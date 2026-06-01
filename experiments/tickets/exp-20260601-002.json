@@ -1,0 +1,114 @@
+{
+  "experiment_id": "exp-20260601-002",
+  "experiment_uid": "expuid-8f6daaa711df4713",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260601-002",
+    "slug": "companyfacts_share_contraction_rs_candidate_pool",
+    "reserved_at": "2026-06-01T01:10:32+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "alpha-search",
+  "hypothesis": "SEC Companyfacts diluted-share contraction combined with the accepted Fundamental Growth RS paper source may identify shareholder-yield candidates with better replacement value than generic growth+RS candidates, while avoiding simple ticker-noise expansion.",
+  "change_type": "default_off_candidate_pool_scout",
+  "mechanism_family": "companyfacts_shareholder_yield_candidate_pool",
+  "trial_family": "companyfacts_share_contraction_rs_candidate_pool",
+  "trial_variant_id": "shares_diluted_yoy_contraction_candidate_source_v1",
+  "single_causal_variable": "shares_diluted_yoy_contraction_candidate_source_v1",
+  "changed_variable": "shares_diluted_yoy_contraction_candidate_source_v1",
+  "prior_trial_count": 2,
+  "nearby_prior_experiments": [
+    "exp-20260520-039",
+    "exp-20260528-017"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "production_visible_sec_companyfacts_share_count_field",
+  "baseline_result_file": "data/experiments/exp-20260528-017/fundamental_growth_rs_low_liability_support.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260601_*;data/experiments/exp-20260601-*;experiments/logs/exp-20260601-*;experiments/artifacts/exp-20260601-*;experiments/tickets/exp-20260601-*;experiments/cards/exp-20260601-*;docs/experiment_log.jsonl;docs/experiment_registry.json"
+  ],
+  "must_not_touch": [
+    "quant/sec_filing_features.py;experiments/tickets/exp-20260531-027.json;experiments/tickets/exp-20260531-028.json;data/backtests/backtest_results_20260531.json"
+  ],
+  "locked_variables": [
+    "core orders",
+    "core ranking",
+    "sizing",
+    "exits",
+    "LLM/news",
+    "accepted alpha_score/source-consensus scalars",
+    "accepted fundamental_growth_rs thresholds"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "docs/backtesting.md canonical three windows; aggregate EV/PnL positive; no regressed window; >=20 target trades; all 3 windows represented; max drawdown drift <=0.5pp; max single positive share <=0.50 and HHI <=0.30",
+  "prediction": {
+    "success_probability": 0.25,
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 3000.0,
+    "main_failure_modes": [
+      "APP_concentration",
+      "thin_sample",
+      "old_thin_regression"
+    ],
+    "confidence_reason": "shares_diluted is free PIT Companyfacts data and distinct from textual buyback, but exp-20260528-017 warned share-count support concentrated in APP.",
+    "recorded_at": "2026-06-01T01:10:06+00:00"
+  },
+  "created_at": "2026-06-01T01:10:32+00:00",
+  "claimed_at": "2026-06-01T01:10:38+00:00",
+  "completed_at": "2026-06-01T01:18:40+00:00",
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [
+      "expected_value_score improved 37.34%",
+      "total_pnl improved 24.52%"
+    ],
+    "before_result_file": "data/experiments/exp-20260601-002/companyfacts_share_contraction_rs_candidate_pool_before_aggregate.json",
+    "after_result_file": "data/experiments/exp-20260601-002/companyfacts_share_contraction_rs_candidate_pool_after_aggregate.json",
+    "delta_metrics": {
+      "expected_value_score": 2.9477,
+      "max_drawdown_pct": 0.0111,
+      "total_pnl": 57590.8
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.25,
+      "brier_score": 0.0625,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "low",
+      "expected_ev_delta": 0.15,
+      "actual_ev_delta": 2.9477,
+      "ev_prediction_error": 2.7977,
+      "expected_pnl_delta": 3000.0,
+      "actual_pnl_delta": 57590.8,
+      "pnl_prediction_error": 54590.8,
+      "predicted_failure_modes": [
+        "APP_concentration",
+        "thin_sample",
+        "old_thin_regression"
+      ],
+      "realized_failure_mode": "APP_concentration",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "The raw PnL was strong, but almost all positive contribution came from APP, matching the exp-20260528-017 warning."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260601-002.json",
+  "card_file": "experiments/cards/exp-20260601-002.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260601-002.json"
+}
