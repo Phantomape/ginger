@@ -1,0 +1,183 @@
+{
+  "accepted": false,
+  "after_metrics": {
+    "expected_value_score": 7.3545,
+    "strategy_total_pnl": 211843.53,
+    "total_pnl": 211843.53
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "expected_value_score": 7.4955,
+    "strategy_total_pnl": 215936.37,
+    "total_pnl": 215936.37
+  },
+  "calibration": {
+    "actual_decision": "rejected_accepted_consensus_liquidity_efficiency_gate",
+    "actual_ev_delta": -0.141,
+    "actual_pnl_delta": -4092.84,
+    "actual_success": 0,
+    "brier_score": 0.1225,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "sample_too_thin",
+      "window_regression",
+      "pnl_cut_too_much",
+      "baseline_matches_docs"
+    ],
+    "predicted_success_probability": 0.35,
+    "realized_failure_mode": [
+      "aggregate_expected_value_positive",
+      "aggregate_pnl_positive",
+      "all_windows_expected_value_improved",
+      "all_windows_pnl_improved",
+      "baseline_matches_docs"
+    ]
+  },
+  "change_summary": "Added a production-visible OHLCV liquidity-efficiency gate to the accepted free-data cross-source consensus paper overlay.",
+  "change_type": "default_off_paper_candidate_quality_gate",
+  "changed_variable": "accepted_free_data_consensus_liquidity_efficiency_gate_v1",
+  "decision": "rejected_accepted_consensus_liquidity_efficiency_gate",
+  "decision_basis": {
+    "alpha_checks_passed": false,
+    "decision": "rejected_accepted_consensus_liquidity_efficiency_gate",
+    "ev_windows_improved": [],
+    "failed_gates": [
+      "aggregate_expected_value_positive",
+      "aggregate_pnl_positive",
+      "all_windows_expected_value_improved",
+      "all_windows_pnl_improved",
+      "baseline_matches_docs"
+    ],
+    "gates": {
+      "aggregate_expected_value_positive": false,
+      "aggregate_pnl_positive": false,
+      "all_windows_expected_value_improved": false,
+      "all_windows_pnl_improved": false,
+      "baseline_matches_docs": false,
+      "concentration_guard_passed": true,
+      "drawdown_drift_passed": true,
+      "survival_floor_passed": true,
+      "target_trade_count_passed": true,
+      "target_window_count_passed": true
+    },
+    "max_drawdown_delta": 0.0026,
+    "min_survival_rate": 0.7917,
+    "passed": false,
+    "pnl_windows_improved": [],
+    "rationale": "The liquidity-efficiency gate did not improve the accepted consensus paper overlay across the canonical three windows. No production/shared behavior is retained.",
+    "requires_parity_before_promotion": true
+  },
+  "delta_metrics": {
+    "expected_value_score_delta": -0.141,
+    "expected_value_score_delta_pct": -0.018811,
+    "max_drawdown_delta": 0.0026,
+    "max_single_positive_share": 0.351961,
+    "positive_pnl_hhi": 0.252664,
+    "strategy_total_pnl_delta": -4092.84,
+    "strategy_total_pnl_delta_pct": -0.018954,
+    "target_trade_count": 45,
+    "total_pnl_delta": -4092.84
+  },
+  "experiment_id": "exp-20260601-017",
+  "hypothesis": "Accepted free-data cross-source consensus candidates with high dollar liquidity and tight signal-day range should have better default-off replacement value than the full accepted consensus queue.",
+  "lane": "alpha_search",
+  "mechanism_family": "default_off_paper_candidate_quality_gate",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260531-030",
+    "exp-20260601-001",
+    "exp-20260601-015",
+    "exp-20260529-004"
+  ],
+  "new_evidence_type": "new_production_visible_cost_liquidity_discriminator",
+  "next_retry_requires": [
+    "do not retry nearby liquidity/range thresholds on this frozen consensus sample",
+    "clean current-code baseline parity versus docs/backtesting.md before any positive retention",
+    "forward closed replacement-value rows before activation",
+    "materially new cost field such as spread/borrow/availability if revisiting this lane"
+  ],
+  "parameters": {
+    "base_notional_usd": 4000.0,
+    "feature_lookback_days": 20,
+    "hold_days": 10,
+    "max_paper_trades_per_day": 1,
+    "max_signal_day_range_close_ratio": 0.1,
+    "min_avg_dollar_volume_20": 200000000.0,
+    "rule_version": "accepted_free_data_consensus_liquidity_efficiency_gate_v1",
+    "same_ticker_cooldown_days": 7,
+    "source_adapter_experiment_id": "exp-20260601-001",
+    "source_replay_experiment_id": "exp-20260531-030"
+  },
+  "prediction": {
+    "confidence_reason": "Builds on accepted free-data consensus and the accepted VBB cost/liquidity field, but may cut too many consensus winners and baseline drift blocks promotion.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "sample_too_thin",
+      "window_regression",
+      "pnl_cut_too_much",
+      "baseline_matches_docs"
+    ],
+    "recorded_at": "2026-06-01T09:06:06+00:00",
+    "success_probability": 0.35
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "aggregate_expected_value_positive; aggregate_pnl_positive; all_windows_expected_value_improved; all_windows_pnl_improved; baseline_matches_docs",
+  "related_files": [
+    "quant/experiments/exp_20260601_017_accepted_consensus_liquidity_efficiency.py",
+    "data/experiments/exp-20260601-017/exp_20260601_017_accepted_consensus_liquidity_efficiency.json",
+    "experiments/logs/exp-20260601-017.json",
+    "experiments/cards/exp-20260601-017.md",
+    "experiments/tickets/exp-20260601-017.json"
+  ],
+  "status": "rejected_accepted_consensus_liquidity_efficiency_gate",
+  "timestamp": "2026-06-01T09:16:16Z",
+  "trial_family": "accepted_free_data_cross_source_consensus_liquidity_efficiency",
+  "trial_variant_id": "accepted_free_data_consensus_liquidity_efficiency_gate_v1",
+  "windows": [
+    {
+      "after_target_trade_count": 9,
+      "before_target_trade_count": 9,
+      "expected_value_after": 4.7869,
+      "expected_value_before": 4.7869,
+      "expected_value_delta": 0.0,
+      "label": "late_strong",
+      "strategy_total_pnl_delta": 0.0
+    },
+    {
+      "after_target_trade_count": 21,
+      "before_target_trade_count": 22,
+      "expected_value_after": 2.3247,
+      "expected_value_before": 2.4136,
+      "expected_value_delta": -0.0889,
+      "label": "mid_weak",
+      "strategy_total_pnl_delta": -1364.5
+    },
+    {
+      "after_target_trade_count": 15,
+      "before_target_trade_count": 16,
+      "expected_value_after": 0.2429,
+      "expected_value_before": 0.295,
+      "expected_value_delta": -0.0521,
+      "label": "old_thin",
+      "strategy_total_pnl_delta": -2728.34
+    }
+  ]
+}
