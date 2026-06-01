@@ -473,6 +473,25 @@ Current evidence:
   paper-notional support (`$4,000` -> `$5,000`) when the selected alpha-score
   candidate also appears in accepted FINRA/IWM or VBB paper sources on the same
   signal date. It remains observe-only.
+- `exp-20260601-003` re-confirmed the `exp-20260531-017` component finding with
+  an added relative_strength double-sort control: on the narrow 52-name
+  watchlist the only robust cross-sectional component was `relative_strength`
+  (`+0.81 pp` 5d, 3/3 windows); `breadth_alignment`'s univariate edge collapsed
+  to `+0.34 pp` after controlling for RS (collinear), and
+  `expectation_revision` / `post_earnings_drift` were perfectly constant
+  (30% of composite weight inert). Narrow-universe verdict: alpha_score is
+  RS-momentum, not incremental.
+- `exp-20260601-006` is the decisive robustness test: it re-ran the composite
+  quintile ladder AND the RS-controlled component decomposition on the broad
+  1,446-ticker all-windows-full-liquid warehouse universe (`96,833` obs).
+  Broadening the universe SHRANK the edge -- the opposite of a generalizable
+  alpha. Composite 5d spread fell `+0.56 pp` (narrow) -> `+0.21 pp` (broad,
+  below the `0.5 pp` floor); `relative_strength` fell `+0.81` -> `+0.34 pp`
+  (also below floor); no component cleared the bar; the only positive composite
+  window was `late_strong` (`1/3`). The universe-robust conclusion: raw
+  `alpha_score` has NO robust 5d cross-sectional forward-return edge; the
+  narrow-watchlist edge was largely a curated-momentum-universe, single-regime
+  artifact.
 
 Do next:
 
@@ -497,7 +516,14 @@ Do not:
   frozen windows without new evidence;
 - tune score weights on the same frozen windows without a pre-registered
   component hypothesis;
-- use filled-trade-only rank attribution to claim the surface works.
+- use filled-trade-only rank attribution to claim the surface works;
+- claim raw `alpha_score` carries cross-sectional alpha from narrow-watchlist
+  evidence: `exp-20260601-006` showed the edge SHRINKS below the materiality
+  floor on the broad 1,446-ticker universe and is carried by a single regime
+  (`late_strong`). Any revival must (a) use a broad universe, (b) show
+  per-regime / out-of-window robustness, and (c) add a genuinely populated
+  non-momentum component (the current expectation/PEAD inputs are constant on
+  broad tickers), not a reweighting of the existing OHLCV-momentum components.
 
 ### 4b. Pattern-Name Candidate Pools
 
