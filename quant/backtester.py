@@ -384,7 +384,7 @@ def build_earnings_event_data_quality(earnings_snapshots, sim_dates):
     has_snapshots = bool(snapshot_dates)
     return {
         "days_to_earnings_source": (
-            "yfinance calendar plus walk-forward simulation date"
+            "daily earnings snapshots when present; yfinance calendar fallback"
         ),
         "snapshot_archive_present": has_snapshots,
         "snapshot_count": len(snapshot_dates),
@@ -1358,38 +1358,62 @@ class BacktestEngine:
     def _earnings_dict_for(self, today, calendar_dates, ticker=None):
         """Build the earnings_data dict feature_layer expects, walked to `today`.
 
-        `days_to_earnings` comes from the historical earnings calendar (always
-        reconstructable). `eps_estimate` and `avg_historical_surprise_pct` come
-        from the nearest available earnings snapshot written by run.py (P-ERN).
-        Without a snapshot, both are None (confidence for C strategy capped at 0.83).
+        Prefer the daily production earnings snapshot for next earnings date and
+        days-to-earnings when it exists; that is the PIT source run.py used for
+        the same trade date. Fall back to the downloaded earnings calendar only
+        when no replay snapshot is available.
         """
         import numpy as np
         today_date = today.date() if hasattr(today, "date") else today
-        future = [d for d in calendar_dates if d > today_date]
+        today_str = (
+            today_date.strftime("%Y%m%d")
+            if hasattr(today_date, "strftime")
+            else str(today_date).replace("-", "")
+        )
+        future = [d for d in calendar_dates if d >= today_date]
         base = {
             "next_earnings_date": None, "days_to_earnings": None,
             "eps_estimate": None, "eps_actual_last": None,
             "historical_surprise_pct": [],
             "avg_historical_surprise_pct": None,
         }
-        if not future:
-            return base
-        nxt = future[0]
-        try:
-            dte = int(np.busday_count(today_date, nxt))
-        except Exception:
-            dte = None
-        base["next_earnings_date"] = str(nxt)
-        base["days_to_earnings"]   = dte
+        if future:
+            nxt = future[0]
+            try:
+                dte = int(np.busday_count(today_date, nxt))
+            except Exception:
+                dte = None
+            base["next_earnings_date"] = str(nxt)
+            base["days_to_earnings"] = dte
 
-        # P-ERN: supplement with the most recent snapshot on or before today.
+        # P-ERN: replay the most recent snapshot on or before today. Exact-day
+        # snapshots match production; prior snapshots are recomputed from their
+        # next_earnings_date so stale days_to_earnings values do not leak.
         if ticker and self._earnings_snapshots:
-            today_str = today_date.strftime("%Y%m%d") if hasattr(today_date, "strftime") else str(today_date).replace("-", "")
-            # Find the latest snapshot date that is ≤ today
             candidates = [d for d in self._earnings_snapshots if d <= today_str]
             if candidates:
                 snap_date = max(candidates)
                 snap = self._earnings_snapshots[snap_date].get(ticker, {})
+                snap_next = None
+                if snap.get("next_earnings_date"):
+                    try:
+                        snap_next = pd.Timestamp(snap["next_earnings_date"]).date()
+                    except Exception:
+                        snap_next = None
+                if snap_next is not None and snap_next >= today_date:
+                    base["next_earnings_date"] = str(snap_next)
+                    if snap_date == today_str and snap.get("days_to_earnings") is not None:
+                        try:
+                            base["days_to_earnings"] = int(snap["days_to_earnings"])
+                        except Exception:
+                            base["days_to_earnings"] = None
+                    else:
+                        try:
+                            base["days_to_earnings"] = int(
+                                np.busday_count(today_date, snap_next)
+                            )
+                        except Exception:
+                            base["days_to_earnings"] = None
                 if snap.get("eps_estimate") is not None:
                     base["eps_estimate"] = snap["eps_estimate"]
                 if snap.get("eps_actual_last") is not None:
@@ -3817,7 +3841,7 @@ class BacktestEngine:
             # quality gate. Treat earnings_event_long metrics as a LOWER BOUND on
             # strategy quality until daily earnings snapshots are accumulated.
             "earnings_event_long_data_quality": {
-                "days_to_earnings_source":        "yfinance calendar (reconstructable, ~accurate)",
+                "days_to_earnings_source":        "daily earnings snapshots when present; yfinance calendar fallback",
                 "eps_estimate":                   "always None — no snapshot archive",
                 "positive_surprise_history":      "always None — no snapshot archive",
                 "confidence_cap":                 0.83,
