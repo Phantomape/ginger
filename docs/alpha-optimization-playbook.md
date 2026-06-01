@@ -44,10 +44,10 @@ Recent repository evidence supports this priority:
 - `FUNDAMENTAL_GROWTH_RS_PAPER` is the current best candidate-pool lead:
   Companyfacts growth + positive operating-profit quality + OHLCV RS produced a
   large three-window paper improvement, then became a shared default-off adapter.
-  Accepted low-volume, filing-recency, and low-liability balance-sheet support
-  improved the shared default-off paper adapter, but the sleeve is now mature
-  enough that nearby frozen-sample scalar retunes should stop; collect forward
-  replacement-value rows first.
+  Accepted low-volume, filing-recency, low-liability balance-sheet, and
+  filing-timeliness support improved the shared default-off paper adapter, but
+  the sleeve is now mature enough that nearby frozen-sample scalar retunes
+  should stop; collect forward replacement-value rows first.
 - `VOLUME_BREADTH_BREAKOUT_PAPER` and QQQ-confirmed VCP show that free OHLCV
   market-confirmation fields can produce useful paper sleeves. Their next step
   is forward maturation, not another breadth/QQQ/top-N sweep. The latest
@@ -304,6 +304,11 @@ default-off candidate source with a closed-ledger governor for
 concentration/drawdown. `exp-20260601-026` accepted the gross-margin quality
 candidate source after the PIT-DTE baseline repair: EV `6.3596 -> 12.6985` and
 PnL `$192,538.61 -> $300,134.87`, with all three windows improved.
+`exp-20260601-027` accepted the next orthogonal Companyfacts support field:
+operating-income filings made within `45` days of quarter end or `75` days of
+annual period end receive a `1.05x` default-off paper-notional scalar. It
+improved the gross-margin adapter EV `12.6985 -> 13.0745` and PnL
+`$300,134.87 -> $305,514.70`, with all three windows improved.
 
 Keep fixed:
 
@@ -316,14 +321,15 @@ Keep fixed:
 - RS proxy and top-1/day paper route;
 - next-open entry and 10-trading-day paper exit;
 - closed-ledger profit cap / drawdown governor.
+- accepted filing-timeliness support: `10-Q <= 45` days and `10-K <= 75` days
+  from fiscal period end to filed date, `1.05x` paper notional.
 
 Next valid fields:
 
 - cash-conversion quality only if it improves forward replacement value;
 - operating-margin durability only with new forward evidence or an orthogonal
   data field;
-- filing-timeliness, low-liability balance-sheet quality, and
-  restatement/disclosure-quality context;
+- restatement/disclosure-quality context;
 - cost-adjusted liquidity state.
 
 Frozen without new evidence:
@@ -337,6 +343,8 @@ Frozen without new evidence:
   above the concentration guard, with APP/MU dominating the lift;
 - gross-margin threshold, duration, source-precedence, or notional-scalar
   retunes around the accepted `exp-20260601-026` candidate source;
+- filing-timeliness threshold/form/scalar retunes around the accepted
+  `exp-20260601-027` support field;
 - any new Companyfacts scalar whose best case still depends on the already
   accepted operating-profit + RS stack rather than a new candidate source;
 - score-tercile/rank monotonicity changes until forward rows show stable

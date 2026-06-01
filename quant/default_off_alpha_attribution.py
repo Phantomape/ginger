@@ -384,6 +384,9 @@ def build_default_off_alpha_attribution_report(
                 "filing_recency_supported": (
                     ((fundamental_growth_rs_paper_sleeve or {}).get("filing_recency") or {}).get("supported_candidate_count")
                 ),
+                "filing_timeliness_supported": (
+                    ((fundamental_growth_rs_paper_sleeve or {}).get("filing_timeliness") or {}).get("supported_candidate_count")
+                ),
                 "low_liability_supported": (
                     ((fundamental_growth_rs_paper_sleeve or {}).get("low_liability") or {}).get("supported_candidate_count")
                 ),

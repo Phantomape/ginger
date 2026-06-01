@@ -907,7 +907,8 @@ the frozen sample; use forward rows or an orthogonal production-visible field.
 Purpose: maintain the default-off `FUNDAMENTAL_GROWTH_RS_PAPER` forward
 observation ledger for the accepted Companyfacts operating-profit quality +
 gross-margin quality + RS candidate-pool alpha from `exp-20260528-008` and
-`exp-20260601-026`.
+`exp-20260601-026`, plus filing-timeliness paper support from
+`exp-20260601-027`.
 
 Candidate route:
 
@@ -921,17 +922,18 @@ Candidate route:
 - Emits ranked candidates but opens at most one paper entry per day, with
   fixed `$10k` base paper notional, next-open paper entry, 10-trading-day close
   exit, closed outcomes, replacement-value summary, the accepted closed-ledger
-  ticker profit-cap / global drawdown governor, accepted low-volume and
-  filing-recency paper-notional support, and accepted PIT liabilities/assets
-  low-liability paper-notional support. Candidate metadata includes
-  gross-margin status, value, source, and filed-date provenance.
+  ticker profit-cap / global drawdown governor, accepted low-volume,
+  filing-recency, filing-timeliness, and PIT liabilities/assets low-liability
+  paper-notional support. Candidate metadata includes gross-margin status,
+  value, source, filed-date provenance, and operating-income filed-date lag
+  from fiscal period end.
 
 Agent rule: this sleeve may collect forward replacement-value evidence for the
 accepted alpha. It must not enable orders, expand the core universe, alter live
 ranking, sizing, exits, LLM/news, or consume live capital without a separate
 Gate 1-4 activation experiment and parity update. Do not retune the
 Companyfacts growth, operating-profit, gross-margin, RS, top-N, hold-day,
-fixed-notional, low-volume, filing-recency, low-liability, or
+fixed-notional, low-volume, filing-recency, filing-timeliness, low-liability, or
 closed-ledger-scalar parameters on the frozen sample without forward rows or a
 new production-visible field.
 

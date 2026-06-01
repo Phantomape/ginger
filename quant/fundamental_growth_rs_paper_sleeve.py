@@ -35,6 +35,7 @@ GOVERNOR_RULE_VERSION = "operating_profit_quality_closed_ledger_governor_v1"
 GROSS_MARGIN_QUALITY_RULE_VERSION = "gross_margin_quality_candidate_source_v1"
 LOW_VOLUME_PARTICIPATION_RULE_VERSION = "fundamental_growth_rs_low_volume_participation_support_v1"
 FILING_RECENCY_RULE_VERSION = "fundamental_growth_rs_filing_recency_support_v1"
+FILING_TIMELINESS_RULE_VERSION = "fundamental_growth_rs_filing_timeliness_support_v1"
 LOW_LIABILITY_RULE_VERSION = "fundamental_growth_rs_low_liability_support_v1"
 REPLACEMENT_VALUE_RULE_VERSION = "fundamental_growth_rs_forward_replacement_value_v1"
 STATE_SCHEMA_VERSION = 1
@@ -95,6 +96,9 @@ DEFAULT_CONFIG = {
     "low_volume_notional_scalar": 1.10,
     "filing_recency_max_days": 90,
     "filing_recency_notional_scalar": 1.05,
+    "filing_timeliness_10q_max_days": 45,
+    "filing_timeliness_10k_max_days": 75,
+    "filing_timeliness_notional_scalar": 1.05,
     "low_liability_assets_max": 0.35,
     "low_liability_notional_scalar": 1.05,
     "forward_gate_min_closed_trades": 30,
@@ -202,6 +206,13 @@ def empty_fundamental_growth_rs_paper_sleeve_snapshot(
         },
         "filing_recency": {
             "rule_version": FILING_RECENCY_RULE_VERSION,
+            "read_only": True,
+            "trade_enabled": False,
+            "alters_orders": False,
+            "supported_candidate_count": 0,
+        },
+        "filing_timeliness": {
+            "rule_version": FILING_TIMELINESS_RULE_VERSION,
             "read_only": True,
             "trade_enabled": False,
             "alters_orders": False,
@@ -421,6 +432,18 @@ def build_fundamental_growth_rs_paper_sleeve_snapshot(
             "paper_notional_scalar": float(cfg["filing_recency_notional_scalar"]),
             "supported_candidate_count": sum(
                 1 for row in candidates if row.get("filing_recency_pass_v1")
+            ),
+        },
+        "filing_timeliness": {
+            "rule_version": FILING_TIMELINESS_RULE_VERSION,
+            "read_only": True,
+            "trade_enabled": False,
+            "alters_orders": False,
+            "timely_10q_max_days": int(cfg["filing_timeliness_10q_max_days"]),
+            "timely_10k_max_days": int(cfg["filing_timeliness_10k_max_days"]),
+            "paper_notional_scalar": float(cfg["filing_timeliness_notional_scalar"]),
+            "supported_candidate_count": sum(
+                1 for row in candidates if row.get("filing_timeliness_pass_v1")
             ),
         },
         "low_liability": {
@@ -1118,6 +1141,22 @@ def _candidate_for_ticker(
     filing_recency_scalar = (
         float(config["filing_recency_notional_scalar"]) if filing_recency_pass else 1.0
     )
+    filing_timeliness_lag_days = _days_between(
+        operating.get("operating_income_current_period_end"),
+        operating.get("operating_income_current_filed"),
+    )
+    filing_timeliness_max_days = _filing_timeliness_max_days(
+        operating.get("operating_income_current_form"),
+        config,
+    )
+    filing_timeliness_pass = (
+        filing_timeliness_lag_days is not None
+        and filing_timeliness_max_days is not None
+        and filing_timeliness_lag_days <= filing_timeliness_max_days
+    )
+    filing_timeliness_scalar = (
+        float(config["filing_timeliness_notional_scalar"]) if filing_timeliness_pass else 1.0
+    )
     liabilities_assets_ratio = _float_or_none(balance_sheet.get("liabilities_assets_ratio"))
     low_liability_pass = (
         liabilities_assets_ratio is not None
@@ -1131,6 +1170,7 @@ def _candidate_for_ticker(
         * global_drawdown_scalar
         * low_volume_scalar
         * filing_recency_scalar
+        * filing_timeliness_scalar
         * low_liability_scalar
     )
     intended_notional = float(config["paper_notional_usd"]) * notional_scalar
@@ -1185,6 +1225,18 @@ def _candidate_for_ticker(
         "filing_recency_max_days": int(config["filing_recency_max_days"]),
         "filing_recency_pass_v1": filing_recency_pass,
         "filing_recency_notional_scalar": filing_recency_scalar,
+        "filing_timeliness_rule_version": FILING_TIMELINESS_RULE_VERSION,
+        "filing_timeliness_known_at": "SEC Companyfacts operating_income filed date and period end <= signal_date",
+        "filing_timeliness_trade_enabled": False,
+        "filing_timeliness_alters_orders": False,
+        "filing_timeliness_lag_days": filing_timeliness_lag_days,
+        "filing_timeliness_max_days": filing_timeliness_max_days,
+        "filing_timeliness_bucket": _filing_timeliness_bucket(
+            filing_timeliness_lag_days,
+            filing_timeliness_max_days,
+        ),
+        "filing_timeliness_pass_v1": filing_timeliness_pass,
+        "filing_timeliness_notional_scalar": filing_timeliness_scalar,
         "low_liability_rule_version": LOW_LIABILITY_RULE_VERSION,
         "low_liability_known_at": "SEC Companyfacts assets/liabilities filed date <= signal_date",
         "low_liability_trade_enabled": False,
@@ -1808,6 +1860,25 @@ def _filing_age_bucket(days: int | None) -> str:
     if days <= 180:
         return "stale_91_180d"
     return "very_stale_gt180d"
+
+
+def _filing_timeliness_max_days(form: Any, config: dict[str, Any]) -> int | None:
+    text = str(form or "").upper()
+    if text == "10-Q":
+        return int(config["filing_timeliness_10q_max_days"])
+    if text == "10-K":
+        return int(config["filing_timeliness_10k_max_days"])
+    return None
+
+
+def _filing_timeliness_bucket(lag_days: int | None, max_days: int | None) -> str:
+    if lag_days is None:
+        return "missing"
+    if max_days is None:
+        return "unsupported_form"
+    if lag_days <= max_days:
+        return "timely"
+    return "late"
 
 
 def _liabilities_assets_bucket(ratio: Any, config: dict[str, Any]) -> str:

@@ -5,6 +5,7 @@ from datetime import date, timedelta
 from quant.default_off_alpha_attribution import build_default_off_alpha_attribution_report
 from quant.fundamental_growth_rs_paper_sleeve import (
     FILING_RECENCY_RULE_VERSION,
+    FILING_TIMELINESS_RULE_VERSION,
     GOVERNOR_RULE_VERSION,
     GROSS_MARGIN_QUALITY_RULE_VERSION,
     LOW_LIABILITY_RULE_VERSION,
@@ -163,13 +164,15 @@ def test_snapshot_adds_top1_companyfacts_growth_rs_candidate_without_orders():
     assert snapshot["candidates"][0]["gross_margin"] > 0.4
     assert snapshot["candidates"][0]["low_volume_participation_rule_version"] == LOW_VOLUME_PARTICIPATION_RULE_VERSION
     assert snapshot["candidates"][0]["filing_recency_rule_version"] == FILING_RECENCY_RULE_VERSION
+    assert snapshot["candidates"][0]["filing_timeliness_rule_version"] == FILING_TIMELINESS_RULE_VERSION
     assert snapshot["candidates"][0]["low_liability_rule_version"] == LOW_LIABILITY_RULE_VERSION
     assert snapshot["candidates"][0]["fundamental_growth_points_v1"] == 2
     assert snapshot["candidates"][0]["operating_profit_quality_pass_v1"] is True
     assert snapshot["candidates"][0]["rs_proxy_score_v1"] >= 0.75
     assert snapshot["candidates"][0]["filing_recency_pass_v1"] is True
+    assert snapshot["candidates"][0]["filing_timeliness_pass_v1"] is True
     assert snapshot["candidates"][0]["low_liability_pass_v1"] is False
-    assert snapshot["candidates"][0]["intended_notional"] == 10_500.0
+    assert snapshot["candidates"][0]["intended_notional"] == 11_025.0
     assert snapshot["trade_enabled"] is False
     assert snapshot["production_impact"]["production_orders_changed"] is False
 
@@ -246,8 +249,10 @@ def test_low_volume_participation_support_scales_paper_notional_without_orders()
     assert candidate["low_volume_notional_scalar"] == 1.1
     assert candidate["filing_recency_pass_v1"] is True
     assert candidate["filing_recency_notional_scalar"] == 1.05
-    assert candidate["closed_ledger_notional_scalar"] == 1.155
-    assert candidate["intended_notional"] == 11_550.0
+    assert candidate["filing_timeliness_pass_v1"] is True
+    assert candidate["filing_timeliness_notional_scalar"] == 1.05
+    assert candidate["closed_ledger_notional_scalar"] == 1.21275
+    assert candidate["intended_notional"] == 12_127.5
     assert snapshot["low_volume_participation"]["supported_candidate_count"] == 1
     assert snapshot["trade_enabled"] is False
     assert snapshot["production_impact"]["production_orders_changed"] is False
@@ -272,9 +277,68 @@ def test_filing_recency_support_scales_paper_notional_without_orders():
     assert candidate["filing_recency_max_days"] == 90
     assert candidate["filing_recency_pass_v1"] is True
     assert candidate["filing_recency_notional_scalar"] == 1.05
+    assert candidate["closed_ledger_notional_scalar"] == 1.1025
+    assert candidate["intended_notional"] == 11_025.0
+    assert snapshot["filing_recency"]["supported_candidate_count"] == 1
+    assert snapshot["trade_enabled"] is False
+    assert snapshot["production_impact"]["production_orders_changed"] is False
+
+
+def test_filing_timeliness_support_scales_paper_notional_without_orders():
+    ohlcv = _ohlcv()
+    as_of = ohlcv["SPY"][125]["date"]
+
+    snapshot = build_fundamental_growth_rs_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker=ohlcv,
+        companyfacts_rows=_facts(),
+        candidate_universe=["AMD", "AAPL"],
+        state=empty_fundamental_growth_rs_paper_state(),
+        persist=False,
+    )
+
+    candidate = snapshot["candidates"][0]
+    assert candidate["filing_timeliness_rule_version"] == FILING_TIMELINESS_RULE_VERSION
+    assert candidate["filing_timeliness_lag_days"] == 25
+    assert candidate["filing_timeliness_max_days"] == 45
+    assert candidate["filing_timeliness_bucket"] == "timely"
+    assert candidate["filing_timeliness_pass_v1"] is True
+    assert candidate["filing_timeliness_notional_scalar"] == 1.05
+    assert candidate["closed_ledger_notional_scalar"] == 1.1025
+    assert candidate["intended_notional"] == 11_025.0
+    assert snapshot["filing_timeliness"]["supported_candidate_count"] == 1
+    assert snapshot["trade_enabled"] is False
+    assert snapshot["production_impact"]["production_orders_changed"] is False
+
+
+def test_late_filing_timeliness_does_not_scale_paper_notional_without_orders():
+    ohlcv = _ohlcv()
+    as_of = ohlcv["SPY"][125]["date"]
+    facts = []
+    for row in _facts():
+        updated = dict(row)
+        if updated["canonical"] == "operating_income" and updated["fy"] == 2026:
+            updated["end"] = "2026-01-01"
+        facts.append(updated)
+
+    snapshot = build_fundamental_growth_rs_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker=ohlcv,
+        companyfacts_rows=facts,
+        candidate_universe=["AMD", "AAPL"],
+        state=empty_fundamental_growth_rs_paper_state(),
+        persist=False,
+    )
+
+    candidate = snapshot["candidates"][0]
+    assert candidate["filing_timeliness_lag_days"] == 114
+    assert candidate["filing_timeliness_max_days"] == 45
+    assert candidate["filing_timeliness_bucket"] == "late"
+    assert candidate["filing_timeliness_pass_v1"] is False
+    assert candidate["filing_timeliness_notional_scalar"] == 1.0
     assert candidate["closed_ledger_notional_scalar"] == 1.05
     assert candidate["intended_notional"] == 10_500.0
-    assert snapshot["filing_recency"]["supported_candidate_count"] == 1
+    assert snapshot["filing_timeliness"]["supported_candidate_count"] == 0
     assert snapshot["trade_enabled"] is False
     assert snapshot["production_impact"]["production_orders_changed"] is False
 
@@ -300,8 +364,9 @@ def test_low_liability_support_scales_paper_notional_without_orders():
     assert candidate["low_liability_pass_v1"] is True
     assert candidate["low_liability_notional_scalar"] == 1.05
     assert candidate["filing_recency_pass_v1"] is True
-    assert candidate["closed_ledger_notional_scalar"] == 1.1025
-    assert candidate["intended_notional"] == 11_025.0
+    assert candidate["filing_timeliness_pass_v1"] is True
+    assert candidate["closed_ledger_notional_scalar"] == 1.157625
+    assert candidate["intended_notional"] == 11_576.25
     assert snapshot["low_liability"]["supported_candidate_count"] == 1
     assert snapshot["trade_enabled"] is False
     assert snapshot["production_impact"]["production_orders_changed"] is False
@@ -330,8 +395,9 @@ def test_closed_ledger_governor_scales_same_ticker_profit_and_global_drawdown():
     assert candidate["ticker_profit_cap_scalar"] == 0.05
     assert candidate["global_drawdown_scalar"] == 0.25
     assert candidate["filing_recency_pass_v1"] is True
-    assert candidate["closed_ledger_notional_scalar"] == 0.013125
-    assert candidate["intended_notional"] == 131.25
+    assert candidate["filing_timeliness_pass_v1"] is True
+    assert candidate["closed_ledger_notional_scalar"] == 0.013781
+    assert candidate["intended_notional"] == 137.81
 
 
 def test_snapshot_fills_next_session_and_closes_after_fixed_hold_without_orders():
@@ -493,6 +559,7 @@ def test_default_off_alpha_report_surfaces_fundamental_growth_rs_sleeve():
         "source_rule_version": SOURCE_RULE_VERSION,
         "governor_rule_version": GOVERNOR_RULE_VERSION,
         "gross_margin_quality": {"candidate_count": 1},
+        "filing_timeliness": {"supported_candidate_count": 1},
         "low_liability": {"supported_candidate_count": 1},
     }
 
@@ -506,5 +573,6 @@ def test_default_off_alpha_report_surfaces_fundamental_growth_rs_sleeve():
     assert surfaces["fundamental_growth_rs"]["label"] == "FUNDAMENTAL_GROWTH_RS_PAPER"
     assert surfaces["fundamental_growth_rs"]["trade_enabled"] is False
     assert surfaces["fundamental_growth_rs"]["extra_metrics"]["gross_margin_quality_candidates"] == 1
+    assert surfaces["fundamental_growth_rs"]["extra_metrics"]["filing_timeliness_supported"] == 1
     assert surfaces["fundamental_growth_rs"]["extra_metrics"]["low_liability_supported"] == 1
     assert "min_closed_trades" in surfaces["fundamental_growth_rs"]["blockers"]
