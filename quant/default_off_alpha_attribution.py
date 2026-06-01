@@ -226,6 +226,7 @@ def build_default_off_alpha_attribution_report(
     volume_breadth_breakout_paper_sleeve: dict[str, Any] | None = None,
     alpha_score_market_regime_paper_sleeve: dict[str, Any] | None = None,
     accepted_source_consensus_paper_sleeve: dict[str, Any] | None = None,
+    free_data_cross_source_consensus_paper_sleeve: dict[str, Any] | None = None,
     fundamental_growth_rs_paper_sleeve: dict[str, Any] | None = None,
     finra_iwm_paper_sleeve: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
@@ -338,6 +339,28 @@ def build_default_off_alpha_attribution_report(
                 ),
                 "source_counts": (
                     ((accepted_source_consensus_paper_sleeve or {}).get("source_consensus") or {}).get("source_counts")
+                ),
+            },
+        ),
+        _surface_summary(
+            name="free_data_cross_source_consensus",
+            label="ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER",
+            snapshot=free_data_cross_source_consensus_paper_sleeve,
+            extra_metrics={
+                "consensus_rule_version": (
+                    (free_data_cross_source_consensus_paper_sleeve or {}).get("consensus_rule_version")
+                ),
+                "paper_notional_usd": (
+                    ((free_data_cross_source_consensus_paper_sleeve or {}).get("source_consensus") or {}).get("paper_notional_usd")
+                ),
+                "min_source_count": (
+                    ((free_data_cross_source_consensus_paper_sleeve or {}).get("source_consensus") or {}).get("min_source_count")
+                ),
+                "source_consensus_supported": (
+                    ((free_data_cross_source_consensus_paper_sleeve or {}).get("source_consensus") or {}).get("supported_candidate_count")
+                ),
+                "source_counts": (
+                    ((free_data_cross_source_consensus_paper_sleeve or {}).get("source_consensus") or {}).get("source_counts")
                 ),
             },
         ),

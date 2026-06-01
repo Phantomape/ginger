@@ -503,6 +503,40 @@ score thresholds, market gate, top-N, hold, or notional on the same frozen
 windows. Promotion to live/core behavior requires closed forward replacement
 value and a separate Gate 1-4 activation experiment.
 
+### `quant/free_data_cross_source_consensus_paper_sleeve.py`
+
+Purpose: maintain the default-off
+`ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER` forward observation ledger for
+the source-agnostic accepted free-data consensus lead.
+
+Evidence boundary:
+
+- `exp-20260531-030` showed that same signal-date ticker agreement across any
+  two accepted free-data paper sleeves improved all three canonical windows
+  (`EV +0.5103`, PnL `+$9,359.12`, `47` target trades) and passed drawdown,
+  survival, sample, and concentration guards.
+- `exp-20260601-001` promoted that fixed candidate definition into a shared
+  default-off adapter. It does not change source thresholds, source notional,
+  top-N, hold period outside this adapter, live watchlists, or order paths.
+
+Adapter semantics:
+
+- receives same-day snapshots from `FUNDAMENTAL_GROWTH_RS_PAPER`,
+  `VOLUME_BREADTH_BREAKOUT_PAPER`, `FINRA_IWM_CONFIRMED_PAPER`, and
+  `ALPHA_SCORE_MARKET_REGIME_PAPER`;
+- admits only candidates whose ticker appears in at least two of those accepted
+  free-data sources on the same signal date;
+- uses fixed `$4,000` paper notional, top-1/day,
+  seven-calendar-day same-ticker admitted-candidate cooldown, next-open paper
+  entry, and 10-trading-day paper exit;
+- emits default-off `pending/open/closed` paper ledger, replacement-value
+  report, forward gate, default-off attribution surface, and human-report block.
+
+Agent rule: this sleeve is observe-only. Do not retune the source count, source
+set, cooldown, notional, or hold period on the same frozen windows. Promotion
+to live/core behavior requires closed forward replacement value and a separate
+Gate 1-4 activation experiment.
+
 ### `quant/ranking_attribution.py`
 
 Purpose: evaluate whether `alpha_score` contains predictive information in historical / replay artifacts.

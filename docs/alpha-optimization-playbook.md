@@ -93,9 +93,10 @@ Recent repository evidence supports this priority:
   accepted free-data paper sleeves agreeing on the same ticker/date plus a
   seven-calendar-day same-ticker cooldown improved all three canonical windows
   (`EV +0.5103`, PnL `+$9,359.12`, `47` target trades) and passed concentration.
-  Treat it as a positive replay lead, not an accepted production surface, until
-  it is rebuilt as a shared live/backtest adapter; do not retune source-count,
-  cooldown, hold, or notional on the frozen windows first.
+  `exp-20260601-001` rebuilt that fixed definition as the shared observe-only
+  `ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER` adapter. The next evidence
+  is forward replacement value for this adapter, not source-count, source-set,
+  cooldown, hold, or notional retuning on the frozen windows.
 - Space remains observe-only, but `exp-20260528-026` showed that a new
   production-visible OHLCV field (`daily_close_location >= 0.84` on
   governed Space `trend_long` signal days) can separate better paper
@@ -255,7 +256,9 @@ Do next:
 
 - roll up closed forward outcomes for `FUNDAMENTAL_GROWTH_RS_PAPER`,
   `VOLUME_BREADTH_BREAKOUT_PAPER`, `FINRA_IWM_CONFIRMED_PAPER`,
-  QQQ-confirmed VCP, and broad-market paper;
+  `ALPHA_SCORE_MARKET_REGIME_PAPER`, `ACCEPTED_SOURCE_CONSENSUS_PAPER`,
+  `ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER`, QQQ-confirmed VCP, and
+  broad-market paper;
 - add cost-adjusted replacement value where spread/liquidity data is available;
 - compare selected rows against same-day core candidates and adjacent paper
   ranks;

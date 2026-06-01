@@ -48,6 +48,24 @@ Aggregate core EV is now `7.8941`; aggregate PnL is `$234,850.99`.
 Latest saved single-window backtest artifacts can reflect only the most recent
 command; canonical acceptance evidence is the three-window artifact above.
 
+## 2026-06-01 Alpha Search Update
+
+`exp-20260601-001` promoted the positive `exp-20260531-030` source-agnostic
+free-data consensus lead into a shared default-off adapter,
+`ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER`. It admits only same-date
+same-ticker agreement across at least two accepted free-data sleeves among
+`FUNDAMENTAL_GROWTH_RS_PAPER`, `VOLUME_BREADTH_BREAKOUT_PAPER`,
+`FINRA_IWM_CONFIRMED_PAPER`, and `ALPHA_SCORE_MARKET_REGIME_PAPER`, with fixed
+`$4,000` paper notional, top-1/day, a seven-calendar-day same-ticker cooldown,
+next-open paper entry, and 10-trading-day close exit. The replay evidence from
+`exp-20260531-030` was aggregate EV `+0.5103`, PnL `+$9,359.12`, `47` target
+trades, no drawdown worsening, and all three canonical windows improved. This
+is observe-only: `trade_enabled=false`, live/default orders remain disabled,
+and core ranking, sizing, exits, LLM/news, and watchlists are unchanged. The
+next valid work is forward replacement-value accumulation and activation
+blocker monitoring, not source-count/cooldown/notional retuning on the frozen
+windows.
+
 ## 2026-05-31 Experiment Consolidation
 
 Today's experiment set produced one accepted default-off paper adapter, but no

@@ -1,0 +1,172 @@
+{
+  "adapter_files": [
+    "quant/free_data_cross_source_consensus_paper_sleeve.py",
+    "quant/run.py",
+    "quant/report_generator.py",
+    "quant/default_off_alpha_attribution.py",
+    "quant/data_paths.py",
+    "quant/test_free_data_cross_source_consensus_paper_sleeve.py",
+    "docs/production_backtest_parity.md",
+    "docs/current_state.md",
+    "docs/alpha-optimization-playbook.md",
+    "docs/data_edge_context_layers.md"
+  ],
+  "after_metrics": {
+    "expected_value_score": 8.4044,
+    "strategy_total_pnl": 244210.11,
+    "total_pnl": 244210.11
+  },
+  "before_metrics": {
+    "expected_value_score": 7.8941,
+    "strategy_total_pnl": 234850.99,
+    "total_pnl": 234850.99
+  },
+  "completed_at": "2026-06-01T00:16:27Z",
+  "created_at": "2026-06-01T00:16:27Z",
+  "decision": "accepted_default_off_free_data_cross_source_consensus_adapter",
+  "delta_metrics": {
+    "expected_value_score_delta": 0.5103,
+    "expected_value_score_delta_pct": 0.064643,
+    "strategy_total_pnl_delta": 9359.12,
+    "strategy_total_pnl_delta_pct": 0.039851,
+    "total_pnl_delta": 9359.12
+  },
+  "experiment_id": "exp-20260601-001",
+  "gate1": {
+    "baseline": {
+      "expected_value_score": 7.8941,
+      "strategy_total_pnl": 234850.99,
+      "total_pnl": 234850.99
+    },
+    "baseline_artifact": "data/experiments/exp-20260531-030/accepted_free_data_cross_source_consensus_before_aggregate.json",
+    "source": "docs/backtesting.md canonical three-window replay"
+  },
+  "gate2": {
+    "missing_entry_date_tickers": [],
+    "missing_target_price_tickers": [],
+    "passed": true,
+    "path": "operator_inputs/open_positions.json",
+    "position_count": 13
+  },
+  "gate3": {
+    "core_survival_unchanged": true,
+    "min_core_survival_rate": 0.7925,
+    "note": "The adapter does not add a core/live filter; canonical core survival is unchanged.",
+    "paper_target_trade_count": 47
+  },
+  "gate4": {
+    "adapter_acceptance_basis": "exp-20260531-030 passed all three windows; this run changes only the shared default-off production/replay adapter boundary.",
+    "passed": true,
+    "source_gate4": {
+      "decision": "positive_replay_lead_not_promoted_requires_shared_cross_source_adapter",
+      "ev_windows_improved": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "gates": {
+        "aggregate_expected_value_positive": true,
+        "aggregate_pnl_positive": true,
+        "all_windows_expected_value_improved": true,
+        "all_windows_pnl_improved": true,
+        "concentration_guard_passed": true,
+        "drawdown_drift_passed": true,
+        "survival_floor_passed": true,
+        "target_trade_count_passed": true,
+        "target_window_count_passed": true
+      },
+      "max_drawdown_delta": -0.0008,
+      "min_survival_rate": 0.7925,
+      "passed": true,
+      "pnl_windows_improved": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "rationale": "Canonical three-window replay improved aggregate EV and PnL across all windows. No production behavior changes were made; promotion is blocked until the cross-source consensus signal is rebuilt as a shared live/backtest adapter.",
+      "requires_parity_before_promotion": true
+    }
+  },
+  "metrics": {
+    "aggregate_expected_value_after": 8.4044,
+    "aggregate_expected_value_before": 7.8941,
+    "aggregate_expected_value_delta": 0.5103,
+    "aggregate_strategy_total_pnl_after": 244210.11,
+    "aggregate_strategy_total_pnl_before": 234850.99,
+    "aggregate_strategy_total_pnl_delta": 9359.12,
+    "max_single_positive_share": 0.41044177499246787,
+    "positive_pnl_hhi": 0.2519530542832012,
+    "target_trade_count": 47
+  },
+  "preflight": {
+    "acceptance_standard": "docs/backtesting.md canonical three-window Gate 1-4 plus production/backtest parity.",
+    "alpha_hypothesis": "Same signal-date ticker agreement across at least two accepted free-data paper sleeves should remain useful when promoted into a shared default-off adapter.",
+    "nearby_prior_experiments": [
+      "exp-20260531-026",
+      "exp-20260531-029",
+      "exp-20260531-030"
+    ],
+    "reproducibility": "Adapter files, source replay artifact, ticket, card, log, and JSONL record are committed.",
+    "single_causal_variable": "accepted_free_data_cross_source_consensus_shared_adapter_v1"
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "parity_test_added": true,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": true,
+    "trade_enabled": false
+  },
+  "rule": {
+    "base_notional_usd": 4000.0,
+    "candidate_pool_rule_version": "accepted_free_data_cross_source_consensus_candidate_pool_v1",
+    "hold_days": 10,
+    "max_paper_trades_per_day": 1,
+    "min_source_count": 2,
+    "rule_version": "accepted_free_data_cross_source_consensus_shared_v1",
+    "same_ticker_cooldown_days": 7,
+    "source_names": [
+      "FUNDAMENTAL_GROWTH_RS_PAPER",
+      "VOLUME_BREADTH_BREAKOUT_PAPER",
+      "FINRA_IWM_CONFIRMED_PAPER",
+      "ALPHA_SCORE_MARKET_REGIME_PAPER"
+    ]
+  },
+  "source_replay_artifact": "data/experiments/exp-20260531-030/accepted_free_data_cross_source_consensus.json",
+  "source_replay_experiment_id": "exp-20260531-030",
+  "windows": [
+    {
+      "expected_value_after": 5.4489,
+      "expected_value_before": 5.1628,
+      "expected_value_delta": 0.2861,
+      "label": "late_strong",
+      "strategy_total_pnl_delta": 2947.24,
+      "target_trade_count": 9
+    },
+    {
+      "expected_value_after": 2.2491,
+      "expected_value_before": 2.1402,
+      "expected_value_delta": 0.1089,
+      "label": "mid_weak",
+      "strategy_total_pnl_delta": 1926.98,
+      "target_trade_count": 22
+    },
+    {
+      "expected_value_after": 0.7064,
+      "expected_value_before": 0.5911,
+      "expected_value_delta": 0.1153,
+      "label": "old_thin",
+      "strategy_total_pnl_delta": 4484.9,
+      "target_trade_count": 16
+    }
+  ]
+}

@@ -64,6 +64,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            volume_breadth_breakout_paper_sleeve=None,
                            alpha_score_market_regime_paper_sleeve=None,
                            accepted_source_consensus_paper_sleeve=None,
+                           free_data_cross_source_consensus_paper_sleeve=None,
                            fundamental_growth_rs_paper_sleeve=None,
                            finra_iwm_paper_sleeve=None,
                            space_catalyst_shadow=None,
@@ -109,6 +110,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         volume_breadth_breakout_paper_sleeve (dict): Default-off volume-breadth breakout paper sleeve
         alpha_score_market_regime_paper_sleeve (dict): Default-off alpha-score market-regime paper sleeve
         accepted_source_consensus_paper_sleeve (dict): Default-off accepted-source consensus paper sleeve
+        free_data_cross_source_consensus_paper_sleeve (dict): Default-off accepted free-data cross-source consensus sleeve
         fundamental_growth_rs_paper_sleeve (dict): Default-off Companyfacts growth + RS paper sleeve
         finra_iwm_paper_sleeve (dict): Default-off FINRA short-pressure IWM-confirmed paper sleeve
         space_catalyst_shadow (dict):   Observe-only space catalyst candidate pool
@@ -2185,6 +2187,71 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"alpha={candidate.get('alpha_score')} "
                 f"sources={candidate.get('accepted_source_consensus_sources', [])} "
                 f"rank_pct={candidate.get('alpha_score_rank_pct')} "
+                f"notional={notional_text} (paper only)"
+            )
+
+    if free_data_cross_source_consensus_paper_sleeve and (
+        free_data_cross_source_consensus_paper_sleeve.get("candidate_count", 0) > 0
+        or free_data_cross_source_consensus_paper_sleeve.get("pending_count", 0) > 0
+        or free_data_cross_source_consensus_paper_sleeve.get("open_position_count", 0) > 0
+        or free_data_cross_source_consensus_paper_sleeve.get("closed_count_today", 0) > 0
+        or free_data_cross_source_consensus_paper_sleeve.get("error")
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("ACCEPTED FREE-DATA CROSS-SOURCE CONSENSUS PAPER SLEEVE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Paper: {free_data_cross_source_consensus_paper_sleeve.get('paper_enabled', False)}  |  "
+            f"Trade enabled: {free_data_cross_source_consensus_paper_sleeve.get('trade_enabled', False)}"
+        )
+        if free_data_cross_source_consensus_paper_sleeve.get("error"):
+            lines.append(
+                f"  Source status: {free_data_cross_source_consensus_paper_sleeve.get('error')}"
+            )
+        consensus = free_data_cross_source_consensus_paper_sleeve.get("source_consensus") or {}
+        cooldown = free_data_cross_source_consensus_paper_sleeve.get("same_ticker_cooldown") or {}
+        lines.append(
+            "  Cross-source consensus: "
+            f"keys={free_data_cross_source_consensus_paper_sleeve.get('source_consensus_key_count', 0)}  |  "
+            f"supported={consensus.get('supported_candidate_count', 0)}  |  "
+            f"min_sources={consensus.get('min_source_count', 0)}  |  "
+            f"cooldown_rejects={cooldown.get('rejected_count', 0)}"
+        )
+        lines.append(
+            f"  Sources: {consensus.get('source_counts', {})}  |  "
+            f"notional=${consensus.get('paper_notional_usd', 0.0):,.0f}"
+        )
+        lines.append(
+            f"  Candidates: {free_data_cross_source_consensus_paper_sleeve.get('candidate_count', 0)}  |  "
+            f"Rejected: {free_data_cross_source_consensus_paper_sleeve.get('rejected_candidate_count', 0)}  |  "
+            f"Pending: {free_data_cross_source_consensus_paper_sleeve.get('pending_count', 0)}  |  "
+            f"Open: {free_data_cross_source_consensus_paper_sleeve.get('open_position_count', 0)}  |  "
+            f"Closed today: {free_data_cross_source_consensus_paper_sleeve.get('closed_count_today', 0)}"
+        )
+        lines.append(
+            "  Realized paper P&L: "
+            f"${free_data_cross_source_consensus_paper_sleeve.get('realized_pnl_to_date', 0.0):,.2f}  |  "
+            f"Unrealized: ${free_data_cross_source_consensus_paper_sleeve.get('unrealized_pnl', 0.0):,.2f}"
+        )
+        gate = free_data_cross_source_consensus_paper_sleeve.get("forward_paper_gate") or {}
+        if gate:
+            metrics = gate.get("metrics") or {}
+            reasons = gate.get("reasons") or []
+            reason_text = ", ".join(reasons) if reasons else "none"
+            lines.append(
+                f"  Forward gate: {gate.get('status', 'unknown')}  |  "
+                f"closed={metrics.get('closed_trades', 0)} "
+                f"pnl=${metrics.get('realized_pnl', 0.0):,.2f}  |  "
+                f"blocked_by={reason_text}"
+            )
+        for candidate in (free_data_cross_source_consensus_paper_sleeve.get("candidates") or [])[:5]:
+            notional = candidate.get("intended_notional")
+            notional_text = (
+                f"${notional:,.0f}" if isinstance(notional, (int, float)) else "n/a"
+            )
+            lines.append(
+                f"  {candidate.get('ticker', '?')}: "
+                f"sources={candidate.get('source_names', [])} "
                 f"notional={notional_text} (paper only)"
             )
 

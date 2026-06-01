@@ -139,6 +139,14 @@ DATA_ARTIFACTS: dict[str, tuple[str, str]] = {
         "paper_sleeves/accepted_source_consensus/state.json",
         "accepted_source_consensus_paper_state.json",
     ),
+    "free_data_cross_source_consensus_paper_snapshots": (
+        "paper_sleeves/free_data_cross_source_consensus/snapshots.jsonl",
+        "free_data_cross_source_consensus_paper_snapshots.jsonl",
+    ),
+    "free_data_cross_source_consensus_paper_state": (
+        "paper_sleeves/free_data_cross_source_consensus/state.json",
+        "free_data_cross_source_consensus_paper_state.json",
+    ),
     "fundamental_growth_rs_paper_snapshots": (
         "paper_sleeves/fundamental_growth_rs/snapshots.jsonl",
         "fundamental_growth_rs_paper_snapshots.jsonl",

@@ -1,0 +1,119 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260601_001_accepted_free_data_cross_source_consensus_adapter.py",
+    "data/experiments/exp-20260601-001/exp_20260601_001_accepted_free_data_cross_source_consensus_adapter.json",
+    "experiments/cards/exp-20260601-001.md",
+    "experiments/manifests/exp-20260601-001.json",
+    "experiments/tickets/exp-20260601-001.json",
+    "experiments/logs/exp-20260601-001.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "artifact": "data/experiments/exp-20260601-001/exp_20260601_001_accepted_free_data_cross_source_consensus_adapter.json",
+  "baseline_result_file": "data/backtests/backtest_results_20260529.json",
+  "card_file": "experiments/cards/exp-20260601-001.md",
+  "change_type": "default_off_paper_adapter",
+  "changed_variable": "accepted_free_data_cross_source_consensus_shared_adapter_v1",
+  "claimed_at": "2026-06-01T00:05:32+00:00",
+  "completed_at": "2026-06-01T00:16:27Z",
+  "created_at": "2026-06-01T00:05:26+00:00",
+  "decision": "accepted_default_off_free_data_cross_source_consensus_adapter",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260601-001",
+  "experiment_uid": "expuid-ca2a7a1977b64841",
+  "gate4": {
+    "adapter_acceptance_basis": "exp-20260531-030 passed all three windows; this run changes only the shared default-off production/replay adapter boundary.",
+    "passed": true,
+    "source_gate4": {
+      "decision": "positive_replay_lead_not_promoted_requires_shared_cross_source_adapter",
+      "ev_windows_improved": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "gates": {
+        "aggregate_expected_value_positive": true,
+        "aggregate_pnl_positive": true,
+        "all_windows_expected_value_improved": true,
+        "all_windows_pnl_improved": true,
+        "concentration_guard_passed": true,
+        "drawdown_drift_passed": true,
+        "survival_floor_passed": true,
+        "target_trade_count_passed": true,
+        "target_window_count_passed": true
+      },
+      "max_drawdown_delta": -0.0008,
+      "min_survival_rate": 0.7925,
+      "passed": true,
+      "pnl_windows_improved": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "rationale": "Canonical three-window replay improved aggregate EV and PnL across all windows. No production behavior changes were made; promotion is blocked until the cross-source consensus signal is rebuilt as a shared live/backtest adapter.",
+      "requires_parity_before_promotion": true
+    }
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260601-001",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-01T00:05:26+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "accepted_free_data_cross_source_consensus_adapter"
+  },
+  "hypothesis": "Source-agnostic agreement across at least two accepted free-data paper sleeves should be promoted into a shared default-off adapter because exp-20260531-030 passed the three-window gate without retuning thresholds or notional.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "add shared source-agnostic cross-source consensus default-off paper adapter; no source thresholds, hold, notional, core, live, LLM, or order changes"
+  ],
+  "log": "experiments/logs/exp-20260601-001.json",
+  "mechanism_family": "default_off_paper_adapter",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260531-026",
+    "exp-20260531-029",
+    "exp-20260531-030"
+  ],
+  "new_evidence_type": "shared_production_visible_adapter_from_positive_replay_lead",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "exp-20260531-030 improved all three canonical windows with 47 target trades and passed drawdown/concentration; risk is implementation parity, not frozen-window alpha.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "adapter_parity_gap",
+      "production_snapshot_shape_mismatch",
+      "source_overlap_thin_forward_rows"
+    ],
+    "recorded_at": "2026-06-01T00:05:00+00:00",
+    "success_probability": 0.55
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "parity_test_added": true,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": true,
+    "trade_enabled": false
+  },
+  "result": null,
+  "revision_manifest_file": "experiments/manifests/exp-20260601-001.json",
+  "single_causal_variable": "add shared source-agnostic cross-source consensus default-off paper adapter; no source thresholds, hold, notional, core, live, LLM, or order changes",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260601-001.json",
+  "trial_family": "accepted_free_data_cross_source_consensus_candidate_pool",
+  "trial_variant_id": "exp-20260601-001"
+}

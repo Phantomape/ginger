@@ -306,6 +306,10 @@ def main():
         build_accepted_source_consensus_paper_sleeve_snapshot,
         empty_accepted_source_consensus_paper_sleeve_snapshot,
     )
+    from free_data_cross_source_consensus_paper_sleeve import (
+        build_free_data_cross_source_consensus_paper_sleeve_snapshot,
+        empty_free_data_cross_source_consensus_paper_sleeve_snapshot,
+    )
     from fundamental_growth_rs_paper_sleeve import (
         build_fundamental_growth_rs_paper_sleeve_snapshot,
         empty_fundamental_growth_rs_paper_sleeve_snapshot,
@@ -2157,6 +2161,44 @@ def main():
         )
 
     try:
+        free_data_cross_source_consensus_paper_sleeve = (
+            build_free_data_cross_source_consensus_paper_sleeve_snapshot(
+                as_of=today_iso,
+                ohlcv_by_ticker=alpha_score_market_regime_ohlcv,
+                source_snapshots=[
+                    fundamental_growth_rs_paper_sleeve,
+                    volume_breadth_breakout_paper_sleeve,
+                    finra_iwm_paper_sleeve,
+                    alpha_score_market_regime_paper_sleeve,
+                ],
+                open_prices=current_open_prices,
+                current_prices=current_prices,
+            )
+        )
+        if (
+            free_data_cross_source_consensus_paper_sleeve.get("candidate_count", 0) > 0
+            or free_data_cross_source_consensus_paper_sleeve.get("pending_count", 0) > 0
+            or free_data_cross_source_consensus_paper_sleeve.get("open_position_count", 0) > 0
+            or free_data_cross_source_consensus_paper_sleeve.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "Free-data cross-source consensus paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
+                free_data_cross_source_consensus_paper_sleeve.get("candidate_count", 0),
+                free_data_cross_source_consensus_paper_sleeve.get("pending_count", 0),
+                free_data_cross_source_consensus_paper_sleeve.get("open_position_count", 0),
+                free_data_cross_source_consensus_paper_sleeve.get("closed_count_today", 0),
+                free_data_cross_source_consensus_paper_sleeve.get("realized_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"Free-data cross-source consensus paper sleeve unavailable: {e}")
+        free_data_cross_source_consensus_paper_sleeve = (
+            empty_free_data_cross_source_consensus_paper_sleeve_snapshot(
+                today_iso,
+                "free_data_cross_source_consensus_paper_sleeve_build_failed",
+            )
+        )
+
+    try:
         broad_market_candidate_universe = load_broad_market_candidate_universe()
         if (
             broad_market_candidate_universe.get("status") == "missing"
@@ -2265,6 +2307,7 @@ def main():
         volume_breadth_breakout_paper_sleeve=volume_breadth_breakout_paper_sleeve,
         alpha_score_market_regime_paper_sleeve=alpha_score_market_regime_paper_sleeve,
         accepted_source_consensus_paper_sleeve=accepted_source_consensus_paper_sleeve,
+        free_data_cross_source_consensus_paper_sleeve=free_data_cross_source_consensus_paper_sleeve,
         fundamental_growth_rs_paper_sleeve=fundamental_growth_rs_paper_sleeve,
         finra_iwm_paper_sleeve=finra_iwm_paper_sleeve,
     )
@@ -2304,6 +2347,7 @@ def main():
     trend_signals_dict["volume_breadth_breakout_paper_sleeve"] = volume_breadth_breakout_paper_sleeve
     trend_signals_dict["alpha_score_market_regime_paper_sleeve"] = alpha_score_market_regime_paper_sleeve
     trend_signals_dict["accepted_source_consensus_paper_sleeve"] = accepted_source_consensus_paper_sleeve
+    trend_signals_dict["free_data_cross_source_consensus_paper_sleeve"] = free_data_cross_source_consensus_paper_sleeve
     trend_signals_dict["fundamental_growth_rs_paper_sleeve"] = fundamental_growth_rs_paper_sleeve
     trend_signals_dict["finra_iwm_paper_sleeve"] = finra_iwm_paper_sleeve
     trend_signals_dict["space_catalyst_shadow"] = space_catalyst_shadow
@@ -2350,6 +2394,7 @@ def main():
         volume_breadth_breakout_paper_sleeve = volume_breadth_breakout_paper_sleeve,
         alpha_score_market_regime_paper_sleeve = alpha_score_market_regime_paper_sleeve,
         accepted_source_consensus_paper_sleeve = accepted_source_consensus_paper_sleeve,
+        free_data_cross_source_consensus_paper_sleeve = free_data_cross_source_consensus_paper_sleeve,
         fundamental_growth_rs_paper_sleeve = fundamental_growth_rs_paper_sleeve,
         finra_iwm_paper_sleeve = finra_iwm_paper_sleeve,
         space_catalyst_shadow = space_catalyst_shadow,
@@ -2402,6 +2447,7 @@ def main():
         "volume_breadth_breakout_paper_sleeve": volume_breadth_breakout_paper_sleeve,
         "alpha_score_market_regime_paper_sleeve": alpha_score_market_regime_paper_sleeve,
         "accepted_source_consensus_paper_sleeve": accepted_source_consensus_paper_sleeve,
+        "free_data_cross_source_consensus_paper_sleeve": free_data_cross_source_consensus_paper_sleeve,
         "fundamental_growth_rs_paper_sleeve": fundamental_growth_rs_paper_sleeve,
         "finra_iwm_paper_sleeve": finra_iwm_paper_sleeve,
         "space_catalyst_shadow": space_catalyst_shadow,
