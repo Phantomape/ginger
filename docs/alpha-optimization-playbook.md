@@ -73,10 +73,23 @@ Recent repository evidence supports this priority:
   ladder was not robust enough for a live-facing source. The follow-up
   full-universe quantile attribution (`exp-20260531-006`) found a small pooled
   top-vs-bottom 5d edge (`+0.556 pp`) across `3,551` observations and `2/3`
-  positive windows, but no clean monotonic quintile ladder. Treat
-  `alpha_score` as a ranking surface that needs component decomposition,
-  cost-adjusted replacement value, and regime buckets before any live ranking
-  change. The accepted route is narrow: top-decile/top-1 with SPY above 50d,
+  positive windows, but no clean monotonic quintile ladder. `exp-20260601-003`
+  decomposed that edge by component (with a relative_strength double-sort
+  control) and found it is essentially `relative_strength` only -- but on the
+  same narrow 52-name curated, momentum-homogeneous watchlist.
+  `exp-20260601-006` re-ran both on the broad 1,446-ticker
+  all-windows-full-liquid warehouse universe (`96,833` observations) and the
+  edge SHRANK when the universe broadened, the opposite of a generalizable
+  alpha: composite 5d spread `+0.21 pp` (below the `0.5 pp` floor),
+  relative_strength `+0.34 pp` (also below floor), no component clears the bar,
+  and the only positive composite window is `late_strong` (`1/3`). The
+  universe-robust conclusion is that raw `alpha_score` has NO robust 5d
+  cross-sectional forward-return edge; the narrow-watchlist edge was largely a
+  curated-momentum-universe, single-regime artifact, and
+  `expectation_revision` / `post_earnings_drift` are perfectly constant
+  (unpopulated) on broad tickers. Do not propose `alpha_score` reweighting as a
+  live ranking/sizing change; reviving the surface needs genuinely populated
+  non-momentum components AND a per-regime robustness requirement. The accepted route is narrow: top-decile/top-1 with SPY above 50d,
   IWM 20d return at least SPY 20d return, 20-day hold, and `$4,000`
   default-off base paper notional only. `exp-20260531-025` added the only
   retained increment so far: `1.25x` default-off paper-notional support when

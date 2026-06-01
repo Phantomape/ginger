@@ -1,0 +1,117 @@
+{
+  "after_metrics": {
+    "universe_size": 1446,
+    "total_observations": 96833,
+    "composite_quintile_5d_spread": 0.002096,
+    "composite_quintile_10d_spread": 0.005139,
+    "composite_quintile_20d_spread": 0.01527,
+    "composite_quintile_monotonic_5d": false,
+    "composite_per_window_5d_spread": {"late_strong": 0.005877, "mid_weak": -0.002404, "old_thin": -0.000941},
+    "relative_strength_5d_spread": 0.003357,
+    "breadth_alignment_5d_spread": 0.004006,
+    "breadth_alignment_residual_vs_rs": 0.003254,
+    "trend_5d_spread": 0.000416,
+    "near_constant_components": ["expectation_revision", "post_earnings_drift"],
+    "non_momentum_incremental_edges": [],
+    "runtime_seconds": 273.7,
+    "strategy_behavior_changed": false
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "comment": "exp-20260531-006 (composite quintile) and exp-20260601-003 (component decomposition) ran on the narrow 52-name curated momentum-homogeneous watchlist: composite 5d +0.56pp (barely cleared floor), relative_strength +0.81pp, verdict momentum_only. This re-runs both on a broad 1446-ticker heterogeneous universe.",
+    "narrow_composite_5d_spread": 0.005557,
+    "narrow_relative_strength_5d_spread": 0.00809,
+    "strategy_behavior_changed": false
+  },
+  "change_summary": "Robustness re-run on the broad 1446-ticker all-windows-full-liquid universe (exp-20260519-030 warehouse), 96833 pooled (day,ticker) observations across the canonical 3 windows. Loads each qualified ticker's full OHLCV once, scores the full universe PIT every 5th trading day via compute_features + build_cross_sectional_ranking_surface, then reuses the exp-20260531-006 quantile and exp-20260601-003 component+RS-double-sort judges. Result: broadening the universe SHRINKS the edge. Composite 5d quintile spread collapses from +0.56pp (narrow) to +0.21pp (below 0.5pp floor); relative_strength shrinks from +0.81pp to +0.34pp (also below floor); NO component clears the bar. The composite per-window spread is positive in only 1/3 windows (late_strong +0.59pp; mid_weak -0.24pp; old_thin -0.09pp) -- the entire tilt is one strong-market regime. expectation/PEAD remain perfectly constant (unpopulated for non-curated tickers).",
+  "change_type": "read_only_broad_universe_ranking_component_validation",
+  "changed_variable": "broad_1446_ticker_universe_alpha_score_quantile_and_component_decomposition",
+  "component": "quant/experiments/exp_20260601_006_broad_universe_alpha_score_ranking_validation.py",
+  "date_range": {
+    "late_strong": "2025-10-23 -> 2026-04-21",
+    "mid_weak": "2025-04-23 -> 2025-10-22",
+    "old_thin": "2024-10-02 -> 2025-04-22",
+    "warehouse_ohlcv_span": "2023-08-29 -> 2026-04-24"
+  },
+  "decision": "composite:observed_only_no_robust_quantile_edge|components:observed_only_no_component_edge",
+  "decision_rule": "Reuse exp-20260531-006 composite quintile judge (accept needs monotonic ladder + majority-positive windows + >=0.5pp 5d spread) and exp-20260601-003 component judge (non-momentum component needs cross-sectional dispersion + majority windows + spread surviving RS double-sort). Both returned non-accept on the broad universe.",
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "composite_5d_spread_narrow_to_broad": -0.003461,
+    "relative_strength_5d_spread_narrow_to_broad": -0.004733,
+    "positive_windows_narrow_to_broad": "2/3 -> 1/3"
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260601-006",
+  "gate1": {"name": "broad_universe_observations_collected", "passed": true, "total_observations": 96833},
+  "gate2": {"name": "components_have_dispersion", "passed": true, "near_constant_components": ["expectation_revision", "post_earnings_drift"]},
+  "gate3": {"name": "survival_rate_not_affected_read_only_attribution", "passed": true},
+  "gate4": {
+    "name": "broad_universe_alpha_score_ranking_edge",
+    "passed": false,
+    "composite_status": "observed_only_no_robust_quantile_edge",
+    "component_status": "observed_only_no_component_edge",
+    "composite_5d_spread": 0.002096,
+    "relative_strength_5d_spread": 0.003357,
+    "edge_floor": 0.005,
+    "composite_positive_windows": "1/3"
+  },
+  "gate_questions": {
+    "what_hypothesis": "Does the narrow-universe 'alpha_score = relative_strength only' conclusion generalize to a broad heterogeneous universe?",
+    "prior_similar_experiments": "exp-20260531-006 (narrow composite quintile), exp-20260601-003 (narrow component decomposition), exp-20260530-022 (filled-trade degenerate).",
+    "single_independent_variable": "Universe breadth (52 curated -> 1446 all-windows-full-liquid warehouse), same scoring + judging machinery.",
+    "success_failure_criteria": "Composite quintile ladder cleaner/monotonic OR a non-momentum component shows an RS-independent edge on the broad universe.",
+    "reproducibility": "Deterministic: load warehouse all_windows_full_liquid tickers, sample every 5th day, score full universe PIT, reuse exp-006/003 judges. 5 new helper tests + reused tested machinery."
+  },
+  "hypothesis": "The exp-20260601-003 conclusion (composite alpha_score edge is only relative_strength) was derived on a narrow 52-name momentum-homogeneous curated watchlist and may not generalize. Re-running on the broad 1446-ticker all-windows-full-liquid warehouse universe tests whether the composite ladder becomes cleaner/monotonic and whether any non-momentum component shows an incremental RS-independent edge.",
+  "lane": "alpha_discovery",
+  "llm_metrics": {"used_llm": false},
+  "mechanism_family": "alpha_search",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": ["exp-20260531-006", "exp-20260601-003", "exp-20260530-022", "exp-20260519-030"],
+  "new_evidence_type": "broad_universe_validation_of_alpha_score_momentum_decomposition",
+  "next_evidence_needed": "Cross-sectional ranking via alpha_score is closed for new alpha on robust broad-universe evidence: the edge shrinks when the universe broadens (the opposite of a generalizable alpha) and the only tilt is single-regime (late_strong). Do not propose alpha_score reweighting as a live ranking/sizing change. Reviving a ranking surface needs genuinely populated non-momentum components on the broad universe AND a per-regime robustness requirement. The parallel default-off alpha_score paper adapters (exp-20260531-005/025/029, exp-20260601-001) likely lean on the same late_strong-regime top-quantile momentum tilt; forward replacement value across regimes is the real test.",
+  "parameters": {
+    "rule_version": "broad_universe_alpha_score_ranking_validation_v1",
+    "universe": "exp-20260519-030 warehouse all_windows_full_liquid",
+    "universe_size": 1446,
+    "sample_step_trading_days": 5,
+    "forward_horizons": [5, 10, 20],
+    "edge_floor": 0.005,
+    "composite_weights": {"trend": 0.30, "relative_strength": 0.25, "expectation_revision": 0.20, "post_earnings_drift": 0.10, "theme_participation": 0.10, "breadth_alignment": 0.05}
+  },
+  "prediction": {
+    "success_probability": 0.40,
+    "expected_ev_delta": 0.0,
+    "main_failure_modes": "rs_still_only_driver_on_broad_universe, expectation_pead_theme_still_constant_for_non_curated_tickers, composite_ladder_still_non_monotonic, edge_concentrated_top_quantile_only, snapshot_universe_survivorship_in_warehouse",
+    "outcome_vs_prediction": "matched and stronger: on the broad universe even RS falls below floor; composite ladder non-monotonic and 1/3 windows; expectation/PEAD still constant. Broadening shrank the edge."
+  },
+  "prior_trial_count": 3,
+  "production_impact": {
+    "alters_entries": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_ranking": false,
+    "alters_sizing": false,
+    "default_off": true,
+    "read_only_attribution": true,
+    "scope": "experiment_artifact_only_data_experiments_exp_20260601_006"
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/experiments/exp_20260601_006_broad_universe_alpha_score_ranking_validation.py",
+    "quant/test_exp_20260601_006_broad_universe_ranking_validation.py",
+    "data/experiments/exp-20260601-006/broad_universe_alpha_score_ranking_validation.json",
+    "experiments/artifacts/exp-20260601-006_broad_universe_alpha_score_ranking_validation.md",
+    "experiments/logs/exp-20260601-006.json",
+    "experiments/tickets/exp-20260601-006.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "rule_version": "broad_universe_alpha_score_ranking_validation_v1",
+  "single_causal_variable": "broad_1446_ticker_universe_alpha_score_quantile_and_component_decomposition",
+  "status": "observed_only",
+  "timestamp": "2026-06-01T08:00:00+00:00",
+  "trial_family": "cross_sectional_ranking_attribution",
+  "trial_variant_id": "exp-20260601-006"
+}
