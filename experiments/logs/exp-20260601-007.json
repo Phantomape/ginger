@@ -1,0 +1,117 @@
+{
+  "after_metrics": {
+    "universe_size": 1446,
+    "reversal_long_short_by_cell_gross": {
+      "f1_h5": -0.001, "f1_h10": -0.003679, "f3_h5": -0.002776,
+      "f3_h10": -0.00971, "f5_h5": -0.002085, "f5_h10": -0.011612
+    },
+    "reversal_long_short_tstat_by_cell": {
+      "f1_h5": -0.3699, "f1_h10": -0.708, "f3_h5": -1.0196,
+      "f3_h10": -1.8062, "f5_h5": -0.8145, "f5_h10": -2.1473
+    },
+    "all_cells_sign": "continuation (losers-minus-winners negative)",
+    "incidental_continuation_winners_minus_losers_gross": {"f3_h10": 0.00971, "f5_h10": 0.011612},
+    "incidental_continuation_top_quintile_10d_f5": 0.0134,
+    "incidental_continuation_windows": "3/3 positive for f3_h10 and f5_h10",
+    "bonferroni_tstat_floor_6_cells": 2.64,
+    "round_trip_long_short_cost": 0.007,
+    "strategy_behavior_changed": false
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "comment": "New direction after momentum/expectation/ranking lines closed. exp-20260601-006 showed 5d momentum (RS, 20-60d formation) weak on broad universe; this tests the documented complement (short-horizon reversal) on the same broad universe.",
+    "strategy_behavior_changed": false
+  },
+  "change_summary": "Tests cross-sectional short-horizon reversal on the broad 1446-ticker all-windows-full-liquid warehouse universe with a one-day skip (formation ends T, holding measured T+1->T+1+H) to remove bid-ask-bounce, a t-stat on the daily long-short series, a 0.70pct round-trip cost adjustment, a formation{1,3,5}xhold{5,10} grid, and per-window robustness. Result: reversal REJECTED -- every cell's losers-minus-winners skip-day forward return is negative (winners beat losers = short-horizon CONTINUATION). Incidental: short-formation (5d) winners continue over 10d (top quintile +1.34pct/10d, winners-minus-losers +1.16pp gross, 3/3 windows, t=2.15 for f5_h10; t=1.81 for f3_h10). Reported as a pre-registration-worthy lead, NOT promoted: marginal under multiple testing (6 cells, Bonferroni floor |t|>=2.64), thin net of cost (~+0.46pp/10d long-short), is-it-incremental-over-core-momentum untested, only 10d hold works.",
+  "change_type": "read_only_short_horizon_cross_sectional_reversal_attribution",
+  "changed_variable": "past_return_formation_quintile_skip_day_forward_return_spread",
+  "component": "quant/experiments/exp_20260601_007_short_horizon_reversal_attribution.py",
+  "date_range": {
+    "late_strong": "2025-10-23 -> 2026-04-21",
+    "mid_weak": "2025-04-23 -> 2025-10-22",
+    "old_thin": "2024-10-02 -> 2025-04-22"
+  },
+  "decision": "observed_only_no_robust_net_reversal_edge",
+  "decision_rule": "A formation/hold cell qualifies as reversal only if its daily losers-minus-winners skip-day forward return has t>=2, a monotonic losers>...>winners ladder, majority-positive windows, AND a positive mean net of 0.70pct round-trip cost. Accept if >=1 cell qualifies. Reject if primary f5/h5 gross long-short <= -0.70pct (continuation). Else observed_only.",
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "primary_f5_h5_reversal_long_short": -0.002085,
+    "strongest_continuation_f5_h10_winners_minus_losers_gross": 0.011612,
+    "strongest_continuation_tstat": 2.1473
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260601-007",
+  "gate1": {"name": "cross_section_observations_collected", "passed": true},
+  "gate2": {"name": "skip_day_applied_no_bounce_overlap", "passed": true, "skip_days": 1},
+  "gate3": {"name": "survival_rate_not_affected_read_only_attribution", "passed": true},
+  "gate4": {
+    "name": "net_cost_adjusted_significant_reversal",
+    "passed": false,
+    "status": "observed_only_no_robust_net_reversal_edge",
+    "tstat_floor": 2.0,
+    "round_trip_long_short_cost": 0.007,
+    "primary_sign": "continuation_or_flat",
+    "qualifying_cells": []
+  },
+  "gate_questions": {
+    "what_hypothesis": "Do recent short-horizon losers bounce (cross-sectional reversal) on the broad universe, net of costs and a skip-day?",
+    "prior_similar_experiments": "exp-20260601-006 (broad-universe momentum weak); exp-20260601-003 (component decomposition). No prior reversal test in repo.",
+    "single_independent_variable": "Past-return formation quintile vs skip-day forward return (reversal direction).",
+    "success_failure_criteria": "Losers-minus-winners daily long-short t>=2, monotonic, majority windows, positive net of 0.70pct cost.",
+    "reproducibility": "Deterministic: warehouse all_windows_full_liquid, skip-day forward returns, formation/hold grid, t-stat. 9 unit tests."
+  },
+  "hypothesis": "Short-horizon cross-sectional reversal: on the broad 1446-ticker all-windows-full-liquid universe, the biggest 1/3/5-day losers out-return the biggest winners over the next 5-10 days (skip-day), with a losers-minus-winners daily t>=2, monotonic, majority-positive windows, surviving a 0.70pct round-trip cost.",
+  "lane": "alpha_discovery",
+  "llm_metrics": {"used_llm": false},
+  "mechanism_family": "cross_sectional_reversal",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": ["exp-20260601-006", "exp-20260601-003", "exp-20260531-006"],
+  "new_evidence_type": "broad_universe_short_horizon_reversal_long_short_tstat_cost_adjusted",
+  "next_evidence_needed": "Reversal is not a usable edge on this universe (rejected). The only positive lead is incidental short-formation (5d) continuation at 10d hold; a clean follow-up must be a SEPARATE pre-registered experiment: long-only top-quintile of 5d winners 10d hold; a hard double-sort test of whether it is incremental over the core's existing momentum/breakout entry; a one-round-trip long-only cost model; and more out-of-sample windows since t=2.15 fails a 6-test Bonferroni floor (>=2.64).",
+  "parameters": {
+    "rule_version": "short_horizon_reversal_skip_day_v1",
+    "universe": "exp-20260519-030 warehouse all_windows_full_liquid",
+    "universe_size": 1446,
+    "skip_days": 1,
+    "formation_days": [1, 3, 5],
+    "hold_days": [5, 10],
+    "quintile": 5,
+    "tstat_floor": 2.0,
+    "round_trip_long_short_cost": 0.007,
+    "round_trip_cost_pct": 0.0035
+  },
+  "prediction": {
+    "success_probability": 0.30,
+    "expected_ev_delta": 0.0,
+    "main_failure_modes": "reversal_gross_positive_but_erased_by_costs, no_reversal_only_continuation, effect_only_in_one_window, bounce_artifact_disappears_with_skip_day, tstat_below_2",
+    "outcome_vs_prediction": "matched: no_reversal_only_continuation. The sign is continuation, not reversal; only the 10d cells reach |t|~2 and fail the multiple-testing floor."
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "alters_entries": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_ranking": false,
+    "alters_sizing": false,
+    "default_off": true,
+    "read_only_attribution": true,
+    "scope": "experiment_artifact_only_data_experiments_exp_20260601_007"
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/experiments/exp_20260601_007_short_horizon_reversal_attribution.py",
+    "quant/test_exp_20260601_007_short_horizon_reversal.py",
+    "data/experiments/exp-20260601-007/short_horizon_reversal_attribution.json",
+    "experiments/artifacts/exp-20260601-007_short_horizon_reversal_attribution.md",
+    "experiments/logs/exp-20260601-007.json",
+    "experiments/tickets/exp-20260601-007.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "rule_version": "short_horizon_reversal_skip_day_v1",
+  "single_causal_variable": "past_return_formation_quintile_skip_day_forward_return_spread",
+  "status": "observed_only",
+  "timestamp": "2026-06-01T10:00:00+00:00",
+  "trial_family": "short_horizon_reversal_attribution",
+  "trial_variant_id": "exp-20260601-007"
+}
