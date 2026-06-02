@@ -309,6 +309,9 @@ def build_default_off_alpha_attribution_report(
                 "pre_event_underpricing_rejected": (
                     ((post_earnings_underpriced_drift_paper_sleeve or {}).get("candidate_reject_counts") or {}).get("pre_event_rs20_outperformed_spy")
                 ),
+                "high_liquidity_supported": (
+                    ((post_earnings_underpriced_drift_paper_sleeve or {}).get("high_liquidity_support") or {}).get("supported_candidate_count")
+                ),
             },
         ),
         _surface_summary(

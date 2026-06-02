@@ -67,11 +67,18 @@ Recent repository evidence supports this priority:
   `POST_EARNINGS_UNDERPRICED_DRIFT_PAPER` adapter; the shared-helper replay
   improved all three canonical windows with aggregate EV `+0.3547`, PnL
   `+$3,557.15`, `20` target paper trades, no drawdown worsening, max single
-  positive share `0.308744`, and positive PnL HHI `0.192948`. The next valid
-  earnings work is forward replacement-value accumulation or materially richer
-  event-quality fields, not implicit DTE resets, generic PEAD/pre-earnings
-  threshold sweeps, or nearby `pre_event_rs20_vs_spy` retunes on the frozen
-  windows.
+  positive share `0.308744`, and positive PnL HHI `0.192948`.
+  `exp-20260602-027` then added one shared free-OHLCV support field on top of
+  the same adapter: already-selected candidates with signal-date
+  `avg_dollar_volume_20d >= $1B` receive `1.10x` default-off paper notional.
+  The combined shared adapter improved all three canonical windows versus core
+  by aggregate EV `+0.4116` and PnL `+$4,058.33`; the support slice adjusted
+  `13` paper trades across all windows and added `+$501.18` incremental paper
+  PnL over exp026. The next valid earnings work is forward replacement-value
+  accumulation or materially richer event-quality fields, not implicit DTE
+  resets, generic PEAD/pre-earnings threshold sweeps, nearby
+  `pre_event_rs20_vs_spy` retunes, or post-earnings high-liquidity
+  threshold/scalar retunes on the frozen windows.
 - `VOLUME_BREADTH_BREAKOUT_PAPER` and QQQ-confirmed VCP show that free OHLCV
   market-confirmation fields can produce useful paper sleeves. Their next step
   is forward maturation, not another breadth/QQQ/top-N sweep. The latest
@@ -1235,6 +1242,10 @@ production-visible field:
   reaction/positive-surprise candidate-pool retries after `exp-20260602-003`
   accepted the explicit continuation policy and `exp-20260602-004` /
   `exp-20260602-006` failed to promote standalone paper pools;
+- nearby post-earnings underpriced drift `pre_event_rs20_vs_spy`, high-liquidity
+  threshold/scalar, score, or close-location retunes after `exp-20260602-026`
+  and `exp-20260602-027`; require forward replacement-value rows or a materially
+  richer event-quality field;
 - simple target, stop, or fixed max-loss exit changes;
 - ticker-specific exceptions from one or two trades;
 - missing-archive or missing-text availability as an alpha field;

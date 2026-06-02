@@ -54,18 +54,31 @@ EV `6.3596` and PnL `$192,538.61`.
 Latest saved single-window backtest artifacts can reflect only the most recent
 command; canonical acceptance evidence is the three-window artifact above.
 
-Latest default-off alpha adapter acceptance: `exp-20260602-026` promoted the
-positive `exp-20260602-023` post-earnings underpriced positive-surprise drift
-lead into the shared `POST_EARNINGS_UNDERPRICED_DRIFT_PAPER` adapter. The
-three canonical windows improved through the shared helper, with aggregate EV
-`+0.3547` (`+4.49%`) and PnL `+$3,557.15` across `20` target paper trades;
-`late_strong`, `mid_weak`, and `old_thin` all improved, max drawdown improved,
-max single positive share was `0.308744`, and positive PnL HHI was `0.192948`.
-This is default-off paper only: `trade_enabled=false`, live/default orders,
-core ranking, sizing, exits, LLM/news, and watchlists are unchanged. The next
-valid work is forward replacement-value accumulation or materially richer
-event-quality fields, not nearby `pre_event_rs20_vs_spy` threshold retuning on
-the frozen windows.
+Latest default-off alpha adapter acceptance: `exp-20260602-027` adds a shared
+high-liquidity paper support field to the accepted
+`POST_EARNINGS_UNDERPRICED_DRIFT_PAPER` adapter from `exp-20260602-026`.
+Already-selected post-earnings underpriced positive-surprise candidates receive
+`1.10x` paper notional only when signal-date `avg_dollar_volume_20d >= $1B`.
+Versus the canonical core baseline, the three canonical windows improved with
+aggregate EV `+0.4116` and PnL `+$4,058.33`; window deltas were
+`late_strong +0.3512` EV / `+$3,055.61`, `mid_weak +0.0535` / `+$802.14`,
+and `old_thin +0.0069` / `+$200.58`. The rule adjusted `13` paper
+trades across all three windows, max drawdown improved, max single positive
+share was `0.310893`, and positive PnL HHI was `0.194626`. The support slice
+itself adjusted `13` trades and added `+$501.18` incremental paper PnL over
+the `exp-20260602-026` adapter (`late_strong +$406.57`,
+`mid_weak +$62.78`, `old_thin +$31.83`). This is default-off paper only:
+`trade_enabled=false`, live/default orders, core ranking, sizing, exits,
+LLM/news, and watchlists are unchanged. The next valid work is forward
+replacement-value accumulation or materially richer event-quality fields, not
+nearby post-earnings high-liquidity threshold/scalar retuning on the frozen
+windows.
+
+`exp-20260602-026` remains the adapter-source acceptance for the same sleeve:
+it promoted the positive `exp-20260602-023` post-earnings underpriced
+positive-surprise drift lead into shared production-visible default-off paper
+observation, improving aggregate EV by `+0.3547` and PnL by `+$3,557.15`
+across `20` target paper trades before the high-liquidity support increment.
 
 ## 2026-06-01 Experiment Consolidation
 

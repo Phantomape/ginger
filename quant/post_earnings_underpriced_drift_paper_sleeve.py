@@ -75,6 +75,7 @@ RULE_VERSION = "post_earnings_underpriced_drift_shared_adapter_v1"
 SOURCE_RULE_VERSION = "post_earnings_positive_surprise_pre_event_underpriced_v1"
 POSITIVE_SURPRISE_RULE_VERSION = "post_earnings_positive_surprise_drift_v1"
 REPLACEMENT_VALUE_RULE_VERSION = "post_earnings_underpriced_forward_replacement_value_v1"
+HIGH_LIQUIDITY_SUPPORT_RULE_VERSION = "post_earnings_underpriced_high_liquidity_support_v1"
 STATE_SCHEMA_VERSION = 1
 
 DEFAULT_STATE_PATH = data_artifact_path("post_earnings_underpriced_drift_paper_state")
@@ -122,6 +123,8 @@ DEFAULT_CONFIG = {
     "min_event_to_signal_excess_vs_spy": 0.0,
     "pre_event_rs_days": 20,
     "max_pre_event_rs20_vs_spy": 0.0,
+    "high_liquidity_avg_dollar_volume_20d_min": 1_000_000_000.0,
+    "high_liquidity_notional_scalar": 1.10,
     "daily_entry_slots": 1,
     "max_active_positions": 5,
     "hold_days": 10,
@@ -318,6 +321,21 @@ def build_post_earnings_underpriced_drift_paper_sleeve_snapshot(
     candidates = candidates[: int(cfg["daily_entry_slots"])]
     for candidate in raw_candidates[len(candidates):]:
         rejected.append({**candidate, "reasons": ["daily_top1_or_capacity_limit"]})
+    high_liquidity_support = {
+        "rule_version": HIGH_LIQUIDITY_SUPPORT_RULE_VERSION,
+        "avg_dollar_volume_20d_min": float(
+            cfg["high_liquidity_avg_dollar_volume_20d_min"]
+        ),
+        "notional_scalar": float(cfg["high_liquidity_notional_scalar"]),
+        "supported_candidate_count": sum(
+            1 for candidate in candidates if candidate.get("high_liquidity_support")
+        ),
+        "supported_raw_candidate_count": sum(
+            1 for candidate in raw_candidates if candidate.get("high_liquidity_support")
+        ),
+        "trade_enabled": False,
+        "alters_orders": False,
+    }
 
     open_positions = working_state.get("open_positions") or []
     room = max(0, int(cfg["max_active_positions"]) - len(open_positions))
@@ -377,6 +395,7 @@ def build_post_earnings_underpriced_drift_paper_sleeve_snapshot(
         },
         "candidate_reject_counts": audit.get("audit_reject_counts") or {},
         "candidate_audit": audit,
+        "high_liquidity_support": high_liquidity_support,
         "candidates": deepcopy(candidates),
         "raw_candidates_sample": deepcopy(raw_candidates[:10]),
         "rejected_candidates": deepcopy(rejected[:50]),
@@ -763,6 +782,15 @@ def _candidate_from_event(
         + (close_location / 10.0)
     )
     base_notional = float(config["paper_notional_usd"])
+    high_liquidity_supported = avg_dollar_volume >= float(
+        config["high_liquidity_avg_dollar_volume_20d_min"]
+    )
+    high_liquidity_scalar = (
+        float(config["high_liquidity_notional_scalar"])
+        if high_liquidity_supported
+        else 1.0
+    )
+    intended_notional = base_notional * high_liquidity_scalar
     return {
         "sleeve": SLEEVE_NAME,
         "ticker": ticker,
@@ -799,10 +827,16 @@ def _candidate_from_event(
         "pre_event_rs20_vs_spy": _round(pre_event_rs, 6),
         "pre_event_underpriced_positive_surprise": True,
         "pre_event_underpricing_threshold": float(config["max_pre_event_rs20_vs_spy"]),
+        "high_liquidity_support": high_liquidity_supported,
+        "high_liquidity_support_rule_version": HIGH_LIQUIDITY_SUPPORT_RULE_VERSION,
+        "high_liquidity_avg_dollar_volume_20d_min": float(
+            config["high_liquidity_avg_dollar_volume_20d_min"]
+        ),
+        "high_liquidity_notional_scalar": _round(high_liquidity_scalar, 6),
         "known_at": "after_earnings_snapshot_transition_and_signal_date_close_before_next_open_paper_entry",
         "source_universe": "current_production_universe_ohlcv_plus_daily_earnings_snapshots",
         "base_paper_notional_usd": base_notional,
-        "intended_notional": base_notional,
+        "intended_notional": _round(intended_notional, 2),
         "trade_enabled": False,
         "alters_orders": False,
     }

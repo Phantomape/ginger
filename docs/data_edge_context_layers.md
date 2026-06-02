@@ -936,7 +936,7 @@ Purpose: maintain the default-off `POST_EARNINGS_UNDERPRICED_DRIFT_PAPER`
 forward observation ledger for the accepted post-earnings underpriced
 positive-surprise drift lead from `exp-20260602-026`, which promoted the
 positive `exp-20260602-023` replay result into a shared production-visible
-adapter.
+adapter, plus high-liquidity paper support from `exp-20260602-027`.
 
 Candidate route:
 
@@ -959,14 +959,19 @@ Candidate route:
   fixed `$10k` base paper notional, next-open paper entry, 10-trading-day
   close exit, closed outcomes, replacement-value summary, and concentration
   blockers only.
+- Applies the accepted `exp-20260602-027` high-liquidity support field:
+  already-selected candidates receive `1.10x` paper notional only when
+  signal-date `avg_dollar_volume_20d >= $1B`. The adapter emits
+  `high_liquidity_support` candidate metadata and snapshot summary fields;
+  this remains paper-only and never enables orders.
 
 Agent rule: this sleeve may collect forward replacement-value evidence for the
 accepted alpha. It must not enable orders, expand the core universe, alter live
 ranking, sizing, exits, LLM/news, or consume live capital without a separate
 Gate 1-4 activation experiment and parity update. Do not retune
 `pre_event_rs20_vs_spy`, surprise thresholds, signal-offset windows, top-N,
-hold-day, or base notional on the frozen sample without forward rows or a
-materially richer event-quality field.
+hold-day, base notional, or high-liquidity threshold/scalar on the frozen
+sample without forward rows or a materially richer event-quality field.
 
 ### `quant/fundamental_growth_rs_paper_sleeve.py`
 

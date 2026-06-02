@@ -1,0 +1,116 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260602_027_post_earnings_high_liquidity_support.py",
+    "data/experiments/exp-20260602-027/exp_20260602_027_post_earnings_high_liquidity_support.json",
+    "experiments/cards/exp-20260602-027.md",
+    "experiments/manifests/exp-20260602-027.json",
+    "experiments/tickets/exp-20260602-027.json",
+    "experiments/logs/exp-20260602-027.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_20260602.json",
+  "card_file": "experiments/cards/exp-20260602-027.md",
+  "change_type": "default_off_paper_allocation",
+  "changed_variable": "post_earnings_underpriced_high_liquidity_notional_scalar_v1",
+  "claimed_at": "2026-06-02T19:06:03+00:00",
+  "completed_at": "2026-06-02T19:32:15+00:00",
+  "created_at": "2026-06-02T19:05:53+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260602-027",
+  "experiment_uid": "expuid-0a0588ca564f43b2",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260602-027",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-02T19:05:53+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "post_earnings_high_liquidity_support"
+  },
+  "hypothesis": "Already-selected post-earnings underpriced drift paper candidates with high 20-day average dollar volume may deserve modest default-off paper support because the event edge is cleaner when participation and execution capacity are strong.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "post_earnings_underpriced_high_liquidity_notional_support_v1"
+  ],
+  "mechanism_family": "default_off_paper_allocation",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260602-026",
+    "exp-20260602-023",
+    "exp-20260602-011",
+    "exp-20260602-022"
+  ],
+  "new_evidence_type": "production_visible_free_ohlcv_cost_liquidity_state",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "Cost/liquidity support has worked in other default-off sleeves; exp026 closed rows show high-dollar-volume candidates positive, but adjusted sample is only 13 rows.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "immaterial_delta",
+      "window_regression",
+      "thin_adjusted_sample"
+    ],
+    "recorded_at": "2026-06-02T19:05:28+00:00",
+    "success_probability": 0.34
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "acceptance_reasons": [
+      "custom_gate4_passed_three_canonical_windows",
+      "aggregate_ev_and_pnl_positive_with_no_window_regressions",
+      "default_off_paper_only_shared_adapter_with_no_live_order_changes"
+    ],
+    "after_result_file": "data/experiments/exp-20260602-027/post_earnings_high_liquidity_support_after_aggregate.json",
+    "artifact": "data/experiments/exp-20260602-027/exp_20260602_027_post_earnings_high_liquidity_support.json",
+    "before_result_file": "data/experiments/exp-20260602-027/post_earnings_high_liquidity_support_before_aggregate.json",
+    "decision": "accepted",
+    "delta_metrics": {
+      "expected_value_score": 0.4116,
+      "max_drawdown_pct": -0.0017,
+      "survival_rate": 0.0,
+      "total_pnl": 4058.33,
+      "total_return_pct": 0.0406,
+      "trade_count": 0
+    },
+    "expected_value_score_delta": 0.4116,
+    "gate4_decision": "accepted_post_earnings_underpriced_high_liquidity_support",
+    "log": "experiments/logs/exp-20260602-027.json",
+    "production_impact": {
+      "backtester_adapter_changed": true,
+      "default_off_paper_only": true,
+      "llm_or_news_changed": false,
+      "parity_rule": "post_earnings_underpriced_high_liquidity_support_v1",
+      "parity_test_added": true,
+      "production_core_ranking_changed": false,
+      "production_exit_changed": false,
+      "production_orders_changed": false,
+      "production_signal_path_changed": false,
+      "production_sizing_changed": false,
+      "production_watchlist_changed": false,
+      "replay_only": false,
+      "run_adapter_changed": true,
+      "shared_policy_changed": true,
+      "trade_enabled": false
+    },
+    "summary": "Accepted shared default-off paper support. Keep it in the production-visible observation adapter to accumulate forward replacement-value rows; do not enable live capital.",
+    "support_trade_summary": {
+      "adjusted_incremental_pnl": 501.18,
+      "adjusted_trade_count": 13,
+      "adjusted_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ]
+    },
+    "total_pnl_delta": 4058.33
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260602-027.json",
+  "single_causal_variable": "post_earnings_underpriced_high_liquidity_notional_support_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260602-027.json",
+  "trial_family": "post_earnings_underpriced_cost_liquidity_support",
+  "trial_variant_id": "exp-20260602-027"
+}

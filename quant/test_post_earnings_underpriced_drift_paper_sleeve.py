@@ -121,6 +121,34 @@ def test_pre_event_outperformer_is_rejected_by_underpricing_gate():
     assert snapshot["new_pending_count"] == 0
 
 
+def test_high_liquidity_support_scales_paper_notional_without_orders():
+    ohlcv = _ohlcv()
+    as_of = ohlcv["SPY"][56]["date"]
+    event_date = ohlcv["SPY"][55]["date"]
+    for row in ohlcv["WIN"]:
+        row["volume"] = 25_000_000.0
+
+    snapshot = build_post_earnings_underpriced_drift_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker=ohlcv,
+        candidate_universe=["WIN"],
+        earnings_index=_earnings_index(event_date),
+        state=empty_post_earnings_underpriced_drift_paper_state(),
+        persist=False,
+    )
+
+    candidate = snapshot["candidates"][0]
+    pending = snapshot["new_pending_entries"][0]
+    assert candidate["high_liquidity_support"] is True
+    assert candidate["high_liquidity_notional_scalar"] == 1.1
+    assert candidate["base_paper_notional_usd"] == 10_000.0
+    assert candidate["intended_notional"] == 11_000.0
+    assert pending["notional"] == 11_000.0
+    assert snapshot["high_liquidity_support"]["supported_candidate_count"] == 1
+    assert candidate["trade_enabled"] is False
+    assert candidate["alters_orders"] is False
+
+
 def test_missing_exact_asof_open_does_not_fill_pending_entry():
     ohlcv = _ohlcv()
     as_of = ohlcv["SPY"][56]["date"]

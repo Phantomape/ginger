@@ -2181,6 +2181,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"pre-RS={candidate.get('pre_event_rs20_vs_spy')} "
                 f"post-RS={candidate.get('rs20_vs_spy')} "
                 f"offset={candidate.get('recent_signal_trading_day_offset')} "
+                f"high-liq={candidate.get('high_liquidity_support', False)} "
                 f"notional={notional_text} (paper only)"
             )
 
