@@ -204,6 +204,12 @@ def compute_earnings_features(earnings_data):
     features = {
         "days_to_earnings":  earnings_data.get("days_to_earnings"),
         "next_earnings_date": earnings_data.get("next_earnings_date"),
+        "last_earnings_date": earnings_data.get("last_earnings_date"),
+        "days_since_last_earnings": earnings_data.get("days_since_last_earnings"),
+        "post_earnings_continuation_confirmed": bool(
+            earnings_data.get("post_earnings_continuation_confirmed")
+        ),
+        "post_earnings_event_date": earnings_data.get("post_earnings_event_date"),
         "eps_estimate":       earnings_data.get("eps_estimate"),
     }
 

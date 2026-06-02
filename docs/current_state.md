@@ -34,21 +34,23 @@ signal-day own-green candle sizing promotion from `exp-20260513-007`, the
 2026-05-10 TRIP sector taxonomy completion from `exp-20260510-015`, and the
 RS20 entry-state shared sizing promotion from `exp-20260510-012`. These are
 documented in `docs/backtesting.md` and
-`docs/alpha-optimization-playbook.md`. As of `exp-20260601-025`, canonical
+`docs/alpha-optimization-playbook.md`. As of `exp-20260602-003`, canonical
 fixed-window core metrics use PIT earnings snapshot `days_to_earnings` replay
-when archived production snapshots exist:
+when archived production snapshots exist, plus explicit same-day
+post-earnings continuation semantics when actual EPS is known and a later
+future earnings date exists:
 
 | Window | EV | Return | Sharpe daily | Max DD | Trades | Survival |
 |---|---:|---:|---:|---:|---:|---:|
-| `late_strong` | 4.1082 | 100.20% | 4.10 | 6.65% | 18 | 81.40% |
-| `mid_weak` | 2.1405 | 78.12% | 2.74 | 11.19% | 20 | 79.17% |
-| `old_thin` | 0.1109 | 14.22% | 0.78 | 14.09% | 20 | 93.62% |
+| `late_strong` | 5.1628 | 117.07% | 4.41 | 6.65% | 18 | 80.39% |
+| `mid_weak` | 2.1402 | 78.11% | 2.74 | 11.19% | 21 | 79.25% |
+| `old_thin` | 0.5911 | 39.67% | 1.49 | 10.01% | 22 | 86.67% |
 
 Latest accepted three-window artifact:
-`data/experiments/exp-20260601-025/exp_20260601_025_pit_dte_baseline_protocol.json`.
-Aggregate core EV is now `6.3596`; aggregate PnL is `$192,538.61`.
-`exp-20260517-009` remains the latest core strategy promotion artifact; its
-`7.8941` / `$234,850.99` aggregate was the older calendar-DTE baseline version.
+`data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json`.
+Aggregate core EV is now `7.8941`; aggregate PnL is `$234,850.99`.
+`exp-20260601-025` remains the prior PIT-DTE control artifact with aggregate
+EV `6.3596` and PnL `$192,538.61`.
 Latest saved single-window backtest artifacts can reflect only the most recent
 command; canonical acceptance evidence is the three-window artifact above.
 
@@ -126,6 +128,20 @@ Attribution shows the gain is concentrated in `8` exact-day reset trades
 implicit DTE side effect. Promotion requires explicit PIT-safe fields for
 pre-earnings risk, post-earnings continuation, days-since-earnings, next future
 earnings DTE, and same-day before-open/after-close event timing parity.
+
+`exp-20260602-003` promoted that lead into explicit shared production/backtest
+semantics. The accepted rule sets `post_earnings_continuation_confirmed` only
+when same-day actual EPS is known and a later future earnings date exists, then
+rolls forward DTE to that next future date. Three-window EV improved
+`6.3596 -> 7.8941` (`+1.5345`, `+24.13%`) and PnL improved
+`$192,538.61 -> $234,850.99` (`+$42,312.38`); max drawdown ceiling improved
+`14.09% -> 11.19%`, trade count increased `58 -> 61`, and minimum survival
+stayed above `79%`. `mid_weak` had a negligible regression (`-0.0003` EV /
+`-$9.27`), while `late_strong` and `old_thin` improved materially. This is now
+the current core Gate 1 baseline; do not retry implicit calendar-DTE reset
+semantics or generic DTE threshold tuning. The next valid alpha question is
+which event-quality or immediate-reaction discriminator improves the accepted
+post-earnings continuation trades.
 
 `exp-20260601-026` accepted the strongest Companyfacts quality lead as a shared
 default-off adapter. It promotes the `exp-20260601-021` gross-margin quality

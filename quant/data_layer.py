@@ -226,6 +226,11 @@ def _populate_from_earnings_dates(result, dates_df, as_of_date):
         past = df[(df["_earnings_date"] <= as_of_date) & df["Reported EPS"].notna()]
         if not past.empty:
             latest_past = past.iloc[-1]
+            last_date = latest_past["_earnings_date"]
+            result["last_earnings_date"] = str(last_date)
+            result["days_since_last_earnings"] = int(
+                np.busday_count(last_date, as_of_date)
+            )
             result["eps_actual_last"] = _round_or_none(latest_past.get("Reported EPS"))
 
             if "Surprise(%)" in past.columns:
@@ -249,6 +254,12 @@ def _populate_from_earnings_dates(result, dates_df, as_of_date):
     next_date = next_row["_earnings_date"]
     result["next_earnings_date"] = str(next_date)
     result["days_to_earnings"] = int(np.busday_count(as_of_date, next_date))
+    result["post_earnings_continuation_confirmed"] = bool(
+        result.get("last_earnings_date") == str(as_of_date)
+        and result.get("eps_actual_last") is not None
+    )
+    if result["post_earnings_continuation_confirmed"]:
+        result["post_earnings_event_date"] = str(as_of_date)
 
     if "EPS Estimate" in next_row.index:
         result["eps_estimate"] = _round_or_none(next_row.get("EPS Estimate"))
@@ -308,6 +319,10 @@ def get_earnings_data(
     result = {
         "next_earnings_date": None,
         "days_to_earnings": None,
+        "last_earnings_date": None,
+        "days_since_last_earnings": None,
+        "post_earnings_continuation_confirmed": False,
+        "post_earnings_event_date": None,
         "eps_estimate": None,
         "eps_actual_last": None,
         "historical_surprise_pct": [],

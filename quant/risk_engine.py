@@ -562,6 +562,14 @@ def enrich_signals(signals, features_dict, atr_target_mult=None):
         dte = features.get("days_to_earnings")
         if dte is not None:
             enriched_sig["days_to_earnings"] = dte
+        for key in (
+            "last_earnings_date",
+            "days_since_last_earnings",
+            "post_earnings_continuation_confirmed",
+            "post_earnings_event_date",
+        ):
+            if key in features and features.get(key) is not None:
+                enriched_sig[key] = features.get(key)
         enriched.append(enriched_sig)
 
     # Store for inspection by callers (report_generator, run.py logging).

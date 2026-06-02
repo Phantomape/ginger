@@ -1371,12 +1371,26 @@ class BacktestEngine:
             else str(today_date).replace("-", "")
         )
         future = [d for d in calendar_dates if d >= today_date]
+        future_after_today = [d for d in calendar_dates if d > today_date]
+        past_or_today = [d for d in calendar_dates if d <= today_date]
         base = {
             "next_earnings_date": None, "days_to_earnings": None,
+            "last_earnings_date": None, "days_since_last_earnings": None,
+            "post_earnings_continuation_confirmed": False,
+            "post_earnings_event_date": None,
             "eps_estimate": None, "eps_actual_last": None,
             "historical_surprise_pct": [],
             "avg_historical_surprise_pct": None,
         }
+        if past_or_today:
+            last = max(past_or_today)
+            base["last_earnings_date"] = str(last)
+            try:
+                base["days_since_last_earnings"] = int(
+                    np.busday_count(last, today_date)
+                )
+            except Exception:
+                base["days_since_last_earnings"] = None
         if future:
             nxt = future[0]
             try:
@@ -1422,6 +1436,19 @@ class BacktestEngine:
                     base["avg_historical_surprise_pct"] = snap["avg_historical_surprise_pct"]
                 if snap.get("historical_surprise_pct"):
                     base["historical_surprise_pct"] = snap["historical_surprise_pct"]
+        if (
+            base.get("last_earnings_date") == str(today_date)
+            and base.get("eps_actual_last") is not None
+            and future_after_today
+        ):
+            nxt = future_after_today[0]
+            base["next_earnings_date"] = str(nxt)
+            try:
+                base["days_to_earnings"] = int(np.busday_count(today_date, nxt))
+            except Exception:
+                base["days_to_earnings"] = None
+            base["post_earnings_continuation_confirmed"] = True
+            base["post_earnings_event_date"] = str(today_date)
         return base
 
     def _download_data(self):

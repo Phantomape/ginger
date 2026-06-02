@@ -1,0 +1,94 @@
+{
+  "acceptance_rule": "docs/backtesting.md canonical three PIT-DTE windows; strong accept if aggregate EV improves >10%, drawdown/survival constraints pass, and implementation is shared production/backtest policy with parity tests",
+  "allowed_write_scope": [
+    "quant",
+    "quant/experiments",
+    "data/experiments",
+    "experiments/tickets",
+    "experiments/logs",
+    "experiments/artifacts",
+    "experiments/cards",
+    "experiments/manifests",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/backtesting.md",
+    "docs/current_state.md",
+    "docs/production_backtest_parity.md"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260601-025/exp_20260601_025_pit_dte_baseline_protocol.json",
+  "card_file": "experiments/cards/exp-20260602-003.md",
+  "change_type": "shared_entry_risk_policy",
+  "changed_variable": "post_earnings_continuation_confirmed_v1",
+  "claimed_at": "2026-06-02T01:07:56+00:00",
+  "completed_at": "2026-06-02T01:25:34+00:00",
+  "created_at": "2026-06-02T01:07:46+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260602-003",
+  "experiment_uid": "expuid-1de6977ce96a4a49",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260602-003",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-02T01:07:46+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "post_earnings_explicit_continuation"
+  },
+  "hypothesis": "Explicit PIT-safe post-earnings continuation semantics may recover same-day earnings trend/breakout entries without treating the just-released event as pre-earnings gap risk.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "DTE baseline",
+    "core exits",
+    "sizing",
+    "universe",
+    "ranking except explicit same-day post-earnings continuation exception"
+  ],
+  "mechanism_family": "post_earnings_continuation",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "live/default orders; LLM/news prompts; paper sleeve activation"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260602-002"
+  ],
+  "new_evidence_type": "explicit_pit_safe_event_timing_field",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "exp-20260602-002 showed a large aggregate post-earnings lead, but explicit same-day timing and thin sample keep promotion risk moderate.",
+    "expected_ev_delta": 1.2,
+    "expected_pnl_delta": 35000.0,
+    "main_failure_modes": [
+      "ambiguous_event_timing",
+      "mid_weak_regression",
+      "thin_exact_day_sample",
+      "production_parity_gap"
+    ],
+    "recorded_at": "2026-06-02T01:07:20+00:00",
+    "success_probability": 0.45
+  },
+  "prior_trial_count": 1,
+  "result": {
+    "aggregate_expected_value_delta": 1.5345,
+    "aggregate_strategy_total_pnl_delta": 42312.38,
+    "artifact": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "decision": "accepted_explicit_post_earnings_continuation_policy"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260602-003.json",
+  "single_causal_variable": "post_earnings_continuation_confirmed same-day earnings exception",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260602-003.json",
+  "trial_family": "post_earnings_explicit_continuation_policy",
+  "trial_variant_id": "explicit_same_day_earnings_continuation_v1"
+}

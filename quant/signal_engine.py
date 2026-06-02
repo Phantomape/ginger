@@ -216,6 +216,11 @@ def strategy_a_trend(ticker, features, market_context=None):
             f"2 trading days before earnings to avoid ±8-15% gap risk "
             f"(overwhelms the 1.5×ATR stop)"
         )
+    if features.get("post_earnings_continuation_confirmed"):
+        entry_note += (
+            "; POST-EARNINGS CONTINUATION: same-day earnings actual is known; "
+            "next earnings date is used for forward DTE risk"
+        )
 
     return {
         "ticker":           ticker,
@@ -230,6 +235,10 @@ def strategy_a_trend(ticker, features, market_context=None):
             "volume_spike":        vol_spike,
             "rs_vs_spy":           round(stock_10d - spy_10d, 4),
             "pct_from_52w_high":   features.get("pct_from_52w_high"),
+            "post_earnings_continuation_confirmed": bool(
+                features.get("post_earnings_continuation_confirmed")
+            ),
+            "post_earnings_event_date": features.get("post_earnings_event_date"),
         },
     }
 
@@ -342,6 +351,11 @@ def strategy_b_breakout(
             f"2 trading days before earnings to avoid ±8-15% gap risk "
             f"(overwhelms the 1.5×ATR stop)"
         )
+    if features.get("post_earnings_continuation_confirmed"):
+        entry_note += (
+            "; POST-EARNINGS CONTINUATION: same-day earnings actual is known; "
+            "next earnings date is used for forward DTE risk"
+        )
 
     return {
         "ticker":           ticker,
@@ -358,6 +372,10 @@ def strategy_b_breakout(
             "rs_vs_spy":           round(stock_10d - spy_10d, 4),
             "pct_from_52w_high":   pct_from_52w_high,
             "breakout_max_pullback_from_52w_high": breakout_max_pullback_from_52w_high,
+            "post_earnings_continuation_confirmed": bool(
+                features.get("post_earnings_continuation_confirmed")
+            ),
+            "post_earnings_event_date": features.get("post_earnings_event_date"),
         },
     }
 

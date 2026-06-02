@@ -4143,7 +4143,7 @@
     },
     {
       "experiment_id": "exp-20260509-021",
-      "hypothesis": "\u8fd1\u671f\u574f\u4ea4\u6613\u96c6\u4e2d\u5728\u4e00\u79cd\u53ef\u590d\u73b0\u7684 hold-quality \u6216 follow-through \u5931\u8d25\u65cf\u7fa4\u4e2d\u3002",
+      "hypothesis": "近期坏交易集中在一种可复现的 hold-quality 或 follow-through 失败族群中。",
       "lane": "loss_attribution",
       "owner": "codex-all-in-one-loss",
       "status": "observed_only",
@@ -4152,7 +4152,7 @@
     },
     {
       "experiment_id": "exp-20260509-022",
-      "hypothesis": "\u5728 LLM/event ranking alpha \u53ef\u88ab\u8bc4\u4f30\u524d\uff0c\u5fc5\u987b\u7a33\u5b9a\u6301\u4e45\u5316 replay coverage \u548c attribution\u3002",
+      "hypothesis": "在 LLM/event ranking alpha 可被评估前，必须稳定持久化 replay coverage 和 attribution。",
       "lane": "measurement_repair",
       "owner": "codex-all-in-one-measurement",
       "status": "observed_only",
@@ -4161,7 +4161,7 @@
     },
     {
       "experiment_id": "exp-20260509-023",
-      "hypothesis": "\u4e00\u4e2a\u6d41\u52a8\u6027\u8fc7\u6ee4\u540e\u7684\u4e8b\u4ef6\u654f\u611f universe \u53ef\u4ee5\u5728\u5f53\u524d trend/breakout \u8986\u76d6\u4e4b\u5916\u4ea7\u751f\u975e\u91cd\u53e0\u9ad8\u8d28\u91cf\u5019\u9009\u3002",
+      "hypothesis": "一个流动性过滤后的事件敏感 universe 可以在当前 trend/breakout 覆盖之外产生非重叠高质量候选。",
       "lane": "universe_scout",
       "owner": "codex-all-in-one-universe",
       "status": "observed_only",
@@ -7312,19 +7312,52 @@
       "updated_at": "2026-06-02T00:12:36+00:00"
     },
     {
-      "experiment_id": "exp-20260602-002",
-      "status": "positive_replay_lead_requires_explicit_event_timing",
-      "lane": "alpha_search",
-      "owner": "codex-alpha-explore",
-      "hypothesis": "Core trend/breakout signals immediately after an earnings event may contain a production-visible post-earnings continuation edge that was previously hidden inside calendar-DTE semantics.",
-      "ticket_file": "experiments/tickets/exp-20260602-002.json",
       "card_file": "experiments/cards/exp-20260602-002.md",
+      "experiment_id": "exp-20260602-002",
+      "hypothesis": "Core trend/breakout signals immediately after an earnings event may contain a production-visible post-earnings continuation edge that was previously hidden inside calendar-DTE semantics.",
+      "lane": "alpha_search",
       "log": "experiments/logs/exp-20260602-002.json",
+      "owner": "codex-alpha-explore",
       "report_file": "data/experiments/exp-20260602-002/exp_20260602_002_post_earnings_reset_continuation.json",
       "revision_manifest_file": "experiments/manifests/exp-20260602-002.json",
+      "status": "positive_replay_lead_requires_explicit_event_timing",
+      "ticket_file": "experiments/tickets/exp-20260602-002.json",
       "updated_at": "2026-06-02T00:44:34+00:00"
+    },
+    {
+      "aggregate_expected_value_delta": 1.5345,
+      "aggregate_strategy_total_pnl_delta": 42312.38,
+      "allowed_write_scope": [
+        "quant",
+        "quant/experiments",
+        "data/experiments",
+        "experiments/tickets",
+        "experiments/logs",
+        "experiments/artifacts",
+        "experiments/cards",
+        "experiments/manifests",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json",
+        "docs/backtesting.md",
+        "docs/current_state.md",
+        "docs/production_backtest_parity.md"
+      ],
+      "artifact": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+      "card_file": "experiments/cards/exp-20260602-003.md",
+      "completed_at": "2026-06-02T01:25:34+00:00",
+      "decision": "accepted_explicit_post_earnings_continuation_policy",
+      "experiment_id": "exp-20260602-003",
+      "hypothesis": "Explicit PIT-safe post-earnings continuation semantics may recover same-day earnings trend/breakout entries without treating the just-released event as pre-earnings gap risk.",
+      "lane": "alpha_search",
+      "log": "experiments/logs/exp-20260602-003.json",
+      "owner": "alpha-search",
+      "report_file": "experiments/artifacts/exp-20260602-003_post_earnings_explicit_continuation.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260602-003.json",
+      "status": "accepted",
+      "ticket_file": "experiments/tickets/exp-20260602-003.json",
+      "updated_at": "2026-06-02T01:07:56+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-02T00:44:34+00:00"
+  "updated_at": "2026-06-02T01:25:34+00:00"
 }

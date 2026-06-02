@@ -85,25 +85,27 @@ Window labels used in experiment logs:
 | `old_thin` | `2024-10-02 -> 2025-04-22` | `data\ohlcv\ohlcv_snapshot_20241002_20250422.json` |
 
 Current accepted fixed-window metrics use the production-faithful PIT earnings
-snapshot `days_to_earnings` replay accepted in `exp-20260601-025`. The strategy
-stack remains the core `exp-20260517-009` (`ample_slot_stock_rank1_topup`)
-promotion on top of the accepted scarce-slot rank-1 top-up; only the canonical
-baseline protocol changed from the historical calendar-only DTE replay to PIT
-snapshot DTE when archived daily earnings snapshots exist.
+snapshot `days_to_earnings` replay accepted in `exp-20260601-025` plus the
+explicit same-day post-earnings continuation semantics accepted in
+`exp-20260602-003`. The strategy stack keeps the core `exp-20260517-009`
+(`ample_slot_stock_rank1_topup`) promotion on top of the accepted scarce-slot
+rank-1 top-up, and now treats a same-day earnings row as post-event only when
+actual EPS is already known and a later future earnings date exists.
 
 | Label | EV score | Sharpe daily | Total PnL | Return | Max DD | Win rate | Trades | Survival |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `late_strong` | 4.1082 | 4.10 | $100,203.06 | 100.20% | 6.65% | 77.78% | 18 | 81.40% |
-| `mid_weak` | 2.1405 | 2.74 | $78,119.38 | 78.12% | 11.19% | 55.00% | 20 | 79.17% |
-| `old_thin` | 0.1109 | 0.78 | $14,216.17 | 14.22% | 14.09% | 30.00% | 20 | 93.62% |
+| `late_strong` | 5.1628 | 4.41 | $117,072.92 | 117.07% | 6.65% | 83.33% | 18 | 80.39% |
+| `mid_weak` | 2.1402 | 2.74 | $78,110.11 | 78.11% | 11.19% | 52.38% | 21 | 79.25% |
+| `old_thin` | 0.5911 | 1.49 | $39,667.96 | 39.67% | 10.01% | 40.91% | 22 | 86.67% |
 
 Artifact note:
+`data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json`
+records the current canonical core baseline version. Aggregate accepted-stack
+EV is `7.8941`; aggregate PnL is `$234,850.99`. The prior PIT-DTE control
+artifact is
 `data/experiments/exp-20260601-025/exp_20260601_025_pit_dte_baseline_protocol.json`
-records the canonical PIT-DTE baseline version. Aggregate accepted-stack EV is
-`6.3596`; aggregate PnL is `$192,538.61`. `exp-20260517-009` remains the latest
-core strategy promotion artifact; its old aggregate EV `7.8941` and PnL
-`$234,850.99` are historical calendar-DTE baseline metrics, not the current
-Gate 1 baseline.
+with aggregate EV `6.3596` and PnL `$192,538.61`; use it only as the before
+artifact for `exp-20260602-003` or older PIT-DTE comparisons.
 
 Previous accepted default-off state-surface paper rank-quality result:
 `exp-20260518-020`
