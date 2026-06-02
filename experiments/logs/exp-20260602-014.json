@@ -1,0 +1,277 @@
+{
+  "anti_js": "No JavaScript was used.",
+  "change_type": "risk_allocation",
+  "changed_variable": "post_earnings_continuation_confirmed_risk_scalar_v1",
+  "decision": "rejected_trace_granularity_blocks_continuation_risk_scalar",
+  "experiment_id": "exp-20260602-014",
+  "gate1": {
+    "baseline_protocol": "docs/backtesting.md canonical three windows",
+    "current_accepted_stack": {
+      "expected_value_score": 7.8941,
+      "max_drawdown_pct": 0.1119,
+      "min_survival_rate": 0.7925,
+      "total_pnl": 234850.99,
+      "trade_count": 61
+    },
+    "exp003_after": {
+      "expected_value_score": 7.8941,
+      "max_drawdown_pct": 0.1119,
+      "min_survival_rate": 0.7925,
+      "total_pnl": 234850.99,
+      "trade_count": 61
+    },
+    "exp003_before": {
+      "expected_value_score": 6.3596,
+      "max_drawdown_pct": 0.1409,
+      "min_survival_rate": 0.7917,
+      "total_pnl": 192538.61,
+      "trade_count": 58
+    },
+    "passed": true
+  },
+  "gate2": {
+    "blocker": "The accepted continuation artifacts preserve only window-level before metrics plus after closed trades without continuation tags. A risk scalar cannot be attributed to a target trade set or validated for production/backtest parity from these files.",
+    "exp003_after_trade_field_audit": {
+      "by_window": {
+        "late_strong": {
+          "coverage": {
+            "days_since_last_earnings": {
+              "coverage_ratio": 0.0,
+              "missing": 18,
+              "present": 0
+            },
+            "post_earnings_continuation_confirmed": {
+              "coverage_ratio": 0.0,
+              "missing": 18,
+              "present": 0
+            },
+            "post_earnings_event_date": {
+              "coverage_ratio": 0.0,
+              "missing": 18,
+              "present": 0
+            }
+          },
+          "trade_count": 18,
+          "trades_with_any_required_field": 0
+        },
+        "mid_weak": {
+          "coverage": {
+            "days_since_last_earnings": {
+              "coverage_ratio": 0.0,
+              "missing": 21,
+              "present": 0
+            },
+            "post_earnings_continuation_confirmed": {
+              "coverage_ratio": 0.0,
+              "missing": 21,
+              "present": 0
+            },
+            "post_earnings_event_date": {
+              "coverage_ratio": 0.0,
+              "missing": 21,
+              "present": 0
+            }
+          },
+          "trade_count": 21,
+          "trades_with_any_required_field": 0
+        },
+        "old_thin": {
+          "coverage": {
+            "days_since_last_earnings": {
+              "coverage_ratio": 0.0,
+              "missing": 22,
+              "present": 0
+            },
+            "post_earnings_continuation_confirmed": {
+              "coverage_ratio": 0.0,
+              "missing": 22,
+              "present": 0
+            },
+            "post_earnings_event_date": {
+              "coverage_ratio": 0.0,
+              "missing": 22,
+              "present": 0
+            }
+          },
+          "trade_count": 22,
+          "trades_with_any_required_field": 0
+        }
+      },
+      "passed": false,
+      "required_fields": [
+        "post_earnings_continuation_confirmed",
+        "post_earnings_event_date",
+        "days_since_last_earnings"
+      ],
+      "source": "data/experiments/exp-20260602-003/*_after.json",
+      "total_trades": 61,
+      "trades_with_any_required_field": 0
+    },
+    "open_position_contract": "No new open-position dependency introduced; entry_date and target_price requirements remain unchanged.",
+    "passed": false,
+    "pit_dte_control_has_trade_trace": false
+  },
+  "gate3": {
+    "minimum_core_survival_rate": 0.7925,
+    "new_filter_added": false,
+    "passed": true
+  },
+  "gate4": {
+    "evaluated_before_after_windows": {
+      "late_strong": {
+        "after": {
+          "expected_value_score": 5.1628,
+          "max_drawdown_pct": 0.0665,
+          "sharpe_daily": 4.41,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "strategy_total_return_pct": 1.1707,
+          "survival_rate": 0.8039,
+          "total_pnl": 117072.92,
+          "trade_count": 18,
+          "win_rate": 0.8333
+        },
+        "after_artifact": "data/experiments/exp-20260602-003/late_strong_after.json",
+        "before": {
+          "expected_value_score": 4.1082,
+          "max_drawdown_pct": 0.0665,
+          "sharpe_daily": 4.1,
+          "signals_generated": 43,
+          "signals_survived": 35,
+          "strategy_total_return_pct": 1.002,
+          "survival_rate": 0.814,
+          "total_pnl": 100203.06,
+          "trade_count": 18,
+          "win_rate": 0.7778
+        },
+        "delta": {
+          "expected_value_score": 1.0546,
+          "max_drawdown_pct": 0.0,
+          "signals_generated": 8,
+          "signals_survived": 6,
+          "survival_rate": -0.0101,
+          "total_pnl": 16869.86,
+          "trade_count": 0
+        },
+        "end": "2026-04-21",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "after": {
+          "expected_value_score": 2.1402,
+          "max_drawdown_pct": 0.1119,
+          "sharpe_daily": 2.74,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "strategy_total_return_pct": 0.7811,
+          "survival_rate": 0.7925,
+          "total_pnl": 78110.11,
+          "trade_count": 21,
+          "win_rate": 0.5238
+        },
+        "after_artifact": "data/experiments/exp-20260602-003/mid_weak_after.json",
+        "before": {
+          "expected_value_score": 2.1405,
+          "max_drawdown_pct": 0.1119,
+          "sharpe_daily": 2.74,
+          "signals_generated": 48,
+          "signals_survived": 38,
+          "strategy_total_return_pct": 0.7812,
+          "survival_rate": 0.7917,
+          "total_pnl": 78119.38,
+          "trade_count": 20,
+          "win_rate": 0.55
+        },
+        "delta": {
+          "expected_value_score": -0.0003,
+          "max_drawdown_pct": 0.0,
+          "signals_generated": 5,
+          "signals_survived": 4,
+          "survival_rate": 0.0008,
+          "total_pnl": -9.27,
+          "trade_count": 1
+        },
+        "end": "2025-10-22",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "after": {
+          "expected_value_score": 0.5911,
+          "max_drawdown_pct": 0.1001,
+          "sharpe_daily": 1.49,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "strategy_total_return_pct": 0.3967,
+          "survival_rate": 0.8667,
+          "total_pnl": 39667.96,
+          "trade_count": 22,
+          "win_rate": 0.4091
+        },
+        "after_artifact": "data/experiments/exp-20260602-003/old_thin_after.json",
+        "before": {
+          "expected_value_score": 0.1109,
+          "max_drawdown_pct": 0.1409,
+          "sharpe_daily": 0.78,
+          "signals_generated": 47,
+          "signals_survived": 44,
+          "strategy_total_return_pct": 0.1422,
+          "survival_rate": 0.9362,
+          "total_pnl": 14216.17,
+          "trade_count": 20,
+          "win_rate": 0.3
+        },
+        "delta": {
+          "expected_value_score": 0.4802,
+          "max_drawdown_pct": -0.0408,
+          "signals_generated": 13,
+          "signals_survived": 8,
+          "survival_rate": -0.0695,
+          "total_pnl": 25451.79,
+          "trade_count": 2
+        },
+        "end": "2025-04-22",
+        "start": "2024-10-02"
+      }
+    },
+    "failed_reasons": [
+      "target_trade_trace_missing",
+      "risk_scalar_after_not_credible_without_per_trade_field"
+    ],
+    "note": "No after scalar was retained or promoted. Window-level exp003 increment is not enough to prove a bounded risk-allocation rule.",
+    "passed": false
+  },
+  "gate_questions": {
+    "1_alpha_hypothesis": "risk allocation: bounded support for core trades that are explicitly confirmed as post-earnings continuation.",
+    "2_history_check": {
+      "exp-20260602-003": "Accepted explicit continuation semantics with aggregate EV +1.5345 and PnL +$42,312.38, but did not retain per-trade continuation tags in closed-trade artifacts.",
+      "exp-20260602-004_006_011_012": "Generic post-earnings pools and peer/reaction transfer families were not stable enough for promotion."
+    },
+    "3_single_causal_variable": "post_earnings_continuation_confirmed_risk_scalar_v1 only",
+    "4_acceptance_standard": "Same docs/backtesting.md three windows; require credible before/after EV/PnL, drawdown, survival, trade count, and concentration evidence before any production/shared scalar.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260602_014_post_earnings_continuation_risk_support.py"
+  },
+  "hypothesis": "Already-selected core trend/breakout trades with PIT-safe post-earnings continuation confirmation may deserve a bounded risk-budget support scalar.",
+  "lane": "alpha_search",
+  "mechanism_family": "risk_allocation",
+  "nearby_prior_experiments": [
+    "exp-20260602-003",
+    "exp-20260602-004",
+    "exp-20260602-006",
+    "exp-20260602-011",
+    "exp-20260602-012"
+  ],
+  "next_alpha_direction": "OHLCV-only volatility contraction plus relative-strength breakout candidate pool with strict liquidity and concentration guardrails.",
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": false,
+    "parity_note": "A positive retry must first add shared, production-visible trace fields to closed trades/candidate events and then run the same scalar in production/backtest shared sizing code.",
+    "production_orders_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "single_causal_variable": "post_earnings_continuation_confirmed_risk_scalar_v1",
+  "status": "rejected",
+  "timestamp": "2026-06-02T10:16:51+00:00",
+  "trial_family": "post_earnings_continuation_risk_support",
+  "why_switched_alpha": "The alpha idea is blocked by trace granularity rather than by a parameter choice. Per the user instruction, the run switches to a separate free-OHLCV candidate-pool alpha instead of retuning this."
+}
