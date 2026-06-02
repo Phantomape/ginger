@@ -1,0 +1,107 @@
+{
+  "acceptance_rule": "Gate 4 passes only if aggregate expected_value_score and total_pnl improve versus the accepted three-window baseline, at least two windows improve EV, no survival rate drops below 5%, and max drawdown does not worsen materially.",
+  "allowed_write_scope": [
+    "experiments\\artifacts\\exp-20260602-018_sector_relative_risk_adjusted_momentum.md"
+  ],
+  "baseline_result_file": "data\\backtests\\backtest_results_current_baseline_20260602_exp20260602003.json",
+  "card_file": "experiments/cards/exp-20260602-018.md",
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "candidate_pool_generation_only",
+  "claimed_at": "2026-06-02T12:12:55+00:00",
+  "completed_at": "2026-06-02T12:20:05+00:00",
+  "created_at": "2026-06-02T12:12:41+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260602-018",
+  "experiment_uid": "expuid-8d855dede9d647e6",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260602-018",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-02T12:12:41+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sector_relative_risk_adjusted_momentum"
+  },
+  "hypothesis": "Sector-relative risk-adjusted momentum candidates may expand the tradeable pool with less noise than raw RS acceleration by requiring same-sector leadership, positive SPY-adjusted trend, and lower realized volatility.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "sector_relative_risk_adjusted_momentum_candidate_pool"
+  ],
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260602-015"
+  ],
+  "new_evidence_type": "free_pit_ohlcv_sector_relative_volatility_score",
+  "owner": "codex-alpha-search",
+  "prediction": {
+    "confidence_reason": "Raw RS acceleration recently failed, but sector residual plus volatility cost is a distinct free-data discriminator that may reduce noise.",
+    "expected_ev_delta": 0.25,
+    "expected_pnl_delta": 12000.0,
+    "main_failure_modes": [
+      "raw_rs_duplicate",
+      "noisy_pool",
+      "trade_count_too_low",
+      "drawdown_worse"
+    ],
+    "recorded_at": "2026-06-02T12:12:15+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 1,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260602-018/sector_relative_risk_adjusted_momentum_before_aggregate.json",
+    "after_result_file": "data/experiments/exp-20260602-018/sector_relative_risk_adjusted_momentum_after_aggregate.json",
+    "delta_metrics": {
+      "expected_value_score": 0.299,
+      "total_return_pct": 0.0078,
+      "max_drawdown_pct": 0.0906,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "total_pnl": 779.15
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.18,
+      "brier_score": 0.0324,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.25,
+      "actual_ev_delta": 0.299,
+      "ev_prediction_error": 0.049,
+      "expected_pnl_delta": 12000.0,
+      "actual_pnl_delta": 779.15,
+      "pnl_prediction_error": -11220.85,
+      "predicted_failure_modes": [
+        "raw_rs_duplicate",
+        "noisy_pool",
+        "trade_count_too_low",
+        "drawdown_worse"
+      ],
+      "realized_failure_mode": "window_regression_and_drawdown_drift",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "Aggregate EV/PnL was slightly positive, but two windows regressed and drawdown drift failed the guardrail."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260602-018.json",
+  "single_causal_variable": "sector_relative_risk_adjusted_momentum_candidate_pool",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260602-018.json",
+  "trial_family": "sector_relative_risk_adjusted_momentum",
+  "trial_variant_id": "sector_residual_rs60_low_vol_v1"
+}
