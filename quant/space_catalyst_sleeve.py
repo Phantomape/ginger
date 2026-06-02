@@ -215,6 +215,13 @@ SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_RULE_VERSION = (
 SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_QUALITY_ETF = "ARKX"
 SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_ATTENTION_ETF = "UFO"
 SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_FIELD = "momentum_20d_pct"
+SPACE_CATALYST_COST_LIQUIDITY_SUPPORT_EXPERIMENT_ID = "exp-20260602-025"
+SPACE_CATALYST_COST_LIQUIDITY_SUPPORT_RULE_VERSION = (
+    "space_selected_cost_liquidity_paper_support_v1"
+)
+SPACE_CATALYST_COST_LIQUIDITY_MIN_DOLLAR_VOLUME = 100_000_000.0
+SPACE_CATALYST_COST_LIQUIDITY_MAX_RANGE_PCT = 0.11
+SPACE_CATALYST_COST_LIQUIDITY_SUPPORT_SCALAR = 1.05
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     "experiment_id": "exp-20260513-113",
@@ -775,6 +782,26 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
         SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_FIELD
     ),
     "space_arkx_ufo_breakout_complement_trade_enabled": False,
+    "space_cost_liquidity_support_experiment_id": (
+        SPACE_CATALYST_COST_LIQUIDITY_SUPPORT_EXPERIMENT_ID
+    ),
+    "space_cost_liquidity_support_rule_version": (
+        SPACE_CATALYST_COST_LIQUIDITY_SUPPORT_RULE_VERSION
+    ),
+    "space_cost_liquidity_support_definition": (
+        "selected Space paper candidate with signal-day dollar volume >= "
+        "$100M and signal-day range <= 11%"
+    ),
+    "space_cost_liquidity_min_signal_day_dollar_volume": (
+        SPACE_CATALYST_COST_LIQUIDITY_MIN_DOLLAR_VOLUME
+    ),
+    "space_cost_liquidity_max_signal_day_range_pct": (
+        SPACE_CATALYST_COST_LIQUIDITY_MAX_RANGE_PCT
+    ),
+    "space_cost_liquidity_support_scalar": (
+        SPACE_CATALYST_COST_LIQUIDITY_SUPPORT_SCALAR
+    ),
+    "space_cost_liquidity_support_trade_enabled": False,
     "live_slots": 0,
     "included_tickers": ["RKLB", "ASTS", "LUNR", "PL", "RDW", "BKSY"],
     "excluded_buckets": [
@@ -926,6 +953,67 @@ def space_catalyst_arkx_ufo_relative_momentum_state(
         "quality_etf_momentum_20d_pct": _round(quality_value, 6),
         "attention_etf_momentum_20d_pct": _round(attention_value, 6),
         "quality_minus_attention_20d_pct": _round(excess, 6),
+    }
+
+
+def space_catalyst_cost_liquidity_support_state(
+    features: dict[str, Any] | None,
+    *,
+    selected: bool,
+    base_notional_usd: Any = None,
+) -> dict[str, Any]:
+    """Return the accepted observe-only cost/liquidity paper support state."""
+    features = features or {}
+    dollar_volume = _as_float(features.get("signal_day_ticker_dollar_volume"))
+    range_pct = _as_float(features.get("signal_day_ticker_range_pct"))
+    base_notional = _as_float(base_notional_usd)
+    liquidity_passed = (
+        dollar_volume is not None
+        and dollar_volume >= SPACE_CATALYST_COST_LIQUIDITY_MIN_DOLLAR_VOLUME
+    )
+    range_passed = (
+        range_pct is not None
+        and range_pct <= SPACE_CATALYST_COST_LIQUIDITY_MAX_RANGE_PCT
+    )
+    support_bucket = bool(selected and liquidity_passed and range_passed)
+    if not selected:
+        reason = "not_selected_space_paper_candidate"
+    elif dollar_volume is None:
+        reason = "missing_signal_day_dollar_volume"
+    elif not liquidity_passed:
+        reason = "below_signal_day_dollar_volume_floor"
+    elif range_pct is None:
+        reason = "missing_signal_day_range_pct"
+    elif not range_passed:
+        reason = "above_signal_day_range_ceiling"
+    else:
+        reason = "selected_cost_liquidity_supported"
+    support_scalar = (
+        SPACE_CATALYST_COST_LIQUIDITY_SUPPORT_SCALAR if support_bucket else 1.0
+    )
+    supported_notional = None
+    if base_notional is not None:
+        supported_notional = _round(base_notional * support_scalar, 2)
+    return {
+        "experiment_id": SPACE_CATALYST_COST_LIQUIDITY_SUPPORT_EXPERIMENT_ID,
+        "rule_version": SPACE_CATALYST_COST_LIQUIDITY_SUPPORT_RULE_VERSION,
+        "known_at": "signal_day_close",
+        "support_bucket": support_bucket,
+        "support_reason": reason,
+        "support_scalar": _round(support_scalar, 6),
+        "min_signal_day_dollar_volume": (
+            SPACE_CATALYST_COST_LIQUIDITY_MIN_DOLLAR_VOLUME
+        ),
+        "max_signal_day_range_pct": SPACE_CATALYST_COST_LIQUIDITY_MAX_RANGE_PCT,
+        "signal_day_dollar_volume": _round(dollar_volume, 2),
+        "signal_day_range_pct": _round(range_pct, 6),
+        "liquidity_passed": liquidity_passed,
+        "range_passed": range_passed,
+        "base_notional_usd": _round(base_notional, 2),
+        "supported_notional_usd": supported_notional,
+        "uses_free_ohlcv_only": True,
+        "trade_enabled": False,
+        "alters_orders": False,
     }
 
 
@@ -1416,6 +1504,16 @@ def empty_space_catalyst_observation_slot(
             "space_iwm_peer_leader_trend_risk_scalar": (
                 SPACE_CATALYST_IWM_PEER_LEADER_TREND_RISK_SCALAR
             ),
+            "space_cost_liquidity_min_signal_day_dollar_volume": (
+                SPACE_CATALYST_COST_LIQUIDITY_MIN_DOLLAR_VOLUME
+            ),
+            "space_cost_liquidity_max_signal_day_range_pct": (
+                SPACE_CATALYST_COST_LIQUIDITY_MAX_RANGE_PCT
+            ),
+            "space_cost_liquidity_support_scalar": (
+                SPACE_CATALYST_COST_LIQUIDITY_SUPPORT_SCALAR
+            ),
+            "space_cost_liquidity_support_trade_enabled": False,
             "space_liquidity_tier": SPACE_CATALYST_LIQUIDITY_TIER,
             "space_liquidity_tier_risk_scalar": (
                 SPACE_CATALYST_LIQUIDITY_TIER_RISK_SCALAR
@@ -2659,6 +2757,16 @@ def build_space_catalyst_observation_slot(
             "space_iwm_peer_leader_trend_risk_scalar": (
                 SPACE_CATALYST_IWM_PEER_LEADER_TREND_RISK_SCALAR
             ),
+            "space_cost_liquidity_min_signal_day_dollar_volume": (
+                SPACE_CATALYST_COST_LIQUIDITY_MIN_DOLLAR_VOLUME
+            ),
+            "space_cost_liquidity_max_signal_day_range_pct": (
+                SPACE_CATALYST_COST_LIQUIDITY_MAX_RANGE_PCT
+            ),
+            "space_cost_liquidity_support_scalar": (
+                SPACE_CATALYST_COST_LIQUIDITY_SUPPORT_SCALAR
+            ),
+            "space_cost_liquidity_support_trade_enabled": False,
             "space_watch_liquidity_tier": SPACE_CATALYST_WATCH_LIQUIDITY_TIER,
             "space_watch_liquidity_tier_risk_scalar": (
                 SPACE_CATALYST_WATCH_LIQUIDITY_TIER_RISK_SCALAR
@@ -3605,6 +3713,9 @@ def _observation_slot_row(
         and (arkx_ufo_relative_momentum_state or {}).get("state")
         == "quality_etf_leader"
     )
+    selected_space_paper_candidate_bucket = bool(
+        trend_high_close_intraday_thrust_bucket or arkx_ufo_breakout_complement_bucket
+    )
     peer_nonleader_breakout_bucket = (
         strategy.lower() == "breakout_long"
         and peer_momentum_state.get("state") == "nonleader"
@@ -3963,6 +4074,14 @@ def _observation_slot_row(
     scaled_paper_notional = None
     if paper_notional is not None and effective_risk_scalar is not None:
         scaled_paper_notional = _round(paper_notional * effective_risk_scalar, 2)
+    cost_liquidity_base_notional = (
+        scaled_paper_notional if scaled_paper_notional is not None else paper_notional
+    )
+    cost_liquidity_support = space_catalyst_cost_liquidity_support_state(
+        features,
+        selected=selected_space_paper_candidate_bucket,
+        base_notional_usd=cost_liquidity_base_notional,
+    )
 
     return {
         "asof_date": asof_date,
@@ -4066,6 +4185,14 @@ def _observation_slot_row(
             signal_day_open_close_return,
             6,
         ),
+        "space_signal_day_dollar_volume": _round(
+            cost_liquidity_support.get("signal_day_dollar_volume"),
+            2,
+        ),
+        "space_signal_day_range_pct": _round(
+            cost_liquidity_support.get("signal_day_range_pct"),
+            6,
+        ),
         "space_trend_high_close_bucket": trend_high_close_bucket,
         "space_trend_high_close_rule_version": (
             SPACE_CATALYST_TREND_HIGH_CLOSE_RULE_VERSION
@@ -4124,6 +4251,31 @@ def _observation_slot_row(
         ),
         "space_arkx_ufo_breakout_complement_trade_enabled": False,
         "space_arkx_ufo_breakout_complement_alters_orders": False,
+        "space_selected_paper_candidate_bucket": selected_space_paper_candidate_bucket,
+        "space_cost_liquidity_support": cost_liquidity_support,
+        "space_cost_liquidity_support_bucket": (
+            cost_liquidity_support.get("support_bucket")
+        ),
+        "space_cost_liquidity_support_reason": (
+            cost_liquidity_support.get("support_reason")
+        ),
+        "space_cost_liquidity_support_rule_version": (
+            SPACE_CATALYST_COST_LIQUIDITY_SUPPORT_RULE_VERSION
+        ),
+        "space_cost_liquidity_min_signal_day_dollar_volume": (
+            SPACE_CATALYST_COST_LIQUIDITY_MIN_DOLLAR_VOLUME
+        ),
+        "space_cost_liquidity_max_signal_day_range_pct": (
+            SPACE_CATALYST_COST_LIQUIDITY_MAX_RANGE_PCT
+        ),
+        "space_cost_liquidity_support_scalar": (
+            cost_liquidity_support.get("support_scalar")
+        ),
+        "space_cost_liquidity_supported_notional_usd": (
+            cost_liquidity_support.get("supported_notional_usd")
+        ),
+        "space_cost_liquidity_trade_enabled": False,
+        "space_cost_liquidity_alters_orders": False,
         "space_peer_momentum_state": peer_momentum_state.get("state"),
         "space_peer_momentum_20d_pct": _round(
             peer_momentum_state.get("own_momentum_20d_pct"),
@@ -4457,6 +4609,12 @@ def _observation_slot_row(
             "shares_to_buy": paper_shares,
             "position_value_usd": _round(paper_notional, 2),
             "scaled_position_value_usd": scaled_paper_notional,
+            "cost_liquidity_support_scalar": (
+                cost_liquidity_support.get("support_scalar")
+            ),
+            "cost_liquidity_supported_position_value_usd": (
+                cost_liquidity_support.get("supported_notional_usd")
+            ),
             "base_risk_pct": sizing.get("base_risk_pct"),
             "risk_pct": sizing.get("risk_pct"),
         },

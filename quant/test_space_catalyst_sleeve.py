@@ -11,6 +11,11 @@ from space_catalyst_sleeve import (  # noqa: E402
     SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_FIELD,
     SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_QUALITY_ETF,
     SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_RULE_VERSION,
+    SPACE_CATALYST_COST_LIQUIDITY_MAX_RANGE_PCT,
+    SPACE_CATALYST_COST_LIQUIDITY_MIN_DOLLAR_VOLUME,
+    SPACE_CATALYST_COST_LIQUIDITY_SUPPORT_EXPERIMENT_ID,
+    SPACE_CATALYST_COST_LIQUIDITY_SUPPORT_RULE_VERSION,
+    SPACE_CATALYST_COST_LIQUIDITY_SUPPORT_SCALAR,
     SPACE_CATALYST_FORWARD_HYPOTHESIS,
     SPACE_CATALYST_LLM_EVENT_FIELDS,
     SPACE_CATALYST_TREND_HIGH_CLOSE_EXPERIMENT_ID,
@@ -26,13 +31,14 @@ from space_catalyst_sleeve import (  # noqa: E402
     empty_space_catalyst_shadow_snapshot,
     persist_space_catalyst_observation_slot,
     persist_space_catalyst_event_ledger,
-    space_catalyst_basket_momentum_state,
     space_catalyst_attention_overlay_profiles,
+    space_catalyst_basket_momentum_state,
+    space_catalyst_cost_liquidity_support_state,
+    space_catalyst_arkx_ufo_relative_momentum_state,
     space_catalyst_forward_replacement_positive_profiles,
     space_catalyst_forward_target_atr_mult,
     space_catalyst_forward_risk_scalar,
     space_catalyst_government_contract_profiles,
-    space_catalyst_arkx_ufo_relative_momentum_state,
     space_catalyst_iwm_relative_momentum_state,
     space_catalyst_multi_event_depth_profiles,
     space_catalyst_official_customer_source_profiles,
@@ -287,6 +293,40 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
     assert (
         snapshot["forward_hypothesis"][
             "space_arkx_ufo_breakout_complement_trade_enabled"
+        ]
+        is False
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_cost_liquidity_support_experiment_id"
+        ]
+        == SPACE_CATALYST_COST_LIQUIDITY_SUPPORT_EXPERIMENT_ID
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_cost_liquidity_support_rule_version"
+        ]
+        == SPACE_CATALYST_COST_LIQUIDITY_SUPPORT_RULE_VERSION
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_cost_liquidity_min_signal_day_dollar_volume"
+        ]
+        == SPACE_CATALYST_COST_LIQUIDITY_MIN_DOLLAR_VOLUME
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_cost_liquidity_max_signal_day_range_pct"
+        ]
+        == SPACE_CATALYST_COST_LIQUIDITY_MAX_RANGE_PCT
+    )
+    assert (
+        snapshot["forward_hypothesis"]["space_cost_liquidity_support_scalar"]
+        == SPACE_CATALYST_COST_LIQUIDITY_SUPPORT_SCALAR
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_cost_liquidity_support_trade_enabled"
         ]
         is False
     )
@@ -1826,6 +1866,49 @@ def test_space_catalyst_arkx_ufo_relative_momentum_state_compares_quality_to_att
     assert missing["state"] == "missing"
 
 
+def test_space_catalyst_cost_liquidity_support_state_is_observe_only():
+    supported = space_catalyst_cost_liquidity_support_state(
+        {
+            "signal_day_ticker_dollar_volume": 150_000_000,
+            "signal_day_ticker_range_pct": 0.08,
+        },
+        selected=True,
+        base_notional_usd=1000.0,
+    )
+    not_selected = space_catalyst_cost_liquidity_support_state(
+        {
+            "signal_day_ticker_dollar_volume": 150_000_000,
+            "signal_day_ticker_range_pct": 0.08,
+        },
+        selected=False,
+        base_notional_usd=1000.0,
+    )
+    too_wide = space_catalyst_cost_liquidity_support_state(
+        {
+            "signal_day_ticker_dollar_volume": 150_000_000,
+            "signal_day_ticker_range_pct": 0.13,
+        },
+        selected=True,
+        base_notional_usd=1000.0,
+    )
+
+    assert supported["experiment_id"] == SPACE_CATALYST_COST_LIQUIDITY_SUPPORT_EXPERIMENT_ID
+    assert supported["rule_version"] == SPACE_CATALYST_COST_LIQUIDITY_SUPPORT_RULE_VERSION
+    assert supported["support_bucket"] is True
+    assert supported["support_reason"] == "selected_cost_liquidity_supported"
+    assert supported["support_scalar"] == SPACE_CATALYST_COST_LIQUIDITY_SUPPORT_SCALAR
+    assert supported["supported_notional_usd"] == 1050.0
+    assert supported["uses_free_ohlcv_only"] is True
+    assert supported["trade_enabled"] is False
+    assert supported["alters_orders"] is False
+    assert not_selected["support_bucket"] is False
+    assert not_selected["support_reason"] == "not_selected_space_paper_candidate"
+    assert not_selected["support_scalar"] == 1.0
+    assert not_selected["supported_notional_usd"] == 1000.0
+    assert too_wide["support_bucket"] is False
+    assert too_wide["support_reason"] == "above_signal_day_range_ceiling"
+
+
 def test_space_catalyst_forward_target_atr_mult_official_trends_only():
     assert space_catalyst_forward_target_atr_mult("RKLB", "trend_long", 4.5) == 7.0
     assert space_catalyst_forward_target_atr_mult("ASTS", "trend_long", 4.5) == 7.0
@@ -2264,7 +2347,9 @@ def test_space_catalyst_observation_slot_marks_arkx_ufo_breakout_complement():
                 "atr": 2.0,
                 "daily_close_location": 0.91,
                 "signal_day_ticker_open_close_return_pct": 0.06,
-                "momentum_20d_pct": 0.0,
+                "signal_day_ticker_dollar_volume": 150_000_000,
+                "signal_day_ticker_range_pct": 0.08,
+                "momentum_20d_pct": 0.2,
             },
             "IWM": {"momentum_20d_pct": 0.0},
             "SPY": {"momentum_20d_pct": 0.0},
@@ -2312,6 +2397,40 @@ def test_space_catalyst_observation_slot_marks_arkx_ufo_breakout_complement():
     )
     assert plan["space_arkx_ufo_breakout_complement_trade_enabled"] is False
     assert plan["space_arkx_ufo_breakout_complement_alters_orders"] is False
+    assert plan["space_selected_paper_candidate_bucket"] is True
+    assert plan["space_signal_day_dollar_volume"] == 150_000_000
+    assert plan["space_signal_day_range_pct"] == 0.08
+    assert plan["space_cost_liquidity_support_bucket"] is True
+    assert plan["space_cost_liquidity_support_reason"] == (
+        "selected_cost_liquidity_supported"
+    )
+    assert plan["space_cost_liquidity_support_rule_version"] == (
+        SPACE_CATALYST_COST_LIQUIDITY_SUPPORT_RULE_VERSION
+    )
+    assert plan["space_cost_liquidity_support_scalar"] == (
+        SPACE_CATALYST_COST_LIQUIDITY_SUPPORT_SCALAR
+    )
+    expected_supported_position_value = round(
+        plan["paper_sizing"]["scaled_position_value_usd"]
+        * SPACE_CATALYST_COST_LIQUIDITY_SUPPORT_SCALAR,
+        2,
+    )
+    assert (
+        plan["space_cost_liquidity_supported_notional_usd"]
+        == expected_supported_position_value
+    )
+    assert plan["space_cost_liquidity_trade_enabled"] is False
+    assert plan["space_cost_liquidity_alters_orders"] is False
+    assert plan["space_cost_liquidity_support"]["uses_free_ohlcv_only"] is True
+    assert plan["space_cost_liquidity_support"]["trade_enabled"] is False
+    assert plan["space_cost_liquidity_support"]["alters_orders"] is False
+    assert plan["paper_sizing"]["cost_liquidity_support_scalar"] == (
+        SPACE_CATALYST_COST_LIQUIDITY_SUPPORT_SCALAR
+    )
+    assert (
+        plan["paper_sizing"]["cost_liquidity_supported_position_value_usd"]
+        == expected_supported_position_value
+    )
     assert plan["trade_enabled"] is False
     assert plan["production_impact"]["alters_orders"] is False
 
@@ -3355,6 +3474,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                 "space_arkx_ufo_breakout_complement_rule_version": (
                     "space_high_close_thrust_arkx_ufo_breakout_complement_v1"
                 ),
+                "space_cost_liquidity_support_scalar": 1.05,
                 "space_iwm_relative_leader_risk_scalar": 1.1,
                 "space_iwm_peer_leader_trend_risk_scalar": 1.15,
                 "space_launch_lunar_theme_risk_scalar": 1.1,
@@ -3452,6 +3572,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                     "space_perfect_tqs_bucket": False,
                     "space_near_perfect_tqs_trend_bucket": False,
                     "space_arkx_ufo_breakout_complement_bucket": True,
+                    "space_cost_liquidity_support_bucket": True,
                     "blocked_reason": "live_slots_zero_forward_gate_pending",
                 }
             ],
@@ -3494,6 +3615,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "near-perfect Space trend TQS @ 1.1x; "
         "peer-nonleader Space breakout @ 0.0x; "
         "ARKX>UFO Space breakout complement observe-only; "
+        "Space cost/liquidity paper support @ 1.05x; "
         "IWM>SPY Space risk @ 1.1x; "
         "IWM+peer-leader Space trend @ 1.15x; "
         "launch/lunar theme risk @ 1.1x; "
@@ -3564,6 +3686,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
         " benchmark_breadth_iwm_leader_trend=True"
         " defense_budget_same_theme_winner_trend=True"
         " arkx_ufo_breakout=True"
+        " cost_liquidity_support=True"
     ) in report
     assert "Closed 10d: 0" in report
     assert "LUNR: fundamental_contract_regulatory" in report

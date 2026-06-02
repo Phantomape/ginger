@@ -126,6 +126,12 @@ def compute_trend_features(data):
 
         # ATR expansion: today's range vs 14-day avg range (excl today)
         today_range    = high - low
+        signal_day_ticker_range_pct = (
+            round(today_range / close, 6) if close > 0 else None
+        )
+        signal_day_ticker_dollar_volume = (
+            round(close * volume, 2) if close > 0 and volume > 0 else None
+        )
         daily_close_location = (
             round(max(0.0, min(1.0, (close - low) / today_range)), 6)
             if today_range > 0 else None
@@ -162,7 +168,10 @@ def compute_trend_features(data):
         return {
             "close":               round(close, 2),
             "signal_day_ticker_open_close_return_pct": signal_day_open_close_return_pct,
+            "signal_day_ticker_range_pct": signal_day_ticker_range_pct,
+            "signal_day_ticker_dollar_volume": signal_day_ticker_dollar_volume,
             "daily_high":          round(high, 2),
+            "daily_low":           round(low, 2),
             "daily_close_location": daily_close_location,
             "price_vs_200ma_pct":  price_vs_200ma_pct,
             "above_200ma":         above_200ma,

@@ -2826,3 +2826,17 @@ but cut aggregate PnL by `$21,220.04`, improved only `mid_weak`, and regressed
 `old_thin` by `-1.1259` EV / `-$42,518.52` with max drawdown worsening to
 `19.68%`. Keep the accepted exp020 state as a sizing helper, not a lifecycle
 target-width rule, until forward target-touch evidence exists.
+
+Latest accepted Space alpha search: `exp-20260602-025` promoted the positive
+`exp-20260602-024` cost/liquidity lead into a shared default-off production
+observation helper. The single causal variable was
+`space_selected_cost_liquidity_paper_notional_support_v1_shared_helper`:
+already selected Space paper candidates receive `1.05x` paper support only
+when signal-day dollar volume is at least `$100M` and signal-day range is at
+most `11%`. Gate 4 passed on the three Space windows: aggregate EV improved
+`+0.8766` and PnL improved `+$16,587.61` versus core, while the incremental
+comparison against accepted `exp-20260531-022` improved `+0.0226` EV and
+`+$466.41` PnL with zero EV/PnL-regressed windows. Supported sample was 3
+trades across `mid_weak` and `old_thin`. This is shared metadata/paper support
+only; production orders, ranking, sizing, exits, watchlists, and live Space
+slots remain unchanged.

@@ -86,9 +86,20 @@ candidates that pass the same high-close/intraday-thrust checks while ARKX 20d
 momentum is greater than UFO 20d momentum. Production computes the price-action
 inputs in `quant/feature_layer.py` and the ARKX/UFO relative state in
 `quant/space_catalyst_sleeve.py` from the same daily OHLCV-derived
-`momentum_20d_pct` feature surface used by the observation slot. These are
-metadata only: they must not alter entries, exits, ranking, sizing, orders, or
-live Space slots without a separate Gate 1-4 promotion experiment.
+`momentum_20d_pct` feature surface used by the observation slot.
+
+The accepted `exp-20260602-025` refinement adds
+`space_catalyst_cost_liquidity_support_state` and the
+`space_cost_liquidity_support_bucket` observation field. It uses only
+production-visible daily OHLCV features from `quant/feature_layer.py`:
+`signal_day_ticker_dollar_volume >= $100M` and
+`signal_day_ticker_range_pct <= 0.11`. The helper is default-off paper metadata
+for already selected Space candidates, applies `1.05x` paper support only in
+the observation surface, and records `trade_enabled=False` /
+`alters_orders=False`.
+
+These are metadata only: they must not alter entries, exits, ranking, sizing,
+orders, or live Space slots without a separate Gate 1-4 promotion experiment.
 
 ---
 

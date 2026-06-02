@@ -145,8 +145,15 @@ Recent repository evidence supports this priority:
   high-close baseline by removing one weak-thrust stopout. `exp-20260531-022`
   added an ARKX>UFO relative-momentum metadata bucket for governed
   `breakout_long` high-close/thrust candidates, improving aggregate EV by
-  `+0.0753` versus `exp-20260529-020` with one RKLB incremental trade. Treat
-  these as forward evidence buckets, not permission to retune Space
+  `+0.0753` versus `exp-20260529-020` with one RKLB incremental trade.
+  `exp-20260602-025` accepted the shared default-off Space cost/liquidity
+  helper from the positive `exp-20260602-024` lead: already selected Space
+  paper candidates get `1.05x` paper support only when signal-day dollar volume
+  is at least `$100M` and signal-day range is at most `11%`; the three-window
+  replay stayed positive versus core (`+0.8766` EV / `+$16,587.61`) and
+  improved the accepted Space route by `+0.0226` EV / `+$466.41` with no
+  EV/PnL-regressed windows. Treat these as forward evidence buckets, not
+  permission to retune Space
   price-action or ETF thresholds or enable live Space slots.
 - The 2026-05-28/29 candidate-pool scouts rejected VWAP reclaim, long-base
   breadth, industry-leadership high-close/no-core-overlap, sector/market

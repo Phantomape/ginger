@@ -32,3 +32,8 @@ def test_compute_trend_features_includes_daily_close_location():
     features = compute_trend_features(frame)
 
     assert features["daily_close_location"] == 0.75
+    assert features["signal_day_ticker_range_pct"] == round(20.0 / 115.0, 6)
+    assert features["signal_day_ticker_dollar_volume"] == 115.0 * (
+        1_000_000 + 20
+    )
+    assert features["daily_low"] == 100.0

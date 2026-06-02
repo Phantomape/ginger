@@ -501,6 +501,14 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 extra_policies.append(
                     "ARKX>UFO Space breakout complement observe-only"
                 )
+            cost_liquidity_support_scalar = forward.get(
+                "space_cost_liquidity_support_scalar"
+            )
+            if cost_liquidity_support_scalar is not None:
+                extra_policies.append(
+                    "Space cost/liquidity paper support @ "
+                    f"{cost_liquidity_support_scalar}x"
+                )
             iwm_relative_leader_scalar = forward.get(
                 "space_iwm_relative_leader_risk_scalar"
             )
@@ -1071,6 +1079,11 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 if plan.get("space_arkx_ufo_breakout_complement_bucket")
                 else ""
             )
+            cost_liquidity_support_text = (
+                " cost_liquidity_support=True"
+                if plan.get("space_cost_liquidity_support_bucket")
+                else ""
+            )
             peer_nonleader_breakout_text = (
                 " peer_nonleader_breakout=True"
                 if plan.get("space_peer_nonleader_breakout_bucket")
@@ -1111,7 +1124,8 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"{defense_budget_same_theme_winner_trend_text}"
                 f"{perfect_tqs_text}"
                 f"{near_perfect_tqs_text}{high_close_intraday_thrust_text}"
-                f"{arkx_ufo_breakout_text}{peer_nonleader_breakout_text} "
+                f"{arkx_ufo_breakout_text}{cost_liquidity_support_text}"
+                f"{peer_nonleader_breakout_text} "
                 f"({plan.get('blocked_reason', 'observe_only')})"
             )
     if space_catalyst_event_ledger and (
