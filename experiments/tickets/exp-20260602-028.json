@@ -1,0 +1,129 @@
+{
+  "acceptance_rule": "Gate 4 under docs/backtesting.md: aggregate EV and PnL must improve versus accepted exp-20260520-004 broad-market stack, no window EV/PnL regression, adjusted trades across all 3 windows, drawdown/concentration within guardrails; positive replay still requires shared helper before retention",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "data/experiments",
+    "experiments/logs",
+    "experiments/artifacts",
+    "experiments/tickets",
+    "docs/experiments/tickets",
+    "docs/experiment_log.jsonl"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260520-004/broad_market_trend_persistence_notional.json",
+  "card_file": "experiments/cards/exp-20260602-028.md",
+  "change_type": "default_off_paper_notional_support",
+  "changed_variable": "broad_market_orderly_market_liquidity_regime_support_v1",
+  "claimed_at": "2026-06-02T20:10:12+00:00",
+  "completed_at": "2026-06-02T20:19:49+00:00",
+  "created_at": "2026-06-02T20:09:45+00:00",
+  "decision": "rejected_broad_market_market_liquidity_support",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260602-028",
+  "experiment_uid": "expuid-54948c02c6cc4d5f",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260602-028",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-02T20:09:45+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "broad_market_market_liquidity_support"
+  },
+  "hypothesis": "capital/risk allocation: already-selected broad-market default-off paper candidates may have better replacement value when the broad tape is liquid and orderly; use a free OHLCV SPY/QQQ/IWM market-liquidity regime field instead of changing tickers or filters",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "accepted broad-market selected candidates",
+    "price floor",
+    "rank_notional_multipliers",
+    "low-extension/high-volatility/trend-persistence supports",
+    "max_active_positions",
+    "daily_entry_slots",
+    "hold_days"
+  ],
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "live/default orders",
+    "core ranking",
+    "core sizing",
+    "exits",
+    "LLM/news prompts",
+    "accepted broad-market candidate definition",
+    "rank profile",
+    "hold period"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260524-030 rejected candidate-level avg-dollar-volume liquidity quality; exp-20260527-024 rejected candidate-level cost/liquidity haircut; no prior market-level liquidity-regime support found"
+  ],
+  "new_evidence_type": "production_visible_free_ohlcv_market_liquidity_regime_field",
+  "owner": "codex-alpha-search",
+  "prediction": {
+    "confidence_reason": "Market-level liquidity regime is backlog-listed and distinct from prior candidate-level liquidity failures, but broad-market sleeve is mature and multiple-testing risk is moderate.",
+    "expected_ev_delta": 0.05,
+    "expected_pnl_delta": 1000.0,
+    "main_failure_modes": [
+      "market regime too correlated with existing benchmark gates",
+      "thin adjusted sample",
+      "late_strong regression",
+      "concentration"
+    ],
+    "recorded_at": "2026-06-02T20:09:17+00:00",
+    "success_probability": 0.35
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260602-028/broad_market_market_liquidity_support_before_aggregate.json",
+    "after_result_file": "data/experiments/exp-20260602-028/broad_market_market_liquidity_support_after_aggregate.json",
+    "delta_metrics": {
+      "expected_value_score": 0.0596,
+      "total_return_pct": 0.015,
+      "max_drawdown_pct": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "total_pnl": 1503.2
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.35,
+      "brier_score": 0.1225,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "low",
+      "expected_ev_delta": 0.05,
+      "actual_ev_delta": 0.0596,
+      "ev_prediction_error": 0.0096,
+      "expected_pnl_delta": 1000.0,
+      "actual_pnl_delta": 1503.2,
+      "pnl_prediction_error": 503.2,
+      "predicted_failure_modes": [
+        "market regime too correlated with existing benchmark gates",
+        "thin adjusted sample",
+        "late_strong regression",
+        "concentration"
+      ],
+      "realized_failure_mode": "old_thin_ev_regression",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "Market-liquidity support improved PnL in all windows but still reduced old_thin EV."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260602-028.json",
+  "single_causal_variable": "broad_market_orderly_market_liquidity_regime_support_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260602-028.json",
+  "trial_family": "broad_market_market_liquidity_regime_support",
+  "trial_variant_id": "broad_market_orderly_market_liquidity_regime_support_v1"
+}
