@@ -36,11 +36,12 @@ shared policy and updates the decision matrix below.
 
 `broad_market_paper_sleeve.py`, `ai_optical_paper_sleeve.py`,
 `volatility_contraction_paper_sleeve.py`, `volume_breadth_breakout_paper_sleeve.py`,
-and `fundamental_growth_rs_paper_sleeve.py` must only fill pending entries,
-advance observed hold days, close paper positions, or accept OHLCV-derived paper
-candidates when the relevant OHLCV data contains an exact `as_of` row. Production
-weekend, holiday, and data-lag runs may report metadata, but stale latest-prior
-prices must not mutate those paper ledgers.
+`fundamental_growth_rs_paper_sleeve.py`, and
+`post_earnings_underpriced_drift_paper_sleeve.py` must only fill pending
+entries, advance observed hold days, close paper positions, or accept
+OHLCV-derived paper candidates when the relevant OHLCV data contains an exact
+`as_of` row. Production weekend, holiday, and data-lag runs may report metadata,
+but stale latest-prior prices must not mutate those paper ledgers.
 
 ## Default-Off Direct Price-Map Sleeve Price-As-Of Guard
 
@@ -85,12 +86,30 @@ emits `sector_residual_*`, `companyfacts_sector_residual_*`, and a
 ranking, sizing, exit, LLM/news, or watchlist path may diverge between replay
 and production.
 
+## Post-Earnings Underpriced Drift Paper Adapter
+
+`exp-20260602-026` promoted the positive `exp-20260602-023` lead into
+`quant/post_earnings_underpriced_drift_paper_sleeve.py`. Backtests and
+production must use the same shared default-off paper adapter semantics:
+positive EPS surprise transitions are detected from daily earnings snapshots
+only when the prior snapshot had `days_to_earnings <= 7`, the current snapshot
+has `days_to_earnings >= 20`, and actual EPS or the surprise-history tail
+changed. A paper candidate can be admitted only in the 0-5 trading days after
+that event, with average dollar volume >= `$40m`, close above prior 50-day
+average, close-location >= `0.55`, 20-day RS vs SPY > `0`, event-to-signal
+return and excess vs SPY >= `0`, and pre-event 20-day ticker return minus SPY
+return <= `0`. The adapter is default-off and paper-only: fixed `$10k` base
+paper notional, top-1/day, next-open paper entry, 10-trading-day close exit,
+forward replacement-value gate, `trade_enabled=false`, and no live/default
+orders, core ranking, sizing, exit, LLM/news, or watchlist changes.
+
 ## Decision Matrix
 
 | Decision point | Shared source | Backtester use | Production use | Allowed difference |
 | --- | --- | --- | --- | --- |
 | Universe and features | `data_layer.py`, `feature_layer.py` | historical/snapshot OHLCV | latest OHLCV | data date only |
 | Earnings proximity and post-earnings continuation data | `data_layer.py`, `backtester.py`, `feature_layer.py`, `risk_engine.py`, `signal_engine.py`, `run.py` | canonical replay uses daily production earnings snapshots for `next_earnings_date` and `days_to_earnings` when present; when same-day actual EPS is known and a later future earnings date exists, it exposes `last_earnings_date`, `days_since_last_earnings`, `post_earnings_continuation_confirmed`, and `post_earnings_event_date`, then rolls forward DTE to the next future earnings date | daily run emits the production earnings snapshot used by the live feature path and the same continuation fields; same-day continuation is allowed only after actual EPS is known | fallback only for missing archived snapshots; canonical fixed-window Gate 1 metrics use PIT snapshot DTE as of `exp-20260601-025` plus explicit post-earnings continuation semantics as of `exp-20260602-003` |
+| Default-off post-earnings underpriced drift paper sleeve | `post_earnings_underpriced_drift_paper_sleeve.py`, `run.py`, `default_off_alpha_attribution.py`, `report_generator.py` | default core backtests do not trade it; historical evidence comes from accepted `exp-20260602-026` and must use the shared helper with daily earnings snapshot transition detection, the fixed positive-surprise drift gates, `pre_event_rs20_vs_spy <= 0`, fixed `$10k` paper notional, top-1/day, next-open paper entry, 10-trading-day close exit, and concentration guard before promotion | daily run derives candidates from the already-loaded daily OHLCV universe plus `SPY`, loads local earnings snapshot history, emits candidate/audit metadata, pending/open/closed paper ledger state, replacement-value report, forward paper gate, default-off alpha-attribution surface, and human-report block | observe-only; no core universe expansion, no live orders, no core ranking/sizing/exit changes, no LLM/news changes, and activation requires closed forward replacement-value outcomes plus a separate Gate 1-4 trade adapter |
 | Read-only market-state / sentiment analysis | `regime_engine.py`, `sentiment_surface.py`, `market_state_analysis.py`, `backtest_sentiment_attribution.py`, `report_generator.py` | emits `result["market_state_sentiment_attribution"]` after canonical metrics are computed; diagnostic only | emits `market_state_snapshot` in daily quant artifacts and report; diagnostic only | no entry, ranking, sizing, exit, heat, LLM/news, or order behavior may read this block without a separate Gate 1-4 experiment |
 | Default-off alpha attribution report | `default_off_alpha_attribution.py`, `report_generator.py` | not used by canonical core metrics; experiment/replay artifacts may use it as read-only activation/blocker context | daily run emits `default_off_alpha_attribution` in quant artifacts and the human report | read-only blocker rollup only; no entry, ranking, sizing, exit, heat, LLM/news, or order behavior may read this block without a separate Gate 1-4 experiment |
 | Universe governance / pilot eligibility | `universe_manager.py`, `universe_adapter.py`, `pilot_sleeve.py` | point-in-time disclosure by default; `--include-pilot-sleeve` replays trade-enabled pilot eligibility day by day | daily run can emit separate `pilot_signals` for trade-enabled pilot records | pilot started on `2026-05-01`, so pre-activation historical windows cannot treat it as then-known production universe |

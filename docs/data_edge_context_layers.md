@@ -930,6 +930,44 @@ experiment and parity update. Do not retune the breadth, breakout, volume,
 top-1, breadth-intensity support, or high-close support thresholds/scalars on
 the frozen sample; use forward rows or an orthogonal production-visible field.
 
+### `quant/post_earnings_underpriced_drift_paper_sleeve.py`
+
+Purpose: maintain the default-off `POST_EARNINGS_UNDERPRICED_DRIFT_PAPER`
+forward observation ledger for the accepted post-earnings underpriced
+positive-surprise drift lead from `exp-20260602-026`, which promoted the
+positive `exp-20260602-023` replay result into a shared production-visible
+adapter.
+
+Candidate route:
+
+- Uses daily earnings snapshots plus the daily loaded OHLCV universe and `SPY`.
+- Confirms a positive EPS surprise event only on a snapshot transition where
+  the prior snapshot had `days_to_earnings <= 7`, the current snapshot has
+  `days_to_earnings >= 20`, and actual EPS or the latest surprise-history
+  value changed.
+- Requires latest surprise >= `3%`, at least `4` surprise-history rows, at
+  least `2` positive historical surprises, and average historical surprise >=
+  `0`.
+- Admits signals only 0-5 trading days after the event, with average dollar
+  volume >= `$40m`, close above the prior 50-day average, close-location >=
+  `0.55`, 20-day RS vs SPY > `0`, event-to-signal return >= `0`, and
+  event-to-signal excess versus SPY >= `0`.
+- Applies the accepted underpricing discriminator: the ticker's 20-day return
+  ending on the close before the event minus SPY's same-window return must be
+  `<= 0`.
+- Emits ranked candidates but opens at most one paper entry per day, with
+  fixed `$10k` base paper notional, next-open paper entry, 10-trading-day
+  close exit, closed outcomes, replacement-value summary, and concentration
+  blockers only.
+
+Agent rule: this sleeve may collect forward replacement-value evidence for the
+accepted alpha. It must not enable orders, expand the core universe, alter live
+ranking, sizing, exits, LLM/news, or consume live capital without a separate
+Gate 1-4 activation experiment and parity update. Do not retune
+`pre_event_rs20_vs_spy`, surprise thresholds, signal-offset windows, top-N,
+hold-day, or base notional on the frozen sample without forward rows or a
+materially richer event-quality field.
+
 ### `quant/fundamental_growth_rs_paper_sleeve.py`
 
 Purpose: maintain the default-off `FUNDAMENTAL_GROWTH_RS_PAPER` forward
@@ -1018,6 +1056,7 @@ Inputs:
 - `broad_market_paper_sleeve`
 - `ai_optical_paper_sleeve`
 - `volume_breadth_breakout_paper_sleeve`
+- `post_earnings_underpriced_drift_paper_sleeve`
 - `fundamental_growth_rs_paper_sleeve`
 
 Output keys:

@@ -224,6 +224,7 @@ def build_default_off_alpha_attribution_report(
     ai_optical_paper_sleeve: dict[str, Any] | None = None,
     volatility_contraction_paper_sleeve: dict[str, Any] | None = None,
     volume_breadth_breakout_paper_sleeve: dict[str, Any] | None = None,
+    post_earnings_underpriced_drift_paper_sleeve: dict[str, Any] | None = None,
     alpha_score_market_regime_paper_sleeve: dict[str, Any] | None = None,
     accepted_source_consensus_paper_sleeve: dict[str, Any] | None = None,
     free_data_cross_source_consensus_paper_sleeve: dict[str, Any] | None = None,
@@ -288,6 +289,25 @@ def build_default_off_alpha_attribution_report(
                 ),
                 "cost_liquidity_supported": (
                     ((volume_breadth_breakout_paper_sleeve or {}).get("cost_liquidity_support") or {}).get("supported_candidate_count")
+                ),
+            },
+        ),
+        _surface_summary(
+            name="post_earnings_underpriced_drift",
+            label="POST_EARNINGS_UNDERPRICED_DRIFT_PAPER",
+            snapshot=post_earnings_underpriced_drift_paper_sleeve,
+            extra_metrics={
+                "source_rule_version": (
+                    (post_earnings_underpriced_drift_paper_sleeve or {}).get("source_rule_version")
+                ),
+                "positive_surprise_events": (
+                    ((post_earnings_underpriced_drift_paper_sleeve or {}).get("candidate_audit") or {}).get("positive_surprise_event_count")
+                ),
+                "earnings_snapshot_dates_loaded": (
+                    ((post_earnings_underpriced_drift_paper_sleeve or {}).get("earnings_snapshot_source") or {}).get("dates_loaded")
+                ),
+                "pre_event_underpricing_rejected": (
+                    ((post_earnings_underpriced_drift_paper_sleeve or {}).get("candidate_reject_counts") or {}).get("pre_event_rs20_outperformed_spy")
                 ),
             },
         ),

@@ -54,6 +54,19 @@ EV `6.3596` and PnL `$192,538.61`.
 Latest saved single-window backtest artifacts can reflect only the most recent
 command; canonical acceptance evidence is the three-window artifact above.
 
+Latest default-off alpha adapter acceptance: `exp-20260602-026` promoted the
+positive `exp-20260602-023` post-earnings underpriced positive-surprise drift
+lead into the shared `POST_EARNINGS_UNDERPRICED_DRIFT_PAPER` adapter. The
+three canonical windows improved through the shared helper, with aggregate EV
+`+0.3547` (`+4.49%`) and PnL `+$3,557.15` across `20` target paper trades;
+`late_strong`, `mid_weak`, and `old_thin` all improved, max drawdown improved,
+max single positive share was `0.308744`, and positive PnL HHI was `0.192948`.
+This is default-off paper only: `trade_enabled=false`, live/default orders,
+core ranking, sizing, exits, LLM/news, and watchlists are unchanged. The next
+valid work is forward replacement-value accumulation or materially richer
+event-quality fields, not nearby `pre_event_rs20_vs_spy` threshold retuning on
+the frozen windows.
+
 ## 2026-06-01 Experiment Consolidation
 
 Today's work produced five accepted default-off paper adapters and one accepted

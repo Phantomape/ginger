@@ -60,11 +60,18 @@ Recent repository evidence supports this priority:
   only after actual EPS is known and a later future earnings date exists, then
   roll DTE to that next event. This recovered aggregate core EV `6.3596 ->
   7.8941` and PnL `$192,538.61 -> $234,850.99`. Nearby post-earnings candidate
-  pools did not yet clear promotion (`exp-20260602-004` rejected the generic
-  strong-reaction pool; `exp-20260602-006` was positive but unpromoted). The
-  next valid earnings work is event-quality and immediate-reaction attribution
-  around the accepted continuation trades, not implicit DTE resets or another
-  generic PEAD/pre-earnings threshold sweep.
+  pools split: `exp-20260602-004` rejected the generic strong-reaction pool,
+  while `exp-20260602-023` found that positive-surprise post-earnings drift
+  rows whose pre-event 20-day ticker return did not outperform SPY were cleaner.
+  `exp-20260602-026` promoted that lead into the shared default-off
+  `POST_EARNINGS_UNDERPRICED_DRIFT_PAPER` adapter; the shared-helper replay
+  improved all three canonical windows with aggregate EV `+0.3547`, PnL
+  `+$3,557.15`, `20` target paper trades, no drawdown worsening, max single
+  positive share `0.308744`, and positive PnL HHI `0.192948`. The next valid
+  earnings work is forward replacement-value accumulation or materially richer
+  event-quality fields, not implicit DTE resets, generic PEAD/pre-earnings
+  threshold sweeps, or nearby `pre_event_rs20_vs_spy` retunes on the frozen
+  windows.
 - `VOLUME_BREADTH_BREAKOUT_PAPER` and QQQ-confirmed VCP show that free OHLCV
   market-confirmation fields can produce useful paper sleeves. Their next step
   is forward maturation, not another breadth/QQQ/top-N sweep. The latest
