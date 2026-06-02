@@ -1,0 +1,109 @@
+{
+  "acceptance_rule": "docs/backtesting.md three windows; aggregate EV/PnL positive; all windows non-regressing; target trades >=20 across all windows and in all 3 windows; max drawdown drift <=0.5pp; min survival >=5%; max single positive share <=0.50 and HHI <=0.30; any positive retained behavior must be production-visible/shared or explicitly rejected as replay-only",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "experiments/tickets",
+    "experiments/logs",
+    "experiments/artifacts",
+    "experiments/cards",
+    "data/experiments",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "quant/experiments/exp_20260602_001_companyfacts_cash_conversion_quality_support.py",
+    "data/experiments/exp-20260602-001/companyfacts_cash_conversion_quality_support.json",
+    "data/experiments/exp-20260602-001/companyfacts_cash_conversion_quality_support_before_aggregate.json",
+    "data/experiments/exp-20260602-001/companyfacts_cash_conversion_quality_support_after_aggregate.json",
+    "experiments/logs/exp-20260602-001.json",
+    "experiments/cards/exp-20260602-001.md",
+    "experiments/artifacts/exp-20260602-001_companyfacts_cash_conversion_quality_support.md",
+    "experiments/tickets/exp-20260602-001.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260601-030/exp_20260601_030_companyfacts_cost_liquidity_support.json",
+  "card_file": "experiments/cards/exp-20260602-001.md",
+  "change_type": "default_off_paper_support_field",
+  "changed_variable": "companyfacts_cash_conversion_quality_support_v1",
+  "claimed_at": "2026-06-02T00:12:36+00:00",
+  "completed_at": "2026-06-02T00:17:45+00:00",
+  "created_at": "2026-06-02T00:12:10+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260602-001",
+  "experiment_uid": "expuid-5dff6763772f440f",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260602-001",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-02T00:12:10+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "companyfacts_cash_conversion_quality_support"
+  },
+  "hypothesis": "SEC Companyfacts cash-conversion quality (operating cash flow covers net income) may identify cleaner default-off Fundamental Growth + RS paper candidates than the accepted cost-liquidity adapter alone.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "PIT Companyfacts filed-date boundary; accepted gross-margin source; accepted filing-timeliness support; accepted cost-liquidity support; RS proxy; top1/day paper route; next-open entry; 10 trading-day paper exit"
+  ],
+  "mechanism_family": "companyfacts_cash_conversion_quality",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [
+    "production live order routing",
+    "core ranking",
+    "exits",
+    "LLM/news prompts"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260504-004",
+    "exp-20260601-019",
+    "exp-20260601-030",
+    "exp-20260601-031"
+  ],
+  "new_evidence_type": "production_visible_sec_companyfacts_ocf_to_net_income_field",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "Cash conversion is explicitly listed as the next valid Companyfacts field, but nearby FCF/yield and dual-growth experiments raise repeat and concentration risk.",
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "adjacent_companyfacts_repeat",
+      "concentration_failed",
+      "thin_mid_window",
+      "no_incremental_replacement_value"
+    ],
+    "recorded_at": "2026-06-02T00:11:44+00:00",
+    "success_probability": 0.28
+  },
+  "prior_trial_count": 2,
+  "result": {
+    "accepted": false,
+    "alpha_passed": true,
+    "artifact": "data/experiments/exp-20260602-001/companyfacts_cash_conversion_quality_support.json",
+    "decision": "positive_replay_lead_not_promoted_requires_forward_rows",
+    "failed_gates": [],
+    "log": "experiments/logs/exp-20260602-001.json",
+    "metrics": {
+      "aggregate_expected_value_delta": 0.4089,
+      "aggregate_total_pnl_delta": 5756.16,
+      "max_single_positive_share": 0.459363,
+      "positive_pnl_hhi": 0.286255,
+      "target_trade_count": 230
+    },
+    "promotable_now": false
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260602-001.json",
+  "single_causal_variable": "companyfacts_cash_conversion_quality_support_v1",
+  "status": "completed",
+  "ticket_file": "experiments/tickets/exp-20260602-001.json",
+  "trial_family": "companyfacts_cash_conversion_quality_support",
+  "trial_variant_id": "ocf_to_net_income_ge_1_support_v1"
+}
