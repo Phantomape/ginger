@@ -1,0 +1,132 @@
+{
+  "acceptance_rule": "docs/backtesting.md three-window Gate 4: aggregate EV/PnL positive, no EV/PnL window regression, drawdown drift <=0.5pp, >=20 target trades in all 3 windows, survival >=5%, concentration guardrails pass.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260602_020_sector_peer_moderate_shock_candidate_pool.py",
+    "data/experiments/exp-20260602-020",
+    "experiments/logs/exp-20260602-020.json",
+    "experiments/tickets/exp-20260602-020.json",
+    "experiments/cards/exp-20260602-020.md",
+    "experiments/artifacts/exp-20260602-020_sector_peer_moderate_shock_candidate_pool.md",
+    "experiments/manifests/exp-20260602-020.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "card_file": "experiments/cards/exp-20260602-020.md",
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "moderate_positive_sector_peer_shock_candidate_source_v1",
+  "claimed_at": "2026-06-02T14:08:36+00:00",
+  "completed_at": "2026-06-02T14:14:58+00:00",
+  "created_at": "2026-06-02T14:08:27+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260602-020",
+  "experiment_uid": "expuid-2cffbece2f2b45ef",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260602-020",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-02T14:08:27+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sector_peer_moderate_shock_candidate_pool"
+  },
+  "hypothesis": "Moderate positive same-sector OHLCV peer shocks may create delayed continuation in liquid unshocked peers, improving the default-off paper candidate pool without noisy ticker expansion.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "core signal generation",
+    "ranking",
+    "sizing",
+    "exit rules",
+    "portfolio heat",
+    "watchlists",
+    "live/default orders"
+  ],
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "production order path",
+    "live/default orders",
+    "core ranking",
+    "core sizing",
+    "core exits",
+    "LLM/news replay"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260531-012",
+    "exp-20260531-013",
+    "exp-20260602-012",
+    "exp-20260602-019"
+  ],
+  "new_evidence_type": "free_ohlcv_moderate_peer_shock_bucket_from_read_only_probe",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "Read-only peer_earnings_transfer_probe found moderate positive peer shocks had better 5d/10d excess lift than extreme shocks; prior strong peer transfer variants failed robustness.",
+    "expected_ev_delta": 0.25,
+    "expected_pnl_delta": 5000.0,
+    "main_failure_modes": [
+      "window_regression",
+      "drawdown_drift_too_high",
+      "target_sample_too_small",
+      "peer_shock_noise"
+    ],
+    "recorded_at": "2026-06-02T14:08:02+00:00",
+    "success_probability": 0.22
+  },
+  "prior_trial_count": 3,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [
+      "expected_value_score improved 33.03%",
+      "total_pnl improved 24.88%"
+    ],
+    "before_result_file": "data/experiments/exp-20260602-020/sector_peer_moderate_shock_candidate_pool_before_aggregate.json",
+    "after_result_file": "data/experiments/exp-20260602-020/sector_peer_moderate_shock_candidate_pool_after_aggregate.json",
+    "delta_metrics": {
+      "expected_value_score": 2.6078,
+      "total_return_pct": 0.5844,
+      "max_drawdown_pct": -0.0081,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "total_pnl": 58440.11
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.22,
+      "brier_score": 0.0484,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.25,
+      "actual_ev_delta": 2.6078,
+      "ev_prediction_error": 2.3578,
+      "expected_pnl_delta": 5000.0,
+      "actual_pnl_delta": 58440.11,
+      "pnl_prediction_error": 53440.11,
+      "predicted_failure_modes": [
+        "window_regression",
+        "drawdown_drift_too_high",
+        "target_sample_too_small",
+        "peer_shock_noise"
+      ],
+      "realized_failure_mode": "target_concentration_failed",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "Moderate peer-shock bucket was much stronger than expected in aggregate, but not diversified enough for acceptance."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260602-020.json",
+  "single_causal_variable": "moderate_positive_sector_peer_shock_candidate_source_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260602-020.json",
+  "trial_family": "sector_peer_moderate_shock_candidate_pool",
+  "trial_variant_id": "sector_peer_moderate_positive_shock_top1_10d_v1"
+}
