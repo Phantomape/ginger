@@ -84,20 +84,30 @@ Window labels used in experiment logs:
 | `mid_weak` | `2025-04-23 -> 2025-10-22` | `data\ohlcv\ohlcv_snapshot_20250423_20251022.json` |
 | `old_thin` | `2024-10-02 -> 2025-04-22` | `data\ohlcv\ohlcv_snapshot_20241002_20250422.json` |
 
-Current accepted fixed-window metrics after core `exp-20260517-009`
-(`ample_slot_stock_rank1_topup`) promoted the stock-only ample-slot rank-1
-post-sizing top-up on top of the accepted scarce-slot rank-1 top-up:
+## Canonical DTE Protocol
+
+As of `exp-20260602-001`, the canonical backtester uses **PIT earnings snapshot
+DTE semantics** (`commit bb4ced9`): `_earnings_dict_for` prefers the daily
+production earnings snapshot for next-earnings date and days-to-earnings when it
+exists, and falls back to the yfinance calendar only when no snapshot is
+available. The pre-bb4ced9 calendar-only compat mode reproduced the old metrics
+but is not the forward production path; `exp-20260601-023` established the full
+attribution. Do not revert to calendar-only DTE without a deliberate protocol
+versioning decision.
+
+Current accepted fixed-window core metrics (`exp-20260517-009` stack, PIT DTE
+canonical baseline as of `exp-20260602-001`):
 
 | Label | EV score | Sharpe daily | Total PnL | Return | Max DD | Win rate | Trades | Survival |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `late_strong` | 5.1628 | 4.41 | $117,072.92 | 117.07% | 6.65% | 83.33% | 18 | 80.39% |
-| `mid_weak` | 2.1402 | 2.74 | $78,110.11 | 78.11% | 11.19% | 52.38% | 21 | 79.25% |
-| `old_thin` | 0.5911 | 1.49 | $39,667.96 | 39.67% | 10.01% | 40.91% | 22 | 86.67% |
+| `late_strong` | 4.1082 | 4.10 | $100,203.06 | 100.20% | 6.65% | 83.33% | 18 | 81.40% |
+| `mid_weak` | 2.1405 | 2.74 | $78,119.38 | 78.12% | 11.19% | 55.00% | 20 | 79.17% |
+| `old_thin` | 0.1109 | 0.78 | $14,216.17 | 14.22% | 14.09% | 35.00% | 20 | 93.62% |
 
 Artifact note:
-`data/experiments/exp-20260517-009/`
-records the latest accepted three-window comparison. Aggregate accepted-stack
-EV is `7.8941`; aggregate PnL is `$234,850.99`.
+`data/experiments/exp-20260601-023/` records the three-window baseline
+reproduction using the PIT DTE semantics. Aggregate accepted-stack core EV is
+`6.3596`; aggregate PnL is `$192,538.61`.
 
 Previous accepted default-off state-surface paper rank-quality result:
 `exp-20260518-020`

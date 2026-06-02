@@ -1,6 +1,6 @@
 ﻿# Current State
 
-Last updated: 2026-06-01.
+Last updated: 2026-06-02.
 
 The current accepted core stack includes the 2026-05-17 stock-only ample-slot
 rank-1 post-sizing top-up from `exp-20260517-009`, layered on top of the
@@ -34,19 +34,68 @@ signal-day own-green candle sizing promotion from `exp-20260513-007`, the
 2026-05-10 TRIP sector taxonomy completion from `exp-20260510-015`, and the
 RS20 entry-state shared sizing promotion from `exp-20260510-012`. These are
 documented in `docs/backtesting.md` and
-`docs/alpha-optimization-playbook.md`. Canonical fixed-window core metrics are:
+`docs/alpha-optimization-playbook.md`. Canonical fixed-window core metrics
+(PIT DTE baseline, accepted by `exp-20260602-001`):
 
 | Window | EV | Return | Sharpe daily | Max DD | Trades | Survival |
 |---|---:|---:|---:|---:|---:|---:|
-| `late_strong` | 5.1628 | 117.07% | 4.41 | 6.65% | 18 | 80.39% |
-| `mid_weak` | 2.1402 | 78.11% | 2.74 | 11.19% | 21 | 79.25% |
-| `old_thin` | 0.5911 | 39.67% | 1.49 | 10.01% | 22 | 86.67% |
+| `late_strong` | 4.1082 | 100.20% | 4.10 | 6.65% | 18 | 81.40% |
+| `mid_weak` | 2.1405 | 78.12% | 2.74 | 11.19% | 20 | 79.17% |
+| `old_thin` | 0.1109 | 14.22% | 0.78 | 14.09% | 20 | 93.62% |
 
-Latest accepted three-window artifact:
-`data/experiments/exp-20260517-009/`.
-Aggregate core EV is now `7.8941`; aggregate PnL is `$234,850.99`.
+Canonical three-window baseline artifact:
+`data/experiments/exp-20260601-023/`.
+Aggregate core EV is `6.3596`; aggregate PnL is `$192,538.61` (PIT DTE
+canonical). The prior calendar-DTE figures (EV `7.8941` / `$234,850.99`) are
+superseded by the more production-faithful PIT DTE baseline; see
+`docs/backtesting.md` for the full protocol note.
 Latest saved single-window backtest artifacts can reflect only the most recent
 command; canonical acceptance evidence is the three-window artifact above.
+
+## 2026-06-02 Experiment Consolidation
+
+Today's work produced one accepted measurement repair and one accepted
+default-off paper adapter. No live/default order path was enabled, no core
+alpha rule was promoted, and no LLM/news authority changed.
+
+`exp-20260602-001` accepted PIT earnings snapshot DTE semantics as the
+canonical backtester baseline. Production `run.py` uses daily earnings snapshot
+files for days-to-earnings; the pre-bb4ced9 calendar-only DTE mode was a
+compatibility shim. Updating the canonical baseline from EV `7.8941` /
+`$234,850.99` (calendar DTE) to EV `6.3596` / `$192,538.61` (PIT DTE)
+resolves the `baseline_matches_docs=false` blocker that prevented retention of
+the gross-margin alpha lead from `exp-20260601-021`. `docs/backtesting.md` has
+been updated with the new PIT DTE canonical metrics table and protocol note.
+
+`exp-20260602-002` accepted the Companyfacts gross-margin quality filter
+(`gross_profit / revenue >= 0.40`, or `(revenue - cost_of_revenue) / revenue
+>= 0.40` as fallback) into the shared `FUNDAMENTAL_GROWTH_RS_PAPER` sleeve.
+Evidence from `exp-20260601-021` showed that gross-margin-passing candidates
+from the existing FG+RS pool produced aggregate EV `+6.3389` and PnL
+`+$107,596.26` across all three canonical windows against the PIT DTE baseline,
+with 265 target paper trades, max single positive share `0.4065` (below the
+`0.50` guard), HHI `0.2363` (below `0.30`), and drawdown improved across all
+three windows. All Gate 4 checks passed once the PIT DTE baseline was accepted.
+The implementation adds `gross_margin_quality()` to `CompanyfactsFundamentalIndex`
+in `quant/fundamental_growth_rs_paper_sleeve.py` — loading `gross_profit` and
+`cost_of_revenue` SEC Companyfacts fields (filed-date-safe), computing gross
+margin, and filtering out candidates below 40%. `RULE_VERSION` updated to
+`fundamental_growth_rs_gross_margin_shared_adapter_v1`. This is
+observe-only: `trade_enabled=false`, live/default orders remain disabled, and
+core ranking, sizing, exits, LLM/news, and watchlists are unchanged. Forward
+gate: needs 30 closed forward paper trades, positive net PnL, concentration
+below 50%, and a separate Gate 1-4 live adapter experiment before any capital
+activation. Do not retune the 40% threshold or try adjacent Companyfacts margin
+scalars on the frozen windows; collect forward replacement-value rows first.
+
+The combined state: PIT DTE core baseline EV `6.3596` + gross-margin filtered
+paper sleeve with historical replay EV improvement `+6.3389` = paper-overlay
+EV `12.6985` across 265 target trades. This is the strongest single paper-alpha
+lead in the repository.
+
+Regression status: 735 tests pass (excluding pre-existing feedparser and
+llm-advisor-path failures unrelated to these changes). No core strategy
+behavior, live-order, ranking, sizing, exit, or LLM/news change.
 
 ## 2026-06-01 Experiment Consolidation
 

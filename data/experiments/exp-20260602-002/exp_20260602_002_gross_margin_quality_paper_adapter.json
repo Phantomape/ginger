@@ -1,0 +1,131 @@
+{
+  "experiment_id": "exp-20260602-002",
+  "lane": "alpha_search",
+  "hypothesis": "Companyfacts filed-date-safe gross-margin quality (gross_profit / revenue >= 0.40) added as a candidate filter to FUNDAMENTAL_GROWTH_RS_PAPER sleeve produces a stronger default-off candidate pool, improving three-window aggregate EV and PnL without worsening drawdown or concentration.",
+  "change_type": "default_off_paper_allocation",
+  "single_causal_variable": "gross_margin_quality_candidate_filter_40pct_floor",
+  "mechanism_family": "companyfacts_gross_margin_quality_candidate_pool",
+  "trial_family": "companyfacts_gross_margin_quality_candidate_pool",
+  "decision": "accepted_shared_adapter",
+  "status": "accepted_default_off_paper_adapter",
+  "accepted": true,
+  "timestamp": "2026-06-02T16:25:00Z",
+  "anti_js": "No JavaScript was used.",
+  "source_experiment": "exp-20260601-021",
+  "backtest_protocol": {
+    "source": "docs/backtesting.md canonical three-window replay",
+    "canonical_baseline": "PIT DTE (accepted by exp-20260602-001)",
+    "execution_model": "Replay-only: selected paper trades are gross-margin filtered rows from the accepted Fundamental Growth + RS source. Core entry, sizing, exits unchanged.",
+    "windows": {
+      "late_strong": {"start": "2025-10-23", "end": "2026-04-21", "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json"},
+      "mid_weak": {"start": "2025-04-23", "end": "2025-10-22", "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json"},
+      "old_thin": {"start": "2024-10-02", "end": "2025-04-22", "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json"}
+    }
+  },
+  "aggregate": {
+    "before": {"expected_value_score": 6.3596, "max_drawdown_pct": 0.1409, "total_pnl": 192538.61},
+    "after": {"expected_value_score": 12.6985, "max_drawdown_pct": 0.1318, "total_pnl": 300134.87},
+    "delta": {"expected_value_score": 6.3389, "expected_value_score_pct": 0.9967, "max_drawdown_pct": -0.0091, "total_pnl": 107596.26}
+  },
+  "window_results": {
+    "late_strong": {
+      "before": {"expected_value_score": 4.1082, "max_drawdown_pct": 0.0665, "total_pnl": 100203.06},
+      "after": {"expected_value_score": 5.7904, "max_drawdown_pct": 0.0596, "total_pnl": 119393.40}
+    },
+    "mid_weak": {
+      "before": {"expected_value_score": 2.1405, "max_drawdown_pct": 0.1119, "total_pnl": 78119.38},
+      "after": {"expected_value_score": 5.3624, "max_drawdown_pct": 0.0914, "total_pnl": 124126.27}
+    },
+    "old_thin": {
+      "before": {"expected_value_score": 0.1109, "max_drawdown_pct": 0.1409, "total_pnl": 14216.17},
+      "after": {"expected_value_score": 1.5457, "max_drawdown_pct": 0.1318, "total_pnl": 56615.20}
+    }
+  },
+  "target_trade_summary": {
+    "target_trades": 265,
+    "max_single_positive_share": 0.4065,
+    "positive_pnl_hhi": 0.236292,
+    "pnl_by_window": {"late_strong": 19190.34, "mid_weak": 46006.89, "old_thin": 42399.03}
+  },
+  "gate1": {"baseline_matches_docs": true, "baseline_ev": 6.3596, "canonical_ev": 6.3596, "note": "Baseline matches after exp-20260602-001 accepted PIT DTE as canonical"},
+  "gate2": {"passed": true},
+  "gate3": {"passed": true, "note": "No core production filter added; candidate pool default-off paper only"},
+  "gate4": {
+    "passed": true,
+    "ev_windows_improved": ["late_strong", "mid_weak", "old_thin"],
+    "pnl_windows_improved": ["late_strong", "mid_weak", "old_thin"],
+    "aggregate_ev_delta": 6.3389,
+    "aggregate_pnl_delta": 107596.26,
+    "drawdown_delta": -0.0091,
+    "max_drawdown_delta": -0.0069,
+    "concentration_guard_passed": true,
+    "max_single_positive_share": 0.4065,
+    "positive_pnl_hhi": 0.236292,
+    "survival_floor_passed": true,
+    "target_trade_count_passed": true,
+    "gates": {
+      "aggregate_expected_value_positive": true,
+      "aggregate_pnl_positive": true,
+      "all_windows_expected_value_improved": true,
+      "all_windows_pnl_improved": true,
+      "baseline_matches_docs_for_retention": true,
+      "concentration_guard_passed": true,
+      "drawdown_drift_passed": true,
+      "survival_floor_passed": true,
+      "target_trade_count_passed": true,
+      "target_window_count_passed": true
+    }
+  },
+  "implementation": {
+    "changed_files": [
+      "quant/fundamental_growth_rs_paper_sleeve.py",
+      "quant/test_fundamental_growth_rs_paper_sleeve.py"
+    ],
+    "changes": [
+      "Added gross_profit and cost_of_revenue to CompanyfactsFundamentalIndex accepted canonicals",
+      "Added gross_margin_quality() method to CompanyfactsFundamentalIndex",
+      "Added min_gross_margin=0.40 to DEFAULT_CONFIG",
+      "Added gross_margin_pass_v1 check in _candidate_for_ticker (return None if fails)",
+      "Added gross margin fields to candidate dict",
+      "Added gross_margin_quality report block to snapshots",
+      "Updated RULE_VERSION to fundamental_growth_rs_gross_margin_shared_adapter_v1",
+      "Added GROSS_MARGIN_RULE_VERSION constant",
+      "Updated test data with gross_profit facts for AMD (50% margin)"
+    ],
+    "rule_version": "gross_margin_quality_candidate_filter_v1",
+    "min_gross_margin": 0.40,
+    "trade_enabled": false,
+    "alters_orders": false,
+    "default_off_paper_only": true
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": true,
+    "trade_enabled": false
+  },
+  "next_action": "forward_replacement_value_accumulation_no_frozen_sample_retunes",
+  "activation_blockers": [
+    "needs_30_closed_forward_trades",
+    "needs_positive_forward_net_pnl",
+    "needs_concentration_below_50pct",
+    "needs_separate_live_adapter_gate1_4"
+  ],
+  "related_files": [
+    "data/experiments/exp-20260601-021/exp_20260601_021_companyfacts_gross_margin_rs_candidate_pool.json",
+    "quant/fundamental_growth_rs_paper_sleeve.py",
+    "quant/test_fundamental_growth_rs_paper_sleeve.py",
+    "data/experiments/exp-20260602-002/exp_20260602_002_gross_margin_quality_paper_adapter.json",
+    "experiments/logs/exp-20260602-002.json"
+  ]
+}

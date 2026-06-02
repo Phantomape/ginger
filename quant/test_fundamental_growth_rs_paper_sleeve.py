@@ -6,6 +6,7 @@ from quant.default_off_alpha_attribution import build_default_off_alpha_attribut
 from quant.fundamental_growth_rs_paper_sleeve import (
     FILING_RECENCY_RULE_VERSION,
     GOVERNOR_RULE_VERSION,
+    GROSS_MARGIN_RULE_VERSION,
     LOW_LIABILITY_RULE_VERSION,
     LOW_VOLUME_PARTICIPATION_RULE_VERSION,
     REPLACEMENT_VALUE_RULE_VERSION,
@@ -95,6 +96,7 @@ def _facts() -> list[dict]:
         _fact("AMD", "eps_diluted", 2026, "Q1", "2026-04-25", 1.45),
         _fact("AMD", "revenue", 2025, "Q1", "2025-04-25", 1000.0),
         _fact("AMD", "revenue", 2026, "Q1", "2026-04-25", 1260.0),
+        _fact("AMD", "gross_profit", 2026, "Q1", "2026-04-25", 630.0),  # 50% margin -> passes 40% floor
         _fact("AMD", "operating_income", 2026, "Q1", "2026-04-25", 220.0),
         _fact("AMD", "assets", 2026, "Q1", "2026-04-25", 1000.0),
         _fact("AMD", "liabilities", 2026, "Q1", "2026-04-25", 500.0),
