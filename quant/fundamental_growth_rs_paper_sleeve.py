@@ -14,14 +14,17 @@ from collections import Counter, defaultdict
 from copy import deepcopy
 from datetime import datetime, timezone
 from pathlib import Path
+from statistics import median
 from typing import Any
 
 try:
+    import broad_market_sector_map
     from constants import ROUND_TRIP_COST_PCT
     from data_paths import DATA_ROOT, data_artifact_path
     from fill_model import SLIPPAGE_BPS_TARGET, apply_entry_fill, apply_slippage
     from risk_engine import SECTOR_MAP
 except ImportError:  # pragma: no cover - package-style imports in tests
+    from quant import broad_market_sector_map
     from quant.constants import ROUND_TRIP_COST_PCT
     from quant.data_paths import DATA_ROOT, data_artifact_path
     from quant.fill_model import SLIPPAGE_BPS_TARGET, apply_entry_fill, apply_slippage
@@ -38,6 +41,7 @@ FILING_RECENCY_RULE_VERSION = "fundamental_growth_rs_filing_recency_support_v1"
 FILING_TIMELINESS_RULE_VERSION = "fundamental_growth_rs_filing_timeliness_support_v1"
 LOW_LIABILITY_RULE_VERSION = "fundamental_growth_rs_low_liability_support_v1"
 COST_LIQUIDITY_RULE_VERSION = "fundamental_growth_rs_cost_liquidity_support_v1"
+SECTOR_RESIDUAL_RULE_VERSION = "companyfacts_sector_residual_strength_support_v1"
 REPLACEMENT_VALUE_RULE_VERSION = "fundamental_growth_rs_forward_replacement_value_v1"
 STATE_SCHEMA_VERSION = 1
 
@@ -105,6 +109,9 @@ DEFAULT_CONFIG = {
     "cost_liquidity_min_avg_dollar_volume_20": 200_000_000.0,
     "cost_liquidity_max_signal_day_range_pct": 0.10,
     "cost_liquidity_notional_scalar": 1.05,
+    "sector_residual_min_ret20_excess_sector": 0.03,
+    "sector_residual_min_sector_members": 5,
+    "sector_residual_notional_scalar": 1.05,
     "forward_gate_min_closed_trades": 30,
     "forward_gate_positive_net_pnl": True,
     "forward_gate_min_win_rate": 0.50,
@@ -231,6 +238,13 @@ def empty_fundamental_growth_rs_paper_sleeve_snapshot(
         },
         "cost_liquidity": {
             "rule_version": COST_LIQUIDITY_RULE_VERSION,
+            "read_only": True,
+            "trade_enabled": False,
+            "alters_orders": False,
+            "supported_candidate_count": 0,
+        },
+        "sector_residual": {
+            "rule_version": SECTOR_RESIDUAL_RULE_VERSION,
             "read_only": True,
             "trade_enabled": False,
             "alters_orders": False,
@@ -480,6 +494,18 @@ def build_fundamental_growth_rs_paper_sleeve_snapshot(
                 1 for row in candidates if row.get("cost_liquidity_pass_v1")
             ),
         },
+        "sector_residual": {
+            "rule_version": SECTOR_RESIDUAL_RULE_VERSION,
+            "read_only": True,
+            "trade_enabled": False,
+            "alters_orders": False,
+            "min_ret20_excess_sector": float(cfg["sector_residual_min_ret20_excess_sector"]),
+            "min_sector_members": int(cfg["sector_residual_min_sector_members"]),
+            "paper_notional_scalar": float(cfg["sector_residual_notional_scalar"]),
+            "supported_candidate_count": sum(
+                1 for row in candidates if row.get("sector_residual_pass_v1")
+            ),
+        },
         "candidates": deepcopy(candidates),
         "rejected_candidates": deepcopy(rejected[:50]),
         "new_pending_entries": deepcopy(new_pending),
@@ -528,6 +554,10 @@ def build_fundamental_growth_rs_candidates(
         and SECTOR_MAP.get(ticker, "Unknown") not in {"Unknown", "ETF", "Commodities"}
     ]
     fundamentals = CompanyfactsFundamentalIndex(companyfacts_rows, config=cfg)
+    sector_residuals = SectorResidualIndex(
+        rows_by_ticker,
+        broad_market_sector_map.load_cache(),
+    )
     rs_by_ticker = _rs_context_by_ticker(
         rows_by_ticker,
         tickers=tickers,
@@ -548,6 +578,7 @@ def build_fundamental_growth_rs_candidates(
             as_of=as_of_date,
             fundamentals=fundamentals,
             rs_by_ticker=rs_by_ticker,
+            sector_residuals=sector_residuals,
             governor=governor,
             config=cfg,
         )
@@ -665,6 +696,151 @@ def build_fundamental_growth_rs_replacement_value_report(
         "trade_enabled": False,
         "alters_orders": False,
     }
+
+
+class SectorResidualIndex:
+    def __init__(
+        self,
+        rows_by_ticker: dict[str, list[dict[str, Any]]],
+        sector_cache: dict[str, Any],
+    ) -> None:
+        self.rows_by_ticker = rows_by_ticker
+        self.sector_cache = sector_cache
+        self.row_index = {
+            ticker: {
+                str(row.get("date") or "")[:10]: idx
+                for idx, row in enumerate(rows or [])
+                if row.get("date")
+            }
+            for ticker, rows in rows_by_ticker.items()
+        }
+        self.lookup_cache: dict[str, dict[str, Any]] = {}
+        self.ret20_cache: dict[tuple[str, str], float | None] = {}
+        self.sector_returns_cache: dict[tuple[str, str], list[float]] = {}
+
+    def lookup(self, ticker: str) -> dict[str, Any]:
+        norm = str(ticker or "").upper()
+        if norm not in self.lookup_cache:
+            self.lookup_cache[norm] = broad_market_sector_map.lookup_sector(
+                norm,
+                self.sector_cache,
+            )
+        return self.lookup_cache[norm]
+
+    def ret20(self, ticker: str, as_of: str) -> float | None:
+        norm = str(ticker or "").upper()
+        key = (norm, _date10(as_of))
+        if key in self.ret20_cache:
+            return self.ret20_cache[key]
+        rows = self.rows_by_ticker.get(norm) or []
+        idx = (self.row_index.get(norm) or {}).get(key[1])
+        if idx is None or idx < 20:
+            self.ret20_cache[key] = None
+            return None
+        current = _positive_float(rows[idx].get("close"))
+        prior = _positive_float(rows[idx - 20].get("close"))
+        if current is None or prior is None:
+            self.ret20_cache[key] = None
+            return None
+        ret = (current / prior) - 1.0
+        self.ret20_cache[key] = ret
+        return ret
+
+    def sector_returns(self, sector: str, as_of: str) -> list[float]:
+        key = (str(sector or ""), _date10(as_of))
+        if key in self.sector_returns_cache:
+            return self.sector_returns_cache[key]
+        values: list[float] = []
+        for ticker in self.rows_by_ticker:
+            lookup = self.lookup(ticker)
+            if lookup.get("status") != broad_market_sector_map.OK_STATUS:
+                continue
+            if lookup.get("sector") != key[0]:
+                continue
+            ret = self.ret20(ticker, key[1])
+            if ret is not None and math.isfinite(ret):
+                values.append(float(ret))
+        self.sector_returns_cache[key] = values
+        return values
+
+    def context(
+        self,
+        ticker: str,
+        as_of: str,
+        config: dict[str, Any],
+    ) -> dict[str, Any]:
+        lookup = self.lookup(ticker)
+        sector = lookup.get("sector")
+        stock_ret20 = self.ret20(ticker, as_of)
+        base = {
+            "sector_residual_rule_version": SECTOR_RESIDUAL_RULE_VERSION,
+            "sector_residual_known_at": (
+                "signal-day close plus persisted public sector cache; all "
+                "returns use Date <= signal_date"
+            ),
+            "sector_residual_trade_enabled": False,
+            "sector_residual_alters_orders": False,
+            "sector_residual_min_ret20_excess_sector": float(
+                config["sector_residual_min_ret20_excess_sector"]
+            ),
+            "sector_residual_min_sector_members": int(
+                config["sector_residual_min_sector_members"]
+            ),
+            "sector_lookup_rule_version": lookup.get("rule_version"),
+            "sector_lookup_source": lookup.get("source"),
+            "sector_lookup_status": lookup.get("status"),
+            "sector": sector,
+            "industry": lookup.get("industry"),
+        }
+        if lookup.get("status") != broad_market_sector_map.OK_STATUS or not sector:
+            return {
+                **base,
+                "sector_residual_status": "missing_sector",
+                "sector_residual_pass_v1": False,
+                "sector_residual_notional_scalar": 1.0,
+                "stock_ret20": _round(stock_ret20, 6),
+                "sector_median_ret20": None,
+                "ret20_excess_sector": None,
+                "sector_member_return_count": 0,
+            }
+        if stock_ret20 is None:
+            return {
+                **base,
+                "sector_residual_status": "missing_stock_ret20",
+                "sector_residual_pass_v1": False,
+                "sector_residual_notional_scalar": 1.0,
+                "stock_ret20": None,
+                "sector_median_ret20": None,
+                "ret20_excess_sector": None,
+                "sector_member_return_count": 0,
+            }
+        sector_values = self.sector_returns(str(sector), as_of)
+        if len(sector_values) < int(config["sector_residual_min_sector_members"]):
+            return {
+                **base,
+                "sector_residual_status": "insufficient_sector_members",
+                "sector_residual_pass_v1": False,
+                "sector_residual_notional_scalar": 1.0,
+                "stock_ret20": _round(stock_ret20, 6),
+                "sector_median_ret20": None,
+                "ret20_excess_sector": None,
+                "sector_member_return_count": len(sector_values),
+            }
+        sector_median_ret20 = median(sector_values)
+        excess = float(stock_ret20) - float(sector_median_ret20)
+        passed = excess >= float(config["sector_residual_min_ret20_excess_sector"])
+        return {
+            **base,
+            "sector_residual_status": "ok" if passed else "ret20_excess_sector_below_floor",
+            "sector_residual_pass_v1": passed,
+            "sector_residual_notional_scalar": (
+                float(config["sector_residual_notional_scalar"]) if passed else 1.0
+            ),
+            "stock_ret20": _round(stock_ret20, 6),
+            "sector_median_ret20": _round(sector_median_ret20, 6),
+            "ret20_excess_sector": _round(excess, 6),
+            "sector_member_return_count": len(sector_values),
+        }
 
 
 class CompanyfactsFundamentalIndex:
@@ -1073,6 +1249,7 @@ def _candidate_for_ticker(
     as_of: str,
     fundamentals: CompanyfactsFundamentalIndex,
     rs_by_ticker: dict[str, dict[str, Any]],
+    sector_residuals: SectorResidualIndex,
     governor: dict[str, Any],
     config: dict[str, Any],
 ) -> dict[str, Any] | None:
@@ -1203,6 +1380,12 @@ def _candidate_for_ticker(
     cost_liquidity_scalar = (
         float(config["cost_liquidity_notional_scalar"]) if cost_liquidity_pass else 1.0
     )
+    sector_residual = sector_residuals.context(ticker, as_of, config)
+    sector_residual_scalar = (
+        float(config["sector_residual_notional_scalar"])
+        if sector_residual.get("sector_residual_pass_v1") is True
+        else 1.0
+    )
     notional_scalar = (
         ticker_profit_scalar
         * global_drawdown_scalar
@@ -1211,13 +1394,14 @@ def _candidate_for_ticker(
         * filing_timeliness_scalar
         * low_liability_scalar
         * cost_liquidity_scalar
+        * sector_residual_scalar
     )
     intended_notional = float(config["paper_notional_usd"]) * notional_scalar
     return {
         "date": as_of,
         "signal_date": as_of,
         "ticker": ticker,
-        "sector": SECTOR_MAP.get(ticker, "Unknown"),
+        "sector": sector_residual.get("sector") or SECTOR_MAP.get(ticker, "Unknown"),
         "strategy": "fundamental_growth_rs_candidate_pool",
         "close": _round(close, 4),
         "avg_dollar_volume_20": _round(avg_dollar_volume, 2),
@@ -1232,6 +1416,7 @@ def _candidate_for_ticker(
         **operating,
         **gross_margin,
         **balance_sheet,
+        **sector_residual,
         "source_rule_version": SOURCE_RULE_VERSION,
         "rule_version": RULE_VERSION,
         "governor_rule_version": GOVERNOR_RULE_VERSION,
@@ -1299,6 +1484,19 @@ def _candidate_for_ticker(
         "signal_day_range_pct": _round(signal_day_range_pct, 6),
         "cost_liquidity_pass_v1": cost_liquidity_pass,
         "cost_liquidity_notional_scalar": cost_liquidity_scalar,
+        "companyfacts_sector_residual_rule_version": SECTOR_RESIDUAL_RULE_VERSION,
+        "companyfacts_sector_residual_known_at": sector_residual.get("sector_residual_known_at"),
+        "companyfacts_sector_residual_trade_enabled": False,
+        "companyfacts_sector_residual_alters_orders": False,
+        "companyfacts_sector_residual_status": sector_residual.get("sector_residual_status"),
+        "companyfacts_sector_residual_pass_v1": sector_residual.get("sector_residual_pass_v1"),
+        "companyfacts_sector_residual_support_scalar": sector_residual_scalar,
+        "companyfacts_sector_residual_min_ret20_excess_sector": float(
+            config["sector_residual_min_ret20_excess_sector"]
+        ),
+        "companyfacts_sector_residual_min_sector_members": int(
+            config["sector_residual_min_sector_members"]
+        ),
         "closed_ledger_notional_scalar": _round(notional_scalar, 6),
         "intended_notional": _round(intended_notional, 2),
         "same_ticker_core_overlap": False,

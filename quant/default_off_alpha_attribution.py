@@ -390,6 +390,12 @@ def build_default_off_alpha_attribution_report(
                 "low_liability_supported": (
                     ((fundamental_growth_rs_paper_sleeve or {}).get("low_liability") or {}).get("supported_candidate_count")
                 ),
+                "cost_liquidity_supported": (
+                    ((fundamental_growth_rs_paper_sleeve or {}).get("cost_liquidity") or {}).get("supported_candidate_count")
+                ),
+                "sector_residual_supported": (
+                    ((fundamental_growth_rs_paper_sleeve or {}).get("sector_residual") or {}).get("supported_candidate_count")
+                ),
             },
         ),
         _surface_summary(

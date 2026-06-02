@@ -13,6 +13,7 @@ from quant.fundamental_growth_rs_paper_sleeve import (
     LOW_VOLUME_PARTICIPATION_RULE_VERSION,
     REPLACEMENT_VALUE_RULE_VERSION,
     RULE_VERSION,
+    SECTOR_RESIDUAL_RULE_VERSION,
     SOURCE_RULE_VERSION,
     build_fundamental_growth_rs_paper_sleeve_snapshot,
     build_fundamental_growth_rs_replacement_value_report,
@@ -434,6 +435,51 @@ def test_cost_liquidity_requires_contained_signal_day_range_without_orders():
     assert snapshot["production_impact"]["production_orders_changed"] is False
 
 
+def test_sector_residual_support_scales_paper_notional_without_orders():
+    ohlcv = _ohlcv()
+    for row in ohlcv["AMD"]:
+        row["volume"] = 2_000_000.0
+    ohlcv.update(
+        {
+            "MSFT": _rows(base=200.0, step=0.02, volume=2_000_000.0),
+            "NVDA": _rows(base=120.0, step=0.02, volume=2_000_000.0),
+            "ORCL": _rows(base=90.0, step=0.02, volume=2_000_000.0),
+            "ADBE": _rows(base=300.0, step=0.02, volume=2_000_000.0),
+            "AVGO": _rows(base=400.0, step=0.02, volume=2_000_000.0),
+        }
+    )
+    as_of = ohlcv["SPY"][125]["date"]
+
+    snapshot = build_fundamental_growth_rs_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker=ohlcv,
+        companyfacts_rows=_facts(),
+        candidate_universe=["AMD", "AAPL"],
+        state=empty_fundamental_growth_rs_paper_state(),
+        persist=False,
+    )
+
+    candidate = snapshot["candidates"][0]
+    assert candidate["sector_residual_rule_version"] == SECTOR_RESIDUAL_RULE_VERSION
+    assert candidate["companyfacts_sector_residual_rule_version"] == SECTOR_RESIDUAL_RULE_VERSION
+    assert candidate["companyfacts_sector_residual_trade_enabled"] is False
+    assert candidate["companyfacts_sector_residual_alters_orders"] is False
+    assert candidate["sector_residual_status"] == "ok"
+    assert candidate["sector_residual_pass_v1"] is True
+    assert candidate["companyfacts_sector_residual_pass_v1"] is True
+    assert candidate["ret20_excess_sector"] >= 0.03
+    assert candidate["sector_member_return_count"] >= 5
+    assert candidate["companyfacts_sector_residual_support_scalar"] == 1.05
+    assert candidate["cost_liquidity_pass_v1"] is True
+    assert candidate["filing_recency_pass_v1"] is True
+    assert candidate["filing_timeliness_pass_v1"] is True
+    assert candidate["closed_ledger_notional_scalar"] == 1.215506
+    assert candidate["intended_notional"] == 12_155.06
+    assert snapshot["sector_residual"]["supported_candidate_count"] == 1
+    assert snapshot["sector_residual"]["trade_enabled"] is False
+    assert snapshot["production_impact"]["production_orders_changed"] is False
+
+
 def test_closed_ledger_governor_scales_same_ticker_profit_and_global_drawdown():
     ohlcv = _ohlcv()
     as_of = ohlcv["SPY"][125]["date"]
@@ -623,6 +669,8 @@ def test_default_off_alpha_report_surfaces_fundamental_growth_rs_sleeve():
         "gross_margin_quality": {"candidate_count": 1},
         "filing_timeliness": {"supported_candidate_count": 1},
         "low_liability": {"supported_candidate_count": 1},
+        "cost_liquidity": {"supported_candidate_count": 1},
+        "sector_residual": {"supported_candidate_count": 1},
     }
 
     report = build_default_off_alpha_attribution_report(
@@ -637,4 +685,6 @@ def test_default_off_alpha_report_surfaces_fundamental_growth_rs_sleeve():
     assert surfaces["fundamental_growth_rs"]["extra_metrics"]["gross_margin_quality_candidates"] == 1
     assert surfaces["fundamental_growth_rs"]["extra_metrics"]["filing_timeliness_supported"] == 1
     assert surfaces["fundamental_growth_rs"]["extra_metrics"]["low_liability_supported"] == 1
+    assert surfaces["fundamental_growth_rs"]["extra_metrics"]["cost_liquidity_supported"] == 1
+    assert surfaces["fundamental_growth_rs"]["extra_metrics"]["sector_residual_supported"] == 1
     assert "min_closed_trades" in surfaces["fundamental_growth_rs"]["blockers"]

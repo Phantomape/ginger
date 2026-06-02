@@ -176,6 +176,23 @@ PnL HHI `0.252329`. The retained implementation is shared default-off
 paper-only metadata in `quant/fundamental_growth_rs_paper_sleeve.py`; no
 live/default orders, core ranking, sizing, exits, LLM/news, or watchlists
 changed.
+
+`exp-20260602-010` accepted the positive `exp-20260602-009` sector-residual
+support lead as a shared default-off adapter. Already-selected
+`FUNDAMENTAL_GROWTH_RS_PAPER` candidates now receive `1.05x` paper notional
+only when their signal-date close-to-close 20-day return exceeds the public
+sector median by at least `3pp` and the sector has at least `5` same-date
+return observations from `data/reference/broad_market_sector_map.json`.
+Three-window EV improved `15.7099 -> 16.1444` (`+0.4345`) and PnL improved
+`$353,364.63 -> $359,253.44` (`+$5,888.81`), with all three windows
+improving, max drawdown improving by `0.04pp`, minimum survival `79.25%`,
+`245` adjusted paper rows, max single positive share `0.4152`, and positive
+PnL HHI `0.23963`. The retained implementation is shared default-off
+paper-only metadata in `quant/fundamental_growth_rs_paper_sleeve.py`; no
+live/default orders, core ranking, sizing, exits, LLM/news, or watchlists
+changed. Do not retry nearby sector-residual thresholds/scalars on these
+frozen windows without new forward replacement-value rows or a materially new
+sector/peer field.
 `exp-20260601-019` free-cash-flow yield was also positive (`EV +2.7877`,
 PnL `+$50,918.82`) but failed concentration and baseline-retention checks.
 `exp-20260601-004` earnings-yield value similarly failed concentration despite

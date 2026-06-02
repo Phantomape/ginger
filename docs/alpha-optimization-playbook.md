@@ -45,9 +45,15 @@ Recent repository evidence supports this priority:
   Companyfacts growth + positive operating-profit quality + OHLCV RS produced a
   large three-window paper improvement, then became a shared default-off adapter.
   Accepted low-volume, filing-recency, low-liability balance-sheet,
-  filing-timeliness, and cost-liquidity support improved the shared default-off
-  paper adapter, but the sleeve is now mature enough that nearby frozen-sample
-  scalar retunes should stop; collect forward replacement-value rows first.
+  filing-timeliness, cost-liquidity, and sector-residual strength support
+  improved the shared default-off paper adapter. The latest accepted increment
+  is `exp-20260602-010`: already-selected candidates get a `1.05x` default-off
+  paper scalar only when their signal-date 20-day return beats the persisted
+  public-sector median by at least `3pp` with at least `5` sector-member return
+  observations. The sleeve is now mature enough that nearby frozen-sample
+  Companyfacts scalar, threshold, and sector-residual retunes should stop;
+  collect forward replacement-value rows or find a materially new free-data
+  field first.
 - `VOLUME_BREADTH_BREAKOUT_PAPER` and QQQ-confirmed VCP show that free OHLCV
   market-confirmation fields can produce useful paper sleeves. Their next step
   is forward maturation, not another breadth/QQQ/top-N sweep. The latest

@@ -2377,12 +2377,16 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         filing_recency = fundamental_growth_rs_paper_sleeve.get("filing_recency") or {}
         filing_timeliness = fundamental_growth_rs_paper_sleeve.get("filing_timeliness") or {}
         low_liability = fundamental_growth_rs_paper_sleeve.get("low_liability") or {}
+        cost_liquidity = fundamental_growth_rs_paper_sleeve.get("cost_liquidity") or {}
+        sector_residual = fundamental_growth_rs_paper_sleeve.get("sector_residual") or {}
         lines.append(
             "  Paper supports: "
             f"low-volume={low_volume.get('supported_candidate_count', 0)}  |  "
             f"filing-recency={filing_recency.get('supported_candidate_count', 0)}  |  "
             f"filing-timeliness={filing_timeliness.get('supported_candidate_count', 0)}  |  "
-            f"low-liability={low_liability.get('supported_candidate_count', 0)}"
+            f"low-liability={low_liability.get('supported_candidate_count', 0)}  |  "
+            f"cost-liquidity={cost_liquidity.get('supported_candidate_count', 0)}  |  "
+            f"sector-residual={sector_residual.get('supported_candidate_count', 0)}"
         )
         gate = fundamental_growth_rs_paper_sleeve.get("forward_paper_gate") or {}
         if gate:
@@ -2407,6 +2411,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"RS={candidate.get('rs_proxy_score_v1')} "
                 f"gross_margin={candidate.get('gross_margin')} "
                 f"liab/assets={candidate.get('liabilities_assets_ratio')} "
+                f"sector_residual={candidate.get('companyfacts_sector_residual_pass_v1')} "
                 f"notional={notional_text} (paper only)"
             )
 

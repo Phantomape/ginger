@@ -60,6 +60,15 @@ proxy, not evidence that production observed the classification point-in-time;
 do not use it for live ranking, sizing, entries, exits, or orders unless a
 separate Gate 1-4 experiment promotes that behavior.
 
+Accepted exception: `exp-20260602-010` promotes one bounded use of this surface
+inside the shared default-off `FUNDAMENTAL_GROWTH_RS_PAPER` adapter only.
+Already-selected Companyfacts paper candidates may receive a `1.05x` paper
+notional scalar when signal-date close-to-close 20-day return beats the
+persisted public-sector median by at least `3pp` and the sector has at least
+`5` same-date return observations. This remains paper-only metadata with
+`trade_enabled=false`; it must not alter live entries, exits, ranking, sizing,
+orders, LLM/news decisions, or watchlists without another Gate 1-4 promotion.
+
 ### `quant/space_catalyst_sleeve.py`
 
 Purpose: maintain the default-off Space catalyst observation surface, including
