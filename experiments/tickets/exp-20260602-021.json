@@ -1,0 +1,78 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260602_021_sector_peer_moderate_shock_ticker_cooldown.py",
+    "data/experiments/exp-20260602-021/exp_20260602_021_sector_peer_moderate_shock_ticker_cooldown.json",
+    "experiments/cards/exp-20260602-021.md",
+    "experiments/manifests/exp-20260602-021.json",
+    "experiments/tickets/exp-20260602-021.json",
+    "experiments/logs/exp-20260602-021.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_20260531.json",
+  "card_file": "experiments/cards/exp-20260602-021.md",
+  "change_type": "default_off_paper_candidate_pool_governance",
+  "changed_variable": "sector_peer_moderate_shock_same_ticker_cooldown_days",
+  "claimed_at": "2026-06-02T15:09:41+00:00",
+  "completed_at": "2026-06-02T15:14:47+00:00",
+  "created_at": "2026-06-02T15:09:30+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260602-021",
+  "experiment_uid": "expuid-e3dc73b52bdf4ad4",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260602-021",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-02T15:09:30+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sector_peer_moderate_shock_ticker_cooldown"
+  },
+  "hypothesis": "Sector peer moderate-shock paper candidates may keep the exp-20260602-020 all-window EV lift while reducing concentration if same-ticker admissions observe a fixed cooldown.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "sector_peer_moderate_shock_same_ticker_cooldown_days"
+  ],
+  "mechanism_family": "default_off_paper_candidate_pool_governance",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260602-020"
+  ],
+  "new_evidence_type": "failure_mode_targeted_deconcentration",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "exp-20260602-020 improved EV/PnL in all three windows but failed only concentration; cooldown directly tests whether the relation survives without repeated ticker exposure.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "edge_was_app_concentration",
+      "window_regression",
+      "target_sample_too_small",
+      "cooldown_cuts_winners"
+    ],
+    "recorded_at": "2026-06-02T15:09:05+00:00",
+    "success_probability": 0.24
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "artifact": "data/experiments/exp-20260602-021/exp_20260602_021_sector_peer_moderate_shock_ticker_cooldown.json",
+    "decision": "rejected_sector_peer_moderate_shock_ticker_cooldown",
+    "expected_value_score_delta": 0.3499,
+    "failed_reasons": [
+      "window_ev_regression",
+      "window_pnl_regression",
+      "target_concentration_failed"
+    ],
+    "gate4_passed": false,
+    "log": "experiments/logs/exp-20260602-021.json",
+    "summary": "The cooldown did not produce a promotable three-window candidate-pool improvement. Do not retry nearby sector-peer moderate-shock cooldown/threshold variants on these frozen windows without forward replacement rows.",
+    "total_pnl_delta": 11848.08
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260602-021.json",
+  "single_causal_variable": "sector_peer_moderate_shock_same_ticker_cooldown_days",
+  "status": "rejected_sector_peer_moderate_shock_ticker_cooldown",
+  "ticket_file": "experiments/tickets/exp-20260602-021.json",
+  "trial_family": "sector_peer_moderate_shock_candidate_pool",
+  "trial_variant_id": "exp-20260602-021"
+}
