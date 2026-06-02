@@ -280,7 +280,137 @@ def build_candidate_forward_oracle(backtest_result, snapshot, horizon_days=20):
     }
 
 
-def build_no_trade_attribution_oracle(backtest_result, snapshot, horizon_days=20):
+def _build_skip_lookup(entry_skip_oracle_data):
+    """Build a (signal_date, ticker) → list[skip_event] lookup from entry_skip_oracle JSON.
+
+    entry_skip_oracle_data is the parsed content of an entry_skip_oracle_*.json
+    file produced by quant/entry_skip_oracle.py.  Each skip event in
+    ``entry_skip_oracle.top_skipped_opportunities`` (and sub-lists) carries:
+      - date        : signal date (YYYY-MM-DD)
+      - ticker      : ticker symbol
+      - decision    : gap_cancel | no_shares | slot_sliced | stop_breach_cancel
+      - details     : dict with mechanism-specific context
+
+    Returns dict[(signal_date, ticker)] = list of skip event dicts.
+    """
+    lookup: dict[tuple[str, str], list[dict]] = {}
+    if not entry_skip_oracle_data:
+        return lookup
+
+    oracle = entry_skip_oracle_data.get("entry_skip_oracle") or {}
+
+    # Collect from top_skipped_opportunities (covers all decision types)
+    top = oracle.get("top_skipped_opportunities") or []
+    for event in top:
+        date = event.get("date")
+        ticker = (event.get("ticker") or "").upper()
+        if date and ticker:
+            key = (date, ticker)
+            lookup.setdefault(key, []).append(event)
+
+    # Also collect from gap_cancel_audit.rows (may include events not in top 10)
+    for event in (oracle.get("gap_cancel_audit") or {}).get("rows") or []:
+        date = event.get("date")
+        ticker = (event.get("ticker") or "").upper()
+        if date and ticker:
+            key = (date, ticker)
+            existing = [e.get("decision") for e in lookup.get(key, [])]
+            if event.get("decision") not in existing:
+                lookup.setdefault(key, []).append(event)
+
+    # Also collect from no_shares_multiplier_audit sub-lists
+    for _bucket, bucket_data in (oracle.get("no_shares_multiplier_audit") or {}).items():
+        for event in (bucket_data or {}).get("rows") or []:
+            date = event.get("date")
+            ticker = (event.get("ticker") or "").upper()
+            if date and ticker:
+                key = (date, ticker)
+                existing = [e.get("decision") for e in lookup.get(key, [])]
+                if event.get("decision") not in existing:
+                    lookup.setdefault(key, []).append(event)
+
+    return lookup
+
+
+def _skip_reason_from_events(skip_events):
+    """Summarise a list of skip events for one (signal_date, ticker) into a
+    compact attribution string and a list of detail dicts.
+
+    Returns (attribution: str, skip_details: list[dict]).
+    """
+    if not skip_events:
+        return None, []
+
+    decisions = [e.get("decision") or "unknown" for e in skip_events]
+    unique_decisions = sorted(set(decisions))
+    attribution = "|".join(unique_decisions)
+
+    details = []
+    for event in skip_events:
+        detail = {
+            "decision": event.get("decision"),
+            "candidate_rank": event.get("candidate_rank"),
+            "strategy": event.get("strategy"),
+        }
+        raw = event.get("details") or {}
+        if event.get("decision") == "gap_cancel":
+            # gap_pct is stored as a top-level field on the skip event;
+            # fall back to recomputing from fill_price / signal_entry if absent.
+            gap_pct = event.get("gap_pct") or raw.get("gap_pct") or (
+                round(
+                    raw.get("fill_price", 0) / raw.get("signal_entry", 1) - 1, 4
+                ) if raw.get("fill_price") and raw.get("signal_entry") else None
+            )
+            detail["gap_pct"] = gap_pct
+            detail["signal_entry"] = raw.get("signal_entry")
+            detail["cancel_gap_pct_threshold"] = raw.get("cancel_gap_pct")
+        elif event.get("decision") == "no_shares":
+            detail["zero_multiplier"] = (
+                [k for k, v in (raw.get("risk_multipliers") or {}).items() if v == 0.0]
+                or None
+            )
+            detail["shares_to_buy"] = raw.get("shares_to_buy")
+        elif event.get("decision") == "stop_breach_cancel":
+            detail["fill_price"] = raw.get("fill_price")
+            detail["stop_price"] = raw.get("stop_price")
+        elif event.get("decision") == "slot_sliced":
+            detail["signal_count"] = raw.get("signal_count")
+        details.append(detail)
+
+    return attribution, details
+
+
+def build_no_trade_attribution_oracle(
+    backtest_result,
+    snapshot,
+    horizon_days=20,
+    entry_skip_oracle_data=None,
+):
+    """Build the no-trade attribution table.
+
+    Parameters
+    ----------
+    backtest_result:
+        Parsed backtest JSON.
+    snapshot:
+        Parsed OHLCV snapshot JSON.
+    horizon_days:
+        Lookahead window for oracle forward-return estimation.
+    entry_skip_oracle_data:
+        Optional parsed entry_skip_oracle JSON (output of
+        ``quant/entry_skip_oracle.py``).  When provided, rows that would
+        otherwise be labelled ``needs_entry_skip_logging`` are enriched with
+        the actual skip decision (``gap_cancel``, ``no_shares``,
+        ``stop_breach_cancel``, ``slot_sliced``) and mechanism details, and
+        the label ``needs_entry_skip_logging`` is replaced by the real reason.
+        Rows with no matching skip event keep the label to indicate genuine
+        gaps that still require investigation.
+    """
+    skip_lookup = _build_skip_lookup(entry_skip_oracle_data)
+    skip_oracle_source = None
+    if entry_skip_oracle_data:
+        skip_oracle_source = entry_skip_oracle_data.get("source_backtest") or "provided"
+
     candidate_rows, missing = _collect_candidate_forward_rows(
         backtest_result,
         snapshot,
@@ -294,6 +424,7 @@ def build_no_trade_attribution_oracle(backtest_result, snapshot, horizon_days=20
             "horizon_days": horizon_days,
             "candidate_days": 0,
             "missing_candidate_count": len(missing),
+            "entry_skip_oracle_source": skip_oracle_source,
             "missing_candidates": missing,
         }
 
@@ -322,14 +453,29 @@ def build_no_trade_attribution_oracle(backtest_result, snapshot, horizon_days=20
 
         if already_holding:
             reason = "already_holding_candidate"
+            skip_details = []
         elif slots_available < len(candidates):
             reason = "slot_competition_possible"
+            skip_details = []
         else:
-            reason = "needs_entry_skip_logging"
+            # Try to resolve from entry_skip_oracle before falling back to
+            # needs_entry_skip_logging.
+            matched_events = []
+            for candidate in candidates:
+                ticker = (candidate.get("ticker") or "").upper()
+                key = (signal_date, ticker)
+                matched_events.extend(skip_lookup.get(key) or [])
+
+            if matched_events:
+                reason, skip_details = _skip_reason_from_events(matched_events)
+            else:
+                reason = "needs_entry_skip_logging"
+                skip_details = []
 
         reason_counts[reason] = reason_counts.get(reason, 0) + 1
         top_candidate = max(candidates, key=lambda row: row["max_forward_return_pct"])
-        rows.append({
+
+        entry = {
             "signal_date": signal_date,
             "candidate_count": len(candidates),
             "top_candidate": top_candidate["ticker"],
@@ -338,17 +484,45 @@ def build_no_trade_attribution_oracle(backtest_result, snapshot, horizon_days=20
             "slots_available_on_signal_date": slots_available,
             "already_holding_candidate_tickers": already_holding,
             "attribution": reason,
-        })
+        }
+        if skip_details:
+            entry["skip_details"] = skip_details
+        rows.append(entry)
 
     missed_returns = [row["top_candidate_return_pct"] for row in rows]
+
+    unresolved = sum(
+        1 for row in rows if row["attribution"] == "needs_entry_skip_logging"
+    )
+    resolved = sum(
+        1 for row in rows
+        if row["attribution"] not in ("needs_entry_skip_logging", "already_holding_candidate", "slot_competition_possible")
+    )
+
+    lookahead_warning = (
+        "This is a conservative reconstruction from saved candidates and closed trades. "
+        "Rows marked needs_entry_skip_logging require explicit backtester skip-reason logs."
+    )
+    if skip_oracle_source:
+        lookahead_warning += (
+            f" entry_skip_oracle_source was joined: {resolved} row(s) resolved, "
+            f"{unresolved} row(s) still unresolved."
+        )
+
     return {
         "oracle_type": "candidate_no_trade_attribution",
         "is_tradable": False,
-        "lookahead_warning": (
-            "This is a conservative reconstruction from saved candidates and closed trades. "
-            "Rows marked needs_entry_skip_logging require explicit backtester skip-reason logs."
-        ),
+        "lookahead_warning": lookahead_warning,
         "horizon_days": horizon_days,
+        "entry_skip_oracle_source": skip_oracle_source,
+        "skip_resolution": {
+            "resolved_count": resolved,
+            "unresolved_count": unresolved,
+            "note": (
+                "resolved = attribution came from entry_skip_oracle; "
+                "unresolved = still needs_entry_skip_logging"
+            ),
+        } if skip_oracle_source else None,
         "candidate_days": len(by_signal_date),
         "no_actual_selection_days": len(rows),
         "missing_candidate_count": len(missing),
@@ -950,17 +1124,55 @@ def build_perfect_exit_oracle(backtest_result, snapshot):
     }
 
 
-def build_oracle_diagnostics(backtest_path, snapshot_path=None, candidate_horizon_days=20):
+def build_oracle_diagnostics(
+    backtest_path,
+    snapshot_path=None,
+    candidate_horizon_days=20,
+    entry_skip_oracle_path=None,
+):
+    """Build all oracle diagnostic sections for a backtest result.
+
+    Parameters
+    ----------
+    backtest_path:
+        Path to the backtest result JSON.
+    snapshot_path:
+        Path to the OHLCV snapshot JSON.  Inferred from known_biases if omitted.
+    candidate_horizon_days:
+        Forward lookahead window in trading days for candidate oracle sections.
+    entry_skip_oracle_path:
+        Optional path to an ``entry_skip_oracle_*.json`` file produced by
+        ``quant/entry_skip_oracle.py``.  When provided, the
+        ``no_trade_attribution`` section joins skip reasons from that file so
+        that rows previously labelled ``needs_entry_skip_logging`` show the
+        actual backtester decision (``gap_cancel``, ``no_shares``,
+        ``stop_breach_cancel``, ``slot_sliced``) instead.
+
+        Typical usage::
+
+            python quant/oracle_diagnostics.py \\
+                --backtest data/backtests/backtest_results_20260531.json \\
+                --entry-skip-oracle data/diagnostics/entry_skip_oracle_20260426.json \\
+                --out data/diagnostics/oracle_diagnostics_20260531.json
+    """
     backtest = _load_json(backtest_path)
     snapshot_path = snapshot_path or infer_snapshot_path(backtest)
     if not snapshot_path:
         raise ValueError("No OHLCV snapshot path found; pass --snapshot explicitly.")
     snapshot = _load_json(snapshot_path)
 
+    entry_skip_oracle_data = None
+    if entry_skip_oracle_path:
+        entry_skip_oracle_data = _load_json(entry_skip_oracle_path)
+
     return {
         "diagnostic_only": True,
         "source_backtest": os.path.abspath(backtest_path),
         "source_snapshot": os.path.abspath(snapshot_path),
+        "source_entry_skip_oracle": (
+            os.path.abspath(entry_skip_oracle_path)
+            if entry_skip_oracle_path else None
+        ),
         "period": backtest.get("period"),
         "acceptance_boundary": (
             "Oracle diagnostics use future prices. They may generate hypotheses "
@@ -982,6 +1194,7 @@ def build_oracle_diagnostics(backtest_path, snapshot_path=None, candidate_horizo
                 backtest,
                 snapshot,
                 horizon_days=candidate_horizon_days,
+                entry_skip_oracle_data=entry_skip_oracle_data,
             ),
             "entry_state": build_entry_state_oracle(
                 backtest,
@@ -1002,6 +1215,15 @@ def main():
         default=20,
         help="Trading-day horizon for candidate forward upper-bound diagnostics.",
     )
+    parser.add_argument(
+        "--entry-skip-oracle",
+        help=(
+            "Path to an entry_skip_oracle_*.json file (output of "
+            "quant/entry_skip_oracle.py). When provided, no_trade_attribution "
+            "rows are enriched with the actual backtester skip reason instead "
+            "of being labelled needs_entry_skip_logging."
+        ),
+    )
     parser.add_argument("--out", help="Optional output JSON path.")
     args = parser.parse_args()
 
@@ -1009,6 +1231,7 @@ def main():
         args.backtest,
         args.snapshot,
         candidate_horizon_days=args.candidate_horizon_days,
+        entry_skip_oracle_path=args.entry_skip_oracle,
     )
     text = json.dumps(result, indent=2, ensure_ascii=False)
     if args.out:
