@@ -1,0 +1,124 @@
+{
+  "acceptance_rule": "docs/backtesting.md canonical three-window replay; aggregate EV/PnL positive; all windows EV/PnL improve; drawdown drift <=0.5pp; survival >=5%; >=20 target trades in all three windows; concentration guards pass.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260602_009_companyfacts_sector_residual_support.py",
+    "data/experiments/exp-20260602-009",
+    "experiments/logs/exp-20260602-009.json",
+    "experiments/artifacts/exp-20260602-009_companyfacts_sector_residual_support.md",
+    "experiments/cards/exp-20260602-009.md",
+    "experiments/tickets/exp-20260602-009.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260601-030/exp_20260601_030_companyfacts_cost_liquidity_support.json",
+  "card_file": "experiments/cards/exp-20260602-009.md",
+  "change_type": "default_off_paper_allocation",
+  "changed_variable": "companyfacts_sector_residual_strength_support_v1",
+  "claimed_at": "2026-06-02T05:14:27+00:00",
+  "completed_at": "2026-06-02T05:22:56+00:00",
+  "created_at": "2026-06-02T05:14:19+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260602-009",
+  "experiment_uid": "expuid-b133cd955e434df6",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260602-009",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-02T05:14:19+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "companyfacts_sector_residual_support"
+  },
+  "hypothesis": "Accepted Fundamental Growth + RS paper rows with positive 20-day stock-vs-sector residual strength may have better allocation quality than sector-lagging rows, using only public sector classification and signal-day OHLCV.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "live/default orders",
+    "core signal generation",
+    "core ranking",
+    "core sizing",
+    "exits",
+    "LLM/news decisions",
+    "Companyfacts thresholds",
+    "cost-liquidity thresholds"
+  ],
+  "mechanism_family": "companyfacts_sector_residual_strength_support",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/fundamental_growth_rs_paper_sleeve.py",
+    "quant/run.py",
+    "quant/signal_engine.py",
+    "quant/risk_engine.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260525-916",
+    "exp-20260525-038",
+    "exp-20260601-030",
+    "exp-20260602-001"
+  ],
+  "new_evidence_type": "production_visible_public_sector_map_plus_signal_day_ohlcv_residual_strength",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "Sector-residual support is narrower than the rejected standalone sector-leadership source and uses a production-visible cache, but prior sector attempts have window-regression risk.",
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "window_ev_regression",
+      "window_pnl_regression",
+      "target_concentration_failed",
+      "drawdown_drift_too_high"
+    ],
+    "recorded_at": "2026-06-02T05:13:50+00:00",
+    "success_probability": 0.22
+  },
+  "prior_trial_count": 3,
+  "result": {
+    "decision": "observed_only",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260602-009/companyfacts_sector_residual_support_before_aggregate.json",
+    "after_result_file": "data/experiments/exp-20260602-009/companyfacts_sector_residual_support_after_aggregate.json",
+    "delta_metrics": {
+      "expected_value_score": 0.4345,
+      "max_drawdown_pct": -0.0004,
+      "total_pnl": 5888.81
+    },
+    "calibration": {
+      "actual_decision": "observed_only",
+      "actual_success": null,
+      "predicted_success_probability": 0.22,
+      "brier_score": null,
+      "calibration_direction": "not_scored",
+      "surprise_level": "not_scored",
+      "expected_ev_delta": 0.15,
+      "actual_ev_delta": 0.4345,
+      "ev_prediction_error": 0.2845,
+      "expected_pnl_delta": 2500.0,
+      "actual_pnl_delta": 5888.81,
+      "pnl_prediction_error": 3388.81,
+      "predicted_failure_modes": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "target_concentration_failed",
+        "drawdown_drift_too_high"
+      ],
+      "realized_failure_mode": "shared_adapter_and_parity_required",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": null
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260602-009.json",
+  "single_causal_variable": "companyfacts_sector_residual_strength_support_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260602-009.json",
+  "trial_family": "companyfacts_sector_residual_strength_support",
+  "trial_variant_id": "companyfacts_sector_residual_strength_support_v1"
+}
