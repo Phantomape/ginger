@@ -1,6 +1,6 @@
 # Alpha Optimization Playbook
 
-Last refreshed: 2026-06-01.
+Last refreshed: 2026-06-02.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log and should not repeat every trial. Detailed records belong in
@@ -478,6 +478,18 @@ same frozen windows. A valid retry needs multi-season forward rows,
 replacement value, and a materially richer expectation-quality field such as
 revision breadth, analyst-count velocity, guidance text direction, or
 surprise durability by regime.
+
+2026-06-02 update: `exp-20260602-002` found a positive observed-only
+post-earnings reset continuation lead when same-day earnings candidates are
+split from pre-event risk and mapped to the next future earnings date after
+the event. Against the canonical PIT-DTE Gate 1 baseline, aggregate EV improved
+`6.3596 -> 7.8941` (`+24.13%`) and PnL improved
+`$192,538.61 -> $234,850.99` (`+$42,312.38`); `8` exact-day reset trades
+accounted for `$41,383.87` of the gain. This is not a license to restore the
+old implicit calendar-DTE behavior. Valid next work is an explicit PIT-safe
+event-timing policy with `pre_earnings_risk`, `post_earnings_continuation`,
+`days_since_earnings`, `next_future_earnings_dte`, and before-open/after-close
+timing parity. Do not retest nearby DTE thresholds until those fields exist.
 
 ### 4a. Continuous Ranking Surface
 

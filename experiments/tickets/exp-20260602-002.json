@@ -1,0 +1,83 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_<ID>_post_earnings_reset_continuation.py",
+    "data/experiments/<ID>/exp_<ID>_post_earnings_reset_continuation.json",
+    "experiments/cards/<ID>.md",
+    "experiments/manifests/<ID>.json",
+    "experiments/tickets/<ID>.json",
+    "experiments/logs/<ID>.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/current_state.md",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260601-025/exp_20260601_025_pit_dte_baseline_protocol.json",
+  "card_file": "experiments/cards/exp-20260602-002.md",
+  "change_type": "post_earnings_continuation_alpha_scout",
+  "changed_variable": "same-day earnings reset DTE for post-earnings continuation candidates",
+  "claimed_at": "2026-06-02T00:40:16+00:00",
+  "completed_at": "2026-06-02T00:44:34Z",
+  "created_at": "2026-06-02T00:40:04+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260602-002",
+  "experiment_uid": "expuid-dde889d64dfd4e92",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260602-002",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-02T00:40:04+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "post_earnings_reset_continuation"
+  },
+  "hypothesis": "Core trend/breakout signals immediately after an earnings event may contain a production-visible post-earnings continuation edge that was previously hidden inside calendar-DTE semantics.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "production-style next-future-earnings DTE after same-day earnings event"
+  ],
+  "mechanism_family": "post_earnings_continuation",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260601-023",
+    "exp-20260601-025"
+  ],
+  "new_evidence_type": "earnings_event_timing_alpha",
+  "owner": "codex-alpha-explore",
+  "prediction": {
+    "confidence_reason": "Pre-scout trade attribution showed the old calendar-DTE increment is concentrated in same-day earnings reset trades, with strong late_strong and old_thin PnL but a tiny mid_weak regression.",
+    "expected_ev_delta": 1.5,
+    "expected_pnl_delta": 42000.0,
+    "main_failure_modes": [
+      "old_thin_only_edge",
+      "event_timing_not_production_safe",
+      "late_strong_regression",
+      "ambiguous_pre_vs_post_market_timing"
+    ],
+    "recorded_at": "2026-06-02T00:39:38+00:00",
+    "success_probability": 0.55
+  },
+  "prior_trial_count": 1,
+  "result": {
+    "aggregate_delta": {
+      "expected_value_score": 1.5345,
+      "expected_value_score_pct": 0.241289,
+      "max_drawdown_pct": -0.029,
+      "signals_generated": 26,
+      "signals_survived": 18,
+      "total_pnl": 42312.38,
+      "total_pnl_pct": 0.21976,
+      "trade_count": 3
+    },
+    "artifact": "data/experiments/exp-20260602-002/exp_20260602_002_post_earnings_reset_continuation.json",
+    "decision": "observed_only_post_earnings_continuation_alpha_lead",
+    "exact_day_reset_pnl": 41383.87,
+    "exact_day_reset_trade_count": 8
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260602-002.json",
+  "single_causal_variable": "production-style next-future-earnings DTE after same-day earnings event",
+  "status": "positive_replay_lead_requires_explicit_event_timing",
+  "ticket_file": "experiments/tickets/exp-20260602-002.json",
+  "trial_family": "post_earnings_reset_continuation",
+  "trial_variant_id": "exp-20260602-002"
+}

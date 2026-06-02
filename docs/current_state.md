@@ -1,6 +1,6 @@
 ﻿# Current State
 
-Last updated: 2026-06-01.
+Last updated: 2026-06-02.
 
 The current accepted core stack includes the 2026-05-17 stock-only ample-slot
 rank-1 post-sizing top-up from `exp-20260517-009`, layered on top of the
@@ -110,6 +110,23 @@ before/after comparisons must use `6.3596` aggregate EV and `$192,538.61`
 aggregate PnL as the Gate 1 baseline unless a later protocol-versioning
 experiment supersedes it.
 
+`exp-20260602-002` split the DTE drift into an alpha scout rather than
+reverting PIT-DTE wholesale. The only changed variable was same-day earnings
+reset semantics for post-event candidates: after the earnings date, use the
+next future earnings date, matching the production-style next-open decision
+boundary, while preserving the current PIT-DTE baseline as the control.
+Three-window EV improved `6.3596 -> 7.8941` (`+1.5345`, `+24.13%`) and PnL
+improved `$192,538.61 -> $234,850.99` (`+$42,312.38`), with max drawdown
+improving `14.09% -> 11.19%` and minimum survival staying above `79%`.
+Attribution shows the gain is concentrated in `8` exact-day reset trades
+(`$41,383.87`), mainly late_strong (`+$25,620.97`) and old_thin
+(`+$15,772.17`), while mid_weak was effectively flat/slightly negative
+(`-$9.27`). Treat this as a positive observed-only
+`post_earnings_continuation` lead, not as permission to restore the old
+implicit DTE side effect. Promotion requires explicit PIT-safe fields for
+pre-earnings risk, post-earnings continuation, days-since-earnings, next future
+earnings DTE, and same-day before-open/after-close event timing parity.
+
 `exp-20260601-026` accepted the strongest Companyfacts quality lead as a shared
 default-off adapter. It promotes the `exp-20260601-021` gross-margin quality
 candidate source after rerunning against the PIT-DTE baseline: aggregate EV
@@ -119,6 +136,7 @@ improving, max drawdown improving, minimum survival `79.17%`, max single
 positive share `0.4065`, and positive PnL HHI `0.236292`. The rule is
 default-off paper only in `quant/fundamental_growth_rs_paper_sleeve.py`; live
 orders, core ranking, sizing, exits, LLM/news, and watchlists are unchanged.
+
 `exp-20260601-027` accepted an orthogonal Companyfacts filing-timeliness
 support scalar on top of that shared adapter: operating-income filings are
 supported when filed within `45` days of quarter end or `75` days of annual
@@ -129,6 +147,7 @@ rows, max single positive share `0.4065`, and positive PnL HHI `0.236293`.
 The retained implementation is shared default-off paper-only metadata in
 `quant/fundamental_growth_rs_paper_sleeve.py`; no live/default orders, core
 ranking, sizing, exits, LLM/news, or watchlists changed.
+
 `exp-20260601-030` accepted another orthogonal Companyfacts/OHLCV support
 field on top of the same shared adapter: already-selected candidates receive
 `1.05x` default-off paper notional only when signal-day
