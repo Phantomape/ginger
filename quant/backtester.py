@@ -1370,8 +1370,11 @@ class BacktestEngine:
             if hasattr(today_date, "strftime")
             else str(today_date).replace("-", "")
         )
-        future = [d for d in calendar_dates if d >= today_date]
-        future_after_today = [d for d in calendar_dates if d > today_date]
+        # exp-20260602-008: strict `>` (the documented pre-bb4ced9e9 semantics).
+        # An earnings event dated exactly today is not the "next" earnings for a
+        # decision made on today's close; the canonical baseline used strict `>`.
+        future = [d for d in calendar_dates if d > today_date]
+        future_after_today = future
         past_or_today = [d for d in calendar_dates if d <= today_date]
         base = {
             "next_earnings_date": None, "days_to_earnings": None,
@@ -1400,34 +1403,25 @@ class BacktestEngine:
             base["next_earnings_date"] = str(nxt)
             base["days_to_earnings"] = dte
 
-        # P-ERN: replay the most recent snapshot on or before today. Exact-day
-        # snapshots match production; prior snapshots are recomputed from their
-        # next_earnings_date so stale days_to_earnings values do not leak.
+        # P-ERN: replay the most recent snapshot on or before today for EPS /
+        # surprise context only.
+        #
+        # exp-20260602-008: the daily earnings snapshots covering the canonical
+        # backtest windows (2024-10 .. 2026-04) are backfilled reconstructions
+        # (midnight `T00:00:00` timestamps, first committed 2026-05-15; genuine
+        # real-time captures only begin 2026-04-20, after all three windows
+        # end). They are NOT point-in-time, so they must not override the
+        # deterministic, reconstructable calendar `next_earnings_date` /
+        # `days_to_earnings` computed above. Sourcing earnings dates from these
+        # backfilled snapshots silently drifted the canonical baseline by
+        # 1.5345 EV / $42,312.38 (exp-20260601-023). Use the snapshot only for
+        # eps / surprise fields, where a stale-but-reconstructed value does not
+        # shift the dte<=3 earnings-window entry block.
         if ticker and self._earnings_snapshots:
             candidates = [d for d in self._earnings_snapshots if d <= today_str]
             if candidates:
                 snap_date = max(candidates)
                 snap = self._earnings_snapshots[snap_date].get(ticker, {})
-                snap_next = None
-                if snap.get("next_earnings_date"):
-                    try:
-                        snap_next = pd.Timestamp(snap["next_earnings_date"]).date()
-                    except Exception:
-                        snap_next = None
-                if snap_next is not None and snap_next >= today_date:
-                    base["next_earnings_date"] = str(snap_next)
-                    if snap_date == today_str and snap.get("days_to_earnings") is not None:
-                        try:
-                            base["days_to_earnings"] = int(snap["days_to_earnings"])
-                        except Exception:
-                            base["days_to_earnings"] = None
-                    else:
-                        try:
-                            base["days_to_earnings"] = int(
-                                np.busday_count(today_date, snap_next)
-                            )
-                        except Exception:
-                            base["days_to_earnings"] = None
                 if snap.get("eps_estimate") is not None:
                     base["eps_estimate"] = snap["eps_estimate"]
                 if snap.get("eps_actual_last") is not None:

@@ -12,7 +12,7 @@ from data_layer import get_earnings_data  # noqa: E402
 from feature_layer import compute_earnings_features  # noqa: E402
 
 
-def test_backtester_prefers_exact_daily_earnings_snapshot_for_dte():
+def test_backtester_uses_calendar_dte_and_snapshot_eps_context():
     engine = BacktestEngine(["DDOG"], start="2026-05-07", end="2026-05-07")
     engine._earnings_snapshots = {
         "20260507": {
@@ -31,8 +31,8 @@ def test_backtester_prefers_exact_daily_earnings_snapshot_for_dte():
         ticker="DDOG",
     )
 
-    assert data["next_earnings_date"] == "2026-05-07"
-    assert data["days_to_earnings"] == 0
+    assert data["next_earnings_date"] == "2026-08-06"
+    assert data["days_to_earnings"] == 65
     assert data["eps_estimate"] == 2.6427
     assert data["avg_historical_surprise_pct"] == 11.99
     assert data["post_earnings_continuation_confirmed"] is False
@@ -88,7 +88,7 @@ def test_data_layer_marks_same_day_post_earnings_continuation():
     assert features["post_earnings_event_date"] == "2026-05-07"
 
 
-def test_backtester_recomputes_prior_snapshot_dte_from_snapshot_date():
+def test_backtester_does_not_use_prior_snapshot_dte_for_calendar_fields():
     engine = BacktestEngine(["DDOG"], start="2026-05-07", end="2026-05-07")
     engine._earnings_snapshots = {
         "20260506": {
@@ -105,5 +105,5 @@ def test_backtester_recomputes_prior_snapshot_dte_from_snapshot_date():
         ticker="DDOG",
     )
 
-    assert data["next_earnings_date"] == "2026-05-08"
-    assert data["days_to_earnings"] == 1
+    assert data["next_earnings_date"] == "2026-08-06"
+    assert data["days_to_earnings"] == 65
