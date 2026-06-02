@@ -4143,7 +4143,7 @@
     },
     {
       "experiment_id": "exp-20260509-021",
-      "hypothesis": "\u8fd1\u671f\u574f\u4ea4\u6613\u96c6\u4e2d\u5728\u4e00\u79cd\u53ef\u590d\u73b0\u7684 hold-quality \u6216 follow-through \u5931\u8d25\u65cf\u7fa4\u4e2d\u3002",
+      "hypothesis": "近期坏交易集中在一种可复现的 hold-quality 或 follow-through 失败族群中。",
       "lane": "loss_attribution",
       "owner": "codex-all-in-one-loss",
       "status": "observed_only",
@@ -4152,7 +4152,7 @@
     },
     {
       "experiment_id": "exp-20260509-022",
-      "hypothesis": "\u5728 LLM/event ranking alpha \u53ef\u88ab\u8bc4\u4f30\u524d\uff0c\u5fc5\u987b\u7a33\u5b9a\u6301\u4e45\u5316 replay coverage \u548c attribution\u3002",
+      "hypothesis": "在 LLM/event ranking alpha 可被评估前，必须稳定持久化 replay coverage 和 attribution。",
       "lane": "measurement_repair",
       "owner": "codex-all-in-one-measurement",
       "status": "observed_only",
@@ -4161,7 +4161,7 @@
     },
     {
       "experiment_id": "exp-20260509-023",
-      "hypothesis": "\u4e00\u4e2a\u6d41\u52a8\u6027\u8fc7\u6ee4\u540e\u7684\u4e8b\u4ef6\u654f\u611f universe \u53ef\u4ee5\u5728\u5f53\u524d trend/breakout \u8986\u76d6\u4e4b\u5916\u4ea7\u751f\u975e\u91cd\u53e0\u9ad8\u8d28\u91cf\u5019\u9009\u3002",
+      "hypothesis": "一个流动性过滤后的事件敏感 universe 可以在当前 trend/breakout 覆盖之外产生非重叠高质量候选。",
       "lane": "universe_scout",
       "owner": "codex-all-in-one-universe",
       "status": "observed_only",
@@ -7427,6 +7427,134 @@
       "updated_at": "2026-06-02T04:15:30+00:00"
     },
     {
+      "card_file": "experiments/cards/exp-20260602-008.md",
+      "experiment_id": "exp-20260602-008",
+      "hypothesis": "Commit bb4ced9e9 made the backtester source next_earnings_date/days_to_earnings from daily earnings snapshots, but exp-20260601-016/023 showed the 2024-2025 canonical-window snapshots are backfilled (midnight timestamps, first committed 2026-05-15; real-time captures only begin 2026-04-20, after all three windows end), so the canonical baseline silently drifted 1.5345 EV / 2,312.38 from the documented 7.8941 / 34,850.99 by sourcing earnings dates from non-PIT reconstructed data. Restoring calendar-only deterministic next_earnings_date/days_to_earnings in the backtester _earnings_dict_for (strict future > today; snapshot supplies only eps/surprise fields, never the earnings date) should reproduce the documented three-window baseline exactly, with zero production impact (run.py builds its own production earnings_data and does not call the backtester path).",
+      "lane": "measurement_repair",
+      "owner": "claude-dte-parity-fix",
+      "revision_manifest_file": "experiments/manifests/exp-20260602-008.json",
+      "status": "claimed",
+      "ticket_file": "experiments/tickets/exp-20260602-008.json",
+      "updated_at": "2026-06-02T05:56:05+00:00"
+    },
+    {
+      "card_file": "experiments/cards/exp-20260602-009.md",
+      "experiment_id": "exp-20260602-009",
+      "hypothesis": "Accepted Fundamental Growth + RS paper rows with positive 20-day stock-vs-sector residual strength may have better allocation quality than sector-lagging rows, using only public sector classification and signal-day OHLCV.",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "revision_manifest_file": "experiments/manifests/exp-20260602-009.json",
+      "status": "observed_only",
+      "ticket_file": "experiments/tickets/exp-20260602-009.json",
+      "updated_at": "2026-06-02T05:22:56+00:00"
+    },
+    {
+      "card_file": "experiments/cards/exp-20260602-010.md",
+      "experiment_id": "exp-20260602-010",
+      "hypothesis": "Promote the positive Companyfacts sector-residual support replay lead into the shared default-off paper adapter so production and backtest use one parity-safe implementation.",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "revision_manifest_file": "experiments/manifests/exp-20260602-010.json",
+      "status": "claimed",
+      "ticket_file": "experiments/tickets/exp-20260602-010.json",
+      "updated_at": "2026-06-02T06:06:39+00:00"
+    },
+    {
+      "card_file": null,
+      "experiment_id": "exp-20260602-011",
+      "hypothesis": null,
+      "lane": null,
+      "owner": null,
+      "revision_manifest_file": null,
+      "status": "rejected",
+      "ticket_file": "experiments/tickets/exp-20260602-011.json",
+      "updated_at": "2026-06-02T07:14:21+00:00"
+    },
+    {
+      "card_file": null,
+      "experiment_id": "exp-20260602-012",
+      "hypothesis": null,
+      "lane": null,
+      "owner": null,
+      "revision_manifest_file": null,
+      "status": "rejected",
+      "ticket_file": "experiments/tickets/exp-20260602-012.json",
+      "updated_at": "2026-06-02T08:14:25+00:00"
+    },
+    {
+      "aggregate_expected_value_delta": 0.4778,
+      "aggregate_strategy_total_pnl_delta": 6349.81,
+      "artifact": "data/experiments/exp-20260602-013/exp_20260602_013_companyfacts_operating_margin_expansion_support.json",
+      "card_file": "experiments/cards/exp-20260602-013.md",
+      "completed_at": "2026-06-02T09:20:18+00:00",
+      "decision": "rejected_operating_margin_expansion_no_material_current_stack_lift",
+      "experiment_id": "exp-20260602-013",
+      "hypothesis": "Filed-date-safe operating margin expansion may identify higher-quality accepted Fundamental Growth RS paper rows without changing live orders.",
+      "lane": "alpha_search",
+      "log": "experiments/logs/exp-20260602-013.json",
+      "owner": "alpha-search",
+      "report_file": "experiments/artifacts/exp-20260602-013_companyfacts_operating_margin_expansion_support.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260602-013.json",
+      "status": "completed",
+      "ticket_file": "experiments/tickets/exp-20260602-013.json",
+      "updated_at": "2026-06-02T09:08:29+00:00"
+    },
+    {
+      "experiment_id": "exp-20260602-014",
+      "status": "claimed",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "hypothesis": "Already-selected core trend/breakout trades with PIT-safe post-earnings continuation confirmation may deserve a bounded risk-budget support scalar.",
+      "ticket_file": "experiments/tickets/exp-20260602-014.json",
+      "card_file": "experiments/cards/exp-20260602-014.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260602-014.json",
+      "updated_at": "2026-06-02T10:09:16+00:00"
+    },
+    {
+      "experiment_id": "exp-20260602-015",
+      "status": "claimed",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "hypothesis": "Stock-only relative-strength acceleration candidates may add default-off replacement alpha when recent 5-day excess versus SPY accelerates above the prior 15-day excess while 20-day relative strength, high-close quality, and liquidity stay strong.",
+      "ticket_file": "experiments/tickets/exp-20260602-015.json",
+      "card_file": "experiments/cards/exp-20260602-015.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260602-015.json",
+      "updated_at": "2026-06-02T10:18:58+00:00"
+    },
+    {
+      "experiment_id": "exp-20260602-016",
+      "status": "claimed",
+      "lane": "alpha_search",
+      "owner": "codex-alpha-search",
+      "hypothesis": "Form 4 meaningful insider purchase events that also have latest published FINRA short-pressure may be a cleaner free-data default-off event candidate pool than raw Form 4 alone.",
+      "ticket_file": "experiments/tickets/exp-20260602-016.json",
+      "card_file": "experiments/cards/exp-20260602-016.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260602-016.json",
+      "updated_at": "2026-06-02T11:09:36+00:00"
+    },
+    {
+      "experiment_id": "exp-20260602-017",
+      "status": "claimed",
+      "lane": "alpha_search",
+      "owner": "codex-alpha-search",
+      "hypothesis": "SEC 10-Q SPY-context paper entries may retain the previous all-window EV/PnL lift while reducing top-contribution concentration if same-ticker repeat 10-Q admissions are cooled down for 90 calendar days.",
+      "ticket_file": "experiments/tickets/exp-20260602-017.json",
+      "card_file": "experiments/cards/exp-20260602-017.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260602-017.json",
+      "updated_at": "2026-06-02T11:21:13+00:00"
+    },
+    {
+      "experiment_id": "exp-20260602-018",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "codex-alpha-search",
+      "hypothesis": "Sector-relative risk-adjusted momentum candidates may expand the tradeable pool with less noise than raw RS acceleration by requiring same-sector leadership, positive SPY-adjusted trend, and lower realized volatility.",
+      "ticket_file": "experiments/tickets/exp-20260602-018.json",
+      "card_file": "experiments/cards/exp-20260602-018.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260602-018.json",
+      "updated_at": "2026-06-02T12:20:05+00:00"
+    },
+    {
       "experiment_id": "exp-20260602-019",
       "status": "rejected",
       "lane": "alpha_search",
@@ -7436,8 +7564,52 @@
       "card_file": "experiments/cards/exp-20260602-019.md",
       "revision_manifest_file": "experiments/manifests/exp-20260602-019.json",
       "updated_at": "2026-06-02T13:12:32+00:00"
+    },
+    {
+      "experiment_id": "exp-20260602-020",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "hypothesis": "Moderate positive same-sector OHLCV peer shocks may create delayed continuation in liquid unshocked peers, improving the default-off paper candidate pool without noisy ticker expansion.",
+      "ticket_file": "experiments/tickets/exp-20260602-020.json",
+      "card_file": "experiments/cards/exp-20260602-020.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260602-020.json",
+      "updated_at": "2026-06-02T14:14:58+00:00"
+    },
+    {
+      "experiment_id": "exp-20260602-021",
+      "status": "claimed",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "hypothesis": "Sector peer moderate-shock paper candidates may keep the exp-20260602-020 all-window EV lift while reducing concentration if same-ticker admissions observe a fixed cooldown.",
+      "ticket_file": "experiments/tickets/exp-20260602-021.json",
+      "card_file": "experiments/cards/exp-20260602-021.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260602-021.json",
+      "updated_at": "2026-06-02T15:09:41+00:00"
+    },
+    {
+      "experiment_id": "exp-20260602-022",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "codex-alpha-explore",
+      "hypothesis": "The existing PIT-safe post-earnings positive-surprise drift score should show monotonic 10-day forward paper outcomes if it is a durable event-quality ranking field.",
+      "ticket_file": "experiments/tickets/exp-20260602-022.json",
+      "card_file": "experiments/cards/exp-20260602-022.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260602-022.json",
+      "updated_at": "2026-06-02T16:11:11+00:00"
+    },
+    {
+      "experiment_id": "exp-20260602-023",
+      "status": "claimed",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "hypothesis": "Post-earnings positive EPS surprise candidates that were not pre-event SPY-relative leaders may have cleaner underpriced drift than generic positive-surprise rows.",
+      "ticket_file": "experiments/tickets/exp-20260602-023.json",
+      "card_file": "experiments/cards/exp-20260602-023.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260602-023.json",
+      "updated_at": "2026-06-02T16:06:11+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-02T13:12:32+00:00"
+  "updated_at": "2026-06-02T16:11:11+00:00"
 }

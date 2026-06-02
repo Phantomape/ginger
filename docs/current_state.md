@@ -249,6 +249,83 @@ and full unit tests passed after the exp028 shared-adapter update:
 `1088 passed in 38.69s`. No additional bug fix was required by the regression
 pass.
 
+## 2026-06-02 Experiment Consolidation
+
+This consolidation covers the later 2026-06-02 work after the prior
+Companyfacts sector-residual adapter update. No live/default order path was
+enabled, no core ranking/sizing/exit rule was promoted, and no LLM/news
+authority changed. The durable conclusion is that post-earnings continuation
+remains the best current alpha question, but the next step is traceable
+event-quality and forward replacement value, not another generic
+positive-surprise, peer-transfer, or score-threshold retune.
+
+Post-earnings follow-ups were mostly rejected or left as replay-only leads.
+`exp-20260602-011` underreaction by close location was positive in all three
+windows (`EV +0.3958`, PnL `+$8,813.46`) and passed concentration, but had only
+`18` target trades versus the `20` trade floor. `exp-20260602-012` exact
+industry peer reaction transfer was rejected because `old_thin` regressed, the
+sample had only `17` trades, and positive PnL was too concentrated. `exp-20260602-014`
+blocked a core post-earnings continuation risk scalar because the accepted
+continuation artifacts do not yet preserve per-trade
+`post_earnings_continuation_confirmed`, event-date, or days-since-event trace
+fields. `exp-20260602-022` rejected the existing positive-surprise drift score
+as a ranking field: the top score tercile underperformed the middle and bottom
+terciles in aggregate, and zero windows had a monotonic ladder.
+
+The one constructive post-earnings result was `exp-20260602-023`: requiring
+pre-event 20-day ticker-minus-SPY relative strength to be non-positive on the
+existing positive-surprise drift source improved all three windows (`EV
++0.3547`, PnL `+$3,557.15`, `20` target trades, concentration passed, max
+drawdown improved). It is explicitly not promoted: the result is replay-only
+default-off paper evidence with no shared adapter, no production wiring, and no
+forward replacement-value rows. A valid continuation needs a shared
+production-visible adapter or forward rows, and should not simply retune the
+pre-event RS threshold.
+
+Companyfacts support-scalar mining should slow down. `exp-20260602-013`
+operating-margin expansion was directionally positive on the current accepted
+sector-residual stack (`EV +0.4778`, PnL `+$6,349.81`, `237` adjusted rows),
+but the current-stack EV lift was only `2.96%`, below the required `10%`
+materiality bar for reopening nearby Companyfacts scalar families. This
+reinforces the freeze already stated for asset-turnover retries
+(`exp-20260602-007`) and sector-residual threshold/scalar retunes around the
+accepted `exp-20260602-010` adapter.
+
+The later OHLCV and relation scouts did not produce promotable alpha.
+`exp-20260602-015` RS-acceleration candidate pool was outright rejected
+because aggregate EV/PnL were not positive and drawdown worsened. `exp-20260602-018`
+sector-relative risk-adjusted momentum was broad but unstable: aggregate EV was
+positive (`+0.2990`) while `late_strong` and `old_thin` regressed and
+`old_thin` max drawdown drifted by `+10.24pp`. `exp-20260602-019` post-earnings
+same-sector peer transfer failed window and drawdown checks. `exp-20260602-020`
+moderate positive sector peer-shock candidates produced large raw replay gains
+(`EV +2.6078`, PnL `+$58,440.11`) but failed concentration badly (`max single
+positive share 0.761365`, HHI `0.602404`). `exp-20260602-021` added a
+30-calendar-day same-ticker cooldown; it reduced concentration but regressed
+`late_strong` and still failed the tighter concentration guard. Do not continue
+sector peer-shock or sector-risk-adjusted momentum retunes on these frozen
+windows without a materially different relation-quality field or forward
+replacement-value evidence.
+
+SEC/Form 4 side routes also stayed rejected. `exp-20260602-016` Form 4 plus
+FINRA short-pressure consensus selected zero event trades and did not improve
+core or the raw Form 4 queue. `exp-20260602-017` SEC 10-Q SPY-context repeat
+cooldown improved all three windows versus the scalar-1.0 baseline (`EV
++0.596267`, PnL `+$12,303.14`) but failed the top-five contribution cap
+(`92.07%`), so no adapter or production report behavior was retained.
+
+Regression status for this run: ignored `data/tmp` meta-research JSON files,
+`.pytest_cache`, and repo-local `__pycache__` directories were removed. The
+first full unit-test run found two stale expectations in
+`quant/test_backtester_earnings_replay.py`; those tests now match the current
+backtester DTE parity repair semantics, where deterministic calendar dates
+drive `next_earnings_date` / `days_to_earnings` and daily snapshots provide
+only EPS/surprise context. Full UT passed after the fix:
+`1093 passed in 37.67s`. `exp-20260602-008` remains a claimed measurement
+repair ticket without a formal closeout artifact in this checkout, so treat the
+test update as regression coverage for the existing implementation, not as a
+new accepted alpha or completed measurement-repair record.
+
 ## 2026-05-31 Experiment Consolidation
 
 Today's experiment set produced one accepted default-off paper adapter, but no

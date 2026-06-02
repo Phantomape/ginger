@@ -54,6 +54,17 @@ Recent repository evidence supports this priority:
   Companyfacts scalar, threshold, and sector-residual retunes should stop;
   collect forward replacement-value rows or find a materially new free-data
   field first.
+- The accepted post-earnings continuation repair changed the core baseline,
+  but not the default rule for earnings alpha. `exp-20260602-003` made the
+  same-day post-event state explicit and PIT-safe: use the just-released event
+  only after actual EPS is known and a later future earnings date exists, then
+  roll DTE to that next event. This recovered aggregate core EV `6.3596 ->
+  7.8941` and PnL `$192,538.61 -> $234,850.99`. Nearby post-earnings candidate
+  pools did not yet clear promotion (`exp-20260602-004` rejected the generic
+  strong-reaction pool; `exp-20260602-006` was positive but unpromoted). The
+  next valid earnings work is event-quality and immediate-reaction attribution
+  around the accepted continuation trades, not implicit DTE resets or another
+  generic PEAD/pre-earnings threshold sweep.
 - `VOLUME_BREADTH_BREAKOUT_PAPER` and QQQ-confirmed VCP show that free OHLCV
   market-confirmation fields can produce useful paper sleeves. Their next step
   is forward maturation, not another breadth/QQQ/top-N sweep. The latest
@@ -330,6 +341,16 @@ cost-liquidity support field: already-selected candidates with signal-day
 `1.05x` default-off paper-notional scalar. It improved the accepted
 filing-timeliness adapter EV `13.0745 -> 13.4753` and PnL
 `$305,514.70 -> $311,052.25`, with all three windows improved.
+`exp-20260602-010` accepted the next genuinely orthogonal support field:
+already-selected candidates whose signal-date 20-day return beats the
+persisted public-sector median by at least `3pp` with at least `5`
+sector-member observations receive a `1.05x` default-off scalar. It improved
+the shared adapter EV `15.7099 -> 16.1444` and PnL `$353,364.63 ->
+$359,253.44`, with all windows improving and max drawdown slightly improving.
+The adjacent 2026-06-02 Companyfacts scouts define the boundary: cash
+conversion was a positive replay lead but was not promoted without forward
+rows (`exp-20260602-001`), while asset turnover was rejected because the lift
+concentrated too heavily in APP (`exp-20260602-007`).
 
 Keep fixed:
 
@@ -346,10 +367,14 @@ Keep fixed:
   from fiscal period end to filed date, `1.05x` paper notional.
 - accepted cost-liquidity support: `avg_dollar_volume_20 >= $200m` and
   signal-day `(high-low)/close <= 0.10`, `1.05x` paper notional.
+- accepted sector-residual support: signal-date 20-day return at least `3pp`
+  above the persisted public-sector median with at least `5` sector observations,
+  `1.05x` paper notional.
 
 Next valid fields:
 
-- cash-conversion quality only if it improves forward replacement value;
+- cash-conversion quality only after forward replacement-value rows confirm the
+  positive `exp-20260602-001` replay lead;
 - operating-margin durability only with new forward evidence or an orthogonal
   data field;
 - restatement/disclosure-quality context;
@@ -371,6 +396,10 @@ Frozen without new evidence:
   `exp-20260601-027` support field;
 - cost-liquidity threshold/scalar retunes around the accepted
   `exp-20260601-030` support field;
+- sector-residual threshold/scalar retunes around the accepted
+  `exp-20260602-010` support field;
+- asset-turnover support retries on the current frozen sample after
+  `exp-20260602-007` failed concentration despite positive raw replay PnL;
 - any new nearby Companyfacts scalar whose best case still depends on the
   already accepted operating-profit + RS stack rather than a new candidate
   source or a genuinely new PIT data field;
@@ -791,6 +820,14 @@ while deterministic code owns the time-series computation. For Ginger, this
 means SEC, earnings, and price-derived fields should persist both the evidence
 trace and the tool/execution trace before they can be considered for Gate 4.
 
+The newest agentic financial-document benchmarks add one practical standard:
+multi-step filing QA is only useful when the system can show which table,
+footnote, period, entity, and arithmetic path produced the field. For Ginger,
+an SEC-derived growth, margin, cash-conversion, liability, or guidance field
+should therefore carry both source-span provenance and calculation provenance.
+If the field cannot be replayed from the archived filing text/XBRL row and the
+calculation trace, it belongs in research notes, not in a paper sleeve.
+
 Useful fields:
 
 - `retrieval_strategy_bucket`
@@ -810,12 +847,20 @@ Useful fields:
 - `tool_result_validation_status`
 - `price_series_asof_policy_id`
 - `numeric_hallucination_bucket`
+- `filing_table_entity_id`
+- `filing_period_alignment_bucket`
+- `xbrl_fact_id`
+- `calculation_trace_json`
+- `arithmetic_replay_status`
+- `field_source_span_hash`
 
 Engineering rule: no retrieval trace means no Gate 4 trading field.
 
 Sources:
 
 - FinAgent-RAG, 2026-05-06: <https://arxiv.org/abs/2605.05409>
+- FinAgent financial-document benchmark dataset, 2026:
+  <https://huggingface.co/datasets/finagent-benchmark/finagent-benchmark>
 - Time Series Augmented Generation for Financial Applications, 2026-04-21:
   <https://arxiv.org/abs/2604.19633>
 - Rethinking Retrieval in financial LLM systems, 2025: <https://arxiv.org/abs/2511.18177>
@@ -840,6 +885,13 @@ risk control is the differentiator across markets. For Ginger, this means
 agent benchmarks are useful for evaluation design, not as permission to let an
 agent own entries, exits, or sizing.
 
+Memory-controlled trading-agent benchmarks add a sharper warning: model
+rationales can change materially when ticker identities, names, or memories are
+masked or decayed. Ginger should treat LLM memory as an experimental variable.
+Any LLM-assisted market memory should have named decay windows, masking policy,
+and replay split IDs so the system can tell whether a result came from genuine
+evidence, ticker-name priors, or stale narrative carryover.
+
 Agent workflows are useful as research operators: they can propose hypotheses,
 retrieve source packets, run attribution scripts, and write a replayable
 evidence ledger. They are not strategy controllers. Any agent-produced
@@ -861,6 +913,11 @@ Useful fields:
 - `agent_hypothesis_ticket_id`
 - `agent_evidence_packet_hash`
 - `agent_replay_command_hash`
+- `agent_memory_decay_policy_id`
+- `agent_identity_mask_policy_id`
+- `agent_memory_window_bucket`
+- `agent_known_to_doing_gap_bucket`
+- `agent_rationale_stability_bucket`
 
 Engineering rule: an LLM agent can propose hypotheses or classify evidence,
 but a trade-impacting action must still become a shared, replayable policy and
@@ -870,6 +927,8 @@ Source:
 
 - Agentic Trading: When LLM Agents Meet Financial Markets, 2026:
   <https://arxiv.org/abs/2605.19337>
+- From Knowing to Doing: A Memory-Controlled Benchmark for LLM Trading Agents
+  on Stock Markets, 2026: <https://arxiv.org/abs/2605.28359>
 - AI-Trader: Benchmarking Autonomous Agents in Real-Time Financial Markets,
   2025/2026: <https://arxiv.org/abs/2512.10971>
 
@@ -886,6 +945,13 @@ representations. The usable lesson is not to add a neural forecaster to live
 orders; it is to persist relation-aware fields that can be replayed:
 peer/sector hierarchy, covariance-network state, text/price alignment quality,
 and whether a modality helped or hurt after costs.
+
+New graph-transformer and hyperbolic/cross-attention work reinforces the same
+implementation lesson: relation construction is the alpha hypothesis. A graph
+field is not useful because it is graph-shaped; it is useful only if its edge
+source, sparsification rule, time window, and modality contribution can be
+replayed and compared against the displaced candidate after costs. This is the
+proper retry path after local same-ticker SEC recurrence tests failed.
 
 Recent peer-information and graph-learning work points to two practical
 directions: characteristic-similarity peer groups and early-peer earnings
@@ -920,6 +986,11 @@ Useful fields:
 - `graph_edge_construction_method`
 - `modality_contribution_after_cost_bucket`
 - `cross_modal_negative_transfer_bucket`
+- `relation_construction_hypothesis_id`
+- `graph_sparsification_method_id`
+- `edge_asof_timestamp`
+- `modality_gate_reason`
+- `relation_displacement_value_bucket`
 
 Local update: `exp-20260530-006` tested the simplest raw SEC filing interaction
 field, `sec_same_event_family_burst_count_v1`, and rejected it. The sample was
@@ -956,6 +1027,8 @@ Sources:
   <https://link.springer.com/article/10.1007/s11142-026-09954-3>
 - Hyperbolic cross-attention multimodal stock forecasting, 2026:
   <https://link.springer.com/article/10.1007/s00521-026-12118-8>
+- Explainable temporal heterogeneous graph transformer for stock return
+  prediction, 2026: <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6800538>
 
 ### Regime-Aware Predictability And Friction-Aware Control
 
@@ -988,6 +1061,14 @@ auditable pipeline. For Ginger, any future optimizer-like component should
 emit its expected-return source, covariance window, constraint shadow prices,
 and displacement cost before it can influence capital.
 
+LLM-to-optimizer papers, including Black-Litterman variants, are useful only
+when the LLM view is converted into a bounded expected-return view with an
+explicit confidence estimate and then passed through deterministic constraints.
+For Ginger, this maps to default-off allocation previews and paper sleeves, not
+to free-form portfolio instructions. The minimum viable output is a view,
+confidence, cost, covariance, constraint, and displacement record that can be
+replayed without the LLM.
+
 Useful fields:
 
 - `predictability_mosaic_bucket`
@@ -1011,6 +1092,11 @@ Useful fields:
 - `constraint_shadow_price_bucket`
 - `optimizer_turnover_penalty_id`
 - `allocation_displacement_cost_bucket`
+- `llm_view_expected_return_bucket`
+- `llm_view_confidence_calibration_bucket`
+- `black_litterman_view_source_id`
+- `allocation_constraint_set_id`
+- `optimizer_replay_hash`
 
 Engineering rule: regime-aware allocation belongs first in read-only
 attribution and default-off sleeves. A live sizing or cap change must be a
@@ -1027,6 +1113,8 @@ Sources:
   <https://link.springer.com/article/10.1186/s40854-026-00927-8>
 - Machine Learning Meets Markowitz, NBER 2026:
   <https://www.nber.org/papers/w34861>
+- LLM-enhanced Black-Litterman portfolio optimization, 2025:
+  <https://arxiv.org/abs/2504.14345>
 
 ### Transaction-Cost-Aware Allocation
 
@@ -1124,6 +1212,15 @@ production-visible field:
   replacement-value rows;
 - Companyfacts support-scalar mining around the accepted operating-profit + RS
   stack;
+- Companyfacts cash-conversion promotion from the frozen replay alone; require
+  forward replacement-value rows after the positive-but-unpromoted
+  `exp-20260602-001` lead;
+- Companyfacts asset-turnover support retries on the current sample after
+  `exp-20260602-007` failed concentration;
+- implicit same-day earnings DTE reset semantics or generic post-earnings
+  reaction/positive-surprise candidate-pool retries after `exp-20260602-003`
+  accepted the explicit continuation policy and `exp-20260602-004` /
+  `exp-20260602-006` failed to promote standalone paper pools;
 - simple target, stop, or fixed max-loss exit changes;
 - ticker-specific exceptions from one or two trades;
 - missing-archive or missing-text availability as an alpha field;
