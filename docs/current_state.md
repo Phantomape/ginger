@@ -316,6 +316,16 @@ materiality bar for reopening nearby Companyfacts scalar families. This
 reinforces the freeze already stated for asset-turnover retries
 (`exp-20260602-007`) and sector-residual threshold/scalar retunes around the
 accepted `exp-20260602-010` adapter.
+`exp-20260603-002` then found that amended-form disclosure-quality support is
+not currently testable on the accepted Companyfacts stack because selected rows
+had zero amended-form coverage across the three canonical windows. The follow-on
+source-provenance scout `exp-20260603-003` tested a `1.05x` support for rows
+whose gross margin was reconstructed from `cost_of_revenue` fallback; it
+improved all three windows and aggregate EV/PnL (`+0.2035`, `+$3,029.19`) but
+failed concentration badly because APP contributed `88.7952%` of positive
+incremental PnL (HHI `0.796841`). No production or shared adapter behavior was
+retained; do not retry nearby Companyfacts form/source-provenance scalars on
+these frozen windows without materially new forward replacement-value evidence.
 
 The later OHLCV and relation scouts did not produce promotable alpha.
 `exp-20260602-015` RS-acceleration candidate pool was outright rejected

@@ -372,6 +372,14 @@ The adjacent 2026-06-02 Companyfacts scouts define the boundary: cash
 conversion was a positive replay lead but was not promoted without forward
 rows (`exp-20260602-001`), while asset turnover was rejected because the lift
 concentrated too heavily in APP (`exp-20260602-007`).
+The 2026-06-03 disclosure/source-provenance scouts narrowed the remaining
+``restatement/disclosure-quality`` opening: amended-form support was not
+testable because accepted Companyfacts rows had zero amended-form coverage
+(`exp-20260603-002`), and cost-of-revenue gross-margin fallback support
+improved all three windows but failed concentration (`exp-20260603-003`,
+aggregate EV `+0.2035`, PnL `+$3,029.19`, APP positive-share `0.887952`,
+HHI `0.796841`). Do not retry this source-provenance scalar family on the
+frozen sample with ticker blacklists or nearby form/source flags.
 
 Keep fixed:
 
@@ -398,7 +406,8 @@ Next valid fields:
   positive `exp-20260602-001` replay lead;
 - operating-margin durability only with new forward evidence or an orthogonal
   data field;
-- restatement/disclosure-quality context;
+- restatement/disclosure-quality context only if it is materially different
+  from amended-form coverage and gross-margin source provenance;
 - cost-adjusted replacement-value attribution beyond the accepted coarse
   cost-liquidity state.
 
@@ -421,6 +430,10 @@ Frozen without new evidence:
   `exp-20260602-010` support field;
 - asset-turnover support retries on the current frozen sample after
   `exp-20260602-007` failed concentration despite positive raw replay PnL;
+- amended-form and gross-margin source-provenance support/haircut retries on
+  the current frozen Companyfacts stack after `exp-20260603-002` had zero
+  selected-row coverage and `exp-20260603-003` failed concentration despite
+  positive all-window EV/PnL;
 - any new nearby Companyfacts scalar whose best case still depends on the
   already accepted operating-profit + RS stack rather than a new candidate
   source or a genuinely new PIT data field;

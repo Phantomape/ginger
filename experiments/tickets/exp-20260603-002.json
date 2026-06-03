@@ -1,0 +1,112 @@
+{
+  "experiment_id": "exp-20260603-002",
+  "experiment_uid": "expuid-1274291a4de64a20",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260603-002",
+    "slug": "companyfacts_amended_filing_haircut",
+    "reserved_at": "2026-06-03T01:11:39+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "observed_only",
+  "lane": "alpha_search",
+  "owner": "alpha-search",
+  "hypothesis": "Accepted Companyfacts Fundamental Growth + RS paper candidates whose latest PIT operating-income or revenue filing comes from amended SEC forms may carry disclosure-quality risk; a small default-off paper haircut may improve allocation quality without adding noisy tickers.",
+  "change_type": "default_off_paper_allocation",
+  "mechanism_family": "companyfacts_disclosure_quality_support",
+  "trial_family": "companyfacts_amended_filing_haircut",
+  "trial_variant_id": "companyfacts_amended_filing_haircut_v1",
+  "single_causal_variable": "companyfacts_amended_filing_haircut_v1",
+  "changed_variable": "companyfacts_amended_filing_haircut_v1",
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260602-010",
+    "exp-20260602-013"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "production_visible_sec_companyfacts_amended_form_disclosure_quality_field",
+  "baseline_result_file": "data/experiments/exp-20260602-010/exp_20260602_010_companyfacts_sector_residual_adapter.json",
+  "allowed_write_scope": [
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "core ranking",
+    "sizing",
+    "exits",
+    "live orders",
+    "LLM/news",
+    "source candidate selection",
+    "hold_days",
+    "notional except tested paper haircut"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "docs/backtesting.md three-window before/after; aggregate EV and PnL positive; all windows EV/PnL improve; drawdown drift <=0.5pp; survival >=5%; target trades in all three windows; concentration guards pass; positive replay requires shared adapter before retention.",
+  "prediction": {
+    "success_probability": 0.25,
+    "expected_ev_delta": 0.05,
+    "expected_pnl_delta": 1000.0,
+    "main_failure_modes": [
+      "sparse_amended_rows",
+      "amended_rows_are_not_lower_quality",
+      "window_regression",
+      "concentration_failed"
+    ],
+    "confidence_reason": "Playbook leaves restatement/disclosure-quality context as a valid Companyfacts field, but amended-form coverage may be sparse in selected paper rows.",
+    "recorded_at": "2026-06-03T01:11:13+00:00"
+  },
+  "created_at": "2026-06-03T01:11:39+00:00",
+  "claimed_at": "2026-06-03T01:11:51+00:00",
+  "completed_at": "2026-06-03T01:15:36+00:00",
+  "result": {
+    "decision": "observed_only",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260602-010/companyfacts_sector_residual_adapter_after_aggregate.json",
+    "after_result_file": "data/experiments/exp-20260602-010/companyfacts_sector_residual_adapter_after_aggregate.json",
+    "delta_metrics": {
+      "expected_value_score": 0.0,
+      "max_drawdown_pct": 0.0,
+      "total_pnl": 0.0
+    },
+    "calibration": {
+      "actual_decision": "observed_only",
+      "actual_success": null,
+      "predicted_success_probability": 0.25,
+      "brier_score": null,
+      "calibration_direction": "not_scored",
+      "surprise_level": "not_scored",
+      "expected_ev_delta": 0.05,
+      "actual_ev_delta": 0.0,
+      "ev_prediction_error": -0.05,
+      "expected_pnl_delta": 1000.0,
+      "actual_pnl_delta": 0.0,
+      "pnl_prediction_error": -1000.0,
+      "predicted_failure_modes": [
+        "sparse_amended_rows",
+        "amended_rows_are_not_lower_quality",
+        "window_regression",
+        "concentration_failed"
+      ],
+      "realized_failure_mode": null,
+      "predicted_failure_mode_hit": null,
+      "surprise_note": null
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260603-002.json",
+  "card_file": "experiments/cards/exp-20260603-002.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260603-002.json"
+}

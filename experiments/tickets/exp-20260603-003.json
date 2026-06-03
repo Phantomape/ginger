@@ -1,0 +1,106 @@
+{
+  "acceptance_rule": "docs/backtesting.md three-window before/after; aggregate EV and PnL positive; all windows EV/PnL improve; drawdown drift <=0.5pp; survival >=5%; target trades in all three windows; concentration guards pass; positive replay requires shared adapter before retention.",
+  "allowed_write_scope": [
+    "docs/experiment_registry.json",
+    "quant/experiments/exp_20260603_003_companyfacts_gross_margin_source_support.py",
+    "data/experiments/exp-20260603-003/exp_20260603_003_companyfacts_gross_margin_source_support.json",
+    "data/experiments/exp-20260603-003/companyfacts_gross_margin_source_support_before_aggregate.json",
+    "data/experiments/exp-20260603-003/companyfacts_gross_margin_source_support_after_aggregate.json",
+    "experiments/logs/exp-20260603-003.json",
+    "experiments/artifacts/exp-20260603-003_companyfacts_gross_margin_source_support.md",
+    "experiments/cards/exp-20260603-003.md",
+    "docs/experiment_log.jsonl"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260602-010/exp_20260602_010_companyfacts_sector_residual_adapter.json",
+  "card_file": "experiments/cards/exp-20260603-003.md",
+  "change_type": "default_off_paper_allocation",
+  "changed_variable": "gross_margin_cost_fallback_support_v1",
+  "claimed_at": "2026-06-03T01:15:47+00:00",
+  "completed_at": "2026-06-03T01:20:07+00:00",
+  "created_at": "2026-06-03T01:14:49+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260603-003",
+  "experiment_uid": "expuid-b52dc2ae354f4c91",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260603-003",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-03T01:14:49+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "companyfacts_gross_margin_source_support"
+  },
+  "hypothesis": "Accepted Companyfacts Fundamental Growth + RS paper candidates whose gross-margin quality is reconstructed from PIT SEC cost_of_revenue fallback, rather than directly reported gross_profit, may have better allocation quality as a free-data disclosure/source-provenance edge.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "core ranking",
+    "sizing",
+    "exits",
+    "live orders",
+    "LLM/news",
+    "source candidate selection",
+    "hold_days",
+    "notional except tested paper support"
+  ],
+  "mechanism_family": "companyfacts_disclosure_quality_support",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260601-026",
+    "exp-20260602-010",
+    "exp-20260603-002"
+  ],
+  "new_evidence_type": "production_visible_sec_companyfacts_gross_margin_source_provenance_field",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "Precheck shows cost_of_revenue fallback rows exist in all three windows and have positive raw PnL contribution, but old_thin may be concentrated.",
+    "expected_ev_delta": 0.08,
+    "expected_pnl_delta": 3000.0,
+    "main_failure_modes": [
+      "window_regression",
+      "concentration_failed",
+      "source_provenance_is_ticker_proxy",
+      "insufficient_incremental_ev"
+    ],
+    "recorded_at": "2026-06-03T01:14:24+00:00",
+    "success_probability": 0.35
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "alpha_passed": false,
+    "artifact": "data/experiments/exp-20260603-003/exp_20260603_003_companyfacts_gross_margin_source_support.json",
+    "decision": "rejected_companyfacts_gross_margin_source_support",
+    "failed_gates": [
+      "concentration_guard_passed"
+    ],
+    "log": "experiments/logs/exp-20260603-003.json",
+    "metrics": {
+      "aggregate_expected_value_delta": 0.2035,
+      "aggregate_total_pnl_delta": 3029.19,
+      "max_single_positive_share": 0.887952,
+      "positive_pnl_hhi": 0.796841,
+      "target_trade_count": 99
+    },
+    "promotable_now": false,
+    "report": "experiments/artifacts/exp-20260603-003_companyfacts_gross_margin_source_support.md"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260603-003.json",
+  "single_causal_variable": "gross_margin_cost_fallback_support_v1",
+  "status": "completed",
+  "ticket_file": "experiments/tickets/exp-20260603-003.json",
+  "trial_family": "companyfacts_gross_margin_source_provenance",
+  "trial_variant_id": "gross_margin_cost_fallback_support_v1"
+}
