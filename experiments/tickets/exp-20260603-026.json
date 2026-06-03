@@ -1,0 +1,192 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260603_026_accepted_consensus_core_overlap_replacement_value.py",
+    "data/experiments/exp-20260603-026/exp_20260603_026_accepted_consensus_core_overlap_replacement_value.json",
+    "experiments/cards/exp-20260603-026.md",
+    "experiments/manifests/exp-20260603-026.json",
+    "experiments/tickets/exp-20260603-026.json",
+    "experiments/logs/exp-20260603-026.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "artifact": "data/experiments/exp-20260603-026/exp_20260603_026_accepted_consensus_core_overlap_replacement_value.json",
+  "baseline_result_file": "data/backtests/backtest_results_20260602.json",
+  "card_file": "experiments/cards/exp-20260603-026.md",
+  "change_type": "default_off_paper_candidate_pool_displacement_value",
+  "changed_variable": "accepted_consensus_same_day_core_overlap_replacement_value_v1",
+  "claimed_at": "2026-06-03T23:11:35+00:00",
+  "completed_at": "2026-06-03T23:20:30Z",
+  "updated_at": "2026-06-03T23:20:30Z",
+  "created_at": "2026-06-03T23:11:21+00:00",
+  "decision": "rejected_positive_vs_core_but_worse_than_current_accepted_consensus",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260603-026",
+  "experiment_uid": "expuid-a19cafdcf2ed4675",
+  "gate4": {
+    "accepted": false,
+    "accepted_comparator_aggregate": {
+      "after": {
+        "expected_value_score": 9.1999,
+        "strategy_total_pnl": 258248.75,
+        "total_pnl": 258248.75
+      },
+      "before": {
+        "expected_value_score": 7.8941,
+        "strategy_total_pnl": 234850.99,
+        "total_pnl": 234850.99
+      },
+      "comparison": {
+        "expected_value_score_delta": 1.3058,
+        "expected_value_score_delta_pct": 0.165415,
+        "strategy_total_pnl_delta": 23397.76,
+        "strategy_total_pnl_delta_pct": 0.099628,
+        "total_pnl_delta": 23397.76
+      }
+    },
+    "accepted_comparator_experiment_id": "exp-20260603-014",
+    "base_gate": {
+      "decision": "positive_replay_lead_not_promoted_requires_shared_cross_source_adapter",
+      "ev_windows_improved": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "gates": {
+        "aggregate_expected_value_positive": true,
+        "aggregate_pnl_positive": true,
+        "all_windows_expected_value_improved": true,
+        "all_windows_pnl_improved": true,
+        "concentration_guard_passed": true,
+        "drawdown_drift_passed": true,
+        "survival_floor_passed": true,
+        "target_trade_count_passed": true,
+        "target_window_count_passed": true
+      },
+      "max_drawdown_delta": -0.0019,
+      "min_survival_rate": 0.7925,
+      "passed": true,
+      "pnl_windows_improved": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "rationale": "Canonical three-window replay improved aggregate EV and PnL across all windows. No production behavior changes were made; promotion is blocked until the cross-source consensus signal is rebuilt as a shared live/backtest adapter.",
+      "requires_parity_before_promotion": true
+    },
+    "comparator_ev_windows_improved": [
+      "mid_weak"
+    ],
+    "comparator_pnl_windows_improved": [
+      "mid_weak"
+    ],
+    "decision": "rejected_positive_vs_core_but_worse_than_current_accepted_consensus",
+    "failed_reasons": [
+      "beats_current_accepted_consensus_ev",
+      "beats_current_accepted_consensus_pnl",
+      "all_windows_beat_current_accepted_consensus_ev",
+      "all_windows_beat_current_accepted_consensus_pnl"
+    ],
+    "gates": {
+      "aggregate_expected_value_positive": true,
+      "aggregate_pnl_positive": true,
+      "all_windows_beat_current_accepted_consensus_ev": false,
+      "all_windows_beat_current_accepted_consensus_pnl": false,
+      "all_windows_expected_value_improved": true,
+      "all_windows_pnl_improved": true,
+      "beats_current_accepted_consensus_ev": false,
+      "beats_current_accepted_consensus_pnl": false,
+      "concentration_guard_passed": true,
+      "drawdown_drift_passed": true,
+      "survival_floor_passed": true,
+      "target_trade_count_passed": true,
+      "target_window_count_passed": true
+    },
+    "passed": false,
+    "rationale": "The no-core-overlap consensus slice is positive versus the core baseline, but it removes profitable accepted-consensus rows and does not beat the current accepted comparator. Do not retain it.",
+    "requires_parity_before_promotion": false,
+    "vs_accepted_comparator": {
+      "accepted_comparator_after": {
+        "expected_value_score": 9.1999,
+        "strategy_total_pnl": 258248.75,
+        "total_pnl": 258248.75
+      },
+      "after": {
+        "expected_value_score": 9.0932,
+        "strategy_total_pnl": 255286.78,
+        "total_pnl": 255286.78
+      },
+      "comparison": {
+        "expected_value_score_delta": -0.1067,
+        "strategy_total_pnl_delta": -2961.97,
+        "total_pnl_delta": -2961.97
+      }
+    }
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260603-026",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-03T23:11:21+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "accepted_consensus_core_overlap_replacement_value"
+  },
+  "hypothesis": "Accepted independent-source consensus candidates should have positive replacement value only when they do not compete with same-day core A/B candidates; same-day core overlap should identify weaker deployment priority.",
+  "id": "exp-20260603-026",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "accepted_consensus_same_day_core_overlap_replacement_value_v1"
+  ],
+  "log": "experiments/logs/exp-20260603-026.json",
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260531-030",
+    "exp-20260601-001",
+    "exp-20260601-028",
+    "exp-20260603-014",
+    "exp-20260603-015",
+    "exp-20260603-025"
+  ],
+  "new_evidence_type": "same_day_core_displacement_value",
+  "owner": "automation-alpha-search",
+  "prediction": {
+    "confidence_reason": "Playbook explicitly asks for same-day core replacement-value evidence before activation; current accepted consensus is historically strong versus cash but has not proven scarce-slot displacement value.",
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 1500.0,
+    "main_failure_modes": [
+      "same_day_core_overlap_sparse",
+      "overlap_slice_negative",
+      "window_regression",
+      "accepted_consensus_comparator_not_beaten"
+    ],
+    "recorded_at": "2026-06-03T23:10:55+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 9,
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_orders": false,
+    "backtester_adapter_changed": false,
+    "parity_note": "This experiment changes no production code. A retained core-overlap priority field would need a shared default-off adapter path that builds the same core-entry map in live reports and backtests before any daily queue, candidate priority, or order surface could change.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "result": {
+    "accepted": false,
+    "artifact": "data/experiments/exp-20260603-026/exp_20260603_026_accepted_consensus_core_overlap_replacement_value.json",
+    "decision": "rejected_positive_vs_core_but_worse_than_current_accepted_consensus"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260603-026.json",
+  "single_causal_variable": "accepted_consensus_same_day_core_overlap_replacement_value_v1",
+  "status": "completed",
+  "ticket_file": "experiments/tickets/exp-20260603-026.json",
+  "trial_family": "accepted_free_data_cross_source_consensus_displacement_value",
+  "trial_variant_id": "accepted_consensus_same_day_core_overlap_replacement_value_v1"
+}
