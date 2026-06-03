@@ -1,36 +1,5 @@
 {
-  "experiment_id": "exp-20260603-018",
-  "experiment_uid": "expuid-dab2916783934ce5",
-  "hub_identity": {
-    "scheme": "hf_hub_local_v1",
-    "namespace": "ginger/experiments",
-    "repo_id": "ginger/experiments/exp-20260603-018",
-    "slug": "consensus_source_family_monotonicity",
-    "reserved_at": "2026-06-03T16:09:42+00:00",
-    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
-  },
-  "status": "claimed",
-  "lane": "alpha_search",
-  "owner": "alpha-search-automation",
-  "hypothesis": "Independent accepted free-data source-family count should show monotonic target-trade outcomes within the already accepted default-off consensus sleeve if it is a durable ranking signal rather than just an admission guard.",
-  "change_type": "default_off_paper_ranking_validation",
-  "mechanism_family": "default_off_paper_ranking_validation",
-  "trial_family": "accepted_free_data_cross_source_consensus_source_family_count_monotonicity",
-  "trial_variant_id": "exp-20260603-018",
-  "single_causal_variable": "independent_source_family_count_monotonicity_bucket_v1",
-  "changed_variable": "independent_source_family_count_monotonicity_bucket_v1",
-  "prior_trial_count": 0,
-  "nearby_prior_experiments": [
-    "exp-20260531-030",
-    "exp-20260601-001",
-    "exp-20260601-028",
-    "exp-20260603-014",
-    "exp-20260603-015",
-    "exp-20260603-016"
-  ],
-  "multiple_testing_risk_bucket": "minimal",
-  "new_evidence_type": "source_family_count_monotonicity_validation",
-  "baseline_result_file": "data/backtests/backtest_results_20260602.json",
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
   "allowed_write_scope": [
     "quant/experiments/exp_20260603_018_consensus_source_family_monotonicity.py",
     "data/experiments/exp-20260603-018/exp_20260603_018_consensus_source_family_monotonicity.json",
@@ -41,14 +10,348 @@
     "docs/experiment_log.jsonl",
     "docs/experiment_registry.json"
   ],
-  "must_not_touch": [],
+  "artifact": "data/experiments/exp-20260603-018/exp_20260603_018_consensus_source_family_monotonicity.json",
+  "baseline_result_file": "data/backtests/backtest_results_20260602.json",
+  "card_file": "experiments/cards/exp-20260603-018.md",
+  "change_type": "default_off_paper_ranking_validation",
+  "changed_variable": "independent_source_family_count_monotonicity_bucket_v1",
+  "claimed_at": "2026-06-03T16:09:52+00:00",
+  "completed_at": "2026-06-03T16:19:31Z",
+  "created_at": "2026-06-03T16:09:42+00:00",
+  "decision": "rejected_current_accepted_consensus_pnl_notional_identity_failed",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260603-018",
+  "experiment_uid": "expuid-dab2916783934ce5",
+  "gate4": {
+    "current_accepted_identity": {
+      "aggregate_after_expected_value_delta_vs_current_accepted": -0.7955,
+      "aggregate_after_strategy_total_pnl_delta_vs_current_accepted": -14038.64,
+      "by_window": [
+        {
+          "after_expected_value_delta_vs_current_accepted": -0.4371,
+          "after_total_pnl_delta_vs_current_accepted": -4420.83,
+          "label": "late_strong",
+          "target_trade_count_delta_vs_current_accepted": 0
+        },
+        {
+          "after_expected_value_delta_vs_current_accepted": -0.1642,
+          "after_total_pnl_delta_vs_current_accepted": -2890.47,
+          "label": "mid_weak",
+          "target_trade_count_delta_vs_current_accepted": 0
+        },
+        {
+          "after_expected_value_delta_vs_current_accepted": -0.1942,
+          "after_total_pnl_delta_vs_current_accepted": -6727.34,
+          "label": "old_thin",
+          "target_trade_count_delta_vs_current_accepted": 0
+        }
+      ],
+      "comparison_artifact": "data/experiments/exp-20260603-014/accepted_consensus_independent_source_family.json",
+      "current_accepted_experiment_id": "exp-20260603-014",
+      "mismatched_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "passed": false
+    },
+    "decision": "rejected_current_accepted_consensus_pnl_notional_identity_failed",
+    "ev_windows_improved": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "gates": {
+      "aggregate_expected_value_positive": true,
+      "aggregate_pnl_positive": true,
+      "all_windows_expected_value_improved": true,
+      "all_windows_pnl_improved": true,
+      "concentration_guard_passed": true,
+      "current_accepted_consensus_identity_passed": false,
+      "drawdown_drift_passed": true,
+      "monotonic_aggregate_avg_pnl_monotonic": true,
+      "monotonic_aggregate_avg_return_monotonic": true,
+      "monotonic_aggregate_median_pnl_monotonic": true,
+      "monotonic_aggregate_sample_passed": false,
+      "monotonic_per_window_avg_pnl_monotonic": true,
+      "monotonic_per_window_median_pnl_monotonic": true,
+      "monotonic_per_window_sample_passed": false,
+      "survival_floor_passed": true,
+      "target_trade_count_passed": true,
+      "target_window_count_passed": true
+    },
+    "max_drawdown_delta": -0.0008,
+    "min_survival_rate": 0.7925,
+    "monotonic_validation": {
+      "decision": "rejected_source_family_count_monotonicity_thin_3plus_bucket",
+      "gates": {
+        "aggregate_avg_pnl_monotonic": true,
+        "aggregate_avg_return_monotonic": true,
+        "aggregate_median_pnl_monotonic": true,
+        "aggregate_sample_passed": false,
+        "per_window_avg_pnl_monotonic": true,
+        "per_window_median_pnl_monotonic": true,
+        "per_window_sample_passed": false
+      },
+      "passed": false,
+      "per_window": [
+        {
+          "avg_pnl_monotonic": true,
+          "family_count_2_avg_pnl": 208.28,
+          "family_count_2_median_pnl": 91.58,
+          "family_count_2_trade_count": 7,
+          "family_count_3plus_avg_pnl": 744.65,
+          "family_count_3plus_median_pnl": 744.65,
+          "family_count_3plus_trade_count": 2,
+          "label": "late_strong",
+          "median_pnl_monotonic": true,
+          "sample_passed": false
+        },
+        {
+          "avg_pnl_monotonic": true,
+          "family_count_2_avg_pnl": 82.12,
+          "family_count_2_median_pnl": 67.36,
+          "family_count_2_trade_count": 21,
+          "family_count_3plus_avg_pnl": 202.54,
+          "family_count_3plus_median_pnl": 202.54,
+          "family_count_3plus_trade_count": 1,
+          "label": "mid_weak",
+          "median_pnl_monotonic": true,
+          "sample_passed": false
+        },
+        {
+          "avg_pnl_monotonic": true,
+          "family_count_2_avg_pnl": 192.73,
+          "family_count_2_median_pnl": 124.87,
+          "family_count_2_trade_count": 14,
+          "family_count_3plus_avg_pnl": 893.35,
+          "family_count_3plus_median_pnl": 893.35,
+          "family_count_3plus_trade_count": 2,
+          "label": "old_thin",
+          "median_pnl_monotonic": true,
+          "sample_passed": false
+        }
+      ],
+      "rationale": "The 3plus-family bucket is directionally strong but too thin across canonical windows to justify a new ranking feature."
+    },
+    "passed": false,
+    "pnl_consistency": {
+      "current_accepted_artifact": {
+        "aggregate": {
+          "implied_pnl_from_notional_and_return": 9359.12,
+          "mismatch_count": 47,
+          "passed": false,
+          "pnl_diff": 14038.64,
+          "recorded_pnl": 23397.76,
+          "trade_count": 47
+        },
+        "by_window": {
+          "late_strong": {
+            "implied_pnl_from_notional_and_return": 2947.24,
+            "mismatch_count": 9,
+            "passed": false,
+            "pnl_diff": 4420.83,
+            "recorded_pnl": 7368.07,
+            "trade_count": 9
+          },
+          "mid_weak": {
+            "implied_pnl_from_notional_and_return": 1926.99,
+            "mismatch_count": 22,
+            "passed": false,
+            "pnl_diff": 2890.46,
+            "recorded_pnl": 4817.45,
+            "trade_count": 22
+          },
+          "old_thin": {
+            "implied_pnl_from_notional_and_return": 4484.89,
+            "mismatch_count": 16,
+            "passed": false,
+            "pnl_diff": 6727.35,
+            "recorded_pnl": 11212.24,
+            "trade_count": 16
+          }
+        },
+        "formula": "recorded_pnl should equal round(paper_notional_usd * pnl_pct_net, 2)",
+        "sample_mismatches": [
+          {
+            "date": "2025-10-23",
+            "implied_pnl_from_notional_and_return": -16.9,
+            "paper_notional_usd": 4000.0,
+            "pnl_diff": -25.36,
+            "pnl_pct_net": -0.004226,
+            "recorded_pnl": -42.26,
+            "ticker": "ISRG",
+            "window": "late_strong"
+          },
+          {
+            "date": "2025-10-24",
+            "implied_pnl_from_notional_and_return": 215.03,
+            "paper_notional_usd": 4000.0,
+            "pnl_diff": 322.55,
+            "pnl_pct_net": 0.053758,
+            "recorded_pnl": 537.58,
+            "ticker": "MU",
+            "window": "late_strong"
+          },
+          {
+            "date": "2025-12-09",
+            "implied_pnl_from_notional_and_return": 44.91,
+            "paper_notional_usd": 4000.0,
+            "pnl_diff": 67.36,
+            "pnl_pct_net": 0.011227,
+            "recorded_pnl": 112.27,
+            "ticker": "APP",
+            "window": "late_strong"
+          },
+          {
+            "date": "2025-12-10",
+            "implied_pnl_from_notional_and_return": 366.28,
+            "paper_notional_usd": 4000.0,
+            "pnl_diff": 549.41,
+            "pnl_pct_net": 0.091569,
+            "recorded_pnl": 915.69,
+            "ticker": "MU",
+            "window": "late_strong"
+          },
+          {
+            "date": "2025-12-19",
+            "implied_pnl_from_notional_and_return": 939.64,
+            "paper_notional_usd": 4000.0,
+            "pnl_diff": 1409.46,
+            "pnl_pct_net": 0.23491,
+            "recorded_pnl": 2349.1,
+            "ticker": "MU",
+            "window": "late_strong"
+          },
+          {
+            "date": "2026-01-06",
+            "implied_pnl_from_notional_and_return": 549.66,
+            "paper_notional_usd": 4000.0,
+            "pnl_diff": 824.49,
+            "pnl_pct_net": 0.137415,
+            "recorded_pnl": 1374.15,
+            "ticker": "MU",
+            "window": "late_strong"
+          },
+          {
+            "date": "2026-01-08",
+            "implied_pnl_from_notional_and_return": 91.58,
+            "paper_notional_usd": 4000.0,
+            "pnl_diff": 137.37,
+            "pnl_pct_net": 0.022895,
+            "recorded_pnl": 228.95,
+            "ticker": "DE",
+            "window": "late_strong"
+          },
+          {
+            "date": "2026-01-16",
+            "implied_pnl_from_notional_and_return": 783.22,
+            "paper_notional_usd": 4000.0,
+            "pnl_diff": 1174.83,
+            "pnl_pct_net": 0.195805,
+            "recorded_pnl": 1958.05,
+            "ticker": "MU",
+            "window": "late_strong"
+          },
+          {
+            "date": "2026-01-23",
+            "implied_pnl_from_notional_and_return": -26.18,
+            "paper_notional_usd": 4000.0,
+            "pnl_diff": -39.28,
+            "pnl_pct_net": -0.006546,
+            "recorded_pnl": -65.46,
+            "ticker": "MU",
+            "window": "late_strong"
+          },
+          {
+            "date": "2025-05-02",
+            "implied_pnl_from_notional_and_return": 170.01,
+            "paper_notional_usd": 4000.0,
+            "pnl_diff": 255.02,
+            "pnl_pct_net": 0.042503,
+            "recorded_pnl": 425.03,
+            "ticker": "PLTR",
+            "window": "mid_weak"
+          }
+        ]
+      },
+      "current_replay": {
+        "aggregate": {
+          "implied_pnl_from_notional_and_return": 9359.12,
+          "mismatch_count": 0,
+          "passed": true,
+          "pnl_diff": 0.0,
+          "recorded_pnl": 9359.12,
+          "trade_count": 47
+        },
+        "by_window": {
+          "late_strong": {
+            "implied_pnl_from_notional_and_return": 2947.24,
+            "mismatch_count": 0,
+            "passed": true,
+            "pnl_diff": 0.0,
+            "recorded_pnl": 2947.24,
+            "trade_count": 9
+          },
+          "mid_weak": {
+            "implied_pnl_from_notional_and_return": 1926.99,
+            "mismatch_count": 0,
+            "passed": true,
+            "pnl_diff": -0.01,
+            "recorded_pnl": 1926.98,
+            "trade_count": 22
+          },
+          "old_thin": {
+            "implied_pnl_from_notional_and_return": 4484.89,
+            "mismatch_count": 0,
+            "passed": true,
+            "pnl_diff": 0.01,
+            "recorded_pnl": 4484.9,
+            "trade_count": 16
+          }
+        },
+        "formula": "recorded_pnl should equal round(paper_notional_usd * pnl_pct_net, 2)",
+        "sample_mismatches": []
+      }
+    },
+    "pnl_windows_improved": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "rationale": "The observational replay selected the same target-trade count but did not match the current accepted artifact because the accepted artifact's recorded PnL does not equal paper_notional_usd times pnl_pct_net. Treat source-family-count ranking as blocked until the accepted consensus baseline is repaired.",
+    "requires_parity_before_promotion": false
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260603-018",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-03T16:09:42+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "consensus_source_family_monotonicity"
+  },
+  "hypothesis": "Independent accepted free-data source-family count should show monotonic target-trade outcomes within the already accepted default-off consensus sleeve if it is a durable ranking signal rather than just an admission guard.",
+  "id": "exp-20260603-018",
+  "lane": "alpha_search",
   "locked_variables": [
     "independent_source_family_count_monotonicity_bucket_v1"
   ],
-  "evaluation_windows": [],
-  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "log": "experiments/logs/exp-20260603-018.json",
+  "mechanism_family": "default_off_paper_ranking_validation",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260531-030",
+    "exp-20260601-001",
+    "exp-20260601-028",
+    "exp-20260603-014",
+    "exp-20260603-015",
+    "exp-20260603-016"
+  ],
+  "new_evidence_type": "source_family_count_monotonicity_validation",
+  "owner": "alpha-search-automation",
   "prediction": {
-    "success_probability": 0.16,
+    "confidence_reason": "The current accepted consensus uses family count only as admission; testing monotonicity is useful for ranking evidence, but source-count retunes are frozen and high multiple-testing risk.",
     "expected_ev_delta": null,
     "expected_pnl_delta": null,
     "main_failure_modes": [
@@ -57,14 +360,31 @@
       "nearby_source_count_overfit",
       "current_accepted_comparator_not_beaten"
     ],
-    "confidence_reason": "The current accepted consensus uses family count only as admission; testing monotonicity is useful for ranking evidence, but source-count retunes are frozen and high multiple-testing risk.",
-    "recorded_at": "2026-06-03T16:09:15+00:00"
+    "recorded_at": "2026-06-03T16:09:15+00:00",
+    "success_probability": 0.16
   },
-  "created_at": "2026-06-03T16:09:42+00:00",
-  "claimed_at": "2026-06-03T16:09:52+00:00",
-  "completed_at": null,
-  "result": null,
+  "prior_trial_count": 0,
+  "production_impact": {
+    "adapter_status": "replay_only_observational_validation",
+    "alters_orders": false,
+    "backtester_adapter_changed": false,
+    "parity_note": "This experiment changes no production code. It validates persisted source-family-count evidence inside the already accepted default-off consensus sleeve and cannot alter daily orders, reports, candidate queues, ranking, sizing, exits, or shared adapters.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "result": {
+    "accepted": false,
+    "summary": "The observational replay selected the same target-trade count but did not match the current accepted artifact because the accepted artifact's recorded PnL does not equal paper_notional_usd times pnl_pct_net. Treat source-family-count ranking as blocked until the accepted consensus baseline is repaired."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260603-018.json",
+  "single_causal_variable": "independent_source_family_count_monotonicity_bucket_v1",
+  "status": "completed",
   "ticket_file": "experiments/tickets/exp-20260603-018.json",
-  "card_file": "experiments/cards/exp-20260603-018.md",
-  "revision_manifest_file": "experiments/manifests/exp-20260603-018.json"
+  "trial_family": "accepted_free_data_cross_source_consensus_source_family_count_monotonicity",
+  "trial_variant_id": "exp-20260603-018"
 }
