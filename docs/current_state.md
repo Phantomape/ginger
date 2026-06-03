@@ -54,6 +54,22 @@ EV `6.3596` and PnL `$192,538.61`.
 Latest saved single-window backtest artifacts can reflect only the most recent
 command; canonical acceptance evidence is the three-window artifact above.
 
+Latest accepted default-off replay lead: `exp-20260603-006` tested one official
+FINRA borrow-pressure admission field on top of the accepted FINRA/IWM
+same-ticker-cooldown source. Candidates were admitted only when the latest
+publication-date-safe FINRA row had `days_to_cover >= 3.0` and positive
+`short_interest_change_pct`. Versus the canonical core baseline, aggregate EV
+improved `7.8941 -> 8.1526` (`+0.2585`) and PnL improved `$234,850.99 ->
+$240,539.11` (`+$5,688.12`), with all three windows improving: `late_strong
++0.1254` EV / `+$1,492.81`, `mid_weak +0.0316` / `+$578.03`, and `old_thin
++0.1015` / `+$3,617.28`. The replay produced `22` target paper trades across
+all three windows, max single positive share `0.383087`, positive PnL HHI
+`0.232995`, and no drawdown or survival regression. This is not yet a shared
+adapter or production change: `trade_enabled=false`, live/default orders,
+watchlists, core ranking, sizing, exits, LLM/news, and shared run/backtest
+adapters are unchanged. Promotion requires moving the exact FINRA
+borrow-pressure admission into a shared default-off adapter with parity tests.
+
 Latest default-off alpha adapter acceptance: `exp-20260603-004` adds a shared
 sector-residual event-quality support field on top of the accepted
 `POST_EARNINGS_UNDERPRICED_DRIFT_PAPER` adapter after `exp-20260602-027`.
