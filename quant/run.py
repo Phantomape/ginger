@@ -2049,6 +2049,15 @@ def main():
                 if frame is not None and str(ticker).upper() != "SPY"
             ),
         }
+        post_earnings_core_entry_tickers_by_date = {
+            today_iso: sorted(
+                {
+                    str(signal.get("ticker") or "").upper()
+                    for signal in (signals or [])
+                    if str(signal.get("ticker") or "").strip()
+                }
+            )
+        }
         post_earnings_underpriced_drift_paper_sleeve = (
             build_post_earnings_underpriced_drift_paper_sleeve_snapshot(
                 as_of=today_iso,
@@ -2056,6 +2065,9 @@ def main():
                 candidate_universe=post_earnings_candidate_universe,
                 open_prices=current_open_prices,
                 current_prices=current_prices,
+                config={
+                    "core_entry_tickers_by_date": post_earnings_core_entry_tickers_by_date,
+                },
             )
         )
         if (

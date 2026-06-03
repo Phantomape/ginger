@@ -77,6 +77,7 @@ POSITIVE_SURPRISE_RULE_VERSION = "post_earnings_positive_surprise_drift_v1"
 REPLACEMENT_VALUE_RULE_VERSION = "post_earnings_underpriced_forward_replacement_value_v1"
 HIGH_LIQUIDITY_SUPPORT_RULE_VERSION = "post_earnings_underpriced_high_liquidity_support_v1"
 SECTOR_RESIDUAL_SUPPORT_RULE_VERSION = "post_earnings_sector_residual_support_v1"
+NON_CORE_OVERLAP_SUPPORT_RULE_VERSION = "post_earnings_non_same_day_core_overlap_support_v1"
 STATE_SCHEMA_VERSION = 1
 
 DEFAULT_STATE_PATH = data_artifact_path("post_earnings_underpriced_drift_paper_state")
@@ -135,6 +136,8 @@ DEFAULT_CONFIG = {
     "sector_residual_min_member_returns": 3,
     "sector_residual_notional_scalar": 1.05,
     "sector_by_ticker": None,
+    "core_entry_tickers_by_date": None,
+    "non_core_overlap_notional_scalar": 1.05,
     "daily_entry_slots": 1,
     "max_active_positions": 5,
     "hold_days": 10,
@@ -308,6 +311,65 @@ def _sector_residual_context(
     }
 
 
+def _normalise_core_entry_tickers_by_date(
+    value: Any,
+) -> dict[str, set[str]] | None:
+    if value is None or not isinstance(value, dict):
+        return None
+    normalised: dict[str, set[str]] = {}
+    for raw_date, raw_tickers in value.items():
+        date_value = _date10(str(raw_date))
+        if not date_value:
+            continue
+        if raw_tickers is None:
+            normalised[date_value] = set()
+            continue
+        if isinstance(raw_tickers, str):
+            iterable = [raw_tickers]
+        else:
+            try:
+                iterable = list(raw_tickers)
+            except TypeError:
+                iterable = []
+        normalised[date_value] = {
+            str(ticker).upper()
+            for ticker in iterable
+            if str(ticker or "").strip()
+        }
+    return normalised
+
+
+def _non_core_overlap_context(
+    *,
+    ticker: str,
+    signal_date: str,
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    by_date = _normalise_core_entry_tickers_by_date(
+        config.get("core_entry_tickers_by_date")
+    )
+    date_value = _date10(signal_date)
+    ticker_value = str(ticker or "").upper()
+    if by_date is None or date_value not in by_date:
+        return {
+            "non_core_overlap_context_status": "missing_core_overlap_context",
+            "same_day_ab_entry_count": None,
+            "same_day_ab_overlap": None,
+            "same_ticker_ab_overlap": None,
+            "non_core_overlap_support": False,
+        }
+    same_day_tickers = by_date.get(date_value) or set()
+    same_ticker_overlap = ticker_value in same_day_tickers
+    same_day_overlap = bool(same_day_tickers)
+    return {
+        "non_core_overlap_context_status": "ok",
+        "same_day_ab_entry_count": len(same_day_tickers),
+        "same_day_ab_overlap": same_day_overlap,
+        "same_ticker_ab_overlap": same_ticker_overlap,
+        "non_core_overlap_support": not same_day_overlap and not same_ticker_overlap,
+    }
+
+
 def empty_post_earnings_underpriced_drift_paper_sleeve_snapshot(
     as_of: str,
     reason: str,
@@ -475,6 +537,26 @@ def build_post_earnings_underpriced_drift_paper_sleeve_snapshot(
         "trade_enabled": False,
         "alters_orders": False,
     }
+    non_core_overlap_support = {
+        "rule_version": NON_CORE_OVERLAP_SUPPORT_RULE_VERSION,
+        "notional_scalar": float(cfg["non_core_overlap_notional_scalar"]),
+        "supported_candidate_count": sum(
+            1 for candidate in candidates if candidate.get("non_core_overlap_support")
+        ),
+        "supported_raw_candidate_count": sum(
+            1 for candidate in raw_candidates if candidate.get("non_core_overlap_support")
+        ),
+        "context_status_counts": dict(
+            sorted(
+                Counter(
+                    str(candidate.get("non_core_overlap_context_status") or "unknown")
+                    for candidate in raw_candidates
+                ).items()
+            )
+        ),
+        "trade_enabled": False,
+        "alters_orders": False,
+    }
 
     open_positions = working_state.get("open_positions") or []
     room = max(0, int(cfg["max_active_positions"]) - len(open_positions))
@@ -536,6 +618,7 @@ def build_post_earnings_underpriced_drift_paper_sleeve_snapshot(
         "candidate_audit": audit,
         "high_liquidity_support": high_liquidity_support,
         "sector_residual_support": sector_residual_support,
+        "non_core_overlap_support": non_core_overlap_support,
         "candidates": deepcopy(candidates),
         "raw_candidates_sample": deepcopy(raw_candidates[:10]),
         "rejected_candidates": deepcopy(rejected[:50]),
@@ -948,8 +1031,28 @@ def _candidate_from_event(
         if sector_residual_supported
         else 1.0
     )
+    non_core_context = _non_core_overlap_context(
+        ticker=ticker,
+        signal_date=signal_date,
+        config=config,
+    )
+    audit[
+        "non_core_overlap_context_"
+        + str(non_core_context.get("non_core_overlap_context_status") or "unknown")
+    ] += 1
+    non_core_overlap_supported = bool(
+        non_core_context.get("non_core_overlap_support")
+    )
+    non_core_overlap_scalar = (
+        float(config["non_core_overlap_notional_scalar"])
+        if non_core_overlap_supported
+        else 1.0
+    )
     pre_sector_residual_notional = base_notional * high_liquidity_scalar
-    intended_notional = pre_sector_residual_notional * sector_residual_scalar
+    pre_non_core_overlap_notional = (
+        pre_sector_residual_notional * sector_residual_scalar
+    )
+    intended_notional = pre_non_core_overlap_notional * non_core_overlap_scalar
     return {
         "sleeve": SLEEVE_NAME,
         "ticker": ticker,
@@ -1002,6 +1105,13 @@ def _candidate_from_event(
         "sector_residual_notional_scalar": _round(sector_residual_scalar, 6),
         "pre_sector_residual_paper_notional_usd": _round(
             pre_sector_residual_notional,
+            2,
+        ),
+        **non_core_context,
+        "non_core_overlap_support_rule_version": NON_CORE_OVERLAP_SUPPORT_RULE_VERSION,
+        "non_core_overlap_notional_scalar": _round(non_core_overlap_scalar, 6),
+        "pre_non_core_overlap_paper_notional_usd": _round(
+            pre_non_core_overlap_notional,
             2,
         ),
         "known_at": "after_earnings_snapshot_transition_and_signal_date_close_before_next_open_paper_entry",

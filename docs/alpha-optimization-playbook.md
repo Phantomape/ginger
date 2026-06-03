@@ -82,11 +82,19 @@ Recent repository evidence supports this priority:
   all three canonical windows improved, but only marginally (`EV +0.0082`,
   PnL `+$199.95`, `16` supported trades). Retain it for forward observation;
   do not mine nearby post-earnings sector-residual thresholds, min-member
-  counts, or scalar values on the frozen windows. The next valid earnings work
-  is forward replacement-value accumulation or a materially richer
-  event-quality field, not implicit DTE resets, generic PEAD/pre-earnings
-  threshold sweeps, nearby `pre_event_rs20_vs_spy` retunes, or post-earnings
-  high-liquidity/sector-residual threshold/scalar retunes.
+  counts, or scalar values on the frozen windows. `exp-20260603-022` then
+  promoted one production-visible support field from the positive
+  `exp-20260603-021` replay lead: already-selected candidates receive another
+  `1.05x` default-off paper scalar only when date-keyed selected core A/B
+  context is available and there is no same-day same-ticker core overlap. This
+  improved all three canonical windows versus exp004 (`EV +0.0300`, PnL
+  `+$247.93`, `16` supported trades) and is now shared paper-only metadata.
+  Treat the frozen post-earnings support stack as saturated: the next valid
+  earnings work is forward replacement-value accumulation or a materially
+  richer event-quality field, not implicit DTE resets, generic
+  PEAD/pre-earnings threshold sweeps, nearby `pre_event_rs20_vs_spy` retunes,
+  or post-earnings high-liquidity, sector-residual, core-overlap, threshold, or
+  scalar retunes.
 - `VOLUME_BREADTH_BREAKOUT_PAPER` and QQQ-confirmed VCP show that free OHLCV
   market-confirmation fields can produce useful paper sleeves. Their next step
   is forward maturation, not another breadth/QQQ/top-N sweep. The latest
@@ -1380,7 +1388,8 @@ production-visible field:
 - nearby post-earnings underpriced drift `pre_event_rs20_vs_spy`, high-liquidity
   threshold/scalar, sector-residual threshold/min-member/scalar, score, or
   close-location retunes after `exp-20260602-026`, `exp-20260602-027`, and
-  `exp-20260603-004`; require forward replacement-value rows or a materially
+  `exp-20260603-004`, or same-day core-overlap support/scalar retunes after
+  `exp-20260603-022`; require forward replacement-value rows or a materially
   richer event-quality field;
 - simple target, stop, or fixed max-loss exit changes;
 - ticker-specific exceptions from one or two trades;

@@ -86,6 +86,26 @@ concentration inside guardrails, but it underperformed the current accepted
 frozen windows unless new forward replacement-value rows show it beats the
 current accepted consensus comparator.
 
+Latest post-earnings support-layer acceptance: `exp-20260603-022` promotes the
+positive `exp-20260603-021` lead into the shared default-off
+`POST_EARNINGS_UNDERPRICED_DRIFT_PAPER` adapter by plumbing
+`core_entry_tickers_by_date` from `run.py` after `plan_entry_candidates`.
+Already-selected underpriced positive-surprise candidates receive an additional
+`1.05x` paper-notional scalar only when same-day selected core A/B context is
+available and has no same-ticker overlap. Versus the accepted `exp-20260603-004`
+after-metrics baseline, aggregate EV improved `8.3139 -> 8.3439` (`+0.0300`)
+and PnL improved `$239,109.27 -> $239,357.20` (`+$247.93`). All three
+canonical windows improved: `late_strong +0.0207` EV / `+$186.66`,
+`mid_weak +0.0090` / `+$41.88`, and `old_thin +0.0003` / `+$19.39`. The rule
+adjusted `16` paper trades across all windows, max drawdown did not worsen,
+max single positive incremental share was `0.299212`, and positive incremental
+PnL HHI was `0.206554`. This is default-off paper only: `trade_enabled=false`,
+live/default orders, watchlists, core ranking, sizing, exits, and LLM/news are
+unchanged. Do not retune nearby post-earnings same-day-core-overlap,
+high-liquidity, sector-residual, threshold, or scalar variants on the frozen
+windows; the next valid work is forward replacement-value accumulation or a
+materially richer event-quality field.
+
 Previous default-off alpha adapter acceptance: `exp-20260603-007` promotes the
 positive `exp-20260603-006` FINRA borrow-pressure admission lead into the
 shared `FINRA_IWM_CONFIRMED_PAPER` adapter. Candidates are admitted only when

@@ -2169,6 +2169,19 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"pnl=${metrics.get('realized_pnl', 0.0):,.2f}  |  "
                 f"blocked_by={reason_text}"
             )
+        non_core_overlap = (
+            post_earnings_underpriced_drift_paper_sleeve.get("non_core_overlap_support")
+            or {}
+        )
+        if non_core_overlap:
+            lines.append(
+                "  Non-core overlap support: "
+                f"supported={non_core_overlap.get('supported_candidate_count', 0)} "
+                f"raw={non_core_overlap.get('supported_raw_candidate_count', 0)} "
+                f"scalar={non_core_overlap.get('notional_scalar')} "
+                f"status={non_core_overlap.get('context_status_counts', {})} "
+                "(paper only)"
+            )
         for candidate in (post_earnings_underpriced_drift_paper_sleeve.get("candidates") or [])[:5]:
             notional = candidate.get("intended_notional")
             notional_text = (
@@ -2184,6 +2197,8 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"high-liq={candidate.get('high_liquidity_support', False)} "
                 f"sector-resid={candidate.get('sector_residual_support', False)} "
                 f"sector-excess={candidate.get('sector_residual_excess_vs_median_20d')} "
+                f"non-core={candidate.get('non_core_overlap_support', False)} "
+                f"same-day-core={candidate.get('same_day_ab_entry_count')} "
                 f"notional={notional_text} (paper only)"
             )
 
