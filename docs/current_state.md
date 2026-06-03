@@ -76,6 +76,16 @@ source-family counts, source sets, FINRA thresholds, cooldown, notional, or
 hold period on the frozen windows; the next valid work is forward
 replacement-value accumulation or a genuinely independent new free-data source.
 
+Latest rejected source-family scout: `exp-20260603-016` tested adding
+`VOLATILITY_CONTRACTION_PAPER` as a genuinely independent source family to the
+accepted consensus route. The variant improved against the core baseline
+(`+0.6665` aggregate EV / `+$11,649.75`), with all three windows positive and
+concentration inside guardrails, but it underperformed the current accepted
+`exp-20260603-015` independent-source-family adapter by `-0.6393` EV and
+`-$11,748.01` PnL. Do not promote or retune VCP source-family expansion on the
+frozen windows unless new forward replacement-value rows show it beats the
+current accepted consensus comparator.
+
 Previous default-off alpha adapter acceptance: `exp-20260603-007` promotes the
 positive `exp-20260603-006` FINRA borrow-pressure admission lead into the
 shared `FINRA_IWM_CONFIRMED_PAPER` adapter. Candidates are admitted only when
@@ -126,6 +136,41 @@ it promoted the positive `exp-20260602-023` post-earnings underpriced
 positive-surprise drift lead into shared production-visible default-off paper
 observation, improving aggregate EV by `+0.3547` and PnL by `+$3,557.15`
 across `20` target paper trades before the high-liquidity support increment.
+
+## 2026-06-03 Experiment Consolidation
+
+Today's experiment log closed or recorded `exp-20260603-001` through
+`exp-20260603-016`. Three default-off paper improvements were retained:
+`exp-20260603-004` added post-earnings sector-residual support, `exp-20260603-007`
+promoted FINRA borrow-pressure admission into the FINRA/IWM paper adapter, and
+`exp-20260603-015` promoted independent source-family counting into the accepted
+free-data cross-source consensus adapter. All three remain paper-only with
+`trade_enabled=false`; live/default orders, core ranking, sizing, exits,
+watchlists, LLM, and news authority were unchanged.
+
+The strongest accepted 6/3 mechanism is source-family independence, not another
+raw source-count expansion. `exp-20260603-011` showed that simply adding FINRA
+borrow-pressure to raw consensus cleared numeric gates but double-counted the
+same FINRA information family. `exp-20260603-014` fixed that causal variable by
+collapsing FINRA/IWM and FINRA borrow-pressure into `finra_short_pressure` and
+requiring at least one non-FINRA confirmation; `exp-20260603-015` then promoted
+the shared adapter. The accepted comparator is now aggregate EV `9.1999` and
+PnL `$258,248.75` for this paper sleeve route; future source-family scouts must
+beat that comparator, not only the core baseline.
+
+Rejected 6/3 work narrowed the next search space. Post-earnings source
+expansion, Companyfacts gross-margin fallback, post-earnings characteristic
+peer transfer, Form 4 post-drawdown / FINRA-overlap / ownership-delta variants,
+SEC customer-demand text, Companyfacts inventory discipline, and VCP consensus
+expansion were not retained. Several were positive versus core but failed the
+right comparator, window, concentration, or semantic-independence gate. Do not
+retry nearby source-count, FINRA-threshold, VCP-source-set, Form 4 overlap,
+Companyfacts inventory/gross-margin fallback, or SEC demand-phrase variants on
+the frozen windows without new forward rows or a materially new free-data field.
+
+Regression checkpoint: the 2026-06-03 automation cleaned only repository-level
+pytest/Python cache directories and ran the full unit suite successfully
+(`1104 passed`). No strategy bug fix was needed during this regression pass.
 
 ## 2026-06-01 Experiment Consolidation
 
