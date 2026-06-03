@@ -1,0 +1,133 @@
+# Form 4 Post-Drawdown Purchase
+
+- experiment_id: `exp-20260603-008`
+- timestamp: `2026-06-03T07:14:48+00:00`
+- decision: `rejected_positive_not_promotable`
+
+## Hypothesis
+
+PIT-safe Form 4 meaningful purchase events may have better forward value when the usable trade date arrives after the ticker has already fallen at least 20% from its prior 60-trading-day high.
+
+## Gate Questions
+
+```json
+{
+  "1_alpha_hypothesis": "entry / candidate_pool: insider purchases are more informative after a material drawdown, when the filing may signal ownership conviction into forced or exhausted selling rather than generic insider interest.",
+  "2_history_check": {
+    "exp-20260504-034": "Raw Form 4 event satellite was positive but not promoted.",
+    "exp-20260530-011": "Multi-filer Form 4 owner-count qualifier did not create promotable evidence.",
+    "exp-20260531-002": "Purchase-value-to-prior-ADV floor did not beat raw queue cleanly.",
+    "exp-20260602-016": "Form4 + FINRA short-pressure consensus did not improve raw Form4 queue.",
+    "exp-20260602-031": "Pre-event RS20 underpriced qualifier was positive vs core but failed raw replacement value."
+  },
+  "3_single_causal_variable": "Only the event qualifier changes by adding prior 60-trading-day drawdown from high <= -20%; core strategy, Form4 threshold, event notional, capacity, hold period, LLM/news, ranking, sizing, and exits stay fixed.",
+  "4_acceptance_standard": "docs/backtesting.md three fixed windows; must improve aggregate EV/PnL versus core and raw Form4, avoid window EV/PnL regressions, and pass drawdown, survival, target sample, and concentration guards.",
+  "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260603_008_form4_post_drawdown_purchase.py"
+}
+```
+
+## Three-Window Results
+
+| Window | Core EV | Raw Form4 EV | Qualified EV | Delta vs raw | Delta vs core | Core PnL | Qualified PnL | Event PnL | Trades |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| late_strong | 5.1628 | 5.2947 | 5.1628 | -0.1319 | 0.0 | $117,072.92 | $117,072.92 | $0.00 | 18 -> 18 |
+| mid_weak | 2.1402 | 2.2689 | 2.3078 | 0.0389 | 0.1676 | $78,110.11 | $80,974.27 | $2,792.52 | 21 -> 24 |
+| old_thin | 0.5911 | 0.5911 | 0.5911 | 0.0 | 0.0 | $39,667.96 | $39,667.96 | $0.00 | 22 -> 22 |
+
+## Aggregate vs Raw Form4
+
+```json
+{
+  "aggregate_ev_after": 8.0617,
+  "aggregate_ev_before": 8.1547,
+  "aggregate_ev_delta": -0.093,
+  "aggregate_ev_delta_pct": -0.011404,
+  "aggregate_pnl_after": 237715.15,
+  "aggregate_pnl_before": 239637.21,
+  "aggregate_pnl_delta": -1922.06,
+  "aggregate_pnl_delta_pct": -0.008021,
+  "max_drawdown_drift": 0.0004,
+  "windows_ev_improved": 1,
+  "windows_ev_regressed": 1,
+  "windows_pnl_improved": 1,
+  "windows_pnl_regressed": 2
+}
+```
+
+## Aggregate vs Core
+
+```json
+{
+  "aggregate_ev_after": 8.0617,
+  "aggregate_ev_before": 7.8941,
+  "aggregate_ev_delta": 0.1676,
+  "aggregate_ev_delta_pct": 0.021231,
+  "aggregate_pnl_after": 237715.15,
+  "aggregate_pnl_before": 234850.99,
+  "aggregate_pnl_delta": 2864.16,
+  "aggregate_pnl_delta_pct": 0.012196,
+  "max_drawdown_drift": 0.0,
+  "windows_ev_improved": 1,
+  "windows_ev_regressed": 0,
+  "windows_pnl_improved": 1,
+  "windows_pnl_regressed": 0
+}
+```
+
+## Gate
+
+```json
+{
+  "drawdown_guard_passed": true,
+  "failed_reasons": [
+    "does_not_improve_raw_form4_queue",
+    "target_sample_too_small",
+    "target_window_coverage_too_small"
+  ],
+  "improves_core_cleanly": true,
+  "improves_vs_raw_form4": false,
+  "max_drawdown_drift_guard": "<= 0.005",
+  "passed": false,
+  "positive_pnl_by_ticker": {
+    "LLY": 1277.77,
+    "TSLA": 1666.23
+  },
+  "positive_pnl_hhi": 0.508705,
+  "positive_pnl_hhi_guard": "<= 0.6",
+  "qualified_selected_event_trades": 3,
+  "sample_guard_passed": false,
+  "single_ticker_positive_share": 0.565975,
+  "single_ticker_positive_share_guard": "<= 0.75",
+  "target_trade_count_min": 8,
+  "target_window_count_min": 2,
+  "target_windows": [
+    "mid_weak"
+  ]
+}
+```
+
+## Decision
+
+The post-drawdown Form 4 slice was positive versus the core baseline, but failed replacement value against raw Form 4 or failed one of the window, sample, drawdown, or concentration guards.
+
+## Production Impact
+
+```json
+{
+  "alters_candidate_ranking": false,
+  "alters_orders": false,
+  "alters_signal_generation": false,
+  "alters_sizing": false,
+  "backtester_adapter_changed": false,
+  "default_off_paper_only": true,
+  "live_slots_changed": false,
+  "parity_test_added": false,
+  "production_orders_changed": false,
+  "production_signal_path_changed": false,
+  "production_watchlist_changed": false,
+  "promotion_blocker_if_positive": "A shared default-off Form 4 post-drawdown paper adapter must be wired through production and replay with source-row caching and parity tests before any production report or order behavior can change.",
+  "replay_only": true,
+  "run_adapter_changed": false,
+  "shared_policy_changed": false
+}
+```
