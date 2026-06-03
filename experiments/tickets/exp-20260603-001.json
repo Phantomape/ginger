@@ -1,0 +1,150 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260603_001_post_earnings_consensus_source.py",
+    "data/experiments/exp-20260603-001/exp_20260603_001_post_earnings_consensus_source.json",
+    "experiments/cards/exp-20260603-001.md",
+    "experiments/manifests/exp-20260603-001.json",
+    "experiments/tickets/exp-20260603-001.json",
+    "experiments/logs/exp-20260603-001.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "artifact": "data/experiments/exp-20260603-001/exp_20260603_001_post_earnings_consensus_source.json",
+  "baseline_result_file": "data/backtests/backtest_results_20260602.json",
+  "card_file": "experiments/cards/exp-20260603-001.md",
+  "change_type": "default_off_candidate_pool_source_expansion",
+  "changed_variable": "accepted_free_data_cross_source_consensus_include_post_earnings_underpriced_source_v1",
+  "claimed_at": "2026-06-03T00:08:27+00:00",
+  "completed_at": "2026-06-03T00:18:18Z",
+  "created_at": "2026-06-03T00:08:20+00:00",
+  "decision": "rejected_post_earnings_consensus_source_expansion",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260603-001",
+  "experiment_uid": "expuid-f9fea20a54b34afe",
+  "gate4": {
+    "alpha_checks_passed": false,
+    "changed_target_trade_count": 1,
+    "changed_target_windows": [
+      "late_strong"
+    ],
+    "decision": "rejected_post_earnings_consensus_source_expansion",
+    "ev_windows_improved": [],
+    "ev_windows_regressed": [
+      "late_strong"
+    ],
+    "failed_gates": [
+      "aggregate_expected_value_positive",
+      "aggregate_pnl_positive",
+      "no_window_expected_value_regression",
+      "no_window_pnl_regression",
+      "at_least_two_windows_expected_value_improved",
+      "at_least_two_windows_pnl_improved",
+      "shared_adapter_promoted_same_source_set"
+    ],
+    "gates": {
+      "after_target_trade_count_passed": true,
+      "after_target_window_count_passed": true,
+      "aggregate_expected_value_positive": false,
+      "aggregate_pnl_positive": false,
+      "at_least_two_windows_expected_value_improved": false,
+      "at_least_two_windows_pnl_improved": false,
+      "baseline_matches_docs": true,
+      "changed_target_trade_count_passed": true,
+      "changed_target_window_count_passed": true,
+      "concentration_guard_passed": true,
+      "drawdown_drift_passed": true,
+      "no_window_expected_value_regression": false,
+      "no_window_pnl_regression": false,
+      "post_earnings_supported_target_trade_count_passed": true,
+      "shared_adapter_promoted_same_source_set": false,
+      "survival_floor_passed": true
+    },
+    "max_drawdown_delta": 0.0,
+    "min_survival_rate": 0.7925,
+    "passed": false,
+    "pnl_windows_improved": [],
+    "pnl_windows_regressed": [
+      "late_strong"
+    ],
+    "post_earnings_supported_target_trade_count": 2,
+    "post_earnings_supported_windows": [
+      "late_strong"
+    ],
+    "rationale": "Adding the post-earnings source did not clear the three-window alpha, sample, risk, baseline, distinctness, or concentration gates.",
+    "requires_parity_before_promotion": true
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260603-001",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-03T00:08:20+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "post_earnings_consensus_source"
+  },
+  "hypothesis": "Adding the newly accepted POST_EARNINGS_UNDERPRICED_DRIFT_PAPER source to the accepted free-data cross-source consensus source set may improve default-off consensus candidate-pool replacement value without adding noisy tickers.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "accepted_free_data_cross_source_consensus_include_post_earnings_underpriced_source_v1"
+  ],
+  "log": "experiments/logs/exp-20260603-001.json",
+  "mechanism_family": "default_off_candidate_pool_source_expansion",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260531-030",
+    "exp-20260601-001",
+    "exp-20260601-028",
+    "exp-20260602-026",
+    "exp-20260602-027"
+  ],
+  "new_evidence_type": "newly_accepted_production_visible_post_earnings_default_off_source",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "Consensus adapters are high-priority and post-earnings underpriced was newly accepted after the original consensus route; risk is overlap/sample may be thin.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "zero_overlap",
+      "thin_sample",
+      "window_regression",
+      "source_set_overfit",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-03T00:07:53+00:00",
+    "success_probability": 0.32
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "llm_or_news_changed": false,
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "result": {
+    "artifact": "data/experiments/exp-20260603-001/exp_20260603_001_post_earnings_consensus_source.json",
+    "decision": "rejected_post_earnings_consensus_source_expansion",
+    "expected_value_score_delta": -0.056,
+    "log": "experiments/logs/exp-20260603-001.json",
+    "strategy_total_pnl_delta": -666.61,
+    "summary": "Adding the post-earnings source did not clear the three-window alpha, sample, risk, baseline, distinctness, or concentration gates."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260603-001.json",
+  "single_causal_variable": "accepted_free_data_cross_source_consensus_include_post_earnings_underpriced_source_v1",
+  "status": "rejected_post_earnings_consensus_source_expansion",
+  "ticket_file": "experiments/tickets/exp-20260603-001.json",
+  "trial_family": "accepted_free_data_consensus_new_source_expansion",
+  "trial_variant_id": "exp-20260603-001"
+}
