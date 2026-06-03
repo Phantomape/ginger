@@ -1,0 +1,71 @@
+{
+  "accepted": false,
+  "anti_js": "No JavaScript was used.",
+  "artifact_path": "data/experiments/exp-20260603-011/accepted_consensus_finra_borrow_presence.json",
+  "changed_variable": "finra_borrow_pressure_presence_added_to_consensus_source_count",
+  "decision": "rejected_finra_borrow_pressure_consensus_presence",
+  "experiment_id": "exp-20260603-011",
+  "hypothesis": "Adding the newly accepted FINRA borrow-pressure source as a source-presence input to accepted free-data consensus may reveal incremental replacement value, but only if it does not rely on FINRA+FINRA double counting.",
+  "lane": "alpha_search",
+  "metrics": {
+    "aggregate_expected_value_after": 9.3455,
+    "aggregate_expected_value_before": 7.8941,
+    "aggregate_expected_value_delta": 1.4514,
+    "aggregate_strategy_total_pnl_after": 260209.13,
+    "aggregate_strategy_total_pnl_before": 234850.99,
+    "aggregate_strategy_total_pnl_delta": 25358.14,
+    "finra_only_positive_pnl_share": 0.109401,
+    "finra_only_trade_share": 0.206897,
+    "max_drawdown_delta": -0.002,
+    "max_single_positive_share": 0.3655397642020801,
+    "positive_pnl_hhi": 0.20305330743057004,
+    "target_trade_count": 58,
+    "target_trade_pnl_usd": 25358.139999999996
+  },
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_orders": false,
+    "backtester_adapter_changed": false,
+    "parity_note": "This experiment changes no production code. A retained result would need a shared default-off adapter with the same source-family semantics and parity tests before any daily report or order surface could change.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "requires_parity_before_promotion": false,
+  "timestamp": "2026-06-03T10:20:14Z",
+  "trial_family": "accepted_free_data_cross_source_consensus_source_presence",
+  "why_rejected": "The replay may improve metrics, but the added source is not independent: selected trades are admitted by FINRA/IWM plus its borrow-pressure subset. Counting that as cross-source agreement would create a misleading candidate-pool alpha.",
+  "windows": [
+    {
+      "expected_value_after": 6.0109,
+      "expected_value_before": 5.1628,
+      "expected_value_delta": 0.8481,
+      "label": "late_strong",
+      "strategy_total_pnl_delta": 8674.19,
+      "target_trade_count": 13,
+      "target_trade_pnl_usd": 8674.190000000002
+    },
+    {
+      "expected_value_after": 2.4104,
+      "expected_value_before": 2.1402,
+      "expected_value_delta": 0.2702,
+      "label": "mid_weak",
+      "strategy_total_pnl_delta": 4717.94,
+      "target_trade_count": 25,
+      "target_trade_pnl_usd": 4717.9400000000005
+    },
+    {
+      "expected_value_after": 0.9242,
+      "expected_value_before": 0.5911,
+      "expected_value_delta": 0.3331,
+      "label": "old_thin",
+      "strategy_total_pnl_delta": 11966.01,
+      "target_trade_count": 20,
+      "target_trade_pnl_usd": 11966.009999999998
+    }
+  ]
+}
