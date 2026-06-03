@@ -2,9 +2,9 @@
 
 This adapter promotes the positive exp-20260531-030 replay lead into a shared
 production-visible observation boundary. It admits a paper candidate only when
-at least two accepted free-data paper sleeves select the same ticker on the
-same signal date. It never emits live orders or changes core signal generation,
-ranking, sizing, exits, heat, LLM, or news behavior.
+at least two independent accepted free-data source families select the same
+ticker on the same signal date. It never emits live orders or changes core
+signal generation, ranking, sizing, exits, heat, LLM, or news behavior.
 """
 
 from __future__ import annotations
@@ -49,11 +49,14 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 
 SLEEVE_NAME = "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER"
 RULE_VERSION = "accepted_free_data_cross_source_consensus_shared_v1"
-CONSENSUS_RULE_VERSION = "accepted_free_data_cross_source_consensus_candidate_pool_v1"
+CONSENSUS_RULE_VERSION = (
+    "accepted_free_data_cross_source_consensus_independent_source_family_v1"
+)
 CORE_CAPACITY_RULE_VERSION = "accepted_free_data_consensus_core_capacity_available_gate_v1"
 REPLACEMENT_VALUE_RULE_VERSION = (
     "accepted_free_data_cross_source_consensus_forward_replacement_value_v1"
 )
+SOURCE_FAMILY_RULE_VERSION = "accepted_free_data_consensus_source_family_map_v1"
 STATE_SCHEMA_VERSION = 1
 
 DEFAULT_STATE_PATH = data_artifact_path("free_data_cross_source_consensus_paper_state")
@@ -63,9 +66,18 @@ DEFAULT_SNAPSHOT_LOG_PATH = data_artifact_path(
 
 ACCEPTED_SOURCE_NAMES = {
     "ALPHA_SCORE_MARKET_REGIME_PAPER",
+    "FINRA_BORROW_PRESSURE_PAPER",
     "FINRA_IWM_CONFIRMED_PAPER",
     "FUNDAMENTAL_GROWTH_RS_PAPER",
     "VOLUME_BREADTH_BREAKOUT_PAPER",
+}
+
+SOURCE_FAMILIES = {
+    "ALPHA_SCORE_MARKET_REGIME_PAPER": "alpha_score_market_regime",
+    "FINRA_BORROW_PRESSURE_PAPER": "finra_short_pressure",
+    "FINRA_IWM_CONFIRMED_PAPER": "finra_short_pressure",
+    "FUNDAMENTAL_GROWTH_RS_PAPER": "companyfacts_growth_quality",
+    "VOLUME_BREADTH_BREAKOUT_PAPER": "volume_breadth_breakout",
 }
 
 DEFAULT_CONFIG = {
@@ -75,6 +87,8 @@ DEFAULT_CONFIG = {
     "paper_notional_usd": 4_000.0,
     "baseline_paper_notional_usd": 10_000.0,
     "min_source_count": 2,
+    "min_source_family_count": 2,
+    "source_families": dict(SOURCE_FAMILIES),
     "daily_entry_slots": 1,
     "max_active_positions": 5,
     "hold_days": 10,
@@ -173,6 +187,7 @@ def empty_free_data_cross_source_consensus_paper_sleeve_snapshot(
             "enabled": True,
             "supported_candidate_count": 0,
             "source_counts": {},
+            "source_family_counts": {},
         },
         "forward_paper_gate": {"passed": False, "status": "blocked", "reasons": [reason]},
         "production_impact": _production_impact(),
@@ -506,6 +521,7 @@ def _consensus_candidates(
     rejected: list[dict[str, Any]] = []
     cooldown_rejected = 0
     min_source_count = int(config["min_source_count"])
+    min_source_family_count = int(config["min_source_family_count"])
     capacity = _core_capacity_context(
         core_active_position_count=core_active_position_count,
         max_core_positions=max_core_positions,
@@ -517,6 +533,9 @@ def _consensus_candidates(
         base.update(_candidate_capacity_fields(capacity))
         if len(source_names) < min_source_count:
             rejected.append({**base, "reasons": ["insufficient_source_count"]})
+            continue
+        if int(base.get("source_family_count") or 0) < min_source_family_count:
+            rejected.append({**base, "reasons": ["insufficient_source_family_count"]})
             continue
         if capacity["required"] and not capacity["known"]:
             rejected.append({**base, "reasons": ["missing_core_capacity_context"]})
@@ -542,7 +561,9 @@ def _consensus_candidates(
     candidates.sort(
         key=lambda row: (
             str(row.get("signal_date") or ""),
+            -int(row.get("source_family_count") or 0),
             -int(row.get("source_count") or 0),
+            "+".join(row.get("source_families") or []),
             "+".join(row.get("source_names") or []),
             str(row.get("ticker") or ""),
         )
@@ -564,6 +585,10 @@ def _candidate_from_sources(
     config: dict[str, Any],
 ) -> dict[str, Any]:
     source_names = sorted(source_rows)
+    source_families = sorted({_source_family(name, config) for name in source_names})
+    source_family_map: dict[str, list[str]] = {}
+    for source_name in source_names:
+        source_family_map.setdefault(_source_family(source_name, config), []).append(source_name)
     notional = float(config["paper_notional_usd"])
     baseline = float(config["baseline_paper_notional_usd"])
     return {
@@ -577,16 +602,65 @@ def _candidate_from_sources(
         "candidate_pool_rule_version": CONSENSUS_RULE_VERSION,
         "cross_source_consensus_candidate_pool": True,
         "source_count": len(source_names),
+        "source_family_count": len(source_families),
         "source_names": source_names,
+        "source_families": source_families,
+        "source_family_map": {
+            family: sorted(names) for family, names in sorted(source_family_map.items())
+        },
         "source_rows": [deepcopy(source_rows[name]) for name in source_names],
         "primary_source": source_names[0] if source_names else None,
+        "primary_source_family": source_families[0] if source_families else None,
         "paper_notional_usd": notional,
         "intended_notional": notional,
         "safe_paper_notional_usd": notional,
         "baseline_safe_paper_notional_usd": baseline,
         "safe_notional_scalar": round(notional / baseline, 6) if baseline else None,
-        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_agreement_rule": (
+            "same_date_ticker_selected_by_at_least_two_independent_accepted_free_data_source_families"
+        ),
+        "source_family_rule_version": SOURCE_FAMILY_RULE_VERSION,
         "known_at": "after_signal_date_close_before_next_open_paper_entry",
+        "trade_enabled": False,
+        "alters_orders": False,
+    }
+
+
+def finra_borrow_pressure_source_snapshot_from_finra_iwm_snapshot(
+    snapshot: dict[str, Any] | None,
+) -> dict[str, Any] | None:
+    """Expose FINRA borrow-pressure candidates as a distinct consensus source.
+
+    The source-family map collapses this alias with FINRA_IWM_CONFIRMED_PAPER,
+    so it cannot create FINRA+FINRA false consensus. It only lets daily reports
+    and forward ledgers carry the accepted borrow-pressure evidence with the
+    same source name used by the exp-20260603-014 replay lead.
+    """
+
+    if not isinstance(snapshot, dict):
+        return None
+    candidates = []
+    for candidate in snapshot.get("candidates") or []:
+        if not isinstance(candidate, dict):
+            continue
+        if candidate.get("finra_borrow_pressure_pass_v1") is not True:
+            continue
+        row = deepcopy(candidate)
+        row["sleeve"] = "FINRA_BORROW_PRESSURE_PAPER"
+        row["source_name"] = "FINRA_BORROW_PRESSURE_PAPER"
+        row["source_family"] = "finra_short_pressure"
+        candidates.append(row)
+    return {
+        "schema_version": 1,
+        "sleeve": "FINRA_BORROW_PRESSURE_PAPER",
+        "asof_date": snapshot.get("asof_date"),
+        "generated_at": snapshot.get("generated_at"),
+        "source_snapshot_rule_version": "finra_borrow_pressure_consensus_source_alias_v1",
+        "source_family_rule_version": SOURCE_FAMILY_RULE_VERSION,
+        "derived_from_sleeve": snapshot.get("sleeve"),
+        "derived_from_rule_version": snapshot.get("rule_version"),
+        "candidate_count": len(candidates),
+        "candidates": candidates,
         "trade_enabled": False,
         "alters_orders": False,
     }
@@ -747,22 +821,33 @@ def _source_consensus_summary(
 ) -> dict[str, Any]:
     source_counts: dict[str, int] = {}
     source_key_counts: dict[str, int] = {}
+    source_family_counts: dict[str, int] = {}
+    source_family_key_counts: dict[str, int] = {}
     for source_rows in source_rows_by_key.values():
         for source_name in source_rows:
             source_key_counts[source_name] = source_key_counts.get(source_name, 0) + 1
+        for family in {_source_family(source_name, config) for source_name in source_rows}:
+            source_family_key_counts[family] = source_family_key_counts.get(family, 0) + 1
     for row in candidates:
         for source_name in row.get("source_names") or []:
             source_counts[source_name] = source_counts.get(source_name, 0) + 1
+        for family in row.get("source_families") or []:
+            source_family_counts[family] = source_family_counts.get(family, 0) + 1
     return {
         "rule_version": CONSENSUS_RULE_VERSION,
+        "source_family_rule_version": SOURCE_FAMILY_RULE_VERSION,
         "enabled": True,
         "source_names": list(config.get("accepted_source_names") or []),
+        "source_families": dict(sorted((config.get("source_families") or {}).items())),
         "min_source_count": int(config["min_source_count"]),
+        "min_source_family_count": int(config["min_source_family_count"]),
         "source_key_count": len(source_rows_by_key),
         "candidate_count": len(candidates),
         "supported_candidate_count": len(candidates),
         "source_counts": dict(sorted(source_counts.items())),
         "source_key_counts": dict(sorted(source_key_counts.items())),
+        "source_family_counts": dict(sorted(source_family_counts.items())),
+        "source_family_key_counts": dict(sorted(source_family_key_counts.items())),
         "paper_notional_usd": float(config["paper_notional_usd"]),
         "trade_enabled": False,
         "alters_orders": False,
@@ -979,11 +1064,28 @@ def _config(config: dict[str, Any] | None) -> dict[str, Any]:
     cfg["accepted_source_names"] = sorted(
         {str(name).upper() for name in cfg.get("accepted_source_names") or []}
     )
+    source_families = dict(SOURCE_FAMILIES)
+    source_families.update(
+        {
+            str(name).upper(): str(family)
+            for name, family in (cfg.get("source_families") or {}).items()
+            if name and family
+        }
+    )
+    cfg["source_families"] = source_families
     cfg["max_core_positions"] = int(cfg.get("max_core_positions") or MAX_POSITIONS)
+    cfg["min_source_family_count"] = int(
+        cfg.get("min_source_family_count") or cfg.get("min_source_count") or 2
+    )
     cfg["require_core_capacity_available"] = bool(
         cfg.get("require_core_capacity_available", True)
     )
     return cfg
+
+
+def _source_family(source_name: str, config: dict[str, Any]) -> str:
+    name = str(source_name).upper()
+    return str((config.get("source_families") or {}).get(name) or name)
 
 
 def _production_impact() -> dict[str, Any]:

@@ -4143,7 +4143,7 @@
     },
     {
       "experiment_id": "exp-20260509-021",
-      "hypothesis": "近期坏交易集中在一种可复现的 hold-quality 或 follow-through 失败族群中。",
+      "hypothesis": "\u8fd1\u671f\u574f\u4ea4\u6613\u96c6\u4e2d\u5728\u4e00\u79cd\u53ef\u590d\u73b0\u7684 hold-quality \u6216 follow-through \u5931\u8d25\u65cf\u7fa4\u4e2d\u3002",
       "lane": "loss_attribution",
       "owner": "codex-all-in-one-loss",
       "status": "observed_only",
@@ -4152,7 +4152,7 @@
     },
     {
       "experiment_id": "exp-20260509-022",
-      "hypothesis": "在 LLM/event ranking alpha 可被评估前，必须稳定持久化 replay coverage 和 attribution。",
+      "hypothesis": "\u5728 LLM/event ranking alpha \u53ef\u88ab\u8bc4\u4f30\u524d\uff0c\u5fc5\u987b\u7a33\u5b9a\u6301\u4e45\u5316 replay coverage \u548c attribution\u3002",
       "lane": "measurement_repair",
       "owner": "codex-all-in-one-measurement",
       "status": "observed_only",
@@ -4161,7 +4161,7 @@
     },
     {
       "experiment_id": "exp-20260509-023",
-      "hypothesis": "一个流动性过滤后的事件敏感 universe 可以在当前 trend/breakout 覆盖之外产生非重叠高质量候选。",
+      "hypothesis": "\u4e00\u4e2a\u6d41\u52a8\u6027\u8fc7\u6ee4\u540e\u7684\u4e8b\u4ef6\u654f\u611f universe \u53ef\u4ee5\u5728\u5f53\u524d trend/breakout \u8986\u76d6\u4e4b\u5916\u4ea7\u751f\u975e\u91cd\u53e0\u9ad8\u8d28\u91cf\u5019\u9009\u3002",
       "lane": "universe_scout",
       "owner": "codex-all-in-one-universe",
       "status": "observed_only",
@@ -7871,18 +7871,15 @@
       "updated_at": "2026-06-03T07:14:48+00:00"
     },
     {
-      "experiment_id": "exp-20260603-009",
-      "status": "rejected",
-      "lane": "alpha_search",
-      "owner": "alpha-search",
-      "hypothesis": "Form 4 meaningful purchase candidates confirmed by accepted FINRA borrow pressure may add cleaner default-off candidate-pool replacement value without retuning either source.",
+      "baseline_result_file": "data/backtests/backtest_results_20260602.json",
+      "card_file": "experiments/cards/exp-20260603-009.md",
       "change_type": "default_off_candidate_pool_cross_source_confirmation",
-      "mechanism_family": "default_off_candidate_pool_cross_source_confirmation",
-      "trial_family": "form4_finra_borrow_pressure_cross_source_overlap",
-      "trial_variant_id": "form4_finra_borrow_pressure_source_overlap_candidate_v1",
-      "single_causal_variable": "form4_finra_borrow_pressure_source_overlap_candidate_v1",
       "changed_variable": "form4_finra_borrow_pressure_source_overlap_candidate_v1",
-      "prior_trial_count": 0,
+      "experiment_id": "exp-20260603-009",
+      "hypothesis": "Form 4 meaningful purchase candidates confirmed by accepted FINRA borrow pressure may add cleaner default-off candidate-pool replacement value without retuning either source.",
+      "lane": "alpha_search",
+      "mechanism_family": "default_off_candidate_pool_cross_source_confirmation",
+      "multiple_testing_risk_bucket": "minimal",
       "nearby_prior_experiments": [
         "exp-20260603-008",
         "exp-20260603-006",
@@ -7890,11 +7887,10 @@
         "exp-20260531-002",
         "exp-20260530-011"
       ],
-      "multiple_testing_risk_bucket": "minimal",
       "new_evidence_type": "new_cross_source_free_data_overlap",
-      "baseline_result_file": "data/backtests/backtest_results_20260602.json",
+      "owner": "alpha-search",
+      "prior_trial_count": 0,
       "result": {
-        "decision": "rejected_form4_finra_borrow_pressure_overlap",
         "aggregate_delta_vs_core": {
           "aggregate_ev_delta": 0.0,
           "aggregate_pnl_delta": 0.0
@@ -7903,6 +7899,8 @@
           "aggregate_ev_delta": -0.2606,
           "aggregate_pnl_delta": -4786.22
         },
+        "artifact": "experiments/artifacts/exp-20260603-009_form4_finra_borrow_pressure_overlap.md",
+        "decision": "rejected_form4_finra_borrow_pressure_overlap",
         "failed_reasons": [
           "does_not_improve_core_cleanly",
           "does_not_improve_raw_form4_queue",
@@ -7910,14 +7908,95 @@
           "target_sample_too_small",
           "target_window_coverage_too_small"
         ],
-        "target_trades": 0,
         "log_file": "experiments/logs/exp-20260603-009.json",
-        "artifact": "experiments/artifacts/exp-20260603-009_form4_finra_borrow_pressure_overlap.md"
+        "target_trades": 0
       },
-      "ticket_file": "experiments/tickets/exp-20260603-009.json",
-      "card_file": "experiments/cards/exp-20260603-009.md",
       "revision_manifest_file": "experiments/manifests/exp-20260603-009.json",
+      "single_causal_variable": "form4_finra_borrow_pressure_source_overlap_candidate_v1",
+      "status": "rejected",
+      "ticket_file": "experiments/tickets/exp-20260603-009.json",
+      "trial_family": "form4_finra_borrow_pressure_cross_source_overlap",
+      "trial_variant_id": "form4_finra_borrow_pressure_source_overlap_candidate_v1",
       "updated_at": "2026-06-03T08:16:32+00:00"
+    },
+    {
+      "card_file": "experiments/cards/exp-20260603-010.md",
+      "completed_at": "2026-06-03T09:14:24+00:00",
+      "experiment_id": "exp-20260603-010",
+      "hypothesis": "PIT-safe Form 4 meaningful-purchase events with aggregate ownership delta >= 10% may have better replacement value than raw Form 4 because they indicate a material insider stake increase rather than token buying.",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "result": {
+        "aggregate_delta_vs_core": {
+          "after_ev_sum": 8.1417,
+          "after_pnl_sum": 239539.76,
+          "aggregate_ev_delta": 0.2476,
+          "aggregate_ev_delta_pct": 0.031365,
+          "aggregate_pnl_delta": 4688.77,
+          "aggregate_pnl_delta_pct": 0.019965,
+          "before_ev_sum": 7.8941,
+          "before_pnl_sum": 234850.99,
+          "max_drawdown_drift": 0.0,
+          "windows_ev_improved": 2,
+          "windows_ev_regressed": 0,
+          "windows_pnl_improved": 3,
+          "windows_pnl_regressed": 0
+        },
+        "aggregate_delta_vs_raw_form4": {
+          "after_ev_sum": 8.1417,
+          "after_pnl_sum": 239539.76,
+          "aggregate_ev_delta": -0.013,
+          "aggregate_ev_delta_pct": -0.001594,
+          "aggregate_pnl_delta": -97.45,
+          "aggregate_pnl_delta_pct": -0.000407,
+          "before_ev_sum": 8.1547,
+          "before_pnl_sum": 239637.21,
+          "max_drawdown_drift": 0.0,
+          "windows_ev_improved": 0,
+          "windows_ev_regressed": 2,
+          "windows_pnl_improved": 1,
+          "windows_pnl_regressed": 1
+        },
+        "decision": "rejected_positive_not_promotable"
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260603-010.json",
+      "status": "rejected",
+      "ticket_file": "experiments/tickets/exp-20260603-010.json",
+      "updated_at": "2026-06-03T09:08:31+00:00"
+    },
+    {
+      "aggregate_expected_value_delta": 1.4514,
+      "aggregate_strategy_total_pnl_delta": 25358.14,
+      "artifact": "data/experiments/exp-20260603-011/accepted_consensus_finra_borrow_presence.json",
+      "card_file": "experiments/cards/exp-20260603-011.md",
+      "completed_at": "2026-06-03T10:20:14Z",
+      "decision": "rejected_finra_borrow_pressure_consensus_presence",
+      "experiment_id": "exp-20260603-011",
+      "hypothesis": "Accepted free-data source consensus candidates with newly accepted FINRA borrow-pressure admission as an additional source-presence field may improve replacement value without changing core live trading.",
+      "lane": "alpha_search",
+      "log": "experiments/logs/exp-20260603-011.json",
+      "owner": "alpha-search",
+      "revision_manifest_file": "experiments/manifests/exp-20260603-011.json",
+      "status": "completed",
+      "ticket_file": "experiments/tickets/exp-20260603-011.json",
+      "updated_at": "2026-06-03T10:15:01+00:00"
+    },
+    {
+      "aggregate_expected_value_delta": -0.1138,
+      "aggregate_strategy_total_pnl_delta": -966.22,
+      "artifact": "data/experiments/exp-20260603-012/sec_customer_contract_business_win.json",
+      "card_file": "experiments/cards/exp-20260603-012.md",
+      "completed_at": "2026-06-03T11:18:22Z",
+      "decision": "rejected_sec_customer_contract_business_win_candidate_pool",
+      "experiment_id": "exp-20260603-012",
+      "hypothesis": "Free SEC filing text with customer/contract/order business-win language may expand a cleaner default-off event candidate pool.",
+      "lane": "alpha_search",
+      "log": "experiments/logs/exp-20260603-012.json",
+      "owner": "alpha-search",
+      "revision_manifest_file": "experiments/manifests/exp-20260603-012.json",
+      "status": "rejected",
+      "ticket_file": "experiments/tickets/exp-20260603-012.json",
+      "updated_at": "2026-06-03T11:18:22Z"
     },
     {
       "aggregate_expected_value_delta": 3.436,
@@ -7936,8 +8015,42 @@
       "status": "completed",
       "ticket_file": "experiments/tickets/exp-20260603-013.json",
       "updated_at": "2026-06-03T12:12:05+00:00"
+    },
+    {
+      "aggregate_expected_value_delta": 1.3058,
+      "aggregate_strategy_total_pnl_delta": 23397.76,
+      "artifact": "data/experiments/exp-20260603-014/accepted_consensus_independent_source_family.json",
+      "card_file": "experiments/cards/exp-20260603-014.md",
+      "completed_at": "2026-06-03T13:11:45Z",
+      "decision": "positive_replay_lead_not_promoted_requires_shared_cross_source_adapter",
+      "experiment_id": "exp-20260603-014",
+      "hypothesis": "Accepted free-data consensus should count independent source families rather than raw source names, so the newly accepted FINRA borrow-pressure evidence can contribute only when confirmed by at least one non-FINRA family.",
+      "lane": "alpha_search",
+      "log": "experiments/logs/exp-20260603-014.json",
+      "owner": "alpha-search",
+      "revision_manifest_file": "experiments/manifests/exp-20260603-014.json",
+      "status": "completed",
+      "ticket_file": "experiments/tickets/exp-20260603-014.json",
+      "updated_at": "2026-06-03T13:07:32+00:00"
+    },
+    {
+      "aggregate_expected_value_delta": 1.3058,
+      "aggregate_strategy_total_pnl_delta": 23397.76,
+      "artifact": "data/experiments/exp-20260603-015/exp_20260603_015_accepted_consensus_source_family_adapter.json",
+      "card_file": "experiments/cards/exp-20260603-015.md",
+      "completed_at": "2026-06-03T14:15:52+00:00",
+      "decision": "accepted_default_off_consensus_source_family_adapter",
+      "experiment_id": "exp-20260603-015",
+      "hypothesis": "Promote the accepted independent source-family free-data consensus replay lead into the shared default-off adapter so FINRA borrow-pressure can contribute only with a non-FINRA family confirmation.",
+      "lane": "alpha_search",
+      "log": "experiments/logs/exp-20260603-015.json",
+      "owner": "alpha-search",
+      "revision_manifest_file": "experiments/manifests/exp-20260603-015.json",
+      "status": "accepted_default_off_consensus_source_family_adapter",
+      "ticket_file": "experiments/tickets/exp-20260603-015.json",
+      "updated_at": "2026-06-03T14:06:45+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-03T12:12:05+00:00"
+  "updated_at": "2026-06-03T14:06:45+00:00"
 }

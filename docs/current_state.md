@@ -33,8 +33,10 @@ the RS60 top-quintile stock sizing promotion from `exp-20260513-030`, the
 signal-day own-green candle sizing promotion from `exp-20260513-007`, the
 2026-05-10 TRIP sector taxonomy completion from `exp-20260510-015`, and the
 RS20 entry-state shared sizing promotion from `exp-20260510-012`. These are
-documented in `docs/backtesting.md` and
-`docs/alpha-optimization-playbook.md`. As of `exp-20260602-003`, canonical
+documented in this file, `docs/alpha-optimization-playbook.md`, and
+`docs/experiment_log.jsonl`. `docs/backtesting.md` is reserved for the
+canonical command, standard windows, metric definitions, protocol caveats, and
+current baseline table. As of `exp-20260602-003`, canonical
 fixed-window core metrics use PIT earnings snapshot `days_to_earnings` replay
 when archived production snapshots exist, plus explicit same-day
 post-earnings continuation semantics when actual EPS is known and a later
@@ -54,7 +56,27 @@ EV `6.3596` and PnL `$192,538.61`.
 Latest saved single-window backtest artifacts can reflect only the most recent
 command; canonical acceptance evidence is the three-window artifact above.
 
-Latest default-off alpha adapter acceptance: `exp-20260603-007` promotes the
+Latest default-off alpha adapter acceptance: `exp-20260603-015` promotes the
+positive `exp-20260603-014` independent source-family free-data consensus lead
+into the shared `ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER` adapter.
+The adapter now admits same-date same-ticker consensus only when at least two
+independent accepted free-data source families agree, collapsing
+`FINRA_IWM_CONFIRMED_PAPER` and `FINRA_BORROW_PRESSURE_PAPER` into one
+`finra_short_pressure` family before admission. The inherited three-window
+evidence from `exp-20260603-014` improved aggregate EV `7.8941 -> 9.1999`
+(`+1.3058`) and PnL `$234,850.99 -> $258,248.75` (`+$23,397.76`), with all
+three windows improving: `late_strong +0.7232` EV / `+$7,368.07`,
+`mid_weak +0.2731` / `+$4,817.45`, and `old_thin +0.3095` /
+`+$11,212.24`. The replay had `47` target paper trades, `0` FINRA-only
+selected trades, max single positive share `0.410442`, positive PnL HHI
+`0.251953`, no drawdown drift, and minimum survival `79.25%`. This remains
+default-off paper only: `trade_enabled=false`, live/default orders, watchlists,
+core ranking, sizing, exits, and LLM/news are unchanged. Do not retune nearby
+source-family counts, source sets, FINRA thresholds, cooldown, notional, or
+hold period on the frozen windows; the next valid work is forward
+replacement-value accumulation or a genuinely independent new free-data source.
+
+Previous default-off alpha adapter acceptance: `exp-20260603-007` promotes the
 positive `exp-20260603-006` FINRA borrow-pressure admission lead into the
 shared `FINRA_IWM_CONFIRMED_PAPER` adapter. Candidates are admitted only when
 the latest publication-date-safe FINRA row has `days_to_cover >= 3.0` and
@@ -127,7 +149,10 @@ is observe-only: `trade_enabled=false`, live/default orders remain disabled,
 and core ranking, sizing, exits, LLM/news, and watchlists are unchanged. The
 next valid work is forward replacement-value accumulation and activation
 blocker monitoring, not source-count/cooldown/notional retuning on the frozen
-windows.
+windows. This raw source-count definition is now superseded by the
+`exp-20260603-015` independent source-family adapter described above; future
+replays and daily reports must use the source-family map, including the
+collapsed `finra_short_pressure` family.
 
 `exp-20260601-028` accepted the strongest previously blocked free-data
 consensus capacity discriminator now that `exp-20260601-025` made the PIT-DTE
@@ -722,6 +747,13 @@ These counts are experiment records, not unique independent strategies.
 | LLM / news veto | Production live path exists; replay depends on archive coverage | Latest saved backtest disclosed zero production-aligned LLM/news replay coverage for the inspected window | Historical attribution is coverage-limited, so turning up LLM authority would be hard to audit | Expand structured logging/replay before increasing LLM veto or ranking authority | Hidden discretionary logic and production/backtest divergence |
 | Fill / execution model | Manual/live execution versus simulated backtest fills | Backtests simulate next-open and price-rule fills; production depends on actual order handling | Realized return can be capped by missed fills, slippage, and delayed manual action | Broker/execution automation or stricter order plan telemetry | Operational errors and backtest fill assumptions not matching live liquidity |
 
+Exit replay history note: `exp-20260429-011` showed disabling pure
+`TRAILING_STOP` partial reduces improved EV in two of three windows and
+aggregate PnL by `$12,837.60`; this is the historical comparison behind the
+shared default that avoids reviving the rejected daily trim loop. A later
+simple target-trim replay (`exp-20260429-032`) was rejected, so exit changes
+still require a complete shared lifecycle design and shadow attribution.
+
 Latest Kova data repair: `exp-20260527-001` added a default-off Kova sidecar
 for free-data accumulation, and `exp-20260527-014` wired it into `quant/run.py`
 as cheap production context. The daily run reuses in-memory OHLCV plus `SPY`,
@@ -1231,6 +1263,17 @@ still inside the `50%` guardrail. The accepted rule lives in shared
 `state_surface_sleeve.py` with focused parity coverage in
 `test_state_surface_sleeve.py`; live/default orders remain disabled.
 
+Previous accepted state-surface paper sleeve-capacity refinement:
+`exp-20260519-027` keeps the accepted `exp-20260519-026` rank/queue alignment
+stack fixed and applies a `1.15x` notional support scalar to all already
+selected state-surface paper candidates after the accepted profile stack.
+Versus that rank/queue alignment baseline, three-window EV improved `+0.8724`
+and PnL improved `+$16,211.14` with no EV-regressed window. Twenty-four paper
+trades were adjusted across all three windows, max drawdown drift stayed inside
+the `0.50pp` guardrail, and single-ticker positive-share concentration stayed
+at `41.74%`. The rule is shared default-off paper only in
+`state_surface_sleeve.py`; live/default orders remain disabled.
+
 Latest accepted state-surface paper queue-lag refinement:
 `exp-20260519-028` keeps the accepted `exp-20260519-027` sleeve-capacity stack
 fixed and adds one production-visible selected-trade displacement support
@@ -1290,6 +1333,17 @@ drawdown worsened by at most `0.38pp`, and single-ticker positive share rose
 from `43.67%` to `44.49%`, inside the `50%` guardrail. The accepted rule lives
 in shared `state_surface_sleeve.py` with focused parity coverage in
 `test_state_surface_sleeve.py`; live/default orders remain disabled.
+
+Rejected state-surface paper trend-stability support:
+`exp-20260520-006` retested the accepted `exp-20260520-001` low-extension stack
+under the stricter state-surface scalar Gate 4 rule. The
+`features.ret20_excess_spy - features.ret60 / 3 <= 0.06` / `1.15x` candidate
+improved aggregate EV by only `+3.487%` (`+0.5528` EV, `+$10,140.40`) across
+the fixed windows, below the required `>10%` uplift for state-surface
+threshold/profile/notional-scalar tuning. No shared helper was promoted; do
+not retry nearby trend-stability state-surface scalars on the frozen windows
+without forward replacement-value evidence or a materially different
+production-visible field.
 
 Latest accepted broad-market candidate-pool paper sleeve:
 `exp-20260519-036` promotes the promising `exp-20260519-035` `price_floor_40`
@@ -1511,6 +1565,33 @@ but this remains replay-only: do not route live/default capital until closed
 forward replacement-value evidence and explicit trade-enabled adapter
 configuration exist. Prior supporting revalidations: `exp-20260517-001` and
 `exp-20260516-044`.
+
+Prior event paper adapter lineage: `exp-20260510-003` promoted the
+`rotation_breakout_leadership` `3.0x` event tilt into a shared default-off
+paper adapter without changing core metrics, live/default orders, or canonical
+baseline values. `exp-20260520-044` later served as the accepted front-rank
+event adapter baseline for the event broad-breadth refinement.
+
+Latest accepted default-off event adapter refinement: `exp-20260521-001` keeps
+the accepted `exp-20260520-044` front-rank event adapter fixed and adds one
+production-visible broad-breadth event quality scalar. Eligible default-off
+event paper rows with `breadth_bucket == broad_breadth` receive a `1.25x`
+paper notional multiplier after the active paper event profile. Versus the
+front-rank adapter baseline, aggregate paper-overlay EV improved `+0.3383` and
+PnL improved `+$5,550.72`, with all three windows EV/PnL-positive and no EV
+regression. The rule lives in the shared default-off event adapter; live/default
+orders remain disabled.
+
+Latest accepted default-off event source-quality refinement:
+`exp-20260521-006` keeps the event broad-breadth/front-rank adapter fixed and
+adds the production-visible `sec_governance_procedural` source-quality scalar
+from the positive `exp-20260521-005` scout. Matching default-off event paper
+rows receive a `2.0x` notional multiplier after the existing rotation,
+front-rank rotation, and broad-breadth paper tilts. Versus the accepted
+`exp-20260521-001` broad-breadth baseline, aggregate paper-overlay EV improved
+`+0.8812` and PnL improved `+$14,372.88`, with all three canonical windows
+EV/PnL-positive and no EV regression. The rule is surfaced by production
+reporting only; live/default orders remain disabled.
 
 Latest rejected SEC completeness alpha search: `exp-20260516-045` tested a new
 cash-flow forecast/guidance/outlook context field inside the accepted

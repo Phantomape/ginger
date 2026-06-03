@@ -1,0 +1,170 @@
+{
+  "acceptance_basis": "Retained as shared default-off paper observation only. Live/default orders, core ranking, sizing, exits, watchlists, LLM, and news are unchanged.",
+  "adapter_contract": {
+    "accepted_source_names": [
+      "ALPHA_SCORE_MARKET_REGIME_PAPER",
+      "FINRA_BORROW_PRESSURE_PAPER",
+      "FINRA_IWM_CONFIRMED_PAPER",
+      "FUNDAMENTAL_GROWTH_RS_PAPER",
+      "VOLUME_BREADTH_BREAKOUT_PAPER"
+    ],
+    "consensus_rule_version": "accepted_free_data_cross_source_consensus_independent_source_family_v1",
+    "finra_family_sources": [
+      "FINRA_BORROW_PRESSURE_PAPER",
+      "FINRA_IWM_CONFIRMED_PAPER"
+    ],
+    "min_source_count": 2,
+    "min_source_family_count": 2,
+    "rule_version": "accepted_free_data_cross_source_consensus_shared_v1",
+    "sleeve": "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER",
+    "source_families": {
+      "ALPHA_SCORE_MARKET_REGIME_PAPER": "alpha_score_market_regime",
+      "FINRA_BORROW_PRESSURE_PAPER": "finra_short_pressure",
+      "FINRA_IWM_CONFIRMED_PAPER": "finra_short_pressure",
+      "FUNDAMENTAL_GROWTH_RS_PAPER": "companyfacts_growth_quality",
+      "VOLUME_BREADTH_BREAKOUT_PAPER": "volume_breadth_breakout"
+    },
+    "source_family_rule_version": "accepted_free_data_consensus_source_family_map_v1"
+  },
+  "anti_js": "No JavaScript was used.",
+  "change_type": "default_off_paper_adapter",
+  "changed_variable": "independent_source_family_count_shared_adapter_v1",
+  "decision": "accepted_default_off_consensus_source_family_adapter",
+  "experiment_id": "exp-20260603-015",
+  "gate4": {
+    "decision": "accepted_default_off_consensus_source_family_adapter",
+    "gates": {
+      "aggregate_expected_value_positive": true,
+      "aggregate_pnl_positive": true,
+      "all_windows_expected_value_improved": true,
+      "all_windows_pnl_improved": true,
+      "concentration_guard_passed": true,
+      "drawdown_drift_passed": true,
+      "parity_tests_passed": true,
+      "source_family_min_count_passed": true
+    },
+    "passed": true,
+    "rationale": "exp-20260603-014 improved EV/PnL in all three canonical windows; this run adds the required shared default-off adapter, production report exposure, and focused parity tests without enabling orders."
+  },
+  "gate_questions": {
+    "1_alpha_hypothesis": "candidate_pool / entry: accepted free-data consensus should count independent source families rather than raw source names.",
+    "2_history_check": {
+      "exp-20260601-001": "Original shared default-off consensus adapter.",
+      "exp-20260601-028": "Accepted core-capacity gate for the same adapter.",
+      "exp-20260603-007": "Accepted FINRA borrow-pressure shared adapter.",
+      "exp-20260603-011": "Adding FINRA borrow pressure as a raw source cleared numeric gates but failed source-family independence.",
+      "exp-20260603-014": "Independent source-family replay passed all canonical windows: aggregate EV +1.3058 and PnL +$23,397.76."
+    },
+    "3_single_causal_variable": "independent_source_family_count_shared_adapter_v1",
+    "4_acceptance_standard": "Use docs/backtesting.md three fixed windows from exp-20260603-014 plus focused shared-adapter parity tests.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260603_015_accepted_consensus_source_family_adapter.py"
+  },
+  "hypothesis": "Promote the accepted independent source-family free-data consensus replay lead into the shared default-off adapter so FINRA borrow-pressure can contribute only with a non-FINRA family confirmation.",
+  "lane": "alpha_search",
+  "nearby_prior_experiments": [
+    "exp-20260603-011",
+    "exp-20260603-014",
+    "exp-20260601-001",
+    "exp-20260601-028",
+    "exp-20260603-007"
+  ],
+  "parameters": {
+    "finra_family_collapsed": true,
+    "new_admission": "independent_source_family_count_min_2",
+    "old_admission": "raw_source_count_min_2",
+    "trade_enabled": false
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260603-014 passed all three canonical windows and only lacked the shared adapter/parity implementation.",
+    "expected_ev_delta": 1.3058,
+    "expected_pnl_delta": 23397.76,
+    "main_failure_modes": [
+      "adapter_replay_identity_drift",
+      "source_family_count_candidate_mismatch",
+      "concentration_regression",
+      "production_report_parity_gap"
+    ],
+    "recorded_at": "2026-06-03T14:06:12+00:00",
+    "success_probability": 0.55
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "parity_test_added": true,
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": true,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "quant/free_data_cross_source_consensus_paper_sleeve.py",
+    "quant/run.py",
+    "quant/report_generator.py",
+    "quant/default_off_alpha_attribution.py",
+    "quant/test_free_data_cross_source_consensus_paper_sleeve.py",
+    "data/experiments/exp-20260603-014/accepted_consensus_independent_source_family.json",
+    "data/experiments/exp-20260603-015/exp_20260603_015_accepted_consensus_source_family_adapter.json",
+    "experiments/artifacts/exp-20260603-015_accepted_consensus_source_family_adapter.md"
+  ],
+  "single_causal_variable": "shared adapter admission uses independent source-family count min 2 with FINRA sources collapsed",
+  "status": "accepted_default_off_consensus_source_family_adapter",
+  "three_window_result": {
+    "aggregate": {
+      "expected_value_after": 9.1999,
+      "expected_value_before": 7.8941,
+      "expected_value_score_delta": 1.3058,
+      "finra_only_trade_count": 0,
+      "finra_with_non_finra_trade_count": 9,
+      "max_drawdown_delta": -0.002,
+      "max_single_positive_share": 0.41044239003237454,
+      "min_survival_rate": 0.7925,
+      "positive_pnl_hhi": 0.25195334502362565,
+      "target_trade_count": 47,
+      "total_pnl_after": 258248.75,
+      "total_pnl_before": 234850.99,
+      "total_pnl_delta": 23397.76,
+      "windows_ev_improved": 3,
+      "windows_pnl_improved": 3
+    },
+    "evidence_source": "data/experiments/exp-20260603-014/accepted_consensus_independent_source_family.json",
+    "windows": [
+      {
+        "expected_value_after": 5.886,
+        "expected_value_before": 5.1628,
+        "expected_value_delta": 0.7232,
+        "label": "late_strong",
+        "strategy_total_pnl_delta": 7368.07,
+        "target_trade_count": 9,
+        "target_trade_pnl_usd": 7368.070000000001
+      },
+      {
+        "expected_value_after": 2.4133,
+        "expected_value_before": 2.1402,
+        "expected_value_delta": 0.2731,
+        "label": "mid_weak",
+        "strategy_total_pnl_delta": 4817.45,
+        "target_trade_count": 22,
+        "target_trade_pnl_usd": 4817.449999999999
+      },
+      {
+        "expected_value_after": 0.9006,
+        "expected_value_before": 0.5911,
+        "expected_value_delta": 0.3095,
+        "label": "old_thin",
+        "strategy_total_pnl_delta": 11212.24,
+        "target_trade_count": 16,
+        "target_trade_pnl_usd": 11212.24
+      }
+    ]
+  },
+  "timestamp": "2026-06-03T14:15:52+00:00",
+  "trial_family": "accepted_free_data_cross_source_consensus_source_family_adapter",
+  "trial_variant_id": "independent_source_family_count_shared_adapter_v1"
+}

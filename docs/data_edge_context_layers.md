@@ -543,14 +543,26 @@ Evidence boundary:
   production-visible core slot context used by entry planning and blocks new
   paper admissions when that context is missing or when active core positions
   are already at `MAX_POSITIONS`.
+- `exp-20260603-015` promoted the positive `exp-20260603-014` independent
+  source-family replay into this shared adapter. Admission now requires at
+  least two independent source families and collapses
+  `FINRA_IWM_CONFIRMED_PAPER` plus `FINRA_BORROW_PRESSURE_PAPER` into the
+  single `finra_short_pressure` family, preventing FINRA+FINRA double counting.
+  The inherited three-window replay improved aggregate EV by `+1.3058` and PnL
+  by `+$23,397.76` with `47` target paper trades and `0` FINRA-only selected
+  trades.
 
 Adapter semantics:
 
 - receives same-day snapshots from `FUNDAMENTAL_GROWTH_RS_PAPER`,
-  `VOLUME_BREADTH_BREAKOUT_PAPER`, `FINRA_IWM_CONFIRMED_PAPER`, and
+  `VOLUME_BREADTH_BREAKOUT_PAPER`, `FINRA_IWM_CONFIRMED_PAPER`,
+  `FINRA_BORROW_PRESSURE_PAPER`, and
   `ALPHA_SCORE_MARKET_REGIME_PAPER`;
-- admits only candidates whose ticker appears in at least two of those accepted
-  free-data sources on the same signal date;
+- admits only candidates whose ticker appears in at least two independent
+  accepted free-data source families on the same signal date;
+- uses the shared source-family map:
+  `companyfacts_growth_quality`, `volume_breadth_breakout`,
+  `finra_short_pressure`, and `alpha_score_market_regime`;
 - admits those candidates only when `active core positions < MAX_POSITIONS`
   under the production core-slot accounting surface;
 - uses fixed `$4,000` paper notional, top-1/day,
@@ -560,10 +572,11 @@ Adapter semantics:
   report, core-capacity gate metadata, forward gate, default-off attribution
   surface, and human-report block.
 
-Agent rule: this sleeve is observe-only. Do not retune the source count, source
-set, cooldown, notional, hold period, or nearby capacity variants on the same
-frozen windows. Promotion to live/core behavior requires closed forward
-replacement value and a separate Gate 1-4 activation experiment.
+Agent rule: this sleeve is observe-only. Do not retune the source count,
+source set, source-family map, cooldown, notional, hold period, FINRA
+thresholds, or nearby capacity variants on the same frozen windows. Promotion
+to live/core behavior requires closed forward replacement value and a separate
+Gate 1-4 activation experiment.
 
 ### `quant/ranking_attribution.py`
 

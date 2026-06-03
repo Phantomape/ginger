@@ -382,11 +382,17 @@ def build_default_off_alpha_attribution_report(
                 "min_source_count": (
                     ((free_data_cross_source_consensus_paper_sleeve or {}).get("source_consensus") or {}).get("min_source_count")
                 ),
+                "min_source_family_count": (
+                    ((free_data_cross_source_consensus_paper_sleeve or {}).get("source_consensus") or {}).get("min_source_family_count")
+                ),
                 "source_consensus_supported": (
                     ((free_data_cross_source_consensus_paper_sleeve or {}).get("source_consensus") or {}).get("supported_candidate_count")
                 ),
                 "source_counts": (
                     ((free_data_cross_source_consensus_paper_sleeve or {}).get("source_consensus") or {}).get("source_counts")
+                ),
+                "source_family_counts": (
+                    ((free_data_cross_source_consensus_paper_sleeve or {}).get("source_consensus") or {}).get("source_family_counts")
                 ),
             },
         ),

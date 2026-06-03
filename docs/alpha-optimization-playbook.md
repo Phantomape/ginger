@@ -116,6 +116,22 @@ Recent repository evidence supports this priority:
   threshold / cooldown / top-N / hold / cost-liquidity threshold/scalar or
   nearby `days_to_cover` / `short_interest_change_pct` threshold retunes on the
   same frozen windows.
+- The accepted free-data cross-source consensus adapter now uses independent
+  source families, not raw source names. `exp-20260603-011` showed that adding
+  FINRA borrow-pressure as a raw consensus source cleared numeric gates but
+  failed because FINRA/IWM plus FINRA borrow-pressure double-counted one
+  information family. `exp-20260603-014` fixed the causal variable by
+  collapsing both into `finra_short_pressure` and requiring at least two
+  independent families; the three canonical windows improved aggregate EV
+  `7.8941 -> 9.1999` (`+1.3058`) and PnL `$234,850.99 -> $258,248.75`
+  (`+$23,397.76`) with `47` target trades, `0` FINRA-only selected trades,
+  max single positive share `0.410442`, and HHI `0.251953`. `exp-20260603-015`
+  promoted that rule into the shared default-off
+  `ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER` adapter and daily report
+  surface. This is still paper-only; do not retune source count, source set,
+  family map, FINRA thresholds, cooldown, notional, or hold period on the
+  frozen windows. The next valid consensus work is forward replacement-value
+  rows or a genuinely independent new free-data source family.
 - Full-universe ranking is promising as attribution, and now has one
   default-off paper queue. Raw `alpha_score` remains unsuitable for live/core
   ranking, but the market-regime-gated safe-notional route passed Gate 4 and
@@ -164,9 +180,12 @@ Recent repository evidence supports this priority:
   core-capacity-available discriminator in that shared adapter: paper consensus
   candidates are admitted only when production-visible core capacity remains,
   improving current-baseline aggregate EV by `+1.1099` and PnL by
-  `+$22,063.58` across all three windows. The next evidence is forward
-  replacement value for this adapter, not source-count, source-set, cooldown,
-  hold, notional, or nearby capacity retuning on the frozen windows.
+  `+$22,063.58` across all three windows. `exp-20260603-015` now supersedes
+  the raw source-count definition with independent source-family admission,
+  including the collapsed `finra_short_pressure` family for FINRA/IWM plus
+  FINRA borrow-pressure. The next evidence is forward replacement value for
+  this adapter, not source-count, source-set, source-family, cooldown, hold,
+  notional, FINRA threshold, or nearby capacity retuning on the frozen windows.
 - Space remains observe-only, but `exp-20260528-026` showed that a new
   production-visible OHLCV field (`daily_close_location >= 0.84` on
   governed Space `trend_long` signal days) can separate better paper
@@ -361,42 +380,33 @@ Do not do next:
 
 ### 2. Fundamental Growth + RS
 
-Mechanism: filed-date-safe Companyfacts growth plus positive operating-profit
-and gross-margin quality plus OHLCV relative strength is a real candidate-pool
-lead. The useful change was not "another fundamental filter"; it was a new
-default-off candidate source with a closed-ledger governor for
-concentration/drawdown. `exp-20260601-026` accepted the gross-margin quality
-candidate source after the PIT-DTE baseline repair: EV `6.3596 -> 12.6985` and
-PnL `$192,538.61 -> $300,134.87`, with all three windows improved.
-`exp-20260601-027` accepted the next orthogonal Companyfacts support field:
-operating-income filings made within `45` days of quarter end or `75` days of
-annual period end receive a `1.05x` default-off paper-notional scalar. It
-improved the gross-margin adapter EV `12.6985 -> 13.0745` and PnL
-`$300,134.87 -> $305,514.70`, with all three windows improved.
-`exp-20260601-030` accepted a production-visible Companyfacts/OHLCV
-cost-liquidity support field: already-selected candidates with signal-day
-`avg_dollar_volume_20 >= $200m` and `(high-low)/close <= 0.10` receive a
-`1.05x` default-off paper-notional scalar. It improved the accepted
-filing-timeliness adapter EV `13.0745 -> 13.4753` and PnL
-`$305,514.70 -> $311,052.25`, with all three windows improved.
-`exp-20260602-010` accepted the next genuinely orthogonal support field:
-already-selected candidates whose signal-date 20-day return beats the
-persisted public-sector median by at least `3pp` with at least `5`
-sector-member observations receive a `1.05x` default-off scalar. It improved
-the shared adapter EV `15.7099 -> 16.1444` and PnL `$353,364.63 ->
-$359,253.44`, with all windows improving and max drawdown slightly improving.
-The adjacent 2026-06-02 Companyfacts scouts define the boundary: cash
-conversion was a positive replay lead but was not promoted without forward
-rows (`exp-20260602-001`), while asset turnover was rejected because the lift
-concentrated too heavily in APP (`exp-20260602-007`).
-The 2026-06-03 disclosure/source-provenance scouts narrowed the remaining
-``restatement/disclosure-quality`` opening: amended-form support was not
-testable because accepted Companyfacts rows had zero amended-form coverage
-(`exp-20260603-002`), and cost-of-revenue gross-margin fallback support
-improved all three windows but failed concentration (`exp-20260603-003`,
-aggregate EV `+0.2035`, PnL `+$3,029.19`, APP positive-share `0.887952`,
-HHI `0.796841`). Do not retry this source-provenance scalar family on the
-frozen sample with ticker blacklists or nearby form/source flags.
+Mechanism: filed-date-safe Companyfacts growth, profitability quality, and
+OHLCV relative strength remain the strongest local candidate-pool evidence.
+The durable lesson is not "add more fundamental filters." It is: build a
+default-off candidate source from a genuinely new PIT field, then use small
+paper-only support fields only when they add orthogonal information and pass
+concentration.
+
+What has held up:
+
+- the main source: growth plus positive operating profit, gross-margin quality,
+  RS proxy, top-1/day routing, next-open paper entry, 10-trading-day exit, and
+  closed-ledger concentration/drawdown governor;
+- support fields that describe a different mechanism: filing timeliness,
+  coarse cost/liquidity, low-liability balance-sheet context, low-volume
+  participation, and sector-residual strength;
+- promotion boundary: shared default-off adapter metadata, no live orders, and
+  forward replacement-value collection before activation.
+
+What did not change the prior:
+
+- cash conversion is still a replay lead only; it needs closed forward
+  replacement-value rows before another promotion attempt;
+- asset turnover and cost-of-revenue/gross-margin-source support were
+  replay-positive but concentration-failed, so they should not be rescued with
+  ticker blacklists or nearby source-provenance flags;
+- amended-form/restatement style support had no selected-row coverage in the
+  accepted sample, so it is a data-availability clue, not alpha evidence.
 
 Keep fixed:
 
@@ -876,6 +886,14 @@ while deterministic code owns the time-series computation. For Ginger, this
 means SEC, earnings, and price-derived fields should persist both the evidence
 trace and the tool/execution trace before they can be considered for Gate 4.
 
+Newer RAG/finance-agent work adds an implementation warning: explicit planning,
+reranking, and iterative self-checks are useful only if their intermediate
+plans are saved. A "better answer" without a retrieval plan, failed-query log,
+reranker score, and arithmetic replay is not a better trading field; it is an
+unreplayable narrative. For Ginger, every RAG-derived field should separate
+document retrieval quality, table/entity alignment, and calculation validity so
+failed retrieval is not accidentally interpreted as neutral or positive alpha.
+
 The newest agentic financial-document benchmarks add one practical standard:
 multi-step filing QA is only useful when the system can show which table,
 footnote, period, entity, and arithmetic path produced the field. For Ginger,
@@ -909,6 +927,11 @@ Useful fields:
 - `calculation_trace_json`
 - `arithmetic_replay_status`
 - `field_source_span_hash`
+- `retrieval_plan_id`
+- `reranker_model_id`
+- `reranker_score_bucket`
+- `self_check_failure_bucket`
+- `missing_evidence_policy_id`
 
 Engineering rule: no retrieval trace means no Gate 4 trading field.
 
@@ -925,6 +948,8 @@ Sources:
   <https://arxiv.org/abs/2604.03664>
 - Fin-RATE SEC filing benchmark, 2026:
   <https://arxiv.org/abs/2602.07294>
+- ReflectRAG, 2026:
+  <https://www.sciencedirect.com/science/article/pii/S0925231226014451>
 
 ### Agentic Trading Evaluation
 
@@ -940,6 +965,13 @@ general LLM capability does not automatically become trading capability, and
 risk control is the differentiator across markets. For Ginger, this means
 agent benchmarks are useful for evaluation design, not as permission to let an
 agent own entries, exits, or sizing.
+
+InvestorBench-style results make memory design the most useful transferable
+idea. Layered market memory can be useful, but short backtest windows,
+single-asset tasks, and buy-and-hold-only baselines are too weak for promotion
+evidence. Ginger should borrow memory decay instrumentation and benchmark
+against deterministic factor baselines, not treat agent cumulative return as a
+strategy result.
 
 Memory-controlled trading-agent benchmarks add a sharper warning: model
 rationales can change materially when ticker identities, names, or memories are
@@ -974,6 +1006,10 @@ Useful fields:
 - `agent_memory_window_bucket`
 - `agent_known_to_doing_gap_bucket`
 - `agent_rationale_stability_bucket`
+- `agent_factor_baseline_comparison_id`
+- `agent_buy_hold_baseline_gap`
+- `agent_memory_layer_hit_counts`
+- `agent_single_asset_bias_bucket`
 
 Engineering rule: an LLM agent can propose hypotheses or classify evidence,
 but a trade-impacting action must still become a shared, replayable policy and
@@ -987,6 +1023,50 @@ Source:
   on Stock Markets, 2026: <https://arxiv.org/abs/2605.28359>
 - AI-Trader: Benchmarking Autonomous Agents in Real-Time Financial Markets,
   2025/2026: <https://arxiv.org/abs/2512.10971>
+- InvestorBench, 2025 / 2026 review:
+  <https://arxiv.org/abs/2412.18174> and
+  <https://beancount.io/bean-labs/research-logs/2026/06/02/investorbench-llm-agent-financial-decision-making>
+
+### LLM Alpha-Mining Workflow
+
+New LLM alpha-mining systems such as evolutionary factor search are relevant
+as research-process tooling, not as direct strategy logic. The useful pattern
+is trajectory accounting: save the hypothesis, factor expression, executable
+code, failed mutation, accepted mutation, complexity score, redundancy score,
+and transfer test. This matches Ginger's experiment discipline and gives a
+clean way to use LLMs without letting them own trades.
+
+For Ginger, an LLM-mined idea is only admissible if it becomes one of:
+
+- a deterministic feature builder with PIT inputs and provenance;
+- a default-off paper sleeve with replacement-value accounting;
+- a pre-registered experiment ticket with one changed causal variable.
+
+Useful fields:
+
+- `alpha_mining_trajectory_id`
+- `alpha_hypothesis_text_hash`
+- `factor_expression_hash`
+- `generated_code_hash`
+- `semantic_consistency_status`
+- `factor_complexity_score`
+- `factor_redundancy_bucket`
+- `mutation_parent_ids`
+- `crossover_parent_ids`
+- `transfer_universe_id`
+- `transfer_window_id`
+- `factor_crowding_bucket`
+- `factor_turnover_cost_bucket`
+- `factor_decay_forward_bucket`
+
+Engineering rule: an LLM-generated factor is a hypothesis generator until its
+code, PIT data contract, cost model, and transfer/replacement-value test are
+replayable inside the normal Gate 1-4 process.
+
+Source:
+
+- QuantaAlpha, 2026:
+  <https://arxiv.org/abs/2602.07085>
 
 ### Event Graphs And Multi-Modal Market Context
 
@@ -1125,6 +1205,14 @@ to free-form portfolio instructions. The minimum viable output is a view,
 confidence, cost, covariance, constraint, and displacement record that can be
 replayed without the LLM.
 
+Retrieval-augmented expert-switching and cross-attention regime-discovery work
+strengthen the controller boundary. The useful idea is not an end-to-end
+allocation network; it is a replayable "which controller is valid in this
+state?" surface. Similar historical-regime retrieval, soft regime assignment,
+uncertainty, and transaction-cost analysis should become read-only context
+fields first. A sleeve can use them only after showing replacement value versus
+the exact candidate or allocation it displaces.
+
 Useful fields:
 
 - `predictability_mosaic_bucket`
@@ -1153,6 +1241,14 @@ Useful fields:
 - `black_litterman_view_source_id`
 - `allocation_constraint_set_id`
 - `optimizer_replay_hash`
+- `historical_regime_neighbor_ids`
+- `regime_similarity_score_bucket`
+- `expert_policy_selected_id`
+- `expert_policy_uncertainty_bucket`
+- `soft_regime_assignment_vector_id`
+- `regime_query_version`
+- `regime_controller_validity_bucket`
+- `state_action_policy_replay_hash`
 
 Engineering rule: regime-aware allocation belongs first in read-only
 attribution and default-off sleeves. A live sizing or cap change must be a
@@ -1171,6 +1267,10 @@ Sources:
   <https://www.nber.org/papers/w34861>
 - LLM-enhanced Black-Litterman portfolio optimization, 2025:
   <https://arxiv.org/abs/2504.14345>
+- Retrieval-augmented LLM-guided expert switching, 2026:
+  <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6256103>
+- Cross-attention regime discovery for portfolio construction, 2026:
+  <https://papers.ssrn.com/sol3/Delivery.cfm/6517438.pdf?abstractid=6517438&mirid=1>
 
 ### Transaction-Cost-Aware Allocation
 

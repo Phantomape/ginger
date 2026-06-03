@@ -317,6 +317,7 @@ def main():
     from free_data_cross_source_consensus_paper_sleeve import (
         build_free_data_cross_source_consensus_paper_sleeve_snapshot,
         empty_free_data_cross_source_consensus_paper_sleeve_snapshot,
+        finra_borrow_pressure_source_snapshot_from_finra_iwm_snapshot,
     )
     from fundamental_growth_rs_paper_sleeve import (
         build_fundamental_growth_rs_paper_sleeve_snapshot,
@@ -2265,6 +2266,9 @@ def main():
                     fundamental_growth_rs_paper_sleeve,
                     volume_breadth_breakout_paper_sleeve,
                     finra_iwm_paper_sleeve,
+                    finra_borrow_pressure_source_snapshot_from_finra_iwm_snapshot(
+                        finra_iwm_paper_sleeve
+                    ),
                     alpha_score_market_regime_paper_sleeve,
                 ],
                 open_prices=current_open_prices,

@@ -2361,10 +2361,12 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             f"keys={free_data_cross_source_consensus_paper_sleeve.get('source_consensus_key_count', 0)}  |  "
             f"supported={consensus.get('supported_candidate_count', 0)}  |  "
             f"min_sources={consensus.get('min_source_count', 0)}  |  "
+            f"min_families={consensus.get('min_source_family_count', 0)}  |  "
             f"cooldown_rejects={cooldown.get('rejected_count', 0)}"
         )
         lines.append(
             f"  Sources: {consensus.get('source_counts', {})}  |  "
+            f"Families: {consensus.get('source_family_counts', {})}  |  "
             f"notional=${consensus.get('paper_notional_usd', 0.0):,.0f}"
         )
         if capacity_gate:
@@ -2409,6 +2411,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             lines.append(
                 f"  {candidate.get('ticker', '?')}: "
                 f"sources={candidate.get('source_names', [])} "
+                f"families={candidate.get('source_families', [])} "
                 f"notional={notional_text} (paper only)"
             )
 
