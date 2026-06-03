@@ -1,0 +1,165 @@
+{
+  "acceptance_rule": "Gate 4 pass vs exp-20260603-004: aggregate EV/PnL positive, all three windows EV/PnL non-regressing, target_trade_count >= 20, survival_rate >= 5%, no drawdown drift > 0.5pp, positive PnL HHI <= 0.30; retain only if shared production adapter parity is explicitly satisfied or result remains rejected lead.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260603_021_post_earnings_non_core_overlap_support.py",
+    "data/experiments/exp-20260603-021/",
+    "experiments/logs/exp-20260603-021.json",
+    "experiments/tickets/exp-20260603-021.json",
+    "docs/experiments/tickets/exp-20260603-021.json",
+    "experiments/cards/exp-20260603-021.md",
+    "experiments/artifacts/exp-20260603-021_post_earnings_non_core_overlap_support.md",
+    "experiments/manifests/exp-20260603-021.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260603-004/exp_20260603_004_post_earnings_sector_residual_support.json",
+  "card_file": "experiments/cards/exp-20260603-021.md",
+  "change_type": "default_off_paper_allocation",
+  "changed_variable": "post_earnings_non_same_day_core_overlap_support_v1",
+  "claimed_at": "2026-06-03T18:10:51+00:00",
+  "completed_at": "2026-06-03T18:17:10+00:00",
+  "created_at": "2026-06-03T18:10:39+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260603-021",
+  "experiment_uid": "expuid-ace6eaa7d0a94eb1",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260603-021",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-03T18:10:39+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "post_earnings_non_core_overlap_support"
+  },
+  "hypothesis": "Accepted post-earnings underpriced-drift paper candidates that do not overlap same-day AB/core activity may be more independent event alpha and deserve modest default-off paper support without changing production orders.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "entry selection",
+    "candidate ranking",
+    "high-liquidity support",
+    "sector-residual support",
+    "same-ticker core-overlap exclusion",
+    "hold days",
+    "base notional",
+    "core orders",
+    "LLM/news replay"
+  ],
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/post_earnings_underpriced_drift_paper_sleeve.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260602-027",
+    "exp-20260603-004",
+    "exp-20260603-020",
+    "exp-20260603-001"
+  ],
+  "new_evidence_type": "cross_mechanism_independence_context_on_accepted_post_earnings_adapter",
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "confidence_reason": "Non-overlap target PnL is positive in all three accepted exp-20260603-004 windows, but the signal is small and same-day core-overlap context is not yet part of the shared production adapter.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "window_regression",
+      "thin_overlap_sample",
+      "production_adapter_input_gap",
+      "nearby_event_quality_overfit"
+    ],
+    "recorded_at": "2026-06-03T18:10:12+00:00",
+    "success_probability": 0.28
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected",
+    "gate4_decision": "rejected_post_earnings_non_core_overlap_support_requires_shared_adapter_input",
+    "artifact": "data/experiments/exp-20260603-021/exp_20260603_021_post_earnings_non_core_overlap_support.json",
+    "log": "experiments/logs/exp-20260603-021.json",
+    "summary": "Metric Gate 4 cleared, but this alpha is rejected as retained behavior because same-day AB/core overlap is not supplied by the shared post-earnings adapter. Treat it as a lead requiring explicit shared-adapter input and parity before retry.",
+    "before_result_file": "data/experiments/exp-20260603-021/post_earnings_non_core_overlap_support_before_aggregate.json",
+    "after_result_file": "data/experiments/exp-20260603-021/post_earnings_non_core_overlap_support_after_aggregate.json",
+    "expected_value_score_delta": 0.03,
+    "total_pnl_delta": 247.93,
+    "support_trade_summary": {
+      "adjusted_trade_count": 16,
+      "adjusted_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "by_window": {
+        "late_strong": {
+          "adjusted_total_pnl": 3919.64,
+          "adjusted_trade_count": 3,
+          "non_core_overlap_incremental_pnl": 186.65
+        },
+        "mid_weak": {
+          "adjusted_total_pnl": 879.57,
+          "adjusted_trade_count": 9,
+          "non_core_overlap_incremental_pnl": 41.88
+        },
+        "old_thin": {
+          "adjusted_total_pnl": 407.32,
+          "adjusted_trade_count": 4,
+          "non_core_overlap_incremental_pnl": 19.4
+        }
+      },
+      "max_single_positive_incremental_pnl_share": 0.299212,
+      "positive_incremental_by_ticker_pnl": {
+        "AAPL": 8.29,
+        "DIS": 30.38,
+        "GS": 31.18,
+        "LLY": 123.7,
+        "META": 35.99,
+        "MU": 135.66,
+        "NOW": 72.44,
+        "V": 15.76
+      },
+      "positive_incremental_pnl_hhi": 0.206554
+    },
+    "production_impact": {
+      "backtester_adapter_changed": false,
+      "default_off_paper_only": true,
+      "llm_or_news_changed": false,
+      "parity_rule": "post_earnings_non_same_day_core_overlap_support_v1",
+      "production_adapter_input_available": false,
+      "production_core_ranking_changed": false,
+      "production_exit_changed": false,
+      "production_orders_changed": false,
+      "production_signal_path_changed": false,
+      "production_sizing_changed": false,
+      "production_watchlist_changed": false,
+      "replay_only": true,
+      "retained_behavior": false,
+      "run_adapter_changed": false,
+      "shared_policy_changed": false,
+      "trade_enabled": false
+    },
+    "delta_metrics": {
+      "expected_value_score": 0.03,
+      "total_pnl": 247.93,
+      "max_drawdown_pct": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260603-021.json",
+  "single_causal_variable": "post_earnings_non_same_day_core_overlap_support_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260603-021.json",
+  "trial_family": "post_earnings_underpriced_core_non_overlap_support",
+  "trial_variant_id": "non_same_day_ab_overlap_scalar_1p05"
+}

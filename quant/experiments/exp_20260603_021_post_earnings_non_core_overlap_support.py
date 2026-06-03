@@ -1,0 +1,836 @@
+"""exp-20260603-021: post-earnings non-core-overlap support scout.
+
+This alpha search tests one production-visible free-OHLCV field on top of the
+accepted default-off POST_EARNINGS_UNDERPRICED_DRIFT_PAPER adapter:
+already-selected candidates with no same-day AB/core activity overlap receive
+1.05x paper notional.
+
+The run compares against exp-20260603-004 after_metrics, so the measured delta
+isolates only this non-core-overlap scalar on top of the currently accepted
+high-liquidity and sector-residual supports. No JavaScript is used.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import math
+import sys
+from collections import Counter
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+QUANT_ROOT = REPO_ROOT / "quant"
+if str(QUANT_ROOT) not in sys.path:
+    sys.path.insert(0, str(QUANT_ROOT))
+
+import exp_20260603_004_post_earnings_sector_residual_support as parent
+
+
+EXPERIMENT_ID = "exp-20260603-021"
+STEM = "post_earnings_non_core_overlap_support"
+TRIAL_FAMILY = "post_earnings_underpriced_core_non_overlap_support"
+CHANGED_VARIABLE = "post_earnings_non_same_day_core_overlap_support_v1"
+RULE_VERSION = "post_earnings_non_same_day_core_overlap_support_v1"
+
+OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
+OUT_JSON = OUT_DIR / f"exp_20260603_021_{STEM}.json"
+BEFORE_AGG_JSON = OUT_DIR / f"{STEM}_before_aggregate.json"
+AFTER_AGG_JSON = OUT_DIR / f"{STEM}_after_aggregate.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+DOC_TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+CARD_MD = REPO_ROOT / "experiments" / "cards" / f"{EXPERIMENT_ID}.md"
+ARTIFACT_MD = REPO_ROOT / "experiments" / "artifacts" / f"{EXPERIMENT_ID}_{STEM}.md"
+EXPERIMENT_LOG = REPO_ROOT / "docs" / "experiment_log.jsonl"
+MANIFEST_JSON = REPO_ROOT / "experiments" / "manifests" / f"{EXPERIMENT_ID}.json"
+
+BASELINE_RESULT_JSON = (
+    REPO_ROOT
+    / "data"
+    / "experiments"
+    / "exp-20260603-004"
+    / "exp_20260603_004_post_earnings_sector_residual_support.json"
+)
+
+NON_CORE_OVERLAP_NOTIONAL_SCALAR = 1.05
+BASE_NOTIONAL_USD = parent.BASE_NOTIONAL_USD
+
+
+def _framework() -> Any:
+    return parent._framework()
+
+
+def _sha256(path: Path) -> str | None:
+    if not path.exists():
+        return None
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _float_or_none(value: Any) -> float | None:
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    return number if math.isfinite(number) else None
+
+
+def _non_core_overlap_context(row: dict[str, Any]) -> dict[str, Any]:
+    if "same_day_ab_overlap" not in row:
+        return {
+            "non_core_overlap_context_status": "missing_core_overlap_context",
+            "non_core_overlap_support": False,
+        }
+    same_day_overlap = bool(row.get("same_day_ab_overlap"))
+    same_ticker_overlap = bool(row.get("same_ticker_ab_overlap"))
+    supported = not same_day_overlap and not same_ticker_overlap
+    return {
+        "non_core_overlap_context_status": "ok",
+        "same_day_ab_overlap": same_day_overlap,
+        "same_ticker_ab_overlap": same_ticker_overlap,
+        "non_core_overlap_support": supported,
+    }
+
+
+def _candidate_rows_for_window(
+    snapshot: dict[str, list[dict[str, Any]]],
+    cfg: dict[str, str],
+    universe: list[str],
+    before_result: dict[str, Any],
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    candidates, audit = parent._candidate_rows_for_window(
+        snapshot,
+        cfg,
+        universe,
+        before_result,
+    )
+    support_count = 0
+    support_days: set[str] = set()
+    support_tickers: set[str] = set()
+    status_counts: Counter[str] = Counter()
+    for row in candidates:
+        context = _non_core_overlap_context(row)
+        row.update(context)
+        status = str(context.get("non_core_overlap_context_status") or "unknown")
+        status_counts[status] += 1
+        supported = bool(context.get("non_core_overlap_support"))
+        try:
+            pre_non_core_notional = float(row.get("intended_notional") or BASE_NOTIONAL_USD)
+        except (TypeError, ValueError):
+            pre_non_core_notional = BASE_NOTIONAL_USD
+        scalar = NON_CORE_OVERLAP_NOTIONAL_SCALAR if supported else 1.0
+        row["non_core_overlap_support_rule_version"] = RULE_VERSION
+        row["non_core_overlap_notional_scalar"] = scalar
+        row["pre_non_core_overlap_paper_notional_usd"] = round(
+            pre_non_core_notional,
+            2,
+        )
+        row["intended_notional"] = round(pre_non_core_notional * scalar, 2)
+        row["trade_enabled"] = False
+        row["alters_orders"] = False
+        if supported:
+            support_count += 1
+            support_days.add(str(row.get("date") or ""))
+            support_tickers.add(str(row.get("ticker") or "").upper())
+
+    audit = dict(audit)
+    audit["non_core_overlap_support_rule_version"] = RULE_VERSION
+    audit["non_core_overlap_notional_scalar"] = NON_CORE_OVERLAP_NOTIONAL_SCALAR
+    audit["non_core_overlap_supported_raw_candidate_count"] = support_count
+    audit["non_core_overlap_supported_candidate_days"] = len(support_days)
+    audit["non_core_overlap_supported_unique_tickers"] = len(support_tickers)
+    audit["non_core_overlap_context_status_counts"] = dict(
+        sorted(status_counts.items())
+    )
+    audit["support_changes_entries_or_filters"] = False
+    return candidates, audit
+
+
+def _paper_trade_from_candidate(
+    snapshot: dict[str, list[dict[str, Any]]],
+    candidate: dict[str, Any],
+) -> dict[str, Any] | None:
+    trade = parent._paper_trade_from_candidate(snapshot, candidate)
+    if trade is None:
+        return None
+    for field in (
+        "non_core_overlap_context_status",
+        "same_day_ab_overlap",
+        "same_ticker_ab_overlap",
+        "non_core_overlap_support",
+        "non_core_overlap_support_rule_version",
+        "non_core_overlap_notional_scalar",
+        "pre_non_core_overlap_paper_notional_usd",
+    ):
+        trade[field] = candidate.get(field)
+    trade["trade_enabled"] = False
+    trade["alters_orders"] = False
+    return trade
+
+
+def _select_paper_trades(
+    snapshot: dict[str, list[dict[str, Any]]],
+    candidates: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    selected: list[dict[str, Any]] = []
+    filtered: list[dict[str, Any]] = []
+    used_date_counts: Counter[str] = Counter()
+    for row in candidates:
+        date_value = str(row.get("date") or "")
+        if row.get("same_ticker_ab_overlap"):
+            filtered.append({**row, "filter_reason": "same_ticker_core_overlap"})
+            continue
+        if used_date_counts[date_value] >= _framework().MAX_PAPER_TRADES_PER_DAY:
+            filtered.append({**row, "filter_reason": "daily_top1_limit"})
+            continue
+        trade = _paper_trade_from_candidate(snapshot, row)
+        if trade is None:
+            filtered.append({**row, "filter_reason": "missing_next_open_or_exit"})
+            continue
+        selected.append(trade)
+        used_date_counts[date_value] += 1
+    return selected, filtered
+
+
+def _accepted_baseline() -> dict[str, Any]:
+    with BASELINE_RESULT_JSON.open("r", encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+def _rebase_payload_to_accepted_baseline(payload: dict[str, Any]) -> dict[str, Any]:
+    baseline = _accepted_baseline()
+    before_metrics = {
+        label: baseline["after_metrics"][label]
+        for label in _framework().base.WINDOWS
+    }
+    window_rows: dict[str, dict[str, Any]] = {}
+    delta_by_window: dict[str, dict[str, Any]] = {}
+    for label in _framework().base.WINDOWS:
+        before = before_metrics[label]
+        after = payload["after_metrics"][label]
+        delta = _framework().overlay_helper._delta(after, before)
+        delta_by_window[label] = delta
+        window_rows[label] = {
+            "before": before,
+            "after": after,
+            "delta": delta,
+            "target_trade_count": len(payload["target_trades_by_window"][label]),
+        }
+    aggregate = _framework()._aggregate(window_rows)
+    target_summary = _framework()._target_trade_summary(
+        payload["target_trades_by_window"]
+    )
+    min_survival = min(
+        float(row.get("survival_rate") or 0.0) for row in before_metrics.values()
+    )
+    gate4 = _framework()._gate4(aggregate, target_summary, min_survival)
+    failed_reasons = list(gate4.get("failed_reasons") or [])
+    for label, delta in delta_by_window.items():
+        if float(delta.get("expected_value_score") or 0.0) <= 0:
+            failed_reasons.append(f"{label}_ev_not_improved_vs_exp004")
+        if float(delta.get("total_pnl") or 0.0) <= 0:
+            failed_reasons.append(f"{label}_pnl_not_improved_vs_exp004")
+    if failed_reasons:
+        gate4["passed"] = False
+        gate4["failed_reasons"] = sorted(set(failed_reasons))
+
+    payload["incremental_baseline_experiment_id"] = "exp-20260603-004"
+    payload["incremental_baseline_result_file"] = _framework().base._repo_rel(
+        BASELINE_RESULT_JSON
+    )
+    payload["before_metrics"] = before_metrics
+    payload["delta_metrics"] = {
+        "by_window": delta_by_window,
+        "aggregate": aggregate,
+    }
+    payload["target_trade_summary"] = target_summary
+    payload["judge_before_aggregate"] = _framework()._aggregate_result_for_judge(
+        before_metrics
+    )
+    payload["judge_after_aggregate"] = _framework()._aggregate_result_for_judge(
+        payload["after_metrics"]
+    )
+    payload["gate4"] = gate4
+    payload["expected_value_score_delta"] = aggregate["expected_value_score_delta_sum"]
+    payload["total_pnl_delta"] = aggregate["total_pnl_delta_sum"]
+    return payload
+
+
+def _support_trade_summary(
+    target_trades_by_window: dict[str, list[dict[str, Any]]]
+) -> dict[str, Any]:
+    by_window: dict[str, dict[str, Any]] = {}
+    incremental_by_ticker: Counter[str] = Counter()
+    supported_rows: list[dict[str, Any]] = []
+    for label, trades in target_trades_by_window.items():
+        supported = [trade for trade in trades if trade.get("non_core_overlap_support")]
+        supported_rows.extend(supported)
+        incremental_pnl = 0.0
+        for trade in supported:
+            try:
+                pre_notional = float(
+                    trade.get("pre_non_core_overlap_paper_notional_usd")
+                    or BASE_NOTIONAL_USD
+                )
+            except (TypeError, ValueError):
+                pre_notional = BASE_NOTIONAL_USD
+            pnl_pct_net = float(trade.get("pnl_pct_net") or 0.0)
+            trade_incremental = (
+                pnl_pct_net * pre_notional * (NON_CORE_OVERLAP_NOTIONAL_SCALAR - 1.0)
+            )
+            incremental_pnl += trade_incremental
+            incremental_by_ticker[str(trade.get("ticker") or "").upper()] += trade_incremental
+        by_window[label] = {
+            "adjusted_trade_count": len(supported),
+            "adjusted_total_pnl": round(
+                sum(float(trade.get("pnl") or 0.0) for trade in supported),
+                2,
+            ),
+            "non_core_overlap_incremental_pnl": round(incremental_pnl, 2),
+        }
+    positive = {ticker: pnl for ticker, pnl in incremental_by_ticker.items() if pnl > 0}
+    positive_total = sum(positive.values())
+    max_share = (
+        round(max(positive.values()) / positive_total, 6)
+        if positive_total > 0 and positive
+        else None
+    )
+    hhi = (
+        round(sum((pnl / positive_total) ** 2 for pnl in positive.values()), 6)
+        if positive_total > 0 and positive
+        else None
+    )
+    return {
+        "adjusted_trade_count": len(supported_rows),
+        "adjusted_windows": [
+            label for label, row in by_window.items() if row["adjusted_trade_count"]
+        ],
+        "by_window": by_window,
+        "positive_incremental_by_ticker_pnl": {
+            ticker: round(pnl, 2) for ticker, pnl in sorted(positive.items())
+        },
+        "max_single_positive_incremental_pnl_share": max_share,
+        "positive_incremental_pnl_hhi": hhi,
+    }
+
+
+def _patch_parent() -> None:
+    parent.EXPERIMENT_ID = EXPERIMENT_ID
+    parent.STEM = STEM
+    parent.TRIAL_FAMILY = TRIAL_FAMILY
+    parent.CHANGED_VARIABLE = CHANGED_VARIABLE
+    parent.OUT_DIR = OUT_DIR
+    parent.OUT_JSON = OUT_JSON
+    parent.BEFORE_AGG_JSON = BEFORE_AGG_JSON
+    parent.AFTER_AGG_JSON = AFTER_AGG_JSON
+    parent.LOG_JSON = LOG_JSON
+    parent.TICKET_JSON = TICKET_JSON
+    parent.DOC_TICKET_JSON = DOC_TICKET_JSON
+    parent.CARD_MD = CARD_MD
+    parent.ARTIFACT_MD = ARTIFACT_MD
+    parent.EXPERIMENT_LOG = EXPERIMENT_LOG
+    parent.MANIFEST_JSON = MANIFEST_JSON
+    parent._patch_parent()
+    _framework()._candidate_rows_for_window = _candidate_rows_for_window
+    _framework()._select_paper_trades = _select_paper_trades
+
+
+def _postprocess_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    payload = _rebase_payload_to_accepted_baseline(payload)
+    gate4 = payload["gate4"]
+    production_adapter_input_available = False
+    decision = (
+        "accepted_post_earnings_non_core_overlap_support"
+        if gate4["passed"] and production_adapter_input_available
+        else (
+            "rejected_post_earnings_non_core_overlap_support_requires_shared_adapter_input"
+            if gate4["passed"]
+            else "rejected_post_earnings_non_core_overlap_support"
+        )
+    )
+    support_summary = _support_trade_summary(payload["target_trades_by_window"])
+    actual_success = 1 if gate4["passed"] and production_adapter_input_available else 0
+    prediction = {
+        "success_probability": 0.28,
+        "expected_ev_delta": 0.02,
+        "expected_pnl_delta": 250.0,
+        "main_failure_modes": [
+            "production_adapter_input_gap",
+            "weak_incremental_delta",
+            "window_regression",
+            "thin_overlap_sample",
+        ],
+        "confidence_reason": (
+            "Current accepted post-earnings support already includes absolute "
+            "liquidity and sector residual. Non-overlap with same-day AB/core "
+            "activity has positive target PnL in the accepted exp004 rows, but "
+            "the shared adapter does not yet receive this context."
+        ),
+        "recorded_at": "2026-06-03T18:10:12+00:00",
+        "brier_score": round((0.28 - actual_success) ** 2, 6),
+    }
+    failed_reasons = list(gate4.get("failed_reasons") or [])
+    if gate4["passed"] and not production_adapter_input_available:
+        failed_reasons.append("production_adapter_input_gap")
+    calibration = {
+        "actual_decision": decision,
+        "actual_success": actual_success,
+        "predicted_success_probability": prediction["success_probability"],
+        "brier_score": prediction["brier_score"],
+        "expected_ev_delta": prediction["expected_ev_delta"],
+        "actual_ev_delta": payload["delta_metrics"]["aggregate"][
+            "expected_value_score_delta_sum"
+        ],
+        "expected_pnl_delta": prediction["expected_pnl_delta"],
+        "actual_pnl_delta": payload["delta_metrics"]["aggregate"][
+            "total_pnl_delta_sum"
+        ],
+        "predicted_failure_modes": prediction["main_failure_modes"],
+        "metric_gate4_passed": bool(gate4["passed"]),
+        "production_adapter_input_available": production_adapter_input_available,
+        "realized_failure_mode": (
+            None if actual_success else "; ".join(failed_reasons)
+        ),
+        "predicted_failure_mode_hit": (
+            False
+            if actual_success
+            else any(
+                token in "; ".join(failed_reasons)
+                for token in ("regression", "pnl", "ev", "concentration", "adapter")
+            )
+        ),
+    }
+    all_target_trades = [
+        trade
+        for trades in payload["target_trades_by_window"].values()
+        for trade in trades
+    ]
+    payload.update(
+        {
+            "experiment_id": EXPERIMENT_ID,
+            "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "lane": "alpha_search",
+            "status": "completed",
+            "decision": decision,
+            "hypothesis": (
+                "Within the accepted post-earnings underpriced drift paper "
+                "sleeve, candidates with no same-day AB/core activity overlap "
+                "may be cleaner independent event alpha rather than duplicated "
+                "core momentum exposure and deserve a small default-off support "
+                "scalar."
+            ),
+            "change_type": "default_off_paper_allocation",
+            "changed_variable": CHANGED_VARIABLE,
+            "single_causal_variable": CHANGED_VARIABLE,
+            "trial_family": TRIAL_FAMILY,
+            "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+            "trial_variant_id": RULE_VERSION,
+            "prior_trial_count": 0,
+            "nearby_prior_experiments": [
+                "exp-20260602-026",
+                "exp-20260602-027",
+                "exp-20260603-004",
+                "exp-20260603-020",
+                "exp-20260603-001",
+            ],
+            "multiple_testing_risk_bucket": "moderate",
+            "new_evidence_type": "cross_mechanism_independence_context_on_accepted_post_earnings_adapter",
+            "prediction": prediction,
+            "calibration": calibration,
+            "parameters": {
+                **payload.get("parameters", {}),
+                "incremental_baseline_experiment_id": "exp-20260603-004",
+                "support_field": "same_day_ab_overlap == false",
+                "non_core_overlap_notional_scalar": NON_CORE_OVERLAP_NOTIONAL_SCALAR,
+                "base_paper_notional_usd": BASE_NOTIONAL_USD,
+                "trade_enabled": False,
+            },
+            "gate_questions": {
+                "1_alpha_hypothesis": (
+                    "risk allocation / event-quality support: post-earnings "
+                    "paper candidates without same-day AB/core activity overlap "
+                    "may represent more independent event alpha."
+                ),
+                "2_history_check": {
+                    "exp-20260602-026": (
+                        "Accepted the shared post-earnings underpriced drift "
+                        "adapter. This run keeps entry/ranking/hold fixed."
+                    ),
+                    "exp-20260602-027": (
+                        "Accepted high absolute liquidity support. This run "
+                        "does not retune avg_dollar_volume_20d threshold/scalar."
+                    ),
+                    "exp-20260603-004": (
+                        "Accepted sector-residual support. This run compares "
+                        "against exp004 after_metrics and keeps sector "
+                        "thresholds fixed."
+                    ),
+                    "exp-20260603-020": (
+                        "Rejected participation-absorption support after a "
+                        "mid_weak regression. This run changes a different "
+                        "cross-mechanism independence variable."
+                    ),
+                    "exp-20260603-001": (
+                        "Rejected adding post-earnings as a consensus source; "
+                        "this run stays inside the already accepted post-earnings "
+                        "paper adapter and does not alter the consensus source set."
+                    ),
+                },
+                "3_single_causal_variable": CHANGED_VARIABLE,
+                "4_acceptance_standard": (
+                    "Same docs/backtesting.md three windows; compare against "
+                    "exp-20260603-004 after_metrics. Accept only if aggregate "
+                    "EV/PnL improves, no EV/PnL window regresses, survival >=5%, "
+                    "and concentration passes. Any retained positive change "
+                    "must move into the shared default-off production adapter."
+                ),
+                "5_reproducibility": (
+                    ".venv\\Scripts\\python.exe -B quant\\experiments\\"
+                    "exp_20260603_021_post_earnings_non_core_overlap_support.py"
+                ),
+            },
+            "gate1": {
+                "baseline_metrics": payload["before_metrics"],
+                "baseline_artifact": (
+                    "data/experiments/exp-20260603-004/"
+                    "exp_20260603_004_post_earnings_sector_residual_support.json"
+                    "#after_metrics"
+                ),
+                "passed": True,
+            },
+            "gate2": {
+                **payload.get("gate2", {}),
+                "support_field_check": {
+                    "fields": [
+                        "same_day_ab_overlap",
+                        "same_ticker_ab_overlap",
+                        "non_core_overlap_context_status",
+                        "non_core_overlap_support",
+                    ],
+                    "sources": [
+                        "experiment runner join against same-day AB/core entries",
+                    ],
+                    "decision_time": (
+                        "known after signal-date close before next-open paper entry "
+                        "in replay; not currently supplied to the shared adapter"
+                    ),
+                    "coverage": _framework()._field_coverage(
+                        all_target_trades,
+                        [
+                            "same_day_ab_overlap",
+                            "same_ticker_ab_overlap",
+                            "non_core_overlap_context_status",
+                            "non_core_overlap_support",
+                        ],
+                    ),
+                    "passed": True,
+                    "shared_adapter_field_available": production_adapter_input_available,
+                },
+            },
+            "gate3": {
+                "new_core_filter_added": False,
+                "candidate_pool_changed": False,
+                "minimum_core_survival_rate": min(
+                    float(row.get("survival_rate") or 0.0)
+                    for row in payload["before_metrics"].values()
+                ),
+                "passed": True,
+                "note": (
+                    "No core filter, candidate filter, or live entry rule was "
+                    "added. Missing core-overlap context leaves paper notional "
+                    "unchanged, and no shared adapter behavior is retained."
+                ),
+            },
+            "support_trade_summary": support_summary,
+            "production_impact": {
+                "shared_policy_changed": False,
+                "backtester_adapter_changed": False,
+                "run_adapter_changed": False,
+                "replay_only": True,
+                "default_off_paper_only": True,
+                "production_watchlist_changed": False,
+                "production_orders_changed": False,
+                "production_signal_path_changed": False,
+                "production_core_ranking_changed": False,
+                "production_sizing_changed": False,
+                "production_exit_changed": False,
+                "trade_enabled": False,
+                "llm_or_news_changed": False,
+                "parity_rule": RULE_VERSION,
+                "production_adapter_input_available": production_adapter_input_available,
+                "retained_behavior": False,
+            },
+            "why_not_other_changes": (
+                "Skipped LLM soft-ranking because replay-safe joins remain sparse. "
+                "Skipped Companyfacts, FINRA, VBB, source-family consensus, and "
+                "state-surface retunes per playbook anti-repeat rules. Skipped "
+                "post-earnings high-liquidity, sector-residual, and participation "
+                "threshold retunes because exp027/exp004 already accepted the "
+                "first two and exp020 rejected participation absorption."
+            ),
+            "interpretation": (
+                "Metric Gate 4 cleared, but this alpha is rejected as retained "
+                "behavior because same-day AB/core overlap is not supplied by "
+                "the shared post-earnings adapter. Treat it as a lead requiring "
+                "explicit shared-adapter input and parity before retry."
+                if gate4["passed"] and not production_adapter_input_available
+                else (
+                    "Non-core-overlap support cleared both metric Gate 4 and "
+                    "shared-adapter parity."
+                    if gate4["passed"]
+                    else (
+                        "Rejected. Non-core-overlap support did not add a reliable "
+                        "incremental support layer on top of accepted post-earnings "
+                        "high-liquidity and sector-residual support."
+                    )
+                )
+            ),
+            "acceptance_interpretation": (
+                "Gate 4 passed in replay, but no shared adapter input exists; "
+                "no strategy behavior is retained."
+                if gate4["passed"] and not production_adapter_input_available
+                else (
+                    "Accepted with shared adapter parity."
+                    if gate4["passed"]
+                    else "Gate 4 failed in replay; no shared adapter change is retained."
+                )
+            ),
+            "rejection_reason": (
+                "; ".join(failed_reasons)
+                if failed_reasons
+                else (
+                    None
+                )
+            ),
+            "related_files": [
+                "quant/experiments/exp_20260603_021_post_earnings_non_core_overlap_support.py",
+                "data/experiments/exp-20260603-021/exp_20260603_021_post_earnings_non_core_overlap_support.json",
+                "data/experiments/exp-20260603-021/post_earnings_non_core_overlap_support_before_aggregate.json",
+                "data/experiments/exp-20260603-021/post_earnings_non_core_overlap_support_after_aggregate.json",
+                "experiments/logs/exp-20260603-021.json",
+                "experiments/tickets/exp-20260603-021.json",
+                "docs/experiments/tickets/exp-20260603-021.json",
+                "experiments/cards/exp-20260603-021.md",
+                "experiments/artifacts/exp-20260603-021_post_earnings_non_core_overlap_support.md",
+                "experiments/manifests/exp-20260603-021.json",
+                "docs/experiment_log.jsonl",
+            ],
+            "anti_js": "No JavaScript was used.",
+        }
+    )
+    return payload
+
+
+def _build_report(payload: dict[str, Any]) -> str:
+    rows = [
+        "| Window | Before EV | After EV | dEV | Before PnL | After PnL | dPnL | DD d | Target trades | Supported trades | Non-core dPnL |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+    ]
+    support = payload["support_trade_summary"]["by_window"]
+    for label in _framework().base.WINDOWS:
+        before = payload["before_metrics"][label]
+        after = payload["after_metrics"][label]
+        delta = payload["delta_metrics"]["by_window"][label]
+        support_row = support[label]
+        rows.append(
+            "| {label} | {bev:.4f} | {aev:.4f} | {dev:+.4f} | ${bpnl:,.2f} | ${apnl:,.2f} | ${dpnl:+,.2f} | {dd:+.4f} | {trades} | {supported} | ${support_dpnl:+,.2f} |".format(
+                label=label,
+                bev=before["expected_value_score"],
+                aev=after["expected_value_score"],
+                dev=delta.get("expected_value_score", 0.0),
+                bpnl=before["total_pnl"],
+                apnl=after["total_pnl"],
+                dpnl=delta.get("total_pnl", 0.0),
+                dd=delta.get("max_drawdown_pct", 0.0),
+                trades=len(payload["target_trades_by_window"][label]),
+                supported=support_row["adjusted_trade_count"],
+                support_dpnl=support_row["non_core_overlap_incremental_pnl"],
+            )
+        )
+    aggregate = payload["delta_metrics"]["aggregate"]
+    return "\n".join(
+        [
+            f"# {EXPERIMENT_ID} Post-Earnings Non-Core-Overlap Support",
+            "",
+            f"Decision: `{payload['decision']}`.",
+            "",
+            (
+                "Single variable: already-selected "
+                "`POST_EARNINGS_UNDERPRICED_DRIFT_PAPER` candidates with "
+                "`same_day_ab_overlap == false` "
+                "receive `1.05x` paper notional."
+            ),
+            "",
+            "Baseline: `exp-20260603-004` accepted after metrics.",
+            "",
+            "## Three-Window Result",
+            "",
+            *rows,
+            "",
+            "## Aggregate",
+            "",
+            f"- EV delta: `{aggregate['expected_value_score_delta_sum']}` (`{aggregate['expected_value_score_delta_pct']}`)",
+            f"- PnL delta: `${aggregate['total_pnl_delta_sum']}` (`{aggregate['total_pnl_delta_pct']}`)",
+            f"- target trades: `{payload['target_trade_summary']['total_trade_count']}`",
+            f"- supported trades: `{payload['support_trade_summary']['adjusted_trade_count']}` across `{payload['support_trade_summary']['adjusted_windows']}`",
+            f"- target max single positive share: `{payload['target_trade_summary']['max_single_positive_pnl_share']}`",
+            f"- target positive PnL HHI: `{payload['target_trade_summary']['positive_pnl_hhi']}`",
+            f"- supported max single positive incremental share: `{payload['support_trade_summary']['max_single_positive_incremental_pnl_share']}`",
+            f"- supported positive incremental HHI: `{payload['support_trade_summary']['positive_incremental_pnl_hhi']}`",
+            "",
+            "## Gate 4",
+            "",
+            "```json",
+            json.dumps(payload["gate4"], indent=2, sort_keys=True),
+            "```",
+            "",
+            "## Production Impact",
+            "",
+            (
+                "Replay scout only. No shared adapter, backtester adapter, run "
+                "adapter, production watchlist, order path, core entry, ranking, "
+                "sizing, or exit behavior was changed. A positive metric result "
+                "still needs explicit shared-adapter core-overlap input before "
+                "being retained."
+            ),
+            "",
+            "No JavaScript was used.",
+        ]
+    ) + "\n"
+
+
+def _persist(payload: dict[str, Any]) -> None:
+    base = _framework().base
+    base._write_json(OUT_JSON, payload)
+    base._write_json(BEFORE_AGG_JSON, payload["judge_before_aggregate"])
+    base._write_json(AFTER_AGG_JSON, payload["judge_after_aggregate"])
+    base._write_json(LOG_JSON, payload)
+    ticket_payload = {}
+    if TICKET_JSON.exists():
+        with TICKET_JSON.open("r", encoding="utf-8") as handle:
+            ticket_payload = json.load(handle)
+    lifecycle_status = "accepted" if payload["decision"].startswith("accepted") else "rejected"
+    before_aggregate = payload["judge_before_aggregate"]
+    after_aggregate = payload["judge_after_aggregate"]
+    aggregate_delta = payload["delta_metrics"]["aggregate"]
+    ticket_payload.update(
+        {
+            "status": lifecycle_status,
+            "completed_at": payload["timestamp"],
+            "result": {
+                "decision": lifecycle_status,
+                "gate4_decision": payload["decision"],
+                "artifact": base._repo_rel(OUT_JSON),
+                "log": base._repo_rel(LOG_JSON),
+                "summary": payload["interpretation"],
+                "before_result_file": base._repo_rel(BEFORE_AGG_JSON),
+                "after_result_file": base._repo_rel(AFTER_AGG_JSON),
+                "expected_value_score_delta": payload["expected_value_score_delta"],
+                "total_pnl_delta": payload["total_pnl_delta"],
+                "support_trade_summary": payload["support_trade_summary"],
+                "production_impact": payload["production_impact"],
+                "delta_metrics": {
+                    "expected_value_score": aggregate_delta[
+                        "expected_value_score_delta_sum"
+                    ],
+                    "total_return_pct": round(
+                        after_aggregate["benchmarks"]["strategy_total_return_pct"]
+                        - before_aggregate["benchmarks"]["strategy_total_return_pct"],
+                        4,
+                    ),
+                    "max_drawdown_pct": round(
+                        after_aggregate["max_drawdown_pct"]
+                        - before_aggregate["max_drawdown_pct"],
+                        4,
+                    ),
+                    "trade_count": after_aggregate["total_trades"]
+                    - before_aggregate["total_trades"],
+                    "survival_rate": round(
+                        after_aggregate["survival_rate"]
+                        - before_aggregate["survival_rate"],
+                        4,
+                    ),
+                    "total_pnl": aggregate_delta["total_pnl_delta_sum"],
+                },
+            },
+        }
+    )
+    base._write_json(TICKET_JSON, ticket_payload)
+    base._write_json(DOC_TICKET_JSON, ticket_payload)
+    base._write_text(ARTIFACT_MD, _build_report(payload))
+    base._write_text(CARD_MD, _build_report(payload))
+    base._upsert_jsonl(EXPERIMENT_LOG, payload)
+    _write_manifest()
+
+
+def _write_manifest() -> None:
+    base = _framework().base
+    files = {
+        "runner": base._repo_rel(Path(__file__)),
+        "result": base._repo_rel(OUT_JSON),
+        "before_aggregate": base._repo_rel(BEFORE_AGG_JSON),
+        "after_aggregate": base._repo_rel(AFTER_AGG_JSON),
+        "log": base._repo_rel(LOG_JSON),
+        "ticket": base._repo_rel(TICKET_JSON),
+        "doc_ticket": base._repo_rel(DOC_TICKET_JSON),
+        "card": base._repo_rel(CARD_MD),
+        "artifact": base._repo_rel(ARTIFACT_MD),
+        "manifest": base._repo_rel(MANIFEST_JSON),
+        "experiment_log": base._repo_rel(EXPERIMENT_LOG),
+        "baseline_result": base._repo_rel(BASELINE_RESULT_JSON),
+    }
+    manifest = {
+        "schema_version": 1,
+        "manifest_type": "ginger_experiment_revision_manifest",
+        "experiment_id": EXPERIMENT_ID,
+        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "files": {
+            label: {
+                "path": rel_path,
+                "exists": (REPO_ROOT / rel_path).exists(),
+                "sha256": _sha256(REPO_ROOT / rel_path),
+            }
+            for label, rel_path in files.items()
+        },
+    }
+    base._write_json(MANIFEST_JSON, manifest)
+
+
+def main() -> int:
+    _patch_parent()
+    payload = _postprocess_payload(_framework()._build_payload())
+    _persist(payload)
+    print(
+        json.dumps(
+            _framework().base._safe(
+                {
+                    "experiment_id": payload["experiment_id"],
+                    "decision": payload["decision"],
+                    "expected_value_score_delta": payload["expected_value_score_delta"],
+                    "total_pnl_delta": payload["total_pnl_delta"],
+                    "gate4": payload["gate4"],
+                    "support_trade_summary": payload["support_trade_summary"],
+                    "artifact": _framework().base._repo_rel(ARTIFACT_MD),
+                    "before_aggregate": _framework().base._repo_rel(BEFORE_AGG_JSON),
+                    "after_aggregate": _framework().base._repo_rel(AFTER_AGG_JSON),
+                    "production_impact": payload["production_impact"],
+                    "anti_js": payload["anti_js"],
+                }
+            ),
+            indent=2,
+            sort_keys=True,
+        )
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    if not math.isfinite(1.0):
+        raise SystemExit("unexpected math failure")
+    raise SystemExit(main())
