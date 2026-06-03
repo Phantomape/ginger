@@ -1,0 +1,134 @@
+{
+  "acceptance_rule": "3-window Gate 4 per docs/backtesting.md; positive replay lead only if aggregate EV and PnL improve, all windows improve, trade count sufficient, and no production/backtest path changes.",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "experiments/logs",
+    "experiments/artifacts",
+    "data/experiments",
+    "docs/experiment_log.jsonl",
+    "experiments/tickets"
+  ],
+  "artifact": "data/experiments/exp-20260603-012/sec_customer_contract_business_win.json",
+  "baseline_result_file": "data/backtests/backtest_results_exp_20260602_003_three_window_baseline.json",
+  "card_file": "experiments/cards/exp-20260603-012.md",
+  "change_type": "default_off_candidate_pool_scout",
+  "changed_variable": "sec_customer_contract_business_win_candidate_source_v1",
+  "claimed_at": "2026-06-03T11:11:17+00:00",
+  "completed_at": "2026-06-03T11:18:22Z",
+  "created_at": "2026-06-03T11:10:30+00:00",
+  "decision": "rejected_sec_customer_contract_business_win_candidate_pool",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260603-012",
+  "experiment_uid": "expuid-ba41cdc5bfc04703",
+  "gate4": {
+    "decision": "rejected_sec_customer_contract_business_win_candidate_pool",
+    "ev_windows_improved": [],
+    "gates": {
+      "aggregate_expected_value_positive": false,
+      "aggregate_pnl_positive": false,
+      "all_windows_expected_value_improved": false,
+      "all_windows_pnl_improved": false,
+      "concentration_guard_passed": true,
+      "drawdown_drift_passed": true,
+      "survival_floor_passed": true,
+      "target_trade_count_passed": true,
+      "target_window_count_passed": true
+    },
+    "max_drawdown_delta": 0.001,
+    "min_survival_rate": 0.7925,
+    "passed": false,
+    "pnl_windows_improved": [
+      "mid_weak"
+    ],
+    "rationale": "One or more Gate 4 checks failed, so the SEC customer-contract / demand-backlog candidate source is not retained.",
+    "requires_parity_before_promotion": false,
+    "status": "rejected"
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260603-012",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-03T11:10:30+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_customer_contract_business_win"
+  },
+  "hypothesis": "Free SEC filing text with customer/contract/order business-win language may expand a cleaner default-off event candidate pool.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "core_entry_exit_ranking_sizing_production_orders"
+  ],
+  "log": "experiments/logs/exp-20260603-012.json",
+  "mechanism_family": "sec_text_event_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "run.py",
+    "quant/strategy.py",
+    "quant/risk.py",
+    "operator_inputs/open_positions.json"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260506-013",
+    "exp-20260516-034",
+    "exp-20260522-022",
+    "exp-20260603-005"
+  ],
+  "new_evidence_type": "new_production_visible_sec_text_business_win_field",
+  "owner": "alpha-search",
+  "prediction": {
+    "actual_ev_delta": -0.1138,
+    "actual_pnl_delta": -966.22,
+    "actual_success": 0,
+    "brier_score": 0.0576,
+    "confidence_reason": "SEC filing text is free and 3-window replayable, and business-win language is distinct from prior SEC tone/guidance scalars, but SEC semantic candidates have high false-positive risk.",
+    "expected_ev_delta": 0.2,
+    "expected_pnl_delta": 3000.0,
+    "main_failure_modes": [
+      "thin_sample",
+      "late_strong_regression",
+      "concentration_failed",
+      "semantic_false_positive"
+    ],
+    "recorded_at": "2026-06-03T11:10:04+00:00",
+    "success_probability": 0.24
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_orders": false,
+    "backtester_adapter_changed": false,
+    "parity_note": "This experiment changes no production code. A retained result would need a shared default-off SEC text adapter with the same semantic field and parity tests before any daily report, candidate queue, or order surface could change.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "result": {
+    "aggregate_expected_value_delta": -0.1138,
+    "aggregate_strategy_total_pnl_delta": -966.22,
+    "artifact": "experiments/artifacts/exp-20260603-012_sec_customer_contract_business_win.md",
+    "decision": "rejected_sec_customer_contract_business_win_candidate_pool",
+    "log": "experiments/logs/exp-20260603-012.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260603-012.json",
+  "single_causal_variable": "sec_customer_contract_business_win_candidate_source_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260603-012.json",
+  "trial_family": "sec_customer_contract_business_win_candidate_pool",
+  "trial_variant_id": "exp-20260603-012"
+}
