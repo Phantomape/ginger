@@ -2182,6 +2182,8 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"post-RS={candidate.get('rs20_vs_spy')} "
                 f"offset={candidate.get('recent_signal_trading_day_offset')} "
                 f"high-liq={candidate.get('high_liquidity_support', False)} "
+                f"sector-resid={candidate.get('sector_residual_support', False)} "
+                f"sector-excess={candidate.get('sector_residual_excess_vs_median_20d')} "
                 f"notional={notional_text} (paper only)"
             )
 

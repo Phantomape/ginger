@@ -1,6 +1,6 @@
 # Alpha Optimization Playbook
 
-Last refreshed: 2026-06-02.
+Last refreshed: 2026-06-03.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log and should not repeat every trial. Detailed records belong in
@@ -74,11 +74,19 @@ Recent repository evidence supports this priority:
   The combined shared adapter improved all three canonical windows versus core
   by aggregate EV `+0.4116` and PnL `+$4,058.33`; the support slice adjusted
   `13` paper trades across all windows and added `+$501.18` incremental paper
-  PnL over exp026. The next valid earnings work is forward replacement-value
-  accumulation or materially richer event-quality fields, not implicit DTE
-  resets, generic PEAD/pre-earnings threshold sweeps, nearby
-  `pre_event_rs20_vs_spy` retunes, or post-earnings high-liquidity
-  threshold/scalar retunes on the frozen windows.
+  PnL over exp026. `exp-20260603-004` then accepted one materially different
+  free-data event-quality support field: already-selected candidates whose
+  signal-date 20-day return is at least the public-sector median, with at
+  least `3` same-sector return observations, receive an additional `1.05x`
+  default-off paper scalar. Compared with the exp027 after-metrics baseline,
+  all three canonical windows improved, but only marginally (`EV +0.0082`,
+  PnL `+$199.95`, `16` supported trades). Retain it for forward observation;
+  do not mine nearby post-earnings sector-residual thresholds, min-member
+  counts, or scalar values on the frozen windows. The next valid earnings work
+  is forward replacement-value accumulation or a materially richer
+  event-quality field, not implicit DTE resets, generic PEAD/pre-earnings
+  threshold sweeps, nearby `pre_event_rs20_vs_spy` retunes, or post-earnings
+  high-liquidity/sector-residual threshold/scalar retunes.
 - `VOLUME_BREADTH_BREAKOUT_PAPER` and QQQ-confirmed VCP show that free OHLCV
   market-confirmation fields can produce useful paper sleeves. Their next step
   is forward maturation, not another breadth/QQQ/top-N sweep. The latest
@@ -1256,8 +1264,9 @@ production-visible field:
   accepted the explicit continuation policy and `exp-20260602-004` /
   `exp-20260602-006` failed to promote standalone paper pools;
 - nearby post-earnings underpriced drift `pre_event_rs20_vs_spy`, high-liquidity
-  threshold/scalar, score, or close-location retunes after `exp-20260602-026`
-  and `exp-20260602-027`; require forward replacement-value rows or a materially
+  threshold/scalar, sector-residual threshold/min-member/scalar, score, or
+  close-location retunes after `exp-20260602-026`, `exp-20260602-027`, and
+  `exp-20260603-004`; require forward replacement-value rows or a materially
   richer event-quality field;
 - simple target, stop, or fixed max-loss exit changes;
 - ticker-specific exceptions from one or two trades;

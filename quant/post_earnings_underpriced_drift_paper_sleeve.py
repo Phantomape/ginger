@@ -76,10 +76,14 @@ SOURCE_RULE_VERSION = "post_earnings_positive_surprise_pre_event_underpriced_v1"
 POSITIVE_SURPRISE_RULE_VERSION = "post_earnings_positive_surprise_drift_v1"
 REPLACEMENT_VALUE_RULE_VERSION = "post_earnings_underpriced_forward_replacement_value_v1"
 HIGH_LIQUIDITY_SUPPORT_RULE_VERSION = "post_earnings_underpriced_high_liquidity_support_v1"
+SECTOR_RESIDUAL_SUPPORT_RULE_VERSION = "post_earnings_sector_residual_support_v1"
 STATE_SCHEMA_VERSION = 1
 
 DEFAULT_STATE_PATH = data_artifact_path("post_earnings_underpriced_drift_paper_state")
 DEFAULT_SNAPSHOT_LOG_PATH = data_artifact_path("post_earnings_underpriced_drift_paper_snapshots")
+DEFAULT_SECTOR_MAP_PATH = (
+    _QUANT_DIR.parent / "data" / "reference" / "broad_market_sector_map.json"
+)
 
 EXCLUDED_TICKERS = {
     "ARKX",
@@ -125,6 +129,12 @@ DEFAULT_CONFIG = {
     "max_pre_event_rs20_vs_spy": 0.0,
     "high_liquidity_avg_dollar_volume_20d_min": 1_000_000_000.0,
     "high_liquidity_notional_scalar": 1.10,
+    "sector_residual_map_path": str(DEFAULT_SECTOR_MAP_PATH),
+    "sector_residual_lookback_days": 20,
+    "sector_residual_min_excess": 0.0,
+    "sector_residual_min_member_returns": 3,
+    "sector_residual_notional_scalar": 1.05,
+    "sector_by_ticker": None,
     "daily_entry_slots": 1,
     "max_active_positions": 5,
     "hold_days": 10,
@@ -138,6 +148,7 @@ DEFAULT_CONFIG = {
 
 _EARNINGS_INDEX_CACHE: dict[str, list[tuple[str, dict[str, Any]]]] | None = None
 _EARNINGS_DATE_COUNT = 0
+_SECTOR_MAP_CACHE: dict[str, str] | None = None
 
 
 def utc_now_iso() -> str:
@@ -191,6 +202,110 @@ def append_post_earnings_underpriced_drift_paper_snapshot(
     log_path.parent.mkdir(parents=True, exist_ok=True)
     with log_path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(_safe(snapshot), sort_keys=True) + "\n")
+
+
+def _sector_by_ticker(config: dict[str, Any]) -> dict[str, str]:
+    supplied = config.get("sector_by_ticker")
+    if isinstance(supplied, dict):
+        return {
+            str(ticker).upper(): str(sector)
+            for ticker, sector in supplied.items()
+            if ticker and sector
+        }
+
+    global _SECTOR_MAP_CACHE
+    if _SECTOR_MAP_CACHE is not None:
+        return _SECTOR_MAP_CACHE
+    path = Path(str(config.get("sector_residual_map_path") or DEFAULT_SECTOR_MAP_PATH))
+    if not path.exists():
+        _SECTOR_MAP_CACHE = {}
+        return _SECTOR_MAP_CACHE
+    with path.open("r", encoding="utf-8") as handle:
+        payload = json.load(handle)
+    entries = payload.get("entries") if isinstance(payload, dict) else {}
+    _SECTOR_MAP_CACHE = {
+        str(ticker).upper(): str(info.get("sector"))
+        for ticker, info in (entries or {}).items()
+        if isinstance(info, dict)
+        and info.get("status") == "ok"
+        and info.get("sector")
+        and str(info.get("sector")).lower() not in {"none", "nan"}
+    }
+    return _SECTOR_MAP_CACHE
+
+
+def _lookback_return_on_date(
+    rows: list[dict[str, Any]],
+    date_value: str,
+    days: int,
+) -> float | None:
+    idx_by_date = _row_index(rows)
+    idx = idx_by_date.get(date_value)
+    if idx is None or idx < days:
+        return None
+    return _close_return(rows, idx - days, idx)
+
+
+def _sector_residual_context(
+    *,
+    ticker: str,
+    rows_by_ticker: dict[str, list[dict[str, Any]]],
+    signal_date: str,
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    ticker = str(ticker or "").upper()
+    sector = _sector_by_ticker(config).get(ticker)
+    if not sector:
+        return {
+            "sector_residual_context_status": "missing_sector",
+            "sector_residual_support": False,
+        }
+    lookback_days = int(config["sector_residual_lookback_days"])
+    returns: list[float] = []
+    ticker_return = None
+    for peer, peer_sector in _sector_by_ticker(config).items():
+        if peer_sector != sector or peer not in rows_by_ticker:
+            continue
+        peer_return = _lookback_return_on_date(
+            rows_by_ticker.get(peer) or [],
+            signal_date,
+            lookback_days,
+        )
+        if peer_return is None:
+            continue
+        returns.append(peer_return)
+        if peer == ticker:
+            ticker_return = peer_return
+    if ticker_return is None:
+        return {
+            "sector": sector,
+            "sector_residual_context_status": "missing_ticker_return",
+            "sector_residual_support": False,
+            "sector_residual_member_return_count": len(returns),
+        }
+    if len(returns) < int(config["sector_residual_min_member_returns"]):
+        return {
+            "sector": sector,
+            "sector_residual_context_status": "sector_sample_too_small",
+            "sector_residual_support": False,
+            "sector_residual_ticker_return_20d": _round(ticker_return, 6),
+            "sector_residual_member_return_count": len(returns),
+        }
+    median_return = sorted(returns)[len(returns) // 2]
+    if len(returns) % 2 == 0:
+        midpoint = len(returns) // 2
+        median_return = (sorted(returns)[midpoint - 1] + sorted(returns)[midpoint]) / 2
+    excess = ticker_return - median_return
+    supported = excess >= float(config["sector_residual_min_excess"])
+    return {
+        "sector": sector,
+        "sector_residual_context_status": "ok",
+        "sector_residual_support": supported,
+        "sector_residual_ticker_return_20d": _round(ticker_return, 6),
+        "sector_residual_median_return_20d": _round(median_return, 6),
+        "sector_residual_excess_vs_median_20d": _round(excess, 6),
+        "sector_residual_member_return_count": len(returns),
+    }
 
 
 def empty_post_earnings_underpriced_drift_paper_sleeve_snapshot(
@@ -336,6 +451,30 @@ def build_post_earnings_underpriced_drift_paper_sleeve_snapshot(
         "trade_enabled": False,
         "alters_orders": False,
     }
+    sector_residual_support = {
+        "rule_version": SECTOR_RESIDUAL_SUPPORT_RULE_VERSION,
+        "sector_map_path": str(cfg.get("sector_residual_map_path") or ""),
+        "lookback_days": int(cfg["sector_residual_lookback_days"]),
+        "min_excess": float(cfg["sector_residual_min_excess"]),
+        "min_member_returns": int(cfg["sector_residual_min_member_returns"]),
+        "notional_scalar": float(cfg["sector_residual_notional_scalar"]),
+        "supported_candidate_count": sum(
+            1 for candidate in candidates if candidate.get("sector_residual_support")
+        ),
+        "supported_raw_candidate_count": sum(
+            1 for candidate in raw_candidates if candidate.get("sector_residual_support")
+        ),
+        "context_status_counts": dict(
+            sorted(
+                Counter(
+                    str(candidate.get("sector_residual_context_status") or "unknown")
+                    for candidate in raw_candidates
+                ).items()
+            )
+        ),
+        "trade_enabled": False,
+        "alters_orders": False,
+    }
 
     open_positions = working_state.get("open_positions") or []
     room = max(0, int(cfg["max_active_positions"]) - len(open_positions))
@@ -396,6 +535,7 @@ def build_post_earnings_underpriced_drift_paper_sleeve_snapshot(
         "candidate_reject_counts": audit.get("audit_reject_counts") or {},
         "candidate_audit": audit,
         "high_liquidity_support": high_liquidity_support,
+        "sector_residual_support": sector_residual_support,
         "candidates": deepcopy(candidates),
         "raw_candidates_sample": deepcopy(raw_candidates[:10]),
         "rejected_candidates": deepcopy(rejected[:50]),
@@ -561,6 +701,7 @@ def build_post_earnings_underpriced_drift_candidates_for_dates(
 
                 candidate = _candidate_from_event(
                     ticker=ticker,
+                    rows_by_ticker=rows_by_ticker,
                     rows=rows,
                     spy_rows=spy_rows,
                     idx=idx,
@@ -701,6 +842,7 @@ def build_post_earnings_underpriced_drift_replacement_value_report(
 def _candidate_from_event(
     *,
     ticker: str,
+    rows_by_ticker: dict[str, list[dict[str, Any]]],
     rows: list[dict[str, Any]],
     spy_rows: list[dict[str, Any]],
     idx: int,
@@ -790,7 +932,24 @@ def _candidate_from_event(
         if high_liquidity_supported
         else 1.0
     )
-    intended_notional = base_notional * high_liquidity_scalar
+    sector_context = _sector_residual_context(
+        ticker=ticker,
+        rows_by_ticker=rows_by_ticker,
+        signal_date=signal_date,
+        config=config,
+    )
+    audit[
+        "sector_residual_context_"
+        + str(sector_context.get("sector_residual_context_status") or "unknown")
+    ] += 1
+    sector_residual_supported = bool(sector_context.get("sector_residual_support"))
+    sector_residual_scalar = (
+        float(config["sector_residual_notional_scalar"])
+        if sector_residual_supported
+        else 1.0
+    )
+    pre_sector_residual_notional = base_notional * high_liquidity_scalar
+    intended_notional = pre_sector_residual_notional * sector_residual_scalar
     return {
         "sleeve": SLEEVE_NAME,
         "ticker": ticker,
@@ -833,6 +992,18 @@ def _candidate_from_event(
             config["high_liquidity_avg_dollar_volume_20d_min"]
         ),
         "high_liquidity_notional_scalar": _round(high_liquidity_scalar, 6),
+        **sector_context,
+        "sector_residual_support_rule_version": SECTOR_RESIDUAL_SUPPORT_RULE_VERSION,
+        "sector_residual_lookback_days": int(config["sector_residual_lookback_days"]),
+        "sector_residual_min_excess": float(config["sector_residual_min_excess"]),
+        "sector_residual_min_member_returns": int(
+            config["sector_residual_min_member_returns"]
+        ),
+        "sector_residual_notional_scalar": _round(sector_residual_scalar, 6),
+        "pre_sector_residual_paper_notional_usd": _round(
+            pre_sector_residual_notional,
+            2,
+        ),
         "known_at": "after_earnings_snapshot_transition_and_signal_date_close_before_next_open_paper_entry",
         "source_universe": "current_production_universe_ohlcv_plus_daily_earnings_snapshots",
         "base_paper_notional_usd": base_notional,

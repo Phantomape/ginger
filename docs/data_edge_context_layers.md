@@ -937,6 +937,8 @@ forward observation ledger for the accepted post-earnings underpriced
 positive-surprise drift lead from `exp-20260602-026`, which promoted the
 positive `exp-20260602-023` replay result into a shared production-visible
 adapter, plus high-liquidity paper support from `exp-20260602-027`.
+`exp-20260603-004` adds sector-residual paper support on the same shared
+adapter.
 
 Candidate route:
 
@@ -964,14 +966,22 @@ Candidate route:
   signal-date `avg_dollar_volume_20d >= $1B`. The adapter emits
   `high_liquidity_support` candidate metadata and snapshot summary fields;
   this remains paper-only and never enables orders.
+- Applies the accepted `exp-20260603-004` sector-residual event-quality support
+  field: already-selected candidates receive an additional `1.05x` paper
+  notional only when signal-date 20-day return is at least the persisted public
+  sector median, with at least `3` same-sector return observations from
+  `data/reference/broad_market_sector_map.json`. The adapter emits
+  `sector_residual_*` candidate metadata and a `sector_residual_support`
+  snapshot summary; this remains paper-only and never enables orders.
 
 Agent rule: this sleeve may collect forward replacement-value evidence for the
 accepted alpha. It must not enable orders, expand the core universe, alter live
 ranking, sizing, exits, LLM/news, or consume live capital without a separate
 Gate 1-4 activation experiment and parity update. Do not retune
 `pre_event_rs20_vs_spy`, surprise thresholds, signal-offset windows, top-N,
-hold-day, base notional, or high-liquidity threshold/scalar on the frozen
-sample without forward rows or a materially richer event-quality field.
+hold-day, base notional, high-liquidity threshold/scalar, or sector-residual
+threshold/min-member/scalar on the frozen sample without forward rows or a
+materially richer event-quality field.
 
 ### `quant/fundamental_growth_rs_paper_sleeve.py`
 

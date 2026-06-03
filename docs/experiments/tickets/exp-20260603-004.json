@@ -1,0 +1,153 @@
+{
+  "acceptance_rule": "Compare against exp-20260602-027 after_metrics on the three canonical windows; accept only if aggregate EV improves with no old_thin regression and no concentration/production-parity breach.",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "data/experiments",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260602-027/exp_20260602_027_post_earnings_high_liquidity_support.json",
+  "card_file": "experiments/cards/exp-20260603-004.md",
+  "change_type": "default_off_paper_adapter_event_quality_support",
+  "changed_variable": "sector_residual_support_scalar",
+  "claimed_at": "2026-06-03T02:13:22+00:00",
+  "completed_at": "2026-06-03T02:42:42+00:00",
+  "created_at": "2026-06-03T02:13:04+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260603-004",
+  "experiment_uid": "expuid-1b9b633ca03b4562",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260603-004",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-03T02:13:04+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "post_earnings_sector_residual_support"
+  },
+  "hypothesis": "Already-selected POST_EARNINGS_UNDERPRICED_DRIFT_PAPER candidates whose signal-date 20d return beats their public sector median have cleaner post-event continuation and deserve a small paper notional support scalar.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "pre_event_rs20_vs_spy",
+    "high_liquidity_support",
+    "post_earnings_score",
+    "close_location"
+  ],
+  "mechanism_family": "post_earnings_underpriced_drift",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/post_earnings_underpriced_drift_paper_sleeve.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260602-026",
+    "exp-20260602-027",
+    "exp-20260603-003"
+  ],
+  "new_evidence_type": "production_visible_public_sector_relative_return_field",
+  "owner": "codex-alpha-search",
+  "prediction": {
+    "confidence_reason": "Precheck found only small positive aggregate paper delta and weak old_thin behavior, but field is free, deterministic, and production-visible if it works.",
+    "expected_ev_delta": 0.02,
+    "expected_pnl_delta": 100.0,
+    "main_failure_modes": [
+      "thin_supported_sample",
+      "old_thin_regression",
+      "coverage_gap",
+      "immaterial_delta"
+    ],
+    "recorded_at": "2026-06-03T02:12:39+00:00",
+    "success_probability": 0.22
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "after_result_file": "data/experiments/exp-20260603-004/post_earnings_sector_residual_support_after_aggregate.json",
+    "artifact": "data/experiments/exp-20260603-004/exp_20260603_004_post_earnings_sector_residual_support.json",
+    "before_result_file": "data/experiments/exp-20260603-004/post_earnings_sector_residual_support_before_aggregate.json",
+    "decision": "accepted",
+    "delta_metrics": {
+      "expected_value_score": 0.0082,
+      "max_drawdown_pct": -0.0001,
+      "survival_rate": 0.0,
+      "total_pnl": 199.95,
+      "total_return_pct": 0.002,
+      "trade_count": 0
+    },
+    "expected_value_score_delta": 0.0082,
+    "gate4_decision": "accepted_post_earnings_sector_residual_support",
+    "log": "experiments/logs/exp-20260603-004.json",
+    "production_impact": {
+      "backtester_adapter_changed": true,
+      "default_off_paper_only": true,
+      "llm_or_news_changed": false,
+      "parity_rule": "post_earnings_sector_residual_support_v1",
+      "parity_test_added": true,
+      "production_core_ranking_changed": false,
+      "production_exit_changed": false,
+      "production_orders_changed": false,
+      "production_signal_path_changed": false,
+      "production_sizing_changed": false,
+      "production_watchlist_changed": false,
+      "replay_only": false,
+      "run_adapter_changed": true,
+      "shared_policy_changed": true,
+      "trade_enabled": false
+    },
+    "summary": "Accepted shared default-off paper support. Retain it for forward observation only; live activation still requires closed forward replacement-value evidence.",
+    "support_trade_summary": {
+      "adjusted_trade_count": 16,
+      "adjusted_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "by_window": {
+        "late_strong": {
+          "adjusted_total_pnl": 3241.64,
+          "adjusted_trade_count": 4,
+          "sector_residual_incremental_pnl": 154.36
+        },
+        "mid_weak": {
+          "adjusted_total_pnl": 746.74,
+          "adjusted_trade_count": 6,
+          "sector_residual_incremental_pnl": 35.56
+        },
+        "old_thin": {
+          "adjusted_total_pnl": 210.62,
+          "adjusted_trade_count": 6,
+          "sector_residual_incremental_pnl": 10.03
+        }
+      },
+      "max_single_positive_incremental_pnl_share": 0.324197,
+      "positive_incremental_by_ticker_pnl": {
+        "DE": 7.0,
+        "DIS": 28.93,
+        "GOOG": 6.03,
+        "GS": 29.69,
+        "LLY": 94.41,
+        "META": 34.27,
+        "MU": 129.2,
+        "NOW": 68.99
+      },
+      "positive_incremental_pnl_hhi": 0.209952
+    },
+    "total_pnl_delta": 199.95
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260603-004.json",
+  "single_causal_variable": "post_earnings_sector_residual_support_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260603-004.json",
+  "trial_family": "sector_relative_event_quality",
+  "trial_variant_id": "sector_residual_support_v1"
+}

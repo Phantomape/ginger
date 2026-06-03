@@ -5,6 +5,7 @@ from datetime import date, timedelta
 from quant.default_off_alpha_attribution import build_default_off_alpha_attribution_report
 from quant.post_earnings_underpriced_drift_paper_sleeve import (
     RULE_VERSION,
+    SECTOR_RESIDUAL_SUPPORT_RULE_VERSION,
     SOURCE_RULE_VERSION,
     build_post_earnings_underpriced_drift_paper_sleeve_snapshot,
     empty_post_earnings_underpriced_drift_paper_state,
@@ -145,6 +146,43 @@ def test_high_liquidity_support_scales_paper_notional_without_orders():
     assert candidate["intended_notional"] == 11_000.0
     assert pending["notional"] == 11_000.0
     assert snapshot["high_liquidity_support"]["supported_candidate_count"] == 1
+    assert candidate["trade_enabled"] is False
+    assert candidate["alters_orders"] is False
+
+
+def test_sector_residual_support_scales_paper_notional_without_orders():
+    ohlcv = _ohlcv()
+    as_of = ohlcv["SPY"][56]["date"]
+    event_date = ohlcv["SPY"][55]["date"]
+    ohlcv["PEER"] = _rows(base=52.0, step=0.04)
+    ohlcv["PEER2"] = _rows(base=48.0, step=0.02)
+
+    snapshot = build_post_earnings_underpriced_drift_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker=ohlcv,
+        candidate_universe=["WIN"],
+        earnings_index=_earnings_index(event_date),
+        state=empty_post_earnings_underpriced_drift_paper_state(),
+        config={
+            "sector_by_ticker": {
+                "WIN": "Software",
+                "PEER": "Software",
+                "PEER2": "Software",
+            }
+        },
+        persist=False,
+    )
+
+    candidate = snapshot["candidates"][0]
+    pending = snapshot["new_pending_entries"][0]
+    assert candidate["sector_residual_context_status"] == "ok"
+    assert candidate["sector_residual_support"] is True
+    assert candidate["sector_residual_support_rule_version"] == SECTOR_RESIDUAL_SUPPORT_RULE_VERSION
+    assert candidate["sector_residual_notional_scalar"] == 1.05
+    assert candidate["pre_sector_residual_paper_notional_usd"] == 10_000.0
+    assert candidate["intended_notional"] == 10_500.0
+    assert pending["notional"] == 10_500.0
+    assert snapshot["sector_residual_support"]["supported_candidate_count"] == 1
     assert candidate["trade_enabled"] is False
     assert candidate["alters_orders"] is False
 

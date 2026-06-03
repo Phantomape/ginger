@@ -312,6 +312,9 @@ def build_default_off_alpha_attribution_report(
                 "high_liquidity_supported": (
                     ((post_earnings_underpriced_drift_paper_sleeve or {}).get("high_liquidity_support") or {}).get("supported_candidate_count")
                 ),
+                "sector_residual_supported": (
+                    ((post_earnings_underpriced_drift_paper_sleeve or {}).get("sector_residual_support") or {}).get("supported_candidate_count")
+                ),
             },
         ),
         _surface_summary(
