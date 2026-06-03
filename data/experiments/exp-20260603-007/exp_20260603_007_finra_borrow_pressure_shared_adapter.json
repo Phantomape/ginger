@@ -1,0 +1,229 @@
+{
+  "acceptance_basis": "Accepted as a default-off production-visible adapter, not as live capital. It preserves the accepted exp-20260603-006 three-window paper lead and starts forward evidence collection without changing core/live behavior.",
+  "adapter_validation": {
+    "borrow_pressure_admission_rule_version": "finra_days_to_cover_positive_short_change_borrow_pressure_source_v1",
+    "cost_liquidity_support_rule_version": "finra_iwm_cost_liquidity_support_v1",
+    "focused_tests": [
+      "py_compile finra_iwm/run/report/default_off modules",
+      "pytest quant/test_finra_iwm_paper_sleeve.py -q"
+    ],
+    "market_confirmation_rule_version": "iwm_spy_20d_risk_appetite_v1",
+    "rule_version": "finra_iwm_borrow_pressure_shared_v1",
+    "same_ticker_cooldown_rule_version": "finra_iwm_same_ticker_signal_cooldown_v1",
+    "shared_files": [
+      "quant/finra_iwm_paper_sleeve.py",
+      "quant/run.py",
+      "quant/default_off_alpha_attribution.py",
+      "quant/report_generator.py",
+      "quant/test_finra_iwm_paper_sleeve.py"
+    ],
+    "sleeve": "FINRA_IWM_CONFIRMED_PAPER",
+    "source_rule_version": "finra_days_to_cover_positive_short_change_borrow_pressure_source_v1"
+  },
+  "change_type": "default_off_paper_adapter",
+  "changed_variable": "finra_borrow_pressure_admission_shared_adapter_v1",
+  "decision": "accepted_default_off_finra_borrow_pressure_shared_adapter",
+  "experiment_id": "exp-20260603-007",
+  "gate_questions": {
+    "1_alpha_hypothesis": "candidate_pool / entry: require the official FINRA row to show both high days-to-cover and positive short-interest change before admitting FINRA/IWM default-off paper candidates.",
+    "2_history_check": {
+      "exp-20260529-018": "FINRA score monotonicity failed, so this run does not rely on another composite-score threshold sweep.",
+      "exp-20260530-010": "Existing shared FINRA/IWM cooldown adapter; this run changes only the FINRA borrow-pressure admission field.",
+      "exp-20260601-029": "Cost-liquidity support is already accepted; this run does not retune notional, liquidity, cooldown, IWM, ranking, or exits.",
+      "exp-20260603-006": "Accepted replay lead: aggregate EV +0.2585, PnL +$5,688.12, 3/3 windows improved, 22 target trades, concentration passed."
+    },
+    "3_single_causal_variable": "finra_borrow_pressure_admission_shared_adapter_v1",
+    "4_acceptance_standard": "Use docs/backtesting.md three windows from exp-20260603-006 for paper alpha evidence; adapter acceptance additionally requires shared production-visible code, no live/core order impact, and focused parity/metadata tests.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260603_007_finra_borrow_pressure_shared_adapter.py"
+  },
+  "hypothesis": "The accepted FINRA borrow-pressure admission lead should become a shared default-off FINRA/IWM paper adapter so production can collect forward replacement-value evidence without changing live orders.",
+  "lane": "alpha_search",
+  "nearby_prior_experiments": [
+    "exp-20260603-006",
+    "exp-20260530-010",
+    "exp-20260601-029",
+    "exp-20260529-018"
+  ],
+  "next_evidence_needed": "Closed forward replacement-value rows, cash/core displacement comparison, concentration and kill-gate monitoring before any live activation review.",
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "parity_test_added": true,
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": true,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "quant/finra_iwm_paper_sleeve.py",
+    "quant/test_finra_iwm_paper_sleeve.py",
+    "quant/default_off_alpha_attribution.py",
+    "quant/report_generator.py",
+    "docs/current_state.md",
+    "docs/alpha-optimization-playbook.md",
+    "docs/data_edge_context_layers.md",
+    "docs/production_backtest_parity.md",
+    "data/experiments/exp-20260603-007/exp_20260603_007_finra_borrow_pressure_shared_adapter.json",
+    "data/experiments/exp-20260603-007/finra_borrow_pressure_shared_adapter_before_aggregate.json",
+    "data/experiments/exp-20260603-007/finra_borrow_pressure_shared_adapter_after_aggregate.json",
+    "experiments/logs/exp-20260603-007.json",
+    "experiments/artifacts/exp-20260603-007_finra_borrow_pressure_shared_adapter.md",
+    "data/experiments/exp-20260603-006/exp_20260603_006_finra_borrow_pressure_candidate_pool.json"
+  ],
+  "single_causal_variable": "shared FINRA borrow-pressure admission adapter boundary",
+  "status": "accepted_default_off_finra_borrow_pressure_shared_adapter",
+  "three_window_evidence_source": "data/experiments/exp-20260603-006/exp_20260603_006_finra_borrow_pressure_candidate_pool.json",
+  "three_window_result": {
+    "aggregate": {
+      "after_expected_value_score_sum": 8.1526,
+      "after_total_pnl_sum": 240539.11,
+      "baseline_expected_value_score_sum": 7.8941,
+      "baseline_total_pnl_sum": 234850.99,
+      "expected_value_score_delta_pct": 0.032746,
+      "expected_value_score_delta_sum": 0.2585,
+      "max_drawdown_delta_max": -0.0003,
+      "target_trade_count_sum": 22,
+      "total_pnl_delta_pct": 0.02422,
+      "total_pnl_delta_sum": 5688.12,
+      "windows_ev_improved": 3,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 3,
+      "windows_pnl_regressed": 0
+    },
+    "gate4": {
+      "aggregate_ev_delta_positive": true,
+      "aggregate_pnl_delta_positive": true,
+      "failed_reasons": [],
+      "max_drawdown_worse": -0.0003,
+      "max_drawdown_worse_guardrail": 0.005,
+      "passed": true,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "max_single_positive_pnl_share": 0.383087,
+        "max_single_positive_pnl_share_guardrail": 0.4,
+        "passed": true,
+        "positive_pnl_hhi": 0.232995,
+        "positive_pnl_hhi_guardrail": 0.3
+      },
+      "target_trade_count": 22,
+      "target_trade_count_min": 20,
+      "target_window_count_min": 3,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "windows_ev_improved": 3,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 3,
+      "windows_pnl_regressed": 0
+    },
+    "target_trade_summary": {
+      "by_ticker_count": {
+        "APP": 1,
+        "BKNG": 1,
+        "CAT": 1,
+        "CRDO": 1,
+        "CVX": 1,
+        "DDOG": 1,
+        "DE": 5,
+        "GE": 2,
+        "GS": 2,
+        "ISRG": 1,
+        "JPM": 2,
+        "MCD": 1,
+        "RTX": 1,
+        "TRIP": 2
+      },
+      "by_ticker_pnl": {
+        "APP": 2728.34,
+        "BKNG": -163.31,
+        "CAT": -849.65,
+        "CRDO": 339.64,
+        "CVX": 82.52,
+        "DDOG": 1457.02,
+        "DE": 1262.13,
+        "GE": 506.92,
+        "GS": 487.34,
+        "ISRG": -42.26,
+        "JPM": 194.2,
+        "MCD": 63.88,
+        "RTX": -355.37,
+        "TRIP": -23.28
+      },
+      "by_window_pnl": {
+        "late_strong": 1492.81,
+        "mid_weak": 578.03,
+        "old_thin": 3617.28
+      },
+      "max_single_positive_pnl_share": 0.383087,
+      "positive_by_ticker_pnl": {
+        "APP": 2728.34,
+        "CRDO": 339.64,
+        "CVX": 82.52,
+        "DDOG": 1457.02,
+        "DE": 1262.13,
+        "GE": 506.92,
+        "GS": 487.34,
+        "JPM": 194.2,
+        "MCD": 63.88
+      },
+      "positive_pnl_hhi": 0.232995,
+      "total_pnl": 5688.12,
+      "total_trade_count": 22,
+      "windows_with_target_trades": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ]
+    },
+    "windows": [
+      {
+        "after_ev": 5.2882,
+        "after_pnl": 118565.73,
+        "after_survival_rate": 0.8039,
+        "before_ev": 5.1628,
+        "before_pnl": 117072.92,
+        "before_survival_rate": 0.8039,
+        "delta_ev": 0.1254,
+        "delta_pnl": 1492.81,
+        "target_trades": 6,
+        "window": "late_strong"
+      },
+      {
+        "after_ev": 2.1718,
+        "after_pnl": 78688.14,
+        "after_survival_rate": 0.7925,
+        "before_ev": 2.1402,
+        "before_pnl": 78110.11,
+        "before_survival_rate": 0.7925,
+        "delta_ev": 0.0316,
+        "delta_pnl": 578.03,
+        "target_trades": 8,
+        "window": "mid_weak"
+      },
+      {
+        "after_ev": 0.6926,
+        "after_pnl": 43285.24,
+        "after_survival_rate": 0.8667,
+        "before_ev": 0.5911,
+        "before_pnl": 39667.96,
+        "before_survival_rate": 0.8667,
+        "delta_ev": 0.1015,
+        "delta_pnl": 3617.28,
+        "target_trades": 8,
+        "window": "old_thin"
+      }
+    ]
+  },
+  "timestamp": "2026-06-03T06:16:00+00:00",
+  "trial_family": "default_off_paper_adapter",
+  "trial_variant_id": "finra_borrow_pressure_admission_shared_adapter_v1"
+}

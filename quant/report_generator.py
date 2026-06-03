@@ -2522,6 +2522,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         source = finra_iwm_paper_sleeve.get("data_source") or {}
         market = finra_iwm_paper_sleeve.get("market_confirmation") or {}
         cooldown = finra_iwm_paper_sleeve.get("same_ticker_cooldown") or {}
+        borrow_pressure = finra_iwm_paper_sleeve.get("borrow_pressure_admission") or {}
         cost_liquidity = finra_iwm_paper_sleeve.get("cost_liquidity_support") or {}
         lines.append(
             "  FINRA rows: "
@@ -2535,6 +2536,14 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             f"IWM-SPY 20d={market.get('iwm_minus_spy_ret20')}  |  "
             f"cooldown rejects={cooldown.get('rejected_count', 0)}"
         )
+        if borrow_pressure:
+            lines.append(
+                "  Borrow pressure admission: "
+                f"{borrow_pressure.get('admitted_candidate_count', 0)} admitted  |  "
+                f"{borrow_pressure.get('rejected_count', 0)} rejected  |  "
+                f"dtc>={borrow_pressure.get('min_finra_days_to_cover')} "
+                f"short_change>{borrow_pressure.get('min_finra_short_interest_change_pct')}"
+            )
         lines.append(
             f"  Candidates: {finra_iwm_paper_sleeve.get('candidate_count', 0)}  |  "
             f"Pending: {finra_iwm_paper_sleeve.get('pending_count', 0)}  |  "
@@ -2567,6 +2576,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"  {candidate.get('ticker', '?')}: "
                 f"score={candidate.get('finra_short_pressure_score')} "
                 f"dtc={candidate.get('finra_days_to_cover')} "
+                f"short_change={candidate.get('finra_short_interest_change_pct')} "
                 f"rs20={candidate.get('rs20_vs_spy')} "
                 f"cost-liquidity={candidate.get('finra_iwm_cost_liquidity_pass_v1')} "
                 f"notional={notional_text} (paper only)"

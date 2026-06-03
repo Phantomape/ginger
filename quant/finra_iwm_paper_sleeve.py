@@ -69,12 +69,15 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 
 
 SLEEVE_NAME = "FINRA_IWM_CONFIRMED_PAPER"
-RULE_VERSION = "finra_iwm_same_ticker_cooldown_shared_v1"
-SOURCE_RULE_VERSION = "finra_short_pressure_breakout_candidate_source_v1"
+RULE_VERSION = "finra_iwm_borrow_pressure_shared_v1"
+SOURCE_RULE_VERSION = "finra_days_to_cover_positive_short_change_borrow_pressure_source_v1"
 MARKET_CONFIRMATION_RULE_VERSION = "iwm_spy_20d_risk_appetite_v1"
 COOLDOWN_RULE_VERSION = "finra_iwm_same_ticker_signal_cooldown_v1"
 REPLACEMENT_VALUE_RULE_VERSION = "finra_iwm_forward_replacement_value_v1"
 COST_LIQUIDITY_SUPPORT_RULE_VERSION = "finra_iwm_cost_liquidity_support_v1"
+BORROW_PRESSURE_ADMISSION_RULE_VERSION = (
+    "finra_days_to_cover_positive_short_change_borrow_pressure_source_v1"
+)
 STATE_SCHEMA_VERSION = 1
 
 FINRA_CSV_URL = "https://cdn.finra.org/equity/otcmarket/biweekly/shrt{yyyymmdd}.csv"
@@ -156,6 +159,9 @@ DEFAULT_CONFIG = {
     "min_signal_close_location": 0.60,
     "min_rs20_vs_spy": 0.0,
     "min_short_pressure_score": 0.70,
+    "borrow_pressure_admission_enabled": True,
+    "min_finra_days_to_cover": 3.0,
+    "min_finra_short_interest_change_pct": 0.0,
     "market_confirmation_days": 20,
     "min_iwm_minus_spy_ret20": 0.003,
     "same_ticker_cooldown_calendar_days": 7,
@@ -405,6 +411,18 @@ def empty_finra_iwm_paper_sleeve_snapshot(as_of: str, reason: str) -> dict[str, 
             "trade_enabled": False,
             "alters_orders": False,
         },
+        "borrow_pressure_admission": {
+            "rule_version": BORROW_PRESSURE_ADMISSION_RULE_VERSION,
+            "enabled": True,
+            "min_finra_days_to_cover": DEFAULT_CONFIG["min_finra_days_to_cover"],
+            "min_finra_short_interest_change_pct": DEFAULT_CONFIG[
+                "min_finra_short_interest_change_pct"
+            ],
+            "admitted_candidate_count": 0,
+            "rejected_count": 0,
+            "trade_enabled": False,
+            "alters_orders": False,
+        },
         "candidate_universe": {"status": reason, "ticker_count": 0},
         "forward_paper_gate": {"passed": False, "status": "blocked", "reasons": [reason]},
         "production_impact": _production_impact(),
@@ -572,6 +590,11 @@ def build_finra_iwm_paper_sleeve_snapshot(
         },
         "market_confirmation": market_context,
         "same_ticker_cooldown": cooldown_audit,
+        "borrow_pressure_admission": _borrow_pressure_admission_summary(
+            candidates,
+            reject_counts,
+            cfg,
+        ),
         "cost_liquidity_support": _cost_liquidity_support_summary(filtered_candidates, cfg),
         "candidate_reject_counts": dict(sorted(reject_counts.items())),
         "candidates": deepcopy(filtered_candidates),
@@ -587,8 +610,9 @@ def build_finra_iwm_paper_sleeve_snapshot(
         "production_impact": _production_impact(),
         "notes": (
             "Default-off paper only. FINRA publication-date rows, IWM/SPY "
-            "confirmation, and same-ticker cooldown are surfaced for forward "
-            "replacement-value evidence; live/core orders remain unchanged."
+            "confirmation, borrow-pressure admission, same-ticker cooldown, "
+            "and cost-liquidity support are surfaced for forward replacement-"
+            "value evidence; live/core orders remain unchanged."
         ),
     }
 
@@ -682,6 +706,11 @@ def _build_candidates(
             continue
 
         finra_row = short_score["finra_row"]
+        borrow_pressure = _borrow_pressure_admission_context(finra_row, config)
+        if borrow_pressure["finra_borrow_pressure_pass_v1"] is not True:
+            _inc(rejects, borrow_pressure["finra_borrow_pressure_status"])
+            continue
+
         selection_score = (
             float(short_score["finra_short_pressure_score"])
             + min(rs20_vs_spy, 0.50)
@@ -702,11 +731,12 @@ def _build_candidates(
                 "sleeve": SLEEVE_NAME,
                 "ticker": ticker,
                 "date": as_of,
-                "strategy": "finra_iwm_same_ticker_cooldown_candidate_pool",
+                "strategy": "finra_borrow_pressure_candidate_pool",
                 "rule_version": RULE_VERSION,
                 "source_rule_version": SOURCE_RULE_VERSION,
                 "market_confirmation_rule_version": MARKET_CONFIRMATION_RULE_VERSION,
                 "same_ticker_cooldown_rule_version": COOLDOWN_RULE_VERSION,
+                "borrow_pressure_admission_rule_version": BORROW_PRESSURE_ADMISSION_RULE_VERSION,
                 "close": _round(close, 4),
                 "volume": _round(volume, 2),
                 "dollar_volume": _round(dollar_volume, 2),
@@ -740,6 +770,7 @@ def _build_candidates(
                 "intended_notional": cost_liquidity["finra_iwm_cost_liquidity_supported_notional_usd"],
                 "trade_enabled": False,
                 "alters_orders": False,
+                **borrow_pressure,
                 **cost_liquidity,
             }
         )
@@ -755,6 +786,79 @@ def _build_candidates(
         )
     )
     return candidates, rejects, market
+
+
+def _borrow_pressure_admission_context(
+    finra_row: dict[str, Any],
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    enabled = bool(config.get("borrow_pressure_admission_enabled", True))
+    min_days_to_cover = float(config["min_finra_days_to_cover"])
+    min_short_change = float(config["min_finra_short_interest_change_pct"])
+    days_to_cover = _float_or_none(finra_row.get("days_to_cover"))
+    short_change_pct = _float_or_none(finra_row.get("short_interest_change_pct"))
+    if not enabled:
+        status = "disabled"
+        passed = True
+    elif days_to_cover is None:
+        status = "missing_finra_days_to_cover"
+        passed = False
+    elif short_change_pct is None:
+        status = "missing_finra_short_interest_change_pct"
+        passed = False
+    elif days_to_cover < min_days_to_cover:
+        status = "days_to_cover_below_threshold"
+        passed = False
+    elif short_change_pct <= min_short_change:
+        status = "short_interest_change_not_positive"
+        passed = False
+    else:
+        status = "passed"
+        passed = True
+    return {
+        "finra_borrow_pressure_rule_version": BORROW_PRESSURE_ADMISSION_RULE_VERSION,
+        "finra_borrow_pressure_known_at": (
+            "after_signal_date_close_with_latest_published_finra_before_next_open_paper_entry"
+        ),
+        "finra_borrow_pressure_trade_enabled": False,
+        "finra_borrow_pressure_alters_orders": False,
+        "finra_borrow_pressure_enabled": enabled,
+        "finra_borrow_pressure_status": status,
+        "finra_borrow_pressure_pass_v1": passed,
+        "min_finra_days_to_cover": min_days_to_cover,
+        "min_finra_short_interest_change_pct": min_short_change,
+    }
+
+
+def _borrow_pressure_admission_summary(
+    candidates: list[dict[str, Any]],
+    reject_counts: dict[str, int],
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    reject_keys = (
+        "missing_finra_days_to_cover",
+        "missing_finra_short_interest_change_pct",
+        "days_to_cover_below_threshold",
+        "short_interest_change_not_positive",
+    )
+    rejects = {
+        key: int(reject_counts.get(key, 0))
+        for key in reject_keys
+        if reject_counts.get(key, 0)
+    }
+    return {
+        "rule_version": BORROW_PRESSURE_ADMISSION_RULE_VERSION,
+        "enabled": bool(config.get("borrow_pressure_admission_enabled", True)),
+        "min_finra_days_to_cover": float(config["min_finra_days_to_cover"]),
+        "min_finra_short_interest_change_pct": float(
+            config["min_finra_short_interest_change_pct"]
+        ),
+        "admitted_candidate_count": len(candidates),
+        "rejected_count": sum(rejects.values()),
+        "reject_counts": rejects,
+        "trade_enabled": False,
+        "alters_orders": False,
+    }
 
 
 def _cost_liquidity_support_context(

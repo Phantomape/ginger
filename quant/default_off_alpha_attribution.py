@@ -438,6 +438,12 @@ def build_default_off_alpha_attribution_report(
                 "cooldown_rejected": (
                     ((finra_iwm_paper_sleeve or {}).get("same_ticker_cooldown") or {}).get("rejected_count")
                 ),
+                "borrow_pressure_admitted": (
+                    ((finra_iwm_paper_sleeve or {}).get("borrow_pressure_admission") or {}).get("admitted_candidate_count")
+                ),
+                "borrow_pressure_rejected": (
+                    ((finra_iwm_paper_sleeve or {}).get("borrow_pressure_admission") or {}).get("rejected_count")
+                ),
                 "finra_rows": (
                     ((finra_iwm_paper_sleeve or {}).get("data_source") or {}).get("row_count")
                 ),

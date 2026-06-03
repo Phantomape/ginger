@@ -4,6 +4,7 @@ from datetime import date, timedelta
 
 from quant.default_off_alpha_attribution import build_default_off_alpha_attribution_report
 from quant.finra_iwm_paper_sleeve import (
+    BORROW_PRESSURE_ADMISSION_RULE_VERSION,
     COOLDOWN_RULE_VERSION,
     COST_LIQUIDITY_SUPPORT_RULE_VERSION,
     MARKET_CONFIRMATION_RULE_VERSION,
@@ -57,12 +58,23 @@ def _ohlcv(asof_idx: int = 60) -> dict[str, list[dict]]:
             spike_day=asof_idx,
             spike_volume=2_500_000.0,
         ),
+        "LOWDTC": _rows(
+            base=70.0,
+            step=0.08,
+            breakout_day=asof_idx,
+            breakout_close=96.0,
+            spike_day=asof_idx,
+            spike_volume=2_400_000.0,
+        ),
         "LOW": _rows(base=40.0, step=0.03),
         "MID": _rows(base=45.0, step=0.04),
     }
     win_close = rows["WIN"][asof_idx]["close"]
     rows["WIN"][asof_idx]["high"] = round(win_close * 1.001, 4)
     rows["WIN"][asof_idx]["low"] = round(win_close * 0.97, 4)
+    lowdtc_close = rows["LOWDTC"][asof_idx]["close"]
+    rows["LOWDTC"][asof_idx]["high"] = round(lowdtc_close * 1.001, 4)
+    rows["LOWDTC"][asof_idx]["low"] = round(lowdtc_close * 0.97, 4)
     return rows
 
 
@@ -76,6 +88,15 @@ def _finra_rows() -> list[dict]:
             "short_interest_change_pct": 50.0,
             "short_interest": 1_000_000,
             "previous_short_interest": 500_000,
+        },
+        {
+            "ticker": "LOWDTC",
+            "settlement_date": "2026-02-13",
+            "publication_date": "2026-02-25",
+            "days_to_cover": 2.0,
+            "short_interest_change_pct": 80.0,
+            "short_interest": 1_000_000,
+            "previous_short_interest": 550_000,
         },
         {
             "ticker": "LOW",
@@ -105,7 +126,7 @@ def test_finra_iwm_snapshot_admits_top_candidate_without_orders():
     snapshot = build_finra_iwm_paper_sleeve_snapshot(
         as_of=as_of,
         ohlcv_by_ticker=ohlcv,
-        candidate_universe=["WIN", "LOW", "MID"],
+        candidate_universe=["WIN", "LOWDTC", "LOW", "MID"],
         finra_rows=_finra_rows(),
         state=empty_finra_iwm_paper_state(),
         persist=False,
@@ -121,7 +142,12 @@ def test_finra_iwm_snapshot_admits_top_candidate_without_orders():
     candidate = snapshot["candidates"][0]
     assert candidate["ticker"] == "WIN"
     assert candidate["rule_version"] == RULE_VERSION
+    assert candidate["source_rule_version"] == BORROW_PRESSURE_ADMISSION_RULE_VERSION
     assert candidate["finra_short_pressure_score"] >= 0.70
+    assert candidate["finra_borrow_pressure_rule_version"] == BORROW_PRESSURE_ADMISSION_RULE_VERSION
+    assert candidate["borrow_pressure_admission_rule_version"] == BORROW_PRESSURE_ADMISSION_RULE_VERSION
+    assert candidate["finra_borrow_pressure_pass_v1"] is True
+    assert candidate["finra_borrow_pressure_trade_enabled"] is False
     assert candidate["same_ticker_cooldown_rule_version"] == COOLDOWN_RULE_VERSION
     assert candidate["finra_iwm_cost_liquidity_rule_version"] == COST_LIQUIDITY_SUPPORT_RULE_VERSION
     assert candidate["finra_iwm_cost_liquidity_pass_v1"] is True
@@ -130,7 +156,35 @@ def test_finra_iwm_snapshot_admits_top_candidate_without_orders():
     assert candidate["trade_enabled"] is False
     assert candidate["alters_orders"] is False
     assert snapshot["cost_liquidity_support"]["supported_candidate_count"] == 1
+    assert snapshot["borrow_pressure_admission"]["rule_version"] == BORROW_PRESSURE_ADMISSION_RULE_VERSION
+    assert snapshot["borrow_pressure_admission"]["admitted_candidate_count"] == 1
+    assert snapshot["borrow_pressure_admission"]["rejected_count"] == 1
+    assert snapshot["candidate_reject_counts"]["days_to_cover_below_threshold"] == 1
     assert snapshot["new_pending_entries"][0]["notional"] == 10_500.0
+
+
+def test_finra_borrow_pressure_gate_blocks_low_days_to_cover_candidate():
+    ohlcv = _ohlcv()
+    as_of = ohlcv["SPY"][60]["date"]
+
+    snapshot = build_finra_iwm_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker=ohlcv,
+        candidate_universe=["LOWDTC"],
+        finra_rows=_finra_rows(),
+        state=empty_finra_iwm_paper_state(),
+        persist=False,
+        config={"allow_network_fetch": False, "min_short_pressure_score": 0.0},
+    )
+
+    assert snapshot["raw_candidate_count"] == 0
+    assert snapshot["candidate_count"] == 0
+    assert snapshot["new_pending_count"] == 0
+    assert snapshot["borrow_pressure_admission"]["rejected_count"] == 1
+    assert snapshot["borrow_pressure_admission"]["reject_counts"] == {
+        "days_to_cover_below_threshold": 1
+    }
+    assert snapshot["production_impact"]["production_orders_changed"] is False
 
 
 def test_same_ticker_cooldown_blocks_recent_admitted_candidate():
@@ -211,6 +265,10 @@ def test_default_off_alpha_attribution_includes_finra_iwm_surface():
             },
             "data_source": {"row_count": 3},
             "same_ticker_cooldown": {"rejected_count": 0},
+            "borrow_pressure_admission": {
+                "admitted_candidate_count": 1,
+                "rejected_count": 2,
+            },
         },
     )
 
@@ -218,3 +276,5 @@ def test_default_off_alpha_attribution_includes_finra_iwm_surface():
     assert "finra_iwm_confirmed" in surfaces
     assert surfaces["finra_iwm_confirmed"]["status"] == "blocked"
     assert surfaces["finra_iwm_confirmed"]["extra_metrics"]["finra_rows"] == 3
+    assert surfaces["finra_iwm_confirmed"]["extra_metrics"]["borrow_pressure_admitted"] == 1
+    assert surfaces["finra_iwm_confirmed"]["extra_metrics"]["borrow_pressure_rejected"] == 2

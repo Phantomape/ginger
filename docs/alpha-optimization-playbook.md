@@ -104,16 +104,18 @@ Recent repository evidence supports this priority:
   `1.05x` paper notional when selected FINRA/IWM candidates have signal-day
   `dollar_volume >= $200m` and `(high-low)/close <= 0.10`, improving all three
   canonical windows by `+0.0072` EV / `+$314.56`. `exp-20260603-006` then
-  found one stronger replay lead, not yet a shared adapter: require the latest
-  PIT-safe FINRA row to have `days_to_cover >= 3.0` and positive
-  `short_interest_change_pct` before admitting the accepted FINRA/IWM/cooldown
-  candidate. This improved all three canonical windows by aggregate EV
-  `+0.2585` and PnL `+$5,688.12` with `22` target trades and concentration
-  inside guardrails. Treat it like Fundamental Growth RS and VBB: the next
-  valid step is a shared default-off adapter plus parity tests and forward
-  replacement rows, not FINRA score / IWM threshold / cooldown / top-N / hold /
-  cost-liquidity threshold/scalar or nearby `days_to_cover` /
-  `short_interest_change_pct` threshold retunes on the same frozen windows.
+  found a stronger replay lead: require the latest PIT-safe FINRA row to have
+  `days_to_cover >= 3.0` and positive `short_interest_change_pct` before
+  admitting the accepted FINRA/IWM/cooldown candidate. This improved all three
+  canonical windows by aggregate EV `+0.2585` and PnL `+$5,688.12` with `22`
+  target trades and concentration inside guardrails. `exp-20260603-007`
+  promoted that lead into the shared default-off adapter with parity coverage
+  and default-off paper-only production behavior. Treat it like Fundamental
+  Growth RS and VBB: the next valid step is forward replacement rows or a
+  genuinely new borrow-cost / loan-availability field, not FINRA score / IWM
+  threshold / cooldown / top-N / hold / cost-liquidity threshold/scalar or
+  nearby `days_to_cover` / `short_interest_change_pct` threshold retunes on the
+  same frozen windows.
 - Full-universe ranking is promising as attribution, and now has one
   default-off paper queue. Raw `alpha_score` remains unsuitable for live/core
   ranking, but the market-regime-gated safe-notional route passed Gate 4 and
@@ -755,9 +757,8 @@ Next valid work:
 - forward replacement value versus same-day core candidates, cash, and adjacent
   paper ranks;
 - concentration decay after the cooldown in real forward rows;
-- promote the `exp-20260603-006` borrow-pressure replay lead into a shared
-  default-off adapter with parity tests before treating it as retained
-  production-visible surface;
+- forward replacement rows for the accepted `exp-20260603-007`
+  borrow-pressure shared adapter before any activation discussion;
 - genuinely new PIT borrow-cost, loan-availability, utilization, or
   options-implied squeeze context if a clean source is added;
 - cost-adjusted liquidity and fill-delay diagnostics.
@@ -767,7 +768,8 @@ Frozen without new evidence:
 - FINRA score threshold, IWM/SPY threshold, cooldown length, top-N, hold-day,
   and fixed-notional retunes on the current frozen sample;
 - nearby `days_to_cover` or `short_interest_change_pct` threshold retunes around
-  `exp-20260603-006` before shared-adapter parity and forward rows exist;
+  `exp-20260603-007` unless forward rows or a new borrow-cost /
+  loan-availability source justify a fresh hypothesis;
 - raw FINRA monotonic ranking or high-short-pressure breakout without IWM
   confirmation;
 - promotion to live capital before closed forward replacement-value rows pass a
