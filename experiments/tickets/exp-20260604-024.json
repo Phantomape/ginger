@@ -1,0 +1,126 @@
+{
+  "acceptance_rule": "docs/backtesting.md three-window Gate 1-4; must improve aggregate EV and PnL versus core and versus standalone raw Form 4, avoid window regressions, have at least 8 selected trades across all 3 windows, and remain replay-only unless promoted through a shared default-off production-visible adapter.",
+  "allowed_write_scope": [
+    "quant/experiments/",
+    "data/experiments/",
+    "experiments/logs/",
+    "experiments/artifacts/",
+    "experiments/cards/",
+    "experiments/manifests/",
+    "experiments/tickets/",
+    "docs/experiment_log.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_20260601_174615.json",
+  "card_file": "experiments/cards/exp-20260604-024.md",
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "form4_meaningful_purchase_with_recent_sec_ftd_pressure_candidate_source_v1",
+  "claimed_at": "2026-06-04T20:10:35+00:00",
+  "completed_at": "2026-06-04T20:17:41+00:00",
+  "created_at": "2026-06-04T20:10:04+00:00",
+  "decision": "rejected_form4_ftd_overlap_candidate_pool",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260604-024",
+  "experiment_uid": "expuid-398ea5f5f1964e4c",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260604-024",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-04T20:10:04+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "form4_meaningful_purchase_with_recent_sec_ftd_pressure_candidate_source_v1"
+  },
+  "hypothesis": "PIT-safe SEC Form 4 meaningful-purchase events confirmed by recent publication-lagged SEC fails-to-deliver pressure may define a higher-quality ownership-plus-settlement-stress candidate pool than either free SEC source alone.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "core_strategy",
+    "ranking",
+    "sizing",
+    "exits",
+    "llm_news",
+    "production_orders"
+  ],
+  "mechanism_family": "free_sec_ownership_settlement_stress",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "quant/data_layer.py",
+    "operator_inputs/open_positions.json"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260604-022",
+    "exp-20260604-023",
+    "exp-20260603-008",
+    "exp-20260603-010"
+  ],
+  "new_evidence_type": "free_sec_source_overlap_relation",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "Standalone Form 4 and FTD failed recently, but a source-overlap relation is new evidence and both inputs are free, PIT-lagged, and production-observable.",
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "thin_sample",
+      "zero_overlap",
+      "window_regression",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-04T20:09:38+00:00",
+    "success_probability": 0.16
+  },
+  "prior_trial_count": 4,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260604-024/form4_ftd_overlap_candidate_pool_before_aggregate.json",
+    "after_result_file": "data/experiments/exp-20260604-024/form4_ftd_overlap_candidate_pool_after_aggregate.json",
+    "delta_metrics": {
+      "expected_value_score": 0.063,
+      "max_drawdown_pct": 0.0,
+      "trade_count": 1,
+      "survival_rate": 0.0,
+      "total_pnl": 1183.45
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.16,
+      "brier_score": 0.0256,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.15,
+      "actual_ev_delta": 0.063,
+      "ev_prediction_error": -0.087,
+      "expected_pnl_delta": 2500.0,
+      "actual_pnl_delta": 1183.45,
+      "pnl_prediction_error": -1316.55,
+      "predicted_failure_modes": [
+        "thin_sample",
+        "zero_overlap",
+        "window_regression",
+        "concentration_failed"
+      ],
+      "realized_failure_mode": "thin_sample",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "The overlap improved core slightly but was too sparse and weaker than raw Form 4."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260604-024.json",
+  "single_causal_variable": "form4_meaningful_purchase_with_recent_sec_ftd_pressure_candidate_source_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260604-024.json",
+  "trial_family": "form4_ftd_overlap_candidate_pool",
+  "trial_variant_id": "v1"
+}
