@@ -1,0 +1,142 @@
+{
+  "acceptance_rule": "docs/backtesting.md 3-window Gate 4: aggregate EV/PnL positive, all windows EV/PnL improve, target trades >=20 across all 3 windows, drawdown drift <=0.5pp, survival >=5%, concentration guards pass; positive replay requires shared default-off adapter plus parity before promotion.",
+  "allowed_write_scope": [
+    "docs/experiment_log.jsonl"
+  ],
+  "artifact": "data/experiments/exp-20260604-014/sec_text_peer_theme_propagation.json",
+  "baseline_result_file": "data/backtests/backtest_results_20260603.json",
+  "card_file": "experiments/cards/exp-20260604-014.md",
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "sec_text_price_alignment_same_sector_peer_propagation_candidate_source_v1",
+  "claimed_at": "2026-06-04T14:11:37+00:00",
+  "completed_at": "2026-06-04T14:17:58Z",
+  "created_at": "2026-06-04T14:11:29+00:00",
+  "decision": "rejected_sec_text_peer_theme_propagation_candidate_pool",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260604-014",
+  "experiment_uid": "expuid-968e03e748654dd7",
+  "gate4": {
+    "decision": "rejected_sec_text_peer_theme_propagation_candidate_pool",
+    "ev_windows_improved": [
+      "mid_weak",
+      "old_thin"
+    ],
+    "gates": {
+      "aggregate_expected_value_positive": true,
+      "aggregate_pnl_positive": true,
+      "all_windows_expected_value_improved": false,
+      "all_windows_pnl_improved": true,
+      "concentration_guard_passed": true,
+      "drawdown_drift_passed": false,
+      "survival_floor_passed": true,
+      "target_trade_count_passed": true,
+      "target_window_count_passed": true
+    },
+    "max_drawdown_delta": 0.0068,
+    "min_survival_rate": 0.7925,
+    "passed": false,
+    "pnl_windows_improved": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "rationale": "One or more Gate 4 checks failed, so the SEC text-price peer/theme propagation candidate source is not retained.",
+    "requires_parity_before_promotion": false,
+    "status": "rejected"
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260604-014",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-04T14:11:29+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_text_peer_theme_propagation"
+  },
+  "hypothesis": "SEC positive text-price aligned source issuers may transfer to liquid same-sector peers with independent signal-date strength, producing a cleaner candidate pool than standalone issuer continuation.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "core_entry",
+    "core_exit",
+    "core_ranking",
+    "core_sizing",
+    "llm_path",
+    "live_orders",
+    "consensus_adapter"
+  ],
+  "log": "experiments/logs/exp-20260604-014.json",
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/backtester.py",
+    "quant/free_data_cross_source_consensus_paper_sleeve.py",
+    "operator_inputs/open_positions.json"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260604-003",
+    "exp-20260603-012",
+    "exp-20260603-005",
+    "exp-20260602-020"
+  ],
+  "new_evidence_type": "free_sec_text_price_alignment_plus_same_sector_peer_relation",
+  "owner": "alpha-search",
+  "prediction": {
+    "actual_ev_delta": 0.3353,
+    "actual_pnl_delta": 8825.48,
+    "actual_success": 0,
+    "brier_score": 0.0324,
+    "confidence_reason": "Prior standalone SEC issuer text-price alignment failed late_strong; this run changes only relation construction to peers, using free production-visible SEC text plus OHLCV.",
+    "expected_ev_delta": 0.16,
+    "expected_pnl_delta": 3000.0,
+    "main_failure_modes": [
+      "window_regression",
+      "thin_sample",
+      "peer_relation_noise",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-04T14:11:16+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 4,
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_orders": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "lookahead_guard": "Source issuer filing text and source/peer OHLCV reactions are observed only through the signal-date close. The paper event usable_trade_date is shifted to the peer's next trading session before the existing next-open event helper prices the trade.",
+    "parity_note": "This experiment changes no production code. A positive replay result cannot be promoted until the same SEC source filter, sector peer relation, peer OHLCV confirmations, next-session entry shift, and selection order are implemented in a shared default-off adapter with production/backtest parity tests.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "result": {
+    "aggregate_expected_value_delta": 0.3353,
+    "aggregate_strategy_total_pnl_delta": 8825.48,
+    "artifact": "experiments/artifacts/exp-20260604-014_sec_text_peer_theme_propagation.md",
+    "decision": "rejected_sec_text_peer_theme_propagation_candidate_pool",
+    "log": "experiments/logs/exp-20260604-014.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260604-014.json",
+  "single_causal_variable": "sec_text_price_alignment_same_sector_peer_propagation_candidate_source_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260604-014.json",
+  "trial_family": "sec_text_peer_theme_propagation_candidate_pool",
+  "trial_variant_id": "sec_text_price_alignment_same_sector_peer_propagation_v1"
+}
