@@ -1,0 +1,114 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260604_012_lagged_consensus_prior_companyfacts_support.py",
+    "data/experiments/exp-20260604-012/exp_20260604_012_lagged_consensus_prior_companyfacts_support.json",
+    "experiments/cards/exp-20260604-012.md",
+    "experiments/manifests/exp-20260604-012.json",
+    "experiments/tickets/exp-20260604-012.json",
+    "experiments/logs/exp-20260604-012.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "artifact": "data/experiments/exp-20260604-012/exp_20260604_012_lagged_consensus_prior_companyfacts_support.json",
+  "baseline_result_file": "data/backtests/backtest_results_20260603.json",
+  "card": "experiments/cards/exp-20260604-012.md",
+  "card_file": "experiments/cards/exp-20260604-012.md",
+  "change_type": "default_off_paper_allocation",
+  "changed_variable": "prior_companyfacts_growth_quality_confirmation_support_scalar_v1",
+  "claimed_at": "2026-06-04T12:09:53+00:00",
+  "completed_at": "2026-06-04T12:17:09Z",
+  "created_at": "2026-06-04T12:09:41+00:00",
+  "decision": "rejected_prior_companyfacts_support_incremental_concentration_failed",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260604-012",
+  "experiment_uid": "expuid-4f9d22c6ec1c4844",
+  "gate4": {
+    "accepted_comparator": "exp-20260604-009",
+    "decision": "rejected_prior_companyfacts_support_incremental_concentration_failed",
+    "gates": {
+      "aggregate_expected_value_positive": true,
+      "aggregate_pnl_positive": true,
+      "all_windows_expected_value_improved": true,
+      "all_windows_pnl_improved": true,
+      "beats_current_accepted_lagged_adapter": true,
+      "concentration_guard_passed": false,
+      "drawdown_drift_passed": true,
+      "prior_companyfacts_selectivity_guard_passed": true,
+      "prior_companyfacts_supported_trade_count_positive": true,
+      "survival_floor_passed": true,
+      "target_trade_count_passed": true,
+      "target_window_count_passed": true
+    },
+    "max_drawdown_delta": 0.0001,
+    "min_survival_rate": 0.7925,
+    "passed": false,
+    "rationale": "The support variant improved all three windows, but incremental positive PnL was too concentrated: max single positive share 0.4281 and HHI 0.3007 breached the Gate 4 concentration guard.",
+    "requires_parity_before_promotion": true,
+    "supported_source_share": 0.5625
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260604-012",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-04T12:09:41+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "lagged_consensus_prior_companyfacts_support"
+  },
+  "hypothesis": "Accepted lagged free-data consensus candidates with prior Companyfacts growth-quality confirmation may have stronger source-timing quality and deserve a small default-off paper support scalar.",
+  "id": "exp-20260604-012",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "prior_companyfacts_growth_quality_confirmation_support_scalar_on_accepted_lagged_consensus"
+  ],
+  "log": "experiments/logs/exp-20260604-012.json",
+  "markdown_artifact": "experiments/artifacts/exp-20260604-012_lagged_consensus_prior_companyfacts_support.md",
+  "mechanism_family": "default_off_paper_allocation",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260604-008",
+    "exp-20260604-009",
+    "exp-20260604-011"
+  ],
+  "new_evidence_type": "production_visible_source_timing_quality_field_on_accepted_lagged_consensus",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "Pre-read of exp008 selected trades shows prior Companyfacts confirmation has positive PnL in all three windows and lower rough concentration than the rejected cost/liquidity support, but this is still a nearby support layer on a strong adapter.",
+    "expected_ev_delta": 0.05,
+    "expected_pnl_delta": 1000.0,
+    "main_failure_modes": [
+      "accepted_adapter_comparator_not_beaten",
+      "window_regression",
+      "incremental_concentration",
+      "nearby_support_scalar_overfit"
+    ],
+    "recorded_at": "2026-06-04T12:09:15+00:00",
+    "success_probability": 0.27
+  },
+  "prior_trial_count": 1,
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_orders": false,
+    "backtester_adapter_changed": false,
+    "parity_note": "This experiment changes no production code. A retained support result would need the shared free-data consensus adapter to compute the same prior Companyfacts confirmation support in daily production and historical replay, with parity tests, before any report queue, paper ledger, or order surface could change.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "result": {
+    "aggregate_expected_value_delta": 0.0682,
+    "aggregate_strategy_total_pnl_delta": 1198.42,
+    "decision": "rejected_prior_companyfacts_support_incremental_concentration_failed"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260604-012.json",
+  "single_causal_variable": "prior_companyfacts_growth_quality_confirmation_support_scalar_on_accepted_lagged_consensus",
+  "status": "completed",
+  "ticket_file": "experiments/tickets/exp-20260604-012.json",
+  "trial_family": "accepted_free_data_cross_source_consensus_source_timing_quality_support",
+  "trial_variant_id": "prior_companyfacts_confirmation_support_1p05_v1"
+}
