@@ -101,7 +101,15 @@ Recent repository evidence supports this priority:
   `exp-20260603-022`, but failed Gate 4 because only `late_strong` improved
   while `mid_weak` and `old_thin` regressed. Do not retry adjacent
   latest-surprise / average-surprise thresholds, rank splits, or notional
-  scalars on the frozen post-earnings sample.
+  scalars on the frozen post-earnings sample. `exp-20260604-029` then tested
+  the separate analyst-revision lane: 20-trading-day EPS estimate revision
+  velocity from daily earnings snapshots plus fixed breakout/liquidity/RS
+  controls. It improved aggregate EV `+0.2400` and PnL `+$3,025.32` with
+  `43` trades, but failed Gate 4 because `old_thin` regressed (`EV -0.0012`,
+  PnL `-$75.29`), and the historical EPS-estimate snapshot source remains
+  proxy-grade. Treat this as evidence that analyst revision deserves a real
+  PIT revision-source adapter with persistence / analyst-count trajectory, not
+  another frozen-window revision/DTE threshold retune.
 - `VOLUME_BREADTH_BREAKOUT_PAPER` and QQQ-confirmed VCP show that free OHLCV
   market-confirmation fields can produce useful paper sleeves. Their next step
   is forward maturation, not another breadth/QQQ/top-N sweep. The latest
