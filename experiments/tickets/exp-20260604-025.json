@@ -1,0 +1,126 @@
+{
+  "acceptance_rule": "docs/backtesting.md three-window Gate 1-4; keep theme-density thresholds fixed, add only same_day_ab_overlap=false discriminator, require aggregate EV/PnL improvement, no window EV/PnL regression, >=20 trades across all 3 windows, concentration guards, and no promotion without shared default-off adapter parity.",
+  "allowed_write_scope": [
+    "quant/experiments/",
+    "data/experiments/",
+    "experiments/logs/",
+    "experiments/artifacts/",
+    "experiments/cards/",
+    "experiments/manifests/",
+    "experiments/tickets/",
+    "docs/experiment_log.jsonl"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260526-016/theme_density_breakout_sleeve.json",
+  "card_file": "experiments/cards/exp-20260604-025.md",
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "theme_density_no_same_day_core_overlap_candidate_source_v1",
+  "claimed_at": "2026-06-04T20:21:33+00:00",
+  "completed_at": "2026-06-04T20:26:39+00:00",
+  "created_at": "2026-06-04T20:21:26+00:00",
+  "decision": "rejected_theme_density_no_core_overlap",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260604-025",
+  "experiment_uid": "expuid-bb7a369625174208",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260604-025",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-04T20:21:26+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "theme_density_no_same_day_core_overlap_candidate_source_v1"
+  },
+  "hypothesis": "Theme-density confirmed breakout candidates may have cleaner replacement value when they do not compete with same-day core A/B entries, reducing slot opportunity cost while keeping the free-OHLCV theme-strength source fixed.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "core_strategy",
+    "ranking",
+    "sizing",
+    "exits",
+    "llm_news",
+    "production_orders",
+    "theme_density_thresholds"
+  ],
+  "mechanism_family": "free_ohlcv_theme_density_replacement_value",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "quant/data_layer.py",
+    "operator_inputs/open_positions.json"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260526-016",
+    "exp-20260604-006",
+    "exp-20260603-021"
+  ],
+  "new_evidence_type": "free_ohlcv_theme_density_replacement_value_discriminator",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "The raw theme-density sleeve had positive aggregate PnL but failed on window opportunity cost; removing same-day core collisions is a replacement-value discriminator rather than a threshold retune.",
+    "expected_ev_delta": 0.25,
+    "expected_pnl_delta": 5000.0,
+    "main_failure_modes": [
+      "late_strong_underparticipation",
+      "window_regression",
+      "sample_too_small",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-04T20:21:01+00:00",
+    "success_probability": 0.24
+  },
+  "prior_trial_count": 2,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260604-025/theme_density_no_core_overlap_before_aggregate.json",
+    "after_result_file": "data/experiments/exp-20260604-025/theme_density_no_core_overlap_after_aggregate.json",
+    "delta_metrics": {
+      "expected_value_score": 0.1893,
+      "max_drawdown_pct": -0.0031,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "total_pnl": 5469.59
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.24,
+      "brier_score": 0.0576,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.25,
+      "actual_ev_delta": 0.1893,
+      "ev_prediction_error": -0.0607,
+      "expected_pnl_delta": 5000.0,
+      "actual_pnl_delta": 5469.59,
+      "pnl_prediction_error": 469.59,
+      "predicted_failure_modes": [
+        "late_strong_underparticipation",
+        "window_regression",
+        "sample_too_small",
+        "concentration_failed"
+      ],
+      "realized_failure_mode": "window_regression",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Removing same-day core collisions preserved aggregate PnL but did not fix late/old instability."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260604-025.json",
+  "single_causal_variable": "theme_density_no_same_day_core_overlap_candidate_source_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260604-025.json",
+  "trial_family": "theme_density_core_overlap_displacement",
+  "trial_variant_id": "no_same_day_core_overlap_v1"
+}
