@@ -200,6 +200,20 @@ regressed on both EV and PnL. Do not retry adjacent post-earnings surprise
 acceleration/latest-vs-average surprise thresholds, rank splits, or paper
 scalars on the frozen windows.
 
+Latest rejected consensus source-family alpha search: `exp-20260604-002`
+tested `BROAD_MARKET_LEADERSHIP_PAPER` as a new independent source family for
+the accepted free-data cross-source consensus. The broad-market source rebuilt
+successfully from the shared paper helper (`30` source rows per canonical
+window), but same-date/same-ticker overlap with existing accepted consensus
+source rows was `0/0/0` across `late_strong`, `mid_weak`, and `old_thin`.
+Consequently every selected target trade came from the prior accepted source
+families, aggregate after metrics were exactly unchanged versus the accepted
+`exp-20260603-014` comparator (`EV 9.1999`, PnL `$258,248.75`), and Gate 4
+rejected the run despite the usual `+1.3058` EV / `+$23,397.76` improvement
+versus the core baseline. Do not retry broad-market-as-consensus-source-family
+on the frozen windows unless new forward overlap rows or a materially different
+source-timing construction exists.
+
 Regression checkpoint: the 2026-06-03 automation cleaned only repository-level
 pytest/Python cache directories and ran the full unit suite successfully
 (`1104 passed`). No strategy bug fix was needed during this regression pass.

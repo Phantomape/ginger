@@ -147,6 +147,14 @@ Recent repository evidence supports this priority:
   family map, FINRA thresholds, cooldown, notional, or hold period on the
   frozen windows. The next valid consensus work is forward replacement-value
   rows or a genuinely independent new free-data source family.
+- `exp-20260604-002` tested the accepted `BROAD_MARKET_LEADERSHIP_PAPER`
+  sleeve as that kind of new source family. It rebuilt `30` broad-market source
+  rows in each canonical window but had `0/0/0` same-date/same-ticker overlap
+  with existing accepted consensus source rows, so selected trades and metrics
+  were identical to the accepted comparator (`EV 9.1999`, PnL `$258,248.75`).
+  Do not retry broad-market-as-consensus-source-family on the frozen windows
+  without new forward overlap rows or a materially different source-timing
+  construction.
 - Full-universe ranking is promising as attribution, and now has one
   default-off paper queue. Raw `alpha_score` remains unsuitable for live/core
   ranking, but the market-regime-gated safe-notional route passed Gate 4 and
