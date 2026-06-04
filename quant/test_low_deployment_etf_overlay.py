@@ -46,12 +46,15 @@ def test_low_deployment_overlay_selects_best_prior_momentum_etf_without_orders()
     assert snapshot["trade_enabled"] is False
     assert snapshot["production_impact"]["alters_orders"] is False
     assert snapshot["candidate"]["ticker"] == "QQQ"
+    assert snapshot["candidate"]["slot_policy"] == "sleeve_independent_paper_slot"
+    assert snapshot["candidate"]["low_deployment_condition_passed"] is True
+    assert snapshot["candidate"]["core_capacity_blocks_observation"] is False
     assert snapshot["closed_count_today"] == 1
     assert snapshot["closed_today"][0]["notional_usd"] == 125_000.0
     assert snapshot["closed_today"][0]["pnl"] > 0
 
 
-def test_low_deployment_overlay_blocks_when_core_book_is_deployed():
+def test_low_deployment_overlay_uses_independent_slot_when_core_book_is_deployed():
     ohlcv = {
         "QQQ": _rows(100.0, 0.003),
         "SPY": _rows(100.0, 0.001),
@@ -61,18 +64,29 @@ def test_low_deployment_overlay_blocks_when_core_book_is_deployed():
         ohlcv_by_ticker=ohlcv,
         open_positions={
             "positions": [
-                {"ticker": "NVDA", "shares": 10},
-                {"ticker": "META", "shares": 5},
+                {"ticker": "NVDA", "shares": 10, "opened_by_strategy": "trend_long"},
+                {"ticker": "META", "shares": 5, "opened_by_strategy": "breakout_long"},
             ]
         },
         portfolio_value=125_000.0,
         state=empty_low_deployment_etf_overlay_state(),
+        config={"max_active_core_positions": 1},
         persist=False,
     )
 
-    assert snapshot["candidate_count"] == 0
-    assert snapshot["closed_count_today"] == 0
-    assert snapshot["skipped_today"][0]["reason"] == "active_core_positions_above_threshold"
+    assert snapshot["candidate_count"] == 1
+    assert snapshot["candidate"]["ticker"] == "QQQ"
+    assert snapshot["candidate"]["slot_policy"] == "sleeve_independent_paper_slot"
+    assert snapshot["candidate"]["low_deployment_condition_passed"] is False
+    assert snapshot["candidate"]["low_deployment_condition_status"] == (
+        "core_above_reference_threshold"
+    )
+    assert snapshot["candidate"]["core_capacity_blocks_observation"] is False
+    assert snapshot["closed_count_today"] == 1
+    assert snapshot["skipped_today"] == []
+    assert snapshot["closed_today"][0]["admission_reason"] == (
+        "sleeve_independent_forward_observation_core_above_reference_threshold"
+    )
 
 
 def test_low_deployment_overlay_requires_positive_trend_and_momentum():

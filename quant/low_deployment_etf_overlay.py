@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Any
 
 from data_paths import data_artifact_path
+from open_position_schema import core_slot_positions
 
 
 SLEEVE_NAME = "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER"
@@ -34,6 +35,9 @@ DEFAULT_CONFIG = {
     "paper_enabled": True,
     "trade_enabled": False,
     "candidate_tickers": ("QQQ", "SPY", "IWM", "GLD", "SLV"),
+    "sleeve_slot_capacity": 1,
+    # Only genuine core-strategy positions feed the low-deployment context.
+    # This is not a sleeve-capacity gate; the overlay owns a separate paper slot.
     "max_active_core_positions": 1,
     "paper_notional_fraction_of_portfolio": 1.0,
     "fallback_paper_notional_usd": 100_000.0,
@@ -144,27 +148,7 @@ def build_low_deployment_etf_overlay_snapshot(
         open_positions,
         overlay_tickers={str(ticker).upper() for ticker in cfg["candidate_tickers"]},
     )
-    if active_core_positions > int(cfg["max_active_core_positions"]):
-        skipped = _skip_payload(
-            as_of_date,
-            "active_core_positions_above_threshold",
-            active_core_positions=active_core_positions,
-            config=cfg,
-        )
-        _append_skip_once(working_state, skipped)
-        snapshot = _snapshot_payload(
-            working_state,
-            as_of=as_of_date,
-            candidate=None,
-            closed_today=[],
-            skipped_today=[skipped],
-            active_core_positions=active_core_positions,
-            config=cfg,
-        )
-        if persist:
-            save_low_deployment_etf_overlay_state(working_state, state_path)
-            append_low_deployment_etf_overlay_snapshot(snapshot, snapshot_log_path)
-        return snapshot
+    core_deployment_context = _core_deployment_context(active_core_positions, cfg)
 
     rows_by_ticker = {
         str(ticker).upper(): _normalise_ohlcv_rows(ohlcv_by_ticker.get(ticker))
@@ -174,6 +158,7 @@ def build_low_deployment_etf_overlay_snapshot(
         rows_by_ticker,
         as_of=as_of_date,
         active_core_positions=active_core_positions,
+        core_deployment_context=core_deployment_context,
         config=cfg,
     )
     skipped_today: list[dict[str, Any]] = []
@@ -182,6 +167,7 @@ def build_low_deployment_etf_overlay_snapshot(
             as_of_date,
             "no_positive_trend_momentum_etf_candidate",
             active_core_positions=active_core_positions,
+            core_deployment_context=core_deployment_context,
             config=cfg,
         )
         _append_skip_once(working_state, skipped)
@@ -205,6 +191,7 @@ def build_low_deployment_etf_overlay_snapshot(
         closed_today=closed_today,
         skipped_today=skipped_today,
         active_core_positions=active_core_positions,
+        core_deployment_context=core_deployment_context,
         config=cfg,
     )
     if persist:
@@ -225,14 +212,33 @@ def _active_core_position_count(
     *,
     overlay_tickers: set[str],
 ) -> int:
-    rows = (open_positions or {}).get("positions") or []
     count = 0
-    for row in rows:
+    for row in core_slot_positions(open_positions):
         ticker = str(row.get("ticker") or "").upper()
         shares = _float_or_none(row.get("shares")) or 0.0
         if ticker and shares > 0 and ticker not in overlay_tickers:
             count += 1
     return count
+
+
+def _core_deployment_context(
+    active_core_positions: int,
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    max_active = int(config["max_active_core_positions"])
+    low_deployment_passed = active_core_positions <= max_active
+    status = "passed" if low_deployment_passed else "core_above_reference_threshold"
+    return {
+        "slot_policy": "sleeve_independent_paper_slot",
+        "sleeve_slot_capacity": int(config.get("sleeve_slot_capacity", 1)),
+        "active_core_positions": active_core_positions,
+        "max_active_core_positions": max_active,
+        "low_deployment_condition_passed": low_deployment_passed,
+        "low_deployment_condition_status": status,
+        "core_capacity_blocks_observation": False,
+        "trade_enabled": False,
+        "alters_orders": False,
+    }
 
 
 def _normalise_ohlcv_rows(data: Any) -> list[dict[str, Any]]:
@@ -268,6 +274,7 @@ def _select_candidate(
     *,
     as_of: str,
     active_core_positions: int,
+    core_deployment_context: dict[str, Any],
     config: dict[str, Any],
 ) -> dict[str, Any] | None:
     candidates = []
@@ -289,6 +296,16 @@ def _select_candidate(
                 "open": _round(trade_row.get("open"), 4),
                 "close": _round(trade_row.get("close"), 4),
                 "active_core_positions": active_core_positions,
+                "core_deployment_context": deepcopy(core_deployment_context),
+                "slot_policy": core_deployment_context["slot_policy"],
+                "sleeve_slot_capacity": core_deployment_context["sleeve_slot_capacity"],
+                "low_deployment_condition_passed": core_deployment_context[
+                    "low_deployment_condition_passed"
+                ],
+                "low_deployment_condition_status": core_deployment_context[
+                    "low_deployment_condition_status"
+                ],
+                "core_capacity_blocks_observation": False,
                 "prior_close": _round(state["prior_close"], 4),
                 "prior_sma200": _round(state["prior_sma200"], 4),
                 "prior_momentum20": _round(state["prior_momentum20"], 6),
@@ -304,6 +321,11 @@ def _select_candidate(
     chosen["paper_enabled"] = bool(config.get("paper_enabled", True))
     chosen["trade_enabled"] = False
     chosen["alters_orders"] = False
+    chosen["admission_reason"] = (
+        "low_deployment_condition_passed"
+        if chosen["low_deployment_condition_passed"]
+        else "sleeve_independent_forward_observation_core_above_reference_threshold"
+    )
     return chosen
 
 
@@ -381,6 +403,7 @@ def _snapshot_payload(
     closed_today: list[dict[str, Any]],
     skipped_today: list[dict[str, Any]],
     active_core_positions: int,
+    core_deployment_context: dict[str, Any],
     config: dict[str, Any],
 ) -> dict[str, Any]:
     closed = [row for row in state.get("closed_positions") or [] if isinstance(row, dict)]
@@ -407,6 +430,16 @@ def _snapshot_payload(
         "skipped_today": skipped_today,
         "active_core_positions": active_core_positions,
         "max_active_core_positions": int(config["max_active_core_positions"]),
+        "core_deployment_context": deepcopy(core_deployment_context),
+        "slot_policy": core_deployment_context["slot_policy"],
+        "sleeve_slot_capacity": core_deployment_context["sleeve_slot_capacity"],
+        "low_deployment_condition_passed": core_deployment_context[
+            "low_deployment_condition_passed"
+        ],
+        "low_deployment_condition_status": core_deployment_context[
+            "low_deployment_condition_status"
+        ],
+        "core_capacity_blocks_observation": False,
         "closed_position_count": len(closed),
         "realized_pnl_to_date": realized,
         "win_rate": win_rate,
@@ -479,6 +512,7 @@ def _skip_payload(
     reason: str,
     *,
     active_core_positions: int,
+    core_deployment_context: dict[str, Any],
     config: dict[str, Any],
 ) -> dict[str, Any]:
     return {
@@ -487,6 +521,16 @@ def _skip_payload(
         "reason": reason,
         "active_core_positions": active_core_positions,
         "max_active_core_positions": int(config["max_active_core_positions"]),
+        "core_deployment_context": deepcopy(core_deployment_context),
+        "slot_policy": core_deployment_context["slot_policy"],
+        "sleeve_slot_capacity": core_deployment_context["sleeve_slot_capacity"],
+        "low_deployment_condition_passed": core_deployment_context[
+            "low_deployment_condition_passed"
+        ],
+        "low_deployment_condition_status": core_deployment_context[
+            "low_deployment_condition_status"
+        ],
+        "core_capacity_blocks_observation": False,
         "trade_enabled": False,
         "alters_orders": False,
     }
