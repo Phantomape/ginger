@@ -145,6 +145,14 @@ Recent repository evidence supports this priority:
   same frozen sample. The next valid work is closed forward replacement-value
   rows, replay-vs-forward parity audit, or a genuinely new PIT borrow-cost /
   loan-availability field.
+- `exp-20260604-028` tested a different official free source, NasdaqTrader
+  Reg SHO threshold-list membership plus the same latest PIT FINRA confirmation.
+  It produced `0` target trades across the three canonical windows: only four
+  warehouse tickers matched the Nasdaq threshold files at all, and no row
+  survived the fixed breakout / liquidity / relative-strength / FINRA controls.
+  Do not retune Nasdaq-only threshold-list OHLCV or FINRA gates on the frozen
+  sample. A valid retry needs broader exchange threshold coverage, forward
+  evidence, or a real PIT borrow-cost / loan-availability source.
 - The accepted free-data cross-source consensus adapter now uses independent
   source families, not raw source names. `exp-20260603-011` showed that adding
   FINRA borrow-pressure as a raw consensus source cleared numeric gates but
