@@ -90,6 +90,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            free_data_cross_source_consensus_paper_sleeve=None,
                            fundamental_growth_rs_paper_sleeve=None,
                            finra_iwm_paper_sleeve=None,
+                           sec_ftd_finra_paper_sleeve=None,
                            space_catalyst_shadow=None,
                            space_catalyst_observation_slot=None,
                            space_catalyst_event_ledger=None,
@@ -138,6 +139,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         free_data_cross_source_consensus_paper_sleeve (dict): Default-off accepted free-data cross-source consensus sleeve
         fundamental_growth_rs_paper_sleeve (dict): Default-off Companyfacts growth + RS paper sleeve
         finra_iwm_paper_sleeve (dict): Default-off FINRA short-pressure IWM-confirmed paper sleeve
+        sec_ftd_finra_paper_sleeve (dict): Default-off SEC FTD + FINRA-confirmed paper sleeve
         space_catalyst_shadow (dict):   Observe-only space catalyst candidate pool
         space_catalyst_observation_slot (dict): Observe-only blocked Space trade plan
         space_catalyst_event_ledger (dict): Observe-only Space event-state ledger
@@ -2640,6 +2642,78 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"short_change={candidate.get('finra_short_interest_change_pct')} "
                 f"rs20={candidate.get('rs20_vs_spy')} "
                 f"cost-liquidity={candidate.get('finra_iwm_cost_liquidity_pass_v1')} "
+                f"notional={notional_text} (paper only)"
+            )
+
+    if sec_ftd_finra_paper_sleeve and (
+        sec_ftd_finra_paper_sleeve.get("candidate_count", 0) > 0
+        or sec_ftd_finra_paper_sleeve.get("pending_count", 0) > 0
+        or sec_ftd_finra_paper_sleeve.get("open_position_count", 0) > 0
+        or sec_ftd_finra_paper_sleeve.get("closed_count_today", 0) > 0
+        or sec_ftd_finra_paper_sleeve.get("error")
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("SEC FTD + FINRA PAPER SLEEVE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Paper: {sec_ftd_finra_paper_sleeve.get('paper_enabled', False)}  |  "
+            f"Trade enabled: {sec_ftd_finra_paper_sleeve.get('trade_enabled', False)}"
+        )
+        if sec_ftd_finra_paper_sleeve.get("error"):
+            lines.append(f"  Source status: {sec_ftd_finra_paper_sleeve.get('error')}")
+        source = sec_ftd_finra_paper_sleeve.get("data_source") or {}
+        ftd_pressure = sec_ftd_finra_paper_sleeve.get("ftd_pressure") or {}
+        finra_confirmation = sec_ftd_finra_paper_sleeve.get("finra_confirmation") or {}
+        lines.append(
+            "  Source rows: "
+            f"SEC FTD={source.get('sec_ftd_row_count', 0)} "
+            f"({source.get('sec_ftd_status')})  |  "
+            f"FINRA={source.get('finra_row_count', 0)} "
+            f"({source.get('finra_status')})  |  "
+            f"covered tickers={source.get('covered_ticker_count', 0)}"
+        )
+        lines.append(
+            "  FTD pressure: "
+            f"{ftd_pressure.get('candidate_count', 0)} candidates  |  "
+            f"shares>={ftd_pressure.get('min_ftd_shares')} "
+            f"notional>={ftd_pressure.get('min_ftd_notional')} "
+            f"ftd/ADV20>={ftd_pressure.get('min_ftd_notional_to_adv20')}"
+        )
+        lines.append(
+            "  FINRA confirmation: "
+            f"{finra_confirmation.get('admitted_candidate_count', 0)} admitted  |  "
+            f"{finra_confirmation.get('rejected_count', 0)} rejected  |  "
+            f"dtc>={finra_confirmation.get('min_finra_days_to_cover')} "
+            f"short_change>{finra_confirmation.get('min_finra_short_interest_change_pct')}"
+        )
+        lines.append(
+            f"  Candidates: {sec_ftd_finra_paper_sleeve.get('candidate_count', 0)}  |  "
+            f"Pending: {sec_ftd_finra_paper_sleeve.get('pending_count', 0)}  |  "
+            f"Open: {sec_ftd_finra_paper_sleeve.get('open_position_count', 0)}  |  "
+            f"Closed today: {sec_ftd_finra_paper_sleeve.get('closed_count_today', 0)}"
+        )
+        gate = sec_ftd_finra_paper_sleeve.get("forward_paper_gate") or {}
+        if gate:
+            metrics = gate.get("metrics") or {}
+            reasons = gate.get("reasons") or []
+            lines.append(
+                f"  Forward gate: {gate.get('status', 'unknown')}  |  "
+                f"closed={metrics.get('closed_trades', 0)} "
+                f"pnl=${metrics.get('realized_pnl', 0.0):,.2f}  |  "
+                f"blocked_by={', '.join(reasons) if reasons else 'none'}"
+            )
+        for candidate in (sec_ftd_finra_paper_sleeve.get("candidates") or [])[:5]:
+            notional = candidate.get("intended_notional")
+            notional_text = (
+                f"${notional:,.0f}" if isinstance(notional, (int, float)) else "n/a"
+            )
+            lines.append(
+                f"  {candidate.get('ticker', '?')}: "
+                f"score={candidate.get('score')} "
+                f"ftd/ADV20={candidate.get('ftd_notional_to_adv20')} "
+                f"dtc={candidate.get('finra_days_to_cover')} "
+                f"short_change={candidate.get('finra_short_interest_change_pct')} "
+                f"rs20exSPY={candidate.get('ret20_excess_spy')} "
                 f"notional={notional_text} (paper only)"
             )
 

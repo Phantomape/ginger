@@ -171,6 +171,22 @@ DATA_ARTIFACTS: dict[str, tuple[str, str]] = {
         "paper_sleeves/finra_iwm/state.json",
         "finra_iwm_paper_state.json",
     ),
+    "sec_ftd_rows": (
+        "non_ohlcv/sec_ftd/rows.json",
+        "sec_ftd_rows.json",
+    ),
+    "sec_ftd_files": (
+        "non_ohlcv/sec_ftd/source_files.json",
+        "sec_ftd_files.json",
+    ),
+    "sec_ftd_finra_paper_snapshots": (
+        "paper_sleeves/sec_ftd_finra/snapshots.jsonl",
+        "sec_ftd_finra_paper_snapshots.jsonl",
+    ),
+    "sec_ftd_finra_paper_state": (
+        "paper_sleeves/sec_ftd_finra/state.json",
+        "sec_ftd_finra_paper_state.json",
+    ),
     "post_earnings_underpriced_drift_paper_snapshots": (
         "paper_sleeves/post_earnings_underpriced_drift/snapshots.jsonl",
         "post_earnings_underpriced_drift_paper_snapshots.jsonl",

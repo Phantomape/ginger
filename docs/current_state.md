@@ -56,7 +56,24 @@ EV `6.3596` and PnL `$192,538.61`.
 Latest saved single-window backtest artifacts can reflect only the most recent
 command; canonical acceptance evidence is the three-window artifact above.
 
-Latest default-off alpha adapter acceptance: `exp-20260604-009` promotes the
+Latest default-off alpha adapter acceptance: `exp-20260604-027` promotes the
+positive `exp-20260604-026` SEC FTD + FINRA confirmation replay lead into the
+shared `SEC_FTD_FINRA_CONFIRMED_PAPER` adapter. Publication-lagged SEC
+fails-to-deliver candidates are admitted only when the latest
+publication-date-safe FINRA row also has `days_to_cover >= 3.0` and positive
+`short_interest_change_pct`; same-day core ticker overlap is blocked. The
+underlying three-window evidence improved aggregate EV `7.8941 -> 8.3361`
+(`+0.4420`) and PnL `$234,850.99 -> $244,951.48` (`+$10,100.49`), with all
+three windows improving and `121` target paper trades. This remains
+default-off paper only: `trade_enabled=false`, live/default orders, watchlists,
+core ranking, sizing, exits, and LLM/news are unchanged. Do not retune nearby
+SEC FTD share/notional/age, FINRA `days_to_cover`, FINRA
+`short_interest_change_pct`, top-N, hold, or notional variants on the frozen
+windows; the next valid work is closed forward replacement-value accumulation,
+replay-vs-forward parity audit, or a genuinely new PIT borrow-cost /
+loan-availability field.
+
+Previous default-off alpha adapter acceptance: `exp-20260604-009` promotes the
 positive `exp-20260604-008` lagged independent accepted-source consensus lead
 into the shared `ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER` adapter.
 The adapter now admits a current accepted-source row when the same ticker had

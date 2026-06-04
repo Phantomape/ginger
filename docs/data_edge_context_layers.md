@@ -1093,6 +1093,44 @@ snapshot summary metadata plus per-candidate `finra_borrow_pressure_*` and
 `finra_iwm_cost_liquidity_*` fields; these fields are known after signal-day
 close before next-open paper entry and never enable live orders.
 
+### `quant/sec_ftd_finra_paper_sleeve.py`
+
+Purpose: maintain the default-off `SEC_FTD_FINRA_CONFIRMED_PAPER` forward
+observation ledger for the accepted SEC fails-to-deliver + FINRA
+borrow-pressure confirmation lead from `exp-20260604-026`, promoted by
+`exp-20260604-027`.
+
+Candidate route:
+
+- Uses SEC half-month fails-to-deliver rows only after their publication-date
+  policy makes them known by `signal_date`.
+- Requires the fixed FTD pressure gates from `exp-20260604-026`:
+  `ftd_shares >= 100000`, `ftd_notional >= $1m`,
+  `ftd_notional / ADV20 >= 0.006`, and publication age `<= 45` days.
+- Requires the fixed OHLCV breakout/liquidity/relative-strength gates:
+  price `>= $10`, `avg_dollar_volume_20 >= $50m`, volume ratio `>= 1.0`,
+  signal-day close location `>= 0.55`, and `ret20_excess_spy >= 0`.
+- Requires the latest publication-date-safe FINRA row to have
+  `days_to_cover >= 3.0` and positive `short_interest_change_pct`.
+- Blocks same-day selected core ticker overlap and tracks fixed `$4k` paper
+  notional, top-1/day, next-open paper entry, 10-trading-day paper hold,
+  closed outcomes, and concentration blockers only.
+
+Data paths:
+
+- `data/non_ohlcv/sec_ftd/rows.json`
+- `data/non_ohlcv/sec_ftd/source_files.json`
+- `data/paper_sleeves/sec_ftd_finra/state.json`
+- `data/paper_sleeves/sec_ftd_finra/snapshots.jsonl`
+
+Agent rule: this sleeve may collect forward replacement-value evidence for the
+accepted alpha. It must not enable orders, expand the core universe, alter live
+ranking, sizing, exits, LLM/news, or consume live capital without a separate
+Gate 1-4 activation experiment and parity update. Do not retune SEC FTD
+share/notional/age, FINRA borrow-pressure thresholds, top-N, hold-day, or
+notional on the frozen sample without closed forward rows or a genuinely new
+PIT borrow-cost / loan-availability field.
+
 ### `quant/default_off_alpha_attribution.py`
 
 Purpose: roll up promotion readiness and blocker reasons across default-off
@@ -1111,6 +1149,7 @@ Inputs:
 - `volume_breadth_breakout_paper_sleeve`
 - `post_earnings_underpriced_drift_paper_sleeve`
 - `fundamental_growth_rs_paper_sleeve`
+- `sec_ftd_finra_paper_sleeve`
 
 Output keys:
 

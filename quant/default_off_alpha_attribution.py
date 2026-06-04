@@ -230,6 +230,7 @@ def build_default_off_alpha_attribution_report(
     free_data_cross_source_consensus_paper_sleeve: dict[str, Any] | None = None,
     fundamental_growth_rs_paper_sleeve: dict[str, Any] | None = None,
     finra_iwm_paper_sleeve: dict[str, Any] | None = None,
+    sec_ftd_finra_paper_sleeve: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build a daily read-only activation/blocker dashboard."""
 
@@ -455,6 +456,34 @@ def build_default_off_alpha_attribution_report(
                 ),
                 "cost_liquidity_supported": (
                     ((finra_iwm_paper_sleeve or {}).get("cost_liquidity_support") or {}).get("supported_candidate_count")
+                ),
+            },
+        ),
+        _surface_summary(
+            name="sec_ftd_finra_confirmed",
+            label="SEC_FTD_FINRA_CONFIRMED_PAPER",
+            snapshot=sec_ftd_finra_paper_sleeve,
+            extra_metrics={
+                "ftd_source_rule_version": (
+                    (sec_ftd_finra_paper_sleeve or {}).get("ftd_source_rule_version")
+                ),
+                "finra_confirmation_rule_version": (
+                    (sec_ftd_finra_paper_sleeve or {}).get("finra_confirmation_rule_version")
+                ),
+                "sec_ftd_rows": (
+                    ((sec_ftd_finra_paper_sleeve or {}).get("data_source") or {}).get("sec_ftd_row_count")
+                ),
+                "finra_rows": (
+                    ((sec_ftd_finra_paper_sleeve or {}).get("data_source") or {}).get("finra_row_count")
+                ),
+                "ftd_candidates": (
+                    ((sec_ftd_finra_paper_sleeve or {}).get("ftd_pressure") or {}).get("candidate_count")
+                ),
+                "finra_confirmed": (
+                    ((sec_ftd_finra_paper_sleeve or {}).get("finra_confirmation") or {}).get("admitted_candidate_count")
+                ),
+                "finra_rejected": (
+                    ((sec_ftd_finra_paper_sleeve or {}).get("finra_confirmation") or {}).get("rejected_count")
                 ),
             },
         ),
