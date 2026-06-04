@@ -1,0 +1,129 @@
+{
+  "acceptance_rule": "Gate 4 must use docs/backtesting.md three canonical windows, positive aggregate EV/PnL vs core, no EV/PnL-regressed windows, at least 20 target trades, concentration guardrails, and positive delta versus current accepted same-date consensus comparator.",
+  "allowed_write_scope": [
+    "docs/experiment_registry.json"
+  ],
+  "artifact": "data/experiments/exp-20260604-008/lagged_independent_source_consensus.json",
+  "baseline_result_file": "data/experiments/exp-20260603-014/accepted_consensus_independent_source_family.json",
+  "card": "experiments/cards/exp-20260604-008.md",
+  "card_file": "experiments/cards/exp-20260604-008.md",
+  "change_type": "default_off_paper_adapter_source_timing_alpha",
+  "changed_variable": "lagged_independent_source_family_confirmation_prior_3_trading_days",
+  "claimed_at": null,
+  "completed_at": "2026-06-04T08:17:47Z",
+  "created_at": "2026-06-04T08:11:54+00:00",
+  "decision": "positive_replay_lead_requires_lagged_consensus_shared_adapter",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260604-008",
+  "experiment_uid": "expuid-996d92ec99e54145",
+  "gate4": {
+    "accepted_comparator": "exp-20260603-014",
+    "decision": "positive_replay_lead_requires_lagged_consensus_shared_adapter",
+    "gates": {
+      "aggregate_expected_value_positive": true,
+      "aggregate_pnl_positive": true,
+      "all_windows_expected_value_improved": true,
+      "all_windows_pnl_improved": true,
+      "beats_current_accepted_same_day_consensus_comparator": true,
+      "concentration_guard_passed": true,
+      "drawdown_drift_passed": true,
+      "lagged_independent_selected_trade_count_positive": true,
+      "source_family_min_count_passed": true,
+      "survival_floor_passed": true,
+      "target_trade_count_passed": true,
+      "target_window_count_passed": true
+    },
+    "max_drawdown_delta": 0.0003,
+    "min_survival_rate": 0.7925,
+    "passed": true,
+    "rationale": "Lagged independent-source timing improved core and the current accepted same-date consensus comparator across all three windows. Promotion would require a shared production/backtest adapter first.",
+    "requires_parity_before_promotion": true
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260604-008",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-04T08:11:54+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "lagged_independent_source_consensus"
+  },
+  "hypothesis": "Lagged independent accepted-source confirmation may improve the accepted free-data consensus candidate pool by admitting a ticker when a current accepted source is confirmed by another independent source family within the prior 3 trading days, rather than requiring exact same-date agreement.",
+  "id": "exp-20260604-008",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "source artifacts",
+    "source family map",
+    "min independent family count=2",
+    "fixed  paper notional",
+    "10 trading day hold",
+    "7 calendar day same-ticker cooldown",
+    "core entries/exits/ranking/sizing",
+    "live/default orders"
+  ],
+  "log": "experiments/logs/exp-20260604-008.json",
+  "markdown_artifact": "experiments/artifacts/exp-20260604-008_lagged_independent_source_consensus.md",
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [
+    "quant/free_data_cross_source_consensus_paper_sleeve.py",
+    "quant/run.py",
+    "quant/backtester.py",
+    "operator_inputs/open_positions.json"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260603-014",
+    "exp-20260603-015",
+    "exp-20260604-002",
+    "exp-20260604-006",
+    "exp-20260604-007"
+  ],
+  "new_evidence_type": "materially_different_source_timing_construction",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "Playbook permits materially different source timing construction after same-date source-family consensus; prior broad-market prior-lead failed as a new source, but this tests timing among already accepted independent sources.",
+    "expected_ev_delta": 0.25,
+    "expected_pnl_delta": 4500.0,
+    "main_failure_modes": [
+      "window_regression",
+      "accepted_comparator_not_beaten",
+      "lagged_confirmation_adds_stale_noise",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-04T08:11:41+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 8,
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_orders": false,
+    "backtester_adapter_changed": false,
+    "parity_note": "This experiment changes no production code. A retained result would require the shared accepted free-data consensus adapter to implement the same lagged source-family timing rule in historical replay and daily production, with parity tests, before any report queue, paper notional, candidate priority, or order surface could change.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "result": null,
+  "revision_manifest_file": "experiments/manifests/exp-20260604-008.json",
+  "single_causal_variable": "lagged_independent_source_family_confirmation_prior_3_trading_days",
+  "status": "completed",
+  "ticket_file": "experiments/tickets/exp-20260604-008.json",
+  "trial_family": "accepted_free_data_cross_source_consensus_source_timing",
+  "trial_variant_id": "lagged_prior_3_trading_days_v1"
+}
