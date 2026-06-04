@@ -1,0 +1,123 @@
+{
+  "experiment_id": "exp-20260604-002",
+  "timestamp": "2026-06-04T03:30:00+00:00",
+  "status": "rejected",
+  "lane": "alpha_search",
+  "hypothesis": "Sector-level peer earnings shock transfer (OHLCV proxy: gap>=5% + volume>=1.8x in last 5 days from same-sector peers) should predict positive 10-day forward excess returns for watchlist equity tickers, providing a genuinely new source family independent of individual-stock alpha_score, FINRA short pressure, companyfacts fundamentals, and breadth signals.",
+  "change_summary": "Probe-only: ran multi-window sector-level peer earnings shock bucket probe using ohlcv_snapshot_20241002_20250422.json, ohlcv_snapshot_20250423_20251022.json, and ohlcv_snapshot_20251023_20260421.json. Computed bucket [pos] (moderate positive peer shock: score>0 but <STRONG=0.03) 10d excess vs SPY forward returns across all three canonical windows. No code was written or deployed.",
+  "change_type": "default_off_paper_candidate_pool",
+  "mechanism_family": "default_off_paper_candidate_pool",
+  "trial_family": "sector_peer_earnings_transfer_candidate_pool",
+  "trial_variant_id": "exp-20260604-002",
+  "single_causal_variable": "sector_peer_earnings_shock_bucket_ohlcv_pos_moderate",
+  "changed_variable": "sector_peer_earnings_shock_bucket_ohlcv_pos_moderate",
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260603-005 (exact-industry Item 2.02 peer transfer via SEC filings — rejected)"
+  ],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "not_declared",
+  "component": "scripts/peer_earnings_transfer_probe.py (observe-only, extended to all three windows)",
+  "parameters": {
+    "granularity": {"old": null, "new": "sector"},
+    "gap_threshold_pct": {"old": null, "new": 5.0},
+    "volume_ratio_threshold": {"old": null, "new": 1.8},
+    "lookback_trading_days": {"old": null, "new": 5},
+    "forward_horizon_days": {"old": null, "new": 10},
+    "return_type": {"old": null, "new": "excess_vs_SPY"}
+  },
+  "probe_results": {
+    "old_thin": {
+      "window": "2024-10-02 to 2025-04-22",
+      "usable_sectors": 6,
+      "baseline_10d_excess_pct": 0.88,
+      "pos_bucket_n": 98,
+      "pos_bucket_mean_10d_excess_pct": 6.50,
+      "pos_bucket_lift_pct": 5.62,
+      "pos_bucket_hit_rate_pct": 59.2,
+      "strong_pos_bucket_n": 414,
+      "strong_pos_bucket_lift_pct": 1.16
+    },
+    "mid_weak": {
+      "window": "2025-04-23 to 2025-10-22",
+      "usable_sectors": 6,
+      "baseline_10d_excess_pct": 1.42,
+      "pos_bucket_n": 157,
+      "pos_bucket_mean_10d_excess_pct": 2.59,
+      "pos_bucket_lift_pct": 1.17,
+      "pos_bucket_hit_rate_pct": 64.3,
+      "strong_pos_bucket_n": 550,
+      "strong_pos_bucket_lift_pct": 2.06
+    },
+    "late_strong": {
+      "window": "2025-10-23 to 2026-04-21",
+      "usable_sectors": 6,
+      "baseline_10d_excess_pct": 0.40,
+      "pos_bucket_n": 102,
+      "pos_bucket_mean_10d_excess_pct": -1.08,
+      "pos_bucket_lift_pct": -1.48,
+      "pos_bucket_hit_rate_pct": 38.2,
+      "strong_pos_bucket_n": 512,
+      "strong_pos_bucket_lift_pct": -0.97
+    },
+    "three_window_consistency": "FAILS — pos bucket lift is positive in old_thin and mid_weak but clearly NEGATIVE in late_strong (-1.48pp). Signal direction reverses in the most recent canonical window."
+  },
+  "before_metrics": {
+    "late_strong": {"expected_value_score": 5.1628, "sharpe_daily": 4.41, "strategy_total_return_pct": 1.1707, "max_drawdown_pct": 0.0665, "trade_count": 18, "win_rate": 0.8333, "total_pnl": 117072.92},
+    "mid_weak": {"expected_value_score": 2.1402, "sharpe_daily": 2.74, "strategy_total_return_pct": 0.7811, "max_drawdown_pct": 0.1119, "trade_count": 21, "win_rate": 0.5238, "total_pnl": 78110.11},
+    "old_thin": {"expected_value_score": 0.5911, "sharpe_daily": 1.49, "strategy_total_return_pct": 0.3967, "max_drawdown_pct": 0.1001, "trade_count": 22, "win_rate": 0.4091, "total_pnl": 39667.96}
+  },
+  "after_metrics": null,
+  "delta_metrics": null,
+  "prediction": {
+    "success_probability": 0.25,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": ["regime_dependence", "late_strong_reversion", "narrow_tech_universe_confound"],
+    "confidence_reason": null,
+    "recorded_at": "2026-06-04T01:57:37+00:00"
+  },
+  "calibration": {
+    "actual_decision": "rejected_pre_gate4_probe_failure",
+    "actual_success": 0,
+    "predicted_success_probability": 0.25,
+    "brier_score": 0.0625,
+    "predicted_failure_modes": ["regime_dependence", "late_strong_reversion", "narrow_tech_universe_confound"],
+    "realized_failure_mode": "late_strong_direction_reversal_regime_dependent",
+    "predicted_failure_mode_hit": true,
+    "surprise_level": "low",
+    "surprise_note": "The pos (moderate positive) bucket lifted +5.62pp in old_thin and +1.17pp in mid_weak but reversed to -1.48pp in late_strong. Likely caused by tariff-uncertainty mean-reversion in late 2025 - early 2026 where prior sector leaders sold off on earnings beats (buy the news, sell the fact). The strong_pos bucket was equally negative (-0.97pp) in late_strong."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false
+  },
+  "decision": "rejected",
+  "rejection_reason": "Sector-level OHLCV peer earnings shock transfer fails three-window consistency. The pos (moderate positive peer shock) bucket shows lift of +5.62pp in old_thin and +1.17pp in mid_weak but REVERSES to -1.48pp in late_strong. The signal is regime-dependent, not generalizable. Likely mechanism: in AI-cycle bull phase (old_thin), sector co-movement is strong and positive earnings shocks propagate; in tariff-uncertainty / mean-reversion regime (late_strong), same-sector earnings beats trigger profit-taking in peers.",
+  "next_retry_requires": [
+    "A regime gate that reliably identifies the 'propagation-friendly' vs 'mean-reversion' market state before entry",
+    "A fundamentally new non-OHLCV information source for peer earnings quality (e.g., actual earnings surprise magnitude, not just gap/volume proxy)",
+    "Or: evidence from a third-party sector ETF performance that confirms cross-sector earnings propagation in the specific regime"
+  ],
+  "related_files": [
+    "experiments/tickets/exp-20260604-002.json",
+    "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+    "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+    "scripts/peer_earnings_transfer_probe.py"
+  ],
+  "anti_repeat_rule": "Do not retry sector-level OHLCV peer earnings shock transfer as a candidate-pool source family without a regime gate or fundamentally richer peer earnings quality signal. The OHLCV gap/volume proxy for earnings events is too noisy and regime-dependent to be a consistent source family. Prior exact-industry Item 2.02 SEC filing tests (exp-20260603-005) also failed; this OHLCV proxy failed at the sector level for the same structural reason.",
+  "supplemental_probe": {
+    "within_theme_momentum": {
+      "description": "Also probed within-theme excess return (ret20 minus theme-average ret20) as a candidate pool signal. Only AI and mega_cap themes have 3+ members in the OHLCV universe.",
+      "high_exc_bucket_old_thin_lift_pct": 0.68,
+      "high_exc_bucket_mid_weak_lift_pct": 1.18,
+      "high_exc_bucket_late_strong_lift_pct": 0.42,
+      "three_window_consistency": "FAILS — inconsistent direction: high_exc bucket has small positive lift in all windows but low_exc bucket (+0.72pp) BEATS high_exc (+0.42pp) in late_strong, indicating mean-reversion not momentum within themes in that window."
+    }
+  },
+  "notes": "Probe-only experiment. No code written, no backtest run. Both sector peer earnings transfer (OHLCV proxy) and within-theme momentum suffer from the same regime-dependence problem in the late_strong window."
+}
