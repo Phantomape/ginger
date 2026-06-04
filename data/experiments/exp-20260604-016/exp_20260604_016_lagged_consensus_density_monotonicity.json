@@ -1,0 +1,870 @@
+{
+  "accepted": false,
+  "after_metrics": {
+    "accepted_adapter_experiment_id": "exp-20260604-009",
+    "aggregate": {
+      "expected_value_score": 9.889,
+      "max_drawdown_pct_max": null,
+      "min_survival_rate": null,
+      "strategy_total_pnl": 270404.86,
+      "trade_count": null
+    },
+    "source_experiment_id": "exp-20260604-008",
+    "windows": {
+      "late_strong": {
+        "expected_value_score": 6.2096,
+        "max_drawdown_pct": 0.0634,
+        "strategy_total_pnl": 127773.45,
+        "survival_rate": 0.8039,
+        "trade_count": 18
+      },
+      "mid_weak": {
+        "expected_value_score": 2.6289,
+        "max_drawdown_pct": 0.1099,
+        "strategy_total_pnl": 87627.97,
+        "survival_rate": 0.7925,
+        "trade_count": 21
+      },
+      "old_thin": {
+        "expected_value_score": 1.0505,
+        "max_drawdown_pct": 0.1004,
+        "strategy_total_pnl": 55003.44,
+        "survival_rate": 0.8667,
+        "trade_count": 22
+      }
+    }
+  },
+  "aggregate_bucket_summary": {
+    "prior_1_family": {
+      "avg_pnl_pct_net": 0.076516,
+      "avg_pnl_usd": 765.1647,
+      "count": 36,
+      "max_single_positive_share": 0.510603,
+      "median_pnl_pct_net": 0.03459,
+      "median_pnl_usd": 345.895,
+      "positive_pnl_total_usd": 34146.09,
+      "total_pnl_usd": 27545.93,
+      "win_rate": 0.722222
+    },
+    "prior_2plus_families": {
+      "avg_pnl_pct_net": 0.009166,
+      "avg_pnl_usd": 91.6555,
+      "count": 11,
+      "max_single_positive_share": 0.548195,
+      "median_pnl_pct_net": -0.006546,
+      "median_pnl_usd": -65.46,
+      "positive_pnl_total_usd": 8720.38,
+      "total_pnl_usd": 1008.21,
+      "win_rate": 0.454545
+    },
+    "same_day_only": {
+      "avg_pnl_pct_net": 0.041175,
+      "avg_pnl_usd": 411.7488,
+      "count": 17,
+      "max_single_positive_share": 0.312261,
+      "median_pnl_pct_net": 0.020036,
+      "median_pnl_usd": 200.36,
+      "positive_pnl_total_usd": 7525.02,
+      "total_pnl_usd": 6999.73,
+      "win_rate": 0.764706
+    }
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "accepted_adapter_experiment_id": "exp-20260604-009",
+    "aggregate": {
+      "expected_value_score": 9.889,
+      "max_drawdown_pct_max": null,
+      "min_survival_rate": null,
+      "strategy_total_pnl": 270404.86,
+      "trade_count": null
+    },
+    "source_experiment_id": "exp-20260604-008",
+    "windows": {
+      "late_strong": {
+        "expected_value_score": 6.2096,
+        "max_drawdown_pct": 0.0634,
+        "strategy_total_pnl": 127773.45,
+        "survival_rate": 0.8039,
+        "trade_count": 18
+      },
+      "mid_weak": {
+        "expected_value_score": 2.6289,
+        "max_drawdown_pct": 0.1099,
+        "strategy_total_pnl": 87627.97,
+        "survival_rate": 0.7925,
+        "trade_count": 21
+      },
+      "old_thin": {
+        "expected_value_score": 1.0505,
+        "max_drawdown_pct": 0.1004,
+        "strategy_total_pnl": 55003.44,
+        "survival_rate": 0.8667,
+        "trade_count": 22
+      }
+    }
+  },
+  "change_summary": "Observed-only monotonic validation of exp-20260604-008 selected paper trades by prior independent source-family confirmation density.",
+  "change_type": "observed_only_ranking_validation",
+  "changed_variable": "prior_independent_source_confirmation_density_bucket_v1",
+  "completed_at": "2026-06-04T16:11:33Z",
+  "created_at": "2026-06-04T16:11:33Z",
+  "decision": "rejected_lagged_density_no_positive_monotonic_ladder",
+  "decision_rationale": "Average net return does not increase from same-day-only to higher prior-confirmation density.",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "strategy_behavior_changed": false,
+    "total_pnl": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260604-016",
+  "gate_questions": {
+    "1_alpha_hypothesis": "ranking/capital allocation attribution: stronger lagged independent source-confirmation density should identify cleaner accepted lagged consensus trades.",
+    "2_history_check": "exp-20260604-008 found the positive lagged source-timing lead; exp-20260604-009 promoted the shared default-off adapter; exp-20260604-010 through 015 rejected nearby rank/support/source retunes versus the accepted lagged comparator.",
+    "3_single_causal_variable": "prior_independent_source_confirmation_density_bucket_v1",
+    "4_acceptance_standard": "Observed-only pass requires aggregate return monotonicity by density bucket, aggregate bucket sample >= 8, and stable monotonicity across at least two evaluable standard windows.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260604_016_lagged_consensus_density_monotonicity.py"
+  },
+  "hypothesis": "Accepted lagged free-data consensus trades should show stable monotonic outcome structure by prior independent source-confirmation density before any ranking or allocation reuse.",
+  "lane": "alpha_search",
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "monotonic_validation": {
+    "aggregate_avg_pnl_pct_ladder": {
+      "prior_1_family": 0.076516,
+      "prior_2plus_families": 0.009166,
+      "same_day_only": 0.041175
+    },
+    "aggregate_counts": {
+      "prior_1_family": 36,
+      "prior_2plus_families": 11,
+      "same_day_only": 17
+    },
+    "aggregate_monotonic_decreasing": false,
+    "aggregate_monotonic_increasing": false,
+    "aggregate_sample_gate_passed": true,
+    "bucket_order": [
+      "same_day_only",
+      "prior_1_family",
+      "prior_2plus_families"
+    ],
+    "evaluable_window_count": 2,
+    "minimum_aggregate_bucket_count": 8,
+    "minimum_window_bucket_count": 3,
+    "monotonic_decreasing_window_count": 0,
+    "monotonic_increasing_window_count": 0,
+    "window_checks": [
+      {
+        "avg_pnl_pct_ladder": {
+          "prior_1_family": 0.068013,
+          "prior_2plus_families": 0.07425,
+          "same_day_only": 0.009334
+        },
+        "counts": {
+          "prior_1_family": 10,
+          "prior_2plus_families": 5,
+          "same_day_only": 2
+        },
+        "evaluable": false,
+        "monotonic_decreasing": false,
+        "monotonic_increasing": false,
+        "window": "late_strong"
+      },
+      {
+        "avg_pnl_pct_ladder": {
+          "prior_1_family": 0.050878,
+          "prior_2plus_families": -0.007661,
+          "same_day_only": 0.03917
+        },
+        "counts": {
+          "prior_1_family": 13,
+          "prior_2plus_families": 3,
+          "same_day_only": 8
+        },
+        "evaluable": true,
+        "monotonic_decreasing": false,
+        "monotonic_increasing": false,
+        "window": "mid_weak"
+      },
+      {
+        "avg_pnl_pct_ladder": {
+          "prior_1_family": 0.108696,
+          "prior_2plus_families": -0.082482,
+          "same_day_only": 0.052563
+        },
+        "counts": {
+          "prior_1_family": 13,
+          "prior_2plus_families": 3,
+          "same_day_only": 7
+        },
+        "evaluable": true,
+        "monotonic_decreasing": false,
+        "monotonic_increasing": false,
+        "window": "old_thin"
+      }
+    ]
+  },
+  "nearby_prior_experiments": [
+    "exp-20260604-008",
+    "exp-20260604-009",
+    "exp-20260604-010",
+    "exp-20260604-011",
+    "exp-20260604-012",
+    "exp-20260604-013",
+    "exp-20260604-015"
+  ],
+  "new_evidence_type": "observed_only_monotonic_validation_on_accepted_lagged_consensus",
+  "next_retry_requires": [
+    "closed forward replacement-value rows",
+    "larger high-density bucket sample",
+    "stable monotonic ladder across all three standard windows",
+    "separate shared-policy experiment before any ranking or allocation change"
+  ],
+  "parameters": {
+    "bucket_definition": {
+      "prior_1_family": "prior_confirmation_family_count == 1",
+      "prior_2plus_families": "prior_confirmation_family_count >= 2",
+      "same_day_only": "prior_confirmation_family_count == 0"
+    },
+    "bucket_order": [
+      "same_day_only",
+      "prior_1_family",
+      "prior_2plus_families"
+    ],
+    "minimum_aggregate_bucket_count": 8,
+    "minimum_window_bucket_count": 3,
+    "source_artifact": "data/experiments/exp-20260604-008/lagged_independent_source_consensus.json"
+  },
+  "prediction": {
+    "confidence_reason": "The accepted lagged adapter has strong three-window evidence, but recent nearby rank/support retunes failed; this run only tests evidence density before any new rule.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "no_monotonic_ladder",
+      "thin_high_density_bucket",
+      "window_instability",
+      "accepted_adapter_already_saturated"
+    ],
+    "recorded_at": "2026-06-04T16:06:55+00:00",
+    "success_probability": 0.22
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "quant/experiments/exp_20260604_016_lagged_consensus_density_monotonicity.py",
+    "data/experiments/exp-20260604-016/exp_20260604_016_lagged_consensus_density_monotonicity.json",
+    "experiments/logs/exp-20260604-016.json",
+    "experiments/cards/exp-20260604-016.md",
+    "experiments/artifacts/exp-20260604-016_lagged_consensus_density_monotonicity.md",
+    "experiments/tickets/exp-20260604-016.json",
+    "data/experiments/exp-20260604-008/lagged_independent_source_consensus.json"
+  ],
+  "row_count": 64,
+  "sample_rows": [
+    {
+      "bucket": "same_day_only",
+      "current_source_family_count": 2,
+      "entry_date": "2025-10-24",
+      "has_lagged_independent_confirmation": false,
+      "max_prior_lag_trading_days": null,
+      "min_prior_lag_trading_days": null,
+      "pnl_pct_net": -0.004226,
+      "pnl_usd": -42.26,
+      "prior_confirmation_family_count": 0,
+      "prior_confirmation_source_count": 0,
+      "prior_confirmation_source_families": [],
+      "signal_date": "2025-10-23",
+      "source_count": 3,
+      "source_families": [
+        "alpha_score_market_regime",
+        "finra_short_pressure"
+      ],
+      "source_family_count": 2,
+      "ticker": "ISRG",
+      "window": "late_strong"
+    },
+    {
+      "bucket": "prior_1_family",
+      "current_source_family_count": 2,
+      "entry_date": "2025-10-27",
+      "has_lagged_independent_confirmation": false,
+      "max_prior_lag_trading_days": 1,
+      "min_prior_lag_trading_days": 1,
+      "pnl_pct_net": 0.053758,
+      "pnl_usd": 537.58,
+      "prior_confirmation_family_count": 1,
+      "prior_confirmation_source_count": 1,
+      "prior_confirmation_source_families": [
+        "companyfacts_growth_quality"
+      ],
+      "signal_date": "2025-10-24",
+      "source_count": 2,
+      "source_families": [
+        "alpha_score_market_regime",
+        "companyfacts_growth_quality"
+      ],
+      "source_family_count": 2,
+      "ticker": "MU",
+      "window": "late_strong"
+    },
+    {
+      "bucket": "prior_1_family",
+      "current_source_family_count": 1,
+      "entry_date": "2025-12-09",
+      "has_lagged_independent_confirmation": true,
+      "max_prior_lag_trading_days": 1,
+      "min_prior_lag_trading_days": 1,
+      "pnl_pct_net": 0.033569,
+      "pnl_usd": 335.69,
+      "prior_confirmation_family_count": 1,
+      "prior_confirmation_source_count": 2,
+      "prior_confirmation_source_families": [
+        "finra_short_pressure"
+      ],
+      "signal_date": "2025-12-08",
+      "source_count": 3,
+      "source_families": [
+        "alpha_score_market_regime",
+        "finra_short_pressure"
+      ],
+      "source_family_count": 2,
+      "ticker": "GS",
+      "window": "late_strong"
+    },
+    {
+      "bucket": "prior_1_family",
+      "current_source_family_count": 2,
+      "entry_date": "2025-12-10",
+      "has_lagged_independent_confirmation": false,
+      "max_prior_lag_trading_days": 3,
+      "min_prior_lag_trading_days": 3,
+      "pnl_pct_net": 0.011227,
+      "pnl_usd": 112.27,
+      "prior_confirmation_family_count": 1,
+      "prior_confirmation_source_count": 1,
+      "prior_confirmation_source_families": [
+        "companyfacts_growth_quality"
+      ],
+      "signal_date": "2025-12-09",
+      "source_count": 2,
+      "source_families": [
+        "alpha_score_market_regime",
+        "companyfacts_growth_quality"
+      ],
+      "source_family_count": 2,
+      "ticker": "APP",
+      "window": "late_strong"
+    },
+    {
+      "bucket": "prior_1_family",
+      "current_source_family_count": 2,
+      "entry_date": "2025-12-11",
+      "has_lagged_independent_confirmation": false,
+      "max_prior_lag_trading_days": 2,
+      "min_prior_lag_trading_days": 2,
+      "pnl_pct_net": 0.091569,
+      "pnl_usd": 915.69,
+      "prior_confirmation_family_count": 1,
+      "prior_confirmation_source_count": 1,
+      "prior_confirmation_source_families": [
+        "companyfacts_growth_quality"
+      ],
+      "signal_date": "2025-12-10",
+      "source_count": 2,
+      "source_families": [
+        "alpha_score_market_regime",
+        "companyfacts_growth_quality"
+      ],
+      "source_family_count": 2,
+      "ticker": "MU",
+      "window": "late_strong"
+    },
+    {
+      "bucket": "prior_1_family",
+      "current_source_family_count": 1,
+      "entry_date": "2025-12-19",
+      "has_lagged_independent_confirmation": true,
+      "max_prior_lag_trading_days": 3,
+      "min_prior_lag_trading_days": 2,
+      "pnl_pct_net": -0.10282,
+      "pnl_usd": -1028.2,
+      "prior_confirmation_family_count": 1,
+      "prior_confirmation_source_count": 1,
+      "prior_confirmation_source_families": [
+        "companyfacts_growth_quality"
+      ],
+      "signal_date": "2025-12-18",
+      "source_count": 2,
+      "source_families": [
+        "alpha_score_market_regime",
+        "companyfacts_growth_quality"
+      ],
+      "source_family_count": 2,
+      "ticker": "APP",
+      "window": "late_strong"
+    },
+    {
+      "bucket": "prior_1_family",
+      "current_source_family_count": 3,
+      "entry_date": "2025-12-22",
+      "has_lagged_independent_confirmation": false,
+      "max_prior_lag_trading_days": 1,
+      "min_prior_lag_trading_days": 1,
+      "pnl_pct_net": 0.23491,
+      "pnl_usd": 2349.1,
+      "prior_confirmation_family_count": 1,
+      "prior_confirmation_source_count": 1,
+      "prior_confirmation_source_families": [
+        "companyfacts_growth_quality"
+      ],
+      "signal_date": "2025-12-19",
+      "source_count": 3,
+      "source_families": [
+        "alpha_score_market_regime",
+        "companyfacts_growth_quality",
+        "volume_breadth_breakout"
+      ],
+      "source_family_count": 3,
+      "ticker": "MU",
+      "window": "late_strong"
+    },
+    {
+      "bucket": "prior_2plus_families",
+      "current_source_family_count": 1,
+      "entry_date": "2025-12-29",
+      "has_lagged_independent_confirmation": true,
+      "max_prior_lag_trading_days": 3,
+      "min_prior_lag_trading_days": 1,
+      "pnl_pct_net": 0.229063,
+      "pnl_usd": 2290.63,
+      "prior_confirmation_family_count": 2,
+      "prior_confirmation_source_count": 2,
+      "prior_confirmation_source_families": [
+        "alpha_score_market_regime",
+        "companyfacts_growth_quality"
+      ],
+      "signal_date": "2025-12-26",
+      "source_count": 2,
+      "source_families": [
+        "alpha_score_market_regime",
+        "companyfacts_growth_quality"
+      ],
+      "source_family_count": 2,
+      "ticker": "MU",
+      "window": "late_strong"
+    },
+    {
+      "bucket": "prior_2plus_families",
+      "current_source_family_count": 1,
+      "entry_date": "2026-01-05",
+      "has_lagged_independent_confirmation": true,
+      "max_prior_lag_trading_days": 3,
+      "min_prior_lag_trading_days": 1,
+      "pnl_pct_net": 0.111092,
+      "pnl_usd": 1110.92,
+      "prior_confirmation_family_count": 2,
+      "prior_confirmation_source_count": 2,
+      "prior_confirmation_source_families": [
+        "alpha_score_market_regime",
+        "companyfacts_growth_quality"
+      ],
+      "signal_date": "2026-01-02",
+      "source_count": 2,
+      "source_families": [
+        "alpha_score_market_regime",
+        "companyfacts_growth_quality"
+      ],
+      "source_family_count": 2,
+      "ticker": "MU",
+      "window": "late_strong"
+    },
+    {
+      "bucket": "same_day_only",
+      "current_source_family_count": 2,
+      "entry_date": "2026-01-09",
+      "has_lagged_independent_confirmation": false,
+      "max_prior_lag_trading_days": null,
+      "min_prior_lag_trading_days": null,
+      "pnl_pct_net": 0.022895,
+      "pnl_usd": 228.95,
+      "prior_confirmation_family_count": 0,
+      "prior_confirmation_source_count": 0,
+      "prior_confirmation_source_families": [],
+      "signal_date": "2026-01-08",
+      "source_count": 3,
+      "source_families": [
+        "alpha_score_market_regime",
+        "finra_short_pressure"
+      ],
+      "source_family_count": 2,
+      "ticker": "DE",
+      "window": "late_strong"
+    },
+    {
+      "bucket": "prior_2plus_families",
+      "current_source_family_count": 1,
+      "entry_date": "2026-01-12",
+      "has_lagged_independent_confirmation": true,
+      "max_prior_lag_trading_days": 3,
+      "min_prior_lag_trading_days": 3,
+      "pnl_pct_net": 0.137892,
+      "pnl_usd": 1378.92,
+      "prior_confirmation_family_count": 3,
+      "prior_confirmation_source_count": 3,
+      "prior_confirmation_source_families": [
+        "alpha_score_market_regime",
+        "companyfacts_growth_quality",
+        "volume_breadth_breakout"
+      ],
+      "signal_date": "2026-01-09",
+      "source_count": 3,
+      "source_families": [
+        "alpha_score_market_regime",
+        "companyfacts_growth_quality",
+        "volume_breadth_breakout"
+      ],
+      "source_family_count": 3,
+      "ticker": "MU",
+      "window": "late_strong"
+    },
+    {
+      "bucket": "prior_1_family",
+      "current_source_family_count": 2,
+      "entry_date": "2026-01-20",
+      "has_lagged_independent_confirmation": false,
+      "max_prior_lag_trading_days": 2,
+      "min_prior_lag_trading_days": 1,
+      "pnl_pct_net": 0.195805,
+      "pnl_usd": 1958.05,
+      "prior_confirmation_family_count": 1,
+      "prior_confirmation_source_count": 1,
+      "prior_confirmation_source_families": [
+        "companyfacts_growth_quality"
+      ],
+      "signal_date": "2026-01-16",
+      "source_count": 2,
+      "source_families": [
+        "alpha_score_market_regime",
+        "companyfacts_growth_quality"
+      ],
+      "source_family_count": 2,
+      "ticker": "MU",
+      "window": "late_strong"
+    },
+    {
+      "bucket": "prior_2plus_families",
+      "current_source_family_count": 2,
+      "entry_date": "2026-01-26",
+      "has_lagged_independent_confirmation": true,
+      "max_prior_lag_trading_days": 3,
+      "min_prior_lag_trading_days": 1,
+      "pnl_pct_net": -0.006546,
+      "pnl_usd": -65.46,
+      "prior_confirmation_family_count": 3,
+      "prior_confirmation_source_count": 3,
+      "prior_confirmation_source_families": [
+        "alpha_score_market_regime",
+        "companyfacts_growth_quality",
+        "volume_breadth_breakout"
+      ],
+      "signal_date": "2026-01-23",
+      "source_count": 3,
+      "source_families": [
+        "alpha_score_market_regime",
+        "companyfacts_growth_quality",
+        "volume_breadth_breakout"
+      ],
+      "source_family_count": 3,
+      "ticker": "MU",
+      "window": "late_strong"
+    },
+    {
+      "bucket": "prior_2plus_families",
+      "current_source_family_count": 1,
+      "entry_date": "2026-02-03",
+      "has_lagged_independent_confirmation": true,
+      "max_prior_lag_trading_days": 3,
+      "min_prior_lag_trading_days": 2,
+      "pnl_pct_net": -0.100251,
+      "pnl_usd": -1002.51,
+      "prior_confirmation_family_count": 2,
+      "prior_confirmation_source_count": 2,
+      "prior_confirmation_source_families": [
+        "alpha_score_market_regime",
+        "companyfacts_growth_quality"
+      ],
+      "signal_date": "2026-02-02",
+      "source_count": 2,
+      "source_families": [
+        "alpha_score_market_regime",
+        "companyfacts_growth_quality"
+      ],
+      "source_family_count": 2,
+      "ticker": "MU",
+      "window": "late_strong"
+    },
+    {
+      "bucket": "prior_1_family",
+      "current_source_family_count": 1,
+      "entry_date": "2026-02-05",
+      "has_lagged_independent_confirmation": true,
+      "max_prior_lag_trading_days": 1,
+      "min_prior_lag_trading_days": 1,
+      "pnl_pct_net": 0.169439,
+      "pnl_usd": 1694.39,
+      "prior_confirmation_family_count": 1,
+      "prior_confirmation_source_count": 1,
+      "prior_confirmation_source_families": [
+        "finra_short_pressure"
+      ],
+      "signal_date": "2026-02-04",
+      "source_count": 2,
+      "source_families": [
+        "alpha_score_market_regime",
+        "finra_short_pressure"
+      ],
+      "source_family_count": 2,
+      "ticker": "DE",
+      "window": "late_strong"
+    },
+    {
+      "bucket": "prior_1_family",
+      "current_source_family_count": 1,
+      "entry_date": "2026-02-10",
+      "has_lagged_independent_confirmation": true,
+      "max_prior_lag_trading_days": 1,
+      "min_prior_lag_trading_days": 1,
+      "pnl_pct_net": 0.029771,
+      "pnl_usd": 297.71,
+      "prior_confirmation_family_count": 1,
+      "prior_confirmation_source_count": 1,
+      "prior_confirmation_source_families": [
+        "finra_short_pressure"
+      ],
+      "signal_date": "2026-02-09",
+      "source_count": 2,
+      "source_families": [
+        "alpha_score_market_regime",
+        "finra_short_pressure"
+      ],
+      "source_family_count": 2,
+      "ticker": "CAT",
+      "window": "late_strong"
+    },
+    {
+      "bucket": "prior_1_family",
+      "current_source_family_count": 1,
+      "entry_date": "2026-03-03",
+      "has_lagged_independent_confirmation": true,
+      "max_prior_lag_trading_days": 2,
+      "min_prior_lag_trading_days": 1,
+      "pnl_pct_net": -0.037094,
+      "pnl_usd": -370.94,
+      "prior_confirmation_family_count": 1,
+      "prior_confirmation_source_count": 1,
+      "prior_confirmation_source_families": [
+        "companyfacts_growth_quality"
+      ],
+      "signal_date": "2026-03-02",
+      "source_count": 2,
+      "source_families": [
+        "companyfacts_growth_quality",
+        "finra_short_pressure"
+      ],
+      "source_family_count": 2,
+      "ticker": "RTX",
+      "window": "late_strong"
+    },
+    {
+      "bucket": "prior_1_family",
+      "current_source_family_count": 2,
+      "entry_date": "2025-05-05",
+      "has_lagged_independent_confirmation": false,
+      "max_prior_lag_trading_days": 3,
+      "min_prior_lag_trading_days": 2,
+      "pnl_pct_net": 0.042503,
+      "pnl_usd": 425.03,
+      "prior_confirmation_family_count": 1,
+      "prior_confirmation_source_count": 1,
+      "prior_confirmation_source_families": [
+        "companyfacts_growth_quality"
+      ],
+      "signal_date": "2025-05-02",
+      "source_count": 2,
+      "source_families": [
+        "alpha_score_market_regime",
+        "companyfacts_growth_quality"
+      ],
+      "source_family_count": 2,
+      "ticker": "PLTR",
+      "window": "mid_weak"
+    },
+    {
+      "bucket": "same_day_only",
+      "current_source_family_count": 2,
+      "entry_date": "2025-05-09",
+      "has_lagged_independent_confirmation": false,
+      "max_prior_lag_trading_days": null,
+      "min_prior_lag_trading_days": null,
+      "pnl_pct_net": 0.020036,
+      "pnl_usd": 200.36,
+      "prior_confirmation_family_count": 0,
+      "prior_confirmation_source_count": 0,
+      "prior_confirmation_source_families": [],
+      "signal_date": "2025-05-08",
+      "source_count": 2,
+      "source_families": [
+        "alpha_score_market_regime",
+        "volume_breadth_breakout"
+      ],
+      "source_family_count": 2,
+      "ticker": "APP",
+      "window": "mid_weak"
+    },
+    {
+      "bucket": "same_day_only",
+      "current_source_family_count": 2,
+      "entry_date": "2025-05-13",
+      "has_lagged_independent_confirmation": false,
+      "max_prior_lag_trading_days": null,
+      "min_prior_lag_trading_days": null,
+      "pnl_pct_net": 0.13645,
+      "pnl_usd": 1364.5,
+      "prior_confirmation_family_count": 0,
+      "prior_confirmation_source_count": 0,
+      "prior_confirmation_source_families": [],
+      "signal_date": "2025-05-12",
+      "source_count": 2,
+      "source_families": [
+        "alpha_score_market_regime",
+        "volume_breadth_breakout"
+      ],
+      "source_family_count": 2,
+      "ticker": "CRDO",
+      "window": "mid_weak"
+    }
+  ],
+  "status": "rejected",
+  "trial_family": "accepted_free_data_cross_source_consensus_lagged_density_monotonicity",
+  "trial_variant_id": "prior_family_density_0_1_2plus_v1",
+  "window_bucket_summary": {
+    "late_strong": {
+      "prior_1_family": {
+        "avg_pnl_pct_net": 0.068013,
+        "avg_pnl_usd": 680.134,
+        "count": 10,
+        "max_single_positive_share": 0.702449,
+        "median_pnl_pct_net": 0.043664,
+        "median_pnl_usd": 436.635,
+        "positive_pnl_total_usd": 8200.48,
+        "total_pnl_usd": 6801.34,
+        "win_rate": 0.8
+      },
+      "prior_2plus_families": {
+        "avg_pnl_pct_net": 0.07425,
+        "avg_pnl_usd": 742.5,
+        "count": 5,
+        "max_single_positive_share": 1.0,
+        "median_pnl_pct_net": 0.111092,
+        "median_pnl_usd": 1110.92,
+        "positive_pnl_total_usd": 4780.47,
+        "total_pnl_usd": 3712.5,
+        "win_rate": 0.6
+      },
+      "same_day_only": {
+        "avg_pnl_pct_net": 0.009334,
+        "avg_pnl_usd": 93.345,
+        "count": 2,
+        "max_single_positive_share": 1.0,
+        "median_pnl_pct_net": 0.009334,
+        "median_pnl_usd": 93.345,
+        "positive_pnl_total_usd": 228.95,
+        "total_pnl_usd": 186.69,
+        "win_rate": 0.5
+      }
+    },
+    "mid_weak": {
+      "prior_1_family": {
+        "avg_pnl_pct_net": 0.050878,
+        "avg_pnl_usd": 508.7754,
+        "count": 13,
+        "max_single_positive_share": 0.500978,
+        "median_pnl_pct_net": 0.042503,
+        "median_pnl_usd": 425.03,
+        "positive_pnl_total_usd": 10286.85,
+        "total_pnl_usd": 6614.08,
+        "win_rate": 0.692308
+      },
+      "prior_2plus_families": {
+        "avg_pnl_pct_net": -0.007661,
+        "avg_pnl_usd": -76.6067,
+        "count": 3,
+        "max_single_positive_share": 1.0,
+        "median_pnl_pct_net": -0.111419,
+        "median_pnl_usd": -1114.19,
+        "positive_pnl_total_usd": 2612.97,
+        "total_pnl_usd": -229.82,
+        "win_rate": 0.333333
+      },
+      "same_day_only": {
+        "avg_pnl_pct_net": 0.03917,
+        "avg_pnl_usd": 391.7,
+        "count": 8,
+        "max_single_positive_share": 0.483423,
+        "median_pnl_pct_net": 0.018438,
+        "median_pnl_usd": 184.38,
+        "positive_pnl_total_usd": 3583.3,
+        "total_pnl_usd": 3133.6,
+        "win_rate": 0.75
+      }
+    },
+    "old_thin": {
+      "prior_1_family": {
+        "avg_pnl_pct_net": 0.108696,
+        "avg_pnl_usd": 1086.9623,
+        "count": 13,
+        "max_single_positive_share": 0.777159,
+        "median_pnl_pct_net": 0.030726,
+        "median_pnl_usd": 307.26,
+        "positive_pnl_total_usd": 15658.76,
+        "total_pnl_usd": 14130.51,
+        "win_rate": 0.692308
+      },
+      "prior_2plus_families": {
+        "avg_pnl_pct_net": -0.082482,
+        "avg_pnl_usd": -824.8233,
+        "count": 3,
+        "max_single_positive_share": 1.0,
+        "median_pnl_pct_net": -0.098534,
+        "median_pnl_usd": -985.34,
+        "positive_pnl_total_usd": 1326.94,
+        "total_pnl_usd": -2474.47,
+        "win_rate": 0.333333
+      },
+      "same_day_only": {
+        "avg_pnl_pct_net": 0.052563,
+        "avg_pnl_usd": 525.6343,
+        "count": 7,
+        "max_single_positive_share": 0.632889,
+        "median_pnl_pct_net": 0.026826,
+        "median_pnl_usd": 268.26,
+        "positive_pnl_total_usd": 3712.77,
+        "total_pnl_usd": 3679.44,
+        "win_rate": 0.857143
+      }
+    }
+  }
+}

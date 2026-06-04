@@ -1,0 +1,131 @@
+{
+  "accepted": false,
+  "after_metrics": {
+    "expected_value_score": 9.889,
+    "max_drawdown_pct_max": null,
+    "min_survival_rate": null,
+    "strategy_total_pnl": 270404.86,
+    "trade_count": null
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "expected_value_score": 9.889,
+    "max_drawdown_pct_max": null,
+    "min_survival_rate": null,
+    "strategy_total_pnl": 270404.86,
+    "trade_count": null
+  },
+  "calibration": {
+    "actual_decision": "rejected_lagged_density_no_positive_monotonic_ladder",
+    "actual_success": 0,
+    "brier_score": 0.0484,
+    "predicted_success_probability": 0.22,
+    "realized_failure_mode": "rejected_lagged_density_no_positive_monotonic_ladder"
+  },
+  "change_summary": "Observed-only monotonic validation of exp-20260604-008 selected paper trades by prior independent source-family confirmation density.",
+  "change_type": "observed_only_ranking_validation",
+  "changed_variable": "prior_independent_source_confirmation_density_bucket_v1",
+  "decision": "rejected_lagged_density_no_positive_monotonic_ladder",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "strategy_behavior_changed": false,
+    "total_pnl": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260604-016",
+  "hypothesis": "Accepted lagged free-data consensus trades should show stable monotonic outcome structure by prior independent source-confirmation density before any ranking or allocation reuse.",
+  "lane": "alpha_search",
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "metrics": {
+    "aggregate_avg_pnl_pct_ladder": {
+      "prior_1_family": 0.076516,
+      "prior_2plus_families": 0.009166,
+      "same_day_only": 0.041175
+    },
+    "aggregate_bucket_counts": {
+      "prior_1_family": 36,
+      "prior_2plus_families": 11,
+      "same_day_only": 17
+    },
+    "aggregate_monotonic_increasing": false,
+    "evaluable_window_count": 2,
+    "monotonic_increasing_window_count": 0,
+    "target_trade_count": 64
+  },
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260604-008",
+    "exp-20260604-009",
+    "exp-20260604-010",
+    "exp-20260604-011",
+    "exp-20260604-012",
+    "exp-20260604-013",
+    "exp-20260604-015"
+  ],
+  "new_evidence_type": "observed_only_monotonic_validation_on_accepted_lagged_consensus",
+  "next_retry_requires": [
+    "closed forward replacement-value rows",
+    "larger high-density bucket sample",
+    "stable monotonic ladder across all three standard windows",
+    "separate shared-policy experiment before any ranking or allocation change"
+  ],
+  "parameters": {
+    "bucket_definition": {
+      "prior_1_family": "prior_confirmation_family_count == 1",
+      "prior_2plus_families": "prior_confirmation_family_count >= 2",
+      "same_day_only": "prior_confirmation_family_count == 0"
+    },
+    "bucket_order": [
+      "same_day_only",
+      "prior_1_family",
+      "prior_2plus_families"
+    ],
+    "minimum_aggregate_bucket_count": 8,
+    "minimum_window_bucket_count": 3,
+    "source_artifact": "data/experiments/exp-20260604-008/lagged_independent_source_consensus.json"
+  },
+  "prediction": {
+    "confidence_reason": "The accepted lagged adapter has strong three-window evidence, but recent nearby rank/support retunes failed; this run only tests evidence density before any new rule.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "no_monotonic_ladder",
+      "thin_high_density_bucket",
+      "window_instability",
+      "accepted_adapter_already_saturated"
+    ],
+    "recorded_at": "2026-06-04T16:06:55+00:00",
+    "success_probability": 0.22
+  },
+  "prior_trial_count": 7,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "Average net return does not increase from same-day-only to higher prior-confirmation density.",
+  "related_files": [
+    "quant/experiments/exp_20260604_016_lagged_consensus_density_monotonicity.py",
+    "data/experiments/exp-20260604-016/exp_20260604_016_lagged_consensus_density_monotonicity.json",
+    "experiments/logs/exp-20260604-016.json",
+    "experiments/cards/exp-20260604-016.md",
+    "experiments/artifacts/exp-20260604-016_lagged_consensus_density_monotonicity.md",
+    "experiments/tickets/exp-20260604-016.json",
+    "data/experiments/exp-20260604-008/lagged_independent_source_consensus.json"
+  ],
+  "status": "rejected",
+  "timestamp": "2026-06-04T16:11:33Z",
+  "trial_family": "accepted_free_data_cross_source_consensus_lagged_density_monotonicity",
+  "trial_variant_id": "prior_family_density_0_1_2plus_v1"
+}
