@@ -115,6 +115,13 @@ COLLECTION_RULES = (
 )
 
 FORWARD_EVIDENCE_DEFAULT_TARGET = 20
+FORWARD_TARGET_PATHS = (
+    ("parameters", "forward_gate_min_closed_trades"),
+    ("forward_paper_gate", "thresholds", "min_closed_trades"),
+    ("tail_diagnostics", "gate_report", "thresholds", "min_trades_for_promotion"),
+    ("promotion_gate", "minimum_closed_decisions"),
+    ("minimum_closed_decisions",),
+)
 SURFACE_SLEEVE_ALIASES = (
     (("state_surface", "state surface", "satellite"), ("state_surface", "state_surface_satellite_paper")),
     (("broad_market", "broad market", "leadership"), ("broad_market", "broad_market_leadership_paper")),
@@ -707,10 +714,33 @@ def _collect_ticker_mapping_keys(value, tickers: set[str], limit=12):
             tickers.add(ticker)
 
 
+def _latest_snapshot_payload_for_sleeve_file(path: Path) -> dict | None:
+    snapshot_path = path.parent / "snapshots.jsonl"
+    if not snapshot_path.exists():
+        return None
+    latest = None
+    try:
+        with snapshot_path.open(encoding="utf-8") as handle:
+            for line in handle:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    payload = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                if isinstance(payload, dict):
+                    latest = payload
+    except OSError:
+        return None
+    return latest
+
+
 def summarize_paper_sleeve_file(root: Path, path: Path):
     payload = load_json(path)
     if not isinstance(payload, dict):
         return None
+    latest_snapshot = _latest_snapshot_payload_for_sleeve_file(path)
     relative = repo_relative(path, root)
     slug = _slug(path.parent.name)
     open_positions = _list_value(payload, "open_positions")
@@ -742,12 +772,9 @@ def summarize_paper_sleeve_file(root: Path, path: Path):
         ("active_event_count",),
         ("event_row_count",),
     ])
-    forward_target = first_number(payload, [
-        ("parameters", "forward_gate_min_closed_trades"),
-        ("tail_diagnostics", "gate_report", "thresholds", "min_trades_for_promotion"),
-        ("promotion_gate", "minimum_closed_decisions"),
-        ("minimum_closed_decisions",),
-    ])
+    forward_target = first_number(payload, FORWARD_TARGET_PATHS)
+    if forward_target is None and latest_snapshot:
+        forward_target = first_number(latest_snapshot, FORWARD_TARGET_PATHS)
     sleeve_name = (
         payload.get("sleeve")
         or payload.get("watch_name")
@@ -835,10 +862,7 @@ def summarize_snapshot_payload(payload: dict):
         ("pending_count",),
         ("replacement_value_report", "pending_count"),
     ], "pending_entries")
-    target_count = first_number(payload, [
-        ("parameters", "forward_gate_min_closed_trades"),
-        ("tail_diagnostics", "gate_report", "thresholds", "min_trades_for_promotion"),
-    ])
+    target_count = first_number(payload, FORWARD_TARGET_PATHS)
     realized_pnl = first_number(payload, [
         ("realized_pnl_to_date",),
         ("replacement_value_report", "closed_pnl"),
