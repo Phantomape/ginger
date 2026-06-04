@@ -1,0 +1,131 @@
+{
+  "experiment_id": "exp-20260604-004",
+  "timestamp": "2026-06-04T03:15:53Z",
+  "lane": "alpha_search",
+  "status": "rejected",
+  "change_type": "default_off_paper_allocation",
+  "mechanism_family": "default_off_paper_allocation",
+  "trial_family": "accepted_free_data_cross_source_consensus_core_overlap_support",
+  "trial_variant_id": "same_day_core_overlap_support_1p10_v1",
+  "changed_variable": "same_day_core_overlap_support_scalar_on_accepted_consensus_selected_rows_v1",
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260603-014",
+    "exp-20260603-015",
+    "exp-20260603-026"
+  ],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "new_replacement_value_context_from_exp_20260603_026",
+  "hypothesis": "Accepted independent-source free-data consensus candidates confirmed by same-day selected core A/B entry context may deserve modest default-off paper-notional support without expanding noisy tickers.",
+  "decision": "rejected_core_overlap_support_window_or_concentration_failed",
+  "accepted": false,
+  "rejection_reason": "The support field was positive in aggregate, but failed the stricter accepted-comparator window, support-sample, or incremental concentration guards.",
+  "anti_js": "No JavaScript was used.",
+  "production_impact": {
+    "trade_enabled": false,
+    "alters_orders": false,
+    "adapter_status": "replay_only_no_live_adapter",
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false,
+    "production_watchlist_changed": false,
+    "production_orders_changed": false,
+    "parity_note": "This experiment changes no production code. A retained core-overlap support field would need the shared free-data consensus paper adapter to build the same date-keyed selected-core ticker context in daily production reports and historical replay before any queue, notional, candidate priority, or order surface could change."
+  },
+  "requires_parity_before_promotion": false,
+  "prediction": {
+    "success_probability": 0.22,
+    "expected_ev_delta": 0.05,
+    "expected_pnl_delta": 300.0,
+    "main_failure_modes": [
+      "thin_overlap_sample",
+      "accepted_comparator_not_beaten",
+      "window_regression",
+      "concentration_failed"
+    ],
+    "confidence_reason": "exp-20260603-026 showed removing same-day core-overlap rows made the accepted consensus worse, so the inverse support field is plausible; the overlap sample is small and mid_weak overlap PnL is a known risk.",
+    "recorded_at": "2026-06-04T03:07:27+00:00"
+  },
+  "calibration": {
+    "actual_success": 0,
+    "predicted_success_probability": 0.22,
+    "brier_score": 0.0484,
+    "expected_ev_delta": 0.05,
+    "actual_ev_delta_vs_core": 1.322,
+    "actual_ev_delta_vs_accepted_comparator": 0.0162,
+    "expected_pnl_delta": 300.0,
+    "actual_pnl_delta_vs_core": 23693.96,
+    "actual_pnl_delta_vs_accepted_comparator": 296.2,
+    "realized_failure_mode": "all_windows_beat_current_accepted_consensus_ev; all_windows_beat_current_accepted_consensus_pnl"
+  },
+  "metrics": {
+    "aggregate_expected_value_before": 7.8941,
+    "aggregate_expected_value_after": 9.2161,
+    "aggregate_expected_value_delta": 1.322,
+    "aggregate_strategy_total_pnl_before": 234850.99,
+    "aggregate_strategy_total_pnl_after": 258544.95,
+    "aggregate_strategy_total_pnl_delta": 23693.96,
+    "accepted_comparator_expected_value_after": 9.1999,
+    "accepted_comparator_strategy_total_pnl_after": 258248.75,
+    "delta_vs_accepted_comparator_ev": 0.0162,
+    "delta_vs_accepted_comparator_pnl": 296.2,
+    "target_trade_count": 47,
+    "target_trade_pnl_usd": 23693.96,
+    "supported_trade_count": 9,
+    "supported_incremental_pnl_usd": 296.2,
+    "max_drawdown_delta": -0.002,
+    "max_single_positive_share": 0.409209,
+    "positive_pnl_hhi": 0.251013
+  },
+  "windows": [
+    {
+      "label": "late_strong",
+      "expected_value_before": 5.1628,
+      "expected_value_after": 5.9051,
+      "expected_value_delta": 0.7423,
+      "strategy_total_pnl_delta": 7505.49,
+      "accepted_comparator_expected_value_after": 5.886,
+      "expected_value_delta_vs_accepted_comparator": 0.0191,
+      "strategy_total_pnl_delta_vs_accepted_comparator": 137.42,
+      "target_trade_count": 9,
+      "supported_trade_count": 1,
+      "supported_incremental_pnl_usd": 137.42
+    },
+    {
+      "label": "mid_weak",
+      "expected_value_before": 2.1402,
+      "expected_value_after": 2.3989,
+      "expected_value_delta": 0.2587,
+      "strategy_total_pnl_delta": 4612.9,
+      "accepted_comparator_expected_value_after": 2.4133,
+      "expected_value_delta_vs_accepted_comparator": -0.0144,
+      "strategy_total_pnl_delta_vs_accepted_comparator": -204.55,
+      "target_trade_count": 22,
+      "supported_trade_count": 3,
+      "supported_incremental_pnl_usd": -204.55
+    },
+    {
+      "label": "old_thin",
+      "expected_value_before": 0.5911,
+      "expected_value_after": 0.9121,
+      "expected_value_delta": 0.321,
+      "strategy_total_pnl_delta": 11575.57,
+      "accepted_comparator_expected_value_after": 0.9006,
+      "expected_value_delta_vs_accepted_comparator": 0.0115,
+      "strategy_total_pnl_delta_vs_accepted_comparator": 363.33,
+      "target_trade_count": 16,
+      "supported_trade_count": 5,
+      "supported_incremental_pnl_usd": 363.33
+    }
+  ],
+  "artifact_path": "data/experiments/exp-20260604-004/exp_20260604_004_accepted_consensus_core_overlap_support.json",
+  "related_files": [
+    "quant/experiments/exp_20260604_004_accepted_consensus_core_overlap_support.py",
+    "data/experiments/exp-20260604-004/exp_20260604_004_accepted_consensus_core_overlap_support.json",
+    "experiments/cards/exp-20260604-004.md",
+    "experiments/logs/exp-20260604-004.json",
+    "experiments/tickets/exp-20260604-004.json"
+  ]
+}

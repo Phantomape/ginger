@@ -1,0 +1,173 @@
+{
+  "experiment_id": "exp-20260604-004",
+  "experiment_uid": "expuid-f6b730406d3849df",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260604-004",
+    "slug": "accepted_consensus_core_overlap_support",
+    "reserved_at": "2026-06-04T03:07:52+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "completed",
+  "lane": "alpha_search",
+  "owner": "alpha-search",
+  "hypothesis": "Accepted independent-source free-data consensus candidates confirmed by same-day selected core A/B ticker context may deserve modest default-off paper-notional support without expanding noisy tickers.",
+  "change_type": "default_off_paper_allocation",
+  "mechanism_family": "default_off_paper_allocation",
+  "trial_family": "accepted_free_data_cross_source_consensus_core_overlap_support",
+  "trial_variant_id": "exp-20260604-004",
+  "single_causal_variable": "same_day_core_overlap_support_scalar_on_accepted_consensus_selected_rows_v1",
+  "changed_variable": "same_day_core_overlap_support_scalar_on_accepted_consensus_selected_rows_v1",
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260603-014",
+    "exp-20260603-015",
+    "exp-20260603-026"
+  ],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "new_replacement_value_context_from_exp_20260603_026",
+  "baseline_result_file": "data/backtests/backtest_results_20260602.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260604_004_accepted_consensus_core_overlap_support.py",
+    "data/experiments/exp-20260604-004/exp_20260604_004_accepted_consensus_core_overlap_support.json",
+    "experiments/cards/exp-20260604-004.md",
+    "experiments/manifests/exp-20260604-004.json",
+    "experiments/tickets/exp-20260604-004.json",
+    "experiments/logs/exp-20260604-004.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "same_day_core_overlap_support_scalar_on_accepted_consensus_selected_rows_v1"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.22,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "thin_overlap_sample",
+      "accepted_comparator_not_beaten",
+      "window_regression",
+      "concentration_failed"
+    ],
+    "confidence_reason": "exp-20260603-026 showed removing same-day core-overlap rows made the accepted consensus worse, so the inverse support field is plausible but overlap sample is small.",
+    "recorded_at": "2026-06-04T03:07:27+00:00"
+  },
+  "created_at": "2026-06-04T03:07:52+00:00",
+  "claimed_at": "2026-06-04T03:08:04+00:00",
+  "completed_at": "2026-06-04T03:15:53Z",
+  "result": {
+    "accepted": false,
+    "decision": "rejected_core_overlap_support_window_or_concentration_failed",
+    "artifact": "data/experiments/exp-20260604-004/exp_20260604_004_accepted_consensus_core_overlap_support.json"
+  },
+  "ticket_file": "experiments/tickets/exp-20260604-004.json",
+  "card_file": "experiments/cards/exp-20260604-004.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260604-004.json",
+  "id": "exp-20260604-004",
+  "decision": "rejected_core_overlap_support_window_or_concentration_failed",
+  "updated_at": "2026-06-04T03:15:53Z",
+  "artifact": "data/experiments/exp-20260604-004/exp_20260604_004_accepted_consensus_core_overlap_support.json",
+  "log": "experiments/logs/exp-20260604-004.json",
+  "production_impact": {
+    "trade_enabled": false,
+    "alters_orders": false,
+    "adapter_status": "replay_only_no_live_adapter",
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false,
+    "production_watchlist_changed": false,
+    "production_orders_changed": false,
+    "parity_note": "This experiment changes no production code. A retained core-overlap support field would need the shared free-data consensus paper adapter to build the same date-keyed selected-core ticker context in daily production reports and historical replay before any queue, notional, candidate priority, or order surface could change."
+  },
+  "gate4": {
+    "decision": "rejected_core_overlap_support_window_or_concentration_failed",
+    "passed": false,
+    "accepted": false,
+    "rationale": "The support field was positive in aggregate, but failed the stricter accepted-comparator window, support-sample, or incremental concentration guards.",
+    "gates": {
+      "aggregate_expected_value_positive": true,
+      "aggregate_pnl_positive": true,
+      "all_windows_expected_value_improved": true,
+      "all_windows_pnl_improved": true,
+      "target_trade_count_passed": true,
+      "target_window_count_passed": true,
+      "drawdown_drift_passed": true,
+      "survival_floor_passed": true,
+      "concentration_guard_passed": true,
+      "beats_current_accepted_consensus_ev": true,
+      "beats_current_accepted_consensus_pnl": true,
+      "all_windows_beat_current_accepted_consensus_ev": false,
+      "all_windows_beat_current_accepted_consensus_pnl": false,
+      "support_trade_count_passed": true,
+      "support_window_count_passed": true,
+      "incremental_concentration_guard_passed": true
+    },
+    "failed_reasons": [
+      "all_windows_beat_current_accepted_consensus_ev",
+      "all_windows_beat_current_accepted_consensus_pnl"
+    ],
+    "base_gate": {
+      "decision": "positive_replay_lead_not_promoted_requires_shared_cross_source_adapter",
+      "passed": true,
+      "rationale": "Canonical three-window replay improved aggregate EV and PnL across all windows. No production behavior changes were made; promotion is blocked until the cross-source consensus signal is rebuilt as a shared live/backtest adapter.",
+      "gates": {
+        "aggregate_expected_value_positive": true,
+        "aggregate_pnl_positive": true,
+        "all_windows_expected_value_improved": true,
+        "all_windows_pnl_improved": true,
+        "target_trade_count_passed": true,
+        "target_window_count_passed": true,
+        "drawdown_drift_passed": true,
+        "survival_floor_passed": true,
+        "concentration_guard_passed": true
+      },
+      "ev_windows_improved": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "pnl_windows_improved": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "max_drawdown_delta": -0.002,
+      "min_survival_rate": 0.7925,
+      "requires_parity_before_promotion": true
+    },
+    "comparator_ev_windows_improved": [
+      "late_strong",
+      "old_thin"
+    ],
+    "comparator_pnl_windows_improved": [
+      "late_strong",
+      "old_thin"
+    ],
+    "accepted_comparator_experiment_id": "exp-20260603-014",
+    "vs_accepted_comparator": {
+      "after": {
+        "expected_value_score": 9.2161,
+        "total_pnl": 258544.95,
+        "strategy_total_pnl": 258544.95
+      },
+      "accepted_comparator_after": {
+        "expected_value_score": 9.1999,
+        "total_pnl": 258248.75,
+        "strategy_total_pnl": 258248.75
+      },
+      "comparison": {
+        "expected_value_score_delta": 0.0162,
+        "strategy_total_pnl_delta": 296.2,
+        "total_pnl_delta": 296.2
+      }
+    },
+    "requires_parity_before_promotion": false
+  }
+}
