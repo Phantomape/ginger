@@ -256,6 +256,21 @@ only `6` event trades, and concentrated positive PnL in LLY (`75.50%`, HHI
 windows without forward replacement-value rows or a materially richer
 ownership-intensity relation.
 
+Latest positive replay lead: `exp-20260604-026` tested official SEC
+fails-to-deliver pressure candidates admitted only when the latest PIT-safe
+FINRA short-interest row also showed borrow pressure (`days_to_cover >= 3.0`
+and positive `short_interest_change_pct`). This is a materially different
+free-data relation from standalone FTD (`exp-20260604-023`) or Form4+FTD
+(`exp-20260604-024`). Gate 4 passed across the three canonical windows: EV
+`7.8941 -> 8.3361` (`+0.4420`), PnL `+$10,100.49`, with `121` target paper
+trades, all three windows positive (`late_strong +0.2225`, `mid_weak +0.0482`,
+`old_thin +0.1713` EV), max drawdown drift `+0.14pp`, max single positive share
+`0.240842`, and HHI `0.102311`. No shared adapter, production order, watchlist,
+ranking, sizing, exit, LLM/news, or live/default behavior changed. Treat this as
+a replay lead only; the next valid step is a separate shared default-off
+FTD+FINRA adapter with parity tests, not FTD/FINRA threshold retuning on the
+same frozen windows.
+
 Latest rejected observed-only validation: `exp-20260604-016` checked whether
 the accepted lagged consensus trades form a monotonic ladder by prior
 independent source-family confirmation density. It did not change strategy

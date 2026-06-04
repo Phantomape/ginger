@@ -131,6 +131,16 @@ Recent repository evidence supports this priority:
   threshold / cooldown / top-N / hold / cost-liquidity threshold/scalar or
   nearby `days_to_cover` / `short_interest_change_pct` threshold retunes on the
   same frozen windows.
+- `exp-20260604-026` found a stronger adjacent replay lead by combining two
+  free, publication-date-safe pressure sources: SEC fails-to-deliver candidates
+  were admitted only when the latest PIT-safe FINRA row also had
+  `days_to_cover >= 3.0` and positive `short_interest_change_pct`. This improved
+  all three canonical windows by aggregate EV `+0.4420` and PnL `+$10,100.49`
+  with `121` target trades and concentration inside guardrails. This is not a
+  live or shared adapter yet; the next valid work is shared default-off
+  FTD+FINRA adapter promotion plus parity tests. Do not convert this into
+  nearby FTD notional/share/age or FINRA threshold retunes on the same frozen
+  sample.
 - The accepted free-data cross-source consensus adapter now uses independent
   source families, not raw source names. `exp-20260603-011` showed that adding
   FINRA borrow-pressure as a raw consensus source cleared numeric gates but
@@ -822,6 +832,9 @@ Next valid work:
 - concentration decay after the cooldown in real forward rows;
 - forward replacement rows for the accepted `exp-20260603-007`
   borrow-pressure shared adapter before any activation discussion;
+- shared default-off FTD+FINRA adapter/parity for the positive `exp-20260604-026`
+  replay lead, keeping trade-enabled live capital disabled until forward
+  replacement-value rows accumulate;
 - genuinely new PIT borrow-cost, loan-availability, utilization, or
   options-implied squeeze context if a clean source is added;
 - cost-adjusted liquidity and fill-delay diagnostics.
@@ -833,6 +846,9 @@ Frozen without new evidence:
 - nearby `days_to_cover` or `short_interest_change_pct` threshold retunes around
   `exp-20260603-007` unless forward rows or a new borrow-cost /
   loan-availability source justify a fresh hypothesis;
+- nearby SEC FTD share/notional/publication-age or FTD+FINRA threshold retunes
+  after `exp-20260604-026`; promote the shared adapter first or require new
+  forward replacement rows;
 - raw FINRA monotonic ranking or high-short-pressure breakout without IWM
   confirmation;
 - promotion to live capital before closed forward replacement-value rows pass a

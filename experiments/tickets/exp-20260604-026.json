@@ -1,0 +1,156 @@
+{
+  "experiment_id": "exp-20260604-026",
+  "experiment_uid": "expuid-bf8e0969afc1428f",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260604-026",
+    "slug": "sec_ftd_finra_confirmed_candidate_pool",
+    "reserved_at": "2026-06-04T21:06:17+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "accepted",
+  "lane": "alpha_search",
+  "owner": "alpha-search",
+  "hypothesis": "Publication-lagged SEC FTD pressure candidates may have cleaner replacement value when confirmed by latest PIT FINRA borrow pressure, combining settlement stress with borrow crowding without adding noisy tickers.",
+  "change_type": "default_off_paper_candidate_pool",
+  "mechanism_family": "default_off_paper_candidate_pool",
+  "trial_family": "sec_ftd_finra_confirmed_candidate_pool",
+  "trial_variant_id": "exp-20260604-026",
+  "single_causal_variable": "sec_ftd_candidate_requires_latest_finra_borrow_pressure_confirmation_v1",
+  "changed_variable": "sec_ftd_candidate_requires_latest_finra_borrow_pressure_confirmation_v1",
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260604-023",
+    "exp-20260604-024",
+    "exp-20260603-006",
+    "exp-20260603-007"
+  ],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "free_sec_ftd_plus_official_finra_borrow_pressure_relation",
+  "baseline_result_file": "data/backtests/backtest_results_20260603.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260604_026_sec_ftd_finra_confirmed_candidate_pool.py",
+    "data/experiments/exp-20260604-026/exp_20260604_026_sec_ftd_finra_confirmed_candidate_pool.json",
+    "experiments/cards/exp-20260604-026.md",
+    "experiments/manifests/exp-20260604-026.json",
+    "experiments/tickets/exp-20260604-026.json",
+    "experiments/logs/exp-20260604-026.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "sec_ftd_candidate_requires_latest_finra_borrow_pressure_confirmation_v1"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.21,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "thin_overlap",
+      "late_strong_regression",
+      "accepted_finra_comparator_underperformance",
+      "concentration_failed"
+    ],
+    "confidence_reason": "FTD standalone was broad and aggregate positive but regressed late_strong; FINRA borrow-pressure has accepted evidence, so cross-source confirmation is materially different but may be too thin.",
+    "recorded_at": "2026-06-04T21:05:51+00:00"
+  },
+  "created_at": "2026-06-04T21:06:17+00:00",
+  "claimed_at": "2026-06-04T21:06:24+00:00",
+  "completed_at": "2026-06-04T21:15:25+00:00",
+  "result": {
+    "decision": "positive_replay_lead_not_promoted_requires_ftd_finra_shared_adapter",
+    "acceptance_reasons": [
+      "aggregate_ev_improved",
+      "aggregate_pnl_improved",
+      "all_three_windows_ev_improved",
+      "all_three_windows_pnl_improved",
+      "sample_guard_passed",
+      "drawdown_guard_passed",
+      "survival_guard_passed",
+      "concentration_guard_passed"
+    ],
+    "before_result_file": "data/experiments/exp-20260604-026/sec_ftd_finra_confirmed_candidate_pool_before_aggregate.json",
+    "after_result_file": "data/experiments/exp-20260604-026/sec_ftd_finra_confirmed_candidate_pool_after_aggregate.json",
+    "artifact_file": "data/experiments/exp-20260604-026/exp_20260604_026_sec_ftd_finra_confirmed_candidate_pool.json",
+    "aggregate": {
+      "before_expected_value_score_sum": 7.8941,
+      "after_expected_value_score_sum": 8.3361,
+      "expected_value_score_delta_sum": 0.442,
+      "expected_value_score_delta_pct": 0.055991,
+      "before_total_pnl_sum": 234850.99,
+      "after_total_pnl_sum": 244951.48,
+      "total_pnl_delta_sum": 10100.49,
+      "total_pnl_delta_pct": 0.043008,
+      "target_trade_count_sum": 121,
+      "windows_ev_improved": 3,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 3,
+      "windows_pnl_regressed": 0,
+      "max_drawdown_delta_max": 0.0014
+    },
+    "window_deltas": {
+      "late_strong": {
+        "expected_value_score_delta": 0.2225,
+        "total_pnl_delta": 2867.33,
+        "target_trade_count": 39
+      },
+      "mid_weak": {
+        "expected_value_score_delta": 0.0482,
+        "total_pnl_delta": 2052.72,
+        "target_trade_count": 40
+      },
+      "old_thin": {
+        "expected_value_score_delta": 0.1713,
+        "total_pnl_delta": 5180.44,
+        "target_trade_count": 42
+      }
+    },
+    "gate4": {
+      "passed": true,
+      "failed_gates": [],
+      "min_survival_rate": 0.7925,
+      "max_drawdown_delta": 0.0014,
+      "max_single_positive_pnl_share": 0.240842,
+      "positive_pnl_hhi": 0.102311
+    },
+    "production_impact": {
+      "replay_only": true,
+      "shared_policy_changed": false,
+      "run_adapter_changed": false,
+      "backtester_adapter_changed": false,
+      "production_orders_changed": false,
+      "trade_enabled": false,
+      "requires_shared_adapter_before_promotion": true
+    },
+    "calibration": {
+      "actual_decision": "positive_replay_lead_not_promoted_requires_ftd_finra_shared_adapter",
+      "actual_success": 1,
+      "predicted_success_probability": 0.21,
+      "brier_score": 0.6241,
+      "calibration_direction": "underconfident",
+      "surprise_level": "high",
+      "expected_ev_delta": null,
+      "actual_ev_delta": 0.442,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": null,
+      "actual_pnl_delta": 10100.49,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "thin_overlap",
+        "late_strong_regression",
+        "accepted_finra_comparator_underperformance",
+        "concentration_failed"
+      ],
+      "realized_failure_mode": null,
+      "predicted_failure_mode_hit": null,
+      "surprise_note": null
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260604-026.json",
+  "card_file": "experiments/cards/exp-20260604-026.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260604-026.json"
+}
