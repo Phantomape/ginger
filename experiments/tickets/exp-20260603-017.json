@@ -9,7 +9,7 @@
     "reserved_at": "2026-06-03T16:07:23+00:00",
     "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
   },
-  "status": "claimed",
+  "status": "rejected_sec_credible_positive_reaction_not_viable",
   "lane": "alpha_search",
   "owner": "alpha-search-automation",
   "hypothesis": "SEC high/medium-credibility filings with positive signal-day reaction may add a genuinely independent source family to accepted free-data consensus without increasing noise.",
@@ -61,8 +61,34 @@
   },
   "created_at": "2026-06-03T16:07:23+00:00",
   "claimed_at": "2026-06-03T16:07:31+00:00",
-  "completed_at": null,
-  "result": null,
+  "completed_at": "2026-06-04T03:00:00+00:00",
+  "result": {
+    "decision": "rejected_sec_credible_positive_reaction_not_viable",
+    "gate_failed": "pre_gate4_probe_failure",
+    "summary": "Positive signal-day reaction filter WORSENS late_strong returns (from +0.04% to -0.72%, hit 31.7%). Signal-day reaction is not a useful predictor; negative-reaction events actually perform better in late_strong. Hypothesis disproved across all three windows.",
+    "probe_results": {
+      "late_strong": {
+        "all_n": 2248,
+        "all_mean": 0.04,
+        "pos_reaction_n": 1031,
+        "pos_reaction_mean": -0.72,
+        "pos_reaction_hit": 31.7
+      },
+      "mid_weak": {
+        "all_n": 1977,
+        "all_mean": 3.22,
+        "pos_reaction_n": 1132,
+        "pos_reaction_mean": 2.29
+      },
+      "old_thin": {
+        "all_n": 2077,
+        "all_mean": -0.66,
+        "pos_reaction_n": 1113,
+        "pos_reaction_mean": -0.65
+      }
+    },
+    "rejection_reason": "Positive signal-day reaction filter degrades late_strong performance and shows no consistent three-window improvement. The mechanism (OHLCV momentum conditioning of SEC events) does not create a distinct positive signal."
+  },
   "ticket_file": "experiments/tickets/exp-20260603-017.json",
   "card_file": "experiments/cards/exp-20260603-017.md",
   "revision_manifest_file": "experiments/manifests/exp-20260603-017.json"
