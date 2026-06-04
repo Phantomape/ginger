@@ -1,0 +1,113 @@
+{
+  "experiment_id": "exp-20260604-003",
+  "timestamp": "2026-06-04T04:00:00+00:00",
+  "status": "rejected",
+  "lane": "alpha_search",
+  "hypothesis": "Consecutive positive revenue YoY growth streak (>=2 consecutive quarters of positive YoY growth as of the 10-Q filing date) may predict positive 10-day forward excess returns for watchlist equity tickers, providing a consistency-of-direction signal distinct from the companyfacts_growth_quality rate-of-growth threshold used in the current FUNDAMENTAL_GROWTH_RS_PAPER sleeve.",
+  "change_summary": "Probe-only: computed consecutive revenue YoY growth streak (>=2 consecutive positive quarters) across all three canonical windows using data/kova/fundamentals/companyfacts_growth_20260421.jsonl. No code was written or deployed.",
+  "change_type": "default_off_paper_candidate_pool",
+  "mechanism_family": "default_off_paper_candidate_pool",
+  "trial_family": "companyfacts_streak_candidate_pool",
+  "trial_variant_id": "exp-20260604-003",
+  "single_causal_variable": "revenue_yoy_growth_consecutive_positive_streak_min2",
+  "changed_variable": "revenue_yoy_growth_consecutive_positive_streak_min2",
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260604-001 (SEC 8-K material agreement probe — rejected)",
+    "exp-20260604-002 (sector OHLCV peer earnings shock transfer — rejected)"
+  ],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "not_declared",
+  "component": "inline probe using companyfacts_growth_20260421.jsonl (observe-only, all three canonical windows)",
+  "parameters": {
+    "streak_min_quarters": {"old": null, "new": 2},
+    "growth_field": {"old": null, "new": "revenue_yoy_pct"},
+    "pit_boundary": {"old": null, "new": "filed_date"},
+    "forward_horizon_days": {"old": null, "new": 10},
+    "return_type": {"old": null, "new": "excess_vs_SPY"}
+  },
+  "probe_results": {
+    "old_thin": {
+      "window": "2024-10-02 to 2025-04-22",
+      "n_total": 68,
+      "baseline_10d_excess_pct": 0.56,
+      "streak_ge2_n": 29,
+      "streak_ge2_mean_10d_excess_pct": 7.24,
+      "streak_ge2_lift_pct": 6.68,
+      "streak_ge2_hit_rate_pct": 62.1,
+      "streak_1_n": 5,
+      "streak_1_lift_pct": -0.08,
+      "streak_0_n": 34,
+      "streak_0_lift_pct": -5.69
+    },
+    "mid_weak": {
+      "window": "2025-04-23 to 2025-10-22",
+      "n_total": 63,
+      "baseline_10d_excess_pct": 4.02,
+      "streak_ge2_n": 12,
+      "streak_ge2_mean_10d_excess_pct": 3.72,
+      "streak_ge2_lift_pct": -0.30,
+      "streak_ge2_hit_rate_pct": 75.0,
+      "streak_0_n": 28,
+      "streak_0_lift_pct": 1.39
+    },
+    "late_strong": {
+      "window": "2025-10-23 to 2026-04-21",
+      "n_total": 67,
+      "baseline_10d_excess_pct": -1.79,
+      "streak_ge2_n": 56,
+      "streak_ge2_mean_10d_excess_pct": -2.21,
+      "streak_ge2_lift_pct": -0.42,
+      "streak_ge2_hit_rate_pct": 32.1,
+      "streak_0_n": 7,
+      "streak_0_lift_pct": 3.87
+    },
+    "three_window_consistency": "FAILS — streak>=2 bucket shows strong lift +6.68pp in old_thin but turns negative in mid_weak (-0.30pp, n=12 thin sample) and late_strong (-0.42pp, n=56). Direction is inconsistent across windows. Mid_weak sample too thin (n=12) to distinguish from noise."
+  },
+  "before_metrics": {
+    "late_strong": {"expected_value_score": 5.1628, "sharpe_daily": 4.41, "strategy_total_return_pct": 1.1707, "max_drawdown_pct": 0.0665, "trade_count": 18, "win_rate": 0.8333, "total_pnl": 117072.92},
+    "mid_weak": {"expected_value_score": 2.1402, "sharpe_daily": 2.74, "strategy_total_return_pct": 0.7811, "max_drawdown_pct": 0.1119, "trade_count": 21, "win_rate": 0.5238, "total_pnl": 78110.11},
+    "old_thin": {"expected_value_score": 0.5911, "sharpe_daily": 1.49, "strategy_total_return_pct": 0.3967, "max_drawdown_pct": 0.1001, "trade_count": 22, "win_rate": 0.4091, "total_pnl": 39667.96}
+  },
+  "after_metrics": null,
+  "delta_metrics": null,
+  "prediction": {
+    "success_probability": 0.2,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": ["regime_dependence", "thin_sample", "overlap_with_existing_companyfacts"],
+    "confidence_reason": null,
+    "recorded_at": "2026-06-04T02:02:23+00:00"
+  },
+  "calibration": {
+    "actual_decision": "rejected_pre_gate4_probe_failure",
+    "actual_success": 0,
+    "predicted_success_probability": 0.2,
+    "brier_score": 0.04,
+    "predicted_failure_modes": ["regime_dependence", "thin_sample", "overlap_with_existing_companyfacts"],
+    "realized_failure_mode": "three_window_inconsistency_and_thin_mid_weak_sample",
+    "predicted_failure_mode_hit": true,
+    "surprise_level": "low",
+    "surprise_note": "The old_thin lift (+6.68pp) was stronger than expected, but mid_weak was too thin (n=12) and late_strong reversed (-0.42pp). The regime-dependence failure mode was predicted and realized: consecutive revenue growth streak is a momentum-confirming signal that works in bull markets (old_thin) but not in mean-reversion or uncertainty regimes."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false
+  },
+  "decision": "rejected",
+  "rejection_reason": "Consecutive revenue growth streak (>=2 consecutive positive YoY revenue quarters) fails three-window consistency. Lift is +6.68pp in old_thin (n=29) but reverses to -0.30pp in mid_weak (n=12, too thin) and -0.42pp in late_strong (n=56). The signal direction is inconsistent across the canonical windows. Likely mechanism: in AI-cycle bull markets consecutive revenue growth is a momentum confirmation that rewards compounders; in tariff-uncertainty / mean-reversion regimes (late_strong), high-streak tickers are already priced-in and face sell-on-delivery pressure. The mid_weak thin sample (n=12) means that window's sign cannot be trusted even if it appears weakly positive.",
+  "next_retry_requires": [
+    "A multi-year companyfacts sample spanning at least 3 distinct market regimes (the current data covers only ~18 months)",
+    "A regime gate that cleanly separates bull-compounding vs mean-reversion environments before entry",
+    "Or: a genuinely different operationalization of earnings quality consistency, such as accelerating-growth or beat-vs-estimate consistency rather than raw positive-growth streak"
+  ],
+  "related_files": [
+    "experiments/tickets/exp-20260604-003.json",
+    "data/kova/fundamentals/companyfacts_growth_20260421.jsonl"
+  ],
+  "anti_repeat_rule": "Do not retry consecutive positive YoY revenue growth streak (>=2 quarters) as a primary candidate-pool source family without a regime gate or a multi-year companyfacts sample spanning at least 3 distinct market regimes. The streak signal is momentum-confirming in bull markets but regime-dependent and inconsistent across the three canonical windows.",
+  "notes": "Probe-only experiment. No code written, no backtest run. The companyfacts_growth_quality mechanism already captured in FUNDAMENTAL_GROWTH_RS_PAPER uses rate-of-growth thresholds; this tested a direction-consistency variant that failed three-window consistency for the same underlying regime-dependence reason as sector peer earnings transfer (exp-20260604-002)."
+}
