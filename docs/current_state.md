@@ -245,6 +245,17 @@ concentration, but Gate 4 rejected it because `late_strong` EV regressed. Do
 not retune nearby SEC same-sector peer thresholds on the frozen sample; use a
 different relation mechanism or forward replacement-value evidence.
 
+`exp-20260604-022` tested a Form 4 cost-basis entry-alignment scout:
+already-qualified meaningful purchases were kept only when the execution-time
+entry open was no more than `1.05x` the insider's weighted reported purchase
+price. The slice was mildly positive versus core (`EV +0.1010`, PnL
+`+$1,728.95`) with no drawdown issue, but Gate 4 rejected it because it
+underperformed the raw Form 4 queue (`EV -0.1596`, PnL `-$3,057.27`), selected
+only `6` event trades, and concentrated positive PnL in LLY (`75.50%`, HHI
+`0.599209`). Do not retry nearby Form 4 cost-basis chase bands on the frozen
+windows without forward replacement-value rows or a materially richer
+ownership-intensity relation.
+
 Latest rejected observed-only validation: `exp-20260604-016` checked whether
 the accepted lagged consensus trades form a monotonic ladder by prior
 independent source-family confirmation density. It did not change strategy

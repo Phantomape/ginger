@@ -271,7 +271,12 @@ Recent repository evidence supports this priority:
   promote owner-count alone or retry adjacent Form 4 role/owner-count fields
   without forward replacement rows or a new ownership-intensity mechanism.
   The 2026-05-31 purchase-value-versus-liquidity scout did not change that
-  prior.
+  prior. `exp-20260604-022` also rejected a distinct cost-basis entry-alignment
+  scout (`entry_open / weighted_insider_purchase_price <= 1.05`): it improved
+  core slightly, but failed replacement value versus raw Form 4, sample size,
+  and concentration (`6` trades; LLY `75.50%` of positive PnL). Do not retry
+  nearby Form 4 cost-basis chase bands on the frozen windows without forward
+  replacement-value rows or a materially richer ownership-intensity relation.
 - Same-ticker SEC event recurrence is now frozen as a standalone event-graph
   idea. Same-family bursts, first/follow-on recurrence, same-ticker
   cross-family transitions, small two-ticker bursts, sector-event breadth
