@@ -1,0 +1,114 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260604_010_lagged_consensus_rank_priority.py",
+    "data/experiments/exp-20260604-010/exp_20260604_010_lagged_consensus_rank_priority.json",
+    "experiments/cards/exp-20260604-010.md",
+    "experiments/manifests/exp-20260604-010.json",
+    "experiments/tickets/exp-20260604-010.json",
+    "experiments/logs/exp-20260604-010.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "artifact": "data/experiments/exp-20260604-010/exp_20260604_010_lagged_consensus_rank_priority.json",
+  "baseline_result_file": "data/backtests/backtest_results_20260603.json",
+  "card": "experiments/cards/exp-20260604-010.md",
+  "card_file": "experiments/cards/exp-20260604-010.md",
+  "change_type": "default_off_paper_adapter_candidate_ranking_alpha",
+  "changed_variable": "lagged_independent_confirmation_rank_priority_v1",
+  "claimed_at": "2026-06-04T10:08:20+00:00",
+  "completed_at": "2026-06-04T10:13:13Z",
+  "created_at": "2026-06-04T10:08:11+00:00",
+  "decision": "rejected_lagged_rank_priority_did_not_beat_accepted_adapter",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260604-010",
+  "experiment_uid": "expuid-5b46a35f93854b4f",
+  "gate4": {
+    "accepted_comparator": "exp-20260604-009",
+    "decision": "rejected_lagged_rank_priority_did_not_beat_accepted_adapter",
+    "gates": {
+      "aggregate_expected_value_positive": true,
+      "aggregate_pnl_positive": true,
+      "all_windows_expected_value_improved": true,
+      "all_windows_pnl_improved": true,
+      "beats_current_accepted_lagged_adapter": false,
+      "concentration_guard_passed": true,
+      "drawdown_drift_passed": true,
+      "lagged_priority_selected_trade_count_positive": true,
+      "survival_floor_passed": true,
+      "target_trade_count_passed": true,
+      "target_window_count_passed": true
+    },
+    "max_drawdown_delta": 0.0005,
+    "min_survival_rate": 0.7925,
+    "passed": false,
+    "rationale": "The rank-priority variant did not beat the current accepted lagged consensus adapter across all three windows.",
+    "requires_parity_before_promotion": true
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260604-010",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-04T10:08:11+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "lagged_consensus_rank_priority"
+  },
+  "hypothesis": "Accepted free-data consensus candidates with lagged independent source confirmation may deserve higher same-day top-1 paper priority than raw current source-count strength.",
+  "id": "exp-20260604-010",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "lagged_independent_confirmation_rank_priority_v1"
+  ],
+  "log": "experiments/logs/exp-20260604-010.json",
+  "markdown_artifact": "experiments/artifacts/exp-20260604-010_lagged_consensus_rank_priority.md",
+  "mechanism_family": "default_off_paper_adapter_candidate_ranking_alpha",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260603-014",
+    "exp-20260603-015",
+    "exp-20260604-008",
+    "exp-20260604-009"
+  ],
+  "new_evidence_type": "production_visible_source_timing_quality_ranking_field",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "Meta research favors default-off adapter alpha; exp-20260604-008/009 show lagged source timing is strong, but prioritizing it above same-day source strength is a distinct ranking variable and may overfit.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "accepted_adapter_comparator_not_beaten",
+      "window_regression",
+      "lagged_priority_adds_stale_noise",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-04T10:07:45+00:00",
+    "success_probability": 0.24
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_orders": false,
+    "backtester_adapter_changed": false,
+    "parity_note": "This experiment changes no production code. A retained rank-priority result would need the shared free-data consensus adapter to apply the same top-1/day candidate ordering in both daily production and replay before any report queue, paper ledger, or order surface could change.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "result": {
+    "accepted_comparator_ev_delta": 0.0165,
+    "aggregate_expected_value_delta": 2.0114,
+    "aggregate_strategy_total_pnl_delta": 35271.22,
+    "decision": "rejected_lagged_rank_priority_did_not_beat_accepted_adapter"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260604-010.json",
+  "single_causal_variable": "lagged_independent_confirmation_rank_priority_v1",
+  "status": "completed",
+  "ticket_file": "experiments/tickets/exp-20260604-010.json",
+  "trial_family": "accepted_free_data_cross_source_consensus_candidate_ranking",
+  "trial_variant_id": "exp-20260604-010"
+}
