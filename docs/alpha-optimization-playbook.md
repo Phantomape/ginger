@@ -94,7 +94,14 @@ Recent repository evidence supports this priority:
   richer event-quality field, not implicit DTE resets, generic
   PEAD/pre-earnings threshold sweeps, nearby `pre_event_rs20_vs_spy` retunes,
   or post-earnings high-liquidity, sector-residual, core-overlap, threshold, or
-  scalar retunes.
+  scalar retunes. `exp-20260604-001` reinforced this saturation: a
+  production-visible earnings-snapshot surprise-acceleration support field
+  (`latest_surprise_pct - avg_historical_surprise_pct >= 5pp`, `1.05x`) had
+  complete selected-row coverage and positive aggregate EV/PnL versus
+  `exp-20260603-022`, but failed Gate 4 because only `late_strong` improved
+  while `mid_weak` and `old_thin` regressed. Do not retry adjacent
+  latest-surprise / average-surprise thresholds, rank splits, or notional
+  scalars on the frozen post-earnings sample.
 - `VOLUME_BREADTH_BREAKOUT_PAPER` and QQQ-confirmed VCP show that free OHLCV
   market-confirmation fields can produce useful paper sleeves. Their next step
   is forward maturation, not another breadth/QQQ/top-N sweep. The latest

@@ -188,6 +188,18 @@ retry nearby source-count, FINRA-threshold, VCP-source-set, Form 4 overlap,
 Companyfacts inventory/gross-margin fallback, or SEC demand-phrase variants on
 the frozen windows without new forward rows or a materially new free-data field.
 
+Latest rejected post-earnings alpha search: `exp-20260604-001` tested one
+production-visible earnings-snapshot event-quality support on the accepted
+`POST_EARNINGS_UNDERPRICED_DRIFT_PAPER` stack. Already-selected candidates with
+`latest_surprise_pct - avg_historical_surprise_pct >= 5pp` received `1.05x`
+default-off paper notional and were compared against `exp-20260603-022`
+after-metrics. Gate 2 coverage was complete across all `20` target trades and
+aggregate EV/PnL were slightly positive (`+0.0119` EV / `+$140.61`), but Gate 4
+failed because only `late_strong` improved while `mid_weak` and `old_thin`
+regressed on both EV and PnL. Do not retry adjacent post-earnings surprise
+acceleration/latest-vs-average surprise thresholds, rank splits, or paper
+scalars on the frozen windows.
+
 Regression checkpoint: the 2026-06-03 automation cleaned only repository-level
 pytest/Python cache directories and ran the full unit suite successfully
 (`1104 passed`). No strategy bug fix was needed during this regression pass.
