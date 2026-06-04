@@ -1,0 +1,134 @@
+{
+  "experiment_id": "exp-20260604-001",
+  "timestamp": "2026-06-04T02:30:00+00:00",
+  "status": "rejected",
+  "lane": "alpha_search",
+  "hypothesis": "SEC 8-K item 1.01 (Material Definitive Agreement) filings for watchlist tickers in an established uptrend may produce positive 10-day forward returns as a new information family combining corporate catalyst event quality with price momentum confirmation.",
+  "change_summary": "Probe-only: measured 10-day forward returns on watchlist tickers with 8-K item 1.01 events in late_strong window. No code was written or deployed.",
+  "change_type": "default_off_paper_candidate_pool",
+  "mechanism_family": "default_off_paper_candidate_pool",
+  "trial_family": "sec_material_agreement_candidate_pool",
+  "trial_variant_id": "exp-20260604-001",
+  "single_causal_variable": "8k_item_1.01_material_agreement_watchlist_presence_combined_with_trend_iwm_regime_gate",
+  "changed_variable": "8k_item_1.01_material_agreement_watchlist_presence_combined_with_trend_iwm_regime_gate",
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "not_declared",
+  "component": "scripts/probe_sec_8k_event_alpha.py (observe-only)",
+  "parameters": {
+    "8k_item_code": {
+      "old": null,
+      "new": "1.01"
+    },
+    "forward_horizon_days": {
+      "old": null,
+      "new": 10
+    },
+    "trend_filter": {
+      "old": null,
+      "new": "ma50_above_and_iwm_trend"
+    }
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {"start": "2025-04-23", "end": "2025-10-22"},
+    {"start": "2024-10-02", "end": "2025-04-22"}
+  ],
+  "probe_results": {
+    "late_strong": {
+      "item_1.01_watchlist_n": 70,
+      "item_1.01_mean_10d_return_pct": -0.51,
+      "item_1.01_median_10d_return_pct": -1.57,
+      "item_1.01_hit_rate_pct": 37.1
+    },
+    "item_5.02_leadership_supplemental": {
+      "old_thin_mean_pct": -1.27,
+      "mid_weak_mean_pct": 1.34,
+      "late_strong_mean_pct": 1.15,
+      "verdict": "inconsistent_across_windows_old_thin_negative"
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 5.1628,
+      "sharpe_daily": 4.41,
+      "strategy_total_return_pct": 1.1707,
+      "max_drawdown_pct": 0.0665,
+      "trade_count": 18,
+      "win_rate": 0.8333,
+      "total_pnl": 117072.92
+    },
+    "mid_weak": {
+      "expected_value_score": 2.1402,
+      "sharpe_daily": 2.74,
+      "strategy_total_return_pct": 0.7811,
+      "max_drawdown_pct": 0.1119,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "total_pnl": 78110.11
+    },
+    "old_thin": {
+      "expected_value_score": 0.5911,
+      "sharpe_daily": 1.49,
+      "strategy_total_return_pct": 0.3967,
+      "max_drawdown_pct": 0.1001,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "total_pnl": 39667.96
+    }
+  },
+  "after_metrics": null,
+  "delta_metrics": null,
+  "prediction": {
+    "success_probability": 0.25,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "thin_sample",
+      "watchlist_ticker_coverage_too_low",
+      "mechanism_not_distinct_from_ohlcv_momentum"
+    ],
+    "confidence_reason": null,
+    "recorded_at": "2026-06-04T01:14:12+00:00"
+  },
+  "calibration": {
+    "actual_decision": "rejected_pre_gate4_probe_failure",
+    "actual_success": 0,
+    "predicted_success_probability": 0.25,
+    "brier_score": 0.0625,
+    "predicted_failure_modes": [
+      "thin_sample",
+      "watchlist_ticker_coverage_too_low",
+      "mechanism_not_distinct_from_ohlcv_momentum"
+    ],
+    "realized_failure_mode": "signal_direction_negative_in_primary_window",
+    "predicted_failure_mode_hit": true,
+    "surprise_level": "low",
+    "surprise_note": "8-K 1.01 events showed clearly negative forward returns (mean -0.51%, hit 37.1%) in late_strong. No need to proceed to Gate 4 backtest. SEC 5.02 also failed three-window consistency test."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false
+  },
+  "decision": "rejected",
+  "rejection_reason": "8-K item 1.01 shows clearly NEGATIVE 10-day forward returns in primary window (late_strong n=70, mean=-0.51%, hit=37.1%). Signal direction is opposite of hypothesis. Pre-Gate 4 failure: the probe disconfirmed the mechanism before any implementation was needed. SEC 8-K data as a standalone candidate-pool source for watchlist tickers is exhausted across item codes tested (1.01, 2.02, 5.02, 7.01, 8.01).",
+  "next_retry_requires": [
+    "A genuinely independent new free-data source family (not SEC events, not OHLCV peer shocks, not FINRA)",
+    "New evidence that 8-K event type predicts direction positively across all three standard windows",
+    "Or: Form 4 insider buying cluster as alternative event source (not yet tried)"
+  ],
+  "related_files": [
+    "experiments/tickets/exp-20260604-001.json",
+    "data/backtests/backtest_results_20260604.json",
+    "data/non_ohlcv/sec_filing_events_*.jsonl"
+  ],
+  "anti_repeat_rule": "Do not retry SEC 8-K material agreement (item 1.01) or any other SEC 8-K item as a primary candidate-pool source for watchlist tickers without new structural evidence that event type predicts direction positively in all three standard windows. SEC leadership (5.02) fails old_thin.",
+  "notes": "Probe-only experiment. No code written, no backtest run. docs/experiment_log.jsonl is an LFS pointer in this environment; full rejection details stored here in experiments/logs/."
+}
