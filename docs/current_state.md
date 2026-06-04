@@ -1,6 +1,6 @@
 ﻿# Current State
 
-Last updated: 2026-06-03.
+Last updated: 2026-06-04.
 
 The current accepted core stack includes the 2026-05-17 stock-only ample-slot
 rank-1 post-sizing top-up from `exp-20260517-009`, layered on top of the
@@ -56,25 +56,25 @@ EV `6.3596` and PnL `$192,538.61`.
 Latest saved single-window backtest artifacts can reflect only the most recent
 command; canonical acceptance evidence is the three-window artifact above.
 
-Latest default-off alpha adapter acceptance: `exp-20260603-015` promotes the
-positive `exp-20260603-014` independent source-family free-data consensus lead
+Latest default-off alpha adapter acceptance: `exp-20260604-009` promotes the
+positive `exp-20260604-008` lagged independent accepted-source consensus lead
 into the shared `ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER` adapter.
-The adapter now admits same-date same-ticker consensus only when at least two
-independent accepted free-data source families agree, collapsing
-`FINRA_IWM_CONFIRMED_PAPER` and `FINRA_BORROW_PRESSURE_PAPER` into one
-`finra_short_pressure` family before admission. The inherited three-window
-evidence from `exp-20260603-014` improved aggregate EV `7.8941 -> 9.1999`
-(`+1.3058`) and PnL `$234,850.99 -> $258,248.75` (`+$23,397.76`), with all
-three windows improving: `late_strong +0.7232` EV / `+$7,368.07`,
-`mid_weak +0.2731` / `+$4,817.45`, and `old_thin +0.3095` /
-`+$11,212.24`. The replay had `47` target paper trades, `0` FINRA-only
-selected trades, max single positive share `0.410442`, positive PnL HHI
-`0.251953`, no drawdown drift, and minimum survival `79.25%`. This remains
-default-off paper only: `trade_enabled=false`, live/default orders, watchlists,
-core ranking, sizing, exits, and LLM/news are unchanged. Do not retune nearby
-source-family counts, source sets, FINRA thresholds, cooldown, notional, or
-hold period on the frozen windows; the next valid work is forward
-replacement-value accumulation or a genuinely independent new free-data source.
+The adapter now admits a current accepted-source row when the same ticker had
+an independent accepted source-family confirmation during the prior three
+trading days. It supersedes the same-day independent-family comparator from
+`exp-20260603-015`. The accepted three-window evidence improved aggregate EV
+`7.8941 -> 9.8890` (`+1.9949`) and PnL `$234,850.99 -> $270,404.86`
+(`+$35,553.87`), and beat the prior accepted comparator by `+0.6891` EV /
+`+$12,156.11`. All three windows improved: `late_strong +1.0468` EV /
+`+$10,700.53`, `mid_weak +0.4887` / `+$9,517.86`, and `old_thin +0.4594` /
+`+$15,335.48`. The replay had `64` target paper trades, `25` lagged
+independent selected trades, max single positive share `0.406701`, and
+positive PnL HHI `0.242387`. This remains default-off paper only:
+`trade_enabled=false`, live/default orders, watchlists, core ranking, sizing,
+exits, and LLM/news are unchanged. Do not retune nearby prior-window,
+source-set, source-family, ranking, support-scalar, notional, or hold-period
+variants on the frozen windows; the next valid work is closed forward
+replacement-value accumulation or a separate Gate 1-4 trade adapter.
 
 Latest rejected source-family scout: `exp-20260603-016` tested adding
 `VOLATILITY_CONTRACTION_PAPER` as a genuinely independent source family to the
@@ -188,6 +188,8 @@ retry nearby source-count, FINRA-threshold, VCP-source-set, Form 4 overlap,
 Companyfacts inventory/gross-margin fallback, or SEC demand-phrase variants on
 the frozen windows without new forward rows or a materially new free-data field.
 
+## 2026-06-04 Experiment Consolidation
+
 Latest rejected post-earnings alpha search: `exp-20260604-001` tested one
 production-visible earnings-snapshot event-quality support on the accepted
 `POST_EARNINGS_UNDERPRICED_DRIFT_PAPER` stack. Already-selected candidates with
@@ -214,9 +216,61 @@ versus the core baseline. Do not retry broad-market-as-consensus-source-family
 on the frozen windows unless new forward overlap rows or a materially different
 source-timing construction exists.
 
-Regression checkpoint: the 2026-06-03 automation cleaned only repository-level
-pytest/Python cache directories and ran the full unit suite successfully
-(`1104 passed`). No strategy bug fix was needed during this regression pass.
+Main accepted 6/4 result: `exp-20260604-008` found that accepted free-data
+consensus is stronger when a current accepted-source row is confirmed by an
+independent accepted source family from the prior three trading days. The
+follow-up `exp-20260604-009` promoted that lagged independent-source rule into
+the shared default-off adapter with parity tests and no live orders. The
+accepted comparator for this paper route is now aggregate EV `9.8890` and PnL
+`$270,404.86`; future source-timing scouts must beat that comparator, not only
+the core baseline or the older same-day consensus route.
+
+Rejected 6/4 source and support variants mostly failed the accepted-comparator
+or incremental-concentration standard. `exp-20260604-003` SEC text/price issuer
+continuation improved PnL but regressed aggregate EV and `late_strong`.
+`exp-20260604-004` same-day core-overlap support was positive but failed the
+stricter support/concentration gate. `exp-20260604-005` Form 4 produced no
+selected consensus rows. `exp-20260604-006` theme density, `exp-20260604-007`
+broad-market prior lead, `exp-20260604-010` lagged rank priority, and
+`exp-20260604-015` VCP prior confirmation were all positive versus core in
+places but failed to beat the accepted lagged adapter. `exp-20260604-011`
+cost/liquidity support and `exp-20260604-012` prior Companyfacts confirmation
+support improved all three windows, but incremental PnL concentration breached
+Gate 4. `exp-20260604-013` cross-modality source-timing gating underperformed
+the accepted lagged adapter in all three windows.
+
+`exp-20260604-014` tested same-sector SEC text-price peer propagation. It had
+positive aggregate EV/PnL versus core (`+0.3353` EV / `+$8,825.48`) and passed
+concentration, but Gate 4 rejected it because `late_strong` EV regressed. Do
+not retune nearby SEC same-sector peer thresholds on the frozen sample; use a
+different relation mechanism or forward replacement-value evidence.
+
+Latest rejected observed-only validation: `exp-20260604-016` checked whether
+the accepted lagged consensus trades form a monotonic ladder by prior
+independent source-family confirmation density. It did not change strategy
+behavior. Aggregate bucket counts were `same_day_only=17`, `prior_1_family=36`,
+and `prior_2plus_families=11`; average net return was not monotonic:
+`same_day_only 4.1175%`, `prior_1_family 7.6516%`, and
+`prior_2plus_families 0.9166%`. Do not add rank or allocation priority from
+prior-family density without closed forward replacement-value rows and a stable
+monotonic ladder.
+Latest rejected AI-optical lagged-prior source scout: `exp-20260604-017`
+tested whether accepted AI-optical IWM-confirmed paper rows could help the
+accepted lagged free-data consensus as prior three-trading-day same-ticker
+confirmation. The rule produced `0` selected AI-optical-prior trades, so the
+after metrics were just the accepted lagged adapter metrics (`EV 9.8890`, PnL
+`$270,404.86`) with no attributable incremental edge. Do not retry AI-optical
+prior confirmation on the frozen windows without new overlap rows or a
+materially different source-timing relation.
+
+Regression checkpoint: the 2026-06-04 automation cleaned repository-level
+pytest/Python cache directories and incomplete hidden backtest temp files,
+deduplicated the duplicate `exp-20260604-012` JSONL record, refreshed
+`data/meta_research_report_latest.json`, and ran the full unit suite
+successfully (`1116 passed`). No strategy bug fix was needed during this
+regression pass. `scripts/experiment.py audit --strict` still reports existing
+prediction/calibration coverage debt in legacy and older post-enforcement
+records; no experiments are currently `running`.
 
 ## 2026-06-01 Experiment Consolidation
 

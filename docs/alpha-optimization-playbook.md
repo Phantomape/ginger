@@ -1,6 +1,6 @@
 # Alpha Optimization Playbook
 
-Last refreshed: 2026-06-03.
+Last refreshed: 2026-06-04.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log and should not repeat every trial. Detailed records belong in
@@ -147,14 +147,20 @@ Recent repository evidence supports this priority:
   family map, FINRA thresholds, cooldown, notional, or hold period on the
   frozen windows. The next valid consensus work is forward replacement-value
   rows or a genuinely independent new free-data source family.
-- `exp-20260604-002` tested the accepted `BROAD_MARKET_LEADERSHIP_PAPER`
-  sleeve as that kind of new source family. It rebuilt `30` broad-market source
-  rows in each canonical window but had `0/0/0` same-date/same-ticker overlap
-  with existing accepted consensus source rows, so selected trades and metrics
-  were identical to the accepted comparator (`EV 9.1999`, PnL `$258,248.75`).
-  Do not retry broad-market-as-consensus-source-family on the frozen windows
-  without new forward overlap rows or a materially different source-timing
-  construction.
+- The 2026-06-04 consensus-source scouts tightened the comparator rule:
+  after `exp-20260603-015`, a new source family must beat the accepted
+  independent-source consensus adapter, not merely beat the core baseline.
+  `BROAD_MARKET_LEADERSHIP_PAPER` had zero same-date overlap (`exp-20260604-002`);
+  SEC text + price alignment improved PnL but regressed aggregate EV and
+  `late_strong` (`exp-20260604-003`); same-day core-overlap support was small
+  and unstable versus the accepted comparator (`exp-20260604-004`); Form 4 as a
+  source family produced zero selected consensus trades (`exp-20260604-005`);
+  theme-density confirmation improved `2/3` windows but still failed the
+  accepted-comparator gate (`exp-20260604-006`). Do not retry these as nearby
+  source-family, overlap, threshold, or notional variants on the frozen windows.
+  The next valid consensus work is closed forward overlap rows, a materially new
+  source timing construction, or a truly independent data source with nonzero
+  accepted-comparator replacement value.
 - Full-universe ranking is promising as attribution, and now has one
   default-off paper queue. Raw `alpha_score` remains unsuitable for live/core
   ranking, but the market-regime-gated safe-notional route passed Gate 4 and
@@ -253,7 +259,11 @@ Recent repository evidence supports this priority:
   high-variance positive with a `late_strong` regression and drawdown breach;
   pre-earnings run-up needs richer expectation-quality fields or forward
   replacement rows, not another imminent-earnings threshold or hold-period
-  sweep.
+  sweep. Recent PEAD research points in the same direction: historical surprise
+  paths and expectation adjustment state matter more than a single latest
+  surprise. For Ginger, the usable field is a replayable surprise-history /
+  expectation-revision trajectory, not another scalar on
+  `latest_surprise_pct - average_surprise_pct`.
 - Form 4 remains watchlist material, not a clean candidate-pool lead. The
   latest multi-filer / owner-count replay (`exp-20260530-011`) was positive
   versus core but failed replacement value versus the raw Form 4 queue,
@@ -373,9 +383,11 @@ Bad LLM responsibilities:
 
 ### 1. Forward Maturation Of Candidate-Pool Sleeves
 
-Meta research currently ranks `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`
-as the highest-value strategy family. The right work is not more frozen-sample
-tuning; it is forward maturity.
+Meta research currently ranks `default_off_paper_adapter` as the highest-value
+strategy family, followed by
+`production_visible_default_off_paper_adapter_for_candidate_pool_alpha`. The
+right work is not more frozen-sample tuning; it is forward maturity against the
+currently accepted comparator.
 
 Do next:
 
@@ -388,6 +400,9 @@ Do next:
 - compare selected rows against same-day core candidates and adjacent paper
   ranks;
 - expose activation blockers in `default_off_alpha_attribution`.
+- for `ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER`, require every new
+  source-family experiment to report both core-baseline deltas and
+  deltas-vs-current-accepted-consensus; reject variants that only beat core.
 
 Do not do next:
 
@@ -400,6 +415,9 @@ Do not do next:
   borrow-cost / availability field;
 - promote paper sleeves into live capital only because historical paper PnL is
   large.
+- add broad-market, SEC text-price, Form 4, or theme-density as consensus
+  families again before nonzero forward overlap rows or a materially different
+  source-timing construction exists.
 
 ### 2. Fundamental Growth + RS
 
@@ -775,6 +793,13 @@ interest alone"; it is official FINRA publication-date-safe short-pressure
 context, OHLCV breakout/liquidity/RS gates, IWM-vs-SPY confirmation, and a
 seven-calendar-day same-ticker admitted-candidate cooldown.
 
+Recent securities-lending research reinforces this boundary. Short-interest
+data are delayed and coarse; the more informative state is whether borrowing
+pressure is expensive, scarce, persistent, and hard to cover without moving the
+price. A future FINRA retry should therefore add a new PIT borrow-cost,
+loan-availability, utilization, lending-fee, or option-implied crowding field,
+not retune `days_to_cover` on the same publication-date snapshot.
+
 Keep fixed:
 
 - official FINRA publication-date boundary;
@@ -834,9 +859,19 @@ state:
 - event-family by market-state;
 - regulatory/policy exposure;
 - event interaction bursts and theme propagation.
+- text/price alignment quality with explicit next-session entry semantics.
 
 The next useful unit is a schema-bound field or event graph that can be
 replayed and attributed, not a prompt asking the model to buy or sell.
+
+Local update: `exp-20260604-003` rejected a standalone SEC text + price
+alignment issuer-continuation pool. The mechanism was plausible and
+concentration was inside guardrails, but it regressed aggregate EV and
+`late_strong`. Do not retune adjacent SEC credibility, positive-language,
+signal-day reaction, or next-session entry-shift thresholds on the frozen
+sample. Future SEC text work needs a richer relation mechanism, such as
+characteristic-similarity peer transfer, guidance/fact mismatch with source
+spans, or a source-overlap graph.
 
 Local update: `exp-20260530-018` tested a simple pre-entry catalyst timing
 field, `high_confidence_pre_entry_catalyst_freshness_bucket_v1`, on the
@@ -973,6 +1008,78 @@ Sources:
   <https://arxiv.org/abs/2602.07294>
 - ReflectRAG, 2026:
   <https://www.sciencedirect.com/science/article/pii/S0925231226014451>
+
+### Earnings Surprise Memory And PEAD State
+
+Recent PEAD work supports a memory-based earnings state rather than a single
+surprise threshold. The practical lesson is that historical surprise patterns,
+pre-event drift, post-event underreaction, analyst expectation adjustment, and
+liquidity/attention state should be separate replayable fields. Ginger's local
+post-earnings stack already confirms the risk: simple latest-surprise
+acceleration was directionally positive in aggregate but unstable by window, so
+it should not be rescued with nearby thresholds.
+
+Useful fields:
+
+- `earnings_surprise_history_window_id`
+- `surprise_consistency_bucket`
+- `surprise_acceleration_bucket`
+- `analyst_revision_absorption_bucket`
+- `pre_event_drift_bucket`
+- `announcement_reaction_abnormal_return_bucket`
+- `post_event_attention_liquidity_bucket`
+- `pead_decay_horizon_bucket`
+- `surprise_history_model_version`
+- `expectation_adjustment_lag_bucket`
+
+Engineering rule: PEAD features should enter as historical state trajectories
+or default-off paper candidates with replacement value, not as standalone
+latest-surprise scalars.
+
+Sources:
+
+- Beyond the last surprise: Reviving PEAD with machine learning and historical
+  earnings, 2025/2026:
+  <https://www.sciencedirect.com/science/article/pii/S1544612325020057>
+- Post-Earnings Announcement Drift practical decomposition, 2026:
+  <https://closelook.net/reports/post-earnings-drift/>
+
+### Short-Pressure And Securities-Lending State
+
+The accepted FINRA route should be treated as a coarse public signal, not a
+complete borrow-pressure model. Current securities-lending research and FINRA
+publication rules both point to the same implementation detail: report-date
+short interest is delayed and incomplete; a better source family would measure
+cost-to-borrow, loan availability, utilization, lending fee pressure, and
+covering capacity at decision time.
+
+Useful fields:
+
+- `short_interest_publication_lag_days`
+- `days_to_cover_publication_safe`
+- `borrow_fee_bucket`
+- `loan_availability_bucket`
+- `securities_lending_utilization_bucket`
+- `borrow_fee_change_bucket`
+- `short_pressure_crowding_bucket`
+- `short_covering_capacity_bucket`
+- `options_implied_squeeze_pressure_bucket`
+- `short_pressure_source_family_id`
+
+Engineering rule: do not use raw high short interest as a standalone long
+signal. A promoted source must be publication-date-safe, independently
+confirmed, de-clustered, and tested against the accepted consensus comparator.
+
+Sources:
+
+- FINRA short-interest reporting dates and publication mechanics:
+  <https://www.finra.org/filing-reporting/regulatory-filing-systems/short-interest>
+- FINRA equity short-interest files:
+  <https://www.finra.org/finra-data/browse-catalog/equity-short-interest/files>
+- Learning by lending securities, Journal of Financial Economics, 2026:
+  <https://www.sciencedirect.com/science/article/pii/S0304405X26000085>
+- Borrowing Costs as a Return Factor, 2026:
+  <https://aemps.ewapub.com/article/view/32333>
 
 ### Agentic Trading Evaluation
 
@@ -1363,6 +1470,11 @@ production-visible field:
 - FINRA/IWM/cooldown/top-N retunes before the accepted default-off FINRA sleeve
   has closed forward replacement-value rows or a new PIT borrow-cost /
   availability field;
+- adding broad-market leadership, SEC text-price alignment, Form 4 meaningful
+  purchases, or theme-density rows as accepted-consensus source families on the
+  frozen windows after `exp-20260604-002` through `exp-20260604-006`, unless
+  new forward overlap rows or a materially different source-timing construction
+  exists;
 - raw full-universe `alpha_score` top-N promotion or score-weight tuning before
   component-level attribution shows a monotonic ladder, regime stability, and
   cost-adjusted replacement value;
@@ -1406,6 +1518,13 @@ production-visible field:
   `exp-20260603-004`, or same-day core-overlap support/scalar retunes after
   `exp-20260603-022`; require forward replacement-value rows or a materially
   richer event-quality field;
+- latest-surprise minus average-surprise, surprise acceleration, or
+  surprise-rank support scalars on the frozen post-earnings sample after
+  `exp-20260604-001`; retry PEAD only with a richer historical
+  surprise/expectation-adjustment trajectory or forward replacement rows;
+- standalone SEC text + price-alignment issuer continuation after
+  `exp-20260604-003`; retry SEC text only with richer relation structure,
+  source-span provenance, or audited peer/theme propagation;
 - simple target, stop, or fixed max-loss exit changes;
 - ticker-specific exceptions from one or two trades;
 - missing-archive or missing-text availability as an alpha field;

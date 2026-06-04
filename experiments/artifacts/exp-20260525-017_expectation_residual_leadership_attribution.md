@@ -20,7 +20,7 @@ Observed-only alpha search. No entries, exits, ranking, sizing, LLM/news, or ord
   "closed_forward_outcomes": {
     "10d": 21,
     "20d": 20,
-    "5d": 22
+    "5d": 24
   },
   "expectation_join_status_counts": {
     "ledger_row_not_usable": 12,
@@ -53,8 +53,8 @@ Observed-only alpha search. No entries, exits, ranking, sizing, LLM/news, or ord
 |---|---:|---:|---:|---:|---:|
 | A_positive_expectation_and_residual_leader | 0 | 0 |  | 0 |  |
 | B_positive_expectation_only | 0 | 0 |  | 0 |  |
-| C_residual_leader_only | 13 | 8 | -0.6725% | 7 | -6.7270% |
-| D_neither | 17 | 14 | 1.2881% | 14 | 0.0609% |
+| C_residual_leader_only | 13 | 9 | -1.2182% | 7 | -6.7270% |
+| D_neither | 17 | 15 | 0.8632% | 14 | 0.0609% |
 
 ## Reconstructed Scout
 
@@ -77,7 +77,7 @@ Non-PIT reconstructed rows are shown only for research triage. They cannot pass 
     "non_pit_reconstructed": 12,
     "pit_usable": 16
   },
-  "total_usable_candidates": 22
+  "total_usable_candidates": 24
 }
 ```
 
@@ -85,8 +85,8 @@ Non-PIT reconstructed rows are shown only for research triage. They cannot pass 
 |---|---:|---:|---:|---:|---:|
 | A_positive_expectation_and_residual_leader | 0 | 0 |  | 0 |  |
 | B_positive_expectation_only | 0 | 0 |  | 0 |  |
-| C_residual_leader_only | 13 | 8 | -0.6725% | 7 | -6.7270% |
-| D_neither | 17 | 14 | 1.2881% | 14 | 0.0609% |
+| C_residual_leader_only | 13 | 9 | -1.2182% | 7 | -6.7270% |
+| D_neither | 17 | 15 | 0.8632% | 14 | 0.0609% |
 
 ## Gate
 
@@ -102,7 +102,7 @@ Non-PIT reconstructed rows are shown only for research triage. They cannot pass 
   "minimum_total_usable_candidates": 30,
   "passed": false,
   "reason": "insufficient_bucket_or_total_sample",
-  "total_usable_candidates": 22
+  "total_usable_candidates": 24
 }
 ```
 
