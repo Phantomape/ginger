@@ -1,0 +1,129 @@
+{
+  "acceptance_rule": "Observed-only pass requires usable PIT revision trajectory rows in all 3 windows plus positive_persistent beating flat_or_negative on both 10d and 20d in at least 2 windows without top-ticker concentration.",
+  "allowed_write_scope": [
+    "quant/experiments/",
+    "data/experiments/",
+    "experiments/logs/",
+    "experiments/cards/",
+    "experiments/tickets/",
+    "docs/experiments/tickets/",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/alpha_direction_guidance.md"
+  ],
+  "artifact_file": "data/experiments/exp-20260604-020/revision_trajectory_pead_attribution.json",
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "card_file": "experiments/cards/exp-20260604-020.md",
+  "change_type": "read_only_alpha_attribution",
+  "changed_variable": "revision_trajectory_bucket_v1",
+  "claimed_at": "2026-06-04T17:36:00+00:00",
+  "completed_at": "2026-06-04T17:47:02Z",
+  "created_at": "2026-06-04T17:35:18+00:00",
+  "decision": "observed_only_data_gap",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260604-020",
+  "experiment_uid": "expuid-19b12d26079e4bf0",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260604-020",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-04T17:35:18+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "revision_trajectory_pead_attribution"
+  },
+  "hypothesis": "PIT analyst or estimate revision trajectory combined with post-earnings continuation may produce better 10d/20d replacement value than flat or negative revision rows.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "production_strategy",
+    "backtest_entry_exit",
+    "sizing",
+    "orders",
+    "llm_prompt"
+  ],
+  "mechanism_family": "analyst_revision_earnings_drift",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260525-034",
+    "exp-20260528-009",
+    "exp-20260528-013",
+    "exp-20260529-007",
+    "exp-20260531-018",
+    "exp-20260604-001"
+  ],
+  "new_evidence_type": "pre_registered_10d20d_revision_trajectory_attribution_with_snapshot_ledger_backfill",
+  "owner": "codex-alpha-search",
+  "prediction": {
+    "confidence_reason": "Prior 5d PEAD/revision work was rejected, but current direction guidance prioritizes analyst revision and repeated 10d-positive clues justify a pre-registered 10d/20d read-only test.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "thin_10d20d_sample",
+      "no_monotonic_bucket",
+      "concentration_failed",
+      "missing_pit_revision_fields"
+    ],
+    "recorded_at": "2026-06-04T17:34:51+00:00",
+    "success_probability": 0.28
+  },
+  "prior_trial_count": 8,
+  "result": {
+    "acceptance_reasons": [],
+    "after_result_file": "data/experiments/exp-20260604-020/revision_trajectory_pead_attribution.json",
+    "before_result_file": "data/experiments/exp-20260604-020/revision_trajectory_pead_attribution.json",
+    "calibration": {
+      "actual_decision": "observed_only_data_gap",
+      "actual_ev_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "actual_success": false,
+      "brier_score": 0.0784,
+      "calibration_direction": "overconfident",
+      "ev_prediction_error": 0.0,
+      "expected_ev_delta": 0.0,
+      "expected_pnl_delta": 0.0,
+      "pnl_prediction_error": 0.0,
+      "predicted_failure_mode_hit": false,
+      "predicted_failure_modes": [
+        "thin_10d20d_sample",
+        "no_monotonic_bucket",
+        "concentration_failed",
+        "missing_pit_revision_fields"
+      ],
+      "predicted_success_probability": 0.28,
+      "realized_failure_mode": "minimum_closed_outcomes_not_met_for_revision_trajectory_buckets",
+      "surprise_level": "expected_failure",
+      "surprise_note": "Failure mode was expected: supplemented snapshot-derived ledgers did not produce enough positive revision rows in any canonical window."
+    },
+    "decision": "observed_only_data_gap",
+    "delta_metrics": {
+      "expected_value_score": 0.0,
+      "expected_value_score_sum_delta": 0.0,
+      "strategy_behavior_delta": 0,
+      "total_pnl": 0.0,
+      "total_pnl_sum_delta": 0.0
+    }
+  },
+  "result_file": "experiments/logs/exp-20260604-020.json",
+  "revision_manifest_file": "experiments/manifests/exp-20260604-020.json",
+  "single_causal_variable": "revision_trajectory_bucket_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260604-020.json",
+  "trial_family": "revision_trajectory_pead_10d20d_attribution",
+  "trial_variant_id": "exp-20260604-020",
+  "updated_at": "2026-06-04T17:47:02Z"
+}
