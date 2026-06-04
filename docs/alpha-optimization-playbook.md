@@ -1,6 +1,6 @@
 # Alpha Optimization Playbook
 
-Last refreshed: 2026-06-03.
+Last refreshed: 2026-06-04.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log and should not repeat every trial. Detailed records belong in
@@ -246,6 +246,19 @@ Recent repository evidence supports this priority:
   promotable relation. Future event work must use a stronger relation source:
   characteristic-similarity peers, source overlap, theme propagation, or
   semantic fact/tone direction with audited retrieval traces.
+- 2026-06-04 probes confirmed that the late_strong window (Oct 2025–Apr 2026)
+  creates a structural regime-dependence barrier for peer-transfer and
+  streak-based source families. Sector-level OHLCV peer earnings shock transfer
+  (`exp-20260604-002`: pos-moderate bucket +5.62pp old_thin, +1.17pp mid_weak,
+  -1.48pp late_strong) and consecutive revenue YoY growth streak >=2 quarters
+  (`exp-20260604-003`: +6.68pp old_thin, -0.30pp mid_weak thin, -0.42pp
+  late_strong) both failed three-window consistency for the same regime reason:
+  bull-market propagation signals reverse in tariff-uncertainty / mean-reversion
+  environments. Within-theme excess momentum (ret20_excess_theme supplemental
+  in exp-20260604-002) also failed: low_exc beat high_exc in late_strong. These
+  three probe directions are now frozen. The only remaining free-data alpha
+  paths are forward maturation of existing paper sleeves and genuinely new
+  non-OHLCV data sources not yet available in the repository.
 - State-surface has too many accepted paper scalars. More nearby
   queue/profile/notional mining now requires a hard >10% aggregate EV lift or
   should be rolled back.
@@ -1385,7 +1398,9 @@ production-visible field:
 - simple target, stop, or fixed max-loss exit changes;
 - ticker-specific exceptions from one or two trades;
 - missing-archive or missing-text availability as an alpha field;
-- LLM direct buy/sell/sizing authority.
+- LLM direct buy/sell/sizing authority;
+- sector-level OHLCV peer earnings shock transfer (gap>=5% + volume>=1.8x in last 5 days from same-sector peers) as a standalone candidate-pool source without a regime gate that cleanly identifies propagation-friendly vs mean-reversion market states — `exp-20260604-002` found the pos-moderate bucket lifts +5.62pp (old_thin) and +1.17pp (mid_weak) but reverses to -1.48pp in late_strong; `exp-20260603-005` (exact-industry Item 2.02 SEC filings) failed for the same structural reason; do not retry either OHLCV sector peer shock transfer or within-theme excess momentum (ret20_excess_theme high_exc bucket) as standalone candidate-pool sources without a regime gate or a non-OHLCV peer earnings quality signal;
+- consecutive positive YoY revenue growth streak (>=2 quarters) as a primary candidate-pool source without a regime gate or a multi-year companyfacts sample spanning at least 3 distinct market regimes — `exp-20260604-003` found streak>=2 lifts +6.68pp in old_thin but reverses to -0.30pp in mid_weak (thin n=12) and -0.42pp in late_strong (n=56); the signal is momentum-confirming in bull markets but inconsistent across canonical windows for the same regime-dependence reason as sector peer earnings transfer.
 
 ## Minimum Standard For Any New LLM Field
 
