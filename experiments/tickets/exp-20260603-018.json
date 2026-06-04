@@ -1,36 +1,5 @@
 {
-  "experiment_id": "exp-20260603-018",
-  "experiment_uid": "expuid-dab2916783934ce5",
-  "hub_identity": {
-    "scheme": "hf_hub_local_v1",
-    "namespace": "ginger/experiments",
-    "repo_id": "ginger/experiments/exp-20260603-018",
-    "slug": "consensus_source_family_monotonicity",
-    "reserved_at": "2026-06-03T16:09:42+00:00",
-    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
-  },
-  "status": "claimed",
-  "lane": "alpha_search",
-  "owner": "alpha-search-automation",
-  "hypothesis": "Independent accepted free-data source-family count should show monotonic target-trade outcomes within the already accepted default-off consensus sleeve if it is a durable ranking signal rather than just an admission guard.",
-  "change_type": "default_off_paper_ranking_validation",
-  "mechanism_family": "default_off_paper_ranking_validation",
-  "trial_family": "accepted_free_data_cross_source_consensus_source_family_count_monotonicity",
-  "trial_variant_id": "exp-20260603-018",
-  "single_causal_variable": "independent_source_family_count_monotonicity_bucket_v1",
-  "changed_variable": "independent_source_family_count_monotonicity_bucket_v1",
-  "prior_trial_count": 0,
-  "nearby_prior_experiments": [
-    "exp-20260531-030",
-    "exp-20260601-001",
-    "exp-20260601-028",
-    "exp-20260603-014",
-    "exp-20260603-015",
-    "exp-20260603-016"
-  ],
-  "multiple_testing_risk_bucket": "minimal",
-  "new_evidence_type": "source_family_count_monotonicity_validation",
-  "baseline_result_file": "data/backtests/backtest_results_20260602.json",
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
   "allowed_write_scope": [
     "quant/experiments/exp_20260603_018_consensus_source_family_monotonicity.py",
     "data/experiments/exp-20260603-018/exp_20260603_018_consensus_source_family_monotonicity.json",
@@ -41,14 +10,64 @@
     "docs/experiment_log.jsonl",
     "docs/experiment_registry.json"
   ],
-  "must_not_touch": [],
+  "artifact": "/home/user/ginger/data/experiments/exp-20260603-018/exp_20260603_018_consensus_source_family_monotonicity.json",
+  "baseline_result_file": "data/backtests/backtest_results_20260602.json",
+  "card_file": "experiments/cards/exp-20260603-018.md",
+  "change_type": "default_off_paper_ranking_validation",
+  "changed_variable": "independent_source_family_count_monotonicity_bucket_v1",
+  "claimed_at": "2026-06-03T16:09:52+00:00",
+  "completed_at": "2026-06-04T16:23:14Z",
+  "created_at": "2026-06-03T16:09:42+00:00",
+  "decision": "observed_only_monotonic_positive",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260603-018",
+  "experiment_uid": "expuid-dab2916783934ce5",
+  "gate4": {
+    "decision": "observed_only_monotonic_positive",
+    "eligible_bucket_count": 2,
+    "gates": {
+      "monotonic_mean_pnl": true,
+      "monotonic_win_rate": true,
+      "thin_bucket_warning": false,
+      "two_or_more_eligible_buckets": true
+    },
+    "max_drawdown_delta": 0.0,
+    "passed": true,
+    "rationale": "Source-family count shows monotonic mean PnL AND win rate across eligible buckets (2 buckets with \u22653 trades). This supports family count as a ranking signal beyond admission, but sample is too thin to promote a source-count threshold change on frozen windows. Collect forward evidence first.",
+    "requires_parity_before_promotion": false,
+    "thin_buckets": []
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260603-018",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-03T16:09:42+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "consensus_source_family_monotonicity"
+  },
+  "hypothesis": "Independent accepted free-data source-family count should show monotonic target-trade outcomes within the already accepted default-off consensus sleeve if it is a durable ranking signal rather than just an admission guard.",
+  "id": "exp-20260603-018",
+  "lane": "alpha_search",
   "locked_variables": [
     "independent_source_family_count_monotonicity_bucket_v1"
   ],
-  "evaluation_windows": [],
-  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "log": "/home/user/ginger/experiments/logs/exp-20260603-018.json",
+  "markdown_artifact": "/home/user/ginger/experiments/cards/exp-20260603-018.md",
+  "mechanism_family": "default_off_paper_ranking_validation",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260531-030",
+    "exp-20260601-001",
+    "exp-20260601-028",
+    "exp-20260603-014",
+    "exp-20260603-015",
+    "exp-20260603-016"
+  ],
+  "new_evidence_type": "source_family_count_monotonicity_validation",
+  "owner": "alpha-search-automation",
   "prediction": {
-    "success_probability": 0.16,
+    "confidence_reason": "The current accepted consensus uses family count only as admission; testing monotonicity is useful for ranking evidence, but source-count retunes are frozen and high multiple-testing risk.",
     "expected_ev_delta": null,
     "expected_pnl_delta": null,
     "main_failure_modes": [
@@ -57,14 +76,28 @@
       "nearby_source_count_overfit",
       "current_accepted_comparator_not_beaten"
     ],
-    "confidence_reason": "The current accepted consensus uses family count only as admission; testing monotonicity is useful for ranking evidence, but source-count retunes are frozen and high multiple-testing risk.",
-    "recorded_at": "2026-06-03T16:09:15+00:00"
+    "recorded_at": "2026-06-03T16:09:15+00:00",
+    "success_probability": 0.16
   },
-  "created_at": "2026-06-03T16:09:42+00:00",
-  "claimed_at": "2026-06-03T16:09:52+00:00",
-  "completed_at": null,
+  "prior_trial_count": 0,
+  "production_impact": {
+    "adapter_status": "read_only_attribution_analysis",
+    "alters_orders": false,
+    "backtester_adapter_changed": false,
+    "parity_note": "This experiment reads existing accepted replay artifacts and performs no strategy changes. Source-count retunes are frozen per the playbook; this analysis is forward evidence only and cannot justify source-count threshold changes on frozen windows.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
   "result": null,
+  "revision_manifest_file": "experiments/manifests/exp-20260603-018.json",
+  "single_causal_variable": "independent_source_family_count_monotonicity_bucket_v1",
+  "status": "completed",
   "ticket_file": "experiments/tickets/exp-20260603-018.json",
-  "card_file": "experiments/cards/exp-20260603-018.md",
-  "revision_manifest_file": "experiments/manifests/exp-20260603-018.json"
+  "trial_family": "accepted_free_data_cross_source_consensus_source_family_count_monotonicity",
+  "trial_variant_id": "exp-20260603-018"
 }
