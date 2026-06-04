@@ -63,6 +63,7 @@ from fill_model import (
 # way.
 from portfolio_engine import ROUND_TRIP_COST_PCT as ROUND_TRIP_COST
 from operator_input_paths import open_positions_path as resolve_open_positions_path
+from open_position_schema import account_positions
 from data_paths import daily_artifact_glob, daily_artifact_path, is_default_data_dir, legacy_daily_artifact_path
 
 
@@ -463,7 +464,11 @@ def evaluate_file(filepath, open_positions_path=None, n_days=EVAL_DAYS):
     if pos_file.exists():
         with open(pos_file, "r", encoding="utf-8") as f:
             pos_data = json.load(f)
-        avg_costs = {p["ticker"]: p.get("avg_cost") for p in pos_data.get("positions", [])}
+        avg_costs = {
+            p["ticker"]: p.get("avg_cost")
+            for p in account_positions(pos_data)
+            if p.get("ticker")
+        }
 
     results = {
         "file":              os.path.basename(filepath),

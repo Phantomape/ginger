@@ -29,6 +29,7 @@ from constants import (
 from earnings_snapshot import persist_earnings_snapshot
 from data_paths import daily_artifact_path, atomic_write_json
 from operator_input_paths import open_positions_path, repo_relative
+from open_position_schema import account_positions, has_account_positions
 from regime_exit import compute_regime_exit_profile
 
 # ── Logging setup ────────────────────────────────────────────────────────────
@@ -183,11 +184,10 @@ def main():
     # blocking all new trades.  Example: stored $70k, actual $150k → heat appears 2×
     # worse than reality, permanently barring new positions.
     portfolio_value = stored_pv
-    if open_positions and open_positions.get("positions"):
+    if has_account_positions(open_positions, positive_only=True):
         equity_pv = sum(
             pos.get("shares", 0) * current_prices.get(pos.get("ticker", ""), pos.get("avg_cost", 0))
-            for pos in open_positions["positions"]
-            if pos.get("ticker") and pos.get("shares", 0) > 0
+            for pos in account_positions(open_positions, positive_only=True)
         )
         # Include cash balance so sizing and heat reflect the full account value.
         # Without cash: a $100k account with $60k invested computes PV=$60k →

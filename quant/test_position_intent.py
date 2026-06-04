@@ -66,3 +66,22 @@ def test_audit_position_intent_coverage_reports_underfilled_position():
             "source_field": "intended_shares",
         }
     ]
+
+
+def test_audit_position_intent_coverage_reads_grouped_open_positions():
+    open_positions = {
+        "observations": [
+            {"ticker": "LEG", "shares": 10, "opened_by_strategy": "legacy"},
+        ],
+        "core_positions": [
+            {"ticker": "MRVL", "shares": 24, "opened_by_strategy": "fomo"},
+        ],
+        "positions": [
+            {"ticker": "SNXX", "shares": 48, "opened_by_strategy": "fomo"},
+        ],
+    }
+
+    audit = audit_position_intent_coverage(open_positions)
+
+    assert audit["non_legacy_positions"] == 2
+    assert audit["missing_intended_share_tickers"] == ["SNXX", "MRVL"]

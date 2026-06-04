@@ -37,6 +37,9 @@ def test_market_state_snapshot_uses_existing_regime_and_sentiment_classifiers():
     assert snapshot["sentiment_surface"]["sentiment"] == "theme_mania"
     assert snapshot["signal_mix"]["breakout_signal_count"] == 3
     assert snapshot["signal_mix"]["theme_signal_count"] == 3
+    assert snapshot["context"]["spy_20d_return"] == 0.05
+    assert snapshot["context"]["qqq_20d_return"] == 0.10
+    assert snapshot["context"]["qqq_minus_spy_ret20"] == 0.05
     assert "qqq_minus_spy_ret20" in snapshot["context_coverage"]["present_fields"]
 
 
@@ -69,3 +72,7 @@ def test_daily_report_surfaces_market_state_snapshot():
     assert "Regime engine: theme_mania" in report
     assert "Sentiment: theme_mania" in report
     assert "Signal mix: total=3 breakout=3 theme=3" in report
+    assert "Context: SPY 20d=+5.0%" in report
+    assert "QQQ 20d=+10.0%" in report
+    assert "QQQ-SPY 20d=+5.0pp" in report
+    assert "VIX=16.0" in report

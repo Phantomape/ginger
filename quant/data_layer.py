@@ -18,6 +18,7 @@ import yfinance as yf
 
 from yfinance_bootstrap import configure_yfinance_runtime
 from operator_input_paths import open_positions_path
+from open_position_schema import account_position_tickers
 
 logger = logging.getLogger(__name__)
 
@@ -46,10 +47,7 @@ def get_universe():
         try:
             with open(path, "r", encoding="utf-8") as f:
                 positions = json.load(f)
-            for pos in positions.get("positions", []):
-                ticker = pos.get("ticker")
-                if ticker:
-                    universe.add(ticker)
+            universe.update(account_position_tickers(positions))
         except Exception:
             pass
 

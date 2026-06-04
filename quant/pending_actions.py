@@ -16,6 +16,7 @@ from datetime import datetime
 from typing import Any
 
 from data_paths import daily_artifact_glob, data_artifact_path
+from open_position_schema import account_positions
 
 PENDING_ACTIONS_FILENAME = "pending_actions.json"
 ACTIONABLE = {"ADD", "REDUCE", "EXIT"}
@@ -36,7 +37,7 @@ def _load_json(path: str) -> Any:
 
 def _position_shares(open_positions: dict | None) -> dict[str, float]:
     shares: dict[str, float] = {}
-    for pos in (open_positions or {}).get("positions", []) or []:
+    for pos in account_positions(open_positions):
         ticker = str(pos.get("ticker", "")).upper().strip()
         if not ticker:
             continue

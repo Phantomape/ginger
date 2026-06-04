@@ -96,6 +96,24 @@ def _context_coverage(context):
     }
 
 
+def _snapshot_context(context):
+    keys = [
+        "market_regime",
+        "spy_pct_from_ma",
+        "qqq_pct_from_ma",
+        "spy_10d_return",
+        "qqq_10d_return",
+        "spy_20d_return",
+        "qqq_20d_return",
+        "vix",
+        "vix_10d_change",
+        "qqq_minus_spy_ret20",
+        "breakout_signal_count",
+        "theme_signal_count",
+    ]
+    return {key: context.get(key) for key in keys if context.get(key) is not None}
+
+
 def build_market_state_snapshot(market_context=None, signals=None, source="unknown"):
     """Build a read-only market-state analysis payload.
 
@@ -115,6 +133,7 @@ def build_market_state_snapshot(market_context=None, signals=None, source="unkno
         "market_regime_report": regime_report,
         "sentiment_surface": sentiment_report,
         "signal_mix": mix,
+        "context": _snapshot_context(context),
         "context_coverage": _context_coverage(context),
         "notes": [
             "Read-only snapshot using existing regime_engine and sentiment_surface classifiers.",

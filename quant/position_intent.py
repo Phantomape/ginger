@@ -10,6 +10,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from open_position_schema import account_positions
+
 
 INTENDED_SHARE_FIELDS = (
     "original_shares",
@@ -41,7 +43,7 @@ def resolve_intended_shares(position: dict | None) -> tuple[int | None, str | No
 
 def audit_position_intent_coverage(open_positions: dict | None) -> dict:
     """Audit whether non-legacy positions can support conservative-entry top-ups."""
-    positions = (open_positions or {}).get("positions", []) or []
+    positions = account_positions(open_positions)
     missing = []
     invalid = []
     underfilled = []

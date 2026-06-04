@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 from filter import WATCHLIST
 from data_paths import daily_artifact_path
 from operator_input_paths import open_positions_path, repo_relative
+from open_position_schema import account_position_tickers, positions_by_ticker
 from position_manager import compute_atr, compute_exit_levels, evaluate_exit_signals
 from regime import compute_market_regime
 
@@ -47,11 +48,7 @@ def get_universe():
 
     # Add tickers from open positions
     positions = load_open_positions()
-    if positions and "positions" in positions:
-        for pos in positions["positions"]:
-            ticker = pos.get("ticker")
-            if ticker:
-                universe.add(ticker)
+    universe.update(account_position_tickers(positions))
 
     logger.info(f"Trading universe: {sorted(universe)}")
     return sorted(universe)
@@ -182,11 +179,12 @@ def compute_position_context(ticker, latest_close, open_positions, atr=None, hig
     Returns:
         dict: Position context or None
     """
-    if not open_positions or "positions" not in open_positions:
+    position_lookup = positions_by_ticker(open_positions, positive_only=True)
+    if not position_lookup:
         return None
 
-    for pos in open_positions["positions"]:
-        if pos.get("ticker") == ticker:
+    pos = position_lookup.get(str(ticker).upper())
+    if pos:
             shares = pos.get("shares", 0)
             avg_cost = pos.get("avg_cost", 0)
 
@@ -360,22 +358,20 @@ def generate_trend_signals(universe=None, window=20, lookback_days=400):
             #   20d_high=$142 → trailing=$130.64 (stop NOT triggered)
             #   high_since_entry=$150 → trailing=$138   (stop correctly triggered)
             high_since_entry = None
-            if open_positions and "positions" in open_positions:
-                for pos in open_positions["positions"]:
-                    if pos.get("ticker") == ticker:
-                        entry_date_str = pos.get("entry_date")
-                        if entry_date_str:
-                            try:
-                                entry_dt = pd.Timestamp(entry_date_str)
-                                data_since = data[data.index >= entry_dt]
-                                if not data_since.empty:
-                                    raw_high = data_since['High'].max()
-                                    high_since_entry = float(
-                                        raw_high.item() if hasattr(raw_high, 'item') else raw_high
-                                    )
-                            except Exception as exc:
-                                logger.debug(f"{ticker}: could not compute high_since_entry: {exc}")
-                        break
+            pos = positions_by_ticker(open_positions, positive_only=True).get(str(ticker).upper())
+            if pos:
+                entry_date_str = pos.get("entry_date")
+                if entry_date_str:
+                    try:
+                        entry_dt = pd.Timestamp(entry_date_str)
+                        data_since = data[data.index >= entry_dt]
+                        if not data_since.empty:
+                            raw_high = data_since['High'].max()
+                            high_since_entry = float(
+                                raw_high.item() if hasattr(raw_high, 'item') else raw_high
+                            )
+                    except Exception as exc:
+                        logger.debug(f"{ticker}: could not compute high_since_entry: {exc}")
 
             # Compute previous trading day's close for daily_return_pct.
             # Required by LLM post-earnings gap rules: "gap > +8% → REDUCE 50%".

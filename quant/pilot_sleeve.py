@@ -22,6 +22,7 @@ from universe_manager import (
     records_as_of,
     registry_hash,
 )
+from open_position_schema import account_positions
 
 
 AI_INFRA_AGGRESSIVE_SLEEVE_NAME = "AI_INFRA_AGGRESSIVE"
@@ -403,11 +404,7 @@ def apply_pilot_sizing_policy(
 
 
 def _positive_positions(open_positions: dict | None) -> list[dict]:
-    return [
-        pos
-        for pos in (open_positions or {}).get("positions", [])
-        if pos.get("ticker") and (pos.get("shares") or 0) > 0
-    ]
+    return account_positions(open_positions, positive_only=True)
 
 
 def _position_capital_pct(pos: dict, open_positions: dict | None) -> float:

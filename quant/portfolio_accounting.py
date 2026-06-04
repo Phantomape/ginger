@@ -8,6 +8,8 @@ open_positions plus current prices.
 
 from __future__ import annotations
 
+from open_position_schema import account_positions
+
 
 def _to_float(value, default=None):
     try:
@@ -21,7 +23,7 @@ def _to_float(value, default=None):
 def compute_equity_market_value(open_positions: dict | None, current_prices: dict | None) -> float:
     """Return market value of listed open positions using current prices when available."""
     total = 0.0
-    for pos in (open_positions or {}).get("positions", []) or []:
+    for pos in account_positions(open_positions):
         ticker = pos.get("ticker")
         shares = _to_float(pos.get("shares"), 0.0)
         if not ticker or shares <= 0:

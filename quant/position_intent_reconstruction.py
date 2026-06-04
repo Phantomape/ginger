@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any
 
 from data_paths import daily_artifact_glob
+from open_position_schema import account_positions
 from position_intent import INTENDED_SHARE_FIELDS, resolve_intended_shares
 
 
@@ -81,27 +82,22 @@ def _ticker(value: Any) -> str | None:
 
 def _current_nonlegacy_positions(open_positions: dict | None) -> list[dict]:
     rows = []
-    for section in ("positions", "observations"):
-        for pos in (open_positions or {}).get(section, []) or []:
-            if not isinstance(pos, dict):
-                continue
-            ticker = _ticker(pos.get("ticker"))
-            if not ticker:
-                continue
-            try:
-                shares = float(pos.get("shares") or 0)
-            except (TypeError, ValueError):
-                shares = 0.0
-            if shares <= 0:
-                continue
-            opened_by = str(pos.get("opened_by_strategy") or "").lower().strip()
-            if opened_by == "legacy":
-                continue
-            row = dict(pos)
-            row["ticker"] = ticker
-            row["_section"] = section
-            row["_current_shares"] = shares
-            rows.append(row)
+    for pos in account_positions(open_positions, positive_only=True):
+        ticker = _ticker(pos.get("ticker"))
+        if not ticker:
+            continue
+        try:
+            shares = float(pos.get("shares") or 0)
+        except (TypeError, ValueError):
+            shares = 0.0
+        opened_by = str(pos.get("opened_by_strategy") or "").lower().strip()
+        if opened_by == "legacy":
+            continue
+        row = dict(pos)
+        row["ticker"] = ticker
+        row["_section"] = row.get("position_group")
+        row["_current_shares"] = shares
+        rows.append(row)
     return rows
 
 

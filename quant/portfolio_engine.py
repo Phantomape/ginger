@@ -91,6 +91,7 @@ from constants import (
     ROUND_TRIP_COST_PCT,
     EXEC_LAG_PCT,
 )
+from open_position_schema import account_positions
 
 logger = logging.getLogger(__name__)
 
@@ -280,7 +281,7 @@ def compute_portfolio_heat(open_positions, current_prices, portfolio_value,
     breakdown     = []
     total_at_risk = 0.0
 
-    for pos in open_positions.get("positions", []):
+    for pos in account_positions(open_positions):
         ticker   = pos.get("ticker")
         shares   = pos.get("shares", 0)
         avg_cost = pos.get("avg_cost", 0)

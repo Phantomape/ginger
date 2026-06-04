@@ -36,6 +36,27 @@ from data_paths import daily_artifact_path
 logger = logging.getLogger(__name__)
 
 
+def _format_market_pct(value):
+    try:
+        return f"{float(value) * 100:+.1f}%"
+    except (TypeError, ValueError):
+        return "n/a"
+
+
+def _format_market_pp(value):
+    try:
+        return f"{float(value) * 100:+.1f}pp"
+    except (TypeError, ValueError):
+        return "n/a"
+
+
+def _format_market_number(value, digits=1):
+    try:
+        return f"{float(value):.{digits}f}"
+    except (TypeError, ValueError):
+        return "n/a"
+
+
 def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            metrics=None, market_regime=None, open_positions=None,
                            market_state_snapshot=None,
@@ -162,6 +183,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         regime_report = market_state_snapshot.get("market_regime_report") or {}
         sentiment = market_state_snapshot.get("sentiment_surface") or {}
         mix = market_state_snapshot.get("signal_mix") or {}
+        state_context = market_state_snapshot.get("context") or {}
         coverage = market_state_snapshot.get("context_coverage") or {}
         missing = coverage.get("missing_fields") or []
         lines.append("\nMARKET STATE SNAPSHOT:")
@@ -181,6 +203,27 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             f"breakout={mix.get('breakout_signal_count', 0)} "
             f"theme={mix.get('theme_signal_count', 0)}"
         )
+        context_parts = []
+        if state_context.get("spy_20d_return") is not None:
+            context_parts.append(
+                f"SPY 20d={_format_market_pct(state_context.get('spy_20d_return'))}"
+            )
+        if state_context.get("qqq_20d_return") is not None:
+            context_parts.append(
+                f"QQQ 20d={_format_market_pct(state_context.get('qqq_20d_return'))}"
+            )
+        if state_context.get("qqq_minus_spy_ret20") is not None:
+            context_parts.append(
+                f"QQQ-SPY 20d={_format_market_pp(state_context.get('qqq_minus_spy_ret20'))}"
+            )
+        if state_context.get("vix") is not None:
+            context_parts.append(f"VIX={_format_market_number(state_context.get('vix'))}")
+        if state_context.get("vix_10d_change") is not None:
+            context_parts.append(
+                f"VIX 10d={_format_market_pct(state_context.get('vix_10d_change'))}"
+            )
+        if context_parts:
+            lines.append("  Context: " + "  ".join(context_parts))
         if missing:
             lines.append(
                 "  Missing context: "

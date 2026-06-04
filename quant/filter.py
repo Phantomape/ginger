@@ -16,6 +16,7 @@ from datetime import datetime, timedelta
 from dateutil import parser as date_parser
 import re
 from operator_input_paths import open_positions_path
+from open_position_schema import account_position_tickers
 
 logger = logging.getLogger(__name__)
 
@@ -62,11 +63,7 @@ def _load_position_tickers():
         try:
             with open(path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-            return {
-                pos['ticker'].upper()
-                for pos in data.get('positions', [])
-                if pos.get('ticker')
-            }
+            return account_position_tickers(data)
         except Exception:
             pass
     return set()

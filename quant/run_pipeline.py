@@ -33,6 +33,7 @@ from parser import parse_feed_with_diagnostics, deduplicate_items, sort_items_by
 from filter import apply_hygiene_filters, apply_trade_filters
 from llm_advisor import get_investment_advice, save_advice
 from operator_input_paths import open_positions_path, repo_relative
+from open_position_schema import account_positions, has_account_positions
 from trend_signals import generate_trend_signals, save_trend_signals
 from earnings_snapshot import persist_earnings_snapshot
 from data_paths import daily_artifact_path
@@ -149,7 +150,7 @@ def _validate_open_positions():
     try:
         with open(path, 'r', encoding='utf-8') as f:
             positions_data = json.load(f)
-        positions = positions_data.get('positions', [])
+        positions = account_positions(positions_data)
 
         missing_entry_date = [
             p['ticker'] for p in positions
@@ -372,7 +373,7 @@ def main():
                 _open_pos = _load_pos()
                 _stored_pv = (_open_pos or {}).get("portfolio_value_usd")
                 _pv = _stored_pv
-                if _open_pos and _open_pos.get("positions"):
+                if has_account_positions(_open_pos, positive_only=True):
                     _current_prices = {
                         t: f["close"]
                         for t, f in qp_features.items()
@@ -382,7 +383,7 @@ def main():
                         pos.get("shares", 0) * _current_prices.get(
                             pos.get("ticker", ""), pos.get("avg_cost", 0)
                         )
-                        for pos in _open_pos["positions"]
+                        for pos in account_positions(_open_pos, positive_only=True)
                         if pos.get("ticker") and pos.get("shares", 0) > 0
                     )
                     _cash_raw = _open_pos.get("cash_usd")

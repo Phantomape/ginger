@@ -143,6 +143,33 @@ def test_core_slot_policy_honors_explicit_sleeve_and_slot_policy():
     )
 
 
+def test_slot_accounting_reads_core_positions_group_and_account_positions():
+    open_positions = {
+        "observations": [
+            {"ticker": "APP", "shares": 17, "opened_by_strategy": "legacy"},
+        ],
+        "core_positions": [
+            {"ticker": "MRVL", "shares": 24, "opened_by_strategy": "fomo"},
+            {"ticker": "COHR", "shares": 16, "opened_by_strategy": "pilot_breakout_long"},
+        ],
+        "positions": [
+            {"ticker": "SNXX", "shares": 48, "opened_by_strategy": "fomo"},
+        ],
+    }
+
+    summary = build_slot_accounting_summary(open_positions, max_positions=5)
+
+    assert count_core_strategy_positions(open_positions) == 2
+    assert summary["live_active_positions"] == 4
+    assert summary["strategy_active_positions"] == 2
+    assert summary["strategy_available_slots"] == 3
+    assert [row["ticker"] for row in summary["core_strategy_positions"]] == ["MRVL", "COHR"]
+    assert [
+        row["ticker"]
+        for row in summary["non_strategy_positions_ignored_for_strategy_slots"]
+    ] == ["SNXX", "APP"]
+
+
 def test_entry_candidate_review_surfaces_backtest_buy_live_slot_deferred():
     open_positions = {
         "positions": [

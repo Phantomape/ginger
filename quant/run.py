@@ -40,6 +40,7 @@ from data_paths import daily_artifact_path, atomic_write_json, atomic_write_text
 from earnings_snapshot import persist_earnings_snapshot
 from estimate_revision_ledger import persist_estimate_revision_ledger
 from operator_input_paths import open_positions_path, repo_relative
+from open_position_schema import has_account_positions, positions_by_ticker
 from regime_exit import compute_regime_exit_profile
 
 
@@ -216,6 +217,7 @@ def main():
         attach_peer_earnings_reaction_to_signals,
         build_peer_earnings_reaction_sidecar,
     )
+    from market_context import build_readonly_market_state_context
     from market_state_analysis import build_market_state_snapshot
     from daily_non_ohlcv_snapshot import persist_daily_non_ohlcv_snapshots
     from kova_data_sidecar import persist_kova_data_snapshot
@@ -697,7 +699,7 @@ def main():
     # ── Live portfolio value ─────────────────────────────────────────────────
     # If cash_usd is omitted, derive it from portfolio_value_usd - live equity.
     # This avoids daily manual cash maintenance while keeping sizing accurate.
-    if open_positions and open_positions.get("positions"):
+    if has_account_positions(open_positions, positive_only=True):
         _current_px = {
             t: f["close"] for t, f in features_dict.items()
             if f and f.get("close") is not None
@@ -726,11 +728,7 @@ def main():
 
     # ── Step 5: Position context (exit signals for held tickers) ─────────────
     _print_section("STEP 5 — Position context")
-    positions_by_ticker = {}
-    for pos in (open_positions or {}).get("positions", []):
-        ticker = pos.get("ticker")
-        if ticker and ticker not in positions_by_ticker:
-            positions_by_ticker[ticker] = pos
+    held_positions_by_ticker = positions_by_ticker(open_positions, positive_only=True)
 
     # Build trend_signals dict with key names that llm_advisor.build_prompt() expects:
     #   breakout_20d → breakout,  breakdown_20d → breakdown,
@@ -772,7 +770,7 @@ def main():
         # high_since_entry=$150 → trailing=$138.00 (correct, would have triggered).
         high_since_entry = None
         if open_positions and ohlcv is not None:
-            pos = positions_by_ticker.get(ticker)
+            pos = held_positions_by_ticker.get(str(ticker).upper())
             entry_date_str = pos.get('entry_date') if pos else None
             if entry_date_str:
                 try:
@@ -929,8 +927,32 @@ def main():
     _regime_str = market_regime.get("regime", "").upper()
 
     log.info(f"Signals generated: {len(signals)}")
+    qqq_ohlcv = ohlcv_dict.get("QQQ")
+    if qqq_ohlcv is None:
+        qqq_ohlcv = _cached_ohlcv("QQQ")
+    try:
+        vix_ohlcv = _cached_ohlcv("^VIX")
+    except Exception as e:
+        log.warning("VIX OHLCV unavailable for market-state context: %s", e)
+        vix_ohlcv = None
+    market_state_context = build_readonly_market_state_context(
+        market_context,
+        ohlcv_by_ticker={
+            "SPY": spy_ohlcv,
+            "QQQ": qqq_ohlcv,
+        },
+        vix_ohlcv=vix_ohlcv,
+    )
+    log.info(
+        "Market-state context: spy20=%s qqq20=%s qqq-spy20=%s vix=%s vix10d=%s",
+        market_state_context.get("spy_20d_return"),
+        market_state_context.get("qqq_20d_return"),
+        market_state_context.get("qqq_minus_spy_ret20"),
+        market_state_context.get("vix"),
+        market_state_context.get("vix_10d_change"),
+    )
     market_state_snapshot = build_market_state_snapshot(
-        market_context=market_context,
+        market_context=market_state_context,
         signals=signals,
         source="production_daily_quant",
     )

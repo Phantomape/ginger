@@ -117,12 +117,16 @@ def test_form4_transaction_jsonl_sample_has_required_pit_contract() -> None:
 def test_open_positions_have_gate2_required_fields() -> None:
     path = ROOT / "operator_inputs" / "open_positions.json"
     payload = _json(path)
-    rows = list(payload.get("positions") or []) + list(payload.get("observations") or [])
-    assert rows, f"{path} must contain positions or observations"
+    rows = (
+        list(payload.get("positions") or [])
+        + list(payload.get("core_positions") or [])
+        + list(payload.get("observations") or [])
+    )
+    assert rows, f"{path} must contain open position rows"
 
     for idx, row in enumerate(rows):
         label = f"{path}:position[{idx}]"
-        for field in ("ticker", "entry_date", "target_price"):
+        for field in ("ticker", "entry_date", "target_price", "sleeve", "slot_policy"):
             assert row.get(field) not in (None, ""), f"{label} missing {field}"
         assert isinstance(row["ticker"], str) and row["ticker"] == row["ticker"].upper()
         _as_date(row["entry_date"])

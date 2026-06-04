@@ -688,6 +688,25 @@ def _sum_numeric(items, keys):
     return round(total, 2) if found else None
 
 
+def _count_with_numeric_fallback(payload: dict, list_key: str, direct_paths) -> int:
+    value = payload.get(list_key)
+    if isinstance(value, list):
+        return len(value)
+    number = first_number(payload, direct_paths)
+    return int(number) if number is not None else 0
+
+
+def _collect_ticker_mapping_keys(value, tickers: set[str], limit=12):
+    if not isinstance(value, dict):
+        return
+    for key in value:
+        if len(tickers) >= limit:
+            return
+        ticker = str(key).strip().upper()
+        if ticker:
+            tickers.add(ticker)
+
+
 def summarize_paper_sleeve_file(root: Path, path: Path):
     payload = load_json(path)
     if not isinstance(payload, dict):
@@ -704,7 +723,11 @@ def summarize_paper_sleeve_file(root: Path, path: Path):
         "pending_entries": pending_entries,
         "closed_positions": closed_positions,
         "candidates": payload.get("candidates"),
+        "event_rows": payload.get("event_rows"),
+        "latest_outcomes": payload.get("latest_outcomes"),
     }, tickers)
+    _collect_ticker_mapping_keys(payload.get("history_by_ticker"), tickers)
+    _collect_ticker_mapping_keys(payload.get("by_ticker"), tickers)
     ledger_rows = first_number(payload, [
         ("ledger_row_count",),
         ("row_count",),
@@ -716,26 +739,46 @@ def summarize_paper_sleeve_file(root: Path, path: Path):
         ("selected_count",),
         ("signal_count",),
         ("ten_k_event_count",),
+        ("active_event_count",),
+        ("event_row_count",),
     ])
     forward_target = first_number(payload, [
         ("parameters", "forward_gate_min_closed_trades"),
         ("tail_diagnostics", "gate_report", "thresholds", "min_trades_for_promotion"),
+        ("promotion_gate", "minimum_closed_decisions"),
+        ("minimum_closed_decisions",),
     ])
     sleeve_name = (
         payload.get("sleeve")
         or payload.get("watch_name")
+        or payload.get("ledger_name")
+        or payload.get("slot_name")
         or payload.get("rule_version")
         or path.parent.name
     )
+    open_count = _count_with_numeric_fallback(payload, "open_positions", [
+        ("open_count",),
+        ("open_decision_count",),
+        ("active_event_count",),
+    ])
+    pending_count = _count_with_numeric_fallback(payload, "pending_entries", [
+        ("pending_count",),
+        ("pending_decision_count",),
+    ])
+    closed_count = _count_with_numeric_fallback(payload, "closed_positions", [
+        ("closed_count",),
+        ("closed_decision_count",),
+        ("outcome_count",),
+    ])
     return {
         "slug": slug,
         "sleeve": str(sleeve_name),
         "file": relative,
         "source_kind": path.name,
         "updated_at": payload.get("updated_at") or payload.get("asof_date") or payload.get("as_of"),
-        "open_count": len(open_positions),
-        "pending_count": len(pending_entries),
-        "closed_count": len(closed_positions),
+        "open_count": open_count,
+        "pending_count": pending_count,
+        "closed_count": closed_count,
         "skipped_count": len(skipped_entries),
         "ledger_row_count": int(ledger_rows) if ledger_rows is not None else None,
         "candidate_count": int(candidate_count) if candidate_count is not None else None,
@@ -1068,13 +1111,15 @@ def summarize_live_positions(root: Path):
         return {
             "count": 0,
             "positions_count": 0,
+            "core_positions_count": 0,
             "observations_count": 0,
             "ticker_sample": [],
             "strategy_counts": {},
         }
     positions = _list_value(payload, "positions")
+    core_positions = _list_value(payload, "core_positions")
     observations = _list_value(payload, "observations")
-    all_rows = positions + observations
+    all_rows = positions + core_positions + observations
     tickers = sorted({
         str(row.get("ticker")).upper()
         for row in all_rows
@@ -1091,6 +1136,7 @@ def summarize_live_positions(root: Path):
         "portfolio_value_usd": payload.get("portfolio_value_usd"),
         "count": len(all_rows),
         "positions_count": len(positions),
+        "core_positions_count": len(core_positions),
         "observations_count": len(observations),
         "ticker_sample": tickers[:18],
         "strategy_counts": dict(strategy_counts.most_common(12)),
@@ -3147,6 +3193,7 @@ HTML_TEMPLATE = """<!doctype html>
           <div class="kv-grid">
             ${metricBlock("Rows", live.count)}
             ${metricBlock("Positions", live.positions_count)}
+            ${metricBlock("Core", live.core_positions_count)}
             ${metricBlock("Observations", live.observations_count)}
             ${metricBlock("As Of", live.as_of)}
           </div>
@@ -3353,6 +3400,7 @@ HTML_TEMPLATE = """<!doctype html>
           <div class="kv-grid">
             ${metricBlock("Rows", live.count)}
             ${metricBlock("Positions", live.positions_count)}
+            ${metricBlock("Core", live.core_positions_count)}
             ${metricBlock("Observations", live.observations_count)}
             ${metricBlock("As Of", live.as_of)}
           </div>

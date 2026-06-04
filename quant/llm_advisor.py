@@ -12,6 +12,12 @@ from pathlib import Path
 from openai import OpenAI
 from data_paths import DATA_ROOT, daily_artifact_path, resolve_daily_artifact_path
 from operator_input_paths import open_positions_path, repo_relative
+from open_position_schema import (
+    account_position_tickers,
+    account_positions,
+    has_account_positions,
+    legacy_positions_payload,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -237,6 +243,8 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
             user_lines.append(line)
 
     system_message = '\n'.join(system_lines).strip()
+    account_position_rows = account_positions(open_positions) if open_positions else []
+    account_tickers = account_position_tickers(open_positions, positive_only=True)
 
     # Build user message with dynamic data. The template text is mojibake in
     # this repository, so use stable section boundaries instead of brittle
@@ -247,8 +255,10 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
 
     # Replace positions JSON (remove 'as_of' field since the prompt has its own date line).
     if open_positions:
-        positions_copy = open_positions.copy()
+        positions_copy = legacy_positions_payload(open_positions)
         positions_copy.pop('as_of', None)
+        positions_copy.pop("core_positions", None)
+        positions_copy.pop("observations", None)
         positions_json = json.dumps(positions_copy, indent=4)
     else:
         positions_json = "{}"
@@ -400,7 +410,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
     portfolio_value = stored_pv
     account_summary = None
     accounting_warnings = []
-    if open_positions and open_positions.get("positions") and current_prices:
+    if has_account_positions(open_positions, positive_only=True) and current_prices:
         account_summary = resolve_portfolio_accounting(
             open_positions,
             current_prices,
@@ -436,7 +446,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
             from risk_engine import SECTOR_MAP
             sector_mv: dict = {}
             total_mv = 0.0
-            for pos in open_positions.get("positions", []):
+            for pos in account_position_rows:
                 t_  = pos.get("ticker", "")
                 sh_ = pos.get("shares", 0)
                 px_ = current_prices.get(t_) or pos.get("avg_cost", 0)
@@ -465,9 +475,9 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
     # Without these, two exit rules silently never fire.
     _data_warnings = []
     if open_positions:
-        _missing_entry_date  = [p["ticker"] for p in open_positions.get("positions", [])
+        _missing_entry_date  = [p["ticker"] for p in account_position_rows
                                  if p.get("ticker") and not p.get("entry_date")]
-        _missing_target_price = [p["ticker"] for p in open_positions.get("positions", [])
+        _missing_target_price = [p["ticker"] for p in account_position_rows
                                   if p.get("ticker") and not p.get("target_price")]
         if _missing_entry_date:
             _data_warnings.append(
@@ -544,10 +554,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
         # ("收紧至 current_price x 0.95") which applies to HOLD positions not in section 3b.
         # Without this, BEAR tightening silently fails for AMD/GOOG/MCD/NFLX etc.
         "current_prices":       {t: p for t, p in current_prices.items()
-                                 if open_positions and any(
-                                     pos.get("ticker") == t
-                                     for pos in open_positions.get("positions", [])
-                                 )},
+                                 if t.upper() in account_tickers},
         "accounting": account_summary if account_summary else {
             "portfolio_value_usd": portfolio_value,
             "cash_source": "stored_or_unavailable",

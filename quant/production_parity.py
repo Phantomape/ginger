@@ -36,6 +36,16 @@ from constants import (
     SECOND_ADDON_MIN_UNREALIZED_PCT,
     TRAILING_STOP_PCT,
 )
+from open_position_schema import (
+    CORE_SLEEVES,
+    CORE_SLOT_POLICIES,
+    CORE_STRATEGY_POSITION_TAGS,
+    NON_CORE_SLEEVES,
+    NON_CORE_SLOT_POLICIES,
+    account_positions,
+    infer_position_sleeve,
+    position_consumes_core_slot as schema_position_consumes_core_slot,
+)
 from position_intent import resolve_intended_shares
 
 try:
@@ -44,41 +54,6 @@ except ImportError:  # pragma: no cover - package-style imports in tests
     from quant.price_asof_guard import date10, normalise_price_dates
 
 TRAILING_PARTIAL_REDUCE_ENABLED = False
-CORE_STRATEGY_POSITION_TAGS = frozenset({
-    "trend_long",
-    "breakout_long",
-    "earnings_event_long",
-})
-CORE_SLOT_POLICIES = frozenset({
-    "core",
-    "core_slot",
-    "consumes_core_slot",
-    "consume_core_slot",
-})
-NON_CORE_SLOT_POLICIES = frozenset({
-    "none",
-    "no_core_slot",
-    "does_not_consume_core_slot",
-    "do_not_consume_core_slot",
-    "ignore_core_slot",
-})
-CORE_SLEEVES = frozenset({
-    "core",
-    "core_strategy",
-})
-NON_CORE_SLEEVES = frozenset({
-    "legacy",
-    "manual",
-    "discretionary",
-    "fomo",
-    "pilot",
-    "paper",
-    "paper_shadow",
-    "observation",
-    "observe_only",
-})
-
-
 def position_was_spy_relative_leader(pos, ticker_df=None, spy_df=None, entry_idx=None, spy_entry_idx=None):
     """Return whether the position qualified as a 20-day ticker-vs-SPY leader at entry."""
     multipliers = pos.get("sizing_multipliers") or {}
@@ -105,10 +80,7 @@ def position_was_spy_relative_leader(pos, ticker_df=None, spy_df=None, entry_idx
 
 
 def _positive_positions(open_positions):
-    return [
-        p for p in (open_positions or {}).get("positions", [])
-        if p.get("ticker") and (p.get("shares") or 0) > 0
-    ]
+    return account_positions(open_positions, positive_only=True)
 
 
 def _position_strategy_tag(position):
@@ -129,35 +101,12 @@ def _normalised_text(value):
 
 
 def _position_sleeve(position):
-    sleeve = _normalised_text(position.get("sleeve"))
-    if sleeve:
-        return sleeve
-    tag = _normalised_text(_position_strategy_tag(position))
-    if tag in CORE_STRATEGY_POSITION_TAGS:
-        return "core"
-    if tag.startswith("pilot"):
-        return "pilot"
-    if tag in NON_CORE_SLEEVES:
-        return tag
-    return "unknown"
+    return infer_position_sleeve(position, position.get("position_group"))
 
 
 def position_consumes_core_slot(position):
     """Return whether a live position should consume core strategy capacity."""
-    slot_policy = _normalised_text(position.get("slot_policy"))
-    if slot_policy in CORE_SLOT_POLICIES:
-        return True
-    if slot_policy in NON_CORE_SLOT_POLICIES:
-        return False
-
-    sleeve = _position_sleeve(position)
-    if sleeve in CORE_SLEEVES:
-        return True
-    if sleeve in NON_CORE_SLEEVES:
-        return False
-
-    tag = _normalised_text(_position_strategy_tag(position))
-    return tag in CORE_STRATEGY_POSITION_TAGS
+    return schema_position_consumes_core_slot(position, position.get("position_group"))
 
 
 def is_core_strategy_position(position):

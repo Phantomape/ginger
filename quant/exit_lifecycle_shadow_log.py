@@ -20,6 +20,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from open_position_schema import positions_by_ticker
+
 log = logging.getLogger(__name__)
 
 RULE_VERSION = "exit_lifecycle_shadow_log_v1"
@@ -114,11 +116,7 @@ def build_exit_lifecycle_snapshot(
         The open_positions dict loaded from operator_inputs.
     """
     records: list[dict[str, Any]] = []
-    positions_by_ticker = {
-        str(pos.get("ticker") or "").upper(): pos
-        for pos in ((open_positions or {}).get("positions") or [])
-        if isinstance(pos, dict)
-    }
+    position_lookup = positions_by_ticker(open_positions)
 
     for ticker, sig in (trend_signals_signals or {}).items():
         pos_ctx = (sig or {}).get("position")
@@ -129,7 +127,7 @@ def build_exit_lifecycle_snapshot(
             # Still record a "no_event" row so we can track every active position
             events = [{"event_type": "no_advisory_event"}]
 
-        pos_data = positions_by_ticker.get(ticker.upper()) or {}
+        pos_data = position_lookup.get(ticker.upper()) or {}
         records.append({
             "rule_version": RULE_VERSION,
             "ticker": ticker,

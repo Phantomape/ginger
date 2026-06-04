@@ -22,6 +22,7 @@ import yfinance as yf
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "quant"))
 from constants import ATR_STOP_MULT, ATR_TARGET_MULT, ATR_PERIOD
 from data_paths import daily_artifact_glob
+from open_position_schema import ACCOUNT_POSITION_GROUPS
 from operator_input_paths import open_positions_path
 
 
@@ -101,7 +102,12 @@ def backfill(dry_run=False):
         data = json.load(f)
 
     signal_index = _load_signal_index()
-    positions = data.get("positions", [])
+    positions = [
+        pos
+        for group in ACCOUNT_POSITION_GROUPS
+        for pos in (data.get(group) or [])
+        if isinstance(pos, dict)
+    ]
     changes = []
 
     tickers_needing_ohlcv = set()
