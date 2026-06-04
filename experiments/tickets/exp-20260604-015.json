@@ -1,0 +1,137 @@
+{
+  "acceptance_rule": "Must beat exp-20260604-009 accepted lagged adapter on aggregate EV and PnL with 3/3 window EV and PnL improvement, pass concentration gates, and remain replay-only unless promoted through shared adapter parity.",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "data/experiments",
+    "experiments/logs",
+    "experiments/cards",
+    "experiments/artifacts",
+    "experiments/manifests",
+    "experiments/tickets",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "artifact": "data/experiments/exp-20260604-015/vcp_lagged_prior_consensus.json",
+  "baseline_result_file": "data/experiments/exp-20260604-009/lagged_source_consensus_adapter_promotion.json",
+  "card": "experiments/cards/exp-20260604-015.md",
+  "card_file": "experiments/cards/exp-20260604-015.md",
+  "change_type": "default_off_paper_adapter_source_timing_alpha",
+  "changed_variable": "vcp_prior_confirmation_source_family_prior_3_trading_days_v1",
+  "claimed_at": "2026-06-04T15:12:15+00:00",
+  "completed_at": "2026-06-04T15:21:27Z",
+  "created_at": "2026-06-04T15:11:53+00:00",
+  "decision": "rejected_vcp_lagged_prior_did_not_beat_accepted_lagged_adapter",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260604-015",
+  "experiment_uid": "expuid-189f2ef8188742aa",
+  "gate4": {
+    "accepted_comparator": "exp-20260604-009",
+    "decision": "rejected_vcp_lagged_prior_did_not_beat_accepted_lagged_adapter",
+    "gates": {
+      "aggregate_expected_value_positive": true,
+      "aggregate_pnl_positive": true,
+      "all_windows_expected_value_improved": true,
+      "all_windows_pnl_improved": true,
+      "beats_exp_20260604_009_accepted_lagged_adapter": false,
+      "concentration_guard_passed": true,
+      "drawdown_drift_passed": true,
+      "source_family_min_count_passed": true,
+      "survival_floor_passed": true,
+      "target_trade_count_passed": true,
+      "target_window_count_passed": true,
+      "vcp_not_used_as_current_anchor": true,
+      "vcp_prior_selected_trade_count_positive": true
+    },
+    "max_drawdown_delta": -0.0003,
+    "min_survival_rate": 0.7925,
+    "passed": false,
+    "rationale": "The VCP prior-confirmation variant did not beat exp-20260604-009 accepted lagged adapter across aggregate EV/PnL and all three per-window EV/PnL comparisons.",
+    "requires_parity_before_promotion": true
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260604-015",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-04T15:11:53+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "vcp_prior_confirmation_source_family_prior_3_trading_days_v1"
+  },
+  "hypothesis": "A current accepted free-data source row may be stronger when the same ticker had the accepted VCP OHLCV compression paper source in the prior three trading days; this improves candidate-pool quality without same-day VCP source-set expansion.",
+  "id": "exp-20260604-015",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "source_notional",
+    "hold_period",
+    "max_paper_trades_per_day",
+    "same_ticker_cooldown",
+    "production_orders",
+    "shared_adapter"
+  ],
+  "log": "experiments/logs/exp-20260604-015.json",
+  "markdown_artifact": "experiments/artifacts/exp-20260604-015_vcp_lagged_prior_consensus.md",
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [
+    "quant/free_data_cross_source_consensus_paper_sleeve.py",
+    "quant/run_multi_sleeve_backtest.py",
+    "quant/run_live.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260603-016",
+    "exp-20260604-008",
+    "exp-20260604-009",
+    "exp-20260604-010",
+    "exp-20260604-011",
+    "exp-20260604-012",
+    "exp-20260604-013"
+  ],
+  "new_evidence_type": "materially_different_prior_timing_construction_for_rejected_vcp_source_family",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "VCP same-day source-family expansion failed versus accepted comparator, but exp-20260604-008 showed prior source timing can be stronger than same-day source expansion.",
+    "expected_ev_delta": 0.18,
+    "expected_pnl_delta": 3000.0,
+    "main_failure_modes": [
+      "accepted_lagged_adapter_not_beaten",
+      "vcp_prior_overlap_sparse",
+      "window_regression",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-04T15:11:27+00:00",
+    "success_probability": 0.16
+  },
+  "prior_trial_count": 12,
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_orders": false,
+    "backtester_adapter_changed": false,
+    "parity_note": "This experiment changes no production code. A retained result would require the shared accepted free-data consensus adapter to reconstruct the same VCP prior-confirmation history in historical replay and daily production, with parity tests, before any report queue, paper notional, candidate priority, or order surface could change.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "result": null,
+  "revision_manifest_file": "experiments/manifests/exp-20260604-015.json",
+  "single_causal_variable": "vcp_prior_confirmation_source_family_prior_3_trading_days_v1",
+  "status": "completed",
+  "ticket_file": "experiments/tickets/exp-20260604-015.json",
+  "trial_family": "accepted_free_data_cross_source_consensus_source_timing",
+  "trial_variant_id": "vcp_lagged_prior_3_trading_days_v1"
+}
