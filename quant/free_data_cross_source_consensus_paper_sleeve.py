@@ -52,6 +52,9 @@ RULE_VERSION = "accepted_free_data_cross_source_consensus_shared_v1"
 CONSENSUS_RULE_VERSION = (
     "accepted_free_data_cross_source_consensus_independent_source_family_v1"
 )
+LAGGED_CONSENSUS_RULE_VERSION = (
+    "accepted_free_data_cross_source_consensus_lagged_independent_source_family_v1"
+)
 CORE_CAPACITY_RULE_VERSION = "accepted_free_data_consensus_core_capacity_available_gate_v1"
 REPLACEMENT_VALUE_RULE_VERSION = (
     "accepted_free_data_cross_source_consensus_forward_replacement_value_v1"
@@ -80,6 +83,13 @@ SOURCE_FAMILIES = {
     "VOLUME_BREADTH_BREAKOUT_PAPER": "volume_breadth_breakout",
 }
 
+SOURCE_SNAPSHOT_HISTORY_ARTIFACTS = {
+    "ALPHA_SCORE_MARKET_REGIME_PAPER": "alpha_score_market_regime_paper_snapshots",
+    "FINRA_IWM_CONFIRMED_PAPER": "finra_iwm_paper_snapshots",
+    "FUNDAMENTAL_GROWTH_RS_PAPER": "fundamental_growth_rs_paper_snapshots",
+    "VOLUME_BREADTH_BREAKOUT_PAPER": "volume_breadth_breakout_paper_snapshots",
+}
+
 DEFAULT_CONFIG = {
     "enabled": False,
     "paper_enabled": True,
@@ -93,6 +103,8 @@ DEFAULT_CONFIG = {
     "max_active_positions": 5,
     "hold_days": 10,
     "same_ticker_cooldown_days": 7,
+    "source_history_enabled": True,
+    "prior_confirmation_trading_days": 3,
     "accepted_source_names": sorted(ACCEPTED_SOURCE_NAMES),
     "require_core_capacity_available": True,
     "max_core_positions": MAX_POSITIONS,
@@ -199,6 +211,7 @@ def build_free_data_cross_source_consensus_paper_sleeve_snapshot(
     *,
     as_of: str,
     source_snapshots: list[dict[str, Any]] | None = None,
+    source_snapshot_history: list[dict[str, Any]] | None = None,
     ohlcv_by_ticker: dict[str, Any] | None = None,
     open_prices: dict[str, Any] | None = None,
     current_prices: dict[str, Any] | None = None,
@@ -265,13 +278,34 @@ def build_free_data_cross_source_consensus_paper_sleeve_snapshot(
         for row in working_state.get("pending_entries") or []
         if isinstance(row, dict)
     }
-    source_rows_by_key = _source_rows_by_key(
+    trading_dates = _trading_dates_from_rows(rows_by_ticker, as_of_date)
+    history_signal_dates = _prior_confirmation_dates(
+        trading_dates,
+        as_of=as_of_date,
+        prior_trading_days=int(cfg["prior_confirmation_trading_days"]),
+    )
+    if source_snapshot_history is None and persist and cfg.get("source_history_enabled", True):
+        source_snapshot_history = load_free_data_cross_source_consensus_source_snapshot_history(
+            as_of=as_of_date,
+            trading_dates=trading_dates,
+            config=cfg,
+        )
+    current_source_rows_by_key = _source_rows_by_key(
         source_snapshots,
         as_of=as_of_date,
+        valid_signal_dates={as_of_date},
+        config=cfg,
+    )
+    history_source_rows_by_key = _source_rows_by_key(
+        [*(source_snapshot_history or []), *(source_snapshots or [])],
+        as_of=as_of_date,
+        valid_signal_dates=set(history_signal_dates),
         config=cfg,
     )
     candidates, rejected, cooldown_summary = _consensus_candidates(
-        source_rows_by_key,
+        current_source_rows_by_key,
+        history_source_rows_by_key=history_source_rows_by_key,
+        history_signal_dates=history_signal_dates,
         as_of=as_of_date,
         active_tickers=active_tickers,
         pending_tickers=pending_tickers,
@@ -295,7 +329,13 @@ def build_free_data_cross_source_consensus_paper_sleeve_snapshot(
 
     closed = working_state.get("closed_positions") or []
     open_positions = working_state.get("open_positions") or []
-    source_summary = _source_consensus_summary(candidates, source_rows_by_key, cfg)
+    source_summary = _source_consensus_summary(
+        candidates,
+        current_source_rows_by_key,
+        cfg,
+        history_source_rows_by_key=history_source_rows_by_key,
+        history_signal_dates=history_signal_dates,
+    )
     replacement_value_report = build_free_data_cross_source_consensus_replacement_value_report(
         candidates=candidates,
         pending_entries=working_state.get("pending_entries") or [],
@@ -320,7 +360,8 @@ def build_free_data_cross_source_consensus_paper_sleeve_snapshot(
         "trade_enabled_reason": "default_off_until_forward_gate_and_activation_review",
         "candidate_count": len(candidates),
         "rejected_candidate_count": len(rejected),
-        "source_consensus_key_count": len(source_rows_by_key),
+        "source_consensus_key_count": len(current_source_rows_by_key),
+        "source_consensus_history_key_count": len(history_source_rows_by_key),
         "new_pending_count": len(new_pending),
         "filled_count": len(filled_today),
         "closed_count_today": len(closed_today),
@@ -333,6 +374,13 @@ def build_free_data_cross_source_consensus_paper_sleeve_snapshot(
             2,
         ),
         "source_consensus": source_summary,
+        "lagged_source_consensus": _lagged_source_consensus_summary(
+            candidates,
+            current_source_rows_by_key=current_source_rows_by_key,
+            history_source_rows_by_key=history_source_rows_by_key,
+            history_signal_dates=history_signal_dates,
+            config=cfg,
+        ),
         "core_capacity_gate": _core_capacity_gate_summary(
             core_active_position_count=core_active_position_count,
             max_core_positions=max_core_positions,
@@ -454,10 +502,12 @@ def _source_rows_by_key(
     source_snapshots: list[dict[str, Any]],
     *,
     as_of: str,
+    valid_signal_dates: set[str],
     config: dict[str, Any],
 ) -> dict[tuple[str, str], dict[str, dict[str, Any]]]:
     allowed = {str(name).upper() for name in config.get("accepted_source_names") or []}
     rows_by_key: dict[tuple[str, str], dict[str, dict[str, Any]]] = {}
+    valid_dates = {_date10(value) for value in valid_signal_dates or set()}
     for snapshot in source_snapshots or []:
         if not isinstance(snapshot, dict):
             continue
@@ -475,21 +525,26 @@ def _source_rows_by_key(
                 or candidate.get("created_asof")
                 or snapshot_asof
             )
-            if not ticker or signal_date != as_of:
+            if not ticker or signal_date not in valid_dates or signal_date > as_of:
                 continue
             key = (signal_date, ticker)
+            candidate_summary = dict(candidate)
+            candidate_summary.setdefault("signal_date", signal_date)
+            candidate_summary.setdefault("date", signal_date)
             rows_by_key.setdefault(key, {})[source_name] = _source_row_summary(
                 source_name,
-                candidate,
+                candidate_summary,
             )
     return rows_by_key
 
 
 def _source_row_summary(source_name: str, row: dict[str, Any]) -> dict[str, Any]:
+    signal_date = _date10(row.get("signal_date") or row.get("date"))
     summary = {
         "source_name": source_name,
         "ticker": str(row.get("ticker") or "").upper(),
-        "signal_date": _date10(row.get("signal_date") or row.get("date")),
+        "date": signal_date,
+        "signal_date": signal_date,
         "rule_version": row.get("rule_version"),
     }
     for key in (
@@ -507,8 +562,10 @@ def _source_row_summary(source_name: str, row: dict[str, Any]) -> dict[str, Any]
 
 
 def _consensus_candidates(
-    source_rows_by_key: dict[tuple[str, str], dict[str, dict[str, Any]]],
+    current_source_rows_by_key: dict[tuple[str, str], dict[str, dict[str, Any]]],
     *,
+    history_source_rows_by_key: dict[tuple[str, str], dict[str, dict[str, Any]]],
+    history_signal_dates: list[str],
     as_of: str,
     active_tickers: set[str],
     pending_tickers: set[str],
@@ -527,9 +584,21 @@ def _consensus_candidates(
         max_core_positions=max_core_positions,
         config=config,
     )
-    for (signal_date, ticker), source_rows in sorted(source_rows_by_key.items()):
-        source_names = sorted(source_rows)
-        base = _candidate_from_sources(signal_date, ticker, source_rows, config)
+    for (signal_date, ticker), current_source_rows in sorted(current_source_rows_by_key.items()):
+        source_rows = _lagged_source_rows_for_ticker(
+            ticker=ticker,
+            as_of=signal_date,
+            history_signal_dates=history_signal_dates,
+            history_source_rows_by_key=history_source_rows_by_key,
+            config=config,
+        )
+        if not source_rows:
+            source_rows = [
+                _source_row_with_timing(row, as_of=signal_date, config=config)
+                for row in current_source_rows.values()
+            ]
+        source_names = sorted({str(row.get("source_name") or "").upper() for row in source_rows})
+        base = _candidate_from_sources(signal_date, ticker, source_rows, current_source_rows, config)
         base.update(_candidate_capacity_fields(capacity))
         if len(source_names) < min_source_count:
             rejected.append({**base, "reasons": ["insufficient_source_count"]})
@@ -562,9 +631,11 @@ def _consensus_candidates(
         key=lambda row: (
             str(row.get("signal_date") or ""),
             -int(row.get("source_family_count") or 0),
+            -int(row.get("current_source_family_count") or 0),
             -int(row.get("source_count") or 0),
+            0 if row.get("has_lagged_independent_confirmation") else 1,
             "+".join(row.get("source_families") or []),
-            "+".join(row.get("source_names") or []),
+            "+".join(row.get("current_source_names") or []),
             str(row.get("ticker") or ""),
         )
     )
@@ -581,11 +652,34 @@ def _consensus_candidates(
 def _candidate_from_sources(
     signal_date: str,
     ticker: str,
-    source_rows: dict[str, dict[str, Any]],
+    source_rows: list[dict[str, Any]],
+    current_source_rows: dict[str, dict[str, Any]],
     config: dict[str, Any],
 ) -> dict[str, Any]:
-    source_names = sorted(source_rows)
+    source_names = sorted(
+        {
+            str(row.get("source_name") or "").upper()
+            for row in source_rows
+            if row.get("source_name")
+        }
+    )
     source_families = sorted({_source_family(name, config) for name in source_names})
+    current_source_names = sorted(current_source_rows)
+    current_source_families = sorted(
+        {_source_family(name, config) for name in current_source_names}
+    )
+    prior_rows = [row for row in source_rows if row.get("timing_role") == "prior_confirmation"]
+    prior_source_names = sorted(
+        {
+            str(row.get("source_name") or "").upper()
+            for row in prior_rows
+            if row.get("source_name")
+        }
+    )
+    prior_families = sorted({_source_family(name, config) for name in prior_source_names})
+    has_lagged_independent_confirmation = any(
+        family not in set(current_source_families) for family in prior_families
+    )
     source_family_map: dict[str, list[str]] = {}
     for source_name in source_names:
         source_family_map.setdefault(_source_family(source_name, config), []).append(source_name)
@@ -603,12 +697,26 @@ def _candidate_from_sources(
         "cross_source_consensus_candidate_pool": True,
         "source_count": len(source_names),
         "source_family_count": len(source_families),
+        "current_source_count": len(current_source_names),
+        "current_source_family_count": len(current_source_families),
+        "prior_confirmation_source_count": len(prior_source_names),
+        "prior_confirmation_family_count": len(prior_families),
+        "has_lagged_independent_confirmation": has_lagged_independent_confirmation,
         "source_names": source_names,
         "source_families": source_families,
+        "current_source_names": current_source_names,
+        "current_source_families": current_source_families,
+        "prior_confirmation_source_families": prior_families,
         "source_family_map": {
             family: sorted(names) for family, names in sorted(source_family_map.items())
         },
-        "source_rows": [deepcopy(source_rows[name]) for name in source_names],
+        "source_rows": sorted(
+            deepcopy(source_rows),
+            key=lambda row: (
+                int(row.get("confirmation_lag_trading_days") or 0),
+                str(row.get("source_name") or ""),
+            ),
+        ),
         "primary_source": source_names[0] if source_names else None,
         "primary_source_family": source_families[0] if source_families else None,
         "paper_notional_usd": notional,
@@ -617,10 +725,155 @@ def _candidate_from_sources(
         "baseline_safe_paper_notional_usd": baseline,
         "safe_notional_scalar": round(notional / baseline, 6) if baseline else None,
         "source_agreement_rule": (
-            "same_date_ticker_selected_by_at_least_two_independent_accepted_free_data_source_families"
+            "current_ticker_selected_by_accepted_source_and_confirmed_by_same_day_or_prior_3_trading_day_independent_accepted_source_family"
         ),
         "source_family_rule_version": SOURCE_FAMILY_RULE_VERSION,
+        "lagged_consensus_rule_version": LAGGED_CONSENSUS_RULE_VERSION,
+        "prior_confirmation_trading_days": int(config["prior_confirmation_trading_days"]),
         "known_at": "after_signal_date_close_before_next_open_paper_entry",
+        "trade_enabled": False,
+        "alters_orders": False,
+    }
+
+
+def _source_row_with_timing(
+    row: dict[str, Any],
+    *,
+    as_of: str,
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    source_name = str(row.get("source_name") or "").upper()
+    signal_date = _date10(row.get("signal_date") or row.get("date") or as_of)
+    timed = deepcopy(row)
+    timed["source_name"] = source_name
+    timed["date"] = signal_date
+    timed["signal_date"] = signal_date
+    timed["source_family"] = _source_family(source_name, config)
+    timed["timing_role"] = "current" if signal_date == as_of else "prior_confirmation"
+    timed["confirmation_lag_trading_days"] = None
+    return timed
+
+
+def _lagged_source_rows_for_ticker(
+    *,
+    ticker: str,
+    as_of: str,
+    history_signal_dates: list[str],
+    history_source_rows_by_key: dict[tuple[str, str], dict[str, dict[str, Any]]],
+    config: dict[str, Any],
+) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    date_index = {date_value: idx for idx, date_value in enumerate(history_signal_dates)}
+    as_of_idx = date_index.get(as_of)
+    for source_date in history_signal_dates:
+        lag = (as_of_idx - date_index[source_date]) if as_of_idx is not None else None
+        for row in (history_source_rows_by_key.get((source_date, ticker)) or {}).values():
+            timed = _source_row_with_timing(row, as_of=as_of, config=config)
+            timed["confirmation_lag_trading_days"] = lag
+            rows.append(timed)
+    return rows
+
+
+def _trading_dates_from_rows(rows_by_ticker: dict[str, list[dict[str, Any]]], as_of: str) -> list[str]:
+    preferred = rows_by_ticker.get("SPY")
+    source_rows = preferred if preferred else next(iter(rows_by_ticker.values()), [])
+    dates = sorted(
+        {
+            _date10(row.get("date"))
+            for row in source_rows or []
+            if isinstance(row, dict) and row.get("date") and _date10(row.get("date")) <= as_of
+        }
+    )
+    return dates
+
+
+def _prior_confirmation_dates(
+    trading_dates: list[str],
+    *,
+    as_of: str,
+    prior_trading_days: int,
+) -> list[str]:
+    if as_of not in trading_dates:
+        return [as_of]
+    as_of_idx = trading_dates.index(as_of)
+    first_idx = max(0, as_of_idx - max(0, int(prior_trading_days)))
+    return trading_dates[first_idx : as_of_idx + 1]
+
+
+def load_free_data_cross_source_consensus_source_snapshot_history(
+    *,
+    as_of: str,
+    trading_dates: list[str],
+    config: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    cfg = _config(config)
+    valid_dates = set(
+        _prior_confirmation_dates(
+            trading_dates,
+            as_of=as_of,
+            prior_trading_days=int(cfg["prior_confirmation_trading_days"]),
+        )
+    )
+    if not valid_dates:
+        return []
+    snapshots: list[dict[str, Any]] = []
+    for source_name, artifact_key in SOURCE_SNAPSHOT_HISTORY_ARTIFACTS.items():
+        path = data_artifact_path(artifact_key)
+        if not path.exists():
+            continue
+        for snapshot in _iter_snapshot_log(path, valid_dates=valid_dates):
+            snapshots.append(snapshot)
+            if source_name == "FINRA_IWM_CONFIRMED_PAPER":
+                alias = finra_borrow_pressure_source_snapshot_from_finra_iwm_snapshot(snapshot)
+                if alias is not None:
+                    snapshots.append(alias)
+    return snapshots
+
+
+def _iter_snapshot_log(path: Path, *, valid_dates: set[str]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    try:
+        with path.open("r", encoding="utf-8") as handle:
+            for line in handle:
+                if not line.strip():
+                    continue
+                try:
+                    payload = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                if not isinstance(payload, dict):
+                    continue
+                snapshot_date = _date10(payload.get("asof_date"))
+                if snapshot_date not in valid_dates:
+                    continue
+                rows.append(payload)
+    except OSError:
+        return []
+    return rows
+
+
+def _lagged_source_consensus_summary(
+    candidates: list[dict[str, Any]],
+    *,
+    current_source_rows_by_key: dict[tuple[str, str], dict[str, dict[str, Any]]],
+    history_source_rows_by_key: dict[tuple[str, str], dict[str, dict[str, Any]]],
+    history_signal_dates: list[str],
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    lagged_candidates = [
+        row for row in candidates or [] if row.get("has_lagged_independent_confirmation")
+    ]
+    return {
+        "rule_version": LAGGED_CONSENSUS_RULE_VERSION,
+        "enabled": bool(config.get("source_history_enabled", True)),
+        "prior_confirmation_trading_days": int(config["prior_confirmation_trading_days"]),
+        "history_signal_dates": list(history_signal_dates),
+        "current_source_key_count": len(current_source_rows_by_key),
+        "history_source_key_count": len(history_source_rows_by_key),
+        "candidate_count": len(candidates or []),
+        "lagged_independent_candidate_count": len(lagged_candidates),
+        "same_day_or_already_independent_candidate_count": len(candidates or [])
+        - len(lagged_candidates),
         "trade_enabled": False,
         "alters_orders": False,
     }
@@ -818,6 +1071,9 @@ def _source_consensus_summary(
     candidates: list[dict[str, Any]],
     source_rows_by_key: dict[tuple[str, str], dict[str, dict[str, Any]]],
     config: dict[str, Any],
+    *,
+    history_source_rows_by_key: dict[tuple[str, str], dict[str, dict[str, Any]]] | None = None,
+    history_signal_dates: list[str] | None = None,
 ) -> dict[str, Any]:
     source_counts: dict[str, int] = {}
     source_key_counts: dict[str, int] = {}
@@ -836,14 +1092,21 @@ def _source_consensus_summary(
     return {
         "rule_version": CONSENSUS_RULE_VERSION,
         "source_family_rule_version": SOURCE_FAMILY_RULE_VERSION,
+        "lagged_consensus_rule_version": LAGGED_CONSENSUS_RULE_VERSION,
         "enabled": True,
         "source_names": list(config.get("accepted_source_names") or []),
         "source_families": dict(sorted((config.get("source_families") or {}).items())),
         "min_source_count": int(config["min_source_count"]),
         "min_source_family_count": int(config["min_source_family_count"]),
+        "prior_confirmation_trading_days": int(config["prior_confirmation_trading_days"]),
+        "history_signal_dates": list(history_signal_dates or []),
         "source_key_count": len(source_rows_by_key),
+        "history_source_key_count": len(history_source_rows_by_key or {}),
         "candidate_count": len(candidates),
         "supported_candidate_count": len(candidates),
+        "lagged_independent_supported_candidate_count": sum(
+            1 for row in candidates if row.get("has_lagged_independent_confirmation")
+        ),
         "source_counts": dict(sorted(source_counts.items())),
         "source_key_counts": dict(sorted(source_key_counts.items())),
         "source_family_counts": dict(sorted(source_family_counts.items())),
@@ -1079,6 +1342,11 @@ def _config(config: dict[str, Any] | None) -> dict[str, Any]:
     )
     cfg["require_core_capacity_available"] = bool(
         cfg.get("require_core_capacity_available", True)
+    )
+    cfg["source_history_enabled"] = bool(cfg.get("source_history_enabled", True))
+    cfg["prior_confirmation_trading_days"] = max(
+        0,
+        int(cfg.get("prior_confirmation_trading_days") or 0),
     )
     return cfg
 

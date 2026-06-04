@@ -1,0 +1,457 @@
+{
+  "adapter_contract": {
+    "accepted_source_names": [
+      "ALPHA_SCORE_MARKET_REGIME_PAPER",
+      "FINRA_BORROW_PRESSURE_PAPER",
+      "FINRA_IWM_CONFIRMED_PAPER",
+      "FUNDAMENTAL_GROWTH_RS_PAPER",
+      "VOLUME_BREADTH_BREAKOUT_PAPER"
+    ],
+    "alters_orders": false,
+    "consensus_rule_version": "accepted_free_data_cross_source_consensus_independent_source_family_v1",
+    "lagged_consensus_rule_version": "accepted_free_data_cross_source_consensus_lagged_independent_source_family_v1",
+    "prior_confirmation_trading_days": 3,
+    "rule_version": "accepted_free_data_cross_source_consensus_shared_v1",
+    "sleeve": "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER",
+    "source_families": {
+      "ALPHA_SCORE_MARKET_REGIME_PAPER": "alpha_score_market_regime",
+      "FINRA_BORROW_PRESSURE_PAPER": "finra_short_pressure",
+      "FINRA_IWM_CONFIRMED_PAPER": "finra_short_pressure",
+      "FUNDAMENTAL_GROWTH_RS_PAPER": "companyfacts_growth_quality",
+      "VOLUME_BREADTH_BREAKOUT_PAPER": "volume_breadth_breakout"
+    },
+    "source_family_rule_version": "accepted_free_data_consensus_source_family_map_v1",
+    "trade_enabled": false
+  },
+  "anti_js": "No JavaScript was used.",
+  "calibration": {
+    "actual_decision": "accepted_lagged_consensus_shared_default_off_adapter",
+    "actual_ev_delta": 1.9949,
+    "actual_pnl_delta": 35553.87,
+    "actual_success": 1,
+    "brier_score": 0.1444,
+    "ev_prediction_error": 0.0,
+    "expected_ev_delta": 1.9949,
+    "expected_pnl_delta": 35553.87,
+    "pnl_prediction_error": 0.0,
+    "predicted_success_probability": 0.62,
+    "realized_failure_mode": null
+  },
+  "change_type": "default_off_paper_adapter_source_timing_alpha",
+  "changed_variable": "lagged_independent_source_family_confirmation_prior_3_trading_days_shared_adapter_v1",
+  "completed_at": "2026-06-04T09:18:15+00:00",
+  "created_at": "2026-06-04T09:18:15+00:00",
+  "decision": "accepted_lagged_consensus_shared_default_off_adapter",
+  "experiment_id": "exp-20260604-009",
+  "focused_tests": [
+    ".venv\\Scripts\\python.exe -m pytest quant\\test_free_data_cross_source_consensus_paper_sleeve.py",
+    ".venv\\Scripts\\python.exe -m py_compile quant\\free_data_cross_source_consensus_paper_sleeve.py quant\\test_free_data_cross_source_consensus_paper_sleeve.py"
+  ],
+  "gate2": {
+    "missing_entry_date_tickers": [],
+    "missing_target_price_tickers": [],
+    "passed": true,
+    "path": "operator_inputs/open_positions.json",
+    "position_count": 11
+  },
+  "gate3": {
+    "candidate_pool_source_timing_admission_only": true,
+    "min_survival_rate": 0.7925,
+    "new_core_filter_added": false,
+    "survival_floor": 0.05
+  },
+  "gate4": {
+    "decision": "accepted_lagged_consensus_shared_default_off_adapter",
+    "gates": {
+      "aggregate_expected_value_positive": true,
+      "aggregate_pnl_positive": true,
+      "all_windows_expected_value_improved": true,
+      "all_windows_pnl_improved": true,
+      "beats_current_accepted_same_day_consensus_comparator": true,
+      "concentration_guard_passed": true,
+      "drawdown_drift_passed": true,
+      "focused_adapter_tests_passed": true,
+      "lagged_independent_selected_trade_count_positive": true,
+      "production_backtest_parity_documented": true,
+      "source_family_min_count_passed": true,
+      "survival_floor_passed": true,
+      "target_trade_count_passed": true,
+      "target_window_count_passed": true
+    },
+    "max_drawdown_delta": 0.0003,
+    "min_survival_rate": 0.7925,
+    "passed": true,
+    "rationale": "exp-20260604-008 improved core and the accepted same-day consensus comparator across all three windows; this run adds the shared helper, source-history contract, and focused tests without enabling orders."
+  },
+  "gate_questions": {
+    "1_alpha_hypothesis": "entry/candidate_pool: lagged independent accepted-source confirmation should improve accepted consensus candidate quality.",
+    "2_history_check": {
+      "exp-20260603-014": "Accepted same-day independent-source consensus.",
+      "exp-20260603-015": "Promoted same-day consensus to shared default-off adapter.",
+      "exp-20260604-008": "Positive replay lead for prior 3 trading-day independent same-ticker source confirmation."
+    },
+    "3_single_causal_variable": "lagged_independent_source_family_confirmation_prior_3_trading_days_shared_adapter_v1",
+    "4_acceptance_standard": "Use docs/backtesting.md three canonical windows; retain only if the inherited shared-adapter promotion preserves the exp008 three-window evidence and passes focused parity tests.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260604_009_lagged_consensus_shared_adapter.py"
+  },
+  "hypothesis": "Promote the positive lagged independent accepted-source consensus replay lead into the shared default-off paper adapter without enabling live orders.",
+  "lane": "alpha_search",
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "metrics": {
+    "accepted_comparator_ev_delta": 0.6891,
+    "accepted_comparator_pnl_delta": 12156.11,
+    "accepted_comparator_windows_ev_improved": 3,
+    "accepted_comparator_windows_pnl_improved": 3,
+    "aggregate_expected_value_after": 9.889,
+    "aggregate_expected_value_before": 7.8941,
+    "aggregate_expected_value_delta": 1.9949,
+    "aggregate_strategy_total_pnl_after": 270404.86,
+    "aggregate_strategy_total_pnl_before": 234850.99,
+    "aggregate_strategy_total_pnl_delta": 35553.87,
+    "lagged_independent_selected_trade_count": 25,
+    "max_single_positive_share": 0.40670140930542037,
+    "positive_pnl_hhi": 0.24238735890036328,
+    "target_trade_count": 64
+  },
+  "nearby_prior_experiments": [
+    "exp-20260603-014",
+    "exp-20260603-015",
+    "exp-20260604-002",
+    "exp-20260604-006",
+    "exp-20260604-007",
+    "exp-20260604-008"
+  ],
+  "next_retry_requires": [
+    "closed forward replacement-value rows before live activation",
+    "separate Gate 1-4 trade adapter before any live/default orders",
+    "no nearby prior-window/source-set/notional retunes on frozen windows"
+  ],
+  "parameters": {
+    "new_adapter_admission": "current_source_row_plus_same_ticker_prior_3_trading_day_independent_source_family_confirmation",
+    "old_adapter_admission": "same_date_independent_source_family_count_min_2",
+    "paper_notional_usd": 4000.0,
+    "trade_enabled": false
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260604-008 beat core and accepted same-day consensus in all three windows; remaining risk is shared adapter parity.",
+    "expected_ev_delta": 1.9949,
+    "expected_pnl_delta": 35553.87,
+    "main_failure_modes": [
+      "adapter_replay_identity_drift",
+      "history_parity_gap",
+      "source_family_invariant_failed"
+    ],
+    "recorded_at": "2026-06-04T09:08:11+00:00",
+    "success_probability": 0.62
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "parity_test_added": true,
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": true,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "quant/free_data_cross_source_consensus_paper_sleeve.py",
+    "quant/test_free_data_cross_source_consensus_paper_sleeve.py",
+    "docs/production_backtest_parity.md",
+    "docs/data_edge_context_layers.md",
+    "data/experiments/exp-20260604-008/lagged_independent_source_consensus.json",
+    "data/experiments/exp-20260604-009/exp_20260604_009_lagged_consensus_shared_adapter.json",
+    "experiments/artifacts/exp-20260604-009_lagged_consensus_shared_adapter.md"
+  ],
+  "status": "accepted_lagged_consensus_shared_default_off_adapter",
+  "three_window_result": {
+    "aggregate": {
+      "after": {
+        "expected_value_score": 9.889,
+        "strategy_total_pnl": 270404.86,
+        "total_pnl": 270404.86
+      },
+      "before": {
+        "expected_value_score": 7.8941,
+        "strategy_total_pnl": 234850.99,
+        "total_pnl": 234850.99
+      },
+      "comparison": {
+        "expected_value_score_delta": 1.9949,
+        "expected_value_score_delta_pct": 0.252708,
+        "strategy_total_pnl_delta": 35553.87,
+        "strategy_total_pnl_delta_pct": 0.151389,
+        "total_pnl_delta": 35553.87
+      }
+    },
+    "evidence_source": "data/experiments/exp-20260604-008/lagged_independent_source_consensus.json",
+    "lagged_source_summary": {
+      "all_selected_have_min_family_count": true,
+      "lagged_independent_selected_trade_count": 25,
+      "lagged_independent_selected_trade_count_by_window": {
+        "late_strong": 10,
+        "mid_weak": 6,
+        "old_thin": 9
+      },
+      "lagged_independent_selected_trade_pnl_usd": 13837.95,
+      "prior_confirmation_trading_days": 3,
+      "selected_family_combo_counts": {
+        "alpha_score_market_regime+companyfacts_growth_quality": 31,
+        "alpha_score_market_regime+companyfacts_growth_quality+finra_short_pressure": 1,
+        "alpha_score_market_regime+companyfacts_growth_quality+volume_breadth_breakout": 5,
+        "alpha_score_market_regime+finra_short_pressure": 12,
+        "alpha_score_market_regime+finra_short_pressure+volume_breadth_breakout": 2,
+        "alpha_score_market_regime+volume_breadth_breakout": 8,
+        "companyfacts_growth_quality+finra_short_pressure": 1,
+        "companyfacts_growth_quality+volume_breadth_breakout": 3,
+        "finra_short_pressure+volume_breadth_breakout": 1
+      },
+      "selected_raw_source_combo_counts": {
+        "ALPHA_SCORE_MARKET_REGIME_PAPER+FINRA_BORROW_PRESSURE_PAPER+FINRA_IWM_CONFIRMED_PAPER": 5,
+        "ALPHA_SCORE_MARKET_REGIME_PAPER+FINRA_BORROW_PRESSURE_PAPER+FINRA_IWM_CONFIRMED_PAPER+FUNDAMENTAL_GROWTH_RS_PAPER": 1,
+        "ALPHA_SCORE_MARKET_REGIME_PAPER+FINRA_BORROW_PRESSURE_PAPER+FINRA_IWM_CONFIRMED_PAPER+VOLUME_BREADTH_BREAKOUT_PAPER": 2,
+        "ALPHA_SCORE_MARKET_REGIME_PAPER+FINRA_IWM_CONFIRMED_PAPER": 7,
+        "ALPHA_SCORE_MARKET_REGIME_PAPER+FUNDAMENTAL_GROWTH_RS_PAPER": 31,
+        "ALPHA_SCORE_MARKET_REGIME_PAPER+FUNDAMENTAL_GROWTH_RS_PAPER+VOLUME_BREADTH_BREAKOUT_PAPER": 5,
+        "ALPHA_SCORE_MARKET_REGIME_PAPER+VOLUME_BREADTH_BREAKOUT_PAPER": 8,
+        "FINRA_BORROW_PRESSURE_PAPER+FINRA_IWM_CONFIRMED_PAPER+VOLUME_BREADTH_BREAKOUT_PAPER": 1,
+        "FINRA_IWM_CONFIRMED_PAPER+FUNDAMENTAL_GROWTH_RS_PAPER": 1,
+        "FUNDAMENTAL_GROWTH_RS_PAPER+VOLUME_BREADTH_BREAKOUT_PAPER": 3
+      },
+      "total_trade_count": 64
+    },
+    "target_summary": {
+      "max_single_positive_share": 0.40670140930542037,
+      "pnl_by_window": {
+        "late_strong": 10700.529999999999,
+        "mid_weak": 9517.859999999999,
+        "old_thin": 15335.48
+      },
+      "positive_pnl_hhi": 0.24238735890036328,
+      "positive_pnl_total_usd": 50391.49,
+      "target_trade_count": 64,
+      "target_trade_pnl_usd": 35553.869999999995,
+      "ticker_rows": [
+        {
+          "paper_pnl_usd": 16752.15,
+          "positive_pnl_share": 0.40670140930542037,
+          "positive_pnl_usd": 20494.289999999997,
+          "ticker": "APP",
+          "trade_count": 14
+        },
+        {
+          "paper_pnl_usd": 9641.32,
+          "positive_pnl_share": 0.21252179683514022,
+          "positive_pnl_usd": 10709.289999999999,
+          "ticker": "MU",
+          "trade_count": 10
+        },
+        {
+          "paper_pnl_usd": 5711.379999999999,
+          "positive_pnl_share": 0.14915891552323615,
+          "positive_pnl_usd": 7516.339999999999,
+          "ticker": "CRDO",
+          "trade_count": 7
+        },
+        {
+          "paper_pnl_usd": 2134.49,
+          "positive_pnl_share": 0.04663029412307515,
+          "positive_pnl_usd": 2349.77,
+          "ticker": "SPOT",
+          "trade_count": 3
+        },
+        {
+          "paper_pnl_usd": 1256.25,
+          "positive_pnl_share": 0.03816795256500652,
+          "positive_pnl_usd": 1923.3400000000001,
+          "ticker": "DE",
+          "trade_count": 4
+        },
+        {
+          "paper_pnl_usd": 835.73,
+          "positive_pnl_share": 0.0207927965614829,
+          "positive_pnl_usd": 1047.78,
+          "ticker": "AMD",
+          "trade_count": 2
+        },
+        {
+          "paper_pnl_usd": 791.1199999999999,
+          "positive_pnl_share": 0.07158331694498417,
+          "positive_pnl_usd": 3607.19,
+          "ticker": "PLTR",
+          "trade_count": 6
+        },
+        {
+          "paper_pnl_usd": 510.92,
+          "positive_pnl_share": 0.010139013551692956,
+          "positive_pnl_usd": 510.92,
+          "ticker": "NFLX",
+          "trade_count": 1
+        },
+        {
+          "paper_pnl_usd": 448.23,
+          "positive_pnl_share": 0.008894954286924241,
+          "positive_pnl_usd": 448.23,
+          "ticker": "SNOW",
+          "trade_count": 1
+        },
+        {
+          "paper_pnl_usd": 320.25,
+          "positive_pnl_share": 0.0063552397438535755,
+          "positive_pnl_usd": 320.25,
+          "ticker": "AMZN",
+          "trade_count": 2
+        },
+        {
+          "paper_pnl_usd": 307.26,
+          "positive_pnl_share": 0.006097458122393285,
+          "positive_pnl_usd": 307.26,
+          "ticker": "DDOG",
+          "trade_count": 1
+        },
+        {
+          "paper_pnl_usd": 297.71,
+          "positive_pnl_share": 0.005907941995761586,
+          "positive_pnl_usd": 297.71,
+          "ticker": "CAT",
+          "trade_count": 1
+        },
+        {
+          "paper_pnl_usd": 266.16,
+          "positive_pnl_share": 0.00528184421615634,
+          "positive_pnl_usd": 266.16,
+          "ticker": "GE",
+          "trade_count": 1
+        },
+        {
+          "paper_pnl_usd": 179.90000000000003,
+          "positive_pnl_share": 0.006661640685758647,
+          "positive_pnl_usd": 335.69,
+          "ticker": "GS",
+          "trade_count": 3
+        },
+        {
+          "paper_pnl_usd": 135.59,
+          "positive_pnl_share": 0.0026907321057583334,
+          "positive_pnl_usd": 135.59,
+          "ticker": "TSLA",
+          "trade_count": 1
+        },
+        {
+          "paper_pnl_usd": -234.42,
+          "positive_pnl_share": 0.0,
+          "positive_pnl_usd": 0.0,
+          "ticker": "CVX",
+          "trade_count": 1
+        },
+        {
+          "paper_pnl_usd": -370.94,
+          "positive_pnl_share": 0.0,
+          "positive_pnl_usd": 0.0,
+          "ticker": "RTX",
+          "trade_count": 1
+        },
+        {
+          "paper_pnl_usd": -384.93,
+          "positive_pnl_share": 0.0,
+          "positive_pnl_usd": 0.0,
+          "ticker": "AVGO",
+          "trade_count": 1
+        },
+        {
+          "paper_pnl_usd": -518.49,
+          "positive_pnl_share": 0.0,
+          "positive_pnl_usd": 0.0,
+          "ticker": "ISRG",
+          "trade_count": 2
+        },
+        {
+          "paper_pnl_usd": -2525.81,
+          "positive_pnl_share": 0.0024146934333555132,
+          "positive_pnl_usd": 121.68,
+          "ticker": "COIN",
+          "trade_count": 2
+        }
+      ],
+      "trades_by_window": {
+        "late_strong": 17,
+        "mid_weak": 24,
+        "old_thin": 23
+      }
+    },
+    "vs_accepted_comparator": {
+      "comparison": {
+        "expected_value_score_delta": 0.6891,
+        "per_window": [
+          {
+            "expected_value_score_delta": 0.3236,
+            "label": "late_strong",
+            "max_drawdown_delta": -0.0006,
+            "strategy_total_pnl_delta": 3332.46,
+            "total_pnl_delta": 3332.46
+          },
+          {
+            "expected_value_score_delta": 0.2156,
+            "label": "mid_weak",
+            "max_drawdown_delta": 0.0,
+            "strategy_total_pnl_delta": 4700.41,
+            "total_pnl_delta": 4700.41
+          },
+          {
+            "expected_value_score_delta": 0.1499,
+            "label": "old_thin",
+            "max_drawdown_delta": 0.013,
+            "strategy_total_pnl_delta": 4123.24,
+            "total_pnl_delta": 4123.24
+          }
+        ],
+        "strategy_total_pnl_delta": 12156.11,
+        "total_pnl_delta": 12156.11,
+        "windows_ev_improved": 3,
+        "windows_ev_regressed": 0,
+        "windows_pnl_improved": 3,
+        "windows_pnl_regressed": 0
+      }
+    },
+    "windows": [
+      {
+        "expected_value_after": 6.2096,
+        "expected_value_before": 5.1628,
+        "expected_value_delta": 1.0468,
+        "label": "late_strong",
+        "lagged_independent_selected_trade_count": 10,
+        "strategy_total_pnl_delta": 10700.53,
+        "target_trade_count": 17,
+        "target_trade_pnl_usd": 10700.529999999999
+      },
+      {
+        "expected_value_after": 2.6289,
+        "expected_value_before": 2.1402,
+        "expected_value_delta": 0.4887,
+        "label": "mid_weak",
+        "lagged_independent_selected_trade_count": 6,
+        "strategy_total_pnl_delta": 9517.86,
+        "target_trade_count": 24,
+        "target_trade_pnl_usd": 9517.859999999999
+      },
+      {
+        "expected_value_after": 1.0505,
+        "expected_value_before": 0.5911,
+        "expected_value_delta": 0.4594,
+        "label": "old_thin",
+        "lagged_independent_selected_trade_count": 9,
+        "strategy_total_pnl_delta": 15335.48,
+        "target_trade_count": 23,
+        "target_trade_pnl_usd": 15335.48
+      }
+    ]
+  },
+  "trial_family": "accepted_free_data_cross_source_consensus_source_timing_adapter",
+  "trial_variant_id": "lagged_prior_3_trading_days_shared_adapter_v1"
+}

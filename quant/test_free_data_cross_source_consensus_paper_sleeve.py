@@ -4,6 +4,7 @@ from datetime import date, timedelta
 
 from quant.default_off_alpha_attribution import build_default_off_alpha_attribution_report
 from quant.free_data_cross_source_consensus_paper_sleeve import (
+    LAGGED_CONSENSUS_RULE_VERSION,
     RULE_VERSION,
     SLEEVE_NAME,
     build_free_data_cross_source_consensus_paper_sleeve_snapshot,
@@ -183,6 +184,83 @@ def test_cross_source_consensus_accepts_finra_borrow_with_non_finra_family():
         "finra_short_pressure": 1,
         "volume_breadth_breakout": 1,
     }
+
+
+def test_cross_source_consensus_admits_prior_independent_family_confirmation():
+    as_of = "2026-01-12"
+    prior_date = "2026-01-09"
+    snapshot = build_free_data_cross_source_consensus_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker={"WIN": _rows(base=80.0), "SPY": _rows(base=100.0)},
+        source_snapshots=[
+            {
+                "sleeve": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+                "asof_date": as_of,
+                "candidates": [{"ticker": "WIN", "signal_date": as_of}],
+            }
+        ],
+        source_snapshot_history=[
+            {
+                "sleeve": "FINRA_IWM_CONFIRMED_PAPER",
+                "asof_date": prior_date,
+                "candidates": [{"ticker": "WIN", "signal_date": prior_date}],
+            }
+        ],
+        state=empty_free_data_cross_source_consensus_paper_state(),
+        core_active_position_count=0,
+        max_core_positions=5,
+        persist=False,
+    )
+
+    assert snapshot["candidate_count"] == 1
+    candidate = snapshot["candidates"][0]
+    assert candidate["ticker"] == "WIN"
+    assert candidate["lagged_consensus_rule_version"] == LAGGED_CONSENSUS_RULE_VERSION
+    assert candidate["current_source_names"] == ["ALPHA_SCORE_MARKET_REGIME_PAPER"]
+    assert candidate["current_source_family_count"] == 1
+    assert candidate["source_family_count"] == 2
+    assert candidate["prior_confirmation_source_families"] == ["finra_short_pressure"]
+    assert candidate["has_lagged_independent_confirmation"] is True
+    assert snapshot["source_consensus"]["lagged_independent_supported_candidate_count"] == 1
+    assert snapshot["lagged_source_consensus"]["lagged_independent_candidate_count"] == 1
+    assert snapshot["new_pending_entries"][0]["trade_enabled"] is False
+    assert snapshot["trade_enabled"] is False
+
+
+def test_cross_source_consensus_rejects_prior_same_family_confirmation():
+    as_of = "2026-01-12"
+    prior_date = "2026-01-09"
+    snapshot = build_free_data_cross_source_consensus_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker={"WIN": _rows(base=80.0), "SPY": _rows(base=100.0)},
+        source_snapshots=[
+            {
+                "sleeve": "FINRA_IWM_CONFIRMED_PAPER",
+                "asof_date": as_of,
+                "candidates": [{"ticker": "WIN", "signal_date": as_of}],
+            }
+        ],
+        source_snapshot_history=[
+            {
+                "sleeve": "FINRA_BORROW_PRESSURE_PAPER",
+                "asof_date": prior_date,
+                "candidates": [{"ticker": "WIN", "signal_date": prior_date}],
+            }
+        ],
+        state=empty_free_data_cross_source_consensus_paper_state(),
+        core_active_position_count=0,
+        max_core_positions=5,
+        persist=False,
+    )
+
+    assert snapshot["candidate_count"] == 0
+    assert snapshot["new_pending_count"] == 0
+    rejected = snapshot["rejected_candidates"][0]
+    assert rejected["source_count"] == 2
+    assert rejected["source_family_count"] == 1
+    assert rejected["source_families"] == ["finra_short_pressure"]
+    assert rejected["reasons"] == ["insufficient_source_family_count"]
+    assert rejected["has_lagged_independent_confirmation"] is False
 
 
 def test_finra_borrow_pressure_source_alias_keeps_orders_disabled():

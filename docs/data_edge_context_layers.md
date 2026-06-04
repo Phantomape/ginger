@@ -551,6 +551,13 @@ Evidence boundary:
   The inherited three-window replay improved aggregate EV by `+1.3058` and PnL
   by `+$23,397.76` with `47` target paper trades and `0` FINRA-only selected
   trades.
+- `exp-20260604-009` promoted the positive `exp-20260604-008` lagged
+  independent-source timing lead into the shared adapter. A current source row
+  can now be confirmed by another independent accepted source family from the
+  same ticker in the prior `3` trading sessions, using the same source-family
+  map and default-off paper boundary. The replay lead improved aggregate EV by
+  `+1.9949` versus core and by `+0.6891` versus the accepted same-day
+  comparator, with all three canonical windows improving.
 
 Adapter semantics:
 
@@ -558,11 +565,15 @@ Adapter semantics:
   `VOLUME_BREADTH_BREAKOUT_PAPER`, `FINRA_IWM_CONFIRMED_PAPER`,
   `FINRA_BORROW_PRESSURE_PAPER`, and
   `ALPHA_SCORE_MARKET_REGIME_PAPER`;
-- admits only candidates whose ticker appears in at least two independent
-  accepted free-data source families on the same signal date;
+- admits only candidates whose ticker has a current accepted source row and at
+  least two independent accepted free-data source families across the current
+  signal date plus the prior `3` trading sessions;
 - uses the shared source-family map:
   `companyfacts_growth_quality`, `volume_breadth_breakout`,
   `finra_short_pressure`, and `alpha_score_market_regime`;
+- loads bounded source-snapshot history from the same default-off paper sleeve
+  snapshot logs used by production reports, and emits current/prior timing and
+  lagged-confirmation metadata;
 - admits those candidates only when `active core positions < MAX_POSITIONS`
   under the production core-slot accounting surface;
 - uses fixed `$4,000` paper notional, top-1/day,
@@ -573,10 +584,10 @@ Adapter semantics:
   surface, and human-report block.
 
 Agent rule: this sleeve is observe-only. Do not retune the source count,
-source set, source-family map, cooldown, notional, hold period, FINRA
-thresholds, or nearby capacity variants on the same frozen windows. Promotion
-to live/core behavior requires closed forward replacement value and a separate
-Gate 1-4 activation experiment.
+source set, source-family map, prior-confirmation window, cooldown, notional,
+hold period, FINRA thresholds, or nearby capacity variants on the same frozen
+windows. Promotion to live/core behavior requires closed forward replacement
+value and a separate Gate 1-4 activation experiment.
 
 ### `quant/ranking_attribution.py`
 
