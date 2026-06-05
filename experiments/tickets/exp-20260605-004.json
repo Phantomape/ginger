@@ -1,0 +1,105 @@
+{
+  "experiment_id": "exp-20260605-004",
+  "experiment_uid": "expuid-da3b3bd427484142",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260605-004",
+    "slug": "sec_ftd_finra_form4_sale_pressure",
+    "reserved_at": "2026-06-05T03:06:12+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "alpha-search-automation",
+  "hypothesis": "Accepted SEC FTD plus FINRA borrow-pressure candidates may have cleaner replacement value when no recent large non-10b5-1 Form 4 insider sale pressure is present.",
+  "change_type": "default_off_paper_candidate_pool",
+  "mechanism_family": "default_off_paper_candidate_pool",
+  "trial_family": "sec_ftd_finra_ownership_pressure_candidate_pool",
+  "trial_variant_id": "exp-20260605-004",
+  "single_causal_variable": "sec_ftd_finra_candidate_excludes_recent_large_non10b5_form4_sale_pressure_v1",
+  "changed_variable": "sec_ftd_finra_candidate_excludes_recent_large_non10b5_form4_sale_pressure_v1",
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260505-010",
+    "exp-20260604-024",
+    "exp-20260604-026",
+    "exp-20260604-027",
+    "exp-20260605-003"
+  ],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "production_visible_sec_form4_ownership_pressure_relation",
+  "baseline_result_file": "data/backtests/backtest_results_20260603.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260605_004_sec_ftd_finra_form4_sale_pressure.py",
+    "data/experiments/exp-20260605-004/exp_20260605_004_sec_ftd_finra_form4_sale_pressure.json",
+    "experiments/cards/exp-20260605-004.md",
+    "experiments/manifests/exp-20260605-004.json",
+    "experiments/tickets/exp-20260605-004.json",
+    "experiments/logs/exp-20260605-004.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "sec_ftd_finra_candidate_excludes_recent_large_non10b5_form4_sale_pressure_v1"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.28,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "underperforms_accepted_ftd_finra_comparator",
+      "thin_sale_pressure_overlap",
+      "late_strong_regression",
+      "concentration_failed"
+    ],
+    "confidence_reason": "Accepted FTD+FINRA has strong evidence and Form 4 sales are an independent free SEC pressure field, but prior simple sale-pressure and FTD/Form4 overlap tests were weak.",
+    "recorded_at": "2026-06-05T03:05:46+00:00"
+  },
+  "created_at": "2026-06-05T03:06:12+00:00",
+  "claimed_at": "2026-06-05T03:06:20+00:00",
+  "completed_at": "2026-06-05T03:20:15+00:00",
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260605-004/sec_ftd_finra_form4_sale_pressure_before_aggregate.json",
+    "after_result_file": "data/experiments/exp-20260605-004/sec_ftd_finra_form4_sale_pressure_after_aggregate.json",
+    "delta_metrics": {
+      "expected_value_score_vs_core": 0.442,
+      "total_pnl_vs_core": 10100.49,
+      "expected_value_score_vs_accepted_ftd_finra": 0.0,
+      "total_pnl_vs_accepted_ftd_finra": 0.0,
+      "windows_ev_improved_vs_accepted_ftd_finra": 0,
+      "windows_pnl_improved_vs_accepted_ftd_finra": 0
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.28,
+      "brier_score": 0.0784,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "low",
+      "expected_ev_delta": null,
+      "actual_ev_delta": 0.0,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": null,
+      "actual_pnl_delta": 0.0,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "underperforms_accepted_ftd_finra_comparator",
+        "thin_sale_pressure_overlap",
+        "late_strong_regression",
+        "concentration_failed"
+      ],
+      "realized_failure_mode": "underperforms_accepted_ftd_finra_comparator",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Form 4 source coverage only had 2026-05/06 usable dates; no canonical-window FTD+FINRA candidates were affected."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260605-004.json",
+  "card_file": "experiments/cards/exp-20260605-004.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260605-004.json"
+}
