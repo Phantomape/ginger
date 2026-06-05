@@ -1,0 +1,112 @@
+{
+  "accepted": false,
+  "anti_js": "No JavaScript was used.",
+  "artifact_path": "data/experiments/exp-20260605-024/exp_20260605_024_lagged_consensus_characteristic_peer_transfer.json",
+  "calibration": {
+    "actual_decision": "rejected_lagged_consensus_characteristic_peer_transfer_candidate_pool",
+    "actual_ev_delta": 0.0101,
+    "actual_pnl_delta": 177.79,
+    "actual_success": 0,
+    "brier_score": 0.0256,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "predicted_success_probability": 0.16,
+    "realized_failure_mode": "rejected_lagged_consensus_characteristic_peer_transfer_candidate_pool"
+  },
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "accepted_lagged_consensus_characteristic_similarity_peer_transfer_candidate_source_v1",
+  "decision": "rejected_lagged_consensus_characteristic_peer_transfer_candidate_pool",
+  "experiment_id": "exp-20260605-024",
+  "hypothesis": "entry/candidate_pool: selected lagged-independent free-data consensus trades may identify characteristic-similar liquid peers that continue reacting over the next 1-3 trading days and can fill open paper slots without replacing accepted lagged rows.",
+  "lane": "alpha_search",
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "metrics": {
+    "core_expected_value_delta": 0.7977,
+    "core_strategy_total_pnl_delta": 14399.33,
+    "incremental_expected_value_after": 8.6918,
+    "incremental_expected_value_before": 8.6817,
+    "incremental_expected_value_delta": 0.0101,
+    "incremental_peer_trade_count": 8,
+    "incremental_peer_trade_pnl_usd": 177.79,
+    "incremental_strategy_total_pnl_after": 249250.32,
+    "incremental_strategy_total_pnl_before": 249072.53,
+    "incremental_strategy_total_pnl_delta": 177.79,
+    "max_drawdown_delta_vs_accepted_lagged": 0.0,
+    "max_single_positive_share": 0.6369124623,
+    "positive_pnl_hhi": 0.4625246999
+  },
+  "multiple_testing_risk_bucket": "medium",
+  "nearby_prior_experiments": [
+    "exp-20260603-005",
+    "exp-20260604-014",
+    "exp-20260604-008",
+    "exp-20260605-021"
+  ],
+  "new_evidence_type": "accepted_lagged_consensus_plus_companyfacts_ohlcv_characteristic_peer_relation",
+  "prediction": {
+    "confidence_reason": "Prior same-sector and post-earnings peer transfer failed, but accepted lagged consensus is the strongest current free-data source. This tests a different relation construction with open-slot incremental selection.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "peer_relation_noise",
+      "open_slot_sample_too_thin",
+      "accepted_lagged_comparator_not_improved",
+      "window_regression",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-05T16:06:33Z",
+    "success_probability": 0.16
+  },
+  "prior_trial_count": 4,
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_orders": false,
+    "backtester_adapter_changed": false,
+    "parity_note": "This experiment changes no production code. If accepted, promotion would require a shared default-off adapter using the same lagged source rows, sector map, Companyfacts contexts, OHLCV features, open-slot selection rules, and next-open paper-entry timing in both historical replay and daily production before any report queue, paper notional, candidate priority, or order surface could change.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "Gate 4 failed: all_windows_incremental_expected_value_improved; all_windows_incremental_pnl_improved; incremental_peer_trade_count_passed; incremental_peer_concentration_guard_passed",
+  "requires_parity_before_promotion": false,
+  "status": "rejected",
+  "timestamp": "2026-06-05T16:23:02Z",
+  "trial_family": "accepted_lagged_consensus_characteristic_peer_transfer",
+  "trial_variant_id": "lagged_consensus_characteristic_peer_transfer_v1",
+  "windows": [
+    {
+      "expected_value_after": 5.5927,
+      "expected_value_before": 5.5821,
+      "expected_value_delta": 0.0106,
+      "incremental_peer_trade_count": 2,
+      "incremental_peer_trade_pnl_usd": 230.4,
+      "label": "late_strong",
+      "raw_peer_candidate_count": 6,
+      "strategy_total_pnl_delta": 230.4
+    },
+    {
+      "expected_value_after": 2.3359,
+      "expected_value_before": 2.3347,
+      "expected_value_delta": 0.0012,
+      "incremental_peer_trade_count": 4,
+      "incremental_peer_trade_pnl_usd": 47.36,
+      "label": "mid_weak",
+      "raw_peer_candidate_count": 8,
+      "strategy_total_pnl_delta": 47.36
+    },
+    {
+      "expected_value_after": 0.7632,
+      "expected_value_before": 0.7649,
+      "expected_value_delta": -0.0017,
+      "incremental_peer_trade_count": 2,
+      "incremental_peer_trade_pnl_usd": -99.97,
+      "label": "old_thin",
+      "raw_peer_candidate_count": 5,
+      "strategy_total_pnl_delta": -99.97
+    }
+  ]
+}
