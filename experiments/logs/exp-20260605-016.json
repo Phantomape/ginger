@@ -1,0 +1,148 @@
+{
+  "after_metrics": {
+    "expected_value_score": 8.18,
+    "max_drawdown_pct_max": 0.1108,
+    "min_survival_rate": 0.7925,
+    "strategy_total_pnl": 241621.5,
+    "trade_count": 253
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "expected_value_score": 7.8941,
+    "max_drawdown_pct_max": 0.1119,
+    "min_survival_rate": 0.7925,
+    "strategy_total_pnl": 234850.99,
+    "trade_count": 61
+  },
+  "change_summary": "Tested a replay-only broad Companyfacts candidate source that requires own fresh dual growth plus a recent same-industry peer growth filing whose price action was absorbed before the signal date.",
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "broad_companyfacts_peer_price_absorption_candidate_source_v1",
+  "component": "quant/experiments/exp_20260605_016_broad_companyfacts_peer_price_absorption.py",
+  "decision": "rejected_broad_companyfacts_peer_price_absorption_candidate_pool",
+  "delta_metrics": {
+    "expected_value_score_delta": 0.2859,
+    "expected_value_score_delta_pct": 0.036217,
+    "max_drawdown_delta": -0.0011,
+    "strategy_total_pnl_delta": 6770.51,
+    "strategy_total_pnl_delta_pct": 0.028829,
+    "trade_count_delta": 192
+  },
+  "experiment_id": "exp-20260605-016",
+  "hypothesis": "Broad Companyfacts filing events with positive realized growth and recent peer price absorption may add cleaner default-off paper candidates than same-industry growth confirmation.",
+  "lane": "alpha_search",
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260605-014",
+    "exp-20260605-015",
+    "exp-20260605-011",
+    "exp-20260604-014"
+  ],
+  "new_evidence_type": "production_visible_companyfacts_price_relation_field",
+  "next_retry_requires": [
+    "do not retune Companyfacts peer absorption thresholds on the frozen windows",
+    "collect forward paper replacement-value rows before revisiting this relation",
+    "a positive result would still require a shared default-off adapter with parity tests",
+    "use a genuinely new free-data relation if this fails"
+  ],
+  "parameters": {
+    "daily_selection": "top_1_by_fixed_peer_price_absorbed_growth_drift_score",
+    "hold_days": 10,
+    "max_fundamental_age_days": 120,
+    "min_avg_dollar_volume_20d": 50000000.0,
+    "min_close_location": 0.55,
+    "min_peer_absorption_age_days": 5,
+    "min_peer_absorption_close_location": 0.55,
+    "min_peer_absorption_excess_spy": 0.0,
+    "min_peer_absorption_return": 0.02,
+    "min_price": 10.0,
+    "min_profit_yoy_growth": 0.15,
+    "min_ret20_excess_spy": 0.0,
+    "min_revenue_yoy_growth": 0.15,
+    "min_volume_ratio_20d": 0.9,
+    "paper_notional": 4000.0,
+    "peer_absorption_lookback_days": 45,
+    "round_trip_cost_pct": 0.0035,
+    "same_ticker_cooldown_days": 30,
+    "trade_enabled": false
+  },
+  "prediction": {
+    "actual_ev_delta": 0.2859,
+    "actual_pnl_delta": 6770.51,
+    "actual_success": 0,
+    "brier_score": 0.0576,
+    "confidence_reason": "Companyfacts peer relation had the latest strong replay lead, but adapter promotion regressed old_thin; this tests a materially different relation: peer price absorption after fundamental filings, not another same-industry growth threshold.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "old_thin_regression",
+      "peer_absorption_not_incremental",
+      "concentration_failed",
+      "drawdown_drift"
+    ],
+    "recorded_at": "2026-06-05T10:05:47+00:00",
+    "success_probability": 0.24
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_note": "This runner changes no production code. A positive result would require a separate shared default-off Companyfacts peer-price absorption adapter, daily production exposure of the same filed-date-safe growth, industry, and OHLCV peer absorption fields, warehouse/snapshot replay parity, and focused tests before any report queue, paper ledger, candidate priority, or order surface could change.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "window_ev_regression;window_pnl_regression",
+  "related_files": [
+    "quant/experiments/exp_20260605_016_broad_companyfacts_peer_price_absorption.py",
+    "data/experiments/exp-20260605-016/exp_20260605_016_broad_companyfacts_peer_price_absorption.json",
+    "experiments/logs/exp-20260605-016.json",
+    "experiments/artifacts/exp-20260605-016_broad_companyfacts_peer_price_absorption.md",
+    "experiments/tickets/exp-20260605-016.json",
+    "data/kova/fundamentals/companyfacts_growth_broad_universe_20260604.jsonl",
+    "data/reference/broad_market_sector_map.json"
+  ],
+  "status": "rejected",
+  "timestamp": "2026-06-05T10:09:30Z",
+  "trial_family": "broad_companyfacts_peer_price_absorption_candidate_pool",
+  "trial_variant_id": "broad_companyfacts_peer_price_absorption_top1_v1",
+  "windows": [
+    {
+      "expected_value_after": 5.1832,
+      "expected_value_before": 5.1628,
+      "expected_value_delta": 0.0204,
+      "label": "late_strong",
+      "strategy_total_pnl_delta": 1808.8,
+      "target_trade_count": 80,
+      "target_trade_pnl_usd": 1164.46
+    },
+    {
+      "expected_value_after": 2.4263,
+      "expected_value_before": 2.1402,
+      "expected_value_delta": 0.2861,
+      "label": "mid_weak",
+      "strategy_total_pnl_delta": 5556.81,
+      "target_trade_count": 81,
+      "target_trade_pnl_usd": 4845.79
+    },
+    {
+      "expected_value_after": 0.5705,
+      "expected_value_before": 0.5911,
+      "expected_value_delta": -0.0206,
+      "label": "old_thin",
+      "strategy_total_pnl_delta": -595.1,
+      "target_trade_count": 31,
+      "target_trade_pnl_usd": -787.19
+    }
+  ]
+}
