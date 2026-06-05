@@ -1,0 +1,90 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260605_033_cross_section_pressure_resilience_candidate_pool.py",
+    "data/experiments/exp-20260605-033/exp_20260605_033_cross_section_pressure_resilience_candidate_pool.json",
+    "experiments/cards/exp-20260605-033.md",
+    "experiments/manifests/exp-20260605-033.json",
+    "experiments/tickets/exp-20260605-033.json",
+    "experiments/logs/exp-20260605-033.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260605-033.md",
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "cross_section_pressure_resilience_candidate_source_v1",
+  "claimed_at": "2026-06-05T21:05:58+00:00",
+  "completed_at": "2026-06-05T21:13:19Z",
+  "created_at": "2026-06-05T21:05:50+00:00",
+  "decision": "rejected_cross_section_pressure_resilience_candidate_pool",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260605-033",
+  "experiment_uid": "expuid-6e1772ef3ac6480a",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260605-033",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-05T21:05:50+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "cross_section_pressure_resilience_candidate_pool"
+  },
+  "hypothesis": "Cross-sectional pressure days may reveal higher-quality broad candidates: stocks that stay liquid, close strong, and outperform SPY/QQQ during a broad synchronous stress day can produce default-off next-open paper alpha without adding noisy tickers.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "cross_section_pressure_resilience_candidate_source_v1"
+  ],
+  "mechanism_family": "default_off_paper_candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260605-013",
+    "exp-20260528-035",
+    "exp-20260528-036",
+    "exp-20260605-023"
+  ],
+  "new_evidence_type": "production_visible_free_ohlcv_cross_section_pressure_resilience",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "Recent broad OHLCV candidate pools mostly failed, but the changepoint/pressure idea is a materially different production-visible state variable and can be tested replay-only with strict gates.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "window_regression",
+      "ohlcv_momentum_relabeling",
+      "drawdown_drift",
+      "concentration_failed",
+      "thin_pressure_sample"
+    ],
+    "recorded_at": "2026-06-05T21:05:44+00:00",
+    "success_probability": 0.16
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": -0.1547,
+    "aggregate_strategy_total_pnl_delta": -2932.46,
+    "artifact": "data/experiments/exp-20260605-033/exp_20260605_033_cross_section_pressure_resilience_candidate_pool.json",
+    "calibration": {
+      "actual_gate4_passed": false,
+      "brier_score": 0.0256,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows"
+      ],
+      "predicted_success_probability": 0.16
+    },
+    "decision": "rejected_cross_section_pressure_resilience_candidate_pool",
+    "log": "experiments/logs/exp-20260605-033.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260605-033.json",
+  "single_causal_variable": "cross_section_pressure_resilience_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The pressure-resilience candidate source did not clear Gate 4. Do not promote or retry this fixed OHLCV pressure/resilience definition on the same frozen windows without a materially new PIT state field or forward replacement-value data.",
+  "ticket_file": "experiments/tickets/exp-20260605-033.json",
+  "trial_family": "cross_section_pressure_resilience_candidate_pool",
+  "trial_variant_id": "exp-20260605-033"
+}
