@@ -1,0 +1,145 @@
+{
+  "acceptance_rule": "docs/backtesting.md three-window Gate 4; must improve aggregate EV/PnL versus core and raw Form4 without window regressions, drawdown drift >0.005, sample <8 trades, or concentration >50% single ticker positive PnL / HHI >0.35",
+  "allowed_write_scope": [
+    "quant/experiments/exp_*_form4_purchase_liquidity_intensity.py",
+    "data/experiments/exp-*/form4_purchase_liquidity_intensity.json",
+    "experiments/logs/exp-*.json",
+    "experiments/tickets/exp-*.json",
+    "docs/experiments/tickets/exp-*.json",
+    "experiments/cards/exp-*.md",
+    "experiments/manifests/exp-*.json",
+    "experiments/artifacts/exp-*_form4_purchase_liquidity_intensity.md",
+    "docs/experiment_log.jsonl"
+  ],
+  "allowed_write_scope_actual": [
+    "data/experiments/exp-20260605-001/form4_purchase_liquidity_intensity.json",
+    "data/experiments/exp-20260605-001/form4_purchase_liquidity_intensity_before_aggregate.json",
+    "data/experiments/exp-20260605-001/form4_purchase_liquidity_intensity_after_aggregate.json",
+    "data/experiments/exp-20260605-001/form4_purchase_liquidity_intensity_raw_form4_aggregate.json",
+    "experiments/logs/exp-20260605-001.json",
+    "experiments/tickets/exp-20260605-001.json",
+    "docs/experiments/tickets/exp-20260605-001.json",
+    "experiments/artifacts/exp-20260605-001_form4_purchase_liquidity_intensity.md",
+    "quant/experiments/exp_20260605_001_form4_purchase_liquidity_intensity.py"
+  ],
+  "baseline_result_file": "docs/backtesting.md",
+  "card_file": "experiments/cards/exp-20260605-001.md",
+  "change_type": "event_qualification_replay",
+  "changed_variable": "form4_purchase_value_to_adv20_ge_0p50pct_forward_queue_v1",
+  "claimed_at": "2026-06-05T00:09:40+00:00",
+  "completed_at": "2026-06-05T00:14:54+00:00",
+  "created_at": "2026-06-05T00:09:33+00:00",
+  "decision": "rejected_positive_not_promotable",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260605-001",
+  "experiment_uid": "expuid-c78b6ff7a8564717",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260605-001",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-05T00:09:33+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "form4_purchase_liquidity_intensity"
+  },
+  "hypothesis": "PIT-safe Form 4 meaningful purchases whose total insider purchase value is unusually large relative to the issuer's pre-event 20-day dollar volume may create a cleaner free-data candidate-pool overlay than the raw Form 4 queue.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "core universe",
+    "core signal generation",
+    "core ranking",
+    "core position sizing",
+    "core exits",
+    "raw Form 4 queue threshold",
+    "event notional",
+    "event hold",
+    "event capacity",
+    "LLM/news replay settings"
+  ],
+  "mechanism_family": "form4_liquidity_normalized_insider_purchase_event_satellite",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "quant/data_layer.py",
+    "operator_inputs/open_positions.json",
+    "run_adapter",
+    "production live order path"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260504-034",
+    "exp-20260530-003",
+    "exp-20260604-022",
+    "exp-20260604-024"
+  ],
+  "new_evidence_type": "free_SEC_Form4_purchase_value_normalized_by_pre_event_OHLCV_liquidity",
+  "owner": "codex-alpha-search",
+  "prediction": {
+    "confidence_reason": "Form4 has weak but occasionally positive free-data signal; liquidity normalization is materially different from prior cost-basis and ownership-delta tests but sample risk is high.",
+    "expected_ev_delta": 0.2,
+    "expected_pnl_delta": 3000.0,
+    "main_failure_modes": [
+      "sample_too_small",
+      "does_not_beat_raw_form4_queue",
+      "window_regression",
+      "single_ticker_concentration"
+    ],
+    "recorded_at": "2026-06-05T00:09:08+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 6,
+  "result": {
+    "decision": "rejected_positive_not_promotable",
+    "before_result_file": "data/experiments/exp-20260605-001/form4_purchase_liquidity_intensity_before_aggregate.json",
+    "after_result_file": "data/experiments/exp-20260605-001/form4_purchase_liquidity_intensity_after_aggregate.json",
+    "delta_metrics": {
+      "expected_value_score": 0.0289,
+      "total_return_pct": 0.007657,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.006875,
+      "trade_count": 1,
+      "survival_rate": 0.0,
+      "total_pnl": 765.71
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.18,
+      "brier_score": 0.0324,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.2,
+      "actual_ev_delta": 0.0289,
+      "ev_prediction_error": -0.1711,
+      "expected_pnl_delta": 3000.0,
+      "actual_pnl_delta": 765.71,
+      "pnl_prediction_error": -2234.29,
+      "predicted_failure_modes": [
+        "sample_too_small",
+        "does_not_beat_raw_form4_queue",
+        "window_regression",
+        "single_ticker_concentration"
+      ],
+      "realized_failure_mode": "sample_too_small",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Only one event passed the 0.50% purchase-value-to-ADV20 floor across all canonical windows."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260605-001.json",
+  "single_causal_variable": "form4_purchase_value_to_adv20_ge_0p50pct_forward_queue_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260605-001.json",
+  "trial_family": "form4_liquidity_normalized_event_satellite",
+  "trial_variant_id": "form4_purchase_value_to_adv20_ge_0p50pct_v1"
+}
