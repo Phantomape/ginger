@@ -1,0 +1,113 @@
+{
+  "acceptance_rule": "Gate 4 requires aggregate EV delta >10pct of baseline for risk allocation, positive aggregate PnL, no window EV/PnL regression, max drawdown drift <=0.5pp, core survival >=5pct, and target events in at least two windows.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260605_032_scheduled_macro_selloff_next_open_risk_action.py",
+    "data/experiments/exp-20260605-032/exp_20260605_032_scheduled_macro_selloff_next_open_risk_action.json",
+    "experiments/cards/exp-20260605-032.md",
+    "experiments/manifests/exp-20260605-032.json",
+    "experiments/tickets/exp-20260605-032.json",
+    "experiments/logs/exp-20260605-032.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "baseline_result_file": "docs/backtesting.md",
+  "card_file": "experiments/cards/exp-20260605-032.md",
+  "change_type": "scheduled_macro_selloff_next_open_risk_action",
+  "changed_variable": "scheduled_macro_calendar_event_family_expansion_v1",
+  "claimed_at": "2026-06-05T20:09:24+00:00",
+  "completed_at": "2026-06-05T20:18:47+00:00",
+  "created_at": "2026-06-05T20:08:53+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260605-032",
+  "experiment_uid": "expuid-8de3a43ae7654bce",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260605-032",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-05T20:08:53+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "scheduled_macro_selloff_next_open_risk_action"
+  },
+  "hypothesis": "Scheduled macro release-day selloffs may mean-revert at the next open when tested across official CPI/FOMC/NFP dates, improving the NFP-only sample without retuning thresholds.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "scheduled_macro_calendar_event_family_expansion_v1"
+  ],
+  "mechanism_family": "macro_event_risk_allocation",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260605-027",
+    "exp-20260605-030"
+  ],
+  "new_evidence_type": "official_free_scheduled_macro_calendar_family_expansion_plus_free_ohlcv",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "NFP-only add-beta improved all three windows but failed the strict EV gate with five events; CPI/FOMC/NFP broadens the official PIT event surface without changing selloff thresholds or hold period.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "thin_macro_selloff_sample",
+      "aggregate_ev_delta_not_gt_10pct",
+      "window_regression",
+      "macro_event_proxy_overfit"
+    ],
+    "recorded_at": "2026-06-05T20:08:42+00:00",
+    "success_probability": 0.14
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260605-032/exp_20260605_032_scheduled_macro_selloff_next_open_risk_action_aggregate_before.json",
+    "after_result_file": "data/experiments/exp-20260605-032/exp_20260605_032_scheduled_macro_selloff_next_open_risk_action_aggregate_after.json",
+    "delta_metrics": {
+      "expected_value_score": 0.1349,
+      "max_drawdown_pct": 0.0,
+      "trade_count": 8,
+      "survival_rate": 0.0,
+      "total_pnl": 4160.58
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.14,
+      "brier_score": 0.0196,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": null,
+      "actual_ev_delta": 0.1349,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": null,
+      "actual_pnl_delta": 4160.58,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "thin_macro_selloff_sample",
+        "aggregate_ev_delta_not_gt_10pct",
+        "window_regression",
+        "macro_event_proxy_overfit"
+      ],
+      "realized_failure_mode": "aggregate_ev_delta_not_gt_10pct",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Add-beta stayed positive in all three windows but remained only +1.71pct aggregate EV, below the risk-allocation hard gate."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260605-032.json",
+  "single_causal_variable": "scheduled_macro_calendar_event_family_expansion_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260605-032.json",
+  "trial_family": "scheduled_macro_selloff_next_open_risk_action",
+  "trial_variant_id": "scheduled_macro_cpi_fomc_nfp_selloff_rebound_v1"
+}
