@@ -197,6 +197,7 @@ def test_production_compare_reads_activation_map_and_live_positions(tmp_path):
     (root / "docs").mkdir()
     (root / "operator_inputs").mkdir()
     (root / "data" / "paper_sleeves" / "broad_market").mkdir(parents=True)
+    (root / "data" / "paper_sleeves" / "low_deployment_etf").mkdir(parents=True)
     (root / "docs" / "current_state.md").write_text(
         "\n".join([
             "## Return Constraint / Activation Map",
@@ -204,6 +205,7 @@ def test_production_compare_reads_activation_map_and_live_positions(tmp_path):
             "|---|---|---|---|---|---|",
             "| Core live stack | Trade-enabled default path | Accepted core stack | Conservative caps | Gate 1-4 | Drawdown |",
             "| `BROAD_MARKET_LEADERSHIP_PAPER` | Default-off paper only; live/default orders disabled | Paper adapter | Needs closed forward replacement-value outcomes | Small sleeve | Hidden beta |",
+            "| Low-deployment ETF overlay | Paper-only overlay | Parity contract allows paper ETF overlay attribution only | Cash semantics, closed forward outcomes, and explicit trade adapter are not ready | Cash-deployment sleeve | Whipsaw |",
         ]),
         encoding="utf-8",
     )
@@ -245,20 +247,60 @@ def test_production_compare_reads_activation_map_and_live_positions(tmp_path):
         ]) + "\n",
         encoding="utf-8",
     )
+    (root / "data" / "paper_sleeves" / "low_deployment_etf" / "state.json").write_text(
+        json.dumps({
+            "sleeve": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER",
+            "updated_at": "2099-01-02T00:00:00+00:00",
+            "closed_positions": [{"ticker": "QQQ"} for _ in range(24)],
+            "parameters": {"forward_gate_min_closed_trades": 60},
+        }),
+        encoding="utf-8",
+    )
+    (root / "data" / "paper_sleeves" / "low_deployment_etf" / "snapshots.jsonl").write_text(
+        "\n".join([
+            json.dumps({
+                "asof_date": "2099-01-02",
+                "closed_position_count": 24,
+                "parameters": {"forward_gate_min_closed_trades": 60},
+                "sleeve": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER",
+            }),
+        ]) + "\n",
+        encoding="utf-8",
+    )
 
     compare = build_production_compare(root)
 
     assert compare["summary"]["executing_count"] == 1
-    assert compare["summary"]["forward_accumulating_count"] == 1
+    assert compare["summary"]["forward_accumulating_count"] == 2
+    assert compare["summary"]["paper_closed_count"] == 25
     assert compare["summary"]["paper_open_count"] == 1
     assert compare["live_positions"]["count"] == 2
-    assert compare["evidence_curves"][0]["target_count"] == 4
-    assert compare["evidence_curves"][0]["points"][-1]["pipeline_pct"] > 0
+    broad_curve = [
+        curve
+        for curve in compare["evidence_curves"]
+        if curve["sleeve"] == "BROAD_MARKET_LEADERSHIP_PAPER"
+    ][0]
+    assert broad_curve["target_count"] == 4
+    assert broad_curve["points"][-1]["pipeline_pct"] > 0
     broad = [row for row in compare["surfaces"] if "BROAD_MARKET" in row["surface"]][0]
     assert broad["paper_pending_count"] == 1
     assert broad["required_closed_forward"] == 4
     assert broad["target_basis"] == "paper_sleeve_forward_gate"
     assert broad["evidence_gap"] == 3
+    low_deployment = [
+        row for row in compare["surfaces"] if "Low-deployment" in row["surface"]
+    ][0]
+    assert low_deployment["paper_closed_count"] == 24
+    assert low_deployment["required_closed_forward"] == 60
+    assert low_deployment["target_basis"] == "paper_sleeve_forward_gate"
+    assert low_deployment["evidence_gap"] == 36
+    low_deployment_curve = [
+        curve
+        for curve in compare["evidence_curves"]
+        if curve["sleeve"] == "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER"
+    ][0]
+    assert low_deployment_curve["target_count"] == 60
+    assert low_deployment_curve["closed_count"] == 24
 
 
 def test_dashboard_writer_outputs_static_html_and_json(tmp_path):
@@ -342,6 +384,9 @@ def test_dashboard_writer_outputs_static_html_and_json(tmp_path):
     assert "Production vs Backtest" in html
     assert "Forward Evidence Curves" in html
     assert "snapshot date from paper sleeve snapshots.jsonl" in html
+    assert "Series indexed" in html
+    assert "curve.closed_count" in html
+    assert "curve.target_count" in html
     assert "curve-point" in html
     assert "curve-hit" in html
     assert "snapshot point" in html

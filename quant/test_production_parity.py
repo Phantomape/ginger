@@ -327,6 +327,33 @@ def test_report_renders_core_slots_and_total_account_shadow():
     assert "total_shadow=deferred:slot_sliced" in report
 
 
+def test_report_surfaces_addon_acceptable_open_guardrail():
+    report = generate_daily_report(
+        [],
+        portfolio_heat={"portfolio_heat_pct": 0.01, "can_add_new_positions": True},
+        market_regime={"regime": "BULL", "note": "test"},
+        addon_actions=[
+            {
+                "ticker": "MRVL",
+                "shares_to_buy": 12,
+                "fill_timing": "next_session_open",
+                "estimated_price": 316.43,
+                "estimated_position_value_usd": 3797.16,
+                "checkpoint_days": 2,
+                "unrealized_pct": 0.0716,
+                "rs_vs_spy": 0.0914,
+                "cap_detail": {"effective_stop": 298.26},
+                "reason": "day-2 follow-through",
+            }
+        ],
+    )
+
+    assert "MRVL: ADD 12 shares at next session open near $316.43" in report
+    assert "Acceptable open guardrail: $310.10 - $321.18" in report
+    assert "hard skip <= $298.26" in report
+    assert "adverse open below range means skip" in report
+
+
 def test_plan_entry_candidates_topups_rank1_when_single_slot(monkeypatch):
     monkeypatch.setattr(
         production_parity,

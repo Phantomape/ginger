@@ -1,5 +1,8 @@
 # Data Directory Layout
 
+For the one-page source map and placement rules, start with
+`docs/data_inventory.md`.
+
 `data/` is organized by artifact role. Daily production archives live under
 `data/daily/`; durable state, ledgers, snapshots, and experiment outputs live
 in named subdirectories. The root should stay limited to this README.

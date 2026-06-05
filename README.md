@@ -101,15 +101,15 @@ data\quant_signals_YYYYMMDD.json -> pilot_signals
 标准回测仍然用 `quant\backtester.py`。按 `docs/backtesting.md`，当前固定看三个非重叠窗口：
 
 ```powershell
-.\.venv\Scripts\python.exe quant\backtester.py --start 2025-10-23 --end 2026-04-21 --ohlcv-snapshot data\ohlcv\ohlcv_snapshot_20251023_20260421.json
+.\.venv\Scripts\python.exe quant\backtester.py --start 2025-10-23 --end 2026-04-21 --ohlcv-warehouse data\experiments\exp-20260519-030\warehouse_main.sqlite --ohlcv-warehouse-snapshot-source data\ohlcv\ohlcv_snapshot_20251023_20260421.json
 ```
 
 ```powershell
-.\.venv\Scripts\python.exe quant\backtester.py --start 2025-04-23 --end 2025-10-22 --ohlcv-snapshot data\ohlcv\ohlcv_snapshot_20250423_20251022.json
+.\.venv\Scripts\python.exe quant\backtester.py --start 2025-04-23 --end 2025-10-22 --ohlcv-warehouse data\experiments\exp-20260519-030\warehouse_main.sqlite --ohlcv-warehouse-snapshot-source data\ohlcv\ohlcv_snapshot_20250423_20251022.json
 ```
 
 ```powershell
-.\.venv\Scripts\python.exe quant\backtester.py --start 2024-10-02 --end 2025-04-22 --ohlcv-snapshot data\ohlcv\ohlcv_snapshot_20241002_20250422.json
+.\.venv\Scripts\python.exe quant\backtester.py --start 2024-10-02 --end 2025-04-22 --ohlcv-warehouse data\experiments\exp-20260519-030\warehouse_main.sqlite --ohlcv-warehouse-snapshot-source data\ohlcv\ohlcv_snapshot_20241002_20250422.json
 ```
 
 关键口径：
@@ -133,7 +133,7 @@ sleeve (`AI_INFRA_PILOT`) with point-in-time universe eligibility, add
 `--include-pilot-sleeve`:
 
 ```powershell
-.\.venv\Scripts\python.exe quant\backtester.py --start 2025-10-23 --end 2026-04-21 --ohlcv-snapshot data\ohlcv\ohlcv_snapshot_20251023_20260421.json --include-pilot-sleeve
+.\.venv\Scripts\python.exe quant\backtester.py --start 2025-10-23 --end 2026-04-21 --ohlcv-warehouse data\experiments\exp-20260519-030\warehouse_main.sqlite --ohlcv-warehouse-snapshot-source data\ohlcv\ohlcv_snapshot_20251023_20260421.json --include-pilot-sleeve
 ```
 
 This is called `试点子组合回测` in the docs. It preloads eligible pilot OHLCV

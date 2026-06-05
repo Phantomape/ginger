@@ -1,6 +1,7 @@
 import os
 import sys
 from datetime import date
+import json
 
 import pandas as pd
 
@@ -107,3 +108,77 @@ def test_backtester_does_not_use_prior_snapshot_dte_for_calendar_fields():
 
     assert data["next_earnings_date"] == "2026-08-06"
     assert data["days_to_earnings"] == 65
+
+
+def test_non_earnings_asset_earnings_data_skips_yfinance(monkeypatch):
+    def fail_ticker(ticker):
+        raise AssertionError(f"yfinance should not be called for {ticker}")
+
+    monkeypatch.setattr("data_layer.yf.Ticker", fail_ticker)
+
+    data = get_earnings_data("SPY", as_of=date(2026, 5, 7))
+
+    assert data["next_earnings_date"] is None
+    assert data["days_to_earnings"] is None
+    assert data["historical_surprise_pct"] == []
+
+
+def test_backtester_earnings_calendar_skips_non_earnings_assets(monkeypatch):
+    calls = []
+
+    class FakeTicker:
+        def __init__(self, ticker):
+            calls.append(ticker)
+
+        def get_earnings_dates(self, limit=20):
+            return pd.DataFrame(
+                {"Reported EPS": [1.0]},
+                index=pd.to_datetime(["2026-05-07"]),
+            )
+
+    monkeypatch.setattr("backtester.yf.Ticker", FakeTicker)
+
+    engine = BacktestEngine(["SPY", "AAA"], start="2026-05-07", end="2026-05-07")
+    calendar = engine._download_earnings_calendar()
+
+    assert calls == ["AAA"]
+    assert calendar["SPY"] == []
+    assert calendar["AAA"] == [date(2026, 5, 7)]
+
+
+def test_backfill_earnings_snapshots_skips_non_earnings_prefetch(tmp_path, monkeypatch):
+    from backfill_earnings_snapshots import backfill_earnings_snapshots
+
+    calls = []
+
+    class FakeTicker:
+        def __init__(self, ticker):
+            calls.append(ticker)
+            self.info = {"forwardEps": 2.5}
+            self.calendar = None
+
+        def get_earnings_dates(self, limit=20):
+            return pd.DataFrame(
+                {
+                    "Reported EPS": [1.1, None],
+                    "Surprise(%)": [7.0, None],
+                    "EPS Estimate": [None, 1.25],
+                },
+                index=pd.to_datetime(["2026-01-20", "2026-01-23"]),
+            )
+
+    monkeypatch.setattr("backfill_earnings_snapshots.yf.Ticker", FakeTicker)
+
+    written = backfill_earnings_snapshots(
+        "2026-01-21",
+        "2026-01-21",
+        universe=["SPY", "AAA"],
+        data_dir=str(tmp_path),
+    )
+
+    assert calls == ["AAA"]
+    assert len(written) == 1
+
+    payload = json.loads((tmp_path / "earnings_snapshot_20260121.json").read_text())
+    assert payload["earnings"]["SPY"]["days_to_earnings"] is None
+    assert payload["earnings"]["AAA"]["days_to_earnings"] == 2

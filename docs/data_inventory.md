@@ -45,7 +45,14 @@ home, and strategy code should read through canonical paths or
 - Some legacy experiment code still names `data/ohlcv_snapshot_*.json`.
   `quant/data_paths.py::ohlcv_snapshot_path` maps those names to
   `data/ohlcv/` when the organized file exists. New code should call that
-  helper or pass the organized `data/ohlcv/...` path directly.
+  helper or pass the organized `data/ohlcv/...` path directly. The backtester
+  also maps missing absolute legacy root paths like
+  `...\data\ohlcv_snapshot_*.json` to `data/ohlcv/` so archived experiment
+  runners survive the directory move without bulk rewrites.
+- Do not bulk-edit historical experiment scripts only to replace snapshot
+  strings. New standard fixed-window backtests should use the versioned SQLite
+  warehouse, while file-oriented replay/probe/sidecar tools may keep explicit
+  snapshot inputs when that is the intended interface.
 - Experiment-local OHLCV snapshots under `data/experiments/<exp-id>/ohlcv/`
   are frozen evidence for that experiment only. Do not use them as future
   baselines unless a follow-up experiment promotes that exact artifact.
@@ -76,6 +83,17 @@ home, and strategy code should read through canonical paths or
   must use the same OHLCV source on both sides: snapshot-vs-snapshot,
   versioned-SQLite-vs-versioned-SQLite, or broad-warehouse-vs-broad-warehouse;
   never mix them.
+- Known retained snapshot consumers are intentional file-oriented tools:
+  `quant/backtester.py --ohlcv-snapshot` for legacy exact-file replay;
+  `scripts/run_options_forward_ledger.py`,
+  `quant/gap_cancel_context_replay.py`, `quant/gap_cancel_threshold_sweep.py`,
+  and `quant/kova_data_sidecar.py` for explicit snapshot sidecars; and
+  observe-only probes such as `scripts/*_probe.py`,
+  `scripts/audit_sector_state_alpha.py`, and
+  `scripts/run_options_overlay_shadow.py` that inspect JSON bars directly.
+  Do not use those retained file inputs as the default for new standard
+  acceptance backtests unless the experiment explicitly documents that file
+  replay is the causal variable.
 - The 2026-06-04 warehouse-vs-snapshot investigation keeps only the compact
   versioned-SQLite parity summary and root-cause audit in top-level
   `data/backtests/`. The bulky per-window snapshot/current, broad-warehouse,

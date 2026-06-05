@@ -113,7 +113,12 @@ def has_snapshot_provenance(data: dict[str, Any]) -> bool:
         ensure_ascii=False,
         sort_keys=True,
     ).lower()
-    return "ohlcv_snapshot" in haystack or "snapshot" in haystack
+    return (
+        "ohlcv_snapshot" in haystack
+        or "warehouse_snapshot_source" in haystack
+        or "ohlcv_snapshot_versions" in haystack
+        or "snapshot" in haystack
+    )
 
 
 def summarize_result(artifact: ResultArtifact) -> dict[str, Any]:
@@ -154,6 +159,15 @@ def parse_backtesting_doc(path: Path) -> dict[str, Any]:
         for line in text.splitlines()
         if "quant\\backtester.py" in line or "quant/backtester.py" in line
     ]
+    deterministic_ohlcv_commands = [
+        command
+        for command in commands
+        if "--ohlcv-snapshot" in command
+        or (
+            "--ohlcv-warehouse" in command
+            and "--ohlcv-warehouse-snapshot-source" in command
+        )
+    ]
     snapshots = {
         spec["snapshot"]: Path(spec["snapshot"]).exists()
         for spec in FIXED_WINDOWS.values()
@@ -161,7 +175,13 @@ def parse_backtesting_doc(path: Path) -> dict[str, Any]:
     return {
         "path": path.as_posix(),
         "exists": path.exists(),
-        "fixed_window_command_count": sum(
+        "fixed_window_command_count": len(deterministic_ohlcv_commands),
+        "warehouse_snapshot_command_count": sum(
+            "--ohlcv-warehouse" in command
+            and "--ohlcv-warehouse-snapshot-source" in command
+            for command in commands
+        ),
+        "legacy_snapshot_command_count": sum(
             "--ohlcv-snapshot" in command for command in commands
         ),
         "snapshot_files_exist": snapshots,

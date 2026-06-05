@@ -62,10 +62,24 @@ WINDOWS: dict[str, dict[str, str]] = {
 LOCAL_SEED_SNAPSHOTS = [
     "data/experiments/exp-20260519-029/ohlcv/exp-20260519-029_late_strong_current_universe_ohlcv.json",
     "data/experiments/exp-20260501-008/ohlcv_aug_20251023_20260421.json",
+    "data/ohlcv/ohlcv_snapshot_20251023_20260501_with_pilot.json",
+    "data/ohlcv/ohlcv_snapshot_20251023_20260421_with_pilot_refreshed.json",
     "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
     "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
     "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
 ]
+REFERENCE_OHLCV_TICKERS = {
+    "SPY",
+    "QQQ",
+    "IWM",
+    "TLT",
+    "IEF",
+    "XLE",
+    "XLU",
+    "XLP",
+    "XLV",
+    "SNXX",
+}
 
 MIN_COVERAGE_FRACTION = 0.95
 MIN_MEDIAN_CLOSE = 5.0
@@ -469,7 +483,7 @@ def seed_local_snapshots(
         snapshot = _load_json(path)
         for ticker, raw_rows in (snapshot.get("ohlcv") or {}).items():
             ticker = str(ticker).upper()
-            if ticker not in target_tickers:
+            if ticker not in target_tickers and ticker not in REFERENCE_OHLCV_TICKERS:
                 continue
             rows = _clean_snapshot_rows(raw_rows, start, end)
             inserted = _upsert_ohlcv(conn, ticker, rows, source=rel_path, updated_at=generated_at)

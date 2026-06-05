@@ -18,27 +18,29 @@ are not automatically executed by the canonical backtest.
 ```powershell
 cd D:\Github\ginger
 
-.\.venv\Scripts\python.exe quant\backtester.py --start <START> --end <END> --ohlcv-snapshot <SNAPSHOT>
+.\.venv\Scripts\python.exe -B quant\ohlcv_warehouse.py seed-snapshot-versions
+.\.venv\Scripts\python.exe quant\backtester.py --start <START> --end <END> --ohlcv-warehouse data\experiments\exp-20260519-030\warehouse_main.sqlite --ohlcv-warehouse-snapshot-source <SNAPSHOT>
 ```
 
-For new broad/full-universe work, prefer the SQLite OHLCV warehouse once the
-reference snapshot seed has been refreshed:
+`<SNAPSHOT>` must be the matching canonical file for the window, for example
+`data\ohlcv\ohlcv_snapshot_20241002_20250422.json` for `old_thin`. The command
+above loads the warehouse `ohlcv_snapshot_versions` table, so standard
+fixed-window baselines stay bit-exact to the organized snapshot files while
+new work reads through the same SQLite warehouse surface.
+
+For new broad/full-universe work, use the broad warehouse `ohlcv` table:
 
 ```powershell
 .\.venv\Scripts\python.exe -B quant\ohlcv_warehouse.py seed-snapshots
 .\.venv\Scripts\python.exe quant\backtester.py --start <START> --end <END> --ohlcv-warehouse data\experiments\exp-20260519-030\warehouse_main.sqlite
 ```
 
-For fixed-window standard baseline reproduction from SQLite, use the
-versioned snapshot table rather than the broad `ohlcv` table:
+For legacy artifact reproduction that explicitly needs a JSON file input,
+`--ohlcv-snapshot` remains supported:
 
 ```powershell
-.\.venv\Scripts\python.exe -B quant\ohlcv_warehouse.py seed-snapshot-versions
-.\.venv\Scripts\python.exe quant\backtester.py --start <START> --end <END> --ohlcv-warehouse data\experiments\exp-20260519-030\warehouse_main.sqlite --ohlcv-warehouse-snapshot-source <SNAPSHOT>
+.\.venv\Scripts\python.exe quant\backtester.py --start <START> --end <END> --ohlcv-snapshot <SNAPSHOT>
 ```
-
-`<SNAPSHOT>` must be the matching canonical file for the window, for example
-`data\ohlcv\ohlcv_snapshot_20241002_20250422.json` for `old_thin`.
 
 Do not mix OHLCV sources in a before/after Gate 4 comparison. Use
 snapshot-vs-snapshot for legacy artifact reproduction, or
@@ -56,7 +58,7 @@ those files.
 等试点 ticker 混入主候选池，也不会占用 core `MAX_POSITIONS` slot。
 
 ```powershell
-.\.venv\Scripts\python.exe quant\backtester.py --start <START> --end <END> --ohlcv-snapshot <SNAPSHOT> --include-pilot-sleeve
+.\.venv\Scripts\python.exe quant\backtester.py --start <START> --end <END> --ohlcv-warehouse data\experiments\exp-20260519-030\warehouse_main.sqlite --ohlcv-warehouse-snapshot-source <SNAPSHOT> --include-pilot-sleeve
 ```
 
 开启后，`AI_INFRA_PILOT`（AI 基建试点子组合）会使用
@@ -82,7 +84,7 @@ change, capital/risk scalar change, bull-booster change, or promotion decision
 that touches `AI_INFRA_AGGRESSIVE` must also run the pilot-sleeve replay:
 
 ```powershell
-.\.venv\Scripts\python.exe quant\backtester.py --start <START> --end <END> --ohlcv-snapshot <SNAPSHOT> --include-pilot-sleeve
+.\.venv\Scripts\python.exe quant\backtester.py --start <START> --end <END> --ohlcv-warehouse data\experiments\exp-20260519-030\warehouse_main.sqlite --ohlcv-warehouse-snapshot-source <SNAPSHOT> --include-pilot-sleeve
 ```
 
 Acceptance records for `AI_INFRA_AGGRESSIVE` must report both:
@@ -158,7 +160,7 @@ block is also summarized in the console output. It does not change
 To disable the diagnostic block for a smaller/debug-only run, add:
 
 ```powershell
-.\.venv\Scripts\python.exe quant\backtester.py --start <START> --end <END> --ohlcv-snapshot <SNAPSHOT> --no-oracle-diagnostics
+.\.venv\Scripts\python.exe quant\backtester.py --start <START> --end <END> --ohlcv-warehouse data\experiments\exp-20260519-030\warehouse_main.sqlite --ohlcv-warehouse-snapshot-source <SNAPSHOT> --no-oracle-diagnostics
 ```
 
 `--include-oracle-diagnostics` remains accepted as a backwards-compatible alias

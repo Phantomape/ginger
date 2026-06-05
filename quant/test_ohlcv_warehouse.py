@@ -297,3 +297,16 @@ def test_backtester_download_data_can_use_warehouse_snapshot_source(tmp_path):
 
     assert sorted(frames) == ["AAA", "QQQ", "SPY"]
     assert float(frames["AAA"].loc["2025-01-02", "Close"]) == 10.5
+
+
+def test_backtester_resolves_absolute_legacy_snapshot_path():
+    repo_root = Path(__file__).resolve().parents[1]
+    legacy = repo_root / "data" / "ohlcv_snapshot_20241002_20250422.json"
+    expected = (
+        repo_root / "data" / "ohlcv" / "ohlcv_snapshot_20241002_20250422.json"
+    )
+
+    assert expected.exists()
+    engine = BacktestEngine([], start="2025-01-02", end="2025-01-02")
+
+    assert Path(engine._resolve_snapshot_path(str(legacy))) == expected

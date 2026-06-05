@@ -19,6 +19,7 @@ import yfinance as yf
 from yfinance_bootstrap import configure_yfinance_runtime
 from operator_input_paths import open_positions_path
 from open_position_schema import account_position_tickers
+from earnings_assets import empty_earnings_data, is_non_earnings_asset
 
 logger = logging.getLogger(__name__)
 
@@ -314,18 +315,11 @@ def get_earnings_data(
     """
     as_of_date = _coerce_as_of_date(as_of)
     current_mode = (as_of is None) or (as_of_date == datetime.now().date())
-    result = {
-        "next_earnings_date": None,
-        "days_to_earnings": None,
-        "last_earnings_date": None,
-        "days_since_last_earnings": None,
-        "post_earnings_continuation_confirmed": False,
-        "post_earnings_event_date": None,
-        "eps_estimate": None,
-        "eps_actual_last": None,
-        "historical_surprise_pct": [],
-        "avg_historical_surprise_pct": None,
-    }
+    result = empty_earnings_data()
+
+    if is_non_earnings_asset(ticker):
+        logger.debug("%s: earnings data skipped for non-earnings asset", ticker)
+        return result
 
     try:
         ticker_obj = ticker_obj or yf.Ticker(ticker)

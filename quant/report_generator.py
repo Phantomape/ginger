@@ -31,6 +31,7 @@ import os
 import logging
 from datetime import datetime
 
+from constants import ADVERSE_GAP_CANCEL_PCT, CANCEL_GAP_PCT
 from data_paths import daily_artifact_path
 
 logger = logging.getLogger(__name__)
@@ -55,6 +56,22 @@ def _format_market_number(value, digits=1):
         return f"{float(value):.{digits}f}"
     except (TypeError, ValueError):
         return "n/a"
+
+
+def _format_price(value):
+    return f"${value:.2f}" if isinstance(value, (int, float)) else "n/a"
+
+
+def _addon_price_guardrail(estimated_price, effective_stop=None):
+    if not isinstance(estimated_price, (int, float)):
+        return None
+    lower = estimated_price * (1.0 - ADVERSE_GAP_CANCEL_PCT)
+    upper = estimated_price * (1.0 + CANCEL_GAP_PCT)
+    return {
+        "lower": round(lower, 2),
+        "upper": round(upper, 2),
+        "effective_stop": effective_stop if isinstance(effective_stop, (int, float)) else None,
+    }
 
 
 def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
@@ -1229,11 +1246,50 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         lines.append("FOLLOW-THROUGH ADD-ONS")
         lines.append("-" * 60)
         for action in addon_actions:
+            estimated_price = action.get("estimated_price")
+            price_text = (
+                f" near ${estimated_price:.2f}"
+                if isinstance(estimated_price, (int, float))
+                else ""
+            )
             lines.append(
                 f"\n{action.get('ticker', '?')}: ADD "
                 f"{action.get('shares_to_buy', '?')} shares "
-                f"at next session open"
+                f"at next session open{price_text}"
             )
+            estimated_value = action.get("estimated_position_value_usd")
+            effective_stop = (action.get("cap_detail") or {}).get("effective_stop")
+            if isinstance(estimated_value, (int, float)) or isinstance(effective_stop, (int, float)):
+                value_text = (
+                    f"${estimated_value:,.2f}"
+                    if isinstance(estimated_value, (int, float))
+                    else "n/a"
+                )
+                stop_text = (
+                    f"${effective_stop:.2f}"
+                    if isinstance(effective_stop, (int, float))
+                    else "n/a"
+                )
+                lines.append(
+                    f"   Reference: price {price_text.strip() or 'n/a'}  |  "
+                    f"Est. value: {value_text}  |  Effective stop: {stop_text}"
+                )
+            guardrail = _addon_price_guardrail(estimated_price, effective_stop)
+            if guardrail:
+                stop_guard = guardrail.get("effective_stop")
+                stop_text = (
+                    f"  |  hard skip <= {_format_price(stop_guard)}"
+                    if isinstance(stop_guard, (int, float))
+                    else ""
+                )
+                lines.append(
+                    "   Acceptable open guardrail: "
+                    f"{_format_price(guardrail['lower'])} - {_format_price(guardrail['upper'])}"
+                    f"{stop_text}"
+                )
+                lines.append(
+                    "   Gap guardrail is advisory for add-ons; adverse open below range means skip."
+                )
             lines.append(
                 f"   Checkpoint: day {action.get('checkpoint_days')}  |  "
                 f"Unrealized: {action.get('unrealized_pct', 0)*100:.1f}%  |  "

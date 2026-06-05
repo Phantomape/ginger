@@ -943,7 +943,7 @@ def collect_evidence_curves(root: Path):
             "remaining_closed": max(target - closed, 0) if target is not None else None,
             "closed_pct": latest.get("closed_pct"),
             "pipeline_pct": latest.get("pipeline_pct"),
-            "points": points[-40:],
+            "points": points[-90:],
         })
     curves.sort(
         key=lambda curve: (
@@ -2452,6 +2452,15 @@ HTML_TEMPLATE = """<!doctype html>
       stroke: #252a32;
       stroke-width: 2;
     }
+    .curve-point {
+      stroke: #252a32;
+      stroke-width: 1.5;
+    }
+    .curve-hit {
+      fill: transparent;
+      stroke: transparent;
+      pointer-events: all;
+    }
     .curve-legend {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -3345,13 +3354,31 @@ HTML_TEMPLATE = """<!doctype html>
       const datedPoints = visible.flatMap(curve => (curve.points || [])
         .map(point => ({ point, time: Date.parse(point.date || "") }))
         .filter(item => Number.isFinite(item.time)));
+      if (!datedPoints.length) {
+        return `<div class="empty">No dated forward evidence snapshots yet</div>`;
+      }
       const minTime = Math.min(...datedPoints.map(item => item.time));
       const maxTime = Math.max(...datedPoints.map(item => item.time));
       const xForTime = time => left + (maxTime === minTime ? chartWidth : ((time - minTime) / (maxTime - minTime)) * chartWidth);
       const formatDate = time => new Date(time).toISOString().slice(5, 10);
-      const xTicks = maxTime === minTime
-        ? [minTime]
-        : [minTime, minTime + (maxTime - minTime) / 2, maxTime];
+      const formatCount = value => Number(value || 0).toLocaleString();
+      const formatMoney = value => {
+        const n = Number(value || 0);
+        const rounded = Math.round(n);
+        if (rounded > 0) return `+$${rounded.toLocaleString()}`;
+        if (rounded < 0) return `-$${Math.abs(rounded).toLocaleString()}`;
+        return "$0";
+      };
+      const sampledTicks = (values, maxCount=8) => {
+        const unique = Array.from(new Set(values)).sort((a, b) => a - b);
+        if (unique.length <= maxCount) return unique;
+        const selected = [];
+        for (let i = 0; i < maxCount; i += 1) {
+          selected.push(unique[Math.round(i * (unique.length - 1) / (maxCount - 1))]);
+        }
+        return Array.from(new Set(selected)).sort((a, b) => a - b);
+      };
+      const xTicks = sampledTicks(datedPoints.map(item => item.time));
       const grid = [0, 25, 50, 75, 100].map(value => `
         <line class="grid-line" x1="${left}" y1="${y(value)}" x2="${width - right}" y2="${y(value)}"></line>
         <text class="axis-label" x="12" y="${y(value) + 4}">${value}%</text>`).join("");
@@ -3364,19 +3391,40 @@ HTML_TEMPLATE = """<!doctype html>
           .filter(item => Number.isFinite(item.time));
         if (!points.length) return "";
         const color = curveColor(curveIndex);
-        const coords = points.map(item => [xForTime(item.time), y(item.point.pipeline_pct)]);
-        const path = coords.map(([x, y], idx) => `${idx ? "L" : "M"}${x.toFixed(1)} ${y.toFixed(1)}`).join(" ");
-        const last = coords[coords.length - 1];
+        const coords = points.map(item => ({
+          item,
+          x: xForTime(item.time),
+          y: y(item.point.pipeline_pct),
+        }));
+        const path = coords.map(({x, y}, idx) => `${idx ? "L" : "M"}${x.toFixed(1)} ${y.toFixed(1)}`).join(" ");
         const lastPoint = points[points.length - 1].point;
+        const markers = coords.map(({item, x, y}, idx) => {
+          const point = item.point || {};
+          const isLatest = idx === coords.length - 1;
+          const title = [
+            `${curve.sleeve} snapshot point`,
+            `${point.date || ""}`,
+            `maturity ${Math.round(point.pipeline_pct || 0)}%`,
+            `closed ${formatCount(point.closed_count)} / ${formatCount(point.target_count || curve.target_count)}`,
+            `open ${formatCount(point.open_count)}, pending ${formatCount(point.pending_count)}`,
+            `realized ${formatMoney(point.realized_pnl)}, unrealized ${formatMoney(point.unrealized_pnl)}`,
+          ].join("\\n");
+          return `
+            <g>
+              <title>${esc(title)}</title>
+              <circle class="${isLatest ? "curve-dot" : "curve-point"}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${isLatest ? "4.8" : "3.2"}" fill="${color}"></circle>
+              <circle class="curve-hit" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="9"></circle>
+            </g>`;
+        }).join("");
         return `
           <path class="curve-path" d="${path}" stroke="${color}"><title>${esc(curve.sleeve)} ${esc(lastPoint.date)}: ${esc(Math.round(lastPoint.pipeline_pct || 0))}% maturity, ${esc(lastPoint.closed_count || 0)} closed</title></path>
-          <circle class="curve-dot" cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="4.5" fill="${color}"></circle>`;
+          ${markers}`;
       }).join("");
       const legend = visible.map((curve, curveIndex) => `
         <div class="legend-item">
           <span class="legend-dot" style="background:${curveColor(curveIndex)}"></span>
           <span class="legend-name" title="${esc(curve.sleeve)}">${esc(shortSleeveName(curve.sleeve))}</span>
-          <span class="legend-metric">${esc(curve.latest_date || "")} / ${esc(Math.round(curve.pipeline_pct || 0))}%</span>
+          <span class="legend-metric">${esc(curve.latest_date || "")} / ${esc(Math.round(curve.pipeline_pct || 0))}% / ${esc(curve.closed_count || 0)}/${esc(curve.target_count || "")}</span>
         </div>`).join("");
       return `
         <div class="chart-shell">
@@ -3485,7 +3533,7 @@ HTML_TEMPLATE = """<!doctype html>
                 <h2>Forward Evidence Curves</h2>
                 <p>HF-style training-curve view for paper sleeves. X-axis is snapshot date; Y-axis is evidence maturity. Closed samples remain the promotion gate.</p>
               </div>
-              <span class="pill">Curves <strong>${esc(curves.length)}</strong></span>
+              <span class="pill">Series indexed <strong>${esc(curves.length)}</strong></span>
             </div>
             ${renderEvidenceChart(curves)}
           </section>

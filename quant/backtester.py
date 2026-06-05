@@ -149,6 +149,7 @@ from production_parity import (
 )
 from position_manager import compute_exit_levels, evaluate_exit_signals
 from yfinance_bootstrap import configure_yfinance_runtime
+from earnings_assets import is_non_earnings_asset
 from pilot_sleeve import (
     AI_INFRA_AGGRESSIVE_SLEEVE_NAME,
     PILOT_SLEEVE_NAME,
@@ -1138,6 +1139,11 @@ class BacktestEngine:
         if not raw_path:
             return None
         if os.path.isabs(raw_path):
+            if os.path.exists(raw_path):
+                return raw_path
+            mapped = ohlcv_snapshot_path(raw_path)
+            if str(mapped) != str(raw_path) and os.path.exists(mapped):
+                return str(mapped)
             return raw_path
         candidate = os.path.abspath(raw_path)
         if os.path.exists(candidate):
@@ -1346,7 +1352,12 @@ class BacktestEngine:
         """
         import numpy as np
         cal = {}
+        skipped_non_earnings = []
         for ticker in self._backtest_data_universe():
+            if is_non_earnings_asset(ticker):
+                cal[ticker] = []
+                skipped_non_earnings.append(ticker)
+                continue
             try:
                 t = yf.Ticker(ticker)
                 df = t.get_earnings_dates(limit=20)
@@ -1361,7 +1372,18 @@ class BacktestEngine:
                 logger.debug(f"{ticker}: earnings calendar unavailable - {e}")
                 cal[ticker] = []
         n_with = sum(1 for v in cal.values() if v)
-        logger.info(f"Earnings calendar: {n_with}/{len(cal)} tickers populated")
+        eligible = len(cal) - len(skipped_non_earnings)
+        if skipped_non_earnings:
+            logger.info(
+                "Earnings calendar skipped non-earnings assets: %s",
+                ", ".join(sorted(skipped_non_earnings)),
+            )
+        logger.info(
+            "Earnings calendar: %d/%d eligible tickers populated; %d non-earnings assets skipped",
+            n_with,
+            eligible,
+            len(skipped_non_earnings),
+        )
         return cal
 
     def _earnings_dict_for(self, today, calendar_dates, ticker=None):
@@ -3933,7 +3955,7 @@ class BacktestEngine:
                 "Trailing partial reduces: replay container is on by default, while pure trailing trims remain disabled by shared production policy",
                 "data_layer.get_universe() reads current watchlist, not point-in-time",
                 "earnings_event_long: runs with partial data (days_to_earnings only); eps_estimate and positive_surprise_history are None until P-ERN snapshots accumulate",
-                "OHLCV is live-downloaded unless --ohlcv-snapshot is provided; small alpha deltas should not be promoted from non-deterministic vendor downloads",
+                "OHLCV is live-downloaded unless --ohlcv-snapshot or --ohlcv-warehouse is provided; small alpha deltas should not be promoted from non-deterministic vendor downloads",
             ],
         }
         # Refresh legacy earnings disclosure after the dict literal so older

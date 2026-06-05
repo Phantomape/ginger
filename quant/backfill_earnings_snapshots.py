@@ -9,6 +9,7 @@ import yfinance as yf
 
 from data_layer import get_earnings_data, get_universe
 from data_paths import daily_artifact_path
+from earnings_assets import empty_earnings_data, is_non_earnings_asset
 from earnings_snapshot import persist_earnings_snapshot
 from yfinance_bootstrap import configure_yfinance_runtime
 
@@ -44,7 +45,12 @@ def backfill_earnings_snapshots(start, end, universe=None, data_dir=None):
     )
 
     prefetched = {}
+    skipped_non_earnings = []
     for ticker in universe:
+        if is_non_earnings_asset(ticker):
+            prefetched[ticker] = {"skip_non_earnings_asset": True}
+            skipped_non_earnings.append(ticker)
+            continue
         ticker_obj = yf.Ticker(ticker)
         try:
             dates_df = ticker_obj.get_earnings_dates(limit=20)
@@ -67,12 +73,20 @@ def backfill_earnings_snapshots(start, end, universe=None, data_dir=None):
             "info": info,
             "calendar": calendar,
         }
+    if skipped_non_earnings:
+        logger.info(
+            "Skipping earnings prefetch for non-earnings assets: %s",
+            ", ".join(sorted(skipped_non_earnings)),
+        )
 
     written = []
     for day in trading_days:
         earnings_by_ticker = {}
         for ticker in universe:
             src = prefetched[ticker]
+            if src.get("skip_non_earnings_asset"):
+                earnings_by_ticker[ticker] = empty_earnings_data()
+                continue
             earnings_by_ticker[ticker] = get_earnings_data(
                 ticker,
                 as_of=day,
