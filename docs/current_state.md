@@ -149,7 +149,7 @@ transfer: incremental EV was only `+0.0101`, incremental PnL was `$+177.79`,
 concentration gates failed. Neither `exp-20260605-023` nor
 `exp-20260605-024` changes production code or accepted strategy state.
 Regression checkpoint: full unit tests passed after cleanup on 2026-06-05
-(`1136 passed in 48.24s`). `scripts/experiment.py audit --strict` still fails
+(`1139 passed in 42.86s`). `scripts/experiment.py audit --strict` still fails
 on existing prediction/calibration coverage debt (post-enforcement prediction
 coverage `89.03%`, closed post-enforcement calibration coverage `60.95%`);
 this was not introduced by today's regression pass.
