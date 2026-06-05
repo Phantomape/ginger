@@ -1,0 +1,117 @@
+{
+  "after_metrics": {
+    "expected_value_score": 7.8941,
+    "max_drawdown_pct": 0.1119,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.7925,
+    "total_pnl": 234850.99,
+    "total_return_pct": null,
+    "trade_count": 61,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 7.8941,
+    "max_drawdown_pct": 0.1119,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.7925,
+    "total_pnl": 234850.99,
+    "total_return_pct": null,
+    "trade_count": 61,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 0,
+    "brier_score": 0.0529,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -0.25,
+    "expected_ev_delta": 0.25,
+    "expected_pnl_delta": 5000.0,
+    "pnl_prediction_error": -5000.0,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "old_thin regression;sample too thin;medium credibility rows are procedural not economic;single ticker concentration"
+    ],
+    "predicted_success_probability": 0.23,
+    "realized_failure_mode": "missing_historical_source_credibility_bucket",
+    "surprise_level": "very_low",
+    "surprise_note": "Forward files have the field, but the canonical historical feature rows do not."
+  },
+  "change_summary": "Preflight found the reserved source_credibility_bucket field is absent from the historical SEC filing feature rows across the canonical windows; no strategy or production code changed.",
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "sec_filing_medium_credibility_absorption_candidate_source_v1",
+  "component": "quant/experiments/exp_20260605_017_sec_filing_medium_absorption_candidate_pool.py;data/experiments/exp-20260605-017/;experiments/artifacts/exp-20260605-017_sec_filing_medium_absorption_candidate_pool.md;experiments/cards/exp-20260605-017.md;experiments/logs/exp-20260605-017.json;experiments/manifests/exp-20260605-017.json;experiments/tickets/exp-20260605-017.json",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260605-017",
+  "hypothesis": "Medium-credibility SEC 8-K filings with same-day low-volume price absorption may form a cleaner free-data default-off candidate pool than raw SEC event fields.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "sec_filing_feature_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260530-006",
+    "exp-20260530-008",
+    "exp-20260530-009"
+  ],
+  "new_evidence_type": "production_visible_sec_filing_feature_plus_ohlcv_absorption_field",
+  "next_retry_requires": [],
+  "notes": "Data-limited alpha branch rejected before Gate 4; switch to a historically available SEC filing item/absorption relation.",
+  "parameters": {
+    "locked_variables": [
+      "core ranking",
+      "sizing",
+      "exits",
+      "LLM/news",
+      "live orders",
+      "accepted default-off adapters"
+    ],
+    "single_causal_variable": "sec_filing_medium_credibility_absorption_candidate_source_v1"
+  },
+  "prediction": {
+    "confidence_reason": "Uses historical PIT-safe SEC feature files and free OHLCV absorption, but SEC event-graph fields have mixed prior results.",
+    "expected_ev_delta": 0.25,
+    "expected_pnl_delta": 5000.0,
+    "main_failure_modes": [
+      "old_thin regression;sample too thin;medium credibility rows are procedural not economic;single ticker concentration"
+    ],
+    "recorded_at": "2026-06-05T11:06:55+00:00",
+    "success_probability": 0.23
+  },
+  "prior_trial_count": 3,
+  "rejection_reason": "No AGENTS.md Gate 4 acceptance condition was met.",
+  "related_files": [
+    "data/experiments/exp-20260605-017/sec_filing_medium_absorption_before.json",
+    "data/experiments/exp-20260605-017/sec_filing_medium_absorption_after.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-06-05T11:10:24+00:00",
+  "trial_family": "sec_filing_medium_credibility_absorption_candidate_pool",
+  "trial_variant_id": "sec_filing_medium_credibility_absorption_top1_v1"
+}
