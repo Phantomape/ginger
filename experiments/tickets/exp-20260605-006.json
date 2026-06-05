@@ -1,0 +1,121 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260605_006_sec_business_development_ex99_candidate_pool.py",
+    "data/experiments/exp-20260605-006/exp_20260605_006_sec_business_development_ex99_candidate_pool.json",
+    "experiments/cards/exp-20260605-006.md",
+    "experiments/manifests/exp-20260605-006.json",
+    "experiments/tickets/exp-20260605-006.json",
+    "experiments/logs/exp-20260605-006.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "artifact": "data/experiments/exp-20260605-006/exp_20260605_006_sec_business_development_ex99_candidate_pool.json",
+  "baseline_result_file": "data/backtests/backtest_results_20260603.json",
+  "card_file": "experiments/cards/exp-20260605-006.md",
+  "change_type": "default_off_candidate_pool_replay",
+  "changed_variable": "sec_business_development_ex99_non_dilutive_candidate_source_v1",
+  "claimed_at": "2026-06-05T04:08:29+00:00",
+  "completed_at": "2026-06-05T04:16:37Z",
+  "created_at": "2026-06-05T04:08:22+00:00",
+  "decision": "rejected_sec_business_development_source_span_candidate_pool",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260605-006",
+  "experiment_uid": "expuid-b68301e2eecd4cf9",
+  "gate4": {
+    "decision": "rejected_sec_business_development_source_span_candidate_pool",
+    "ev_windows_improved": [
+      "mid_weak",
+      "old_thin"
+    ],
+    "gates": {
+      "aggregate_expected_value_positive": true,
+      "aggregate_pnl_positive": true,
+      "all_windows_expected_value_improved": false,
+      "all_windows_pnl_improved": false,
+      "concentration_guard_passed": false,
+      "drawdown_drift_passed": false,
+      "survival_floor_passed": true,
+      "target_trade_count_passed": true,
+      "target_window_count_passed": true
+    },
+    "max_drawdown_delta": 0.0065,
+    "min_survival_rate": 0.7925,
+    "passed": false,
+    "pnl_windows_improved": [
+      "mid_weak",
+      "old_thin"
+    ],
+    "rationale": "One or more Gate 4 checks failed, so the SEC business-development source-span candidate source is not retained.",
+    "requires_parity_before_promotion": false,
+    "status": "rejected"
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260605-006",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-05T04:08:22+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_business_development_ex99_candidate_pool"
+  },
+  "hypothesis": "PIT SEC 8-K/press-release filings with business-development source-span language and no offering/dilution text may identify a cleaner default-off candidate pool than generic SEC positive text.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "sec_business_development_ex99_non_dilutive_candidate_source_v1"
+  ],
+  "log": "experiments/logs/exp-20260605-006.json",
+  "mechanism_family": "default_off_candidate_pool_replay",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260604-003",
+    "exp-20260604-014",
+    "exp-20260603-012",
+    "exp-20260530-006"
+  ],
+  "new_evidence_type": "pit_sec_text_source_span_relation",
+  "owner": "alpha-search",
+  "prediction": {
+    "actual_ev_delta": 0.1114,
+    "actual_pnl_delta": 7680.02,
+    "actual_success": 0,
+    "brier_score": 0.0729,
+    "confidence_reason": "SEC text-price alignment failed as generic issuer continuation, but playbook calls for richer source-span relation fields; this uses PIT SEC text and avoids recent FTD/FINRA/Form4/Companyfacts retunes.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "window_regression",
+      "concentration_failed",
+      "sample_too_thin"
+    ],
+    "recorded_at": "2026-06-05T04:07:54+00:00",
+    "success_probability": 0.27
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_orders": false,
+    "backtester_adapter_changed": false,
+    "parity_note": "This experiment changes no production code. A retained result would need a shared default-off SEC source-span adapter with the same document-section extraction, business-development pattern set, dilution exclusions, and backtest/live parity tests before any daily report, candidate queue, or order surface could change.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "result": {
+    "aggregate_expected_value_delta": 0.1114,
+    "aggregate_strategy_total_pnl_delta": 7680.02,
+    "artifact": "experiments/artifacts/exp-20260605-006_sec_business_development_ex99_candidate_pool.md",
+    "decision": "rejected_sec_business_development_source_span_candidate_pool",
+    "log": "experiments/logs/exp-20260605-006.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260605-006.json",
+  "single_causal_variable": "sec_business_development_ex99_non_dilutive_candidate_source_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260605-006.json",
+  "trial_family": "sec_text_business_development_source_span_candidate_pool",
+  "trial_variant_id": "exp-20260605-006"
+}
