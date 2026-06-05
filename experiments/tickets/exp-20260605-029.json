@@ -1,0 +1,143 @@
+{
+  "experiment_id": "exp-20260605-029",
+  "experiment_uid": "expuid-ced7dc745727401c",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260605-029",
+    "slug": "estimate_revision_persistence_underreaction",
+    "reserved_at": "2026-06-05T18:09:10+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "alpha-search",
+  "hypothesis": "Persistent positive EPS-estimate revisions over 10/20 trading snapshots plus underreacted price action may add a cleaner default-off candidate source than raw revision velocity.",
+  "change_type": "default_off_paper_candidate_pool",
+  "mechanism_family": "analyst_revision_expectation_trajectory",
+  "trial_family": "estimate_revision_persistence_underreaction_candidate_pool",
+  "trial_variant_id": "persistent_positive_estimate_revision_underreaction_candidate_source_v1",
+  "single_causal_variable": "persistent_positive_estimate_revision_underreaction_candidate_source_v1",
+  "changed_variable": "persistent_positive_estimate_revision_underreaction_candidate_source_v1",
+  "prior_trial_count": 5,
+  "nearby_prior_experiments": [
+    "exp-20260531-001",
+    "exp-20260531-003",
+    "exp-20260604-001",
+    "exp-20260602-023",
+    "exp-20260604-029"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "daily_earnings_snapshot_revision_persistence_underreaction",
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260605_029_estimate_revision_persistence_underreaction.py",
+    "data/experiments/exp-20260605-029/",
+    "experiments/artifacts/exp-20260605-029_estimate_revision_persistence_underreaction.md",
+    "experiments/cards/exp-20260605-029.md",
+    "experiments/logs/exp-20260605-029.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "persistent_positive_estimate_revision_underreaction_candidate_source_v1"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": 0.18,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "old_thin_regression",
+      "proxy_revision_source_noise",
+      "thin_sample",
+      "positive_pnl_concentration"
+    ],
+    "confidence_reason": "Raw revision velocity was positive but failed one window; persistence plus underreaction directly targets that failure while remaining proxy-grade.",
+    "recorded_at": "2026-06-05T18:08:57+00:00"
+  },
+  "created_at": "2026-06-05T18:09:10+00:00",
+  "claimed_at": "2026-06-05T18:09:43+00:00",
+  "completed_at": "2026-06-05T18:22:21+00:00",
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260605-029/estimate_revision_persistence_underreaction_before_aggregate.json",
+    "after_result_file": "data/experiments/exp-20260605-029/estimate_revision_persistence_underreaction_after_aggregate.json",
+    "delta_metrics": {
+      "expected_value_score": -0.3025,
+      "total_pnl": -2693.67,
+      "max_drawdown_pct": 0.0013,
+      "target_trade_count": 43,
+      "max_single_positive_share": 0.351213,
+      "positive_pnl_hhi": 0.201626
+    },
+    "before_metrics": {
+      "expected_value_score": 7.8941,
+      "total_pnl": 234850.99
+    },
+    "after_metrics": {
+      "expected_value_score": 7.5916,
+      "total_pnl": 232157.32
+    },
+    "failed_gates": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression"
+    ],
+    "windows": [
+      {
+        "label": "late_strong",
+        "expected_value_before": 5.1628,
+        "expected_value_after": 4.8199,
+        "expected_value_delta": -0.3429,
+        "total_pnl_delta": -3662.59,
+        "target_trade_count": 16
+      },
+      {
+        "label": "mid_weak",
+        "expected_value_before": 2.1402,
+        "expected_value_after": 2.1696,
+        "expected_value_delta": 0.0294,
+        "total_pnl_delta": 498.25,
+        "target_trade_count": 20
+      },
+      {
+        "label": "old_thin",
+        "expected_value_before": 0.5911,
+        "expected_value_after": 0.6021,
+        "expected_value_delta": 0.011,
+        "total_pnl_delta": 470.67,
+        "target_trade_count": 7
+      }
+    ],
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.18,
+      "brier_score": 0.0324,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.18,
+      "actual_ev_delta": -0.3025,
+      "ev_prediction_error": -0.4825,
+      "expected_pnl_delta": 2500.0,
+      "actual_pnl_delta": -2693.67,
+      "pnl_prediction_error": -5193.67,
+      "predicted_failure_modes": [
+        "old_thin_regression",
+        "proxy_revision_source_noise",
+        "thin_sample",
+        "positive_pnl_concentration"
+      ],
+      "realized_failure_mode": "late_strong_regression",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "Underreaction filter fixed old_thin but inverted the strong-trend window, suggesting the raw revision edge depended on leadership rather than lag."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260605-029.json",
+  "card_file": "experiments/cards/exp-20260605-029.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260605-029.json"
+}
