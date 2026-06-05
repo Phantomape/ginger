@@ -1,0 +1,143 @@
+{
+  "after_metrics": {
+    "expected_value_score": 7.9653,
+    "max_drawdown_pct_max": 0.1106,
+    "min_survival_rate": 0.7925,
+    "strategy_total_pnl": 237012.21,
+    "trade_count": 90
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "expected_value_score": 7.8941,
+    "max_drawdown_pct_max": 0.1119,
+    "min_survival_rate": 0.7925,
+    "strategy_total_pnl": 234850.99,
+    "trade_count": 61
+  },
+  "change_summary": "Tested fresh SEC Companyfacts dual-growth filings with pre-filing SPY-relative underreaction and first-usable-day price confirmation as a replay-only default-off paper candidate source.",
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+  "component": "quant/experiments/exp_20260605_022_broad_companyfacts_fresh_underreaction_filing.py",
+  "decision": "rejected_broad_companyfacts_fresh_underreaction_filing_candidate_pool",
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0712,
+    "expected_value_score_delta_pct": 0.009019,
+    "max_drawdown_delta": -0.0013,
+    "strategy_total_pnl_delta": 2161.22,
+    "strategy_total_pnl_delta_pct": 0.009203,
+    "trade_count_delta": 29
+  },
+  "experiment_id": "exp-20260605-022",
+  "hypothesis": "Fresh SEC Companyfacts dual-growth filings with pre-filing SPY-relative underreaction and first-usable-day price confirmation may add cleaner default-off paper candidates than stale daily broad growth rows.",
+  "lane": "alpha_search",
+  "mechanism_family": "default_off_paper_candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260605-011",
+    "exp-20260605-014",
+    "exp-20260605-015",
+    "exp-20260605-016"
+  ],
+  "new_evidence_type": "production_visible_filed_date_companyfacts_event_timing_field",
+  "next_retry_requires": [
+    "do not retune fresh Companyfacts filing underreaction thresholds on the frozen windows",
+    "collect forward paper replacement-value rows before revisiting this relation",
+    "positive replay would require shared default-off adapter and parity tests before promotion",
+    "use a genuinely new free-data relation if this fails"
+  ],
+  "parameters": {
+    "daily_selection": "top_1_by_fresh_filing_underreaction_score",
+    "hold_days": 10,
+    "max_prefiling_ret20_excess_spy": 0.0,
+    "min_avg_dollar_volume_20d": 50000000.0,
+    "min_price": 10.0,
+    "min_profit_yoy_growth": 0.15,
+    "min_ret20_excess_spy": -0.02,
+    "min_revenue_yoy_growth": 0.15,
+    "min_signal_close_location": 0.6,
+    "min_signal_day_return": 0.0,
+    "paper_notional": 4000.0,
+    "round_trip_cost_pct": 0.0035,
+    "same_ticker_cooldown_days": 30,
+    "trade_enabled": false
+  },
+  "prediction": {
+    "actual_ev_delta": 0.0712,
+    "actual_pnl_delta": 2161.22,
+    "actual_success": 0,
+    "brier_score": 0.0529,
+    "confidence_reason": "Default-off candidate-pool adapters are the highest-priority meta family, but nearby broad Companyfacts variants failed or could not promote; this uses filing-event timing and pre-filing underreaction rather than peer confirmation or scalar retuning.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "old_thin_regression",
+      "stale_growth_not_incremental",
+      "window_regression",
+      "drawdown_worsening",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-05T15:07:04+00:00",
+    "success_probability": 0.23
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_note": "This runner changes no production code. It uses only SEC Companyfacts growth rows with filed-date visibility, warehouse OHLCV known after the first usable trading-day close, and delayed next-open paper entry. A positive result would require a separate shared default-off fresh Companyfacts filing adapter, daily production exposure of the same filed-date and OHLCV confirmation fields, warehouse/snapshot replay parity, and focused tests before any report queue, paper ledger, candidate priority, or order surface could change.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "window_ev_regression;window_pnl_regression",
+  "related_files": [
+    "quant/experiments/exp_20260605_022_broad_companyfacts_fresh_underreaction_filing.py",
+    "data/experiments/exp-20260605-022/exp_20260605_022_broad_companyfacts_fresh_underreaction_filing.json",
+    "experiments/logs/exp-20260605-022.json",
+    "experiments/artifacts/exp-20260605-022_broad_companyfacts_fresh_underreaction_filing.md",
+    "experiments/tickets/exp-20260605-022.json",
+    "data/kova/fundamentals/companyfacts_growth_broad_universe_20260604.jsonl"
+  ],
+  "status": "rejected",
+  "timestamp": "2026-06-05T15:12:51Z",
+  "trial_family": "broad_companyfacts_fresh_underreaction_filing_candidate_pool",
+  "trial_variant_id": "broad_companyfacts_fresh_underreaction_filing_top1_v1",
+  "windows": [
+    {
+      "expected_value_after": 5.1479,
+      "expected_value_before": 5.1628,
+      "expected_value_delta": -0.0149,
+      "label": "late_strong",
+      "strategy_total_pnl_delta": 728.56,
+      "target_trade_count": 17,
+      "target_trade_pnl_usd": -188.99
+    },
+    {
+      "expected_value_after": 2.2338,
+      "expected_value_before": 2.1402,
+      "expected_value_delta": 0.0936,
+      "label": "mid_weak",
+      "strategy_total_pnl_delta": 1667.3,
+      "target_trade_count": 11,
+      "target_trade_pnl_usd": 1595.67
+    },
+    {
+      "expected_value_after": 0.5836,
+      "expected_value_before": 0.5911,
+      "expected_value_delta": -0.0075,
+      "label": "old_thin",
+      "strategy_total_pnl_delta": -234.64,
+      "target_trade_count": 1,
+      "target_trade_pnl_usd": -234.64
+    }
+  ]
+}

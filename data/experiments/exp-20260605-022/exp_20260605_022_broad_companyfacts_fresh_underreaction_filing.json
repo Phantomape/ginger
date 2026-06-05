@@ -1,0 +1,2980 @@
+{
+  "aggregate": {
+    "after": {
+      "expected_value_score": 7.9653,
+      "max_drawdown_pct_max": 0.1106,
+      "min_survival_rate": 0.7925,
+      "strategy_total_pnl": 237012.21,
+      "trade_count": 90
+    },
+    "before": {
+      "expected_value_score": 7.8941,
+      "max_drawdown_pct_max": 0.1119,
+      "min_survival_rate": 0.7925,
+      "strategy_total_pnl": 234850.99,
+      "trade_count": 61
+    },
+    "comparison": {
+      "expected_value_score_delta": 0.0712,
+      "expected_value_score_delta_pct": 0.009019,
+      "max_drawdown_delta": -0.0013,
+      "strategy_total_pnl_delta": 2161.22,
+      "strategy_total_pnl_delta_pct": 0.009203,
+      "trade_count_delta": 29
+    }
+  },
+  "anti_js": "No JavaScript was used.",
+  "candidate_audit": {
+    "candidate_rows_before_daily_top1_by_window": {
+      "late_strong": 21,
+      "mid_weak": 19,
+      "old_thin": 1
+    },
+    "fresh_filing_rule": {
+      "max_filing_to_signal_trading_days": 2,
+      "max_prefiling_ret20_excess_spy": 0.0,
+      "min_profit_yoy_growth": 0.15,
+      "min_ret20_excess_spy": -0.02,
+      "min_revenue_yoy_growth": 0.15,
+      "min_signal_close_location": 0.6,
+      "min_signal_day_return": 0.0
+    },
+    "growth_ticker_count": 1274,
+    "max_paper_trades_per_entry_day": 1,
+    "raw_candidate_count": 29,
+    "raw_filing_events_by_window": {
+      "late_strong": 403,
+      "mid_weak": 360,
+      "old_thin": 160
+    },
+    "same_ticker_cooldown_days": 30,
+    "selected_by_window": {
+      "late_strong": 17,
+      "mid_weak": 11,
+      "old_thin": 1
+    },
+    "underreaction_rejects_by_window": {
+      "late_strong": 382,
+      "mid_weak": 323,
+      "old_thin": 145
+    },
+    "warehouse_frame_count": 1446
+  },
+  "completed_at": "2026-06-05T15:12:51Z",
+  "experiment_id": "exp-20260605-022",
+  "gate2": {
+    "missing_entry_date_or_target_price": [],
+    "passed": true,
+    "path": "operator_inputs/open_positions.json",
+    "position_count": 15
+  },
+  "gate3": {
+    "min_survival_rate": 0.7925,
+    "note": "Replay-only paper candidate source does not alter core signal filters.",
+    "survival_rate_unchanged": true
+  },
+  "gate4": {
+    "decision": "rejected_broad_companyfacts_fresh_underreaction_filing_candidate_pool",
+    "drawdown_guard": "<= 0.005",
+    "failed_reasons": [
+      "window_ev_regression",
+      "window_pnl_regression"
+    ],
+    "passed": false,
+    "positive_pnl_hhi_guard": "<= 0.3",
+    "requires_parity_before_promotion": true,
+    "single_ticker_positive_share_guard": "<= 0.5",
+    "status": "rejected",
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "windows_ev_regressed": [
+      "late_strong",
+      "old_thin"
+    ],
+    "windows_pnl_regressed": [
+      "old_thin"
+    ]
+  },
+  "lane": "alpha_search",
+  "next_retry_requires": [
+    "do not retune fresh Companyfacts filing underreaction thresholds on the frozen windows",
+    "collect forward paper replacement-value rows before revisiting this relation",
+    "positive replay would require shared default-off adapter and parity tests before promotion",
+    "use a genuinely new free-data relation if this fails"
+  ],
+  "parameters": {
+    "daily_selection": "top_1_by_fresh_filing_underreaction_score",
+    "hold_days": 10,
+    "max_prefiling_ret20_excess_spy": 0.0,
+    "min_avg_dollar_volume_20d": 50000000.0,
+    "min_price": 10.0,
+    "min_profit_yoy_growth": 0.15,
+    "min_ret20_excess_spy": -0.02,
+    "min_revenue_yoy_growth": 0.15,
+    "min_signal_close_location": 0.6,
+    "min_signal_day_return": 0.0,
+    "paper_notional": 4000.0,
+    "round_trip_cost_pct": 0.0035,
+    "same_ticker_cooldown_days": 30,
+    "trade_enabled": false
+  },
+  "prediction": {
+    "actual_ev_delta": 0.0712,
+    "actual_pnl_delta": 2161.22,
+    "actual_success": 0,
+    "brier_score": 0.0529,
+    "confidence_reason": "Default-off candidate-pool adapters are the highest-priority meta family, but nearby broad Companyfacts variants failed or could not promote; this uses filing-event timing and pre-filing underreaction rather than peer confirmation or scalar retuning.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "old_thin_regression",
+      "stale_growth_not_incremental",
+      "window_regression",
+      "drawdown_worsening",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-05T15:07:04+00:00",
+    "success_probability": 0.23
+  },
+  "preflight": {
+    "alpha_hypothesis": "Fresh SEC Companyfacts dual-growth filings with pre-filing SPY-relative underreaction and first-usable-day price confirmation may add cleaner default-off paper candidates than stale daily broad growth rows.",
+    "category": "entry_candidate_pool",
+    "nearby_prior_experiments": [
+      "exp-20260605-011",
+      "exp-20260605-014",
+      "exp-20260605-015",
+      "exp-20260605-016"
+    ],
+    "reproducible_if_failed": true,
+    "single_causal_variable": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+    "success_standard": "Canonical three-window before/after aggregate EV and PnL must improve, no window EV/PnL regression, max drawdown drift <= 0.005, target trades >= 20, all three windows represented, concentration within guardrails, and any positive replay must be promoted only through a shared default-off adapter with parity tests."
+  },
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_note": "This runner changes no production code. It uses only SEC Companyfacts growth rows with filed-date visibility, warehouse OHLCV known after the first usable trading-day close, and delayed next-open paper entry. A positive result would require a separate shared default-off fresh Companyfacts filing adapter, daily production exposure of the same filed-date and OHLCV confirmation fields, warehouse/snapshot replay parity, and focused tests before any report queue, paper ledger, candidate priority, or order surface could change.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "quant/experiments/exp_20260605_022_broad_companyfacts_fresh_underreaction_filing.py",
+    "data/experiments/exp-20260605-022/exp_20260605_022_broad_companyfacts_fresh_underreaction_filing.json",
+    "experiments/logs/exp-20260605-022.json",
+    "experiments/artifacts/exp-20260605-022_broad_companyfacts_fresh_underreaction_filing.md",
+    "experiments/tickets/exp-20260605-022.json",
+    "data/kova/fundamentals/companyfacts_growth_broad_universe_20260604.jsonl"
+  ],
+  "results": [
+    {
+      "after": {
+        "combined_equity_curve": [
+          [
+            "2025-10-23",
+            100000.0
+          ],
+          [
+            "2025-10-24",
+            100000.0
+          ],
+          [
+            "2025-10-27",
+            100000.0
+          ],
+          [
+            "2025-10-28",
+            100000.0
+          ],
+          [
+            "2025-10-29",
+            100000.0
+          ],
+          [
+            "2025-10-30",
+            99744.74
+          ],
+          [
+            "2025-10-31",
+            99445.28
+          ],
+          [
+            "2025-11-03",
+            100204.69
+          ],
+          [
+            "2025-11-04",
+            99305.05
+          ],
+          [
+            "2025-11-05",
+            101750.28
+          ],
+          [
+            "2025-11-06",
+            102466.32
+          ],
+          [
+            "2025-11-07",
+            100804.27
+          ],
+          [
+            "2025-11-10",
+            105924.01
+          ],
+          [
+            "2025-11-11",
+            107654.46
+          ],
+          [
+            "2025-11-12",
+            107743.31
+          ],
+          [
+            "2025-11-13",
+            105582.72
+          ],
+          [
+            "2025-11-14",
+            105144.48
+          ],
+          [
+            "2025-11-17",
+            106240.3
+          ],
+          [
+            "2025-11-18",
+            106005.17
+          ],
+          [
+            "2025-11-19",
+            107526.78
+          ],
+          [
+            "2025-11-20",
+            106676.73
+          ],
+          [
+            "2025-11-21",
+            108424.53
+          ],
+          [
+            "2025-11-24",
+            112041.36
+          ],
+          [
+            "2025-11-25",
+            113329.98
+          ],
+          [
+            "2025-11-26",
+            113461.58
+          ],
+          [
+            "2025-11-28",
+            113439.93
+          ],
+          [
+            "2025-12-01",
+            112952.84
+          ],
+          [
+            "2025-12-02",
+            113698.11
+          ],
+          [
+            "2025-12-03",
+            113660.41
+          ],
+          [
+            "2025-12-04",
+            112345.98
+          ],
+          [
+            "2025-12-05",
+            113631.0
+          ],
+          [
+            "2025-12-08",
+            113526.09
+          ],
+          [
+            "2025-12-09",
+            116133.65
+          ],
+          [
+            "2025-12-10",
+            117200.0
+          ],
+          [
+            "2025-12-11",
+            118771.7
+          ],
+          [
+            "2025-12-12",
+            116402.03
+          ],
+          [
+            "2025-12-15",
+            118572.38
+          ],
+          [
+            "2025-12-16",
+            118201.91
+          ],
+          [
+            "2025-12-17",
+            121878.45
+          ],
+          [
+            "2025-12-18",
+            120701.32
+          ],
+          [
+            "2025-12-19",
+            122472.83
+          ],
+          [
+            "2025-12-22",
+            127074.96
+          ],
+          [
+            "2025-12-23",
+            129818.23
+          ],
+          [
+            "2025-12-24",
+            129261.02
+          ],
+          [
+            "2025-12-26",
+            130863.67
+          ],
+          [
+            "2025-12-29",
+            124853.0
+          ],
+          [
+            "2025-12-30",
+            124981.75
+          ],
+          [
+            "2025-12-31",
+            124119.19
+          ],
+          [
+            "2026-01-02",
+            124759.75
+          ],
+          [
+            "2026-01-05",
+            127770.43
+          ],
+          [
+            "2026-01-06",
+            125899.54
+          ],
+          [
+            "2026-01-07",
+            123981.08
+          ],
+          [
+            "2026-01-08",
+            123081.78
+          ],
+          [
+            "2026-01-09",
+            126411.99
+          ],
+          [
+            "2026-01-12",
+            128390.94
+          ],
+          [
+            "2026-01-13",
+            127309.91
+          ],
+          [
+            "2026-01-14",
+            127345.27
+          ],
+          [
+            "2026-01-15",
+            127373.12
+          ],
+          [
+            "2026-01-16",
+            131127.21
+          ],
+          [
+            "2026-01-20",
+            131658.67
+          ],
+          [
+            "2026-01-21",
+            136858.48
+          ],
+          [
+            "2026-01-22",
+            127755.53
+          ],
+          [
+            "2026-01-23",
+            127755.53
+          ],
+          [
+            "2026-01-26",
+            127755.53
+          ],
+          [
+            "2026-01-27",
+            151792.09
+          ],
+          [
+            "2026-01-28",
+            158426.37
+          ],
+          [
+            "2026-01-29",
+            166285.8
+          ],
+          [
+            "2026-01-30",
+            167657.56
+          ],
+          [
+            "2026-02-02",
+            169152.02
+          ],
+          [
+            "2026-02-03",
+            175563.35
+          ],
+          [
+            "2026-02-04",
+            178833.91
+          ],
+          [
+            "2026-02-05",
+            174148.67
+          ],
+          [
+            "2026-02-06",
+            185430.86
+          ],
+          [
+            "2026-02-09",
+            190905.01
+          ],
+          [
+            "2026-02-10",
+            191400.05
+          ],
+          [
+            "2026-02-11",
+            196973.55
+          ],
+          [
+            "2026-02-12",
+            191166.21
+          ],
+          [
+            "2026-02-13",
+            190777.72
+          ],
+          [
+            "2026-02-17",
+            188052.09
+          ],
+          [
+            "2026-02-18",
+            193866.9
+          ],
+          [
+            "2026-02-19",
+            194529.48
+          ],
+          [
+            "2026-02-20",
+            191202.91
+          ],
+          [
+            "2026-02-23",
+            194512.99
+          ],
+          [
+            "2026-02-24",
+            193591.48
+          ],
+          [
+            "2026-02-25",
+            192799.36
+          ],
+          [
+            "2026-02-26",
+            192545.75
+          ],
+          [
+            "2026-02-27",
+            197259.53
+          ],
+          [
+            "2026-03-02",
+            203984.46
+          ],
+          [
+            "2026-03-03",
+            203529.95
+          ],
+          [
+            "2026-03-04",
+            203552.5
+          ],
+          [
+            "2026-03-05",
+            203324.08
+          ],
+          [
+            "2026-03-06",
+            203069.85
+          ],
+          [
+            "2026-03-09",
+            203005.02
+          ],
+          [
+            "2026-03-10",
+            202876.8
+          ],
+          [
+            "2026-03-11",
+            202742.1
+          ],
+          [
+            "2026-03-12",
+            202820.22
+          ],
+          [
+            "2026-03-13",
+            202824.35
+          ],
+          [
+            "2026-03-16",
+            202852.9
+          ],
+          [
+            "2026-03-17",
+            203351.69
+          ],
+          [
+            "2026-03-18",
+            203616.01
+          ],
+          [
+            "2026-03-19",
+            204784.8
+          ],
+          [
+            "2026-03-20",
+            204904.57
+          ],
+          [
+            "2026-03-23",
+            206341.81
+          ],
+          [
+            "2026-03-24",
+            206994.35
+          ],
+          [
+            "2026-03-25",
+            206317.03
+          ],
+          [
+            "2026-03-26",
+            207407.35
+          ],
+          [
+            "2026-03-27",
+            208915.32
+          ],
+          [
+            "2026-03-30",
+            208518.59
+          ],
+          [
+            "2026-03-31",
+            208733.6
+          ],
+          [
+            "2026-04-01",
+            208920.99
+          ],
+          [
+            "2026-04-02",
+            208947.49
+          ],
+          [
+            "2026-04-06",
+            209050.21
+          ],
+          [
+            "2026-04-07",
+            208971.82
+          ],
+          [
+            "2026-04-08",
+            209266.89
+          ],
+          [
+            "2026-04-09",
+            208623.89
+          ],
+          [
+            "2026-04-10",
+            210772.96
+          ],
+          [
+            "2026-04-13",
+            211362.63
+          ],
+          [
+            "2026-04-14",
+            215526.0
+          ],
+          [
+            "2026-04-15",
+            215395.98
+          ],
+          [
+            "2026-04-16",
+            215035.86
+          ],
+          [
+            "2026-04-17",
+            215808.59
+          ],
+          [
+            "2026-04-20",
+            213515.31
+          ],
+          [
+            "2026-04-21",
+            217801.48
+          ]
+        ],
+        "core_trade_count": 18,
+        "event_pnl": -188.99,
+        "event_trade_count": 17,
+        "expected_value_score": 5.1479,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.37,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "total_pnl": 117801.48,
+        "total_return_pct": 1.178,
+        "trade_count": 35,
+        "vs_qqq_pct": 1.12,
+        "vs_spy_pct": 1.1239,
+        "win_rate": 0.6286,
+        "winning_trades": 22
+      },
+      "before": {
+        "expected_value_score": 5.1628,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "total_return_pct": 1.1707,
+        "trade_count": 18,
+        "vs_qqq_pct": 1.1128,
+        "vs_spy_pct": 1.1166,
+        "win_rate": 0.8333,
+        "winning_trades": 15
+      },
+      "comparison": {
+        "expected_value_score_delta": -0.0149,
+        "max_drawdown_delta": 0.0,
+        "strategy_total_pnl_delta": 728.56
+      },
+      "label": "late_strong",
+      "selected_trades": [
+        {
+          "avg_dollar_volume_20d": 191673728.06,
+          "candidate_score": 2.315092,
+          "close_location": 0.91182,
+          "companyfacts_filing_date": "2025-10-29",
+          "companyfacts_profit_asof_date": "2025-10-29",
+          "companyfacts_profit_canonical": "eps_basic",
+          "companyfacts_profit_form": "10-Q",
+          "companyfacts_profit_yoy_growth": 0.460526,
+          "companyfacts_revenue_asof_date": "2025-10-29",
+          "companyfacts_revenue_form": "10-Q",
+          "companyfacts_revenue_yoy_growth": 0.432101,
+          "entry_date": "2025-10-31",
+          "entry_open": 185.1558,
+          "exit_close": 157.7659,
+          "exit_date": "2025-11-14",
+          "filing_to_signal_calendar_days": 1,
+          "gross_return": -0.147929,
+          "net_return": -0.151429,
+          "notional": 4000.0,
+          "pnl": -605.72,
+          "prefiling_ret20_excess_spy": -0.023193,
+          "ret20": 0.084805,
+          "ret20_excess_spy": 0.06895,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 21.60343034285945,
+          "signal_date": "2025-10-30",
+          "signal_day_return": 0.073333,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": 0.015854,
+          "ticker": "FTAI",
+          "trade_enabled": false,
+          "volume_ratio_20d": 2.345301,
+          "window": "late_strong"
+        },
+        {
+          "avg_dollar_volume_20d": 62234410.52,
+          "candidate_score": 2.933157,
+          "close_location": 0.838984,
+          "companyfacts_filing_date": "2025-10-30",
+          "companyfacts_profit_asof_date": "2025-10-30",
+          "companyfacts_profit_canonical": "eps_basic",
+          "companyfacts_profit_form": "10-Q",
+          "companyfacts_profit_yoy_growth": 2.295455,
+          "companyfacts_revenue_asof_date": "2025-10-30",
+          "companyfacts_revenue_form": "10-Q",
+          "companyfacts_revenue_yoy_growth": 0.37629,
+          "entry_date": "2025-11-03",
+          "entry_open": 33.78,
+          "exit_close": 36.12,
+          "exit_date": "2025-11-17",
+          "filing_to_signal_calendar_days": 1,
+          "gross_return": 0.069272,
+          "net_return": 0.065772,
+          "notional": 4000.0,
+          "pnl": 263.09,
+          "prefiling_ret20_excess_spy": -0.031276,
+          "ret20": 0.023723,
+          "ret20_excess_spy": 0.004521,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 118.41326656445958,
+          "signal_date": "2025-10-31",
+          "signal_day_return": 0.033784,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": 0.019202,
+          "ticker": "CNX",
+          "trade_enabled": false,
+          "volume_ratio_20d": 1.551454,
+          "window": "late_strong"
+        },
+        {
+          "avg_dollar_volume_20d": 66700221.17,
+          "candidate_score": 2.740073,
+          "close_location": 0.916665,
+          "companyfacts_filing_date": "2025-10-31",
+          "companyfacts_profit_asof_date": "2025-10-31",
+          "companyfacts_profit_canonical": "net_income",
+          "companyfacts_profit_form": "10-Q",
+          "companyfacts_profit_yoy_growth": 0.851401,
+          "companyfacts_revenue_asof_date": "2025-10-31",
+          "companyfacts_revenue_form": "10-Q",
+          "companyfacts_revenue_yoy_growth": 0.7845,
+          "entry_date": "2025-11-04",
+          "entry_open": 10.5296,
+          "exit_close": 10.3487,
+          "exit_date": "2025-11-18",
+          "filing_to_signal_calendar_days": 3,
+          "gross_return": -0.017179,
+          "net_return": -0.020679,
+          "notional": 4000.0,
+          "pnl": -82.72,
+          "prefiling_ret20_excess_spy": -0.035345,
+          "ret20": 0.015596,
+          "ret20_excess_spy": -0.001869,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 379.8819587798434,
+          "signal_date": "2025-11-03",
+          "signal_day_return": 0.009116,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": 0.017466,
+          "ticker": "RITM",
+          "trade_enabled": false,
+          "volume_ratio_20d": 1.410317,
+          "window": "late_strong"
+        },
+        {
+          "avg_dollar_volume_20d": 114044577.49,
+          "candidate_score": 1.47757,
+          "close_location": 0.618662,
+          "companyfacts_filing_date": "2025-11-03",
+          "companyfacts_profit_asof_date": "2025-11-03",
+          "companyfacts_profit_canonical": "eps_basic",
+          "companyfacts_profit_form": "10-Q",
+          "companyfacts_profit_yoy_growth": 0.37963,
+          "companyfacts_revenue_asof_date": "2025-11-03",
+          "companyfacts_revenue_form": "10-Q",
+          "companyfacts_revenue_yoy_growth": 0.221246,
+          "entry_date": "2025-11-05",
+          "entry_open": 68.31,
+          "exit_close": 70.25,
+          "exit_date": "2025-11-19",
+          "filing_to_signal_calendar_days": 1,
+          "gross_return": 0.0284,
+          "net_return": 0.0249,
+          "notional": 4000.0,
+          "pnl": 99.6,
+          "prefiling_ret20_excess_spy": -0.028963,
+          "ret20": 0.030748,
+          "ret20_excess_spy": 0.021602,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 58.55658238852886,
+          "signal_date": "2025-11-04",
+          "signal_day_return": 0.027946,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": 0.009146,
+          "ticker": "HALO",
+          "trade_enabled": false,
+          "volume_ratio_20d": 1.389801,
+          "window": "late_strong"
+        },
+        {
+          "avg_dollar_volume_20d": 68547505.59,
+          "candidate_score": 2.340938,
+          "close_location": 0.886066,
+          "companyfacts_filing_date": "2025-11-04",
+          "companyfacts_profit_asof_date": "2025-11-04",
+          "companyfacts_profit_canonical": "net_income",
+          "companyfacts_profit_form": "10-Q",
+          "companyfacts_profit_yoy_growth": 1.04204,
+          "companyfacts_revenue_asof_date": "2025-11-04",
+          "companyfacts_revenue_form": "10-Q",
+          "companyfacts_revenue_yoy_growth": 0.330166,
+          "entry_date": "2025-11-06",
+          "entry_open": 81.1928,
+          "exit_close": 77.2419,
+          "exit_date": "2025-11-20",
+          "filing_to_signal_calendar_days": 1,
+          "gross_return": -0.048661,
+          "net_return": -0.052161,
+          "notional": 4000.0,
+          "pnl": -208.65,
+          "prefiling_ret20_excess_spy": -0.049316,
+          "ret20": -0.01214,
+          "ret20_excess_spy": -0.018781,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 49.26543003193013,
+          "signal_date": "2025-11-05",
+          "signal_day_return": 0.027083,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": 0.006641,
+          "ticker": "PIPR",
+          "trade_enabled": false,
+          "volume_ratio_20d": 0.744266,
+          "window": "late_strong"
+        },
+        {
+          "avg_dollar_volume_20d": 2203613420.92,
+          "candidate_score": 2.821501,
+          "close_location": 0.988372,
+          "companyfacts_filing_date": "2025-11-06",
+          "companyfacts_profit_asof_date": "2025-11-06",
+          "companyfacts_profit_canonical": "net_income",
+          "companyfacts_profit_form": "10-Q",
+          "companyfacts_profit_yoy_growth": 1.294707,
+          "companyfacts_revenue_asof_date": "2025-11-06",
+          "companyfacts_revenue_form": "10-Q",
+          "companyfacts_revenue_yoy_growth": 0.194826,
+          "entry_date": "2025-11-10",
+          "entry_open": 29.06,
+          "exit_close": 27.4,
+          "exit_date": "2025-11-24",
+          "filing_to_signal_calendar_days": 1,
+          "gross_return": -0.057123,
+          "net_return": -0.060623,
+          "notional": 4000.0,
+          "pnl": -242.49,
+          "prefiling_ret20_excess_spy": -0.044076,
+          "ret20": 0.077129,
+          "ret20_excess_spy": 0.049641,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 137.6462516693403,
+          "signal_date": "2025-11-07",
+          "signal_day_return": 0.03866,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": 0.027488,
+          "ticker": "SOFI",
+          "trade_enabled": false,
+          "volume_ratio_20d": 1.037382,
+          "window": "late_strong"
+        },
+        {
+          "avg_dollar_volume_20d": 61753378.04,
+          "candidate_score": 3.030917,
+          "close_location": 0.816716,
+          "companyfacts_filing_date": "2025-11-21",
+          "companyfacts_profit_asof_date": "2025-11-21",
+          "companyfacts_profit_canonical": "eps_basic",
+          "companyfacts_profit_form": "10-K",
+          "companyfacts_profit_yoy_growth": 2.323144,
+          "companyfacts_revenue_asof_date": "2025-11-21",
+          "companyfacts_revenue_form": "10-K",
+          "companyfacts_revenue_yoy_growth": 0.418236,
+          "entry_date": "2025-11-25",
+          "entry_open": 402.75,
+          "exit_close": 470.84,
+          "exit_date": "2025-12-10",
+          "filing_to_signal_calendar_days": 3,
+          "gross_return": 0.169063,
+          "net_return": 0.165563,
+          "notional": 4000.0,
+          "pnl": 662.25,
+          "prefiling_ret20_excess_spy": -0.123653,
+          "ret20": -0.02411,
+          "ret20_excess_spy": -1.6e-05,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 9.931719428926133,
+          "signal_date": "2025-11-24",
+          "signal_day_return": 0.085024,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": -0.024094,
+          "ticker": "IESC",
+          "trade_enabled": false,
+          "volume_ratio_20d": 1.105411,
+          "window": "late_strong"
+        },
+        {
+          "avg_dollar_volume_20d": 67244974.06,
+          "candidate_score": 2.67246,
+          "close_location": 0.920499,
+          "companyfacts_filing_date": "2026-02-04",
+          "companyfacts_profit_asof_date": "2026-02-04",
+          "companyfacts_profit_canonical": "net_income",
+          "companyfacts_profit_form": "10-K",
+          "companyfacts_profit_yoy_growth": 0.640524,
+          "companyfacts_revenue_asof_date": "2026-02-04",
+          "companyfacts_revenue_form": "10-K",
+          "companyfacts_revenue_yoy_growth": 0.356224,
+          "entry_date": "2026-02-06",
+          "entry_open": 198.2857,
+          "exit_close": 214.1005,
+          "exit_date": "2026-02-23",
+          "filing_to_signal_calendar_days": 1,
+          "gross_return": 0.079758,
+          "net_return": 0.076258,
+          "notional": 4000.0,
+          "pnl": 305.03,
+          "prefiling_ret20_excess_spy": -0.027891,
+          "ret20": 0.105281,
+          "ret20_excess_spy": 0.122625,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 20.172914172871447,
+          "signal_date": "2026-02-05",
+          "signal_day_return": 0.138469,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": -0.017344,
+          "ticker": "ENSG",
+          "trade_enabled": false,
+          "volume_ratio_20d": 2.841898,
+          "window": "late_strong"
+        },
+        {
+          "avg_dollar_volume_20d": 429920597.83,
+          "candidate_score": 2.093262,
+          "close_location": 0.84434,
+          "companyfacts_filing_date": "2026-02-12",
+          "companyfacts_profit_asof_date": "2026-02-12",
+          "companyfacts_profit_canonical": "eps_diluted",
+          "companyfacts_profit_form": "10-K",
+          "companyfacts_profit_yoy_growth": 0.607692,
+          "companyfacts_revenue_asof_date": "2026-02-12",
+          "companyfacts_revenue_form": "10-K",
+          "companyfacts_revenue_yoy_growth": 0.287028,
+          "entry_date": "2026-02-17",
+          "entry_open": 70.25,
+          "exit_close": 73.08,
+          "exit_date": "2026-03-03",
+          "filing_to_signal_calendar_days": 1,
+          "gross_return": 0.040285,
+          "net_return": 0.036785,
+          "notional": 4000.0,
+          "pnl": 147.14,
+          "prefiling_ret20_excess_spy": -0.053117,
+          "ret20": 0.011265,
+          "ret20_excess_spy": 0.026419,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 56.93950177935943,
+          "signal_date": "2026-02-13",
+          "signal_day_return": 0.075906,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": -0.015154,
+          "ticker": "DXCM",
+          "trade_enabled": false,
+          "volume_ratio_20d": 1.820609,
+          "window": "late_strong"
+        },
+        {
+          "avg_dollar_volume_20d": 3407856361.3,
+          "candidate_score": 1.269068,
+          "close_location": 0.806622,
+          "companyfacts_filing_date": "2026-02-13",
+          "companyfacts_profit_asof_date": "2026-02-13",
+          "companyfacts_profit_canonical": "eps_basic",
+          "companyfacts_profit_form": "10-K",
+          "companyfacts_profit_yoy_growth": 0.233846,
+          "companyfacts_revenue_asof_date": "2026-02-13",
+          "companyfacts_revenue_form": "10-K",
+          "companyfacts_revenue_yoy_growth": 0.153968,
+          "entry_date": "2026-02-18",
+          "entry_open": 306.8894,
+          "exit_close": 297.8656,
+          "exit_date": "2026-03-04",
+          "filing_to_signal_calendar_days": 4,
+          "gross_return": -0.029404,
+          "net_return": -0.032904,
+          "notional": 4000.0,
+          "pnl": -131.62,
+          "prefiling_ret20_excess_spy": -0.006543,
+          "ret20": -0.01709,
+          "ret20_excess_spy": -0.004352,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 13.03401091202507,
+          "signal_date": "2026-02-17",
+          "signal_day_return": 0.015138,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": -0.012737,
+          "ticker": "JPM",
+          "trade_enabled": false,
+          "volume_ratio_20d": 0.80049,
+          "window": "late_strong"
+        },
+        {
+          "avg_dollar_volume_20d": 281526662.72,
+          "candidate_score": 2.688325,
+          "close_location": 0.908749,
+          "companyfacts_filing_date": "2026-02-19",
+          "companyfacts_profit_asof_date": "2026-02-19",
+          "companyfacts_profit_canonical": "net_income",
+          "companyfacts_profit_form": "10-K",
+          "companyfacts_profit_yoy_growth": 0.96382,
+          "companyfacts_revenue_asof_date": "2026-02-19",
+          "companyfacts_revenue_form": "10-K",
+          "companyfacts_revenue_yoy_growth": 0.701242,
+          "entry_date": "2026-02-23",
+          "entry_open": 286.4843,
+          "exit_close": 281.3535,
+          "exit_date": "2026-03-09",
+          "filing_to_signal_calendar_days": 1,
+          "gross_return": -0.017909,
+          "net_return": -0.021409,
+          "notional": 4000.0,
+          "pnl": -85.64,
+          "prefiling_ret20_excess_spy": -0.026418,
+          "ret20": -0.007956,
+          "ret20_excess_spy": -0.008609,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 13.96237061921548,
+          "signal_date": "2026-02-20",
+          "signal_day_return": 0.050629,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": 0.000653,
+          "ticker": "RGLD",
+          "trade_enabled": false,
+          "volume_ratio_20d": 1.050201,
+          "window": "late_strong"
+        },
+        {
+          "avg_dollar_volume_20d": 113896924.2,
+          "candidate_score": 3.697001,
+          "close_location": 0.979853,
+          "companyfacts_filing_date": "2026-02-24",
+          "companyfacts_profit_asof_date": "2026-02-24",
+          "companyfacts_profit_canonical": "net_income",
+          "companyfacts_profit_form": "10-K",
+          "companyfacts_profit_yoy_growth": 3.37743,
+          "companyfacts_revenue_asof_date": "2026-02-24",
+          "companyfacts_revenue_form": "10-K",
+          "companyfacts_revenue_yoy_growth": 0.873749,
+          "entry_date": "2026-02-26",
+          "entry_open": 96.64,
+          "exit_close": 84.51,
+          "exit_date": "2026-03-12",
+          "filing_to_signal_calendar_days": 1,
+          "gross_return": -0.125517,
+          "net_return": -0.129017,
+          "notional": 4000.0,
+          "pnl": -516.07,
+          "prefiling_ret20_excess_spy": -0.004064,
+          "ret20": 0.046325,
+          "ret20_excess_spy": 0.049689,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 41.39072873823361,
+          "signal_date": "2026-02-25",
+          "signal_day_return": 0.047236,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": -0.003364,
+          "ticker": "GMED",
+          "trade_enabled": false,
+          "volume_ratio_20d": 1.633913,
+          "window": "late_strong"
+        },
+        {
+          "avg_dollar_volume_20d": 279659105.04,
+          "candidate_score": 1.942774,
+          "close_location": 0.993609,
+          "companyfacts_filing_date": "2026-02-25",
+          "companyfacts_profit_asof_date": "2026-02-25",
+          "companyfacts_profit_canonical": "net_income",
+          "companyfacts_profit_form": "10-K",
+          "companyfacts_profit_yoy_growth": 0.559934,
+          "companyfacts_revenue_asof_date": "2026-02-25",
+          "companyfacts_revenue_form": "10-K",
+          "companyfacts_revenue_yoy_growth": 0.226915,
+          "entry_date": "2026-02-27",
+          "entry_open": 130.36,
+          "exit_close": 119.88,
+          "exit_date": "2026-03-13",
+          "filing_to_signal_calendar_days": 1,
+          "gross_return": -0.080393,
+          "net_return": -0.083893,
+          "notional": 4000.0,
+          "pnl": -335.57,
+          "prefiling_ret20_excess_spy": -0.080071,
+          "ret20": -0.02319,
+          "ret20_excess_spy": -0.01439,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 30.684258831480626,
+          "signal_date": "2026-02-26",
+          "signal_day_return": 0.028614,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": -0.0088,
+          "ticker": "XYL",
+          "trade_enabled": false,
+          "volume_ratio_20d": 0.925739,
+          "window": "late_strong"
+        },
+        {
+          "avg_dollar_volume_20d": 93759624.08,
+          "candidate_score": 1.602477,
+          "close_location": 0.898089,
+          "companyfacts_filing_date": "2026-02-26",
+          "companyfacts_profit_asof_date": "2026-02-26",
+          "companyfacts_profit_canonical": "net_income",
+          "companyfacts_profit_form": "10-K",
+          "companyfacts_profit_yoy_growth": 0.310811,
+          "companyfacts_revenue_asof_date": "2026-02-26",
+          "companyfacts_revenue_form": "10-K",
+          "companyfacts_revenue_yoy_growth": 0.229152,
+          "entry_date": "2026-03-02",
+          "entry_open": 51.5936,
+          "exit_close": 47.37,
+          "exit_date": "2026-03-16",
+          "filing_to_signal_calendar_days": 1,
+          "gross_return": -0.081864,
+          "net_return": -0.085364,
+          "notional": 4000.0,
+          "pnl": -341.45,
+          "prefiling_ret20_excess_spy": -0.030227,
+          "ret20": -0.02919,
+          "ret20_excess_spy": -0.017592,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 77.52894361096781,
+          "signal_date": "2026-02-27",
+          "signal_day_return": 0.013027,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": -0.011599,
+          "ticker": "FNF",
+          "trade_enabled": false,
+          "volume_ratio_20d": 1.806539,
+          "window": "late_strong"
+        },
+        {
+          "avg_dollar_volume_20d": 63788554.49,
+          "candidate_score": 1.487415,
+          "close_location": 0.783683,
+          "companyfacts_filing_date": "2026-02-27",
+          "companyfacts_profit_asof_date": "2026-02-27",
+          "companyfacts_profit_canonical": "eps_diluted",
+          "companyfacts_profit_form": "10-K",
+          "companyfacts_profit_yoy_growth": 0.437265,
+          "companyfacts_revenue_asof_date": "2026-02-27",
+          "companyfacts_revenue_form": "10-K",
+          "companyfacts_revenue_yoy_growth": 0.197637,
+          "entry_date": "2026-03-03",
+          "entry_open": 254.28,
+          "exit_close": 252.66,
+          "exit_date": "2026-03-17",
+          "filing_to_signal_calendar_days": 3,
+          "gross_return": -0.006371,
+          "net_return": -0.009871,
+          "notional": 4000.0,
+          "pnl": -39.48,
+          "prefiling_ret20_excess_spy": -0.01558,
+          "ret20": -0.013717,
+          "ret20_excess_spy": -0.005639,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 15.730690652833504,
+          "signal_date": "2026-03-02",
+          "signal_day_return": 0.018056,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": -0.008078,
+          "ticker": "PRI",
+          "trade_enabled": false,
+          "volume_ratio_20d": 0.651972,
+          "window": "late_strong"
+        },
+        {
+          "avg_dollar_volume_20d": 300402401.8,
+          "candidate_score": 4.47549,
+          "close_location": 0.831335,
+          "companyfacts_filing_date": "2026-03-26",
+          "companyfacts_profit_asof_date": "2026-03-26",
+          "companyfacts_profit_canonical": "net_income",
+          "companyfacts_profit_form": "10-K",
+          "companyfacts_profit_yoy_growth": 3.257803,
+          "companyfacts_revenue_asof_date": "2026-03-26",
+          "companyfacts_revenue_form": "10-K",
+          "companyfacts_revenue_yoy_growth": 0.64757,
+          "entry_date": "2026-03-30",
+          "entry_open": 570.1064,
+          "exit_close": 603.4193,
+          "exit_date": "2026-04-14",
+          "filing_to_signal_calendar_days": 1,
+          "gross_return": 0.058433,
+          "net_return": 0.054933,
+          "notional": 4000.0,
+          "pnl": 219.73,
+          "prefiling_ret20_excess_spy": -0.030523,
+          "ret20": 0.255668,
+          "ret20_excess_spy": 0.3288,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 7.016233841759738,
+          "signal_date": "2026-03-27",
+          "signal_day_return": 0.379141,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": -0.073133,
+          "ticker": "AGX",
+          "trade_enabled": false,
+          "volume_ratio_20d": 3.107965,
+          "window": "late_strong"
+        },
+        {
+          "avg_dollar_volume_20d": 122413121.46,
+          "candidate_score": 1.880012,
+          "close_location": 0.876972,
+          "companyfacts_filing_date": "2026-04-01",
+          "companyfacts_profit_asof_date": "2026-04-01",
+          "companyfacts_profit_canonical": "eps_basic",
+          "companyfacts_profit_form": "10-K",
+          "companyfacts_profit_yoy_growth": 0.66129,
+          "companyfacts_revenue_asof_date": "2026-04-01",
+          "companyfacts_revenue_form": "10-K",
+          "companyfacts_revenue_yoy_growth": 0.196408,
+          "entry_date": "2026-04-06",
+          "entry_open": 64.55,
+          "exit_close": 76.13,
+          "exit_date": "2026-04-20",
+          "filing_to_signal_calendar_days": 1,
+          "gross_return": 0.179396,
+          "net_return": 0.175896,
+          "notional": 4000.0,
+          "pnl": 703.58,
+          "prefiling_ret20_excess_spy": -0.006519,
+          "ret20": -0.016001,
+          "ret20_excess_spy": 0.018768,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 61.967464150120946,
+          "signal_date": "2026-04-02",
+          "signal_day_return": 0.01334,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": -0.03477,
+          "ticker": "URBN",
+          "trade_enabled": false,
+          "volume_ratio_20d": 0.698748,
+          "window": "late_strong"
+        }
+      ],
+      "target_trade_count": 17,
+      "target_trade_pnl_usd": -188.99,
+      "window": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      }
+    },
+    {
+      "after": {
+        "combined_equity_curve": [
+          [
+            "2025-04-23",
+            100000.0
+          ],
+          [
+            "2025-04-24",
+            100000.0
+          ],
+          [
+            "2025-04-25",
+            100093.21
+          ],
+          [
+            "2025-04-28",
+            100055.55
+          ],
+          [
+            "2025-04-29",
+            100058.0
+          ],
+          [
+            "2025-04-30",
+            100063.31
+          ],
+          [
+            "2025-05-01",
+            100395.18
+          ],
+          [
+            "2025-05-02",
+            100713.19
+          ],
+          [
+            "2025-05-05",
+            100679.0
+          ],
+          [
+            "2025-05-06",
+            100556.37
+          ],
+          [
+            "2025-05-07",
+            100877.82
+          ],
+          [
+            "2025-05-08",
+            100989.33
+          ],
+          [
+            "2025-05-09",
+            100879.03
+          ],
+          [
+            "2025-05-12",
+            101668.87
+          ],
+          [
+            "2025-05-13",
+            101858.98
+          ],
+          [
+            "2025-05-14",
+            102450.22
+          ],
+          [
+            "2025-05-15",
+            100110.51
+          ],
+          [
+            "2025-05-16",
+            103405.82
+          ],
+          [
+            "2025-05-19",
+            103179.96
+          ],
+          [
+            "2025-05-20",
+            102311.61
+          ],
+          [
+            "2025-05-21",
+            101428.03
+          ],
+          [
+            "2025-05-22",
+            103959.53
+          ],
+          [
+            "2025-05-23",
+            102042.38
+          ],
+          [
+            "2025-05-27",
+            102910.55
+          ],
+          [
+            "2025-05-28",
+            100420.43
+          ],
+          [
+            "2025-05-29",
+            99198.01
+          ],
+          [
+            "2025-05-30",
+            98914.42
+          ],
+          [
+            "2025-06-02",
+            99462.58
+          ],
+          [
+            "2025-06-03",
+            101761.27
+          ],
+          [
+            "2025-06-04",
+            100942.99
+          ],
+          [
+            "2025-06-05",
+            100358.03
+          ],
+          [
+            "2025-06-06",
+            102169.4
+          ],
+          [
+            "2025-06-09",
+            104453.0
+          ],
+          [
+            "2025-06-10",
+            103820.51
+          ],
+          [
+            "2025-06-11",
+            102451.46
+          ],
+          [
+            "2025-06-12",
+            100675.67
+          ],
+          [
+            "2025-06-13",
+            100841.71
+          ],
+          [
+            "2025-06-16",
+            104751.07
+          ],
+          [
+            "2025-06-17",
+            104482.28
+          ],
+          [
+            "2025-06-18",
+            112063.2
+          ],
+          [
+            "2025-06-20",
+            113894.09
+          ],
+          [
+            "2025-06-23",
+            101298.96
+          ],
+          [
+            "2025-06-24",
+            118447.97
+          ],
+          [
+            "2025-06-25",
+            120175.0
+          ],
+          [
+            "2025-06-26",
+            114065.94
+          ],
+          [
+            "2025-06-27",
+            114065.94
+          ],
+          [
+            "2025-06-30",
+            123114.25
+          ],
+          [
+            "2025-07-01",
+            120080.75
+          ],
+          [
+            "2025-07-02",
+            124431.49
+          ],
+          [
+            "2025-07-03",
+            125145.87
+          ],
+          [
+            "2025-07-07",
+            125084.85
+          ],
+          [
+            "2025-07-08",
+            124542.59
+          ],
+          [
+            "2025-07-09",
+            127334.58
+          ],
+          [
+            "2025-07-10",
+            131583.99
+          ],
+          [
+            "2025-07-11",
+            133658.64
+          ],
+          [
+            "2025-07-14",
+            134132.88
+          ],
+          [
+            "2025-07-15",
+            132744.74
+          ],
+          [
+            "2025-07-16",
+            134800.21
+          ],
+          [
+            "2025-07-17",
+            137452.22
+          ],
+          [
+            "2025-07-18",
+            141489.67
+          ],
+          [
+            "2025-07-21",
+            142767.42
+          ],
+          [
+            "2025-07-22",
+            143349.77
+          ],
+          [
+            "2025-07-23",
+            143109.95
+          ],
+          [
+            "2025-07-24",
+            143097.17
+          ],
+          [
+            "2025-07-25",
+            143090.97
+          ],
+          [
+            "2025-07-28",
+            143076.76
+          ],
+          [
+            "2025-07-29",
+            143093.44
+          ],
+          [
+            "2025-07-30",
+            143115.58
+          ],
+          [
+            "2025-07-31",
+            143080.72
+          ],
+          [
+            "2025-08-01",
+            142915.11
+          ],
+          [
+            "2025-08-04",
+            142977.04
+          ],
+          [
+            "2025-08-05",
+            142952.87
+          ],
+          [
+            "2025-08-06",
+            142911.41
+          ],
+          [
+            "2025-08-07",
+            142903.93
+          ],
+          [
+            "2025-08-08",
+            143258.76
+          ],
+          [
+            "2025-08-11",
+            142673.13
+          ],
+          [
+            "2025-08-12",
+            143648.63
+          ],
+          [
+            "2025-08-13",
+            144776.12
+          ],
+          [
+            "2025-08-14",
+            144418.47
+          ],
+          [
+            "2025-08-15",
+            143806.83
+          ],
+          [
+            "2025-08-18",
+            143566.41
+          ],
+          [
+            "2025-08-19",
+            143524.4
+          ],
+          [
+            "2025-08-20",
+            141983.1
+          ],
+          [
+            "2025-08-21",
+            141623.65
+          ],
+          [
+            "2025-08-22",
+            143031.31
+          ],
+          [
+            "2025-08-25",
+            141926.47
+          ],
+          [
+            "2025-08-26",
+            143398.77
+          ],
+          [
+            "2025-08-27",
+            144425.76
+          ],
+          [
+            "2025-08-28",
+            145391.4
+          ],
+          [
+            "2025-08-29",
+            143892.89
+          ],
+          [
+            "2025-09-02",
+            143705.05
+          ],
+          [
+            "2025-09-03",
+            143160.33
+          ],
+          [
+            "2025-09-04",
+            147821.04
+          ],
+          [
+            "2025-09-05",
+            149851.94
+          ],
+          [
+            "2025-09-08",
+            150897.95
+          ],
+          [
+            "2025-09-09",
+            142715.14
+          ],
+          [
+            "2025-09-10",
+            142715.14
+          ],
+          [
+            "2025-09-11",
+            142715.14
+          ],
+          [
+            "2025-09-12",
+            142715.14
+          ],
+          [
+            "2025-09-15",
+            142715.14
+          ],
+          [
+            "2025-09-16",
+            142715.14
+          ],
+          [
+            "2025-09-17",
+            142715.14
+          ],
+          [
+            "2025-09-18",
+            142715.14
+          ],
+          [
+            "2025-09-19",
+            142715.14
+          ],
+          [
+            "2025-09-22",
+            167139.12
+          ],
+          [
+            "2025-09-23",
+            167415.32
+          ],
+          [
+            "2025-09-24",
+            165670.98
+          ],
+          [
+            "2025-09-25",
+            165159.77
+          ],
+          [
+            "2025-09-26",
+            165262.51
+          ],
+          [
+            "2025-09-29",
+            168512.18
+          ],
+          [
+            "2025-09-30",
+            168296.4
+          ],
+          [
+            "2025-10-01",
+            169991.66
+          ],
+          [
+            "2025-10-02",
+            169505.1
+          ],
+          [
+            "2025-10-03",
+            172921.12
+          ],
+          [
+            "2025-10-06",
+            174730.27
+          ],
+          [
+            "2025-10-07",
+            172004.05
+          ],
+          [
+            "2025-10-08",
+            175973.15
+          ],
+          [
+            "2025-10-09",
+            179388.44
+          ],
+          [
+            "2025-10-10",
+            175826.17
+          ],
+          [
+            "2025-10-13",
+            178040.93
+          ],
+          [
+            "2025-10-14",
+            179213.43
+          ],
+          [
+            "2025-10-15",
+            180263.18
+          ],
+          [
+            "2025-10-16",
+            180170.01
+          ],
+          [
+            "2025-10-17",
+            179729.81
+          ],
+          [
+            "2025-10-20",
+            179729.81
+          ],
+          [
+            "2025-10-21",
+            179729.81
+          ],
+          [
+            "2025-10-22",
+            179777.41
+          ]
+        ],
+        "core_trade_count": 21,
+        "event_pnl": 1595.67,
+        "event_trade_count": 11,
+        "expected_value_score": 2.2338,
+        "max_drawdown_pct": 0.1106,
+        "sharpe_daily": 2.8,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925,
+        "total_pnl": 79777.41,
+        "total_return_pct": 0.7978,
+        "trade_count": 32,
+        "vs_qqq_pct": 0.4627,
+        "vs_spy_pct": 0.5434,
+        "win_rate": 0.5625,
+        "winning_trades": 18
+      },
+      "before": {
+        "expected_value_score": 2.1402,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "total_return_pct": 0.7811,
+        "trade_count": 21,
+        "vs_qqq_pct": 0.446,
+        "vs_spy_pct": 0.5267,
+        "win_rate": 0.5238,
+        "winning_trades": 11
+      },
+      "comparison": {
+        "expected_value_score_delta": 0.0936,
+        "max_drawdown_delta": -0.0013,
+        "strategy_total_pnl_delta": 1667.3
+      },
+      "label": "mid_weak",
+      "selected_trades": [
+        {
+          "avg_dollar_volume_20d": 972644900.42,
+          "candidate_score": 3.089806,
+          "close_location": 0.801653,
+          "companyfacts_filing_date": "2025-04-23",
+          "companyfacts_profit_asof_date": "2025-04-23",
+          "companyfacts_profit_canonical": "eps_diluted",
+          "companyfacts_profit_form": "10-Q",
+          "companyfacts_profit_yoy_growth": 2.5,
+          "companyfacts_revenue_asof_date": "2025-04-23",
+          "companyfacts_revenue_form": "10-Q",
+          "companyfacts_revenue_yoy_growth": 0.338505,
+          "entry_date": "2025-04-25",
+          "entry_open": 84.8651,
+          "exit_close": 93.9439,
+          "exit_date": "2025-05-09",
+          "filing_to_signal_calendar_days": 1,
+          "gross_return": 0.106979,
+          "net_return": 0.103479,
+          "notional": 4000.0,
+          "pnl": 413.92,
+          "prefiling_ret20_excess_spy": -0.078707,
+          "ret20": 0.027689,
+          "ret20_excess_spy": 0.066206,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 47.13363146686285,
+          "signal_date": "2025-04-24",
+          "signal_day_return": 0.075385,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": -0.038516,
+          "ticker": "VRT",
+          "trade_enabled": false,
+          "volume_ratio_20d": 0.998681,
+          "window": "mid_weak"
+        },
+        {
+          "avg_dollar_volume_20d": 1053402251.26,
+          "candidate_score": 1.728521,
+          "close_location": 0.805262,
+          "companyfacts_filing_date": "2025-04-25",
+          "companyfacts_profit_asof_date": "2025-04-25",
+          "companyfacts_profit_canonical": "net_income",
+          "companyfacts_profit_form": "10-Q",
+          "companyfacts_profit_yoy_growth": 0.63471,
+          "companyfacts_revenue_asof_date": "2025-04-25",
+          "companyfacts_revenue_form": "10-Q",
+          "companyfacts_revenue_yoy_growth": 0.219819,
+          "entry_date": "2025-04-29",
+          "entry_open": 70.3744,
+          "exit_close": 84.6299,
+          "exit_date": "2025-05-13",
+          "filing_to_signal_calendar_days": 3,
+          "gross_return": 0.202567,
+          "net_return": 0.199067,
+          "notional": 4000.0,
+          "pnl": 796.27,
+          "prefiling_ret20_excess_spy": -0.016324,
+          "ret20": -0.014323,
+          "ret20_excess_spy": -0.005667,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 56.8388801974984,
+          "signal_date": "2025-04-28",
+          "signal_day_return": 0.0021,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": -0.008656,
+          "ticker": "LRCX",
+          "trade_enabled": false,
+          "volume_ratio_20d": 0.640769,
+          "window": "mid_weak"
+        },
+        {
+          "avg_dollar_volume_20d": 53661949.06,
+          "candidate_score": 3.694625,
+          "close_location": 0.898736,
+          "companyfacts_filing_date": "2025-04-29",
+          "companyfacts_profit_asof_date": "2025-04-29",
+          "companyfacts_profit_canonical": "net_income",
+          "companyfacts_profit_form": "10-Q",
+          "companyfacts_profit_yoy_growth": 1.511028,
+          "companyfacts_revenue_asof_date": "2025-04-29",
+          "companyfacts_revenue_form": "10-Q",
+          "companyfacts_revenue_yoy_growth": 1.240547,
+          "entry_date": "2025-05-01",
+          "entry_open": 95.773,
+          "exit_close": 99.55,
+          "exit_date": "2025-05-15",
+          "filing_to_signal_calendar_days": 1,
+          "gross_return": 0.039437,
+          "net_return": 0.035937,
+          "notional": 4000.0,
+          "pnl": 143.75,
+          "prefiling_ret20_excess_spy": -0.031991,
+          "ret20": -0.025697,
+          "ret20_excess_spy": -0.014235,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 41.76541037767101,
+          "signal_date": "2025-04-30",
+          "signal_day_return": 0.015,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": -0.011462,
+          "ticker": "PFSI",
+          "trade_enabled": false,
+          "volume_ratio_20d": 0.571783,
+          "window": "mid_weak"
+        },
+        {
+          "avg_dollar_volume_20d": 50938262.02,
+          "candidate_score": 3.257219,
+          "close_location": 0.906736,
+          "companyfacts_filing_date": "2025-05-01",
+          "companyfacts_profit_asof_date": "2025-05-01",
+          "companyfacts_profit_canonical": "net_income",
+          "companyfacts_profit_form": "10-Q",
+          "companyfacts_profit_yoy_growth": 1.650004,
+          "companyfacts_revenue_asof_date": "2025-05-01",
+          "companyfacts_revenue_form": "10-Q",
+          "companyfacts_revenue_yoy_growth": 0.622752,
+          "entry_date": "2025-05-05",
+          "entry_open": 140.6655,
+          "exit_close": 149.967,
+          "exit_date": "2025-05-19",
+          "filing_to_signal_calendar_days": 1,
+          "gross_return": 0.066125,
+          "net_return": 0.062625,
+          "notional": 4000.0,
+          "pnl": 250.5,
+          "prefiling_ret20_excess_spy": -0.002617,
+          "ret20": 0.088186,
+          "ret20_excess_spy": 0.032178,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 28.43625416760047,
+          "signal_date": "2025-05-02",
+          "signal_day_return": 0.026171,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": 0.056009,
+          "ticker": "PJT",
+          "trade_enabled": false,
+          "volume_ratio_20d": 1.111845,
+          "window": "mid_weak"
+        },
+        {
+          "avg_dollar_volume_20d": 317938479.35,
+          "candidate_score": 2.758747,
+          "close_location": 0.925194,
+          "companyfacts_filing_date": "2025-05-02",
+          "companyfacts_profit_asof_date": "2025-05-02",
+          "companyfacts_profit_canonical": "net_income",
+          "companyfacts_profit_form": "10-Q",
+          "companyfacts_profit_yoy_growth": 3.630802,
+          "companyfacts_revenue_asof_date": "2025-05-02",
+          "companyfacts_revenue_form": "10-Q",
+          "companyfacts_revenue_yoy_growth": 0.152799,
+          "entry_date": "2025-05-06",
+          "entry_open": 180.12,
+          "exit_close": 188.15,
+          "exit_date": "2025-05-20",
+          "filing_to_signal_calendar_days": 3,
+          "gross_return": 0.044581,
+          "net_return": 0.041081,
+          "notional": 4000.0,
+          "pnl": 164.33,
+          "prefiling_ret20_excess_spy": -0.063889,
+          "ret20": 0.108077,
+          "ret20_excess_spy": -0.007166,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 22.207417879384064,
+          "signal_date": "2025-05-05",
+          "signal_day_return": 0.033585,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": 0.115243,
+          "ticker": "GDDY",
+          "trade_enabled": false,
+          "volume_ratio_20d": 1.100016,
+          "window": "mid_weak"
+        },
+        {
+          "avg_dollar_volume_20d": 752310889.72,
+          "candidate_score": 2.82587,
+          "close_location": 0.792,
+          "companyfacts_filing_date": "2025-05-05",
+          "companyfacts_profit_asof_date": "2025-05-05",
+          "companyfacts_profit_canonical": "eps_basic",
+          "companyfacts_profit_form": "10-Q",
+          "companyfacts_profit_yoy_growth": 4.84,
+          "companyfacts_revenue_asof_date": "2025-05-05",
+          "companyfacts_revenue_form": "10-Q",
+          "companyfacts_revenue_yoy_growth": 0.426883,
+          "entry_date": "2025-05-07",
+          "entry_open": 266.2945,
+          "exit_close": 263.8718,
+          "exit_date": "2025-05-21",
+          "filing_to_signal_calendar_days": 1,
+          "gross_return": -0.009098,
+          "net_return": -0.012598,
+          "notional": 4000.0,
+          "pnl": -50.39,
+          "prefiling_ret20_excess_spy": -0.020071,
+          "ret20": 0.111216,
+          "ret20_excess_spy": 0.003321,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 15.020962842028972,
+          "signal_date": "2025-05-06",
+          "signal_day_return": 0.005316,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": 0.107895,
+          "ticker": "PGR",
+          "trade_enabled": false,
+          "volume_ratio_20d": 0.65257,
+          "window": "mid_weak"
+        },
+        {
+          "avg_dollar_volume_20d": 52396753.68,
+          "candidate_score": 2.398321,
+          "close_location": 0.730769,
+          "companyfacts_filing_date": "2025-05-07",
+          "companyfacts_profit_asof_date": "2025-05-07",
+          "companyfacts_profit_canonical": "net_income",
+          "companyfacts_profit_form": "10-Q",
+          "companyfacts_profit_yoy_growth": 1.062749,
+          "companyfacts_revenue_asof_date": "2025-05-07",
+          "companyfacts_revenue_form": "10-Q",
+          "companyfacts_revenue_yoy_growth": 0.47915,
+          "entry_date": "2025-05-09",
+          "entry_open": 54.4748,
+          "exit_close": 53.2675,
+          "exit_date": "2025-05-23",
+          "filing_to_signal_calendar_days": 1,
+          "gross_return": -0.022163,
+          "net_return": -0.025663,
+          "notional": 4000.0,
+          "pnl": -102.65,
+          "prefiling_ret20_excess_spy": -0.030609,
+          "ret20": 0.011105,
+          "ret20_excess_spy": -0.018861,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 73.42844918283039,
+          "signal_date": "2025-05-08",
+          "signal_day_return": 0.003021,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": 0.029966,
+          "ticker": "TRNO",
+          "trade_enabled": false,
+          "volume_ratio_20d": 1.457538,
+          "window": "mid_weak"
+        },
+        {
+          "avg_dollar_volume_20d": 1600688526.9,
+          "candidate_score": 3.349226,
+          "close_location": 0.957317,
+          "companyfacts_filing_date": "2025-05-12",
+          "companyfacts_profit_asof_date": "2025-05-12",
+          "companyfacts_profit_canonical": "net_income",
+          "companyfacts_profit_form": "10-Q",
+          "companyfacts_profit_yoy_growth": 0.267115,
+          "companyfacts_revenue_asof_date": "2025-05-12",
+          "companyfacts_revenue_form": "10-Q",
+          "companyfacts_revenue_yoy_growth": 2.584452,
+          "entry_date": "2025-05-14",
+          "entry_open": 45.93,
+          "exit_close": 41.15,
+          "exit_date": "2025-05-29",
+          "filing_to_signal_calendar_days": 1,
+          "gross_return": -0.104071,
+          "net_return": -0.107571,
+          "notional": 4000.0,
+          "pnl": -430.29,
+          "prefiling_ret20_excess_spy": -0.080703,
+          "ret20": 0.174215,
+          "ret20_excess_spy": 0.0857,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 87.08904797349297,
+          "signal_date": "2025-05-13",
+          "signal_day_return": 0.160203,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": 0.088515,
+          "ticker": "SMCI",
+          "trade_enabled": false,
+          "volume_ratio_20d": 2.037886,
+          "window": "mid_weak"
+        },
+        {
+          "avg_dollar_volume_20d": 112993088.48,
+          "candidate_score": 3.506884,
+          "close_location": 0.86722,
+          "companyfacts_filing_date": "2025-05-13",
+          "companyfacts_profit_asof_date": "2025-05-13",
+          "companyfacts_profit_canonical": "eps_basic",
+          "companyfacts_profit_form": "10-Q",
+          "companyfacts_profit_yoy_growth": 3.75,
+          "companyfacts_revenue_asof_date": "2025-05-13",
+          "companyfacts_revenue_form": "10-Q",
+          "companyfacts_revenue_yoy_growth": 0.30624,
+          "entry_date": "2025-05-15",
+          "entry_open": 44.55,
+          "exit_close": 43.04,
+          "exit_date": "2025-05-30",
+          "filing_to_signal_calendar_days": 1,
+          "gross_return": -0.033894,
+          "net_return": -0.037394,
+          "notional": 4000.0,
+          "pnl": -149.58,
+          "prefiling_ret20_excess_spy": -0.054659,
+          "ret20": 0.221949,
+          "ret20_excess_spy": 0.128981,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 89.78675799106307,
+          "signal_date": "2025-05-14",
+          "signal_day_return": 0.20839,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": 0.092967,
+          "ticker": "EXEL",
+          "trade_enabled": false,
+          "volume_ratio_20d": 4.452981,
+          "window": "mid_weak"
+        },
+        {
+          "avg_dollar_volume_20d": 1034430438.97,
+          "candidate_score": 2.594134,
+          "close_location": 0.709056,
+          "companyfacts_filing_date": "2025-05-21",
+          "companyfacts_profit_asof_date": "2025-05-21",
+          "companyfacts_profit_canonical": "net_income",
+          "companyfacts_profit_form": "10-Q",
+          "companyfacts_profit_yoy_growth": 1.431354,
+          "companyfacts_revenue_asof_date": "2025-05-21",
+          "companyfacts_revenue_form": "10-Q",
+          "companyfacts_revenue_yoy_growth": 0.330118,
+          "entry_date": "2025-05-23",
+          "entry_open": 183.61,
+          "exit_close": 196.33,
+          "exit_date": "2025-06-09",
+          "filing_to_signal_calendar_days": 1,
+          "gross_return": 0.069277,
+          "net_return": 0.065777,
+          "notional": 4000.0,
+          "pnl": 263.11,
+          "prefiling_ret20_excess_spy": -0.011726,
+          "ret20": 0.057373,
+          "ret20_excess_spy": -0.009209,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 21.78530573881218,
+          "signal_date": "2025-05-22",
+          "signal_day_return": 0.026923,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": 0.066582,
+          "ticker": "PANW",
+          "trade_enabled": false,
+          "volume_ratio_20d": 1.382484,
+          "window": "mid_weak"
+        },
+        {
+          "avg_dollar_volume_20d": 62693545.55,
+          "candidate_score": 2.162372,
+          "close_location": 0.888889,
+          "companyfacts_filing_date": "2025-08-07",
+          "companyfacts_profit_asof_date": "2025-08-07",
+          "companyfacts_profit_canonical": "net_income",
+          "companyfacts_profit_form": "10-Q",
+          "companyfacts_profit_yoy_growth": 0.4251,
+          "companyfacts_revenue_asof_date": "2025-08-07",
+          "companyfacts_revenue_form": "10-Q",
+          "companyfacts_revenue_yoy_growth": 0.504994,
+          "entry_date": "2025-08-11",
+          "entry_open": 112.39,
+          "exit_close": 121.12,
+          "exit_date": "2025-08-25",
+          "filing_to_signal_calendar_days": 1,
+          "gross_return": 0.077676,
+          "net_return": 0.074176,
+          "notional": 4000.0,
+          "pnl": 296.7,
+          "prefiling_ret20_excess_spy": -0.01664,
+          "ret20": 0.066426,
+          "ret20_excess_spy": 0.044682,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 35.59035520707028,
+          "signal_date": "2025-08-08",
+          "signal_day_return": 0.072952,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": 0.021744,
+          "ticker": "ROAD",
+          "trade_enabled": false,
+          "volume_ratio_20d": 1.620427,
+          "window": "mid_weak"
+        }
+      ],
+      "target_trade_count": 11,
+      "target_trade_pnl_usd": 1595.67,
+      "window": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      }
+    },
+    {
+      "after": {
+        "combined_equity_curve": [
+          [
+            "2024-10-02",
+            100000.0
+          ],
+          [
+            "2024-10-03",
+            100000.0
+          ],
+          [
+            "2024-10-04",
+            100000.0
+          ],
+          [
+            "2024-10-07",
+            100000.0
+          ],
+          [
+            "2024-10-08",
+            100000.0
+          ],
+          [
+            "2024-10-09",
+            100000.0
+          ],
+          [
+            "2024-10-10",
+            100056.42
+          ],
+          [
+            "2024-10-11",
+            99691.39
+          ],
+          [
+            "2024-10-14",
+            99212.98
+          ],
+          [
+            "2024-10-15",
+            98535.33
+          ],
+          [
+            "2024-10-16",
+            97904.47
+          ],
+          [
+            "2024-10-17",
+            98095.5
+          ],
+          [
+            "2024-10-18",
+            98181.69
+          ],
+          [
+            "2024-10-21",
+            98100.59
+          ],
+          [
+            "2024-10-22",
+            97788.15
+          ],
+          [
+            "2024-10-23",
+            96510.84
+          ],
+          [
+            "2024-10-24",
+            97194.36
+          ],
+          [
+            "2024-10-25",
+            97822.77
+          ],
+          [
+            "2024-10-28",
+            96816.99
+          ],
+          [
+            "2024-10-29",
+            97064.01
+          ],
+          [
+            "2024-10-30",
+            96968.22
+          ],
+          [
+            "2024-10-31",
+            96108.87
+          ],
+          [
+            "2024-11-01",
+            97547.24
+          ],
+          [
+            "2024-11-04",
+            97282.0
+          ],
+          [
+            "2024-11-05",
+            97282.0
+          ],
+          [
+            "2024-11-06",
+            109210.01
+          ],
+          [
+            "2024-11-07",
+            109817.14
+          ],
+          [
+            "2024-11-08",
+            101993.47
+          ],
+          [
+            "2024-11-11",
+            101993.47
+          ],
+          [
+            "2024-11-12",
+            101993.47
+          ],
+          [
+            "2024-11-13",
+            101993.47
+          ],
+          [
+            "2024-11-14",
+            101993.47
+          ],
+          [
+            "2024-11-15",
+            101993.47
+          ],
+          [
+            "2024-11-18",
+            101993.47
+          ],
+          [
+            "2024-11-19",
+            128148.53
+          ],
+          [
+            "2024-11-20",
+            128102.42
+          ],
+          [
+            "2024-11-21",
+            127692.35
+          ],
+          [
+            "2024-11-22",
+            127431.55
+          ],
+          [
+            "2024-11-25",
+            128375.32
+          ],
+          [
+            "2024-11-26",
+            130185.11
+          ],
+          [
+            "2024-11-27",
+            129787.35
+          ],
+          [
+            "2024-11-29",
+            130549.68
+          ],
+          [
+            "2024-12-02",
+            131627.03
+          ],
+          [
+            "2024-12-03",
+            131919.48
+          ],
+          [
+            "2024-12-04",
+            133324.84
+          ],
+          [
+            "2024-12-05",
+            133189.86
+          ],
+          [
+            "2024-12-06",
+            133506.89
+          ],
+          [
+            "2024-12-09",
+            133061.72
+          ],
+          [
+            "2024-12-10",
+            133714.43
+          ],
+          [
+            "2024-12-11",
+            133961.98
+          ],
+          [
+            "2024-12-12",
+            133852.42
+          ],
+          [
+            "2024-12-13",
+            133798.94
+          ],
+          [
+            "2024-12-16",
+            134385.67
+          ],
+          [
+            "2024-12-17",
+            134714.93
+          ],
+          [
+            "2024-12-18",
+            132854.95
+          ],
+          [
+            "2024-12-19",
+            133674.41
+          ],
+          [
+            "2024-12-20",
+            134131.51
+          ],
+          [
+            "2024-12-23",
+            134052.36
+          ],
+          [
+            "2024-12-24",
+            134606.36
+          ],
+          [
+            "2024-12-26",
+            134648.36
+          ],
+          [
+            "2024-12-27",
+            134284.95
+          ],
+          [
+            "2024-12-30",
+            133743.86
+          ],
+          [
+            "2024-12-31",
+            133861.78
+          ],
+          [
+            "2025-01-02",
+            133596.88
+          ],
+          [
+            "2025-01-03",
+            133679.26
+          ],
+          [
+            "2025-01-06",
+            133374.59
+          ],
+          [
+            "2025-01-07",
+            133136.41
+          ],
+          [
+            "2025-01-08",
+            133281.9
+          ],
+          [
+            "2025-01-10",
+            132062.35
+          ],
+          [
+            "2025-01-13",
+            132062.35
+          ],
+          [
+            "2025-01-14",
+            132062.35
+          ],
+          [
+            "2025-01-15",
+            130940.16
+          ],
+          [
+            "2025-01-16",
+            132407.16
+          ],
+          [
+            "2025-01-17",
+            135596.23
+          ],
+          [
+            "2025-01-21",
+            137963.34
+          ],
+          [
+            "2025-01-22",
+            137425.86
+          ],
+          [
+            "2025-01-23",
+            141473.83
+          ],
+          [
+            "2025-01-24",
+            139527.57
+          ],
+          [
+            "2025-01-27",
+            139167.19
+          ],
+          [
+            "2025-01-28",
+            140778.53
+          ],
+          [
+            "2025-01-29",
+            140497.67
+          ],
+          [
+            "2025-01-30",
+            140740.19
+          ],
+          [
+            "2025-01-31",
+            132062.35
+          ],
+          [
+            "2025-02-03",
+            132062.35
+          ],
+          [
+            "2025-02-04",
+            132062.35
+          ],
+          [
+            "2025-02-05",
+            132062.35
+          ],
+          [
+            "2025-02-06",
+            148015.42
+          ],
+          [
+            "2025-02-07",
+            150200.73
+          ],
+          [
+            "2025-02-10",
+            152177.89
+          ],
+          [
+            "2025-02-11",
+            138997.18
+          ],
+          [
+            "2025-02-12",
+            139038.1
+          ],
+          [
+            "2025-02-13",
+            139069.17
+          ],
+          [
+            "2025-02-14",
+            139024.11
+          ],
+          [
+            "2025-02-18",
+            152148.17
+          ],
+          [
+            "2025-02-19",
+            150948.23
+          ],
+          [
+            "2025-02-20",
+            147136.92
+          ],
+          [
+            "2025-02-21",
+            145830.59
+          ],
+          [
+            "2025-02-24",
+            145468.58
+          ],
+          [
+            "2025-02-25",
+            143805.58
+          ],
+          [
+            "2025-02-26",
+            144619.68
+          ],
+          [
+            "2025-02-27",
+            141954.12
+          ],
+          [
+            "2025-02-28",
+            142312.91
+          ],
+          [
+            "2025-03-03",
+            142772.92
+          ],
+          [
+            "2025-03-04",
+            141501.71
+          ],
+          [
+            "2025-03-05",
+            142658.54
+          ],
+          [
+            "2025-03-06",
+            137441.2
+          ],
+          [
+            "2025-03-07",
+            137482.36
+          ],
+          [
+            "2025-03-10",
+            136791.46
+          ],
+          [
+            "2025-03-11",
+            137708.74
+          ],
+          [
+            "2025-03-12",
+            138052.72
+          ],
+          [
+            "2025-03-13",
+            139285.32
+          ],
+          [
+            "2025-03-14",
+            139289.46
+          ],
+          [
+            "2025-03-17",
+            139821.52
+          ],
+          [
+            "2025-03-18",
+            140462.07
+          ],
+          [
+            "2025-03-19",
+            140368.07
+          ],
+          [
+            "2025-03-20",
+            140133.07
+          ],
+          [
+            "2025-03-21",
+            139433.32
+          ],
+          [
+            "2025-03-24",
+            139433.32
+          ],
+          [
+            "2025-03-25",
+            139433.32
+          ],
+          [
+            "2025-03-26",
+            139433.32
+          ],
+          [
+            "2025-03-27",
+            139433.32
+          ],
+          [
+            "2025-03-28",
+            139433.32
+          ],
+          [
+            "2025-03-31",
+            139433.32
+          ],
+          [
+            "2025-04-01",
+            139433.32
+          ],
+          [
+            "2025-04-02",
+            139433.32
+          ],
+          [
+            "2025-04-03",
+            139433.32
+          ],
+          [
+            "2025-04-04",
+            139433.32
+          ],
+          [
+            "2025-04-07",
+            139433.32
+          ],
+          [
+            "2025-04-08",
+            139433.32
+          ],
+          [
+            "2025-04-09",
+            139433.32
+          ],
+          [
+            "2025-04-10",
+            139433.32
+          ],
+          [
+            "2025-04-11",
+            139433.32
+          ],
+          [
+            "2025-04-14",
+            139433.32
+          ],
+          [
+            "2025-04-15",
+            139433.32
+          ],
+          [
+            "2025-04-16",
+            139433.32
+          ],
+          [
+            "2025-04-17",
+            139433.32
+          ],
+          [
+            "2025-04-21",
+            139433.32
+          ],
+          [
+            "2025-04-22",
+            139433.32
+          ]
+        ],
+        "core_trade_count": 22,
+        "event_pnl": -234.64,
+        "event_trade_count": 1,
+        "expected_value_score": 0.5836,
+        "max_drawdown_pct": 0.1011,
+        "sharpe_daily": 1.48,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667,
+        "total_pnl": 39433.32,
+        "total_return_pct": 0.3943,
+        "trade_count": 23,
+        "vs_qqq_pct": 0.4692,
+        "vs_spy_pct": 0.4615,
+        "win_rate": 0.3913,
+        "winning_trades": 9
+      },
+      "before": {
+        "expected_value_score": 0.5911,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "total_return_pct": 0.3967,
+        "trade_count": 22,
+        "vs_qqq_pct": 0.4716,
+        "vs_spy_pct": 0.4639,
+        "win_rate": 0.4091,
+        "winning_trades": 9
+      },
+      "comparison": {
+        "expected_value_score_delta": -0.0075,
+        "max_drawdown_delta": 0.001,
+        "strategy_total_pnl_delta": -234.64
+      },
+      "label": "old_thin",
+      "selected_trades": [
+        {
+          "avg_dollar_volume_20d": 97420803.74,
+          "candidate_score": 1.989209,
+          "close_location": 0.649303,
+          "companyfacts_filing_date": "2025-02-04",
+          "companyfacts_profit_asof_date": "2025-02-04",
+          "companyfacts_profit_canonical": "eps_basic",
+          "companyfacts_profit_form": "10-Q",
+          "companyfacts_profit_yoy_growth": 0.818182,
+          "companyfacts_revenue_asof_date": "2025-02-04",
+          "companyfacts_revenue_form": "10-Q",
+          "companyfacts_revenue_yoy_growth": 0.238151,
+          "entry_date": "2025-02-06",
+          "entry_open": 77.23,
+          "exit_close": 72.97,
+          "exit_date": "2025-02-21",
+          "filing_to_signal_calendar_days": 1,
+          "gross_return": -0.05516,
+          "net_return": -0.05866,
+          "notional": 4000.0,
+          "pnl": -234.64,
+          "prefiling_ret20_excess_spy": -0.020329,
+          "ret20": 0.050096,
+          "ret20_excess_spy": 0.035214,
+          "rule_version": "broad_companyfacts_fresh_underreaction_filing_candidate_source_v1",
+          "shares": 51.79334230393874,
+          "signal_date": "2025-02-05",
+          "signal_day_return": 0.021223,
+          "source": "BROAD_COMPANYFACTS_FRESH_UNDERREACTION_FILING_PAPER",
+          "spy_ret20": 0.014882,
+          "ticker": "BRBR",
+          "trade_enabled": false,
+          "volume_ratio_20d": 1.298293,
+          "window": "old_thin"
+        }
+      ],
+      "target_trade_count": 1,
+      "target_trade_pnl_usd": -234.64,
+      "window": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  ],
+  "source_data": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "growth_path": "data/kova/fundamentals/companyfacts_growth_broad_universe_20260604.jsonl",
+    "warehouse": "data/experiments/exp-20260519-030/warehouse_main.sqlite"
+  },
+  "target_summary": {
+    "max_single_positive_share": 0.16838,
+    "positive_pnl_by_ticker": {
+      "AGX": 219.73,
+      "CNX": 263.09,
+      "DXCM": 147.14,
+      "ENSG": 305.03,
+      "GDDY": 164.33,
+      "HALO": 99.6,
+      "IESC": 662.25,
+      "LRCX": 796.27,
+      "PANW": 263.11,
+      "PFSI": 143.75,
+      "PJT": 250.5,
+      "ROAD": 296.7,
+      "URBN": 703.58,
+      "VRT": 413.92
+    },
+    "positive_pnl_hhi": 0.100555,
+    "target_by_window": {
+      "late_strong": {
+        "count": 17,
+        "pnl": -188.99
+      },
+      "mid_weak": {
+        "count": 11,
+        "pnl": 1595.67
+      },
+      "old_thin": {
+        "count": 1,
+        "pnl": -234.64
+      }
+    },
+    "target_trade_count": 29,
+    "target_trade_pnl_usd": 1172.04,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "total_pnl_by_ticker": {
+      "AGX": 219.73,
+      "BRBR": -234.64,
+      "CNX": 263.09,
+      "DXCM": 147.14,
+      "ENSG": 305.03,
+      "EXEL": -149.58,
+      "FNF": -341.45,
+      "FTAI": -605.72,
+      "GDDY": 164.33,
+      "GMED": -516.07,
+      "HALO": 99.6,
+      "IESC": 662.25,
+      "JPM": -131.62,
+      "LRCX": 796.27,
+      "PANW": 263.11,
+      "PFSI": 143.75,
+      "PGR": -50.39,
+      "PIPR": -208.65,
+      "PJT": 250.5,
+      "PRI": -39.48,
+      "RGLD": -85.64,
+      "RITM": -82.72,
+      "ROAD": 296.7,
+      "SMCI": -430.29,
+      "SOFI": -242.49,
+      "TRNO": -102.65,
+      "URBN": 703.58,
+      "VRT": 413.92,
+      "XYL": -335.57
+    }
+  }
+}
