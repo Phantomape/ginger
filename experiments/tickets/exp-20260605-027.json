@@ -1,0 +1,104 @@
+{
+  "acceptance_rule": "capital-allocation/rebalance alpha must improve aggregate expected_value_score by more than 10%, improve PnL, avoid window EV/PnL regression, keep survival_rate >= 5%, and preserve production/backtest parity as replay-only/default-off.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260605_027_hawkish_macro_selloff_rebalance_allocator.py",
+    "data/experiments/exp-20260605-027/exp_20260605_027_hawkish_macro_selloff_rebalance_allocator.json",
+    "experiments/cards/exp-20260605-027.md",
+    "experiments/manifests/exp-20260605-027.json",
+    "experiments/tickets/exp-20260605-027.json",
+    "experiments/logs/exp-20260605-027.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "card_file": "experiments/cards/exp-20260605-027.md",
+  "change_type": "default_off_macro_shock_rebalance_paper_sleeve",
+  "changed_variable": "hawkish_macro_selloff_rebalance_allocator_v1",
+  "claimed_at": "2026-06-05T17:20:44+00:00",
+  "completed_at": "2026-06-05T17:29:45Z",
+  "created_at": "2026-06-05T17:20:37+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260605-027",
+  "experiment_uid": "expuid-21db0ea471114199",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260605-027",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-05T17:20:37+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "hawkish_macro_selloff_rebalance_allocator"
+  },
+  "hypothesis": "After a hot macro/rates shock selloff, a production-visible rebalance sleeve that rotates away from duration-heavy QQQ beta into resilient liquid sector/cross-asset ETFs may add short-horizon replacement alpha.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "hawkish_macro_selloff_rebalance_allocator_v1"
+  ],
+  "mechanism_family": "regime_aware_rebalance_allocation",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260510-007",
+    "exp-20260512-777",
+    "exp-20260512-106",
+    "exp-20260513-013",
+    "exp-20260605-013"
+  ],
+  "new_evidence_type": "production_visible_free_ohlcv_macro_shock_rebalance_proxy",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "User supplied today NFP/rates-up selloff context, but prior broad ETF/allocation retunes are mixed; using only free OHLCV and a strict 10% EV gate keeps the replay honest.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "thin_macro_shock_sample",
+      "sector_rotation_overfit",
+      "old_thin_regression",
+      "etf_overlay_too_small",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-05T17:20:26+00:00",
+    "success_probability": 0.12
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": -0.0455,
+    "aggregate_strategy_total_pnl_delta": -941.88,
+    "artifact": "data/experiments/exp-20260605-027/exp_20260605_027_hawkish_macro_selloff_rebalance_allocator.json",
+    "calibration": {
+      "actual_gate4_passed": false,
+      "failure_modes_observed": [
+        "aggregate_ev_delta_not_gt_10pct",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "target_concentration_failed"
+      ],
+      "predicted_success_probability": 0.12
+    },
+    "decision": "rejected_hawkish_macro_selloff_rebalance_allocator",
+    "log": "experiments/logs/exp-20260605-027.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260605-027.json",
+  "single_causal_variable": "hawkish_macro_selloff_rebalance_allocator_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260605-027.json",
+  "trial_family": "hawkish_macro_selloff_rebalance_allocator",
+  "trial_variant_id": "hawkish_macro_selloff_rebalance_allocator_v1"
+}
