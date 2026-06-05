@@ -194,6 +194,7 @@ def main():
 
     # Imports are inside main() so the module can be imported without side-effects
     from data_layer         import get_universe, get_ohlcv, get_ohlcv_many, get_earnings_data
+    from ohlcv_warehouse    import DEFAULT_WAREHOUSE_PATH, upsert_ohlcv_frames
     from feature_layer      import compute_features
     from trend_signals      import compute_position_context, save_trend_signals
     from signal_engine      import generate_signals, rank_signals_for_allocation
@@ -444,6 +445,127 @@ def main():
         )
 
     data_universe = sorted(set(universe) | set(pilot_universe))
+    ohlcv_warehouse_path = os.environ.get(
+        "OHLCV_WAREHOUSE_PATH",
+        str(DEFAULT_WAREHOUSE_PATH),
+    )
+    ohlcv_warehouse_enabled = not _env_flag(
+        "DISABLE_OHLCV_WAREHOUSE_ACCUMULATION",
+        False,
+    )
+    ohlcv_warehouse_update_existing = _env_flag(
+        "OHLCV_WAREHOUSE_UPDATE_EXISTING",
+        False,
+    )
+    ohlcv_warehouse_commit_every = _env_int("OHLCV_WAREHOUSE_COMMIT_EVERY") or 1000
+    ohlcv_warehouse_recorded_tickers = set()
+    ohlcv_warehouse_processed_tickers = set()
+    ohlcv_warehouse_empty_tickers = set()
+    ohlcv_warehouse_touched_tickers = set()
+    ohlcv_warehouse_summary = {
+        "status": "enabled" if ohlcv_warehouse_enabled else "disabled",
+        "path": ohlcv_warehouse_path,
+        "update_existing": ohlcv_warehouse_update_existing,
+        "inserted": 0,
+        "updated": 0,
+        "unchanged": 0,
+        "skipped_existing": 0,
+        "skipped_rows": 0,
+        "processed_ticker_count": 0,
+        "empty_ticker_count": 0,
+        "touched_ticker_count": 0,
+        "phases": [],
+        "production_impact": {
+            "alters_signal_generation": False,
+            "alters_candidate_ranking": False,
+            "alters_sizing": False,
+            "alters_orders": False,
+        },
+    }
+
+    def _accumulate_ohlcv_warehouse(frames_by_ticker, phase):
+        if not ohlcv_warehouse_enabled:
+            return
+        frames_by_ticker = dict(frames_by_ticker or {})
+        if not frames_by_ticker:
+            return
+        try:
+            summary = upsert_ohlcv_frames(
+                ohlcv_warehouse_path,
+                frames_by_ticker,
+                source=f"run.py:{phase}",
+                provider="yfinance",
+                update_existing=ohlcv_warehouse_update_existing,
+                commit_every=ohlcv_warehouse_commit_every,
+            )
+        except Exception as e:
+            log.warning("OHLCV warehouse accumulation failed during %s: %s", phase, e)
+            ohlcv_warehouse_summary["status"] = "failed"
+            ohlcv_warehouse_summary.setdefault("errors", []).append(
+                {"phase": phase, "error": str(e)}
+            )
+            return
+
+        processed = set(summary.get("processed_tickers") or [])
+        empty = set(summary.get("empty_tickers") or [])
+        touched = set(summary.get("touched_tickers") or [])
+        ohlcv_warehouse_recorded_tickers.update(processed | empty)
+        ohlcv_warehouse_processed_tickers.update(processed)
+        ohlcv_warehouse_empty_tickers.update(empty)
+        ohlcv_warehouse_touched_tickers.update(touched)
+        for key in (
+            "inserted",
+            "updated",
+            "unchanged",
+            "skipped_existing",
+            "skipped_rows",
+        ):
+            ohlcv_warehouse_summary[key] += int(summary.get(key) or 0)
+        ohlcv_warehouse_summary["processed_ticker_count"] = len(
+            ohlcv_warehouse_processed_tickers
+        )
+        ohlcv_warehouse_summary["empty_ticker_count"] = len(
+            ohlcv_warehouse_empty_tickers
+        )
+        ohlcv_warehouse_summary["touched_ticker_count"] = len(
+            ohlcv_warehouse_touched_tickers
+        )
+        if ohlcv_warehouse_summary.get("errors"):
+            ohlcv_warehouse_summary["status"] = "partial_failed"
+        else:
+            ohlcv_warehouse_summary["status"] = (
+                "updated"
+                if (
+                    ohlcv_warehouse_summary["inserted"]
+                    or ohlcv_warehouse_summary["updated"]
+                )
+                else "no_new_rows"
+            )
+        ohlcv_warehouse_summary["phases"].append(
+            {
+                "phase": phase,
+                "ticker_count": summary.get("ticker_count"),
+                "processed_ticker_count": summary.get("processed_ticker_count"),
+                "empty_ticker_count": summary.get("empty_ticker_count"),
+                "inserted": summary.get("inserted"),
+                "updated": summary.get("updated"),
+                "skipped_existing": summary.get("skipped_existing"),
+                "skipped_rows": summary.get("skipped_rows"),
+                "touched_ticker_count": summary.get("touched_ticker_count"),
+                "processed_tickers_sample": sorted(processed)[:20],
+                "touched_tickers_sample": sorted(touched)[:20],
+            }
+        )
+        log.info(
+            "OHLCV warehouse %s: tickers=%s inserted=%s updated=%s existing=%s skipped_rows=%s",
+            phase,
+            summary.get("processed_ticker_count"),
+            summary.get("inserted"),
+            summary.get("updated"),
+            summary.get("skipped_existing"),
+            summary.get("skipped_rows"),
+        )
+
     ohlcv_cache = {}
     earnings_cache = {}
 
@@ -507,6 +629,10 @@ def main():
     spy_ohlcv = ohlcv_dict.get("SPY")
     if spy_ohlcv is None:
         spy_ohlcv = _cached_ohlcv("SPY")
+    primary_warehouse_frames = dict(ohlcv_dict)
+    if spy_ohlcv is not None:
+        primary_warehouse_frames["SPY"] = spy_ohlcv
+    _accumulate_ohlcv_warehouse(primary_warehouse_frames, "primary_batch")
     option_underlying_prices = {}
     for ticker, ohlcv in ohlcv_dict.items():
         if ohlcv is None or ohlcv.empty:
@@ -811,6 +937,7 @@ def main():
         "pilot_universe": pilot_universe,
         "data_universe": data_universe,
         "market_regime": market_regime,
+        "ohlcv_warehouse": ohlcv_warehouse_summary,
         "signals":      trend_signals_signals,
     }
 
@@ -2477,6 +2604,13 @@ def main():
         log.warning(f"BTC/USD crypto sleeve unavailable: {e}")
         crypto_sleeve = empty_crypto_sleeve_advice(e)
 
+    extra_ohlcv_frames = {
+        ticker: frame
+        for ticker, frame in ohlcv_cache.items()
+        if ticker not in ohlcv_warehouse_recorded_tickers
+    }
+    _accumulate_ohlcv_warehouse(extra_ohlcv_frames, "cached_extra")
+
     default_off_alpha_attribution = build_default_off_alpha_attribution_report(
         as_of=today_iso,
         pilot_attribution=pilot_attribution,
@@ -2546,6 +2680,7 @@ def main():
     trend_signals_dict["space_catalyst_event_ledger"] = space_catalyst_event_ledger
     trend_signals_dict["platform_rs20_watch"] = platform_rs20_watch
     trend_signals_dict["sec_10k_forward_watch"] = sec_10k_forward_watch
+    trend_signals_dict["ohlcv_warehouse"] = ohlcv_warehouse_summary
     trend_signals_dict["non_ohlcv_snapshot"] = non_ohlcv_snapshot
     trend_signals_dict["crypto_sleeve"] = crypto_sleeve
 
@@ -2653,6 +2788,7 @@ def main():
         "space_catalyst_event_ledger": space_catalyst_event_ledger,
         "platform_rs20_watch": platform_rs20_watch,
         "sec_10k_forward_watch": sec_10k_forward_watch,
+        "ohlcv_warehouse": ohlcv_warehouse_summary,
         "non_ohlcv_snapshot": non_ohlcv_snapshot,
         "crypto_sleeve": crypto_sleeve,
         "heat_blocked_signals": heat_blocked_signals,

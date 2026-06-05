@@ -129,6 +129,11 @@ from data_paths import (
     resolve_daily_artifact_path,
     ohlcv_snapshot_path,
 )
+from ohlcv_warehouse import (
+    load_warehouse_ohlcv_frames,
+    load_warehouse_snapshot_ohlcv_frames,
+    snapshot_source_key,
+)
 from production_parity import (
     TRAILING_PARTIAL_REDUCE_ENABLED,
     build_early_relative_weakness_exit_actions,
@@ -1065,7 +1070,9 @@ class BacktestEngine:
 
     def __init__(self, universe, start=None, end=None, config=None,
                  replay_llm=False, replay_news=False, data_dir=None,
-                 ohlcv_snapshot_path=None, save_ohlcv_snapshot_path=None,
+                 ohlcv_snapshot_path=None, ohlcv_warehouse_path=None,
+                 ohlcv_warehouse_snapshot_source=None,
+                 save_ohlcv_snapshot_path=None,
                  include_pilot_sleeve=False, require_non_ohlcv=False,
                  save_entry_candidate_events_path=None,
                  include_entry_candidate_events=False,
@@ -1088,6 +1095,8 @@ class BacktestEngine:
             data_dir = os.path.normpath(os.path.join(here, "..", "data"))
         self.data_dir    = data_dir
         self.ohlcv_snapshot_path = self._resolve_snapshot_path(ohlcv_snapshot_path)
+        self.ohlcv_warehouse_path = self._resolve_snapshot_path(ohlcv_warehouse_path)
+        self.ohlcv_warehouse_snapshot_source = ohlcv_warehouse_snapshot_source
         self.save_ohlcv_snapshot_path = self._resolve_snapshot_path(save_ohlcv_snapshot_path)
         self.save_entry_candidate_events_path = self._resolve_snapshot_path(
             save_entry_candidate_events_path
@@ -1467,6 +1476,49 @@ class BacktestEngine:
                     f"OHLCV snapshot not found: {self.ohlcv_snapshot_path}"
                 )
             return self._load_ohlcv_snapshot(self.ohlcv_snapshot_path)
+
+        if self.ohlcv_warehouse_path:
+            if not os.path.exists(self.ohlcv_warehouse_path):
+                raise FileNotFoundError(
+                    f"OHLCV warehouse not found: {self.ohlcv_warehouse_path}"
+                )
+            if self.ohlcv_warehouse_snapshot_source:
+                ohlcv = load_warehouse_snapshot_ohlcv_frames(
+                    self.ohlcv_warehouse_path,
+                    self.ohlcv_warehouse_snapshot_source,
+                    all_tickers,
+                    dl_start,
+                    dl_end,
+                )
+                source_label = (
+                    "versioned snapshot "
+                    f"{snapshot_source_key(self.ohlcv_warehouse_snapshot_source)}"
+                )
+            else:
+                ohlcv = load_warehouse_ohlcv_frames(
+                    self.ohlcv_warehouse_path,
+                    all_tickers,
+                    dl_start,
+                    dl_end,
+                )
+                source_label = "broad ohlcv"
+            missing = sorted(set(all_tickers) - set(ohlcv))
+            if missing:
+                logger.warning(
+                    "OHLCV warehouse %s missing %d/%d requested tickers: %s",
+                    source_label,
+                    len(missing),
+                    len(all_tickers),
+                    ", ".join(missing[:20]),
+                )
+            logger.info(
+                "Loaded OHLCV warehouse %s <- %s (%d/%d tickers)",
+                source_label,
+                self.ohlcv_warehouse_path,
+                len(ohlcv),
+                len(all_tickers),
+            )
+            return ohlcv
 
         logger.info(f"Downloading {len(all_tickers)} tickers: "
                     f"{dl_start.date()} → {dl_end.date()}")
@@ -3790,6 +3842,12 @@ class BacktestEngine:
             "ohlcv_source": {
                 "snapshot_loaded": bool(self.ohlcv_snapshot_path),
                 "snapshot_path": self.ohlcv_snapshot_path,
+                "warehouse_loaded": bool(self.ohlcv_warehouse_path),
+                "warehouse_path": self.ohlcv_warehouse_path,
+                "warehouse_snapshot_source": (
+                    snapshot_source_key(self.ohlcv_warehouse_snapshot_source)
+                    if self.ohlcv_warehouse_snapshot_source else None
+                ),
                 "snapshot_written": bool(self.save_ohlcv_snapshot_path),
                 "snapshot_write_path": self.save_ohlcv_snapshot_path,
             },
@@ -4705,6 +4763,11 @@ def main():
                         help="Use the entry-day regime exit profile to set ATR target width. Default: on.")
     parser.add_argument("--ohlcv-snapshot", type=str, default=None,
                         help="Load OHLCV from a saved snapshot JSON instead of live yfinance.")
+    parser.add_argument("--ohlcv-warehouse", type=str, default=None,
+                        help="Load OHLCV from the broad SQLite warehouse instead of live yfinance.")
+    parser.add_argument("--ohlcv-warehouse-snapshot-source", type=str, default=None,
+                        help=("When --ohlcv-warehouse is set, load rows from the "
+                              "versioned snapshot table for this source key/path."))
     parser.add_argument("--save-ohlcv-snapshot", type=str, default=None,
                         help="Save downloaded OHLCV to a snapshot JSON for deterministic reruns.")
     parser.add_argument("--include-pilot-sleeve", action="store_true",
@@ -4749,6 +4812,8 @@ def main():
                             replay_llm=args.replay_llm,
                             replay_news=args.replay_news,
                             ohlcv_snapshot_path=args.ohlcv_snapshot,
+                            ohlcv_warehouse_path=args.ohlcv_warehouse,
+                            ohlcv_warehouse_snapshot_source=args.ohlcv_warehouse_snapshot_source,
                             save_ohlcv_snapshot_path=args.save_ohlcv_snapshot,
                             include_pilot_sleeve=args.include_pilot_sleeve,
                             require_non_ohlcv=args.require_non_ohlcv,
@@ -4790,6 +4855,8 @@ def main():
                     replay_llm=args.replay_llm,
                     replay_news=args.replay_news,
                     ohlcv_snapshot_path=args.ohlcv_snapshot,
+                    ohlcv_warehouse_path=args.ohlcv_warehouse,
+                    ohlcv_warehouse_snapshot_source=args.ohlcv_warehouse_snapshot_source,
                     include_pilot_sleeve=args.include_pilot_sleeve,
                     require_non_ohlcv=args.require_non_ohlcv,
                     include_oracle_diagnostics=args.include_oracle_diagnostics,

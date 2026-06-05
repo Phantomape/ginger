@@ -56,6 +56,23 @@ EV `6.3596` and PnL `$192,538.61`.
 Latest saved single-window backtest artifacts can reflect only the most recent
 command; canonical acceptance evidence is the three-window artifact above.
 
+2026-06-04 OHLCV warehouse measurement repair: the broad SQLite warehouse
+`ohlcv` table remains the preferred full-universe research and daily
+accumulation source, but fixed-window baseline reproduction must use the new
+versioned `ohlcv_snapshot_versions` table keyed by
+`(snapshot_source, ticker, date)`. The broad `(ticker, date)` table is a
+superset and can legitimately include extra tickers such as `MRVL`, `COHR`, or
+`NBIS`, while overlapping snapshots can carry different adjusted-price
+versions. Standard-window SQLite replay therefore requires
+`--ohlcv-warehouse-snapshot-source <SNAPSHOT>`. The seeded main warehouse now
+has `64,561` versioned snapshot rows across the three canonical sources, and
+the versioned SQLite three-window replay exactly matches the accepted snapshot
+baseline: aggregate EV `7.8941`, aggregate PnL `$234,850.99`. Audit artifact:
+`data/backtests/warehouse_vs_snapshot_data_quality_audit_20260604.json`;
+SQLite parity artifact:
+`data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json`.
+Full UT after the repair passed: `1132 passed in 43.69s`.
+
 Latest default-off alpha adapter acceptance: `exp-20260604-027` promotes the
 positive `exp-20260604-026` SEC FTD + FINRA confirmation replay lead into the
 shared `SEC_FTD_FINRA_CONFIRMED_PAPER` adapter. Publication-lagged SEC

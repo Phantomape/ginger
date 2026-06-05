@@ -21,6 +21,29 @@ cd D:\Github\ginger
 .\.venv\Scripts\python.exe quant\backtester.py --start <START> --end <END> --ohlcv-snapshot <SNAPSHOT>
 ```
 
+For new broad/full-universe work, prefer the SQLite OHLCV warehouse once the
+reference snapshot seed has been refreshed:
+
+```powershell
+.\.venv\Scripts\python.exe -B quant\ohlcv_warehouse.py seed-snapshots
+.\.venv\Scripts\python.exe quant\backtester.py --start <START> --end <END> --ohlcv-warehouse data\experiments\exp-20260519-030\warehouse_main.sqlite
+```
+
+For fixed-window standard baseline reproduction from SQLite, use the
+versioned snapshot table rather than the broad `ohlcv` table:
+
+```powershell
+.\.venv\Scripts\python.exe -B quant\ohlcv_warehouse.py seed-snapshot-versions
+.\.venv\Scripts\python.exe quant\backtester.py --start <START> --end <END> --ohlcv-warehouse data\experiments\exp-20260519-030\warehouse_main.sqlite --ohlcv-warehouse-snapshot-source <SNAPSHOT>
+```
+
+`<SNAPSHOT>` must be the matching canonical file for the window, for example
+`data\ohlcv\ohlcv_snapshot_20241002_20250422.json` for `old_thin`.
+
+Do not mix OHLCV sources in a before/after Gate 4 comparison. Use
+snapshot-vs-snapshot for legacy artifact reproduction, or
+warehouse-vs-warehouse for new warehouse-backed experiments.
+
 New backtest result files are written under `data\backtests\`. Legacy
 root-level `data\backtest_results_*.json` references remain readable through
 `quant/data_paths.py` compatibility resolvers when older checkouts still have

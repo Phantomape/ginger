@@ -12,7 +12,7 @@ home, and strategy code should read through canonical paths or
 | --- | --- | --- |
 | Fixed-window daily OHLCV | `data/ohlcv/ohlcv_snapshot_*.json` | Deterministic backtest input. The three standard windows are defined in `docs/backtesting.md`. Pilot/sleeve OHLCV variants in this directory are not canonical core baselines unless the command explicitly uses them. |
 | Intraday OHLCV | `data/kova/intraday/intraday_ohlcv_YYYYMMDD.jsonl` | Kova/intraday archive. Do not substitute it for fixed-window backtest snapshots without a documented experiment. |
-| Broad/full ticker OHLCV warehouse | `data/experiments/exp-20260519-030/warehouse_main.sqlite` | Broad-market OHLCV warehouse built by `exp-20260519-030`. It has `ticker_universe`, `ohlcv`, `fetch_status`, `coverage_summary`, and `run_manifest` tables; after the reference-asset seed it contains 4,968,741 OHLCV rows and 1,446 `all_windows_full_liquid` tickers. Use it as the broad stock OHLCV research superset and preferred input for new full-universe work. `quant/ohlcv_warehouse.py` can seed deterministic snapshot rows, `quant/run.py` accumulates production-downloaded OHLCV into it daily, and `quant/backtester.py --ohlcv-warehouse ...` can load it directly. |
+| Broad/full ticker OHLCV warehouse | `data/experiments/exp-20260519-030/warehouse_main.sqlite` | Broad-market OHLCV warehouse built by `exp-20260519-030`. It has `ticker_universe`, broad `ohlcv`, versioned `ohlcv_snapshot_versions`, `fetch_status`, `coverage_summary`, and `run_manifest` tables; after the reference-asset seed the broad table contains 4,968,741 OHLCV rows and 1,446 `all_windows_full_liquid` tickers. Use broad `ohlcv` as the broad stock OHLCV research superset and preferred input for new full-universe work. Use `ohlcv_snapshot_versions` for standard fixed-window reproduction. `quant/ohlcv_warehouse.py` can seed deterministic snapshot rows, `quant/run.py` accumulates production-downloaded OHLCV into the broad table daily, and `quant/backtester.py --ohlcv-warehouse ...` can load either broad or versioned rows. |
 | Non-OHLCV replay data | `data/non_ohlcv/` | SEC filings, filing text/features, Form 4, companyfacts, earnings/event snapshots, and coverage manifests. Check the coverage report before adding `require_non_ohlcv` rules. |
 | Realized fundamentals (curated) | `data/kova/fundamentals/companyfacts_growth_YYYYMMDD.jsonl` | Daily Kova/CANSLIM sidecar SEC Companyfacts YoY growth for the ~40 curated trade-universe names. PIT-safe (`asof_date <= signal_date`). Built by `quant/kova_data_sidecar.py`. |
 | Realized fundamentals (broad universe) | `data/kova/fundamentals/companyfacts_growth_broad_universe_YYYYMMDD.jsonl` | SEC Companyfacts realized YoY growth (revenue / eps_basic / eps_diluted / net_income) for the broad 1,446 `all_windows_full_liquid` warehouse universe. Built by `exp-20260605-007`. Free, official SEC XBRL, PIT-safe (filing date). See "Broad-Universe Realized Fundamentals" below for coverage. The clean, scalable alternative to yfinance `eps_estimate`, which is ~50-name-only and annual/quarterly contaminated. |
@@ -29,6 +29,13 @@ home, and strategy code should read through canonical paths or
 - The fixed-window backtester snapshot source of truth is `data/ohlcv/`.
 - The broad stock OHLCV research superset is
   `data/experiments/exp-20260519-030/warehouse_main.sqlite`.
+- The SQLite warehouse has two OHLCV roles:
+  - `ohlcv`: one broad row per `(ticker, date)` for full-universe research and
+    daily production accumulation.
+  - `ohlcv_snapshot_versions`: one row per
+    `(snapshot_source, ticker, date)` for fixed-window reproduction. This table
+    preserves overlapping adjusted-price versions and prevents broader
+    warehouse-only tickers from entering legacy standard baselines.
 - Current shared files include three standard windows plus pilot/sleeve variants:
   `ohlcv_snapshot_20241002_20250422.json`,
   `ohlcv_snapshot_20250423_20251022.json`,
@@ -46,6 +53,11 @@ home, and strategy code should read through canonical paths or
   them to a much broader ticker set. Keep it aligned by running
   `.\.venv\Scripts\python.exe -B quant\ohlcv_warehouse.py seed-snapshots`
   after adding or changing deterministic `data/ohlcv/` snapshots.
+- Keep the versioned fixed-window table aligned by running
+  `.\.venv\Scripts\python.exe -B quant\ohlcv_warehouse.py seed-snapshot-versions`
+  after adding or changing deterministic `data/ohlcv/` snapshots. Standard
+  baseline runs from SQLite must pass
+  `--ohlcv-warehouse-snapshot-source <SNAPSHOT>`.
 - The daily production run accumulates any OHLCV frame it actually downloads
   into the same SQLite warehouse. `quant/run.py` first records the primary
   batched universe, then records extra tickers fetched on demand for paper
@@ -58,13 +70,17 @@ home, and strategy code should read through canonical paths or
 - Daily accumulation is not a full 10k-ticker vendor refresh. It guarantees
   that production-touched tickers keep accruing in the warehouse. Full raw
   `ticker_universe` refreshes should remain a separate batch/backfill job.
-- Backtests can load the warehouse with `--ohlcv-warehouse`. A fixed-window
-  before/after comparison must use the same OHLCV source on both sides:
-  snapshot-vs-snapshot or warehouse-vs-warehouse, never mixed.
-- A single `(ticker, date)` warehouse row cannot preserve multiple historical
-  adjusted-price versions from overlapping snapshot lookback windows. Use
-  `data/ohlcv/` snapshots when a legacy artifact needs bit-exact replay; use
-  the warehouse for new broad-universe experiments and refresh baselines there.
+- Backtests can load the broad table with `--ohlcv-warehouse`, or a fixed
+  snapshot version with both `--ohlcv-warehouse` and
+  `--ohlcv-warehouse-snapshot-source`. A fixed-window before/after comparison
+  must use the same OHLCV source on both sides: snapshot-vs-snapshot,
+  versioned-SQLite-vs-versioned-SQLite, or broad-warehouse-vs-broad-warehouse;
+  never mix them.
+- A single broad `(ticker, date)` warehouse row cannot preserve multiple
+  historical adjusted-price versions from overlapping snapshot lookback
+  windows. Use `data/ohlcv/` or `ohlcv_snapshot_versions` when a legacy
+  artifact needs bit-exact replay; use broad `ohlcv` for new broad-universe
+  experiments and refresh baselines there.
 
 ## Broad-Universe Realized Fundamentals
 

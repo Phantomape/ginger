@@ -256,7 +256,9 @@ def test_production_compare_reads_activation_map_and_live_positions(tmp_path):
     assert compare["evidence_curves"][0]["points"][-1]["pipeline_pct"] > 0
     broad = [row for row in compare["surfaces"] if "BROAD_MARKET" in row["surface"]][0]
     assert broad["paper_pending_count"] == 1
-    assert broad["evidence_gap"] == 19
+    assert broad["required_closed_forward"] == 4
+    assert broad["target_basis"] == "paper_sleeve_forward_gate"
+    assert broad["evidence_gap"] == 3
 
 
 def test_dashboard_writer_outputs_static_html_and_json(tmp_path):
@@ -340,6 +342,9 @@ def test_dashboard_writer_outputs_static_html_and_json(tmp_path):
     assert "Production vs Backtest" in html
     assert "Forward Evidence Curves" in html
     assert "snapshot date from paper sleeve snapshots.jsonl" in html
+    assert "curve-point" in html
+    assert "curve-hit" in html
+    assert "snapshot point" in html
     json_text = json_path.read_text(encoding="utf-8")
     assert "Infinity" not in html
     assert "Infinity" not in json_text
