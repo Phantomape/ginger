@@ -1,6 +1,6 @@
 # Alpha Optimization Playbook
 
-Last refreshed: 2026-06-04.
+Last refreshed: 2026-06-05.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log and should not repeat every trial. Detailed records belong in
@@ -54,6 +54,18 @@ Recent repository evidence supports this priority:
   Companyfacts scalar, threshold, and sector-residual retunes should stop;
   collect forward replacement-value rows or find a materially new free-data
   field first.
+- Broad same-industry Companyfacts peer confirmation is now frozen. `exp-20260605-014`
+  looked positive as a replay-only lead (`EV +0.2992`, PnL `+$11,207.33`), but
+  `exp-20260605-015` retested the idea through a production-realistic shared
+  adapter candidate and failed Gate 4: aggregate EV and PnL remained positive
+  (`+0.4864` EV / `+$12,793.51`), but window EV/PnL regressed and max drawdown
+  drifted `+0.0063`, above the `0.005` guard. The important lesson is temporal:
+  the earlier lead benefited from reverse-chronology standard-window iteration
+  letting later-window same-ticker cooldowns suppress older-window candidates,
+  which production cannot do. Do not promote or retune same-industry
+  Companyfacts peer-confirmation lookback, cooldown, top-N, score, notional, or
+  threshold variants on the frozen sample. A valid retry needs a materially new
+  free data edge and production-realistic chronological replay from the start.
 - The accepted post-earnings continuation repair changed the core baseline,
   but not the default rule for earnings alpha. `exp-20260602-003` made the
   same-day post-event state explicit and PIT-safe: use the just-released event
@@ -162,35 +174,29 @@ Recent repository evidence supports this priority:
   sample. A valid retry needs broader exchange threshold coverage, forward
   evidence, or a real PIT borrow-cost / loan-availability source.
 - The accepted free-data cross-source consensus adapter now uses independent
-  source families, not raw source names. `exp-20260603-011` showed that adding
-  FINRA borrow-pressure as a raw consensus source cleared numeric gates but
-  failed because FINRA/IWM plus FINRA borrow-pressure double-counted one
-  information family. `exp-20260603-014` fixed the causal variable by
-  collapsing both into `finra_short_pressure` and requiring at least two
-  independent families; the three canonical windows improved aggregate EV
-  `7.8941 -> 9.1999` (`+1.3058`) and PnL `$234,850.99 -> $258,248.75`
-  (`+$23,397.76`) with `47` target trades, `0` FINRA-only selected trades,
-  max single positive share `0.410442`, and HHI `0.251953`. `exp-20260603-015`
-  promoted that rule into the shared default-off
-  `ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER` adapter and daily report
-  surface. This is still paper-only; do not retune source count, source set,
-  family map, FINRA thresholds, cooldown, notional, or hold period on the
-  frozen windows. The next valid consensus work is forward replacement-value
-  rows or a genuinely independent new free-data source family.
-- The 2026-06-04 consensus-source scouts tightened the comparator rule:
-  after `exp-20260603-015`, a new source family must beat the accepted
-  independent-source consensus adapter, not merely beat the core baseline.
-  `BROAD_MARKET_LEADERSHIP_PAPER` had zero same-date overlap (`exp-20260604-002`);
-  SEC text + price alignment improved PnL but regressed aggregate EV and
-  `late_strong` (`exp-20260604-003`); same-day core-overlap support was small
-  and unstable versus the accepted comparator (`exp-20260604-004`); Form 4 as a
-  source family produced zero selected consensus trades (`exp-20260604-005`);
-  theme-density confirmation improved `2/3` windows but still failed the
-  accepted-comparator gate (`exp-20260604-006`). Do not retry these as nearby
-  source-family, overlap, threshold, or notional variants on the frozen windows.
-  The next valid consensus work is closed forward overlap rows, a materially new
-  source timing construction, or a truly independent data source with nonzero
-  accepted-comparator replacement value.
+  source families and, as of `exp-20260604-009`, lagged timing. The raw
+  source-count version double-counted FINRA information; `exp-20260603-014/015`
+  fixed that by collapsing FINRA/IWM plus FINRA borrow-pressure into one
+  `finra_short_pressure` family. `exp-20260604-008/009` then showed the stronger
+  mechanism: a current accepted-source row is cleaner when confirmed by a
+  different accepted source family during the prior three trading days. The
+  promoted shared default-off adapter improved aggregate EV `7.8941 -> 9.8890`
+  and PnL `$234,850.99 -> $270,404.86`, beating the same-day consensus
+  comparator by `+0.6891` EV / `+$12,156.11`. This is now the comparator for
+  consensus work. Future source-family, support, timing, rank-priority, or
+  notional variants must beat `exp-20260604-009`, not only the core baseline or
+  the older same-day consensus.
+- The 2026-06-04/05 consensus-source scouts tightened the anti-repeat rule.
+  Broad-market leadership had zero useful overlap; SEC text + price alignment,
+  same-sector SEC peer propagation, theme density, VCP prior confirmation, SEC
+  negative reaction, cross-modality gating, same-day core-overlap support,
+  prior Companyfacts support, and cost/liquidity support either failed the
+  accepted comparator, regressed a window, breached incremental concentration,
+  or selected no new rows. Do not retry these as nearby source-family, overlap,
+  timing, threshold, rank-priority, or scalar variants on the frozen windows.
+  The next valid consensus work is closed forward replacement value for the
+  accepted lagged adapter, a materially new timing construction, or a truly
+  independent data source with nonzero accepted-comparator displacement value.
 - Full-universe ranking is promising as attribution, and now has one
   default-off paper queue. Raw `alpha_score` remains unsuitable for live/core
   ranking, but the market-regime-gated safe-notional route passed Gate 4 and
@@ -264,6 +270,13 @@ Recent repository evidence supports this priority:
   EV/PnL-regressed windows. Treat these as forward evidence buckets, not
   permission to retune Space
   price-action or ETF thresholds or enable live Space slots.
+- `exp-20260605-012` rejected Space activation readiness: no production-visible
+  official Space cohort passed the 10-day same-theme replacement-value gate.
+  Space remains an observe-only catalyst laboratory. Valid work is forward
+  replacement-value collection by catalyst/source/peer bucket or a genuinely new
+  official catalyst-quality field; live Space slots, activation reviews, and
+  adjacent same-theme/profile scalars should stay frozen until the forward gate
+  has nonzero passing cohorts.
 - The 2026-05-28/29 candidate-pool scouts rejected VWAP reclaim, long-base
   breadth, industry-leadership high-close/no-core-overlap, sector/market
   breadth agreement, ticker accumulation-quality breakout, Form 4 role quality,
@@ -317,6 +330,13 @@ Recent repository evidence supports this priority:
 - State-surface has too many accepted paper scalars. More nearby
   queue/profile/notional mining now requires a hard >10% aggregate EV lift or
   should be rolled back.
+- 2026-06-05 meta-research refresh still ranks `default_off_paper_adapter` and
+  `production_visible_default_off_paper_adapter_for_candidate_pool_alpha` at
+  the top of the strategy queue. That is not permission to mine more frozen
+  thresholds. It means the research process should favor shared default-off
+  adapters, forward outcome ledgers, replacement-value comparators, and
+  production-visible new data fields over core filters, ticker exceptions, and
+  scalar sweeps.
 
 ## Durable Repository Lessons
 
@@ -437,7 +457,9 @@ Do next:
 - expose activation blockers in `default_off_alpha_attribution`.
 - for `ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER`, require every new
   source-family experiment to report both core-baseline deltas and
-  deltas-vs-current-accepted-consensus; reject variants that only beat core.
+  deltas-vs-current-accepted-consensus; the current accepted comparator is the
+  `exp-20260604-009` lagged independent-source adapter, not the older same-day
+  adapter; reject variants that only beat core.
 
 Do not do next:
 
@@ -453,6 +475,10 @@ Do not do next:
 - add broad-market, SEC text-price, Form 4, or theme-density as consensus
   families again before nonzero forward overlap rows or a materially different
   source-timing construction exists.
+- add SEC negative reaction, VCP prior confirmation, cross-modality gating,
+  same-day core-overlap, cost/liquidity, or prior Companyfacts support on top
+  of the lagged consensus adapter unless the trial has new forward rows or a
+  different source-timing mechanism and can beat `exp-20260604-009`.
 
 ### 2. Fundamental Growth + RS
 
@@ -509,6 +535,9 @@ Next valid fields:
   positive `exp-20260602-001` replay lead;
 - operating-margin durability only with new forward evidence or an orthogonal
   data field;
+- broad 1,446-ticker Companyfacts coverage and realized-growth attribution as
+  dataset/readiness work, not as another support scalar on the mature
+  `FUNDAMENTAL_GROWTH_RS_PAPER` stack;
 - restatement/disclosure-quality context only if it is materially different
   from amended-form coverage and gross-margin source provenance;
 - cost-adjusted replacement-value attribution beyond the accepted coarse
@@ -662,6 +691,16 @@ old implicit calendar-DTE behavior. Valid next work is an explicit PIT-safe
 event-timing policy with `pre_earnings_risk`, `post_earnings_continuation`,
 `days_since_earnings`, `next_future_earnings_dte`, and before-open/after-close
 timing parity. Do not retest nearby DTE thresholds until those fields exist.
+
+2026-06-04/05 update: post-earnings support is saturated on the frozen windows.
+Surprise acceleration (`exp-20260604-001`) and analyst revision velocity from
+proxy daily earnings snapshots (`exp-20260604-029`) were directionally positive
+in aggregate but failed Gate 4 by window or source quality. The valid PEAD
+retry is a PIT revision-source adapter that persists estimate level, revision
+velocity, analyst count, revenue estimate, guidance direction, and surprise
+memory across more than one earnings season. Do not rescue the current
+surprise/revision lane with DTE, latest-vs-average surprise, close-location,
+revision velocity, or scalar retunes on the same frozen sample.
 
 ### 4a. Continuous Ranking Surface
 
@@ -858,6 +897,9 @@ Next valid work:
 - genuinely new PIT borrow-cost, loan-availability, utilization, or
   options-implied squeeze context if a clean source is added;
 - cost-adjusted liquidity and fill-delay diagnostics.
+- exchange threshold-list work only if coverage is materially broader than the
+  rejected NasdaqTrader-only files and can create nonzero accepted-comparator
+  rows.
 
 Frozen without new evidence:
 
@@ -869,6 +911,9 @@ Frozen without new evidence:
 - nearby SEC FTD share/notional/publication-age or FTD+FINRA threshold retunes
   after `exp-20260604-027` unless closed forward rows or a genuinely new
   borrow-cost / loan-availability field justify a fresh hypothesis;
+- FTD+Companyfacts, FTD+Form4 sale-pressure, FTD+lagged-consensus, or
+  Nasdaq-only threshold-list variants on the frozen windows after the 2026-06-05
+  scouts failed accepted-comparator, sample, or concentration gates;
 - raw FINRA monotonic ranking or high-short-pressure breakout without IWM
   confirmation;
 - promotion to live capital before closed forward replacement-value rows pass a
@@ -884,6 +929,11 @@ high-risk multiple testing. Work here should move toward:
 - sector/theme crowding;
 - persistence versus extension;
 - activation readiness and kill-gates.
+
+Current rule: state-surface-like profile, rank, notional, and support tuning
+must clear the hard >10% aggregate EV lift unless it is pure measurement repair.
+Small all-window improvements are not enough for this family because the stack
+already contains many accepted paper scalars.
 
 Any same-family notional/profile/capital tweak needs >10% aggregate EV uplift
 under the standard multi-window protocol, otherwise roll it back.
@@ -1200,12 +1250,19 @@ Source:
 
 ### LLM Alpha-Mining Workflow
 
-New LLM alpha-mining systems such as evolutionary factor search are relevant
-as research-process tooling, not as direct strategy logic. The useful pattern
-is trajectory accounting: save the hypothesis, factor expression, executable
-code, failed mutation, accepted mutation, complexity score, redundancy score,
-and transfer test. This matches Ginger's experiment discipline and gives a
-clean way to use LLMs without letting them own trades.
+New LLM alpha-mining systems such as evolutionary factor search, MCTS-guided
+formula search, and executable alpha-factor benchmarks are relevant as
+research-process tooling, not as direct strategy logic. The useful pattern is
+trajectory accounting: save the hypothesis, factor expression, executable code,
+failed mutation, accepted mutation, complexity score, redundancy score, and
+transfer test. This matches Ginger's experiment discipline and gives a clean
+way to use LLMs without letting them own trades.
+
+The 2026 benchmark direction adds one stricter lesson: the LLM output should be
+an executable factor in a constrained DSL or deterministic feature builder,
+then judged by the same replay, transfer, cost, and replacement-value gates as
+human-generated hypotheses. Free-form factor prose is not enough; generated
+code without semantic-consistency and redundancy checks is also not enough.
 
 For Ginger, an LLM-mined idea is only admissible if it becomes one of:
 
@@ -1222,6 +1279,11 @@ Useful fields:
 - `semantic_consistency_status`
 - `factor_complexity_score`
 - `factor_redundancy_bucket`
+- `factor_dsl_validation_status`
+- `factor_operator_set_version`
+- `factor_static_leakage_check_status`
+- `factor_transfer_ic_bucket`
+- `factor_net_of_cost_replay_bucket`
 - `mutation_parent_ids`
 - `crossover_parent_ids`
 - `transfer_universe_id`
@@ -1238,6 +1300,10 @@ Source:
 
 - QuantaAlpha, 2026:
   <https://arxiv.org/abs/2602.07085>
+- AlphaBench, ICLR 2026:
+  <https://alphabench.cc/>
+- Navigating the Alpha Jungle, AAAI 2026:
+  <https://ojs.aaai.org/index.php/AAAI/article/download/37069/41031>
 
 ### Event Graphs And Multi-Modal Market Context
 
@@ -1320,7 +1386,12 @@ source overlap, or characteristic-similarity peer links.
 
 Additional 2026-05-30 evidence extended the freeze: exact-industry Item 2.02
 peer transfer, sector-event breadth transfer, and small same-family SEC bursts
-also failed. That makes relation quality the bottleneck, not event count.
+also failed. `exp-20260604-014` then rejected same-sector SEC text-price peer
+propagation despite positive aggregate PnL because `late_strong` regressed.
+That makes relation quality the bottleneck, not event count or same-sector
+membership. Future peer work needs characteristic similarity, customer/supplier
+links, analyst-coverage overlap, or another relation with explicit edge
+construction and displacement value.
 
 Sources:
 
@@ -1368,6 +1439,14 @@ auditable pipeline. For Ginger, any future optimizer-like component should
 emit its expected-return source, covariance window, constraint shadow prices,
 and displacement cost before it can influence capital.
 
+Recent transaction-cost and ML predictability papers sharpen the acceptance
+standard. Directional accuracy, IC, or raw portfolio return can be economically
+negative after realistic frictions. For Ginger, any new ranking, factor, or
+candidate pool should report net-of-cost replacement value against the exact
+candidate it displaces, not just PnL versus cash or a passive benchmark. If the
+edge disappears after spread/slippage/turnover or only survives by trading
+hard-to-fill rows, keep it as attribution.
+
 LLM-to-optimizer papers, including Black-Litterman variants, are useful only
 when the LLM view is converted into a bounded expected-return view with an
 explicit confidence estimate and then passed through deterministic constraints.
@@ -1397,6 +1476,10 @@ Useful fields:
 - `turnover_budget_remaining`
 - `expected_sharpe_improvement_after_cost`
 - `friction_gate_passed`
+- `directional_accuracy_net_cost_bucket`
+- `precision_at_trade_rate_bucket`
+- `minimum_positive_prediction_rate_floor`
+- `turnover_adjusted_information_ratio_bucket`
 - `constraint_elasticity_bucket`
 - `llm_signal_role`
 - `rank_score_validity_regime_bucket`
@@ -1442,6 +1525,13 @@ Sources:
   <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6256103>
 - Cross-attention regime discovery for portfolio construction, 2026:
   <https://papers.ssrn.com/sol3/Delivery.cfm/6517438.pdf?abstractid=6517438&mirid=1>
+- The transaction cost trap, SSRN 2026:
+  <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6422358>
+- Maximizing the risk-adjusted return of classification model-based
+  investments, 2026:
+  <https://www.sciencedirect.com/science/article/pii/S1568494626006988>
+- Deep learning, predictability, and optimal portfolio returns, 2026:
+  <https://www.sciencedirect.com/science/article/pii/S0927539826000204>
 
 ### Transaction-Cost-Aware Allocation
 
@@ -1456,6 +1546,13 @@ against the displaced alternative. A candidate that is positive versus cash but
 negative after spread/slippage versus the same-day core candidate is not an
 activation candidate.
 
+Training or selecting a model on raw return accuracy is especially dangerous.
+Current research suggests the implementable target should include precision at
+a minimum trade rate, turnover, spread/slippage, financing/borrow cost, and
+constraint feasibility. Ginger's local analogue is Gate 4 plus
+accepted-comparator replacement value: a source that looks good versus core but
+fails the current accepted paper adapter should not be retained.
+
 Useful fields:
 
 - `expected_round_trip_cost_bucket`
@@ -1467,6 +1564,11 @@ Useful fields:
 - `no_trade_zone_bucket`
 - `liquidity_range_efficiency_bucket`
 - `paper_to_live_cost_decay_bucket`
+- `precision_trade_rate_floor_passed`
+- `net_alpha_after_turnover_cost`
+- `borrow_fee_cost_bucket`
+- `hard_to_borrow_availability_bucket`
+- `accepted_comparator_net_cost_delta`
 
 Sources:
 

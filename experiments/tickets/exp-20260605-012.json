@@ -1,0 +1,79 @@
+{
+  "acceptance_rule": "Observed-only pass requires at least one production-visible official/primary Space cohort with >=5 closed mature 10d rows, avg 10d same-theme replacement value > 0, median >= 0, 10d same-theme win rate >= 50%, avg 10d cash pnl > 0, avg 10d ARKX/UFO relative value > 0, and max single ticker positive PnL share <= 50%; no live slots or trade adapter may change.",
+  "allowed_write_scope": [
+    "quant\\experiments",
+    "data\\experiments",
+    "experiments\\artifacts",
+    "experiments\\logs"
+  ],
+  "baseline_result_file": "data\\paper_sleeves\\space_catalyst\\event_state_shadow_summary.json",
+  "card_file": "experiments/cards/exp-20260605-012.md",
+  "change_type": "read_only_activation_readiness_audit",
+  "changed_variable": "space_official_cohort_10d_same_theme_replacement_activation_scope_v1",
+  "claimed_at": "2026-06-05T06:15:51+00:00",
+  "completed_at": "2026-06-05T06:23:13+00:00",
+  "created_at": "2026-06-05T06:12:44+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260605-012",
+  "experiment_uid": "expuid-2a6d485addd843d4",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260605-012",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-05T06:12:44+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "space_same_theme_activation_readiness"
+  },
+  "hypothesis": "Official Space catalyst forward rows may contain a production-visible sub-cohort that passes 10d same-theme replacement value even though the aggregate Space shadow universe does not.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "space_catalyst_live_slots",
+    "space_catalyst_trade_enabled",
+    "space_official_cohort_activation_scope"
+  ],
+  "mechanism_family": "pilot_or_sleeve",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260528-026",
+    "exp-20260529-020",
+    "exp-20260531-022",
+    "exp-20260602-025",
+    "exp-20260513-113",
+    "exp-20260514-009"
+  ],
+  "new_evidence_type": "closed_forward_same_theme_replacement_rows",
+  "owner": "codex-space-activation",
+  "prediction": {
+    "confidence_reason": "The aggregate Space gate already fails same-theme replacement; defense_budget_theme is near breakeven but sample is thin and same-theme win rate is only about 50%, so a scoped pass is possible but not likely.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "same_theme_value_nonpositive",
+      "thin_official_subcohort",
+      "single_ticker_concentration",
+      "missing_core_replacement_value"
+    ],
+    "recorded_at": "2026-06-05T06:12:13+00:00",
+    "success_probability": 0.24
+  },
+  "prior_trial_count": 6,
+  "result": {
+    "artifact": "experiments/artifacts/exp-20260605-012_space_same_theme_activation_readiness.md",
+    "card": "experiments/cards/exp-20260605-012.md",
+    "decision": "rejected_space_same_theme_activation_readiness",
+    "failed_reasons": [
+      "no_official_cohort_passed_same_theme_replacement_gate"
+    ],
+    "json": "data/experiments/exp-20260605-012/exp_20260605_012_space_same_theme_activation_readiness.json",
+    "log": "experiments/logs/exp-20260605-012.json",
+    "passed": false,
+    "passing_cohort_count": 0
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260605-012.json",
+  "single_causal_variable": "space_official_cohort_10d_same_theme_replacement_activation_scope_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260605-012.json",
+  "trial_family": "space_forward_same_theme_activation_readiness",
+  "trial_variant_id": "official_cohort_10d_same_theme_scope_v1"
+}

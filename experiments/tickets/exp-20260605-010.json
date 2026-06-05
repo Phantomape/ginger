@@ -1,0 +1,65 @@
+{
+  "experiment_id": "exp-20260605-010",
+  "experiment_uid": "expuid-5ad243b3f26d4568",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260605-010",
+    "slug": "realized_yoy_growth_quintile_forward_return_incremental_to_ret20",
+    "reserved_at": "2026-06-05T06:02:40+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "claimed",
+  "lane": "alpha_discovery",
+  "owner": "claude-fundgrowth-attr",
+  "hypothesis": "On the broad 1446-ticker universe, stocks with higher PIT-safe realized YoY fundamental growth (revenue / EPS from the exp-20260605-007 companyfacts asset) out-return lower-growth stocks over 10/20 trading days, AND the edge is incremental over ret20 momentum (double-sort within ret20 quintile bands). For each (signal_day, ticker) the signal is the most recent growth row with asof_date <= signal_day; forward returns are skip-day close-to-close on the warehouse OHLCV. The decisive test is whether the growth quintile top-minus-bottom forward spread survives controlling for ret20, with a daily long-short t>=2 and majority-positive windows net of cost.",
+  "change_type": "read_only_broad_universe_realized_fundamental_growth_forward_return",
+  "mechanism_family": "cross_sectional_fundamental_growth",
+  "trial_family": "broad_universe_fundamental_growth_attribution",
+  "trial_variant_id": "exp-20260605-010",
+  "single_causal_variable": "realized_yoy_growth_quintile_forward_return_incremental_to_ret20",
+  "changed_variable": "realized_yoy_growth_quintile_forward_return_incremental_to_ret20",
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "broad_universe_realized_growth_quantile_forward_spread_and_ret20_double_sort",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260605_010_realized_yoy_growth_quintile_forward_return_incremental_to_ret20.py",
+    "data/experiments/exp-20260605-010/exp_20260605_010_realized_yoy_growth_quintile_forward_return_incremental_to_ret20.json",
+    "experiments/cards/exp-20260605-010.md",
+    "experiments/manifests/exp-20260605-010.json",
+    "experiments/tickets/exp-20260605-010.json",
+    "experiments/logs/exp-20260605-010.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "realized_yoy_growth_quintile_forward_return_incremental_to_ret20"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.35,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "growth_edge_collapses_after_ret20_control_just_momentum",
+      "growth_subsumed_by_quality_not_tested",
+      "one_window_carries_it",
+      "thin_after_cost",
+      "stale_quarterly_growth_low_signal_at_daily_frequency",
+      "survivorship_inflates_growers"
+    ],
+    "confidence_reason": "Realized growth is a known weak-to-moderate cross-sectional predictor often subsumed by momentum/quality; on this survivorship-liquid universe over one 18-month period, modest odds the growth spread survives a ret20 double-sort with significance.",
+    "recorded_at": "2026-06-05T06:02:40+00:00"
+  },
+  "created_at": "2026-06-05T06:02:40+00:00",
+  "claimed_at": "2026-06-05T06:02:50+00:00",
+  "completed_at": null,
+  "result": null,
+  "ticket_file": "experiments/tickets/exp-20260605-010.json",
+  "card_file": "experiments/cards/exp-20260605-010.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260605-010.json"
+}

@@ -1,0 +1,79 @@
+{
+  "experiment_id": "exp-20260604-021",
+  "status": "proposed",
+  "lane": "alpha_search",
+  "owner": null,
+  "hypothesis": "A broad-universe positive-EPS-surprise PEAD paper sleeve (PEAD_BROAD_UNIVERSE_PAPER) will surface independent earnings-drift candidates not captured by the existing POST_EARNINGS_UNDERPRICED_DRIFT_PAPER sleeve. The critical design change: trigger on EPS surprise >= 5% alone, apply gap-cancel (skip if earnings-day gap > 3%), and hold 10 trading days. Remove MA50/RS/pre-event-underpricing/close-location filters that currently restrict the existing sleeve to a narrow 'already-trending' subpopulation. This accumulates forward replacement-value evidence needed to eventually answer whether broad positive-surprise PEAD has meaningful alpha on a wider universe.",
+  "change_type": "default_off_paper_allocation",
+  "mechanism_family": "pead_broad_universe",
+  "trial_family": "pead_broad_universe_paper",
+  "trial_variant_id": "pead_broad_universe_paper_v1",
+  "single_causal_variable": "broad_universe_eps_surprise_only_pead_no_rs_ma50_prefilters",
+  "changed_variable": "broad_universe_eps_surprise_only_pead_no_rs_ma50_prefilters",
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260531-018",
+    "exp-20260528-027",
+    "exp-20260528-028",
+    "exp-20260528-029",
+    "exp-20260602-026"
+  ],
+  "multiple_testing_risk_bucket": "low",
+  "new_evidence_type": "new_sleeve_new_filter_design_independent_from_existing_pead_sleeve",
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "allowed_write_scope": [
+    "quant/pead_broad_universe_paper_sleeve.py",
+    "quant/run.py",
+    "data/paper_sleeves/pead_broad_universe_state.json",
+    "data/paper_sleeves/pead_broad_universe_snapshots.jsonl",
+    "experiments/tickets/exp-20260604-021.json",
+    "experiments/logs/exp-20260604-021.json",
+    "experiments/cards/exp-20260604-021.md",
+    "experiments/manifests/exp-20260604-021.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [
+    "quant/post_earnings_underpriced_drift_paper_sleeve.py",
+    "quant/signal_engine.py",
+    "quant/constants.py",
+    "quant/backtester.py"
+  ],
+  "locked_variables": [
+    "broad_universe_eps_surprise_only_pead_no_rs_ma50_prefilters"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2026-06-04",
+      "end": "2026-12-31",
+      "note": "Forward paper accumulation only; no frozen backtest window required for initial sleeve creation. Gate 5 applies before any live activation."
+    }
+  ],
+  "acceptance_rule": "observed_only; sleeve runs and persists state daily; at least one forward paper candidate surfaced; design and code are consistent with existing paper sleeve patterns; Gate 5 (30+ closed forward trades, positive net PnL, concentration passed, kill switch) must pass before any live activation experiment",
+  "prediction": {
+    "success_probability": 0.70,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "earnings_snapshot_coverage_too_narrow_universe_mirrors_core",
+      "gap_cancel_filter_overdiscards_all_candidates",
+      "zero_forward_candidates_infrequent_earnings"
+    ],
+    "confidence_reason": "Forward paper sleeve creation has high probability of technical success. EV/PnL delta is 0 because this is observe-only paper with no strategy behavior changes. Main known limitation: earnings snapshots only cover the ~45-ticker production universe; true broad-universe PEAD would require separate earnings data expansion, documented in the sleeve.",
+    "recorded_at": "2026-06-04T00:00:00+00:00"
+  },
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": true,
+    "replay_only": false,
+    "parity_test_added": false
+  },
+  "created_at": "2026-06-04T00:00:00-07:00",
+  "claimed_at": null,
+  "completed_at": null,
+  "result": null,
+  "ticket_file": "experiments/tickets/exp-20260604-021.json",
+  "card_file": "experiments/cards/exp-20260604-021.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260604-021.json"
+}
