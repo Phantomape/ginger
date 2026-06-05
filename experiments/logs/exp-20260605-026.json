@@ -1,0 +1,147 @@
+{
+  "after_metrics": {
+    "expected_value_score": 7.1173,
+    "max_drawdown_pct_max": 0.1101,
+    "min_survival_rate": 0.7925,
+    "strategy_total_pnl": 230179.91,
+    "trade_count": 262
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "expected_value_score": 7.8941,
+    "max_drawdown_pct_max": 0.1119,
+    "min_survival_rate": 0.7925,
+    "strategy_total_pnl": 234850.99,
+    "trade_count": 61
+  },
+  "change_summary": "Tested broad SEC Companyfacts loss-to-profit inflection plus OHLCV confirmation as a replay-only default-off paper candidate source.",
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "broad_companyfacts_profitability_inflection_rs_candidate_source_v1",
+  "component": "quant/experiments/exp_20260605_026_broad_companyfacts_profitability_inflection_rs.py",
+  "decision": "rejected_broad_companyfacts_profitability_inflection_rs_candidate_pool",
+  "delta_metrics": {
+    "expected_value_score_delta": -0.7768,
+    "expected_value_score_delta_pct": -0.098403,
+    "max_drawdown_delta": -0.0018,
+    "strategy_total_pnl_delta": -4671.08,
+    "strategy_total_pnl_delta_pct": -0.01989,
+    "trade_count_delta": 201
+  },
+  "experiment_id": "exp-20260605-026",
+  "hypothesis": "Broad SEC Companyfacts loss-to-profit inflection, confirmed by revenue growth and OHLCV relative strength, can add a distinct default-off paper candidate source beyond dual-positive growth.",
+  "lane": "alpha_search",
+  "mechanism_family": "default_off_paper_candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260605-011",
+    "exp-20260605-014",
+    "exp-20260605-015",
+    "exp-20260605-022"
+  ],
+  "new_evidence_type": "new_production_visible_field",
+  "next_retry_requires": [
+    "closed forward replacement-value rows",
+    "proof that profitability inflection is incremental to ret20 momentum",
+    "shared default-off adapter and parity tests before promotion",
+    "avoid nearby Companyfacts threshold/scalar retunes on the same frozen sample"
+  ],
+  "parameters": {
+    "daily_selection": "top_1_by_fixed_profit_inflection_rs_score",
+    "hold_days": 10,
+    "max_fundamental_age_days": 190,
+    "min_avg_dollar_volume_20d": 50000000.0,
+    "min_close_location": 0.55,
+    "min_price": 10.0,
+    "min_ret20_excess_spy": 0.02,
+    "min_revenue_yoy_growth": 0.1,
+    "min_volume_ratio_20d": 1.0,
+    "paper_notional": 4000.0,
+    "profit_canonical_priority": [
+      "eps_diluted",
+      "eps_basic",
+      "net_income"
+    ],
+    "profit_current_gt_zero": true,
+    "profit_prior_lte_zero": true,
+    "round_trip_cost_pct": 0.0035,
+    "same_ticker_cooldown_days": 30,
+    "trade_enabled": false
+  },
+  "prediction": {
+    "actual_ev_delta": -0.7768,
+    "actual_pnl_delta": -4671.08,
+    "actual_success": 0,
+    "brier_score": 0.0484,
+    "confidence_reason": "Companyfacts broad asset has high coverage and profitability inflection is causally different from same-industry peer confirmation, but recent Companyfacts families often regress old_thin.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "old_thin_regression",
+      "turnaround_noise",
+      "positive_pnl_concentration"
+    ],
+    "recorded_at": "2026-06-05T17:06:24+00:00",
+    "success_probability": 0.22
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_note": "This runner changes no production code. A positive result would require a separate shared default-off Companyfacts profitability-inflection adapter, production exposure of the same PIT filed-date-safe fields, and focused parity tests before any report queue, paper ledger, candidate priority, or order surface could change.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "aggregate_ev_not_positive;aggregate_pnl_not_positive;window_ev_regression;window_pnl_regression;window_drawdown_drift_too_high",
+  "related_files": [
+    "quant/experiments/exp_20260605_026_broad_companyfacts_profitability_inflection_rs.py",
+    "data/experiments/exp-20260605-026/exp_20260605_026_broad_companyfacts_profitability_inflection_rs.json",
+    "experiments/logs/exp-20260605-026.json",
+    "experiments/artifacts/exp-20260605-026_broad_companyfacts_profitability_inflection_rs.md",
+    "experiments/tickets/exp-20260605-026.json",
+    "data/kova/fundamentals/companyfacts_growth_broad_universe_20260604.jsonl"
+  ],
+  "status": "rejected",
+  "timestamp": "2026-06-05T17:15:59Z",
+  "trial_family": "broad_companyfacts_profitability_inflection_candidate_pool",
+  "trial_variant_id": "profitability_inflection_rs_top1_v1",
+  "windows": [
+    {
+      "expected_value_after": 4.2942,
+      "expected_value_before": 5.1628,
+      "expected_value_delta": -0.8686,
+      "label": "late_strong",
+      "strategy_total_pnl_delta": -6110.68,
+      "target_trade_count": 92,
+      "target_trade_pnl_usd": -6448.88
+    },
+    {
+      "expected_value_after": 2.3219,
+      "expected_value_before": 2.1402,
+      "expected_value_delta": 0.1817,
+      "label": "mid_weak",
+      "strategy_total_pnl_delta": 4520.35,
+      "target_trade_count": 68,
+      "target_trade_pnl_usd": 4638.64
+    },
+    {
+      "expected_value_after": 0.5012,
+      "expected_value_before": 0.5911,
+      "expected_value_delta": -0.0899,
+      "label": "old_thin",
+      "strategy_total_pnl_delta": -3080.75,
+      "target_trade_count": 41,
+      "target_trade_pnl_usd": -3080.76
+    }
+  ]
+}
