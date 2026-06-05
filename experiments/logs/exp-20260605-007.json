@@ -1,0 +1,67 @@
+{
+  "after_metrics": {
+    "fetch_errors": 6,
+    "growth_rows_written": 199887,
+    "no_usable_count": 165,
+    "ok_eps_yoy_growth_share": 0.8389,
+    "ok_revenue_yoy_growth_share": 0.7925,
+    "strategy_behavior_changed": false,
+    "tickers_requested": 1446
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "comment": "yfinance eps_estimate covered ~50 curated names, ~0 on broad universe, annual/quarterly contaminated.",
+    "strategy_behavior_changed": false
+  },
+  "change_summary": "Built broad 1446-universe SEC Companyfacts YoY growth dataset (199887 rows, 137642 ok) + coverage audit. 79.3pct ok revenue YoY growth, 83.9pct ok eps YoY growth; ~11pct gap is foreign filers (20-F/IFRS) + index ETFs. Clean PIT-safe (filed<=asof) free alternative to yfinance eps_estimate. Documented in docs/data_inventory.md.",
+  "change_type": "read_only_broad_universe_companyfacts_data_asset_build",
+  "changed_variable": "broad_1446_universe_companyfacts_growth_dataset_and_coverage_audit",
+  "component": "quant/experiments/exp_20260605_007_broad_universe_companyfacts_asset.py",
+  "decision": "accepted_broad_universe_companyfacts_data_asset",
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260605-007",
+  "gate1": {
+    "name": "data_source_available",
+    "passed": true
+  },
+  "gate2": {
+    "name": "cik_coverage",
+    "passed": true
+  },
+  "gate3": {
+    "name": "survival_rate_not_affected_read_only",
+    "passed": true
+  },
+  "gate4": {
+    "name": "broad_coverage_materially_better_than_yfinance",
+    "ok_eps_yoy_growth_share": 0.8389,
+    "passed": true
+  },
+  "hypothesis": "SEC Companyfacts realized fundamentals are free, PIT-safe, and broadly available; pulling them for the 1446 liquid universe creates a clean broad fundamental asset, unlike yfinance eps_estimate (~50 names, annual/quarterly contaminated).",
+  "lane": "measurement_repair",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "mechanism_family": "data_asset_build",
+  "next_evidence_needed": "Optionally run a broad-universe realized-fundamental-growth forward-return attribution (independent of the FUNDAMENTAL_GROWTH_RS sleeve which a parallel agent is tuning). For a forward ESTIMATE-revision signal, a cheap dedicated API (Finnhub/FMP) is still required; companyfacts is realized, not forward.",
+  "production_impact": {
+    "alters_orders": false,
+    "alters_ranking": false,
+    "alters_sizing": false,
+    "default_off": true,
+    "read_only_data_asset": true,
+    "scope": "data_asset_only"
+  },
+  "related_files": [
+    "quant/experiments/exp_20260605_007_broad_universe_companyfacts_asset.py",
+    "data/experiments/exp-20260605-007/broad_universe_companyfacts_coverage_audit.json",
+    "experiments/artifacts/exp-20260605-007_broad_universe_companyfacts_asset.md",
+    "docs/data_inventory.md",
+    "experiments/logs/exp-20260605-007.json",
+    "experiments/tickets/exp-20260605-007.json"
+  ],
+  "status": "accepted",
+  "timestamp": "2026-06-05T06:00:00+00:00",
+  "trial_family": "companyfacts_broad_universe_asset",
+  "trial_variant_id": "exp-20260605-007"
+}
