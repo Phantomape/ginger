@@ -88,6 +88,69 @@ watchlists, core ranking, sizing, exits, or orders. Treat same-industry
 Companyfacts peer-confirmed filing drift as frozen unless new evidence uses
 production-realistic chronological replay and beats the current gates.
 
+## 2026-06-05 Experiment Consolidation
+
+Today's work added one retained measurement asset and rejected the main new
+alpha families tested after the June 4 consolidation. `exp-20260605-007`
+accepted a broad SEC Companyfacts realized-fundamentals data asset for the
+1,446-ticker `all_windows_full_liquid` warehouse universe: `199,887` PIT-safe
+growth rows were produced, with clean OK revenue YoY growth for `1,146`
+tickers (`79.3%`) and clean OK EPS YoY growth for `1,213` tickers (`83.9%`).
+This is a data asset and coverage repair only. It changes no entries, exits,
+ranking, sizing, paper sleeves, watchlists, LLM/news authority, or orders.
+
+The most important alpha lesson is negative: broad Companyfacts same-industry
+peer confirmation is frozen. `exp-20260605-014` looked like a positive
+replay-only lead (`+0.2992` EV / `+$11,207.33`, `253` target trades), but
+`exp-20260605-015` rebuilt the idea as a production-realistic shared adapter
+candidate and failed Gate 4 because `old_thin` regressed and max drawdown
+drifted `+0.0063`, above the `0.005` guard. Related Companyfacts attempts did
+not rescue the family: `exp-20260605-011` dual-growth RS, `exp-20260605-016`
+peer price absorption (`+0.2859` EV / `+$6,770.51` but `old_thin` regressed),
+and `exp-20260605-022` fresh underreaction filing (`+0.0712` EV /
+`+$2,161.22` but `late_strong` and `old_thin` EV regressed) were all rejected.
+Do not retune same-industry Companyfacts peer lookbacks, cooldowns, OHLCV
+confirmation thresholds, or fresh-underreaction thresholds on the frozen
+windows. A valid retry needs a materially new free-data relation and
+chronological production semantics from the start.
+
+Other June 5 scouts narrowed the queue rather than adding a retained alpha.
+Form 4 liquidity intensity (`exp-20260605-001`) was positive versus core but
+failed replacement value versus the raw Form 4 queue, sample, and
+concentration checks. SEC FTD / FINRA add-ons and consensus-source variants
+(`exp-20260605-002` through `exp-20260605-004` and `exp-20260605-008`) did not
+beat the accepted comparators or selected no incremental source rows. Space
+activation readiness (`exp-20260605-012`) found no production-visible official
+Space cohort passing the 10-day same-theme replacement-value gate, so Space
+remains observe-only. The broad low-beta residual-momentum pool
+(`exp-20260605-013`) raised aggregate EV by `+1.0029` but lost `-$8,459.56`
+PnL, regressed two windows, and worsened max drawdown by `+8.72pp`; do not
+promote it.
+
+The SEC filing/event lane also remains unpromoted. `exp-20260605-017` could
+not run Gate 4 because the required historical `source_credibility_bucket` and
+related SEC feature fields were missing. The operational and after-hours 8-K
+candidate pools (`exp-20260605-018`, `exp-20260605-019`, and
+`exp-20260605-020`) all failed the multi-window gate; the best-looking
+after-hours operational variant was still rejected because `old_thin` regressed.
+`exp-20260605-021` tested a fill-delay next-open gap guard on the accepted
+lagged consensus adapter and underperformed the accepted comparator by
+`-0.3708` EV / `-$3,698.24`. Keep the accepted lagged consensus and FTD+FINRA
+adapters as the current default-off comparators; the next useful evidence is
+closed forward replacement value, replay-vs-forward parity audit, or a genuinely
+new production-visible data source.
+
+`exp-20260605-023` closed as rejected observed-only breadth-alignment
+monotonic validation: pooled 5d Q5-Q1 was `0.004007`, RS-controlled residual
+spread was `0.003254`, and zero standard windows had monotonic 5d ladders.
+`exp-20260605-024` remains proposed for lagged-consensus characteristic peer
+transfer. Neither currently changes production code or accepted strategy
+state. Regression checkpoint: full unit tests passed after cleanup on
+2026-06-05 (`1136 passed in 50.30s`). `scripts/experiment.py audit --strict`
+still fails on existing prediction/calibration coverage debt (post-enforcement
+prediction coverage `89.03%`, closed post-enforcement calibration coverage
+`60.95%`); this was not introduced by today's regression pass.
+
 Latest default-off alpha adapter acceptance: `exp-20260604-027` promotes the
 positive `exp-20260604-026` SEC FTD + FINRA confirmation replay lead into the
 shared `SEC_FTD_FINRA_CONFIRMED_PAPER` adapter. Publication-lagged SEC
