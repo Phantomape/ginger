@@ -1,0 +1,115 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260605_021_lagged_consensus_fill_delay_gap_guard.py",
+    "data/experiments/exp-20260605-021/exp_20260605_021_lagged_consensus_fill_delay_gap_guard.json",
+    "experiments/cards/exp-20260605-021.md",
+    "experiments/manifests/exp-20260605-021.json",
+    "experiments/tickets/exp-20260605-021.json",
+    "experiments/logs/exp-20260605-021.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "artifact": "data/experiments/exp-20260605-021/exp_20260605_021_lagged_consensus_fill_delay_gap_guard.json",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card": "experiments/cards/exp-20260605-021.md",
+  "card_file": "experiments/cards/exp-20260605-021.md",
+  "change_type": "default_off_paper_entry_execution_alpha",
+  "changed_variable": "accepted_lagged_consensus_max_next_open_gap_from_signal_close_pct_v1",
+  "claimed_at": "2026-06-05T14:08:11+00:00",
+  "completed_at": "2026-06-05T14:13:34Z",
+  "created_at": "2026-06-05T14:08:01+00:00",
+  "decision": "rejected_fill_delay_gap_guard_did_not_beat_accepted_adapter",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260605-021",
+  "experiment_uid": "expuid-1412dc9ffa2b4e2f",
+  "gate4": {
+    "accepted_comparator": "exp-20260604-009",
+    "blocked_source_share": 0.15625,
+    "decision": "rejected_fill_delay_gap_guard_did_not_beat_accepted_adapter",
+    "gates": {
+      "aggregate_expected_value_positive": false,
+      "aggregate_pnl_positive": false,
+      "all_windows_expected_value_improved": false,
+      "all_windows_pnl_improved": false,
+      "beats_current_accepted_lagged_adapter": false,
+      "concentration_guard_passed": false,
+      "drawdown_drift_passed": true,
+      "fill_delay_blocked_trade_count_positive": true,
+      "fill_delay_selectivity_guard_passed": true,
+      "survival_floor_passed": true,
+      "target_trade_count_passed": false,
+      "target_window_count_passed": true
+    },
+    "kept_source_share": 0.84375,
+    "max_drawdown_delta": 0.0032,
+    "min_survival_rate": 0.7925,
+    "passed": false,
+    "rationale": "The fill-delay gap guard did not beat the current accepted lagged consensus adapter across all three windows.",
+    "requires_parity_before_promotion": true
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260605-021",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-05T14:08:01+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "lagged_consensus_fill_delay_gap_guard"
+  },
+  "hypothesis": "Accepted lagged free-data consensus paper candidates with limited next-open fill-delay gap may have better replacement value than chased gap-up fills.",
+  "id": "exp-20260605-021",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "accepted_lagged_consensus_max_next_open_gap_from_signal_close_pct_v1"
+  ],
+  "log": "experiments/logs/exp-20260605-021.json",
+  "markdown_artifact": "experiments/artifacts/exp-20260605-021_lagged_consensus_fill_delay_gap_guard.md",
+  "mechanism_family": "default_off_paper_entry_execution_alpha",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260428-017",
+    "exp-20260604-009",
+    "exp-20260604-011"
+  ],
+  "new_evidence_type": "production_visible_execution_time_open_gap_field",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "Execution gap control is production-visible and distinct from source/timing retunes, but the accepted lagged consensus comparator is already strong.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "accepted_comparator_not_beaten",
+      "window_regression",
+      "filter_too_broad",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-05T14:07:31+00:00",
+    "success_probability": 0.24
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_orders": false,
+    "backtester_adapter_changed": false,
+    "parity_note": "This experiment changes no production code. A retained result would need the shared free-data consensus adapter to compute the same execution-time next-open gap guard in daily production and historical replay, with parity tests, before any report queue, paper ledger, or order surface could change.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "result": {
+    "aggregate_expected_value_delta": -0.3708,
+    "aggregate_strategy_total_pnl_delta": -3698.24,
+    "decision": "rejected_fill_delay_gap_guard_did_not_beat_accepted_adapter"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260605-021.json",
+  "single_causal_variable": "accepted_lagged_consensus_max_next_open_gap_from_signal_close_pct_v1",
+  "status": "completed",
+  "ticket_file": "experiments/tickets/exp-20260605-021.json",
+  "trial_family": "accepted_free_data_cross_source_consensus_fill_delay_execution",
+  "trial_variant_id": "exp-20260605-021"
+}
