@@ -1,6 +1,6 @@
 ﻿# Current State
 
-Last updated: 2026-06-04.
+Last updated: 2026-06-05.
 
 The current accepted core stack includes the 2026-05-17 stock-only ample-slot
 rank-1 post-sizing top-up from `exp-20260517-009`, layered on top of the
@@ -72,6 +72,21 @@ baseline: aggregate EV `7.8941`, aggregate PnL `$234,850.99`. Audit artifact:
 SQLite parity artifact:
 `data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json`.
 Full UT after the repair passed: `1132 passed in 43.69s`.
+
+Latest alpha-search rejection: `exp-20260605-015` attempted to promote the
+positive `exp-20260605-014` broad Companyfacts peer-confirmed filing-drift lead
+into a production-realistic shared default-off adapter. The realistic replay
+did not reproduce the lead cleanly because production time can only apply
+same-ticker cooldowns forward in time, while the earlier replay iterated the
+standard windows in reverse chronology and let later-window selections suppress
+older-window candidates. With production-realistic cooldown semantics, the
+three-window aggregate still improved EV `7.8941 -> 8.3805` (`+0.4864`) and
+PnL `$234,850.99 -> $247,644.50` (`+$12,793.51`), but Gate 4 rejected it due
+to window EV/PnL regression and max-drawdown drift `+0.0063` versus the
+`0.005` guard. The adapter was not wired into `run.py`, reports, attribution,
+watchlists, core ranking, sizing, exits, or orders. Treat same-industry
+Companyfacts peer-confirmed filing drift as frozen unless new evidence uses
+production-realistic chronological replay and beats the current gates.
 
 Latest default-off alpha adapter acceptance: `exp-20260604-027` promotes the
 positive `exp-20260604-026` SEC FTD + FINRA confirmation replay lead into the

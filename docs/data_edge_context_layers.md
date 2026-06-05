@@ -69,6 +69,16 @@ persisted public-sector median by at least `3pp` and the sector has at least
 `trade_enabled=false`; it must not alter live entries, exits, ranking, sizing,
 orders, LLM/news decisions, or watchlists without another Gate 1-4 promotion.
 
+Rejected adjacent use: `exp-20260605-015` tested same-industry Companyfacts
+peer confirmation as a production-realistic broad candidate-pool adapter and
+failed Gate 4 despite positive aggregate EV/PnL because window regressions and
+drawdown drift exceeded the guard. The failure exposed a replay/production
+temporal issue in the earlier positive lead: production cannot use future
+standard-window selections to cool down older historical dates. Do not add this
+peer-confirmed filing-drift surface to daily context, ranking, reports, or
+orders unless a new experiment starts with chronological replay semantics and
+passes Gate 1-4.
+
 ### `quant/space_catalyst_sleeve.py`
 
 Purpose: maintain the default-off Space catalyst observation surface, including

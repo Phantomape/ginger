@@ -101,6 +101,19 @@ emits `sector_residual_*`, `companyfacts_sector_residual_*`, and a
 ranking, sizing, exit, LLM/news, or watchlist path may diverge between replay
 and production.
 
+## Rejected Companyfacts Peer-Confirmed Filing Drift Adapter Candidate
+
+`exp-20260605-015` tested the production-realistic version of the positive
+`exp-20260605-014` broad Companyfacts same-industry peer-confirmation lead.
+It failed Gate 4, so there is no active production/default-off adapter for this
+family. The failed replay is the parity guardrail: production cannot use
+reverse-chronology standard-window cooldown behavior where later-window
+selections suppress earlier-window candidates. Any future retry must use
+chronological same-ticker cooldown semantics from the start, must not be wired
+into `run.py`, reports, attribution, watchlists, ranking, sizing, exits, or
+orders before passing Gate 1-4, and must treat the current shared adapter
+candidate module as experiment-only evidence.
+
 ## Post-Earnings Underpriced Drift Paper Adapter
 
 `exp-20260602-026` promoted the positive `exp-20260602-023` lead into
