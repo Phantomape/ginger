@@ -143,13 +143,16 @@ new production-visible data source.
 `exp-20260605-023` closed as rejected observed-only breadth-alignment
 monotonic validation: pooled 5d Q5-Q1 was `0.004007`, RS-controlled residual
 spread was `0.003254`, and zero standard windows had monotonic 5d ladders.
-`exp-20260605-024` remains proposed for lagged-consensus characteristic peer
-transfer. Neither currently changes production code or accepted strategy
-state. Regression checkpoint: full unit tests passed after cleanup on
-2026-06-05 (`1136 passed in 50.30s`). `scripts/experiment.py audit --strict`
-still fails on existing prediction/calibration coverage debt (post-enforcement
-prediction coverage `89.03%`, closed post-enforcement calibration coverage
-`60.95%`); this was not introduced by today's regression pass.
+`exp-20260605-024` also closed as rejected lagged-consensus characteristic peer
+transfer: incremental EV was only `+0.0101`, incremental PnL was `$+177.79`,
+`old_thin` regressed by `-0.0017` EV / `-$99.97`, and peer trade count plus
+concentration gates failed. Neither `exp-20260605-023` nor
+`exp-20260605-024` changes production code or accepted strategy state.
+Regression checkpoint: full unit tests passed after cleanup on 2026-06-05
+(`1136 passed in 48.24s`). `scripts/experiment.py audit --strict` still fails
+on existing prediction/calibration coverage debt (post-enforcement prediction
+coverage `89.03%`, closed post-enforcement calibration coverage `60.95%`);
+this was not introduced by today's regression pass.
 
 Latest default-off alpha adapter acceptance: `exp-20260604-027` promotes the
 positive `exp-20260604-026` SEC FTD + FINRA confirmation replay lead into the
