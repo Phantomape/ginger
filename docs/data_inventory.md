@@ -18,7 +18,7 @@ home, and strategy code should read through canonical paths or
 | Realized fundamentals (broad universe) | `data/kova/fundamentals/companyfacts_growth_broad_universe_YYYYMMDD.jsonl` | SEC Companyfacts realized YoY growth (revenue / eps_basic / eps_diluted / net_income) for the broad 1,446 `all_windows_full_liquid` warehouse universe. Built by `exp-20260605-007`. Free, official SEC XBRL, PIT-safe (filing date). See "Broad-Universe Realized Fundamentals" below for coverage. The clean, scalable alternative to yfinance `eps_estimate`, which is ~50-name-only and annual/quarterly contaminated. |
 | Daily production archive | `data/daily/...` | News, signals, reports, LLM prompts/responses/decisions, earnings/event snapshots, universe state, and forward-test artifacts. Use `quant/data_paths.py` daily artifact helpers. |
 | Operator-maintained live inputs | `operator_inputs/` | Manual/live inputs such as `open_positions.json` and `manual_trades.jsonl`. Gate 2 fields like `entry_date` and `target_price` are verified here, not under `data/`. |
-| Backtest results | `data/backtests/backtest_results_*.json` | Standard backtest outputs. Root-level `data/backtest_results_*.json` is legacy compatibility only. |
+| Backtest results | `data/backtests/backtest_results_*.json` | Standard backtest outputs. Keep top-level files for current/cited acceptance or audit summaries; archive bulky one-off comparison/per-window details under `data/backtests/archive/<date_or_topic>/`. Root-level `data/backtest_results_*.json` is legacy compatibility only. |
 | Experiment artifacts | `data/experiments/exp-YYYYMMDD-NNN/` | Per-experiment outputs, diagnostics, and local snapshots. Experiment-local OHLCV copies are allowed only as that experiment's evidence and should not become shared inputs. |
 | Paper sleeves | `data/paper_sleeves/<sleeve>/state.json` and `snapshots.jsonl` | Default-off paper sleeve state and forward snapshots. These are attribution/observation surfaces unless promoted through Gate 1-4. |
 | Durable state, ledgers, reference | `data/state/`, `data/ledgers/`, `data/reference/` | Persistent state, append-only ledgers, and static reference maps. Prefer named keys in `quant/data_paths.py` for shared artifacts. |
@@ -76,6 +76,11 @@ home, and strategy code should read through canonical paths or
   must use the same OHLCV source on both sides: snapshot-vs-snapshot,
   versioned-SQLite-vs-versioned-SQLite, or broad-warehouse-vs-broad-warehouse;
   never mix them.
+- The 2026-06-04 warehouse-vs-snapshot investigation keeps only the compact
+  versioned-SQLite parity summary and root-cause audit in top-level
+  `data/backtests/`. The bulky per-window snapshot/current, broad-warehouse,
+  and versioned-warehouse comparison outputs are archived under
+  `data/backtests/archive/20260604_ohlcv_warehouse_replay/`.
 - A single broad `(ticker, date)` warehouse row cannot preserve multiple
   historical adjusted-price versions from overlapping snapshot lookback
   windows. Use `data/ohlcv/` or `ohlcv_snapshot_versions` when a legacy
