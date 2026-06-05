@@ -8712,8 +8712,68 @@
       "aggregate_strategy_total_pnl_delta": 0.0,
       "completed_at": "2026-06-05T01:12:10+00:00",
       "updated_at": "2026-06-05T01:12:10+00:00"
+    },
+    {
+      "experiment_id": "exp-20260605-003",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search-automation",
+      "hypothesis": "SEC FTD pressure candidates may be cleaner when confirmed by filed-date SEC Companyfacts gross-margin quality, using a different free source relation than FINRA borrow pressure.",
+      "ticket_file": "experiments/tickets/exp-20260605-003.json",
+      "card_file": "experiments/cards/exp-20260605-003.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260605-003.json",
+      "updated_at": "2026-06-05T02:18:05+00:00",
+      "result": {
+        "decision": "rejected",
+        "acceptance_reasons": [],
+        "before_result_file": "data/experiments/exp-20260605-003/sec_ftd_companyfacts_gross_margin_candidate_pool_before_aggregate.json",
+        "after_result_file": "data/experiments/exp-20260605-003/sec_ftd_companyfacts_gross_margin_candidate_pool_after_aggregate.json",
+        "delta_metrics": {
+          "expected_value_score": 0.0459,
+          "total_pnl": 517.02,
+          "target_trade_count": 11,
+          "max_drawdown_pct": 0.0004,
+          "max_single_positive_share": 0.746007,
+          "positive_pnl_hhi": 0.621039
+        },
+        "calibration": {
+          "actual_decision": "rejected_sec_ftd_companyfacts_gross_margin_candidate_pool",
+          "actual_success": 0,
+          "predicted_success_probability": 0.18,
+          "brier_score": 0.0324,
+          "calibration_direction": "directionally_calibrated",
+          "surprise_level": "very_low",
+          "expected_ev_delta": null,
+          "actual_ev_delta": 0.0459,
+          "ev_prediction_error": null,
+          "expected_pnl_delta": null,
+          "actual_pnl_delta": 517.02,
+          "pnl_prediction_error": null,
+          "predicted_failure_modes": [
+            "accepted_ftd_finra_comparator_underperformance",
+            "late_strong_regression",
+            "thin_or_concentrated_overlap"
+          ],
+          "realized_failure_mode": "accepted_ftd_finra_comparator_underperformance",
+          "predicted_failure_mode_hit": true,
+          "surprise_note": null
+        },
+        "artifact_file": "data/experiments/exp-20260605-003/exp_20260605_003_sec_ftd_companyfacts_gross_margin_candidate_pool.json",
+        "markdown_artifact_file": "experiments/artifacts/exp-20260605-003_sec_ftd_companyfacts_gross_margin_candidate_pool.md",
+        "gate4_failed_gates": [
+          "accepted_ftd_finra_aggregate_ev_not_beaten",
+          "accepted_ftd_finra_aggregate_pnl_not_beaten",
+          "accepted_ftd_finra_window_ev_regression",
+          "accepted_ftd_finra_window_pnl_regression",
+          "target_concentration_failed",
+          "target_sample_too_small",
+          "window_ev_regression",
+          "window_pnl_regression"
+        ],
+        "notes": "Rejected: only 11 target trades, old_thin regressed, concentration failed, and every accepted FTD+FINRA comparator gate failed."
+      }
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-05T01:12:10+00:00"
+  "updated_at": "2026-06-05T02:18:05+00:00"
 }
