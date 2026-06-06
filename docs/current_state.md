@@ -1,6 +1,6 @@
 ﻿# Current State
 
-Last updated: 2026-06-05.
+Last updated: 2026-06-06.
 
 The current accepted core stack includes the 2026-05-17 stock-only ample-slot
 rank-1 post-sizing top-up from `exp-20260517-009`, layered on top of the
@@ -87,6 +87,63 @@ to window EV/PnL regression and max-drawdown drift `+0.0063` versus the
 watchlists, core ranking, sizing, exits, or orders. Treat same-industry
 Companyfacts peer-confirmed filing drift as frozen unless new evidence uses
 production-realistic chronological replay and beats the current gates.
+
+## 2026-06-06 Experiment Consolidation
+
+June 6 added one accepted default-off adapter and otherwise narrowed the broad
+candidate-pool queue. `exp-20260606-001` promoted the low-deployment ETF
+cash-substitute route into the shared default-off `low_deployment_etf_overlay`
+adapter. The accepted evidence reproduced `exp-20260605-035`: aggregate EV
+`7.8941 -> 10.9233` (`+3.0292`, `+38.37%`) and PnL
+`$234,850.99 -> $279,157.90` (`+$44,306.91`), with all three canonical
+windows improving, `19` target paper trades, max drawdown delta `-0.0008`, and
+concentration passing. It remains paper-only and default-off; live/default
+orders, core ranking, sizing, exits, watchlists, and LLM/news did not change.
+
+The ETF acceptance also became the comparator for nearby safety retunes, and
+the first two retunes failed. `exp-20260606-011` tested a two-loss / ten-day
+cooldown kill switch and underperformed the accepted adapter by `-0.8346` EV
+and `-$9,945.28`. `exp-20260606-012` tested a SPY/QQQ market-pressure guard,
+but it blocked zero entries and added no signal coverage. Do not retune the ETF
+pool, thresholds, hold days, notional, loss-streak guards, or market-pressure
+guards on the frozen windows. The next valid ETF work is forward
+replacement-value rows, explicit cash semantics, a portfolio-level capital cap,
+and a kill-switch design supported by forward or materially new tail evidence.
+
+Broad OHLCV stock continuation remains rejected despite repeated positive
+aggregate deltas. `exp-20260606-004`, `exp-20260606-005`,
+`exp-20260606-006`, `exp-20260606-008`, `exp-20260606-010`,
+`exp-20260606-014`, and `exp-20260606-015` all tested variants of recent
+winners, market confirmation, low-deployment gating, changepoint/tail state,
+gap-down recovery, exhaustion caps, or low-volatility 20-day breakouts. Several
+raised aggregate EV/PnL, with the best market-confirmed 5-day continuation
+showing `+2.3453` EV and `+$36,495.37`, but Gate 4 rejected the family for
+old-window regression and/or max-drawdown drift. Treat broad recent-winner and
+low-vol breakout routes as diagnostic-only unless a new tail-state field beats
+the accepted ETF cash substitute after exact displacement, costs, and drawdown
+accounting.
+
+Free-data relation scouts did not add another retained source. SEC strategic
+customer/partner warrant alignment (`exp-20260606-002`) produced zero target
+trades, and SEC Item 1.01 + 2.03 credit absorption (`exp-20260606-007`) found
+only two target trades and failed sample/concentration gates. Companyfacts
+growth acceleration (`exp-20260606-009`) regressed aggregate EV despite
+positive PnL, while low EPS dilution (`exp-20260606-013`) improved aggregate
+EV by `+0.4961` and PnL by `+$6,925.94` but remains rejected rather than a
+retained mechanism. EPS revision plus positive surprise-history confirmation
+(`exp-20260606-016`) improved two windows but failed on `old_thin`, drawdown
+drift `+0.0071`, and concentration. Official macro-relief leadership
+(`exp-20260606-017`) improved all three windows by a small aggregate
+`+0.1078` EV / `+$1,819.71`, but only produced `10` trades and failed the
+sample gate. None of these changed production code or accepted strategy state.
+
+Regression checkpoint: transient caches and stale scratch files were cleaned,
+then the full unit-test suite passed on 2026-06-06:
+`1140 passed in 45.05s`. `scripts/experiment.py audit --strict` still fails
+on existing process coverage debt rather than a unit-test bug: post-enforcement
+prediction coverage is `90.71%`, closed post-enforcement calibration coverage
+is `63.91%`, with `17` post-enforcement missing predictions and `48` missing
+closed calibrations.
 
 ## 2026-06-05 Experiment Consolidation
 
