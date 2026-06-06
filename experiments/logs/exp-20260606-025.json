@@ -1,0 +1,193 @@
+{
+  "accepted": true,
+  "aggregate_expected_value_delta": 0.3845,
+  "aggregate_strategy_total_pnl_delta": 6107.66,
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260606-025/exp_20260606_025_rolling_corr_peer_shock_shared_adapter.json",
+  "backtest_protocol": {
+    "REGIME_AWARE_EXIT": true,
+    "candidate_ohlcv_source": "data/experiments/exp-20260519-030/warehouse_main.sqlite",
+    "execution_model": "Signal uses only signal-date close OHLCV and 60 prior trading day returns, admits only dates with same-day core A/B flow, paper entry is next available open, and exit is 10 trading days after signal with the shared fill/cost model.",
+    "replay_llm": false,
+    "replay_news": false,
+    "source": "docs/backtesting.md canonical three-window core replay plus shared default-off paper helper overlay",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "calibration": {
+    "actual_gate4_passed": true,
+    "brier_score": 0.1444,
+    "failure_modes_observed": [],
+    "predicted_success_probability": 0.62
+  },
+  "changed_variable": "rolling_corr_peer_shock_core_flow_shared_adapter_v1",
+  "decision": "accepted_rolling_corr_peer_shock_shared_default_off_adapter",
+  "experiment_id": "exp-20260606-025",
+  "gate4": {
+    "aggregate_ev_delta": 0.3845,
+    "aggregate_pnl_delta": 6107.66,
+    "decision": "accepted_rolling_corr_peer_shock_shared_default_off_adapter",
+    "failed_reasons": [],
+    "lead_reproduction": {
+      "aggregate_expected_value_score_delta_drift": 0.0,
+      "aggregate_total_pnl_delta_drift": 0.0,
+      "by_window": {
+        "late_strong": {
+          "expected_value_score_drift": 0.0,
+          "total_pnl_drift": 0.0,
+          "trade_count": 13
+        },
+        "mid_weak": {
+          "expected_value_score_drift": 0.0,
+          "total_pnl_drift": 0.0,
+          "trade_count": 18
+        },
+        "old_thin": {
+          "expected_value_score_drift": 0.0,
+          "total_pnl_drift": 0.0,
+          "trade_count": 17
+        }
+      },
+      "max_ev_drift": 0.0002,
+      "max_pnl_drift": 1.0,
+      "passed": true,
+      "source_lead_artifact": "data/experiments/exp-20260606-024/exp_20260606_024_rolling_corr_peer_shock_core_flow_positive.json",
+      "trade_count_drift": 0
+    },
+    "max_drawdown_worse": 0.001,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "parity_test_added": true,
+    "passed": true,
+    "shared_adapter_module": "quant/rolling_corr_peer_shock_paper_sleeve.py",
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.12189,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": true,
+      "positive_pnl_hhi": 0.056595,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 48,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_ev_improved": 3,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 3,
+    "windows_pnl_regressed": 0
+  },
+  "hypothesis": "The core-flow confirmed rolling-correlation peer-shock lead remains valuable when candidate generation is moved into a shared default-off paper adapter used by both historical replay and daily snapshot tests.",
+  "lane": "alpha_search",
+  "lead_reproduction": {
+    "aggregate_expected_value_score_delta_drift": 0.0,
+    "aggregate_total_pnl_delta_drift": 0.0,
+    "by_window": {
+      "late_strong": {
+        "expected_value_score_drift": 0.0,
+        "total_pnl_drift": 0.0,
+        "trade_count": 13
+      },
+      "mid_weak": {
+        "expected_value_score_drift": 0.0,
+        "total_pnl_drift": 0.0,
+        "trade_count": 18
+      },
+      "old_thin": {
+        "expected_value_score_drift": 0.0,
+        "total_pnl_drift": 0.0,
+        "trade_count": 17
+      }
+    },
+    "max_ev_drift": 0.0002,
+    "max_pnl_drift": 1.0,
+    "passed": true,
+    "source_lead_artifact": "data/experiments/exp-20260606-024/exp_20260606_024_rolling_corr_peer_shock_core_flow_positive.json",
+    "trade_count_drift": 0
+  },
+  "log": "experiments/logs/exp-20260606-025.json",
+  "mechanism_family": "production_visible_free_ohlcv_relation_alpha",
+  "prediction": {
+    "confidence_reason": "exp-20260606-024 already cleared Gate 4 as a replay-only lead. This run changes only implementation boundary: candidate generation moves into a shared default-off paper helper and must reproduce the same three-window edge.",
+    "expected_ev_delta": 0.38,
+    "expected_pnl_delta": 6100.0,
+    "main_failure_modes": [
+      "shared_adapter_replay_drift",
+      "window_regression",
+      "drawdown_drift",
+      "parity_fixture_failure",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-06T20:08:00Z",
+    "success_probability": 0.62
+  },
+  "production_impact": {
+    "adapter_status": "shared_default_off_helper_added_not_wired_to_live_orders",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": true,
+    "default_off_paper_only": true,
+    "parity_note": "Historical replay calls quant/rolling_corr_peer_shock_paper_sleeve.py, the same helper covered by daily snapshot tests. The helper remains default-off and is not wired into quant/run.py, reports, watchlists, or any live/default order path in this experiment.",
+    "parity_test_added": true,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": true,
+    "trade_enabled": false
+  },
+  "status": "accepted",
+  "timestamp": "2026-06-06T19:59:37Z",
+  "trial_family": "rolling_corr_peer_shock_default_off_shared_adapter",
+  "trial_variant_id": "rolling_corr_peer_shock_core_flow_shared_adapter_v1",
+  "windows": [
+    {
+      "expected_value_after": 5.3795,
+      "expected_value_before": 5.1628,
+      "expected_value_delta": 0.2167,
+      "label": "late_strong",
+      "strategy_total_pnl_delta": 2734.23,
+      "target_trade_count": 13
+    },
+    {
+      "expected_value_after": 2.2847,
+      "expected_value_before": 2.1402,
+      "expected_value_delta": 0.1445,
+      "label": "mid_weak",
+      "strategy_total_pnl_delta": 2622.62,
+      "target_trade_count": 18
+    },
+    {
+      "expected_value_after": 0.6144,
+      "expected_value_before": 0.5911,
+      "expected_value_delta": 0.0233,
+      "label": "old_thin",
+      "strategy_total_pnl_delta": 750.81,
+      "target_trade_count": 17
+    }
+  ]
+}
