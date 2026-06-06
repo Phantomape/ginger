@@ -75,6 +75,46 @@ For pure measurement repair, write the blocker instead of a money-making
 hypothesis. Example: "Current experiment IDs collide because artifacts can be
 created before registry reservation."
 
+## Shared-Paper-First Fast Path
+
+For high-potential, production-visible candidate-pool or default-off paper alpha,
+prefer a shared-paper-first experiment instead of a private replay scout.
+
+Use this path when the proposed signal depends only on fields that can be
+available in both historical replay and the daily run, such as free OHLCV,
+official event calendars, accepted default-off sleeve snapshots, Companyfacts
+rows with filed-date boundaries, FINRA/SEC rows with publication-date
+boundaries, or already-produced core entry context.
+
+Minimum requirements:
+
+- Reserve one `alpha_search` ID for the shared helper experiment.
+- Implement the candidate logic in a shared helper module, typically
+  `quant/<alpha_name>_paper_sleeve.py`, before writing private runner-only
+  selection code.
+- The helper should expose both a historical replay function and a daily
+  default-off snapshot function, for example `build_*_historical_trades()` and
+  `build_*_paper_sleeve_snapshot()`.
+- The experiment runner must call the shared helper for after-measurement; it
+  should not duplicate a second private candidate implementation.
+- Add focused tests proving daily snapshot and historical replay share the same
+  rule version and produce the same representative candidate on a fixture.
+- Keep `trade_enabled=False` and live/default orders unchanged.
+- Record the helper in `docs/production_backtest_parity.md` when Gate 4 accepts
+  or when the helper is retained for forward default-off observation.
+
+If Gate 4 accepts, the result may be recorded as an accepted shared default-off
+helper and can proceed directly to a separate forward-paper wiring experiment.
+Live trading, capital allocation, core ranking, exits, watchlists, or order
+surfaces still require closed forward evidence and their own Gate 1-4 activation
+experiment.
+
+Private replay scouts remain allowed only when the data shape is uncertain or
+the idea is too speculative to justify a helper. A positive private scout is not
+an accepted alpha; it must be labeled as a replay lead, explain why
+shared-paper-first was not used, and name the exact shared helper/parity work
+required before any paper or production observation.
+
 ## Reserve Identity First
 
 Always reserve the experiment ID before writing runners, data directories,
@@ -206,6 +246,11 @@ allowed replay-only difference in `docs/production_backtest_parity.md`.
 
 Do not accept a backtester-only rule.
 
+For default-off paper alpha, do not retain a high-potential positive result if
+the only implementation is private runner logic. Either start with the
+shared-paper-first path above, or downgrade the result to
+`positive_replay_lead_not_promoted` until a shared helper reproduces it.
+
 When changing shared behavior, add focused parity tests or update the parity
 contract. Production output must expose the same action or decision basis that
 the backtester uses.
@@ -301,6 +346,8 @@ response before stopping.
 - Do not change strategy behavior without Gate 1-4.
 - Do not keep failed strategy logic just because unit tests pass.
 - Do not use paper PnL alone as activation evidence.
+- Do not call a private replay-only scout "accepted"; accepted paper alpha needs
+  shared replay/daily semantics or a documented measurement-repair exception.
 - Do not promote replay-only or default-off logic into live capital without a
   separate accepted activation experiment.
 - Do not add LLM authority over sizing, slots, exits, or risk without replayable

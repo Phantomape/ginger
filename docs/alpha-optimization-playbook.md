@@ -32,7 +32,11 @@ Priority rules:
 - Prefer new production-visible fields over threshold/scalar sweeps.
 - Prefer default-off paper adapters before core or live expansion.
 - Prefer replacement value against the displaced candidate over standalone PnL.
-- Prefer shared production/backtest policy over replay-only logic.
+- Prefer shared-paper-first experiments for high-potential default-off paper
+  alpha: the first serious test should use a shared historical replay plus daily
+  snapshot helper, not private runner-only selection code.
+- Prefer shared production/backtest policy over replay-only logic. A positive
+  private replay scout is only a lead until a shared helper reproduces it.
 - Treat high aggregate EV with window regression or drawdown drift as a rejected
   clue, not as a retained strategy.
 
@@ -41,9 +45,15 @@ Priority rules:
 The strongest current pattern is not more filters. It is:
 
 1. find broad, cheap, point-in-time candidate sources;
-2. make them default-off paper adapters with shared production/replay semantics;
+2. when the idea is credible, test it through a shared-paper-first helper that
+   can drive both historical replay and daily default-off snapshots;
 3. collect closed forward replacement-value rows;
 4. only then design activation, caps, and kill switches.
+
+Private replay scouts should be reserved for uncertain data-shape discovery or
+very speculative ideas. They should not be treated as accepted alpha even when
+Gate 4 is positive; the next retained asset must be the shared helper or daily
+default-off wiring that reproduces the lead.
 
 Meta-research on 1,439 records continues to rank production-visible default-off
 paper adapters above raw filters, ticker exceptions, and cap releases. The
