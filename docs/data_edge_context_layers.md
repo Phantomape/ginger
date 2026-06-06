@@ -706,6 +706,37 @@ Gate 1-4 activation experiment and parity update. Do not retune the macro
 calendar, relief thresholds, close-location thresholds, top-N, hold days,
 cooldown, or notional on the frozen sample without materially new data.
 
+### `quant/rolling_corr_peer_shock_paper_sleeve.py`
+
+Purpose: maintain the default-off
+`ROLLING_CORR_PEER_SHOCK_CORE_FLOW_PAPER` forward observation ledger for the
+accepted rolling-correlation peer-shock lead from `exp-20260606-024` and the
+shared adapter promotion from `exp-20260606-025`.
+
+Candidate route:
+
+- Uses the broad-market paper universe feed plus `SPY` OHLCV.
+- Requires same-day selected core A/B entry flow from the production entry
+  plan, but does not feed back into that entry plan.
+- Looks for liquid sector-known peer shocks using signal-date return,
+  relative return versus `SPY`, volume confirmation, and 20-day excess return.
+- Pairs those peer shocks with liquid same-sector or same-industry laggards
+  using 60-prior-trading-day rolling return correlation.
+- Requires positive candidate signal-day return, excludes same-day selected
+  core same-ticker overlap, emits top-1/day, fixed `$4,000` paper notional,
+  next-open paper entry, 10-trading-day close exit, costs, and same-ticker
+  cooldown.
+- Daily run emits peer-shock context, pending/open/closed paper state,
+  forward gate, default-off attribution surface, and human-report block.
+
+Agent rule: this sleeve may collect forward replacement-value evidence for the
+accepted alpha only. It must not enable orders, expand the core universe, alter
+live ranking, sizing, exits, watchlists, LLM/news prompts, or consume capital
+without a separate Gate 1-4 activation experiment and parity update. Do not
+retune correlation thresholds, core-flow admission, top-N, hold days, cooldown,
+or notional on the frozen sample without closed forward rows or a new
+production-visible data edge.
+
 ### `quant/ai_optical_paper_sleeve.py`
 
 Purpose: maintain the default-off `AI_OPTICAL_IWM_CONFIRMED_PAPER` forward
@@ -1181,6 +1212,8 @@ Inputs:
 - `low_deployment_etf_overlay`
 - `core_misfit_paper_sleeve`
 - `broad_market_paper_sleeve`
+- `macro_relief_leadership_paper_sleeve`
+- `rolling_corr_peer_shock_paper_sleeve`
 - `ai_optical_paper_sleeve`
 - `volume_breadth_breakout_paper_sleeve`
 - `post_earnings_underpriced_drift_paper_sleeve`

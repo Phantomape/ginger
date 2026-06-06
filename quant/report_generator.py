@@ -99,6 +99,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            core_misfit_paper_sleeve=None,
                            broad_market_paper_sleeve=None,
                            macro_relief_leadership_paper_sleeve=None,
+                           rolling_corr_peer_shock_paper_sleeve=None,
                            ai_optical_paper_sleeve=None,
                            volatility_contraction_paper_sleeve=None,
                            volume_breadth_breakout_paper_sleeve=None,
@@ -149,6 +150,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         core_misfit_paper_sleeve (dict): Default-off core-misfit paper attribution
         broad_market_paper_sleeve (dict): Default-off broad-market leadership paper sleeve
         macro_relief_leadership_paper_sleeve (dict): Default-off macro-relief stock leadership paper sleeve
+        rolling_corr_peer_shock_paper_sleeve (dict): Default-off rolling-correlation peer-shock paper sleeve
         ai_optical_paper_sleeve (dict): Default-off AI optical IWM-confirmed paper sleeve
         volatility_contraction_paper_sleeve (dict): Default-off QQQ-confirmed volatility-contraction paper sleeve
         volume_breadth_breakout_paper_sleeve (dict): Default-off volume-breadth breakout paper sleeve
@@ -2061,6 +2063,69 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"  {candidate.get('ticker', '?')}: "
                 f"score={candidate.get('candidate_score')} "
                 f"rel_spy={candidate.get('candidate_relative_vs_spy')} "
+                f"signal={candidate.get('signal_date', candidate.get('date'))} "
+                f"notional={notional_text} (paper only)"
+            )
+
+    if rolling_corr_peer_shock_paper_sleeve and (
+        rolling_corr_peer_shock_paper_sleeve.get("candidate_count", 0) > 0
+        or rolling_corr_peer_shock_paper_sleeve.get("pending_count", 0) > 0
+        or rolling_corr_peer_shock_paper_sleeve.get("open_position_count", 0) > 0
+        or rolling_corr_peer_shock_paper_sleeve.get("closed_count_today", 0) > 0
+        or rolling_corr_peer_shock_paper_sleeve.get("closed_position_count", 0) > 0
+        or rolling_corr_peer_shock_paper_sleeve.get("error")
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("ROLLING-CORR PEER-SHOCK PAPER SLEEVE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Paper: {rolling_corr_peer_shock_paper_sleeve.get('paper_enabled', False)}  |  "
+            f"Trade enabled: {rolling_corr_peer_shock_paper_sleeve.get('trade_enabled', False)}"
+        )
+        if rolling_corr_peer_shock_paper_sleeve.get("error"):
+            lines.append(
+                f"  Source status: {rolling_corr_peer_shock_paper_sleeve.get('error')}"
+            )
+        context = rolling_corr_peer_shock_paper_sleeve.get("peer_shock_context") or {}
+        lines.append(
+            f"  Source: free OHLCV  |  "
+            f"Core flow required: {context.get('core_flow_confirmation_required', True)}  |  "
+            f"Corr pairs: {context.get('raw_corr_pairs', 0)}"
+        )
+        lines.append(
+            f"  Candidates: {rolling_corr_peer_shock_paper_sleeve.get('candidate_count', 0)}  |  "
+            f"Raw: {rolling_corr_peer_shock_paper_sleeve.get('raw_candidate_count', 0)}  |  "
+            f"Rejected: {rolling_corr_peer_shock_paper_sleeve.get('rejected_candidate_count', 0)}  |  "
+            f"Pending: {rolling_corr_peer_shock_paper_sleeve.get('pending_count', 0)}  |  "
+            f"Open: {rolling_corr_peer_shock_paper_sleeve.get('open_position_count', 0)}  |  "
+            f"Closed today: {rolling_corr_peer_shock_paper_sleeve.get('closed_count_today', 0)}"
+        )
+        lines.append(
+            "  Realized paper P&L: "
+            f"${rolling_corr_peer_shock_paper_sleeve.get('realized_pnl_to_date', 0.0):,.2f}  |  "
+            f"Unrealized: ${rolling_corr_peer_shock_paper_sleeve.get('unrealized_pnl', 0.0):,.2f}"
+        )
+        gate = rolling_corr_peer_shock_paper_sleeve.get("forward_paper_gate") or {}
+        if gate:
+            reasons = gate.get("reasons") or []
+            reason_text = ", ".join(reasons) if reasons else "none"
+            lines.append(
+                f"  Forward gate: {gate.get('status', 'unknown')}  |  "
+                f"closed={gate.get('closed_trade_count', 0)} "
+                f"pnl=${gate.get('net_pnl', 0.0):,.2f}  |  "
+                f"blocked_by={reason_text}"
+            )
+        for candidate in (rolling_corr_peer_shock_paper_sleeve.get("candidates") or [])[:5]:
+            notional = candidate.get("paper_notional_usd") or candidate.get("intended_notional")
+            notional_text = (
+                f"${notional:,.0f}" if isinstance(notional, (int, float)) else "n/a"
+            )
+            lines.append(
+                f"  {candidate.get('ticker', '?')}: "
+                f"peer={candidate.get('peer_ticker')} "
+                f"corr={candidate.get('rolling_corr_60d')} "
+                f"score={candidate.get('candidate_score')} "
+                f"peer_rel_spy={candidate.get('peer_relative_vs_spy')} "
                 f"signal={candidate.get('signal_date', candidate.get('date'))} "
                 f"notional={notional_text} (paper only)"
             )

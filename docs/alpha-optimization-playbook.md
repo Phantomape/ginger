@@ -128,6 +128,52 @@ Do not retune nearby top-N, SPY/QQQ relief thresholds, close-location
 thresholds, hold days, same-ticker cooldown, or paper notional on the frozen
 sample.
 
+### Rolling-Correlation Peer-Shock Core Flow
+
+This is a free-OHLCV candidate-pool lead. On days when the core A/B stack has
+selected entries, a strong peer shock can identify a correlated liquid laggard
+that has begun reacting but has not yet fully caught up.
+
+Accepted shared adapter: `exp-20260606-025`, promoting the positive replay lead
+from `exp-20260606-024`. Daily default-off forward wiring was accepted in
+`exp-20260606-026`.
+
+Mechanism:
+
+- source universe: broad-market, sector-known, liquid stock observation feed;
+- confirmation: same-day selected core A/B entry flow;
+- peer event: strong signal-day peer return, relative return versus `SPY`,
+  volume confirmation, and 20-day excess return;
+- laggard pair: 60-prior-trading-day rolling return correlation to the shocked
+  peer;
+- candidate gate: positive signal-day laggard return, no selected-core
+  same-ticker overlap;
+- lifecycle: top-1/day, fixed `$4,000` paper notional, next-open paper entry,
+  10-trading-day close exit, costs included;
+- status: default-off paper only, no live orders.
+
+Evidence:
+
+- aggregate EV `7.8941 -> 8.2786` (`+0.3845`);
+- PnL `$234,850.99 -> $240,958.65`;
+- all three canonical windows improved;
+- target paper trades: `48`;
+- max drawdown drift: `0.0010`;
+- concentration passed (`max_single_positive_pnl_share=0.12189`,
+  `positive_pnl_hhi=0.056595`).
+
+Next valid work:
+
+- collect closed forward replacement-value rows from the daily default-off
+  adapter;
+- audit broad-market sector coverage and missing OHLCV rows;
+- search for a genuinely point-in-time peer/industry classification or
+  low-latency peer-news field if free data exists;
+- separate Gate 1-4 activation experiment before any live deployment.
+
+Do not retune nearby correlation thresholds, core-flow admission, top-N, hold
+days, same-ticker cooldown, or paper notional on the frozen sample.
+
 ### Lagged Independent Free-Data Consensus
 
 The accepted consensus route is that a current accepted-source paper candidate

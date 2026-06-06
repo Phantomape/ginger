@@ -113,6 +113,22 @@ surface is production-visible for forward observation only:
 `trade_enabled=false`, no live/default orders, no core ranking/sizing/exits,
 no watchlist changes, and no LLM/news path changes.
 
+`exp-20260606-025` promoted the positive `exp-20260606-024`
+rolling-correlation peer-shock core-flow lead into the shared default-off
+`rolling_corr_peer_shock_paper_sleeve.py` adapter, and `exp-20260606-026`
+wired that adapter into daily default-off forward observation. The accepted
+three-window evidence is aggregate EV `7.8941 -> 8.2786` (`+0.3845`) and PnL
+`$234,850.99 -> $240,958.65` (`+$6,107.66`), with `late_strong` `+0.2167`
+EV / `+$2,734.23`, `mid_weak` `+0.1445` / `+$2,622.62`, and `old_thin`
+`+0.0233` / `+$750.81`. It selected `48` target paper trades, max drawdown
+drift was `+0.0010`, and concentration passed: max single positive PnL share
+`0.12189`, positive PnL HHI `0.056595`. Daily production now emits only
+paper state, peer-shock context, default-off attribution, and report metadata:
+`trade_enabled=false`, no live/default orders, no core universe expansion, no
+core ranking/sizing/exits, no watchlist changes, and no LLM/news path changes.
+Next valid work is closed forward replacement-value evidence or a materially
+new free peer-data source, not frozen-sample threshold retuning.
+
 The ETF acceptance also became the comparator for nearby safety retunes, and
 the first two retunes failed. `exp-20260606-011` tested a two-loss / ten-day
 cooldown kill switch and underperformed the accepted adapter by `-0.8346` EV

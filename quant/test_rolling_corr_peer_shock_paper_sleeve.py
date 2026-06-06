@@ -165,3 +165,48 @@ def test_historical_replay_and_daily_snapshot_share_candidate_rule_versions():
     assert trades[0]["source_rule_version"] == SOURCE_RULE_VERSION
     assert audit["selected_by_window"]["fixture"] == 1
     assert snapshot["production_impact"]["trade_enabled"] is False
+
+
+def test_daily_snapshot_advances_pending_to_closed_using_historical_fill_model(tmp_path):
+    ohlcv = _ohlcv()
+    signal_day = ohlcv["SPY"][70]["date"]
+    exit_day = ohlcv["SPY"][80]["date"]
+    state_path = tmp_path / "state.json"
+    snapshot_log_path = tmp_path / "snapshots.jsonl"
+    core_entries = {signal_day: [{"ticker": "CORE", "entry_signal": "B"}]}
+
+    trades, _audit = build_rolling_corr_peer_shock_historical_trades(
+        ohlcv_by_ticker=ohlcv,
+        core_entries_by_date=core_entries,
+        windows={"fixture": {"start": signal_day, "end": exit_day}},
+        sector_entries=_sector_entries(),
+    )
+    signal_snapshot = build_rolling_corr_peer_shock_paper_sleeve_snapshot(
+        as_of=signal_day,
+        ohlcv_by_ticker=ohlcv,
+        core_entries=core_entries[signal_day],
+        sector_entries=_sector_entries(),
+        state_path=state_path,
+        snapshot_log_path=snapshot_log_path,
+        persist=True,
+    )
+    closed_snapshot = build_rolling_corr_peer_shock_paper_sleeve_snapshot(
+        as_of=exit_day,
+        ohlcv_by_ticker=ohlcv,
+        core_entries=[],
+        sector_entries=_sector_entries(),
+        state_path=state_path,
+        snapshot_log_path=snapshot_log_path,
+        persist=True,
+    )
+
+    assert signal_snapshot["pending_count"] == 1
+    assert closed_snapshot["closed_count_today"] == 1
+    assert closed_snapshot["open_position_count"] == 0
+    assert closed_snapshot["realized_pnl_to_date"] == trades[0]["pnl"]
+    closed = closed_snapshot["closed_positions_this_run"][0]
+    assert closed["ticker"] == trades[0]["ticker"] == "LAG"
+    assert closed["entry_date"] == trades[0]["entry_date"]
+    assert closed["exit_date"] == trades[0]["exit_date"]
+    assert closed["pnl_pct_net"] == trades[0]["pnl_pct_net"]
+    assert closed["trade_enabled"] is False

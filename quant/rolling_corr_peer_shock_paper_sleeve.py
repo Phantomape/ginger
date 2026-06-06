@@ -176,6 +176,7 @@ def empty_rolling_corr_peer_shock_paper_sleeve_snapshot(
         "pending_count": 0,
         "open_position_count": 0,
         "closed_position_count": 0,
+        "closed_count_today": 0,
         "realized_pnl_to_date": 0.0,
         "unrealized_pnl": 0.0,
         "peer_shock_context": {
@@ -227,6 +228,12 @@ def build_rolling_corr_peer_shock_paper_sleeve_snapshot(
         state if state is not None else load_rolling_corr_peer_shock_paper_state(state_path)
     )
     _normalise_state(working_state)
+    lifecycle = _advance_paper_state(
+        rows_by_ticker=rows_by_ticker,
+        state=working_state,
+        as_of_date=as_of_date,
+        config=cfg,
+    )
 
     candidates, peer_contexts, scan = build_rolling_corr_peer_shock_candidate_rows(
         ohlcv_by_ticker=rows_by_ticker,
@@ -262,13 +269,22 @@ def build_rolling_corr_peer_shock_paper_sleeve_snapshot(
         "pending_count": len(working_state["pending_entries"]),
         "open_position_count": len(working_state["open_positions"]),
         "closed_position_count": len(working_state["closed_positions"]),
+        "closed_count_today": len(lifecycle["closed_this_run"]),
         "realized_pnl_to_date": _round(
             sum(float(row.get("pnl") or 0.0) for row in working_state["closed_positions"]),
             2,
         ),
-        "unrealized_pnl": 0.0,
+        "unrealized_pnl": _unrealized_pnl(
+            rows_by_ticker=rows_by_ticker,
+            open_positions=working_state["open_positions"],
+            as_of_date=as_of_date,
+            config=cfg,
+        ),
         "candidates": selected,
         "rejected_candidates": rejected[:50],
+        "opened_positions_this_run": lifecycle["opened_this_run"],
+        "closed_positions_this_run": lifecycle["closed_this_run"],
+        "skipped_entries_this_run": lifecycle["skipped_this_run"],
         "peer_shock_context": {
             **scan,
             "rule_version": SOURCE_RULE_VERSION,
@@ -561,7 +577,11 @@ def _select_candidates_for_paper(
     used_date_counts: Counter[str] = Counter()
     trading_dates = _trading_dates(rows_by_ticker)
     date_pos = {day: pos for pos, day in enumerate(trading_dates)}
-    next_allowed_pos_by_ticker: dict[str, int] = {}
+    next_allowed_pos_by_ticker = _cooldown_positions_from_state(
+        state=state,
+        trading_dates=trading_dates,
+        config=config,
+    )
     blocked = _blocked_tickers(state)
     for row in candidates:
         signal_date = str(row.get("date") or "")
@@ -600,6 +620,189 @@ def _select_candidates_for_paper(
         used_date_counts[signal_date] += 1
         next_allowed_pos_by_ticker[ticker] = pos + int(config["same_ticker_cooldown_days"])
     return selected, rejected
+
+
+def _advance_paper_state(
+    *,
+    rows_by_ticker: dict[str, list[dict[str, Any]]],
+    state: dict[str, Any],
+    as_of_date: str,
+    config: dict[str, Any],
+) -> dict[str, list[dict[str, Any]]]:
+    trading_dates = _trading_dates(rows_by_ticker)
+    if _asof_trading_pos(trading_dates, as_of_date) is None:
+        return {"opened_this_run": [], "closed_this_run": [], "skipped_this_run": []}
+
+    opened_this_run: list[dict[str, Any]] = []
+    closed_this_run: list[dict[str, Any]] = []
+    skipped_this_run: list[dict[str, Any]] = []
+
+    still_open: list[dict[str, Any]] = []
+    for position in state.get("open_positions") or []:
+        if not isinstance(position, dict):
+            continue
+        closed = _close_open_position_if_due(
+            rows_by_ticker=rows_by_ticker,
+            position=position,
+            as_of_date=as_of_date,
+            config=config,
+        )
+        if closed is None:
+            still_open.append(position)
+        else:
+            closed_this_run.append(closed)
+    state["open_positions"] = still_open
+
+    still_pending: list[dict[str, Any]] = []
+    for pending in state.get("pending_entries") or []:
+        if not isinstance(pending, dict):
+            continue
+        opened, skip_reason = _open_pending_entry_if_due(
+            rows_by_ticker=rows_by_ticker,
+            pending=pending,
+            as_of_date=as_of_date,
+            config=config,
+        )
+        if opened is None:
+            if skip_reason is None:
+                still_pending.append(pending)
+            else:
+                skipped = {
+                    **pending,
+                    "skip_reason": skip_reason,
+                    "skipped_at": utc_now_iso(),
+                }
+                skipped_this_run.append(skipped)
+                state["skipped_entries"].append(skipped)
+            continue
+        opened_this_run.append(opened)
+        closed = _close_open_position_if_due(
+            rows_by_ticker=rows_by_ticker,
+            position=opened,
+            as_of_date=as_of_date,
+            config=config,
+        )
+        if closed is None:
+            state["open_positions"].append(opened)
+        else:
+            closed_this_run.append(closed)
+    state["pending_entries"] = still_pending
+    state["closed_positions"].extend(closed_this_run)
+
+    return {
+        "opened_this_run": opened_this_run,
+        "closed_this_run": closed_this_run,
+        "skipped_this_run": skipped_this_run,
+    }
+
+
+def _open_pending_entry_if_due(
+    *,
+    rows_by_ticker: dict[str, list[dict[str, Any]]],
+    pending: dict[str, Any],
+    as_of_date: str,
+    config: dict[str, Any],
+) -> tuple[dict[str, Any] | None, str | None]:
+    ticker = str(pending.get("ticker") or "").upper()
+    rows = rows_by_ticker.get(ticker) or []
+    idx = _row_index(rows).get(str(pending.get("signal_date") or ""))
+    if idx is None:
+        return None, "missing_signal_date_position"
+    entry_idx = idx + 1
+    if entry_idx >= len(rows):
+        return None, "missing_next_open"
+    if _date(rows[entry_idx]) > _date10(as_of_date):
+        return None, None
+    entry_raw = _value(rows[entry_idx], "open")
+    if not entry_raw:
+        return None, "missing_entry_open"
+    entry_price = apply_entry_fill(entry_raw)
+    return (
+        {
+            **pending,
+            "entry_date": _date(rows[entry_idx]),
+            "entry_raw_open": _round(entry_raw, 4),
+            "entry_price": _round(entry_price, 4),
+            "hold_days": int(config["hold_days"]),
+            "opened_at": utc_now_iso(),
+        },
+        None,
+    )
+
+
+def _close_open_position_if_due(
+    *,
+    rows_by_ticker: dict[str, list[dict[str, Any]]],
+    position: dict[str, Any],
+    as_of_date: str,
+    config: dict[str, Any],
+) -> dict[str, Any] | None:
+    ticker = str(position.get("ticker") or "").upper()
+    rows = rows_by_ticker.get(ticker) or []
+    idx = _row_index(rows).get(str(position.get("signal_date") or ""))
+    if idx is None:
+        return None
+    exit_idx = idx + int(config["hold_days"])
+    if exit_idx >= len(rows) or _date(rows[exit_idx]) > _date10(as_of_date):
+        return None
+    exit_raw = _value(rows[exit_idx], "close")
+    if not exit_raw:
+        return None
+    entry_price = float(position.get("entry_price") or 0.0)
+    if entry_price <= 0.0:
+        entry_raw = _value(rows[idx + 1], "open") if idx + 1 < len(rows) else None
+        if not entry_raw:
+            return None
+        entry_price = apply_entry_fill(entry_raw)
+    exit_price = apply_slippage(exit_raw, SLIPPAGE_BPS_TARGET, "sell")
+    pnl_pct_net = (exit_price / entry_price) - 1.0 - float(config["round_trip_cost_pct"])
+    notional = float(
+        position.get("paper_notional_usd")
+        or position.get("intended_notional")
+        or config["paper_notional_usd"]
+    )
+    return {
+        **position,
+        "exit_date": _date(rows[exit_idx]),
+        "exit_raw_close": _round(exit_raw, 4),
+        "exit_price": _round(exit_price, 4),
+        "pnl_pct_net": _round(pnl_pct_net, 6),
+        "pnl": _round(notional * pnl_pct_net, 2),
+        "closed_at": utc_now_iso(),
+    }
+
+
+def _unrealized_pnl(
+    *,
+    rows_by_ticker: dict[str, list[dict[str, Any]]],
+    open_positions: list[dict[str, Any]],
+    as_of_date: str,
+    config: dict[str, Any],
+) -> float:
+    total = 0.0
+    trading_dates = _trading_dates(rows_by_ticker)
+    if _asof_trading_pos(trading_dates, as_of_date) is None:
+        return 0.0
+    for position in open_positions:
+        ticker = str(position.get("ticker") or "").upper()
+        rows = rows_by_ticker.get(ticker) or []
+        current_idx = _latest_row_index_on_or_before(rows, as_of_date)
+        if current_idx is None:
+            continue
+        current_close = _value(rows[current_idx], "close")
+        entry_price = float(position.get("entry_price") or 0.0)
+        if not current_close or entry_price <= 0.0:
+            continue
+        exit_price = apply_slippage(current_close, SLIPPAGE_BPS_TARGET, "sell")
+        notional = float(
+            position.get("paper_notional_usd")
+            or position.get("intended_notional")
+            or config["paper_notional_usd"]
+        )
+        total += notional * (
+            (exit_price / entry_price) - 1.0 - float(config["round_trip_cost_pct"])
+        )
+    return _round(total, 2)
 
 
 def _paper_trade_from_candidate(
@@ -943,6 +1146,43 @@ def _blocked_tickers(state: dict[str, Any]) -> set[str]:
             if ticker:
                 blocked.add(ticker)
     return blocked
+
+
+def _cooldown_positions_from_state(
+    *,
+    state: dict[str, Any],
+    trading_dates: list[str],
+    config: dict[str, Any],
+) -> dict[str, int]:
+    date_pos = {day: pos for pos, day in enumerate(trading_dates)}
+    cooldown = int(config["same_ticker_cooldown_days"])
+    next_allowed: dict[str, int] = {}
+    for key in ["closed_positions", "skipped_entries"]:
+        for row in state.get(key) or []:
+            if not isinstance(row, dict):
+                continue
+            ticker = str(row.get("ticker") or "").upper()
+            signal_date = str(row.get("signal_date") or row.get("date") or "")
+            pos = date_pos.get(signal_date)
+            if not ticker or pos is None:
+                continue
+            next_allowed[ticker] = max(next_allowed.get(ticker, -1), pos + cooldown)
+    return next_allowed
+
+
+def _asof_trading_pos(trading_dates: list[str], as_of_date: str) -> int | None:
+    as_of = _date10(as_of_date)
+    eligible = [pos for pos, day in enumerate(trading_dates) if day <= as_of]
+    return max(eligible) if eligible else None
+
+
+def _latest_row_index_on_or_before(
+    rows: list[dict[str, Any]],
+    as_of_date: str,
+) -> int | None:
+    as_of = _date10(as_of_date)
+    candidates = [idx for idx, row in enumerate(rows) if _date(row) <= as_of]
+    return max(candidates) if candidates else None
 
 
 def _forward_paper_gate(state: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:

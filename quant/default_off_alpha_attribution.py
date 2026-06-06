@@ -222,6 +222,7 @@ def build_default_off_alpha_attribution_report(
     core_misfit_paper_sleeve: dict[str, Any] | None = None,
     broad_market_paper_sleeve: dict[str, Any] | None = None,
     macro_relief_leadership_paper_sleeve: dict[str, Any] | None = None,
+    rolling_corr_peer_shock_paper_sleeve: dict[str, Any] | None = None,
     ai_optical_paper_sleeve: dict[str, Any] | None = None,
     volatility_contraction_paper_sleeve: dict[str, Any] | None = None,
     volume_breadth_breakout_paper_sleeve: dict[str, Any] | None = None,
@@ -287,6 +288,46 @@ def build_default_off_alpha_attribution_report(
                 ),
                 "candidate_universe_ticker_count": (
                     ((macro_relief_leadership_paper_sleeve or {}).get("candidate_universe") or {}).get("ticker_count")
+                ),
+            },
+        ),
+        _surface_summary(
+            name="rolling_corr_peer_shock",
+            label="ROLLING_CORR_PEER_SHOCK_CORE_FLOW_PAPER",
+            snapshot=rolling_corr_peer_shock_paper_sleeve,
+            extra_metrics={
+                "rule_version": (
+                    (rolling_corr_peer_shock_paper_sleeve or {}).get("rule_version")
+                ),
+                "source_rule_version": (
+                    (rolling_corr_peer_shock_paper_sleeve or {}).get("source_rule_version")
+                ),
+                "raw_candidate_count": (
+                    (rolling_corr_peer_shock_paper_sleeve or {}).get("raw_candidate_count")
+                ),
+                "same_day_core_flow_required": (
+                    (
+                        (rolling_corr_peer_shock_paper_sleeve or {}).get(
+                            "peer_shock_context"
+                        )
+                        or {}
+                    ).get("core_flow_confirmation_required")
+                ),
+                "raw_corr_pairs": (
+                    (
+                        (rolling_corr_peer_shock_paper_sleeve or {}).get(
+                            "peer_shock_context"
+                        )
+                        or {}
+                    ).get("raw_corr_pairs")
+                ),
+                "uses_free_ohlcv_only": (
+                    (
+                        (rolling_corr_peer_shock_paper_sleeve or {}).get(
+                            "production_impact"
+                        )
+                        or {}
+                    ).get("uses_free_ohlcv_only")
                 ),
             },
         ),

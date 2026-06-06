@@ -58,6 +58,24 @@ def test_default_off_alpha_attribution_rolls_up_blockers_without_orders():
                 "metrics": {"closed_trades": 0},
             },
         },
+        rolling_corr_peer_shock_paper_sleeve={
+            "candidate_count": 1,
+            "raw_candidate_count": 3,
+            "pending_count": 1,
+            "trade_enabled": False,
+            "rule_version": "rolling_corr_peer_shock_core_flow_shared_adapter_v1",
+            "source_rule_version": "rolling_corr_peer_shock_core_flow_positive_candidate_source_v1",
+            "peer_shock_context": {
+                "core_flow_confirmation_required": True,
+                "raw_corr_pairs": 3,
+            },
+            "production_impact": {"uses_free_ohlcv_only": True},
+            "forward_paper_gate": {
+                "passed": False,
+                "status": "blocked",
+                "reasons": ["not_enough_closed_forward_paper_trades"],
+            },
+        },
     )
 
     assert report["read_only"] is True
@@ -67,6 +85,13 @@ def test_default_off_alpha_attribution_rolls_up_blockers_without_orders():
     assert report["blocked_surface_count"] >= 2
     surface_names = {row["name"] for row in report["surfaces"]}
     assert "volatility_contraction_qqq_confirmed" in surface_names
+    assert "rolling_corr_peer_shock" in surface_names
+    rolling_surface = next(
+        row for row in report["surfaces"] if row["name"] == "rolling_corr_peer_shock"
+    )
+    assert rolling_surface["trade_enabled"] is False
+    assert rolling_surface["extra_metrics"]["same_day_core_flow_required"] is True
+    assert rolling_surface["extra_metrics"]["uses_free_ohlcv_only"] is True
     top_reasons = {row["reason"] for row in report["top_blockers"]}
     assert "closed_pilot_outcomes" in top_reasons
     assert "min_closed_trades" in top_reasons
@@ -108,6 +133,33 @@ def test_report_generator_renders_default_off_alpha_attribution():
             },
             "candidates": [{"ticker": "NVDA", "intended_notional": 10000.0}],
         },
+        rolling_corr_peer_shock_paper_sleeve={
+            "candidate_count": 1,
+            "raw_candidate_count": 2,
+            "pending_count": 1,
+            "trade_enabled": False,
+            "paper_enabled": True,
+            "peer_shock_context": {
+                "core_flow_confirmation_required": True,
+                "raw_corr_pairs": 2,
+            },
+            "forward_paper_gate": {
+                "passed": False,
+                "status": "blocked",
+                "reasons": ["not_enough_closed_forward_paper_trades"],
+            },
+            "candidates": [
+                {
+                    "ticker": "LAG",
+                    "peer_ticker": "PEER",
+                    "rolling_corr_60d": 0.75,
+                    "candidate_score": 1.23,
+                    "peer_relative_vs_spy": 0.05,
+                    "date": "2026-05-24",
+                    "paper_notional_usd": 4000.0,
+                }
+            ],
+        },
     )
 
     report = generate_daily_report(
@@ -130,6 +182,33 @@ def test_report_generator_renders_default_off_alpha_attribution():
             },
             "candidates": [{"ticker": "NVDA", "intended_notional": 10000.0}],
         },
+        rolling_corr_peer_shock_paper_sleeve={
+            "candidate_count": 1,
+            "raw_candidate_count": 2,
+            "pending_count": 1,
+            "trade_enabled": False,
+            "paper_enabled": True,
+            "peer_shock_context": {
+                "core_flow_confirmation_required": True,
+                "raw_corr_pairs": 2,
+            },
+            "forward_paper_gate": {
+                "passed": False,
+                "status": "blocked",
+                "reasons": ["not_enough_closed_forward_paper_trades"],
+            },
+            "candidates": [
+                {
+                    "ticker": "LAG",
+                    "peer_ticker": "PEER",
+                    "rolling_corr_60d": 0.75,
+                    "candidate_score": 1.23,
+                    "peer_relative_vs_spy": 0.05,
+                    "date": "2026-05-24",
+                    "paper_notional_usd": 4000.0,
+                }
+            ],
+        },
     )
 
     assert "DEFAULT-OFF ALPHA ATTRIBUTION" in report
@@ -138,3 +217,6 @@ def test_report_generator_renders_default_off_alpha_attribution():
     assert "closed_pilot_outcomes" in report
     assert "CORE_MISFIT_PAPER" in report
     assert "VOLATILITY CONTRACTION QQQ-CONFIRMED PAPER SLEEVE" in report
+    assert "ROLLING-CORR PEER-SHOCK PAPER SLEEVE" in report
+    assert "Core flow required: True" in report
+    assert "peer=PEER" in report

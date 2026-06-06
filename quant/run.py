@@ -296,6 +296,10 @@ def main():
         build_macro_relief_leadership_snapshot,
         empty_macro_relief_leadership_snapshot,
     )
+    from rolling_corr_peer_shock_paper_sleeve import (
+        build_rolling_corr_peer_shock_paper_sleeve_snapshot,
+        empty_rolling_corr_peer_shock_paper_sleeve_snapshot,
+    )
     from ai_optical_paper_sleeve import (
         build_ai_optical_candidate_universe_from_universe_state,
         build_ai_optical_paper_sleeve_snapshot,
@@ -2700,6 +2704,49 @@ def main():
         )
 
     try:
+        if not broad_market_candidate_universe.get("tickers"):
+            rolling_corr_peer_shock_paper_sleeve = (
+                empty_rolling_corr_peer_shock_paper_sleeve_snapshot(
+                    today_iso,
+                    "broad_market_candidate_universe_unavailable",
+                )
+            )
+        else:
+            rolling_corr_ohlcv = dict(broad_market_ohlcv)
+            if "SPY" not in rolling_corr_ohlcv and spy_ohlcv is not None:
+                rolling_corr_ohlcv["SPY"] = spy_ohlcv
+            rolling_corr_peer_shock_paper_sleeve = (
+                build_rolling_corr_peer_shock_paper_sleeve_snapshot(
+                    as_of=today_iso,
+                    ohlcv_by_ticker=rolling_corr_ohlcv,
+                    core_entries=signals,
+                    candidate_universe=broad_market_candidate_universe,
+                )
+            )
+        if (
+            rolling_corr_peer_shock_paper_sleeve.get("candidate_count", 0) > 0
+            or rolling_corr_peer_shock_paper_sleeve.get("pending_count", 0) > 0
+            or rolling_corr_peer_shock_paper_sleeve.get("open_position_count", 0) > 0
+            or rolling_corr_peer_shock_paper_sleeve.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "Rolling-corr peer-shock paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
+                rolling_corr_peer_shock_paper_sleeve.get("candidate_count", 0),
+                rolling_corr_peer_shock_paper_sleeve.get("pending_count", 0),
+                rolling_corr_peer_shock_paper_sleeve.get("open_position_count", 0),
+                rolling_corr_peer_shock_paper_sleeve.get("closed_count_today", 0),
+                rolling_corr_peer_shock_paper_sleeve.get("realized_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"Rolling-corr peer-shock paper sleeve unavailable: {e}")
+        rolling_corr_peer_shock_paper_sleeve = (
+            empty_rolling_corr_peer_shock_paper_sleeve_snapshot(
+                today_iso,
+                "rolling_corr_peer_shock_paper_sleeve_build_failed",
+            )
+        )
+
+    try:
         crypto_sleeve = build_crypto_sleeve_advice(load_crypto_config())
         if crypto_sleeve.get("enabled"):
             crypto_action = crypto_sleeve.get("action", {}).get("action")
@@ -2737,6 +2784,7 @@ def main():
         core_misfit_paper_sleeve=core_misfit_paper_sleeve,
         broad_market_paper_sleeve=broad_market_paper_sleeve,
         macro_relief_leadership_paper_sleeve=macro_relief_leadership_paper_sleeve,
+        rolling_corr_peer_shock_paper_sleeve=rolling_corr_peer_shock_paper_sleeve,
         ai_optical_paper_sleeve=ai_optical_paper_sleeve,
         volatility_contraction_paper_sleeve=volatility_contraction_paper_sleeve,
         volume_breadth_breakout_paper_sleeve=volume_breadth_breakout_paper_sleeve,
@@ -2782,6 +2830,7 @@ def main():
     trend_signals_dict["core_misfit_paper_sleeve"] = core_misfit_paper_sleeve
     trend_signals_dict["broad_market_paper_sleeve"] = broad_market_paper_sleeve
     trend_signals_dict["macro_relief_leadership_paper_sleeve"] = macro_relief_leadership_paper_sleeve
+    trend_signals_dict["rolling_corr_peer_shock_paper_sleeve"] = rolling_corr_peer_shock_paper_sleeve
     trend_signals_dict["ai_optical_paper_sleeve"] = ai_optical_paper_sleeve
     trend_signals_dict["volatility_contraction_paper_sleeve"] = volatility_contraction_paper_sleeve
     trend_signals_dict["volume_breadth_breakout_paper_sleeve"] = volume_breadth_breakout_paper_sleeve
@@ -2835,6 +2884,7 @@ def main():
         core_misfit_paper_sleeve = core_misfit_paper_sleeve,
         broad_market_paper_sleeve = broad_market_paper_sleeve,
         macro_relief_leadership_paper_sleeve = macro_relief_leadership_paper_sleeve,
+        rolling_corr_peer_shock_paper_sleeve = rolling_corr_peer_shock_paper_sleeve,
         ai_optical_paper_sleeve = ai_optical_paper_sleeve,
         volatility_contraction_paper_sleeve = volatility_contraction_paper_sleeve,
         volume_breadth_breakout_paper_sleeve = volume_breadth_breakout_paper_sleeve,
@@ -2893,6 +2943,7 @@ def main():
         "core_misfit_paper_sleeve": core_misfit_paper_sleeve,
         "broad_market_paper_sleeve": broad_market_paper_sleeve,
         "macro_relief_leadership_paper_sleeve": macro_relief_leadership_paper_sleeve,
+        "rolling_corr_peer_shock_paper_sleeve": rolling_corr_peer_shock_paper_sleeve,
         "ai_optical_paper_sleeve": ai_optical_paper_sleeve,
         "volatility_contraction_paper_sleeve": volatility_contraction_paper_sleeve,
         "volume_breadth_breakout_paper_sleeve": volume_breadth_breakout_paper_sleeve,
