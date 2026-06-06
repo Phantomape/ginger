@@ -1,0 +1,124 @@
+{
+  "after_metrics": {
+    "expected_value_score": 7.8941,
+    "max_drawdown_pct": 0.1119,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.7925,
+    "total_pnl": 234850.99,
+    "total_return_pct": 2.3485,
+    "trade_count": 61,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 7.8941,
+    "max_drawdown_pct": 0.1119,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.7925,
+    "total_pnl": 234850.99,
+    "total_return_pct": 2.3485,
+    "trade_count": 61,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 0,
+    "brier_score": 0.0196,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -0.2,
+    "expected_ev_delta": 0.2,
+    "expected_pnl_delta": 6000.0,
+    "pnl_prediction_error": -6000.0,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "falling_knife_drawdown",
+      "window_regression",
+      "liquidity_rebound_not_tradeable",
+      "single_ticker_concentration"
+    ],
+    "predicted_success_probability": 0.14,
+    "realized_failure_mode": "preflight_wrong_sign_prior_evidence",
+    "surprise_level": "very_low",
+    "surprise_note": "The nearby observed-only experiment did not support losers mean-reversion; it supported winner continuation instead."
+  },
+  "change_summary": "Preflight rejected wrong-sign short-horizon reversal hypothesis before strategy implementation.",
+  "change_type": "default_off_broad_cross_section_reversal_candidate_pool",
+  "changed_variable": "broad_full_liquid_extreme_5d_reversal_top1_candidate_pool",
+  "component": "quant/experiments/exp_20260606_003_broad_5d_reversal_candidate_pool.py, data/experiments/exp-20260606-003, experiments/logs/exp-20260606-003.json, experiments/cards/exp-20260606-003.md, experiments/manifests/exp-20260606-003.json, experiments/artifacts/exp-20260606-003_broad_5d_reversal_candidate_pool.md, experiments/tickets/exp-20260606-003.json",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260606-003",
+  "hypothesis": "entry/candidate_pool: broad full-liquid stocks with extreme 5-day SPY-relative selloffs may mean-revert over the next 10 trading days when selected as a top-1 next-open default-off paper candidate, expanding the pool without adding unmanaged tickers.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "short_horizon_cross_section_reversal",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260601-007",
+    "exp-20260526-004",
+    "exp-20260601-012"
+  ],
+  "new_evidence_type": "observed_only_broad_full_liquid_reversal_lead_promoted_to_next_open_paper_replay",
+  "next_retry_requires": [],
+  "notes": "History check showed exp-20260601-007 rejected reversal and only found an incidental continuation lead. No production or strategy code was changed; baseline before/after remains identical to release the claimed ticket and avoid testing a historically contradicted direction.",
+  "parameters": {
+    "locked_variables": [
+      "live_orders",
+      "core_entry_rules",
+      "core_exits",
+      "low_deployment_etf_pool",
+      "companyfacts_fields",
+      "sec_text_phrase_sets"
+    ],
+    "single_causal_variable": "broad_full_liquid_extreme_5d_reversal_top1_candidate_pool"
+  },
+  "prediction": {
+    "confidence_reason": "Prior broad observed-only reversal lead had t>=2 and monotonic loser-minus-winner results, but similar reclaim candidates failed under production execution and broad OHLCV pools are noisy.",
+    "expected_ev_delta": 0.2,
+    "expected_pnl_delta": 6000.0,
+    "main_failure_modes": [
+      "falling_knife_drawdown",
+      "window_regression",
+      "liquidity_rebound_not_tradeable",
+      "single_ticker_concentration"
+    ],
+    "recorded_at": "2026-06-06T02:13:39+00:00",
+    "success_probability": 0.14
+  },
+  "prior_trial_count": 3,
+  "rejection_reason": "No AGENTS.md Gate 4 acceptance condition was met.",
+  "related_files": [
+    "data/experiments/exp-20260606-003/broad_5d_reversal_candidate_pool_before_aggregate.json",
+    "data/experiments/exp-20260606-003/broad_5d_reversal_candidate_pool_after_aggregate.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-06-06T02:17:39+00:00",
+  "trial_family": "broad_full_liquid_reversal_candidate_pool",
+  "trial_variant_id": "extreme_5d_spy_relative_reversal_top1_v1"
+}
