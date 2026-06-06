@@ -1,0 +1,109 @@
+{
+  "acceptance_rule": "Accept only if docs/backtesting.md three-window aggregate expected_value_score and PnL improve, no window PnL regression, drawdown does not worsen materially, survival remains >=5%, and production parity remains default-off/replay-only.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260606_004_broad_5d_winner_continuation_candidate_pool.py",
+    "data/experiments/exp-20260606-004",
+    "experiments/logs/exp-20260606-004.json",
+    "experiments/cards/exp-20260606-004.md",
+    "experiments/manifests/exp-20260606-004.json",
+    "experiments/artifacts/exp-20260606-004_broad_5d_winner_continuation_candidate_pool.md",
+    "experiments/tickets/exp-20260606-004.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "card_file": "experiments/cards/exp-20260606-004.md",
+  "change_type": "default_off_broad_5d_winner_continuation_candidate_pool",
+  "changed_variable": "broad_full_liquid_top_5d_spy_relative_winner_continuation_top1_candidate_pool",
+  "claimed_at": "2026-06-06T02:17:47+00:00",
+  "completed_at": "2026-06-06T02:22:09Z",
+  "created_at": "2026-06-06T02:16:50+00:00",
+  "decision": "rejected_broad_5d_winner_continuation_candidate_pool",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260606-004",
+  "experiment_uid": "expuid-dbf9198c4800469e",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260606-004",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-06T02:16:50+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "broad_5d_winner_continuation_candidate_pool"
+  },
+  "hypothesis": "entry/candidate_pool: broad all-windows-full-liquid stocks in the top cross-sectional 5-day SPY-relative return bucket may continue over the next 10 trading days when replayed as a top-1 next-open default-off paper candidate; this tests whether the observed-only continuation lead can survive production-like execution and core-overlap controls.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "live_orders",
+    "core_entry_rules",
+    "core_exits",
+    "low_deployment_etf_pool",
+    "companyfacts_fields",
+    "sec_text_phrase_sets"
+  ],
+  "mechanism_family": "short_formation_continuation",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [
+    "quant/strategy.py",
+    "quant/run.py",
+    "quant/backtester.py",
+    "quant/low_deployment_etf_overlay.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260601-007",
+    "exp-20260601-008",
+    "exp-20260602-015",
+    "exp-20260605-013"
+  ],
+  "new_evidence_type": "observed_only_f5_h10_long_only_continuation_promoted_to_next_open_paper_replay",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "Exp-20260601-008 found long-only f5/h10 excess but not significant ret20-incremental evidence; this run asks whether a stricter top-1, next-open paper execution can still add replacement value.",
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 4500.0,
+    "main_failure_modes": [
+      "not_incremental_over_core_momentum",
+      "window_regression",
+      "top1_concentration",
+      "chased_winner_gap_decay"
+    ],
+    "recorded_at": "2026-06-06T02:16:45+00:00",
+    "success_probability": 0.12
+  },
+  "prior_trial_count": 4,
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": 1.9754,
+    "aggregate_strategy_total_pnl_delta": 25210.26,
+    "artifact": "data/experiments/exp-20260606-004/exp_20260606_004_broad_5d_winner_continuation_candidate_pool.json",
+    "calibration": {
+      "actual_gate4_passed": false,
+      "brier_score": 0.0144,
+      "failure_modes_observed": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "drawdown_drift_too_high"
+      ],
+      "predicted_success_probability": 0.12
+    },
+    "decision": "rejected_broad_5d_winner_continuation_candidate_pool",
+    "log": "experiments/logs/exp-20260606-004.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260606-004.json",
+  "single_causal_variable": "broad_full_liquid_top_5d_spy_relative_winner_continuation_top1_candidate_pool",
+  "status": "rejected",
+  "summary": "The 5-day winner-continuation candidate pool did not clear Gate 4; do not promote or retune nearby broad OHLCV momentum on these frozen windows without new forward evidence.",
+  "ticket_file": "experiments/tickets/exp-20260606-004.json",
+  "trial_family": "broad_full_liquid_5d_winner_continuation_candidate_pool",
+  "trial_variant_id": "top_5d_spy_relative_winner_next_open_10d_top1_v1"
+}
