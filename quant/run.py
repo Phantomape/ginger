@@ -309,6 +309,10 @@ def main():
         build_post_earnings_underpriced_drift_paper_sleeve_snapshot,
         empty_post_earnings_underpriced_drift_paper_sleeve_snapshot,
     )
+    from pead_broad_universe_paper_sleeve import (
+        build_pead_broad_universe_paper_sleeve_snapshot,
+        empty_pead_broad_universe_paper_sleeve_snapshot,
+    )
     from alpha_score_market_regime_paper_sleeve import (
         build_alpha_score_market_regime_paper_sleeve_snapshot,
         empty_alpha_score_market_regime_paper_sleeve_snapshot,
@@ -2246,6 +2250,70 @@ def main():
             )
         )
 
+    # exp-20260604-021: PEAD broad-universe paper sleeve
+    # Scans observation_universe + core_universe (~80-90 tickers).
+    # Trigger: EPS surprise >= 5%, gap-cancel > 3%, price >= $5, avg vol >= $10M.
+    # No MA50/RS/pre-event filters. Paper-only forward observation.
+    try:
+        pead_broad_ohlcv = dict(ohlcv_dict)
+        pead_broad_ohlcv["SPY"] = spy_ohlcv
+        # Expand to broad universe: core + pilot + governance observation tickers
+        pead_broad_extra_tickers = set(
+            (universe_governance_state or {}).get("governance_observation_universe") or []
+        ) | set(
+            (universe_governance_state or {}).get("segments", {}).get("research") or []
+        ) | set(
+            (universe_governance_state or {}).get("segments", {}).get("specialist") or []
+        )
+        for _pead_ticker in sorted(pead_broad_extra_tickers):
+            if _pead_ticker not in pead_broad_ohlcv or pead_broad_ohlcv[_pead_ticker] is None:
+                try:
+                    pead_broad_ohlcv[_pead_ticker] = _cached_ohlcv(_pead_ticker)
+                except Exception as _pead_ohlcv_err:
+                    log.debug(
+                        "PEAD broad paper: OHLCV unavailable for %s: %s",
+                        _pead_ticker,
+                        _pead_ohlcv_err,
+                    )
+        pead_broad_candidate_universe = {
+            "status": "broad_data_universe",
+            "tickers": sorted(
+                ticker
+                for ticker, frame in pead_broad_ohlcv.items()
+                if frame is not None and str(ticker).upper() != "SPY"
+            ),
+        }
+        pead_broad_universe_paper_sleeve = build_pead_broad_universe_paper_sleeve_snapshot(
+            as_of=today_iso,
+            ohlcv_by_ticker=pead_broad_ohlcv,
+            candidate_universe=pead_broad_candidate_universe,
+            open_prices=current_open_prices,
+            current_prices=current_prices,
+        )
+        if (
+            pead_broad_universe_paper_sleeve.get("candidate_count", 0) > 0
+            or pead_broad_universe_paper_sleeve.get("pending_count", 0) > 0
+            or pead_broad_universe_paper_sleeve.get("open_position_count", 0) > 0
+            or pead_broad_universe_paper_sleeve.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "PEAD broad-universe paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s universe=%d",
+                pead_broad_universe_paper_sleeve.get("candidate_count", 0),
+                pead_broad_universe_paper_sleeve.get("pending_count", 0),
+                pead_broad_universe_paper_sleeve.get("open_position_count", 0),
+                pead_broad_universe_paper_sleeve.get("closed_count_today", 0),
+                pead_broad_universe_paper_sleeve.get("realized_pnl_to_date", 0.0),
+                (pead_broad_universe_paper_sleeve.get("candidate_universe") or {}).get(
+                    "ticker_count", 0
+                ),
+            )
+    except Exception as e:
+        log.warning(f"PEAD broad-universe paper sleeve unavailable: {e}")
+        pead_broad_universe_paper_sleeve = empty_pead_broad_universe_paper_sleeve_snapshot(
+            today_iso,
+            "pead_broad_universe_paper_sleeve_build_failed",
+        )
+
     try:
         fundamental_growth_ohlcv = dict(ohlcv_dict)
         fundamental_growth_ohlcv["SPY"] = spy_ohlcv
@@ -2669,6 +2737,7 @@ def main():
     trend_signals_dict["volatility_contraction_paper_sleeve"] = volatility_contraction_paper_sleeve
     trend_signals_dict["volume_breadth_breakout_paper_sleeve"] = volume_breadth_breakout_paper_sleeve
     trend_signals_dict["post_earnings_underpriced_drift_paper_sleeve"] = post_earnings_underpriced_drift_paper_sleeve
+    trend_signals_dict["pead_broad_universe_paper_sleeve"] = pead_broad_universe_paper_sleeve
     trend_signals_dict["alpha_score_market_regime_paper_sleeve"] = alpha_score_market_regime_paper_sleeve
     trend_signals_dict["accepted_source_consensus_paper_sleeve"] = accepted_source_consensus_paper_sleeve
     trend_signals_dict["free_data_cross_source_consensus_paper_sleeve"] = free_data_cross_source_consensus_paper_sleeve
@@ -2777,6 +2846,7 @@ def main():
         "volatility_contraction_paper_sleeve": volatility_contraction_paper_sleeve,
         "volume_breadth_breakout_paper_sleeve": volume_breadth_breakout_paper_sleeve,
         "post_earnings_underpriced_drift_paper_sleeve": post_earnings_underpriced_drift_paper_sleeve,
+        "pead_broad_universe_paper_sleeve": pead_broad_universe_paper_sleeve,
         "alpha_score_market_regime_paper_sleeve": alpha_score_market_regime_paper_sleeve,
         "accepted_source_consensus_paper_sleeve": accepted_source_consensus_paper_sleeve,
         "free_data_cross_source_consensus_paper_sleeve": free_data_cross_source_consensus_paper_sleeve,

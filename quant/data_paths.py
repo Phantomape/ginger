@@ -195,6 +195,14 @@ DATA_ARTIFACTS: dict[str, tuple[str, str]] = {
         "paper_sleeves/post_earnings_underpriced_drift/state.json",
         "post_earnings_underpriced_drift_paper_state.json",
     ),
+    "pead_broad_universe_paper_state": (
+        "paper_sleeves/pead_broad_universe_state.json",
+        "pead_broad_universe_paper_state.json",
+    ),
+    "pead_broad_universe_paper_snapshots": (
+        "paper_sleeves/pead_broad_universe_snapshots.jsonl",
+        "pead_broad_universe_paper_snapshots.jsonl",
+    ),
     "broad_market_paper_universe": (
         "state/broad_market_paper/universe.json",
         "broad_market_paper_universe.json",
