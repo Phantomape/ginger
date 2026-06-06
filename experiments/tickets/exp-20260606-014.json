@@ -1,0 +1,110 @@
+{
+  "acceptance_rule": "docs/backtesting.md canonical 3 windows; require positive aggregate EV/PnL, no EV/PnL-regressed window, max drawdown drift <=0.5pp, survival >=5%, concentration pass, and compare against accepted low-deployment ETF before promotion.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260606_014_broad_5d_winner_exhaustion_cap.py",
+    "data/experiments/exp-20260606-014/exp_20260606_014_broad_5d_winner_exhaustion_cap.json",
+    "experiments/cards/exp-20260606-014.md",
+    "experiments/manifests/exp-20260606-014.json",
+    "experiments/tickets/exp-20260606-014.json",
+    "experiments/logs/exp-20260606-014.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "card_file": "experiments/cards/exp-20260606-014.md",
+  "change_type": "default_off_broad_tail_state_candidate_pool",
+  "changed_variable": "broad_5d_winner_candidate_ret5_lte_20pct_tail_state_v1",
+  "claimed_at": "2026-06-06T12:12:26+00:00",
+  "completed_at": "2026-06-06T12:16:52+00:00",
+  "created_at": "2026-06-06T12:12:13+00:00",
+  "decision": "rejected_broad_5d_winner_exhaustion_cap_candidate_pool",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260606-014",
+  "experiment_uid": "expuid-089a5560998542f9",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260606-014",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-06T12:12:13+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "broad_5d_winner_exhaustion_cap"
+  },
+  "hypothesis": "Broad 5-day winner continuation has replacement value but fails drawdown; excluding parabolic signal-day winners with candidate_ret5 greater than 20 percent may preserve the continuation edge while removing tail-risk exhaustion.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "broad_5d_winner_candidate_ret5_exhaustion_cap_state_v1"
+  ],
+  "mechanism_family": "production_visible_free_ohlcv_tail_state_classifier",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260606-004",
+    "exp-20260606-005",
+    "exp-20260606-006",
+    "exp-20260606-010"
+  ],
+  "new_evidence_type": "production_visible_ohlcv_tail_classifier_for_existing_broad_momentum_pool",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "Recent broad 5d winner continuation had strong aggregate EV and all-window PnL but failed tail/drawdown; a ret5 exhaustion cap is production-visible and directly targets that failure, though broad OHLCV multiple-testing risk is high.",
+    "expected_ev_delta": 0.4,
+    "expected_pnl_delta": 7000.0,
+    "main_failure_modes": [
+      "drawdown_drift_too_high",
+      "edge_removed_by_exhaustion_cap",
+      "underperforms_etf_substitute",
+      "window_regression"
+    ],
+    "recorded_at": "2026-06-06T12:12:02+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 4,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "after_result_file": "data/experiments/exp-20260606-014/exp_20260606_014_broad_5d_winner_exhaustion_cap.json",
+    "delta_metrics": {},
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.18,
+      "brier_score": 0.0324,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.4,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 7000.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "drawdown_drift_too_high",
+        "edge_removed_by_exhaustion_cap",
+        "underperforms_etf_substitute",
+        "window_regression"
+      ],
+      "realized_failure_mode": "underperforms_etf_substitute",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "The 20 percent cap preserved trade count but still selected replacement candidates that regressed old_thin, so parabolic signal-day winners were not the main tail source."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260606-014.json",
+  "single_causal_variable": "broad_5d_winner_candidate_ret5_exhaustion_cap_state_v1",
+  "status": "rejected",
+  "summary": "The exhaustion cap did not clear Gate 4; keep broad 5d winner continuation rejected and do not retune adjacent ret5 cap thresholds on these frozen windows.",
+  "ticket_file": "experiments/tickets/exp-20260606-014.json",
+  "trial_family": "broad_5d_winner_exhaustion_capped_continuation_candidate_pool",
+  "trial_variant_id": "candidate_ret5_lte_20pct_v1"
+}
