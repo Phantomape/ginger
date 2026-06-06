@@ -41,6 +41,18 @@ The system's strongest current pattern is not "more filters." It is:
 
 Recent repository evidence supports this priority:
 
+- The strongest current capital-allocation lead is idle-cash replacement value,
+  not another ETF threshold retune. `exp-20260605-035` found that on days with
+  at most one active core position, a narrow ETF cash substitute selected from
+  `QQQ` / `SPY` / `IWM` / `GLD` / `SLV` by signal-date trend and 20-session
+  momentum improved the three canonical windows by aggregate EV `7.8941 ->
+  10.9233` and PnL `$234,850.99 -> $279,157.90`. `exp-20260606-001`
+  reproduced that result through the shared default-off paper adapter with
+  next-open entry, 10-trading-day exit, one pending/open ETF position, costs,
+  and no live orders. Do not mine nearby ETF tickers, thresholds, hold days, or
+  notionals on the frozen sample; the next valid work is closed forward
+  replacement-value rows, cash-semantics parity, capital caps, and a separate
+  Gate 1-4 trade adapter.
 - `FUNDAMENTAL_GROWTH_RS_PAPER` is the current best candidate-pool lead:
   Companyfacts growth + positive operating-profit quality + OHLCV RS produced a
   large three-window paper improvement, then became a shared default-off adapter.

@@ -154,7 +154,27 @@ on existing prediction/calibration coverage debt (post-enforcement prediction
 coverage `89.03%`, closed post-enforcement calibration coverage `60.95%`);
 this was not introduced by today's regression pass.
 
-Latest default-off alpha adapter acceptance: `exp-20260604-027` promotes the
+Latest default-off alpha adapter acceptance: `exp-20260606-001` promotes the
+accepted low-deployment ETF cash-substitute replay into the shared
+`low_deployment_etf_overlay.py` default-off paper adapter. The alpha hypothesis
+is capital allocation: when the core stack has at most one active position,
+idle cash has replacement value if a narrow liquid ETF basket has positive
+trend. The shared adapter uses exact signal-date rows for `QQQ` / `SPY` /
+`IWM` / `GLD` / `SLV`, requires close above SMA200 and positive 20-session
+momentum, chooses the top momentum candidate, tracks one pending/open ETF paper
+position, enters at next open, exits after 10 trading days, and applies
+slippage plus round-trip cost. The accepted three-window evidence reproduced
+`exp-20260605-035`: aggregate EV `7.8941 -> 10.9233` (`+3.0292`, `+38.37%`)
+and PnL `$234,850.99 -> $279,157.90` (`+$44,306.91`), with all three windows
+improving, `19` target paper trades, max drawdown delta `-0.0008`, and
+concentration passing. This remains default-off paper only: no live/default
+orders, watchlists, core ranking, sizing, exits, or LLM/news changed. Do not
+retune nearby ETF pool, threshold, hold-day, notional, or scalar variants on
+the frozen windows; the next valid work is closed forward replacement-value
+rows, explicit cash-semantics parity, capital cap and kill-switch design, and a
+separate Gate 1-4 trade adapter.
+
+Previous default-off alpha adapter acceptance: `exp-20260604-027` promotes the
 positive `exp-20260604-026` SEC FTD + FINRA confirmation replay lead into the
 shared `SEC_FTD_FINRA_CONFIRMED_PAPER` adapter. Publication-lagged SEC
 fails-to-deliver candidates are admitted only when the latest
@@ -1028,7 +1048,7 @@ These counts are experiment records, not unique independent strategies.
 | Default-off external event overlay bundle | Default-off / replay-only attribution | `exp-20260517-010` event notional replay improved `+0.5389` EV / `+$7,987.90` but remained replay-only | Closed forward replacement-value evidence and trade-enabled adapter do not exist yet | Enable a tiny event bundle sleeve with source-priority dedupe and kill switch | Event overlap, duplicate exposure, and replay-only optimism |
 | Space catalyst shadow universe | Observe-only/default-off; live Space slots are zero | Many accepted default-off metadata/risk helpers; current stack remains metadata/helper only | No live Space slots; promotion requires forward replacement-value evidence and separate pilot promotion | Create explicit Space pilot slots with hard cap and sleeve-level drawdown stop | High-beta thematic drawdown, small ticker universe, and scalar-mining risk |
 | `CORE_MISFIT_PAPER` | Default-off paper; no live shorting and no core exclusion | Historical core-misfit long cohort PnL `-$6,469.57`; inverse paper `+$4,385.29`; conditioned short scout `+$5,799.05` but not live | Borrow/locate costs unmodeled; needs at least 20 closed 10-day paper outcomes plus positive no-trade and inverse evidence | First consider no-trade exclusion or reduced long risk before any inverse/short activation | Missed rebounds, short costs, and tiny sample dependence |
-| Low-deployment ETF overlay | Paper-only overlay | Parity contract allows paper ETF overlay attribution only | Cash semantics, closed forward outcomes, and explicit trade adapter are not ready | Enable only as a cash-deployment sleeve with strict capital cap | False comfort from using idle cash; ETF regime whipsaw |
+| Low-deployment ETF cash substitute | Default-off paper only; live/default orders disabled | `exp-20260605-035` accepted the replay lead and `exp-20260606-001` reproduced it through the shared adapter: aggregate EV `7.8941 -> 10.9233`, PnL `$234,850.99 -> $279,157.90`, 19 target paper trades, all windows improved, concentration passed | Cash semantics, closed forward replacement-value outcomes, capital cap, kill switch, and explicit trade adapter are not ready | Enable only as a capped cash-deployment sleeve after a separate Gate 1-4 activation experiment | False comfort from using idle cash, ETF regime whipsaw, and backtest/live cash-accounting divergence |
 | Exit advisory lifecycle | Production advisory, not fully replayed | Backtester executes full-position `stop_price` / `target_price`; production also computes profit ladders, time stops, LLM advice, and pending actions | Advisory exits are not proven alpha until shadow attribution supports a shared lifecycle; `pending_actions.json` is not PIT-replayed | Build shared executable exit lifecycle only after shadow attribution | Early profit taking can destroy trend winners; simple target trim was rejected in `exp-20260429-032` |
 | LLM / news veto | Production live path exists; replay depends on archive coverage | Latest saved backtest disclosed zero production-aligned LLM/news replay coverage for the inspected window | Historical attribution is coverage-limited, so turning up LLM authority would be hard to audit | Expand structured logging/replay before increasing LLM veto or ranking authority | Hidden discretionary logic and production/backtest divergence |
 | Fill / execution model | Manual/live execution versus simulated backtest fills | Backtests simulate next-open and price-rule fills; production depends on actual order handling | Realized return can be capped by missed fills, slippage, and delayed manual action | Broker/execution automation or stricter order plan telemetry | Operational errors and backtest fill assumptions not matching live liquidity |

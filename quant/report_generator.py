@@ -1840,6 +1840,8 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
 
     if low_deployment_etf_overlay and (
         low_deployment_etf_overlay.get("candidate_count", 0) > 0
+        or low_deployment_etf_overlay.get("pending_count", 0) > 0
+        or low_deployment_etf_overlay.get("open_position_count", 0) > 0
         or low_deployment_etf_overlay.get("closed_count_today", 0) > 0
         or low_deployment_etf_overlay.get("closed_position_count", 0) > 0
         or low_deployment_etf_overlay.get("error")
@@ -1855,12 +1857,15 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             lines.append(f"  Source status: {low_deployment_etf_overlay.get('error')}")
         lines.append(
             f"  Active core positions: {low_deployment_etf_overlay.get('active_core_positions')}  |  "
+            f"Pending: {low_deployment_etf_overlay.get('pending_count', 0)}  |  "
+            f"Open: {low_deployment_etf_overlay.get('open_position_count', 0)}  |  "
             f"Closed today: {low_deployment_etf_overlay.get('closed_count_today', 0)}  |  "
             f"Closed total: {low_deployment_etf_overlay.get('closed_position_count', 0)}"
         )
         lines.append(
             "  Realized paper P&L: "
-            f"${low_deployment_etf_overlay.get('realized_pnl_to_date', 0.0):,.2f}"
+            f"${low_deployment_etf_overlay.get('realized_pnl_to_date', 0.0):,.2f}  |  "
+            f"Unrealized: ${low_deployment_etf_overlay.get('unrealized_pnl', 0.0):,.2f}"
         )
         gate = low_deployment_etf_overlay.get("forward_paper_gate") or {}
         if gate:
@@ -1876,9 +1881,9 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         if candidate:
             lines.append(
                 f"  Candidate: {candidate.get('ticker', '?')} "
-                f"mom20={candidate.get('prior_momentum20')} "
-                f"decision={candidate.get('decision_date')} "
-                f"trade_date={candidate.get('trade_date')} (paper only)"
+                f"mom20={candidate.get('momentum20', candidate.get('prior_momentum20'))} "
+                f"signal={candidate.get('signal_date', candidate.get('decision_date'))} "
+                f"entry={candidate.get('entry_timing', 'next_session_open')} (paper only)"
             )
 
     if core_misfit_paper_sleeve and (
