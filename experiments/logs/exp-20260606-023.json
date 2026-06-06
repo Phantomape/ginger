@@ -1,0 +1,146 @@
+{
+  "accepted": false,
+  "aggregate_expected_value_delta": 0.3676,
+  "aggregate_expected_value_delta_pct": 0.037173,
+  "aggregate_strategy_total_pnl_delta": 7583.42,
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260606-023/exp_20260606_023_market_state_lagged_consensus_allocation.json",
+  "backtest_protocol": {
+    "baseline_comparator_experiment_id": "exp-20260604-009",
+    "execution_impact": "none_replay_only_default_off",
+    "source": "docs/backtesting.md canonical three fixed windows; before is the accepted exp-20260604-009 lagged consensus default-off paper adapter replay; after recomputes the same paper overlay with only the target-state notional scalar changed.",
+    "source_replay_experiment_id": "exp-20260604-008",
+    "state_timing": "prior_trading_day_close_before_entry_open",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "calibration": {
+    "actual_gate4_passed": false,
+    "brier_score": 0.0961,
+    "failure_modes_observed": [
+      "incremental_target_concentration_failed"
+    ],
+    "predicted_success_probability": 0.31
+  },
+  "changed_variable": "accepted_free_data_consensus_mixed_balanced_normal_notional_scalar",
+  "decision": "rejected_market_state_lagged_consensus_allocation",
+  "experiment_id": "exp-20260606-023",
+  "gate4": {
+    "aggregate_ev_delta": 0.3676,
+    "aggregate_pnl_delta": 7583.42,
+    "decision": "rejected_market_state_lagged_consensus_allocation",
+    "failed_reasons": [
+      "incremental_target_concentration_failed"
+    ],
+    "max_drawdown_worse": 0.0,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_accepted_comparator_survival_rate": 0.7925,
+    "passed": false,
+    "rationale": "The frozen target-state allocation scalar failed Gate 4: incremental_target_concentration_failed. Do not retune this same state/scalar on the same windows without materially new replacement-value evidence.",
+    "requires_parity_before_promotion": true,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.508329,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": false,
+      "positive_pnl_hhi": 0.327588,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 39,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_ev_improved": 3,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 3,
+    "windows_pnl_regressed": 0
+  },
+  "hypothesis": "Accepted lagged free-data consensus paper candidates may deserve higher allocation only when prior-close state is mixed|balanced|normal. This tests a frozen 1.25x target-state notional top-up against the current accepted lagged consensus adapter.",
+  "lane": "alpha_search",
+  "log": "experiments/logs/exp-20260606-023.json",
+  "mechanism_family": "default_off_paper_allocation",
+  "negative_reflection": "If rejected, the likely reason is that observed normalized sleeve attribution did not translate into equity-curve EV after sizing and drawdown accounting, or the 39-row cell remained too concentrated for allocation. That would argue for fresh forward replacement-value rows rather than scalar retuning.",
+  "prediction": {
+    "confidence_reason": "exp-20260606-022 identified one frozen router-grade cell with 39 rows, all three windows represented, avg PnL 7.78%, and 5.69pp edge versus the same sleeve in other states; meta research prioritizes production-visible default-off paper adapter work.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "window_regression",
+      "drawdown_drift",
+      "observed_attribution_overfit",
+      "accepted_sleeve_overlap_duplicate_rows",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-06T18:04:33Z",
+    "success_probability": 0.31
+  },
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "parity_note": "This experiment changes no production code. A positive result would require a shared market-state sleeve-allocation adapter that computes the same prior-close SPY/QQQ state label in both historical replay and daily production before any paper ledger, report queue, priority, notional, watchlist, or order surface could change.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "status": "rejected",
+  "timestamp": "2026-06-06T18:13:23Z",
+  "trial_family": "market_state_sleeve_router_allocation",
+  "trial_variant_id": "accepted_lagged_consensus_mixed_balanced_normal_1_25x_v1",
+  "windows": [
+    {
+      "expected_value_after": 6.331,
+      "expected_value_before": 6.2096,
+      "expected_value_delta": 0.1214,
+      "label": "late_strong",
+      "strategy_total_pnl_delta": 1170.95,
+      "target_trade_count": 11
+    },
+    {
+      "expected_value_after": 2.7444,
+      "expected_value_before": 2.6289,
+      "expected_value_delta": 0.1155,
+      "label": "mid_weak",
+      "strategy_total_pnl_delta": 2355.41,
+      "target_trade_count": 13
+    },
+    {
+      "expected_value_after": 1.1812,
+      "expected_value_before": 1.0505,
+      "expected_value_delta": 0.1307,
+      "label": "old_thin",
+      "strategy_total_pnl_delta": 4057.06,
+      "target_trade_count": 15
+    }
+  ]
+}
