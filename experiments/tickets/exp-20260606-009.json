@@ -1,0 +1,130 @@
+{
+  "acceptance_rule": "docs/backtesting.md canonical 3-window Gate 1-4; aggregate EV/PnL positive, no window EV/PnL regression, drawdown drift <= 0.5pp, target sample >=20 across all 3 windows, concentration pass; positive result remains replay-only until shared adapter/parity.",
+  "allowed_write_scope": [
+    "quant/experiments/;data/experiments/;experiments/logs/;experiments/tickets/;experiments/cards/;experiments/manifests/;experiments/artifacts/;docs/experiment_registry.json;docs/experiment_log.jsonl"
+  ],
+  "artifact": "data/experiments/exp-20260606-009/exp_20260606_009_broad_companyfacts_growth_acceleration_rs.json",
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "card_file": "experiments/cards/exp-20260606-009.md",
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "broad_companyfacts_growth_acceleration_rs_candidate_source_v1",
+  "claimed_at": "2026-06-06T07:07:33+00:00",
+  "completed_at": "2026-06-06T07:10:25Z",
+  "created_at": "2026-06-06T07:07:20+00:00",
+  "decision": "rejected_broad_companyfacts_growth_acceleration_rs_candidate_pool",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260606-009",
+  "experiment_uid": "expuid-8518ba08519b4f2d",
+  "gate4": {
+    "decision": "rejected_broad_companyfacts_growth_acceleration_rs_candidate_pool",
+    "drawdown_guard": "<= 0.005",
+    "failed_reasons": [
+      "aggregate_ev_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression"
+    ],
+    "passed": false,
+    "positive_pnl_hhi_guard": "<= 0.3",
+    "requires_parity_before_promotion": true,
+    "single_ticker_positive_share_guard": "<= 0.5",
+    "status": "rejected",
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "windows_ev_regressed": [
+      "late_strong",
+      "old_thin"
+    ],
+    "windows_pnl_regressed": [
+      "late_strong",
+      "old_thin"
+    ]
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260606-009",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-06T07:07:20+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "broad_companyfacts_growth_acceleration_rs"
+  },
+  "hypothesis": "Broad Companyfacts YoY revenue plus earnings acceleration, confirmed by liquid relative strength, may identify cleaner default-off paper candidates than static dual-growth or loss-to-profit inflection.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "broad_companyfacts_growth_acceleration_rs_candidate_source_v1"
+  ],
+  "log": "experiments/logs/exp-20260606-009.json",
+  "mechanism_family": "default_off_paper_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260605-011",
+    "exp-20260605-014",
+    "exp-20260605-015",
+    "exp-20260605-022",
+    "exp-20260605-026"
+  ],
+  "new_evidence_type": "new_production_visible_field",
+  "owner": "alpha-search",
+  "prediction": {
+    "actual_ev_delta": -0.1641,
+    "actual_pnl_delta": 1607.14,
+    "actual_success": 0,
+    "brier_score": 0.0324,
+    "confidence_reason": "Companyfacts broad asset has PIT/free coverage and acceleration is a distinct growth-trajectory field, but recent broad Companyfacts candidate pools often regress windows and this is near a crowded family.",
+    "expected_ev_delta": 0.12,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "old_thin_regression",
+      "static_growth_already_captures_signal",
+      "momentum_concentration",
+      "not_incremental_over_companyfacts_family"
+    ],
+    "recorded_at": "2026-06-06T07:07:09+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_note": "This runner changes no production code. A positive result would require a separate shared default-off Companyfacts growth-acceleration adapter, daily production exposure of the same filed-date-safe acceleration fields, warehouse/snapshot replay parity, and focused tests before any report queue, paper ledger, candidate priority, watchlist, sizing, or order surface could change.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "result": {
+    "aggregate_expected_value_delta": -0.1641,
+    "aggregate_strategy_total_pnl_delta": 1607.14,
+    "artifact": "experiments/artifacts/exp-20260606-009_broad_companyfacts_growth_acceleration_rs.md",
+    "decision": "rejected_broad_companyfacts_growth_acceleration_rs_candidate_pool",
+    "log": "experiments/logs/exp-20260606-009.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260606-009.json",
+  "single_causal_variable": "broad_companyfacts_growth_acceleration_rs_candidate_source_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260606-009.json",
+  "trial_family": "broad_companyfacts_growth_acceleration_candidate_pool",
+  "trial_variant_id": "growth_acceleration_rs_top1_v1"
+}

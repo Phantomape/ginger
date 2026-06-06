@@ -1,0 +1,150 @@
+{
+  "after_metrics": {
+    "expected_value_score": 7.73,
+    "max_drawdown_pct_max": 0.1149,
+    "min_survival_rate": 0.7925,
+    "strategy_total_pnl": 236458.13,
+    "trade_count": 359
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "expected_value_score": 7.8941,
+    "max_drawdown_pct_max": 0.1119,
+    "min_survival_rate": 0.7925,
+    "strategy_total_pnl": 234850.99,
+    "trade_count": 61
+  },
+  "change_summary": "Tested broad SEC Companyfacts revenue/profit YoY acceleration plus OHLCV confirmation as a replay-only default-off paper candidate source.",
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "broad_companyfacts_growth_acceleration_rs_candidate_source_v1",
+  "component": "quant/experiments/exp_20260606_009_broad_companyfacts_growth_acceleration_rs.py",
+  "decision": "rejected_broad_companyfacts_growth_acceleration_rs_candidate_pool",
+  "delta_metrics": {
+    "expected_value_score_delta": -0.1641,
+    "expected_value_score_delta_pct": -0.020788,
+    "max_drawdown_delta": 0.003,
+    "strategy_total_pnl_delta": 1607.14,
+    "strategy_total_pnl_delta_pct": 0.006843,
+    "trade_count_delta": 298
+  },
+  "experiment_id": "exp-20260606-009",
+  "hypothesis": "Broad Companyfacts YoY revenue plus earnings acceleration, confirmed by liquid relative strength, may identify cleaner default-off paper candidates than static dual-growth or loss-to-profit inflection.",
+  "lane": "alpha_search",
+  "mechanism_family": "default_off_paper_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260605-011",
+    "exp-20260605-014",
+    "exp-20260605-015",
+    "exp-20260605-022",
+    "exp-20260605-026"
+  ],
+  "new_evidence_type": "new_production_visible_field",
+  "next_retry_requires": [
+    "closed forward replacement-value rows",
+    "proof that growth acceleration is incremental to static growth and ret20 momentum",
+    "shared default-off adapter and parity tests before promotion",
+    "avoid nearby Companyfacts acceleration threshold/scalar retunes on this frozen sample"
+  ],
+  "parameters": {
+    "daily_selection": "top_1_by_fixed_growth_acceleration_rs_score",
+    "hold_days": 10,
+    "max_fundamental_age_days": 190,
+    "min_avg_dollar_volume_20d": 50000000.0,
+    "min_close_location": 0.55,
+    "min_price": 10.0,
+    "min_profit_acceleration": 0.1,
+    "min_profit_yoy_growth": 0.1,
+    "min_ret20_excess_spy": 0.02,
+    "min_revenue_acceleration": 0.05,
+    "min_revenue_yoy_growth": 0.1,
+    "min_volume_ratio_20d": 1.0,
+    "paper_notional": 4000.0,
+    "profit_canonical_priority": [
+      "eps_diluted",
+      "eps_basic",
+      "net_income"
+    ],
+    "round_trip_cost_pct": 0.0035,
+    "same_ticker_cooldown_days": 30,
+    "trade_enabled": false
+  },
+  "prediction": {
+    "actual_ev_delta": -0.1641,
+    "actual_pnl_delta": 1607.14,
+    "actual_success": 0,
+    "brier_score": 0.0324,
+    "confidence_reason": "Companyfacts broad asset has PIT/free coverage and acceleration is a distinct growth-trajectory field, but recent broad Companyfacts candidate pools often regress windows and this is near a crowded family.",
+    "expected_ev_delta": 0.12,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "old_thin_regression",
+      "static_growth_already_captures_signal",
+      "momentum_concentration",
+      "not_incremental_over_companyfacts_family"
+    ],
+    "recorded_at": "2026-06-06T07:07:09+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_note": "This runner changes no production code. A positive result would require a separate shared default-off Companyfacts growth-acceleration adapter, daily production exposure of the same filed-date-safe acceleration fields, warehouse/snapshot replay parity, and focused tests before any report queue, paper ledger, candidate priority, watchlist, sizing, or order surface could change.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "aggregate_ev_not_positive;window_ev_regression;window_pnl_regression",
+  "related_files": [
+    "quant/experiments/exp_20260606_009_broad_companyfacts_growth_acceleration_rs.py",
+    "data/experiments/exp-20260606-009/exp_20260606_009_broad_companyfacts_growth_acceleration_rs.json",
+    "experiments/logs/exp-20260606-009.json",
+    "experiments/artifacts/exp-20260606-009_broad_companyfacts_growth_acceleration_rs.md",
+    "experiments/tickets/exp-20260606-009.json",
+    "data/kova/fundamentals/companyfacts_growth_broad_universe_20260604.jsonl"
+  ],
+  "status": "rejected",
+  "timestamp": "2026-06-06T07:10:25Z",
+  "trial_family": "broad_companyfacts_growth_acceleration_candidate_pool",
+  "trial_variant_id": "growth_acceleration_rs_top1_v1",
+  "windows": [
+    {
+      "expected_value_after": 4.8771,
+      "expected_value_before": 5.1628,
+      "expected_value_delta": -0.2857,
+      "label": "late_strong",
+      "strategy_total_pnl_delta": -396.71,
+      "target_trade_count": 105,
+      "target_trade_pnl_usd": -1547.44
+    },
+    {
+      "expected_value_after": 2.3272,
+      "expected_value_before": 2.1402,
+      "expected_value_delta": 0.187,
+      "label": "mid_weak",
+      "strategy_total_pnl_delta": 4122.87,
+      "target_trade_count": 105,
+      "target_trade_pnl_usd": 4834.93
+    },
+    {
+      "expected_value_after": 0.5257,
+      "expected_value_before": 0.5911,
+      "expected_value_delta": -0.0654,
+      "label": "old_thin",
+      "strategy_total_pnl_delta": -2119.02,
+      "target_trade_count": 88,
+      "target_trade_pnl_usd": -1623.79
+    }
+  ]
+}
