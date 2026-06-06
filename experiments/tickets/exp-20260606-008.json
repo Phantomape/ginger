@@ -1,0 +1,94 @@
+{
+  "acceptance_rule": "Gate 4 must improve aggregate expected_value_score with max drawdown worsening <=0.5pp, no window regression, target trades >=20, and concentration guards pass; positive result remains default-off/replay-only until shared production-visible adapter parity is added.",
+  "allowed_write_scope": [
+    "experiments/manifests/exp-20260606-008.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "card_file": "experiments/cards/exp-20260606-008.md",
+  "change_type": "default_off_candidate_pool_state_gate",
+  "changed_variable": "changepoint_tail_pressure_state_gate",
+  "claimed_at": "2026-06-06T07:02:29+00:00",
+  "completed_at": "2026-06-06T07:06:30Z",
+  "created_at": "2026-06-06T07:02:19+00:00",
+  "decision": "rejected_broad_5d_changepoint_tail_state_candidate_pool",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260606-008",
+  "experiment_uid": "expuid-c7ee2afd74e44a0a",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260606-008",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-06T07:02:19+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "broad_5d_winner_changepoint_tail_state"
+  },
+  "hypothesis": "Broad 5-day market-confirmed winner continuation may become executable when entries are restricted to non-changepoint, non-tail-pressure market states computed from free OHLCV breadth and SPY realized volatility, preserving exp-20260606-005 upside while reducing drawdown.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "ticker_pool=all_windows_full_liquid_common_stock_proxy;rank=top_cross_sectional_5d_spy_relative_winner;hold_days=10;notional=10000;market_confirmation=spy_ret5_positive_and_candidate_ret20_positive;baseline=exp-20260606-005"
+  ],
+  "mechanism_family": "short_formation_continuation_changepoint_tail_state",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260605-033",
+    "exp-20260606-004",
+    "exp-20260606-005",
+    "exp-20260606-006",
+    "exp-20260606-007"
+  ],
+  "new_evidence_type": "materially_new_production_visible_ohlcv_changepoint_tail_state",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "exp-20260606-005 improved EV in all three windows but failed on drawdown; playbook allows retry only with materially new PIT state such as changepoint/tail persistence, which this tests.",
+    "expected_ev_delta": 0.8,
+    "expected_pnl_delta": 12000.0,
+    "main_failure_modes": [
+      "drawdown_drift_too_high",
+      "window_regression",
+      "thin_sample",
+      "ohlcv_momentum_relabeling"
+    ],
+    "recorded_at": "2026-06-06T07:02:12+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 5,
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": 0.9237,
+    "aggregate_strategy_total_pnl_delta": 18788.6,
+    "artifact": "data/experiments/exp-20260606-008/exp_20260606_008_broad_5d_winner_changepoint_tail_state.json",
+    "calibration": {
+      "actual_gate4_passed": false,
+      "brier_score": 0.0324,
+      "failure_modes_observed": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "drawdown_drift_too_high"
+      ],
+      "predicted_success_probability": 0.18
+    },
+    "decision": "rejected_broad_5d_changepoint_tail_state_candidate_pool",
+    "log": "experiments/logs/exp-20260606-008.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260606-008.json",
+  "single_causal_variable": "broad_5d_winner_no_changepoint_tail_pressure_state_v1",
+  "status": "rejected",
+  "summary": "The changepoint/tail-state broad winner-continuation source did not clear Gate 4; do not promote or locally retune this broad OHLCV momentum family on the frozen windows.",
+  "ticket_file": "experiments/tickets/exp-20260606-008.json",
+  "trial_family": "broad_full_liquid_5d_winner_changepoint_tail_state_candidate_pool",
+  "trial_variant_id": "no_spy_vol_expansion_no_cross_section_tail_pressure_v1"
+}
