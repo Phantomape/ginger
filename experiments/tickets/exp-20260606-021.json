@@ -1,0 +1,149 @@
+{
+  "acceptance_rule": "Observed-only discovery. No strategy behavior changes. Success requires adequate coverage across all three canonical windows and a stable market-state/family outcome separation that justifies a later frozen router Gate 1-4 experiment.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_YYYYMMDD_NNN_*.py",
+    "data/experiments/exp-YYYYMMDD-NNN",
+    "experiments/logs",
+    "experiments/cards",
+    "experiments/manifests",
+    "experiments/tickets",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "card_file": "experiments/cards/exp-20260606-021.md",
+  "change_type": "read_only_market_state_family_attribution",
+  "changed_variable": "market_state_strategy_family_attribution_v1",
+  "claimed_at": "2026-06-06T17:21:43+00:00",
+  "completed_at": "2026-06-06T17:34:54Z",
+  "created_at": "2026-06-06T17:21:35+00:00",
+  "decision": "observed_only_no_router_yet_market_state_sample_thin_or_unstable",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260606-021",
+  "experiment_uid": "expuid-80d06232da6146c2",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260606-021",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-06T17:21:35+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "market_state_family_replacement_value_attribution"
+  },
+  "hypothesis": "Read-only market-state buckets may predict which strategy family has positive 10-day realized trade value, enabling a later state-conditioned family router without touching live orders in this run.",
+  "lane": "alpha_discovery",
+  "locked_variables": [
+    "market_state_strategy_family_attribution_v1"
+  ],
+  "mechanism_family": "market_state_family_replacement_value_prediction",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260511-017",
+    "exp-20260526-021",
+    "exp-20260528-035",
+    "exp-20260528-036",
+    "exp-20260530-002",
+    "exp-20260606-014"
+  ],
+  "new_evidence_type": "read_only_state_family_monotonicity_attribution",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "Current docs keep market-state analysis diagnostic-only, but recent broad continuation failures indicate tail-state classification may explain family-level replacement value better than another threshold retune.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "no_monotonic_state_edge",
+      "thin_family_state_sample",
+      "window_instability",
+      "existing_state_surface_overlap",
+      "no_router_justification"
+    ],
+    "recorded_at": "2026-06-06T17:21:24+00:00",
+    "success_probability": 0.22
+  },
+  "prior_trial_count": 6,
+  "result": {
+    "accepted": false,
+    "aggregate_baseline_metrics": {
+      "expected_value_score_sum": 7.8941,
+      "state_coverage_rate": 1.0,
+      "total_pnl_sum": 234850.99,
+      "trade_count": 61
+    },
+    "aggregate_expected_value_delta": 0.0,
+    "aggregate_strategy_total_pnl_delta": 0.0,
+    "artifact": "data/experiments/exp-20260606-021/exp_20260606_021_market_state_family_replacement_value_attribution.json",
+    "decision": "observed_only_no_router_yet_market_state_sample_thin_or_unstable",
+    "diagnostic_only": true,
+    "log": "experiments/logs/exp-20260606-021.json",
+    "router_readiness": {
+      "candidate_count": 0,
+      "decision": "observed_only_no_router_yet_market_state_sample_thin_or_unstable",
+      "failed_reasons": [
+        "state_contrast_sample_too_small",
+        "no_stable_positive_state_family_candidate"
+      ],
+      "families_with_state_contrast": 0,
+      "family_counts": {
+        "breakout_long": 22,
+        "trend_long": 39
+      },
+      "family_state_counts": {
+        "breakout_long": {
+          "broad_up|balanced|extended": 1,
+          "broad_up|balanced|normal": 4,
+          "mixed|balanced|normal": 17
+        },
+        "trend_long": {
+          "broad_down|balanced|pullback": 1,
+          "broad_down|spy_defensive_leads|pullback": 1,
+          "broad_up|balanced|normal": 5,
+          "broad_up|qqq_leads|extended": 1,
+          "mixed|balanced|normal": 29,
+          "mixed|balanced|pullback": 1,
+          "mixed|spy_defensive_leads|normal": 1
+        }
+      },
+      "ready_for_router_gate": false,
+      "state_counts": {
+        "broad_down|balanced|pullback": 1,
+        "broad_down|spy_defensive_leads|pullback": 1,
+        "broad_up|balanced|extended": 1,
+        "broad_up|balanced|normal": 9,
+        "broad_up|qqq_leads|extended": 1,
+        "mixed|balanced|normal": 46,
+        "mixed|balanced|pullback": 1,
+        "mixed|spy_defensive_leads|normal": 1
+      },
+      "thresholds": {
+        "min_family_trades_for_router": 15,
+        "min_state_family_r_edge": 0.25,
+        "min_state_family_trades_global": 6,
+        "min_total_trades_for_router": 60,
+        "min_windows_with_state_family": 2
+      },
+      "top_candidates": [],
+      "total_trades": 61
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260606-021.json",
+  "single_causal_variable": "market_state_strategy_family_attribution_v1",
+  "status": "observed_only",
+  "summary": "Observed-only attribution does not yet justify a state-conditioned family router. The core sample is small and/or the state-family effect is not stable enough across canonical windows.",
+  "ticket_file": "experiments/tickets/exp-20260606-021.json",
+  "trial_family": "market_state_family_replacement_value_attribution",
+  "trial_variant_id": "observed_only_core_trade_state_family_attribution_v1"
+}
