@@ -1,0 +1,86 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260606_010_gap_down_recovery_candidate_pool.py",
+    "data/experiments/exp-20260606-010/exp_20260606_010_gap_down_recovery_candidate_pool.json",
+    "experiments/cards/exp-20260606-010.md",
+    "experiments/manifests/exp-20260606-010.json",
+    "experiments/tickets/exp-20260606-010.json",
+    "experiments/logs/exp-20260606-010.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260606-010.md",
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "broad_liquid_gap_down_recovery_next_open_candidate_source_v1",
+  "claimed_at": "2026-06-06T08:05:56+00:00",
+  "completed_at": "2026-06-06T08:09:23Z",
+  "created_at": "2026-06-06T08:05:46+00:00",
+  "decision": "rejected_gap_down_recovery_candidate_pool",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260606-010",
+  "experiment_uid": "expuid-2ae2eee65b454e1e",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260606-010",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-06T08:05:46+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "gap_down_recovery_candidate_pool"
+  },
+  "hypothesis": "Broad liquid stocks that gap down at the open but reclaim strongly by the close may identify event-sensitive recovery candidates with better 10-day next-open paper replacement value than raw broad momentum, without changing live orders.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "broad_liquid_gap_down_recovery_next_open_candidate_source_v1"
+  ],
+  "mechanism_family": "default_off_paper_candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260427-013",
+    "exp-20260427-017",
+    "exp-20260606-003"
+  ],
+  "new_evidence_type": "current_canonical_warehouse_replay_of_old_observed_shadow_source",
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "confidence_reason": "Older observed-only gap-down recovery had useful mid/old forward returns but mixed late window evidence; current broad reversal tests recently failed, so probability is modest but the morphology is distinct from 5-day momentum continuation.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "old_thin_reversal_noise",
+      "aggregate_ev_not_positive",
+      "drawdown_drift",
+      "positive_pnl_concentration"
+    ],
+    "recorded_at": "2026-06-06T08:05:35+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": 0.5129,
+    "aggregate_strategy_total_pnl_delta": 6243.6,
+    "artifact": "data/experiments/exp-20260606-010/exp_20260606_010_gap_down_recovery_candidate_pool.json",
+    "calibration": {
+      "actual_gate4_passed": false,
+      "brier_score": 0.0324,
+      "failure_modes_observed": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "drawdown_drift_too_high"
+      ],
+      "predicted_success_probability": 0.18
+    },
+    "decision": "rejected_gap_down_recovery_candidate_pool",
+    "log": "experiments/logs/exp-20260606-010.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260606-010.json",
+  "single_causal_variable": "broad_liquid_gap_down_recovery_next_open_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The gap-down recovery candidate source did not clear Gate 4; do not promote or locally retune this OHLCV reversal family on the frozen windows.",
+  "ticket_file": "experiments/tickets/exp-20260606-010.json",
+  "trial_family": "gap_down_recovery_default_off_candidate_pool",
+  "trial_variant_id": "exp-20260606-010"
+}
