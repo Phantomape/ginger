@@ -1,0 +1,93 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260606_029_sector_etf_lead_laggard_candidate_pool.py",
+    "data/experiments/exp-20260606-029/exp_20260606_029_sector_etf_lead_laggard_candidate_pool.json",
+    "experiments/cards/exp-20260606-029.md",
+    "experiments/manifests/exp-20260606-029.json",
+    "experiments/tickets/exp-20260606-029.json",
+    "experiments/logs/exp-20260606-029.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260606-029.md",
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "sector_etf_lead_same_sector_laggard_candidate_source_v1",
+  "claimed_at": "2026-06-06T23:06:41+00:00",
+  "completed_at": "2026-06-06T23:10:37Z",
+  "created_at": "2026-06-06T23:06:28+00:00",
+  "decision": "rejected_sector_etf_laggard_candidate_pool",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260606-029",
+  "experiment_uid": "expuid-e4ab24584b8b4f5a",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260606-029",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-06T23:06:28+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sector_etf_lead_laggard_candidate_pool"
+  },
+  "hypothesis": "Defensive and energy sector ETF leadership may identify same-sector liquid stock laggards with next-open continuation when the ETF leads SPY but the stock has only begun to react.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "sector_etf_lead_same_sector_laggard_candidate_source_v1"
+  ],
+  "mechanism_family": "default_off_paper_candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260430-008",
+    "exp-20260515-017",
+    "exp-20260511-024",
+    "exp-20260606-024"
+  ],
+  "new_evidence_type": "production_visible_free_ohlcv_sector_etf_to_stock_relation",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "Sector ETF direct expansion failed, but using XLE/XLP/XLU/XLV as non-traded relation context for same-sector stock laggards is a different production-visible free-OHLCV candidate source; recent accepted peer-shock evidence supports relation-aware sources.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "window_regression",
+      "drawdown_drift",
+      "sector_etf_relabeling",
+      "concentration_failed",
+      "target_sample_too_small"
+    ],
+    "recorded_at": "2026-06-06T23:06:17+00:00",
+    "success_probability": 0.17
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": -0.0214,
+    "aggregate_strategy_total_pnl_delta": -522.83,
+    "artifact": "data/experiments/exp-20260606-029/exp_20260606_029_sector_etf_lead_laggard_candidate_pool.json",
+    "calibration": {
+      "actual_ev_delta": -0.0214,
+      "actual_gate4_passed": false,
+      "actual_pnl_delta": -522.83,
+      "actual_success": 0,
+      "brier_score": 0.0289,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows"
+      ],
+      "predicted_success_probability": 0.17
+    },
+    "decision": "rejected_sector_etf_laggard_candidate_pool",
+    "log": "experiments/logs/exp-20260606-029.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260606-029.json",
+  "single_causal_variable": "sector_etf_lead_same_sector_laggard_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The sector ETF lead / same-sector laggard source did not clear Gate 4; do not promote or locally retune this ETF-to-stock relation on the frozen windows.",
+  "ticket_file": "experiments/tickets/exp-20260606-029.json",
+  "trial_family": "sector_etf_lead_laggard_candidate_pool",
+  "trial_variant_id": "exp-20260606-029"
+}
