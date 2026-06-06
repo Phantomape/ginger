@@ -275,6 +275,9 @@ Acceptance boundary:
   or remove candidates;
 - live removal, quarantine, or down-sizing requires a separate Gate 1-4
   experiment unless it is explicitly paper/default-off;
+- paper/default-off ticker governance can be retained in the same experiment
+  when it uses a shared helper, exposes the same observe-only daily surface, and
+  leaves live/default orders unchanged;
 - never remove a ticker solely from one to three bad trades.
 
 ### All-Market Candidate Discovery
@@ -305,7 +308,10 @@ Minimum metrics:
 
 Acceptance boundary:
 
-- all-market discovery starts as research-only or paper-only;
+- all-market discovery starts as paper/default-off or research-only;
+- when PIT universe/data controls are already available and the daily path can
+  expose the same fields, prefer a shared-paper-first default-off helper over a
+  private research scout;
 - it cannot expand core until the universe construction and replacement-value
   evidence are audited;
 - all-market wins should first become a sleeve, field, or explicit ticker

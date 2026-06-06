@@ -49,6 +49,7 @@ expected_value_score = strategy_total_return_pct × sharpe_daily
 3. 禁止连续多轮只做日志、replay、parity、目录整理或文档，而不提出新的 alpha 假设。
 4. 每轮开始前至少写出 1 个候选 `alpha_hypothesis`。即使最终暂缓，也要说明被哪个测量缺陷阻断。
 5. 候选任务优先选择：**高赚钱潜力 + 高可验证性 + 低复杂度 + 可生产执行**。
+6. 对高潜力、生产可见的 default-off paper alpha，默认使用 **shared-paper-first**：第一次严肃实验就应实现共享 helper，同时覆盖 historical replay 和 daily default-off snapshot，再用它跑 Gate 1-4。private replay scout 只适合数据形态不确定或想法非常早期的低成本探索；即使结果正向，也只能记录为 lead，不能算 accepted alpha。
 
 基础设施修复只能服务于策略实验，不能长期替代策略实验。若一项修复不能明显提升 alpha 假设的可验证性、生产可执行性、风险归因或数据质量，默认不应占据最高优先级。
 
@@ -159,6 +160,8 @@ LLM 规则同样适用：如果想让 LLM 判断某个维度，必须先确认�
 `expected_value_score` 提升 > 10% 可以作为**强接受信号**，但不作为硬性最低门槛。小幅但稳定的边际提升在策略系统中可能有价值，尤其当它同时降低复杂度、降低尾部风险、改善生产一致性或提升可归因性。
 
 **state-surface 加严规则**：`state_surface_sleeve` 已经叠加了多层 paper notional scalar / rank profile / support / haircut 规则，继续做同类阈值、profile、notional scalar 或 capital allocation 调参时，`expected_value_score` 提升 > 10% 必须作为 Gate 4 的硬性最低门槛，而不是强接受信号。计算口径以 `docs/backtesting.md` 的标准多窗口 before/after aggregate `expected_value_score` 为准。若 aggregate EV 未提升超过 10%，默认必须回滚策略改动并记录为失败实验；不得用“小幅但稳定”“三窗口都改善”“PnL 改善”“paper-only”“不影响生产订单”等理由保留。例外只允许 `measurement_repair`，且必须说明它修复了哪一个会扭曲 alpha 评估或生产 / 回测一致性的阻断项。
+
+对 high-potential default-off paper alpha，如果同一实验已经通过 shared helper 同时覆盖 historical replay 和 daily default-off snapshot，并且保持 `trade_enabled=False`、不改变 live/default orders、ranking、sizing 或 exits，可以在同一实验内保留为 accepted shared default-off helper；不必为了“paper 接入生产可见输出”再拆一轮。live activation、capital allocation、core ranking、watchlist/order surface 仍必须另做 Gate 1-4。
 
 默认保留规则：
 

@@ -99,12 +99,19 @@ Minimum requirements:
   should not duplicate a second private candidate implementation.
 - Add focused tests proving daily snapshot and historical replay share the same
   rule version and produce the same representative candidate on a fixture.
+- Daily report, ledger, or run-path observe-only wiring may be included in the
+  same experiment when it calls the same helper, keeps `trade_enabled=False`,
+  and leaves live/default orders, ranking, sizing, exits, and watchlists
+  unchanged.
 - Keep `trade_enabled=False` and live/default orders unchanged.
 - Record the helper in `docs/production_backtest_parity.md` when Gate 4 accepts
   or when the helper is retained for forward default-off observation.
 
 If Gate 4 accepts, the result may be recorded as an accepted shared default-off
-helper and can proceed directly to a separate forward-paper wiring experiment.
+helper. A separate follow-up experiment is not required merely to wire
+observe-only daily/report output when that wiring was included in the same
+ticket and reuses the same helper. If the accepted helper does not yet expose
+daily output, the next step can be a small forward-paper wiring experiment.
 Live trading, capital allocation, core ranking, exits, watchlists, or order
 surfaces still require closed forward evidence and their own Gate 1-4 activation
 experiment.
@@ -250,6 +257,10 @@ For default-off paper alpha, do not retain a high-potential positive result if
 the only implementation is private runner logic. Either start with the
 shared-paper-first path above, or downgrade the result to
 `positive_replay_lead_not_promoted` until a shared helper reproduces it.
+
+A shared-paper-first result is not backtester-only merely because the daily path
+does not trade it. It must, however, expose the same rule through a daily
+default-off snapshot, report, or ledger path and keep `trade_enabled=False`.
 
 When changing shared behavior, add focused parity tests or update the parity
 contract. Production output must expose the same action or decision basis that

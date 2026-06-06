@@ -50,6 +50,7 @@ large shared JSON document.
   "owner": null,
   "hypothesis": "Breakout losses cluster in one reproducible follow-through failure mode.",
   "change_type": "analysis_only",
+  "implementation_mode": "observed_only_attribution",
   "mechanism_family": "breakout_loss_attribution",
   "trial_family": "breakout_follow_through_taxonomy",
   "trial_variant_id": "breakout_follow_through_taxonomy_v1",
@@ -101,6 +102,8 @@ large shared JSON document.
     "backtester_adapter_changed": false,
     "run_adapter_changed": false,
     "replay_only": false,
+    "trade_enabled": false,
+    "daily_snapshot_exposed": false,
     "parity_test_added": false
   },
   "created_at": "2026-04-25T00:00:00-07:00",
@@ -131,6 +134,13 @@ count nearby research attempts without changing strategy behavior:
 | `nearby_prior_experiments` | Relevant accepted/rejected experiment IDs. |
 | `multiple_testing_risk_bucket` | `minimal`, `low`, `moderate`, or `high`. |
 | `new_evidence_type` | What makes this more than another nearby retry, or `not_declared`. |
+
+`implementation_mode` is recommended for alpha and scout tickets. Use
+`shared_paper_first` when the same helper will power historical replay and daily
+default-off observation, `private_replay_scout` only for uncertain data-shape
+discovery, `observed_only_attribution` for measurement without acceptance, and
+`live_activation` only when closed forward evidence is being promoted into
+executable behavior.
 
 For pure `measurement_repair` tickets these fields are recommended but may be
 omitted when no alpha family is being evaluated.
@@ -202,12 +212,17 @@ Every ticket that can affect executable trade behavior must include
 | `backtester_adapter_changed` | Historical replay wiring changed. |
 | `run_adapter_changed` | Daily production wiring, report, JSON, or prompt exposure changed. |
 | `replay_only` | The difference is an allowed historical-data limitation, not duplicate strategy logic. |
+| `trade_enabled` | The experiment can place or alter live/default executable trades. |
+| `daily_snapshot_exposed` | The same candidate/rule is visible through a daily default-off snapshot, report, or ledger path. |
 | `parity_test_added` | A focused test or manifest update guards the production/backtest contract. |
 
 If `shared_policy_changed=true`, then either `run_adapter_changed=true` or
-`replay_only=true` must be true. Otherwise the experiment is backtester-only and
-must not be accepted. Allowed replay-only differences are listed in
-`docs/production_backtest_parity.md`.
+`replay_only=true` must be true, except for
+`implementation_mode=shared_paper_first` default-off alpha where
+`trade_enabled=false`, `daily_snapshot_exposed=true`, and a parity test or
+parity-contract update records the shared replay/daily semantics. Otherwise the
+experiment is backtester-only and must not be accepted. Allowed replay-only
+differences are listed in `docs/production_backtest_parity.md`.
 
 Example observed-only closeout:
 

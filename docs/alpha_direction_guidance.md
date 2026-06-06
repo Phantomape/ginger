@@ -5,7 +5,7 @@
 > acceptance evidence. Use it to choose the next alpha hypothesis before
 > reserving an experiment ID.
 
-Last updated: 2026-06-04.
+Last updated: 2026-06-06.
 
 ---
 
@@ -91,9 +91,11 @@ Valid next work:
 - `revenue_revision_velocity_30d`, if available;
 - strict PIT snapshot provenance and missing-data buckets.
 
-The first experiment should be attribution or default-off paper only. Do not
-promote it into live ranking or sizing until the field is replayable and passes
-Gate 1-4.
+If PIT coverage or field shape is unknown, start with attribution or
+observed-only coverage measurement. Once coverage is adequate, the first
+serious alpha test should be a shared default-off paper helper, not a private
+replay scout. Do not promote it into live ranking or sizing until the shared
+field is replayable, production-visible, and passes Gate 1-4 activation.
 
 ### SEC Filing + LLM
 
@@ -224,7 +226,8 @@ revision support.
 Class:
 
 ```text
-default-off paper adapter or replay-only scout first.
+shared default-off paper helper first; replay-only scout only if field shape is
+still uncertain.
 ```
 
 Hard constraints:
@@ -232,7 +235,8 @@ Hard constraints:
 - no live orders;
 - no core ranking change;
 - no LLM authority;
-- daily production must be able to emit the same fields before promotion.
+- daily production must be able to emit the same fields in the same shared
+  helper experiment when the fields are already PIT-safe.
 
 ### 4.3 SEC Semantic Field Scout
 
@@ -246,7 +250,8 @@ price reaction have higher replacement value than generic SEC event rows.
 Class:
 
 ```text
-schema-bound LLM / rule extraction followed by read-only attribution.
+schema-bound LLM / rule extraction; use read-only attribution only when coverage
+or parse quality is unknown, otherwise use a shared default-off paper helper.
 ```
 
 Minimum provenance:
@@ -270,7 +275,8 @@ material relative to liquidity and ownership context.
 Class:
 
 ```text
-default-off paper scout or observed-only attribution.
+shared default-off paper helper when PIT fields exist; observed-only
+attribution only for coverage or provenance audit.
 ```
 
 Minimum fields:
@@ -335,6 +341,10 @@ Reject if the result only improves one window, only improves standalone PnL
 versus cash, depends on one ticker, lacks PIT production visibility, or cannot
 be represented as a shared production/backtest policy before promotion.
 ```
+
+If field coverage is already known, the default implementation should be
+shared-paper-first: one helper that powers historical replay and daily
+default-off observation in the same accepted experiment.
 
 The goal is to add a real information edge, not another layer of clever
 allocation on the same old signals.

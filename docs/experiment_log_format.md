@@ -36,6 +36,7 @@
   "hypothesis": "放松某个过滤器后，可能提高 expected_value_score 且不显著恶化回撤",
   "change_summary": "将某阈值从 A 调整到 B",
   "change_type": "threshold",
+  "implementation_mode": "shared_paper_first",
   "mechanism_family": "core_entry_filtering",
   "trial_family": "neutral_confidence_threshold",
   "trial_variant_id": "neutral_confidence_0p88",
@@ -142,6 +143,8 @@
     "backtester_adapter_changed": true,
     "run_adapter_changed": true,
     "replay_only": false,
+    "trade_enabled": false,
+    "daily_snapshot_exposed": true,
     "parity_test_added": true
   },
   "decision": "rejected",
@@ -168,6 +171,7 @@
 | `hypothesis` | 是 | 本次实验要验证的因果假设 |
 | `change_summary` | 是 | 一句话描述改动 |
 | `change_type` | 是 | 如 `threshold` / `filter` / `llm_prompt` / `data_fix` / `parity_fix` |
+| `implementation_mode` | alpha 推荐 | `shared_paper_first` / `private_replay_scout` / `observed_only_attribution` / `measurement_repair` / `live_activation` |
 | `mechanism_family` | alpha 推荐 | 机制级研究族，如 `state_surface_concentration`、`broad_market_forward_maturation` |
 | `trial_family` | alpha 必填 | 用于 trial accounting 的近邻实验族；同族重试必须累计 |
 | `trial_variant_id` | alpha 推荐 | 本次具体变体 ID，便于区分同族 sweep 或 scout |
@@ -202,6 +206,7 @@
 - `timestamp`
 - `hypothesis`
 - `change_type`
+- `implementation_mode`
 - `changed_variable`
 - `trial_family`
 - `prior_trial_count`
@@ -213,10 +218,19 @@
 - `delta_metrics`
 - `decision`
 
-若实验会影响真实可执行交易，还必须填 `production_impact`。如果
-`shared_policy_changed=true` 但 `run_adapter_changed=false`，默认视为
-backtester-only 结果，除非 `replay_only=true` 且差异已记录在
-`docs/production_backtest_parity.md`。
+若实验会影响真实可执行交易，还必须填 `production_impact`。
+
+对 `implementation_mode=shared_paper_first` 的 default-off alpha，若
+`shared_policy_changed=true`、`trade_enabled=false`、`daily_snapshot_exposed=true`
+且已加入 parity 测试或记录 `docs/production_backtest_parity.md`，则不因
+`run_adapter_changed=false` 自动视为 backtester-only。若不是
+`shared_paper_first`，`shared_policy_changed=true` 但
+`run_adapter_changed=false` 仍默认视为 backtester-only 结果，除非
+`replay_only=true` 且差异已记录在 `docs/production_backtest_parity.md`。
+
+`private_replay_scout` 的正向结果只能记录为 lead，不能写成 accepted alpha；
+accepted default-off paper alpha 必须有 shared replay/daily semantics 或明确的
+measurement-repair 例外。
 
 ## 什么时候还要写进 Alpha 文档
 

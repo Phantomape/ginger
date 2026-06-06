@@ -12,11 +12,17 @@ The current direction is to increase alpha density by accumulating high-informat
 
 Preferred workflow:
 
-1. Produce daily context snapshots in production.
-2. Keep them append-only and replayable.
+1. For unknown data surfaces, produce daily context snapshots in production.
+2. Keep snapshots append-only and replayable.
 3. Run attribution against historical trades / backtests.
-4. Promote only the small subset that proves incremental value.
-5. Do not use these tools for live decisions until a separate Gate 1-4 experiment accepts the change.
+4. Promote only the small subset that proves incremental value through Gate
+   1-4.
+5. If the field is already PIT-safe, replayable, and easy for the daily path to
+   emit, do not force a passive-only staging round. Start the first serious
+   alpha test as a shared default-off paper helper with both historical replay
+   and daily snapshot semantics.
+6. Do not use these tools for live decisions until a separate Gate 1-4
+   activation experiment accepts the change.
 
 ---
 
@@ -146,7 +152,11 @@ Production impact:
 }
 ```
 
-Agent rule: this file is the daily passive context memory. Prefer adding new context fields here before turning them into strategy logic.
+Agent rule: this file is the daily passive context memory. For unknown data
+surfaces, prefer adding context fields here before turning them into strategy
+logic. For fields that are already PIT-safe, replayable, and production-emittable,
+use the shared-paper-first path instead of forcing a separate passive-context
+staging round.
 
 ---
 
