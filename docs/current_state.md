@@ -90,7 +90,7 @@ production-realistic chronological replay and beats the current gates.
 
 ## 2026-06-06 Experiment Consolidation
 
-June 6 added one accepted default-off adapter and otherwise narrowed the broad
+June 6 added two accepted default-off adapters and otherwise narrowed the broad
 candidate-pool queue. `exp-20260606-001` promoted the low-deployment ETF
 cash-substitute route into the shared default-off `low_deployment_etf_overlay`
 adapter. The accepted evidence reproduced `exp-20260605-035`: aggregate EV
@@ -99,6 +99,19 @@ adapter. The accepted evidence reproduced `exp-20260605-035`: aggregate EV
 windows improving, `19` target paper trades, max drawdown delta `-0.0008`, and
 concentration passing. It remains paper-only and default-off; live/default
 orders, core ranking, sizing, exits, watchlists, and LLM/news did not change.
+
+`exp-20260606-020` promoted the positive `exp-20260606-019` macro relief top-2
+stock leadership lead into the shared default-off
+`macro_relief_leadership_paper_sleeve.py` adapter. The shared replay kept the
+same three-window evidence: aggregate EV `7.8941 -> 8.0754` (`+0.1813`) and
+PnL `$234,850.99 -> $237,913.77` (`+$3,062.78`), with `late_strong`
+`+0.1147` EV / `+$1,255.60`, `mid_weak` `+0.0327` / `+$624.83`, and
+`old_thin` `+0.0339` / `+$1,182.35`. It selected `20` target paper trades
+across all three windows, had no drawdown drift, and concentration passed
+(`max_single_positive_pnl_share=0.160712`, `positive_pnl_hhi=0.10744`). This
+surface is production-visible for forward observation only:
+`trade_enabled=false`, no live/default orders, no core ranking/sizing/exits,
+no watchlist changes, and no LLM/news path changes.
 
 The ETF acceptance also became the comparator for nearby safety retunes, and
 the first two retunes failed. `exp-20260606-011` tested a two-loss / ten-day

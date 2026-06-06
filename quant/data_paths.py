@@ -99,6 +99,14 @@ DATA_ARTIFACTS: dict[str, tuple[str, str]] = {
         "paper_sleeves/broad_market/state.json",
         "broad_market_paper_state.json",
     ),
+    "macro_relief_leadership_paper_snapshots": (
+        "paper_sleeves/macro_relief_leadership/snapshots.jsonl",
+        "macro_relief_leadership_paper_snapshots.jsonl",
+    ),
+    "macro_relief_leadership_paper_state": (
+        "paper_sleeves/macro_relief_leadership/state.json",
+        "macro_relief_leadership_paper_state.json",
+    ),
     "ai_optical_paper_snapshots": (
         "paper_sleeves/ai_optical/snapshots.jsonl",
         "ai_optical_paper_snapshots.jsonl",

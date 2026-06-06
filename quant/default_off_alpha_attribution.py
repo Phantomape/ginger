@@ -221,6 +221,7 @@ def build_default_off_alpha_attribution_report(
     low_deployment_etf_overlay: dict[str, Any] | None = None,
     core_misfit_paper_sleeve: dict[str, Any] | None = None,
     broad_market_paper_sleeve: dict[str, Any] | None = None,
+    macro_relief_leadership_paper_sleeve: dict[str, Any] | None = None,
     ai_optical_paper_sleeve: dict[str, Any] | None = None,
     volatility_contraction_paper_sleeve: dict[str, Any] | None = None,
     volume_breadth_breakout_paper_sleeve: dict[str, Any] | None = None,
@@ -266,6 +267,28 @@ def build_default_off_alpha_attribution_report(
             name="broad_market_leadership",
             label="BROAD_MARKET_LEADERSHIP_PAPER",
             snapshot=broad_market_paper_sleeve,
+        ),
+        _surface_summary(
+            name="macro_relief_leadership",
+            label="MACRO_RELIEF_LEADERSHIP_PAPER",
+            snapshot=macro_relief_leadership_paper_sleeve,
+            extra_metrics={
+                "source_rule_version": (
+                    (macro_relief_leadership_paper_sleeve or {}).get("source_rule_version")
+                ),
+                "macro_relief_days": (
+                    ((macro_relief_leadership_paper_sleeve or {}).get("context_scan") or {}).get("macro_relief_days")
+                ),
+                "raw_candidate_count": (
+                    (macro_relief_leadership_paper_sleeve or {}).get("raw_candidate_count")
+                ),
+                "candidate_universe_status": (
+                    ((macro_relief_leadership_paper_sleeve or {}).get("candidate_universe") or {}).get("status")
+                ),
+                "candidate_universe_ticker_count": (
+                    ((macro_relief_leadership_paper_sleeve or {}).get("candidate_universe") or {}).get("ticker_count")
+                ),
+            },
         ),
         _surface_summary(
             name="ai_optical_iwm_confirmed",

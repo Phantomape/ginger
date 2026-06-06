@@ -98,6 +98,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            low_deployment_etf_overlay=None,
                            core_misfit_paper_sleeve=None,
                            broad_market_paper_sleeve=None,
+                           macro_relief_leadership_paper_sleeve=None,
                            ai_optical_paper_sleeve=None,
                            volatility_contraction_paper_sleeve=None,
                            volume_breadth_breakout_paper_sleeve=None,
@@ -147,6 +148,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         low_deployment_etf_overlay (dict): Default-off low-deployment ETF paper overlay
         core_misfit_paper_sleeve (dict): Default-off core-misfit paper attribution
         broad_market_paper_sleeve (dict): Default-off broad-market leadership paper sleeve
+        macro_relief_leadership_paper_sleeve (dict): Default-off macro-relief stock leadership paper sleeve
         ai_optical_paper_sleeve (dict): Default-off AI optical IWM-confirmed paper sleeve
         volatility_contraction_paper_sleeve (dict): Default-off QQQ-confirmed volatility-contraction paper sleeve
         volume_breadth_breakout_paper_sleeve (dict): Default-off volume-breadth breakout paper sleeve
@@ -1998,6 +2000,68 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"  {candidate.get('ticker', '?')}: "
                 f"score={features.get('score')} "
                 f"ret20_spy={features.get('ret20_excess_spy')} "
+                f"notional={notional_text} (paper only)"
+            )
+
+    if macro_relief_leadership_paper_sleeve and (
+        macro_relief_leadership_paper_sleeve.get("candidate_count", 0) > 0
+        or macro_relief_leadership_paper_sleeve.get("pending_count", 0) > 0
+        or macro_relief_leadership_paper_sleeve.get("open_position_count", 0) > 0
+        or macro_relief_leadership_paper_sleeve.get("closed_count_today", 0) > 0
+        or macro_relief_leadership_paper_sleeve.get("closed_position_count", 0) > 0
+        or macro_relief_leadership_paper_sleeve.get("error")
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("MACRO RELIEF LEADERSHIP PAPER SLEEVE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Paper: {macro_relief_leadership_paper_sleeve.get('paper_enabled', False)}  |  "
+            f"Trade enabled: {macro_relief_leadership_paper_sleeve.get('trade_enabled', False)}"
+        )
+        if macro_relief_leadership_paper_sleeve.get("error"):
+            lines.append(
+                f"  Source status: {macro_relief_leadership_paper_sleeve.get('error')}"
+            )
+        universe = macro_relief_leadership_paper_sleeve.get("candidate_universe") or {}
+        context = macro_relief_leadership_paper_sleeve.get("macro_relief_context") or {}
+        lines.append(
+            f"  Universe: {universe.get('status', 'unknown')}  |  "
+            f"Tickers: {universe.get('ticker_count', 0)}  |  "
+            f"Relief day: {context.get('passed', False)}"
+        )
+        lines.append(
+            f"  Candidates: {macro_relief_leadership_paper_sleeve.get('candidate_count', 0)}  |  "
+            f"Raw: {macro_relief_leadership_paper_sleeve.get('raw_candidate_count', 0)}  |  "
+            f"Pending: {macro_relief_leadership_paper_sleeve.get('pending_count', 0)}  |  "
+            f"Open: {macro_relief_leadership_paper_sleeve.get('open_position_count', 0)}  |  "
+            f"Closed today: {macro_relief_leadership_paper_sleeve.get('closed_count_today', 0)}"
+        )
+        lines.append(
+            "  Realized paper P&L: "
+            f"${macro_relief_leadership_paper_sleeve.get('realized_pnl_to_date', 0.0):,.2f}  |  "
+            f"Unrealized: ${macro_relief_leadership_paper_sleeve.get('unrealized_pnl', 0.0):,.2f}"
+        )
+        gate = macro_relief_leadership_paper_sleeve.get("forward_paper_gate") or {}
+        if gate:
+            metrics = gate.get("metrics") or {}
+            reasons = gate.get("reasons") or []
+            reason_text = ", ".join(reasons) if reasons else "none"
+            lines.append(
+                f"  Forward gate: {gate.get('status', 'unknown')}  |  "
+                f"closed={metrics.get('closed_trades', 0)} "
+                f"pnl=${metrics.get('realized_pnl', 0.0):,.2f}  |  "
+                f"blocked_by={reason_text}"
+            )
+        for candidate in (macro_relief_leadership_paper_sleeve.get("candidates") or [])[:5]:
+            notional = candidate.get("paper_notional_usd") or candidate.get("notional_usd")
+            notional_text = (
+                f"${notional:,.0f}" if isinstance(notional, (int, float)) else "n/a"
+            )
+            lines.append(
+                f"  {candidate.get('ticker', '?')}: "
+                f"score={candidate.get('candidate_score')} "
+                f"rel_spy={candidate.get('candidate_relative_vs_spy')} "
+                f"signal={candidate.get('signal_date', candidate.get('date'))} "
                 f"notional={notional_text} (paper only)"
             )
 

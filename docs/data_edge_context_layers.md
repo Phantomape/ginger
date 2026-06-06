@@ -680,6 +680,32 @@ Agent rule: this feed may create pending/open/closed default-off paper rows and
 replacement-value evidence. It must not enable orders, core universe expansion,
 ranking, or sizing without a separate Gate 1-4 activation experiment.
 
+### `quant/macro_relief_leadership_paper_sleeve.py`
+
+Purpose: maintain the default-off `MACRO_RELIEF_LEADERSHIP_PAPER` forward
+observation ledger for the accepted macro relief stock-leadership lead from
+`exp-20260606-020`.
+
+Candidate route:
+
+- Uses the broad-market paper universe feed plus exact `SPY` and `QQQ` OHLCV.
+- Requires an official `CPI`, `FOMC`, or `NFP` event date.
+- Requires same-day `SPY` and `QQQ` relief returns and high close-location.
+- Scores liquid sector-known stock leaders using signal-day return, relative
+  return versus `SPY`/`QQQ`, 20/60-day excess return, high-close quality,
+  volume confirmation, liquidity, and realized volatility.
+- Emits up to two same-day paper candidates with next-open entry,
+  10-trading-day close exit, slippage and round-trip cost metadata.
+- Excludes same-day selected-core same-ticker overlap and keeps a same-ticker
+  cooldown.
+
+Agent rule: this feed may collect forward replacement-value evidence only. It
+must not enable orders, expand the core universe, alter live ranking, sizing,
+exits, watchlists, LLM/news prompts, or consume capital without a separate
+Gate 1-4 activation experiment and parity update. Do not retune the macro
+calendar, relief thresholds, close-location thresholds, top-N, hold days,
+cooldown, or notional on the frozen sample without materially new data.
+
 ### `quant/ai_optical_paper_sleeve.py`
 
 Purpose: maintain the default-off `AI_OPTICAL_IWM_CONFIRMED_PAPER` forward

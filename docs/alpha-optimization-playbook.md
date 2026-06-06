@@ -88,6 +88,46 @@ Next valid work:
 Do not retune nearby ETF list, momentum threshold, SMA window, hold days,
 notional, or scalar on the frozen sample.
 
+### Macro Relief Stock Leadership
+
+This is a free-data candidate-pool lead tied to official macro event days. When
+official CPI/FOMC/NFP days produce broad risk relief, the strongest liquid stock
+leaders can be tracked as default-off paper candidates.
+
+Accepted shared adapter: `exp-20260606-020`, promoting the positive replay lead
+from `exp-20260606-019`.
+
+Mechanism:
+
+- official event families: `CPI`, `FOMC`, `NFP`;
+- macro relief gate: same-day `SPY` and `QQQ` rally and close high in range;
+- source universe: broad-market, sector-known, liquid stock observation feed;
+- selection: up to top-2 same-day stock leaders;
+- lifecycle: next-open paper entry, 10-trading-day close exit, costs included;
+- status: default-off paper only, no live orders.
+
+Evidence:
+
+- aggregate EV `7.8941 -> 8.0754` (`+0.1813`);
+- PnL `$234,850.99 -> $237,913.77`;
+- all three canonical windows improved;
+- target paper trades: `20`;
+- max drawdown drift: `0.0000`;
+- concentration passed (`max_single_positive_pnl_share=0.160712`,
+  `positive_pnl_hhi=0.10744`).
+
+Next valid work:
+
+- collect closed forward replacement-value rows from the shared adapter;
+- audit production universe coverage versus the broad warehouse source;
+- add a true point-in-time macro-surprise/consensus field if a free source is
+  found;
+- separate Gate 1-4 activation experiment before any live deployment.
+
+Do not retune nearby top-N, SPY/QQQ relief thresholds, close-location
+thresholds, hold days, same-ticker cooldown, or paper notional on the frozen
+sample.
+
 ### Lagged Independent Free-Data Consensus
 
 The accepted consensus route is that a current accepted-source paper candidate
