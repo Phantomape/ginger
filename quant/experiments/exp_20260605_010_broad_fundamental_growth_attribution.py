@@ -187,11 +187,33 @@ def _quintile_groups(rows, key):
     return [o[(i * n) // QUINTILE:((i + 1) * n) // QUINTILE] for i in range(QUINTILE)]
 
 
+def _day_within_ret20_growth_spread(day_rows, horizon_key):
+    """One sampled day: average (across ret20 bands) of the growth top-minus-
+    bottom 20d spread. Returns None if the day cannot form enough bands."""
+    if len(day_rows) < QUINTILE * QUINTILE * 2:
+        return None
+    bands = _quintile_groups(day_rows, "ret20")
+    band_spreads = []
+    for band in bands:
+        if len(band) < QUINTILE * 2:
+            continue
+        gq = _quintile_groups(band, "growth")
+        top = [r[horizon_key] for r in gq[-1] if r[horizon_key] is not None]
+        bot = [r[horizon_key] for r in gq[0] if r[horizon_key] is not None]
+        if len(top) >= 2 and len(bot) >= 2:
+            band_spreads.append(sum(top) / len(top) - sum(bot) / len(bot))
+    if not band_spreads:
+        return None
+    return sum(band_spreads) / len(band_spreads)
+
+
 def collect(prepared, growth_idx, start, end):
     """Per sampled day: rows with {growth, ret20, fwd10, fwd20}; plus daily
-    long-short (top-bottom growth quintile) by horizon."""
+    long-short (top-bottom growth quintile) by horizon and the daily
+    within-ret20-band growth spread (for a proper residual t-stat)."""
     obs = []
     daily_ls = {h: [] for h in FORWARD_HORIZONS}
+    daily_resid20 = []  # within-ret20-band growth spread per sampled day (20d)
     for asof in _sampled_days(prepared, start, end, SAMPLE_STEP):
         asof_str = str(asof.date())
         day_rows = []
@@ -217,7 +239,10 @@ def collect(prepared, growth_idx, start, end):
             bot = [r[key] for r in q[0] if r[key] is not None]
             if top and bot:
                 daily_ls[h].append(sum(top) / len(top) - sum(bot) / len(bot))
-    return obs, daily_ls
+        rspread = _day_within_ret20_growth_spread(day_rows, "f20")
+        if rspread is not None:
+            daily_resid20.append(rspread)
+    return obs, daily_ls, daily_resid20
 
 
 def _pooled_ladder(obs, horizon_key):
@@ -229,23 +254,6 @@ def _pooled_ladder(obs, horizon_key):
     return out
 
 
-def _conditional_vs_ret20(obs, horizon_key):
-    """growth top-minus-bottom within ret20 quintile bands (double-sort residual)."""
-    bands = _quintile_groups(obs, "ret20")
-    spreads = []
-    for band in bands:
-        if len(band) < QUINTILE * 4:
-            continue
-        gq = _quintile_groups(band, "growth")
-        top = [r[horizon_key] for r in gq[-1] if r[horizon_key] is not None]
-        bot = [r[horizon_key] for r in gq[0] if r[horizon_key] is not None]
-        if len(top) >= 3 and len(bot) >= 3:
-            spreads.append(sum(top) / len(top) - sum(bot) / len(bot))
-    if not spreads:
-        return None, None
-    return round(sum(spreads) / len(spreads), 6), _tstat(spreads)
-
-
 def run(output: Path = DEFAULT_OUTPUT) -> dict[str, Any]:
     import time
     t0 = time.time()
@@ -255,10 +263,12 @@ def run(output: Path = DEFAULT_OUTPUT) -> dict[str, Any]:
 
     per_window_obs = {}
     per_window_ls = {}
+    resid20_daily_all = []
     for w, (s, e) in WINDOWS.items():
-        obs, daily_ls = collect(prepared, growth_idx, s, e)
+        obs, daily_ls, daily_resid20 = collect(prepared, growth_idx, s, e)
         per_window_obs[w] = obs
         per_window_ls[w] = daily_ls
+        resid20_daily_all.extend(daily_resid20)
     pooled = [r for obs in per_window_obs.values() for r in obs]
 
     # pooled long-short t-stat per horizon (across all sampled days, all windows)
@@ -275,7 +285,11 @@ def run(output: Path = DEFAULT_OUTPUT) -> dict[str, Any]:
         for h in FORWARD_HORIZONS
     }
     ladders = {h: _pooled_ladder(pooled, "f10" if h == 10 else "f20") for h in FORWARD_HORIZONS}
-    resid_mean, resid_tstat = _conditional_vs_ret20(pooled, "f20")
+    # proper residual: t-stat over the DAILY within-ret20-band growth spread
+    # series (one observation per sampled day), not over the 5 band means.
+    resid_mean = round(statistics.mean(resid20_daily_all), 6) if resid20_daily_all else None
+    resid_tstat = _tstat(resid20_daily_all)
+    resid_n = len(resid20_daily_all)
 
     # judge on primary horizon (20d)
     h = PRIMARY_HORIZON
@@ -321,8 +335,13 @@ def run(output: Path = DEFAULT_OUTPUT) -> dict[str, Any]:
             for h_ in FORWARD_HORIZONS
         },
         "ret20_double_sort_residual_20d": {
-            "mean": resid_mean, "tstat": resid_tstat,
-            "note": "growth top-minus-bottom within ret20 bands; must be >cost AND t>=2 for incrementality",
+            "mean": resid_mean, "tstat": resid_tstat, "n_sampled_days": resid_n,
+            "note": (
+                "t-stat over the DAILY within-ret20-band growth top-minus-bottom "
+                "spread series (n = sampled days); must be >cost AND t>=2 for "
+                "incrementality. (An earlier version mistakenly t-tested only the "
+                "5 band means, n=5 — fixed here.)"
+            ),
         },
         "round_trip_long_short_cost": LONG_SHORT_COST,
         "tstat_floor": T_STAT_FLOOR,

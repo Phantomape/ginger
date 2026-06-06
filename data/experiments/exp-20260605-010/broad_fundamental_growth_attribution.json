@@ -1,0 +1,89 @@
+{
+  "anti_js": "No JavaScript was used.",
+  "caveat": "Realized (not forward) growth; quarterly value held constant between filings so daily-frequency signal is stale within a quarter. Warehouse survivorship; raw close-to-close; growth clipped at +/-500pct YoY to tame tiny-prior-base blowups; 3 windows are one contiguous 18-month period. Long-short t-stat does not account for borrow/impact.",
+  "decision": "observed_only_no_robust_growth_edge",
+  "experiment_id": "exp-20260605-010",
+  "gates": {
+    "all_passed": false,
+    "gate1": {
+      "n": 71518,
+      "name": "observations_collected",
+      "passed": true
+    },
+    "gate2": {
+      "name": "pit_growth_join",
+      "note": "signal uses most recent companyfacts row with asof_date<=signal_day",
+      "passed": true
+    },
+    "gate3": {
+      "name": "survival_rate_not_affected_read_only",
+      "passed": true
+    },
+    "gate4": {
+      "incremental_over_ret20": true,
+      "name": "incremental_growth_edge_over_ret20",
+      "passed": false,
+      "primary_horizon": 20,
+      "raw_long_short_ok": false,
+      "raw_net_of_cost_ok": false,
+      "residual_mean": 0.011835,
+      "residual_tstat": 3.2877,
+      "status": "observed_only_no_robust_growth_edge"
+    }
+  },
+  "growth_quintile_long_short": {
+    "h10": {
+      "mean_gross": 0.001974,
+      "mean_net_of_cost": -0.005026,
+      "per_window_mean": {
+        "late_strong": -0.013669,
+        "mid_weak": 0.007719,
+        "old_thin": 0.010331
+      },
+      "pooled_quintile_ladder_low_to_high_growth": [
+        0.014256,
+        -0.002765,
+        0.004426,
+        0.004561,
+        0.007758
+      ],
+      "positive_windows": "2/3",
+      "tstat": 0.5259
+    },
+    "h20": {
+      "mean_gross": 0.005228,
+      "mean_net_of_cost": -0.001772,
+      "per_window_mean": {
+        "late_strong": -0.025793,
+        "mid_weak": 0.016562,
+        "old_thin": 0.021855
+      },
+      "pooled_quintile_ladder_low_to_high_growth": [
+        0.025723,
+        -0.015256,
+        0.007949,
+        0.008785,
+        0.017551
+      ],
+      "positive_windows": "2/3",
+      "tstat": 0.9189
+    }
+  },
+  "observations_by_window": {
+    "late_strong": 22729,
+    "mid_weak": 23595,
+    "old_thin": 25194
+  },
+  "ret20_double_sort_residual_20d": {
+    "mean": 0.011835,
+    "note": "growth top-minus-bottom within ret20 bands; must be >cost AND t>=2 for incrementality",
+    "tstat": 3.2877
+  },
+  "round_trip_long_short_cost": 0.007,
+  "rule_version": "broad_fundamental_growth_forward_return_v1",
+  "runtime_seconds": 23.0,
+  "signal": "companyfacts revenue YoY growth (PIT asof<=signal_day), clip +/-5.0",
+  "total_observations": 71518,
+  "tstat_floor": 2.0,
+  "universe": "exp-20260519-030 warehouse all_windows_full_liquid"
+}
