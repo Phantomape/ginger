@@ -3,7 +3,7 @@
 This note records the research directions implied by the Kova PDF and the
 current Ginger evidence. It is a memory aid for future agents, not a trading
 rule. Use it together with `docs/backtesting.md`,
-`docs/alpha-optimization-playbook.md`, `docs/current_state.md`, and
+`docs/alpha-optimization-playbook.md`, `docs/current_state_snapshot.md`, and
 `docs/experiment_log.jsonl`.
 
 ## Current Anchor

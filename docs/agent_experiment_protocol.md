@@ -17,10 +17,10 @@ experiment artifact.
   current priorities, frozen retry zones, and lesson-card links.
 - `docs/current_state_snapshot.md`: default compact current-state entrypoint,
   recent accepted/default-off state, and exact-source pointers.
-- `docs/current_state.md`: legacy full exact-state reference for accepted stack,
-  activation map, default-off surfaces, and known blockers. Read targeted
-  sections when exact state details are needed; do not use it as the default
-  memory dump.
+- `docs/current_state.md`: thin file holding only the dashboard-parsed
+  activation map. The verbose accepted-stack / experiment-consolidation history
+  is archived in `docs/archive/current_state_legacy.md`; read the archive only
+  when exact deep history is needed, never as the default memory dump.
 - `docs/alpha-optimization-playbook.md`: preferred alpha directions, frozen
   retry zones, and mechanism-level lessons.
 - `docs/data_edge_context_layers.md`: passive context, sidecar, attribution, and
@@ -48,9 +48,10 @@ Experiment memory is intentionally layered:
 - `docs/lessons/*.md` cards store compact mechanism-level lessons for targeted
   retrieval.
 - `docs/current_state_snapshot.md` is the short current-state entrypoint.
-- `docs/current_state.md` is a full reference for exact accepted-stack and
-  activation details, not the default context to paste into every run. It can
-  be archived only after those exact-state duties have audited replacements.
+- `docs/current_state.md` is now a thin activation-map file; the verbose
+  accepted-stack / experiment-consolidation history lives in
+  `docs/archive/current_state_legacy.md`. Neither is default context — use
+  `docs/current_state_snapshot.md` for orientation.
 
 After closing a material alpha experiment, refresh the compact memory:
 

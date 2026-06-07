@@ -2,7 +2,7 @@
 
 This document is the weekly consolidation surface for research judgement
 quality. It is not a strategy log, not a trade signal, and not a replacement
-for `docs/current_state.md`, `docs/alpha-optimization-playbook.md`, or
+for `docs/current_state_snapshot.md`, `docs/alpha-optimization-playbook.md`, or
 `docs/experiment_log.jsonl`.
 
 Use it to answer four questions after enough predicted experiments have closed:

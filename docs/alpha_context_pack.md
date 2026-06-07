@@ -7,21 +7,21 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1061`
-- Raw records loaded by meta report: `1467`
-- History fingerprint: `26532b0ec01fc15c`
+- Strategy records counted: `1062`
+- Raw records loaded by meta report: `1468`
+- History fingerprint: `b11933f49c267328`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
-- Full exact-state fallback: `docs/current_state.md`.
+- Activation map: `docs/current_state.md`; deep history archive: `docs/archive/current_state_legacy.md`.
 
 ## How To Use
 
 - Read this file first for default memory.
 - Read a `docs/lessons/*.md` card when touching its mechanism family.
 - Read `docs/current_state_snapshot.md` for current-state orientation.
-- Read `docs/current_state.md` only for exact accepted-stack, baseline,
-  activation, or blocker details not covered by the snapshot.
+- Read `docs/archive/current_state_legacy.md` only for deep accepted-stack,
+  baseline, or blocker history not covered by the snapshot.
 - Run `.\.venv\Scripts\python.exe -B scripts\build_alpha_memory.py --git-ref HEAD`
   after closing and committing material alpha experiments so this pack
   reflects the latest committed lessons.
@@ -62,8 +62,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260607-012` `rejected_industry_dispersion_compression_repair_candidate_pool`: EV `+0.9113`, PnL `$12,296.17`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_dispersion_compression_repair_candidate_pool`.
-  Lesson: The candidate source failed to add robust replacement value, regressed a canonical window, or breached drawdown/concentration gates. That means high prior industry dispersion plus same-day repair did not reliably sepa...
 - `exp-20260607-013` `rejected_post_earnings_peer_upcoming_prewarm_candidate_pool`: EV `+0.0183`, PnL `$146.10`, family `production_visible_event_peer_relation_alpha`, trial `post_earnings_peer_upcoming_earnings_prewarm_candidate_pool`.
   Lesson: The source failed to add robust replacement value across the three canonical windows or breached sample/risk gates. The upcoming peer earnings timing relation did not sufficiently separate true pre-report repricing fr...
 - `exp-20260607-014` `rejected_industry_volume_breadth_laggard_repair_candidate_pool`: EV `+0.0409`, PnL `$771.96`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_volume_breadth_laggard_repair_candidate_pool`.
@@ -86,6 +84,8 @@ facts before changing strategy behavior.
   Lesson: The source failed to add robust replacement value after next-open entry and costs. That suggests crypto ETF thrust did not reliably separate durable proxy-stock leadership from high-beta chase in the canonical windows...
 - `exp-20260607-023` `rejected_volatility_stress_resilient_leadership_candidate_pool`: EV `+0.0443`, PnL `$-1,176.66`, family `production_visible_free_ohlcv_cross_asset_candidate_pool`, trial `volatility_stress_resilient_leadership_candidate_pool`.
   Lesson: The source failed to add robust replacement value after next-open entry and costs. That suggests VIXY stress did not reliably separate durable resilient stock leadership from broad risk-off noise in the canonical wind...
+- `exp-20260607-024` `rejected_rates_up_financial_leadership_candidate_pool`: EV `-0.0310`, PnL `$-1,546.51`, family `production_visible_free_ohlcv_cross_asset_candidate_pool`, trial `rates_up_financial_leadership_candidate_pool`.
+  Lesson: The relation likely measures same-day financial beta rather than durable delayed continuation. Gate 4 observed 23 target trades; old_thin changed by -0.0459 EV and $-1,806.15. If rejected, the after-cost next-open edg...
 
 ## Highest-Signal Historical Records
 

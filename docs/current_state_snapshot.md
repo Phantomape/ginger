@@ -6,18 +6,19 @@ complete state database.
 
 ## Source Snapshot
 
-- Strategy records counted: `1061`
+- Strategy records counted: `1062`
 - Accepted strategy records: `186`
-- History fingerprint: `26532b0ec01fc15c`
+- History fingerprint: `b11933f49c267328`
 - Generated from committed experiment logs when using `--git-ref HEAD`.
 
 ## Exact State Sources
 
 - `docs/backtesting.md`: canonical windows, commands, metric definitions,
   and baseline protocol.
-- `docs/current_state.md`: legacy full exact-state reference. Read only
-  targeted sections when exact accepted-stack, activation, or blocker
-  details are needed.
+- `docs/current_state.md`: thin file holding only the dashboard-parsed
+  activation map. The verbose accepted-stack / experiment-consolidation
+  history is archived in `docs/archive/current_state_legacy.md`; read it
+  only if exact deep history is needed.
 - `docs/production_backtest_parity.md`: production/backtest parity rules.
 - `operator_inputs/open_positions.json` and live/paper ledgers: current
   runtime position state.
@@ -28,7 +29,8 @@ complete state database.
 - Then read this snapshot for state orientation.
 - Then read a mechanism card in `docs/lessons/*.md` if touching that
   mechanism family.
-- Only then open targeted sections of the long `docs/current_state.md`.
+- Only if exact deep history is required, open targeted sections of
+  `docs/archive/current_state_legacy.md`.
 
 ## Recent Accepted Strategy Records
 
@@ -90,13 +92,13 @@ complete state database.
 
 ## State Migration Note
 
-- Do not delete `docs/current_state.md` until exact accepted-stack,
-  activation-map, baseline, and blocker duties have an audited
-  replacement source.
+- The verbose accepted-stack / experiment-consolidation history has been
+  archived to `docs/archive/current_state_legacy.md`; `docs/current_state.md`
+  now keeps only the dashboard-parsed activation map.
 - Historical lessons should move to generated context packs and lesson
   cards, not into this snapshot.
 
 ## Line Budget
 
 - Target maximum lines: `220`
-- Actual lines when generated: `102`
+- Actual lines when generated: `104`

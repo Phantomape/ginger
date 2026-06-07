@@ -60,7 +60,8 @@ expected_value_score = strategy_total_return_pct × sharpe_daily
 
 ```text
 docs/backtesting.md
-docs/current_state.md
+docs/alpha_context_pack.md
+docs/current_state_snapshot.md
 docs/agent_experiment_protocol.md
 docs/iteration_analysis.md
 docs/experiment_log.jsonl
@@ -122,7 +123,7 @@ alpha_search / alpha_discovery / universe_scout 类型的 ticket，必须包含 
 ```
 
 该报告只用于研究队列排序，不是交易信号，也不能替代
-`docs/backtesting.md`、`docs/current_state.md` 或 Gate 1-4。优先用它回答：
+`docs/backtesting.md`、`docs/current_state_snapshot.md` 或 Gate 1-4。优先用它回答：
 
 - 哪些 mechanism / trial family 历史上更值得继续；
 - 哪些方向属于 `freeze_candidates`，重试前需要新证据；
