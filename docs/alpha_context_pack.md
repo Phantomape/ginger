@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1042`
-- Raw records loaded by meta report: `1447`
-- History fingerprint: `0de19f16f16ecd21`
+- Strategy records counted: `1046`
+- Raw records loaded by meta report: `1452`
+- History fingerprint: `7feb1214eeb76234`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Full current stack reference: `docs/current_state.md`.
@@ -28,6 +28,8 @@ facts before changing strategy behavior.
 
 - `production_visible_default_off_paper_adapter_for_candidate_pool_alpha` priority `0.8477`: experiments `1`, accept `100.00%`, sum EV `+0.7124`, sum PnL `$13,225.50`.
   Reason: 1/1 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
+- `default_off_paper_shared_adapter` priority `0.8476`: experiments `1`, accept `100.00%`, sum EV `+0.2763`, sum PnL `$6,208.99`.
+  Reason: 1/1 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
 - `default_off_paper_adapter` priority `0.8173`: experiments `7`, accept `85.71%`, sum EV `+4.8031`, sum PnL `$81,956.93`.
   Reason: 1/7 records have sample >= 10; 7/7 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive...
 - `paper_notional_support_scout` priority `0.7009`: experiments `3`, accept `66.67%`, sum EV `+0.0804`, sum PnL `$1,393.64`.
@@ -44,9 +46,6 @@ facts before changing strategy behavior.
 - `fundamental_growth_rs_default_off_candidate_pool` priority `0.5443`: experiments `1`, accept `0.00%`, sum EV `+5.2015`, sum PnL `$92,488.83`.
   Reason: 1/1 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
   Guardrail: many prior rejections in this family
-- `default_off_broad_5d_winner_continuation_candidate_pool` priority `0.5432`: experiments `1`, accept `0.00%`, sum EV `+1.9754`, sum PnL `$25,210.26`.
-  Reason: 1/1 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
-  Guardrail: many prior rejections in this family
 
 ## Frozen Or High-Risk Near Neighbors
 
@@ -61,14 +60,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260606-019` `positive_replay_lead_not_promoted_macro_relief_top2_leadership_candidate_pool`: EV `+0.1813`, PnL `$3,062.78`, family `free_official_macro_calendar_plus_ohlcv_candidate_pool`, trial `macro_relief_leadership_candidate_pool`.
-  Lesson: Official CPI/FOMC/NFP relief days where SPY and QQQ both rally and close strong may support two liquid stock leaders per event day, increasing sample size while preserving the positive three-window top-1 edge.
-- `exp-20260606-020` `accepted_macro_relief_top2_shared_default_off_paper_adapter`: EV `+0.1813`, PnL `$3,062.78`, family `free_official_macro_calendar_plus_ohlcv_candidate_pool`, trial `macro_relief_leadership_candidate_pool`.
-  Lesson: The positive exp-20260606-019 macro relief top-2 stock leadership source can be implemented as one shared default-off paper adapter without changing the three-window evidence or creating a production/backtest mismatch.
-- `exp-20260606-023` `rejected_market_state_lagged_consensus_allocation`: EV `+0.0000`, PnL `$0.00`, family `default_off_paper_allocation`, trial `market_state_sleeve_router_allocation`.
-  Lesson: Accepted lagged free-data consensus paper candidates may deserve higher allocation only when prior-close state is mixed|balanced|normal. This tests a frozen 1.25x target-state notional top-up against the current accep...
-- `exp-20260606-024` `positive_replay_lead_not_promoted_core_flow_peer_shock_lag`: EV `+0.3845`, PnL `$6,107.66`, family `production_visible_free_ohlcv_relation_alpha`, trial `rolling_corr_peer_shock_core_flow_candidate_pool`.
-  Lesson: Core-flow confirmed rolling-correlation peer-shock candidates may expand the default-off paper pool only when the same signal date already has core A/B entry flow and the candidate itself closes positive.
 - `exp-20260606-025` `accepted_rolling_corr_peer_shock_shared_default_off_adapter`: EV `+0.0000`, PnL `$0.00`, family `production_visible_free_ohlcv_relation_alpha`, trial `rolling_corr_peer_shock_default_off_shared_adapter`.
   Lesson: The core-flow confirmed rolling-correlation peer-shock lead remains valuable when candidate generation is moved into a shared default-off paper adapter used by both historical replay and daily snapshot tests.
 - `exp-20260606-026` `accepted`: EV `+0.0000`, PnL `$0.00`, family `default_off_forward_adapter_wiring`, trial `default_off_forward_adapter_wiring`.
@@ -85,6 +76,14 @@ facts before changing strategy behavior.
   Lesson: window_ev_regression;window_pnl_regression
 - `exp-20260607-004` `unknown`: EV `+0.0000`, PnL `$0.00`, family `sec_guidance_outlook_raise_price_aligned_candidate_pool`, trial `sec_guidance_outlook_raise_price_aligned_candidate_pool`.
   Lesson: The guidance/outlook raise evidence-span rule found too few independent events and the selected positives were concentrated in large-cap continuation names already represented by existing momentum or consensus surface...
+- `exp-20260607-005` `rejected_trend_quality_short_horizon_reversal_candidate_pool`: EV `+0.0082`, PnL `$-917.35`, family `production_visible_free_ohlcv_candidate_pool`, trial `trend_quality_short_horizon_reversal_candidate_pool`.
+  Lesson: The source had enough sample size and passed concentration checks, but the edge appeared only in mid_weak. late_strong and old_thin both lost EV/PnL, and old_thin added 2.50pp of drawdown, which means the ret3 excess...
+- `exp-20260607-006` `rejected_macro_relief_sector_confirmed_leadership_candidate_pool`: EV `+0.2287`, PnL `$5,261.19`, family `free_official_macro_calendar_plus_ohlcv_candidate_pool`, trial `macro_relief_sector_confirmed_leadership_candidate_pool`.
+  Lesson: Core Gate 4 passed, but the stricter accepted-comparator check rejected the variant because late_strong regressed versus exp020.
+- `exp-20260607-007` `positive_replay_lead_not_promoted_industry_relative_laggard_repair`: EV `+0.2763`, PnL `$6,208.99`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_relative_laggard_repair_candidate_pool`.
+  Lesson: The source produced positive replacement value in all three canonical windows without breaching drawdown, survival, or concentration guardrails, suggesting industry-relative lag plus same-day repair captured a distinc...
+- `exp-20260607-008` `accepted_industry_relative_laggard_repair_shared_default_off_adapter`: EV `+0.2763`, PnL `$6,208.99`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_relative_laggard_repair_shared_default_off_adapter`.
+  Lesson: The shared helper reproduced the private replay lead with the same fixed policy bundle, indicating the alpha came from the industry relative lag plus same-day repair relation rather than runner-only implementation qui...
 
 ## Highest-Signal Historical Records
 
@@ -123,4 +122,4 @@ facts before changing strategy behavior.
 ## Line Budget
 
 - Target maximum lines: `420`
-- Actual lines when generated: `126`
+- Actual lines when generated: `125`
