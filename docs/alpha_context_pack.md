@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1057`
-- Raw records loaded by meta report: `1521`
-- History fingerprint: `6cda8321a0656f9f`
+- Strategy records counted: `1060`
+- Raw records loaded by meta report: `1466`
+- History fingerprint: `8d87508916675dbb`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -36,11 +36,11 @@ facts before changing strategy behavior.
   Reason: 1/7 records have sample >= 10; 7/7 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive...
 - `paper_notional_support_scout` priority `0.7009`: experiments `3`, accept `66.67%`, sum EV `+0.0804`, sum PnL `$1,393.64`.
   Reason: 3/3 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
-- `pilot_or_sleeve` priority `0.6319`: experiments `163`, accept `25.77%`, sum EV `+66.3503`, sum PnL `$1,150,019.23`.
-  Reason: 162/163 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually changes sizing/allocation rather than...
+- `pilot_or_sleeve` priority `0.6341`: experiments `157`, accept `26.75%`, sum EV `+65.3614`, sum PnL `$1,132,114.57`.
+  Reason: 156/157 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually changes sizing/allocation rather than...
   Guardrail: heavily explored family; diminishing-return risk; many prior rejections in this family
-- `slot_or_ranking` priority `0.5671`: experiments `116`, accept `26.72%`, sum EV `+27.0021`, sum PnL `$475,621.54`.
-  Reason: 1/116 records have sample >= 10; 113/116 records show multi-window evidence; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
+- `slot_or_ranking` priority `0.5687`: experiments `115`, accept `26.96%`, sum EV `+27.0021`, sum PnL `$475,621.54`.
+  Reason: 1/115 records have sample >= 10; 112/115 records show multi-window evidence; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
   Guardrail: average drawdown delta worsens; can change survival, trade count, or exit distribution broadly; heavily explored family; diminishing-return risk; many prior rejections in this family
 - `default_off_paper_allocation` priority `0.5641`: experiments `12`, accept `33.33%`, sum EV `+0.0285`, sum PnL `$456.30`.
   Reason: 12/12 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs
@@ -62,12 +62,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260607-008` `accepted_industry_relative_laggard_repair_shared_default_off_adapter`: EV `+0.2763`, PnL `$6,208.99`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_relative_laggard_repair_shared_default_off_adapter`.
-  Lesson: The shared helper reproduced the private replay lead with the same fixed policy bundle, indicating the alpha came from the industry relative lag plus same-day repair relation rather than runner-only implementation qui...
-- `exp-20260607-009` `rejected_industry_pullback_leader_resilience_candidate_pool`: EV `-0.0595`, PnL `$672.27`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_pullback_leader_resilience_candidate_pool`.
-  Lesson: The candidate source either failed to add aggregate replacement value, regressed at least one canonical window, or breached drawdown/concentration gates. That means leader resilience inside industry pullbacks did not...
-- `exp-20260607-010` `rejected_industry_breadth_repair_second_line_candidate_pool`: EV `+0.5350`, PnL `$8,091.64`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_breadth_repair_second_line_candidate_pool`.
-  Lesson: The candidate source failed to add robust replacement value, regressed a canonical window, or breached drawdown/concentration gates. That means same-day industry breadth repair did not reliably separate second-line ca...
 - `exp-20260607-011` `rejected_precious_metals_etf_producer_lag_candidate_pool`: EV `-0.0274`, PnL `$719.53`, family `production_visible_free_ohlcv_relation_alpha`, trial `precious_metals_etf_producer_lag_candidate_pool`.
   Lesson: Gate 4 failed even though the sleeve generated 76 trades and positive aggregate PnL, because expected_value_score fell and late_strong regressed on both EV and PnL. The GLD/SLV move appears to be priced into producer...
 - `exp-20260607-012` `rejected_industry_dispersion_compression_repair_candidate_pool`: EV `+0.9113`, PnL `$12,296.17`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_dispersion_compression_repair_candidate_pool`.
@@ -86,6 +80,12 @@ facts before changing strategy behavior.
   Lesson: The source produced positive replacement value in all three windows without breaching drawdown, survival, or concentration guardrails, suggesting volatility-premium compression added a distinct cross-asset risk-relief...
 - `exp-20260607-019` `accepted_volatility_relief_stock_leadership_shared_default_off_adapter`: EV `+0.5732`, PnL `$11,934.79`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `volatility_relief_stock_leadership_shared_adapter`.
   Lesson: Shared replay matched the exp-20260607-018 lead because the alpha came from a distinct VIXY volatility-compression state plus liquid stock leadership, not runner-only implementation details. Do not retry by sweeping V...
+- `exp-20260607-020` `rejected_credit_relief_stock_leadership_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `production_visible_free_ohlcv_cross_asset_candidate_pool`, trial `credit_relief_stock_leadership_candidate_pool`.
+  Lesson: The source produced zero target rows because HYG and JNK are absent from the canonical broad warehouse. This is a data-coverage failure for the proposed credit-risk proxy, not evidence that credit relief thresholds sh...
+- `exp-20260607-021` `rejected_dollar_weakness_stock_leadership_candidate_pool`: EV `+0.2787`, PnL `$3,335.13`, family `production_visible_free_ohlcv_cross_asset_candidate_pool`, trial `dollar_weakness_stock_leadership_candidate_pool`.
+  Lesson: The source failed to add robust replacement value after next-open entry and costs. That suggests UUP weakness with risk-on confirmation did not reliably separate durable stock leadership from broad risk-on momentum in...
+- `exp-20260607-022` `rejected_crypto_etf_thrust_proxy_stock_leadership_candidate_pool`: EV `-0.1716`, PnL `$163.72`, family `production_visible_free_ohlcv_relation_alpha`, trial `crypto_etf_thrust_proxy_stock_leadership_candidate_pool`.
+  Lesson: The source failed to add robust replacement value after next-open entry and costs. That suggests crypto ETF thrust did not reliably separate durable proxy-stock leadership from high-beta chase in the canonical windows...
 
 ## Highest-Signal Historical Records
 
