@@ -1,0 +1,127 @@
+{
+  "acceptance_rule": "docs/backtesting.md canonical three windows: aggregate EV/PnL positive, no EV/PnL regression window, target trades >=20 across all three windows, survival >=5%, drawdown drift <=0.5pp, concentration pass",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260607_016_risk_appetite_tech_laggard_repair.py",
+    "data/experiments/exp-20260607-016",
+    "experiments/logs/exp-20260607-016.json",
+    "experiments/tickets/exp-20260607-016.json",
+    "experiments/cards/exp-20260607-016.md",
+    "experiments/manifests/exp-20260607-016.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "card_file": "experiments/cards/exp-20260607-016.md",
+  "causal_components": [
+    "QQQ firm day",
+    "IWM relative risk appetite",
+    "Technology/semiconductor liquid universe",
+    "20d laggard repair",
+    "next-open 10d paper hold"
+  ],
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "risk_appetite_tech_laggard_repair_candidate_source_v1",
+  "claimed_at": "2026-06-07T14:09:14+00:00",
+  "completed_at": "2026-06-07T14:17:05Z",
+  "created_at": "2026-06-07T14:09:00+00:00",
+  "decision": "rejected_risk_appetite_tech_laggard_repair_candidate_pool",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260607-016",
+  "experiment_uid": "expuid-04827f9a804242c8",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260607-016",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-07T14:09:00+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "risk_appetite_tech_laggard_repair_candidate_source_v1"
+  },
+  "hypothesis": "When QQQ is firm and IWM outperforms SPY, risk appetite may pull forward delayed repair in liquid Technology and semiconductor laggards that are reclaiming relative strength at the close.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "core strategy",
+    "accepted default-on policy",
+    "entry slippage",
+    "exit slippage",
+    "round-trip costs",
+    "hold_days=10",
+    "paper_notional=4000",
+    "trade_enabled=false"
+  ],
+  "mechanism_family": "production_visible_free_ohlcv_relation_alpha",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "production order path",
+    "live/default orders",
+    "core ranking",
+    "core sizing",
+    "exits",
+    "LLM/news scoring",
+    "state_surface_sleeve"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260607-007",
+    "exp-20260607-008",
+    "exp-20260607-010",
+    "exp-20260607-014",
+    "exp-20260607-015"
+  ],
+  "new_evidence_type": "free_ohlcv_qqq_iwm_confirmed_tech_laggard_repair",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "Uses only free OHLCV and available QQQ/IWM/SPY context, but recent industry/OHLCV relation variants failed old_thin, so prior confidence is low.",
+    "expected_ev_delta": 0.12,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "near_neighbor_to_industry_laggard",
+      "old_thin_regression",
+      "small_sample",
+      "tech_beta_chase",
+      "drawdown_drift"
+    ],
+    "recorded_at": "2026-06-07T14:08:54+00:00",
+    "success_probability": 0.12
+  },
+  "prior_trial_count": 5,
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": -0.0448,
+    "aggregate_strategy_total_pnl_delta": -609.14,
+    "artifact": "data/experiments/exp-20260607-016/exp_20260607_016_risk_appetite_tech_laggard_repair.json",
+    "calibration": {
+      "actual_gate4_passed": false,
+      "brier_score": 0.0144,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small"
+      ],
+      "predicted_success_probability": 0.12
+    },
+    "decision": "rejected_risk_appetite_tech_laggard_repair_candidate_pool",
+    "log": "experiments/logs/exp-20260607-016.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260607-016.json",
+  "single_causal_variable": "risk_appetite_tech_laggard_repair_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The QQQ/IWM risk-appetite tech laggard source did not clear Gate 4. Do not promote it or answer by retuning QQQ/IWM thresholds, tech lag bands, reclaim, liquidity, volatility, hold-day, cooldown, top-N, or notional on these frozen windows.",
+  "ticket_file": "experiments/tickets/exp-20260607-016.json",
+  "trial_family": "risk_appetite_tech_laggard_repair_candidate_pool",
+  "trial_variant_id": "qqq_iwm_confirmed_tech_laggard_repair_top1_next_open_10d_v1"
+}
