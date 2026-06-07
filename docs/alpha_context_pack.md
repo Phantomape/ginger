@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1062`
-- Raw records loaded by meta report: `1468`
-- History fingerprint: `b11933f49c267328`
+- Strategy records counted: `1064`
+- Raw records loaded by meta report: `1470`
+- History fingerprint: `4eebf7c9c9dca2d8`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -62,10 +62,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260607-013` `rejected_post_earnings_peer_upcoming_prewarm_candidate_pool`: EV `+0.0183`, PnL `$146.10`, family `production_visible_event_peer_relation_alpha`, trial `post_earnings_peer_upcoming_earnings_prewarm_candidate_pool`.
-  Lesson: The source failed to add robust replacement value across the three canonical windows or breached sample/risk gates. The upcoming peer earnings timing relation did not sufficiently separate true pre-report repricing fr...
-- `exp-20260607-014` `rejected_industry_volume_breadth_laggard_repair_candidate_pool`: EV `+0.0409`, PnL `$771.96`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_volume_breadth_laggard_repair_candidate_pool`.
-  Lesson: The candidate source failed to add robust replacement value, regressed a canonical window, or breached drawdown/concentration gates. That means group-level volume breadth did not reliably separate real fund-flow diffu...
 - `exp-20260607-015` `rejected_rates_relief_duration_growth_laggard_candidate_pool`: EV `+0.0650`, PnL `$769.74`, family `production_visible_free_ohlcv_relation_alpha`, trial `rates_relief_duration_growth_laggard_candidate_pool`.
   Lesson: The relation was directionally positive in aggregate but too thin and not robust enough for retention. late_strong and mid_weak improved, but old_thin regressed by -0.0327 EV and $-1,155.31; only 18 target trades clos...
 - `exp-20260607-016` `rejected_risk_appetite_tech_laggard_repair_candidate_pool`: EV `-0.0448`, PnL `$-609.14`, family `production_visible_free_ohlcv_relation_alpha`, trial `risk_appetite_tech_laggard_repair_candidate_pool`.
@@ -86,6 +82,10 @@ facts before changing strategy behavior.
   Lesson: The source failed to add robust replacement value after next-open entry and costs. That suggests VIXY stress did not reliably separate durable resilient stock leadership from broad risk-off noise in the canonical wind...
 - `exp-20260607-024` `rejected_rates_up_financial_leadership_candidate_pool`: EV `-0.0310`, PnL `$-1,546.51`, family `production_visible_free_ohlcv_cross_asset_candidate_pool`, trial `rates_up_financial_leadership_candidate_pool`.
   Lesson: The relation likely measures same-day financial beta rather than durable delayed continuation. Gate 4 observed 23 target trades; old_thin changed by -0.0459 EV and $-1,806.15. If rejected, the after-cost next-open edg...
+- `exp-20260607-025` `rejected_pead_broad_universe_historical_replay`: EV `-0.7738`, PnL `$-10,060.33`, family `production_visible_free_earnings_candidate_pool`, trial `pead_broad_universe_historical_candidate_pool`.
+  Lesson: Gate 4 observed 97 closed target trades; old_thin changed by -0.1642 EV and $-6,322.44. The evidence suggests the broad direct issuer PEAD source is not credible as a replacement-value candidate pool under the existin...
+- `exp-20260607-026` `rejected_volatility_curve_relief_stock_leadership_candidate_pool`: EV `+0.4441`, PnL `$7,338.46`, family `production_visible_free_ohlcv_cross_asset_candidate_pool`, trial `volatility_curve_relief_stock_leadership_candidate_pool`.
+  Lesson: VIXM did not add enough independent information beyond the accepted VIXY relief state. The stricter curve-relief requirement either thinned the sample, removed accepted VIXY winners, or merely relabeled the same risk-...
 
 ## Highest-Signal Historical Records
 
