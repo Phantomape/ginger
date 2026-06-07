@@ -209,6 +209,53 @@ Next valid work:
 Do not retune nearby correlation thresholds, core-flow admission, top-N, hold
 days, same-ticker cooldown, or paper notional on the frozen sample.
 
+### Industry-Relative Laggard Repair
+
+This is a free-OHLCV candidate-pool lead. In liquid industry groups that are
+already showing 20-day relative strength, a stock that lagged the group but
+reclaims relative strength on the signal day can be tracked as a catch-up
+candidate without simply adding noisy broad-universe momentum names.
+
+Accepted shared adapter: `exp-20260607-008`, promoting the positive replay lead
+from `exp-20260607-007`.
+
+Mechanism:
+
+- source universe: broad-market, sector-known, liquid stock observation feed;
+- grouping: persisted public industry label, falling back to sector;
+- group gate: positive group 20-day excess return versus `SPY`, sufficient
+  positive-member breadth, and non-broken 5-day group context;
+- candidate gate: 20-day lag versus group, non-broken 60-day trend, positive
+  same-day reclaim versus `SPY`, close-location, volume, and volatility guards;
+- lifecycle: top-1/day, fixed `$4,000` paper notional, next-open paper entry,
+  10-trading-day close exit, costs included, and 15-trading-day same-ticker
+  cooldown;
+- status: default-off paper only, no live orders.
+
+Evidence:
+
+- aggregate EV `7.8941 -> 8.1704` (`+0.2763`);
+- PnL `$234,850.99 -> $241,059.98`;
+- all three canonical windows improved;
+- target paper trades: `306`;
+- max drawdown drift: `0.0021`;
+- shared adapter reproduced the private replay lead with zero EV/PnL/trade
+  drift.
+
+Next valid work:
+
+- collect closed forward replacement-value rows from the shared adapter;
+- audit industry/sector coverage and missing OHLCV rows in the broad-market
+  feed;
+- search for a genuinely point-in-time peer/industry classification or
+  low-latency industry news/event field if free data exists;
+- before live deployment, either measure the full execution envelope
+  (notional/cap/liquidity/slippage/displacement/kill switch/order semantics) or
+  release through checklist if that envelope has already been accepted.
+
+Do not retune nearby industry lag, group-strength, signal-day reclaim, top-N,
+hold days, same-ticker cooldown, or paper notional on the frozen sample.
+
 ### Lagged Independent Free-Data Consensus
 
 The accepted consensus route is that a current accepted-source paper candidate

@@ -223,6 +223,7 @@ def build_default_off_alpha_attribution_report(
     broad_market_paper_sleeve: dict[str, Any] | None = None,
     macro_relief_leadership_paper_sleeve: dict[str, Any] | None = None,
     rolling_corr_peer_shock_paper_sleeve: dict[str, Any] | None = None,
+    industry_relative_laggard_repair_paper_sleeve: dict[str, Any] | None = None,
     ai_optical_paper_sleeve: dict[str, Any] | None = None,
     volatility_contraction_paper_sleeve: dict[str, Any] | None = None,
     volume_breadth_breakout_paper_sleeve: dict[str, Any] | None = None,
@@ -324,6 +325,42 @@ def build_default_off_alpha_attribution_report(
                 "uses_free_ohlcv_only": (
                     (
                         (rolling_corr_peer_shock_paper_sleeve or {}).get(
+                            "production_impact"
+                        )
+                        or {}
+                    ).get("uses_free_ohlcv_only")
+                ),
+            },
+        ),
+        _surface_summary(
+            name="industry_relative_laggard_repair",
+            label="INDUSTRY_RELATIVE_LAGGARD_REPAIR_PAPER",
+            snapshot=industry_relative_laggard_repair_paper_sleeve,
+            extra_metrics={
+                "rule_version": (
+                    (industry_relative_laggard_repair_paper_sleeve or {}).get("rule_version")
+                ),
+                "source_rule_version": (
+                    (industry_relative_laggard_repair_paper_sleeve or {}).get(
+                        "source_rule_version"
+                    )
+                ),
+                "raw_candidate_count": (
+                    (industry_relative_laggard_repair_paper_sleeve or {}).get(
+                        "raw_candidate_count"
+                    )
+                ),
+                "strong_group_rows": (
+                    (
+                        (industry_relative_laggard_repair_paper_sleeve or {}).get(
+                            "industry_repair_context"
+                        )
+                        or {}
+                    ).get("strong_group_rows")
+                ),
+                "uses_free_ohlcv_only": (
+                    (
+                        (industry_relative_laggard_repair_paper_sleeve or {}).get(
                             "production_impact"
                         )
                         or {}
