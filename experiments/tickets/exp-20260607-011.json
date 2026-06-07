@@ -1,0 +1,109 @@
+{
+  "acceptance_rule": "Aggregate expected_value_score and PnL positive versus accepted core baseline, no standard-window EV/PnL regression, >=20 target trades, survival_rate >=5%, no material drawdown/tail worsening; replay-only positive remains a lead until shared production-visible adapter passes parity.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260607_011_precious_metals_etf_producer_lag.py",
+    "data/experiments/exp-20260607-011",
+    "experiments/logs/exp-20260607-011.json",
+    "experiments/cards/exp-20260607-011.md",
+    "experiments/tickets/exp-20260607-011.json",
+    "experiments/manifests/exp-20260607-011.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_20260422_20261021.json",
+  "card_file": "experiments/cards/exp-20260607-011.md",
+  "causal_components": [
+    "GLD/SLV context thrust",
+    "producer industry universe",
+    "lagging constructive equity confirmation",
+    "top1 daily 10d paper hold"
+  ],
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "Fixed commodity ETF-to-producer lag policy: after strong GLD or SLV relative thrust, rank liquid Basic Materials gold/silver/mining producers that lag the ETF but close constructively for a 10-day default-off paper hold.",
+  "claimed_at": "2026-06-07T09:09:40+00:00",
+  "completed_at": "2026-06-07T09:17:13Z",
+  "created_at": "2026-06-07T09:09:05+00:00",
+  "decision": "rejected_precious_metals_etf_producer_lag_candidate_pool",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260607-011",
+  "experiment_uid": "expuid-4411ce8882b44525",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260607-011",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-07T09:09:05+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "precious_metals_etf_producer_lag"
+  },
+  "hypothesis": "Precious metals ETF thrusts should identify liquid gold and silver producer laggards where commodity beta has moved but operating-leverage equities have not fully repriced; the edge uses free PIT OHLCV and expands the candidate pool without changing live orders.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "Fixed commodity ETF-to-producer lag policy: after strong GLD or SLV relative thrust, rank liquid Basic Materials gold/silver/mining producers that lag the ETF but close constructively for a 10-day default-off paper hold."
+  ],
+  "mechanism_family": "commodity_beta_producer_lag",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260514-018",
+    "exp-20260514-049",
+    "exp-20260514-050",
+    "exp-20260606-029"
+  ],
+  "new_evidence_type": "Commodity sleeve and gold ETF allocation successes exist, while broad sector ETF laggard failed; this tests a narrower producer-beta relation with free OHLCV.",
+  "owner": "codex",
+  "prediction": {
+    "confidence_reason": "Narrow commodity relation has stronger economic channel than broad sector ETF, but existing producer universe may be thin.",
+    "expected_ev_delta": 0.12,
+    "expected_pnl_delta": 3500.0,
+    "main_failure_modes": [
+      "commodity ETF move already priced in miners",
+      "thin producer universe concentration",
+      "late_strong only correlation",
+      "old_thin reversal after precious metals spikes"
+    ],
+    "recorded_at": "2026-06-07T09:08:52+00:00",
+    "success_probability": 0.42
+  },
+  "prior_trial_count": 1,
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": -0.0274,
+    "aggregate_strategy_total_pnl_delta": 719.53,
+    "artifact": "data/experiments/exp-20260607-011/exp_20260607_011_precious_metals_etf_producer_lag.json",
+    "calibration": {
+      "actual_ev_delta": -0.0274,
+      "actual_gate4_passed": false,
+      "actual_pnl_delta": 719.53,
+      "actual_success": 0,
+      "brier_score": 0.1764,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression"
+      ],
+      "predicted_success_probability": 0.42
+    },
+    "decision": "rejected_precious_metals_etf_producer_lag_candidate_pool",
+    "log": "experiments/logs/exp-20260607-011.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260607-011.json",
+  "single_causal_variable": "Fixed commodity ETF-to-producer lag policy: after strong GLD or SLV relative thrust, rank liquid Basic Materials gold/silver/mining producers that lag the ETF but close constructively for a 10-day default-off paper hold.",
+  "status": "rejected",
+  "summary": "The GLD/SLV producer-lag source did not clear Gate 4; do not promote or locally retune this commodity ETF-to-producer relation on the frozen windows.",
+  "ticket_file": "experiments/tickets/exp-20260607-011.json",
+  "trial_family": "precious_metals_etf_producer_lag",
+  "trial_variant_id": "v1_fixed_policy"
+}
