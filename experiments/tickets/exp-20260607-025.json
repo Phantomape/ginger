@@ -1,0 +1,99 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260607_025_pead_broad_universe_historical_replay.py",
+    "data/experiments/exp-20260607-025/exp_20260607_025_pead_broad_universe_historical_replay.json",
+    "experiments/cards/exp-20260607-025.md",
+    "experiments/manifests/exp-20260607-025.json",
+    "experiments/tickets/exp-20260607-025.json",
+    "experiments/logs/exp-20260607-025.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260607-025.md",
+  "causal_components": [
+    "existing shared PEAD helper",
+    "historical replay runner",
+    "three-window artifact",
+    "experiment log"
+  ],
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "pead_broad_universe_historical_replay_candidate_source_v1",
+  "claimed_at": "2026-06-07T21:07:55+00:00",
+  "completed_at": "2026-06-07T21:19:05Z",
+  "created_at": "2026-06-07T21:06:07+00:00",
+  "decision": "rejected_pead_broad_universe_historical_replay",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260607-025",
+  "experiment_uid": "expuid-a44a234a583e4ea7",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260607-025",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-07T21:06:07+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "pead_broad_universe_historical_replay"
+  },
+  "hypothesis": "Broad-universe positive EPS-surprise PEAD candidates from the existing PEAD_BROAD_UNIVERSE_PAPER helper may add replacement-value candidate-pool alpha across the canonical three windows without relying on raw OHLCV momentum retunes.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "pead_broad_universe_historical_replay_candidate_source_v1"
+  ],
+  "mechanism_family": "default_off_paper_candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260604-021",
+    "exp-20260607-003",
+    "exp-20260602-026"
+  ],
+  "new_evidence_type": "existing_forward_sleeve_now_tested_on_three_canonical_windows",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "The helper is production-visible and uses PIT-style earnings snapshot transitions plus free OHLCV; existing underpriced PEAD worked in a narrower sleeve, but broad positive-surprise PEAD can become gap-chasing and earlier PEAD peer-transfer variants failed.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "window_regression",
+      "thin_sample",
+      "large_gap_chase",
+      "concentration_failed",
+      "earnings_snapshot_transition_artifacts"
+    ],
+    "recorded_at": "2026-06-07T21:05:54+00:00",
+    "success_probability": 0.2
+  },
+  "prior_trial_count": 2,
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": -0.7738,
+    "aggregate_strategy_total_pnl_delta": -10060.33,
+    "artifact": "data/experiments/exp-20260607-025/exp_20260607_025_pead_broad_universe_historical_replay.json",
+    "calibration": {
+      "actual_ev_delta": -0.7738,
+      "actual_gate4_passed": false,
+      "actual_pnl_delta": -10060.33,
+      "actual_success": 0,
+      "brier_score": 0.04,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "not_all_windows_ev_improved",
+        "drawdown_drift_too_high"
+      ],
+      "predicted_success_probability": 0.2
+    },
+    "decision": "rejected_pead_broad_universe_historical_replay",
+    "log": "experiments/logs/exp-20260607-025.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260607-025.json",
+  "single_causal_variable": "pead_broad_universe_historical_replay_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The existing PEAD broad helper did not clear Gate 4 on the canonical windows. Keep the forward observer default-off and do not promote or retune this EPS-surprise-only source on the same frozen windows.",
+  "ticket_file": "experiments/tickets/exp-20260607-025.json",
+  "trial_family": "pead_broad_universe_historical_candidate_pool",
+  "trial_variant_id": "exp-20260607-025"
+}
