@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1060`
-- Raw records loaded by meta report: `1466`
-- History fingerprint: `8d87508916675dbb`
+- Strategy records counted: `1061`
+- Raw records loaded by meta report: `1467`
+- History fingerprint: `26532b0ec01fc15c`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -62,8 +62,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260607-011` `rejected_precious_metals_etf_producer_lag_candidate_pool`: EV `-0.0274`, PnL `$719.53`, family `production_visible_free_ohlcv_relation_alpha`, trial `precious_metals_etf_producer_lag_candidate_pool`.
-  Lesson: Gate 4 failed even though the sleeve generated 76 trades and positive aggregate PnL, because expected_value_score fell and late_strong regressed on both EV and PnL. The GLD/SLV move appears to be priced into producer...
 - `exp-20260607-012` `rejected_industry_dispersion_compression_repair_candidate_pool`: EV `+0.9113`, PnL `$12,296.17`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_dispersion_compression_repair_candidate_pool`.
   Lesson: The candidate source failed to add robust replacement value, regressed a canonical window, or breached drawdown/concentration gates. That means high prior industry dispersion plus same-day repair did not reliably sepa...
 - `exp-20260607-013` `rejected_post_earnings_peer_upcoming_prewarm_candidate_pool`: EV `+0.0183`, PnL `$146.10`, family `production_visible_event_peer_relation_alpha`, trial `post_earnings_peer_upcoming_earnings_prewarm_candidate_pool`.
@@ -86,6 +84,8 @@ facts before changing strategy behavior.
   Lesson: The source failed to add robust replacement value after next-open entry and costs. That suggests UUP weakness with risk-on confirmation did not reliably separate durable stock leadership from broad risk-on momentum in...
 - `exp-20260607-022` `rejected_crypto_etf_thrust_proxy_stock_leadership_candidate_pool`: EV `-0.1716`, PnL `$163.72`, family `production_visible_free_ohlcv_relation_alpha`, trial `crypto_etf_thrust_proxy_stock_leadership_candidate_pool`.
   Lesson: The source failed to add robust replacement value after next-open entry and costs. That suggests crypto ETF thrust did not reliably separate durable proxy-stock leadership from high-beta chase in the canonical windows...
+- `exp-20260607-023` `rejected_volatility_stress_resilient_leadership_candidate_pool`: EV `+0.0443`, PnL `$-1,176.66`, family `production_visible_free_ohlcv_cross_asset_candidate_pool`, trial `volatility_stress_resilient_leadership_candidate_pool`.
+  Lesson: The source failed to add robust replacement value after next-open entry and costs. That suggests VIXY stress did not reliably separate durable resilient stock leadership from broad risk-off noise in the canonical wind...
 
 ## Highest-Signal Historical Records
 
