@@ -8,6 +8,15 @@ log. Detailed trial records belong in `docs/experiment_log.jsonl`,
 durable mechanism lessons, frozen retry zones, research queue, and external
 research ideas that can be converted into replayable fields.
 
+For default LLM context, start with `docs/alpha_context_pack.md`. It is a
+generated short memory surface; this playbook remains the durable policy and
+research-prior reference. Mechanism-specific short lessons live under
+`docs/lessons/*.md` and should be refreshed with:
+
+```powershell
+.\.venv\Scripts\python.exe -B scripts\build_alpha_memory.py --git-ref HEAD
+```
+
 North-star metric:
 
 ```text

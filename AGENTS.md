@@ -61,6 +61,7 @@ expected_value_score = strategy_total_return_pct × sharpe_daily
 
 ```text
 docs/backtesting.md
+docs/alpha_context_pack.md
 docs/current_state.md
 docs/agent_experiment_protocol.md
 docs/iteration_analysis.md
@@ -74,6 +75,7 @@ data/backtests/backtest_results_*.json
 ```
 
 - `docs/backtesting.md` 是回测命令、标准窗口、基线口径、指标字段和多窗口验证的单一真相源。`AGENTS.md` 不重复维护这些细节，避免两个文件标准分歧。
+- `docs/alpha_context_pack.md` 是默认短记忆入口：它压缩当前 alpha 优先级、冻结方向、近期高信号实验和 lesson-card 链接，避免每轮把完整 `docs/current_state.md` 塞进 LLM 上下文。
 - `docs/agent_experiment_protocol.md` 是 agent 做实验的操作入口和流程索引：先 reserve / claim 实验 ID，再按 Gate 1-4、parity、artifact、closeout 执行；它不替代本文件和各单一真相源。
 - `docs/alpha-optimization-playbook.md` 是默认高价值优化方向、近期机制级启发、已证伪思路和优先级变化的单一真相源。`AGENTS.md` 不维护具体优化方向清单，只要求每轮策略实验先参考该 playbook。
 - `docs/data_edge_context_layers.md` 是 passive intelligence、context accumulation、continuous ranking、tail diagnostics、meta research 与 attribution 工具的单一真相源。新增 context layer、ranking surface、diagnostics 或 attribution sidecar 时，必须同步更新该文档，而不是把工具说明散落在实验脚本里。

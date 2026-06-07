@@ -13,8 +13,11 @@ experiment artifact.
 - `AGENTS.md`: top-level agent rules, required reading, and Gate 1-4.
 - `docs/backtesting.md`: canonical backtest command, windows, baseline metrics,
   and acceptance evidence.
-- `docs/current_state.md`: current accepted stack, activation map, default-off
-  surfaces, and known blockers.
+- `docs/alpha_context_pack.md`: default compact LLM memory for alpha search,
+  current priorities, frozen retry zones, and lesson-card links.
+- `docs/current_state.md`: full current accepted stack, activation map,
+  default-off surfaces, and known blockers. Read targeted sections when exact
+  state details are needed; do not use it as the default memory dump.
 - `docs/alpha-optimization-playbook.md`: preferred alpha directions, frozen
   retry zones, and mechanism-level lessons.
 - `docs/data_edge_context_layers.md`: passive context, sidecar, attribution, and
@@ -28,6 +31,31 @@ experiment artifact.
 
 Do not copy protocol details into multiple files. If a command, window, metric,
 or parity rule conflicts with a source file above, the source file wins.
+
+## Layered Experiment Memory
+
+Experiment memory is intentionally layered:
+
+- Raw facts live in per-experiment tickets, logs, cards, artifacts, data files,
+  and committed code.
+- `docs/experiment_registry.json` is only a light coordination/index surface.
+  It should not become the durable research-memory database.
+- `docs/alpha_context_pack.md` is the default short memory surface for LLM
+  agents.
+- `docs/lessons/*.md` cards store compact mechanism-level lessons for targeted
+  retrieval.
+- `docs/current_state.md` is a full reference for exact accepted-stack and
+  activation details, not the default context to paste into every run.
+
+After closing a material alpha experiment, refresh the compact memory:
+
+```powershell
+.\.venv\Scripts\python.exe -B scripts\build_alpha_memory.py --git-ref HEAD
+```
+
+The generated context pack and lesson cards are derived summaries. If a
+summary conflicts with a ticket, log, artifact, code, `docs/backtesting.md`, or
+`docs/production_backtest_parity.md`, the raw/source file wins.
 
 ## Experiment Classes
 
