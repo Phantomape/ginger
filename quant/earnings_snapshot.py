@@ -144,6 +144,133 @@ def _snapshot_should_be_rewritten(existing, replacement):
     return replacement_next > existing_next
 
 
+def merge_earnings_into_snapshot(
+    additional_earnings_by_ticker,
+    as_of=None,
+    base_dir=None,
+    logger=None,
+):
+    """Merge additional tickers into an existing daily earnings snapshot.
+
+    This is additive: only tickers NOT already present in the snapshot are
+    inserted.  Existing tickers are never overwritten.  Used by the PEAD broad
+    universe daily fetch (exp-20260607-003) to expand coverage from ~44 to ~500
+    tickers without touching the core watchlist data.
+
+    Returns the snapshot path, or None if no snapshot exists for this date.
+    """
+    if as_of is None:
+        as_of = datetime.now()
+    if logger is None:
+        logger = logging.getLogger(__name__)
+    if base_dir is None:
+        base_dir = daily_artifact_path("earnings_snapshot", as_of.strftime("%Y%m%d")).parent
+
+    date_str = as_of.strftime("%Y%m%d")
+    snapshot_path = os.path.join(base_dir, f"earnings_snapshot_{date_str}.json")
+
+    if not os.path.exists(snapshot_path):
+        logger.info(
+            "No existing snapshot for %s; creating new snapshot from broad universe data.",
+            date_str,
+        )
+        return persist_earnings_snapshot(
+            additional_earnings_by_ticker,
+            as_of=as_of,
+            base_dir=base_dir,
+            logger=logger,
+        )
+
+    try:
+        with open(snapshot_path, "r", encoding="utf-8") as handle:
+            existing = json.load(handle)
+    except Exception as exc:
+        logger.warning(
+            "Failed to read existing snapshot for merge at %s: %s; skipping merge.",
+            snapshot_path,
+            exc,
+        )
+        return snapshot_path
+
+    if not _payload_has_required_shape(existing):
+        logger.warning(
+            "Existing snapshot has invalid shape at %s; skipping merge.",
+            snapshot_path,
+        )
+        return snapshot_path
+
+    existing_earnings = existing.get("earnings") or {}
+    new_tickers_added = 0
+    for raw_ticker, earnings_data in (additional_earnings_by_ticker or {}).items():
+        ticker = str(raw_ticker).upper().strip()
+        if not ticker or ticker in existing_earnings:
+            continue
+        row = _normalize_snapshot_row(earnings_data, as_of)
+        if row is not None:
+            existing_earnings[ticker] = row
+            new_tickers_added += 1
+
+    if new_tickers_added == 0:
+        logger.info(
+            "Earnings snapshot merge: no new tickers to add for %s (all %d broad tickers already present).",
+            date_str,
+            len(additional_earnings_by_ticker or {}),
+        )
+        return snapshot_path
+
+    existing["earnings"] = existing_earnings
+    # Recompute coverage stats
+    existing["coverage"] = {
+        "tickers_total": len(existing_earnings),
+        "tickers_persisted": len(existing_earnings),
+        "tickers_with_next_earnings_date": sum(
+            1 for data in existing_earnings.values()
+            if isinstance(data, dict) and data.get("next_earnings_date") is not None
+        ),
+        "tickers_with_inferred_next_earnings_date": sum(
+            1 for data in existing_earnings.values()
+            if isinstance(data, dict) and data.get("next_earnings_date_inferred") is True
+        ),
+        "tickers_with_days_to_earnings": sum(
+            1 for data in existing_earnings.values()
+            if isinstance(data, dict) and data.get("days_to_earnings") is not None
+        ),
+        "tickers_with_eps_estimate": sum(
+            1 for data in existing_earnings.values()
+            if isinstance(data, dict) and data.get("eps_estimate") is not None
+        ),
+        "tickers_with_eps_actual_last": sum(
+            1 for data in existing_earnings.values()
+            if isinstance(data, dict) and data.get("eps_actual_last") is not None
+        ),
+        "tickers_with_surprise_history": sum(
+            1 for data in existing_earnings.values()
+            if isinstance(data, dict) and (
+                data.get("avg_historical_surprise_pct") is not None
+                or data.get("historical_surprise_pct")
+            )
+        ),
+    }
+    existing["broad_universe_expanded"] = True
+    existing["broad_universe_ticker_count"] = len(existing_earnings)
+
+    with open(snapshot_path, "w", encoding="utf-8") as handle:
+        json.dump(existing, handle, indent=2, ensure_ascii=False, default=str)
+
+    coverage = existing["coverage"]
+    logger.info(
+        "Earnings snapshot merged (broad universe +%d): %s "
+        "(total=%s next=%s eps=%s surprise=%s)",
+        new_tickers_added,
+        snapshot_path,
+        coverage["tickers_persisted"],
+        coverage["tickers_with_next_earnings_date"],
+        coverage["tickers_with_eps_estimate"],
+        coverage["tickers_with_surprise_history"],
+    )
+    return snapshot_path
+
+
 def persist_earnings_snapshot(
     earnings_by_ticker,
     as_of=None,

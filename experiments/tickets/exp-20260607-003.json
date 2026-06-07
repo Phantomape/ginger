@@ -1,0 +1,78 @@
+{
+  "acceptance_rule": "Forward Gate 5 before any activation: >= 30 closed forward paper trades within 10 weeks, positive net PnL, single-ticker positive PnL share <= 50%, and top-5 positive PnL share <= 60%. This is a default-off data-coverage expansion; no live orders, ranking, sizing, or exits change.",
+  "allowed_write_scope": [
+    "quant/pead_broad_universe_tickers.py",
+    "quant/fetch_broad_earnings_snapshot.py",
+    "quant/pead_broad_universe_paper_sleeve.py",
+    "quant/earnings_snapshot.py",
+    "quant/run.py",
+    "data/daily/snapshots/earnings",
+    "data/paper_sleeves/pead_broad_universe_state.json",
+    "data/paper_sleeves/pead_broad_universe_snapshots.jsonl",
+    "experiments/cards/exp-20260607-003.md",
+    "experiments/manifests/exp-20260607-003.json",
+    "experiments/tickets/exp-20260607-003.json",
+    "docs/current_state.md"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260607-003.md",
+  "change_type": "default_off_paper_data_coverage_expansion",
+  "changed_variable": "pead_broad_universe_earnings_snapshot_500_ticker_expansion",
+  "claimed_at": "2026-06-07T16:25:00+00:00",
+  "completed_at": null,
+  "created_at": "2026-06-07T01:15:00+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260607-003",
+  "experiment_uid": "expuid-c3d9a82f15b7e046",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260607-003",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-07T01:15:00+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "pead_broad_500_ticker_earnings_expansion"
+  },
+  "hypothesis": "Expanding earnings snapshot from 44 to 500 S&P 500 adjacent tickers, enabling PEAD broad universe sleeve to detect 60-80 EPS surprise events per quarter instead of 4-5, targeting Gate 5 in 10 weeks.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "pead_broad_universe_earnings_snapshot_500_ticker_expansion"
+  ],
+  "mechanism_family": "pead_broad_universe_paper",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260604-021"
+  ],
+  "new_evidence_type": "broader_earnings_snapshot_coverage_via_yfinance_fetch",
+  "owner": "codex-regression",
+  "prediction": {
+    "confidence_reason": "This is a default-off data-coverage expansion, not a live alpha promotion. The PEAD broad-universe mechanism is unchanged; the change increases earnings snapshot and warehouse OHLCV coverage so forward paper observation can accumulate enough closed rows for Gate 5.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "yfinance_earnings_sparse",
+      "no_eps_estimate_coverage",
+      "warehouse_ohlcv_gap"
+    ],
+    "recorded_at": "2026-06-07T01:15:00+00:00",
+    "success_probability": 0.7
+  },
+  "prior_trial_count": 1,
+  "production_impact": {
+    "trade_enabled": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "scope": "default_off_pead_broad_universe_500_ticker_forward_observation",
+    "notes": "Daily fetch and warehouse OHLCV expansion are additive and wrapped in graceful fallbacks. No live/default orders are changed."
+  },
+  "result": null,
+  "revision_manifest_file": "experiments/manifests/exp-20260607-003.json",
+  "single_causal_variable": "pead_broad_universe_earnings_snapshot_500_ticker_expansion",
+  "status": "running",
+  "ticket_file": "experiments/tickets/exp-20260607-003.json",
+  "trial_family": "pead_broad_universe_paper",
+  "trial_variant_id": "exp-20260607-003"
+}

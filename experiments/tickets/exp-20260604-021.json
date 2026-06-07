@@ -69,6 +69,17 @@
     "replay_only": false,
     "parity_test_added": false
   },
+  "design_decisions": [
+    {
+      "date": "2026-06-06",
+      "decision": "gap_cancel_threshold_set_to_5pct_not_3pct",
+      "constant": "PEAD_MAX_EARNINGS_DAY_GAP_PCT",
+      "value": 0.05,
+      "rationale": "Original sketch used 3%. Analysis of 44-ticker earnings snapshot data (Oct 2025 - Feb 2026) showed that large-cap tech stocks in this universe (GOOG, MSFT, AMZN, META, COIN, PLTR) routinely gap 5-10%+ on earnings day. At 3%, roughly 60-70% of qualifying EPS-surprise events (surprise >= 5%) would be filtered out before any forward observation begins, leaving sample accumulation far too thin to reach Gate 5 (30+ closed trades) within a reasonable time window. At 5%, moderate-gap events are retained for observation while the largest-gap cases (gap >= 5%) — where the market has already fully priced the surprise into the open and subsequent PEAD drift is unlikely — are excluded. This threshold is sleeve-local (PEAD_MAX_EARNINGS_DAY_GAP_PCT in pead_broad_universe_paper_sleeve.py) and does not affect the existing POST_EARNINGS_UNDERPRICED_DRIFT_PAPER sleeve or any other strategy.",
+      "single_causal_variable_unchanged": true,
+      "scope": "default_value_change_in_DEFAULT_CONFIG_and_sleeve_local_constant_only"
+    }
+  ],
   "created_at": "2026-06-04T00:00:00-07:00",
   "claimed_at": null,
   "completed_at": null,

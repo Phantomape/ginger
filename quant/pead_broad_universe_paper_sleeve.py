@@ -1,12 +1,18 @@
 """Default-off broad-universe PEAD paper sleeve.
 
-exp-20260604-021: PEAD_BROAD_UNIVERSE_PAPER
+exp-20260604-021: PEAD_BROAD_UNIVERSE_PAPER (original design, ~80-90 tickers)
+exp-20260607-003: PEAD_BROAD_500_TICKER_EARNINGS_EXPANSION
+  - Earnings snapshot expanded from ~44 to ~500 S&P 500 adjacent tickers
+    via quant/fetch_broad_earnings_snapshot.py (run daily after run.py)
+  - OHLCV for the ~500 tickers loaded from warehouse in run.py
+  - Sleeve code unchanged; expansion is purely data-layer (snapshot + OHLCV)
+  - Expected: ~60-80 PEAD events/quarter → Gate 5 in ~10 weeks
 
 Design intent:
 Surfaces forward earnings-drift candidates from a wider universe
-(observation_universe + core_universe, about 80-90 tickers) without the
-MA50/RS20/close-location/pre-event-underpricing filters that narrow the
-existing POST_EARNINGS_UNDERPRICED_DRIFT_PAPER sleeve to an
+(~500 S&P 500 adjacent tickers via warehouse OHLCV + broad earnings snapshot)
+without the MA50/RS20/close-location/pre-event-underpricing filters that narrow
+the existing POST_EARNINGS_UNDERPRICED_DRIFT_PAPER sleeve to an
 already-trending subpopulation.
 
 Single causal variable being tested:
@@ -16,7 +22,17 @@ Trigger conditions, all required:
 - EPS surprise, latest quarter, >= 5%
 - Price >= $5 on event_confirmed_date
 - Avg daily dollar volume, 20d, >= $10M on event_confirmed_date
-- Earnings-day gap <= 3%: abs(open / prev_close - 1) <= 0.03
+- Earnings-day gap <= 5%: abs(open / prev_close - 1) <= PEAD_MAX_EARNINGS_DAY_GAP_PCT
+
+Gap threshold rationale (2026-06-06):
+5% was chosen (over the original 3%) because this universe includes large-cap tech
+stocks (GOOG, MSFT, AMZN, META) that routinely gap 5-8% on earnings day. At 3%
+roughly 60-70% of qualifying surprise events would be filtered out before any PEAD
+observation begins, leaving sample counts too thin to reach Gate 5 (30+ closed trades)
+within a reasonable time window. 5% retains moderate-gap events while still excluding
+the largest-gap cases (≥5%) where the market has already fully priced the surprise
+into the open and PEAD drift is unlikely. This threshold is sleeve-local and does not
+affect the existing POST_EARNINGS_UNDERPRICED_DRIFT_PAPER sleeve.
 
 Entry / hold:
 - Candidate surfaced on event_confirmed_date with offset = 0
@@ -113,6 +129,13 @@ STATE_SCHEMA_VERSION = 1
 DEFAULT_STATE_PATH = data_artifact_path("pead_broad_universe_paper_state")
 DEFAULT_SNAPSHOT_LOG_PATH = data_artifact_path("pead_broad_universe_paper_snapshots")
 
+# Gap-cancel threshold for this sleeve (sleeve-local, does not affect any other strategy).
+# Set to 5% (not the 3% in the original design sketch) because large-cap tech stocks in
+# this universe routinely gap 5-8% on earnings day; at 3% roughly 60-70% of qualifying
+# EPS-surprise events would be discarded, starving Gate 5 sample accumulation.
+# Rationale recorded in experiments/tickets/exp-20260604-021.json (2026-06-06).
+PEAD_MAX_EARNINGS_DAY_GAP_PCT: float = 0.05
+
 EXCLUDED_TICKERS = {
     "ARKX",
     "GLD",
@@ -152,8 +175,10 @@ DEFAULT_CONFIG = {
     "min_avg_dollar_volume_20d": 10_000_000.0,   # $10M
     # Price filter
     "min_price": 5.0,
-    # Gap-cancel: skip if earnings-day gap > this threshold
-    "max_earnings_day_gap_pct": 0.03,
+    # Gap-cancel: skip if earnings-day gap > this threshold.
+    # Uses PEAD_MAX_EARNINGS_DAY_GAP_PCT (5%) — sleeve-local, not a global constant.
+    # See PEAD_MAX_EARNINGS_DAY_GAP_PCT docstring and ticket exp-20260604-021 for rationale.
+    "max_earnings_day_gap_pct": PEAD_MAX_EARNINGS_DAY_GAP_PCT,
     # Position management
     "paper_notional_usd": 10_000.0,
     "daily_entry_slots": 3,
@@ -408,9 +433,11 @@ def build_pead_broad_universe_paper_sleeve_snapshot(
         "forward_paper_gate": gate,
         "production_impact": _production_impact(),
         "notes": (
-            "Default-off broad-universe PEAD paper sleeve (exp-20260604-021). "
-            "Trigger: EPS surprise >= 5%, gap-cancel > 3%, price >= $5, "
+            "Default-off broad-universe PEAD paper sleeve (exp-20260604-021 + exp-20260607-003). "
+            "Trigger: EPS surprise >= 5%, gap-cancel > 5% (PEAD_MAX_EARNINGS_DAY_GAP_PCT), price >= $5, "
             "avg dollar vol >= $10M. No MA50/RS/pre-event filters. "
+            "Universe expanded from ~80-90 to ~500 S&P 500 adjacent tickers via "
+            "fetch_broad_earnings_snapshot.py (daily, after run.py) + warehouse OHLCV. "
             "Gate 5 required before any live activation."
         ),
         "next_action": "paper_observe_forward_no_orders",

@@ -2263,13 +2263,14 @@ def main():
         )
 
     # exp-20260604-021: PEAD broad-universe paper sleeve
-    # Scans observation_universe + core_universe (~80-90 tickers).
-    # Trigger: EPS surprise >= 5%, gap-cancel > 3%, price >= $5, avg vol >= $10M.
+    # exp-20260607-003: Expanded from ~80-90 tickers to ~500 S&P 500 adjacent tickers
+    # via warehouse OHLCV batch load and broad earnings snapshot expansion.
+    # Trigger: EPS surprise >= 5%, gap-cancel > 5%, price >= $5, avg vol >= $10M.
     # No MA50/RS/pre-event filters. Paper-only forward observation.
     try:
         pead_broad_ohlcv = dict(ohlcv_dict)
         pead_broad_ohlcv["SPY"] = spy_ohlcv
-        # Expand to broad universe: core + pilot + governance observation tickers
+        # Expand to governance observation tickers (existing logic)
         pead_broad_extra_tickers = set(
             (universe_governance_state or {}).get("governance_observation_universe") or []
         ) | set(
@@ -2287,6 +2288,52 @@ def main():
                         _pead_ticker,
                         _pead_ohlcv_err,
                     )
+        # exp-20260607-003: Load ~500 broad-universe tickers from warehouse.
+        # This is a fast batch SQLite read; it does NOT call yfinance.
+        # Only tickers not already in pead_broad_ohlcv are fetched.
+        try:
+            from pead_broad_universe_tickers import get_pead_broad_universe_tickers
+            from ohlcv_warehouse import load_warehouse_ohlcv_frames
+            _pead_broad_500 = get_pead_broad_universe_tickers()
+            _pead_warehouse_needed = [
+                t for t in _pead_broad_500
+                if t not in pead_broad_ohlcv or pead_broad_ohlcv.get(t) is None
+            ]
+            if _pead_warehouse_needed and DEFAULT_WAREHOUSE_PATH.exists():
+                # Load last ~200 calendar days (~130 trading days) — enough for
+                # 20d avg dollar volume, 10d hold, and event detection history.
+                _pead_wh_end = pd.Timestamp(today_iso)
+                _pead_wh_start = _pead_wh_end - pd.Timedelta(days=200)
+                _pead_wh_frames = load_warehouse_ohlcv_frames(
+                    DEFAULT_WAREHOUSE_PATH,
+                    _pead_warehouse_needed,
+                    start=_pead_wh_start,
+                    end=_pead_wh_end,
+                )
+                _pead_wh_loaded = 0
+                for _wh_ticker, _wh_frame in _pead_wh_frames.items():
+                    if _wh_frame is not None and not _wh_frame.empty:
+                        pead_broad_ohlcv[_wh_ticker] = _wh_frame
+                        _pead_wh_loaded += 1
+                log.info(
+                    "PEAD broad paper (exp-20260607-003): warehouse loaded %d/%d broad tickers "
+                    "(total universe now %d)",
+                    _pead_wh_loaded,
+                    len(_pead_warehouse_needed),
+                    len(pead_broad_ohlcv),
+                )
+            elif not DEFAULT_WAREHOUSE_PATH.exists():
+                log.warning(
+                    "PEAD broad paper (exp-20260607-003): warehouse not found at %s; "
+                    "falling back to ~80-ticker governance universe.",
+                    DEFAULT_WAREHOUSE_PATH,
+                )
+        except Exception as _pead_wh_err:
+            log.warning(
+                "PEAD broad paper (exp-20260607-003): warehouse load failed: %s; "
+                "falling back to governance universe only.",
+                _pead_wh_err,
+            )
         pead_broad_candidate_universe = {
             "status": "broad_data_universe",
             "tickers": sorted(
