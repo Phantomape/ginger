@@ -1,0 +1,91 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260607_001_core_selected_anchor_peer_lag.py",
+    "data/experiments/exp-20260607-001/exp_20260607_001_core_selected_anchor_peer_lag.json",
+    "experiments/cards/exp-20260607-001.md",
+    "experiments/manifests/exp-20260607-001.json",
+    "experiments/tickets/exp-20260607-001.json",
+    "experiments/logs/exp-20260607-001.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260607-001.md",
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "core_selected_anchor_peer_lag_candidate_source_v1",
+  "claimed_at": "2026-06-07T00:07:39+00:00",
+  "completed_at": "2026-06-07T00:10:36Z",
+  "created_at": "2026-06-07T00:06:58+00:00",
+  "decision": "rejected_core_selected_anchor_peer_lag_candidate_pool",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260607-001",
+  "experiment_uid": "expuid-78c5abc5ac084368",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260607-001",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-07T00:06:58+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "core_selected_anchor_peer_lag"
+  },
+  "hypothesis": "Core-selected A/B entries that themselves shock higher may be better peer anchors for a correlated laggard default-off paper candidate than arbitrary peer shocks.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "core_selected_anchor_peer_lag_candidate_source_v1"
+  ],
+  "mechanism_family": "default_off_paper_candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260606-018",
+    "exp-20260606-024",
+    "exp-20260606-025",
+    "exp-20260606-026",
+    "exp-20260606-028"
+  ],
+  "new_evidence_type": "production_visible_core_selected_anchor_relation",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "Accepted peer-shock evidence supports free OHLCV relation alpha, but forcing the shock anchor to be a core-selected ticker may over-thin the sample or duplicate existing core flow.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "sample_too_thin",
+      "window_regression",
+      "anchor_redundant_with_existing_peer_shock",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-07T00:06:40+00:00",
+    "success_probability": 0.19
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": 0.0,
+    "aggregate_strategy_total_pnl_delta": 0.0,
+    "artifact": "data/experiments/exp-20260607-001/exp_20260607_001_core_selected_anchor_peer_lag.json",
+    "calibration": {
+      "actual_gate4_passed": false,
+      "brier_score": 0.0361,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "target_concentration_failed"
+      ],
+      "predicted_success_probability": 0.19
+    },
+    "decision": "rejected_core_selected_anchor_peer_lag_candidate_pool",
+    "log": "experiments/logs/exp-20260607-001.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260607-001.json",
+  "single_causal_variable": "core_selected_anchor_peer_lag_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The core-selected anchor peer-lag source did not clear Gate 4; do not promote or locally retune this peer-lag family on the frozen windows.",
+  "ticket_file": "experiments/tickets/exp-20260607-001.json",
+  "trial_family": "rolling_corr_core_selected_anchor_peer_lag_candidate_pool",
+  "trial_variant_id": "exp-20260607-001"
+}

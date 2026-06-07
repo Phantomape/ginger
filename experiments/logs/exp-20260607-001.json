@@ -1,0 +1,593 @@
+{
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 5.1628,
+      "max_consecutive_losses": 2,
+      "max_drawdown_pct": 0.0665,
+      "sharpe_daily": 4.41,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "strategy_total_return_pct": 1.1707,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5146,
+      "total_pnl": 117072.92,
+      "trade_count": 18,
+      "win_rate": 0.8333,
+      "worst_trade_pct": -0.0397
+    },
+    "mid_weak": {
+      "expected_value_score": 2.1402,
+      "max_consecutive_losses": 6,
+      "max_drawdown_pct": 0.1119,
+      "sharpe_daily": 2.74,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "strategy_total_return_pct": 0.7811,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.5493,
+      "total_pnl": 78110.11,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "worst_trade_pct": -0.0897
+    },
+    "old_thin": {
+      "expected_value_score": 0.5911,
+      "max_consecutive_losses": 4,
+      "max_drawdown_pct": 0.1001,
+      "sharpe_daily": 1.49,
+      "signals_generated": 60,
+      "signals_survived": 52,
+      "strategy_total_return_pct": 0.3967,
+      "survival_rate": 0.8667,
+      "tail_loss_share": 0.5193,
+      "total_pnl": 39667.96,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "worst_trade_pct": -0.0635
+    }
+  },
+  "anti_js": "No JavaScript was used.",
+  "backtest_protocol": {
+    "REGIME_AWARE_EXIT": true,
+    "candidate_ohlcv_source": "data/experiments/exp-20260519-030/warehouse_main.sqlite",
+    "execution_model": "Signal uses only close-of-day OHLCV available on the signal date plus 60 prior trading-day returns for correlation. Paper entry is next available open with existing entry slippage; exit is the close 10 trading days after the signal with target-side sell slippage and ROUND_TRIP_COST_PCT.",
+    "replay_llm": false,
+    "replay_news": false,
+    "source": "docs/backtesting.md canonical three-window core replay plus replay-only broad warehouse default-off paper overlay",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 5.1628,
+      "max_consecutive_losses": 2,
+      "max_drawdown_pct": 0.0665,
+      "sharpe_daily": 4.41,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "strategy_total_return_pct": 1.1707,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5146,
+      "total_pnl": 117072.92,
+      "trade_count": 18,
+      "win_rate": 0.8333,
+      "worst_trade_pct": -0.0397
+    },
+    "mid_weak": {
+      "expected_value_score": 2.1402,
+      "max_consecutive_losses": 6,
+      "max_drawdown_pct": 0.1119,
+      "sharpe_daily": 2.74,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "strategy_total_return_pct": 0.7811,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.5493,
+      "total_pnl": 78110.11,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "worst_trade_pct": -0.0897
+    },
+    "old_thin": {
+      "expected_value_score": 0.5911,
+      "max_consecutive_losses": 4,
+      "max_drawdown_pct": 0.1001,
+      "sharpe_daily": 1.49,
+      "signals_generated": 60,
+      "signals_survived": 52,
+      "strategy_total_return_pct": 0.3967,
+      "survival_rate": 0.8667,
+      "tail_loss_share": 0.5193,
+      "total_pnl": 39667.96,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "worst_trade_pct": -0.0635
+    }
+  },
+  "calibration": {
+    "actual_gate4_passed": false,
+    "brier_score": 0.0361,
+    "failure_modes_observed": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "fewer_than_two_ev_improved_windows",
+      "target_sample_too_small",
+      "target_window_coverage_too_small",
+      "target_concentration_failed"
+    ],
+    "predicted_success_probability": 0.19
+  },
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "core_selected_anchor_peer_lag_candidate_source_v1",
+  "context_scan_by_window": {
+    "late_strong": {
+      "core_flow_confirmation_required": true,
+      "core_selected_anchor_required": true,
+      "correlation_lookback_days": 60,
+      "days_with_core_selected_anchor_candidates": 0,
+      "days_with_corr_pairs": 104,
+      "days_with_laggard_candidates": 120,
+      "days_with_peer_shocks": 120,
+      "max_candidate_realized_vol_20d": 0.09,
+      "max_candidate_ret5": 0.055,
+      "max_candidate_signal_return": 0.02,
+      "max_laggard_candidates_per_day": 350,
+      "max_shock_peers_per_day": 10,
+      "min_candidate_close_location": 0.35,
+      "min_candidate_ret20_excess_spy": -0.03,
+      "min_candidate_ret5": -0.055,
+      "min_candidate_ret60_excess_spy": -0.08,
+      "min_candidate_signal_return": 0.0,
+      "min_correlation": 0.58,
+      "min_peer_relative_vs_spy": 0.04,
+      "min_peer_ret20_excess_spy": -0.02,
+      "min_peer_signal_return": 0.055,
+      "min_peer_volume_ratio_20d": 1.05,
+      "positive_candidate_signal_return_required": true,
+      "raw_candidates_after_core_flow_filter": 215,
+      "raw_candidates_after_core_selected_anchor_filter": 0,
+      "raw_candidates_before_core_flow_filter": 1167,
+      "raw_candidates_before_core_selected_anchor_filter": 215,
+      "raw_corr_pairs": 1167,
+      "raw_laggard_candidates": 17740,
+      "raw_peer_shocks": 1841,
+      "rule_version": "rolling_corr_peer_shock_core_flow_positive_candidate_source_v1",
+      "scanned_trading_days": 123
+    },
+    "mid_weak": {
+      "core_flow_confirmation_required": true,
+      "core_selected_anchor_required": true,
+      "correlation_lookback_days": 60,
+      "days_with_core_selected_anchor_candidates": 0,
+      "days_with_corr_pairs": 115,
+      "days_with_laggard_candidates": 127,
+      "days_with_peer_shocks": 127,
+      "max_candidate_realized_vol_20d": 0.09,
+      "max_candidate_ret5": 0.055,
+      "max_candidate_signal_return": 0.02,
+      "max_laggard_candidates_per_day": 350,
+      "max_shock_peers_per_day": 10,
+      "min_candidate_close_location": 0.35,
+      "min_candidate_ret20_excess_spy": -0.03,
+      "min_candidate_ret5": -0.055,
+      "min_candidate_ret60_excess_spy": -0.08,
+      "min_candidate_signal_return": 0.0,
+      "min_correlation": 0.58,
+      "min_peer_relative_vs_spy": 0.04,
+      "min_peer_ret20_excess_spy": -0.02,
+      "min_peer_signal_return": 0.055,
+      "min_peer_volume_ratio_20d": 1.05,
+      "positive_candidate_signal_return_required": true,
+      "raw_candidates_after_core_flow_filter": 491,
+      "raw_candidates_after_core_selected_anchor_filter": 0,
+      "raw_candidates_before_core_flow_filter": 3454,
+      "raw_candidates_before_core_selected_anchor_filter": 491,
+      "raw_corr_pairs": 3454,
+      "raw_laggard_candidates": 17775,
+      "raw_peer_shocks": 1889,
+      "rule_version": "rolling_corr_peer_shock_core_flow_positive_candidate_source_v1",
+      "scanned_trading_days": 127
+    },
+    "old_thin": {
+      "core_flow_confirmation_required": true,
+      "core_selected_anchor_required": true,
+      "correlation_lookback_days": 60,
+      "days_with_core_selected_anchor_candidates": 0,
+      "days_with_corr_pairs": 108,
+      "days_with_laggard_candidates": 135,
+      "days_with_peer_shocks": 135,
+      "max_candidate_realized_vol_20d": 0.09,
+      "max_candidate_ret5": 0.055,
+      "max_candidate_signal_return": 0.02,
+      "max_laggard_candidates_per_day": 350,
+      "max_shock_peers_per_day": 10,
+      "min_candidate_close_location": 0.35,
+      "min_candidate_ret20_excess_spy": -0.03,
+      "min_candidate_ret5": -0.055,
+      "min_candidate_ret60_excess_spy": -0.08,
+      "min_candidate_signal_return": 0.0,
+      "min_correlation": 0.58,
+      "min_peer_relative_vs_spy": 0.04,
+      "min_peer_ret20_excess_spy": -0.02,
+      "min_peer_signal_return": 0.055,
+      "min_peer_volume_ratio_20d": 1.05,
+      "positive_candidate_signal_return_required": true,
+      "raw_candidates_after_core_flow_filter": 306,
+      "raw_candidates_after_core_selected_anchor_filter": 0,
+      "raw_candidates_before_core_flow_filter": 1709,
+      "raw_candidates_before_core_selected_anchor_filter": 306,
+      "raw_corr_pairs": 1709,
+      "raw_laggard_candidates": 18558,
+      "raw_peer_shocks": 1621,
+      "rule_version": "rolling_corr_peer_shock_core_flow_positive_candidate_source_v1",
+      "scanned_trading_days": 138
+    }
+  },
+  "decision": "rejected_core_selected_anchor_peer_lag_candidate_pool",
+  "delta_metrics": {
+    "aggregate": {
+      "after_expected_value_score_sum": 7.8941,
+      "after_total_pnl_sum": 234850.99,
+      "baseline_expected_value_score_sum": 7.8941,
+      "baseline_total_pnl_sum": 234850.99,
+      "expected_value_score_delta_pct": 0.0,
+      "expected_value_score_delta_sum": 0.0,
+      "max_drawdown_delta_max": 0.0,
+      "target_trade_count_sum": 0,
+      "total_pnl_delta_pct": 0.0,
+      "total_pnl_delta_sum": 0.0,
+      "windows_ev_improved": 0,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 0,
+      "windows_pnl_regressed": 0
+    },
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "win_rate": 0.0
+      }
+    }
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260607-001",
+  "filtered_candidates_sample_by_window": {
+    "late_strong": [],
+    "mid_weak": [],
+    "old_thin": []
+  },
+  "gate1": {
+    "baseline_artifact": "data/experiments/exp-20260607-001/exp_20260607_001_core_selected_anchor_peer_lag.json#before_metrics",
+    "baseline_metrics": {
+      "late_strong": {
+        "expected_value_score": 5.1628,
+        "max_consecutive_losses": 2,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "strategy_total_return_pct": 1.1707,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.5146,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "win_rate": 0.8333,
+        "worst_trade_pct": -0.0397
+      },
+      "mid_weak": {
+        "expected_value_score": 2.1402,
+        "max_consecutive_losses": 6,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "strategy_total_return_pct": 0.7811,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.5493,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "win_rate": 0.5238,
+        "worst_trade_pct": -0.0897
+      },
+      "old_thin": {
+        "expected_value_score": 0.5911,
+        "max_consecutive_losses": 4,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "strategy_total_return_pct": 0.3967,
+        "survival_rate": 0.8667,
+        "tail_loss_share": 0.5193,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "win_rate": 0.4091,
+        "worst_trade_pct": -0.0635
+      }
+    },
+    "passed": true
+  },
+  "gate2": {
+    "open_positions": {
+      "missing_entry_date_tickers": [],
+      "missing_target_price_tickers": [],
+      "passed": true,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 11
+    },
+    "passed": true,
+    "runtime_fields": [
+      "warehouse ohlcv Date/Open/High/Low/Close/Volume",
+      "SPY daily OHLCV",
+      "QQQ daily OHLCV",
+      "data/reference/broad_market_sector_map.json sector/status",
+      "operator_inputs/open_positions.json entry_date",
+      "operator_inputs/open_positions.json target_price"
+    ]
+  },
+  "gate3": {
+    "candidate_pool_changed": false,
+    "minimum_core_survival_rate": 0.7925,
+    "new_core_filter_added": false,
+    "note": "No new core filter or entry rule was added. The pressure resilience candidate source is additive default-off paper, so core signals generated/survived are unchanged from baseline.",
+    "passed": true
+  },
+  "gate4": {
+    "aggregate_ev_delta": 0.0,
+    "aggregate_pnl_delta": 0.0,
+    "decision": "rejected_core_selected_anchor_peer_lag_candidate_pool",
+    "failed_reasons": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "fewer_than_two_ev_improved_windows",
+      "target_sample_too_small",
+      "target_window_coverage_too_small",
+      "target_concentration_failed"
+    ],
+    "max_drawdown_worse": 0.0,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": false,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": null,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": false,
+      "positive_pnl_hhi": null,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 0,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [],
+    "windows_ev_improved": 0,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 0,
+    "windows_pnl_regressed": 0
+  },
+  "gate_questions": {
+    "1_alpha_hypothesis": "entry/candidate_pool: if the existing core stack selected a ticker that also has a peer-shock day, its correlated laggards may have cleaner replacement value than laggards anchored on arbitrary same-day peer shocks.",
+    "2_history_check": {
+      "exp-20260606-018": "Any peer-shock lag improved aggregate EV/PnL but failed old_thin and drawdown.",
+      "exp-20260606-024_to_026": "Core-flow plus positive-candidate peer shock passed Gate 4 and was promoted into a shared default-off helper and daily forward observation.",
+      "exp-20260606-028": "Adding accepted peer shock into lagged consensus was redundant versus the accepted comparator."
+    },
+    "3_single_causal_variable": "core_selected_anchor_peer_lag_candidate_source_v1",
+    "4_acceptance_standard": "Use docs/backtesting.md three canonical windows. Accept only if aggregate EV/PnL improve, no EV/PnL regression window, target sample >=20 across all 3 windows, survival >=5%, drawdown drift <=0.5pp, and concentration guard passes. A positive replay still requires shared helper parity before promotion.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260607_001_core_selected_anchor_peer_lag.py"
+  },
+  "hypothesis": "Core-selected A/B entries that themselves shock higher may be better peer anchors for a correlated laggard default-off paper candidate than arbitrary peer shocks.",
+  "interpretation": "The core-selected anchor peer-lag source did not clear Gate 4; do not promote or locally retune this peer-lag family on the frozen windows.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "mechanism_family": "production_visible_free_ohlcv_relation_alpha",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260606-018",
+    "exp-20260606-024",
+    "exp-20260606-025",
+    "exp-20260606-026",
+    "exp-20260606-028"
+  ],
+  "negative_reflection": "If rejected, the core-selected anchor either over-thinned the accepted peer-shock relation or simply duplicated existing core risk-on dates. Do not retry by sweeping local correlation, shock-return, hold-day, cooldown, or notional thresholds; require forward replacement rows or a materially new relation source.",
+  "new_evidence_type": "production_visible_core_selected_anchor_relation",
+  "next_evidence_needed": "A positive replay lead still needs shared helper parity for core-selected anchor mode before production observation. Live activation would require closed forward replacement-value rows and a separate Gate 1-4 trade adapter.",
+  "parameters": {
+    "core_flow_confirmation_required": true,
+    "core_selected_anchor_required": true,
+    "correlation_lookback_days": 60,
+    "hold_days": 10,
+    "max_candidate_realized_vol_20": 0.075,
+    "max_candidate_realized_vol_20d": 0.09,
+    "max_candidate_ret5": 0.055,
+    "max_candidate_signal_return": 0.02,
+    "max_laggard_candidates_per_day": 350,
+    "max_paper_trades_per_day": 1,
+    "max_pressure_median_return": -0.004,
+    "max_qqq_pressure_return": -0.01,
+    "max_raw_rows_per_day": 50,
+    "max_shock_peers_per_day": 10,
+    "max_spy_pressure_return": -0.0075,
+    "min_avg_dollar_volume_20d": 50000000.0,
+    "min_candidate_close_location": 0.35,
+    "min_candidate_relative_vs_qqq": 0.022,
+    "min_candidate_relative_vs_spy": 0.018,
+    "min_candidate_ret20_excess_spy": -0.03,
+    "min_candidate_ret5": -0.055,
+    "min_candidate_ret60_excess_spy": -0.08,
+    "min_candidate_signal_return": 0.0,
+    "min_context_liquid_count": 250,
+    "min_correlation": 0.58,
+    "min_peer_relative_vs_spy": 0.04,
+    "min_peer_ret20_excess_spy": -0.02,
+    "min_peer_signal_return": 0.055,
+    "min_peer_volume_ratio_20d": 1.05,
+    "min_pressure_dispersion": 0.018,
+    "min_pressure_down_fraction": 0.58,
+    "min_pressure_tail_down_fraction": 0.18,
+    "min_price": 10.0,
+    "paper_notional_usd": 4000.0,
+    "same_ticker_cooldown_days": 10,
+    "single_causal_variable": "core_selected_anchor_peer_lag_candidate_source_v1"
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "entry/candidate_pool: if the existing core stack selected a ticker that also has a peer-shock day, its correlated laggards may have cleaner replacement value than laggards anchored on arbitrary same-day peer shocks.",
+    "2_history_check": {
+      "exp-20260606-018": "Any peer-shock lag improved aggregate EV/PnL but failed old_thin and drawdown.",
+      "exp-20260606-024_to_026": "Core-flow plus positive-candidate peer shock passed Gate 4 and was promoted into a shared default-off helper and daily forward observation.",
+      "exp-20260606-028": "Adding accepted peer shock into lagged consensus was redundant versus the accepted comparator."
+    },
+    "3_single_causal_variable": "core_selected_anchor_peer_lag_candidate_source_v1",
+    "4_acceptance_standard": "Use docs/backtesting.md three canonical windows. Accept only if aggregate EV/PnL improve, no EV/PnL regression window, target sample >=20 across all 3 windows, survival >=5%, drawdown drift <=0.5pp, and concentration guard passes. A positive replay still requires shared helper parity before promotion.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260607_001_core_selected_anchor_peer_lag.py"
+  },
+  "prediction": {
+    "confidence_reason": "Accepted peer-shock evidence supports free OHLCV relation alpha, but forcing the shock anchor to be a core-selected ticker may over-thin the sample or duplicate existing core flow.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "sample_too_thin",
+      "window_regression",
+      "anchor_redundant_with_existing_peer_shock",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-07T00:06:40+00:00",
+    "success_probability": 0.19
+  },
+  "pressure_context_samples_by_window": {
+    "late_strong": [],
+    "mid_weak": [],
+    "old_thin": []
+  },
+  "pressure_contexts_by_window": {
+    "late_strong": [],
+    "mid_weak": [],
+    "old_thin": []
+  },
+  "prior_trial_count": 1,
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_note": "This experiment changes no production code. A positive result would require the shared rolling-correlation peer-shock helper to expose the same core-selected anchor mode in both historical replay and daily default-off snapshots before any report queue, paper ledger, candidate priority, sizing, watchlist, or order surface could change.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "raw_candidate_counts": {
+    "late_strong": 0,
+    "mid_weak": 0,
+    "old_thin": 0
+  },
+  "rejection_reason": "aggregate_ev_not_positive; aggregate_pnl_not_positive; fewer_than_two_ev_improved_windows; target_sample_too_small; target_window_coverage_too_small; target_concentration_failed",
+  "related_files": [
+    "quant/experiments/exp_20260607_001_core_selected_anchor_peer_lag.py",
+    "data/experiments/exp-20260607-001/exp_20260607_001_core_selected_anchor_peer_lag.json",
+    "experiments/logs/exp-20260607-001.json",
+    "experiments/tickets/exp-20260607-001.json",
+    "experiments/cards/exp-20260607-001.md",
+    "experiments/manifests/exp-20260607-001.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "status": "rejected",
+  "target_trade_summary": {
+    "by_ticker_count": {},
+    "by_ticker_pnl": {},
+    "by_window_pnl": {
+      "late_strong": 0,
+      "mid_weak": 0,
+      "old_thin": 0
+    },
+    "max_single_positive_pnl_share": null,
+    "positive_by_ticker_pnl": {},
+    "positive_pnl_hhi": null,
+    "total_pnl": 0,
+    "total_trade_count": 0,
+    "windows_with_target_trades": []
+  },
+  "target_trades_by_window": {
+    "late_strong": [],
+    "mid_weak": [],
+    "old_thin": []
+  },
+  "timestamp": "2026-06-07T00:10:36Z",
+  "total_pnl_delta": 0.0,
+  "trial_family": "rolling_corr_core_selected_anchor_peer_lag_candidate_pool",
+  "trial_variant_id": "core_selected_anchor_peer_lag_top1_next_open_10d_v1",
+  "warehouse_coverage_by_window": {
+    "late_strong": {
+      "loaded_ticker_count": 1237,
+      "sector_known_candidate_ticker_count": 1235,
+      "source": "data/experiments/exp-20260519-030/warehouse_main.sqlite"
+    },
+    "mid_weak": {
+      "loaded_ticker_count": 1237,
+      "sector_known_candidate_ticker_count": 1235,
+      "source": "data/experiments/exp-20260519-030/warehouse_main.sqlite"
+    },
+    "old_thin": {
+      "loaded_ticker_count": 1237,
+      "sector_known_candidate_ticker_count": 1235,
+      "source": "data/experiments/exp-20260519-030/warehouse_main.sqlite"
+    }
+  }
+}
