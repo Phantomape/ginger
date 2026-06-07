@@ -12,14 +12,16 @@ facts before changing strategy behavior.
 - History fingerprint: `7feb1214eeb76234`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
-- Full current stack reference: `docs/current_state.md`.
+- Compact state entrypoint: `docs/current_state_snapshot.md`.
+- Full exact-state fallback: `docs/current_state.md`.
 
 ## How To Use
 
 - Read this file first for default memory.
 - Read a `docs/lessons/*.md` card when touching its mechanism family.
+- Read `docs/current_state_snapshot.md` for current-state orientation.
 - Read `docs/current_state.md` only for exact accepted-stack, baseline,
-  activation, or blocker details that are relevant to the current task.
+  activation, or blocker details not covered by the snapshot.
 - Run `.\.venv\Scripts\python.exe -B scripts\build_alpha_memory.py --git-ref HEAD`
   after closing and committing material alpha experiments so this pack
   reflects the latest committed lessons.
@@ -122,4 +124,4 @@ facts before changing strategy behavior.
 ## Line Budget
 
 - Target maximum lines: `420`
-- Actual lines when generated: `125`
+- Actual lines when generated: `127`

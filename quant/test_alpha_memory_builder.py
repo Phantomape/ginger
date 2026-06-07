@@ -53,6 +53,7 @@ def test_alpha_memory_builder_uses_logs_without_registry(tmp_path):
     result = write_alpha_memory(
         root=tmp_path,
         context_pack=tmp_path / "docs" / "alpha_context_pack.md",
+        current_state_snapshot=tmp_path / "docs" / "current_state_snapshot.md",
         lessons_dir=tmp_path / "docs" / "lessons",
         lesson_count=2,
         recent_count=3,
@@ -61,14 +62,21 @@ def test_alpha_memory_builder_uses_logs_without_registry(tmp_path):
     context = (tmp_path / "docs" / "alpha_context_pack.md").read_text(
         encoding="utf-8"
     )
+    snapshot = (tmp_path / "docs" / "current_state_snapshot.md").read_text(
+        encoding="utf-8"
+    )
     assert result["records_counted"] == 3
     assert "Strategy records counted: `3`" in context
     assert "History fingerprint" in context
-    assert "docs/current_state.md" in context
+    assert "docs/current_state_snapshot.md" in context
+    assert "Exact State Sources" in snapshot
+    assert "docs/current_state.md" in snapshot
     assert len(context.splitlines()) <= 420
+    assert len(snapshot.splitlines()) <= 220
     assert (tmp_path / "docs" / "lessons" / "peer-shock.md").exists()
     assert (tmp_path / "docs" / "lessons" / "macro-relief.md").exists()
     assert str(tmp_path) not in context
+    assert str(tmp_path) not in snapshot
 
 
 def test_alpha_memory_lesson_cards_include_retry_guidance(tmp_path):
@@ -82,6 +90,7 @@ def test_alpha_memory_lesson_cards_include_retry_guidance(tmp_path):
     write_alpha_memory(
         root=tmp_path,
         context_pack=tmp_path / "docs" / "alpha_context_pack.md",
+        current_state_snapshot=tmp_path / "docs" / "current_state_snapshot.md",
         lessons_dir=tmp_path / "docs" / "lessons",
         lesson_count=1,
         recent_count=4,
@@ -104,10 +113,27 @@ def test_alpha_memory_context_pack_enforces_line_budget(tmp_path):
         write_alpha_memory(
             root=tmp_path,
             context_pack=tmp_path / "docs" / "alpha_context_pack.md",
+            current_state_snapshot=tmp_path / "docs" / "current_state_snapshot.md",
             lessons_dir=tmp_path / "docs" / "lessons",
             lesson_count=1,
             recent_count=4,
             context_line_budget=20,
+        )
+
+
+def test_alpha_memory_current_state_snapshot_enforces_line_budget(tmp_path):
+    rows = [_row(i, decision="accepted", ev_delta=0.1) for i in range(12)]
+    _write_jsonl(tmp_path / "docs" / "experiment_log.jsonl", rows)
+
+    with pytest.raises(ValueError, match="current state snapshot"):
+        write_alpha_memory(
+            root=tmp_path,
+            context_pack=tmp_path / "docs" / "alpha_context_pack.md",
+            current_state_snapshot=tmp_path / "docs" / "current_state_snapshot.md",
+            lessons_dir=tmp_path / "docs" / "lessons",
+            lesson_count=1,
+            recent_count=4,
+            state_line_budget=20,
         )
 
 
@@ -147,6 +173,7 @@ def test_git_ref_materialization_ignores_dirty_workspace_logs(tmp_path):
     result = write_alpha_memory(
         root=source_root,
         context_pack=tmp_path / "docs" / "alpha_context_pack.md",
+        current_state_snapshot=tmp_path / "docs" / "current_state_snapshot.md",
         lessons_dir=tmp_path / "docs" / "lessons",
         lesson_count=4,
         recent_count=4,
@@ -154,6 +181,7 @@ def test_git_ref_materialization_ignores_dirty_workspace_logs(tmp_path):
     second_result = write_alpha_memory(
         root=second_source_root,
         context_pack=tmp_path / "docs" / "alpha_context_pack_again.md",
+        current_state_snapshot=tmp_path / "docs" / "current_state_snapshot_again.md",
         lessons_dir=tmp_path / "docs" / "lessons_again",
         lesson_count=4,
         recent_count=4,

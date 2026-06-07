@@ -15,9 +15,12 @@ experiment artifact.
   and acceptance evidence.
 - `docs/alpha_context_pack.md`: default compact LLM memory for alpha search,
   current priorities, frozen retry zones, and lesson-card links.
-- `docs/current_state.md`: full current accepted stack, activation map,
-  default-off surfaces, and known blockers. Read targeted sections when exact
-  state details are needed; do not use it as the default memory dump.
+- `docs/current_state_snapshot.md`: default compact current-state entrypoint,
+  recent accepted/default-off state, and exact-source pointers.
+- `docs/current_state.md`: legacy full exact-state reference for accepted stack,
+  activation map, default-off surfaces, and known blockers. Read targeted
+  sections when exact state details are needed; do not use it as the default
+  memory dump.
 - `docs/alpha-optimization-playbook.md`: preferred alpha directions, frozen
   retry zones, and mechanism-level lessons.
 - `docs/data_edge_context_layers.md`: passive context, sidecar, attribution, and
@@ -44,8 +47,10 @@ Experiment memory is intentionally layered:
   agents.
 - `docs/lessons/*.md` cards store compact mechanism-level lessons for targeted
   retrieval.
+- `docs/current_state_snapshot.md` is the short current-state entrypoint.
 - `docs/current_state.md` is a full reference for exact accepted-stack and
-  activation details, not the default context to paste into every run.
+  activation details, not the default context to paste into every run. It can
+  be archived only after those exact-state duties have audited replacements.
 
 After closing a material alpha experiment, refresh the compact memory:
 
@@ -54,8 +59,9 @@ After closing a material alpha experiment, refresh the compact memory:
 ```
 
 The generated context pack and lesson cards are derived summaries. If a
-summary conflicts with a ticket, log, artifact, code, `docs/backtesting.md`, or
-`docs/production_backtest_parity.md`, the raw/source file wins.
+summary conflicts with a ticket, log, artifact, code, `docs/backtesting.md`,
+`docs/current_state.md`, or `docs/production_backtest_parity.md`, the
+raw/source file wins.
 
 ## Experiment Classes
 
