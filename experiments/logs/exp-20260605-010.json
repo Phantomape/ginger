@@ -1,0 +1,81 @@
+{
+  "after_metrics": {
+    "growth_ls_20d_gross": 0.005228,
+    "growth_ls_20d_tstat": 0.9189,
+    "ret20_residual_20d_mean": 0.003014,
+    "ret20_residual_20d_tstat": 0.5906,
+    "ret20_residual_n_days": 64,
+    "strategy_behavior_changed": false,
+    "total_observations": 71518
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "comment": "first realized-growth attribution on broad universe using the new exp-20260605-007 asset.",
+    "strategy_behavior_changed": false
+  },
+  "change_summary": "Joined exp-20260605-007 companyfacts revenue YoY growth (PIT asof<=signal_day) to warehouse OHLCV, 71518 obs across 3 windows. Growth quintile long-short 20d +0.52pct gross (t=0.92, insignificant, net negative); ladder non-monotonic U-shaped (Q1 low-growth highest at +2.57pct); late_strong window inverts (-2.58pct). ret20 double-sort residual +0.30pct t=0.59 (insignificant). Caught and fixed a residual t-stat flaw: first run t-tested only 5 ret20-band means (spurious t=3.29); corrected to daily within-band series (n=64) -> t=0.59. No robust growth edge raw or momentum-conditional.",
+  "change_type": "read_only_broad_universe_realized_fundamental_growth_forward_return",
+  "changed_variable": "realized_yoy_growth_quintile_forward_return_incremental_to_ret20",
+  "component": "quant/experiments/exp_20260605_010_broad_fundamental_growth_attribution.py",
+  "decision": "observed_only_no_robust_growth_edge",
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260605-010",
+  "gate1": {
+    "n": 71518,
+    "name": "observations_collected",
+    "passed": true
+  },
+  "gate2": {
+    "name": "pit_growth_join",
+    "note": "signal uses most recent companyfacts row with asof_date<=signal_day",
+    "passed": true
+  },
+  "gate3": {
+    "name": "survival_rate_not_affected_read_only",
+    "passed": true
+  },
+  "gate4": {
+    "incremental_over_ret20": false,
+    "name": "incremental_growth_edge_over_ret20",
+    "passed": false,
+    "primary_horizon": 20,
+    "raw_long_short_ok": false,
+    "raw_net_of_cost_ok": false,
+    "residual_mean": 0.003014,
+    "residual_tstat": 0.5906,
+    "status": "observed_only_no_robust_growth_edge"
+  },
+  "hypothesis": "On the broad 1446 universe, higher realized revenue YoY growth (companyfacts, PIT) out-returns lower growth over 10/20d and is incremental over ret20 (double-sort).",
+  "lane": "alpha_discovery",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "mechanism_family": "cross_sectional_fundamental_growth",
+  "multiple_testing_risk_bucket": "minimal",
+  "next_evidence_needed": "Test fundamental growth at earnings-event frequency (filing date) not daily, combined with quality (margin/cash-conversion); a long-only top-quintile framing is cheaper but the U-shaped ladder (Q1 high) argues against a simple top rule. The companyfacts asset itself remains the right clean replacement for yfinance eps_estimate.",
+  "prediction": {
+    "main_failure_modes": "growth_edge_collapses_after_ret20_control_just_momentum, stale_quarterly_growth_low_signal_at_daily_frequency, one_window_carries_it, thin_after_cost",
+    "outcome_vs_prediction": "matched: raw insignificant + ret20-conditional residual insignificant; stale-quarterly + one-window-inverts both present.",
+    "success_probability": 0.35
+  },
+  "production_impact": {
+    "alters_orders": false,
+    "alters_ranking": false,
+    "alters_sizing": false,
+    "default_off": true,
+    "read_only_attribution": true,
+    "scope": "experiment_artifact_only"
+  },
+  "related_files": [
+    "quant/experiments/exp_20260605_010_broad_fundamental_growth_attribution.py",
+    "quant/test_exp_20260605_010_fundamental_growth_attribution.py",
+    "data/experiments/exp-20260605-010/broad_fundamental_growth_attribution.json",
+    "experiments/artifacts/exp-20260605-010_broad_fundamental_growth_attribution.md",
+    "experiments/logs/exp-20260605-010.json",
+    "experiments/tickets/exp-20260605-010.json"
+  ],
+  "status": "observed_only",
+  "timestamp": "2026-06-05T08:00:00+00:00",
+  "trial_family": "broad_universe_fundamental_growth_attribution",
+  "trial_variant_id": "exp-20260605-010"
+}
