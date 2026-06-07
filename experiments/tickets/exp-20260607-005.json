@@ -1,0 +1,96 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260607_005_trend_quality_short_horizon_reversal.py",
+    "data/experiments/exp-20260607-005/exp_20260607_005_trend_quality_short_horizon_reversal.json",
+    "experiments/cards/exp-20260607-005.md",
+    "experiments/manifests/exp-20260607-005.json",
+    "experiments/tickets/exp-20260607-005.json",
+    "experiments/logs/exp-20260607-005.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "card_file": "experiments/cards/exp-20260607-005.md",
+  "causal_components": [
+    "fixed trend-quality reversal candidate source",
+    "replay-only runner",
+    "artifact",
+    "log"
+  ],
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "trend_quality_short_horizon_reversal_candidate_source_v1",
+  "claimed_at": "2026-06-07T03:12:14+00:00",
+  "completed_at": "2026-06-07T03:23:23Z",
+  "created_at": "2026-06-07T03:11:59+00:00",
+  "decision": "rejected_trend_quality_short_horizon_reversal_candidate_pool",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260607-005",
+  "experiment_uid": "expuid-875825a9ab034b6b",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260607-005",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-07T03:11:59+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "trend_quality_short_horizon_reversal"
+  },
+  "hypothesis": "Liquid sector-known stocks that sell off sharply versus SPY over three days but remain in a long-term uptrend and reclaim strength on the signal day may add short-horizon mean-reversion candidates without adding noisy tickers.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "trend_quality_short_horizon_reversal_candidate_source_v1"
+  ],
+  "mechanism_family": "production_visible_free_ohlcv_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260601-007",
+    "exp-20260529-013",
+    "exp-20260526-011",
+    "exp-20260528-037"
+  ],
+  "new_evidence_type": "free_ohlcv_trend_quality_reversal_candidate_source",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "Short-horizon reversal is plausible but cost-sensitive; adding liquidity, 50/100d trend quality, reclaim confirmation, and top1/day reduces noise versus prior naked pullback and broad OHLCV failures.",
+    "expected_ev_delta": 0.2,
+    "expected_pnl_delta": 3500.0,
+    "main_failure_modes": [
+      "window_regression",
+      "drawdown_drift",
+      "cost_sensitive_reversal",
+      "concentration_failed",
+      "sample_too_small"
+    ],
+    "recorded_at": "2026-06-07T03:11:42+00:00",
+    "success_probability": 0.16
+  },
+  "prior_trial_count": 3,
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": 0.0082,
+    "aggregate_strategy_total_pnl_delta": -917.35,
+    "artifact": "data/experiments/exp-20260607-005/exp_20260607_005_trend_quality_short_horizon_reversal.json",
+    "calibration": {
+      "actual_gate4_passed": false,
+      "brier_score": 0.0256,
+      "failure_modes_observed": [
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "drawdown_drift_too_high"
+      ],
+      "predicted_success_probability": 0.16
+    },
+    "decision": "rejected_trend_quality_short_horizon_reversal_candidate_pool",
+    "log": "experiments/logs/exp-20260607-005.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260607-005.json",
+  "single_causal_variable": "trend_quality_short_horizon_reversal_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The trend-quality short-horizon reversal candidate source did not clear Gate 4. Do not promote it or answer by retuning nearby ret3, trend, volume, hold-day, cooldown, or notional thresholds on these frozen windows.",
+  "ticket_file": "experiments/tickets/exp-20260607-005.json",
+  "trial_family": "trend_quality_short_horizon_reversal_candidate_pool",
+  "trial_variant_id": "trend_quality_short_horizon_reversal_top1_5d_v1"
+}
