@@ -1,0 +1,95 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260607_009_industry_pullback_leader_resilience.py",
+    "data/experiments/exp-20260607-009/exp_20260607_009_industry_pullback_leader_resilience.json",
+    "experiments/cards/exp-20260607-009.md",
+    "experiments/manifests/exp-20260607-009.json",
+    "experiments/tickets/exp-20260607-009.json",
+    "experiments/logs/exp-20260607-009.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260607-009.md",
+  "causal_components": [
+    "replay-only broad warehouse candidate source",
+    "three-window paper overlay",
+    "artifact log card manifest"
+  ],
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "industry_pullback_leader_resilience_candidate_source_v1",
+  "claimed_at": "2026-06-07T07:05:43+00:00",
+  "completed_at": "2026-06-07T07:09:37Z",
+  "created_at": "2026-06-07T07:05:12+00:00",
+  "decision": "rejected_industry_pullback_leader_resilience_candidate_pool",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260607-009",
+  "experiment_uid": "expuid-8fe42d5006f447f9",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260607-009",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-07T07:05:12+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "industry_pullback_leader_resilience"
+  },
+  "hypothesis": "Strong industry groups that pull back briefly may produce continuation alpha in liquid leader stocks that stay resilient versus their group and SPY.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "industry_pullback_leader_resilience_candidate_source_v1"
+  ],
+  "mechanism_family": "default_off_paper_candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260605-033",
+    "exp-20260607-005",
+    "exp-20260607-007",
+    "exp-20260607-008"
+  ],
+  "new_evidence_type": "free_ohlcv_industry_pullback_leader_resilience",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "Recent relation-aware OHLCV sources worked when relation quality was explicit, but broad OHLCV momentum and short-horizon reversal often failed; this tests a different industry pullback-resilience relation with strict three-window gates.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "window_regression",
+      "drawdown_drift",
+      "leader_exhaustion",
+      "ohlcv_momentum_relabeling",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-07T07:04:57+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 4,
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": -0.0595,
+    "aggregate_strategy_total_pnl_delta": 672.27,
+    "artifact": "data/experiments/exp-20260607-009/exp_20260607_009_industry_pullback_leader_resilience.json",
+    "calibration": {
+      "actual_gate4_passed": false,
+      "brier_score": 0.0324,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "drawdown_drift_too_high"
+      ],
+      "predicted_success_probability": 0.18
+    },
+    "decision": "rejected_industry_pullback_leader_resilience_candidate_pool",
+    "log": "experiments/logs/exp-20260607-009.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260607-009.json",
+  "single_causal_variable": "industry_pullback_leader_resilience_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The industry pullback leader-resilience source did not clear Gate 4. Do not promote it or answer by retuning group pullback, leader-resilience, close-location, hold-day, cooldown, top-N, or notional thresholds on these frozen windows.",
+  "ticket_file": "experiments/tickets/exp-20260607-009.json",
+  "trial_family": "industry_pullback_leader_resilience_candidate_pool",
+  "trial_variant_id": "exp-20260607-009"
+}
