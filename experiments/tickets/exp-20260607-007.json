@@ -1,0 +1,104 @@
+{
+  "acceptance_rule": "Gate 4 per docs/backtesting.md: aggregate EV and PnL positive, zero EV/PnL regression windows, target trades >=20 across all three windows, core survival >=5%, drawdown drift <=0.5pp, concentration pass; replay-only positives require shared default-off parity before production promotion.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_*_industry_relative_laggard_repair.py",
+    "data/experiments/exp-*/exp_*_industry_relative_laggard_repair.json",
+    "experiments/logs/exp-*.json",
+    "experiments/cards/exp-*.md",
+    "experiments/manifests/exp-*.json",
+    "experiments/tickets/exp-*.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "card_file": "experiments/cards/exp-20260607-007.md",
+  "causal_components": [],
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "industry_relative_laggard_repair_candidate_source_v1",
+  "claimed_at": "2026-06-07T05:11:07+00:00",
+  "completed_at": "2026-06-07T05:17:27Z",
+  "created_at": "2026-06-07T05:10:35+00:00",
+  "decision": "positive_replay_lead_not_promoted_industry_relative_laggard_repair",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260607-007",
+  "experiment_uid": "expuid-807a7e0aefb947e4",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260607-007",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-07T05:10:35+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "industry_relative_laggard_repair"
+  },
+  "hypothesis": "Industry-relative laggard repair: within a strong liquid industry group, the stock that lagged the group over 20 trading days but reclaims relative strength on the signal day may expand the candidate pool without simply adding noisy broad momentum tickers.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "accepted core stack; live/default orders; ranking; sizing; exits; LLM/news paths; state-surface notional/rank/support profile"
+  ],
+  "mechanism_family": "production_visible_free_ohlcv_relation_alpha",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/earnings_snapshot.py",
+    "quant/pead_broad_universe_paper_sleeve.py",
+    "quant/fetch_broad_earnings_snapshot.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260606-029",
+    "exp-20260607-005",
+    "exp-20260607-006",
+    "exp-20260606-024"
+  ],
+  "new_evidence_type": "free_ohlcv_industry_relative_laggard_repair",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "Recent relation-aware free-OHLCV peer shock worked only after core-flow confirmation, while sector ETF laggards and short-horizon reversal failed. Industry-relative repair is a different free relation source but likely cost/tail sensitive.",
+    "expected_ev_delta": 0.18,
+    "expected_pnl_delta": 3000.0,
+    "main_failure_modes": [
+      "window_regression",
+      "drawdown_drift",
+      "laggard_value_trap",
+      "sector_laggard_relabeling",
+      "sample_too_small",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-07T05:10:20+00:00",
+    "success_probability": 0.14
+  },
+  "prior_trial_count": 4,
+  "result": {
+    "accepted": true,
+    "aggregate_expected_value_delta": 0.2763,
+    "aggregate_strategy_total_pnl_delta": 6208.99,
+    "artifact": "data/experiments/exp-20260607-007/exp_20260607_007_industry_relative_laggard_repair.json",
+    "calibration": {
+      "actual_gate4_passed": true,
+      "brier_score": 0.7396,
+      "failure_modes_observed": [],
+      "predicted_success_probability": 0.14
+    },
+    "decision": "positive_replay_lead_not_promoted_industry_relative_laggard_repair",
+    "log": "experiments/logs/exp-20260607-007.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260607-007.json",
+  "single_causal_variable": "industry_relative_laggard_repair_candidate_source_v1",
+  "status": "positive_replay_lead_not_promoted",
+  "summary": "The industry-relative laggard repair source cleared Gate 4 as a replay-only/default-off lead, but no production surface was promoted.",
+  "ticket_file": "experiments/tickets/exp-20260607-007.json",
+  "trial_family": "industry_relative_laggard_repair_candidate_pool",
+  "trial_variant_id": "industry_laggard_signal_day_reclaim_top1_next_open_10d_v1"
+}
