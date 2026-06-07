@@ -1,0 +1,97 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260607_026_volatility_curve_relief_stock_leadership.py",
+    "data/experiments/exp-20260607-026/exp_20260607_026_volatility_curve_relief_stock_leadership.json",
+    "experiments/cards/exp-20260607-026.md",
+    "experiments/manifests/exp-20260607-026.json",
+    "experiments/tickets/exp-20260607-026.json",
+    "experiments/logs/exp-20260607-026.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260607-026.md",
+  "causal_components": [
+    "replay-only fixed VIXY/VIXM curve-relief context",
+    "stock leadership selection",
+    "next-open 10-day paper hold",
+    "Gate 1-4 artifact/log"
+  ],
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "volatility_curve_relief_stock_leadership_candidate_source_v1",
+  "claimed_at": "2026-06-07T22:05:38+00:00",
+  "completed_at": "2026-06-07T22:09:08Z",
+  "created_at": "2026-06-07T22:05:28+00:00",
+  "decision": "rejected_volatility_curve_relief_stock_leadership_candidate_pool",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260607-026",
+  "experiment_uid": "expuid-29778b21c0f8491e",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260607-026",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-07T22:05:28+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "volatility_curve_relief_stock_leadership"
+  },
+  "hypothesis": "VIXY/VIXM volatility-curve relief may identify liquid stock leaders with stronger next-open continuation than plain VIXY relief.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "volatility_curve_relief_stock_leadership_candidate_source_v1"
+  ],
+  "mechanism_family": "default_off_paper_candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260607-018",
+    "exp-20260607-019",
+    "exp-20260606-019",
+    "exp-20260606-027"
+  ],
+  "new_evidence_type": "free_ohlcv_vixy_vixm_term_structure_proxy",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "Accepted VIXY relief worked, and VIXM is a free PIT OHLCV term-structure proxy; this is materially new volatility-structure evidence but close enough to the accepted VIXY family that it must beat all three canonical windows and be treated only as a replay lead unless a shared helper follows.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "accepted_vixy_comparator_not_beaten",
+      "window_regression",
+      "drawdown_drift",
+      "thin_sample",
+      "vol_curve_proxy_relabels_vixy"
+    ],
+    "recorded_at": "2026-06-07T22:05:14+00:00",
+    "success_probability": 0.16
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": 0.4441,
+    "aggregate_strategy_total_pnl_delta": 7338.46,
+    "artifact": "data/experiments/exp-20260607-026/exp_20260607_026_volatility_curve_relief_stock_leadership.json",
+    "calibration": {
+      "actual_ev_delta": 0.4441,
+      "actual_gate4_passed": false,
+      "actual_pnl_delta": 7338.46,
+      "actual_success": 0,
+      "brier_score": 0.0256,
+      "failure_modes_observed": [
+        "window_ev_regression",
+        "accepted_vixy_comparator_ev_not_beaten",
+        "accepted_vixy_comparator_pnl_not_beaten"
+      ],
+      "predicted_success_probability": 0.16
+    },
+    "decision": "rejected_volatility_curve_relief_stock_leadership_candidate_pool",
+    "log": "experiments/logs/exp-20260607-026.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260607-026.json",
+  "single_causal_variable": "volatility_curve_relief_stock_leadership_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The volatility-curve relief source did not clear Gate 4 or failed to beat the accepted VIXY relief comparator. Do not promote it or answer by retuning VIXY/VIXM/SPY/QQQ thresholds on these frozen windows.",
+  "ticket_file": "experiments/tickets/exp-20260607-026.json",
+  "trial_family": "volatility_curve_relief_stock_leadership_candidate_pool",
+  "trial_variant_id": "exp-20260607-026"
+}
