@@ -104,6 +104,9 @@ large shared JSON document.
     "replay_only": false,
     "trade_enabled": false,
     "daily_snapshot_exposed": false,
+    "live_realism_evaluated": false,
+    "live_ready": false,
+    "activation_envelope": null,
     "parity_test_added": false
   },
   "created_at": "2026-04-25T00:00:00-07:00",
@@ -138,9 +141,10 @@ count nearby research attempts without changing strategy behavior:
 `implementation_mode` is recommended for alpha and scout tickets. Use
 `shared_paper_first` when the same helper will power historical replay and daily
 default-off observation, `private_replay_scout` only for uncertain data-shape
-discovery, `observed_only_attribution` for measurement without acceptance, and
-`live_activation` only when closed forward evidence is being promoted into
-executable behavior.
+discovery, `observed_only_attribution` for measurement without acceptance,
+`activation_envelope` when the experiment only evaluates missing live-capital
+constraints for an already accepted signal, and `live_release` when an
+unchanged, already measured envelope is being enabled through configuration.
 
 For pure `measurement_repair` tickets these fields are recommended but may be
 omitted when no alpha family is being evaluated.
@@ -214,6 +218,9 @@ Every ticket that can affect executable trade behavior must include
 | `replay_only` | The difference is an allowed historical-data limitation, not duplicate strategy logic. |
 | `trade_enabled` | The experiment can place or alter live/default executable trades. |
 | `daily_snapshot_exposed` | The same candidate/rule is visible through a daily default-off snapshot, report, or ledger path. |
+| `live_realism_evaluated` | The experiment measured the real-capital envelope: notional/caps, liquidity/slippage, displacement, exposure, kill switch, and order semantics. |
+| `live_ready` | The result is eligible for a `trade_enabled=true` release without another alpha search, assuming the envelope remains unchanged. |
+| `activation_envelope` | Structured summary of the measured notional, capital cap, liquidity/slippage model, portfolio displacement, exposure limits, kill switch, and order semantics. |
 | `parity_test_added` | A focused test or manifest update guards the production/backtest contract. |
 
 If `shared_policy_changed=true`, then either `run_adapter_changed=true` or
@@ -223,6 +230,14 @@ If `shared_policy_changed=true`, then either `run_adapter_changed=true` or
 parity-contract update records the shared replay/daily semantics. Otherwise the
 experiment is backtester-only and must not be accepted. Allowed replay-only
 differences are listed in `docs/production_backtest_parity.md`.
+
+If an alpha could plausibly be promoted to live capital, its ticket or final log
+must say whether the live-realistic envelope is being measured. A positive
+paper result with `live_realism_evaluated=false` may be accepted as
+default-off/observe-ready, but it is not live-ready. If
+`live_realism_evaluated=true`, `live_ready=true`, and the later release does not
+change the envelope, enabling `trade_enabled=true` can be handled as a
+release/config record instead of a new alpha experiment.
 
 Example observed-only closeout:
 

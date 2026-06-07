@@ -145,6 +145,15 @@
     "replay_only": false,
     "trade_enabled": false,
     "daily_snapshot_exposed": true,
+    "live_realism_evaluated": true,
+    "live_ready": false,
+    "activation_envelope": {
+      "intended_notional": "default-off paper notional or proposed live notional",
+      "capital_cap": "maximum portfolio capital at risk",
+      "liquidity_slippage_model": "decision-time liquidity and cost assumptions",
+      "portfolio_displacement": "cash or displaced candidate comparison",
+      "kill_switch": "drawdown, volatility, or forward replacement-value stop"
+    },
     "parity_test_added": true
   },
   "decision": "rejected",
@@ -171,7 +180,7 @@
 | `hypothesis` | 是 | 本次实验要验证的因果假设 |
 | `change_summary` | 是 | 一句话描述改动 |
 | `change_type` | 是 | 如 `threshold` / `filter` / `llm_prompt` / `data_fix` / `parity_fix` |
-| `implementation_mode` | alpha 推荐 | `shared_paper_first` / `private_replay_scout` / `observed_only_attribution` / `measurement_repair` / `live_activation` |
+| `implementation_mode` | alpha 推荐 | `shared_paper_first` / `private_replay_scout` / `observed_only_attribution` / `measurement_repair` / `activation_envelope` / `live_release` |
 | `mechanism_family` | alpha 推荐 | 机制级研究族，如 `state_surface_concentration`、`broad_market_forward_maturation` |
 | `trial_family` | alpha 必填 | 用于 trial accounting 的近邻实验族；同族重试必须累计 |
 | `trial_variant_id` | alpha 推荐 | 本次具体变体 ID，便于区分同族 sweep 或 scout |
@@ -191,7 +200,7 @@
 | `llm_metrics` | 推荐 | 若涉及 LLM，则记录单独归因指标 |
 | `prediction` | alpha/scout 必填 | Pre-run probability, expected EV/PnL delta, expected failure modes, and confidence reason recorded before seeing the result. |
 | `calibration` | closed alpha/scout 必填 | Post-run comparison of prediction versus actual decision, including Brier score, over/underconfidence, EV/PnL error, and failure-mode hit. |
-| `production_impact` | 策略改动必填 | 记录该实验是否改变共享 policy、回测 adapter、生产 adapter、是否 replay-only、是否加 parity 测试 |
+| `production_impact` | 策略改动必填 | 记录该实验是否改变共享 policy、回测 adapter、生产 adapter、是否 replay-only、是否加 parity 测试，以及是否评估真钱执行包络 |
 | `decision` | 是 | 最终结论 |
 | `rejection_reason` | 条件必填 | 被拒绝或回滚时必须写 |
 | `next_retry_requires` | 推荐 | 未来想重试，需要什么新证据 |
@@ -231,6 +240,13 @@
 `private_replay_scout` 的正向结果只能记录为 lead，不能写成 accepted alpha；
 accepted default-off paper alpha 必须有 shared replay/daily semantics 或明确的
 measurement-repair 例外。
+
+任何可能进入 live 的 alpha 都必须在 `production_impact` 里记录
+`live_realism_evaluated`、`live_ready` 和 `activation_envelope`。如果
+`live_realism_evaluated=false`，该实验最多只能写成 accepted default-off /
+observe-ready，不能写成 live-ready。若 `live_realism_evaluated=true` 且
+后续 release 不改变包络，`trade_enabled=true` 可以作为发布/配置变更记录；
+若包络缺失或改变，必须先做窄的 activation-envelope Gate 1-4。
 
 ## 什么时候还要写进 Alpha 文档
 

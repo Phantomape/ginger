@@ -161,7 +161,9 @@ LLM 规则同样适用：如果想让 LLM 判断某个维度，必须先确认�
 
 **state-surface 加严规则**：`state_surface_sleeve` 已经叠加了多层 paper notional scalar / rank profile / support / haircut 规则，继续做同类阈值、profile、notional scalar 或 capital allocation 调参时，`expected_value_score` 提升 > 10% 必须作为 Gate 4 的硬性最低门槛，而不是强接受信号。计算口径以 `docs/backtesting.md` 的标准多窗口 before/after aggregate `expected_value_score` 为准。若 aggregate EV 未提升超过 10%，默认必须回滚策略改动并记录为失败实验；不得用“小幅但稳定”“三窗口都改善”“PnL 改善”“paper-only”“不影响生产订单”等理由保留。例外只允许 `measurement_repair`，且必须说明它修复了哪一个会扭曲 alpha 评估或生产 / 回测一致性的阻断项。
 
-对 high-potential default-off paper alpha，如果同一实验已经通过 shared helper 同时覆盖 historical replay 和 daily default-off snapshot，并且保持 `trade_enabled=False`、不改变 live/default orders、ranking、sizing 或 exits，可以在同一实验内保留为 accepted shared default-off helper；不必为了“paper 接入生产可见输出”再拆一轮。live activation、capital allocation、core ranking、watchlist/order surface 仍必须另做 Gate 1-4。
+对 high-potential default-off paper alpha，如果同一实验已经通过 shared helper 同时覆盖 historical replay 和 daily default-off snapshot，并且保持 `trade_enabled=False`、不改变 live/default orders、ranking、sizing 或 exits，可以在同一实验内保留为 accepted shared default-off helper；不必为了“paper 接入生产可见输出”再拆一轮。
+
+真钱可执行性不是事后补丁。任何声称有机会进入 live 的 alpha 实验，都必须在本轮记录 live-realistic execution envelope：目标 notional / capital cap、流动性和滑点假设、组合挤出、最大持仓/行业/主题暴露、kill switch、订单语义、失败处理、以及这些约束是否已经进入 after-measurement。若这些约束已经在同一 accepted 实验里评估并保持不变，后续把 `trade_enabled` 从 `false` 切到 `true` 可以是 release checklist / config change，而不是新的 alpha 实验。若本轮没有评估真钱包络，则该结果只能算 accepted default-off，不算 live-ready；之后需要一个窄的 activation-envelope Gate 1-4 补足真钱约束，不能重新发明 alpha。
 
 默认保留规则：
 

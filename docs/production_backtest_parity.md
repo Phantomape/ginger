@@ -21,6 +21,29 @@ in shared modules such as:
 - `quant/production_parity.py`
 - future `quant/policy/*.py` modules
 
+## Live-Realistic Execution Envelope
+
+An alpha is not live-ready merely because a default-off paper sleeve has
+positive EV. The accepting experiment must also define and measure the
+execution envelope that would be used with real capital:
+
+- intended notional or sizing rule;
+- capital cap and exposure limits;
+- liquidity and slippage assumptions;
+- portfolio displacement or slot interaction;
+- order timing and order type semantics;
+- kill switch and failure handling;
+- production/backtest parity for all of the above.
+
+If that envelope is measured and unchanged, a later `trade_enabled=true` release
+can be treated as an operational release checklist/config change. If it was not
+measured, activation requires a narrow activation-envelope Gate 1-4 that tests
+the missing execution constraints; it must not search for a new alpha signal.
+
+Legacy rows below that say "separate Gate 1-4 trade adapter" should be read
+through this rule: the required work is a live-realistic execution-envelope
+evaluation unless the accepted experiment already supplied it.
+
 ## Read-Only SEC Semantic Provenance
 
 `quant/run.py` passes the daily `sec_filing_text` artifact into the shared SEC

@@ -103,6 +103,10 @@ Minimum requirements:
   same experiment when it calls the same helper, keeps `trade_enabled=False`,
   and leaves live/default orders, ranking, sizing, exits, and watchlists
   unchanged.
+- If the alpha is intended to become live-capital eligible, define and measure
+  the live-realistic execution envelope in this same experiment: intended
+  notional, capital cap, liquidity/slippage assumptions, portfolio displacement,
+  exposure limits, kill switch, order semantics, and failure handling.
 - Keep `trade_enabled=False` and live/default orders unchanged.
 - Record the helper in `docs/production_backtest_parity.md` when Gate 4 accepts
   or when the helper is retained for forward default-off observation.
@@ -113,8 +117,12 @@ observe-only daily/report output when that wiring was included in the same
 ticket and reuses the same helper. If the accepted helper does not yet expose
 daily output, the next step can be a small forward-paper wiring experiment.
 Live trading, capital allocation, core ranking, exits, watchlists, or order
-surfaces still require closed forward evidence and their own Gate 1-4 activation
-experiment.
+surfaces require live-realistic evidence. If the accepted experiment already
+measured that execution envelope and the release does not change it, enabling
+`trade_enabled=True` can be a release checklist/config change, not a new alpha
+experiment. If the execution envelope was not measured, run a narrow
+activation-envelope Gate 1-4 that tests only the missing capital/execution/risk
+constraints and does not search for a new signal.
 
 Private replay scouts remain allowed only when the data shape is uncertain or
 the idea is too speculative to justify a helper. A positive private scout is not
@@ -261,6 +269,11 @@ shared-paper-first path above, or downgrade the result to
 A shared-paper-first result is not backtester-only merely because the daily path
 does not trade it. It must, however, expose the same rule through a daily
 default-off snapshot, report, or ledger path and keep `trade_enabled=False`.
+
+Do not mark an alpha `live_ready` unless the experiment measured a
+live-realistic execution envelope. Paper EV without notional, liquidity,
+slippage, portfolio displacement, and kill-switch constraints is an accepted
+observation surface, not a live strategy.
 
 When changing shared behavior, add focused parity tests or update the parity
 contract. Production output must expose the same action or decision basis that

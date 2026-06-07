@@ -31,6 +31,10 @@ Priority rules:
   alpha test.
 - Prefer new production-visible fields over threshold/scalar sweeps.
 - Prefer default-off paper adapters before core or live expansion.
+- For any alpha that may become live-capital eligible, include the live-realistic
+  execution envelope in the experiment rather than postponing it: notional,
+  capital cap, liquidity/slippage, portfolio displacement, exposure limits,
+  kill switch, and order semantics.
 - Prefer replacement value against the displaced candidate over standalone PnL.
 - Prefer shared-paper-first experiments for high-potential default-off paper
   alpha: the first serious test should use a shared historical replay plus daily
@@ -47,8 +51,12 @@ The strongest current pattern is not more filters. It is:
 1. find broad, cheap, point-in-time candidate sources;
 2. when the idea is credible, test it through a shared-paper-first helper that
    can drive both historical replay and daily default-off snapshots;
-3. collect closed forward replacement-value rows;
-4. only then design activation, caps, and kill switches.
+3. define the live-realistic execution envelope early, even while
+   `trade_enabled=false`;
+4. collect closed forward replacement-value rows under that envelope;
+5. if the envelope was already measured and remains unchanged, live enablement
+   is a release checklist/config change; otherwise run only a narrow
+   activation-envelope Gate 1-4, not a new alpha search.
 
 Private replay scouts should be reserved for uncertain data-shape discovery or
 very speculative ideas. They should not be treated as accepted alpha even when
@@ -93,7 +101,9 @@ Next valid work:
 - closed forward replacement-value rows under the shared ledger;
 - explicit cash semantics and portfolio-level capital cap;
 - kill switch based on drawdown, realized volatility, and ETF concentration;
-- separate Gate 1-4 trade adapter before any live deployment.
+- live enablement only after the same cash semantics, cap, and kill switch are
+  measured under an activation envelope; if already measured, release can be a
+  checklist/config change rather than a new alpha search.
 
 Do not retune nearby ETF list, momentum threshold, SMA window, hold days,
 notional, or scalar on the frozen sample.
@@ -132,7 +142,9 @@ Next valid work:
 - audit production universe coverage versus the broad warehouse source;
 - add a true point-in-time macro-surprise/consensus field if a free source is
   found;
-- separate Gate 1-4 activation experiment before any live deployment.
+- before live deployment, either measure the full execution envelope
+  (notional/cap/liquidity/slippage/displacement/kill switch/order semantics) or
+  release through checklist if that envelope has already been accepted.
 
 Do not retune nearby top-N, SPY/QQQ relief thresholds, close-location
 thresholds, hold days, same-ticker cooldown, or paper notional on the frozen
@@ -179,7 +191,9 @@ Next valid work:
 - audit broad-market sector coverage and missing OHLCV rows;
 - search for a genuinely point-in-time peer/industry classification or
   low-latency peer-news field if free data exists;
-- separate Gate 1-4 activation experiment before any live deployment.
+- before live deployment, either measure the full execution envelope
+  (notional/cap/liquidity/slippage/displacement/kill switch/order semantics) or
+  release through checklist if that envelope has already been accepted.
 
 Do not retune nearby correlation thresholds, core-flow admission, top-N, hold
 days, same-ticker cooldown, or paper notional on the frozen sample.
