@@ -21,7 +21,9 @@ Before strategy-affecting work, answer:
 1. What is the alpha hypothesis, and is it entry, exit, ranking, capital
    allocation, candidate-pool, LLM event scoring, or risk allocation?
 2. Has the same or adjacent family been tried before, and what failed?
-3. What is the one changed causal variable?
+3. What is the one changed decision hypothesis or fixed policy bundle, and
+   which edits are only implementation/parity/live-realism work needed to
+   evaluate it?
 4. What Gate 1-4 standard from `docs/backtesting.md` decides acceptance?
 5. If it fails, can the next agent reproduce the trial from repository records?
 

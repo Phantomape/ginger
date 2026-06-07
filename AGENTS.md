@@ -86,11 +86,13 @@ data/backtests/backtest_results_*.json
 
 1. 本轮最值得测试的赚钱假设是什么？它属于 entry、exit、ranking、capital allocation、LLM event scoring 还是 risk allocation？它是否符合 `docs/alpha-optimization-playbook.md` 的当前高价值方向；若偏离，理由是什么？
 2. 过去是否做过相同或近似实验？上次参数、窗口、失败原因是什么？
-3. 这次只改变哪一个独立因果变量？
+3. 这次只检验哪一个独立决策假设 / policy bundle？哪些只是为评估它所需的实现、parity、daily snapshot、ledger、live-realistic execution envelope 或测试？
 4. 本次成功 / 失败的验收标准是什么？验收标准是否符合 `docs/backtesting.md`？
 5. 如果失败，下一位代理能否仅靠仓库记录复现实验？
 
 若无法回答第 2、3、4、5 点，禁止开始策略逻辑改动。
+
+`single_causal_variable` / `changed_variable` 是历史字段名，真实含义应理解为**单一可归因决策假设**，不是“只能改一个代码参数”或“只能碰一个文件”。一个 accepted alpha 实验可以包含为了评估同一假设所必需的共享 helper、历史 replay、daily default-off snapshot、report/ledger wiring、parity 测试、live-realistic execution envelope 和 artifact/log 更新。禁止的是在同一实验里混入多个互相独立的 alpha 假设、事后调参、或用一个 ID 同时寻找 entry、exit、ranking、sizing 多个自由度。
 
 ### 3.1 推荐启动工具
 

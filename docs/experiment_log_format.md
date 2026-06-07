@@ -41,6 +41,12 @@
   "trial_family": "neutral_confidence_threshold",
   "trial_variant_id": "neutral_confidence_0p88",
   "changed_variable": "neutral_confidence_threshold",
+  "causal_components": [
+    "fixed threshold",
+    "shared helper",
+    "daily snapshot",
+    "parity test"
+  ],
   "prior_trial_count": 3,
   "nearby_prior_experiments": [
     "exp-20260410-001",
@@ -184,7 +190,8 @@
 | `mechanism_family` | alpha 推荐 | 机制级研究族，如 `state_surface_concentration`、`broad_market_forward_maturation` |
 | `trial_family` | alpha 必填 | 用于 trial accounting 的近邻实验族；同族重试必须累计 |
 | `trial_variant_id` | alpha 推荐 | 本次具体变体 ID，便于区分同族 sweep 或 scout |
-| `changed_variable` | alpha 必填 | 本次唯一独立因果变量 |
+| `changed_variable` | alpha 必填 | 本次唯一可归因的决策假设或固定 policy bundle 的稳定 accounting key |
+| `causal_components` | alpha 推荐 | 固定 bundle 内部组件；除非另做 ablation，否则不能把其中某个组件单独称为已验证 |
 | `prior_trial_count` | alpha 必填 | 本轮开始前同一 `trial_family + changed_variable` 或明显近邻变量已试次数 |
 | `nearby_prior_experiments` | alpha 必填 | 相关历史实验 ID 列表，尤其是最近失败和已接受基线 |
 | `multiple_testing_risk_bucket` | alpha 必填 | `minimal` / `low` / `moderate` / `high`，表示同族多重检验风险 |
@@ -217,6 +224,7 @@
 - `change_type`
 - `implementation_mode`
 - `changed_variable`
+- `causal_components`
 - `trial_family`
 - `prior_trial_count`
 - `new_evidence_type`
@@ -240,6 +248,12 @@
 `private_replay_scout` 的正向结果只能记录为 lead，不能写成 accepted alpha；
 accepted default-off paper alpha 必须有 shared replay/daily semantics 或明确的
 measurement-repair 例外。
+
+`changed_variable` 不应被理解成“只能改一个文件/参数”。它是归因边界：
+一个实验可以包含评估同一 policy bundle 所需的 helper、adapter、daily
+snapshot、report/ledger、parity、live-realism envelope 和测试。若一次实验
+合并多个互不相关的 alpha 来源或多个可调自由度，必须把它写成 composite
+bundle，只能接受/拒绝整个 bundle；不能事后声称其中某个组件单独有效。
 
 任何可能进入 live 的 alpha 都必须在 `production_impact` 里记录
 `live_realism_evaluated`、`live_ready` 和 `activation_envelope`。如果

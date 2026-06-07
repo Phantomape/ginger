@@ -63,7 +63,9 @@ working notes:
    allocation, LLM event scoring, or risk allocation?
 2. Have we tested the same or nearby idea before? List prior experiment IDs,
    parameters, windows, and failure modes.
-3. What is the single causal variable changed in this run?
+3. What is the single decision hypothesis or policy bundle tested in this run,
+   and which changes are only implementation, parity, daily-output,
+   live-realism, or test work needed to evaluate it?
 4. What is the success or failure standard, and does it match
    `docs/backtesting.md`?
 5. If it fails, can the next agent reproduce the run using only repository
@@ -74,6 +76,39 @@ If questions 2 through 5 cannot be answered, do not change strategy logic.
 For pure measurement repair, write the blocker instead of a money-making
 hypothesis. Example: "Current experiment IDs collide because artifacts can be
 created before registry reservation."
+
+## Causal Granularity
+
+`single_causal_variable` is a legacy field name. Treat it as the single
+attributable decision hypothesis or policy bundle under test, not as one code
+parameter, one file, or one mechanical wiring step.
+
+Allowed inside one experiment:
+
+- shared helper implementation;
+- historical replay and daily default-off snapshot functions;
+- report, ledger, or run-path observe-only wiring that calls the same helper;
+- parity tests and production/backtest contract updates;
+- fixed execution envelope fields such as notional, cap, costs, liquidity,
+  slippage, displacement, exposure limits, and kill switch;
+- artifact, ticket, card, manifest, and log updates.
+
+These are not separate causal variables when they are required to evaluate the
+same pre-declared policy bundle.
+
+Not allowed inside one ordinary experiment:
+
+- adding two unrelated alpha sources;
+- changing entry and exit rules at the same time unless the pre-declared object
+  is a complete lifecycle policy and no component-level claim is made;
+- tuning several thresholds after seeing results;
+- accepting a composite policy while later claiming one internal component was
+  independently proven.
+
+If a composite policy is intentional, predeclare it as the causal bundle, list
+its fixed components, and judge only the bundle. To learn which component works,
+run a predeclared ablation or factorial follow-up; do not infer it after the
+fact.
 
 ## Shared-Paper-First Fast Path
 
@@ -143,7 +178,7 @@ Preferred command:
   --lane alpha_search `
   --hypothesis "One sentence hypothesis." `
   --change-type default_off_paper_allocation `
-  --single-causal-variable "one changed variable" `
+  --single-causal-variable "one decision hypothesis or fixed policy bundle" `
   --file-slug short_file_slug `
   --trial-family stable_trial_family `
   --changed-variable stable_changed_variable `
@@ -247,7 +282,7 @@ Default retention logic:
   logging, parity, or production execution, even if EV is unchanged.
 - Default reject: main objective declines, risk worsens, only one window wins,
   most windows regress, complexity rises without evidence, or the result is not
-  attributable to one causal variable.
+  attributable to one predeclared decision hypothesis or policy bundle.
 
 For state-surface profile, scalar, notional, or similar tuning, follow the
 tighter rule in `AGENTS.md`: aggregate EV must improve by more than 10% unless
@@ -354,7 +389,7 @@ Before ending the turn, make sure the next agent can answer:
 
 - Which ID owns the work?
 - Which files were changed?
-- Which single causal variable changed?
+- Which single decision hypothesis or policy bundle was tested?
 - Which baseline and after artifacts were used?
 - Which tests or backtests were run?
 - Was this alpha evidence, observed-only evidence, or measurement repair?

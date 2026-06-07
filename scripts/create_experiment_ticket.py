@@ -26,7 +26,26 @@ def main(description=__doc__):
     parser.add_argument("--lane", required=True)
     parser.add_argument("--hypothesis", required=True)
     parser.add_argument("--change-type", required=True)
-    parser.add_argument("--single-causal-variable", required=True)
+    parser.add_argument(
+        "--single-causal-variable",
+        "--decision-variable",
+        dest="single_causal_variable",
+        required=True,
+        help=(
+            "Single attributable decision hypothesis or fixed policy bundle "
+            "under test. The old --single-causal-variable name is kept for "
+            "compatibility; --decision-variable is preferred."
+        ),
+    )
+    parser.add_argument(
+        "--causal-components",
+        default="",
+        help=(
+            "Comma-separated fixed components inside a predeclared policy "
+            "bundle. Components are not individually accepted unless later "
+            "ablated."
+        ),
+    )
     parser.add_argument("--mechanism-family")
     parser.add_argument("--trial-family")
     parser.add_argument("--trial-variant-id")
@@ -106,6 +125,7 @@ def main(description=__doc__):
             hypothesis=args.hypothesis,
             change_type=args.change_type,
             single_causal_variable=args.single_causal_variable,
+            causal_components=parse_csv(args.causal_components),
             mechanism_family=args.mechanism_family,
             trial_family=args.trial_family,
             trial_variant_id=args.trial_variant_id,

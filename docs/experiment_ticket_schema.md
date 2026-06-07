@@ -2,7 +2,7 @@
 
 This file defines the minimum contract for multi-agent experiments. The goal is
 to let agents explore in parallel while preserving one baseline, one judge, and
-one causal variable per experiment.
+one attributable decision hypothesis or fixed policy bundle per experiment.
 
 Operational sequence:
 
@@ -56,6 +56,10 @@ large shared JSON document.
   "trial_variant_id": "breakout_follow_through_taxonomy_v1",
   "single_causal_variable": "breakout follow-through taxonomy",
   "changed_variable": "breakout follow-through taxonomy",
+  "causal_components": [
+    "fixed taxonomy labels",
+    "read-only attribution report"
+  ],
   "prior_trial_count": 0,
   "nearby_prior_experiments": [],
   "multiple_testing_risk_bucket": "minimal",
@@ -132,7 +136,9 @@ count nearby research attempts without changing strategy behavior:
 | `mechanism_family` | Durable mechanism-level family used for playbook synthesis. |
 | `trial_family` | Narrow family used with `changed_variable` for repeated-trial counting. |
 | `trial_variant_id` | Specific variant name for this sweep/scout/run. |
-| `changed_variable` | The one causal variable changed or measured by the ticket. |
+| `single_causal_variable` | Legacy field name for the one attributable decision hypothesis or fixed policy bundle under test. |
+| `changed_variable` | Stable accounting key for the same decision hypothesis or policy bundle. |
+| `causal_components` | Optional fixed components inside a predeclared bundle. These are not individually accepted unless separately ablated. |
 | `prior_trial_count` | Known count of prior same-family or nearby trials before this run. |
 | `nearby_prior_experiments` | Relevant accepted/rejected experiment IDs. |
 | `multiple_testing_risk_bucket` | `minimal`, `low`, `moderate`, or `high`. |
@@ -145,6 +151,15 @@ discovery, `observed_only_attribution` for measurement without acceptance,
 `activation_envelope` when the experiment only evaluates missing live-capital
 constraints for an already accepted signal, and `live_release` when an
 unchanged, already measured envelope is being enabled through configuration.
+
+Do not interpret `single_causal_variable` as "only one code edit" or "only one
+file." A ticket can reserve all files needed to evaluate one policy bundle:
+shared helper, replay runner, daily snapshot/report/ledger wiring, parity tests,
+activation envelope, card, manifest, and log. Splitting those mechanical pieces
+into separate experiments is usually process waste. The boundary is attribution:
+if the ticket combines unrelated alpha sources or multiple tunable degrees of
+freedom, either predeclare the whole composite as the only accepted object or
+split/ablate it before claiming component-level evidence.
 
 For pure `measurement_repair` tickets these fields are recommended but may be
 omitted when no alpha family is being evaluated.
@@ -296,10 +311,11 @@ non-overlapping paths:
 - `docs/experiment_log.jsonl`
 - `docs/experiment_registry.json`
 
-The default `<slug>` is derived from `--single-causal-variable`, so a ticket
-with `single_causal_variable="bad trade hold-quality taxonomy"` creates names
-like `exp_20260427_010_bad_trade_hold_quality_taxonomy.py`. If an agent wants
-a shorter explicit name, pass `--file-slug hold_quality_audit`.
+The default `<slug>` is derived from `--single-causal-variable` /
+`--decision-variable`, so a ticket with
+`single_causal_variable="bad trade hold-quality taxonomy"` creates names like
+`exp_20260427_010_bad_trade_hold_quality_taxonomy.py`. If an agent wants a
+shorter explicit name, pass `--file-slug hold_quality_audit`.
 
 Do not use broad directory scopes such as `data/`, `quant/`, `docs/`, or
 `scripts/` for ordinary experiments. They serialize unrelated agents because
