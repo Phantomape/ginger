@@ -1,0 +1,118 @@
+{
+  "acceptance_rule": "aggregate EV and PnL improve versus canonical 3-window baseline, each window non-negative EV delta, trade sample >=20 aggregate and no max drawdown worsening over 0.5pp; otherwise reject and do not wire shared helper",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260607_*_vbb_anchor_corr_peer_lag.py",
+    "data/experiments/exp-20260607-*/",
+    "experiments/cards/exp-20260607-*.md",
+    "experiments/logs/exp-20260607-*.json",
+    "experiments/manifests/exp-20260607-*.json",
+    "experiments/tickets/exp-20260607-*.json",
+    "docs/experiments/tickets/exp-20260607-*.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "card_file": "experiments/cards/exp-20260607-017.md",
+  "causal_components": [
+    "private replay scout",
+    "fixed accepted VBB anchor source",
+    "rolling-correlation same-sector peer lag selector",
+    "three-window Gate 1-4 measurement",
+    "artifact log card manifest"
+  ],
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "vbb_anchor_rolling_corr_peer_lag_candidate_source_v1",
+  "claimed_at": "2026-06-07T15:08:02+00:00",
+  "completed_at": "2026-06-07T15:22:46Z",
+  "created_at": "2026-06-07T15:07:36+00:00",
+  "decision": "rejected_vbb_anchor_corr_peer_lag_candidate_pool",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260607-017",
+  "experiment_uid": "expuid-5e9d81478908481a",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260607-017",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-07T15:07:36+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "vbb_anchor_corr_peer_lag"
+  },
+  "hypothesis": "Accepted volume-breadth breakout anchors may identify correlated same-sector laggards that begin catching up after broad participation days.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "VBB accepted thresholds and support scalars; default-off paper only; no live order/ranking/sizing/exits changes"
+  ],
+  "mechanism_family": "relation_aware_free_ohlcv_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/run.py",
+    "operator_inputs",
+    "live orders",
+    "accepted sleeves",
+    "volume_breadth_breakout thresholds",
+    "rolling_corr_peer_shock thresholds"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260526-014",
+    "exp-20260606-018",
+    "exp-20260606-024",
+    "exp-20260607-008"
+  ],
+  "new_evidence_type": "accepted VBB breadth-flow anchor applied to rolling-correlation peer-lag relation",
+  "owner": "codex-alpha-search",
+  "prediction": {
+    "confidence_reason": "VBB is an accepted production-visible breadth-flow source and core-flow peer shock showed relation edges can work; generic peer lag failed without flow confirmation, so the edge is plausible but low probability.",
+    "expected_ev_delta": 0.2,
+    "expected_pnl_delta": 5000.0,
+    "main_failure_modes": [
+      "generic_peer_lag_failure",
+      "old_thin_regression",
+      "drawdown_drift",
+      "insufficient_vbb_anchor_days",
+      "sector_relation_noise"
+    ],
+    "recorded_at": "2026-06-07T15:07:24+00:00",
+    "success_probability": 0.16
+  },
+  "prior_trial_count": 3,
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": -0.0355,
+    "aggregate_strategy_total_pnl_delta": -1161.97,
+    "artifact": "data/experiments/exp-20260607-017/exp_20260607_017_vbb_anchor_corr_peer_lag.json",
+    "calibration": {
+      "actual_gate4_passed": false,
+      "brier_score": 0.0256,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "drawdown_drift_too_high"
+      ],
+      "predicted_success_probability": 0.16
+    },
+    "decision": "rejected_vbb_anchor_corr_peer_lag_candidate_pool",
+    "log": "experiments/logs/exp-20260607-017.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260607-017.json",
+  "single_causal_variable": "vbb_anchor_rolling_corr_peer_lag_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The VBB-anchor rolling-correlation peer-lag source did not clear Gate 4; do not promote or locally retune this VBB-anchor peer-lag family on the frozen windows.",
+  "ticket_file": "experiments/tickets/exp-20260607-017.json",
+  "trial_family": "vbb_anchor_peer_lag",
+  "trial_variant_id": "vbb_anchor_rolling_corr_peer_lag_v1"
+}
