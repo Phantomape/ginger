@@ -94,6 +94,15 @@ data/backtests/backtest_results_*.json
 
 `single_causal_variable` / `changed_variable` 是历史字段名，真实含义应理解为**单一可归因决策假设**，不是“只能改一个代码参数”或“只能碰一个文件”。一个 accepted alpha 实验可以包含为了评估同一假设所必需的共享 helper、历史 replay、daily default-off snapshot、report/ledger wiring、parity 测试、live-realistic execution envelope 和 artifact/log 更新。禁止的是在同一实验里混入多个互相独立的 alpha 假设、事后调参、或用一个 ID 同时寻找 entry、exit、ranking、sizing 多个自由度。
 
+实验规范默认走 **Lean Alpha Contract**：少填低价值表格，多写高价值判断。一次 alpha 实验最低只需要清楚留下四件事：
+
+1. **假设推断**：为什么这个信息/机制应该赚钱，历史上相邻实验说明了什么，最可能失败在哪里；
+2. **固定策略包**：本轮接受或拒绝的完整 policy bundle 是什么，哪些只是实现 / parity / daily output / execution envelope；
+3. **可信测量**：使用哪些标准窗口、before/after 指标和生产一致性约束判断；
+4. **复盘反思**：结果为什么发生，哪些近邻重试应禁止，下一步需要什么新证据。
+
+不要为了补齐低价值字段而拆实验、延后 shared helper、延后 production-visible paper 输出或延后真钱执行包络；结构化字段能由工具默认时就默认，关键是推理和反思必须具体、可复现、可指导下一轮。
+
 ### 3.1 推荐启动工具
 
 选择新的 `alpha_search` 方向前，优先运行或读取 meta research 报告：

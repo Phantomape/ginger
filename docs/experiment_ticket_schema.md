@@ -127,9 +127,10 @@ automatically. The experiment card is the human-readable summary; the revision
 manifest records git revision, dirty status, and file hashes available at
 reservation time.
 
-Trial accounting fields are required for `alpha_discovery`, `universe_scout`,
-and `alpha_search` style tickets. They let `quant/meta_research_engine.py`
-count nearby research attempts without changing strategy behavior:
+Trial accounting fields help `quant/meta_research_engine.py` count nearby
+research attempts without changing strategy behavior. Use them when they add
+real meta-learning value; do not delay a good alpha test just to over-specify
+labels that the tooling can default.
 
 | Field | Meaning |
 | --- | --- |
@@ -177,6 +178,11 @@ creation code rejects these lanes unless `success_probability` and
 `main_failure_modes` are present. This is the system's "exam estimate": it
 records what the agent believed before seeing the result, so later
 meta-learning can distinguish good judgement from lucky outcomes.
+
+Keep the prediction concise but substantive. `confidence_reason` should carry
+the hypothesis inference: why the edge should exist, which related experiments
+raise or lower confidence, and which disconfirmers would make the result
+unreliable. Do not add extra fields when that reasoning is already clear here.
 
 Strategy-facing `measurement_repair` tickets should include a prediction when
 the repair has a clear acceptance rule, but pure process repairs may omit it.

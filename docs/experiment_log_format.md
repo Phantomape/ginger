@@ -17,12 +17,12 @@
 推荐流程：
 
 1. 先查 `docs/experiment_log.jsonl` 是否已有相似尝试
-2. 明确假设、参数和窗口
+2. 明确假设推断、固定 policy bundle、主要失败模式和窗口
 3. 跑基线
-4. 做单一因果改动
+4. 做同一 policy bundle 所需的 helper / replay / daily output / parity / execution-envelope 改动
 5. 跑改后结果
-6. 将实验结果追加写入 `docs/experiment_log.jsonl`
-7. 如有必要，再把高层总结写入 `docs/iteration_analysis.md`
+6. 写出结果反思和下一步禁止/允许重试条件
+7. 将实验结果追加写入 `docs/experiment_log.jsonl`
 
 ## JSONL 字段规范
 
@@ -168,6 +168,11 @@
     "需要新的回测窗口证据",
     "需要先修复生产/回测一致性差异"
   ],
+  "post_run_reflection": {
+    "why_result_happened": "The direction was right, but concentration was worse than expected.",
+    "forbidden_near_neighbor_retry": "Do not retune the same threshold on frozen windows.",
+    "new_evidence_required": "Forward replacement-value rows or a materially different data edge."
+  },
   "related_files": [
     "quant/signal_engine.py",
     "data/backtests/backtest_results_20260417.json"
@@ -188,14 +193,14 @@
 | `change_type` | 是 | 如 `threshold` / `filter` / `llm_prompt` / `data_fix` / `parity_fix` |
 | `implementation_mode` | alpha 推荐 | `shared_paper_first` / `private_replay_scout` / `observed_only_attribution` / `measurement_repair` / `activation_envelope` / `live_release` |
 | `mechanism_family` | alpha 推荐 | 机制级研究族，如 `state_surface_concentration`、`broad_market_forward_maturation` |
-| `trial_family` | alpha 必填 | 用于 trial accounting 的近邻实验族；同族重试必须累计 |
+| `trial_family` | alpha 推荐 | 用于 trial accounting 的近邻实验族；工具可默认，只有在能提升 meta-learning 时才需要精细填写 |
 | `trial_variant_id` | alpha 推荐 | 本次具体变体 ID，便于区分同族 sweep 或 scout |
 | `changed_variable` | alpha 必填 | 本次唯一可归因的决策假设或固定 policy bundle 的稳定 accounting key |
 | `causal_components` | alpha 推荐 | 固定 bundle 内部组件；除非另做 ablation，否则不能把其中某个组件单独称为已验证 |
-| `prior_trial_count` | alpha 必填 | 本轮开始前同一 `trial_family + changed_variable` 或明显近邻变量已试次数 |
-| `nearby_prior_experiments` | alpha 必填 | 相关历史实验 ID 列表，尤其是最近失败和已接受基线 |
-| `multiple_testing_risk_bucket` | alpha 必填 | `minimal` / `low` / `moderate` / `high`，表示同族多重检验风险 |
-| `new_evidence_type` | alpha 必填 | 本轮新增证据类型，如 `new_forward_rows`、`new_production_visible_field`、`new_replacement_value_cohort`、`new_pit_universe`、`not_declared` |
+| `prior_trial_count` | alpha 推荐 | 本轮开始前同一 `trial_family + changed_variable` 或明显近邻变量已试次数；未知时用叙述说明近邻检查 |
+| `nearby_prior_experiments` | alpha 推荐 | 相关历史实验 ID 列表，尤其是最近失败和已接受基线 |
+| `multiple_testing_risk_bucket` | alpha 推荐 | `minimal` / `low` / `moderate` / `high`，表示同族多重检验风险 |
+| `new_evidence_type` | alpha 推荐 | 本轮新增证据类型，如 `new_forward_rows`、`new_production_visible_field`、`new_replacement_value_cohort`、`new_pit_universe`、`not_declared` |
 | `component` | 是 | 主要修改模块或文件 |
 | `parameters` | 是 | 改动参数，新旧值都要保留 |
 | `date_range` | 是 | 主实验窗口 |
@@ -211,12 +216,15 @@
 | `decision` | 是 | 最终结论 |
 | `rejection_reason` | 条件必填 | 被拒绝或回滚时必须写 |
 | `next_retry_requires` | 推荐 | 未来想重试，需要什么新证据 |
+| `post_run_reflection` | alpha 必填 | 为什么结果发生、禁止哪些近邻重试、需要什么新证据 |
 | `related_files` | 推荐 | 相关文件、结果文件、日志文件 |
 | `notes` | 否 | 补充说明 |
 
-## 最低填写要求
+## Lean 最低填写要求
 
-即使是一次失败的小实验，也至少要填：
+失败和成功都必须留下可复现指标，但不要为了低价值字段阻塞实验。最低要求是四组信息：
+
+### 1. 假设推断
 
 - `experiment_id`
 - `timestamp`
@@ -224,16 +232,29 @@
 - `change_type`
 - `implementation_mode`
 - `changed_variable`
-- `causal_components`
-- `trial_family`
-- `prior_trial_count`
-- `new_evidence_type`
+- `prediction.success_probability`
+- `prediction.main_failure_modes`
+- `prediction.confidence_reason`，必须说明赚钱机制、近邻历史证据和主要反证风险
+
+### 2. 固定策略包和测量
+
+- `causal_components`，如果是 composite bundle
 - `parameters`
 - `date_range`
 - `before_metrics`
 - `after_metrics`
 - `delta_metrics`
+
+### 3. 生产一致性
+
+- `production_impact`，若策略可能被 daily path、paper observation 或 live capital 使用
+
+### 4. 结果反思
+
 - `decision`
+- `rejection_reason` 或 acceptance basis
+- `next_retry_requires`，必须写出禁止近邻重试或允许重试所需的新证据
+- `post_run_reflection` / `calibration.surprise_note`，必须解释为什么结果发生
 
 若实验会影响真实可执行交易，还必须填 `production_impact`。
 

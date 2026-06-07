@@ -54,24 +54,27 @@ or parity rule conflicts with a source file above, the source file wins.
 Measurement repair is allowed to interrupt alpha work only when it removes a
 real blocker to credible alpha evaluation or production execution.
 
-## Required Preflight
+## Lean Alpha Contract
 
-Before strategy-affecting work, answer these five questions in the ticket or
-working notes:
+For alpha work, prefer one compact contract over scattered form-filling. The
+contract can live in the ticket, experiment card, artifact, or log, but it must
+be easy for the next agent to find.
 
-1. What is the money-making hypothesis, and is it entry, exit, ranking, capital
-   allocation, LLM event scoring, or risk allocation?
-2. Have we tested the same or nearby idea before? List prior experiment IDs,
-   parameters, windows, and failure modes.
-3. What is the single decision hypothesis or policy bundle tested in this run,
-   and which changes are only implementation, parity, daily-output,
-   live-realism, or test work needed to evaluate it?
-4. What is the success or failure standard, and does it match
-   `docs/backtesting.md`?
-5. If it fails, can the next agent reproduce the run using only repository
-   records?
+Minimum content:
 
-If questions 2 through 5 cannot be answered, do not change strategy logic.
+- Hypothesis inference: why this mechanism should make money, what related
+  experiments imply, and the most likely failure modes.
+- Fixed policy bundle: the one decision hypothesis under test, plus which
+  edits are only helper, replay, daily-output, parity, live-realism, artifact,
+  or test work needed to evaluate it.
+- Measurement plan: the standard windows, before/after metric, production
+  consistency boundary, and live-realistic envelope when relevant.
+- Reflection plan: what result would reject the idea, what near-neighbor retry
+  should be forbidden, and what new evidence would make a retry worthwhile.
+
+If those four blocks cannot be answered, do not change strategy logic. Do not
+block an experiment merely because low-value accounting fields are incomplete
+when the tools can default them and the contract above is specific.
 
 For pure measurement repair, write the blocker instead of a money-making
 hypothesis. Example: "Current experiment IDs collide because artifacts can be
@@ -178,16 +181,18 @@ Preferred command:
   --lane alpha_search `
   --hypothesis "One sentence hypothesis." `
   --change-type default_off_paper_allocation `
-  --single-causal-variable "one decision hypothesis or fixed policy bundle" `
+  --decision-variable "one decision hypothesis or fixed policy bundle" `
+  --causal-components "shared helper,daily snapshot,parity test" `
   --file-slug short_file_slug `
-  --trial-family stable_trial_family `
-  --changed-variable stable_changed_variable `
   --nearby-prior-experiments exp-YYYYMMDD-NNN `
-  --new-evidence-type new_forward_rows `
   --success-probability 0.35 `
   --main-failure-modes "thin_sample,concentration_failed" `
-  --confidence-reason "Why this prior is reasonable before seeing the result."
+  --confidence-reason "Mechanism, prior evidence, and disconfirmers."
 ```
+
+Use `--trial-family`, `--changed-variable`, `--prior-trial-count`, and
+`--new-evidence-type` when they add real meta-learning value. Do not stop a
+good alpha test just to overfit those labels; the tooling has defaults.
 
 For measurement repair:
 
@@ -360,15 +365,13 @@ For observed-only measurement or analysis work, add:
 Final records must include:
 
 - experiment ID
-- hypothesis
-- changed variable
-- prior/nearby experiments
-- parameters
+- hypothesis inference and fixed policy bundle
+- nearby experiments or a clear statement that no close prior was found
 - before/after/delta metrics or observed-only artifact
 - production impact
 - decision
-- rejection reason or acceptance basis
-- next retry requirements
+- rejection reason or acceptance basis, with post-run reflection
+- next retry requirements or explicit "do not retry without X"
 - related files
 
 Rejected and rolled-back experiments must still be recorded.

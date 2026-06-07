@@ -740,6 +740,13 @@ def build_experiment_card_markdown(ticket):
         f"- New evidence type: `{ticket.get('new_evidence_type')}`",
         f"- Multiple-testing risk: `{ticket.get('multiple_testing_risk_bucket')}`",
         "",
+        "## Lean Alpha Contract",
+        "",
+        "- Hypothesis inference: why this should make money, which prior experiments matter, and what would falsify it.",
+        "- Fixed policy bundle: what is accepted/rejected as one object, and which edits are only implementation/parity/live-realism/test work.",
+        "- Measurement plan: windows, before/after metrics, production parity, and live-realistic envelope if relevant.",
+        "- Reflection plan: likely failure explanation, forbidden near-neighbor retries, and required new evidence for another attempt.",
+        "",
         "## Evaluation Plan",
         "",
         f"- Baseline result file: `{ticket.get('baseline_result_file') or 'not set'}`",
@@ -757,6 +764,12 @@ def build_experiment_card_markdown(ticket):
         "```json",
         json.dumps(ticket.get("prediction") or {}, indent=2, ensure_ascii=False, sort_keys=True),
         "```",
+        "",
+        "## Post-Run Reflection",
+        "",
+        "- Why did the result happen? TODO",
+        "- Which near-neighbor retry is now forbidden? TODO",
+        "- What new evidence would justify a retry? TODO",
         "",
         "## Closeout Notes",
         "",
@@ -1373,6 +1386,7 @@ def build_log_draft(
         "trial_family": experiment.get("trial_family"),
         "trial_variant_id": experiment.get("trial_variant_id"),
         "changed_variable": experiment.get("changed_variable"),
+        "causal_components": experiment.get("causal_components") or [],
         "prior_trial_count": experiment.get("prior_trial_count", 0),
         "nearby_prior_experiments": experiment.get("nearby_prior_experiments") or [],
         "multiple_testing_risk_bucket": experiment.get("multiple_testing_risk_bucket"),
@@ -1408,6 +1422,12 @@ def build_log_draft(
             realized_failure_mode=realized_failure_mode,
             surprise_note=surprise_note,
         )
+    row["post_run_reflection"] = {
+        "why_result_happened": surprise_note or "TODO",
+        "realized_failure_mode": realized_failure_mode,
+        "forbidden_near_neighbor_retry": "TODO",
+        "new_evidence_required": "TODO",
+    }
     return row
 
 
