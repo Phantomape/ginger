@@ -171,6 +171,14 @@ DATA_ARTIFACTS: dict[str, tuple[str, str]] = {
         "paper_sleeves/finra_iwm/state.json",
         "finra_iwm_paper_state.json",
     ),
+    "macro_relief_leadership_paper_state": (
+        "paper_sleeves/macro_relief_leadership/state.json",
+        "macro_relief_leadership_paper_state.json",
+    ),
+    "macro_relief_leadership_paper_snapshots": (
+        "paper_sleeves/macro_relief_leadership/snapshots.jsonl",
+        "macro_relief_leadership_paper_snapshots.jsonl",
+    ),
     "sec_ftd_rows": (
         "non_ohlcv/sec_ftd/rows.json",
         "sec_ftd_rows.json",

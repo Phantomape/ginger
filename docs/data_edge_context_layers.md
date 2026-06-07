@@ -1141,6 +1141,59 @@ share/notional/age, FINRA borrow-pressure thresholds, top-N, hold-day, or
 notional on the frozen sample without closed forward rows or a genuinely new
 PIT borrow-cost / loan-availability field.
 
+### `quant/macro_relief_leadership_paper_sleeve.py`
+
+Purpose: maintain the default-off `MACRO_RELIEF_LEADERSHIP_PAPER` forward
+observation ledger for the accepted macro event relief-day top-2 leadership
+candidate-pool alpha from `exp-20260606-020`, which promoted the positive
+`exp-20260606-019` replay lead into a shared production-visible adapter.
+
+Candidate route:
+
+- Uses the daily loaded OHLCV universe plus `SPY` and `QQQ`.
+- Triggers only on hardcoded `MACRO_EVENTS_BY_DATE` release dates (CPI, FOMC,
+  NFP) from 2024-10-04 through 2026-04-10.
+- Requires the broad-market relief pass: SPY same-day return `>= 0.4%`, QQQ
+  same-day return `>= 0.6%`, and both SPY and QQQ close at least `65%` of
+  their daily range (close location `>= 0.65` using `_range_location`; returns
+  `None` on zero-range days, causing rejection).
+- Admits stock candidates with price `>= $10`, close location `>= 0.70`,
+  signal-day return `>= 1.0%`, relative-vs-SPY `>= 0.8%`,
+  relative-vs-QQQ `>= 0.4%`, avg dollar volume `>= $50M`, and realized
+  20-day volatility `<= 8%`.
+- Scores candidates using:
+  `2.25×rel_spy + 1.25×rel_qqq + 0.80×ret20_excess_spy + 0.35×ret60_excess_spy
+   + 0.30×close_location + 0.10×min(vol_ratio, 3) + 0.04×liquidity_score
+   − 0.55×realized_vol20 − 0.20×max(ret5, 0)`.
+- Selects top-2 per macro relief day with a 10-day same-ticker cooldown.
+- Tracks fixed `$4,000` paper notional, next-open paper entry, 10-calendar-day
+  close exit, closed outcomes, replacement-value summary, and concentration
+  blockers only.
+
+Data paths:
+
+- `data/paper_sleeves/macro_relief_leadership/state.json`
+- `data/paper_sleeves/macro_relief_leadership/snapshots.jsonl`
+
+Evidence boundary:
+
+- `exp-20260606-019` replay lead was positive across all three canonical
+  windows; single replay-only adapter.
+- `exp-20260606-020` promoted the same fixed source into a shared default-off
+  production adapter (`RULE_VERSION = macro_relief_top2_leadership_v1`), with
+  parity tests in `test_macro_relief_leadership_paper_sleeve.py`. Gate 4 passed:
+  aggregate EV delta `+0.1613` (`+2.57%`), PnL delta `+$3,062.80`, `20` target
+  trades, all three canonical windows improved, max drawdown delta `0.0`, max
+  single ticker `16.07%`, HHI `0.107`.
+
+Agent rule: this sleeve may collect forward replacement-value evidence. It must
+not enable orders, expand the core universe, alter live ranking, sizing, exits,
+LLM/news, or consume live capital without passing Gate 5 (≥ 30 closed forward
+10-day paper trades, positive forward paper PnL, replacement value, kill switch)
+and a separate Gate 1-4 activation experiment. Do not retune the macro event
+list, SPY/QQQ return thresholds, close-location thresholds, candidate gates,
+scoring formula, top-N, hold days, notional, or cooldown on the frozen sample.
+
 ### `quant/default_off_alpha_attribution.py`
 
 Purpose: roll up promotion readiness and blocker reasons across default-off
@@ -1160,6 +1213,7 @@ Inputs:
 - `post_earnings_underpriced_drift_paper_sleeve`
 - `fundamental_growth_rs_paper_sleeve`
 - `sec_ftd_finra_paper_sleeve`
+- `macro_relief_leadership_paper_sleeve`
 
 Output keys:
 

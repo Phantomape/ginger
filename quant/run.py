@@ -334,6 +334,10 @@ def main():
         build_finra_iwm_paper_sleeve_snapshot,
         empty_finra_iwm_paper_sleeve_snapshot,
     )
+    from macro_relief_leadership_paper_sleeve import (
+        build_macro_relief_leadership_paper_sleeve_snapshot,
+        empty_macro_relief_leadership_paper_sleeve_snapshot,
+    )
     from sec_ftd_finra_paper_sleeve import (
         build_sec_ftd_finra_paper_sleeve_snapshot,
         empty_sec_ftd_finra_paper_sleeve_snapshot,
@@ -2400,6 +2404,42 @@ def main():
         )
 
     try:
+        macro_relief_ohlcv = dict(ohlcv_dict)
+        macro_relief_ohlcv["SPY"] = spy_ohlcv
+        if "QQQ" not in macro_relief_ohlcv or macro_relief_ohlcv.get("QQQ") is None:
+            macro_relief_ohlcv["QQQ"] = _cached_ohlcv("QQQ")
+        macro_relief_sector_map = {
+            ticker: {"sector": meta.get("sector"), "industry": meta.get("industry")}
+            for ticker, meta in (sector_map or {}).items()
+            if ticker not in {"SPY", "QQQ", "IWM", "GLD", "SLV"}
+        }
+        macro_relief_leadership_paper_sleeve = build_macro_relief_leadership_paper_sleeve_snapshot(
+            as_of=today_iso,
+            ohlcv_by_ticker=macro_relief_ohlcv,
+            sector_map=macro_relief_sector_map if macro_relief_sector_map else None,
+        )
+        if (
+            macro_relief_leadership_paper_sleeve.get("candidate_count", 0) > 0
+            or macro_relief_leadership_paper_sleeve.get("pending_count", 0) > 0
+            or macro_relief_leadership_paper_sleeve.get("open_position_count", 0) > 0
+            or macro_relief_leadership_paper_sleeve.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "Macro relief leadership paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
+                macro_relief_leadership_paper_sleeve.get("candidate_count", 0),
+                macro_relief_leadership_paper_sleeve.get("pending_count", 0),
+                macro_relief_leadership_paper_sleeve.get("open_position_count", 0),
+                macro_relief_leadership_paper_sleeve.get("closed_count_today", 0),
+                macro_relief_leadership_paper_sleeve.get("realized_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"Macro relief leadership paper sleeve unavailable: {e}")
+        macro_relief_leadership_paper_sleeve = empty_macro_relief_leadership_paper_sleeve_snapshot(
+            today_iso,
+            "macro_relief_leadership_paper_sleeve_build_failed",
+        )
+
+    try:
         sec_ftd_finra_ohlcv = dict(ohlcv_dict)
         sec_ftd_finra_ohlcv["SPY"] = spy_ohlcv
         sec_ftd_finra_candidate_universe = {
@@ -2699,6 +2739,7 @@ def main():
         fundamental_growth_rs_paper_sleeve=fundamental_growth_rs_paper_sleeve,
         finra_iwm_paper_sleeve=finra_iwm_paper_sleeve,
         sec_ftd_finra_paper_sleeve=sec_ftd_finra_paper_sleeve,
+        macro_relief_leadership_paper_sleeve=macro_relief_leadership_paper_sleeve,
     )
 
     # Attach enriched quant signals to trend_signals_dict so llm_advisor can show
@@ -2744,6 +2785,7 @@ def main():
     trend_signals_dict["fundamental_growth_rs_paper_sleeve"] = fundamental_growth_rs_paper_sleeve
     trend_signals_dict["finra_iwm_paper_sleeve"] = finra_iwm_paper_sleeve
     trend_signals_dict["sec_ftd_finra_paper_sleeve"] = sec_ftd_finra_paper_sleeve
+    trend_signals_dict["macro_relief_leadership_paper_sleeve"] = macro_relief_leadership_paper_sleeve
     trend_signals_dict["space_catalyst_shadow"] = space_catalyst_shadow
     trend_signals_dict["space_catalyst_observation_slot"] = space_catalyst_observation_slot
     trend_signals_dict["space_catalyst_event_ledger"] = space_catalyst_event_ledger
@@ -2795,6 +2837,7 @@ def main():
         fundamental_growth_rs_paper_sleeve = fundamental_growth_rs_paper_sleeve,
         finra_iwm_paper_sleeve = finra_iwm_paper_sleeve,
         sec_ftd_finra_paper_sleeve = sec_ftd_finra_paper_sleeve,
+        macro_relief_leadership_paper_sleeve = macro_relief_leadership_paper_sleeve,
         space_catalyst_shadow = space_catalyst_shadow,
         space_catalyst_observation_slot = space_catalyst_observation_slot,
         space_catalyst_event_ledger = space_catalyst_event_ledger,
@@ -2853,6 +2896,7 @@ def main():
         "fundamental_growth_rs_paper_sleeve": fundamental_growth_rs_paper_sleeve,
         "finra_iwm_paper_sleeve": finra_iwm_paper_sleeve,
         "sec_ftd_finra_paper_sleeve": sec_ftd_finra_paper_sleeve,
+        "macro_relief_leadership_paper_sleeve": macro_relief_leadership_paper_sleeve,
         "space_catalyst_shadow": space_catalyst_shadow,
         "space_catalyst_observation_slot": space_catalyst_observation_slot,
         "space_catalyst_event_ledger": space_catalyst_event_ledger,

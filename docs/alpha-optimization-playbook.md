@@ -1,6 +1,6 @@
 # Alpha Optimization Playbook
 
-Last refreshed: 2026-06-06.
+Last refreshed: 2026-06-07.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -273,6 +273,40 @@ Next valid work:
 Do not retune Space price-action, ETF, defense-budget, low-thrust absorption,
 or theme-segment thresholds on the frozen sample.
 
+### Macro Relief Day Top-2 Leadership
+
+Official macro event release days (CPI, FOMC, NFP) where both SPY and QQQ rally and close high are a repeatable candidate-pool trigger. When the broad market confirms relief, the top-2 leading stocks by day-of relative strength and volume profile can be captured in a bounded paper adapter.
+
+Accepted shared adapter: `exp-20260606-020`.
+
+Mechanism:
+
+- trigger: `MACRO_EVENTS_BY_DATE` hardcoded CPI/FOMC/NFP release dates;
+- broad-market pass: SPY return ≥ 0.4%, QQQ return ≥ 0.6%, both close ≥ 0.65 of daily range;
+- candidate gates: price ≥ $10, close location ≥ 0.70, signal return ≥ 1.0%, relative-vs-SPY ≥ 0.8%, relative-vs-QQQ ≥ 0.4%, avg dollar volume ≥ $50M, realized vol ≤ 8%;
+- selection: top-2 by composite score (relative strength, excess return, close location, volume ratio, liquidity, inverse-vol);
+- lifecycle: next-open paper entry, 10-calendar-day exit, $4,000 notional, same-ticker 10-day cooldown;
+- status: default-off paper only, no live orders.
+
+Evidence:
+
+- aggregate EV delta `+0.1613` (`+2.57%`);
+- PnL delta `+$3,062.80`;
+- `20` target paper trades;
+- all three canonical windows improved;
+- max drawdown delta `0.0`;
+- max single ticker `16.07%` (< 50% limit), HHI `0.107` (< 0.35 limit).
+
+Next valid work:
+
+- collect ≥ 30 closed forward 10-day paper trades under the shared ledger;
+- validate forward paper PnL is positive;
+- replacement value vs. core or cash;
+- kill switch and sleeve-level drawdown stop design;
+- separate Gate 1-4 pilot before live deployment (Gate 5 prerequisite).
+
+Do not retune macro event list, SPY/QQQ return thresholds, close location thresholds, hold days, notional, top-N, or cooldown on the frozen sample.
+
 ## Rejected Mechanisms That Still Teach Something
 
 ### Broad 5-Day Winner Continuation
@@ -348,6 +382,7 @@ evidence on accepted paper adapters:
 - FINRA/IWM borrow-pressure;
 - post-earnings underpriced drift;
 - Fundamental Growth RS;
+- macro relief day top-2 leadership;
 - VBB / VCP / Space observe-only buckets where nonzero forward rows exist.
 
 Minimum forward package:

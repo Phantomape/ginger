@@ -88,6 +88,24 @@ watchlists, core ranking, sizing, exits, or orders. Treat same-industry
 Companyfacts peer-confirmed filing drift as frozen unless new evidence uses
 production-realistic chronological replay and beats the current gates.
 
+## 2026-06-07 Experiment Consolidation
+
+June 7 added one accepted shared default-off adapter: `exp-20260606-020`
+promoted the accepted macro relief top-2 stock leadership replay lead
+(`exp-20260606-019`) into the shared default-off
+`macro_relief_leadership_paper_sleeve.py` production-visible adapter. On
+official CPI/FOMC/NFP release days where both SPY and QQQ rally and close high
+in their daily ranges, the two highest-scoring liquid stock leaders are admitted
+as next-open paper candidates with a 10-trading-day hold. Gate 4 passed: all
+three canonical windows improved with zero regressions — aggregate EV
+`+0.1613` (`+2.57%`), PnL `+$3,062.80`, `20` target trades across all windows,
+max drawdown delta `0.0`, and concentration passing (max single ticker
+`16.07%`, HHI `0.107`). This remains default-off paper only: no live/default
+orders, core ranking, sizing, exits, watchlists, or LLM/news changed. The next
+valid macro relief work is collecting at least 30 closed forward 10-day paper
+trades before any live cash-deployment adapter. 12 parity tests added in
+`quant/test_macro_relief_leadership_paper_sleeve.py`.
+
 ## 2026-06-06 Experiment Consolidation
 
 June 6 added one accepted default-off adapter and otherwise narrowed the broad
@@ -211,7 +229,13 @@ on existing prediction/calibration coverage debt (post-enforcement prediction
 coverage `89.03%`, closed post-enforcement calibration coverage `60.95%`);
 this was not introduced by today's regression pass.
 
-Latest default-off alpha adapter acceptance: `exp-20260606-001` promotes the
+Latest default-off alpha adapter acceptance: `exp-20260606-020` promotes the
+accepted macro relief top-2 stock leadership replay (`exp-20260606-019`) into
+the shared `macro_relief_leadership_paper_sleeve.py` default-off paper adapter.
+Gate 4 passed: aggregate EV `+0.1613` (`+2.57%`), PnL `+$3,062.80`, `20`
+trades across all three windows, no regressions, concentration passed.
+
+Previous shared adapter acceptance: `exp-20260606-001` promotes the
 accepted low-deployment ETF cash-substitute replay into the shared
 `low_deployment_etf_overlay.py` default-off paper adapter. The alpha hypothesis
 is capital allocation: when the core stack has at most one active position,

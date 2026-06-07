@@ -231,6 +231,7 @@ def build_default_off_alpha_attribution_report(
     fundamental_growth_rs_paper_sleeve: dict[str, Any] | None = None,
     finra_iwm_paper_sleeve: dict[str, Any] | None = None,
     sec_ftd_finra_paper_sleeve: dict[str, Any] | None = None,
+    macro_relief_leadership_paper_sleeve: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build a daily read-only activation/blocker dashboard."""
 
@@ -484,6 +485,22 @@ def build_default_off_alpha_attribution_report(
                 ),
                 "finra_rejected": (
                     ((sec_ftd_finra_paper_sleeve or {}).get("finra_confirmation") or {}).get("rejected_count")
+                ),
+            },
+        ),
+        _surface_summary(
+            name="macro_relief_leadership",
+            label="MACRO_RELIEF_LEADERSHIP_PAPER",
+            snapshot=macro_relief_leadership_paper_sleeve,
+            extra_metrics={
+                "rule_version": (
+                    (macro_relief_leadership_paper_sleeve or {}).get("rule_version")
+                ),
+                "is_macro_relief_day": (
+                    (macro_relief_leadership_paper_sleeve or {}).get("is_macro_relief_day")
+                ),
+                "macro_events_today": len(
+                    (macro_relief_leadership_paper_sleeve or {}).get("macro_events_today") or []
                 ),
             },
         ),

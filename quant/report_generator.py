@@ -108,6 +108,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            fundamental_growth_rs_paper_sleeve=None,
                            finra_iwm_paper_sleeve=None,
                            sec_ftd_finra_paper_sleeve=None,
+                           macro_relief_leadership_paper_sleeve=None,
                            space_catalyst_shadow=None,
                            space_catalyst_observation_slot=None,
                            space_catalyst_event_ledger=None,
@@ -2776,6 +2777,55 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"short_change={candidate.get('finra_short_interest_change_pct')} "
                 f"rs20exSPY={candidate.get('ret20_excess_spy')} "
                 f"notional={notional_text} (paper only)"
+            )
+
+    if macro_relief_leadership_paper_sleeve and (
+        macro_relief_leadership_paper_sleeve.get("is_macro_relief_day")
+        or macro_relief_leadership_paper_sleeve.get("candidate_count", 0) > 0
+        or macro_relief_leadership_paper_sleeve.get("pending_count", 0) > 0
+        or macro_relief_leadership_paper_sleeve.get("open_position_count", 0) > 0
+        or macro_relief_leadership_paper_sleeve.get("closed_count_today", 0) > 0
+        or macro_relief_leadership_paper_sleeve.get("error")
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("MACRO RELIEF LEADERSHIP PAPER SLEEVE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Paper: {macro_relief_leadership_paper_sleeve.get('paper_enabled', False)}  |  "
+            f"Trade enabled: {macro_relief_leadership_paper_sleeve.get('trade_enabled', False)}  |  "
+            f"Macro relief day: {macro_relief_leadership_paper_sleeve.get('is_macro_relief_day', False)}"
+        )
+        if macro_relief_leadership_paper_sleeve.get("error"):
+            lines.append(f"  Error: {macro_relief_leadership_paper_sleeve.get('error')}")
+        macro_events = macro_relief_leadership_paper_sleeve.get("macro_events_today") or []
+        if macro_events:
+            lines.append(
+                "  Events: " + ", ".join(
+                    f"{e.get('family')} ({e.get('label')})" for e in macro_events
+                )
+            )
+        lines.append(
+            f"  Candidates: {macro_relief_leadership_paper_sleeve.get('candidate_count', 0)}  |  "
+            f"Pending: {macro_relief_leadership_paper_sleeve.get('pending_count', 0)}  |  "
+            f"Open: {macro_relief_leadership_paper_sleeve.get('open_position_count', 0)}  |  "
+            f"Closed today: {macro_relief_leadership_paper_sleeve.get('closed_count_today', 0)}  |  "
+            f"Realized PnL: ${macro_relief_leadership_paper_sleeve.get('realized_pnl_to_date', 0.0):,.2f}"
+        )
+        gate = macro_relief_leadership_paper_sleeve.get("forward_paper_gate") or {}
+        if gate:
+            reasons = gate.get("reasons") or []
+            lines.append(
+                f"  Forward gate: {gate.get('status', 'unknown')}  |  "
+                f"blocked_by={', '.join(reasons) if reasons else 'none'}"
+            )
+        for candidate in (macro_relief_leadership_paper_sleeve.get("candidates") or [])[:5]:
+            lines.append(
+                f"  {candidate.get('ticker', '?')}: "
+                f"score={candidate.get('candidate_score')} "
+                f"rel_spy={candidate.get('candidate_relative_vs_spy')} "
+                f"ret20ex={candidate.get('candidate_ret20_excess_spy')} "
+                f"close_loc={candidate.get('candidate_close_location')} "
+                f"(paper only)"
             )
 
     lines.append("\n" + "-" * 60)
