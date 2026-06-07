@@ -1,6 +1,6 @@
 ﻿# Current State
 
-Last updated: 2026-06-06.
+Last updated: 2026-06-07.
 
 The current accepted core stack includes the 2026-05-17 stock-only ample-slot
 rank-1 post-sizing top-up from `exp-20260517-009`, layered on top of the
@@ -87,6 +87,71 @@ to window EV/PnL regression and max-drawdown drift `+0.0063` versus the
 watchlists, core ranking, sizing, exits, or orders. Treat same-industry
 Companyfacts peer-confirmed filing drift as frozen unless new evidence uses
 production-realistic chronological replay and beats the current gates.
+
+## 2026-06-07 Experiment Consolidation
+
+June 7 added one accepted shared default-off relation adapter and otherwise
+rejected a broad set of nearby relation and reversal scouts. The accepted
+mechanism is `exp-20260607-008`
+`industry_relative_laggard_repair_shared_default_off_adapter`, promoted from
+the positive replay lead in `exp-20260607-007`. The final shared helper
+reproduced the fixed policy bundle with aggregate EV `+0.2763` and PnL
+`+$6,208.99` across `306` target paper trades. This remains forward-observation
+paper only: `trade_enabled=false`, no live/default orders, and no change to
+core ranking, sizing, exits, watchlists, LLM, or news authority.
+
+The durable alpha lesson is narrower than "peer lag works." The retained edge
+requires a strong liquid industry group plus an underparticipating ticker that
+repairs on the signal day. Generic relation labels did not survive. Rejected
+neighbors included core-selected anchor peer lag with zero target trades
+(`exp-20260607-001`), trend-quality short-horizon reversal (`+0.0082` EV but
+`-$917.35` PnL and drawdown/window failures), macro-relief sector confirmation
+(`+0.2287` EV / `+$5,261.19` but failed the accepted-comparator guard), industry
+pullback leader resilience, industry breadth second-line repair, precious-metals
+producer lag, dispersion-compression repair, post-earnings peer prewarm, industry
+volume-breadth laggard repair, rates-relief duration-growth laggard, risk-appetite
+tech laggard repair, and VBB-anchor correlated peer lag. Some of these were
+positive versus core, but failed window, drawdown, sample, or accepted-comparator
+checks. Future relation work needs a materially new PIT relation field or closed
+forward replacement-value evidence, not sector/ETF labels, top-N, hold-day,
+cooldown, or notional retunes on the frozen windows.
+
+`exp-20260607-018` later closed rejected: the VIXY volatility-relief
+stock-leadership source produced zero target trades and zero qualifying
+volatility-relief days across the canonical windows, leaving aggregate EV and
+PnL unchanged at `0.0`. It changes no production code. Do not retry by sweeping
+VIXY/SPY/QQQ thresholds, top-N, hold-day, cooldown, or notional on the frozen
+windows; a retry needs materially new PIT volatility evidence such as term
+structure, options/realized-vol compression, or closed forward rows from a
+shared default-off adapter.
+
+`exp-20260607-003` is now the running PEAD broad-universe default-off data
+coverage expansion. It expands the PEAD broad paper sleeve from the prior
+`exp-20260604-021` small observation universe toward roughly `500` S&P
+500-adjacent tickers by adding `quant/fetch_broad_earnings_snapshot.py`,
+`quant/pead_broad_universe_tickers.py`, additive snapshot merging, and warehouse
+OHLCV batch loading in `quant/run.py`. This is not an accepted live alpha and
+does not change orders, ranking, sizing, or exits. Its only acceptance path is
+forward Gate 5: at least `30` closed forward paper trades within `10` weeks,
+positive net PnL, single-ticker positive PnL share `<= 50%`, and top-5 positive
+PnL share `<= 60%`. During regression closeout, stale PEAD comments and
+generated notes were corrected so this expansion consistently uses
+`exp-20260607-003`; `exp-20260606-028` remains the already-logged rejected
+rolling-correlation peer-shock lagged-consensus experiment and must not be
+reused.
+
+Regression checkpoint: transient caches, stale registry lock, and ignored
+`data/tmp` scratch reports were cleaned while preserving experiment/daily
+artifacts. Full unit tests passed on 2026-06-07:
+`1167 passed in 61.20s`. JSON artifacts for modified experiment records and
+daily quant signals parsed successfully after the PEAD ID repair. Focused
+compile checks passed for the touched PEAD, earnings snapshot, run, and alpha
+memory modules. `scripts/experiment.py audit --lean-strict` exited cleanly for
+lean-quality gating (`lean_quality_passed=true`) and shows no post-enforcement
+weak prediction or reflection quality gaps, but the overall audit still reports
+existing coverage debt: post-enforcement prediction coverage `92.02%`, closed
+post-enforcement calibration coverage `66.25%`, `17` post-enforcement missing
+predictions, and `54` missing closed calibrations.
 
 ## 2026-06-06 Experiment Consolidation
 
