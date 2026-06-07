@@ -6,17 +6,15 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `80`
-- Accepted / rejected: `7` / `68`
-- Accept rate: `8.75%`
-- Sum EV delta: `+50.1623`
-- Sum PnL delta: `$1,029,099.36`
-- Latest: `exp-20260606-028` `rejected_peer_shock_lagged_consensus_did_not_beat_accepted_lagged_comparator` with EV `+0.0413` and PnL `$983.18`.
+- Experiments: `81`
+- Accepted / rejected: `8` / `68`
+- Accept rate: `9.88%`
+- Sum EV delta: `+50.7355`
+- Sum PnL delta: `$1,041,034.15`
+- Latest: `exp-20260607-019` `accepted_volatility_relief_stock_leadership_shared_default_off_adapter` with EV `+0.5732` and PnL `$11,934.79`.
 
 ## Retained Or Positive Evidence
 
-- `exp-20260529-004` `accepted_shared_vbb_cost_liquidity_support`: EV `+0.0285`, PnL `$456.30`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `volume_breadth_breakout_cost_liquidity_support`.
-  Lesson: The accepted VOLUME_BREADTH_BREAKOUT_PAPER source may have better replacement value when selected trades combine large signal-day dollar volume with a contained daily range. This is a free OHLCV cost/liquidity field k...
 - `exp-20260530-007` `accepted_candidate_finra_iwm_same_ticker_cooldown`: EV `+0.3308`, PnL `$8,298.40`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `finra_iwm_same_ticker_cooldown_candidate_pool`.
   Lesson: FINRA short-pressure IWM-confirmed candidates failed the prior promotion screen only by repeated same-ticker positive PnL concentration. A seven-calendar-day same-ticker signal cooldown should reduce clustered APP-lik...
 - `exp-20260601-029` `accepted_shared_finra_iwm_cost_liquidity_support`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `finra_iwm_cost_liquidity_support`.
@@ -27,6 +25,8 @@ records before making strategy changes.
   Lesson: Within the accepted post-earnings underpriced drift paper sleeve, candidates with no same-day core A/B overlap are a cleaner independent event-alpha bucket and deserve a small default-off paper-notional support scalar.
 - `exp-20260604-009` `accepted_lagged_consensus_shared_default_off_adapter`: EV `+1.9949`, PnL `$35,553.87`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_source_timing_adapter`.
   Lesson: exp-20260604-008 improved core and the accepted same-day consensus comparator across all three windows; this run adds the shared helper, source-history contract, and focused tests without enabling orders.
+- `exp-20260607-019` `accepted_volatility_relief_stock_leadership_shared_default_off_adapter`: EV `+0.5732`, PnL `$11,934.79`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `volatility_relief_stock_leadership_shared_adapter`.
+  Lesson: Shared replay matched the exp-20260607-018 lead because the alpha came from a distinct VIXY volatility-compression state plus liquid stock leadership, not runner-only implementation details. Do not retry by sweeping V...
 
 ## Rejections And Failure Lessons
 
@@ -66,9 +66,9 @@ records before making strategy changes.
 
 ## Recent Raw Records
 
-- `exp-20260605-014` source `experiments/logs/exp-20260605-014.json`.
 - `exp-20260605-015` source `experiments/logs/exp-20260605-015.json`.
 - `exp-20260605-016` source `experiments/logs/exp-20260605-016.json`.
 - `exp-20260605-021` source `experiments/logs/exp-20260605-021.json`.
 - `exp-20260605-024` source `experiments/logs/exp-20260605-024.json`.
 - `exp-20260606-028` source `experiments/logs/exp-20260606-028.json`.
+- `exp-20260607-019` source `experiments/logs/exp-20260607-019.json`.

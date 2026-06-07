@@ -716,6 +716,39 @@ Gate 1-4 activation experiment and parity update. Do not retune the macro
 calendar, relief thresholds, close-location thresholds, top-N, hold days,
 cooldown, or notional on the frozen sample without materially new data.
 
+### `quant/volatility_relief_stock_leadership_paper_sleeve.py`
+
+Purpose: maintain the default-off `VOLATILITY_RELIEF_LEADERSHIP_PAPER` forward
+observation ledger for the accepted VIXY volatility-relief stock-leadership
+lead from `exp-20260607-018` and the shared adapter promotion from
+`exp-20260607-019`.
+
+Candidate route:
+
+- Uses the broad-market paper universe feed plus exact `SPY`, `QQQ`, and
+  `VIXY` OHLCV.
+- Requires same-day `VIXY` selloff and weak close-location.
+- Requires same-day `SPY` and `QQQ` risk-relief returns and high
+  close-location.
+- Scores liquid sector-known stock leaders using signal-day return, relative
+  return versus `SPY`/`QQQ`, 20/60-day excess return, high-close quality,
+  volume confirmation, liquidity, and realized volatility.
+- Emits up to two same-day paper candidates with next-open entry,
+  10-trading-day close exit, slippage and round-trip cost metadata.
+- Excludes same-day selected-core same-ticker overlap and keeps a same-ticker
+  cooldown.
+- Daily run emits volatility-relief context, pending/open/closed paper state,
+  forward gate, default-off attribution surface, and human-report block.
+
+Agent rule: this sleeve may collect forward replacement-value evidence for the
+accepted alpha only. It must not enable orders, expand the core universe, alter
+live ranking, sizing, exits, watchlists, LLM/news prompts, or consume capital
+without a separate Gate 1-4 activation experiment and parity update. Do not
+retune VIXY relief thresholds, SPY/QQQ confirmation thresholds,
+close-location thresholds, top-N, hold days, cooldown, or notional on the
+frozen sample without closed forward rows or a materially new
+production-visible volatility-flow data edge.
+
 ### `quant/rolling_corr_peer_shock_paper_sleeve.py`
 
 Purpose: maintain the default-off
@@ -1257,6 +1290,7 @@ Inputs:
 - `core_misfit_paper_sleeve`
 - `broad_market_paper_sleeve`
 - `macro_relief_leadership_paper_sleeve`
+- `volatility_relief_stock_leadership_paper_sleeve`
 - `rolling_corr_peer_shock_paper_sleeve`
 - `industry_relative_laggard_repair_paper_sleeve`
 - `ai_optical_paper_sleeve`

@@ -222,6 +222,7 @@ def build_default_off_alpha_attribution_report(
     core_misfit_paper_sleeve: dict[str, Any] | None = None,
     broad_market_paper_sleeve: dict[str, Any] | None = None,
     macro_relief_leadership_paper_sleeve: dict[str, Any] | None = None,
+    volatility_relief_stock_leadership_paper_sleeve: dict[str, Any] | None = None,
     rolling_corr_peer_shock_paper_sleeve: dict[str, Any] | None = None,
     industry_relative_laggard_repair_paper_sleeve: dict[str, Any] | None = None,
     ai_optical_paper_sleeve: dict[str, Any] | None = None,
@@ -289,6 +290,58 @@ def build_default_off_alpha_attribution_report(
                 ),
                 "candidate_universe_ticker_count": (
                     ((macro_relief_leadership_paper_sleeve or {}).get("candidate_universe") or {}).get("ticker_count")
+                ),
+            },
+        ),
+        _surface_summary(
+            name="volatility_relief_stock_leadership",
+            label="VOLATILITY_RELIEF_LEADERSHIP_PAPER",
+            snapshot=volatility_relief_stock_leadership_paper_sleeve,
+            extra_metrics={
+                "rule_version": (
+                    (volatility_relief_stock_leadership_paper_sleeve or {}).get("rule_version")
+                ),
+                "source_rule_version": (
+                    (volatility_relief_stock_leadership_paper_sleeve or {}).get(
+                        "source_rule_version"
+                    )
+                ),
+                "volatility_relief_days": (
+                    (
+                        (volatility_relief_stock_leadership_paper_sleeve or {}).get(
+                            "context_scan"
+                        )
+                        or {}
+                    ).get("volatility_relief_days")
+                ),
+                "raw_candidate_count": (
+                    (volatility_relief_stock_leadership_paper_sleeve or {}).get(
+                        "raw_candidate_count"
+                    )
+                ),
+                "candidate_universe_status": (
+                    (
+                        (volatility_relief_stock_leadership_paper_sleeve or {}).get(
+                            "candidate_universe"
+                        )
+                        or {}
+                    ).get("status")
+                ),
+                "candidate_universe_ticker_count": (
+                    (
+                        (volatility_relief_stock_leadership_paper_sleeve or {}).get(
+                            "candidate_universe"
+                        )
+                        or {}
+                    ).get("ticker_count")
+                ),
+                "uses_free_ohlcv_only": (
+                    (
+                        (volatility_relief_stock_leadership_paper_sleeve or {}).get(
+                            "production_impact"
+                        )
+                        or {}
+                    ).get("uses_free_ohlcv_only")
                 ),
             },
         ),

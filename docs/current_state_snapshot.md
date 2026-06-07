@@ -6,9 +6,9 @@ complete state database.
 
 ## Source Snapshot
 
-- Strategy records counted: `1046`
-- Accepted strategy records: `185`
-- History fingerprint: `7feb1214eeb76234`
+- Strategy records counted: `1057`
+- Accepted strategy records: `186`
+- History fingerprint: `6cda8321a0656f9f`
 - Generated from committed experiment logs when using `--git-ref HEAD`.
 
 ## Exact State Sources
@@ -32,6 +32,14 @@ complete state database.
 
 ## Recent Accepted Strategy Records
 
+- `exp-20260602-010` `accepted_companyfacts_sector_residual_shared_adapter`: EV `+0.0000`, PnL `$0.00`, family `companyfacts_sector_residual_strength_support`, trial `companyfacts_sector_residual_strength_support`.
+  Lesson: Risk allocation / candidate quality: among accepted Companyfacts Growth + RS paper rows, those beating their public sector median 20-day return by at least 3pp deserve a small default-off paper support scalar.
+- `exp-20260602-025` `accepted_shared_space_cost_liquidity_support_helper`: EV `+0.8766`, PnL `$16,587.61`, family `governed_space_selected_cost_liquidity_paper_notional_support`, trial `governed_space_selected_cost_liquidity_paper_notional_support`.
+  Lesson: The positive Space selected-candidate cost/liquidity paper support from exp-20260602-024 can be retained only if the same free-OHLCV helper is exposed through the default-off production observation slot and the three-...
+- `exp-20260602-026` `accepted_post_earnings_underpriced_shared_default_off_adapter`: EV `+0.3547`, PnL `$3,557.15`, family `default_off_paper_adapter`, trial `post_earnings_positive_surprise_underpriced_shared_adapter`.
+  Lesson: Promoting the exp-20260602-023 post-earnings underpriced positive-surprise drift lead into a shared default-off paper adapter will preserve the three-window replay edge while making forward replacement-value rows prod...
+- `exp-20260602-027` `accepted_post_earnings_underpriced_high_liquidity_support`: EV `+0.4116`, PnL `$4,058.33`, family `default_off_paper_allocation`, trial `post_earnings_underpriced_cost_liquidity_support`.
+  Lesson: Already-selected post-earnings underpriced drift paper candidates with high 20-day average dollar volume may deserve modest default-off paper support because the event edge is cleaner when participation and execution...
 - `exp-20260603-004` `accepted_post_earnings_sector_residual_support`: EV `+0.0082`, PnL `$199.95`, family `post_earnings_underpriced_drift`, trial `post_earnings_underpriced_sector_relative_event_quality`.
   Lesson: Within the accepted post-earnings underpriced drift paper sleeve, candidates still leading their public broad sector on signal-date 20-day return may have cleaner event continuation and deserve a small default-off sup...
 - `exp-20260603-006` `accepted_candidate_finra_borrow_pressure`: EV `+0.2585`, PnL `$5,688.12`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `finra_borrow_pressure_candidate_pool`.
@@ -46,19 +54,19 @@ complete state database.
   Lesson: exp-20260604-008 improved core and the accepted same-day consensus comparator across all three windows; this run adds the shared helper, source-history contract, and focused tests without enabling orders.
 - `exp-20260604-027` `accepted_default_off_sec_ftd_finra_shared_adapter`: EV `+0.0000`, PnL `$0.00`, family `default_off_paper_adapter`, trial `default_off_paper_adapter`.
   Lesson: Promote the positive SEC FTD plus FINRA borrow-pressure replay lead into a shared default-off paper adapter so production can collect forward replacement-value evidence without changing live orders.
-- `exp-20260606-001` `accepted_shared_default_off_low_deployment_etf_cash_substitute_adapter`: EV `+3.0292`, PnL `$44,306.91`, family `low_deployment_etf_cash_substitute_shared_adapter`, trial `low_deployment_etf_cash_substitute_shared_adapter`.
-  Lesson: Low core deployment leaves replacement-value gaps; the accepted low-deployment ETF cash-substitute replay should reproduce as a shared default-off paper adapter with next-open entry, 10-trading-day close exit, one ope...
-- `exp-20260606-020` `accepted_macro_relief_top2_shared_default_off_paper_adapter`: EV `+0.1813`, PnL `$3,062.78`, family `free_official_macro_calendar_plus_ohlcv_candidate_pool`, trial `macro_relief_leadership_candidate_pool`.
-  Lesson: The positive exp-20260606-019 macro relief top-2 stock leadership source can be implemented as one shared default-off paper adapter without changing the three-window evidence or creating a production/backtest mismatch.
 - `exp-20260606-025` `accepted_rolling_corr_peer_shock_shared_default_off_adapter`: EV `+0.0000`, PnL `$0.00`, family `production_visible_free_ohlcv_relation_alpha`, trial `rolling_corr_peer_shock_default_off_shared_adapter`.
   Lesson: The core-flow confirmed rolling-correlation peer-shock lead remains valuable when candidate generation is moved into a shared default-off paper adapter used by both historical replay and daily snapshot tests.
-- `exp-20260606-026` `accepted`: EV `+0.0000`, PnL `$0.00`, family `default_off_forward_adapter_wiring`, trial `default_off_forward_adapter_wiring`.
-  Lesson: The accepted rolling-correlation peer-shock alpha should now be wired into daily default-off observation so it can collect forward closed replacement-value rows using the same helper semantics that passed the three-wi...
-- `exp-20260607-008` `accepted_industry_relative_laggard_repair_shared_default_off_adapter`: EV `+0.2763`, PnL `$6,208.99`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_relative_laggard_repair_shared_default_off_adapter`.
-  Lesson: The shared helper reproduced the private replay lead with the same fixed policy bundle, indicating the alpha came from the industry relative lag plus same-day repair relation rather than runner-only implementation qui...
 
 ## Recent Production-Visible Or Default-Off Accepted Records
 
+- `exp-20260602-026` `accepted_post_earnings_underpriced_shared_default_off_adapter`: EV `+0.3547`, PnL `$3,557.15`, family `default_off_paper_adapter`, trial `post_earnings_positive_surprise_underpriced_shared_adapter`.
+  Lesson: Promoting the exp-20260602-023 post-earnings underpriced positive-surprise drift lead into a shared default-off paper adapter will preserve the three-window replay edge while making forward replacement-value rows prod...
+- `exp-20260602-027` `accepted_post_earnings_underpriced_high_liquidity_support`: EV `+0.4116`, PnL `$4,058.33`, family `default_off_paper_allocation`, trial `post_earnings_underpriced_cost_liquidity_support`.
+  Lesson: Already-selected post-earnings underpriced drift paper candidates with high 20-day average dollar volume may deserve modest default-off paper support because the event edge is cleaner when participation and execution...
+- `exp-20260603-004` `accepted_post_earnings_sector_residual_support`: EV `+0.0082`, PnL `$199.95`, family `post_earnings_underpriced_drift`, trial `post_earnings_underpriced_sector_relative_event_quality`.
+  Lesson: Within the accepted post-earnings underpriced drift paper sleeve, candidates still leading their public broad sector on signal-date 20-day return may have cleaner event continuation and deserve a small default-off sup...
+- `exp-20260603-006` `accepted_candidate_finra_borrow_pressure`: EV `+0.2585`, PnL `$5,688.12`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `finra_borrow_pressure_candidate_pool`.
+  Lesson: Official FINRA borrow-pressure rows with high days-to-cover and positive short-interest change may improve the accepted FINRA/IWM default-off candidate pool by requiring both crowding and active borrow-demand pressure.
 - `exp-20260603-007` `accepted_default_off_finra_borrow_pressure_shared_adapter`: EV `+0.0000`, PnL `$0.00`, family `default_off_paper_adapter`, trial `default_off_paper_adapter`.
   Lesson: The accepted FINRA borrow-pressure admission lead should become a shared default-off FINRA/IWM paper adapter so production can collect forward replacement-value evidence without changing live orders.
 - `exp-20260603-015` `accepted_default_off_consensus_source_family_adapter`: EV `+1.3058`, PnL `$23,397.76`, family `default_off_paper_adapter`, trial `accepted_free_data_cross_source_consensus_source_family_adapter`.
@@ -69,24 +77,16 @@ complete state database.
   Lesson: exp-20260604-008 improved core and the accepted same-day consensus comparator across all three windows; this run adds the shared helper, source-history contract, and focused tests without enabling orders.
 - `exp-20260604-027` `accepted_default_off_sec_ftd_finra_shared_adapter`: EV `+0.0000`, PnL `$0.00`, family `default_off_paper_adapter`, trial `default_off_paper_adapter`.
   Lesson: Promote the positive SEC FTD plus FINRA borrow-pressure replay lead into a shared default-off paper adapter so production can collect forward replacement-value evidence without changing live orders.
-- `exp-20260606-001` `accepted_shared_default_off_low_deployment_etf_cash_substitute_adapter`: EV `+3.0292`, PnL `$44,306.91`, family `low_deployment_etf_cash_substitute_shared_adapter`, trial `low_deployment_etf_cash_substitute_shared_adapter`.
-  Lesson: Low core deployment leaves replacement-value gaps; the accepted low-deployment ETF cash-substitute replay should reproduce as a shared default-off paper adapter with next-open entry, 10-trading-day close exit, one ope...
-- `exp-20260606-020` `accepted_macro_relief_top2_shared_default_off_paper_adapter`: EV `+0.1813`, PnL `$3,062.78`, family `free_official_macro_calendar_plus_ohlcv_candidate_pool`, trial `macro_relief_leadership_candidate_pool`.
-  Lesson: The positive exp-20260606-019 macro relief top-2 stock leadership source can be implemented as one shared default-off paper adapter without changing the three-window evidence or creating a production/backtest mismatch.
 - `exp-20260606-025` `accepted_rolling_corr_peer_shock_shared_default_off_adapter`: EV `+0.0000`, PnL `$0.00`, family `production_visible_free_ohlcv_relation_alpha`, trial `rolling_corr_peer_shock_default_off_shared_adapter`.
   Lesson: The core-flow confirmed rolling-correlation peer-shock lead remains valuable when candidate generation is moved into a shared default-off paper adapter used by both historical replay and daily snapshot tests.
-- `exp-20260606-026` `accepted`: EV `+0.0000`, PnL `$0.00`, family `default_off_forward_adapter_wiring`, trial `default_off_forward_adapter_wiring`.
-  Lesson: The accepted rolling-correlation peer-shock alpha should now be wired into daily default-off observation so it can collect forward closed replacement-value rows using the same helper semantics that passed the three-wi...
-- `exp-20260607-008` `accepted_industry_relative_laggard_repair_shared_default_off_adapter`: EV `+0.2763`, PnL `$6,208.99`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_relative_laggard_repair_shared_default_off_adapter`.
-  Lesson: The shared helper reproduced the private replay lead with the same fixed policy bundle, indicating the alpha came from the industry relative lag plus same-day repair relation rather than runner-only implementation qui...
 
 ## Current Research Queue Pointers
 
-- `production_visible_default_off_paper_adapter_for_candidate_pool_alpha` priority `0.8477`, experiments `1`, accept `100.00%`.
+- `production_visible_default_off_paper_adapter_for_candidate_pool_alpha` priority `0.8479`, experiments `2`, accept `100.00%`.
 - `default_off_paper_shared_adapter` priority `0.8476`, experiments `1`, accept `100.00%`.
 - `default_off_paper_adapter` priority `0.8173`, experiments `7`, accept `85.71%`.
 - `paper_notional_support_scout` priority `0.7009`, experiments `3`, accept `66.67%`.
-- `pilot_or_sleeve` priority `0.6341`, experiments `157`, accept `26.75%`.
+- `pilot_or_sleeve` priority `0.6319`, experiments `163`, accept `25.77%`.
 
 ## State Migration Note
 

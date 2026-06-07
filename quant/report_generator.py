@@ -99,6 +99,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            core_misfit_paper_sleeve=None,
                            broad_market_paper_sleeve=None,
                            macro_relief_leadership_paper_sleeve=None,
+                           volatility_relief_stock_leadership_paper_sleeve=None,
                            rolling_corr_peer_shock_paper_sleeve=None,
                            industry_relative_laggard_repair_paper_sleeve=None,
                            ai_optical_paper_sleeve=None,
@@ -151,6 +152,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         core_misfit_paper_sleeve (dict): Default-off core-misfit paper attribution
         broad_market_paper_sleeve (dict): Default-off broad-market leadership paper sleeve
         macro_relief_leadership_paper_sleeve (dict): Default-off macro-relief stock leadership paper sleeve
+        volatility_relief_stock_leadership_paper_sleeve (dict): Default-off VIXY volatility-relief stock leadership paper sleeve
         rolling_corr_peer_shock_paper_sleeve (dict): Default-off rolling-correlation peer-shock paper sleeve
         industry_relative_laggard_repair_paper_sleeve (dict): Default-off industry-relative laggard repair paper sleeve
         ai_optical_paper_sleeve (dict): Default-off AI optical IWM-confirmed paper sleeve
@@ -2057,6 +2059,71 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"blocked_by={reason_text}"
             )
         for candidate in (macro_relief_leadership_paper_sleeve.get("candidates") or [])[:5]:
+            notional = candidate.get("paper_notional_usd") or candidate.get("notional_usd")
+            notional_text = (
+                f"${notional:,.0f}" if isinstance(notional, (int, float)) else "n/a"
+            )
+            lines.append(
+                f"  {candidate.get('ticker', '?')}: "
+                f"score={candidate.get('candidate_score')} "
+                f"rel_spy={candidate.get('candidate_relative_vs_spy')} "
+                f"signal={candidate.get('signal_date', candidate.get('date'))} "
+                f"notional={notional_text} (paper only)"
+            )
+
+    if volatility_relief_stock_leadership_paper_sleeve and (
+        volatility_relief_stock_leadership_paper_sleeve.get("candidate_count", 0) > 0
+        or volatility_relief_stock_leadership_paper_sleeve.get("pending_count", 0) > 0
+        or volatility_relief_stock_leadership_paper_sleeve.get("open_position_count", 0) > 0
+        or volatility_relief_stock_leadership_paper_sleeve.get("closed_count_today", 0) > 0
+        or volatility_relief_stock_leadership_paper_sleeve.get("closed_position_count", 0) > 0
+        or volatility_relief_stock_leadership_paper_sleeve.get("error")
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("VOLATILITY RELIEF LEADERSHIP PAPER SLEEVE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Paper: {volatility_relief_stock_leadership_paper_sleeve.get('paper_enabled', False)}  |  "
+            f"Trade enabled: {volatility_relief_stock_leadership_paper_sleeve.get('trade_enabled', False)}"
+        )
+        if volatility_relief_stock_leadership_paper_sleeve.get("error"):
+            lines.append(
+                f"  Source status: {volatility_relief_stock_leadership_paper_sleeve.get('error')}"
+            )
+        universe = volatility_relief_stock_leadership_paper_sleeve.get("candidate_universe") or {}
+        context = volatility_relief_stock_leadership_paper_sleeve.get("volatility_relief_context") or {}
+        lines.append(
+            f"  Universe: {universe.get('status', 'unknown')}  |  "
+            f"Tickers: {universe.get('ticker_count', 0)}  |  "
+            f"Relief day: {context.get('passed', False)}  |  "
+            f"VIXY ret: {context.get('vixy_return')}"
+        )
+        lines.append(
+            f"  Candidates: {volatility_relief_stock_leadership_paper_sleeve.get('candidate_count', 0)}  |  "
+            f"Raw: {volatility_relief_stock_leadership_paper_sleeve.get('raw_candidate_count', 0)}  |  "
+            f"Pending: {volatility_relief_stock_leadership_paper_sleeve.get('pending_count', 0)}  |  "
+            f"Open: {volatility_relief_stock_leadership_paper_sleeve.get('open_position_count', 0)}  |  "
+            f"Closed today: {volatility_relief_stock_leadership_paper_sleeve.get('closed_count_today', 0)}"
+        )
+        lines.append(
+            "  Realized paper P&L: "
+            f"${volatility_relief_stock_leadership_paper_sleeve.get('realized_pnl_to_date', 0.0):,.2f}  |  "
+            f"Unrealized: ${volatility_relief_stock_leadership_paper_sleeve.get('unrealized_pnl', 0.0):,.2f}"
+        )
+        gate = volatility_relief_stock_leadership_paper_sleeve.get("forward_paper_gate") or {}
+        if gate:
+            metrics = gate.get("metrics") or {}
+            reasons = gate.get("reasons") or []
+            reason_text = ", ".join(reasons) if reasons else "none"
+            lines.append(
+                f"  Forward gate: {gate.get('status', 'unknown')}  |  "
+                f"closed={metrics.get('closed_trades', 0)} "
+                f"pnl=${metrics.get('realized_pnl', 0.0):,.2f}  |  "
+                f"blocked_by={reason_text}"
+            )
+        for candidate in (
+            volatility_relief_stock_leadership_paper_sleeve.get("candidates") or []
+        )[:5]:
             notional = candidate.get("paper_notional_usd") or candidate.get("notional_usd")
             notional_text = (
                 f"${notional:,.0f}" if isinstance(notional, (int, float)) else "n/a"

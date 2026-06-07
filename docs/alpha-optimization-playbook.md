@@ -81,13 +81,14 @@ research report is queue guidance only; it is not a trading signal.
 
 The June 6-7 readout tightens the rule: relation-aware free-data candidate
 sources can work, but only when the relation itself is the edge. Accepted
-examples use macro-event relief, rolling-correlation peer shock with core-flow
-confirmation, or industry-relative laggard repair. Rejected neighbors show what
-does not count as a new relation: sector ETF laggards, core-selected anchor peer
-lags with zero target trades, short-horizon reversal/reclaim, macro sector
-confirmation that fails versus the accepted comparator, and SEC guidance/outlook
-phrase matching with same-day price alignment. These are mostly weak
-confirmers, not new information.
+examples use macro-event relief, volatility-relief leadership,
+rolling-correlation peer shock with core-flow confirmation, or
+industry-relative laggard repair. Rejected neighbors show what does not count
+as a new relation:
+sector ETF laggards, core-selected anchor peer lags with zero target trades,
+short-horizon reversal/reclaim, macro sector confirmation that fails versus the
+accepted comparator, and SEC guidance/outlook phrase matching with same-day
+price alignment. These are mostly weak confirmers, not new information.
 
 Default next question for any new broad candidate pool:
 
@@ -181,6 +182,48 @@ Next valid work:
 Do not retune nearby top-N, SPY/QQQ relief thresholds, close-location
 thresholds, hold days, same-ticker cooldown, or paper notional on the frozen
 sample.
+
+### Volatility Relief Stock Leadership
+
+This is a free-data candidate-pool lead tied to volatility-product relief. When
+`VIXY` sells off and closes weak while `SPY` and `QQQ` confirm risk relief, the
+strongest liquid stock leaders can be tracked as default-off paper candidates.
+
+Accepted shared adapter: `exp-20260607-019`, promoting the positive replay lead
+from `exp-20260607-018`.
+
+Mechanism:
+
+- volatility relief gate: same-day `VIXY` selloff and low close-location;
+- confirmation: same-day `SPY` and `QQQ` rally and close high in range;
+- source universe: broad-market, sector-known, liquid stock observation feed;
+- selection: up to top-2 same-day stock leaders;
+- lifecycle: next-open paper entry, 10-trading-day close exit, costs included;
+- status: default-off paper only, no live orders.
+
+Evidence:
+
+- aggregate EV `7.8941 -> 8.4673` (`+0.5732`);
+- PnL `$234,850.99 -> $246,785.79`;
+- all three canonical windows improved;
+- target paper trades: `88`;
+- max drawdown drift: `0.0003`;
+- concentration passed (`max_single_positive_pnl_share=0.142323`,
+  `positive_pnl_hhi=0.060267`).
+
+Next valid work:
+
+- collect closed forward replacement-value rows from the shared adapter;
+- audit broad-market universe coverage on volatility-relief days;
+- search for truly point-in-time vol-flow, option-volume, or volatility-event
+  fields if free data exists;
+- before live deployment, either measure the full execution envelope
+  (notional/cap/liquidity/slippage/displacement/kill switch/order semantics) or
+  release through checklist if that envelope has already been accepted.
+
+Do not retune nearby VIXY relief thresholds, SPY/QQQ confirmation thresholds,
+close-location thresholds, top-N, hold days, same-ticker cooldown, or paper
+notional on the frozen sample.
 
 ### Rolling-Correlation Peer-Shock Core Flow
 

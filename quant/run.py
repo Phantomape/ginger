@@ -296,6 +296,10 @@ def main():
         build_macro_relief_leadership_snapshot,
         empty_macro_relief_leadership_snapshot,
     )
+    from volatility_relief_stock_leadership_paper_sleeve import (
+        build_volatility_relief_stock_leadership_snapshot,
+        empty_volatility_relief_stock_leadership_snapshot,
+    )
     from rolling_corr_peer_shock_paper_sleeve import (
         build_rolling_corr_peer_shock_paper_sleeve_snapshot,
         empty_rolling_corr_peer_shock_paper_sleeve_snapshot,
@@ -2756,6 +2760,59 @@ def main():
 
     try:
         if not broad_market_candidate_universe.get("tickers"):
+            volatility_relief_stock_leadership_paper_sleeve = (
+                empty_volatility_relief_stock_leadership_snapshot(
+                    today_iso,
+                    "broad_market_candidate_universe_unavailable",
+                )
+            )
+        else:
+            volatility_relief_ohlcv = dict(broad_market_ohlcv)
+            if "SPY" not in volatility_relief_ohlcv and spy_ohlcv is not None:
+                volatility_relief_ohlcv["SPY"] = spy_ohlcv
+            if "QQQ" not in volatility_relief_ohlcv:
+                if "QQQ" in ohlcv_dict:
+                    volatility_relief_ohlcv["QQQ"] = ohlcv_dict["QQQ"]
+                else:
+                    volatility_relief_ohlcv["QQQ"] = _cached_ohlcv("QQQ")
+            if "VIXY" not in volatility_relief_ohlcv:
+                if "VIXY" in ohlcv_dict:
+                    volatility_relief_ohlcv["VIXY"] = ohlcv_dict["VIXY"]
+                else:
+                    volatility_relief_ohlcv["VIXY"] = _cached_ohlcv("VIXY")
+            volatility_relief_stock_leadership_paper_sleeve = (
+                build_volatility_relief_stock_leadership_snapshot(
+                    as_of=today_iso,
+                    ohlcv_by_ticker=volatility_relief_ohlcv,
+                    candidate_universe=broad_market_candidate_universe,
+                    core_entries=signals,
+                )
+            )
+        if (
+            volatility_relief_stock_leadership_paper_sleeve.get("candidate_count", 0) > 0
+            or volatility_relief_stock_leadership_paper_sleeve.get("pending_count", 0) > 0
+            or volatility_relief_stock_leadership_paper_sleeve.get("open_position_count", 0) > 0
+            or volatility_relief_stock_leadership_paper_sleeve.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "Volatility-relief leadership paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
+                volatility_relief_stock_leadership_paper_sleeve.get("candidate_count", 0),
+                volatility_relief_stock_leadership_paper_sleeve.get("pending_count", 0),
+                volatility_relief_stock_leadership_paper_sleeve.get("open_position_count", 0),
+                volatility_relief_stock_leadership_paper_sleeve.get("closed_count_today", 0),
+                volatility_relief_stock_leadership_paper_sleeve.get("realized_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"Volatility-relief leadership paper sleeve unavailable: {e}")
+        volatility_relief_stock_leadership_paper_sleeve = (
+            empty_volatility_relief_stock_leadership_snapshot(
+                today_iso,
+                "volatility_relief_stock_leadership_paper_sleeve_build_failed",
+            )
+        )
+
+    try:
+        if not broad_market_candidate_universe.get("tickers"):
             rolling_corr_peer_shock_paper_sleeve = (
                 empty_rolling_corr_peer_shock_paper_sleeve_snapshot(
                     today_iso,
@@ -2878,6 +2935,7 @@ def main():
         core_misfit_paper_sleeve=core_misfit_paper_sleeve,
         broad_market_paper_sleeve=broad_market_paper_sleeve,
         macro_relief_leadership_paper_sleeve=macro_relief_leadership_paper_sleeve,
+        volatility_relief_stock_leadership_paper_sleeve=volatility_relief_stock_leadership_paper_sleeve,
         rolling_corr_peer_shock_paper_sleeve=rolling_corr_peer_shock_paper_sleeve,
         industry_relative_laggard_repair_paper_sleeve=industry_relative_laggard_repair_paper_sleeve,
         ai_optical_paper_sleeve=ai_optical_paper_sleeve,
@@ -2925,6 +2983,7 @@ def main():
     trend_signals_dict["core_misfit_paper_sleeve"] = core_misfit_paper_sleeve
     trend_signals_dict["broad_market_paper_sleeve"] = broad_market_paper_sleeve
     trend_signals_dict["macro_relief_leadership_paper_sleeve"] = macro_relief_leadership_paper_sleeve
+    trend_signals_dict["volatility_relief_stock_leadership_paper_sleeve"] = volatility_relief_stock_leadership_paper_sleeve
     trend_signals_dict["rolling_corr_peer_shock_paper_sleeve"] = rolling_corr_peer_shock_paper_sleeve
     trend_signals_dict["industry_relative_laggard_repair_paper_sleeve"] = industry_relative_laggard_repair_paper_sleeve
     trend_signals_dict["ai_optical_paper_sleeve"] = ai_optical_paper_sleeve
@@ -2980,6 +3039,7 @@ def main():
         core_misfit_paper_sleeve = core_misfit_paper_sleeve,
         broad_market_paper_sleeve = broad_market_paper_sleeve,
         macro_relief_leadership_paper_sleeve = macro_relief_leadership_paper_sleeve,
+        volatility_relief_stock_leadership_paper_sleeve = volatility_relief_stock_leadership_paper_sleeve,
         rolling_corr_peer_shock_paper_sleeve = rolling_corr_peer_shock_paper_sleeve,
         industry_relative_laggard_repair_paper_sleeve = industry_relative_laggard_repair_paper_sleeve,
         ai_optical_paper_sleeve = ai_optical_paper_sleeve,
@@ -3040,6 +3100,7 @@ def main():
         "core_misfit_paper_sleeve": core_misfit_paper_sleeve,
         "broad_market_paper_sleeve": broad_market_paper_sleeve,
         "macro_relief_leadership_paper_sleeve": macro_relief_leadership_paper_sleeve,
+        "volatility_relief_stock_leadership_paper_sleeve": volatility_relief_stock_leadership_paper_sleeve,
         "rolling_corr_peer_shock_paper_sleeve": rolling_corr_peer_shock_paper_sleeve,
         "industry_relative_laggard_repair_paper_sleeve": industry_relative_laggard_repair_paper_sleeve,
         "ai_optical_paper_sleeve": ai_optical_paper_sleeve,
