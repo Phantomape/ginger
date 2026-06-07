@@ -1,6 +1,6 @@
 # Alpha Optimization Playbook
 
-Last refreshed: 2026-06-06.
+Last refreshed: 2026-06-07.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -8,10 +8,11 @@ log. Detailed trial records belong in `docs/experiment_log.jsonl`,
 durable mechanism lessons, frozen retry zones, research queue, and external
 research ideas that can be converted into replayable fields.
 
-For default LLM context, start with `docs/alpha_context_pack.md`. It is a
-generated short memory surface; this playbook remains the durable policy and
-research-prior reference. Mechanism-specific short lessons live under
-`docs/lessons/*.md` and should be refreshed with:
+For default LLM context, start with `docs/alpha_context_pack.md`, then
+`docs/current_state_snapshot.md` when current-state orientation is needed.
+These are generated short memory surfaces; this playbook remains the durable
+policy and research-prior reference. Mechanism-specific short lessons live
+under `docs/lessons/*.md` and should be refreshed with:
 
 ```powershell
 .\.venv\Scripts\python.exe -B scripts\build_alpha_memory.py --git-ref HEAD
@@ -74,9 +75,29 @@ very speculative ideas. They should not be treated as accepted alpha even when
 Gate 4 is positive; the next retained asset must be the shared helper or daily
 default-off wiring that reproduces the lead.
 
-Meta-research on 1,439 records continues to rank production-visible default-off
+Meta-research on 1,482 records continues to rank production-visible default-off
 paper adapters above raw filters, ticker exceptions, and cap releases. The
 research report is queue guidance only; it is not a trading signal.
+
+The June 6-7 readout tightens the rule: relation-aware free-data candidate
+sources can work, but only when the relation itself is the edge. Accepted
+examples use macro-event relief, rolling-correlation peer shock with core-flow
+confirmation, or industry-relative laggard repair. Rejected neighbors show what
+does not count as a new relation: sector ETF laggards, core-selected anchor peer
+lags with zero target trades, short-horizon reversal/reclaim, macro sector
+confirmation that fails versus the accepted comparator, and SEC guidance/outlook
+phrase matching with same-day price alignment. These are mostly weak
+confirmers, not new information.
+
+Default next question for any new broad candidate pool:
+
+- what exact relation makes this ticker a better replacement than cash, ETF
+  substitute, or the already accepted default-off comparator;
+- whether the relation is point-in-time and production-visible;
+- whether the candidate improves all windows against the accepted comparator,
+  not only against the core baseline;
+- whether the result survives costs, concentration, and drawdown before any
+  notional, top-N, hold-day, or cooldown tuning.
 
 ## Accepted Mechanisms To Build Around
 
@@ -474,6 +495,43 @@ Next valid work:
 - do not promote stock continuation unless it beats the ETF substitute after
   costs, drawdown, and exact displacement accounting.
 
+### Weak Relation Confirmers
+
+June 6-7 relation variants clarify the boundary between a real relation alpha
+and a descriptive overlay.
+
+Rejected neighbors:
+
+- peer-shock lagged consensus did not beat the already accepted lagged
+  independent-family comparator;
+- sector ETF laggard and core-selected anchor peer-lag variants failed because
+  the relation was too broad or produced too few real target trades;
+- macro relief sector-confirmed leadership passed against the core baseline
+  but failed the stricter accepted-comparator check;
+- trend-quality short-horizon reversal had enough sample but was mostly a
+  fragile rebound selector with old-window drawdown damage.
+
+Lesson:
+
+- a relation must identify a tradable displacement edge, not merely describe
+  that a ticker belongs to a sector, peer group, or recent-reversal bucket;
+- any relation family with an accepted comparator must beat that comparator,
+  not just add positive standalone paper PnL;
+- broad confirmation fields should become attribution fields first unless they
+  create a materially different PIT edge.
+
+Next valid work:
+
+- orthogonal relation data such as PIT peer taxonomy, supplier/customer links,
+  option/borrow structure, event-source propagation, or closed forward
+  replacement rows;
+- relation attribution that reports which accepted comparator each candidate
+  would displace.
+
+Do not retune peer lag, sector median, ETF laggard, macro sector-confirmation,
+short-horizon selloff/reclaim, top-N, hold-day, cooldown, or notional thresholds
+on the frozen sample.
+
 ### SEC Operational / Financing Event Pools
 
 Recent SEC 8-K operational, leadership, shareholder-vote, strategic-warrant,
@@ -484,6 +542,9 @@ Lesson:
 
 - SEC event alpha needs a stronger relation or semantic provenance than item
   code plus same-day price absorption;
+- guidance/outlook raise phrase matching plus same-day price alignment is also
+  insufficient when the event count is thin or the winners are large-cap
+  continuation names already captured by momentum/consensus surfaces;
 - the next useful SEC work is relation construction, source-span provenance,
   guidance/fact-tone gaps, or forward replacement rows, not phrase threshold
   retuning.
@@ -555,6 +616,10 @@ Acceptance path:
 
 Local same-ticker SEC recurrence and same-sector peer transfer have failed.
 Future event graph work must improve the relation, not the event count.
+Recent OHLCV relation work adds one positive template: industry-relative lag
+plus same-day repair can work when the group is already strong and the candidate
+shows a bounded reclaim. Recent failures add the negative template: sector/ETF
+labels, core-selected anchors, and generic peer lag are not enough.
 
 Candidate relation sources:
 
@@ -575,6 +640,17 @@ Minimum fields:
 - `early_peer_event_age_trading_days`
 - `peer_transfer_strength_score`
 - `relation_displacement_value_bucket`
+- `accepted_relation_comparator_id`
+- `relation_edge_failure_mode`
+
+Acceptance path:
+
+- first compare against the closest accepted relation comparator, such as
+  rolling-correlation peer shock, macro relief leadership, or industry-relative
+  laggard repair;
+- require displacement value after costs, not only standalone paper PnL;
+- if the relation is production-visible and PIT-safe, use shared-paper-first
+  instead of a private replay scout.
 
 ### 4. Expectation Revision With Real PIT Trajectory
 
@@ -742,6 +818,105 @@ Implementable fields:
 - `nowcast_replacement_value_bucket`
 
 Source: <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6134446>
+
+### LLM Financial-Headline Alpha
+
+Recent headline-alpha work reports that LLM-derived financial-news sentiment
+can produce positive alpha when the model is sufficiently capable and the output
+is used as a rank-based portfolio signal. Ginger should treat this as support
+for structured text fields, not direct LLM trading.
+
+Implementable fields:
+
+- `headline_llm_model_id`
+- `headline_source_timestamp`
+- `headline_sentiment_rank_bucket`
+- `headline_event_family_bucket`
+- `headline_signal_complexity_floor_passed`
+- `headline_source_coverage_fraction`
+- `headline_rank_replacement_value_bucket`
+- `headline_model_disagreement_bucket`
+
+Controls:
+
+- archive the exact headline set and model/schema version;
+- compare against accepted non-text comparators after costs;
+- require model disagreement / calibration reporting before any paper adapter;
+- do not use raw positive sentiment when the event family, timestamp, or source
+  coverage is missing.
+
+Source: <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6597694>
+
+### Human-Directed LLM Beats Autonomous LLM
+
+New 2026 live-signal evidence argues for structured human direction and
+game-theoretic scaffolding over autonomous LLM trading. This reinforces
+Ginger's boundary: the LLM can classify, explain, and expose uncertainty, while
+deterministic code owns execution, sizing, exits, and constraints.
+
+Implementable fields:
+
+- `llm_scaffold_id`
+- `llm_game_type_bucket`
+- `llm_independent_verdict_bucket`
+- `llm_autonomous_vs_scaffold_delta_bucket`
+- `llm_signal_frequency_budget_remaining`
+- `llm_view_volatility_bucket`
+- `human_direction_context_hash`
+
+Controls:
+
+- preserve the prompt/scaffold and source set as replay artifacts;
+- measure whether the scaffold reduces weak buy frequency, turnover, and
+  volatility, not just whether it increases bullish calls;
+- never let consensus magnitude or autonomous LLM conviction override the
+  shared policy gate.
+
+Source: <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6705178>
+
+### Agentic Financial RAG Self-Verification
+
+Agentic RAG research for financial document QA emphasizes iterative retrieval,
+reasoning, and self-verification for numerical precision. For Ginger, the
+tradable implication is not "ask an agent to trade"; it is to store retrieval
+coverage, verification failures, and evidence-span confidence before any SEC,
+earnings, or news semantic field can affect a paper sleeve.
+
+Implementable fields:
+
+- `rag_retrieval_loop_count`
+- `rag_source_set_hash`
+- `rag_numeric_self_check_passed`
+- `rag_evidence_span_confidence_bucket`
+- `rag_missing_source_reason`
+- `rag_contradiction_bucket`
+- `rag_verified_event_field_version`
+
+Controls:
+
+- fail closed when source spans or numeric self-checks are missing;
+- keep retrieval and verification artifacts replayable by timestamp;
+- promote only schema-bound fields with Gate 1-4 evidence.
+
+Source: <https://arxiv.org/abs/2605.05409>
+
+### LLM Herding And Crowded AI Signals
+
+LLM market experiments suggest AI traders may avoid some irrational cascades
+while still participating in rational herding. For Ginger, this is a risk
+surface: popular AI-readable narratives may crowd into the same liquid leaders,
+so text/agent signals need crowding and displacement diagnostics.
+
+Implementable fields:
+
+- `ai_readable_narrative_density_bucket`
+- `llm_herding_risk_bucket`
+- `model_consensus_crowding_bucket`
+- `same_source_signal_crowding_count`
+- `crowded_signal_displacement_value_bucket`
+- `narrative_unwind_risk_bucket`
+
+Source: <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6805805>
 
 ## Anti-Repeat Rules
 
