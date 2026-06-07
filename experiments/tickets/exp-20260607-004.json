@@ -1,0 +1,149 @@
+{
+  "acceptance_rule": "docs/backtesting.md canonical three-window before/after; aggregate EV and PnL positive; all 3 windows improve; survival >=5%; drawdown/concentration/sample guards pass; positive replay lead requires shared adapter parity before promotion",
+  "allowed_write_scope": [
+    "quant/experiments/",
+    "data/experiments/",
+    "experiments/logs/",
+    "experiments/artifacts/",
+    "experiments/cards/",
+    "experiments/tickets/",
+    "docs/experiments/tickets/",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "artifact": "data/experiments/exp-20260607-004/sec_guidance_outlook_raise_price_aligned.json",
+  "baseline_result_file": "docs/backtesting.md",
+  "card_file": "experiments/cards/exp-20260607-004.md",
+  "causal_components": [],
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "sec_guidance_outlook_raise_price_aligned_candidate_source_v1",
+  "claimed_at": "2026-06-07T02:11:31+00:00",
+  "completed_at": "2026-06-07T02:23:19Z",
+  "created_at": "2026-06-07T02:10:56+00:00",
+  "decision": "rejected_sec_guidance_outlook_raise_price_aligned_candidate_pool",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260607-004",
+  "experiment_uid": "expuid-28afb89cc6554e74",
+  "gate4": {
+    "decision": "rejected_sec_guidance_outlook_raise_price_aligned_candidate_pool",
+    "ev_windows_improved": [
+      "mid_weak",
+      "old_thin"
+    ],
+    "gates": {
+      "aggregate_expected_value_positive": false,
+      "aggregate_pnl_positive": true,
+      "all_windows_expected_value_improved": false,
+      "all_windows_pnl_improved": true,
+      "concentration_guard_passed": false,
+      "drawdown_drift_passed": true,
+      "survival_floor_passed": true,
+      "target_trade_count_passed": false,
+      "target_window_count_passed": true
+    },
+    "max_drawdown_delta": 0.0004,
+    "min_survival_rate": 0.7925,
+    "passed": false,
+    "pnl_windows_improved": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "rationale": "One or more Gate 4 checks failed, so the standalone SEC guidance/outlook raise price-aligned source is not retained.",
+    "requires_parity_before_promotion": false,
+    "status": "rejected"
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260607-004",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-07T02:10:56+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_guidance_outlook_raise_price_aligned"
+  },
+  "hypothesis": "SEC text rows with explicit guidance/outlook raise language, no guidance-cut or financing/dilution language, and positive same-day price alignment may form a cleaner default-off issuer-continuation candidate pool than generic SEC positive text.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "live_orders",
+    "core_ranking",
+    "core_sizing",
+    "core_exits",
+    "llm_prompt",
+    "news_replay"
+  ],
+  "log": "experiments/logs/exp-20260607-004.json",
+  "mechanism_family": "sec_semantic_source_span_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/run.py",
+    "operator_inputs/open_positions.json"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260516-034",
+    "exp-20260603-012",
+    "exp-20260605-006",
+    "exp-20260605-018",
+    "exp-20260606-002",
+    "exp-20260606-007"
+  ],
+  "new_evidence_type": "pit_sec_text_guidance_outlook_raise_evidence_span_plus_price_alignment",
+  "owner": "alpha-search",
+  "prediction": {
+    "actual_ev_delta": -0.0231,
+    "actual_pnl_delta": 489.79,
+    "actual_success": 0,
+    "brier_score": 0.0484,
+    "confidence_reason": "Guidance/outlook raise is a higher-information SEC semantic field with source-span provenance, but older guidance scalar was thin and recent SEC text pools have failed.",
+    "expected_ev_delta": 0.18,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "thin_sample",
+      "window_regression",
+      "semantic_false_positive",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-07T02:10:38+00:00",
+    "success_probability": 0.22
+  },
+  "prior_trial_count": 6,
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_orders": false,
+    "backtester_adapter_changed": false,
+    "lookahead_guard": "The candidate selector observes signal-date close-to-close reaction, then shifts usable_trade_date to the next trading session before calling the existing next-open paper trade helper.",
+    "parity_note": "This experiment changes no production code. A retained result would need a shared default-off SEC guidance/outlook adapter using the same filing credibility, evidence-span extraction, exclusion language, signal-day OHLCV reaction, next-session entry shift, and parity tests before any daily report, candidate queue, or order surface could change.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "result": {
+    "aggregate_expected_value_delta": -0.0231,
+    "aggregate_strategy_total_pnl_delta": 489.79,
+    "artifact": "experiments/artifacts/exp-20260607-004_sec_guidance_outlook_raise_price_aligned.md",
+    "decision": "rejected_sec_guidance_outlook_raise_price_aligned_candidate_pool",
+    "log": "experiments/logs/exp-20260607-004.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260607-004.json",
+  "single_causal_variable": "sec_guidance_outlook_raise_price_aligned_candidate_source_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260607-004.json",
+  "trial_family": "sec_guidance_outlook_raise_price_aligned_candidate_pool",
+  "trial_variant_id": "sec_guidance_outlook_raise_price_aligned_v1"
+}
