@@ -103,6 +103,8 @@ data/backtests/backtest_results_*.json
 
 不要为了补齐低价值字段而拆实验、延后 shared helper、延后 production-visible paper 输出或延后真钱执行包络；结构化字段能由工具默认时就默认，关键是推理和反思必须具体、可复现、可指导下一轮。
 
+后续自动化应优先用 `scripts/experiment.py audit --lean-strict` 防回退：它检查高价值推断和复盘是否具体，而不是要求更多冗余字段；历史质量债只报告，不要求回填后再做新实验。
+
 ### 3.1 推荐启动工具
 
 选择新的 `alpha_search` 方向前，优先运行或读取 meta research 报告：

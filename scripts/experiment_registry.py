@@ -67,6 +67,7 @@ PREDICTION_REQUIRED_LANES = {
     "universe_scout",
 }
 PREDICTION_ENFORCEMENT_STARTED_AT = "2026-05-29T21:33:00+00:00"
+LEAN_QUALITY_ENFORCEMENT_STARTED_AT = "2026-06-07T01:44:00+00:00"
 
 
 def utc_now_iso():
@@ -606,6 +607,72 @@ def prediction_missing_reasons(ticket):
         reasons.append("missing_success_probability")
     if not prediction.get("main_failure_modes"):
         reasons.append("missing_main_failure_modes")
+    return reasons
+
+
+def _word_count(value):
+    return len(re.findall(r"[A-Za-z0-9_\u4e00-\u9fff]+", str(value or "")))
+
+
+def _looks_placeholder(value):
+    text = str(value or "").strip().lower()
+    if not text:
+        return True
+    placeholders = (
+        "todo",
+        "tbd",
+        "n/a",
+        "none",
+        "placeholder",
+        "fill",
+        "test prediction",
+        "why this prior is reasonable",
+    )
+    return any(token in text for token in placeholders)
+
+
+def lean_prediction_quality_reasons(ticket):
+    if not prediction_required_for_lane(ticket.get("lane")):
+        return []
+    prediction = normalize_prediction(ticket.get("prediction"))
+    if not prediction:
+        return ["missing_prediction"]
+    reason = prediction.get("confidence_reason")
+    reasons = []
+    if prediction.get("success_probability") is None:
+        reasons.append("missing_success_probability")
+    if _looks_placeholder(reason):
+        reasons.append("missing_substantive_confidence_reason")
+    elif _word_count(reason) < 12:
+        reasons.append("confidence_reason_too_short")
+    if not prediction.get("main_failure_modes"):
+        reasons.append("missing_main_failure_modes")
+    return reasons
+
+
+def lean_reflection_quality_reasons(ticket, log_row):
+    if not prediction_required_for_lane(ticket.get("lane")):
+        return []
+    reflection = log_row.get("post_run_reflection") if isinstance(log_row, dict) else None
+    reasons = []
+    if isinstance(reflection, dict):
+        why = reflection.get("why_result_happened")
+        forbidden = reflection.get("forbidden_near_neighbor_retry")
+        new_evidence = reflection.get("new_evidence_required")
+        if _looks_placeholder(why) or _word_count(why) < 10:
+            reasons.append("weak_result_reflection")
+        if _looks_placeholder(forbidden):
+            reasons.append("missing_forbidden_retry")
+        if _looks_placeholder(new_evidence):
+            reasons.append("missing_new_evidence_required")
+        return reasons
+
+    calibration = log_row.get("calibration") if isinstance(log_row, dict) else None
+    surprise_note = calibration.get("surprise_note") if isinstance(calibration, dict) else None
+    notes = log_row.get("notes") if isinstance(log_row, dict) else None
+    fallback = surprise_note or notes
+    if _looks_placeholder(fallback) or _word_count(fallback) < 15:
+        reasons.append("missing_post_run_reflection")
     return reasons
 
 
@@ -1519,14 +1586,20 @@ def _prediction_enforcement_datetime():
     return parsed
 
 
-def prediction_enforcement_bucket(ticket):
+def _lean_quality_enforcement_datetime():
+    parsed = _parse_iso_datetime(LEAN_QUALITY_ENFORCEMENT_STARTED_AT)
+    if parsed is None:
+        raise ValueError("invalid LEAN_QUALITY_ENFORCEMENT_STARTED_AT")
+    return parsed
+
+
+def _enforcement_bucket(ticket, cutoff):
     """Classify prediction gaps as legacy or post-enforcement.
 
     Missing timestamps are treated as legacy because we cannot prove the agent
     saw the new code-enforced rule. A future-dated experiment ID still counts
     as post-enforcement even when a hand-written stub omits timestamps.
     """
-    cutoff = _prediction_enforcement_datetime()
     for field in ("created_at", "reserved_at", "updated_at", "claimed_at", "completed_at"):
         parsed = _parse_iso_datetime(ticket.get(field))
         if parsed is not None:
@@ -1545,6 +1618,16 @@ def prediction_enforcement_bucket(ticket):
     if experiment_date and experiment_date > cutoff.date():
         return "post_enforcement"
     return "legacy_pre_enforcement"
+
+
+def prediction_enforcement_bucket(ticket):
+    """Classify prediction-presence gaps against the original cutoff."""
+    return _enforcement_bucket(ticket, _prediction_enforcement_datetime())
+
+
+def lean_quality_enforcement_bucket(ticket):
+    """Classify lean quality gaps without blocking historical process debt."""
+    return _enforcement_bucket(ticket, _lean_quality_enforcement_datetime())
 
 
 def _ticket_records_for_audit(registry, tickets_dir=DEFAULT_TICKETS_DIR):
@@ -1585,6 +1668,7 @@ def audit_experiment_process(
     *,
     tickets_dir=DEFAULT_TICKETS_DIR,
     logs_dir=DEFAULT_EXPERIMENT_LOGS_DIR,
+    lean=False,
 ):
     """Audit whether experiment objects obey the code-enforced process contract."""
     tickets = _ticket_records_for_audit(registry, tickets_dir=tickets_dir)
@@ -1604,6 +1688,10 @@ def audit_experiment_process(
     closed_missing_calibration = []
     closed_legacy_missing_calibration = []
     closed_post_missing_calibration = []
+    weak_prediction_quality = []
+    post_weak_prediction_quality = []
+    closed_weak_reflection = []
+    closed_post_weak_reflection = []
 
     for experiment_id, ticket in sorted(tickets.items()):
         if not prediction_required_for_lane(ticket.get("lane")):
@@ -1661,11 +1749,51 @@ def audit_experiment_process(
             else:
                 closed_legacy_missing_calibration.append(item)
 
-    passed = not post_missing_prediction and not closed_post_missing_calibration
+        if lean:
+            quality_bucket = lean_quality_enforcement_bucket(ticket)
+            quality_reasons = lean_prediction_quality_reasons(ticket)
+            if quality_reasons:
+                item = {
+                    "experiment_id": experiment_id,
+                    "lane": ticket.get("lane"),
+                    "status": status,
+                    "quality_gaps": quality_reasons,
+                    "enforcement_bucket": quality_bucket,
+                }
+                weak_prediction_quality.append(item)
+                if quality_bucket == "post_enforcement":
+                    post_weak_prediction_quality.append(item)
+            if is_closed:
+                reflection_reasons = lean_reflection_quality_reasons(ticket, log_row)
+                if reflection_reasons:
+                    item = {
+                        "experiment_id": experiment_id,
+                        "lane": ticket.get("lane"),
+                        "status": status,
+                        "quality_gaps": reflection_reasons,
+                        "enforcement_bucket": quality_bucket,
+                    }
+                    closed_weak_reflection.append(item)
+                    if quality_bucket == "post_enforcement":
+                        closed_post_weak_reflection.append(item)
+
+    lean_passed = (
+        not post_weak_prediction_quality
+        and not closed_post_weak_reflection
+    )
+    passed = (
+        not post_missing_prediction
+        and not closed_post_missing_calibration
+        and (lean_passed if lean else True)
+    )
     return {
         "schema_version": 2,
         "checked_at": utc_now_iso(),
+        "lean_quality_audit": bool(lean),
         "prediction_enforcement_started_at": PREDICTION_ENFORCEMENT_STARTED_AT,
+        "lean_quality_enforcement_started_at": (
+            LEAN_QUALITY_ENFORCEMENT_STARTED_AT if lean else None
+        ),
         "tickets_checked": len(tickets),
         "logs_checked": len(logs),
         "alpha_ticket_count": alpha_ticket_count,
@@ -1690,6 +1818,14 @@ def audit_experiment_process(
         ),
         "closed_post_enforcement_missing_calibration_count": len(
             closed_post_missing_calibration
+        ),
+        "weak_prediction_quality_count": len(weak_prediction_quality),
+        "post_enforcement_weak_prediction_quality_count": len(
+            post_weak_prediction_quality
+        ),
+        "closed_weak_reflection_count": len(closed_weak_reflection),
+        "closed_post_enforcement_weak_reflection_count": len(
+            closed_post_weak_reflection
         ),
         "prediction_coverage": (
             round((alpha_ticket_count - len(missing_prediction)) / alpha_ticket_count, 4)
@@ -1763,6 +1899,15 @@ def audit_experiment_process(
         "closed_post_enforcement_missing_calibration_examples": (
             closed_post_missing_calibration[:25]
         ),
+        "weak_prediction_quality_examples": weak_prediction_quality[:25],
+        "post_enforcement_weak_prediction_quality_examples": (
+            post_weak_prediction_quality[:25]
+        ),
+        "closed_weak_reflection_examples": closed_weak_reflection[:25],
+        "closed_post_enforcement_weak_reflection_examples": (
+            closed_post_weak_reflection[:25]
+        ),
+        "lean_quality_passed": lean_passed if lean else None,
         "passed": passed,
         "strict_blocks_only_post_enforcement_gaps": True,
     }

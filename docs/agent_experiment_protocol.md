@@ -386,6 +386,17 @@ Use `--strict` in automation to fail only on post-enforcement alpha/scout
 prediction or calibration gaps. Pre-enforcement history is reported as legacy
 process debt and should not be backfilled with hindsight probabilities.
 
+Use lean strict audit for active alpha automation:
+
+```powershell
+.\.venv\Scripts\python.exe -B scripts\experiment.py audit --lean-strict
+```
+
+This does not demand more accounting fields. It blocks post-lean-enforcement alpha
+tickets with weak/generic `confidence_reason` or closed alpha logs that leave
+post-run reflection as `TODO`, missing, or too vague. Existing historical debt
+is reported as legacy quality debt; do not waste alpha time backfilling it.
+
 ## Handoff Checklist
 
 Before ending the turn, make sure the next agent can answer:

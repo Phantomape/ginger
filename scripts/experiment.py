@@ -52,6 +52,22 @@ def _audit(argv):
         action="store_true",
         help="Exit with status 2 when the audit finds post-enforcement alpha process gaps.",
     )
+    parser.add_argument(
+        "--lean",
+        action="store_true",
+        help=(
+            "Also audit lean alpha quality: substantive confidence_reason and "
+            "post-run reflection, without requiring extra accounting fields."
+        ),
+    )
+    parser.add_argument(
+        "--lean-strict",
+        action="store_true",
+        help=(
+            "Exit with status 2 only when post-lean-enforcement quality gaps "
+            "exist; implies --lean and does not block on historical metadata debt."
+        ),
+    )
     args = parser.parse_args(argv)
 
     workspace_root = _workspace_root_for_registry(args.registry)
@@ -60,8 +76,11 @@ def _audit(argv):
         registry,
         tickets_dir=args.tickets_dir or workspace_root / "experiments" / "tickets",
         logs_dir=args.logs_dir or workspace_root / "experiments" / "logs",
+        lean=args.lean or args.lean_strict,
     )
     print_json(result)
+    if args.lean_strict and not result["lean_quality_passed"]:
+        raise SystemExit(2)
     if args.strict and not result["passed"]:
         raise SystemExit(2)
 

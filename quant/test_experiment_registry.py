@@ -767,6 +767,173 @@ def test_audit_experiment_process_fails_post_enforcement_gaps(tmp_path):
     ] == "exp-20990101-030"
 
 
+def test_lean_audit_flags_weak_reasoning_and_missing_reflection(tmp_path):
+    tickets_dir = tmp_path / "experiments" / "tickets"
+    logs_dir = tmp_path / "experiments" / "logs"
+    tickets_dir.mkdir(parents=True)
+    logs_dir.mkdir(parents=True)
+
+    (tickets_dir / "exp-20990101-040.json").write_text(
+        json.dumps(
+            {
+                "experiment_id": "exp-20990101-040",
+                "lane": "alpha_search",
+                "status": "accepted",
+                "created_at": "2099-01-01T00:00:00+00:00",
+                "prediction": {
+                    "success_probability": 0.4,
+                    "main_failure_modes": ["thin_sample"],
+                    "confidence_reason": "Maybe works.",
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    (logs_dir / "exp-20990101-040.json").write_text(
+        json.dumps(
+            {
+                "experiment_id": "exp-20990101-040",
+                "decision": "accepted",
+                "calibration": {"actual_success": 1},
+                "post_run_reflection": {
+                    "why_result_happened": "TODO",
+                    "forbidden_near_neighbor_retry": "TODO",
+                    "new_evidence_required": "TODO",
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    audit = audit_experiment_process(
+        {"schema_version": 1, "updated_at": None, "experiments": []},
+        tickets_dir=tickets_dir,
+        logs_dir=logs_dir,
+        lean=True,
+    )
+
+    assert audit["passed"] is False
+    assert audit["lean_quality_passed"] is False
+    assert audit["post_enforcement_weak_prediction_quality_count"] == 1
+    assert audit["closed_post_enforcement_weak_reflection_count"] == 1
+
+
+def test_lean_audit_reports_legacy_debt_without_blocking(tmp_path):
+    tickets_dir = tmp_path / "experiments" / "tickets"
+    logs_dir = tmp_path / "experiments" / "logs"
+    tickets_dir.mkdir(parents=True)
+    logs_dir.mkdir(parents=True)
+
+    (tickets_dir / "exp-20260607-002.json").write_text(
+        json.dumps(
+            {
+                "experiment_id": "exp-20260607-002",
+                "lane": "alpha_search",
+                "status": "rejected",
+                "created_at": "2026-06-07T01:18:00+00:00",
+                "prediction": {
+                    "success_probability": 0.4,
+                    "main_failure_modes": ["thin_sample"],
+                    "confidence_reason": "Maybe works.",
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    (logs_dir / "exp-20260607-002.json").write_text(
+        json.dumps(
+            {
+                "experiment_id": "exp-20260607-002",
+                "decision": "rejected",
+                "calibration": {"actual_success": 0},
+                "post_run_reflection": {
+                    "why_result_happened": "TODO",
+                    "forbidden_near_neighbor_retry": "TODO",
+                    "new_evidence_required": "TODO",
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    audit = audit_experiment_process(
+        {"schema_version": 1, "updated_at": None, "experiments": []},
+        tickets_dir=tickets_dir,
+        logs_dir=logs_dir,
+        lean=True,
+    )
+
+    assert audit["passed"] is True
+    assert audit["lean_quality_passed"] is True
+    assert audit["weak_prediction_quality_count"] == 1
+    assert audit["post_enforcement_weak_prediction_quality_count"] == 0
+    assert audit["closed_weak_reflection_count"] == 1
+    assert audit["closed_post_enforcement_weak_reflection_count"] == 0
+
+
+def test_lean_audit_passes_substantive_reasoning_and_reflection(tmp_path):
+    tickets_dir = tmp_path / "experiments" / "tickets"
+    logs_dir = tmp_path / "experiments" / "logs"
+    tickets_dir.mkdir(parents=True)
+    logs_dir.mkdir(parents=True)
+
+    (tickets_dir / "exp-20990101-041.json").write_text(
+        json.dumps(
+            {
+                "experiment_id": "exp-20990101-041",
+                "lane": "alpha_search",
+                "status": "accepted",
+                "created_at": "2099-01-01T00:00:00+00:00",
+                "prediction": {
+                    "success_probability": 0.34,
+                    "main_failure_modes": ["drawdown_drift", "window_regression"],
+                    "confidence_reason": (
+                        "Peer-shock rows previously improved all windows, but "
+                        "this variant may fail if it duplicates selected consensus flow."
+                    ),
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    (logs_dir / "exp-20990101-041.json").write_text(
+        json.dumps(
+            {
+                "experiment_id": "exp-20990101-041",
+                "decision": "accepted",
+                "calibration": {"actual_success": 1},
+                "post_run_reflection": {
+                    "why_result_happened": (
+                        "The policy worked because peer-shock rows added "
+                        "independent relation evidence instead of duplicating "
+                        "the accepted consensus source family."
+                    ),
+                    "forbidden_near_neighbor_retry": (
+                        "Do not retune correlation thresholds on the same windows."
+                    ),
+                    "new_evidence_required": (
+                        "Retry only with closed forward replacement-value rows "
+                        "or a new PIT peer-classification source."
+                    ),
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    audit = audit_experiment_process(
+        {"schema_version": 1, "updated_at": None, "experiments": []},
+        tickets_dir=tickets_dir,
+        logs_dir=logs_dir,
+        lean=True,
+    )
+
+    assert audit["passed"] is True
+    assert audit["lean_quality_passed"] is True
+    assert audit["post_enforcement_weak_prediction_quality_count"] == 0
+    assert audit["closed_post_enforcement_weak_reflection_count"] == 0
+
+
 def test_per_experiment_log_entry_is_written_to_own_file(tmp_path):
     row = {"experiment_id": "exp-20990101-003", "decision": "observed_only"}
     logs_dir = tmp_path / "logs"
