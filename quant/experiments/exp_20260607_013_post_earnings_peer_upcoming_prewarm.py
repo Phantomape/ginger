@@ -1,0 +1,1033 @@
+"""exp-20260607-013: post-earnings peer upcoming-earnings prewarm.
+
+Replay-only alpha search. It tests one event-peer timing relation: after a
+positive post-earnings issuer reaction, admit one exact-industry liquid peer
+only when that peer has its own upcoming earnings soon and shows constructive
+but bounded pre-report price action.
+
+No production code, shared adapter, live/default orders, ranking, sizing,
+exits, LLM/news path, or watchlist behavior is changed. No JavaScript is used.
+"""
+
+from __future__ import annotations
+
+import math
+from collections import defaultdict
+from pathlib import Path
+from typing import Any
+
+import exp_20260602_006_post_earnings_positive_surprise_drift_candidate_pool as earnings_parent
+import exp_20260606_029_sector_etf_lead_laggard_candidate_pool as base
+
+
+EXPERIMENT_ID = "exp-20260607-013"
+STEM = "post_earnings_peer_upcoming_prewarm"
+TRIAL_FAMILY = "post_earnings_peer_upcoming_earnings_prewarm_candidate_pool"
+TRIAL_VARIANT_ID = "post_earnings_peer_upcoming_earnings_prewarm_top1_next_open_10d_v1"
+CHANGED_VARIABLE = "post_earnings_peer_upcoming_earnings_prewarm_candidate_source_v1"
+RULE_VERSION = CHANGED_VARIABLE
+
+framework = base.framework
+REPO_ROOT = base.REPO_ROOT
+OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
+OUT_JSON = OUT_DIR / f"exp_20260607_013_{STEM}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+CARD_MD = REPO_ROOT / "experiments" / "cards" / f"{EXPERIMENT_ID}.md"
+MANIFEST_JSON = REPO_ROOT / "experiments" / "manifests" / f"{EXPERIMENT_ID}.json"
+EXPERIMENT_LOG = REPO_ROOT / "docs" / "experiment_log.jsonl"
+REGISTRY_JSON = REPO_ROOT / "docs" / "experiment_registry.json"
+
+BASE_NOTIONAL_USD = 4_000.0
+HOLD_DAYS = 10
+MAX_PAPER_TRADES_PER_DAY = 1
+SAME_TICKER_COOLDOWN_DAYS = 15
+
+RECENT_SIGNAL_DAYS_MIN = 0
+RECENT_SIGNAL_DAYS_MAX = 5
+MIN_PRICE = 10.0
+MIN_AVG_DOLLAR_VOLUME_20D = 50_000_000.0
+MIN_EXACT_INDUSTRY_PEERS = 2
+
+MIN_ISSUER_EVENT_EXCESS_VS_SPY = 0.015
+MIN_ISSUER_EVENT_CLOSE_LOCATION = 0.60
+MIN_PEER_DAYS_TO_EARNINGS = 5
+MAX_PEER_DAYS_TO_EARNINGS = 20
+MIN_PEER_SIGNAL_RETURN = 0.0025
+MIN_PEER_SIGNAL_EXCESS_VS_SPY = 0.0020
+MIN_PEER_EVENT_TO_SIGNAL_EXCESS_VS_SPY = -0.0040
+MAX_PEER_EVENT_TO_SIGNAL_EXCESS_VS_SPY = 0.0800
+MIN_PEER_CLOSE_LOCATION = 0.58
+MIN_PEER_RET20_EXCESS_SPY = -0.030
+MAX_PEER_RET20_EXCESS_SPY = 0.120
+MIN_PEER_RET5_EXCESS_SPY = -0.020
+MAX_PEER_RET5_EXCESS_SPY = 0.075
+MIN_PEER_RET60_EXCESS_SPY = -0.060
+MIN_VOLUME_RATIO_20D = 0.70
+MAX_VOLUME_RATIO_20D = 2.80
+MAX_REALIZED_VOL_20D = 0.090
+MOVING_AVERAGE_DAYS = 50
+
+MIN_TARGET_TRADES = 20
+MIN_TARGET_WINDOWS = 3
+MAX_DRAWDOWN_WORSE = 0.005
+MAX_SINGLE_POSITIVE_SHARE = 0.50
+MAX_POSITIVE_HHI = 0.35
+
+PREDICTION = {
+    "success_probability": 0.18,
+    "expected_ev_delta": None,
+    "expected_pnl_delta": None,
+    "main_failure_modes": [
+        "window_regression",
+        "thin_sample",
+        "concentration_failed",
+        "earnings_peer_transfer_near_neighbor",
+        "revision_proxy_grade",
+    ],
+    "confidence_reason": (
+        "Peer earnings transfer failed when it was broad same-sector "
+        "similarity, while revision+DTE variants were proxy-grade; this "
+        "narrows to peers with their own upcoming earnings timing and "
+        "constructive but bounded pre-report price action using "
+        "production-visible snapshots and free OHLCV."
+    ),
+    "recorded_at": "2026-06-07T11:04:48+00:00",
+}
+
+PRODUCTION_IMPACT = {
+    "trade_enabled": False,
+    "alters_orders": False,
+    "adapter_status": "replay_only_no_live_adapter",
+    "shared_policy_changed": False,
+    "backtester_adapter_changed": False,
+    "run_adapter_changed": False,
+    "replay_only": True,
+    "parity_test_added": False,
+    "production_signal_path_changed": False,
+    "production_orders_changed": False,
+    "production_watchlist_changed": False,
+    "alters_signal_generation": False,
+    "alters_candidate_ranking": False,
+    "alters_sizing": False,
+    "alters_exits": False,
+    "parity_note": (
+        "This experiment changes no production code. A positive result would "
+        "require a shared default-off adapter that computes the same PIT "
+        "earnings event, exact-industry relation, upcoming peer earnings "
+        "window, bounded prewarm OHLCV fields, same-ticker core-overlap "
+        "exclusion, next-open paper entry, 10-trading-day exit, costs, "
+        "cooldown, and concentration controls in both replay and daily "
+        "production before any report queue, paper ledger, candidate "
+        "priority, sizing, watchlist, or order surface could change."
+    ),
+}
+
+BASE_LOAD_WINDOW_SNAPSHOT = base.BASE_LOAD_WINDOW_SNAPSHOT
+BASE_BUILD_PAYLOAD = base.BASE_BUILD_PAYLOAD
+BASE_GATE4 = base.BASE_GATE4
+
+_EARNINGS_INFO_CACHE: dict[tuple[str, str], tuple[str, dict[str, Any]] | None] = {}
+
+
+def _repo_rel(path: Path | str) -> str:
+    value = Path(path)
+    if not value.is_absolute():
+        value = REPO_ROOT / value
+    return str(value.resolve().relative_to(REPO_ROOT.resolve())).replace("\\", "/")
+
+
+def _norm(value: Any) -> str:
+    return str(value or "").strip().lower()
+
+
+def _latest_earnings_info_asof(
+    ticker: str,
+    asof_date: str,
+) -> tuple[str, dict[str, Any]] | None:
+    key = (str(ticker).upper(), asof_date)
+    if key in _EARNINGS_INFO_CACHE:
+        return _EARNINGS_INFO_CACHE[key]
+    rows = earnings_parent.earnings_helper._load_earnings_index().get(key[0], [])
+    latest: tuple[str, dict[str, Any]] | None = None
+    for snap_date, info in rows:
+        if snap_date <= asof_date:
+            latest = (snap_date, info)
+        else:
+            break
+    _EARNINGS_INFO_CACHE[key] = latest
+    return latest
+
+
+def _load_window_snapshot(
+    *,
+    cfg: dict[str, str],
+    eligible_tickers: set[str],
+) -> dict[str, list[dict[str, Any]]]:
+    return BASE_LOAD_WINDOW_SNAPSHOT(cfg=cfg, eligible_tickers=eligible_tickers)
+
+
+def _candidate_for_peer(
+    *,
+    snapshot: dict[str, list[dict[str, Any]]],
+    indices: dict[str, dict[str, int]],
+    sector_entries: dict[str, dict[str, Any]],
+    event: dict[str, Any],
+    event_ticker: str,
+    peer_ticker: str,
+    event_date: str,
+    signal_date: str,
+    issuer_event_return: float,
+    issuer_event_excess: float,
+    issuer_close_location: float,
+    spy_event_idx: int,
+    spy_idx: int,
+) -> dict[str, Any] | None:
+    rows = snapshot.get(peer_ticker) or []
+    spy_rows = snapshot.get("SPY") or []
+    idx = indices.get(peer_ticker, {}).get(signal_date)
+    event_peer_idx = indices.get(peer_ticker, {}).get(event_date)
+    if idx is None or event_peer_idx is None:
+        return None
+    if idx < max(MOVING_AVERAGE_DAYS, 60, 20) or spy_idx < 60:
+        return None
+    if idx + HOLD_DAYS >= len(rows):
+        return None
+
+    latest = _latest_earnings_info_asof(peer_ticker, signal_date)
+    if latest is None:
+        return None
+    peer_snapshot_date, peer_info = latest
+    peer_dte = earnings_parent.earnings_helper._float_or_none(
+        peer_info.get("days_to_earnings")
+    )
+    if peer_dte is None:
+        return None
+    if peer_dte < MIN_PEER_DAYS_TO_EARNINGS:
+        return None
+    if peer_dte > MAX_PEER_DAYS_TO_EARNINGS:
+        return None
+
+    row = rows[idx]
+    close = framework._value(row, "Close")
+    if close is None or close < MIN_PRICE:
+        return None
+    ma50 = earnings_parent.earnings_helper._prior_average(
+        rows,
+        idx,
+        MOVING_AVERAGE_DAYS,
+        "Close",
+    )
+    if ma50 is None or float(close) <= ma50:
+        return None
+    adv20 = framework._avg_dollar_volume(rows, idx)
+    if adv20 is None or adv20 < MIN_AVG_DOLLAR_VOLUME_20D:
+        return None
+
+    signal_return = framework._daily_return(rows, idx)
+    spy_signal_return = framework._daily_return(spy_rows, spy_idx)
+    if signal_return is None or spy_signal_return is None:
+        return None
+    signal_excess = signal_return - spy_signal_return
+    if signal_return < MIN_PEER_SIGNAL_RETURN:
+        return None
+    if signal_excess < MIN_PEER_SIGNAL_EXCESS_VS_SPY:
+        return None
+
+    spy_event_to_signal_return = earnings_parent.earnings_helper._close_return(
+        spy_rows,
+        spy_event_idx - 1,
+        spy_idx,
+    )
+    peer_event_to_signal_return = earnings_parent.earnings_helper._close_return(
+        rows,
+        event_peer_idx - 1,
+        idx,
+    )
+    if spy_event_to_signal_return is None or peer_event_to_signal_return is None:
+        return None
+    peer_event_to_signal_excess = (
+        peer_event_to_signal_return - spy_event_to_signal_return
+    )
+    if peer_event_to_signal_excess < MIN_PEER_EVENT_TO_SIGNAL_EXCESS_VS_SPY:
+        return None
+    if peer_event_to_signal_excess > MAX_PEER_EVENT_TO_SIGNAL_EXCESS_VS_SPY:
+        return None
+
+    close_location = framework._close_location(row)
+    if close_location is None or close_location < MIN_PEER_CLOSE_LOCATION:
+        return None
+    ret5 = framework._ret(rows, idx, 5)
+    ret20 = framework._ret(rows, idx, 20)
+    ret60 = framework._ret(rows, idx, 60)
+    spy_ret5 = framework._ret(spy_rows, spy_idx, 5)
+    spy_ret20 = framework._ret(spy_rows, spy_idx, 20)
+    spy_ret60 = framework._ret(spy_rows, spy_idx, 60)
+    realized_vol = framework._realized_vol(rows, idx)
+    if (
+        ret5 is None
+        or ret20 is None
+        or ret60 is None
+        or spy_ret5 is None
+        or spy_ret20 is None
+        or spy_ret60 is None
+        or realized_vol is None
+    ):
+        return None
+    ret5_excess = ret5 - spy_ret5
+    ret20_excess = ret20 - spy_ret20
+    ret60_excess = ret60 - spy_ret60
+    if ret20_excess < MIN_PEER_RET20_EXCESS_SPY:
+        return None
+    if ret20_excess > MAX_PEER_RET20_EXCESS_SPY:
+        return None
+    if ret5_excess < MIN_PEER_RET5_EXCESS_SPY:
+        return None
+    if ret5_excess > MAX_PEER_RET5_EXCESS_SPY:
+        return None
+    if ret60_excess < MIN_PEER_RET60_EXCESS_SPY:
+        return None
+    if realized_vol > MAX_REALIZED_VOL_20D:
+        return None
+    volume_ratio = framework._volume_ratio(rows, idx) or 0.0
+    if volume_ratio < MIN_VOLUME_RATIO_20D:
+        return None
+    if volume_ratio > MAX_VOLUME_RATIO_20D:
+        return None
+
+    dte_urgency = (MAX_PEER_DAYS_TO_EARNINGS - peer_dte) / (
+        MAX_PEER_DAYS_TO_EARNINGS - MIN_PEER_DAYS_TO_EARNINGS
+    )
+    score = (
+        1.70 * issuer_event_excess
+        + 1.30 * signal_excess
+        + 0.80 * peer_event_to_signal_excess
+        + 0.55 * ret20_excess
+        + 0.35 * close_location
+        + 0.30 * max(dte_urgency, 0.0)
+        + 0.035 * math.log10(max(adv20, 1.0) / 1_000_000.0)
+        - 0.50 * realized_vol
+        - 0.18 * max(ret5_excess - 0.040, 0.0)
+        - 0.12 * max(peer_event_to_signal_excess - 0.040, 0.0)
+    )
+    peer_meta = sector_entries.get(peer_ticker) or {}
+    event_meta = sector_entries.get(event_ticker) or {}
+    return {
+        "date": signal_date,
+        "ticker": peer_ticker,
+        "source": "POST_EARNINGS_PEER_UPCOMING_PREWARM_PAPER",
+        "candidate_score": round(score, 6),
+        "candidate_signal_day_return": round(signal_return, 6),
+        "candidate_signal_excess_vs_spy": round(signal_excess, 6),
+        "candidate_event_to_signal_return": round(peer_event_to_signal_return, 6),
+        "candidate_event_to_signal_excess_vs_spy": round(
+            peer_event_to_signal_excess,
+            6,
+        ),
+        "candidate_ret5_excess_spy": round(ret5_excess, 6),
+        "candidate_ret20_excess_spy": round(ret20_excess, 6),
+        "candidate_ret60_excess_spy": round(ret60_excess, 6),
+        "candidate_close_location": round(close_location, 6),
+        "candidate_volume_ratio_20d": round(volume_ratio, 6),
+        "candidate_avg_dollar_volume_20d": round(adv20, 2),
+        "candidate_realized_vol_20d": round(realized_vol, 6),
+        "candidate_days_to_earnings": int(peer_dte),
+        "candidate_earnings_snapshot_source_date": peer_snapshot_date,
+        "candidate_next_earnings_date": peer_info.get("next_earnings_date"),
+        "event_ticker": event_ticker,
+        "event_confirmed_date": event_date,
+        "event_issuer_return_1d": round(issuer_event_return, 6),
+        "event_issuer_excess_return_1d_vs_spy": round(issuer_event_excess, 6),
+        "event_issuer_close_location": round(issuer_close_location, 6),
+        "event_latest_surprise_pct": round(float(event["latest_surprise_pct"]), 6),
+        "event_avg_historical_surprise_pct": round(
+            float(event["avg_historical_surprise_pct"]),
+            6,
+        ),
+        "event_eps_actual_last": event["eps_actual_last"],
+        "event_earnings_snapshot_source_date": event["earnings_snapshot_source_date"],
+        "event_previous_snapshot_source_date": event["previous_snapshot_source_date"],
+        "event_sector": event_meta.get("sector"),
+        "event_industry": event_meta.get("industry"),
+        "peer_sector": peer_meta.get("sector"),
+        "peer_industry": peer_meta.get("industry"),
+        "peer_relation_source": "exact_industry_positive_earnings_to_upcoming_peer",
+        "peer_relation_key": _norm(peer_meta.get("industry")),
+        "rule_version": RULE_VERSION,
+        "uses_free_ohlcv_and_earnings_snapshots": True,
+        "uses_llm": False,
+        "trade_enabled": False,
+        "known_at": "after_peer_signal_date_close_before_next_open_paper_entry",
+    }
+
+
+def _candidate_rows_for_window(
+    *,
+    snapshot: dict[str, list[dict[str, Any]]],
+    cfg: dict[str, str],
+    before_result: dict[str, Any],
+    sector_entries: dict[str, dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
+    entries_by_date = framework.shadow._baseline_entries(before_result)
+    indices = {
+        ticker: framework.shadow._row_index(framework.shadow._series(snapshot, ticker))
+        for ticker in snapshot
+    }
+    dates = [
+        date_value
+        for date_value in framework.shadow._trading_dates(snapshot)
+        if str(cfg["start"]) <= date_value <= str(cfg["end"])
+    ]
+    trading_pos = {date_value: idx for idx, date_value in enumerate(dates)}
+    spy_rows = snapshot.get("SPY") or []
+    stock_entries = {
+        ticker: meta
+        for ticker, meta in sector_entries.items()
+        if ticker in snapshot and ticker != "SPY" and _norm(meta.get("industry"))
+    }
+    peers_by_industry: dict[str, list[str]] = defaultdict(list)
+    for ticker, meta in stock_entries.items():
+        peers_by_industry[_norm(meta.get("industry"))].append(ticker)
+
+    candidates: list[dict[str, Any]] = []
+    contexts: list[dict[str, Any]] = []
+    audit_counts: dict[str, int] = defaultdict(int)
+    context_scan = {
+        "scanned_trading_days": len(dates),
+        "positive_surprise_event_count": 0,
+        "issuer_positive_reaction_event_count": 0,
+        "event_signal_context_count": 0,
+        "raw_candidate_rows": 0,
+        "candidate_days": 0,
+        "unique_candidate_tickers": 0,
+        "unique_event_tickers": 0,
+        "candidate_industry_count": len(peers_by_industry),
+        "rule_version": RULE_VERSION,
+    }
+    candidate_tickers: set[str] = set()
+    event_tickers: set[str] = set()
+    min_idx = max(MOVING_AVERAGE_DAYS, 60, 20)
+
+    for event_ticker in sorted(stock_entries):
+        event_meta = stock_entries[event_ticker]
+        industry_key = _norm(event_meta.get("industry"))
+        peer_tickers = [
+            ticker
+            for ticker in peers_by_industry.get(industry_key, [])
+            if ticker != event_ticker
+        ]
+        if len(peer_tickers) < MIN_EXACT_INDUSTRY_PEERS:
+            audit_counts["no_exact_industry_peer_depth"] += 1
+            continue
+
+        issuer_rows = snapshot.get(event_ticker) or []
+        events = earnings_parent._positive_surprise_events(event_ticker, cfg, dates)
+        context_scan["positive_surprise_event_count"] += len(events)
+        for event in events:
+            event_date = str(event["event_confirmed_date"])
+            event_trade_pos = trading_pos.get(event_date)
+            issuer_event_idx = indices.get(event_ticker, {}).get(event_date)
+            spy_event_idx = indices.get("SPY", {}).get(event_date)
+            if event_trade_pos is None or issuer_event_idx is None or spy_event_idx is None:
+                audit_counts["missing_event_ohlcv"] += 1
+                continue
+            if issuer_event_idx <= 0 or spy_event_idx <= 0 or issuer_event_idx < min_idx:
+                audit_counts["insufficient_issuer_event_context"] += 1
+                continue
+
+            issuer_event_return = earnings_parent.earnings_helper._close_return(
+                issuer_rows,
+                issuer_event_idx - 1,
+                issuer_event_idx,
+            )
+            spy_event_return = earnings_parent.earnings_helper._close_return(
+                spy_rows,
+                spy_event_idx - 1,
+                spy_event_idx,
+            )
+            issuer_close_location = framework._close_location(issuer_rows[issuer_event_idx])
+            if (
+                issuer_event_return is None
+                or spy_event_return is None
+                or issuer_close_location is None
+            ):
+                audit_counts["missing_issuer_event_reaction"] += 1
+                continue
+            issuer_event_excess = issuer_event_return - spy_event_return
+            if issuer_event_excess < MIN_ISSUER_EVENT_EXCESS_VS_SPY:
+                audit_counts["issuer_event_reaction_too_weak"] += 1
+                continue
+            if issuer_close_location < MIN_ISSUER_EVENT_CLOSE_LOCATION:
+                audit_counts["issuer_weak_close_location"] += 1
+                continue
+            context_scan["issuer_positive_reaction_event_count"] += 1
+            event_tickers.add(event_ticker)
+
+            for offset in range(RECENT_SIGNAL_DAYS_MIN, RECENT_SIGNAL_DAYS_MAX + 1):
+                signal_pos = event_trade_pos + offset
+                if signal_pos >= len(dates):
+                    audit_counts["signal_window_out_of_range"] += 1
+                    continue
+                signal_date = dates[signal_pos]
+                spy_idx = indices.get("SPY", {}).get(signal_date)
+                if spy_idx is None or spy_idx < min_idx:
+                    audit_counts["missing_signal_spy_context"] += 1
+                    continue
+                day_rows: list[dict[str, Any]] = []
+                for peer_ticker in peer_tickers:
+                    row = _candidate_for_peer(
+                        snapshot=snapshot,
+                        indices=indices,
+                        sector_entries=stock_entries,
+                        event=event,
+                        event_ticker=event_ticker,
+                        peer_ticker=peer_ticker,
+                        event_date=event_date,
+                        signal_date=signal_date,
+                        issuer_event_return=issuer_event_return,
+                        issuer_event_excess=issuer_event_excess,
+                        issuer_close_location=issuer_close_location,
+                        spy_event_idx=spy_event_idx,
+                        spy_idx=spy_idx,
+                    )
+                    if row is None:
+                        continue
+                    ab_entries = entries_by_date.get(signal_date, [])
+                    row["same_day_ab_entry_count"] = len(ab_entries)
+                    row["same_day_ab_overlap"] = bool(ab_entries)
+                    row["same_ticker_ab_overlap"] = any(
+                        trade.get("ticker") == peer_ticker for trade in ab_entries
+                    )
+                    day_rows.append(row)
+                    candidate_tickers.add(peer_ticker)
+
+                if not day_rows:
+                    continue
+                day_rows.sort(
+                    key=lambda row: (
+                        -float(row["candidate_score"]),
+                        int(row["candidate_days_to_earnings"]),
+                        -float(row["candidate_signal_excess_vs_spy"]),
+                        -float(row["candidate_event_to_signal_excess_vs_spy"]),
+                        -float(row["candidate_avg_dollar_volume_20d"]),
+                        row["ticker"],
+                    )
+                )
+                candidates.extend(day_rows)
+                top = day_rows[0]
+                contexts.append(
+                    {
+                        "date": signal_date,
+                        "event_date": event_date,
+                        "event_ticker": event_ticker,
+                        "event_industry": event_meta.get("industry"),
+                        "raw_candidate_count": len(day_rows),
+                        "top_candidate": top["ticker"],
+                        "top_candidate_score": top["candidate_score"],
+                        "top_candidate_days_to_earnings": top[
+                            "candidate_days_to_earnings"
+                        ],
+                        "top_candidate_signal_excess_vs_spy": top[
+                            "candidate_signal_excess_vs_spy"
+                        ],
+                        "top_candidate_event_to_signal_excess_vs_spy": top[
+                            "candidate_event_to_signal_excess_vs_spy"
+                        ],
+                    }
+                )
+                context_scan["event_signal_context_count"] += 1
+
+    candidates.sort(
+        key=lambda row: (
+            row["date"],
+            -float(row["candidate_score"]),
+            int(row["candidate_days_to_earnings"]),
+            -float(row["candidate_signal_excess_vs_spy"]),
+            -float(row["candidate_event_to_signal_excess_vs_spy"]),
+            -float(row["candidate_avg_dollar_volume_20d"]),
+            row["ticker"],
+        )
+    )
+    context_scan.update(
+        {
+            "raw_candidate_rows": len(candidates),
+            "candidate_days": len({row["date"] for row in candidates}),
+            "unique_candidate_tickers": len(candidate_tickers),
+            "unique_event_tickers": len(event_tickers),
+            "audit_reject_counts": dict(sorted(audit_counts.items())),
+            "min_exact_industry_peers": MIN_EXACT_INDUSTRY_PEERS,
+            "recent_signal_days_min": RECENT_SIGNAL_DAYS_MIN,
+            "recent_signal_days_max": RECENT_SIGNAL_DAYS_MAX,
+            "min_peer_days_to_earnings": MIN_PEER_DAYS_TO_EARNINGS,
+            "max_peer_days_to_earnings": MAX_PEER_DAYS_TO_EARNINGS,
+            "min_issuer_event_excess_vs_spy": MIN_ISSUER_EVENT_EXCESS_VS_SPY,
+            "min_issuer_event_close_location": MIN_ISSUER_EVENT_CLOSE_LOCATION,
+        }
+    )
+    return candidates, contexts, context_scan
+
+
+def _gate4(
+    *,
+    aggregate: dict[str, Any],
+    target_summary: dict[str, Any],
+    before_metrics: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    gate = BASE_GATE4(
+        aggregate=aggregate,
+        target_summary=target_summary,
+        before_metrics=before_metrics,
+    )
+    gate["decision"] = (
+        "positive_replay_lead_not_promoted_post_earnings_peer_upcoming_prewarm"
+        if gate["passed"]
+        else "rejected_post_earnings_peer_upcoming_prewarm_candidate_pool"
+    )
+    return gate
+
+
+def _build_payload() -> dict[str, Any]:
+    payload = BASE_BUILD_PAYLOAD()
+    aggregate = payload["delta_metrics"]["aggregate"]
+    payload.update(
+        {
+            "experiment_id": EXPERIMENT_ID,
+            "hypothesis": (
+                "Positive post-earnings issuer reactions may identify exact-"
+                "industry peers with upcoming earnings that begin constructive "
+                "pre-report repricing without being generic peer catch-up."
+            ),
+            "change_type": "default_off_paper_candidate_pool",
+            "changed_variable": CHANGED_VARIABLE,
+            "trial_family": TRIAL_FAMILY,
+            "trial_variant_id": TRIAL_VARIANT_ID,
+            "mechanism_family": "production_visible_event_peer_relation_alpha",
+            "new_evidence_type": "earnings_event_to_upcoming_peer_timing_relation",
+            "nearby_prior_experiments": [
+                "exp-20260603-005",
+                "exp-20260605-029",
+                "exp-20260606-016",
+            ],
+            "prior_trial_count": 3,
+            "multiple_testing_risk_bucket": "moderate",
+            "prediction": PREDICTION,
+            "production_impact": PRODUCTION_IMPACT,
+            "anti_js": "No JavaScript was used.",
+            "event_prewarm_contexts_by_window": payload["pressure_contexts_by_window"],
+            "event_prewarm_context_samples_by_window": payload[
+                "pressure_context_samples_by_window"
+            ],
+            "negative_reflection": (
+                "If rejected, the likely reason is that exact-industry "
+                "post-earnings information does not transfer cleanly into "
+                "upcoming peer earnings prewarm, or the DTE/prewarm filters "
+                "still select generic price momentum instead of a distinct "
+                "relation. Do not retry by sweeping DTE, issuer reaction, "
+                "prewarm return, close-location, volume, hold-day, cooldown, "
+                "or notional thresholds on these frozen windows."
+            ),
+            "next_evidence_needed": (
+                "A retry needs materially new PIT relation evidence, such as "
+                "analyst-count revision trajectory, true customer/supplier "
+                "links, audited peer earnings calendars with expectation "
+                "changes, or closed forward replacement rows."
+            ),
+        }
+    )
+    payload["parameters"] = {
+        "paper_notional_usd": BASE_NOTIONAL_USD,
+        "hold_days": HOLD_DAYS,
+        "max_paper_trades_per_day": MAX_PAPER_TRADES_PER_DAY,
+        "same_ticker_cooldown_days": SAME_TICKER_COOLDOWN_DAYS,
+        "recent_signal_days_min": RECENT_SIGNAL_DAYS_MIN,
+        "recent_signal_days_max": RECENT_SIGNAL_DAYS_MAX,
+        "min_price": MIN_PRICE,
+        "min_avg_dollar_volume_20d": MIN_AVG_DOLLAR_VOLUME_20D,
+        "min_exact_industry_peers": MIN_EXACT_INDUSTRY_PEERS,
+        "min_issuer_event_excess_vs_spy": MIN_ISSUER_EVENT_EXCESS_VS_SPY,
+        "min_issuer_event_close_location": MIN_ISSUER_EVENT_CLOSE_LOCATION,
+        "min_peer_days_to_earnings": MIN_PEER_DAYS_TO_EARNINGS,
+        "max_peer_days_to_earnings": MAX_PEER_DAYS_TO_EARNINGS,
+        "min_peer_signal_return": MIN_PEER_SIGNAL_RETURN,
+        "min_peer_signal_excess_vs_spy": MIN_PEER_SIGNAL_EXCESS_VS_SPY,
+        "min_peer_event_to_signal_excess_vs_spy": (
+            MIN_PEER_EVENT_TO_SIGNAL_EXCESS_VS_SPY
+        ),
+        "max_peer_event_to_signal_excess_vs_spy": (
+            MAX_PEER_EVENT_TO_SIGNAL_EXCESS_VS_SPY
+        ),
+        "min_peer_close_location": MIN_PEER_CLOSE_LOCATION,
+        "min_peer_ret20_excess_spy": MIN_PEER_RET20_EXCESS_SPY,
+        "max_peer_ret20_excess_spy": MAX_PEER_RET20_EXCESS_SPY,
+        "min_peer_ret5_excess_spy": MIN_PEER_RET5_EXCESS_SPY,
+        "max_peer_ret5_excess_spy": MAX_PEER_RET5_EXCESS_SPY,
+        "min_peer_ret60_excess_spy": MIN_PEER_RET60_EXCESS_SPY,
+        "min_volume_ratio_20d": MIN_VOLUME_RATIO_20D,
+        "max_volume_ratio_20d": MAX_VOLUME_RATIO_20D,
+        "max_realized_vol_20d": MAX_REALIZED_VOL_20D,
+        "moving_average_days": MOVING_AVERAGE_DAYS,
+        "single_causal_variable": CHANGED_VARIABLE,
+    }
+    payload["backtest_protocol"].update(
+        {
+            "source": (
+                "docs/backtesting.md canonical three-window core replay plus "
+                "replay-only post-earnings event to upcoming exact-industry "
+                "peer paper overlay"
+            ),
+            "candidate_ohlcv_source": _repo_rel(framework.WAREHOUSE),
+            "earnings_snapshot_source": (
+                "data/daily/snapshots/earnings/earnings_snapshot_*.json"
+            ),
+            "execution_model": (
+                "Issuer event confirmation and peer days_to_earnings use only "
+                "daily earnings snapshots available as of signal date. OHLCV "
+                "fields use signal-date close and prior history. Paper entry "
+                "is next available open with existing entry slippage; exit is "
+                "the close 10 trading days after the signal with target-side "
+                "sell slippage and ROUND_TRIP_COST_PCT."
+            ),
+        }
+    )
+    payload["gate_questions"] = {
+        "1_alpha_hypothesis": (
+            "entry/candidate_pool: positive post-earnings issuer reactions "
+            "may prewarm exact-industry peers before their own upcoming "
+            "earnings when price action is constructive but bounded."
+        ),
+        "2_history_check": {
+            "exp-20260603-005": (
+                "Broad same-sector characteristic peer transfer failed two "
+                "EV windows and concentration; this run requires exact "
+                "industry and the peer's own upcoming earnings timing."
+            ),
+            "exp-20260605-029": (
+                "Persistent estimate-revision underreaction failed late_strong "
+                "and used proxy-grade revision snapshots; this run does not "
+                "use estimate revision velocity."
+            ),
+            "exp-20260606-016": (
+                "Revision plus surprise-history confirmation still failed "
+                "old_thin/drawdown/concentration; this run uses external peer "
+                "event timing rather than same-ticker revision persistence."
+            ),
+        },
+        "3_single_causal_variable": CHANGED_VARIABLE,
+        "4_acceptance_standard": (
+            "Use docs/backtesting.md three canonical windows. Accept only if "
+            "aggregate EV/PnL improve, no EV/PnL regression window, target "
+            "sample >=20 across all 3 windows, survival >=5%, drawdown drift "
+            "<=0.5pp, and concentration guard passes. A positive replay still "
+            "requires shared adapter parity before promotion."
+        ),
+        "5_reproducibility": (
+            ".venv\\Scripts\\python.exe -B quant\\experiments\\"
+            "exp_20260607_013_post_earnings_peer_upcoming_prewarm.py"
+        ),
+    }
+    payload["pre_run_questions"] = payload["gate_questions"]
+    payload["gate2"]["runtime_fields"] = [
+        "daily earnings snapshot days_to_earnings",
+        "daily earnings snapshot eps_actual_last",
+        "daily earnings snapshot historical_surprise_pct",
+        "warehouse ohlcv Date/Open/High/Low/Close/Volume",
+        "SPY daily OHLCV",
+        "data/reference/broad_market_sector_map.json industry/sector/status",
+        "operator_inputs/open_positions.json entry_date",
+        "operator_inputs/open_positions.json target_price",
+    ]
+    payload["gate3"]["note"] = (
+        "No new core filter or entry rule was added. The event-peer upcoming "
+        "earnings prewarm source is additive default-off paper, so core "
+        "signals generated/survived are unchanged from baseline."
+    )
+    payload["decision"] = payload["gate4"]["decision"]
+    payload["status"] = (
+        "positive_replay_lead_not_promoted"
+        if payload["gate4"]["passed"]
+        else "rejected"
+    )
+    payload["calibration"] = {
+        "predicted_success_probability": PREDICTION["success_probability"],
+        "actual_success": 1 if payload["gate4"]["passed"] else 0,
+        "actual_gate4_passed": payload["gate4"]["passed"],
+        "actual_ev_delta": aggregate["expected_value_score_delta_sum"],
+        "actual_pnl_delta": aggregate["total_pnl_delta_sum"],
+        "failure_modes_observed": payload["gate4"]["failed_reasons"],
+        "brier_score": round(
+            (
+                PREDICTION["success_probability"]
+                - (1.0 if payload["gate4"]["passed"] else 0.0)
+            )
+            ** 2,
+            6,
+        ),
+    }
+    payload["post_run_reflection"] = (
+        {
+            "why_result_happened": (
+                "The fixed policy cleared all Gate 4 robustness checks as a "
+                "replay lead, suggesting the event-to-upcoming-peer timing "
+                "relation added replacement value beyond generic peer transfer."
+            ),
+            "forbidden_near_neighbor_retry": (
+                "Do not immediately retune DTE, issuer reaction, prewarm "
+                "return, top-N, hold-day, cooldown, or notional thresholds. "
+                "Promote only through a shared default-off adapter first."
+            ),
+            "new_evidence_required": (
+                "A shared adapter with daily snapshot parity and forward "
+                "closed replacement rows is required before production "
+                "observation or activation."
+            ),
+        }
+        if payload["gate4"]["passed"]
+        else {
+            "why_result_happened": (
+                "The source failed to add robust replacement value across the "
+                "three canonical windows or breached sample/risk gates. The "
+                "upcoming peer earnings timing relation did not sufficiently "
+                "separate true pre-report repricing from generic peer catch-up "
+                "under next-open entry, 10-day exit, costs, and slippage."
+            ),
+            "forbidden_near_neighbor_retry": (
+                "Do not retry by sweeping DTE, issuer reaction, signal return, "
+                "event-to-signal return, close-location, volume, volatility, "
+                "top-N, hold-day, cooldown, or paper notional thresholds on "
+                "these frozen windows."
+            ),
+            "new_evidence_required": (
+                "A retry requires materially different PIT evidence such as "
+                "analyst-count/estimate trajectory, customer/supplier links, "
+                "peer expectation revision, or closed forward replacement rows."
+            ),
+        }
+    )
+    payload["interpretation"] = (
+        "The post-earnings peer upcoming-earnings prewarm source cleared Gate "
+        "4 as a replay-only/default-off lead. No production surface was "
+        "promoted; a shared adapter plus parity tests are required before "
+        "forward use."
+        if payload["gate4"]["passed"]
+        else (
+            "The post-earnings peer upcoming-earnings prewarm source did not "
+            "clear Gate 4; do not promote or locally retune this event-peer "
+            "timing relation on the frozen windows."
+        )
+    )
+    payload["rejection_reason"] = (
+        None if payload["gate4"]["passed"] else "; ".join(payload["gate4"]["failed_reasons"])
+    )
+    payload["related_files"] = [
+        _repo_rel(Path(__file__)),
+        _repo_rel(OUT_JSON),
+        _repo_rel(LOG_JSON),
+        _repo_rel(TICKET_JSON),
+        _repo_rel(CARD_MD),
+        _repo_rel(MANIFEST_JSON),
+        _repo_rel(EXPERIMENT_LOG),
+        _repo_rel(REGISTRY_JSON),
+    ]
+    return payload
+
+
+def _build_card(payload: dict[str, Any]) -> str:
+    rows = [
+        "| Window | Before EV | After EV | dEV | Before PnL | After PnL | dPnL | DD d | Events | Contexts | Trades |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+    ]
+    for label in framework.WINDOWS:
+        before = payload["before_metrics"][label]
+        after = payload["after_metrics"][label]
+        delta = payload["delta_metrics"]["by_window"][label]
+        scan = payload["context_scan_by_window"][label]
+        rows.append(
+            "| {label} | {bev:.4f} | {aev:.4f} | {dev:+.4f} | ${bpnl:,.2f} | ${apnl:,.2f} | ${dpnl:+,.2f} | {dd:+.4f} | {events} | {ctx} | {trades} |".format(
+                label=label,
+                bev=before["expected_value_score"],
+                aev=after["expected_value_score"],
+                dev=delta.get("expected_value_score", 0.0),
+                bpnl=before["total_pnl"],
+                apnl=after["total_pnl"],
+                dpnl=delta.get("total_pnl", 0.0),
+                dd=delta.get("max_drawdown_pct", 0.0),
+                events=scan.get("issuer_positive_reaction_event_count", 0),
+                ctx=scan.get("event_signal_context_count", 0),
+                trades=len(payload["target_trades_by_window"][label]),
+            )
+        )
+    aggregate = payload["delta_metrics"]["aggregate"]
+    return "\n".join(
+        [
+            f"# {EXPERIMENT_ID} Post-Earnings Peer Upcoming Prewarm",
+            "",
+            f"Status: `{payload['status']}`",
+            f"Decision: `{payload['decision']}`",
+            "",
+            "## Hypothesis",
+            "",
+            payload["hypothesis"],
+            "",
+            "## Gate 4",
+            "",
+            *rows,
+            "",
+            "- Aggregate EV delta: `{:+.4f}`".format(
+                aggregate["expected_value_score_delta_sum"]
+            ),
+            "- Aggregate PnL delta: `${:+,.2f}`".format(
+                aggregate["total_pnl_delta_sum"]
+            ),
+            "- Target trades: `{}`".format(payload["target_trade_summary"]["total_trade_count"]),
+            "- Failed reasons: `{}`".format(
+                ", ".join(payload["gate4"]["failed_reasons"]) or "none"
+            ),
+            "",
+            "## Production Impact",
+            "",
+            (
+                "Replay-only and default-off paper only. No shared policy, run "
+                "adapter, backtester adapter, production watchlist, order path, "
+                "core entry, ranking, sizing, or exit behavior changed."
+            ),
+            "",
+            "No JavaScript was used.",
+        ]
+    ) + "\n"
+
+
+def _build_log_record(payload: dict[str, Any]) -> dict[str, Any]:
+    aggregate = payload["delta_metrics"]["aggregate"]
+    return {
+        "experiment_id": EXPERIMENT_ID,
+        "timestamp": payload["timestamp"],
+        "lane": "alpha_search",
+        "status": payload["status"],
+        "decision": payload["decision"],
+        "accepted": payload["gate4"]["passed"],
+        "mechanism_family": "production_visible_event_peer_relation_alpha",
+        "trial_family": TRIAL_FAMILY,
+        "trial_variant_id": TRIAL_VARIANT_ID,
+        "changed_variable": CHANGED_VARIABLE,
+        "hypothesis": payload["hypothesis"],
+        "backtest_protocol": payload["backtest_protocol"],
+        "baseline_result_file": (
+            "data/experiments/exp-20260602-003/"
+            "exp_20260602_003_post_earnings_explicit_continuation.json"
+        ),
+        "artifact": _repo_rel(OUT_JSON),
+        "log": _repo_rel(LOG_JSON),
+        "aggregate_expected_value_delta": aggregate["expected_value_score_delta_sum"],
+        "aggregate_expected_value_delta_pct": aggregate["expected_value_score_delta_pct"],
+        "aggregate_strategy_total_pnl_delta": aggregate["total_pnl_delta_sum"],
+        "gate4": payload["gate4"],
+        "windows": [
+            {
+                "label": label,
+                "expected_value_before": payload["before_metrics"][label][
+                    "expected_value_score"
+                ],
+                "expected_value_after": payload["after_metrics"][label][
+                    "expected_value_score"
+                ],
+                "expected_value_delta": payload["delta_metrics"]["by_window"][label][
+                    "expected_value_score"
+                ],
+                "strategy_total_pnl_delta": payload["delta_metrics"]["by_window"][label][
+                    "total_pnl"
+                ],
+                "issuer_positive_reaction_event_count": payload[
+                    "context_scan_by_window"
+                ][label].get("issuer_positive_reaction_event_count"),
+                "event_signal_context_count": payload["context_scan_by_window"][label].get(
+                    "event_signal_context_count"
+                ),
+                "raw_candidate_count": payload["context_scan_by_window"][label].get(
+                    "raw_candidate_rows"
+                ),
+                "target_trade_count": len(payload["target_trades_by_window"][label]),
+            }
+            for label in framework.WINDOWS
+        ],
+        "prediction": PREDICTION,
+        "calibration": {**payload["calibration"]},
+        "production_impact": PRODUCTION_IMPACT,
+        "negative_reflection": payload["negative_reflection"],
+        "post_run_reflection": payload["post_run_reflection"],
+        "anti_js": "No JavaScript was used.",
+    }
+
+
+def _write_manifest(payload: dict[str, Any]) -> None:
+    script_path = Path(__file__)
+    manifest = {
+        "experiment_id": EXPERIMENT_ID,
+        "status": payload["status"],
+        "decision": payload["decision"],
+        "created_at": payload["timestamp"],
+        "anti_js": "No JavaScript was used.",
+        "allowed_write_scope": [
+            _repo_rel(script_path),
+            _repo_rel(OUT_JSON),
+            _repo_rel(LOG_JSON),
+            _repo_rel(TICKET_JSON),
+            _repo_rel(CARD_MD),
+            _repo_rel(MANIFEST_JSON),
+            _repo_rel(EXPERIMENT_LOG),
+            _repo_rel(REGISTRY_JSON),
+        ],
+        "file_hashes": {
+            _repo_rel(script_path): framework._sha256(script_path),
+            _repo_rel(OUT_JSON): framework._sha256(OUT_JSON),
+            _repo_rel(LOG_JSON): framework._sha256(LOG_JSON),
+            _repo_rel(TICKET_JSON): framework._sha256(TICKET_JSON),
+            _repo_rel(CARD_MD): framework._sha256(CARD_MD),
+        },
+    }
+    framework._write_json(MANIFEST_JSON, manifest)
+
+
+def _patch_framework() -> None:
+    framework.EXPERIMENT_ID = EXPERIMENT_ID
+    framework.STEM = STEM
+    framework.TRIAL_FAMILY = TRIAL_FAMILY
+    framework.TRIAL_VARIANT_ID = TRIAL_VARIANT_ID
+    framework.CHANGED_VARIABLE = CHANGED_VARIABLE
+    framework.RULE_VERSION = RULE_VERSION
+    framework.OUT_DIR = OUT_DIR
+    framework.OUT_JSON = OUT_JSON
+    framework.LOG_JSON = LOG_JSON
+    framework.TICKET_JSON = TICKET_JSON
+    framework.CARD_MD = CARD_MD
+    framework.MANIFEST_JSON = MANIFEST_JSON
+    framework.EXPERIMENT_LOG = EXPERIMENT_LOG
+    framework.REGISTRY_JSON = REGISTRY_JSON
+    framework.BASE_NOTIONAL_USD = BASE_NOTIONAL_USD
+    framework.HOLD_DAYS = HOLD_DAYS
+    framework.MAX_PAPER_TRADES_PER_DAY = MAX_PAPER_TRADES_PER_DAY
+    framework.SAME_TICKER_COOLDOWN_DAYS = SAME_TICKER_COOLDOWN_DAYS
+    framework.MIN_TARGET_TRADES = MIN_TARGET_TRADES
+    framework.MIN_TARGET_WINDOWS = MIN_TARGET_WINDOWS
+    framework.MAX_DRAWDOWN_WORSE = MAX_DRAWDOWN_WORSE
+    framework.MAX_SINGLE_POSITIVE_SHARE = MAX_SINGLE_POSITIVE_SHARE
+    framework.MAX_POSITIVE_HHI = MAX_POSITIVE_HHI
+    framework.PREDICTION = PREDICTION
+    framework.PRODUCTION_IMPACT = PRODUCTION_IMPACT
+    framework._load_window_snapshot = _load_window_snapshot
+    framework._candidate_rows_for_window = _candidate_rows_for_window
+    framework._gate4 = _gate4
+    framework._build_payload = _build_payload
+    framework._build_card = _build_card
+    framework._build_log_record = _build_log_record
+    framework._write_manifest = _write_manifest
+
+
+_patch_framework()
+
+
+def main() -> None:
+    framework.main()
+
+
+if __name__ == "__main__":
+    main()
