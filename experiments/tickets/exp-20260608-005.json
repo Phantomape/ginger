@@ -1,0 +1,97 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260608_005_industry_stable_tail_guard.py",
+    "data/experiments/exp-20260608-005/exp_20260608_005_industry_stable_tail_guard.json",
+    "experiments/cards/exp-20260608-005.md",
+    "experiments/manifests/exp-20260608-005.json",
+    "experiments/tickets/exp-20260608-005.json",
+    "experiments/logs/exp-20260608-005.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260608-005.md",
+  "causal_components": [
+    "replay runner",
+    "tail-state guard",
+    "artifact",
+    "experiment log"
+  ],
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "industry_stable_leadership_tail_guard_candidate_source_v1",
+  "claimed_at": "2026-06-08T04:04:45+00:00",
+  "completed_at": "2026-06-08T04:11:16Z",
+  "created_at": "2026-06-08T04:04:32+00:00",
+  "decision": "rejected_industry_stable_tail_guard_candidate_pool",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260608-005",
+  "experiment_uid": "expuid-f3061222fb354e15",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260608-005",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-08T04:04:32+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "industry_stable_tail_guard"
+  },
+  "hypothesis": "Industry stable leadership may retain its replacement-value edge if blocked only during broad risk-off / volatility-up tail states that caused the prior drawdown drift.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "industry_stable_leadership_tail_guard_candidate_source_v1"
+  ],
+  "mechanism_family": "default_off_paper_candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260608-004",
+    "exp-20260607-008",
+    "exp-20260607-009",
+    "exp-20260607-010",
+    "exp-20260607-012",
+    "exp-20260607-014"
+  ],
+  "new_evidence_type": "free_ohlcv_market_tail_state",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "exp-20260608-004 was positive in all windows but failed only on drawdown drift, while accepted exp-20260607-008 proves industry relations can work; the new evidence is an independent sign-based SPY/QQQ risk-off plus VIXY up tail-state, not an industry threshold retune.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "edge_thinned_by_tail_guard",
+      "drawdown_still_fails",
+      "old_thin_regression",
+      "broad_beta_relabel",
+      "target_sample_too_small"
+    ],
+    "recorded_at": "2026-06-08T04:04:17+00:00",
+    "success_probability": 0.22
+  },
+  "prior_trial_count": 1,
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": 0.1448,
+    "aggregate_strategy_total_pnl_delta": -1089.2,
+    "artifact": "data/experiments/exp-20260608-005/exp_20260608_005_industry_stable_tail_guard.json",
+    "calibration": {
+      "actual_gate4_passed": false,
+      "brier_score": 0.0484,
+      "failure_modes_observed": [
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "drawdown_drift_too_high"
+      ],
+      "predicted_success_probability": 0.22
+    },
+    "decision": "rejected_industry_stable_tail_guard_candidate_pool",
+    "log": "experiments/logs/exp-20260608-005.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260608-005.json",
+  "single_causal_variable": "industry_stable_leadership_tail_guard_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The tail-guarded industry stable-leadership source did not clear Gate 4. Do not promote it or respond by tuning the same industry thresholds or the sign-based tail guard on these frozen windows.",
+  "ticket_file": "experiments/tickets/exp-20260608-005.json",
+  "trial_family": "industry_stable_tail_guard_candidate_pool",
+  "trial_variant_id": "exp-20260608-005"
+}
