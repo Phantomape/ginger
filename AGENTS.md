@@ -106,7 +106,7 @@ data/backtests/backtest_results_*.json
 
 不要为了补齐低价值字段而拆实验、延后 shared helper、延后 production-visible paper 输出或延后真钱执行包络；结构化字段能由工具默认时就默认，关键是推理和反思必须具体、可复现、可指导下一轮。
 
-后续自动化应优先用 `scripts/experiment.py audit --lean-strict` 防回退：它检查高价值推断和复盘是否具体，而不是要求更多冗余字段；历史质量债只报告，不要求回填后再做新实验。
+后续自动化应优先用 `scripts/experiment.py audit --lean-strict` 防回退：它检查高价值推断和复盘是否具体，而不是要求更多冗余字段；历史质量债只报告，不要求回填后再做新实验。`--lean` / `--lean-strict` 默认打印精简的 lean summary：唯一决定性字段是 `lean_quality_passed`（仅当某个 post-enforcement 实验存在 weak prediction quality 或 weak reflection 时才为 false，并触发 exit 2）。`missing_prediction` / `missing_calibration` 多为已关闭 ticket，仅作可见性提示，不阻断；legacy pre-enforcement 债务被折叠成计数。需要完整报告和顶层 `passed`（可能仅因历史债务为 false）时加 `--full`。
 
 ### 3.1 推荐启动工具
 

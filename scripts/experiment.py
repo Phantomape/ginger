@@ -40,6 +40,72 @@ def _run_delegate(program, argv, main_func, *main_args):
         sys.argv = original_argv
 
 
+def _summarize_lean_audit(result, *, lean_strict):
+    """Lead with the actionable lean verdict; collapse non-blocking legacy debt.
+
+    The full audit result interleaves legacy pre-enforcement gaps (reported only,
+    never blocking per AGENTS.md) with the small set of post-enforcement items
+    that actually matter, and exposes a top-level ``passed`` that can be false
+    purely from historical debt. Running ``--lean``/``--lean-strict`` should not
+    look like a failure when the lean gate is green, so this view shows only what
+    a lean experiment is expected to act on.
+    """
+    def _ids(rows, limit=8):
+        out = []
+        for row in rows:
+            if isinstance(row, dict):
+                out.append(row.get("experiment_id"))
+            else:
+                out.append(row)
+        return out[:limit]
+
+    sources = {
+        # These two drive lean_quality_passed (i.e., they BLOCK --lean-strict).
+        "weak_prediction_quality": result.get(
+            "post_enforcement_weak_prediction_quality_examples", []
+        ),
+        "weak_reflection": result.get(
+            "closed_post_enforcement_weak_reflection_examples", []
+        ),
+        # These are post-enforcement but reported-only for --lean-strict; mostly
+        # already-closed tickets, so treat as visibility, not a blocker.
+        "missing_prediction": result.get(
+            "post_enforcement_missing_prediction_examples", []
+        ),
+        "missing_calibration": result.get(
+            "closed_post_enforcement_missing_calibration_examples", []
+        ),
+    }
+    blocking = bool(sources["weak_prediction_quality"] or sources["weak_reflection"])
+    actionable = {
+        key: {"count": len(rows), "example_ids": _ids(rows)}
+        for key, rows in sources.items()
+        if rows
+    }
+    return {
+        "view": "lean_summary",
+        "lean_quality_passed": result.get("lean_quality_passed"),
+        "lean_strict_would_block": bool(lean_strict and blocking),
+        "blocks_lean_strict": ["weak_prediction_quality", "weak_reflection"],
+        "post_enforcement_alpha_ticket_count": result.get(
+            "post_enforcement_alpha_ticket_count"
+        ),
+        "post_enforcement_gaps": actionable,
+        "legacy_pre_enforcement_alpha_ticket_count": result.get(
+            "legacy_pre_enforcement_alpha_ticket_count"
+        ),
+        "note": (
+            "lean_quality_passed is the verdict that matters: it is true unless a "
+            "post-enforcement experiment has weak prediction quality or weak "
+            "reflection. missing_prediction/missing_calibration are mostly already-"
+            "closed tickets shown for visibility (counts capped at 25 in the "
+            "report). Legacy pre-enforcement gaps are never backfilled (AGENTS.md). "
+            "Run `experiment.py audit --lean --full` for the complete report and "
+            "the top-level `passed` flag, which can be false purely from debt."
+        ),
+    }
+
+
 def _audit(argv):
     parser = argparse.ArgumentParser(
         description="Audit tickets/logs for missing prediction and calibration metadata."
@@ -68,6 +134,15 @@ def _audit(argv):
             "exist; implies --lean and does not block on historical metadata debt."
         ),
     )
+    parser.add_argument(
+        "--full",
+        action="store_true",
+        help=(
+            "With --lean/--lean-strict, print the complete audit result instead "
+            "of the lean summary (includes the legacy historical-debt lists and "
+            "the top-level `passed` flag)."
+        ),
+    )
     args = parser.parse_args(argv)
 
     workspace_root = _workspace_root_for_registry(args.registry)
@@ -78,7 +153,10 @@ def _audit(argv):
         logs_dir=args.logs_dir or workspace_root / "experiments" / "logs",
         lean=args.lean or args.lean_strict,
     )
-    print_json(result)
+    if (args.lean or args.lean_strict) and not args.full:
+        print_json(_summarize_lean_audit(result, lean_strict=args.lean_strict))
+    else:
+        print_json(result)
     if args.lean_strict and not result["lean_quality_passed"]:
         raise SystemExit(2)
     if args.strict and not result["passed"]:
