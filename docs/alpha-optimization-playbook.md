@@ -1,6 +1,6 @@
 # Alpha Optimization Playbook
 
-Last refreshed: 2026-06-07.
+Last refreshed: 2026-06-08.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -79,16 +79,25 @@ Meta-research on 1,482 records continues to rank production-visible default-off
 paper adapters above raw filters, ticker exceptions, and cap releases. The
 research report is queue guidance only; it is not a trading signal.
 
-The June 6-7 readout tightens the rule: relation-aware free-data candidate
+The June 6-8 readout tightens the rule: relation-aware free-data candidate
 sources can work, but only when the relation itself is the edge. Accepted
 examples use macro-event relief, volatility-relief leadership,
 rolling-correlation peer shock with core-flow confirmation, or
 industry-relative laggard repair. Rejected neighbors show what does not count
-as a new relation:
-sector ETF laggards, core-selected anchor peer lags with zero target trades,
-short-horizon reversal/reclaim, macro sector confirmation that fails versus the
-accepted comparator, and SEC guidance/outlook phrase matching with same-day
-price alignment. These are mostly weak confirmers, not new information.
+as a new relation: sector ETF laggards, core-selected anchor peer lags with
+zero target trades, short-horizon reversal/reclaim, macro sector confirmation
+that fails versus the accepted comparator, broad cross-asset proxies, and SEC
+guidance/outlook phrase matching with same-day price alignment. These are
+mostly weak confirmers, not new information.
+
+The June 8 batch adds a sharper boundary. Copper strength, oil-cost relief,
+IWM breadth thrust, DIA/MDY "real economy" leadership, and simple VIX/SPY/QQQ
+tail guards did not create enough after-cost next-open replacement value. The
+one useful lead was not another broad proxy: it was a narrower
+industry-stable-leadership source admitted only when the existing core A/B stack
+also had same-day entry flow and same-ticker overlap was excluded. Treat this
+as evidence that relation alpha needs an internal flow or displacement anchor,
+not just a macro ETF or commodity tape label.
 
 Default next question for any new broad candidate pool:
 
@@ -320,6 +329,48 @@ Next valid work:
 Do not retune nearby industry lag, group-strength, signal-day reclaim, top-N,
 hold days, same-ticker cooldown, or paper notional on the frozen sample.
 
+### Industry-Stable Core-Flow Confirmation Lead
+
+This is a positive replay lead, not an accepted alpha. The plain
+industry-stable leadership source had positive EV/PnL in all windows but failed
+the drawdown guard. A same-day core-flow confirmation variant repaired enough
+tail risk to pass replay Gate 4, but it remains private replay evidence until a
+shared default-off helper reproduces it.
+
+Positive replay lead: `exp-20260608-007`, following rejected
+`exp-20260608-004` and `exp-20260608-005`.
+
+Mechanism:
+
+- source: broad-market liquid stocks grouped by persisted industry or sector;
+- base relation: stable low-volatility leaders inside strong industries;
+- confirmation: same signal date must have selected core A/B entry flow;
+- overlap rule: exclude same-ticker core overlap so the row tests independent
+  replacement value;
+- lifecycle in replay: top-1/day, next-open entry, 10-trading-day close exit,
+  costs included;
+- status: positive replay lead only, no production/default-off adapter yet.
+
+Evidence:
+
+- aggregate EV `+0.1459`;
+- PnL `+$3,731.54`;
+- all three canonical windows improved;
+- target paper trades: `47`;
+- max drawdown drift `0.0007`, within the `0.005` guard.
+
+Next valid work:
+
+- implement a shared default-off adapter using the exact fixed policy bundle;
+- prove daily snapshot and historical replay share the same core-flow
+  confirmation and same-ticker overlap semantics;
+- compare against `industry_relative_laggard_repair`, `rolling_corr_peer_shock`,
+  and volatility/macro relief accepted comparators;
+- collect forward replacement-value rows before any activation discussion.
+
+Do not retune industry stability, low-volatility, core-flow count, overlap,
+top-N, hold-day, cooldown, or notional thresholds on the frozen sample.
+
 ### Lagged Independent Free-Data Consensus
 
 The accepted consensus route is that a current accepted-source paper candidate
@@ -540,7 +591,7 @@ Next valid work:
 
 ### Weak Relation Confirmers
 
-June 6-7 relation variants clarify the boundary between a real relation alpha
+June 6-8 relation variants clarify the boundary between a real relation alpha
 and a descriptive overlay.
 
 Rejected neighbors:
@@ -553,6 +604,11 @@ Rejected neighbors:
   but failed the stricter accepted-comparator check;
 - trend-quality short-horizon reversal had enough sample but was mostly a
   fragile rebound selector with old-window drawdown damage.
+- copper-growth, oil-cost-relief, IWM breadth-thrust, DIA/MDY real-economy, and
+  defensive/rates sector variants mostly relabeled broad risk beta or cyclical
+  beta without durable next-open replacement value;
+- industry-stable leadership had real continuation signal, but simple
+  SPY/QQQ-down plus VIXY-up tail exclusion did not isolate the drawdown problem.
 
 Lesson:
 
@@ -562,6 +618,9 @@ Lesson:
   not just add positive standalone paper PnL;
 - broad confirmation fields should become attribution fields first unless they
   create a materially different PIT edge.
+- broad ETF/commodity/macro proxies should be presumed to be beta labels unless
+  they explain which ticker they displace and why the edge survives next-open
+  costs and the closest accepted comparator.
 
 Next valid work:
 
@@ -572,7 +631,8 @@ Next valid work:
   would displace.
 
 Do not retune peer lag, sector median, ETF laggard, macro sector-confirmation,
-short-horizon selloff/reclaim, top-N, hold-day, cooldown, or notional thresholds
+short-horizon selloff/reclaim, commodity/ETF proxy thresholds, broad
+real-economy proxy thresholds, top-N, hold-day, cooldown, or notional thresholds
 on the frozen sample.
 
 ### SEC Operational / Financing Event Pools
@@ -739,6 +799,13 @@ Minimum LLM field standard:
 5. production artifact visibility;
 6. PIT replay safety;
 7. chronological evaluation before strategy use.
+
+Near-term implication from 2026 research: LLM and agent systems should be
+treated as auditable evidence-processing infrastructure. The useful product is
+not an autonomous trade call; it is a timestamped, schema-bound, retrievable
+field with source coverage, calibration, uncertainty, and failure-mode metadata.
+If the field cannot be replayed or compared against a displaced candidate after
+costs, keep it out of trading logic.
 
 ## External Research Mapped To Ginger
 
@@ -943,6 +1010,122 @@ Controls:
 
 Source: <https://arxiv.org/abs/2605.05409>
 
+### Agentic Trading Evidence Ledger
+
+A May 2026 survey of LLM trading-agent studies finds that evaluation protocols
+are still not comparable: only a small minority of closed-loop studies report
+time-consistent splits, transaction costs, survivorship/universe handling, or
+full reproducibility. This directly supports Ginger's Gate 1-4 discipline: an
+agent architecture is not alpha evidence unless it comes with execution timing,
+costs, universe controls, and replay artifacts.
+
+Implementable fields:
+
+- `agentic_signal_protocol_id`
+- `agentic_signal_universe_control_bucket`
+- `agentic_signal_execution_semantics_bucket`
+- `agentic_signal_cost_model_version`
+- `agentic_signal_replay_artifact_hash`
+- `agentic_signal_reproducibility_tier`
+- `agentic_signal_closed_loop_eval_flag`
+
+Controls:
+
+- agent outputs must be logged as evidence rows before they affect paper
+  adapters;
+- every agent-produced candidate must report the exact comparator it would
+  displace;
+- reject any agent alpha claim that lacks costs, execution timing, universe
+  controls, or replayable source artifacts.
+
+Source: <https://arxiv.org/abs/2605.19337>
+
+### Interaction-Native Agent Memory
+
+Recent financial-agent memory work argues for passive context injection,
+temporal graph memory, wiki-style audit surfaces, and write-time invalidation.
+For Ginger, this maps cleanly to context packs, lesson cards, daily snapshots,
+and anti-repeat rules: memory should reduce repeated bad experiments and stale
+assumptions, not expand model discretion.
+
+Implementable fields:
+
+- `context_memory_snapshot_hash`
+- `retrieved_lesson_card_ids`
+- `stale_memory_invalidation_reason`
+- `decision_context_buffer_version`
+- `memory_maturity_bucket`
+- `memory_decay_bucket`
+- `audit_surface_link_id`
+
+Controls:
+
+- before alpha search, retrieve the relevant mechanism card and nearest
+  rejected neighbors;
+- invalidate memory when a shared adapter or parity contract supersedes a
+  private replay lead;
+- measure whether memory reduces near-neighbor duplicate experiments.
+
+Source: <https://arxiv.org/abs/2606.01886>
+
+### LLM News Sentiment As Modest Feature
+
+2026 news-sentiment studies continue to find that LLM-derived sentiment can
+improve some stock-movement prediction setups, but the reported benefit is
+model- and architecture-dependent and often modest. This fits Ginger's local
+evidence: raw positive text or headline sentiment is too weak; sentiment must
+be tied to event family, timestamp, coverage, and replacement value.
+
+Implementable fields:
+
+- `news_sentiment_model_family`
+- `news_sentiment_daily_aggregation_method`
+- `news_sentiment_coverage_fraction`
+- `news_sentiment_event_family_bucket`
+- `news_sentiment_model_disagreement_bucket`
+- `news_sentiment_incremental_feature_delta`
+- `news_sentiment_replacement_value_bucket`
+
+Controls:
+
+- archive the exact headline/article set and timestamp;
+- report coverage gaps before scoring results;
+- compare sentiment-assisted candidates against accepted non-text comparators
+  after costs;
+- do not promote daily sentiment averages without event-family and source
+  provenance.
+
+Sources:
+
+- <https://arxiv.org/abs/2602.00086>
+- <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6597694>
+
+### Adaptive Relation Graphs
+
+New graph-learning stock-prediction work emphasizes adaptive correlations and
+heterogeneous relations rather than static sector labels. This reinforces the
+local lesson from rolling-correlation peer shock and industry-relative laggard
+repair: edge construction is the hypothesis, and a static group label is rarely
+enough.
+
+Implementable fields:
+
+- `adaptive_relation_graph_version`
+- `dynamic_edge_method_id`
+- `edge_asof_timestamp`
+- `edge_decay_half_life_days`
+- `heterogeneous_relation_type`
+- `edge_stability_bucket`
+- `edge_displacement_comparator_id`
+
+Controls:
+
+- start with attribution or default-off paper, not core ranking;
+- require PIT-valid edge timestamps and no future membership leakage;
+- compare directly against accepted relation adapters before promotion.
+
+Source: <https://www.sciencedirect.com/science/article/pii/S0031320326005716>
+
 ### LLM Herding And Crowded AI Signals
 
 LLM market experiments suggest AI traders may avoid some irrational cascades
@@ -974,6 +1157,8 @@ production-visible field:
 - LLM direct buy/sell/sizing/exit authority;
 - raw full-universe `alpha_score` top-N or weight tuning;
 - broad OHLCV factor mining that only rediscovers momentum;
+- commodity/ETF/macro proxy leadership variants that merely relabel broad beta
+  or cyclical beta;
 - broad 5-day winner continuation variants unless they solve drawdown/tail and
   beat the accepted low-deployment ETF comparator;
 - low-deployment ETF threshold, ETF-list, hold-day, or notional retunes;
