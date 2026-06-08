@@ -108,6 +108,7 @@ def compute_account_state(
     regime_data: dict,
     manual_trades: list | None = None,
     asof_date: str | None = None,
+    core_fire_tickers: set[str] | None = None,
 ) -> dict:
     """
     Compute the top-level account_state and per-position decision_state.
@@ -116,6 +117,10 @@ def compute_account_state(
         trend_signals: enriched trend_signals dict (after enrich_positions_with_breach_status)
         heat_data:     portfolio_heat dict from portfolio_engine
         regime_data:   market_regime dict from regime.py
+        core_fire_tickers:
+            Optional set of tickers allowed to promote CRITICAL_EXIT into the
+            account-level FIRE lock.  When omitted, preserve the legacy behavior
+            and let any critical position trigger FIRE.
 
     Returns:
         dict with keys:
@@ -132,6 +137,16 @@ def compute_account_state(
     suggested_reduce_pct: dict[str, int] = {}
     manual_trade_conflicts: dict[str, dict] = {}
     same_day_buy_tickers = _same_day_manual_buy_tickers(manual_trades, asof_date)
+    core_fire_tickers_norm = (
+        {str(t or "").upper().strip() for t in core_fire_tickers if str(t or "").strip()}
+        if core_fire_tickers is not None
+        else None
+    )
+
+    def _counts_for_account_fire(ticker: str) -> bool:
+        if core_fire_tickers_norm is None:
+            return True
+        return str(ticker or "").upper().strip() in core_fire_tickers_norm
 
     # ── Regime ──────────────────────────────────────────────────────────────
     regime = regime_data.get("regime", "UNKNOWN") if regime_data else "UNKNOWN"
@@ -166,7 +181,8 @@ def compute_account_state(
             or breach_st in ("DELAYED_BREACH", "HISTORIC_BREACH")
         ):
             decision_state = "CRITICAL_EXIT"
-            has_critical = True
+            if _counts_for_account_fire(ticker):
+                has_critical = True
         elif "ATR_STOP" in rule_names:
             # Canonical backtests execute ATR stop_price breaches as full exits.
             # Keep production preflight aligned with that lifecycle.
@@ -186,7 +202,8 @@ def compute_account_state(
         # Upgrade breach states + emit warnings
         if breach_st == "HISTORIC_BREACH":
             decision_state = "CRITICAL_EXIT"
-            has_critical = True
+            if _counts_for_account_fire(ticker):
+                has_critical = True
             data_warnings.append(
                 f"{ticker}: HISTORIC_BREACH — hard_stop "
                 f"{pos_ctx.get('exit_levels', {}).get('hard_stop_price', '?')} is >20% "
@@ -195,7 +212,8 @@ def compute_account_state(
             )
         elif breach_st == "DELAYED_BREACH":
             decision_state = "CRITICAL_EXIT"
-            has_critical = True
+            if _counts_for_account_fire(ticker):
+                has_critical = True
             data_warnings.append(
                 f"{ticker}: DELAYED_BREACH — hard_stop "
                 f"{pos_ctx.get('exit_levels', {}).get('hard_stop_price', '?')} "

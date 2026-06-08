@@ -5015,6 +5015,81 @@ def test_preflight_trailing_stop_only_no_longer_forces_reduce():
     assert result["new_trade_locked"] is False
 
 
+def test_preflight_non_core_critical_exit_does_not_trigger_account_fire():
+    """
+    Legacy/manual/observation critical exits must remain visible without
+    freezing core strategy entries.
+    """
+    from preflight_validator import compute_account_state, enrich_positions_with_breach_status
+
+    ts = {
+        "signals": {
+            "META": {
+                "close": 100.0,
+                "position": {
+                    "shares": 1,
+                    "avg_cost": 120.0,
+                    "unrealized_pnl_pct": -0.16,
+                    "breach_status": "OK",
+                    "exit_levels": {"hard_stop_price": 80.0},
+                    "exit_signals": {
+                        "any_triggered": True,
+                        "triggered_rules": [
+                            {"rule": "HARD_STOP", "urgency": "CRITICAL", "message": "Hard stop hit"}
+                        ],
+                    },
+                },
+            },
+            "COHR": {
+                "close": 200.0,
+                "position": {
+                    "shares": 1,
+                    "avg_cost": 180.0,
+                    "unrealized_pnl_pct": 0.1,
+                    "breach_status": "OK",
+                    "exit_levels": {"hard_stop_price": 160.0},
+                    "exit_signals": {"any_triggered": False, "triggered_rules": []},
+                },
+            },
+        }
+    }
+    enrich_positions_with_breach_status(ts)
+    result = compute_account_state(
+        ts,
+        heat_data={},
+        regime_data={"regime": "NORMAL"},
+        core_fire_tickers={"COHR"},
+    )
+
+    assert result["position_states"]["META"] == "CRITICAL_EXIT"
+    assert result["position_states"]["COHR"] == "HOLD"
+    assert result["account_state"] == "NORMAL"
+    assert result["new_trade_locked"] is False
+    assert result["lock_reason"] == ""
+
+
+def test_preflight_core_critical_exit_still_triggers_account_fire():
+    """Core-slot critical exits must still lock new trades."""
+    from preflight_validator import compute_account_state, enrich_positions_with_breach_status
+
+    ts = _make_preflight_trend_signals()
+    ts["signals"]["TEST"]["position"]["exit_signals"]["triggered_rules"] = [
+        {"rule": "HARD_STOP", "urgency": "CRITICAL", "message": "Hard stop hit"}
+    ]
+    enrich_positions_with_breach_status(ts)
+    result = compute_account_state(
+        ts,
+        heat_data={},
+        regime_data={"regime": "NORMAL"},
+        core_fire_tickers={"TEST"},
+    )
+
+    assert result["position_states"]["TEST"] == "CRITICAL_EXIT"
+    assert result["account_state"] == "FIRE"
+    assert result["new_trade_locked"] is True
+    assert "CRITICAL positions" in result["lock_reason"]
+
+
 def test_preflight_bear_emergency_stops_populated_when_bear():
     """
     Contract: bear_emergency_stops must be populated for all tickers when

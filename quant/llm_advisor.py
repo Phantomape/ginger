@@ -15,6 +15,7 @@ from operator_input_paths import open_positions_path, repo_relative
 from open_position_schema import (
     account_position_tickers,
     account_positions,
+    core_slot_positions,
     has_account_positions,
     legacy_positions_payload,
 )
@@ -502,12 +503,18 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
     from position_intent import audit_position_intent_coverage
     if trend_signals:
         enrich_positions_with_breach_status(trend_signals)
+    core_fire_tickers = {
+        str(row.get("ticker") or "").upper().strip()
+        for row in core_slot_positions(open_positions, positive_only=True)
+        if row.get("ticker")
+    } if open_positions else set()
     preflight = compute_account_state(
         trend_signals = trend_signals,
         heat_data     = heat,
         regime_data   = regime,
         manual_trades = load_manual_trades(),
         asof_date     = datetime.now().strftime("%Y-%m-%d"),
+        core_fire_tickers = core_fire_tickers,
     )
     if isinstance(trend_signals, dict):
         # Persist the machine-state summary alongside the day payload so later

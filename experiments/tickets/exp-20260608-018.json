@@ -1,0 +1,115 @@
+{
+  "experiment_id": "exp-20260608-018",
+  "experiment_uid": "expuid-af44145be5724b19",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260608-018",
+    "slug": "core_slot_only_account_fire_scope",
+    "reserved_at": "2026-06-08T16:33:16+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "claimed",
+  "lane": "measurement_repair",
+  "owner": "codex",
+  "hypothesis": "Legacy/manual/observation critical exits should remain visible but must not promote the core strategy account state to FIRE or lock new core trades; only core-slot positions should trigger account-level FIRE.",
+  "change_type": "production_preflight_policy_repair",
+  "mechanism_family": "production_execution_gating",
+  "trial_family": "core_slot_only_fire_scope",
+  "trial_variant_id": "core_slot_only_fire_scope_v1",
+  "single_causal_variable": "core_slot_only_account_fire_scope",
+  "changed_variable": "account_fire_scope",
+  "causal_components": [
+    "preflight core_fire_tickers parameter",
+    "llm_advisor core slot wiring",
+    "preflight regression tests",
+    "production parity documentation"
+  ],
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "user_operator_intent",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/preflight_validator.py",
+    "quant/llm_advisor.py",
+    "quant/test_quant.py",
+    "docs/production_backtest_parity.md",
+    "experiments/logs",
+    "experiments/tickets",
+    "experiments/cards",
+    "experiments/manifests",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "core_slot_only_account_fire_scope"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.9,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "core_critical_no_longer_locks",
+      "legacy_exit_visibility_lost",
+      "llm_decision_log_contract_drift"
+    ],
+    "confidence_reason": "This is an ownership-boundary repair aligned with existing grouped open-position schema; focused smoke can verify current META/NFLX remain visible without locking core strategy entries.",
+    "recorded_at": "2026-06-08T16:33:02+00:00"
+  },
+  "created_at": "2026-06-08T16:33:16+00:00",
+  "claimed_at": "2026-06-08T16:33:36+00:00",
+  "completed_at": "2026-06-08T16:34:02Z",
+  "result": {
+    "status": "accepted",
+    "decision": "accepted_core_slot_only_account_fire_scope",
+    "change_summary": "Program-layer FIRE/new_trade_locked now only counts CRITICAL_EXIT rows for core-slot positions. Non-core legacy/manual/observation/FOMO rows still appear in position_states, warnings, current prices, heat/risk context, news context, and LLM prompt surfaces.",
+    "measurement_basis": {
+      "focused_pytest": "4 passed, 322 deselected",
+      "py_compile": "quant/preflight_validator.py and quant/llm_advisor.py compiled successfully",
+      "current_day_smoke": {
+        "source_trend_signals": "data/daily/signals/trend/trend_signals_20260607.json",
+        "source_open_positions": "operator_inputs/open_positions.json",
+        "core_fire_tickers": [
+          "AMZN",
+          "COHR",
+          "MRVL",
+          "SNOW"
+        ],
+        "account_state_after": "NORMAL",
+        "new_trade_locked_after": false,
+        "non_core_critical_still_visible": {
+          "META": "CRITICAL_EXIT",
+          "NFLX": "CRITICAL_EXIT"
+        },
+        "target_exits_still_visible": {
+          "APP": "TARGET_EXIT",
+          "QQQ": "TARGET_EXIT"
+        }
+      }
+    },
+    "production_impact": {
+      "shared_policy_changed": true,
+      "run_adapter_changed": false,
+      "llm_prompt_boundary_changed": true,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "alters_orders": false,
+      "trade_enabled": false,
+      "measurement_repair": true
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The old preflight collapsed all account holdings into one FIRE scope, so legacy critical exits froze core strategy entries even though grouped open-position schema already distinguishes account risk from core slot ownership.",
+      "forbidden_near_neighbor_retry": "Do not reintroduce global account FIRE from no_core_slot rows; if non-core risk should block entries, add an explicit operator-configured cash/risk rule instead.",
+      "new_evidence_required": "A retry would need a broker/execution rule showing that non-core legacy risk must freeze core strategy entries despite the sleeve ownership boundary."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260608-018.json",
+  "card_file": "experiments/cards/exp-20260608-018.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260608-018.json"
+}

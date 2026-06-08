@@ -97,6 +97,14 @@ total account heat/cash/risk, but not toward core entry slots. Shared code
 should use `quant/open_position_schema.py` instead of manually reading only
 `payload["positions"]`.
 
+The same ownership boundary applies to the program-layer `FIRE` lock used by
+the LLM preflight surface: all real positions still appear in exit states,
+warnings, current prices, news context, heat, and risk review, but only
+core-slot positions may promote a `CRITICAL_EXIT` into account-level
+`FIRE/new_trade_locked`. Legacy, manual, observation, FOMO, and other
+`no_core_slot` rows remain visible as risk work but must not freeze core
+strategy entry capacity by themselves.
+
 ## Companyfacts Cost-Liquidity Paper Support
 
 `exp-20260601-030` promoted the Companyfacts cost-liquidity support field into
