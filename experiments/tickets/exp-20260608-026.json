@@ -1,0 +1,146 @@
+{
+  "acceptance_rule": "docs/backtesting.md three canonical windows; must beat current accepted lagged consensus comparator in EV and PnL in all three windows, keep sample/drawdown/survival/concentration gates, and remain replay-only unless shared adapter parity is added.",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "data/experiments",
+    "experiments/logs",
+    "experiments/cards",
+    "experiments/tickets",
+    "experiments/manifests",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "artifact": "data/experiments/exp-20260608-026/exp_20260608_026_industry_laggard_lagged_consensus_source.json",
+  "baseline_result_file": "data/experiments/exp-20260604-009/exp_20260604_009_lagged_consensus_shared_adapter.json",
+  "card": "experiments/cards/exp-20260608-026.md",
+  "card_file": "experiments/cards/exp-20260608-026.md",
+  "causal_components": [
+    "accepted industry laggard shared helper source rows",
+    "accepted lagged consensus scout",
+    "accepted lagged comparator guard",
+    "no production path changes"
+  ],
+  "change_type": "default_off_paper_adapter_source_family_alpha",
+  "changed_variable": "industry_relative_laggard_repair_source_family_added_to_accepted_lagged_consensus_v1",
+  "claimed_at": null,
+  "completed_at": "2026-06-08T22:19:07+00:00",
+  "created_at": "2026-06-08T22:11:19+00:00",
+  "decision": "rejected_industry_laggard_lagged_consensus_did_not_beat_accepted_lagged_comparator",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260608-026",
+  "experiment_uid": "expuid-c2f28fab141f44ca",
+  "gate4": {
+    "accepted_comparator": "exp-20260604-009",
+    "decision": "rejected_industry_laggard_lagged_consensus_did_not_beat_accepted_lagged_comparator",
+    "gates": {
+      "aggregate_expected_value_positive": true,
+      "aggregate_pnl_positive": true,
+      "all_windows_expected_value_improved": true,
+      "all_windows_pnl_improved": true,
+      "beats_current_accepted_lagged_consensus_comparator": false,
+      "concentration_guard_passed": true,
+      "drawdown_drift_passed": true,
+      "new_source_selected_trade_count_positive": true,
+      "survival_floor_passed": true,
+      "target_trade_count_passed": true,
+      "target_window_count_passed": true
+    },
+    "max_drawdown_delta": 0.0,
+    "min_survival_rate": 0.7925,
+    "passed": false,
+    "rationale": "The variant did not beat the current accepted lagged consensus comparator across all three canonical windows.",
+    "requires_parity_before_promotion": true
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260608-026",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-08T22:11:19+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "industry_laggard_lagged_consensus_source"
+  },
+  "hypothesis": "Accepted industry-relative laggard-repair paper rows may improve the accepted lagged free-data consensus scout when treated as a new independent production-visible source family.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "industry_laggard thresholds",
+    "lagged consensus thresholds",
+    "notional",
+    "hold days",
+    "top-N",
+    "production orders"
+  ],
+  "log": "experiments/logs/exp-20260608-026.json",
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/industry_relative_laggard_repair_paper_sleeve.py",
+    "quant/free_data_cross_source_consensus_paper_sleeve.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260604-008",
+    "exp-20260604-009",
+    "exp-20260606-028",
+    "exp-20260607-007",
+    "exp-20260607-008",
+    "exp-20260608-009"
+  ],
+  "new_evidence_type": "accepted_production_visible_industry_relative_laggard_repair_source_family",
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "confidence_reason": "Industry laggard repair accepted with 306 trades and shared helper, but prior accepted source-family additions often fail the current lagged comparator guard.",
+    "expected_ev_delta": 0.1,
+    "expected_pnl_delta": 1800.0,
+    "main_failure_modes": [
+      "accepted_lagged_comparator_not_beaten",
+      "source_redundant_with_existing_consensus",
+      "window_regression",
+      "concentration_failed",
+      "zero_selected_source_rows"
+    ],
+    "recorded_at": "2026-06-08T22:11:07+00:00",
+    "success_probability": 0.2
+  },
+  "prior_trial_count": 7,
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_consensus_adapter_change",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_note": "This runner changes no production code. A positive result would still require the shared free-data consensus adapter to load the accepted industry-relative laggard-repair paper snapshot as the same source family in both replay and daily production, with parity tests, before any daily report queue, candidate priority, paper notional, watchlist, or order surface could change.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "result": {
+    "aggregate_expected_value_delta_vs_lagged": -0.006,
+    "aggregate_strategy_total_pnl_delta_vs_lagged": 217.23
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260608-026.json",
+  "single_causal_variable": "industry_relative_laggard_repair_source_family_added_to_accepted_lagged_consensus_v1",
+  "status": "completed",
+  "ticket_file": "experiments/tickets/exp-20260608-026.json",
+  "trial_family": "accepted_free_data_cross_source_consensus_new_independent_source_family",
+  "trial_variant_id": "industry_relative_laggard_repair_lagged_consensus_source_family_v1"
+}
