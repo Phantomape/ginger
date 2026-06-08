@@ -1,0 +1,121 @@
+{
+  "acceptance_rule": "docs/backtesting.md canonical three-window aggregate EV/PnL improvement, no window EV/PnL regression, target sample >=20, survival >=5%, max drawdown drift <=0.5pp, concentration guard; positive replay requires shared adapter parity before production visibility",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260608_002_oil_cost_relief_travel_leadership.py",
+    "data/experiments/exp-20260608-002",
+    "experiments/logs/exp-20260608-002.json",
+    "experiments/tickets/exp-20260608-002.json",
+    "experiments/cards/exp-20260608-002.md",
+    "experiments/manifests/exp-20260608-002.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_20260422_20260606.json",
+  "card_file": "experiments/cards/exp-20260608-002.md",
+  "causal_components": [
+    "USO negative cost context",
+    "travel/leisure stock relative-strength gates",
+    "next-open 10d paper overlay"
+  ],
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "oil_cost_relief_travel_leadership_candidate_source_v1",
+  "claimed_at": "2026-06-08T01:10:17+00:00",
+  "completed_at": "2026-06-08T01:14:02Z",
+  "created_at": "2026-06-08T01:10:05+00:00",
+  "decision": "rejected_oil_cost_relief_travel_leadership_candidate_pool",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260608-002",
+  "experiment_uid": "expuid-223a203550114cf6",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260608-002",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-08T01:10:05+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "oil_cost_relief_travel_leadership_candidate_source_v1"
+  },
+  "hypothesis": "USO oil-cost relief days may identify fuel-sensitive travel and leisure stock leaders with next-open continuation.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "live_orders",
+    "default_enabled_candidate_pool",
+    "ranking",
+    "sizing",
+    "exits"
+  ],
+  "mechanism_family": "production_visible_free_ohlcv_relation_alpha",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/run.py",
+    "operator_inputs/open_positions.json"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260428-035",
+    "exp-20260428-036",
+    "exp-20260504-045",
+    "exp-20260511-024",
+    "exp-20260515-017",
+    "exp-20260607-018"
+  ],
+  "new_evidence_type": "production_visible_free_ohlcv_oil_cost_relief_relation",
+  "owner": "codex-alpha-search",
+  "prediction": {
+    "confidence_reason": "Accepted macro/VIXY relation alpha supports non-traded context, but rejected USO/XLE ETF trials warn that oil signals often relabel sector beta unless mapped to fuel-sensitive equities.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "oil_move_not_equity_causal",
+      "travel_beta_relabel",
+      "airline_idiosyncratic_noise",
+      "target_sample_too_small",
+      "old_thin_regression",
+      "drawdown_drift"
+    ],
+    "recorded_at": "2026-06-08T01:09:58+00:00",
+    "success_probability": 0.15
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": -0.0839,
+    "aggregate_strategy_total_pnl_delta": -1428.38,
+    "artifact": "data/experiments/exp-20260608-002/exp_20260608_002_oil_cost_relief_travel_leadership.json",
+    "calibration": {
+      "actual_ev_delta": -0.0839,
+      "actual_gate4_passed": false,
+      "actual_pnl_delta": -1428.38,
+      "actual_success": 0,
+      "brier_score": 0.0225,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows"
+      ],
+      "predicted_success_probability": 0.15
+    },
+    "decision": "rejected_oil_cost_relief_travel_leadership_candidate_pool",
+    "log": "experiments/logs/exp-20260608-002.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260608-002.json",
+  "single_causal_variable": "oil_cost_relief_travel_leadership_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The USO oil-cost relief travel/leisure leadership source did not clear Gate 4; do not promote or locally retune this oil-cost relation on the frozen windows.",
+  "ticket_file": "experiments/tickets/exp-20260608-002.json",
+  "trial_family": "oil_cost_relief_travel_leadership_candidate_pool",
+  "trial_variant_id": "uso_down_travel_leisure_leadership_top2_10d_v1"
+}
