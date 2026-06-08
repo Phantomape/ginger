@@ -40,7 +40,7 @@ from data_paths import daily_artifact_path, atomic_write_json, atomic_write_text
 from earnings_snapshot import persist_earnings_snapshot
 from estimate_revision_ledger import persist_estimate_revision_ledger
 from operator_input_paths import open_positions_path, repo_relative
-from open_position_schema import has_account_positions, positions_by_ticker
+from open_position_schema import core_slot_positions, has_account_positions, positions_by_ticker
 from regime_exit import compute_regime_exit_profile
 
 
@@ -102,6 +102,14 @@ def _load_open_positions():
             return None
     log.warning(f"open_positions.json not found at {repo_relative(path)}")
     return None
+
+
+def _core_slot_ticker_set(open_positions):
+    return {
+        str(row.get("ticker") or "").upper().strip()
+        for row in core_slot_positions(open_positions, positive_only=True)
+        if row.get("ticker")
+    }
 
 
 def _print_section(title):
@@ -2397,7 +2405,7 @@ def main():
                 as_of=today_iso,
                 ohlcv_by_ticker=fundamental_growth_ohlcv,
                 candidate_universe=fundamental_growth_candidate_universe,
-                current_core_tickers=set(positions_by_ticker.keys()),
+                current_core_tickers=_core_slot_ticker_set(open_positions),
                 open_prices=current_open_prices,
                 current_prices=current_prices,
             )
