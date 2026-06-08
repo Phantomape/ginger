@@ -1,0 +1,103 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260608_014_companyfacts_quality_compression_breakout.py",
+    "data/experiments/exp-20260608-014/exp_20260608_014_companyfacts_quality_compression_breakout.json",
+    "experiments/cards/exp-20260608-014.md",
+    "experiments/manifests/exp-20260608-014.json",
+    "experiments/tickets/exp-20260608-014.json",
+    "experiments/logs/exp-20260608-014.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260608-014.md",
+  "causal_components": [
+    "private replay scout",
+    "three-window Gate 4",
+    "production-parity boundary",
+    "no shared adapter unless later promoted"
+  ],
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "companyfacts_quality_compression_breakout_candidate_source_v1",
+  "claimed_at": "2026-06-08T13:06:29+00:00",
+  "completed_at": "2026-06-08T13:14:49Z",
+  "created_at": "2026-06-08T13:06:12+00:00",
+  "decision": "rejected_companyfacts_quality_compression_breakout_candidate_pool",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260608-014",
+  "experiment_uid": "expuid-e3affc1fe70941fb",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260608-014",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-08T13:06:12+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "companyfacts_quality_compression_breakout"
+  },
+  "hypothesis": "Fresh profitable SEC Companyfacts quality can anchor narrow-range compression breakouts so the default-off broad candidate pool expands with information absorption rather than raw OHLCV momentum.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "companyfacts_quality_compression_breakout_candidate_source_v1"
+  ],
+  "mechanism_family": "default_off_paper_candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260608-012",
+    "exp-20260608-013",
+    "exp-20260528-016",
+    "exp-20260528-017",
+    "exp-20260605-011",
+    "exp-20260605-015"
+  ],
+  "new_evidence_type": "not_declared",
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "confidence_reason": "Narrow-range compression just passed as a small production-visible OHLCV lead, and Companyfacts quality historically helped as a default-off support field; the risk is that broad Companyfacts candidate-pool expansions often failed and that this scout is not promotable without a shared PIT helper.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "sample_too_thin",
+      "companyfacts_proxy_or_stale_data",
+      "ohlcv_momentum_relabel",
+      "old_thin_regression",
+      "drawdown_drift",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-08T13:05:59+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": -0.0349,
+    "aggregate_strategy_total_pnl_delta": -379.32,
+    "artifact": "data/experiments/exp-20260608-014/exp_20260608_014_companyfacts_quality_compression_breakout.json",
+    "calibration": {
+      "actual_gate4_passed": false,
+      "brier_score": 0.0324,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "target_concentration_failed"
+      ],
+      "predicted_success_probability": 0.18
+    },
+    "decision": "rejected_companyfacts_quality_compression_breakout_candidate_pool",
+    "log": "experiments/logs/exp-20260608-014.json",
+    "numeric_passed": false
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260608-014.json",
+  "single_causal_variable": "companyfacts_quality_compression_breakout_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The Companyfacts quality overlay did not clear numeric Gate 4. Do not promote it or retune the same thresholds on frozen windows.",
+  "ticket_file": "experiments/tickets/exp-20260608-014.json",
+  "trial_family": "companyfacts_quality_compression_breakout_candidate_pool",
+  "trial_variant_id": "exp-20260608-014"
+}
