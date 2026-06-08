@@ -1,0 +1,98 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260608_010_industry_volume_breadth_core_flow_confirmation.py",
+    "data/experiments/exp-20260608-010/exp_20260608_010_industry_volume_breadth_core_flow_confirmation.json",
+    "experiments/cards/exp-20260608-010.md",
+    "experiments/manifests/exp-20260608-010.json",
+    "experiments/tickets/exp-20260608-010.json",
+    "experiments/logs/exp-20260608-010.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260608-010.md",
+  "causal_components": [
+    "fixed prior volume-breadth laggard repair source",
+    "same-day core A/B flow confirmation",
+    "same-ticker core overlap exclusion",
+    "three-window replay",
+    "artifact/log closeout"
+  ],
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "industry_volume_breadth_core_flow_confirmed_candidate_source_v1",
+  "claimed_at": "2026-06-08T09:06:30+00:00",
+  "completed_at": "2026-06-08T09:09:43Z",
+  "created_at": "2026-06-08T09:06:16+00:00",
+  "decision": "rejected_industry_volume_breadth_core_flow_confirmed_candidate_pool",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260608-010",
+  "experiment_uid": "expuid-ea0e33906009435f",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260608-010",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-08T09:06:16+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "industry_volume_breadth_core_flow_confirmation"
+  },
+  "hypothesis": "Industry volume-breadth laggard repair may become cleaner when same-day core A/B flow confirms equity risk acceptance and same-ticker core overlap is excluded.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "industry_volume_breadth_core_flow_confirmed_candidate_source_v1"
+  ],
+  "mechanism_family": "default_off_paper_candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260607-014",
+    "exp-20260608-007",
+    "exp-20260608-008"
+  ],
+  "new_evidence_type": "production_visible_core_flow_confirmation",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "exp-20260607-014 rejected the raw volume-breadth repair source; exp-20260608-007/008 showed same-day core-flow confirmation can rescue a relation alpha. This tests whether core-flow is an orthogonal production-visible discriminator, not a threshold retune.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "sample_too_thin",
+      "volume_chase_noise",
+      "old_thin_regression",
+      "drawdown_drift",
+      "accepted_laggard_repair_near_neighbor"
+    ],
+    "recorded_at": "2026-06-08T09:06:03+00:00",
+    "success_probability": 0.19
+  },
+  "prior_trial_count": 2,
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": 0.0011,
+    "aggregate_strategy_total_pnl_delta": -99.93,
+    "artifact": "data/experiments/exp-20260608-010/exp_20260608_010_industry_volume_breadth_core_flow_confirmation.json",
+    "calibration": {
+      "actual_gate4_passed": false,
+      "brier_score": 0.0361,
+      "failure_modes_observed": [
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "target_concentration_failed"
+      ],
+      "predicted_success_probability": 0.19
+    },
+    "decision": "rejected_industry_volume_breadth_core_flow_confirmed_candidate_pool",
+    "log": "experiments/logs/exp-20260608-010.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260608-010.json",
+  "single_causal_variable": "industry_volume_breadth_core_flow_confirmed_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The core-flow confirmed industry volume-breadth source did not clear Gate 4. Do not promote it or respond by tuning the same volume-breadth, core-flow, overlap, top-N, hold-day, cooldown, or notional thresholds on these frozen windows.",
+  "ticket_file": "experiments/tickets/exp-20260608-010.json",
+  "trial_family": "industry_volume_breadth_core_flow_confirmed_candidate_pool",
+  "trial_variant_id": "exp-20260608-010"
+}
