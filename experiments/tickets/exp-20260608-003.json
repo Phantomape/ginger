@@ -1,0 +1,115 @@
+{
+  "acceptance_rule": "docs/backtesting.md three canonical windows; aggregate EV/PnL must improve, zero EV/PnL regression windows, target trades >=20 across all three windows, survival >=5%, drawdown drift <=0.5pp, concentration guards pass; positive replay requires shared adapter before production retention.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260608_003_iwm_breadth_thrust_stock_leadership.py",
+    "data/experiments/exp-20260608-003/exp_20260608_003_iwm_breadth_thrust_stock_leadership.json",
+    "experiments/cards/exp-20260608-003.md",
+    "experiments/manifests/exp-20260608-003.json",
+    "experiments/tickets/exp-20260608-003.json",
+    "experiments/logs/exp-20260608-003.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260608-003.md",
+  "causal_components": [],
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "iwm_breadth_thrust_stock_leadership_candidate_source_v1",
+  "claimed_at": "2026-06-08T02:11:59+00:00",
+  "completed_at": "2026-06-08T02:17:00Z",
+  "created_at": "2026-06-08T02:11:32+00:00",
+  "decision": "rejected_iwm_breadth_thrust_stock_leadership_candidate_pool",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260608-003",
+  "experiment_uid": "expuid-8b4dab3c857e4963",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260608-003",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-08T02:11:32+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "iwm_breadth_thrust_stock_leadership"
+  },
+  "hypothesis": "IWM breadth-thrust days where IWM leads SPY while SPY and QQQ also close firm may identify liquid stock leaders whose next-open 10-day paper continuation adds cleaner replacement value than generic broad momentum.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "core entries",
+    "core ranking",
+    "core sizing",
+    "core exits",
+    "live/default orders",
+    "LLM/news",
+    "accepted VIXY and macro relief adapters"
+  ],
+  "mechanism_family": "production_visible_free_ohlcv_cross_asset_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/run.py",
+    ".claude/settings.local.json",
+    "data/meta_research_report_latest.json",
+    "quant/test_run_daily_wiring.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260502-001",
+    "exp-20260530-005",
+    "exp-20260607-016",
+    "exp-20260607-019"
+  ],
+  "new_evidence_type": "free_ohlcv_iwm_breadth_thrust_cross_asset_state",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "Relation-aware free-OHLCV candidate pools have worked for macro and VIXY relief, but prior IWM breadth-confirmed sizing and tech-laggard filters failed, so this is a low-probability scout for stock leadership rather than a threshold retune.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "broad_beta_relabel",
+      "old_thin_regression",
+      "drawdown_drift",
+      "iwm_state_too_sparse",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-08T02:11:18+00:00",
+    "success_probability": 0.16
+  },
+  "prior_trial_count": 3,
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": -0.1263,
+    "aggregate_strategy_total_pnl_delta": -3590.75,
+    "artifact": "data/experiments/exp-20260608-003/exp_20260608_003_iwm_breadth_thrust_stock_leadership.json",
+    "calibration": {
+      "actual_gate4_passed": false,
+      "brier_score": 0.0256,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows"
+      ],
+      "predicted_success_probability": 0.16
+    },
+    "decision": "rejected_iwm_breadth_thrust_stock_leadership_candidate_pool",
+    "log": "experiments/logs/exp-20260608-003.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260608-003.json",
+  "single_causal_variable": "iwm_breadth_thrust_stock_leadership_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The IWM breadth-thrust stock-leadership source did not clear Gate 4. Do not promote it or answer by retuning IWM/SPY/QQQ thresholds, top-N, hold-day, cooldown, or notional on these frozen windows.",
+  "ticket_file": "experiments/tickets/exp-20260608-003.json",
+  "trial_family": "iwm_breadth_thrust_stock_leadership_candidate_pool",
+  "trial_variant_id": "iwm_spy_qqq_confirmed_stock_leadership_top2_10d_v1"
+}
