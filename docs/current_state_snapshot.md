@@ -6,9 +6,9 @@ complete state database.
 
 ## Source Snapshot
 
-- Strategy records counted: `1070`
-- Accepted strategy records: `186`
-- History fingerprint: `43b45739bea41ee5`
+- Strategy records counted: `1088`
+- Accepted strategy records: `188`
+- History fingerprint: `6fb9844bc4cdccd0`
 - Generated from committed experiment logs when using `--git-ref HEAD`.
 
 ## Exact State Sources
@@ -34,10 +34,6 @@ complete state database.
 
 ## Recent Accepted Strategy Records
 
-- `exp-20260603-006` `accepted_candidate_finra_borrow_pressure`: EV `+0.2585`, PnL `$5,688.12`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `finra_borrow_pressure_candidate_pool`.
-  Lesson: Official FINRA borrow-pressure rows with high days-to-cover and positive short-interest change may improve the accepted FINRA/IWM default-off candidate pool by requiring both crowding and active borrow-demand pressure.
-- `exp-20260603-007` `accepted_default_off_finra_borrow_pressure_shared_adapter`: EV `+0.0000`, PnL `$0.00`, family `default_off_paper_adapter`, trial `default_off_paper_adapter`.
-  Lesson: The accepted FINRA borrow-pressure admission lead should become a shared default-off FINRA/IWM paper adapter so production can collect forward replacement-value evidence without changing live orders.
 - `exp-20260603-015` `accepted_default_off_consensus_source_family_adapter`: EV `+1.3058`, PnL `$23,397.76`, family `default_off_paper_adapter`, trial `accepted_free_data_cross_source_consensus_source_family_adapter`.
   Lesson: Retained as shared default-off paper observation only. Live/default orders, core ranking, sizing, exits, watchlists, LLM, and news are unchanged.
 - `exp-20260603-022` `accepted_post_earnings_non_core_overlap_shared_support`: EV `+0.0300`, PnL `$247.93`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `post_earnings_underpriced_core_non_overlap_support`.
@@ -58,13 +54,13 @@ complete state database.
   Lesson: The shared helper reproduced the private replay lead with the same fixed policy bundle, indicating the alpha came from the industry relative lag plus same-day repair relation rather than runner-only implementation qui...
 - `exp-20260607-019` `accepted_volatility_relief_stock_leadership_shared_default_off_adapter`: EV `+0.5732`, PnL `$11,934.79`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `volatility_relief_stock_leadership_shared_adapter`.
   Lesson: Shared replay matched the exp-20260607-018 lead because the alpha came from a distinct VIXY volatility-compression state plus liquid stock leadership, not runner-only implementation details. Do not retry by sweeping V...
+- `exp-20260608-008` `accepted_industry_stable_core_flow_shared_default_off_adapter`: EV `+0.1459`, PnL `$3,731.54`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_stable_core_flow_shared_default_off_adapter`.
+  Lesson: Core-flow confirmation removed enough pure industry beta to keep the fixed stable-leader source within Gate 4 bounds, and the shared helper reproduced the private replay lead without changing live orders or core ranki...
+- `exp-20260608-013` `accepted_narrow_range_compression_breakout_shared_default_off_adapter`: EV `+0.1608`, PnL `$2,248.98`, family `production_visible_free_ohlcv_candidate_pool`, trial `narrow_range_compression_breakout_shared_default_off_adapter`.
+  Lesson: The shared helper reproduced the private replay lead because it kept the exact compression, range-expansion, volume, high-close, SPY-relative trend, next-open entry, 10-day exit, cost, top-1, cooldown, and same-ticker...
 
 ## Recent Production-Visible Or Default-Off Accepted Records
 
-- `exp-20260603-015` `accepted_default_off_consensus_source_family_adapter`: EV `+1.3058`, PnL `$23,397.76`, family `default_off_paper_adapter`, trial `accepted_free_data_cross_source_consensus_source_family_adapter`.
-  Lesson: Retained as shared default-off paper observation only. Live/default orders, core ranking, sizing, exits, watchlists, LLM, and news are unchanged.
-- `exp-20260603-022` `accepted_post_earnings_non_core_overlap_shared_support`: EV `+0.0300`, PnL `$247.93`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `post_earnings_underpriced_core_non_overlap_support`.
-  Lesson: Within the accepted post-earnings underpriced drift paper sleeve, candidates with no same-day core A/B overlap are a cleaner independent event-alpha bucket and deserve a small default-off paper-notional support scalar.
 - `exp-20260604-009` `accepted_lagged_consensus_shared_default_off_adapter`: EV `+1.9949`, PnL `$35,553.87`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_source_timing_adapter`.
   Lesson: exp-20260604-008 improved core and the accepted same-day consensus comparator across all three windows; this run adds the shared helper, source-history contract, and focused tests without enabling orders.
 - `exp-20260604-027` `accepted_default_off_sec_ftd_finra_shared_adapter`: EV `+0.0000`, PnL `$0.00`, family `default_off_paper_adapter`, trial `default_off_paper_adapter`.
@@ -81,14 +77,18 @@ complete state database.
   Lesson: The shared helper reproduced the private replay lead with the same fixed policy bundle, indicating the alpha came from the industry relative lag plus same-day repair relation rather than runner-only implementation qui...
 - `exp-20260607-019` `accepted_volatility_relief_stock_leadership_shared_default_off_adapter`: EV `+0.5732`, PnL `$11,934.79`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `volatility_relief_stock_leadership_shared_adapter`.
   Lesson: Shared replay matched the exp-20260607-018 lead because the alpha came from a distinct VIXY volatility-compression state plus liquid stock leadership, not runner-only implementation details. Do not retry by sweeping V...
+- `exp-20260608-008` `accepted_industry_stable_core_flow_shared_default_off_adapter`: EV `+0.1459`, PnL `$3,731.54`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_stable_core_flow_shared_default_off_adapter`.
+  Lesson: Core-flow confirmation removed enough pure industry beta to keep the fixed stable-leader source within Gate 4 bounds, and the shared helper reproduced the private replay lead without changing live orders or core ranki...
+- `exp-20260608-013` `accepted_narrow_range_compression_breakout_shared_default_off_adapter`: EV `+0.1608`, PnL `$2,248.98`, family `production_visible_free_ohlcv_candidate_pool`, trial `narrow_range_compression_breakout_shared_default_off_adapter`.
+  Lesson: The shared helper reproduced the private replay lead because it kept the exact compression, range-expansion, volume, high-close, SPY-relative trend, next-open entry, 10-day exit, cost, top-1, cooldown, and same-ticker...
 
 ## Current Research Queue Pointers
 
 - `production_visible_default_off_paper_adapter_for_candidate_pool_alpha` priority `0.8479`, experiments `2`, accept `100.00%`.
-- `default_off_paper_shared_adapter` priority `0.8476`, experiments `1`, accept `100.00%`.
 - `default_off_paper_adapter` priority `0.8173`, experiments `7`, accept `85.71%`.
+- `default_off_paper_shared_adapter` priority `0.7726`, experiments `2`, accept `100.00%`.
 - `paper_notional_support_scout` priority `0.7009`, experiments `3`, accept `66.67%`.
-- `pilot_or_sleeve` priority `0.6337`, experiments `158`, accept `26.58%`.
+- `pilot_or_sleeve` priority `0.6325`, experiments `161`, accept `26.09%`.
 
 ## State Migration Note
 
