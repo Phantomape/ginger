@@ -225,6 +225,7 @@ def build_default_off_alpha_attribution_report(
     volatility_relief_stock_leadership_paper_sleeve: dict[str, Any] | None = None,
     rolling_corr_peer_shock_paper_sleeve: dict[str, Any] | None = None,
     industry_relative_laggard_repair_paper_sleeve: dict[str, Any] | None = None,
+    industry_stable_core_flow_paper_sleeve: dict[str, Any] | None = None,
     ai_optical_paper_sleeve: dict[str, Any] | None = None,
     volatility_contraction_paper_sleeve: dict[str, Any] | None = None,
     volume_breadth_breakout_paper_sleeve: dict[str, Any] | None = None,
@@ -414,6 +415,54 @@ def build_default_off_alpha_attribution_report(
                 "uses_free_ohlcv_only": (
                     (
                         (industry_relative_laggard_repair_paper_sleeve or {}).get(
+                            "production_impact"
+                        )
+                        or {}
+                    ).get("uses_free_ohlcv_only")
+                ),
+            },
+        ),
+        _surface_summary(
+            name="industry_stable_core_flow",
+            label="INDUSTRY_STABLE_CORE_FLOW_PAPER",
+            snapshot=industry_stable_core_flow_paper_sleeve,
+            extra_metrics={
+                "rule_version": (
+                    (industry_stable_core_flow_paper_sleeve or {}).get("rule_version")
+                ),
+                "source_rule_version": (
+                    (industry_stable_core_flow_paper_sleeve or {}).get("source_rule_version")
+                ),
+                "raw_candidate_count": (
+                    (industry_stable_core_flow_paper_sleeve or {}).get("raw_candidate_count")
+                ),
+                "stable_industry_group_rows": (
+                    (
+                        (industry_stable_core_flow_paper_sleeve or {}).get(
+                            "industry_stable_core_flow_context"
+                        )
+                        or {}
+                    ).get("stable_industry_group_rows")
+                ),
+                "core_flow_confirmed_dates": (
+                    (
+                        (industry_stable_core_flow_paper_sleeve or {}).get(
+                            "industry_stable_core_flow_context"
+                        )
+                        or {}
+                    ).get("core_flow_confirmed_dates")
+                ),
+                "same_ticker_core_overlap_excluded": (
+                    (
+                        (industry_stable_core_flow_paper_sleeve or {}).get(
+                            "industry_stable_core_flow_context"
+                        )
+                        or {}
+                    ).get("same_ticker_core_overlap_excluded")
+                ),
+                "uses_free_ohlcv_only": (
+                    (
+                        (industry_stable_core_flow_paper_sleeve or {}).get(
                             "production_impact"
                         )
                         or {}

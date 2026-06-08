@@ -814,6 +814,43 @@ retune industry lag, group-strength, signal-day reclaim, top-N, hold days,
 cooldown, or notional on the frozen sample without closed forward rows or a
 materially new production-visible data edge.
 
+### `quant/industry_stable_core_flow_paper_sleeve.py`
+
+Purpose: maintain the default-off `INDUSTRY_STABLE_CORE_FLOW_PAPER` forward
+observation ledger for the accepted industry-stable core-flow lead from
+`exp-20260608-007` and the shared adapter promotion from `exp-20260608-008`.
+
+Candidate route:
+
+- Uses the broad-market free-OHLCV universe plus exact `SPY` OHLCV.
+- Groups liquid stocks by persisted public industry label, falling back to
+  sector when industry is missing.
+- Requires a strong, stable group: positive 20-day group excess return versus
+  `SPY`, adequate positive-member breadth, same-day group participation, bounded
+  dispersion, and bounded realized volatility.
+- Selects liquid stable leaders with 20-day excess return versus `SPY`,
+  positive lead versus the group median, non-negative 60-day excess return,
+  signal-day positive relative return, close-location, volume, 5-day extension,
+  and volatility guards.
+- Requires same-day selected core A/B entry flow from the production entry plan,
+  excludes same-ticker selected core overlap, emits top-1/day, fixed `$4,000`
+  paper notional, next-open paper entry, 10-trading-day close exit, costs, and
+  15-trading-day same-ticker cooldown.
+- Historical replay requires a future 10-trading-day exit row before a target
+  trade can be accepted; daily observation emits pending rows from same-day
+  known OHLCV only and mutates paper state only on exact `as_of` OHLCV rows.
+- Daily run emits industry-stable core-flow context, pending/open/closed paper
+  state, forward gate, default-off attribution surface, and human-report block.
+
+Agent rule: this sleeve may collect forward replacement-value evidence for the
+accepted alpha only. It must not enable orders, expand the core universe, alter
+live ranking, sizing, exits, watchlists, LLM/news prompts, or consume capital
+without a separate Gate 1-4 activation experiment and parity update. Do not
+retune core-flow admission, same-ticker overlap handling, industry-strength,
+stability, leader, close-location, volume, top-N, hold days, cooldown, or
+notional on the frozen sample without closed forward rows or a materially new
+production-visible data edge.
+
 ### `quant/ai_optical_paper_sleeve.py`
 
 Purpose: maintain the default-off `AI_OPTICAL_IWM_CONFIRMED_PAPER` forward

@@ -308,6 +308,10 @@ def main():
         build_industry_relative_laggard_repair_paper_sleeve_snapshot,
         empty_industry_relative_laggard_repair_paper_sleeve_snapshot,
     )
+    from industry_stable_core_flow_paper_sleeve import (
+        build_industry_stable_core_flow_snapshot,
+        empty_industry_stable_core_flow_snapshot,
+    )
     from ai_optical_paper_sleeve import (
         build_ai_optical_candidate_universe_from_universe_state,
         build_ai_optical_paper_sleeve_snapshot,
@@ -2898,6 +2902,49 @@ def main():
         )
 
     try:
+        if not broad_market_candidate_universe.get("tickers"):
+            industry_stable_core_flow_paper_sleeve = (
+                empty_industry_stable_core_flow_snapshot(
+                    today_iso,
+                    "broad_market_candidate_universe_unavailable",
+                )
+            )
+        else:
+            industry_stable_core_flow_ohlcv = dict(broad_market_ohlcv)
+            if "SPY" not in industry_stable_core_flow_ohlcv and spy_ohlcv is not None:
+                industry_stable_core_flow_ohlcv["SPY"] = spy_ohlcv
+            industry_stable_core_flow_paper_sleeve = (
+                build_industry_stable_core_flow_snapshot(
+                    as_of=today_iso,
+                    ohlcv_by_ticker=industry_stable_core_flow_ohlcv,
+                    core_entries=signals,
+                    candidate_universe=broad_market_candidate_universe,
+                )
+            )
+        if (
+            industry_stable_core_flow_paper_sleeve.get("candidate_count", 0) > 0
+            or industry_stable_core_flow_paper_sleeve.get("pending_count", 0) > 0
+            or industry_stable_core_flow_paper_sleeve.get("open_position_count", 0) > 0
+            or industry_stable_core_flow_paper_sleeve.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "Industry stable core-flow paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
+                industry_stable_core_flow_paper_sleeve.get("candidate_count", 0),
+                industry_stable_core_flow_paper_sleeve.get("pending_count", 0),
+                industry_stable_core_flow_paper_sleeve.get("open_position_count", 0),
+                industry_stable_core_flow_paper_sleeve.get("closed_count_today", 0),
+                industry_stable_core_flow_paper_sleeve.get("realized_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"Industry stable core-flow paper sleeve unavailable: {e}")
+        industry_stable_core_flow_paper_sleeve = (
+            empty_industry_stable_core_flow_snapshot(
+                today_iso,
+                "industry_stable_core_flow_paper_sleeve_build_failed",
+            )
+        )
+
+    try:
         crypto_sleeve = build_crypto_sleeve_advice(load_crypto_config())
         if crypto_sleeve.get("enabled"):
             crypto_action = crypto_sleeve.get("action", {}).get("action")
@@ -2938,6 +2985,7 @@ def main():
         volatility_relief_stock_leadership_paper_sleeve=volatility_relief_stock_leadership_paper_sleeve,
         rolling_corr_peer_shock_paper_sleeve=rolling_corr_peer_shock_paper_sleeve,
         industry_relative_laggard_repair_paper_sleeve=industry_relative_laggard_repair_paper_sleeve,
+        industry_stable_core_flow_paper_sleeve=industry_stable_core_flow_paper_sleeve,
         ai_optical_paper_sleeve=ai_optical_paper_sleeve,
         volatility_contraction_paper_sleeve=volatility_contraction_paper_sleeve,
         volume_breadth_breakout_paper_sleeve=volume_breadth_breakout_paper_sleeve,
@@ -2986,6 +3034,7 @@ def main():
     trend_signals_dict["volatility_relief_stock_leadership_paper_sleeve"] = volatility_relief_stock_leadership_paper_sleeve
     trend_signals_dict["rolling_corr_peer_shock_paper_sleeve"] = rolling_corr_peer_shock_paper_sleeve
     trend_signals_dict["industry_relative_laggard_repair_paper_sleeve"] = industry_relative_laggard_repair_paper_sleeve
+    trend_signals_dict["industry_stable_core_flow_paper_sleeve"] = industry_stable_core_flow_paper_sleeve
     trend_signals_dict["ai_optical_paper_sleeve"] = ai_optical_paper_sleeve
     trend_signals_dict["volatility_contraction_paper_sleeve"] = volatility_contraction_paper_sleeve
     trend_signals_dict["volume_breadth_breakout_paper_sleeve"] = volume_breadth_breakout_paper_sleeve
@@ -3042,6 +3091,7 @@ def main():
         volatility_relief_stock_leadership_paper_sleeve = volatility_relief_stock_leadership_paper_sleeve,
         rolling_corr_peer_shock_paper_sleeve = rolling_corr_peer_shock_paper_sleeve,
         industry_relative_laggard_repair_paper_sleeve = industry_relative_laggard_repair_paper_sleeve,
+        industry_stable_core_flow_paper_sleeve = industry_stable_core_flow_paper_sleeve,
         ai_optical_paper_sleeve = ai_optical_paper_sleeve,
         volatility_contraction_paper_sleeve = volatility_contraction_paper_sleeve,
         volume_breadth_breakout_paper_sleeve = volume_breadth_breakout_paper_sleeve,
@@ -3103,6 +3153,7 @@ def main():
         "volatility_relief_stock_leadership_paper_sleeve": volatility_relief_stock_leadership_paper_sleeve,
         "rolling_corr_peer_shock_paper_sleeve": rolling_corr_peer_shock_paper_sleeve,
         "industry_relative_laggard_repair_paper_sleeve": industry_relative_laggard_repair_paper_sleeve,
+        "industry_stable_core_flow_paper_sleeve": industry_stable_core_flow_paper_sleeve,
         "ai_optical_paper_sleeve": ai_optical_paper_sleeve,
         "volatility_contraction_paper_sleeve": volatility_contraction_paper_sleeve,
         "volume_breadth_breakout_paper_sleeve": volume_breadth_breakout_paper_sleeve,

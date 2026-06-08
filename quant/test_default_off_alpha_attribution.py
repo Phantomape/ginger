@@ -76,6 +76,25 @@ def test_default_off_alpha_attribution_rolls_up_blockers_without_orders():
                 "reasons": ["not_enough_closed_forward_paper_trades"],
             },
         },
+        industry_stable_core_flow_paper_sleeve={
+            "candidate_count": 1,
+            "raw_candidate_count": 4,
+            "pending_count": 1,
+            "trade_enabled": False,
+            "rule_version": "industry_stable_core_flow_shared_default_off_adapter_v1",
+            "source_rule_version": "industry_stable_core_flow_confirmed_candidate_source_v1",
+            "industry_stable_core_flow_context": {
+                "stable_industry_group_rows": 2,
+                "core_flow_confirmed_dates": 1,
+                "same_ticker_core_overlap_excluded": True,
+            },
+            "production_impact": {"uses_free_ohlcv_only": True},
+            "forward_paper_gate": {
+                "passed": False,
+                "status": "blocked",
+                "reasons": ["not_enough_closed_forward_paper_trades"],
+            },
+        },
     )
 
     assert report["read_only"] is True
@@ -89,9 +108,15 @@ def test_default_off_alpha_attribution_rolls_up_blockers_without_orders():
     rolling_surface = next(
         row for row in report["surfaces"] if row["name"] == "rolling_corr_peer_shock"
     )
+    stable_surface = next(
+        row for row in report["surfaces"] if row["name"] == "industry_stable_core_flow"
+    )
     assert rolling_surface["trade_enabled"] is False
     assert rolling_surface["extra_metrics"]["same_day_core_flow_required"] is True
     assert rolling_surface["extra_metrics"]["uses_free_ohlcv_only"] is True
+    assert stable_surface["trade_enabled"] is False
+    assert stable_surface["extra_metrics"]["core_flow_confirmed_dates"] == 1
+    assert stable_surface["extra_metrics"]["uses_free_ohlcv_only"] is True
     top_reasons = {row["reason"] for row in report["top_blockers"]}
     assert "closed_pilot_outcomes" in top_reasons
     assert "min_closed_trades" in top_reasons
@@ -160,6 +185,33 @@ def test_report_generator_renders_default_off_alpha_attribution():
                 }
             ],
         },
+        industry_stable_core_flow_paper_sleeve={
+            "candidate_count": 1,
+            "raw_candidate_count": 2,
+            "pending_count": 1,
+            "trade_enabled": False,
+            "paper_enabled": True,
+            "industry_stable_core_flow_context": {
+                "stable_industry_group_rows": 1,
+                "core_flow_confirmed_dates": 1,
+            },
+            "forward_paper_gate": {
+                "passed": False,
+                "status": "blocked",
+                "reasons": ["not_enough_closed_forward_paper_trades"],
+            },
+            "candidates": [
+                {
+                    "ticker": "LEAD",
+                    "candidate_group_key": "technology/software",
+                    "candidate_ret20_lead_vs_group": 0.04,
+                    "candidate_signal_relative_vs_spy": 0.02,
+                    "candidate_score": 1.91,
+                    "date": "2026-05-24",
+                    "paper_notional_usd": 4000.0,
+                }
+            ],
+        },
     )
 
     report = generate_daily_report(
@@ -209,6 +261,33 @@ def test_report_generator_renders_default_off_alpha_attribution():
                 }
             ],
         },
+        industry_stable_core_flow_paper_sleeve={
+            "candidate_count": 1,
+            "raw_candidate_count": 2,
+            "pending_count": 1,
+            "trade_enabled": False,
+            "paper_enabled": True,
+            "industry_stable_core_flow_context": {
+                "stable_industry_group_rows": 1,
+                "core_flow_confirmed_dates": 1,
+            },
+            "forward_paper_gate": {
+                "passed": False,
+                "status": "blocked",
+                "reasons": ["not_enough_closed_forward_paper_trades"],
+            },
+            "candidates": [
+                {
+                    "ticker": "LEAD",
+                    "candidate_group_key": "technology/software",
+                    "candidate_ret20_lead_vs_group": 0.04,
+                    "candidate_signal_relative_vs_spy": 0.02,
+                    "candidate_score": 1.91,
+                    "date": "2026-05-24",
+                    "paper_notional_usd": 4000.0,
+                }
+            ],
+        },
     )
 
     assert "DEFAULT-OFF ALPHA ATTRIBUTION" in report
@@ -220,3 +299,6 @@ def test_report_generator_renders_default_off_alpha_attribution():
     assert "ROLLING-CORR PEER-SHOCK PAPER SLEEVE" in report
     assert "Core flow required: True" in report
     assert "peer=PEER" in report
+    assert "INDUSTRY STABLE CORE-FLOW PAPER SLEEVE" in report
+    assert "Core-flow dates: 1" in report
+    assert "group=technology/software" in report

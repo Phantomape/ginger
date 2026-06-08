@@ -102,6 +102,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            volatility_relief_stock_leadership_paper_sleeve=None,
                            rolling_corr_peer_shock_paper_sleeve=None,
                            industry_relative_laggard_repair_paper_sleeve=None,
+                           industry_stable_core_flow_paper_sleeve=None,
                            ai_optical_paper_sleeve=None,
                            volatility_contraction_paper_sleeve=None,
                            volume_breadth_breakout_paper_sleeve=None,
@@ -155,6 +156,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         volatility_relief_stock_leadership_paper_sleeve (dict): Default-off VIXY volatility-relief stock leadership paper sleeve
         rolling_corr_peer_shock_paper_sleeve (dict): Default-off rolling-correlation peer-shock paper sleeve
         industry_relative_laggard_repair_paper_sleeve (dict): Default-off industry-relative laggard repair paper sleeve
+        industry_stable_core_flow_paper_sleeve (dict): Default-off industry stable core-flow paper sleeve
         ai_optical_paper_sleeve (dict): Default-off AI optical IWM-confirmed paper sleeve
         volatility_contraction_paper_sleeve (dict): Default-off QQQ-confirmed volatility-contraction paper sleeve
         volume_breadth_breakout_paper_sleeve (dict): Default-off volume-breadth breakout paper sleeve
@@ -2256,6 +2258,71 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"group={candidate.get('candidate_group_key')} "
                 f"lag20={candidate.get('candidate_industry_lag_20d')} "
                 f"repair5={candidate.get('candidate_repair_vs_group_5d')} "
+                f"score={candidate.get('candidate_score')} "
+                f"signal={candidate.get('signal_date', candidate.get('date'))} "
+                f"notional={notional_text} (paper only)"
+            )
+
+    if industry_stable_core_flow_paper_sleeve and (
+        industry_stable_core_flow_paper_sleeve.get("candidate_count", 0) > 0
+        or industry_stable_core_flow_paper_sleeve.get("pending_count", 0) > 0
+        or industry_stable_core_flow_paper_sleeve.get("open_position_count", 0) > 0
+        or industry_stable_core_flow_paper_sleeve.get("closed_count_today", 0) > 0
+        or industry_stable_core_flow_paper_sleeve.get("closed_position_count", 0) > 0
+        or industry_stable_core_flow_paper_sleeve.get("error")
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("INDUSTRY STABLE CORE-FLOW PAPER SLEEVE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Paper: {industry_stable_core_flow_paper_sleeve.get('paper_enabled', False)}  |  "
+            f"Trade enabled: {industry_stable_core_flow_paper_sleeve.get('trade_enabled', False)}"
+        )
+        if industry_stable_core_flow_paper_sleeve.get("error"):
+            lines.append(
+                f"  Source status: {industry_stable_core_flow_paper_sleeve.get('error')}"
+            )
+        context = industry_stable_core_flow_paper_sleeve.get(
+            "industry_stable_core_flow_context"
+        ) or {}
+        lines.append(
+            f"  Source: free OHLCV  |  "
+            f"Stable groups: {context.get('stable_industry_group_rows', 0)}  |  "
+            f"Core-flow dates: {context.get('core_flow_confirmed_dates', 0)}  |  "
+            f"Raw candidates: {industry_stable_core_flow_paper_sleeve.get('raw_candidate_count', 0)}"
+        )
+        lines.append(
+            f"  Candidates: {industry_stable_core_flow_paper_sleeve.get('candidate_count', 0)}  |  "
+            f"Rejected: {industry_stable_core_flow_paper_sleeve.get('rejected_candidate_count', 0)}  |  "
+            f"Pending: {industry_stable_core_flow_paper_sleeve.get('pending_count', 0)}  |  "
+            f"Open: {industry_stable_core_flow_paper_sleeve.get('open_position_count', 0)}  |  "
+            f"Closed today: {industry_stable_core_flow_paper_sleeve.get('closed_count_today', 0)}"
+        )
+        lines.append(
+            "  Realized paper P&L: "
+            f"${industry_stable_core_flow_paper_sleeve.get('realized_pnl_to_date', 0.0):,.2f}  |  "
+            f"Unrealized: ${industry_stable_core_flow_paper_sleeve.get('unrealized_pnl', 0.0):,.2f}"
+        )
+        gate = industry_stable_core_flow_paper_sleeve.get("forward_paper_gate") or {}
+        if gate:
+            reasons = gate.get("reasons") or []
+            reason_text = ", ".join(reasons) if reasons else "none"
+            lines.append(
+                f"  Forward gate: {gate.get('status', 'unknown')}  |  "
+                f"closed={gate.get('closed_trade_count', 0)} "
+                f"pnl=${gate.get('net_pnl', 0.0):,.2f}  |  "
+                f"blocked_by={reason_text}"
+            )
+        for candidate in (industry_stable_core_flow_paper_sleeve.get("candidates") or [])[:5]:
+            notional = candidate.get("paper_notional_usd") or candidate.get("intended_notional")
+            notional_text = (
+                f"${notional:,.0f}" if isinstance(notional, (int, float)) else "n/a"
+            )
+            lines.append(
+                f"  {candidate.get('ticker', '?')}: "
+                f"group={candidate.get('candidate_group_key')} "
+                f"lead20={candidate.get('candidate_ret20_lead_vs_group')} "
+                f"rel_spy={candidate.get('candidate_signal_relative_vs_spy')} "
                 f"score={candidate.get('candidate_score')} "
                 f"signal={candidate.get('signal_date', candidate.get('date'))} "
                 f"notional={notional_text} (paper only)"
