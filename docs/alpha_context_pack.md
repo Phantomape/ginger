@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1088`
-- Raw records loaded by meta report: `1495`
-- History fingerprint: `6fb9844bc4cdccd0`
+- Strategy records counted: `1091`
+- Raw records loaded by meta report: `1498`
+- History fingerprint: `7f4fabdb7d3a7626`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -62,12 +62,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260608-012` `positive_replay_lead_not_promoted_narrow_range_compression_breakout`: EV `+0.1608`, PnL `$2,248.98`, family `production_visible_free_ohlcv_candidate_pool`, trial `narrow_range_compression_breakout_candidate_pool`.
-  Lesson: The fixed compression-to-expansion source improved all three windows because it selected only 44 liquid top-ranked rows after prior range compression, signal-day range expansion, volume, high-close, SPY-relative trend...
-- `exp-20260608-013` `accepted_narrow_range_compression_breakout_shared_default_off_adapter`: EV `+0.1608`, PnL `$2,248.98`, family `production_visible_free_ohlcv_candidate_pool`, trial `narrow_range_compression_breakout_shared_default_off_adapter`.
-  Lesson: The shared helper reproduced the private replay lead because it kept the exact compression, range-expansion, volume, high-close, SPY-relative trend, next-open entry, 10-day exit, cost, top-1, cooldown, and same-ticker...
-- `exp-20260608-014` `rejected_companyfacts_quality_compression_breakout_candidate_pool`: EV `-0.0349`, PnL `$-379.32`, family `companyfacts_quality_candidate_pool_scout`, trial `companyfacts_quality_compression_breakout_candidate_pool`.
-  Lesson: The fixed quality overlay either made the compression source too sparse or selected filings whose fundamental confirmation lagged the price absorption event, so the three-window EV/PnL replacement value did not surviv...
 - `exp-20260608-015` `rejected_low_deployment_stock_leadership_candidate_pool`: EV `+0.3435`, PnL `$7,376.74`, family `production_visible_free_ohlcv_candidate_pool`, trial `low_deployment_stock_leadership_candidate_pool`.
   Lesson: The fixed source was directionally positive in all three windows but underpowered: it found 1077 raw candidates across 152 low-deployment days, yet only 17 closed target trades survived the one-open-position, top-1, c...
 - `exp-20260608-016` `rejected_accumulation_base_breakout_candidate_pool`: EV `+0.7278`, PnL `$6,710.05`, family `production_visible_free_ohlcv_candidate_pool`, trial `ticker_accumulation_base_breakout_candidate_pool`.
@@ -86,6 +80,12 @@ facts before changing strategy behavior.
   Lesson: Sector-level peer shocks did not add enough ticker-specific relation information beyond broad sector beta. The accepted rolling-corr peer-shock route likely works because it combines ticker-pair specificity with core-...
 - `exp-20260608-024` `rejected_accumulation_base_core_flow_confirmed_candidate_pool`: EV `-0.0908`, PnL `$-2,193.00`, family `production_visible_free_ohlcv_relation_alpha`, trial `accumulation_base_core_flow_confirmation`.
   Lesson: Core-flow confirmation did not make the accumulation-base source robust enough. It either thinned the useful winners, kept the old-window tail, or selected dates where the core stack already owned the cleaner demand s...
+- `exp-20260608-025` `rejected_same_industry_characteristic_peer_shock_candidate_pool`: EV `+0.1070`, PnL `$286.58`, family `production_visible_free_ohlcv_relation_alpha`, trial `same_industry_characteristic_peer_shock_candidate_pool`.
+  Lesson: Same-industry characteristic similarity is more specific than sector transfer, but it may still not encode the actual economic link or may remove too many usable rows. The accepted rolling-corr route likely works beca...
+- `exp-20260608-026` `rejected_industry_laggard_lagged_consensus_did_not_beat_accepted_lagged_comparator`: EV `-0.0060`, PnL `$217.23`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_new_independent_source_family`.
+  Lesson: The variant did not beat the current accepted lagged consensus comparator across all three canonical windows.
+- `exp-20260608-027` `rejected_sec_event_provenanced_peer_shock_candidate_pool`: EV `+0.1165`, PnL `$1,291.76`, family `relation_aware_event_peer_shock`, trial `sec_event_provenanced_peer_shock`.
+  Lesson: SEC event provenance improves auditability but may still be too thin and semantically mixed. The accepted rolling-corr peer shock likely works because relation specificity and core-flow confirmation are both present;...
 
 ## Highest-Signal Historical Records
 

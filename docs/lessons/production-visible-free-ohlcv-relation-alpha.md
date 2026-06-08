@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `24`
-- Accepted / rejected: `3` / `18`
-- Accept rate: `12.50%`
-- Sum EV delta: `+4.0615`
-- Sum PnL delta: `$62,395.58`
-- Latest: `exp-20260608-024` `rejected_accumulation_base_core_flow_confirmed_candidate_pool` with EV `-0.0908` and PnL `$-2,193.00`.
+- Experiments: `25`
+- Accepted / rejected: `3` / `19`
+- Accept rate: `12.00%`
+- Sum EV delta: `+4.1685`
+- Sum PnL delta: `$62,682.16`
+- Latest: `exp-20260608-025` `rejected_same_industry_characteristic_peer_shock_candidate_pool` with EV `+0.1070` and PnL `$286.58`.
 
 ## Retained Or Positive Evidence
 
@@ -24,8 +24,6 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260607-022` `rejected_crypto_etf_thrust_proxy_stock_leadership_candidate_pool`: EV `-0.1716`, PnL `$163.72`, family `production_visible_free_ohlcv_relation_alpha`, trial `crypto_etf_thrust_proxy_stock_leadership_candidate_pool`.
-  Lesson: The source failed to add robust replacement value after next-open entry and costs. That suggests crypto ETF thrust did not reliably separate durable proxy-stock leadership from high-beta chase in the canonical windows...
 - `exp-20260608-001` `rejected_copper_growth_stock_leadership_candidate_pool`: EV `+0.0944`, PnL `$-581.06`, family `production_visible_free_ohlcv_relation_alpha`, trial `copper_growth_stock_leadership_candidate_pool`.
   Lesson: Gate 4 observed 83 target trades; old_thin changed by -0.0766 EV and $-3,182.95. If rejected, the after-cost next-open edge was either already priced by the signal close, too close to cyclical sector beta, or missing...
 - `exp-20260608-002` `rejected_oil_cost_relief_travel_leadership_candidate_pool`: EV `-0.0839`, PnL `$-1,428.38`, family `production_visible_free_ohlcv_relation_alpha`, trial `oil_cost_relief_travel_leadership_candidate_pool`.
@@ -40,6 +38,8 @@ records before making strategy changes.
   Lesson: Sector-level peer shocks did not add enough ticker-specific relation information beyond broad sector beta. The accepted rolling-corr peer-shock route likely works because it combines ticker-pair specificity with core-...
 - `exp-20260608-024` `rejected_accumulation_base_core_flow_confirmed_candidate_pool`: EV `-0.0908`, PnL `$-2,193.00`, family `production_visible_free_ohlcv_relation_alpha`, trial `accumulation_base_core_flow_confirmation`.
   Lesson: Core-flow confirmation did not make the accumulation-base source robust enough. It either thinned the useful winners, kept the old-window tail, or selected dates where the core stack already owned the cleaner demand s...
+- `exp-20260608-025` `rejected_same_industry_characteristic_peer_shock_candidate_pool`: EV `+0.1070`, PnL `$286.58`, family `production_visible_free_ohlcv_relation_alpha`, trial `same_industry_characteristic_peer_shock_candidate_pool`.
+  Lesson: Same-industry characteristic similarity is more specific than sector transfer, but it may still not encode the actual economic link or may remove too many usable rows. The accepted rolling-corr route likely works beca...
 
 ## Retry Discipline
 
@@ -52,17 +52,18 @@ records before making strategy changes.
   Latest failure: `exp-20260608-005` aggregate_pnl_not_positive; window_ev_regression; window_pnl_regression; drawdown_drift_too_high
 - `oil_cost_relief_travel_leadership_candidate_pool` / `oil_cost_relief_travel_leadership_candidate_source_v1`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260608-002`.
   Latest failure: `exp-20260608-002` aggregate_ev_not_positive; aggregate_pnl_not_positive; window_ev_regression; window_pnl_regression; fewer_than_two_ev_improved_windows
+- `same_industry_characteristic_peer_shock_candidate_pool` / `same_industry_characteristic_peer_shock_candidate_source_v1`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260608-025`.
+  Latest failure: `exp-20260608-025` window_ev_regression; window_pnl_regression; drawdown_drift_too_high; accepted_peer_shock_ev_not_beaten; accepted_peer_shock_pnl_not_beaten
 - `accumulation_base_core_flow_confirmation` / `accumulation_base_core_flow_confirmed_candidate_source_v1`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260608-024`.
   Latest failure: `exp-20260608-024` aggregate_ev_not_positive; aggregate_pnl_not_positive; window_ev_regression; window_pnl_regression; fewer_than_two_ev_improved_windows
 - `industry_dispersion_compression_repair_candidate_pool` / `industry_dispersion_compression_repair_candidate_source_v1`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260607-012`.
   Latest failure: `exp-20260607-012` window_ev_regression; window_pnl_regression; drawdown_drift_too_high
-- `industry_relative_laggard_repair_shared_default_off_adapter` / `industry_relative_laggard_repair_shared_default_off_adapter_v1`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260607-008`.
 
 ## Recent Raw Records
 
-- `exp-20260608-005` source `experiments/logs/exp-20260608-005.json`.
 - `exp-20260608-007` source `experiments/logs/exp-20260608-007.json`.
 - `exp-20260608-008` source `experiments/logs/exp-20260608-008.json`.
 - `exp-20260608-010` source `experiments/logs/exp-20260608-010.json`.
 - `exp-20260608-023` source `experiments/logs/exp-20260608-023.json`.
 - `exp-20260608-024` source `experiments/logs/exp-20260608-024.json`.
+- `exp-20260608-025` source `experiments/logs/exp-20260608-025.json`.
