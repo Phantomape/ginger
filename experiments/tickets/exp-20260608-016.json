@@ -1,0 +1,94 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260608_016_accumulation_base_breakout.py",
+    "data/experiments/exp-20260608-016/exp_20260608_016_accumulation_base_breakout.json",
+    "experiments/cards/exp-20260608-016.md",
+    "experiments/manifests/exp-20260608-016.json",
+    "experiments/tickets/exp-20260608-016.json",
+    "experiments/logs/exp-20260608-016.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260608-016.md",
+  "causal_components": [
+    "private replay scout",
+    "canonical three-window before-after artifact",
+    "experiment log"
+  ],
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "ticker_accumulation_base_breakout_candidate_source_v1",
+  "claimed_at": "2026-06-08T15:07:05+00:00",
+  "completed_at": "2026-06-08T15:14:40Z",
+  "created_at": "2026-06-08T15:06:50+00:00",
+  "decision": "rejected_accumulation_base_breakout_candidate_pool",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260608-016",
+  "experiment_uid": "expuid-949b70c1ac204405",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260608-016",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-08T15:06:50+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "accumulation_base_breakout"
+  },
+  "hypothesis": "Ticker-level accumulation-base breakouts with positive up-volume balance before a volume-confirmed high close may expand the default-off candidate pool beyond range-compression and broad market breadth signals.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "ticker_accumulation_base_breakout_candidate_source_v1"
+  ],
+  "mechanism_family": "default_off_paper_candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260526-014",
+    "exp-20260606-015",
+    "exp-20260608-012",
+    "exp-20260608-013"
+  ],
+  "new_evidence_type": "new_production_visible_ohlcv_accumulation_volume_field",
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "confidence_reason": "Prior free-OHLCV adapter wins came from production-visible candidate pools, but raw momentum and many ETF/proxy variants failed. This tests ticker-level accumulation volume balance as a materially different discriminator from range compression or market volume breadth.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "ohlcv_momentum_relabel",
+      "window_regression",
+      "drawdown_drift",
+      "target_sample_too_small",
+      "concentration_failed",
+      "nearby_compression_overlap"
+    ],
+    "recorded_at": "2026-06-08T15:06:36+00:00",
+    "success_probability": 0.15
+  },
+  "prior_trial_count": 4,
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": 0.7278,
+    "aggregate_strategy_total_pnl_delta": 6710.05,
+    "artifact": "data/experiments/exp-20260608-016/exp_20260608_016_accumulation_base_breakout.json",
+    "calibration": {
+      "actual_gate4_passed": false,
+      "brier_score": 0.0225,
+      "failure_modes_observed": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "drawdown_drift_too_high"
+      ],
+      "predicted_success_probability": 0.15
+    },
+    "decision": "rejected_accumulation_base_breakout_candidate_pool",
+    "log": "experiments/logs/exp-20260608-016.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260608-016.json",
+  "single_causal_variable": "ticker_accumulation_base_breakout_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The ticker-level accumulation-base breakout source did not clear Gate 4. Do not promote or locally retune this OHLCV accumulation family on the frozen windows.",
+  "ticket_file": "experiments/tickets/exp-20260608-016.json",
+  "trial_family": "ticker_accumulation_base_breakout_candidate_pool",
+  "trial_variant_id": "exp-20260608-016"
+}
