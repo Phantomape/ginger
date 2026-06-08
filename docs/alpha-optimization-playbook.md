@@ -1,6 +1,6 @@
 # Alpha Optimization Playbook
 
-Last refreshed: 2026-06-07.
+Last refreshed: 2026-06-08.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -629,6 +629,17 @@ Candidate relation sources:
 - early peer earnings reaction;
 - source-family propagation with explicit timestamp and source provenance;
 - correlation-network stress clusters for risk, not direct alpha.
+
+**exp-20260608-001 finding**: Companyfacts-based fundamental quality filter on
+industry laggard repair was tested but rejected (thin_sample, late_strong
+regression). Only ~48 tickers have SEC Companyfacts revenue data loaded; 29K+
+candidates filtered per day for missing data. Two windows improved
+(mid_weak +0.13 EV, old_thin +0.02 EV), but late_strong regressed (-0.10 EV).
+The hypothesis may be valid with broader Companyfacts coverage. Do NOT retry
+by sweeping revenue growth threshold, hold days, lag bounds, or group size on
+these frozen windows. Retry requires loading Companyfacts data for at least the
+top-500 OHLCV universe tickers (run the full SEC EDGAR companyfacts pipeline
+for more tickers before repeating this experiment family).
 
 Minimum fields:
 

@@ -1,0 +1,99 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260608_001_fundamental_cluster_laggard_repair.py",
+    "data/experiments/exp-20260608-001/exp_20260608_001_fundamental_cluster_laggard_repair.json",
+    "experiments/cards/exp-20260608-001.md",
+    "experiments/manifests/exp-20260608-001.json",
+    "experiments/tickets/exp-20260608-001.json",
+    "experiments/logs/exp-20260608-001.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260608-001.md",
+  "causal_components": [
+    "fundamental_cluster_definition",
+    "laggard_selection",
+    "paper_sleeve"
+  ],
+  "change_type": "default_off_paper_allocation",
+  "changed_variable": "peer_relation_source_bucket=fundamental_cluster_laggard_repair_v1",
+  "claimed_at": null,
+  "completed_at": "2026-06-08T16:56:48+00:00",
+  "created_at": "2026-06-08T16:25:31+00:00",
+  "decision": "rejected_fundamental_cluster_laggard_repair_candidate_pool",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260608-001",
+  "experiment_uid": "expuid-e160c855aeae4670",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260608-001",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-08T16:25:31+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "fundamental_cluster_laggard_repair"
+  },
+  "hypothesis": "Within sectors showing positive group momentum, stocks grouped by fundamental similarity (revenue growth quintile from Companyfacts) form more homogeneous peer clusters than GICS sector labels alone; a laggard within its fundamental-similarity cluster that repairs on the signal day shows positive catch-up alpha across canonical windows.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "peer_relation_source_bucket=fundamental_cluster_laggard_repair_v1"
+  ],
+  "mechanism_family": "default_off_paper_allocation",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "owner": null,
+  "prediction": {
+    "confidence_reason": "Companyfacts revenue growth quintile creates more homogeneous peer clusters than GICS sector labels, reducing noise in peer-lag signal; prior accepted mechanisms (rolling-corr peer shock +0.38 EV, industry laggard repair +0.28 EV) show OHLCV peer dynamics have edge; fundamental similarity adds a new independent dimension not yet captured.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "thin_sample",
+      "old_thin_regression",
+      "concentration_failed",
+      "fundamental_data_sparsity"
+    ],
+    "recorded_at": "2026-06-08T16:25:18+00:00",
+    "success_probability": 0.25
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "after_result_file": "data/experiments/exp-20260608-001/exp_20260608_001_fundamental_cluster_laggard_repair.json",
+    "delta_metrics": {},
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.25,
+      "brier_score": 0.0625,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "low",
+      "expected_ev_delta": null,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": null,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "thin_sample",
+        "old_thin_regression",
+        "concentration_failed",
+        "fundamental_data_sparsity"
+      ],
+      "realized_failure_mode": "thin_sample,window_regression",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "Companyfacts coverage limited to ~48 tickers; 29K+ candidates filtered per day for no_data. Two of three windows improved (mid_weak +0.13 EV, old_thin +0.02 EV) but late_strong regressed (-0.10 EV). Confirms data sparsity is the binding constraint."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260608-001.json",
+  "single_causal_variable": "peer_relation_source_bucket=fundamental_cluster_laggard_repair_v1",
+  "status": "rejected",
+  "summary": "The fundamental cluster laggard repair source did not clear Gate 4. The most likely cause is thin sample from limited Companyfacts coverage (~48 tickers). Do not retry by sweeping growth threshold, hold days, laggard lag bounds, or notional on these frozen windows.",
+  "ticket_file": "experiments/tickets/exp-20260608-001.json",
+  "trial_family": "default_off_paper_allocation",
+  "trial_variant_id": "exp-20260608-001"
+}
