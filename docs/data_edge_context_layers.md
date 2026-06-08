@@ -851,6 +851,39 @@ stability, leader, close-location, volume, top-N, hold days, cooldown, or
 notional on the frozen sample without closed forward rows or a materially new
 production-visible data edge.
 
+### `quant/narrow_range_compression_breakout_paper_sleeve.py`
+
+Purpose: maintain the default-off
+`NARROW_RANGE_COMPRESSION_BREAKOUT_PAPER` forward observation ledger for the
+positive narrow-range compression breakout lead from `exp-20260608-012` and
+the shared adapter promotion from `exp-20260608-013`.
+
+Candidate route:
+
+- Uses the broad-market free-OHLCV universe plus exact `SPY` OHLCV.
+- Requires persisted public sector coverage and liquid stock filters
+  (`price >= $10`, `ADV20 >= $50m`).
+- Requires prior 10-day median range compression versus the prior 40-day
+  reference range, then signal-day range expansion, positive signal-day
+  return, high close-location, and volume confirmation.
+- Requires 20-day and 60-day excess return versus `SPY` guards, bounded
+  5-day and 20-day extension, and bounded realized volatility.
+- Excludes same-ticker selected core overlap, emits top-1/day, fixed `$4,000`
+  paper notional, next-open paper entry, 10-trading-day close exit, costs, and
+  10-trading-day same-ticker cooldown.
+- Historical replay requires a future 10-trading-day exit row before a target
+  trade can be accepted; daily observation may emit same-day pending rows
+  without future bars and mutates paper state only on exact `as_of` OHLCV rows.
+
+Agent rule: this sleeve may collect forward replacement-value evidence for the
+accepted alpha only. It must not enable orders, expand the core universe, alter
+live ranking, sizing, exits, watchlists, LLM/news prompts, or consume capital
+without a separate Gate 1-4 activation experiment and parity update. Do not
+retune range lookbacks, compression ratio, expansion ratio, volume,
+close-location, extension, top-N, hold days, cooldown, or notional on the
+frozen sample without closed forward rows or a materially new production-visible
+data edge.
+
 ### `quant/ai_optical_paper_sleeve.py`
 
 Purpose: maintain the default-off `AI_OPTICAL_IWM_CONFIRMED_PAPER` forward

@@ -1,0 +1,91 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "data/experiments/exp-20260608-013/exp_20260608_013_narrow_range_compression_shared_adapter.json",
+    "docs/data_edge_context_layers.md",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/production_backtest_parity.md",
+    "experiments/cards/exp-20260608-013.md",
+    "experiments/logs/exp-20260608-013.json",
+    "experiments/manifests/exp-20260608-013.json",
+    "experiments/tickets/exp-20260608-013.json",
+    "quant/experiments/exp_20260608_013_narrow_range_compression_shared_adapter.py",
+    "quant/narrow_range_compression_breakout_paper_sleeve.py",
+    "quant/test_narrow_range_compression_breakout_paper_sleeve.py"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260608-013.md",
+  "causal_components": [
+    "shared helper",
+    "historical replay",
+    "daily snapshot",
+    "parity tests",
+    "artifact/log"
+  ],
+  "change_type": "default_off_paper_adapter",
+  "changed_variable": "narrow_range_compression_breakout_shared_default_off_adapter_v1",
+  "claimed_at": "2026-06-08T12:05:23+00:00",
+  "completed_at": "2026-06-08T12:18:06Z",
+  "created_at": "2026-06-08T12:05:00+00:00",
+  "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260608-013",
+  "experiment_uid": "expuid-7dde71ca00344bb1",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260608-013",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-08T12:05:00+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "narrow_range_compression_shared_adapter"
+  },
+  "hypothesis": "Promote the positive narrow-range compression breakout replay lead into a shared default-off paper helper so historical replay and daily snapshot use the same production-visible free-OHLCV rule.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "narrow_range_compression_breakout_shared_default_off_adapter_v1"
+  ],
+  "mechanism_family": "default_off_paper_adapter",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260608-012"
+  ],
+  "new_evidence_type": "shared_default_off_helper_reproduces_positive_replay_lead",
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "confidence_reason": "The private replay lead passed all three canonical windows, but acceptance requires shared historical and daily semantics; no threshold retune is being attempted.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "shared_helper_drift",
+      "production_snapshot_gap",
+      "drawdown_or_window_regression",
+      "thin_forward_surface"
+    ],
+    "recorded_at": "2026-06-08T12:04:53+00:00",
+    "success_probability": 0.55
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "aggregate_expected_value_delta": 0.1608,
+    "aggregate_strategy_total_pnl_delta": 2248.98,
+    "artifact": "data/experiments/exp-20260608-013/exp_20260608_013_narrow_range_compression_shared_adapter.json",
+    "calibration": {
+      "actual_gate4_passed": true,
+      "brier_score": 0.3025,
+      "failure_modes_observed": [],
+      "predicted_success_probability": 0.45
+    },
+    "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+    "log": "experiments/logs/exp-20260608-013.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260608-013.json",
+  "single_causal_variable": "narrow_range_compression_breakout_shared_default_off_adapter_v1",
+  "status": "accepted",
+  "summary": "The positive narrow-range compression breakout lead reproduced through a shared default-off helper and daily snapshot API.",
+  "ticket_file": "experiments/tickets/exp-20260608-013.json",
+  "trial_family": "narrow_range_compression_breakout_shared_adapter",
+  "trial_variant_id": "exp-20260608-013"
+}
