@@ -1,0 +1,122 @@
+{
+  "acceptance_rule": "docs/backtesting.md three canonical windows; aggregate EV/PnL positive; no window EV/PnL regression; >=20 trades across all 3 windows; survival >=5%; drawdown drift <=0.5pp; concentration pass; replay-only result cannot be production accepted without shared helper parity",
+  "allowed_write_scope": [
+    "data/experiments",
+    "data/experiments/exp-20260608-009/exp_20260608_009_accepted_relation_helper_consensus.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "experiments",
+    "experiments/cards/exp-20260608-009.md",
+    "experiments/logs/exp-20260608-009.json",
+    "experiments/manifests/exp-20260608-009.json",
+    "experiments/tickets/exp-20260608-009.json",
+    "quant/experiments",
+    "quant/experiments/exp_20260608_009_accepted_relation_helper_consensus.py"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260608-009.md",
+  "causal_components": [
+    "fixed accepted helper outputs",
+    "same-day same-industry support",
+    "top1 daily consensus selection",
+    "15 trading-day same-ticker cooldown",
+    "replay-only paper overlay"
+  ],
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "accepted_relation_helper_same_day_industry_consensus_candidate_source_v1",
+  "claimed_at": "2026-06-08T08:14:26+00:00",
+  "completed_at": "2026-06-08T08:31:45Z",
+  "created_at": "2026-06-08T08:14:03+00:00",
+  "decision": "rejected_accepted_relation_helper_consensus",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260608-009",
+  "experiment_uid": "expuid-26a4376f66cf41dd",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260608-009",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-08T08:14:03+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "accepted_relation_helper_consensus"
+  },
+  "hypothesis": "Accepted default-off relation helpers may be more predictive when two or more fixed helper families independently emit same-day same-industry candidates, because cross-helper agreement may identify real displacement rather than one sleeve's idiosyncratic noise.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "accepted_relation_helper_same_day_industry_consensus_candidate_source_v1"
+  ],
+  "mechanism_family": "relation_aware_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/run.py",
+    "live/default orders",
+    "core ranking",
+    "sizing",
+    "exits",
+    "LLM/news behavior"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260608-008",
+    "exp-20260607-008",
+    "exp-20260606-025",
+    "exp-20260607-019",
+    "exp-20260604-009"
+  ],
+  "new_evidence_type": "production_visible_free_data_cross_helper_relation_overlap",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "Recent accepted relation helpers prove free OHLCV relation sources can work, but cross-helper overlap is likely sparse and may mostly duplicate laggard repair/stable core-flow timing rather than add independent replacement value.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "sample_too_thin",
+      "window_regression",
+      "accepted_comparator_not_beaten",
+      "drawdown_drift",
+      "consensus_relabels_single_helper_noise"
+    ],
+    "recorded_at": "2026-06-08T08:13:49+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": 0.0015,
+    "aggregate_strategy_total_pnl_delta": -431.22,
+    "artifact": "data/experiments/exp-20260608-009/exp_20260608_009_accepted_relation_helper_consensus.json",
+    "calibration": {
+      "actual_gate4_passed": false,
+      "brier_score": 0.0324,
+      "failure_modes_observed": [
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "target_sample_too_small",
+        "target_concentration_failed"
+      ],
+      "predicted_success_probability": 0.18
+    },
+    "decision": "rejected_accepted_relation_helper_consensus",
+    "log": "experiments/logs/exp-20260608-009.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260608-009.json",
+  "single_causal_variable": "accepted_relation_helper_same_day_industry_consensus_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The same-day same-industry helper-consensus candidate pool failed Gate 4: overlap was too sparse and two windows regressed. Do not retry this fixed consensus definition by only changing top-N, cooldown, hold days, or notional.",
+  "ticket_file": "experiments/tickets/exp-20260608-009.json",
+  "trial_family": "accepted_relation_helper_consensus",
+  "trial_variant_id": "accepted_relation_helper_same_day_industry_consensus_candidate_source_v1",
+  "updated_at": "2026-06-08T08:31:45Z"
+}
