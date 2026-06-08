@@ -1,0 +1,216 @@
+"""Unit tests for the full-stack candidate-pool verdict helper.
+
+Covers the execution envelope completeness checklist, the AGENTS.md scout
+materiality floor, the Gate-4 composition over evaluate_experiment_promotion_gate,
+the codified Gate-5 live-readiness check, and the three-rung verdict ladder
+(including the two operator-confirmed decisions: forward-immature Gate-4 pass
+lands at accepted_paper_pending_forward, and an incomplete envelope blocks
+live_eligible only).
+
+No JavaScript was used.
+"""
+
+from __future__ import annotations
+
+from quant.full_stack_candidate_pool import (
+    ExecutionEnvelope,
+    evaluate_gate4,
+    evaluate_live_readiness,
+    evaluate_materiality,
+    full_stack_verdict,
+)
+
+
+def _pass_metrics(**overrides):
+    """A window-metrics dict that passes Gate 4 + materiality."""
+    base = {
+        "aggregate_ev_delta": 0.31,
+        "aggregate_pnl_delta": 5000.0,
+        "windows_ev_improved": 3,
+        "windows_ev_regressed": 0,
+        "adjusted_trade_count": 40,
+        "adjusted_window_count": 3,
+        "max_drawdown_worse_max": 0.001,
+        "single_ticker_positive_share": 0.30,
+        "baseline_single_ticker_positive_share": 0.32,
+        "top_5_contribution_pct": 0.45,
+        "baseline_top_5_contribution_pct": 0.50,
+        "hhi_concentration": 0.10,
+        "baseline_hhi_concentration": 0.12,
+        "avg_pnl_per_trade_delta": 600.0,
+        "avg_return_delta_pp": 6.0,
+    }
+    base.update(overrides)
+    return base
+
+
+def _full_envelope():
+    return ExecutionEnvelope(
+        base_notional=10_000.0,
+        max_capital_pct=0.05,
+        min_dollar_volume=2_000_000.0,
+        slippage_bps=10.0,
+        max_displacement=2,
+        max_concurrent=5,
+        order_semantics="next_open",
+        kill_switch_drawdown_pct=0.08,
+        sleeve_drawdown_stop_pct=0.12,
+    )
+
+
+# --- envelope ---------------------------------------------------------------
+
+def test_envelope_missing_lists_all_required_when_empty():
+    env = ExecutionEnvelope()
+    missing = env.missing()
+    assert "base_notional" in missing
+    assert "kill_switch_drawdown_pct" in missing
+    assert len(missing) == 9
+    assert env.complete() is False
+
+
+def test_envelope_complete_when_all_required_set():
+    env = _full_envelope()
+    assert env.missing() == []
+    assert env.complete() is True
+    d = env.to_dict()
+    assert d["complete"] is True and d["missing"] == []
+
+
+def test_envelope_blank_string_counts_as_missing():
+    env = _full_envelope()
+    env.order_semantics = "   "
+    assert "order_semantics" in env.missing()
+
+
+# --- materiality ------------------------------------------------------------
+
+def test_materiality_immaterial_only_when_both_below_floor():
+    m = evaluate_materiality({"avg_pnl_per_trade_delta": 100.0, "avg_return_delta_pp": 2.0})
+    assert m["material"] is False
+
+
+def test_materiality_material_when_either_above_floor():
+    assert evaluate_materiality(
+        {"avg_pnl_per_trade_delta": 600.0, "avg_return_delta_pp": 2.0}
+    )["material"] is True
+    assert evaluate_materiality(
+        {"avg_pnl_per_trade_delta": 100.0, "avg_return_delta_pp": 6.0}
+    )["material"] is True
+
+
+def test_materiality_unknown_defaults_material_with_warning():
+    m = evaluate_materiality({})
+    assert m["material"] is True
+    assert "missing_materiality_metrics" in m["warnings"]
+
+
+# --- gate 4 -----------------------------------------------------------------
+
+def test_gate4_passes_on_clean_metrics():
+    g = evaluate_gate4(_pass_metrics())
+    assert g["passed"] is True
+    assert g["hard_failures"] == []
+
+
+def test_gate4_fails_on_regressed_window():
+    g = evaluate_gate4(_pass_metrics(windows_ev_regressed=1))
+    assert g["passed"] is False
+    assert "ev_regressed_windows" in g["hard_failures"]
+
+
+def test_gate4_fails_on_concentration_cap():
+    g = evaluate_gate4(_pass_metrics(single_ticker_positive_share=0.65))
+    assert g["passed"] is False
+    assert any("single_ticker_positive_share" in f for f in g["hard_failures"])
+
+
+def test_gate4_fails_on_immaterial_effect():
+    g = evaluate_gate4(
+        _pass_metrics(avg_pnl_per_trade_delta=100.0, avg_return_delta_pp=2.0)
+    )
+    assert g["passed"] is False
+    assert "immaterial_effect" in g["hard_failures"]
+
+
+# --- gate 5 live readiness --------------------------------------------------
+
+def test_live_readiness_immature_forward_blocks():
+    lr = evaluate_live_readiness(
+        envelope=_full_envelope(),
+        closed_forward_trades=0,
+        forward_pnl=None,
+        replacement_value_passed=False,
+        kill_switch_parity_passed=True,
+    )
+    assert lr["ready"] is False
+    assert any(b.startswith("forward_rows_immature") for b in lr["blockers"])
+
+
+def test_live_readiness_ready_when_all_satisfied():
+    lr = evaluate_live_readiness(
+        envelope=_full_envelope(),
+        closed_forward_trades=35,
+        forward_pnl=4200.0,
+        replacement_value_passed=True,
+        kill_switch_parity_passed=True,
+    )
+    assert lr["ready"] is True
+    assert lr["blockers"] == []
+
+
+# --- verdict ladder ---------------------------------------------------------
+
+def test_verdict_reject_when_gate4_fails():
+    g = evaluate_gate4(_pass_metrics(windows_ev_regressed=1))
+    lr = evaluate_live_readiness(envelope=_full_envelope(), closed_forward_trades=0)
+    v = full_stack_verdict(gate4=g, live_readiness=lr, envelope=_full_envelope())
+    assert v["verdict"] == "reject"
+
+
+def test_verdict_accepted_paper_pending_forward_when_gate4_passes_but_immature():
+    # Decision 1: a first one-shot Gate-4 pass with immature forward rows is an
+    # accepted paper sleeve, not a mere lead.
+    g = evaluate_gate4(_pass_metrics())
+    lr = evaluate_live_readiness(
+        envelope=_full_envelope(),
+        closed_forward_trades=0,
+        forward_pnl=None,
+        replacement_value_passed=False,
+        kill_switch_parity_passed=True,
+    )
+    v = full_stack_verdict(gate4=g, live_readiness=lr, envelope=_full_envelope())
+    assert v["verdict"] == "accepted_paper_pending_forward"
+    assert "no new experiment is needed" in v["next_step"].lower()
+
+
+def test_verdict_live_eligible_when_gate4_and_gate5_pass():
+    g = evaluate_gate4(_pass_metrics())
+    lr = evaluate_live_readiness(
+        envelope=_full_envelope(),
+        closed_forward_trades=35,
+        forward_pnl=4200.0,
+        replacement_value_passed=True,
+        kill_switch_parity_passed=True,
+    )
+    v = full_stack_verdict(gate4=g, live_readiness=lr, envelope=_full_envelope())
+    assert v["verdict"] == "live_eligible"
+
+
+def test_incomplete_envelope_blocks_live_only():
+    # Decision 2: an incomplete envelope blocks live_eligible but NOT
+    # accepted_paper_pending_forward.
+    env = _full_envelope()
+    env.slippage_bps = None  # incomplete
+    g = evaluate_gate4(_pass_metrics())
+    lr = evaluate_live_readiness(
+        envelope=env,
+        closed_forward_trades=35,
+        forward_pnl=4200.0,
+        replacement_value_passed=True,
+        kill_switch_parity_passed=True,
+    )
+    assert lr["ready"] is False
+    assert "execution_envelope_incomplete" in lr["blockers"]
+    v = full_stack_verdict(gate4=g, live_readiness=lr, envelope=env)
+    assert v["verdict"] == "accepted_paper_pending_forward"

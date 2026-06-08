@@ -203,6 +203,42 @@ an accepted alpha; it must be labeled as a replay lead, explain why
 shared-paper-first was not used, and name the exact shared helper/parity work
 required before any paper or production observation.
 
+## Full-Stack Candidate-Pool Contract
+
+Shared-paper-first above describes the discipline in prose; this is its runnable
+form so one experiment reaches a production / paper-sleeve verdict instead of
+being split across rounds.
+
+- Template: `quant/experiments/_templates/candidate_pool_full_stack_template.py`
+  (copy it; fill 5 TODOs: candidate source, shared `*_paper_sleeve.py` adapter,
+  3-window before/after metrics, execution envelope, forward/parity inputs).
+- Verdict helper: `quant/full_stack_candidate_pool.py`. It reuses the canonical
+  Gate 4 (`quant.evaluator_gates.evaluate_experiment_promotion_gate`: EV/PnL
+  delta, window robustness, single-ticker <= 0.50 / top-5 <= 0.60 / HHI
+  concentration, drawdown-worse guard) plus the scout materiality floor, and
+  codifies Gate 5 live-readiness (>= 30 closed forward 10d paper trades, positive
+  forward PnL, replacement value vs core/cash, a complete `ExecutionEnvelope`,
+  and a parity-tested kill switch).
+- Use `--change-type candidate_pool_full_stack` on the reserved ticket.
+
+Verdict ladder (`full_stack_verdict`):
+
+- `reject` -- Gate 4 fails. Roll back; log the failure; do not retune on the
+  frozen sample.
+- `accepted_paper_pending_forward` -- Gate 4 passes. Accept as a default-off
+  paper sleeve now. The only things left before live capital are forward-row
+  maturation and any unchecked Gate-5 items, all designed in this same
+  experiment. No new experiment is required -- only calendar time. This is the
+  normal outcome of a first one-shot run.
+- `live_eligible` -- Gate 4 and Gate 5 both pass. Turning on live capital is a
+  config/flag change behind the declared envelope and kill switch, not a new
+  alpha search.
+
+An incomplete `ExecutionEnvelope` blocks `live_eligible` only; it does not block
+`accepted_paper_pending_forward`, where it surfaces as a remaining checklist.
+Declare every envelope field up front anyway, so live promotion never needs a
+separate activation experiment.
+
 ## Reserve Identity First
 
 Always reserve the experiment ID before writing runners, data directories,
