@@ -1,0 +1,107 @@
+{
+  "acceptance_rule": "Use docs/backtesting.md canonical three windows; accept only aggregate EV/PnL positive, no EV/PnL window regression, target trades >=20 across all three windows, survival >=5%, drawdown drift <=0.5pp, concentration pass, and shared adapter/parity before production exposure.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260608_012_narrow_range_compression_breakout.py",
+    "data/experiments/exp-20260608-012",
+    "experiments/logs/exp-20260608-012.json",
+    "experiments/tickets/exp-20260608-012.json",
+    "experiments/cards/exp-20260608-012.md",
+    "experiments/manifests/exp-20260608-012.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "card_file": "experiments/cards/exp-20260608-012.md",
+  "causal_components": [],
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "narrow_range_compression_breakout_candidate_source_v1",
+  "claimed_at": "2026-06-08T11:10:04+00:00",
+  "completed_at": "2026-06-08T11:18:25Z",
+  "created_at": "2026-06-08T11:09:42+00:00",
+  "decision": "positive_replay_lead_not_promoted_narrow_range_compression_breakout",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260608-012",
+  "experiment_uid": "expuid-a9f810df995745f0",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260608-012",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-08T11:09:42+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "narrow_range_compression_breakout_candidate_source_v1"
+  },
+  "hypothesis": "Narrow-range volatility compression followed by a signal-day range-expansion close near the high may identify liquid stock accumulation starts with better next-open 10-day replacement value than raw broad momentum.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "live_orders",
+    "core_entry",
+    "ranking",
+    "sizing",
+    "exits"
+  ],
+  "mechanism_family": "production_visible_free_ohlcv_candidate_pool",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [
+    "quant/run.py",
+    "operator_inputs/open_positions.json"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260606-015",
+    "exp-20260606-014",
+    "exp-20260607-010",
+    "exp-20260607-012",
+    "exp-20260608-010",
+    "exp-20260606-005"
+  ],
+  "new_evidence_type": "production_visible_free_ohlcv_compression_breakout_structure",
+  "owner": "codex-alpha-search",
+  "prediction": {
+    "confidence_reason": "Recent broad OHLCV and industry-breadth neighbors mostly failed, but this tests a distinct compression-to-expansion accumulation structure with production-visible fields and no LLM/proxy data dependency.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "window_regression",
+      "drawdown_drift",
+      "ohlcv_momentum_relabeling",
+      "target_sample_too_small",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-08T11:09:28+00:00",
+    "success_probability": 0.14
+  },
+  "prior_trial_count": 6,
+  "result": {
+    "accepted": true,
+    "aggregate_expected_value_delta": 0.1608,
+    "aggregate_strategy_total_pnl_delta": 2248.98,
+    "artifact": "data/experiments/exp-20260608-012/exp_20260608_012_narrow_range_compression_breakout.json",
+    "calibration": {
+      "actual_gate4_passed": true,
+      "brier_score": 0.7396,
+      "failure_modes_observed": [],
+      "predicted_success_probability": 0.14
+    },
+    "decision": "positive_replay_lead_not_promoted_narrow_range_compression_breakout",
+    "log": "experiments/logs/exp-20260608-012.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260608-012.json",
+  "single_causal_variable": "narrow_range_compression_breakout_candidate_source_v1",
+  "status": "accepted",
+  "summary": "The narrow-range compression breakout source cleared Gate 4 as a replay-only/default-off lead, but no production surface was promoted. A shared parity adapter is required before use.",
+  "ticket_file": "experiments/tickets/exp-20260608-012.json",
+  "trial_family": "narrow_range_compression_breakout_candidate_pool",
+  "trial_variant_id": "narrow_range_compression_breakout_top1_next_open_10d_v1"
+}
