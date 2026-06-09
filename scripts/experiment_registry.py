@@ -1542,6 +1542,75 @@ def update_result(
     return exp
 
 
+def persist_self_registered_result(
+    registry_path,
+    *,
+    experiment_id,
+    lane,
+    prediction,
+    result,
+    status,
+    fields=None,
+    allow_missing_prediction=False,
+    timeout_seconds=DEFAULT_LOCK_TIMEOUT_SECONDS,
+):
+    """Sanctioned path for runners that compute their own before/after result and
+    persist it themselves, instead of writing ``docs/experiment_registry.json``
+    by hand.
+
+    Hand-rolled self-registration historically bypassed
+    ``require_pre_run_prediction`` and dropped the ``prediction`` from the
+    persisted record (it survived only in the log), so the audit reported
+    ``missing_prediction`` even when the agent had predicted. This helper closes
+    both holes: it REQUIRES a pre-run prediction for prediction-required lanes and
+    PROPAGATES the normalized prediction onto the upserted registry entry and
+    ticket.
+
+    ``fields`` is an optional dict of extra ticket fields to persist
+    (``change_type``, ``mechanism_family``, ``trial_family``,
+    ``single_causal_variable``, etc.). Non-prediction-required lanes are accepted
+    without a prediction, matching ``require_pre_run_prediction``.
+    """
+    normalized = normalize_prediction(prediction)
+    require_pre_run_prediction(
+        {"experiment_id": experiment_id, "lane": lane, "prediction": normalized},
+        allow_missing_prediction=allow_missing_prediction,
+    )
+
+    def _mutator(registry):
+        now = utc_now_iso()
+        exp = get_experiment(registry, experiment_id) or {"experiment_id": experiment_id}
+        exp.setdefault("experiment_id", experiment_id)
+        exp.setdefault("created_at", now)
+        if isinstance(fields, dict):
+            for key, value in fields.items():
+                if value is not None:
+                    exp[key] = value
+        exp["lane"] = lane
+        exp["status"] = status
+        if normalized:
+            exp["prediction"] = normalized
+        exp["result"] = result
+        exp["updated_at"] = now
+        exp["completed_at"] = now
+        experiments = registry.setdefault("experiments", [])
+        for index, existing in enumerate(experiments):
+            if existing.get("experiment_id") == experiment_id:
+                experiments[index] = exp
+                break
+        else:
+            experiments.append(exp)
+        registry["updated_at"] = now
+        if "_tickets_dir" in registry:
+            save_ticket(exp, _registry_tickets_dir(registry))
+            _sync_index_entry(registry, exp)
+        return exp
+
+    return locked_registry_update(
+        registry_path, _mutator, timeout_seconds=timeout_seconds
+    )
+
+
 def _load_json_file(path):
     try:
         with Path(path).open(encoding="utf-8-sig") as f:

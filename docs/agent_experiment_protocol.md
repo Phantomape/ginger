@@ -496,3 +496,12 @@ response before stopping.
   separate accepted activation experiment.
 - Do not add LLM authority over sizing, slots, exits, or risk without replayable
   prompt/log attribution and a shared policy boundary.
+- Do not self-register: a runner must not write `docs/experiment_registry.json`
+  (or ticket files) by hand. That bypasses `require_pre_run_prediction` and drops
+  the `prediction` from the persisted record. Reserve with `experiment.py new`
+  and finalize with `experiment.py close`, or call
+  `experiment_registry.persist_self_registered_result()`, which enforces the
+  prediction and propagates it onto the ticket. The guard test
+  `quant/test_no_new_self_registering_runners.py` blocks new direct registry
+  writers (legacy runners are grandfathered in
+  `quant/experiments/_self_register_legacy_allowlist.txt`).
