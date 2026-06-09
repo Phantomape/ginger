@@ -11519,8 +11519,174 @@
       "trial_family": "sec_large_filing_payload_price_absorption_candidate_pool",
       "trial_variant_id": "sec_large_filing_payload_price_absorption_top1_next_open_10d_v1",
       "updated_at": "2026-06-09T11:19:10+00:00"
+    },
+    {
+      "experiment_id": "exp-20260609-013",
+      "experiment_uid": "expuid-5345e49416af4408",
+      "hub_identity": {
+        "scheme": "hf_hub_local_v1",
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260609-013",
+        "slug": "asynchronous_lead_lag_peer_catchup",
+        "reserved_at": "2026-06-09T11:23:17+00:00",
+        "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+      },
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search-automation",
+      "hypothesis": "Stable asynchronous lead-lag relations may create a cleaner candidate pool: when a leader with a historically stable one-day lead shocks upward, a liquid laggard that starts catching up but remains behind may have next-open 10-day continuation value.",
+      "change_type": "default_off_paper_candidate_pool",
+      "mechanism_family": "production_visible_free_ohlcv_asynchronous_relation_alpha",
+      "trial_family": "asynchronous_lead_lag_peer_catchup_candidate_pool",
+      "trial_variant_id": "asynchronous_lead_lag_peer_catchup_top1_next_open_10d_v1",
+      "single_causal_variable": "asynchronous_lead_lag_peer_catchup_candidate_source_v1",
+      "changed_variable": "asynchronous_lead_lag_peer_catchup_candidate_source_v1",
+      "causal_components": [
+        "60d lagged return correlation",
+        "previous-day leader shock",
+        "current-day laggard catch-up",
+        "liquid sector-known universe",
+        "next-open paper entry"
+      ],
+      "prior_trial_count": 4,
+      "nearby_prior_experiments": [
+        "exp-20260606-024",
+        "exp-20260606-025",
+        "exp-20260607-007",
+        "exp-20260608-007",
+        "exp-20260609-010"
+      ],
+      "multiple_testing_risk_bucket": "moderate",
+      "new_evidence_type": "production_visible_free_ohlcv_stable_lead_lag_direction_field",
+      "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260609_013_asynchronous_lead_lag_peer_catchup.py",
+        "data/experiments/exp-20260609-013",
+        "experiments/logs/exp-20260609-013.json",
+        "experiments/tickets/exp-20260609-013.json",
+        "experiments/cards/exp-20260609-013.md",
+        "experiments/artifacts/exp-20260609-013_asynchronous_lead_lag_peer_catchup.md",
+        "experiments/manifests/exp-20260609-013.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "must_not_touch": [],
+      "locked_variables": [
+        "asynchronous_lead_lag_peer_catchup_candidate_source_v1"
+      ],
+      "evaluation_windows": [
+        {
+          "start": "2025-10-23",
+          "end": "2026-04-21"
+        },
+        {
+          "start": "2025-04-23",
+          "end": "2025-10-22"
+        },
+        {
+          "start": "2024-10-02",
+          "end": "2025-04-22"
+        }
+      ],
+      "acceptance_rule": "docs/backtesting.md canonical three windows; aggregate EV/PnL positive; no window EV or PnL regression; target trades >=20; trades in all three windows; survival >=5%; drawdown drift <=0.5pp; concentration guard passes; must be compared against accepted rolling-correlation peer shock and industry relation sleeves before promotion.",
+      "prediction": {
+        "success_probability": 0.13,
+        "expected_ev_delta": 0.1,
+        "expected_pnl_delta": 1500.0,
+        "main_failure_modes": [
+          "correlation_mining_without_causal_story",
+          "rolling_corr_peer_shock_comparator_not_beaten",
+          "window_regression",
+          "drawdown_drift",
+          "thin_sample"
+        ],
+        "confidence_reason": "Playbook asks for asynchronous relation metadata; accepted rolling-correlation peer shock proves relation alpha can work, but this harder lead-lag variant may just mine correlations.",
+        "recorded_at": "2026-06-09T11:23:10Z"
+      },
+      "created_at": "2026-06-09T11:23:17+00:00",
+      "claimed_at": "2026-06-09T11:23:26+00:00",
+      "completed_at": "2026-06-09T11:30:52+00:00",
+      "result": {
+        "decision": "rejected_asynchronous_lead_lag_peer_catchup_candidate_pool",
+        "accepted": false,
+        "artifact": "data/experiments/exp-20260609-013/exp_20260609_013_asynchronous_lead_lag_peer_catchup.json",
+        "log": "experiments/logs/exp-20260609-013.json",
+        "aggregate_expected_value_delta": -0.66,
+        "aggregate_strategy_total_pnl_delta": -10148.17,
+        "calibration": {
+          "predicted_success_probability": 0.13,
+          "actual_gate4_passed": false,
+          "failure_modes_observed": [
+            "aggregate_ev_not_positive",
+            "aggregate_pnl_not_positive",
+            "window_ev_regression",
+            "window_pnl_regression",
+            "fewer_than_two_ev_improved_windows",
+            "drawdown_drift_too_high",
+            "rolling_corr_peer_shock_ev_not_beaten",
+            "rolling_corr_peer_shock_pnl_not_beaten"
+          ],
+          "brier_score": 0.0169
+        },
+        "gate4": {
+          "passed": false,
+          "decision": "rejected_asynchronous_lead_lag_peer_catchup_candidate_pool",
+          "failed_reasons": [
+            "aggregate_ev_not_positive",
+            "aggregate_pnl_not_positive",
+            "window_ev_regression",
+            "window_pnl_regression",
+            "fewer_than_two_ev_improved_windows",
+            "drawdown_drift_too_high",
+            "rolling_corr_peer_shock_ev_not_beaten",
+            "rolling_corr_peer_shock_pnl_not_beaten"
+          ],
+          "aggregate_ev_delta": -0.66,
+          "aggregate_pnl_delta": -10148.17,
+          "windows_ev_improved": 0,
+          "windows_ev_regressed": 3,
+          "windows_pnl_improved": 0,
+          "windows_pnl_regressed": 3,
+          "target_trade_count": 333,
+          "target_trade_count_min": 20,
+          "target_windows": [
+            "late_strong",
+            "mid_weak",
+            "old_thin"
+          ],
+          "target_window_count_min": 3,
+          "max_drawdown_worse": 0.0228,
+          "max_drawdown_worse_guardrail": 0.005,
+          "minimum_core_survival_rate": 0.7925,
+          "survival_guard_passed": true,
+          "target_concentration": {
+            "passed": true,
+            "max_single_positive_pnl_share": 0.071621,
+            "max_single_positive_pnl_share_guardrail": 0.5,
+            "positive_pnl_hhi": 0.020186,
+            "positive_pnl_hhi_guardrail": 0.35
+          },
+          "rolling_corr_peer_shock_comparator": {
+            "experiment_id": "exp-20260606-025",
+            "decision": "accepted_rolling_corr_peer_shock_shared_default_off_adapter",
+            "expected_value_score_delta_sum": 0.3845,
+            "total_pnl_delta_sum": 6107.66,
+            "target_trade_count": 48
+          }
+        }
+      },
+      "ticket_file": "experiments/tickets/exp-20260609-013.json",
+      "card_file": "experiments/cards/exp-20260609-013.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260609-013.json",
+      "decision": "rejected_asynchronous_lead_lag_peer_catchup_candidate_pool",
+      "summary": "The asynchronous lead-lag peer catch-up source did not clear Gate 4 or did not beat the accepted rolling-correlation peer-shock comparator; do not promote or locally retune this lag-correlation family on the frozen windows.",
+      "artifact": "data/experiments/exp-20260609-013/exp_20260609_013_asynchronous_lead_lag_peer_catchup.json",
+      "log": "experiments/logs/exp-20260609-013.json",
+      "aggregate_expected_value_delta": -0.66,
+      "aggregate_strategy_total_pnl_delta": -10148.17,
+      "updated_at": "2026-06-09T11:30:52+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-09T11:19:10+00:00"
+  "updated_at": "2026-06-09T11:30:52+00:00"
 }
