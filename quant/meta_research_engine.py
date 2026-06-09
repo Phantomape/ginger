@@ -1244,6 +1244,11 @@ def build_meta_report(root=DEFAULT_ROOT):
     }
 
 
+def serialize_meta_report(report):
+    """Return portable JSON for artifacts consumed by mixed tooling."""
+    return json.dumps(report, indent=2, ensure_ascii=True)
+
+
 def main():
     try:
         sys.stdout.reconfigure(encoding="utf-8")
@@ -1256,7 +1261,7 @@ def main():
     args = parser.parse_args()
 
     report = build_meta_report(args.root)
-    text = json.dumps(report, indent=2, ensure_ascii=False)
+    text = serialize_meta_report(report)
     if args.output:
         Path(args.output).write_text(text, encoding="utf-8")
         print(args.output)

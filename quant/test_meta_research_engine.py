@@ -1,6 +1,6 @@
 import json
 
-from quant.meta_research_engine import build_meta_report
+from quant.meta_research_engine import build_meta_report, serialize_meta_report
 
 
 def test_meta_report_handles_legacy_string_metric_buckets(tmp_path):
@@ -68,6 +68,30 @@ def test_meta_report_chinese_explanation_translates_priority_fields(tmp_path):
     assert "priority" in explanation["字段说明"]
     assert explanation["当前前五策略研究方向"]
     assert explanation["当前前五策略研究方向"][0]["family_zh"]
+
+
+def test_meta_report_serialization_is_portable_json(tmp_path):
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    log_path = docs_dir / "experiment_log.jsonl"
+    log_path.write_text(
+        json.dumps(
+            {
+                "experiment_id": "exp-20990101-099",
+                "decision": "accepted",
+                "change_type": "risk_scalar_or_topup",
+                "delta_metrics": {"expected_value_score": 0.5},
+                "after_metrics": {"trade_count": 10},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    report = build_meta_report(tmp_path)
+    text = serialize_meta_report(report)
+
+    assert text.isascii()
+    assert json.loads(text)["chinese_explanation"] == report["chinese_explanation"]
 
 
 def test_meta_report_separates_strategy_from_measurement_priorities(tmp_path):
