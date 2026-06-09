@@ -1,0 +1,97 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260609_001_market_pullback_resilient_reclaim.py",
+    "data/experiments/exp-20260609-001/exp_20260609_001_market_pullback_resilient_reclaim.json",
+    "experiments/cards/exp-20260609-001.md",
+    "experiments/manifests/exp-20260609-001.json",
+    "experiments/tickets/exp-20260609-001.json",
+    "experiments/logs/exp-20260609-001.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260609-001.md",
+  "causal_components": [
+    "fixed free-OHLCV candidate source",
+    "replay-only three-window measurement",
+    "production-parity boundary",
+    "artifact/log/card updates"
+  ],
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "market_pullback_resilient_reclaim_candidate_source_v1",
+  "claimed_at": "2026-06-09T01:04:12+00:00",
+  "completed_at": "2026-06-09T01:09:43Z",
+  "created_at": "2026-06-09T01:03:59+00:00",
+  "decision": "rejected_market_pullback_resilient_reclaim_candidate_pool",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260609-001",
+  "experiment_uid": "expuid-2be4db5c2290404a",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260609-001",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-09T01:03:59+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "market_pullback_resilient_reclaim"
+  },
+  "hypothesis": "Market-pullback resilient relative-strength stocks may expand the default-off candidate pool when SPY has just sold off but the stock reclaims a prior high with high close-location and bounded extension.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "market_pullback_resilient_reclaim_candidate_source_v1"
+  ],
+  "mechanism_family": "default_off_paper_candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260426-062",
+    "exp-20260606-014",
+    "exp-20260606-027",
+    "exp-20260607-023",
+    "exp-20260608-016"
+  ],
+  "new_evidence_type": "not_declared",
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "confidence_reason": "Playbook favors production-visible candidate-pool alpha, but broad momentum and stress-resilience neighbors failed; this tests a fixed tail-state entry where SPY pullback creates dispersion and only liquid stocks with relative resilience plus reclaim are selected.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "old_thin_regression",
+      "drawdown_drift",
+      "ohlcv_momentum_relabeling",
+      "underperforms_low_deployment_etf_comparator",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-09T01:03:47+00:00",
+    "success_probability": 0.14
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": 0.0118,
+    "aggregate_strategy_total_pnl_delta": -706.57,
+    "artifact": "data/experiments/exp-20260609-001/exp_20260609_001_market_pullback_resilient_reclaim.json",
+    "calibration": {
+      "actual_gate4_passed": false,
+      "brier_score": 0.0196,
+      "failure_modes_observed": [
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten"
+      ],
+      "predicted_success_probability": 0.14
+    },
+    "decision": "rejected_market_pullback_resilient_reclaim_candidate_pool",
+    "log": "experiments/logs/exp-20260609-001.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260609-001.json",
+  "single_causal_variable": "market_pullback_resilient_reclaim_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The market-pullback resilient reclaim source did not clear Gate 4 or did not beat the accepted compression comparator; do not promote or locally retune this OHLCV tail-state family on the frozen windows.",
+  "ticket_file": "experiments/tickets/exp-20260609-001.json",
+  "trial_family": "default_off_paper_candidate_pool",
+  "trial_variant_id": "exp-20260609-001"
+}
