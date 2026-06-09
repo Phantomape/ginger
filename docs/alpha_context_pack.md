@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1091`
-- Raw records loaded by meta report: `1498`
-- History fingerprint: `7f4fabdb7d3a7626`
+- Strategy records counted: `1093`
+- Raw records loaded by meta report: `1500`
+- History fingerprint: `d91dfddc083c1eb6`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -62,10 +62,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260608-015` `rejected_low_deployment_stock_leadership_candidate_pool`: EV `+0.3435`, PnL `$7,376.74`, family `production_visible_free_ohlcv_candidate_pool`, trial `low_deployment_stock_leadership_candidate_pool`.
-  Lesson: The fixed source was directionally positive in all three windows but underpowered: it found 1077 raw candidates across 152 low-deployment days, yet only 17 closed target trades survived the one-open-position, top-1, c...
-- `exp-20260608-016` `rejected_accumulation_base_breakout_candidate_pool`: EV `+0.7278`, PnL `$6,710.05`, family `production_visible_free_ohlcv_candidate_pool`, trial `ticker_accumulation_base_breakout_candidate_pool`.
-  Lesson: The accumulation-volume field selected a large broad sample and looked directionally useful in late_strong and mid_weak, but old_thin lost EV/PnL and the overlay raised max drawdown by 1.72pp. That means the up-volume...
 - `exp-20260608-017` `rejected_quiet_tight_range_accumulation_candidate_pool`: EV `-0.0091`, PnL `$-748.58`, family `production_visible_free_ohlcv_candidate_pool`, trial `quiet_tight_range_accumulation_candidate_pool`.
   Lesson: The fixed quiet-range absorption source failed Gate 4 because the tight high-close volume field did not add robust replacement value across the canonical windows after next-open execution and cooldown. The likely mech...
 - `exp-20260608-019` `rejected_rates_relief_growth_leadership_candidate_pool`: EV `+0.1824`, PnL `$976.19`, family `production_visible_free_ohlcv_cross_asset_candidate_pool`, trial `rates_relief_growth_leadership_candidate_pool`.
@@ -86,6 +82,10 @@ facts before changing strategy behavior.
   Lesson: The variant did not beat the current accepted lagged consensus comparator across all three canonical windows.
 - `exp-20260608-027` `rejected_sec_event_provenanced_peer_shock_candidate_pool`: EV `+0.1165`, PnL `$1,291.76`, family `relation_aware_event_peer_shock`, trial `sec_event_provenanced_peer_shock`.
   Lesson: SEC event provenance improves auditability but may still be too thin and semantically mixed. The accepted rolling-corr peer shock likely works because relation specificity and core-flow confirmation are both present;...
+- `exp-20260608-028` `rejected_negative_peer_shock_resilience_candidate_pool`: EV `+0.2689`, PnL `$4,013.82`, family `production_visible_free_ohlcv_relation_alpha`, trial `negative_peer_shock_resilient_substitute_candidate_pool`.
+  Lesson: A negative peer shock may be interpreted as contagion across correlated stocks rather than as rotation into substitutes. If the source is positive versus core but fails the accepted peer comparator, the edge is not st...
+- `exp-20260609-001` `rejected_market_pullback_resilient_reclaim_candidate_pool`: EV `+0.0118`, PnL `$-706.57`, family `production_visible_free_ohlcv_tail_state_candidate_pool`, trial `market_pullback_resilient_reclaim_candidate_pool`.
+  Lesson: Market-pullback resilience can still be generic momentum under stress. If it fails a window or comparator, the source did not separate durable institutional demand from fragile rebound beta. Do not retry by sweeping S...
 
 ## Highest-Signal Historical Records
 
