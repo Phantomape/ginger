@@ -1,6 +1,6 @@
 # Alpha Optimization Playbook
 
-Last refreshed: 2026-06-08.
+Last refreshed: 2026-06-09.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -75,7 +75,7 @@ very speculative ideas. They should not be treated as accepted alpha even when
 Gate 4 is positive; the next retained asset must be the shared helper or daily
 default-off wiring that reproduces the lead.
 
-Meta-research on 1,482 records continues to rank production-visible default-off
+Meta-research on 1,608 records continues to rank production-visible default-off
 paper adapters above raw filters, ticker exceptions, and cap releases. The
 research report is queue guidance only; it is not a trading signal.
 
@@ -98,6 +98,18 @@ industry-stable-leadership source admitted only when the existing core A/B stack
 also had same-day entry flow and same-ticker overlap was excluded. Treat this
 as evidence that relation alpha needs an internal flow or displacement anchor,
 not just a macro ETF or commodity tape label.
+
+The late June 8 and June 9 readout adds two more rules. First, narrow-range
+compression can be useful when the full policy bundle is fixed: prior range
+compression, signal-day range expansion, high close-location, volume
+confirmation, SPY-relative trend, next-open entry, 10-day exit, costs,
+cooldown, and core-overlap exclusion. Second, most intuitive "institutional
+demand" relabels are still too generic. Gap-and-hold, breadth-confirmed
+gap-and-hold, post-thrust inside-day absorption, accumulation-base variants,
+market-pullback reclaim, and extra core-flow or volatility-relief confirmation
+did not beat the accepted comparators. Treat these as evidence that price
+formation labels need an independent displacement edge, not just cleaner
+momentum vocabulary.
 
 Default next question for any new broad candidate pool:
 
@@ -329,16 +341,16 @@ Next valid work:
 Do not retune nearby industry lag, group-strength, signal-day reclaim, top-N,
 hold days, same-ticker cooldown, or paper notional on the frozen sample.
 
-### Industry-Stable Core-Flow Confirmation Lead
+### Industry-Stable Core-Flow Confirmation
 
-This is a positive replay lead, not an accepted alpha. The plain
-industry-stable leadership source had positive EV/PnL in all windows but failed
-the drawdown guard. A same-day core-flow confirmation variant repaired enough
-tail risk to pass replay Gate 4, but it remains private replay evidence until a
-shared default-off helper reproduces it.
+This is a free-OHLCV relation alpha. The plain industry-stable leadership
+source had positive EV/PnL in all windows but failed the drawdown guard.
+Same-day core A/B entry flow plus same-ticker overlap exclusion repaired enough
+tail risk, and the shared adapter reproduced the fixed bundle.
 
-Positive replay lead: `exp-20260608-007`, following rejected
-`exp-20260608-004` and `exp-20260608-005`.
+Accepted shared adapter: `exp-20260608-008`, promoting the positive replay lead
+from `exp-20260608-007` after rejected `exp-20260608-004` and
+`exp-20260608-005`.
 
 Mechanism:
 
@@ -347,9 +359,10 @@ Mechanism:
 - confirmation: same signal date must have selected core A/B entry flow;
 - overlap rule: exclude same-ticker core overlap so the row tests independent
   replacement value;
-- lifecycle in replay: top-1/day, next-open entry, 10-trading-day close exit,
-  costs included;
-- status: positive replay lead only, no production/default-off adapter yet.
+- lifecycle: top-1/day, fixed `$4,000` paper notional, 15-trading-day
+  same-ticker cooldown, next-open paper entry, 10-trading-day close exit, costs
+  included;
+- status: default-off paper only, no live orders.
 
 Evidence:
 
@@ -358,18 +371,57 @@ Evidence:
 - all three canonical windows improved;
 - target paper trades: `47`;
 - max drawdown drift `0.0007`, within the `0.005` guard.
+- shared adapter reproduced the private replay lead.
 
 Next valid work:
 
-- implement a shared default-off adapter using the exact fixed policy bundle;
-- prove daily snapshot and historical replay share the same core-flow
-  confirmation and same-ticker overlap semantics;
 - compare against `industry_relative_laggard_repair`, `rolling_corr_peer_shock`,
   and volatility/macro relief accepted comparators;
 - collect forward replacement-value rows before any activation discussion.
 
 Do not retune industry stability, low-volatility, core-flow count, overlap,
 top-N, hold-day, cooldown, or notional thresholds on the frozen sample.
+
+### Narrow-Range Compression Breakout
+
+This is a free-OHLCV price-formation candidate-pool lead. Compression alone is
+not enough; the accepted edge is the complete fixed bundle that demands prior
+range contraction, signal-day expansion, high close-location, volume
+confirmation, and SPY-relative trend before next-open entry.
+
+Accepted shared adapter: `exp-20260608-013`, promoting the positive replay lead
+from `exp-20260608-012`.
+
+Mechanism:
+
+- source universe: broad-market, sector-known, liquid stock observation feed;
+- setup: prior 10-day range compression versus 40-day reference range;
+- trigger: signal-day range expansion, positive signal-day return, high
+  close-location, and volume confirmation;
+- trend guards: SPY-relative 20-day and 60-day trend, plus extension guards;
+- lifecycle: top-1/day, fixed `$4,000` paper notional, 10-trading-day
+  same-ticker cooldown, next-open paper entry, 10-trading-day close exit, costs
+  included;
+- status: default-off paper only, no live orders.
+
+Evidence:
+
+- aggregate EV `+0.1608`;
+- PnL `+$2,248.98`;
+- all three canonical windows improved;
+- target paper trades: `44`;
+- shared adapter reproduced the replay lead.
+
+Next valid work:
+
+- collect forward replacement-value rows from the shared adapter;
+- compare directly against accepted low-deployment ETF and relation adapters;
+- study drawdown/tail state as read-only attribution before any activation
+  envelope.
+
+Do not retune compression windows, expansion thresholds, close-location,
+volume, SPY-relative trend, extension guard, top-N, hold-day, cooldown, or
+notional thresholds on the frozen sample.
 
 ### Lagged Independent Free-Data Consensus
 
@@ -680,6 +732,9 @@ evidence on accepted paper adapters:
 - FINRA/IWM borrow-pressure;
 - post-earnings underpriced drift;
 - Fundamental Growth RS;
+- macro relief, volatility relief, rolling-correlation peer shock,
+  industry-relative laggard repair, industry-stable core-flow, and
+  narrow-range compression breakout;
 - VBB / VCP / Space observe-only buckets where nonzero forward rows exist.
 
 Minimum forward package:
@@ -694,9 +749,10 @@ Minimum forward package:
 
 ### 2. Tail-State Classifier For Momentum And Broad Candidate Pools
 
-Broad recent-winner tests suggest a real continuation signal with unacceptable
-tail risk. The next experiment should be diagnostic/field-building before
-adapter promotion.
+Broad recent-winner, gap-and-hold, post-thrust inside-day, accumulation-base,
+and market-pullback reclaim tests suggest a real but crowded continuation
+surface with unacceptable tail/comparator risk. The next experiment should be
+diagnostic/field-building before adapter promotion.
 
 Candidate fields:
 
@@ -708,21 +764,27 @@ Candidate fields:
 - `same_day_displacement_candidate_type`
 - `accepted_etf_substitute_comparator_delta`
 - `cost_adjusted_drawdown_contribution_bucket`
+- `gap_hold_event_absorption_quality_bucket`
+- `post_thrust_pause_quality_bucket`
+- `compression_breakout_tail_state_bucket`
 
 Acceptance path:
 
 - first read-only attribution;
 - then default-off paper only if tail-state separation beats the low-deployment
-  ETF comparator after costs and drawdown.
+  ETF and accepted compression/relation comparators after costs and drawdown.
 
 ### 3. Relation-Aware Event / Peer Fields
 
 Local same-ticker SEC recurrence and same-sector peer transfer have failed.
 Future event graph work must improve the relation, not the event count.
-Recent OHLCV relation work adds one positive template: industry-relative lag
-plus same-day repair can work when the group is already strong and the candidate
-shows a bounded reclaim. Recent failures add the negative template: sector/ETF
-labels, core-selected anchors, and generic peer lag are not enough.
+Recent OHLCV relation work adds positive templates: rolling-correlation peer
+shock with core-flow confirmation, industry-relative lag plus same-day repair,
+industry-stable leadership with core-flow admission, and volatility/macro
+relief leadership. Recent failures add the negative template: sector/ETF
+labels, core-selected anchors, negative peer shocks, SEC-provenanced peer
+shocks, characteristic-similar same-industry shocks, and generic peer lag are
+not enough.
 
 Candidate relation sources:
 
@@ -731,7 +793,9 @@ Candidate relation sources:
 - customer/supplier or contract counterparties when source text supports it;
 - early peer earnings reaction;
 - source-family propagation with explicit timestamp and source provenance;
-- correlation-network stress clusters for risk, not direct alpha.
+- dynamic correlation or hypergraph edges with explicit as-of dates, decay, and
+  relation type;
+- correlation-network stress clusters for risk first, not direct alpha.
 
 Minimum fields:
 
@@ -745,12 +809,15 @@ Minimum fields:
 - `relation_displacement_value_bucket`
 - `accepted_relation_comparator_id`
 - `relation_edge_failure_mode`
+- `dynamic_relation_edge_decay_bucket`
+- `relation_graph_high_order_cluster_id`
+- `relation_source_provenance_hash`
 
 Acceptance path:
 
 - first compare against the closest accepted relation comparator, such as
-  rolling-correlation peer shock, macro relief leadership, or industry-relative
-  laggard repair;
+  rolling-correlation peer shock, macro relief leadership, volatility relief,
+  industry-relative laggard repair, or industry-stable core-flow;
 - require displacement value after costs, not only standalone paper PnL;
 - if the relation is production-visible and PIT-safe, use shared-paper-first
   instead of a private replay scout.
@@ -1126,6 +1193,85 @@ Controls:
 
 Source: <https://www.sciencedirect.com/science/article/pii/S0031320326005716>
 
+### Dynamic Hypergraph And High-Order Relations
+
+Recent 2026 dynamic-hypergraph stock-prediction research argues that static
+graphs miss high-order and asynchronous market dependencies. Ginger's local
+translation is narrow: do not add a black-box graph forecaster; persist richer
+edge construction metadata so relation alphas can be compared against accepted
+relation sleeves.
+
+Implementable fields:
+
+- `relation_hypergraph_version`
+- `high_order_relation_cluster_id`
+- `hyperedge_member_count_bucket`
+- `hyperedge_asof_timestamp`
+- `hyperedge_decay_weight_bucket`
+- `asynchronous_relation_lag_bucket`
+- `relation_cluster_displacement_value_bucket`
+
+Controls:
+
+- every edge or hyperedge must have an as-of timestamp and no future membership
+  leakage;
+- direct alpha use must beat accepted relation comparators after costs;
+- use high-order clusters first for attribution, concentration, and stress
+  diagnostics.
+
+Source: <https://www.sciencedirect.com/science/article/pii/S156849462600400X>
+
+### Causal Information-Channel Alignment
+
+Recent causal-momentum work frames cross-sectional prediction as alignment
+between information channels, using ideas such as Granger causality and
+transfer entropy. Ginger should treat this as an edge-quality audit, not as a
+license to mine correlations.
+
+Implementable fields:
+
+- `information_channel_id`
+- `channel_alignment_method`
+- `causal_edge_asof_timestamp`
+- `causal_edge_strength_bucket`
+- `channel_lead_lag_bucket`
+- `transfer_entropy_bucket`
+- `causal_relation_displacement_value_bucket`
+
+Controls:
+
+- compare causal edges against rolling-correlation peer shock before promotion;
+- require stable lead/lag direction across windows;
+- reject any channel whose economic story is only "correlation was high."
+
+Source: <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6397278>
+
+### Logic-Constrained Alpha Synthesis
+
+New neural-symbolic alpha-synthesis research emphasizes conditioning formulas
+on market categories and adding logic constraints for robustness under regime
+shifts. Ginger's compatible use is a candidate-generator audit surface: any
+formula must be frozen before Gate 1, translated into named fields, and judged
+after costs.
+
+Implementable fields:
+
+- `symbolic_alpha_formula_id`
+- `formula_generation_prompt_hash`
+- `formula_logic_constraint_set`
+- `formula_market_category_bucket`
+- `formula_component_source_ids`
+- `formula_turnover_cost_bucket`
+- `formula_after_cost_replacement_value_bucket`
+
+Controls:
+
+- no post-hoc formula edits after seeing frozen-window outcomes;
+- require a simple human-readable formula and source fields;
+- compare against accepted default-off adapters, not only against cash.
+
+Source: <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6819380>
+
 ### LLM Herding And Crowded AI Signals
 
 LLM market experiments suggest AI traders may avoid some irrational cascades
@@ -1161,13 +1307,22 @@ production-visible field:
   or cyclical beta;
 - broad 5-day winner continuation variants unless they solve drawdown/tail and
   beat the accepted low-deployment ETF comparator;
+- gap-and-hold, breadth-confirmed gap-and-hold, post-thrust inside-day
+  absorption, accumulation-base, quiet high-close accumulation, and
+  market-pullback reclaim variants unless they add a new independent
+  production-visible displacement field and beat accepted compression/relation
+  comparators;
+- extra core-flow, VIXY/volatility-relief, or breadth confirmation layered on
+  an already accepted candidate source unless it improves all windows versus
+  that accepted source, not only the core baseline;
 - low-deployment ETF threshold, ETF-list, hold-day, or notional retunes;
 - lagged free-data consensus source-set/source-family/timing/notional retunes
   that do not beat the accepted lagged independent-family comparator;
 - FINRA/IWM, SEC FTD, borrow-pressure, top-N, cooldown, hold, or notional
   retunes without a new PIT borrow-cost / availability source;
-- Companyfacts support-scalar mining, same-industry peer confirmation,
-  fresh-underreaction, or dual-growth threshold variants;
+- Companyfacts support-scalar mining, quality-gated top-1 replacement,
+  same-industry peer confirmation, fresh-underreaction, or dual-growth
+  threshold variants;
 - post-earnings high-liquidity, sector-residual, core-overlap, DTE, latest
   surprise, average surprise, pre-event RS, score, rank, or scalar retunes;
 - SEC item-code / phrase / same-day absorption retries without richer semantic
@@ -1175,6 +1330,9 @@ production-visible field:
 - raw SEC same-family bursts, first/follow-on recurrence, same-ticker
   cross-family transitions, same-sector SEC peer transfer, or same-sector
   event breadth retries;
+- sector-level, same-industry characteristic-similar, negative-shock, or
+  SEC-provenanced peer-shock retries unless the relation edge is stronger than
+  rolling-correlation peer shock and has explicit PIT provenance;
 - Form 4 owner-count or liquidity-intensity retries without forward
   replacement value;
 - Space price-action, ETF relative, defense-budget, low-thrust absorption, or

@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `82`
-- Accepted / rejected: `8` / `69`
-- Accept rate: `9.76%`
-- Sum EV delta: `+50.7295`
-- Sum PnL delta: `$1,041,251.38`
-- Latest: `exp-20260608-026` `rejected_industry_laggard_lagged_consensus_did_not_beat_accepted_lagged_comparator` with EV `-0.0060` and PnL `$217.23`.
+- Experiments: `85`
+- Accepted / rejected: `8` / `72`
+- Accept rate: `9.41%`
+- Sum EV delta: `+50.6496`
+- Sum PnL delta: `$1,039,488.03`
+- Latest: `exp-20260609-017` `rejected_revision_surprise_lagged_consensus_did_not_beat_accepted_lagged_comparator` with EV `-0.0799` and PnL `$-1,763.35`.
 
 ## Retained Or Positive Evidence
 
@@ -30,12 +30,6 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260605-008` `rejected_sec_negative_lagged_consensus_did_not_beat_accepted_lagged_comparator`: EV `+0.1447`, PnL `$1,692.07`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_new_independent_source_family`.
-  Lesson: The variant did not beat the current accepted lagged consensus comparator across all three canonical windows.
-- `exp-20260605-013` `rejected_broad_low_beta_residual_momentum_candidate_pool`: EV `+1.0029`, PnL `$-8,459.56`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `broad_low_beta_residual_momentum_candidate_pool`.
-  Lesson: aggregate_pnl_not_positive;window_ev_regression;window_pnl_regression;drawdown_drift_too_high
-- `exp-20260605-015` `rejected_default_off_broad_companyfacts_peer_confirmed_adapter`: EV `+0.4864`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `broad_companyfacts_peer_confirmed_filing_drift_adapter`.
-  Lesson: window_ev_regression;window_pnl_regression;drawdown_drift_too_high
 - `exp-20260605-016` `rejected_broad_companyfacts_peer_price_absorption_candidate_pool`: EV `+0.2859`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `broad_companyfacts_peer_price_absorption_candidate_pool`.
   Lesson: window_ev_regression;window_pnl_regression
 - `exp-20260605-021` `rejected_fill_delay_gap_guard_did_not_beat_accepted_adapter`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_fill_delay_execution`.
@@ -45,6 +39,12 @@ records before making strategy changes.
 - `exp-20260606-028` `rejected_peer_shock_lagged_consensus_did_not_beat_accepted_lagged_comparator`: EV `+0.0413`, PnL `$983.18`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_new_independent_source_family`.
   Lesson: The variant did not beat the current accepted lagged consensus comparator across all three canonical windows.
 - `exp-20260608-026` `rejected_industry_laggard_lagged_consensus_did_not_beat_accepted_lagged_comparator`: EV `-0.0060`, PnL `$217.23`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_new_independent_source_family`.
+  Lesson: The variant did not beat the current accepted lagged consensus comparator across all three canonical windows.
+- `exp-20260609-005` `rejected_sec_ftd_finra_lagged_consensus_no_selected_source_rows`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_new_independent_source_family`.
+  Lesson: The SEC FTD + FINRA source produced no selected lagged-consensus trades.
+- `exp-20260609-007` `rejected_no_tail_state_separation`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `tail_state_winner_continuation_candidate_pool`.
+  Lesson: The breadth and extension state separated resilient recent winners from tail-risk rows, but it mostly explained generic winner continuation and did not create enough per-trade replacement value after costs. Do not ret...
+- `exp-20260609-017` `rejected_revision_surprise_lagged_consensus_did_not_beat_accepted_lagged_comparator`: EV `-0.0799`, PnL `$-1,763.35`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_new_independent_source_family`.
   Lesson: The variant did not beat the current accepted lagged consensus comparator across all three canonical windows.
 
 ## Retry Discipline
@@ -66,9 +66,9 @@ records before making strategy changes.
 
 ## Recent Raw Records
 
-- `exp-20260605-016` source `experiments/logs/exp-20260605-016.json`.
-- `exp-20260605-021` source `experiments/logs/exp-20260605-021.json`.
-- `exp-20260605-024` source `experiments/logs/exp-20260605-024.json`.
 - `exp-20260606-028` source `experiments/logs/exp-20260606-028.json`.
 - `exp-20260607-019` source `experiments/logs/exp-20260607-019.json`.
 - `exp-20260608-026` source `experiments/logs/exp-20260608-026.json`.
+- `exp-20260609-005` source `experiments/logs/exp-20260609-005.json`.
+- `exp-20260609-007` source `experiments/logs/exp-20260609-007.json`.
+- `exp-20260609-017` source `experiments/logs/exp-20260609-017.json`.

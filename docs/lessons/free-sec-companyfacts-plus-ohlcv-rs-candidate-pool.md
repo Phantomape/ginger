@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `16`
-- Accepted / rejected: `3` / `13`
-- Accept rate: `18.75%`
-- Sum EV delta: `+87.3279`
-- Sum PnL delta: `$1,407,688.14`
-- Latest: `exp-20260529-003` `rejected_fundamental_growth_rs_low_capex_intensity_support` with EV `+7.8221` and PnL `$114,862.08`.
+- Experiments: `17`
+- Accepted / rejected: `3` / `14`
+- Accept rate: `17.65%`
+- Sum EV delta: `+89.1546`
+- Sum PnL delta: `$1,455,714.33`
+- Latest: `exp-20260609-006` `rejected_fundamental_growth_rs_quality_gated_top1_replacement` with EV `+1.8267` and PnL `$48,026.19`.
 
 ## Retained Or Positive Evidence
 
@@ -24,8 +24,6 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260527-903` `rejected_fundamental_growth_rs_sector_exposure_cap`: EV `+0.9384`, PnL `$15,291.80`, family `free_sec_companyfacts_plus_ohlcv_rs_candidate_pool`, trial `fundamental_growth_rs_default_off_candidate_pool`.
-  Lesson: drawdown_drift_too_high
 - `exp-20260528-004` `rejected_fundamental_growth_rs_operating_profit_quality`: EV `+7.5644`, PnL `$121,768.14`, family `free_sec_companyfacts_plus_ohlcv_rs_candidate_pool`, trial `fundamental_growth_rs_operating_profit_quality`.
   Lesson: drawdown_drift_too_high; target_concentration_failed
 - `exp-20260528-006` `rejected_fundamental_growth_rs_cash_conversion_quality`: EV `+4.1310`, PnL `$82,848.39`, family `free_sec_companyfacts_plus_ohlcv_rs_candidate_pool`, trial `fundamental_growth_rs_cash_conversion_quality`.
@@ -40,9 +38,13 @@ records before making strategy changes.
   Lesson: candidate_pool / capital allocation: within the accepted Companyfacts operating-profit + RS paper source, non-declining operating margin versus the prior-year same quarter is a free SEC quality field. A small default-...
 - `exp-20260529-003` `rejected_fundamental_growth_rs_low_capex_intensity_support`: EV `+7.8221`, PnL `$114,862.08`, family `free_sec_companyfacts_plus_ohlcv_rs_candidate_pool`, trial `fundamental_growth_rs_low_capex_intensity_support`.
   Lesson: candidate_pool / capital allocation: within the accepted Companyfacts operating-profit + RS paper source, low PIT capex/revenue is a distinct free SEC capital-intensity field. A small default-off paper notional suppor...
+- `exp-20260609-006` `rejected_fundamental_growth_rs_quality_gated_top1_replacement`: EV `+1.8267`, PnL `$48,026.19`, family `free_sec_companyfacts_plus_ohlcv_rs_candidate_pool`, trial `fundamental_growth_rs_quality_gated_candidate_selection`.
+  Lesson: The selector likely rejected high-ranked winners or starved one of the standard windows; the two quality fields are not sufficient as hard candidate-selection gates on the frozen sample. Do not retry by only loosening...
 
 ## Retry Discipline
 
+- `fundamental_growth_rs_quality_gated_candidate_selection` / `fundamental_growth_rs_quality_gated_top1_replacement_v1`: risk `high`, guidance `freeze_nearby_retries_until_new_forward_or_field_evidence`, recent `exp-20260609-006`.
+  Latest failure: `exp-20260609-006` window_ev_regression; window_pnl_regression; target_concentration_failed
 - `fundamental_growth_rs_low_capex_intensity_support` / `fundamental_growth_rs_low_capex_intensity_notional_scalar_v1`: risk `high`, guidance `freeze_nearby_retries_until_new_forward_or_field_evidence`, recent `exp-20260529-003`.
   Latest failure: `exp-20260529-003` If replay-positive, run a separate shared default-off adapter/parity change. If rejected, prefer forward replacement rows or a new candidate-pool source over more Companyfacts scalar mining.
 - `fundamental_growth_rs_operating_margin_durability_support` / `fundamental_growth_rs_operating_margin_durability_notional_scalar_v1`: risk `high`, guidance `freeze_nearby_retries_until_new_forward_or_field_evidence`, recent `exp-20260528-023`.
@@ -54,14 +56,12 @@ records before making strategy changes.
 - `fundamental_growth_rs_low_liability_balance_sheet_support` / `fundamental_growth_rs_low_liability_assets_notional_scalar_v1`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260528-017`.
 - `fundamental_growth_rs_filing_recency_support` / `fundamental_growth_rs_operating_income_filing_recency_notional_scalar_v1`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260528-016`.
 - `fundamental_growth_rs_low_volume_participation_support` / `fundamental_growth_rs_signal_day_low_volume_notional_scalar_v1`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260528-015`.
-- `fundamental_growth_rs_gross_margin_expansion_quality` / `fundamental_growth_rs_gross_margin_expansion_quality_v1`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260528-012`.
-  Latest failure: `exp-20260528-012` target_concentration_failed
 
 ## Recent Raw Records
 
-- `exp-20260528-016` source `experiments/logs/exp-20260528-016.json`.
 - `exp-20260528-017` source `experiments/logs/exp-20260528-017.json`.
 - `exp-20260528-019` source `experiments/logs/exp-20260528-019.json`.
 - `exp-20260528-020` source `experiments/logs/exp-20260528-020.json`.
 - `exp-20260528-023` source `experiments/logs/exp-20260528-023.json`.
 - `exp-20260529-003` source `experiments/logs/exp-20260529-003.json`.
+- `exp-20260609-006` source `experiments/logs/exp-20260609-006.json`.

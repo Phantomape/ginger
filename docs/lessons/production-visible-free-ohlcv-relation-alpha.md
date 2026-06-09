@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `26`
-- Accepted / rejected: `3` / `20`
-- Accept rate: `11.54%`
-- Sum EV delta: `+4.4374`
-- Sum PnL delta: `$66,695.98`
-- Latest: `exp-20260608-028` `rejected_negative_peer_shock_resilience_candidate_pool` with EV `+0.2689` and PnL `$4,013.82`.
+- Experiments: `27`
+- Accepted / rejected: `3` / `21`
+- Accept rate: `11.11%`
+- Sum EV delta: `+4.5890`
+- Sum PnL delta: `$69,790.76`
+- Latest: `exp-20260609-010` `rejected_volatility_relief_industry_laggard_repair_candidate_pool` with EV `+0.1516` and PnL `$3,094.78`.
 
 ## Retained Or Positive Evidence
 
@@ -24,8 +24,6 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260608-002` `rejected_oil_cost_relief_travel_leadership_candidate_pool`: EV `-0.0839`, PnL `$-1,428.38`, family `production_visible_free_ohlcv_relation_alpha`, trial `oil_cost_relief_travel_leadership_candidate_pool`.
-  Lesson: Gate 4 observed 63 target trades; old_thin changed by -0.0106 EV and $-443.97. If rejected, the after-cost next-open edge was either too noisy, not causally connected to future fuel-sensitive equity returns, or overwh...
 - `exp-20260608-004` `rejected_industry_stable_leadership_candidate_pool`: EV `+0.5821`, PnL `$6,636.29`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_stable_leadership_candidate_pool`.
   Lesson: The source produced positive EV and PnL in all three canonical windows with broad sample and low positive-PnL concentration, but the maximum drawdown drift breached the +0.5pp guardrail. That suggests the relation has...
 - `exp-20260608-005` `rejected_industry_stable_tail_guard_candidate_pool`: EV `+0.1448`, PnL `$-1,089.20`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_stable_tail_guard_candidate_pool`.
@@ -40,6 +38,8 @@ records before making strategy changes.
   Lesson: Same-industry characteristic similarity is more specific than sector transfer, but it may still not encode the actual economic link or may remove too many usable rows. The accepted rolling-corr route likely works beca...
 - `exp-20260608-028` `rejected_negative_peer_shock_resilience_candidate_pool`: EV `+0.2689`, PnL `$4,013.82`, family `production_visible_free_ohlcv_relation_alpha`, trial `negative_peer_shock_resilient_substitute_candidate_pool`.
   Lesson: A negative peer shock may be interpreted as contagion across correlated stocks rather than as rotation into substitutes. If the source is positive versus core but fails the accepted peer comparator, the edge is not st...
+- `exp-20260609-010` `rejected_volatility_relief_industry_laggard_repair_candidate_pool`: EV `+0.1516`, PnL `$3,094.78`, family `production_visible_free_ohlcv_relation_alpha`, trial `volatility_relief_industry_laggard_repair_candidate_pool`.
+  Lesson: The fixed vol-relief plus industry-laggard relation failed Gate 4 or did not beat the accepted vol-relief comparator. The likely reason is sample thinning or generic relief beta: once next-open execution, core-overlap...
 
 ## Retry Discipline
 
@@ -61,9 +61,9 @@ records before making strategy changes.
 
 ## Recent Raw Records
 
-- `exp-20260608-008` source `experiments/logs/exp-20260608-008.json`.
 - `exp-20260608-010` source `experiments/logs/exp-20260608-010.json`.
 - `exp-20260608-023` source `experiments/logs/exp-20260608-023.json`.
 - `exp-20260608-024` source `experiments/logs/exp-20260608-024.json`.
 - `exp-20260608-025` source `experiments/logs/exp-20260608-025.json`.
 - `exp-20260608-028` source `experiments/logs/exp-20260608-028.json`.
+- `exp-20260609-010` source `experiments/logs/exp-20260609-010.json`.

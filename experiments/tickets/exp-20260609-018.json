@@ -1,0 +1,95 @@
+{
+  "experiment_id": "exp-20260609-018",
+  "experiment_uid": "expuid-5d8b06984a9140a7",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260609-018",
+    "slug": "industry_pullback_reclaim",
+    "reserved_at": "2026-06-09T16:07:24+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "claimed",
+  "lane": "alpha_search",
+  "owner": "alpha-search-automation",
+  "hypothesis": "Within strong liquid industries, stocks that pull back to or below their 50-day average and reclaim it while industry trend remains strong may add cleaner catch-up candidates than generic laggard repair.",
+  "change_type": "default_off_paper_candidate_pool",
+  "mechanism_family": "production_visible_free_ohlcv_relation_alpha",
+  "trial_family": "industry_pullback_reclaim_candidate_pool",
+  "trial_variant_id": "industry_pullback_reclaim_top1_next_open_10d_v1",
+  "single_causal_variable": "industry_pullback_reclaim_candidate_source_v1",
+  "changed_variable": "industry_pullback_reclaim_candidate_source_v1",
+  "causal_components": [
+    "fixed OHLCV candidate source",
+    "replay-only measurement",
+    "accepted comparator checks",
+    "artifact/log closeout"
+  ],
+  "prior_trial_count": 4,
+  "nearby_prior_experiments": [
+    "exp-20260607-007",
+    "exp-20260607-008",
+    "exp-20260607-009",
+    "exp-20260609-014"
+  ],
+  "multiple_testing_risk_bucket": "high",
+  "new_evidence_type": "OHLCV industry-trend plus SMA50 reclaim relation field",
+  "baseline_result_file": "data/backtests/backtest_results_20260606_193249.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260609_018_industry_pullback_reclaim.py",
+    "data/experiments/exp-20260609-018",
+    "experiments/logs/exp-20260609-018.json",
+    "experiments/tickets/exp-20260609-018.json",
+    "experiments/cards/exp-20260609-018.md",
+    "experiments/manifests/exp-20260609-018.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [
+    "quant/live_trading.py",
+    "quant/portfolio_manager.py",
+    "operator_inputs/open_positions.json"
+  ],
+  "locked_variables": [
+    "core_strategy",
+    "live_orders",
+    "position_sizing",
+    "exits"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "aggregate expected_value_score delta and total_pnl delta must beat accepted industry laggard repair comparator; no majority window regression; replay-only positives remain leads until shared helper parity.",
+  "prediction": {
+    "success_probability": 0.13,
+    "expected_ev_delta": 0.18,
+    "expected_pnl_delta": 3500.0,
+    "main_failure_modes": [
+      "accepted_industry_laggard_comparator_not_beaten",
+      "window_regression",
+      "drawdown_drift",
+      "pullback_value_trap",
+      "too_close_to_laggard_repair"
+    ],
+    "confidence_reason": "Adjacent accepted industry relation alpha exists, but nearby relation and gap experiments often fail unless the reclaim field adds independent displacement evidence.",
+    "recorded_at": "2026-06-09T16:07:09+00:00"
+  },
+  "created_at": "2026-06-09T16:07:24+00:00",
+  "claimed_at": "2026-06-09T16:07:33+00:00",
+  "completed_at": null,
+  "result": null,
+  "ticket_file": "experiments/tickets/exp-20260609-018.json",
+  "card_file": "experiments/cards/exp-20260609-018.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260609-018.json"
+}
