@@ -11337,8 +11337,190 @@
       "card_file": "experiments/cards/exp-20260609-011.md",
       "revision_manifest_file": "experiments/manifests/exp-20260609-011.json",
       "updated_at": "2026-06-09T10:26:17+00:00"
+    },
+    {
+      "acceptance_rule": "docs/backtesting.md canonical three windows; aggregate EV/PnL positive; all three windows EV/PnL positive; target trades >=20; trades in all three windows; drawdown drift <=0.5pp; survival >=5%; concentration max single positive <=0.50 and HHI <=0.30; positive replay requires shared default-off adapter before promotion.",
+      "aggregate_expected_value_delta": 0.0426,
+      "aggregate_strategy_total_pnl_delta": 989.18,
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260609_012_sec_large_filing_payload_price_absorption.py",
+        "data/experiments/exp-20260609-012",
+        "experiments/logs/exp-20260609-012.json",
+        "experiments/tickets/exp-20260609-012.json",
+        "experiments/cards/exp-20260609-012.md",
+        "experiments/artifacts/exp-20260609-012_sec_large_filing_payload_price_absorption.md",
+        "experiments/manifests/exp-20260609-012.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "artifact": "data/experiments/exp-20260609-012/sec_large_filing_payload_price_absorption.json",
+      "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+      "card_file": "experiments/cards/exp-20260609-012.md",
+      "causal_components": [
+        "SEC text payload size",
+        "form credibility bucket",
+        "signal-day excess return",
+        "close location",
+        "volume confirmation",
+        "next-open entry"
+      ],
+      "change_type": "default_off_paper_candidate_pool",
+      "changed_variable": "sec_large_filing_payload_price_absorption_candidate_source_v1",
+      "claimed_at": "2026-06-09T11:10:09+00:00",
+      "completed_at": "2026-06-09T11:19:10+00:00",
+      "created_at": "2026-06-09T11:10:00+00:00",
+      "decision": "rejected_sec_large_filing_payload_price_absorption_candidate_pool",
+      "evaluation_windows": [
+        {
+          "end": "2026-04-21",
+          "start": "2025-10-23"
+        },
+        {
+          "end": "2025-10-22",
+          "start": "2025-04-23"
+        },
+        {
+          "end": "2025-04-22",
+          "start": "2024-10-02"
+        }
+      ],
+      "experiment_id": "exp-20260609-012",
+      "experiment_uid": "expuid-d12cce277baa4eea",
+      "gate4": {
+        "decision": "rejected_sec_large_filing_payload_price_absorption_candidate_pool",
+        "ev_windows_improved": [
+          "late_strong",
+          "mid_weak"
+        ],
+        "gates": {
+          "aggregate_expected_value_positive": true,
+          "aggregate_pnl_positive": true,
+          "all_windows_expected_value_improved": false,
+          "all_windows_pnl_improved": false,
+          "concentration_guard_passed": true,
+          "drawdown_drift_passed": true,
+          "survival_floor_passed": true,
+          "target_trade_count_passed": false,
+          "target_window_count_passed": false
+        },
+        "max_drawdown_delta": 0.0,
+        "min_survival_rate": 0.7925,
+        "passed": false,
+        "pnl_windows_improved": [
+          "late_strong",
+          "mid_weak"
+        ],
+        "rationale": "One or more Gate 4 checks failed, so the standalone SEC large filing-payload price-absorption source is not retained.",
+        "requires_parity_before_promotion": false,
+        "status": "rejected"
+      },
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260609-012",
+        "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-09T11:10:00+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "sec_large_filing_payload_price_absorption"
+      },
+      "hypothesis": "Large SEC filing payloads that the market absorbs with positive signal-day price/volume action may identify high-information issuer events with underreaction, expanding the default-off candidate pool without brittle guidance or contract phrase parsing.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "sec_large_filing_payload_price_absorption_candidate_source_v1"
+      ],
+      "log": "experiments/logs/exp-20260609-012.json",
+      "mechanism_family": "production_visible_sec_text_event_candidate_pool",
+      "multiple_testing_risk_bucket": "moderate",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260603-012",
+        "exp-20260607-004",
+        "exp-20260605-018",
+        "exp-20260605-006",
+        "exp-20260608-027"
+      ],
+      "new_evidence_type": "production_visible_sec_filing_payload_size_x_price_absorption_field",
+      "owner": "alpha-search-automation",
+      "prediction": {
+        "success_probability": 0.16,
+        "expected_ev_delta": 0.12,
+        "expected_pnl_delta": 1800.0,
+        "main_failure_modes": [
+          "SEC text size is generic disclosure volume not causal",
+          "large-cap earnings relabel",
+          "window regression",
+          "concentration failed",
+          "sample too thin"
+        ],
+        "confidence_reason": "SEC text coverage spans all three windows and payload size is PIT/free, but prior SEC semantic pools were noisy or thin; this uses size plus market absorption instead of phrase thresholds.",
+        "recorded_at": "2026-06-09T11:09:53Z"
+      },
+      "prior_trial_count": 5,
+      "production_impact": {
+        "adapter_status": "replay_only_no_live_adapter",
+        "alters_orders": false,
+        "backtester_adapter_changed": false,
+        "lookahead_guard": "The selector observes signal-date SEC text plus close-to-close OHLCV reaction, then shifts usable_trade_date to the next trading session before calling the existing next-open paper trade helper.",
+        "parity_note": "This experiment changes no production code. A retained result would need a shared default-off SEC filing-payload/price-absorption adapter with the same source fields, exclusions, signal-date OHLCV reaction, next-session entry shift, and parity tests before any daily report, candidate queue, or order surface could change.",
+        "parity_test_added": false,
+        "production_orders_changed": false,
+        "production_signal_path_changed": false,
+        "replay_only": true,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "trade_enabled": false
+      },
+      "result": {
+        "decision": "rejected_sec_large_filing_payload_price_absorption_candidate_pool",
+        "aggregate_expected_value_delta": 0.0426,
+        "aggregate_strategy_total_pnl_delta": 989.18,
+        "artifact": "data/experiments/exp-20260609-012/sec_large_filing_payload_price_absorption.json",
+        "log": "experiments/logs/exp-20260609-012.json",
+        "gate4": {
+          "decision": "rejected_sec_large_filing_payload_price_absorption_candidate_pool",
+          "status": "rejected",
+          "passed": false,
+          "rationale": "One or more Gate 4 checks failed, so the standalone SEC large filing-payload price-absorption source is not retained.",
+          "gates": {
+            "aggregate_expected_value_positive": true,
+            "aggregate_pnl_positive": true,
+            "all_windows_expected_value_improved": false,
+            "all_windows_pnl_improved": false,
+            "target_trade_count_passed": false,
+            "target_window_count_passed": false,
+            "drawdown_drift_passed": true,
+            "survival_floor_passed": true,
+            "concentration_guard_passed": true
+          },
+          "ev_windows_improved": [
+            "late_strong",
+            "mid_weak"
+          ],
+          "pnl_windows_improved": [
+            "late_strong",
+            "mid_weak"
+          ],
+          "max_drawdown_delta": 0.0,
+          "min_survival_rate": 0.7925,
+          "requires_parity_before_promotion": false
+        },
+        "calibration": {
+          "success_probability": 0.16,
+          "actual_success": 0,
+          "actual_ev_delta": 0.0426,
+          "actual_pnl_delta": 989.18,
+          "brier_score": 0.0256
+        }
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260609-012.json",
+      "single_causal_variable": "sec_large_filing_payload_price_absorption_candidate_source_v1",
+      "status": "rejected",
+      "summary": "Rejected because the fixed SEC filing-payload price-absorption bundle produced zero target trades. The filter audit found 164 large, credible, non-negative filing rows before OHLCV reaction checks, but 164 could not be mapped to the replay price map, leaving no price-ready candidates across the three canonical windows. The positive aggregate delta is an empty-event-curve artifact and is not alpha evidence. Do not retune payload size, close-location, volume, or credibility thresholds on this sample; this direction needs broader replay OHLCV coverage or a different free-data candidate source already inside the tradable universe.",
+      "ticket_file": "experiments/tickets/exp-20260609-012.json",
+      "trial_family": "sec_large_filing_payload_price_absorption_candidate_pool",
+      "trial_variant_id": "sec_large_filing_payload_price_absorption_top1_next_open_10d_v1",
+      "updated_at": "2026-06-09T11:19:10+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-09T10:26:17+00:00"
+  "updated_at": "2026-06-09T11:19:10+00:00"
 }
