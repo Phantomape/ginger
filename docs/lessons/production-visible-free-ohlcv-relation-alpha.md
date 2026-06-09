@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `27`
-- Accepted / rejected: `3` / `21`
-- Accept rate: `11.11%`
-- Sum EV delta: `+4.5890`
-- Sum PnL delta: `$69,790.76`
-- Latest: `exp-20260609-010` `rejected_volatility_relief_industry_laggard_repair_candidate_pool` with EV `+0.1516` and PnL `$3,094.78`.
+- Experiments: `29`
+- Accepted / rejected: `3` / `23`
+- Accept rate: `10.34%`
+- Sum EV delta: `+4.8991`
+- Sum PnL delta: `$76,574.38`
+- Latest: `exp-20260609-019` `rejected_industry_breadth_acceleration_leader_candidate_pool` with EV `+0.3669` and PnL `$9,509.62`.
 
 ## Retained Or Positive Evidence
 
@@ -24,10 +24,6 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260608-004` `rejected_industry_stable_leadership_candidate_pool`: EV `+0.5821`, PnL `$6,636.29`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_stable_leadership_candidate_pool`.
-  Lesson: The source produced positive EV and PnL in all three canonical windows with broad sample and low positive-PnL concentration, but the maximum drawdown drift breached the +0.5pp guardrail. That suggests the relation has...
-- `exp-20260608-005` `rejected_industry_stable_tail_guard_candidate_pool`: EV `+0.1448`, PnL `$-1,089.20`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_stable_tail_guard_candidate_pool`.
-  Lesson: The sign-based market tail guard did not produce a robust enough fixed policy. That means the prior drawdown drift was not isolated by simple SPY/QQQ 5-day weakness plus VIXY 5-day strength, or the guard removed too m...
 - `exp-20260608-010` `rejected_industry_volume_breadth_core_flow_confirmed_candidate_pool`: EV `+0.0011`, PnL `$-99.93`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_volume_breadth_core_flow_confirmed_candidate_pool`.
   Lesson: Core-flow confirmation was not sufficient to turn industry volume-breadth laggard repair into robust replacement value. It either thinned the sample, kept volume-chase noise, or failed in old_thin after costs and next...
 - `exp-20260608-023` `rejected_sector_peer_gap_reaction_transfer_candidate_pool`: EV `+0.5698`, PnL `$7,312.15`, family `production_visible_free_ohlcv_relation_alpha`, trial `sector_peer_gap_reaction_transfer_candidate_pool`.
@@ -40,6 +36,10 @@ records before making strategy changes.
   Lesson: A negative peer shock may be interpreted as contagion across correlated stocks rather than as rotation into substitutes. If the source is positive versus core but fails the accepted peer comparator, the edge is not st...
 - `exp-20260609-010` `rejected_volatility_relief_industry_laggard_repair_candidate_pool`: EV `+0.1516`, PnL `$3,094.78`, family `production_visible_free_ohlcv_relation_alpha`, trial `volatility_relief_industry_laggard_repair_candidate_pool`.
   Lesson: The fixed vol-relief plus industry-laggard relation failed Gate 4 or did not beat the accepted vol-relief comparator. The likely reason is sample thinning or generic relief beta: once next-open execution, core-overlap...
+- `exp-20260609-018` `rejected_industry_pullback_reclaim_candidate_pool`: EV `-0.0568`, PnL `$-2,726.00`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_pullback_reclaim_candidate_pool`.
+  Lesson: The fixed SMA50 pullback/reclaim source failed Gate 4 or did not beat accepted relation comparators. The mechanism likely collapses into a familiar laggard-repair/value-trap pattern: a moving-average reclaim inside a...
+- `exp-20260609-019` `rejected_industry_breadth_acceleration_leader_candidate_pool`: EV `+0.3669`, PnL `$9,509.62`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_breadth_acceleration_leader_candidate_pool`.
+  Lesson: The candidate earned most of its aggregate gain in mid_weak while late_strong and old_thin both lost EV/PnL, so the breadth field looks regime-fragile rather than a stable replacement-value source. Its drawdown drift...
 
 ## Retry Discipline
 
@@ -61,9 +61,9 @@ records before making strategy changes.
 
 ## Recent Raw Records
 
-- `exp-20260608-010` source `experiments/logs/exp-20260608-010.json`.
-- `exp-20260608-023` source `experiments/logs/exp-20260608-023.json`.
 - `exp-20260608-024` source `experiments/logs/exp-20260608-024.json`.
 - `exp-20260608-025` source `experiments/logs/exp-20260608-025.json`.
 - `exp-20260608-028` source `experiments/logs/exp-20260608-028.json`.
 - `exp-20260609-010` source `experiments/logs/exp-20260609-010.json`.
+- `exp-20260609-018` source `experiments/logs/exp-20260609-018.json`.
+- `exp-20260609-019` source `experiments/logs/exp-20260609-019.json`.

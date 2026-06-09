@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `85`
-- Accepted / rejected: `8` / `72`
-- Accept rate: `9.41%`
-- Sum EV delta: `+50.6496`
-- Sum PnL delta: `$1,039,488.03`
-- Latest: `exp-20260609-017` `rejected_revision_surprise_lagged_consensus_did_not_beat_accepted_lagged_comparator` with EV `-0.0799` and PnL `$-1,763.35`.
+- Experiments: `87`
+- Accepted / rejected: `8` / `74`
+- Accept rate: `9.20%`
+- Sum EV delta: `+50.6600`
+- Sum PnL delta: `$1,039,434.69`
+- Latest: `exp-20260609-025` `rejected_form4_liquidity_cost_cluster_candidate_pool` with EV `+0.0000` and PnL `$0.00`.
 
 ## Retained Or Positive Evidence
 
@@ -30,10 +30,6 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260605-016` `rejected_broad_companyfacts_peer_price_absorption_candidate_pool`: EV `+0.2859`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `broad_companyfacts_peer_price_absorption_candidate_pool`.
-  Lesson: window_ev_regression;window_pnl_regression
-- `exp-20260605-021` `rejected_fill_delay_gap_guard_did_not_beat_accepted_adapter`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_fill_delay_execution`.
-  Lesson: The fill-delay gap guard did not beat the current accepted lagged consensus adapter across all three windows.
 - `exp-20260605-024` `rejected_lagged_consensus_characteristic_peer_transfer_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_lagged_consensus_characteristic_peer_transfer`.
   Lesson: Gate 4 failed: all_windows_incremental_expected_value_improved; all_windows_incremental_pnl_improved; incremental_peer_trade_count_passed; incremental_peer_concentration_guard_passed
 - `exp-20260606-028` `rejected_peer_shock_lagged_consensus_did_not_beat_accepted_lagged_comparator`: EV `+0.0413`, PnL `$983.18`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_new_independent_source_family`.
@@ -46,6 +42,10 @@ records before making strategy changes.
   Lesson: The breadth and extension state separated resilient recent winners from tail-risk rows, but it mostly explained generic winner continuation and did not create enough per-trade replacement value after costs. Do not ret...
 - `exp-20260609-017` `rejected_revision_surprise_lagged_consensus_did_not_beat_accepted_lagged_comparator`: EV `-0.0799`, PnL `$-1,763.35`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_new_independent_source_family`.
   Lesson: The variant did not beat the current accepted lagged consensus comparator across all three canonical windows.
+- `exp-20260609-023` `rejected_compression_lagged_consensus_did_not_beat_accepted_lagged_comparator`: EV `+0.0104`, PnL `$-53.34`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_new_independent_source_family`.
+  Lesson: The variant did not beat the current accepted lagged consensus comparator across all three canonical windows.
+- `exp-20260609-025` `rejected_form4_liquidity_cost_cluster_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `form4_liquidity_cost_cluster_candidate_pool`.
+  Lesson: The stricter cluster/cost/liquidity qualifier produced too few selected trades and failed raw Form4 replacement value. The data shape shows that adding cluster or senior-owner support to the already sparse forward que...
 
 ## Retry Discipline
 
@@ -57,18 +57,19 @@ records before making strategy changes.
   Latest failure: `exp-20260603-023` The accepted AI optical source rows had no same-date ticker overlap that survived the independent consensus selector, so the observed after metrics are not attributable to the tested source-family addition.
 - `accepted_free_data_cross_source_consensus_source_family_count_monotonicity` / `independent_source_family_count_monotonicity_bucket_v1`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260603-018`.
   Latest failure: `exp-20260603-018` The observational replay selected the same target-trade count but did not match the current accepted artifact because the accepted artifact's recorded PnL does not equal paper_notional_usd times pnl_pct_net. Treat sou...
+- `accepted_free_data_cross_source_consensus_new_independent_source_family` / `narrow_range_compression_breakout_source_family_added_to_accepted_lagged_consensus_v1`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260609-023`.
+  Latest failure: `exp-20260609-023` The variant did not beat the current accepted lagged consensus comparator across all three canonical windows.
 - `accepted_free_data_cross_source_consensus_new_independent_source_family` / `volatility_contraction_source_family_presence_added_to_independent_consensus_v1`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260603-016`.
   Latest failure: `exp-20260603-016` The VCP-expanded consensus improved versus the core baseline but underperformed the current accepted independent-source consensus. Source-set expansions must beat the accepted comparator before retention or adapter pr...
 - `accepted_free_data_cross_source_consensus_source_timing` / `lagged_independent_source_family_confirmation_prior_3_trading_days`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260604-008`.
-- `full_universe_alpha_score_candidate_pool_safe_risk_budget` / `full_universe_alpha_score_market_regime_safe_notional_0p40_v1`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260531-021`.
-- `accepted_free_data_cross_source_consensus_new_independent_source_family` / `form4_meaningful_purchase_source_family_added_to_accepted_consensus_v1`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260604-005`.
-  Latest failure: `exp-20260604-005` Adding PIT-safe Form 4 as a source family produced no selected consensus paper trades, so it adds no alpha evidence.
+- `form4_liquidity_cost_cluster_candidate_pool` / `form4_liquidity_cost_cluster_qualifier_v1`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260609-025`.
+  Latest failure: `exp-20260609-025`
 
 ## Recent Raw Records
 
-- `exp-20260606-028` source `experiments/logs/exp-20260606-028.json`.
-- `exp-20260607-019` source `experiments/logs/exp-20260607-019.json`.
 - `exp-20260608-026` source `experiments/logs/exp-20260608-026.json`.
 - `exp-20260609-005` source `experiments/logs/exp-20260609-005.json`.
 - `exp-20260609-007` source `experiments/logs/exp-20260609-007.json`.
 - `exp-20260609-017` source `experiments/logs/exp-20260609-017.json`.
+- `exp-20260609-023` source `experiments/logs/exp-20260609-023.json`.
+- `exp-20260609-025` source `experiments/logs/exp-20260609-025.json`.

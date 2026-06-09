@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1109`
-- Raw records loaded by meta report: `1516`
-- History fingerprint: `769f37c3436f1177`
+- Strategy records counted: `1118`
+- Raw records loaded by meta report: `1526`
+- History fingerprint: `20349084f4a95bac`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -32,12 +32,12 @@ facts before changing strategy behavior.
   Reason: 2/2 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
 - `default_off_paper_adapter` priority `0.8173`: experiments `7`, accept `85.71%`, sum EV `+4.8031`, sum PnL `$81,956.93`.
   Reason: 1/7 records have sample >= 10; 7/7 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive...
-- `default_off_paper_shared_adapter` priority `0.7726`: experiments `2`, accept `100.00%`, sum EV `+0.4371`, sum PnL `$8,457.97`.
-  Reason: 2/2 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; still has ro...
+- `default_off_paper_shared_adapter` priority `0.7477`: experiments `3`, accept `100.00%`, sum EV `+0.7145`, sum PnL `$13,745.66`.
+  Reason: 3/3 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; still has ro...
 - `paper_notional_support_scout` priority `0.7009`: experiments `3`, accept `66.67%`, sum EV `+0.0804`, sum PnL `$1,393.64`.
   Reason: 3/3 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
-- `pilot_or_sleeve` priority `0.6325`: experiments `161`, accept `26.09%`, sum EV `+65.6309`, sum PnL `$1,131,559.13`.
-  Reason: 160/161 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually changes sizing/allocation rather than...
+- `pilot_or_sleeve` priority `0.6322`: experiments `162`, accept `25.93%`, sum EV `+65.9978`, sum PnL `$1,141,068.75`.
+  Reason: 161/162 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually changes sizing/allocation rather than...
   Guardrail: heavily explored family; diminishing-return risk; many prior rejections in this family
 - `slot_or_ranking` priority `0.5687`: experiments `115`, accept `26.96%`, sum EV `+27.0021`, sum PnL `$475,621.54`.
   Reason: 1/115 records have sample >= 10; 112/115 records show multi-window evidence; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
@@ -63,30 +63,30 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260609-006` `rejected_fundamental_growth_rs_quality_gated_top1_replacement`: EV `+1.8267`, PnL `$48,026.19`, family `free_sec_companyfacts_plus_ohlcv_rs_candidate_pool`, trial `fundamental_growth_rs_quality_gated_candidate_selection`.
-  Lesson: The selector likely rejected high-ranked winners or starved one of the standard windows; the two quality fields are not sufficient as hard candidate-selection gates on the frozen sample. Do not retry by only loosening...
-- `exp-20260609-007` `rejected_no_tail_state_separation`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `tail_state_winner_continuation_candidate_pool`.
-  Lesson: The breadth and extension state separated resilient recent winners from tail-risk rows, but it mostly explained generic winner continuation and did not create enough per-trade replacement value after costs. Do not ret...
-- `exp-20260609-008` `rejected_low_turnover_rs_consolidation_candidate_pool`: EV `+0.1029`, PnL `$321.64`, family `production_visible_free_ohlcv_candidate_pool`, trial `low_turnover_rs_consolidation_candidate_pool`.
-  Lesson: The fixed low-turnover RS consolidation source failed Gate 4 or did not beat the accepted compression comparator. The likely mechanism is stale momentum: low turnover can mean absence of demand rather than hidden accu...
-- `exp-20260609-009` `rejected_companyfacts_shareholder_yield_fcf_combo`: EV `+0.0000`, PnL `$0.00`, family `free_data_companyfacts_fundamental_candidate_pool`, trial `companyfacts_shareholder_yield_fcf_combo`.
-  Lesson: The intersection was too sparse to evaluate as a durable candidate-pool edge. Combining two individually interesting Companyfacts fields removed too many source rows. No same-window threshold/scalar retry of share con...
-- `exp-20260609-010` `rejected_volatility_relief_industry_laggard_repair_candidate_pool`: EV `+0.1516`, PnL `$3,094.78`, family `production_visible_free_ohlcv_relation_alpha`, trial `volatility_relief_industry_laggard_repair_candidate_pool`.
-  Lesson: The fixed vol-relief plus industry-laggard relation failed Gate 4 or did not beat the accepted vol-relief comparator. The likely reason is sample thinning or generic relief beta: once next-open execution, core-overlap...
-- `exp-20260609-011` `accepted_shared_default_off_revision_surprise_low_extension_adapter`: EV `+0.0000`, PnL `$0.00`, family `analyst_revision_expectation_trajectory`, trial `analyst_revision_surprise_low_extension_candidate_pool`.
-  Lesson: The result reproduced the exp-20260608-011 positive lead because the shared helper preserved the exact same economic bundle: improving EPS estimates, positive surprise history, liquid breakout confirmation, and a sele...
-- `exp-20260609-012` `unknown`: EV `+0.0000`, PnL `$0.00`, family `production_visible_sec_text_event_candidate_pool`, trial `sec_large_filing_payload_price_absorption_candidate_pool`.
-  Lesson: Rejected because the fixed SEC filing-payload price-absorption bundle produced zero target trades. The filter audit found 164 large, credible, non-negative filing rows before OHLCV reaction checks, but 164 could not b...
-- `exp-20260609-013` `rejected_asynchronous_lead_lag_peer_catchup_candidate_pool`: EV `-0.6600`, PnL `$-10,148.17`, family `production_visible_free_ohlcv_asynchronous_relation_alpha`, trial `asynchronous_lead_lag_peer_catchup_candidate_pool`.
-  Lesson: Lead-lag structure has to beat a strong same-day peer-shock comparator. If it fails, the follower relation is either too noisy, too slow, or already captured by accepted relation sleeves. Do not retry by sweeping lag...
-- `exp-20260609-014` `rejected_multi_peer_correlation_cluster_shock_candidate_pool`: EV `+0.6906`, PnL `$6,287.54`, family `production_visible_free_ohlcv_high_order_relation_alpha`, trial `multi_peer_correlation_cluster_shock_candidate_pool`.
-  Lesson: A high-order peer cluster has to beat the accepted single-peer relation sleeve. If it fails, the extra peers likely add broad momentum/correlation exposure rather than a stronger displacement edge after next-open exec...
 - `exp-20260609-015` `rejected_persistent_revision_surprise_overlay`: EV `+0.0000`, PnL `$0.00`, family `analyst_revision_expectation_trajectory`, trial `analyst_revision_surprise_persistence_candidate_pool`.
   Lesson: The overlay asks for persistent 7d and 30d revision evidence after the accepted helper has already required a strong 20-snapshot EPS revision, positive surprise history, and a low-extension breakout. If it underperfor...
 - `exp-20260609-016` `rejected_gap_hold_core_flow_confirmed_candidate_pool`: EV `+0.3278`, PnL `$6,000.13`, family `production_visible_free_ohlcv_candidate_pool`, trial `gap_hold_core_flow_confirmed_candidate_pool`.
   Lesson: Same-day core-flow admission can reduce bad market states, but it may also remove the few independent gap-hold winners and leave a sample that cannot beat the accepted compression and relation adapters after next-open...
 - `exp-20260609-017` `rejected_revision_surprise_lagged_consensus_did_not_beat_accepted_lagged_comparator`: EV `-0.0799`, PnL `$-1,763.35`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_new_independent_source_family`.
   Lesson: The variant did not beat the current accepted lagged consensus comparator across all three canonical windows.
+- `exp-20260609-018` `rejected_industry_pullback_reclaim_candidate_pool`: EV `-0.0568`, PnL `$-2,726.00`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_pullback_reclaim_candidate_pool`.
+  Lesson: The fixed SMA50 pullback/reclaim source failed Gate 4 or did not beat accepted relation comparators. The mechanism likely collapses into a familiar laggard-repair/value-trap pattern: a moving-average reclaim inside a...
+- `exp-20260609-019` `rejected_industry_breadth_acceleration_leader_candidate_pool`: EV `+0.3669`, PnL `$9,509.62`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_breadth_acceleration_leader_candidate_pool`.
+  Lesson: The candidate earned most of its aggregate gain in mid_weak while late_strong and old_thin both lost EV/PnL, so the breadth field looks regime-fragile rather than a stable replacement-value source. Its drawdown drift...
+- `exp-20260609-020` `rejected_ftd_finra_no_core_flow`: EV `+0.0000`, PnL `$0.00`, family `free_sec_settlement_plus_borrow_pressure_displacement`, trial `sec_ftd_finra_no_core_flow_candidate_pool`.
+  Lesson: The no-core-flow displacement field did not beat the accepted FTD+FINRA comparator. The likely failure is that same-day core-flow presence is not a reliable crowding proxy here; excluding those dates removes some vali...
+- `exp-20260609-022` `rejected_vixy_vixm_term_relief_leadership_candidate_pool`: EV `+0.4168`, PnL `$6,257.05`, family `production_visible_free_ohlcv_cross_asset_candidate_pool`, trial `volatility_term_structure_relief_candidate_pool`.
+  Lesson: The VIXM term-structure field did not add enough incremental information beyond accepted VIXY relief. It either removed useful VIXY-only winners or kept the same broad risk-on beta without stronger per-window replacem...
+- `exp-20260609-023` `rejected_compression_lagged_consensus_did_not_beat_accepted_lagged_comparator`: EV `+0.0104`, PnL `$-53.34`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_new_independent_source_family`.
+  Lesson: The variant did not beat the current accepted lagged consensus comparator across all three canonical windows.
+- `exp-20260609-024` `rejected_early_peer_earnings_sympathy_candidate_pool`: EV `-0.0950`, PnL `$-1,325.52`, family `production_visible_event_peer_relation_alpha`, trial `early_peer_earnings_sympathy_candidate_pool`.
+  Lesson: The source failed to add robust replacement value across the three canonical windows or breached sample/risk gates. The same-day peer sympathy relation did not sufficiently separate true event-information transfer fro...
+- `exp-20260609-025` `rejected_form4_liquidity_cost_cluster_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `form4_liquidity_cost_cluster_candidate_pool`.
+  Lesson: The stricter cluster/cost/liquidity qualifier produced too few selected trades and failed raw Form4 replacement value. The data shape shows that adding cluster or senior-owner support to the already sparse forward que...
+- `exp-20260609-026` `positive_replay_lead_not_promoted_turn_of_month_liquid_leadership`: EV `+0.2774`, PnL `$5,287.69`, family `production_visible_free_calendar_ohlcv_candidate_pool`, trial `turn_of_month_liquid_leadership_candidate_pool`.
+  Lesson: The fixed turn-of-month liquid leadership bundle cleared the canonical three-window gates and beat the accepted compression comparator, suggesting the calendar-flow timing contributed replacement value beyond generic...
+- `exp-20260609-027` `accepted_turn_of_month_liquid_leadership_shared_default_off_adapter`: EV `+0.2774`, PnL `$5,287.69`, family `production_visible_free_calendar_ohlcv_candidate_pool`, trial `turn_of_month_liquid_leadership_shared_default_off_adapter`.
+  Lesson: The shared helper reproduced the private replay lead because it kept the exact calendar window, liquid sector-known universe, SPY-relative leadership, close/volume/volatility guards, same-ticker selected-core overlap...
 
 ## Highest-Signal Historical Records
 
@@ -119,8 +119,8 @@ facts before changing strategy behavior.
 - [`slot_or_ranking`](lessons/slot-or-ranking.md)
 - [`event_or_llm`](lessons/event-or-llm.md)
 - [`exit_policy`](lessons/exit-policy.md)
-- [`default_off_paper_adapter`](lessons/default-off-paper-adapter.md)
 - [`production_visible_free_ohlcv_relation_alpha`](lessons/production-visible-free-ohlcv-relation-alpha.md)
+- [`default_off_paper_adapter`](lessons/default-off-paper-adapter.md)
 
 ## Line Budget
 
