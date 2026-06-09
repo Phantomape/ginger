@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1093`
-- Raw records loaded by meta report: `1500`
-- History fingerprint: `d91dfddc083c1eb6`
+- Strategy records counted: `1094`
+- Raw records loaded by meta report: `1501`
+- History fingerprint: `ae32c93dfd4014a8`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -62,8 +62,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260608-017` `rejected_quiet_tight_range_accumulation_candidate_pool`: EV `-0.0091`, PnL `$-748.58`, family `production_visible_free_ohlcv_candidate_pool`, trial `quiet_tight_range_accumulation_candidate_pool`.
-  Lesson: The fixed quiet-range absorption source failed Gate 4 because the tight high-close volume field did not add robust replacement value across the canonical windows after next-open execution and cooldown. The likely mech...
 - `exp-20260608-019` `rejected_rates_relief_growth_leadership_candidate_pool`: EV `+0.1824`, PnL `$976.19`, family `production_visible_free_ohlcv_cross_asset_candidate_pool`, trial `rates_relief_growth_leadership_candidate_pool`.
   Lesson: The fixed rates-relief leadership source produced 58 target trades. old_thin moved -0.0861 EV and $-3,333.60; the full Gate 4 decision records whether TLT/SPY/QQQ relief separated durable growth leadership from macro...
 - `exp-20260608-020` `rejected_compression_core_flow_confirmed_candidate_pool`: EV `+0.0134`, PnL `$417.08`, family `production_visible_free_ohlcv_candidate_pool`, trial `narrow_range_compression_core_flow_confirmation`.
@@ -86,6 +84,8 @@ facts before changing strategy behavior.
   Lesson: A negative peer shock may be interpreted as contagion across correlated stocks rather than as rotation into substitutes. If the source is positive versus core but fails the accepted peer comparator, the edge is not st...
 - `exp-20260609-001` `rejected_market_pullback_resilient_reclaim_candidate_pool`: EV `+0.0118`, PnL `$-706.57`, family `production_visible_free_ohlcv_tail_state_candidate_pool`, trial `market_pullback_resilient_reclaim_candidate_pool`.
   Lesson: Market-pullback resilience can still be generic momentum under stress. If it fails a window or comparator, the source did not separate durable institutional demand from fragile rebound beta. Do not retry by sweeping S...
+- `exp-20260609-002` `rejected_gap_and_hold_institutional_demand_candidate_pool`: EV `+0.4991`, PnL `$9,849.36`, family `production_visible_free_ohlcv_candidate_pool`, trial `gap_and_hold_institutional_demand_candidate_pool`.
+  Lesson: Gap-and-hold may still be an event-day momentum/crowding label. If it fails any canonical window or accepted compression comparator, the rule did not isolate durable institutional demand after next-open execution cost...
 
 ## Highest-Signal Historical Records
 
