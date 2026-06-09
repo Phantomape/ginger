@@ -1,0 +1,154 @@
+{
+  "acceptance_rule": "Beat exp-20260604-009 accepted lagged consensus on aggregate EV and PnL, improve all three canonical windows versus that comparator, keep survival above 5%, maintain concentration guards, and make no production-path changes.",
+  "aggregate_expected_value_delta": 0.0104,
+  "aggregate_strategy_total_pnl_delta": -53.34,
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260609_023_compression_lagged_consensus_source.py",
+    "data/experiments/exp-20260609-023",
+    "experiments/logs/exp-20260609-023.json",
+    "experiments/cards/exp-20260609-023.md",
+    "experiments/tickets/exp-20260609-023.json",
+    "experiments/manifests/exp-20260609-023.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "artifact": "data/experiments/exp-20260609-023/exp_20260609_023_compression_lagged_consensus_source.json",
+  "baseline_result_file": "data/experiments/exp-20260604-009/exp_20260604_009_lagged_consensus_shared_adapter.json",
+  "card": "experiments/cards/exp-20260609-023.md",
+  "card_file": "experiments/cards/exp-20260609-023.md",
+  "causal_components": [
+    "accepted shared helper source rows",
+    "lagged consensus replay",
+    "accepted comparator check",
+    "production parity boundary"
+  ],
+  "change_type": "default_off_paper_adapter_source_family_alpha",
+  "changed_variable": "narrow_range_compression_breakout_source_family_added_to_accepted_lagged_consensus_v1",
+  "claimed_at": "2026-06-09T19:10:46+00:00",
+  "completed_at": "2026-06-09T19:15:56+00:00",
+  "created_at": "2026-06-09T19:10:37+00:00",
+  "decision": "rejected_compression_lagged_consensus_did_not_beat_accepted_lagged_comparator",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260609-023",
+  "experiment_uid": "expuid-978943f3df174c31",
+  "gate4": {
+    "accepted_comparator": "exp-20260604-009",
+    "decision": "rejected_compression_lagged_consensus_did_not_beat_accepted_lagged_comparator",
+    "gates": {
+      "aggregate_expected_value_positive": true,
+      "aggregate_pnl_positive": true,
+      "all_windows_expected_value_improved": true,
+      "all_windows_pnl_improved": true,
+      "beats_current_accepted_lagged_consensus_comparator": false,
+      "concentration_guard_passed": true,
+      "drawdown_drift_passed": true,
+      "new_source_selected_trade_count_positive": true,
+      "survival_floor_passed": true,
+      "target_trade_count_passed": true,
+      "target_window_count_passed": true
+    },
+    "max_drawdown_delta": 0.0003,
+    "min_survival_rate": 0.7925,
+    "passed": false,
+    "rationale": "The variant did not beat the current accepted lagged consensus comparator across all three canonical windows.",
+    "requires_parity_before_promotion": true
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260609-023",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-09T19:10:37+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "compression_lagged_consensus_source"
+  },
+  "hypothesis": "Accepted narrow-range compression breakout paper rows may improve the accepted lagged free-data consensus scout when treated as a distinct free-OHLCV price-formation source family.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "core_orders",
+    "live_orders",
+    "ranking",
+    "sizing",
+    "exits",
+    "llm",
+    "news",
+    "accepted_lagged_base_policy",
+    "compression_helper_thresholds"
+  ],
+  "log": "experiments/logs/exp-20260609-023.json",
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/run.py",
+    "operator_inputs/open_positions.json",
+    "quant/free_data_cross_source_consensus_paper_sleeve.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260604-009",
+    "exp-20260604-015",
+    "exp-20260606-028",
+    "exp-20260608-026",
+    "exp-20260609-005",
+    "exp-20260609-017",
+    "exp-20260608-013"
+  ],
+  "new_evidence_type": "newly_accepted_narrow_range_compression_breakout_source_family",
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "confidence_reason": "The compression breakout source is accepted standalone with all-window positive evidence and shared-helper parity, but prior source-family admissions frequently failed against the accepted lagged comparator.",
+    "expected_ev_delta": 0.08,
+    "expected_pnl_delta": 1500.0,
+    "main_failure_modes": [
+      "accepted_lagged_comparator_not_beaten",
+      "compression_rows_redundant_with_volume_breadth",
+      "window_regression",
+      "source_rows_selected_only_as_prior_confirmation",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-09T19:10:24+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 8,
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_consensus_adapter_change",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_note": "This runner changes no production code. A positive result would still require the shared free-data consensus adapter to load the accepted narrow-range compression breakout paper source under the same source-family mapping in historical replay and daily production, with parity tests, before any daily report queue, candidate priority, paper notional, watchlist, or order surface could change.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "result": {
+    "aggregate_expected_value_delta_vs_lagged": 0.0104,
+    "aggregate_strategy_total_pnl_delta_vs_lagged": -53.34
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260609-023.json",
+  "single_causal_variable": "narrow_range_compression_breakout_source_family_added_to_accepted_lagged_consensus_v1",
+  "status": "completed",
+  "summary": "The variant did not beat the current accepted lagged consensus comparator across all three canonical windows.",
+  "ticket_file": "experiments/tickets/exp-20260609-023.json",
+  "trial_family": "accepted_free_data_cross_source_consensus_new_independent_source_family",
+  "trial_variant_id": "narrow_range_compression_breakout_lagged_consensus_source_family_v1",
+  "updated_at": "2026-06-09T19:15:56+00:00"
+}
