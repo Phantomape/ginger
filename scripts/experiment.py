@@ -24,6 +24,7 @@ from experiment_registry import (
     load_registry,
     print_json,
 )
+from self_registration_guard import new_offenders as _self_register_new_offenders
 
 
 def _workspace_root_for_registry(registry_path):
@@ -153,13 +154,27 @@ def _audit(argv):
         logs_dir=args.logs_dir or workspace_root / "experiments" / "logs",
         lean=args.lean or args.lean_strict,
     )
+    sr_new = _self_register_new_offenders()
+    result["self_registration"] = {
+        "passed": not sr_new,
+        "new_offenders": sr_new,
+        "note": (
+            "Runners writing docs/experiment_registry.json directly bypass "
+            "prediction enforcement. Use experiment.py new/close or "
+            "experiment_registry.persist_self_registered_result(). --strict blocks "
+            "on new offenders; the pre-commit hook blocks the offending commit; "
+            "--lean-strict reports them without failing the shared audit."
+        ),
+    }
     if (args.lean or args.lean_strict) and not args.full:
-        print_json(_summarize_lean_audit(result, lean_strict=args.lean_strict))
+        summary = _summarize_lean_audit(result, lean_strict=args.lean_strict)
+        summary["self_registration"] = result["self_registration"]
+        print_json(summary)
     else:
         print_json(result)
     if args.lean_strict and not result["lean_quality_passed"]:
         raise SystemExit(2)
-    if args.strict and not result["passed"]:
+    if args.strict and (not result["passed"] or sr_new):
         raise SystemExit(2)
 
 

@@ -507,3 +507,9 @@ response before stopping.
   `quant/experiments/_self_register_legacy_allowlist.txt`). The allowlist is
   prune-only: `python scripts/refresh_self_register_allowlist.py` drops migrated
   runners but refuses to grandfather new offenders without `--accept-new`.
+  `experiment.py audit` reports new offenders in a `self_registration` block so
+  they surface at closeout; `--strict` exits non-zero on them. For commit-time
+  enforcement enable the hook once: `git config core.hooksPath scripts/git-hooks`
+  (fail-open; blocks only the offending commit). When the guard goes red during
+  rollout, migrate the runner to the helper, or `--accept-new` if it is a
+  genuine in-flight legacy-pattern runner.

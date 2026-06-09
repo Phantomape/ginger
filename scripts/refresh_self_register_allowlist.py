@@ -26,18 +26,11 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-QUANT_DIR = REPO_ROOT / "quant"
-if str(QUANT_DIR) not in sys.path:
-    sys.path.insert(0, str(QUANT_DIR))
+SCRIPTS_DIR = REPO_ROOT / "scripts"
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
 
-import importlib.util
-
-_spec = importlib.util.spec_from_file_location(
-    "_self_register_guard",
-    QUANT_DIR / "test_no_new_self_registering_runners.py",
-)
-_guard = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(_guard)
+import self_registration_guard as _guard
 
 ALLOWLIST_PATH = _guard.ALLOWLIST_PATH
 HEADER = (
@@ -67,8 +60,8 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    current = _guard._current_offenders()
-    allow = _guard._load_allowlist()
+    current = _guard.current_offenders()
+    allow = _guard.load_allowlist()
     new_offenders = sorted(current - allow)
     migrated = sorted(allow - current)
 

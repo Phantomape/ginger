@@ -1,0 +1,30 @@
+#!/bin/sh
+# Block commits that add a NEW self-registering experiment runner.
+#
+# A runner that writes docs/experiment_registry.json directly bypasses
+# require_pre_run_prediction. New runners must use experiment.py new/close or
+# experiment_registry.persist_self_registered_result(). Legacy offenders are
+# grandfathered in quant/experiments/_self_register_legacy_allowlist.txt.
+#
+# Enable repo-wide (one time, applies to this working copy):
+#   git config core.hooksPath scripts/git-hooks
+#
+# Fail-open: this hook blocks ONLY on a confirmed new offender (exit 1). Any
+# tooling problem (missing python, import error) lets the commit through so a
+# broken hook never halts the whole fleet.
+
+PY="python"
+command -v "$PY" >/dev/null 2>&1 || PY="python3"
+command -v "$PY" >/dev/null 2>&1 || PY=".venv/Scripts/python.exe"
+[ -x "$PY" ] || command -v "$PY" >/dev/null 2>&1 || exit 0
+
+"$PY" scripts/self_registration_guard.py --staged
+status=$?
+if [ "$status" -eq 1 ]; then
+  echo "" >&2
+  echo "Commit blocked by the self-registration guard. Migrate the runner(s)" >&2
+  echo "above off direct registry writes, or (deliberately) grandfather them" >&2
+  echo "with: python scripts/refresh_self_register_allowlist.py --accept-new" >&2
+  exit 1
+fi
+exit 0
