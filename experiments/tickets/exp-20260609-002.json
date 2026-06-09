@@ -1,0 +1,96 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260609_002_gap_and_hold_institutional_demand.py",
+    "data/experiments/exp-20260609-002/exp_20260609_002_gap_and_hold_institutional_demand.json",
+    "experiments/cards/exp-20260609-002.md",
+    "experiments/manifests/exp-20260609-002.json",
+    "experiments/tickets/exp-20260609-002.json",
+    "experiments/logs/exp-20260609-002.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260609-002.md",
+  "causal_components": [
+    "fixed gap-and-hold OHLCV candidate source",
+    "replay-only three-window evaluation",
+    "artifact/log/card/ticket closeout"
+  ],
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "gap_and_hold_institutional_demand_candidate_source_v1",
+  "claimed_at": "2026-06-09T02:05:06+00:00",
+  "completed_at": "2026-06-09T02:08:44Z",
+  "created_at": "2026-06-09T02:04:56+00:00",
+  "decision": "rejected_gap_and_hold_institutional_demand_candidate_pool",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260609-002",
+  "experiment_uid": "expuid-448c6fc81a1a4c82",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260609-002",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-09T02:04:56+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "gap_and_hold_institutional_demand"
+  },
+  "hypothesis": "Gap-and-hold liquid stock breakouts may identify institutional demand continuation candidates after signal-day event absorption without adding noisy tickers.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "gap_and_hold_institutional_demand_candidate_source_v1"
+  ],
+  "mechanism_family": "production_visible_free_ohlcv_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260426-044",
+    "exp-20260606-003",
+    "exp-20260606-004",
+    "exp-20260606-010",
+    "exp-20260606-015",
+    "exp-20260608-012",
+    "exp-20260609-001"
+  ],
+  "new_evidence_type": "production_visible_free_ohlcv_gap_hold_absorption_field",
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "confidence_reason": "Playbook favors production-visible default-off candidate-pool alpha, but broad OHLCV neighbors are crowded and often fail old_thin/drawdown. Gap-and-hold is a distinct event-absorption morphology using free decision-time OHLCV; likely failure is momentum relabeling.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "old_thin_regression",
+      "drawdown_drift",
+      "ohlcv_momentum_relabeling",
+      "accepted_compression_comparator_not_beaten",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-09T02:04:44+00:00",
+    "success_probability": 0.15
+  },
+  "prior_trial_count": 7,
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": 0.4991,
+    "aggregate_strategy_total_pnl_delta": 9849.36,
+    "artifact": "data/experiments/exp-20260609-002/exp_20260609_002_gap_and_hold_institutional_demand.json",
+    "calibration": {
+      "actual_gate4_passed": false,
+      "brier_score": 0.0225,
+      "failure_modes_observed": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "drawdown_drift_too_high"
+      ],
+      "predicted_success_probability": 0.15
+    },
+    "decision": "rejected_gap_and_hold_institutional_demand_candidate_pool",
+    "log": "experiments/logs/exp-20260609-002.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260609-002.json",
+  "single_causal_variable": "gap_and_hold_institutional_demand_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The gap-and-hold institutional-demand source did not clear Gate 4 or did not beat the accepted compression comparator; do not promote or locally retune this OHLCV gap-hold family on the frozen windows.",
+  "ticket_file": "experiments/tickets/exp-20260609-002.json",
+  "trial_family": "gap_and_hold_institutional_demand_candidate_pool",
+  "trial_variant_id": "exp-20260609-002"
+}
