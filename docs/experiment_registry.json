@@ -13525,8 +13525,219 @@
       "decision": "rejected_early_peer_earnings_sympathy_candidate_pool",
       "aggregate_expected_value_delta": -0.095,
       "aggregate_strategy_total_pnl_delta": -1325.52
+    },
+    {
+      "experiment_id": "exp-20260609-025",
+      "experiment_uid": "expuid-cde06c4811684f99",
+      "hub_identity": {
+        "scheme": "hf_hub_local_v1",
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260609-025",
+        "slug": "form4_liquidity_cost_cluster_purchase",
+        "reserved_at": "2026-06-09T21:10:48+00:00",
+        "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+      },
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search-automation",
+      "hypothesis": "PIT-safe Form 4 meaningful purchase events should have cleaner forward value when the purchase is material versus prior 20-day dollar volume, supported by cluster or senior-owner evidence, and entered near the insiders' weighted reported purchase cost.",
+      "change_type": "event_qualification_replay",
+      "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+      "trial_family": "form4_liquidity_cost_cluster_candidate_pool",
+      "trial_variant_id": "form4_liquidity_cost_cluster_top1_10d_v1",
+      "single_causal_variable": "form4_liquidity_cost_cluster_qualifier_v1",
+      "changed_variable": "form4_liquidity_cost_cluster_qualifier_v1",
+      "causal_components": [
+        "Form4 meaningful purchase queue",
+        "total purchase value vs 20d dollar volume",
+        "owner/transaction cluster or senior role",
+        "entry open <= 1.08x weighted insider purchase price",
+        "10d fixed hold",
+        "10k event sleeve",
+        "raw Form4 replacement comparator"
+      ],
+      "prior_trial_count": 7,
+      "nearby_prior_experiments": [
+        "exp-20260504-034",
+        "exp-20260529-002",
+        "exp-20260530-003",
+        "exp-20260530-011",
+        "exp-20260602-016",
+        "exp-20260602-031",
+        "exp-20260604-022",
+        "exp-20260605-001"
+      ],
+      "multiple_testing_risk_bucket": "moderate",
+      "new_evidence_type": "free_sec_form4_purchase_value_to_liquidity_cost_anchor_cluster",
+      "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260609_025_form4_liquidity_cost_cluster_purchase.py",
+        "data/experiments/exp-20260609-025",
+        "experiments/logs/exp-20260609-025.json",
+        "experiments/tickets/exp-20260609-025.json",
+        "docs/experiments/tickets/exp-20260609-025.json",
+        "experiments/cards/exp-20260609-025.md",
+        "experiments/manifests/exp-20260609-025.json",
+        "experiments/artifacts/exp-20260609-025_form4_liquidity_cost_cluster_purchase.md",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "must_not_touch": [
+        "production orders",
+        "live sizing",
+        "core signal generation",
+        "core candidate ranking",
+        "LLM prompts",
+        "news replay",
+        "state-surface allocation"
+      ],
+      "locked_variables": [
+        "core strategy",
+        "Form4 parser threshold",
+        "raw Form4 queue",
+        "event notional",
+        "event holding period",
+        "event capacity",
+        "LLM/news replay settings",
+        "production orders"
+      ],
+      "evaluation_windows": [
+        {
+          "start": "2025-10-23",
+          "end": "2026-04-21"
+        },
+        {
+          "start": "2025-04-23",
+          "end": "2025-10-22"
+        },
+        {
+          "start": "2024-10-02",
+          "end": "2025-04-22"
+        }
+      ],
+      "acceptance_rule": "docs/backtesting.md 3 canonical windows; must improve aggregate EV/PnL versus core and raw Form4, avoid EV/PnL regression windows, pass drawdown/survival/sample/concentration guards",
+      "prediction": {
+        "success_probability": 0.13,
+        "expected_ev_delta": 0.12,
+        "expected_pnl_delta": 2500.0,
+        "main_failure_modes": [
+          "does_not_beat_raw_form4_queue",
+          "sample_too_thin",
+          "old_thin_regression",
+          "cost_anchor_relabel",
+          "concentration"
+        ],
+        "confidence_reason": "Form4 is PIT-safe and free across the fixed windows, but nearby Form4 qualifiers repeatedly failed raw-queue replacement value. This run has low confidence because it tests a stricter purchase-value-to-liquidity plus cost-anchor cluster relation.",
+        "recorded_at": "2026-06-09T21:10:35+00:00"
+      },
+      "created_at": "2026-06-09T21:10:48+00:00",
+      "claimed_at": "2026-06-09T21:10:58+00:00",
+      "completed_at": "2026-06-09T21:20:14+00:00",
+      "result": {
+        "decision": "rejected_form4_liquidity_cost_cluster_candidate_pool",
+        "accepted": false,
+        "artifact": "data/experiments/exp-20260609-025/exp_20260609_025_form4_liquidity_cost_cluster_purchase.json",
+        "log": "experiments/logs/exp-20260609-025.json",
+        "card": "experiments/cards/exp-20260609-025.md",
+        "aggregate_expected_value_delta": 0.0247,
+        "aggregate_strategy_total_pnl_delta": 614.23,
+        "aggregate_delta_vs_raw_form4": {
+          "aggregate_ev_before": 8.1547,
+          "aggregate_ev_after": 7.9188,
+          "aggregate_ev_delta": -0.2359,
+          "aggregate_ev_delta_pct": -0.028928,
+          "aggregate_pnl_before": 239637.21,
+          "aggregate_pnl_after": 235465.22,
+          "aggregate_pnl_delta": -4171.99,
+          "aggregate_pnl_delta_pct": -0.01741,
+          "windows_ev_improved": 0,
+          "windows_ev_regressed": 2,
+          "windows_pnl_improved": 0,
+          "windows_pnl_regressed": 3,
+          "max_drawdown_drift": 0.0016
+        },
+        "gate4": {
+          "passed": false,
+          "decision": "rejected_form4_liquidity_cost_cluster_candidate_pool",
+          "failed_reasons": [
+            "does_not_improve_raw_form4_queue",
+            "target_sample_too_small",
+            "target_window_coverage_too_small",
+            "single_ticker_concentration",
+            "positive_pnl_hhi_concentration"
+          ],
+          "improves_core_cleanly": true,
+          "improves_vs_raw_form4": false,
+          "drawdown_guard_passed": true,
+          "max_drawdown_drift_guard": "<= 0.005",
+          "qualified_selected_event_trades": 2,
+          "target_trade_count_min": 8,
+          "target_windows": [
+            "mid_weak"
+          ],
+          "target_window_count_min": 3,
+          "single_ticker_positive_share": 1.0,
+          "single_ticker_positive_share_guard": "<= 0.75",
+          "positive_pnl_hhi": 1.0,
+          "positive_pnl_hhi_guard": "<= 0.6",
+          "sample_guard_passed": false,
+          "positive_pnl_by_ticker": {
+            "TSLA": 694.07
+          }
+        },
+        "calibration": {
+          "predicted_success_probability": 0.13,
+          "actual_success": 0,
+          "actual_gate4_passed": false,
+          "actual_ev_delta_vs_core": 0.0247,
+          "actual_pnl_delta_vs_core": 614.23,
+          "actual_ev_delta_vs_raw_form4": -0.2359,
+          "actual_pnl_delta_vs_raw_form4": -4171.99,
+          "failure_modes_observed": [
+            "does_not_improve_raw_form4_queue",
+            "target_sample_too_small",
+            "target_window_coverage_too_small",
+            "single_ticker_concentration",
+            "positive_pnl_hhi_concentration"
+          ],
+          "brier_score": 0.0169
+        },
+        "production_impact": {
+          "shared_policy_changed": false,
+          "backtester_adapter_changed": false,
+          "run_adapter_changed": false,
+          "parity_test_added": false,
+          "replay_only": true,
+          "default_off_paper_only": true,
+          "trade_enabled": false,
+          "production_signal_path_changed": false,
+          "alters_signal_generation": false,
+          "alters_candidate_ranking": false,
+          "alters_sizing": false,
+          "alters_orders": false,
+          "live_slots_changed": false,
+          "production_watchlist_changed": false,
+          "production_orders_changed": false,
+          "parity_note": "This experiment changes no production path. A positive result would require a shared default-off Form 4 adapter that computes the same usable-date event grouping, weighted purchase cost, prior-20-day dollar volume, cluster/senior-owner support, next-open paper entry, 10-day exit, costs, capacity, raw Form4 comparator, and source-row cache in both historical replay and daily production before any report queue, paper ledger, candidate priority, sizing, watchlist, or order surface could change."
+        },
+        "post_run_reflection": {
+          "why_result_happened": "The stricter cluster/cost/liquidity qualifier produced too few selected trades and failed raw Form4 replacement value. The data shape shows that adding cluster or senior-owner support to the already sparse forward queue removes most events rather than creating a robust candidate-pool edge.",
+          "forbidden_near_neighbor_retry": "Do not retry by sweeping the purchase-value-to-ADV, entry-to-cost, owner-count, transaction-count, senior-role, notional, capacity, or hold-day thresholds on these frozen windows.",
+          "new_evidence_required": "A Form4 revisit needs a denser forward replacement source, such as broader PIT daily filings with source-row cache, or a materially new relation like buyback authorization or official short-interest context. Otherwise move to another alpha family."
+        }
+      },
+      "ticket_file": "experiments/tickets/exp-20260609-025.json",
+      "card_file": "experiments/cards/exp-20260609-025.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260609-025.json",
+      "decision": "rejected_form4_liquidity_cost_cluster_candidate_pool",
+      "summary": "The liquidity/cost/cluster Form4 slice did not produce enough stable three-window replacement value versus core and raw Form4, or failed sample/risk gates. It should not be promoted.",
+      "artifact": "data/experiments/exp-20260609-025/exp_20260609_025_form4_liquidity_cost_cluster_purchase.json",
+      "log": "experiments/logs/exp-20260609-025.json",
+      "aggregate_expected_value_delta": 0.0247,
+      "aggregate_strategy_total_pnl_delta": 614.23,
+      "updated_at": "2026-06-09T21:20:14+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-09T20:10:34Z"
+  "updated_at": "2026-06-09T21:20:14+00:00"
 }
