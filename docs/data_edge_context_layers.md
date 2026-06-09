@@ -884,6 +884,42 @@ close-location, extension, top-N, hold days, cooldown, or notional on the
 frozen sample without closed forward rows or a materially new production-visible
 data edge.
 
+### `quant/turn_of_month_liquid_leadership_paper_sleeve.py`
+
+Purpose: maintain the default-off
+`TURN_OF_MONTH_LIQUID_LEADERSHIP_PAPER` forward observation ledger for the
+positive turn-of-month liquid leadership lead from `exp-20260609-026` and the
+shared adapter promotion from `exp-20260609-027`.
+
+Candidate route:
+
+- Uses the broad-market free-OHLCV universe plus exact `SPY` OHLCV.
+- Requires persisted public sector coverage and liquid stock filters
+  (`price >= $10`, `ADV20 >= $75m`).
+- Restricts signal dates to the last trading day through the first three
+  trading days of each month.
+- Requires 20-day and 60-day excess return versus `SPY`, positive signal-day
+  return, high close-location, bounded volume ratio, bounded 5-day and 20-day
+  extension, and bounded realized volatility.
+- Excludes same-ticker selected core overlap, emits top-1/day, fixed `$4,000`
+  paper notional, next-open paper entry, 10-trading-day close exit, costs, and
+  10-trading-day same-ticker cooldown.
+- Historical replay requires a future 10-trading-day exit row before a target
+  trade can be accepted. Daily observation may emit same-day pending rows
+  without future bars and mutates paper state only on exact `as_of` OHLCV rows.
+- Daily observation must not infer last-trading-day labels from truncated
+  OHLCV. Month-end candidates require explicit `calendar_dates` or
+  `known_month_end_dates`; otherwise the month-end route fails closed.
+
+Agent rule: this sleeve may collect forward replacement-value evidence for the
+accepted alpha only. It must not enable orders, expand the core universe, alter
+live ranking, sizing, exits, watchlists, LLM/news prompts, or consume capital
+without a separate Gate 1-4 activation experiment and parity update. Do not
+retune turn-window day counts, relative-strength thresholds, close-location,
+volume, volatility, top-N, hold days, cooldown, or notional on the frozen sample
+without closed forward rows or a materially new point-in-time flow-beneficiary
+data edge.
+
 ### `quant/ai_optical_paper_sleeve.py`
 
 Purpose: maintain the default-off `AI_OPTICAL_IWM_CONFIRMED_PAPER` forward

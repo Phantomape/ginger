@@ -423,6 +423,60 @@ Do not retune compression windows, expansion thresholds, close-location,
 volume, SPY-relative trend, extension guard, top-N, hold-day, cooldown, or
 notional thresholds on the frozen sample.
 
+### Turn-of-Month Liquid Leadership
+
+This is a free-calendar plus free-OHLCV candidate-pool lead. The edge is not
+generic month-start momentum; the accepted bundle requires a liquid
+sector-known stock to show SPY-relative leadership and strong signal-day
+quality inside the last-trading-day through first-three-trading-days window.
+
+Accepted shared adapter: `exp-20260609-027`, promoting the positive replay lead
+from `exp-20260609-026`.
+
+Mechanism:
+
+- calendar route: last trading day through first three trading days of each
+  month;
+- source universe: broad-market, sector-known, liquid stock observation feed;
+- leadership gates: 20-day and 60-day excess return versus `SPY`;
+- quality guards: positive signal-day return, high close-location, bounded
+  volume ratio, bounded realized volatility, and bounded 5-day/20-day
+  extension;
+- lifecycle: top-1/day, fixed `$4,000` paper notional, 10-trading-day
+  same-ticker cooldown, next-open paper entry, 10-trading-day close exit, costs
+  included;
+- status: default-off paper only, no live orders.
+
+Evidence:
+
+- aggregate EV `+0.2774`;
+- PnL `+$5,287.69`;
+- all three canonical windows improved;
+- target paper trades: `73`;
+- max drawdown drift `-0.0001`;
+- concentration passed (`max_single_positive_pnl_share=0.118149`,
+  `positive_pnl_hhi=0.052302`);
+- shared adapter reproduced the replay lead with zero EV/PnL/trade drift.
+
+Production parity note:
+
+- historical replay must pass the full loaded trading calendar into the helper;
+- daily snapshots must not infer month-end from truncated OHLCV;
+- month-end candidates require explicit `calendar_dates` or
+  `known_month_end_dates`, otherwise the month-end route fails closed.
+
+Next valid work:
+
+- collect closed forward replacement-value rows from the shared adapter;
+- look for a genuinely point-in-time flow-beneficiary data edge, such as ETF
+  rebalance constituents or other free flow proxies;
+- before live deployment, measure the full activation envelope
+  (notional/cap/liquidity/slippage/displacement/kill switch/order semantics).
+
+Do not retune turn-window day counts, ret20/ret60 leadership thresholds,
+close-location, volume, volatility, top-N, hold-day, cooldown, or notional
+thresholds on the frozen sample.
+
 ### Lagged Independent Free-Data Consensus
 
 The accepted consensus route is that a current accepted-source paper candidate
