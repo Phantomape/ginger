@@ -504,4 +504,6 @@ response before stopping.
   prediction and propagates it onto the ticket. The guard test
   `quant/test_no_new_self_registering_runners.py` blocks new direct registry
   writers (legacy runners are grandfathered in
-  `quant/experiments/_self_register_legacy_allowlist.txt`).
+  `quant/experiments/_self_register_legacy_allowlist.txt`). The allowlist is
+  prune-only: `python scripts/refresh_self_register_allowlist.py` drops migrated
+  runners but refuses to grandfather new offenders without `--accept-new`.
