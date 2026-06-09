@@ -72,6 +72,28 @@ def test_detector_flags_direct_registry_write():
     ) is True
 
 
+def test_helper_user_referencing_registry_path_is_exempt():
+    # A runner that uses the sanctioned helper but references the registry path
+    # (to pass it in) and writes its OWN artifact must NOT be flagged.
+    sample = (
+        'REGISTRY_JSON = REPO_ROOT / "docs" / "experiment_registry.json"\n'
+        'OUT_JSON.write_text(json.dumps(payload))\n'
+        'persist_self_registered_result(REGISTRY_JSON, experiment_id=eid,\n'
+        '    lane="alpha_search", prediction=pred, result=res, status="rejected")\n'
+    )
+    assert _self_registers(sample) is False
+
+
+def test_setdefault_overrides_helper_exemption():
+    # Mutating the experiments list is the hard signal even if the helper is also
+    # mentioned -- a sloppy runner must not hide a direct write behind the import.
+    sample = (
+        "persist_self_registered_result(REG, ...)\n"
+        'registry.setdefault("experiments", []).append(entry)\n'
+    )
+    assert _self_registers(sample) is True
+
+
 def test_current_offenders_are_all_grandfathered():
     # Sanity: the allowlist is a superset of current offenders (the guard only
     # fails on NEW ones). Equivalent to test_no_new_... but explicit.

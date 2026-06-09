@@ -1,0 +1,191 @@
+{
+  "anti_js": "No JavaScript was used.",
+  "elapsed_seconds": 17.7,
+  "experiment_id": "exp-20260609-007",
+  "method": "Read-only PIT attribution. Candidate pool = top-20% ret5 winners. Tail-state resilient = day breadth>=0.5 AND median ret20>=0 AND candidate not overextended (ret5-ret20 <= pool median). Forward 10d skip-day close-to-close; one round-trip cost. window_metrics are a return-based proxy (fixed $10k notional) for a backtester before/after.",
+  "per_window": {
+    "late_strong": {
+      "comparator_pool_mean": 0.004825,
+      "resilient_fwd_mean": 0.00772,
+      "resilient_minus_comparator": 0.002895,
+      "resilient_n": 2030,
+      "resilient_net_of_cost": 0.00422,
+      "tail_risk_fwd_mean": 0.003467,
+      "tail_risk_n": 4328
+    },
+    "mid_weak": {
+      "comparator_pool_mean": 0.028553,
+      "resilient_fwd_mean": 0.031505,
+      "resilient_minus_comparator": 0.002952,
+      "resilient_n": 2755,
+      "resilient_net_of_cost": 0.028005,
+      "tail_risk_fwd_mean": 0.026463,
+      "tail_risk_n": 3892
+    },
+    "old_thin": {
+      "comparator_pool_mean": -0.002551,
+      "resilient_fwd_mean": 0.013632,
+      "resilient_minus_comparator": 0.016183,
+      "resilient_n": 2316,
+      "resilient_net_of_cost": 0.010132,
+      "tail_risk_fwd_mean": -0.010198,
+      "tail_risk_n": 4901
+    }
+  },
+  "pooled": {
+    "concentration": {
+      "hhi": 0.006371465718272695,
+      "single_ticker": 0.03337045244319053,
+      "top5": 0.11306865531483065
+    },
+    "resilient_excess_vs_comparator": 0.008884,
+    "resilient_fwd_tstat": 12.3593,
+    "resilient_minus_tailrisk": 0.013692,
+    "resilient_n": 7101,
+    "resilient_net_of_cost": 0.015376,
+    "tail_risk_n": 13121
+  },
+  "rule_version": "tail_state_winner_continuation_v1",
+  "universe": "exp-20260519-030 warehouse all_windows_full_liquid",
+  "verdict": {
+    "anti_js": "No JavaScript was used.",
+    "execution_envelope": {
+      "base_notional": 10000.0,
+      "complete": true,
+      "kill_switch_drawdown_pct": 0.08,
+      "max_capital_pct": 0.05,
+      "max_concurrent": 5,
+      "max_displacement": 2,
+      "min_dollar_volume": 2000000.0,
+      "missing": [],
+      "notes": "Declared up front; live readiness still blocked on forward rows.",
+      "order_semantics": "next_open",
+      "sleeve_drawdown_stop_pct": 0.12,
+      "slippage_bps": 10.0
+    },
+    "gate4": {
+      "hard_failures": [
+        "immaterial_effect"
+      ],
+      "materiality": {
+        "avg_pnl_per_trade_delta": 88.84,
+        "avg_return_delta_pp": 0.8884,
+        "material": false,
+        "min_avg_pnl_per_trade_delta": 500.0,
+        "min_avg_return_delta_pp": 5.0,
+        "warnings": []
+      },
+      "passed": false,
+      "promotion_gate": {
+        "checks": {
+          "adjusted_trade_sample": true,
+          "adjusted_window_coverage": true,
+          "drawdown_worse_guard": true,
+          "ev_improved_window_coverage": true,
+          "no_ev_regressed_windows": true,
+          "positive_aggregate_ev": true,
+          "positive_aggregate_pnl": true,
+          "tail_concentration_cap": true,
+          "tail_concentration_evidence": true,
+          "tail_concentration_not_worse": true
+        },
+        "concentration_checks": [
+          {
+            "baseline": 0.5,
+            "cap_passed": true,
+            "delta": -0.46663,
+            "max_allowed": 0.5,
+            "name": "single_ticker_positive_share",
+            "not_worse": true,
+            "value": 0.03337
+          },
+          {
+            "baseline": 0.6,
+            "cap_passed": true,
+            "delta": -0.486931,
+            "max_allowed": 0.6,
+            "name": "top_5_contribution_pct",
+            "not_worse": true,
+            "value": 0.113069
+          },
+          {
+            "baseline": 0.35,
+            "cap_passed": true,
+            "delta": -0.343629,
+            "max_allowed": 0.35,
+            "name": "hhi_concentration",
+            "not_worse": true,
+            "value": 0.006371
+          }
+        ],
+        "hard_failures": [],
+        "metrics": {
+          "adjusted_trade_count": 7101,
+          "adjusted_window_count": 3,
+          "adjusted_windows": [],
+          "aggregate_ev_delta": 0.8884,
+          "aggregate_pnl_delta": 630853.18,
+          "max_drawdown_worse": 0.000605,
+          "windows_ev_improved": 3.0,
+          "windows_ev_regressed": 0.0
+        },
+        "passed": true,
+        "status": "passed",
+        "thresholds": {
+          "concentration_tolerance": 1e-12,
+          "max_drawdown_worse": 0.005,
+          "max_ev_regressed_windows": 0,
+          "max_hhi_concentration": 0.35,
+          "max_single_ticker_positive_share": 0.5,
+          "max_top_5_contribution_pct": 0.6,
+          "min_adjusted_trades": 9,
+          "min_adjusted_windows": 2,
+          "min_aggregate_ev_delta": 0.0,
+          "min_aggregate_pnl_delta": 0.0,
+          "min_ev_improved_windows": 2,
+          "require_tail_concentration_evidence": true,
+          "require_tail_concentration_not_worse": true
+        },
+        "warnings": []
+      },
+      "status": "blocked",
+      "warnings": []
+    },
+    "gate4_passed": false,
+    "live_readiness": {
+      "blockers": [
+        "forward_rows_immature:0/30",
+        "forward_pnl_not_positive",
+        "replacement_value_not_passed",
+        "kill_switch_parity_not_passed"
+      ],
+      "closed_forward_trades": 0,
+      "envelope_missing": [],
+      "forward_pnl": null,
+      "kill_switch_parity_passed": false,
+      "min_closed_forward_trades": 30,
+      "ready": false,
+      "replacement_value_passed": false
+    },
+    "live_ready": false,
+    "next_step": "Roll back the sleeve change and log the failure. Gate 4 did not pass; do not retune on the frozen sample.",
+    "verdict": "reject"
+  },
+  "window_metrics_proxy": {
+    "adjusted_trade_count": 7101,
+    "adjusted_window_count": 3,
+    "aggregate_ev_delta": 0.8884,
+    "aggregate_pnl_delta": 630853.18,
+    "avg_pnl_per_trade_delta": 88.84,
+    "avg_return_delta_pp": 0.8884,
+    "baseline_hhi_concentration": 0.35,
+    "baseline_single_ticker_positive_share": 0.5,
+    "baseline_top_5_contribution_pct": 0.6,
+    "hhi_concentration": 0.006371,
+    "max_drawdown_worse_max": 0.000605,
+    "single_ticker_positive_share": 0.03337,
+    "top_5_contribution_pct": 0.113069,
+    "windows_ev_improved": 3,
+    "windows_ev_regressed": 0
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "experiment_id": "exp-20260609-007",
+  "experiment_uid": "expuid-09fd4885522347f8",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260609-007",
+    "slug": "tail_state_continuation_candidate_pool",
+    "reserved_at": "2026-06-09T06:26:02+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected_no_tail_state_separation",
+  "lane": "alpha_search",
+  "owner": null,
+  "hypothesis": "Within broad recent-winner continuation candidates, a PIT tail-state filter (ret5/ret20 extension + breadth support + momentum-crash regime) separates resilient continuation from tail-risk continuation and beats the low-deployment ETF comparator after cost and drawdown.",
+  "change_type": "candidate_pool_full_stack",
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "trial_family": "tail_state_winner_continuation_candidate_pool",
+  "trial_variant_id": "exp-20260609-007",
+  "single_causal_variable": "tail-state filter applied to the broad winner-continuation candidate pool",
+  "changed_variable": "tail-state filter applied to the broad winner-continuation candidate pool",
+  "causal_components": [],
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260601-008"
+  ],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "not_declared",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260609_007_tail_state_continuation_candidate_pool.py",
+    "data/experiments/exp-20260609-007/exp_20260609_007_tail_state_continuation_candidate_pool.json",
+    "experiments/cards/exp-20260609-007.md",
+    "experiments/manifests/exp-20260609-007.json",
+    "experiments/tickets/exp-20260609-007.json",
+    "experiments/logs/exp-20260609-007.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "tail-state filter applied to the broad winner-continuation candidate pool"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.2,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "tail_state_does_not_separate",
+      "not_incremental_over_ret20",
+      "fails_etf_comparator_after_cost",
+      "concentration_or_drawdown_breach"
+    ],
+    "confidence_reason": "Broad winner continuation showed a real but non-incremental signal with heavy tail risk in exp-20260601-008; a tail-state classifier might isolate resilient continuation, though prior broad cross-sectional edges collapsed after momentum and cost controls.",
+    "recorded_at": "2026-06-09T06:25:45+00:00"
+  },
+  "created_at": "2026-06-09T06:26:02+00:00",
+  "claimed_at": null,
+  "completed_at": "2026-06-09T06:29:32+00:00",
+  "result": {
+    "decision": "rejected_no_tail_state_separation",
+    "verdict": "reject",
+    "next_step": "Roll back the sleeve change and log the failure. Gate 4 did not pass; do not retune on the frozen sample.",
+    "pooled": {
+      "resilient_n": 7101,
+      "tail_risk_n": 13121,
+      "resilient_minus_tailrisk": 0.013692,
+      "resilient_fwd_tstat": 12.3593,
+      "resilient_net_of_cost": 0.015376,
+      "resilient_excess_vs_comparator": 0.008884,
+      "concentration": {
+        "single_ticker": 0.03337045244319053,
+        "top5": 0.11306865531483065,
+        "hhi": 0.006371465718272695
+      }
+    },
+    "artifact": "data\\experiments\\exp-20260609-007\\tail_state_continuation_candidate_pool.json"
+  },
+  "ticket_file": "experiments/tickets/exp-20260609-007.json",
+  "card_file": "experiments/cards/exp-20260609-007.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260609-007.json",
+  "updated_at": "2026-06-09T06:29:32+00:00"
+}

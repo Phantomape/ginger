@@ -25,9 +25,18 @@ ALLOWLIST_PATH = EXPERIMENTS_DIR / "_self_register_legacy_allowlist.txt"
 
 def self_registers(text: str) -> bool:
     """True if the source mutates the registry experiments list or writes the
-    registry file path directly."""
+    registry file path directly.
+
+    Mutating `registry["experiments"]` is the hard signal and always flags. A
+    runner that delegates to `persist_self_registered_result()` (the sanctioned
+    enforced+propagating path) is exempt -- it may reference the registry path to
+    pass it to the helper and still write its own artifact files, which must not
+    be mistaken for a direct registry write.
+    """
     if 'setdefault("experiments"' in text or "setdefault('experiments'" in text:
         return True
+    if "persist_self_registered_result(" in text:
+        return False
     if "experiment_registry.json" in text and (
         "_write_json(" in text or "json.dump" in text or ".write_text(" in text
     ):
