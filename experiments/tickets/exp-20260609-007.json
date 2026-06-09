@@ -59,11 +59,27 @@
   "created_at": "2026-06-09T06:26:02+00:00",
   "claimed_at": null,
   "completed_at": "2026-06-09T06:29:32+00:00",
-  "result": {
-    "decision": "rejected_no_tail_state_separation",
-    "verdict": "reject",
-    "next_step": "Roll back the sleeve change and log the failure. Gate 4 did not pass; do not retune on the frozen sample.",
-    "pooled": {
+      "result": {
+        "decision": "rejected_no_tail_state_separation",
+        "verdict": "reject",
+        "next_step": "Roll back the sleeve change and log the failure. Gate 4 did not pass; do not retune on the frozen sample.",
+        "calibration": {
+          "actual_decision": "rejected",
+          "actual_success": 0,
+          "predicted_success_probability": 0.2,
+          "brier_score": 0.04,
+          "calibration_direction": "directionally_calibrated",
+          "surprise_level": "low",
+          "realized_failure_mode": "immaterial_effect",
+          "predicted_failure_mode_hit": true,
+          "surprise_note": "The filter separated winners from tail-risk rows, but the excess was far below the materiality floor."
+        },
+        "post_run_reflection": {
+          "why_result_happened": "The breadth and extension state separated resilient recent winners from tail-risk rows, but it mostly explained generic winner continuation and did not create enough per-trade replacement value after costs.",
+          "forbidden_near_neighbor_retry": "Do not retry broad recent-winner continuation by sweeping ret5, ret20, breadth, overextension, momentum-crash, top-quintile, hold, notional, or sampling thresholds on the frozen windows.",
+          "new_evidence_required": "Revisit only with a materially new PIT tail-state or flow field and direct replacement-value evidence versus the accepted low-deployment ETF comparator."
+        },
+        "pooled": {
       "resilient_n": 7101,
       "tail_risk_n": 13121,
       "resilient_minus_tailrisk": 0.013692,

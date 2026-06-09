@@ -1,0 +1,123 @@
+{
+  "experiment_id": "exp-20260609-007",
+  "timestamp": "2026-06-09T06:29:32+00:00",
+  "status": "rejected",
+  "decision": "rejected_no_tail_state_separation",
+  "hypothesis": "Within broad recent-winner continuation candidates, a PIT tail-state filter separates resilient continuation from tail-risk continuation and beats the low-deployment ETF comparator after cost and drawdown.",
+  "change_summary": "Tested a read-only tail-state filter on broad recent-winner continuation candidates.",
+  "change_type": "candidate_pool_full_stack",
+  "implementation_mode": "observed_only_attribution",
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "trial_family": "tail_state_winner_continuation_candidate_pool",
+  "trial_variant_id": "exp-20260609-007",
+  "changed_variable": "tail_state_filter_applied_to_broad_winner_continuation_candidate_pool",
+  "nearby_prior_experiments": [
+    "exp-20260601-008"
+  ],
+  "prediction": {
+    "success_probability": 0.2,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "tail_state_does_not_separate",
+      "not_incremental_over_ret20",
+      "fails_etf_comparator_after_cost",
+      "concentration_or_drawdown_breach"
+    ],
+    "confidence_reason": "Broad winner continuation had prior evidence of positive but tail-risky continuation in exp-20260601-008, while repeated broad cross-sectional OHLCV edges had failed after cost and comparator controls.",
+    "recorded_at": "2026-06-09T06:25:45+00:00"
+  },
+  "before_metrics": {
+    "comparator_pool_mean_forward_10d_return": 0.009251
+  },
+  "after_metrics": {
+    "resilient_forward_10d_return": 0.018135,
+    "resilient_net_of_cost": 0.015376,
+    "resilient_trade_count": 7101,
+    "tail_risk_trade_count": 13121
+  },
+  "delta_metrics": {
+    "resilient_excess_vs_comparator_return": 0.008884,
+    "average_pnl_per_trade_delta": 88.84,
+    "average_return_delta_pp": 0.8884,
+    "resilient_minus_tailrisk_return": 0.013692
+  },
+  "window_metrics": {
+    "late_strong": {
+      "resilient_minus_comparator": 0.002895,
+      "resilient_n": 2030,
+      "tail_risk_n": 4328
+    },
+    "mid_weak": {
+      "resilient_minus_comparator": 0.002952,
+      "resilient_n": 2755,
+      "tail_risk_n": 3892
+    },
+    "old_thin": {
+      "resilient_minus_comparator": 0.016183,
+      "resilient_n": 2316,
+      "tail_risk_n": 4901
+    }
+  },
+  "gate4": {
+    "passed": false,
+    "hard_failures": [
+      "immaterial_effect"
+    ],
+    "materiality": {
+      "avg_pnl_per_trade_delta": 88.84,
+      "min_avg_pnl_per_trade_delta": 500.0,
+      "avg_return_delta_pp": 0.8884,
+      "min_avg_return_delta_pp": 5.0
+    }
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "trade_enabled": false,
+    "daily_snapshot_exposed": false,
+    "live_realism_evaluated": false,
+    "live_ready": false
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_success": 0,
+    "predicted_success_probability": 0.2,
+    "brier_score": 0.04,
+    "calibration_direction": "directionally_calibrated",
+    "surprise_level": "low",
+    "expected_ev_delta": null,
+    "actual_ev_delta": 0.8884,
+    "expected_pnl_delta": null,
+    "actual_pnl_delta": 630853.18,
+    "predicted_failure_modes": [
+      "tail_state_does_not_separate",
+      "not_incremental_over_ret20",
+      "fails_etf_comparator_after_cost",
+      "concentration_or_drawdown_breach"
+    ],
+    "realized_failure_mode": "immaterial_effect",
+    "predicted_failure_mode_hit": true,
+    "surprise_note": "The filter separated winners from tail-risk rows, but the excess was far below the materiality floor."
+  },
+  "rejection_reason": "Gate 4 failed on immaterial_effect: $88.84 average PnL per trade and 0.8884pp return delta were below the $500 and 5pp materiality floors.",
+  "next_retry_requires": [
+    "A materially different PIT tail-state field",
+    "Forward replacement-value evidence against the low-deployment ETF comparator",
+    "A more selective candidate construction that is not a top-quintile winner retune"
+  ],
+  "post_run_reflection": {
+    "why_result_happened": "The breadth and extension state separated resilient recent winners from tail-risk rows, but it mostly explained generic winner continuation and did not create enough per-trade replacement value after costs.",
+    "forbidden_near_neighbor_retry": "Do not retry broad recent-winner continuation by sweeping ret5, ret20, breadth, overextension, momentum-crash, top-quintile, hold, notional, or sampling thresholds on the frozen windows.",
+    "new_evidence_required": "Revisit only with a materially new PIT tail-state or flow field and direct replacement-value evidence versus the accepted low-deployment ETF comparator."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260609_007_tail_state_continuation_candidate_pool.py",
+    "data/experiments/exp-20260609-007/tail_state_continuation_candidate_pool.json",
+    "experiments/artifacts/exp-20260609-007_tail_state_continuation_candidate_pool.md",
+    "experiments/tickets/exp-20260609-007.json"
+  ],
+  "notes": "No JavaScript was used."
+}
