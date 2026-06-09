@@ -1,0 +1,108 @@
+{
+  "experiment_id": "exp-20260609-020",
+  "experiment_uid": "expuid-8a860818653e4fb0",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260609-020",
+    "slug": "sec_ftd_finra_no_core_flow",
+    "reserved_at": "2026-06-09T17:08:25+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "alpha-search-automation",
+  "hypothesis": "Accepted SEC FTD plus FINRA candidates may have better independent replacement value when the signal date has no same-day core A/B flow, avoiding duplicate crowded exposure while keeping the FTD and FINRA thresholds fixed.",
+  "change_type": "default_off_paper_candidate_pool",
+  "mechanism_family": "free_sec_settlement_plus_borrow_pressure_displacement",
+  "trial_family": "sec_ftd_finra_no_core_flow_candidate_pool",
+  "trial_variant_id": "sec_ftd_finra_no_core_flow_top1_no_backup_v1",
+  "single_causal_variable": "sec_ftd_finra_no_same_day_core_flow_candidate_source_v1",
+  "changed_variable": "sec_ftd_finra_no_same_day_core_flow_candidate_source_v1",
+  "causal_components": [
+    "accepted FTD+FINRA candidate source",
+    "no same-day core flow admission",
+    "no backup substitution",
+    "next-open paper entry",
+    "10-trading-day fixed hold",
+    "three-window Gate 4"
+  ],
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260604-026",
+    "exp-20260604-027",
+    "exp-20260603-006",
+    "exp-20260609-016"
+  ],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "not_declared",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260609_020_sec_ftd_finra_no_core_flow.py",
+    "data/experiments/exp-20260609-020/exp_20260609_020_sec_ftd_finra_no_core_flow.json",
+    "experiments/cards/exp-20260609-020.md",
+    "experiments/manifests/exp-20260609-020.json",
+    "experiments/tickets/exp-20260609-020.json",
+    "experiments/logs/exp-20260609-020.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "sec_ftd_finra_no_same_day_core_flow_candidate_source_v1"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.16,
+    "expected_ev_delta": 0.06,
+    "expected_pnl_delta": 1200.0,
+    "main_failure_modes": [
+      "accepted_ftd_finra_comparator_not_beaten",
+      "old_thin_regression",
+      "sample_thinning",
+      "core_flow_is_not_crowding_proxy"
+    ],
+    "confidence_reason": "FTD+FINRA is an accepted free SEC/FINRA data edge. This tests a distinct displacement field, not FTD/FINRA threshold retuning: only accepted selected FTD+FINRA rows with no same-day core A/B entries are admitted, and no backup candidate is substituted after the no-core-flow exclusion.",
+    "recorded_at": "2026-06-09T17:34:26+00:00"
+  },
+  "created_at": "2026-06-09T17:08:25+00:00",
+  "claimed_at": "2026-06-09T17:08:36+00:00",
+  "completed_at": "2026-06-09T17:34:26+00:00",
+  "result": {
+    "experiment_id": "exp-20260609-020",
+    "status": "rejected",
+    "decision": "rejected_ftd_finra_no_core_flow",
+    "lane": "alpha_search",
+    "changed_variable": "sec_ftd_finra_no_same_day_core_flow_candidate_source_v1",
+    "trial_family": "sec_ftd_finra_no_core_flow_candidate_pool",
+    "trial_variant_id": "sec_ftd_finra_no_core_flow_top1_no_backup_v1",
+    "accepted": false,
+    "expected_value_score_delta_sum": 0.466,
+    "total_pnl_delta_sum": 8906.37,
+    "target_trade_count_sum": 98,
+    "gate4_passed": false,
+    "failed_gates": [
+      "accepted_ftd_finra_pnl_not_beaten"
+    ],
+    "artifact_path": "data\\experiments\\exp-20260609-020\\exp_20260609_020_sec_ftd_finra_no_core_flow.json",
+    "log_path": "experiments\\logs\\exp-20260609-020.json",
+    "card_path": "experiments\\cards\\exp-20260609-020.md",
+    "manifest_path": "experiments\\manifests\\exp-20260609-020.json",
+    "closed_at": "2026-06-09T17:34:26.200066+00:00",
+    "post_run_reflection": {
+      "why_result_happened": "The no-core-flow displacement field did not beat the accepted FTD+FINRA comparator. The likely failure is that same-day core-flow presence is not a reliable crowding proxy here; excluding those dates removes some valid settlement/borrow-pressure winners without creating enough independent replacement value.",
+      "realized_failure_mode": "accepted_ftd_finra_pnl_comparator_not_beaten_due_old_thin_underperformance",
+      "forbidden_near_neighbor_retry": "Do not retune accepted FTD/FINRA thresholds, top-N/day, hold length, cooldown, notional, or the no-core-flow cutoff on the same frozen windows.",
+      "new_evidence_required": "Forward replacement rows or a materially new free data field, such as a borrow-cost, catalyst, liquidity, or order-flow relation that explains why core-flow dates should be displaced rather than retained."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260609-020.json",
+  "card_file": "experiments/cards/exp-20260609-020.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260609-020.json",
+  "artifact_path": "data\\experiments\\exp-20260609-020\\exp_20260609_020_sec_ftd_finra_no_core_flow.json",
+  "log_path": "experiments\\logs\\exp-20260609-020.json",
+  "card_path": "experiments\\cards\\exp-20260609-020.md",
+  "manifest_path": "experiments\\manifests\\exp-20260609-020.json",
+  "updated_at": "2026-06-09T17:34:26+00:00"
+}
