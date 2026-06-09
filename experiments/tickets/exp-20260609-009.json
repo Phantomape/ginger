@@ -1,0 +1,116 @@
+{
+  "acceptance_rule": "Accept only if aggregate expected_value_score and PnL improve versus core baseline, all three standard windows improve, target trades remain statistically meaningful, max drawdown drift stays <=0.005, target PnL concentration max_share<=0.40 and hhi<=0.30, and the result beats accepted low-liability support comparator exp-20260528-017; otherwise reject and leave no production changes.",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "data/experiments",
+    "experiments/artifacts",
+    "experiments/logs",
+    "experiments/cards",
+    "experiments/tickets",
+    "experiments/manifests",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260609-009.md",
+  "causal_components": [
+    "replay_candidate_selector",
+    "Gate_1_4_artifact",
+    "production_parity_note",
+    "no_production_code_change"
+  ],
+  "change_type": "default_off_candidate_pool_scout",
+  "changed_variable": "companyfacts_shareholder_yield_cash_generation_combo_candidate_source_v1",
+  "claimed_at": "2026-06-09T08:08:48+00:00",
+  "completed_at": "2026-06-09T08:18:26+00:00",
+  "created_at": "2026-06-09T08:08:17+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260609-009",
+  "experiment_uid": "expuid-a63887e9f39c436b",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260609-009",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-09T08:08:17+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "companyfacts_shareholder_yield_fcf_combo"
+  },
+  "hypothesis": "Filed-date SEC Companyfacts candidates with both diluted-share contraction and positive free-cash-flow yield may deconcentrate the prior shareholder-yield and FCF leads while preserving replacement value.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "companyfacts_shareholder_yield_cash_generation_combo_candidate_source_v1"
+  ],
+  "mechanism_family": "free_data_companyfacts_fundamental_candidate_pool",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260601-002",
+    "exp-20260601-019",
+    "exp-20260601-004",
+    "exp-20260609-006"
+  ],
+  "new_evidence_type": "fixed_intersection_of_two_prior_free_data_fundamental_edges",
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "confidence_reason": "Share contraction and FCF yield each had positive but concentrated three-window evidence; combining them tests a real cash-return mechanism that may reduce concentration, but prior Companyfacts selection attempts repeatedly failed accepted comparator or concentration gates.",
+    "expected_ev_delta": 0.75,
+    "expected_pnl_delta": 15000.0,
+    "main_failure_modes": [
+      "still_APP_MU_concentrated",
+      "too_thin",
+      "accepted_low_liability_comparator_not_beaten",
+      "late_strong_regression",
+      "drawdown_drift"
+    ],
+    "recorded_at": "2026-06-09T08:08:04+00:00",
+    "success_probability": 0.14
+  },
+  "prior_trial_count": 4,
+  "result": {
+    "accepted": false,
+    "accepted_low_liability_failed_checks": [
+      "aggregate_ev_not_above_accepted_exp017",
+      "aggregate_pnl_not_above_accepted_exp017",
+      "window_ev_regressed_vs_accepted_exp017",
+      "window_pnl_regressed_vs_accepted_exp017"
+    ],
+    "aggregate_expected_value_delta": 1.2381,
+    "aggregate_strategy_total_pnl_delta": 28907.35,
+    "artifact": "data/experiments/exp-20260609-009/companyfacts_shareholder_yield_fcf_combo.json",
+    "card": "experiments/cards/exp-20260609-009.md",
+    "decision": "rejected_companyfacts_shareholder_yield_fcf_combo",
+    "failed_gates": [
+      "all_windows_expected_value_improved",
+      "all_windows_pnl_improved",
+      "target_window_count_passed",
+      "concentration_guard_passed",
+      "accepted_low_liability_comparator_passed"
+    ],
+    "log": "experiments/logs/exp-20260609-009.json",
+    "max_single_positive_share": 0.950689,
+    "metrics_gate4_passed": false,
+    "positive_pnl_hhi": 0.906241,
+    "promotable_now": false,
+    "report": "experiments/artifacts/exp-20260609-009_companyfacts_shareholder_yield_fcf_combo.md",
+    "target_trade_count": 26
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260609-009.json",
+  "single_causal_variable": "companyfacts_shareholder_yield_cash_generation_combo_candidate_source_v1",
+  "status": "completed",
+  "ticket_file": "experiments/tickets/exp-20260609-009.json",
+  "trial_family": "companyfacts_shareholder_yield_fcf_combo",
+  "trial_variant_id": "v1"
+}
