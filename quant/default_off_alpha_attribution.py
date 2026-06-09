@@ -226,6 +226,7 @@ def build_default_off_alpha_attribution_report(
     rolling_corr_peer_shock_paper_sleeve: dict[str, Any] | None = None,
     industry_relative_laggard_repair_paper_sleeve: dict[str, Any] | None = None,
     industry_stable_core_flow_paper_sleeve: dict[str, Any] | None = None,
+    narrow_range_compression_breakout_paper_sleeve: dict[str, Any] | None = None,
     ai_optical_paper_sleeve: dict[str, Any] | None = None,
     volatility_contraction_paper_sleeve: dict[str, Any] | None = None,
     volume_breadth_breakout_paper_sleeve: dict[str, Any] | None = None,
@@ -463,6 +464,46 @@ def build_default_off_alpha_attribution_report(
                 "uses_free_ohlcv_only": (
                     (
                         (industry_stable_core_flow_paper_sleeve or {}).get(
+                            "production_impact"
+                        )
+                        or {}
+                    ).get("uses_free_ohlcv_only")
+                ),
+            },
+        ),
+        _surface_summary(
+            name="narrow_range_compression_breakout",
+            label="NARROW_RANGE_COMPRESSION_BREAKOUT_PAPER",
+            snapshot=narrow_range_compression_breakout_paper_sleeve,
+            extra_metrics={
+                "rule_version": (
+                    (narrow_range_compression_breakout_paper_sleeve or {}).get("rule_version")
+                ),
+                "source_rule_version": (
+                    (narrow_range_compression_breakout_paper_sleeve or {}).get("source_rule_version")
+                ),
+                "raw_candidate_count": (
+                    (narrow_range_compression_breakout_paper_sleeve or {}).get("raw_candidate_count")
+                ),
+                "compressed_rows_scanned": (
+                    (
+                        (narrow_range_compression_breakout_paper_sleeve or {}).get(
+                            "narrow_range_compression_breakout_context"
+                        )
+                        or {}
+                    ).get("compressed_rows_scanned")
+                ),
+                "same_ticker_core_overlap_excluded": (
+                    (
+                        (narrow_range_compression_breakout_paper_sleeve or {}).get(
+                            "narrow_range_compression_breakout_context"
+                        )
+                        or {}
+                    ).get("same_ticker_core_overlap_excluded")
+                ),
+                "uses_free_ohlcv_only": (
+                    (
+                        (narrow_range_compression_breakout_paper_sleeve or {}).get(
                             "production_impact"
                         )
                         or {}

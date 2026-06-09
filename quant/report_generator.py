@@ -103,6 +103,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            rolling_corr_peer_shock_paper_sleeve=None,
                            industry_relative_laggard_repair_paper_sleeve=None,
                            industry_stable_core_flow_paper_sleeve=None,
+                           narrow_range_compression_breakout_paper_sleeve=None,
                            ai_optical_paper_sleeve=None,
                            volatility_contraction_paper_sleeve=None,
                            volume_breadth_breakout_paper_sleeve=None,
@@ -2324,6 +2325,69 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"lead20={candidate.get('candidate_ret20_lead_vs_group')} "
                 f"rel_spy={candidate.get('candidate_signal_relative_vs_spy')} "
                 f"score={candidate.get('candidate_score')} "
+                f"signal={candidate.get('signal_date', candidate.get('date'))} "
+                f"notional={notional_text} (paper only)"
+            )
+
+    if narrow_range_compression_breakout_paper_sleeve and (
+        narrow_range_compression_breakout_paper_sleeve.get("candidate_count", 0) > 0
+        or narrow_range_compression_breakout_paper_sleeve.get("pending_count", 0) > 0
+        or narrow_range_compression_breakout_paper_sleeve.get("open_position_count", 0) > 0
+        or narrow_range_compression_breakout_paper_sleeve.get("closed_count_today", 0) > 0
+        or narrow_range_compression_breakout_paper_sleeve.get("closed_position_count", 0) > 0
+        or narrow_range_compression_breakout_paper_sleeve.get("error")
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("NARROW-RANGE COMPRESSION BREAKOUT PAPER SLEEVE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Paper: {narrow_range_compression_breakout_paper_sleeve.get('paper_enabled', False)}  |  "
+            f"Trade enabled: {narrow_range_compression_breakout_paper_sleeve.get('trade_enabled', False)}"
+        )
+        if narrow_range_compression_breakout_paper_sleeve.get("error"):
+            lines.append(
+                f"  Source status: {narrow_range_compression_breakout_paper_sleeve.get('error')}"
+            )
+        context = narrow_range_compression_breakout_paper_sleeve.get(
+            "narrow_range_compression_breakout_context"
+        ) or {}
+        lines.append(
+            f"  Source: free OHLCV  |  "
+            f"Compressed scanned: {context.get('compressed_rows_scanned', 0)}  |  "
+            f"Raw candidates: {narrow_range_compression_breakout_paper_sleeve.get('raw_candidate_count', 0)}"
+        )
+        lines.append(
+            f"  Candidates: {narrow_range_compression_breakout_paper_sleeve.get('candidate_count', 0)}  |  "
+            f"Rejected: {narrow_range_compression_breakout_paper_sleeve.get('rejected_candidate_count', 0)}  |  "
+            f"Pending: {narrow_range_compression_breakout_paper_sleeve.get('pending_count', 0)}  |  "
+            f"Open: {narrow_range_compression_breakout_paper_sleeve.get('open_position_count', 0)}  |  "
+            f"Closed today: {narrow_range_compression_breakout_paper_sleeve.get('closed_count_today', 0)}"
+        )
+        lines.append(
+            "  Realized paper P&L: "
+            f"${narrow_range_compression_breakout_paper_sleeve.get('realized_pnl_to_date', 0.0):,.2f}  |  "
+            f"Unrealized: ${narrow_range_compression_breakout_paper_sleeve.get('unrealized_pnl', 0.0):,.2f}"
+        )
+        gate = narrow_range_compression_breakout_paper_sleeve.get("forward_paper_gate") or {}
+        if gate:
+            reasons = gate.get("reasons") or []
+            reason_text = ", ".join(reasons) if reasons else "none"
+            lines.append(
+                f"  Forward gate: {gate.get('status', 'unknown')}  |  "
+                f"closed={gate.get('closed_trade_count', 0)} "
+                f"pnl=${gate.get('net_pnl', 0.0):,.2f}  |  "
+                f"blocked_by={reason_text}"
+            )
+        for candidate in (narrow_range_compression_breakout_paper_sleeve.get("candidates") or [])[:5]:
+            notional = candidate.get("paper_notional_usd") or candidate.get("intended_notional")
+            notional_text = (
+                f"${notional:,.0f}" if isinstance(notional, (int, float)) else "n/a"
+            )
+            lines.append(
+                f"  {candidate.get('ticker', '?')}: "
+                f"compression={candidate.get('prior_10d_range_ratio')} "
+                f"expansion={candidate.get('signal_day_range_ratio')} "
+                f"close_loc={candidate.get('close_location')} "
                 f"signal={candidate.get('signal_date', candidate.get('date'))} "
                 f"notional={notional_text} (paper only)"
             )

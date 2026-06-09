@@ -95,6 +95,24 @@ def test_default_off_alpha_attribution_rolls_up_blockers_without_orders():
                 "reasons": ["not_enough_closed_forward_paper_trades"],
             },
         },
+        narrow_range_compression_breakout_paper_sleeve={
+            "candidate_count": 1,
+            "raw_candidate_count": 3,
+            "pending_count": 1,
+            "trade_enabled": False,
+            "rule_version": "narrow_range_compression_breakout_shared_default_off_adapter_v1",
+            "source_rule_version": "narrow_range_compression_breakout_candidate_source_v1",
+            "narrow_range_compression_breakout_context": {
+                "raw_compression_breakout_candidates": 2,
+                "same_ticker_core_overlap_excluded": False,
+            },
+            "production_impact": {"uses_free_ohlcv_only": True},
+            "forward_paper_gate": {
+                "passed": False,
+                "status": "blocked",
+                "reasons": ["not_enough_closed_forward_paper_trades"],
+            },
+        },
     )
 
     assert report["read_only"] is True
@@ -105,6 +123,7 @@ def test_default_off_alpha_attribution_rolls_up_blockers_without_orders():
     surface_names = {row["name"] for row in report["surfaces"]}
     assert "volatility_contraction_qqq_confirmed" in surface_names
     assert "rolling_corr_peer_shock" in surface_names
+    assert "narrow_range_compression_breakout" in surface_names
     rolling_surface = next(
         row for row in report["surfaces"] if row["name"] == "rolling_corr_peer_shock"
     )
@@ -212,6 +231,35 @@ def test_report_generator_renders_default_off_alpha_attribution():
                 }
             ],
         },
+        narrow_range_compression_breakout_paper_sleeve={
+            "candidate_count": 1,
+            "raw_candidate_count": 2,
+            "pending_count": 1,
+            "trade_enabled": False,
+            "paper_enabled": True,
+            "rule_version": "narrow_range_compression_breakout_shared_default_off_adapter_v1",
+            "source_rule_version": "narrow_range_compression_breakout_candidate_source_v1",
+            "narrow_range_compression_breakout_context": {
+                "raw_compression_breakout_candidates": 2,
+                "same_ticker_core_overlap_excluded": False,
+            },
+            "production_impact": {"uses_free_ohlcv_only": True},
+            "forward_paper_gate": {
+                "passed": False,
+                "status": "blocked",
+                "reasons": ["not_enough_closed_forward_paper_trades"],
+            },
+            "candidates": [
+                {
+                    "ticker": "COMP",
+                    "prior_10d_range_ratio": 0.045,
+                    "signal_day_range_ratio": 0.085,
+                    "close_location": 0.82,
+                    "date": "2026-05-24",
+                    "paper_notional_usd": 4000.0,
+                }
+            ],
+        },
     )
 
     report = generate_daily_report(
@@ -288,6 +336,35 @@ def test_report_generator_renders_default_off_alpha_attribution():
                 }
             ],
         },
+        narrow_range_compression_breakout_paper_sleeve={
+            "candidate_count": 1,
+            "raw_candidate_count": 2,
+            "pending_count": 1,
+            "trade_enabled": False,
+            "paper_enabled": True,
+            "rule_version": "narrow_range_compression_breakout_shared_default_off_adapter_v1",
+            "source_rule_version": "narrow_range_compression_breakout_candidate_source_v1",
+            "narrow_range_compression_breakout_context": {
+                "raw_compression_breakout_candidates": 2,
+                "same_ticker_core_overlap_excluded": False,
+            },
+            "production_impact": {"uses_free_ohlcv_only": True},
+            "forward_paper_gate": {
+                "passed": False,
+                "status": "blocked",
+                "reasons": ["not_enough_closed_forward_paper_trades"],
+            },
+            "candidates": [
+                {
+                    "ticker": "COMP",
+                    "prior_10d_range_ratio": 0.045,
+                    "signal_day_range_ratio": 0.085,
+                    "close_location": 0.82,
+                    "date": "2026-05-24",
+                    "paper_notional_usd": 4000.0,
+                }
+            ],
+        },
     )
 
     assert "DEFAULT-OFF ALPHA ATTRIBUTION" in report
@@ -302,3 +379,4 @@ def test_report_generator_renders_default_off_alpha_attribution():
     assert "INDUSTRY STABLE CORE-FLOW PAPER SLEEVE" in report
     assert "Core-flow dates: 1" in report
     assert "group=technology/software" in report
+    assert "NARROW-RANGE COMPRESSION BREAKOUT PAPER SLEEVE" in report
