@@ -1,0 +1,167 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "data/experiments",
+    "experiments",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260609-008.md",
+  "causal_components": [
+    "private replay runner",
+    "three-window artifact",
+    "experiment log"
+  ],
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "low_turnover_rs_consolidation_candidate_source_v1",
+  "claimed_at": "2026-06-09T07:18:42+00:00",
+  "completed_at": "2026-06-09T07:30:15+00:00",
+  "created_at": "2026-06-09T07:17:46+00:00",
+  "decision": "rejected_low_turnover_rs_consolidation_candidate_pool",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260609-008",
+  "experiment_uid": "expuid-cc1672ac53144e07",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260609-008",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-09T07:17:46+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "low_turnover_rs_consolidation"
+  },
+  "hypothesis": "Liquid sector-known stocks with persistent SPY-relative strength that pause on unusually low turnover and controlled range may represent quiet institutional holding pressure, expanding the default-off candidate pool without adding noisy tickers.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "low_turnover_rs_consolidation_candidate_source_v1"
+  ],
+  "mechanism_family": "production_visible_free_ohlcv_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260608-012",
+    "exp-20260608-013",
+    "exp-20260608-016",
+    "exp-20260608-017",
+    "exp-20260609-002"
+  ],
+  "new_evidence_type": "production_visible_free_ohlcv_low_turnover_rs_consolidation_field",
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "success_probability": 0.12,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "quiet_consolidation_near_neighbor",
+      "stale_momentum_relabel",
+      "old_thin_regression",
+      "drawdown_drift",
+      "accepted_compression_comparator_not_beaten"
+    ],
+    "confidence_reason": "The free-OHLCV candidate-pool lane has one small accepted compression source, but accumulation and quiet high-volume variants recently failed; this tests the opposite low-turnover holding-pressure morphology with strict comparator gates.",
+    "recorded_at": "2026-06-09T07:17:33+00:00"
+  },
+  "prior_trial_count": 5,
+  "result": {
+    "decision": "rejected_low_turnover_rs_consolidation_candidate_pool",
+    "accepted": false,
+    "artifact": "data/experiments/exp-20260609-008/exp_20260609_008_low_turnover_rs_consolidation.json",
+    "log": "experiments/logs/exp-20260609-008.json",
+    "card": "experiments/cards/exp-20260609-008.md",
+    "aggregate_expected_value_delta": 0.1029,
+    "aggregate_strategy_total_pnl_delta": 321.64,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_low_turnover_rs_consolidation_candidate_pool",
+      "failed_reasons": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "drawdown_drift_too_high",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten"
+      ],
+      "aggregate_ev_delta": 0.1029,
+      "aggregate_pnl_delta": 321.64,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 2,
+      "windows_pnl_improved": 1,
+      "windows_pnl_regressed": 2,
+      "target_trade_count": 363,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0197,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.073331,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.020943,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "accepted_compression_comparator": {
+        "experiment_id": "exp-20260608-013",
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "expected_value_score_delta_sum": 0.1608,
+        "total_pnl_delta_sum": 2248.98,
+        "target_trade_count": 44
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.12,
+      "actual_gate4_passed": false,
+      "failure_modes_observed": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "drawdown_drift_too_high",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten"
+      ],
+      "brier_score": 0.0144
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "replay_only_no_live_adapter",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "parity_note": "This experiment changes no production code. A positive result would require a shared default-off adapter that computes the same sector-known liquid stock universe, signal-day controlled-range field, low-turnover field, SPY-relative trend guards, same-ticker core-overlap exclusion, next-open paper entry, 10-trading-day exit, costs, cooldown, accepted compression comparator, and concentration controls in both historical replay and daily production before any report queue, paper ledger, candidate priority, sizing, watchlist, or order surface could change."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The fixed low-turnover RS consolidation source failed Gate 4 or did not beat the accepted compression comparator. The likely mechanism is stale momentum: low turnover can mean absence of demand rather than hidden accumulation after next-open execution and cooldown.",
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping signal range, range-to-median ratio, low-volume bounds, close-location, distance-to-high, ret5/ret20, top-N, hold-day, cooldown, or paper notional thresholds on these frozen windows.",
+      "new_evidence_required": "Next useful evidence is forward replacement-value rows, a shared default-off helper that reproduces this exact replay and daily snapshot semantics, or an orthogonal PIT catalyst/flow field. Live activation would need a separate activation-envelope Gate 1-4."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260609-008.json",
+  "single_causal_variable": "low_turnover_rs_consolidation_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The low-turnover RS consolidation source did not clear Gate 4 or did not beat the accepted compression comparator. Do not promote or locally retune this OHLCV low-turnover consolidation family on the frozen windows.",
+  "ticket_file": "experiments/tickets/exp-20260609-008.json",
+  "trial_family": "low_turnover_rs_consolidation_candidate_pool",
+  "trial_variant_id": "low_turnover_rs_consolidation_top1_next_open_10d_v1",
+  "artifact": "data/experiments/exp-20260609-008/exp_20260609_008_low_turnover_rs_consolidation.json",
+  "log": "experiments/logs/exp-20260609-008.json",
+  "aggregate_expected_value_delta": 0.1029,
+  "aggregate_strategy_total_pnl_delta": 321.64,
+  "updated_at": "2026-06-09T07:30:15+00:00"
+}
