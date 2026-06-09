@@ -1,0 +1,158 @@
+{
+  "acceptance_rule": "Gate 1-4 per docs/backtesting.md; positive aggregate EV and PnL; no EV/PnL regression in any of the three windows versus the accepted low-liability stack; >=30 target trades across all three windows; concentration and drawdown guardrails pass; no production code change unless follow-up shared adapter is implemented.",
+  "aggregate_expected_value_delta": 1.8267,
+  "aggregate_strategy_total_pnl_delta": 48026.19,
+  "allowed_write_scope": [
+    "quant/experiments;data/experiments;experiments/logs;experiments/artifacts;experiments/cards;experiments/tickets;docs/experiments/tickets;docs/experiment_log.jsonl;docs/experiment_registry.json"
+  ],
+  "artifact": "data/experiments/exp-20260609-006/exp_20260609_006_fundamental_growth_rs_quality_gated_top1_replacement.json",
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "card": "experiments/cards/exp-20260609-006.md",
+  "card_file": "experiments/cards/exp-20260609-006.md",
+  "causal_components": [
+    "filed_date_safe_operating_income_recency_gate",
+    "filed_date_safe_low_liability_gate",
+    "existing_next_open_10d_paper_execution"
+  ],
+  "change_type": "default_off_paper_candidate_selection",
+  "changed_variable": "fundamental_growth_rs_quality_gated_top1_replacement_v1",
+  "claimed_at": "2026-06-09T06:09:01+00:00",
+  "completed_at": "2026-06-09T06:20:19+00:00",
+  "created_at": "2026-06-09T06:08:32+00:00",
+  "decision": "rejected_fundamental_growth_rs_quality_gated_top1_replacement",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260609-006",
+  "experiment_uid": "expuid-af6a2128319d47ae",
+  "gate4": {
+    "accepted_low_liability_comparison_passed": false,
+    "accepted_low_liability_failed_checks": [
+      "aggregate_ev_not_above_accepted_exp017",
+      "aggregate_pnl_not_above_accepted_exp017",
+      "window_ev_regressed_vs_accepted_exp017",
+      "window_pnl_regressed_vs_accepted_exp017"
+    ],
+    "aggregate_ev_delta_positive": true,
+    "aggregate_pnl_delta_positive": true,
+    "core_gate4_passed": false,
+    "decision": "rejected_fundamental_growth_rs_quality_gated_top1_replacement",
+    "max_drawdown_worse": 0.0038,
+    "max_drawdown_worse_guardrail": 0.005,
+    "passed": false,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.888934,
+      "max_single_positive_pnl_share_guardrail": 0.4,
+      "passed": false,
+      "positive_pnl_hhi": 0.802539,
+      "positive_pnl_hhi_guardrail": 0.3
+    },
+    "target_trade_count": 231,
+    "target_trade_count_min": 30,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_ev_improved": 2,
+    "windows_ev_regressed": 1,
+    "windows_pnl_regressed": 1
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260609-006",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-09T06:08:32+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "fundamental_growth_rs_quality_gated_top1_replacement"
+  },
+  "hypothesis": "Candidate-pool selection alpha: within the accepted SEC Companyfacts Fundamental Growth RS paper source, replacing the daily top-1 with the best same-day candidate that has both fresh operating-income filing and low-liability balance-sheet evidence may improve source quality without adding noisy tickers.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "core_signal_generation",
+    "core_ranking",
+    "core_sizing",
+    "core_exits",
+    "LLM",
+    "news",
+    "watchlists",
+    "live_orders",
+    "state_surface_sleeve",
+    "lagged_consensus_sources"
+  ],
+  "log": "experiments/logs/exp-20260609-006.json",
+  "mechanism_family": "free_sec_companyfacts_plus_ohlcv_rs_candidate_pool",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [
+    "quant/fundamental_growth_rs_paper_sleeve.py;operator_inputs/open_positions.json;quant/report_generator.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260528-016",
+    "exp-20260528-017",
+    "exp-20260601-027",
+    "exp-20260607-002",
+    "exp-20260608-014"
+  ],
+  "new_evidence_type": "production_visible_sec_companyfacts_selection_replacement",
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "confidence_reason": "Filing recency and low liability were accepted as small support fields, but broad Companyfacts candidate-pool variants recently failed and this family has high multiple-testing risk; this is a narrow replay scout, not a production promotion.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "rejecting_top_ranked_winners",
+      "too_few_quality_candidates",
+      "old_thin_regression",
+      "companyfacts_support_fields_not_selection_fields",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-09T06:08:14+00:00",
+    "success_probability": 0.16
+  },
+  "prior_trial_count": 24,
+  "production_impact": {
+    "adapter_status": "private_replay_scout_no_shared_adapter_change",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "parity_note": "This experiment changes no production code. It reuses filed-date-safe SEC Companyfacts and signal-date OHLCV fields in replay only. A positive result cannot be promoted unless the same quality-gated selection is implemented in a shared default-off adapter, daily snapshot, historical replay, and parity tests before any report queue, watchlist, sizing, or order behavior changes.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_llm": false
+  },
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": 1.8267,
+    "aggregate_strategy_total_pnl_delta": 48026.19
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260609-006.json",
+  "single_causal_variable": "fundamental_growth_rs_quality_gated_top1_replacement_v1",
+  "status": "completed",
+  "ticket_file": "experiments/tickets/exp-20260609-006.json",
+  "trial_family": "fundamental_growth_rs_quality_gated_candidate_selection",
+  "trial_variant_id": "fundamental_growth_rs_filing_recency_low_liability_top1_replacement_v1",
+  "updated_at": "2026-06-09T06:20:19+00:00"
+}
