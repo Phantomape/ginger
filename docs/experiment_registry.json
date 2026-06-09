@@ -13736,8 +13736,170 @@
       "aggregate_expected_value_delta": 0.0247,
       "aggregate_strategy_total_pnl_delta": 614.23,
       "updated_at": "2026-06-09T21:20:14+00:00"
+    },
+    {
+      "experiment_id": "exp-20260609-026",
+      "experiment_uid": "expuid-9c75473d11b945ef",
+      "hub_identity": {
+        "scheme": "hf_hub_local_v1",
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260609-026",
+        "slug": "turn_of_month_liquid_leadership",
+        "reserved_at": "2026-06-09T22:06:19+00:00",
+        "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+      },
+      "status": "positive_replay_lead_not_promoted",
+      "lane": "alpha_search",
+      "owner": "alpha-search-automation",
+      "hypothesis": "entry/candidate_pool: turn-of-month institutional contribution and rebalance flow should make liquid sector-known stocks that already show 20-day SPY-relative leadership and a high signal-day close continue after next-open entry. It uses only free calendar and OHLCV data.",
+      "change_type": "default_off_paper_candidate_pool",
+      "mechanism_family": "production_visible_free_calendar_ohlcv_candidate_pool",
+      "trial_family": "turn_of_month_liquid_leadership_candidate_pool",
+      "trial_variant_id": "turn_of_month_liquid_leadership_top1_next_open_10d_v1",
+      "single_causal_variable": "turn_of_month_liquid_leadership_candidate_source_v1",
+      "changed_variable": "turn_of_month_liquid_leadership_candidate_source_v1",
+      "causal_components": [
+        "calendar window",
+        "liquid sector-known universe",
+        "20d SPY-relative leadership",
+        "signal-day high close",
+        "next-open entry",
+        "10d fixed hold",
+        "costs",
+        "concentration gate"
+      ],
+      "prior_trial_count": 6,
+      "nearby_prior_experiments": [
+        "exp-20260605-027",
+        "exp-20260605-030",
+        "exp-20260605-032",
+        "exp-20260606-020",
+        "exp-20260607-019",
+        "exp-20260608-013"
+      ],
+      "multiple_testing_risk_bucket": "moderate",
+      "new_evidence_type": "production_visible_free_calendar_turn_of_month_liquid_leadership_field",
+      "baseline_result_file": "data\\experiments\\exp-20260602-003\\exp_20260602_003_post_earnings_explicit_continuation.json",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260609_026_turn_of_month_liquid_leadership.py",
+        "data/experiments/exp-20260609-026/exp_20260609_026_turn_of_month_liquid_leadership.json",
+        "experiments/cards/exp-20260609-026.md",
+        "experiments/manifests/exp-20260609-026.json",
+        "experiments/tickets/exp-20260609-026.json",
+        "experiments/logs/exp-20260609-026.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "must_not_touch": [],
+      "locked_variables": [
+        "turn_of_month_liquid_leadership_candidate_source_v1"
+      ],
+      "evaluation_windows": [],
+      "acceptance_rule": "docs/backtesting.md three canonical windows; must improve aggregate EV/PnL, avoid per-window EV/PnL regression, pass drawdown/survival/sample/concentration guards; replay-only positive result is a lead until shared helper parity exists.",
+      "prediction": {
+        "success_probability": 0.16,
+        "expected_ev_delta": null,
+        "expected_pnl_delta": null,
+        "main_failure_modes": [
+          "generic_momentum_not_calendar_edge",
+          "window_regression",
+          "drawdown_drift_too_high",
+          "accepted_compression_comparator_not_beaten",
+          "thin_month_turn_sample"
+        ],
+        "confidence_reason": "The signal is point-in-time safe and free-data executable, but nearby macro rebalance, scheduled-event, and price-formation candidate pools often failed after costs. This tests a distinct fixed calendar-flow hypothesis rather than LLM soft ranking, Form4, or Companyfacts mining.",
+        "recorded_at": "2026-06-09T21:30:00+00:00"
+      },
+      "created_at": "2026-06-09T22:06:19+00:00",
+      "claimed_at": "2026-06-09T22:06:28+00:00",
+      "completed_at": "2026-06-09T22:19:32+00:00",
+      "result": {
+        "decision": "positive_replay_lead_not_promoted_turn_of_month_liquid_leadership",
+        "accepted": false,
+        "artifact": "data/experiments/exp-20260609-026/exp_20260609_026_turn_of_month_liquid_leadership.json",
+        "log": "experiments/logs/exp-20260609-026.json",
+        "card": "experiments/cards/exp-20260609-026.md",
+        "aggregate_expected_value_delta": 0.2774,
+        "aggregate_strategy_total_pnl_delta": 5287.69,
+        "gate4": {
+          "passed": true,
+          "decision": "positive_replay_lead_not_promoted_turn_of_month_liquid_leadership",
+          "failed_reasons": [],
+          "aggregate_ev_delta": 0.2774,
+          "aggregate_pnl_delta": 5287.69,
+          "windows_ev_improved": 3,
+          "windows_ev_regressed": 0,
+          "windows_pnl_improved": 3,
+          "windows_pnl_regressed": 0,
+          "target_trade_count": 73,
+          "target_trade_count_min": 20,
+          "target_windows": [
+            "late_strong",
+            "mid_weak",
+            "old_thin"
+          ],
+          "target_window_count_min": 3,
+          "max_drawdown_worse": -0.0001,
+          "max_drawdown_worse_guardrail": 0.005,
+          "minimum_core_survival_rate": 0.7925,
+          "survival_guard_passed": true,
+          "target_concentration": {
+            "passed": true,
+            "max_single_positive_pnl_share": 0.118149,
+            "max_single_positive_pnl_share_guardrail": 0.5,
+            "positive_pnl_hhi": 0.052302,
+            "positive_pnl_hhi_guardrail": 0.35
+          },
+          "accepted_compression_comparator": {
+            "experiment_id": "exp-20260608-013",
+            "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+            "expected_value_score_delta_sum": 0.1608,
+            "total_pnl_delta_sum": 2248.98,
+            "target_trade_count": 44
+          }
+        },
+        "calibration": {
+          "predicted_success_probability": 0.16,
+          "actual_gate4_passed": true,
+          "failure_modes_observed": [],
+          "brier_score": 0.7056
+        },
+        "production_impact": {
+          "trade_enabled": false,
+          "alters_orders": false,
+          "adapter_status": "replay_only_no_live_adapter",
+          "shared_policy_changed": false,
+          "backtester_adapter_changed": false,
+          "run_adapter_changed": false,
+          "replay_only": true,
+          "parity_test_added": false,
+          "production_signal_path_changed": false,
+          "production_orders_changed": false,
+          "production_watchlist_changed": false,
+          "alters_signal_generation": false,
+          "alters_candidate_ranking": false,
+          "alters_sizing": false,
+          "alters_exits": false,
+          "parity_note": "This experiment changes no production code. A positive result would require a shared default-off adapter that computes the same trading-day month labels, sector-known liquid stock universe, SPY-relative leadership gates, close-quality gates, same-ticker core-overlap exclusion, next-open paper entry, 10-trading-day exit, costs, cooldown, accepted compression comparator, and concentration controls in both historical replay and daily production before any report queue, paper ledger, candidate priority, sizing, watchlist, or order surface could change."
+        },
+        "post_run_reflection": {
+          "why_result_happened": "The fixed turn-of-month liquid leadership bundle cleared the canonical three-window gates and beat the accepted compression comparator, suggesting the calendar-flow timing contributed replacement value beyond generic OHLCV compression. It remains only a replay lead because no shared daily adapter or production parity path was added.",
+          "forbidden_near_neighbor_retry": "Do not retry by sweeping month-start/end day counts, ret20/ret60 relative-strength thresholds, signal-day return, close-location, volume-ratio bounds, top-N, hold-day, cooldown, or paper notional on the same frozen windows.",
+          "new_evidence_required": "A retry needs materially new evidence that identifies real month-flow beneficiaries, such as point-in-time ETF rebalance constituent deltas, ownership/flow proxies, or forward daily-snapshot replacement value. Pure threshold retunes stay frozen."
+        }
+      },
+      "ticket_file": "experiments/tickets/exp-20260609-026.json",
+      "card_file": "experiments/cards/exp-20260609-026.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260609-026.json",
+      "decision": "positive_replay_lead_not_promoted_turn_of_month_liquid_leadership",
+      "summary": "The turn-of-month liquid leadership source passed as a replay-only promotion lead, but no production surface changed and a shared default-off parity adapter is required before use.",
+      "artifact": "data/experiments/exp-20260609-026/exp_20260609_026_turn_of_month_liquid_leadership.json",
+      "log": "experiments/logs/exp-20260609-026.json",
+      "aggregate_expected_value_delta": 0.2774,
+      "aggregate_strategy_total_pnl_delta": 5287.69,
+      "updated_at": "2026-06-09T22:19:32+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-09T21:20:14+00:00"
+  "updated_at": "2026-06-09T22:19:32+00:00"
 }
