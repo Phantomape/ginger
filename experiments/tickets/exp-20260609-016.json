@@ -1,0 +1,116 @@
+{
+  "acceptance_rule": "Must pass docs/backtesting.md three-window Gate 1-4 versus core baseline and beat accepted compression exp-20260608-013 and rolling-corr peer-shock exp-20260606-025 aggregate EV/PnL; otherwise reject.",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "data/experiments",
+    "experiments/logs",
+    "experiments/artifacts",
+    "experiments/cards",
+    "docs/experiment_log.jsonl"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260609-002/exp_20260609_002_gap_and_hold_institutional_demand.json",
+  "card_file": "experiments/cards/exp-20260609-016.md",
+  "causal_components": [
+    "historical replay",
+    "artifact",
+    "experiment log"
+  ],
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "gap_hold_core_flow_nonoverlap_candidate_source_v1",
+  "claimed_at": "2026-06-09T14:22:32+00:00",
+  "completed_at": "2026-06-09T14:25:04Z",
+  "created_at": "2026-06-09T14:22:20+00:00",
+  "decision": "rejected_gap_hold_core_flow_confirmed_candidate_pool",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260609-016",
+  "experiment_uid": "expuid-6016a8cccf124127",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260609-016",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-09T14:22:20+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "gap_hold_core_flow_confirmed"
+  },
+  "hypothesis": "Gap-and-hold candidates may have replacement value only when same-day core A/B flow confirms portfolio-level demand while excluding same-ticker core overlap; this tests whether a free OHLCV event-day morphology adds value beyond accepted compression and rolling-correlation relation comparators.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "gap-hold morphology thresholds",
+    "hold_days",
+    "notional",
+    "top1",
+    "no_backup_substitution",
+    "core ranking",
+    "sizing",
+    "exits",
+    "orders"
+  ],
+  "mechanism_family": "production_visible_free_ohlcv_candidate_pool",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [
+    "quant/run.py",
+    "operator_inputs/open_positions.json",
+    "quant/narrow_range_compression_paper_sleeve.py",
+    "quant/rolling_corr_peer_shock_paper_sleeve.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260609-002",
+    "exp-20260609-003",
+    "exp-20260608-013",
+    "exp-20260606-025"
+  ],
+  "new_evidence_type": "production_visible_core_flow_displacement_field_on_gap_hold",
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "confidence_reason": "Gap-hold alone had positive aggregate but failed old_thin/drawdown; core-flow confirmation has rescued relation sources before, but playbook treats gap-hold retries as high-risk unless they beat accepted comparators.",
+    "expected_ev_delta": 0.2,
+    "expected_pnl_delta": 3500.0,
+    "main_failure_modes": [
+      "sample_too_thin",
+      "old_thin_regression",
+      "accepted_comparators_not_beaten",
+      "core_flow_overfit",
+      "gap_momentum_relabel"
+    ],
+    "recorded_at": "2026-06-09T14:22:07+00:00",
+    "success_probability": 0.12
+  },
+  "prior_trial_count": 4,
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": 0.3278,
+    "aggregate_strategy_total_pnl_delta": 6000.13,
+    "artifact": "data/experiments/exp-20260609-016/exp_20260609_016_gap_hold_core_flow_confirmed.json",
+    "calibration": {
+      "actual_gate4_passed": false,
+      "brier_score": 0.0144,
+      "failure_modes_observed": [
+        "accepted_rolling_corr_ev_not_beaten",
+        "accepted_rolling_corr_pnl_not_beaten"
+      ],
+      "predicted_success_probability": 0.12
+    },
+    "decision": "rejected_gap_hold_core_flow_confirmed_candidate_pool",
+    "log": "experiments/logs/exp-20260609-016.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260609-016.json",
+  "single_causal_variable": "gap_hold_core_flow_nonoverlap_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The core-flow-confirmed gap-and-hold source did not clear Gate 4 or did not beat accepted compression/rolling-corr comparators; do not promote or locally retune this OHLCV gap-hold family on the frozen windows.",
+  "ticket_file": "experiments/tickets/exp-20260609-016.json",
+  "trial_family": "gap_hold_core_flow_confirmed_candidate_pool",
+  "trial_variant_id": "gap_hold_core_flow_nonoverlap_top1_next_open_10d_v1"
+}
