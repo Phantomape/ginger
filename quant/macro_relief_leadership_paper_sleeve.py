@@ -25,12 +25,14 @@ try:
     from constants import ROUND_TRIP_COST_PCT
     from data_paths import data_artifact_path
     from fill_model import SLIPPAGE_BPS_ENTRY, SLIPPAGE_BPS_TARGET, apply_slippage
+    from macro_events import MACRO_EVENTS
 except ImportError:  # pragma: no cover - package-style imports in tests
     from quant.broad_market_sector_map import load_cache as _load_sector_cache
     from quant.broad_market_sector_map import lookup_sector as _lookup_sector
     from quant.constants import ROUND_TRIP_COST_PCT
     from quant.data_paths import data_artifact_path
     from quant.fill_model import SLIPPAGE_BPS_ENTRY, SLIPPAGE_BPS_TARGET, apply_slippage
+    from quant.macro_events import MACRO_EVENTS
 
 
 SLEEVE_NAME = "MACRO_RELIEF_LEADERSHIP_PAPER"
@@ -100,57 +102,6 @@ EXCLUDED_TICKERS = {
     "VIXY",
     "VXX",
 }
-
-MACRO_EVENTS = [
-    {"date": "2024-10-04", "family": "NFP", "label": "Sep 2024 Employment Situation"},
-    {"date": "2024-10-10", "family": "CPI", "label": "Sep 2024 CPI"},
-    {"date": "2024-11-01", "family": "NFP", "label": "Oct 2024 Employment Situation"},
-    {"date": "2024-11-07", "family": "FOMC", "label": "Nov 2024 FOMC decision"},
-    {"date": "2024-11-13", "family": "CPI", "label": "Oct 2024 CPI"},
-    {"date": "2024-12-06", "family": "NFP", "label": "Nov 2024 Employment Situation"},
-    {"date": "2024-12-11", "family": "CPI", "label": "Nov 2024 CPI"},
-    {"date": "2024-12-18", "family": "FOMC", "label": "Dec 2024 FOMC decision"},
-    {"date": "2025-01-10", "family": "NFP", "label": "Dec 2024 Employment Situation"},
-    {"date": "2025-01-15", "family": "CPI", "label": "Dec 2024 CPI"},
-    {"date": "2025-01-29", "family": "FOMC", "label": "Jan 2025 FOMC decision"},
-    {"date": "2025-02-07", "family": "NFP", "label": "Jan 2025 Employment Situation"},
-    {"date": "2025-02-12", "family": "CPI", "label": "Jan 2025 CPI"},
-    {"date": "2025-03-07", "family": "NFP", "label": "Feb 2025 Employment Situation"},
-    {"date": "2025-03-12", "family": "CPI", "label": "Feb 2025 CPI"},
-    {"date": "2025-03-19", "family": "FOMC", "label": "Mar 2025 FOMC decision"},
-    {"date": "2025-04-04", "family": "NFP", "label": "Mar 2025 Employment Situation"},
-    {"date": "2025-04-10", "family": "CPI", "label": "Mar 2025 CPI"},
-    {"date": "2025-05-02", "family": "NFP", "label": "Apr 2025 Employment Situation"},
-    {"date": "2025-05-07", "family": "FOMC", "label": "May 2025 FOMC decision"},
-    {"date": "2025-05-13", "family": "CPI", "label": "Apr 2025 CPI"},
-    {"date": "2025-06-06", "family": "NFP", "label": "May 2025 Employment Situation"},
-    {"date": "2025-06-11", "family": "CPI", "label": "May 2025 CPI"},
-    {"date": "2025-06-18", "family": "FOMC", "label": "Jun 2025 FOMC decision"},
-    {"date": "2025-07-03", "family": "NFP", "label": "Jun 2025 Employment Situation"},
-    {"date": "2025-07-15", "family": "CPI", "label": "Jun 2025 CPI"},
-    {"date": "2025-07-30", "family": "FOMC", "label": "Jul 2025 FOMC decision"},
-    {"date": "2025-08-01", "family": "NFP", "label": "Jul 2025 Employment Situation"},
-    {"date": "2025-08-12", "family": "CPI", "label": "Jul 2025 CPI"},
-    {"date": "2025-09-05", "family": "NFP", "label": "Aug 2025 Employment Situation"},
-    {"date": "2025-09-11", "family": "CPI", "label": "Aug 2025 CPI"},
-    {"date": "2025-09-17", "family": "FOMC", "label": "Sep 2025 FOMC decision"},
-    {"date": "2025-10-03", "family": "NFP", "label": "Sep 2025 Employment Situation"},
-    {"date": "2025-10-29", "family": "FOMC", "label": "Oct 2025 FOMC decision"},
-    {"date": "2025-11-07", "family": "NFP", "label": "Oct 2025 Employment Situation"},
-    {"date": "2025-12-05", "family": "NFP", "label": "Nov 2025 Employment Situation"},
-    {"date": "2025-12-10", "family": "FOMC", "label": "Dec 2025 FOMC decision"},
-    {"date": "2025-12-18", "family": "CPI", "label": "Nov 2025 CPI"},
-    {"date": "2026-01-09", "family": "NFP", "label": "Dec 2025 Employment Situation"},
-    {"date": "2026-01-13", "family": "CPI", "label": "Dec 2025 CPI"},
-    {"date": "2026-01-28", "family": "FOMC", "label": "Jan 2026 FOMC decision"},
-    {"date": "2026-02-06", "family": "NFP", "label": "Jan 2026 Employment Situation"},
-    {"date": "2026-02-13", "family": "CPI", "label": "Jan 2026 CPI"},
-    {"date": "2026-03-06", "family": "NFP", "label": "Feb 2026 Employment Situation"},
-    {"date": "2026-03-11", "family": "CPI", "label": "Feb 2026 CPI"},
-    {"date": "2026-03-18", "family": "FOMC", "label": "Mar 2026 FOMC decision"},
-    {"date": "2026-04-03", "family": "NFP", "label": "Mar 2026 Employment Situation"},
-    {"date": "2026-04-10", "family": "CPI", "label": "Mar 2026 CPI"},
-]
 
 _SECTOR_CACHE: dict[str, Any] | None = None
 
