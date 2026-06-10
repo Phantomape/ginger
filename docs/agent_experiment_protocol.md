@@ -15,7 +15,8 @@ commands to run and what an experiment must leave behind.
 - `docs/alpha-optimization-playbook.md`: alpha directions and frozen zones.
 - `docs/production_backtest_parity.md`: core shared-policy parity contract.
 - `docs/production_backtest_parity_matrix.md`: per-adapter parity rows.
-- `docs/data_edge_context_layers.md`: context, attribution, data-edge surfaces.
+- `docs/data_edge_context_layers.md`: data-edge operating contract.
+- `docs/data_edge_context_layers_catalog.md`: concrete surface/tool catalog.
 - `docs/experiment_ticket_schema.md`: ticket fields and conflict rules.
 - `docs/experiment_log_format.md`: JSON / JSONL closeout shape.
 

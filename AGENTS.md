@@ -71,7 +71,8 @@ data/backtests/backtest_results_*.json
 - alpha 方向、frozen zones、机制经验：`docs/alpha-optimization-playbook.md`
 - production/backtest parity 核心合同：`docs/production_backtest_parity.md`
 - adapter / sleeve parity 表：`docs/production_backtest_parity_matrix.md`（按需深读）
-- data edge、context layer、attribution surface：`docs/data_edge_context_layers.md`
+- data edge / context layer 核心合同：`docs/data_edge_context_layers.md`
+- 具体 surface / sidecar / sleeve 目录：`docs/data_edge_context_layers_catalog.md`（按需深读）
 - JSON/JSONL 记录格式：`docs/experiment_log_format.md`
 
 常用工具：
