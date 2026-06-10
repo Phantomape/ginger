@@ -6,9 +6,9 @@ complete state database.
 
 ## Source Snapshot
 
-- Strategy records counted: `1119`
-- Accepted strategy records: `190`
-- History fingerprint: `f314049df358e471`
+- Strategy records counted: `1125`
+- Accepted strategy records: `191`
+- History fingerprint: `329c121ca304b04e`
 - Generated from committed experiment logs when using `--git-ref HEAD`.
 
 ## Exact State Sources
@@ -34,8 +34,6 @@ complete state database.
 
 ## Recent Accepted Strategy Records
 
-- `exp-20260604-009` `accepted_lagged_consensus_shared_default_off_adapter`: EV `+1.9949`, PnL `$35,553.87`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_source_timing_adapter`.
-  Lesson: exp-20260604-008 improved core and the accepted same-day consensus comparator across all three windows; this run adds the shared helper, source-history contract, and focused tests without enabling orders.
 - `exp-20260604-027` `accepted_default_off_sec_ftd_finra_shared_adapter`: EV `+0.0000`, PnL `$0.00`, family `default_off_paper_adapter`, trial `default_off_paper_adapter`.
   Lesson: Promote the positive SEC FTD plus FINRA borrow-pressure replay lead into a shared default-off paper adapter so production can collect forward replacement-value evidence without changing live orders.
 - `exp-20260606-001` `accepted_shared_default_off_low_deployment_etf_cash_substitute_adapter`: EV `+3.0292`, PnL `$44,306.91`, family `low_deployment_etf_cash_substitute_shared_adapter`, trial `low_deployment_etf_cash_substitute_shared_adapter`.
@@ -58,11 +56,11 @@ complete state database.
   Lesson: The result reproduced the exp-20260608-011 positive lead because the shared helper preserved the exact same economic bundle: improving EPS estimates, positive surprise history, liquid breakout confirmation, and a sele...
 - `exp-20260609-027` `accepted_turn_of_month_liquid_leadership_shared_default_off_adapter`: EV `+0.2774`, PnL `$5,287.69`, family `production_visible_free_calendar_ohlcv_candidate_pool`, trial `turn_of_month_liquid_leadership_shared_default_off_adapter`.
   Lesson: The shared helper reproduced the private replay lead because it kept the exact calendar window, liquid sector-known universe, SPY-relative leadership, close/volume/volatility guards, same-ticker selected-core overlap...
+- `exp-20260610-005` `accepted_shared_default_off_accepted_helper_source_priority_allocator`: EV `+0.8971`, PnL `$14,502.52`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
+  Lesson: The alpha worked because it expanded the usable candidate pool across several accepted OHLCV helper sensors while limiting same-day overlap to one ex-ante highest-priority paper risk slot. The shared helper removes th...
 
 ## Recent Production-Visible Or Default-Off Accepted Records
 
-- `exp-20260606-001` `accepted_shared_default_off_low_deployment_etf_cash_substitute_adapter`: EV `+3.0292`, PnL `$44,306.91`, family `low_deployment_etf_cash_substitute_shared_adapter`, trial `low_deployment_etf_cash_substitute_shared_adapter`.
-  Lesson: Low core deployment leaves replacement-value gaps; the accepted low-deployment ETF cash-substitute replay should reproduce as a shared default-off paper adapter with next-open entry, 10-trading-day close exit, one ope...
 - `exp-20260606-020` `accepted_macro_relief_top2_shared_default_off_paper_adapter`: EV `+0.1813`, PnL `$3,062.78`, family `free_official_macro_calendar_plus_ohlcv_candidate_pool`, trial `macro_relief_leadership_candidate_pool`.
   Lesson: The positive exp-20260606-019 macro relief top-2 stock leadership source can be implemented as one shared default-off paper adapter without changing the three-window evidence or creating a production/backtest mismatch.
 - `exp-20260606-025` `accepted_rolling_corr_peer_shock_shared_default_off_adapter`: EV `+0.0000`, PnL `$0.00`, family `production_visible_free_ohlcv_relation_alpha`, trial `rolling_corr_peer_shock_default_off_shared_adapter`.
@@ -81,6 +79,8 @@ complete state database.
   Lesson: The result reproduced the exp-20260608-011 positive lead because the shared helper preserved the exact same economic bundle: improving EPS estimates, positive surprise history, liquid breakout confirmation, and a sele...
 - `exp-20260609-027` `accepted_turn_of_month_liquid_leadership_shared_default_off_adapter`: EV `+0.2774`, PnL `$5,287.69`, family `production_visible_free_calendar_ohlcv_candidate_pool`, trial `turn_of_month_liquid_leadership_shared_default_off_adapter`.
   Lesson: The shared helper reproduced the private replay lead because it kept the exact calendar window, liquid sector-known universe, SPY-relative leadership, close/volume/volatility guards, same-ticker selected-core overlap...
+- `exp-20260610-005` `accepted_shared_default_off_accepted_helper_source_priority_allocator`: EV `+0.8971`, PnL `$14,502.52`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
+  Lesson: The alpha worked because it expanded the usable candidate pool across several accepted OHLCV helper sensors while limiting same-day overlap to one ex-ante highest-priority paper risk slot. The shared helper removes th...
 
 ## Current Research Queue Pointers
 
@@ -88,7 +88,7 @@ complete state database.
 - `default_off_paper_adapter` priority `0.8173`, experiments `7`, accept `85.71%`.
 - `default_off_paper_shared_adapter` priority `0.7477`, experiments `3`, accept `100.00%`.
 - `paper_notional_support_scout` priority `0.7009`, experiments `3`, accept `66.67%`.
-- `pilot_or_sleeve` priority `0.6322`, experiments `162`, accept `25.93%`.
+- `pilot_or_sleeve` priority `0.6323`, experiments `162`, accept `25.93%`.
 
 ## State Migration Note
 

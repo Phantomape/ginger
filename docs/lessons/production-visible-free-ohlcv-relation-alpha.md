@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `29`
-- Accepted / rejected: `3` / `23`
-- Accept rate: `10.34%`
-- Sum EV delta: `+4.8991`
-- Sum PnL delta: `$76,574.38`
-- Latest: `exp-20260609-019` `rejected_industry_breadth_acceleration_leader_candidate_pool` with EV `+0.3669` and PnL `$9,509.62`.
+- Experiments: `30`
+- Accepted / rejected: `3` / `24`
+- Accept rate: `10.00%`
+- Sum EV delta: `+4.4820`
+- Sum PnL delta: `$69,858.67`
+- Latest: `exp-20260610-003` `rejected_industry_leadership_dispersion_candidate_pool` with EV `-0.4171` and PnL `$-6,715.71`.
 
 ## Retained Or Positive Evidence
 
@@ -24,8 +24,6 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260608-010` `rejected_industry_volume_breadth_core_flow_confirmed_candidate_pool`: EV `+0.0011`, PnL `$-99.93`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_volume_breadth_core_flow_confirmed_candidate_pool`.
-  Lesson: Core-flow confirmation was not sufficient to turn industry volume-breadth laggard repair into robust replacement value. It either thinned the sample, kept volume-chase noise, or failed in old_thin after costs and next...
 - `exp-20260608-023` `rejected_sector_peer_gap_reaction_transfer_candidate_pool`: EV `+0.5698`, PnL `$7,312.15`, family `production_visible_free_ohlcv_relation_alpha`, trial `sector_peer_gap_reaction_transfer_candidate_pool`.
   Lesson: Sector-level peer shocks did not add enough ticker-specific relation information beyond broad sector beta. The accepted rolling-corr peer-shock route likely works because it combines ticker-pair specificity with core-...
 - `exp-20260608-024` `rejected_accumulation_base_core_flow_confirmed_candidate_pool`: EV `-0.0908`, PnL `$-2,193.00`, family `production_visible_free_ohlcv_relation_alpha`, trial `accumulation_base_core_flow_confirmation`.
@@ -40,6 +38,8 @@ records before making strategy changes.
   Lesson: The fixed SMA50 pullback/reclaim source failed Gate 4 or did not beat accepted relation comparators. The mechanism likely collapses into a familiar laggard-repair/value-trap pattern: a moving-average reclaim inside a...
 - `exp-20260609-019` `rejected_industry_breadth_acceleration_leader_candidate_pool`: EV `+0.3669`, PnL `$9,509.62`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_breadth_acceleration_leader_candidate_pool`.
   Lesson: The candidate earned most of its aggregate gain in mid_weak while late_strong and old_thin both lost EV/PnL, so the breadth field looks regime-fragile rather than a stable replacement-value source. Its drawdown drift...
+- `exp-20260610-003` `rejected_industry_leadership_dispersion_candidate_pool`: EV `-0.4171`, PnL `$-6,715.71`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_leadership_dispersion_candidate_pool`.
+  Lesson: Single-leader industry dispersion must separate sponsorship from ordinary momentum. If it fails, the selected rows are likely too extended, too regime-sensitive, or already covered better by the accepted laggard-repai...
 
 ## Retry Discipline
 
@@ -61,9 +61,9 @@ records before making strategy changes.
 
 ## Recent Raw Records
 
-- `exp-20260608-024` source `experiments/logs/exp-20260608-024.json`.
 - `exp-20260608-025` source `experiments/logs/exp-20260608-025.json`.
 - `exp-20260608-028` source `experiments/logs/exp-20260608-028.json`.
 - `exp-20260609-010` source `experiments/logs/exp-20260609-010.json`.
 - `exp-20260609-018` source `experiments/logs/exp-20260609-018.json`.
 - `exp-20260609-019` source `experiments/logs/exp-20260609-019.json`.
+- `exp-20260610-003` source `experiments/logs/exp-20260610-003.json`.

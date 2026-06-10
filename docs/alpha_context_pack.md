@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1123`
-- Raw records loaded by meta report: `1665`
-- History fingerprint: `9e594839397563ea`
+- Strategy records counted: `1125`
+- Raw records loaded by meta report: `1533`
+- History fingerprint: `329c121ca304b04e`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -34,19 +34,20 @@ facts before changing strategy behavior.
   Reason: 1/7 records have sample >= 10; 7/7 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive...
 - `default_off_paper_shared_adapter` priority `0.7477`: experiments `3`, accept `100.00%`, sum EV `+0.7145`, sum PnL `$13,745.66`.
   Reason: 3/3 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; still has ro...
-- `default_off_shared_paper_adapter` priority `0.7476`: experiments `3`, accept `100.00%`, sum EV `+0.3659`, sum PnL `$5,956.53`.
-  Reason: 3/3 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; still has ro...
 - `paper_notional_support_scout` priority `0.7009`: experiments `3`, accept `66.67%`, sum EV `+0.0804`, sum PnL `$1,393.64`.
   Reason: 3/3 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
-- `pilot_or_sleeve` priority `0.6282`: experiments `172`, accept `24.42%`, sum EV `+66.9867`, sum PnL `$1,158,973.41`.
-  Reason: 170/172 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually changes sizing/allocation rather than...
+- `pilot_or_sleeve` priority `0.6323`: experiments `162`, accept `25.93%`, sum EV `+65.9978`, sum PnL `$1,141,068.75`.
+  Reason: 161/162 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually changes sizing/allocation rather than...
   Guardrail: heavily explored family; diminishing-return risk; many prior rejections in this family
-- `slot_or_ranking` priority `0.5727`: experiments `123`, accept `27.64%`, sum EV `+28.7963`, sum PnL `$504,626.58`.
-  Reason: 1/123 records have sample >= 10; 120/123 records show multi-window evidence; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
+- `slot_or_ranking` priority `0.5705`: experiments `118`, accept `27.12%`, sum EV `+27.8992`, sum PnL `$490,124.06`.
+  Reason: 1/118 records have sample >= 10; 115/118 records show multi-window evidence; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
   Guardrail: average drawdown delta worsens; can change survival, trade count, or exit distribution broadly; heavily explored family; diminishing-return risk; many prior rejections in this family
 - `default_off_paper_allocation` priority `0.5641`: experiments `12`, accept `33.33%`, sum EV `+0.0285`, sum PnL `$456.30`.
   Reason: 12/12 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs
   Guardrail: heavily explored family; diminishing-return risk
+- `fundamental_growth_rs_default_off_candidate_pool` priority `0.5443`: experiments `1`, accept `0.00%`, sum EV `+5.2015`, sum PnL `$92,488.83`.
+  Reason: 1/1 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
+  Guardrail: many prior rejections in this family
 
 ## Frozen Or High-Risk Near Neighbors
 
@@ -62,10 +63,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260609-020` `rejected_ftd_finra_no_core_flow`: EV `+0.0000`, PnL `$0.00`, family `free_sec_settlement_plus_borrow_pressure_displacement`, trial `sec_ftd_finra_no_core_flow_candidate_pool`.
-  Lesson: The no-core-flow displacement field did not beat the accepted FTD+FINRA comparator. The likely failure is that same-day core-flow presence is not a reliable crowding proxy here; excluding those dates removes some vali...
-- `exp-20260609-022` `rejected_vixy_vixm_term_relief_leadership_candidate_pool`: EV `+0.4168`, PnL `$6,257.05`, family `production_visible_free_ohlcv_cross_asset_candidate_pool`, trial `volatility_term_structure_relief_candidate_pool`.
-  Lesson: The VIXM term-structure field did not add enough incremental information beyond accepted VIXY relief. It either removed useful VIXY-only winners or kept the same broad risk-on beta without stronger per-window replacem...
 - `exp-20260609-023` `rejected_compression_lagged_consensus_did_not_beat_accepted_lagged_comparator`: EV `+0.0104`, PnL `$-53.34`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_new_independent_source_family`.
   Lesson: The variant did not beat the current accepted lagged consensus comparator across all three canonical windows.
 - `exp-20260609-024` `rejected_early_peer_earnings_sympathy_candidate_pool`: EV `-0.0950`, PnL `$-1,325.52`, family `production_visible_event_peer_relation_alpha`, trial `early_peer_earnings_sympathy_candidate_pool`.
@@ -86,6 +83,10 @@ facts before changing strategy behavior.
   Lesson: The source-priority allocator added enough replacement value over the strongest included helper to justify a shared-helper parity follow-up. Its value likely came from avoiding same-day overlapping helper exposure whi...
 - `exp-20260610-005` `accepted_shared_default_off_accepted_helper_source_priority_allocator`: EV `+0.8971`, PnL `$14,502.52`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
   Lesson: The alpha worked because it expanded the usable candidate pool across several accepted OHLCV helper sensors while limiting same-day overlap to one ex-ante highest-priority paper risk slot. The shared helper removes th...
+- `exp-20260610-006` `rejected_macro_relief_allocator_extension`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
+  Lesson: Macro relief was already an accepted standalone helper, but the allocator extension did not add enough incremental replacement value after existing higher-priority helper rows and global cooldown. The likely issue is...
+- `exp-20260610-007` `positive_replay_lead_not_promoted_fiftytwo_week_high_proximity_core_flow`: EV `+0.4308`, PnL `$9,295.34`, family `production_visible_free_ohlcv_candidate_pool`, trial `fiftytwo_week_high_proximity_breakout_candidate_pool`.
+  Lesson: The 52-week-high proximity breakout core-flow bundle cleared the canonical three-window gates and beat the accepted compression/core-flow comparators, suggesting anchoring underreaction at the 52-week high added repla...
 
 ## Highest-Signal Historical Records
 
@@ -124,4 +125,4 @@ facts before changing strategy behavior.
 ## Line Budget
 
 - Target maximum lines: `420`
-- Actual lines when generated: `127`
+- Actual lines when generated: `128`

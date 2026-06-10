@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `89`
-- Accepted / rejected: `9` / `74`
-- Accept rate: `10.11%`
+- Experiments: `90`
+- Accepted / rejected: `9` / `75`
+- Accept rate: `10.00%`
 - Sum EV delta: `+51.5571`
 - Sum PnL delta: `$1,053,937.21`
-- Latest: `exp-20260610-005` `accepted_shared_default_off_accepted_helper_source_priority_allocator` with EV `+0.8971` and PnL `$14,502.52`.
+- Latest: `exp-20260610-006` `rejected_macro_relief_allocator_extension` with EV `+0.0000` and PnL `$0.00`.
 
 ## Retained Or Positive Evidence
 
@@ -30,8 +30,6 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260605-024` `rejected_lagged_consensus_characteristic_peer_transfer_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_lagged_consensus_characteristic_peer_transfer`.
-  Lesson: Gate 4 failed: all_windows_incremental_expected_value_improved; all_windows_incremental_pnl_improved; incremental_peer_trade_count_passed; incremental_peer_concentration_guard_passed
 - `exp-20260606-028` `rejected_peer_shock_lagged_consensus_did_not_beat_accepted_lagged_comparator`: EV `+0.0413`, PnL `$983.18`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_new_independent_source_family`.
   Lesson: The variant did not beat the current accepted lagged consensus comparator across all three canonical windows.
 - `exp-20260608-026` `rejected_industry_laggard_lagged_consensus_did_not_beat_accepted_lagged_comparator`: EV `-0.0060`, PnL `$217.23`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_new_independent_source_family`.
@@ -46,6 +44,8 @@ records before making strategy changes.
   Lesson: The variant did not beat the current accepted lagged consensus comparator across all three canonical windows.
 - `exp-20260609-025` `rejected_form4_liquidity_cost_cluster_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `form4_liquidity_cost_cluster_candidate_pool`.
   Lesson: The stricter cluster/cost/liquidity qualifier produced too few selected trades and failed raw Form4 replacement value. The data shape shows that adding cluster or senior-owner support to the already sparse forward que...
+- `exp-20260610-006` `rejected_macro_relief_allocator_extension`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
+  Lesson: Macro relief was already an accepted standalone helper, but the allocator extension did not add enough incremental replacement value after existing higher-priority helper rows and global cooldown. The likely issue is...
 
 ## Retry Discipline
 
@@ -63,13 +63,13 @@ records before making strategy changes.
   Latest failure: `exp-20260603-016` The VCP-expanded consensus improved versus the core baseline but underperformed the current accepted independent-source consensus. Source-set expansions must beat the accepted comparator before retention or adapter pr...
 - `accepted_free_data_cross_source_consensus_source_timing` / `lagged_independent_source_family_confirmation_prior_3_trading_days`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260604-008`.
 - `form4_liquidity_cost_cluster_candidate_pool` / `form4_liquidity_cost_cluster_qualifier_v1`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260609-025`.
-  Latest failure: `exp-20260609-025`
+  Latest failure: `exp-20260609-025` 
 
 ## Recent Raw Records
 
-- `exp-20260609-007` source `experiments/logs/exp-20260609-007.json`.
 - `exp-20260609-017` source `experiments/logs/exp-20260609-017.json`.
 - `exp-20260609-023` source `experiments/logs/exp-20260609-023.json`.
 - `exp-20260609-025` source `experiments/logs/exp-20260609-025.json`.
 - `exp-20260610-004` source `experiments/logs/exp-20260610-004.json`.
 - `exp-20260610-005` source `experiments/logs/exp-20260610-005.json`.
+- `exp-20260610-006` source `experiments/logs/exp-20260610-006.json`.
