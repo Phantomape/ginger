@@ -151,8 +151,10 @@ evidence on accepted paper adapters:
 - post-earnings underpriced drift;
 - Fundamental Growth RS;
 - macro relief, volatility relief, rolling-correlation peer shock,
-  industry-relative laggard repair, industry-stable core-flow, and
-  narrow-range compression breakout;
+  industry-relative laggard repair, industry-stable core-flow,
+  narrow-range compression breakout, turn-of-month liquid leadership, and
+  52-week-high proximity core-flow (full-stack
+  `accepted_paper_pending_forward`, exp-20260610-008);
 - VBB / VCP / Space observe-only buckets where nonzero forward rows exist.
 
 Minimum forward package:
