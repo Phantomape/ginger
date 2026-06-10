@@ -16,6 +16,8 @@ Date provenance:
 TODO: the Aug 2026 CPI release date (Jul 2026 data, expected mid-August)
 could not be verified against the official schedule when this calendar was
 last updated — add it from bls.gov/schedule/news_release/cpi.htm.
+quant/calendar_audit.py flags this gap (and any future coverage expiry) in
+the intraday report's DATA QUALITY section, so staleness is never silent.
 """
 
 from __future__ import annotations

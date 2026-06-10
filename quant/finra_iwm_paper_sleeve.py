@@ -108,6 +108,19 @@ US_MARKET_HOLIDAYS = {
     date(2026, 9, 7),
     date(2026, 11, 26),
     date(2026, 12, 25),
+    # 2027 full-day closures per the NYSE Group official holiday calendar.
+    # Weekend observances: Juneteenth (Sat 6/19 -> Fri 6/18), Independence Day
+    # (Sun 7/4 -> Mon 7/5), Christmas (Sat 12/25 -> Fri 12/24).
+    date(2027, 1, 1),
+    date(2027, 1, 18),
+    date(2027, 2, 15),
+    date(2027, 3, 26),
+    date(2027, 5, 31),
+    date(2027, 6, 18),
+    date(2027, 7, 5),
+    date(2027, 9, 6),
+    date(2027, 11, 25),
+    date(2027, 12, 24),
 }
 
 PUBLICATION_OVERRIDES = {

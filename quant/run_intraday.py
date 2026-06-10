@@ -227,6 +227,19 @@ def main(no_news: bool = False, offline: bool = False, data_dir=None) -> dict:
 
     macro = build_macro_context(date_iso)
 
+    calendar_findings = []
+    try:
+        from calendar_audit import audit_static_calendars
+        calendar_findings = audit_static_calendars(date_iso)
+        for finding in calendar_findings:
+            if finding["severity"] in ("stale", "gap", "error"):
+                log.warning("calendar audit: %s", finding["message"])
+    except ImportError:  # pragma: no cover - package-style imports in tests
+        from quant.calendar_audit import audit_static_calendars
+        calendar_findings = audit_static_calendars(date_iso)
+    except Exception as e:
+        log.error("Calendar audit failed: %s", e)
+
     news_payload = None
     news = None
     if not no_news:
@@ -258,6 +271,7 @@ def main(no_news: bool = False, offline: bool = False, data_dir=None) -> dict:
             "quote_sources": quote_source_summary(
                 {t: q for t, q in quotes.items() if t in held_tickers}
             ) if held_tickers else {},
+            "calendar_audit": calendar_findings,
             **(
                 {
                     "news_sources_ok": news_payload["sources_ok"],

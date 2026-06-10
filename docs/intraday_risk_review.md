@@ -80,6 +80,27 @@ prev_close / high_since_entry 的计算中剔除——否则 prev_close 会变�
 报告会按 family 检测日历过期并提示更新。
 已知缺口：2026 年 8 月的 CPI 发布日（7 月数据）录入时无法核实，见模块内 TODO。
 
+## 静态日历审计（防"静默过期"类 bug）
+
+`quant/calendar_audit.py` 统一审计仓库内所有手工维护的日期表，结果出现在
+盘中报告的 DATA QUALITY 段（`[!]` = stale/gap，`[i]` = info）：
+
+- `macro_events.MACRO_EVENTS`：按 family 检测覆盖过期（提前 45 天预警）；
+  对 NFP/CPI 做"未来缺月"检测（FOMC 日程不规则，不适用）——当前会标出
+  2026-08 缺 CPI；只查未来月份，不会误报历史上真实的发布中断。
+- `finra_iwm_paper_sleeve.US_MARKET_HOLIDAYS`：覆盖年份过期/临期检测。
+  该表驱动 FINRA 发布日的工作日计算，已按 NYSE 官方日历补到 2027 全年。
+- `finra_iwm_paper_sleeve.PUBLICATION_OVERRIDES`：信息性提示验证钉的边界。
+  已核实现有每条钉都等于"剔除假日后第 7 个工作日"规则的输出，钉之外回退
+  到该规则（snapshot 中 `publication_date_method` 字段已标注来源），假日表
+  保持最新则回退结果正确。
+
+维护方式：审计报警后，从官方源（bls.gov/schedule、federalreserve.gov、
+nyse.com、finra.org）核对并追加日期，**不要凭记忆或推算录入**；不可核实
+就保留缺口让审计继续报警。冻结的标准回测窗口（如 `form4_shadow_outcomes`
+里的三窗口、SEC backfill 的 DEFAULT_END=2026-04-21）是协议固定值，
+不属于陈旧数据，不要"修"。
+
 ## 测试
 
 ```powershell

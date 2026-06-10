@@ -589,6 +589,9 @@ def render_intraday_report(review: dict) -> str:
         lines.append(
             f"  news sources ok={dq['news_sources_ok']} failed={dq['news_sources_failed']}"
         )
+    for finding in dq.get("calendar_audit", []):
+        marker = "[!]" if finding["severity"] in ("stale", "gap", "error") else "[i]"
+        lines.append(f"  {marker} calendar/{finding['calendar']}: {finding['message']}")
     lines.append(
         "  Note: daily history is dividend-adjusted while live quotes are raw; "
         "tiny stop/ATR offsets are possible near ex-dividend dates."
