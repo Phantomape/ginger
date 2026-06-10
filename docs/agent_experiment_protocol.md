@@ -118,6 +118,29 @@ execution envelope, Gate-4 verdict, and closeout artifact in one experiment.
 If any of those pieces are skipped, the record must explain the blocker and the
 result cannot be called accepted alpha merely because a replay was positive.
 
+## Prediction Enforcement
+
+Prediction-required lanes are `alpha_search`, `alpha_discovery`, and
+`universe_scout`. Use `experiment.py new` / `reserve` or
+`persist_self_registered_result()` so the code can enforce prediction metadata
+before work is recorded.
+
+Required pre-run fields:
+
+- `prediction.success_probability`
+- `prediction.main_failure_modes`
+- `prediction.confidence_reason`
+
+`confidence_reason` must be substantive: explain the money-making mechanism,
+nearby historical evidence, and main disconfirming risk. Placeholder text and
+too-short reasons are rejected at reservation/self-registration time.
+
+At closeout, keep the prediction on the final record and include calibration or
+reflection explaining whether the predicted failure mode occurred. Run
+`scripts/experiment.py audit --lean-strict`; weak prediction quality and weak
+reflection block the lean verdict, while legacy missing prediction/calibration
+debt remains visibility-only.
+
 ## Shared-Paper-First
 
 Use shared-paper-first when the signal can be available in both historical

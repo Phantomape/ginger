@@ -689,6 +689,26 @@ def require_pre_run_prediction(ticket, *, allow_missing_prediction=False):
     )
 
 
+def require_pre_run_prediction_quality(ticket, *, allow_missing_prediction=False):
+    """Require substantive pre-run prediction text for new alpha/scout work.
+
+    Presence is enforced separately by ``require_pre_run_prediction``. This
+    quality gate keeps placeholder or one-line confidence reasons from entering
+    the workflow through the normal reservation path or sanctioned
+    self-registration path.
+    """
+    reasons = lean_prediction_quality_reasons(ticket)
+    if not reasons or allow_missing_prediction:
+        return
+    experiment_id = ticket.get("experiment_id") or "new experiment"
+    lane = ticket.get("lane")
+    joined = ", ".join(reasons)
+    raise ValueError(
+        f"{lane} ticket {experiment_id} requires a substantive pre-run "
+        f"prediction before work can continue; weak: {joined}"
+    )
+
+
 def parse_windows(values):
     windows = []
     for raw in values or []:
@@ -1091,6 +1111,13 @@ def create_ticket(
     )
     normalized_prediction = normalize_prediction(prediction)
     require_pre_run_prediction(
+        {
+            "experiment_id": experiment_id,
+            "lane": lane,
+            "prediction": normalized_prediction,
+        }
+    )
+    require_pre_run_prediction_quality(
         {
             "experiment_id": experiment_id,
             "lane": lane,
@@ -1573,6 +1600,10 @@ def persist_self_registered_result(
     """
     normalized = normalize_prediction(prediction)
     require_pre_run_prediction(
+        {"experiment_id": experiment_id, "lane": lane, "prediction": normalized},
+        allow_missing_prediction=allow_missing_prediction,
+    )
+    require_pre_run_prediction_quality(
         {"experiment_id": experiment_id, "lane": lane, "prediction": normalized},
         allow_missing_prediction=allow_missing_prediction,
     )

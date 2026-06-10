@@ -37,7 +37,10 @@ def alpha_prediction():
     return {
         "success_probability": 0.4,
         "main_failure_modes": ["thin_sample"],
-        "confidence_reason": "Test prediction for strategy-facing ticket.",
+        "confidence_reason": (
+            "Mechanism has production visible PIT evidence, nearby trials were mixed, "
+            "and thin sample or concentration can still fail."
+        ),
     }
 
 
@@ -321,7 +324,10 @@ def test_create_ticket_records_pre_run_prediction():
             expected_ev_delta=0.12,
             expected_pnl_delta=2500.0,
             main_failure_modes=["sample_too_thin", "concentration_failed"],
-            confidence_reason="Prior paper evidence is strong but forward rows are thin.",
+            confidence_reason=(
+                "Prior paper evidence is positive, related families were mixed, and "
+                "forward rows may be too thin or concentrated."
+            ),
         ),
     )
 
@@ -382,6 +388,33 @@ def test_alpha_ticket_prediction_requires_failure_modes():
         assert "missing_main_failure_modes" in str(exc)
     else:
         raise AssertionError("alpha ticket without failure modes was accepted")
+
+
+def test_alpha_ticket_prediction_requires_substantive_confidence_reason():
+    registry = {"schema_version": 1, "updated_at": None, "experiments": []}
+
+    for reason, expected in [
+        ("TODO", "missing_substantive_confidence_reason"),
+        ("Prior evidence is mixed.", "confidence_reason_too_short"),
+    ]:
+        try:
+            create_ticket(
+                registry,
+                lane="alpha_search",
+                hypothesis="Test one alpha hypothesis.",
+                change_type="ranking_rule",
+                single_causal_variable=f"new ranking field {expected}",
+                prediction={
+                    "success_probability": 0.35,
+                    "main_failure_modes": ["thin_sample"],
+                    "confidence_reason": reason,
+                },
+            )
+        except ValueError as exc:
+            assert "requires a substantive pre-run prediction" in str(exc)
+            assert expected in str(exc)
+        else:
+            raise AssertionError("weak confidence reason was accepted")
 
 
 def test_default_file_stem_falls_back_when_slug_has_no_ascii():
@@ -634,7 +667,10 @@ def test_log_draft_includes_prediction_calibration():
             "expected_ev_delta": 0.2,
             "expected_pnl_delta": 4000.0,
             "main_failure_modes": ["sample_too_thin"],
-            "confidence_reason": "Strong frozen-window paper evidence.",
+            "confidence_reason": (
+                "Frozen-window paper evidence looks strong, but related support "
+                "sleeves often failed when sample size was thin."
+            ),
         },
     )
     judgement = {
@@ -1099,6 +1135,10 @@ def test_update_result_records_prediction_calibration():
             "success_probability": 0.2,
             "expected_ev_delta": 0.01,
             "main_failure_modes": ["drawdown_failed"],
+            "confidence_reason": (
+                "Low-confidence top-up may help if drawdown stays contained, but "
+                "nearby risk-scalar trials often failed tail-risk guards."
+            ),
         },
     )
     judgement = {

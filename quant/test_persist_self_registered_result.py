@@ -41,7 +41,10 @@ def _prediction():
     return {
         "success_probability": 0.3,
         "main_failure_modes": ["thin_sample"],
-        "confidence_reason": "free PIT-safe field but prior similar qualifiers failed",
+        "confidence_reason": (
+            "Free PIT-safe field has plausible mechanism, prior qualifiers were mixed, "
+            "and thin sample remains the main failure risk."
+        ),
     }
 
 
@@ -53,6 +56,23 @@ def test_requires_prediction_for_alpha_lane(tmp_path):
             experiment_id="exp-20260608-901",
             lane="alpha_search",
             prediction=None,
+            result={"decision": "rejected"},
+            status="rejected",
+        )
+
+
+def test_rejects_weak_prediction_quality_for_alpha_lane(tmp_path):
+    reg = _setup_registry(tmp_path)
+    with pytest.raises(ValueError, match="substantive pre-run prediction"):
+        persist_self_registered_result(
+            reg,
+            experiment_id="exp-20260608-905",
+            lane="alpha_search",
+            prediction={
+                "success_probability": 0.3,
+                "main_failure_modes": ["thin_sample"],
+                "confidence_reason": "TODO",
+            },
             result={"decision": "rejected"},
             status="rejected",
         )
