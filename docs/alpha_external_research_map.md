@@ -211,6 +211,40 @@ Controls:
 
 Source: <https://arxiv.org/abs/2605.05409>
 
+### Market-Feedback Adaptive Financial RAG
+
+May 2026 work on market-feedback adaptive retrieval for frozen LLMs is directly
+compatible with Ginger's default-off evidence model. The useful adaptation is
+not fine-tuning the reader after every outcome; it is learning which source
+families helped after residual-return labels mature, then using that
+source-memory state only for future PIT retrieval.
+
+Implementable fields:
+
+- `event_rag_source_memory_version`
+- `event_rag_anchor_timestamp`
+- `event_rag_source_family`
+- `event_rag_event_type_bucket`
+- `event_rag_horizon_bucket`
+- `event_rag_residual_label_version`
+- `event_rag_source_utility_bucket`
+- `event_rag_market_context_card_hash`
+- `event_rag_feedback_matured_flag`
+- `event_rag_reader_model_id`
+
+Controls:
+
+- update source memory only after the relevant 5/10/20-day residual label has
+  matured;
+- keep the LLM reader frozen or versioned so performance attribution belongs
+  to retrieval/source memory, not hidden model drift;
+- archive the anchor, retrieved evidence set, market-context card, schema, and
+  output hash;
+- compare any RAG-assisted candidate against the exact accepted helper or cash
+  it displaces after costs.
+
+Source: <https://arxiv.org/abs/2605.31201>
+
 ### Agentic Trading Evidence Ledger
 
 A May 2026 survey of LLM trading-agent studies finds that evaluation protocols
@@ -327,6 +361,41 @@ Controls:
 
 Source: <https://www.sciencedirect.com/science/article/pii/S0031320326005716>
 
+### Relation Score Gating And Crosstalk Control
+
+June 2026 cross-sectional stock-prediction work highlights two practical
+failure modes that match Ginger's relation experiments: stale relation graphs
+can mis-rank candidates, and graph propagation can leak stock-specific noise
+across neighbors. The local implementation should be a transparent score
+formation and crosstalk audit, not a black-box graph forecaster.
+
+Implementable fields:
+
+- `relation_score_head_version`
+- `own_stock_score_component`
+- `neighbor_relation_score_component`
+- `relation_gate_weight_bucket`
+- `relation_crosstalk_risk_bucket`
+- `temporal_scale_component_bucket`
+- `relation_graph_staleness_bucket`
+- `relation_score_residual_bucket`
+- `rank_ic_alignment_bucket`
+
+Controls:
+
+- report own-stock, neighbor, and residual score components separately before
+  any relation field affects paper selection;
+- require relation edges to have as-of timestamps and decay/staleness metadata;
+- compare relation-score candidates against accepted relation helpers, not only
+  against cash;
+- use crosstalk diagnostics to reject static sector labels or broad beta
+  relabels that merely propagate noisy momentum.
+
+Sources:
+
+- <https://arxiv.org/abs/2606.08930>
+- <https://arxiv.org/abs/2604.20204>
+
 ### Dynamic Hypergraph And High-Order Relations
 
 Recent 2026 dynamic-hypergraph stock-prediction research argues that static
@@ -405,6 +474,36 @@ Controls:
 - compare against accepted default-off adapters, not only against cash.
 
 Source: <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6819380>
+
+### Disclosure Timing And Complexity As Event Context
+
+Research on AI-audited regulatory filings argues that price discovery can be
+slowed by the combination of dense language and irregular disclosure timing.
+For Ginger, this maps to SEC event context and risk attribution: complexity and
+timing surprise are candidate fields only when they are filing-time bounded and
+measured against accepted SEC/event comparators.
+
+Implementable fields:
+
+- `filing_complexity_bucket`
+- `filing_timing_surprise_bucket`
+- `filing_cadence_irregularity_bucket`
+- `filing_change_density_bucket`
+- `disclosure_absorption_delay_bucket`
+- `insider_timing_context_bucket`
+- `sec_event_complexity_relation_bucket`
+
+Controls:
+
+- compute complexity and cadence using only filings available by the signal
+  timestamp;
+- separate routine business updates from structural deterioration or guidance
+  changes;
+- use the fields first for event-risk explanation and default-off attribution;
+- require replacement value versus accepted SEC and non-text comparators before
+  entry, ranking, or sizing use.
+
+Source: <https://arxiv.org/abs/2602.17895>
 
 ### LLM Herding And Crowded AI Signals
 

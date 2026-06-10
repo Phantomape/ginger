@@ -6,17 +6,15 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `91`
-- Accepted / rejected: `9` / `76`
-- Accept rate: `9.89%`
-- Sum EV delta: `+52.5764`
-- Sum PnL delta: `$1,072,696.76`
-- Latest: `exp-20260610-009` `rejected_fiftytwo_week_high_allocator_source_extension` with EV `+1.0193` and PnL `$18,759.55`.
+- Experiments: `93`
+- Accepted / rejected: `10` / `77`
+- Accept rate: `10.75%`
+- Sum EV delta: `+54.5390`
+- Sum PnL delta: `$1,102,970.47`
+- Latest: `exp-20260610-016` `rejected_post_earnings_allocator_extension` with EV `+0.9906` and PnL `$15,076.66`.
 
 ## Retained Or Positive Evidence
 
-- `exp-20260601-029` `accepted_shared_finra_iwm_cost_liquidity_support`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `finra_iwm_cost_liquidity_support`.
-  Lesson: Accepted FINRA/IWM same-ticker cooldown paper candidates may deserve modest notional support when signal-day dollar liquidity is high and signal-day range is contained, proxying lower execution friction and cleaner br...
 - `exp-20260603-006` `accepted_candidate_finra_borrow_pressure`: EV `+0.2585`, PnL `$5,688.12`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `finra_borrow_pressure_candidate_pool`.
   Lesson: Official FINRA borrow-pressure rows with high days-to-cover and positive short-interest change may improve the accepted FINRA/IWM default-off candidate pool by requiring both crowding and active borrow-demand pressure.
 - `exp-20260603-022` `accepted_post_earnings_non_core_overlap_shared_support`: EV `+0.0300`, PnL `$247.93`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `post_earnings_underpriced_core_non_overlap_support`.
@@ -27,11 +25,11 @@ records before making strategy changes.
   Lesson: Shared replay matched the exp-20260607-018 lead because the alpha came from a distinct VIXY volatility-compression state plus liquid stock leadership, not runner-only implementation details. Do not retry by sweeping V...
 - `exp-20260610-005` `accepted_shared_default_off_accepted_helper_source_priority_allocator`: EV `+0.8971`, PnL `$14,502.52`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
   Lesson: The alpha worked because it expanded the usable candidate pool across several accepted OHLCV helper sensors while limiting same-day overlap to one ex-ante highest-priority paper risk slot. The shared helper removes th...
+- `exp-20260610-014` `accepted_shared_default_off_revision_allocator_source_extension`: EV `+0.9720`, PnL `$15,197.05`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
+  Lesson: The revision rows added replacement value on dates where expectation revision evidence displaced pure OHLCV rows or supplied coverage on dates where the higher-priority helpers had weaker candidates. The shared helper...
 
 ## Rejections And Failure Lessons
 
-- `exp-20260608-026` `rejected_industry_laggard_lagged_consensus_did_not_beat_accepted_lagged_comparator`: EV `-0.0060`, PnL `$217.23`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_new_independent_source_family`.
-  Lesson: The variant did not beat the current accepted lagged consensus comparator across all three canonical windows.
 - `exp-20260609-005` `rejected_sec_ftd_finra_lagged_consensus_no_selected_source_rows`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_new_independent_source_family`.
   Lesson: The SEC FTD + FINRA source produced no selected lagged-consensus trades.
 - `exp-20260609-007` `rejected_no_tail_state_separation`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `tail_state_winner_continuation_candidate_pool`.
@@ -46,6 +44,8 @@ records before making strategy changes.
   Lesson: Macro relief was already an accepted standalone helper, but the allocator extension did not add enough incremental replacement value after existing higher-priority helper rows and global cooldown. The likely issue is...
 - `exp-20260610-009` `rejected_fiftytwo_week_high_allocator_source_extension`: EV `+1.0193`, PnL `$18,759.55`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
   Lesson: The source overlapped too much with higher-priority allocator rows or displaced better rows in at least one canonical window. Do not retry by changing 52-week source rank, allocator top-N, source thresholds, notional,...
+- `exp-20260610-016` `rejected_post_earnings_allocator_extension`: EV `+0.9906`, PnL `$15,076.66`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
+  Lesson: The standalone post-earnings sleeve remains accepted, but its rows did not add enough incremental replacement value after the accepted allocator's higher-priority rows and same-ticker cooldown. The likely failure mode...
 
 ## Retry Discipline
 
@@ -67,9 +67,9 @@ records before making strategy changes.
 
 ## Recent Raw Records
 
-- `exp-20260609-023` source `experiments/logs/exp-20260609-023.json`.
-- `exp-20260609-025` source `experiments/logs/exp-20260609-025.json`.
 - `exp-20260610-004` source `experiments/logs/exp-20260610-004.json`.
 - `exp-20260610-005` source `experiments/logs/exp-20260610-005.json`.
 - `exp-20260610-006` source `experiments/logs/exp-20260610-006.json`.
-- `exp-20260610-009` source `experiments/logs/exp-20260610-009.json`.
+- `exp-20260610-009` source `docs/experiment_log.jsonl`.
+- `exp-20260610-014` source `experiments/logs/exp-20260610-014.json`.
+- `exp-20260610-016` source `experiments/logs/exp-20260610-016.json`.

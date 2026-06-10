@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-06-09.
+Last refreshed: 2026-06-10.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -79,9 +79,9 @@ very speculative ideas. They should not be treated as accepted alpha even when
 Gate 4 is positive; the next retained asset must be the shared helper or daily
 default-off wiring that reproduces the lead.
 
-Meta-research on 1,608 records continues to rank production-visible default-off
-paper adapters above raw filters, ticker exceptions, and cap releases. The
-research report is queue guidance only; it is not a trading signal.
+Meta-research continues to rank production-visible default-off paper adapters
+above raw filters, ticker exceptions, and cap releases. The research report is
+queue guidance only; it is not a trading signal.
 
 The June 6-8 readout tightens the rule: relation-aware free-data candidate
 sources can work, but only when the relation itself is the edge. Accepted
@@ -114,6 +114,24 @@ market-pullback reclaim, and extra core-flow or volatility-relief confirmation
 did not beat the accepted comparators. Treat these as evidence that price
 formation labels need an independent displacement edge, not just cleaner
 momentum vocabulary.
+
+The June 10 readout makes the allocator lesson sharper. A source-priority
+allocator across already accepted default-off helpers can add value when it
+chooses one ex-ante highest-priority paper row per day and avoids same-ticker
+overlap. Revision-surprise low-extension earned a fixed rank-5 slot inside that
+allocator because it supplied distinct expectation evidence. Simple additions
+of already accepted helpers, such as macro relief, 52-week-high, or
+post-earnings rows, did not add enough incremental replacement value after
+higher-priority rows and cooldown. Calendar and event labels also narrowed:
+turn-of-month leadership remains accepted, while OPEX week, quarter-end,
+holiday-adjacent, pre-earnings DTE/low-bar, broad SEC business-update labels,
+Companyfacts quality gates layered onto 52-week anchors, and extra compression
+tail gates did not beat accepted comparators. A fixed semiconductor/AI hardware
+basket breadth-thrust scout was also rejected despite positive aggregate EV
+because it regressed old_thin, failed concentration, and did not beat the
+accepted source-priority allocator. The useful question is now source
+arbitration and distinct evidence, not more date labels, helper stacking, or
+hand-built theme baskets.
 
 Default next question for any new broad candidate pool:
 
@@ -155,6 +173,8 @@ evidence on accepted paper adapters:
   narrow-range compression breakout, turn-of-month liquid leadership, and
   52-week-high proximity core-flow (full-stack
   `accepted_paper_pending_forward`, exp-20260610-008);
+- accepted-helper source-priority allocator with revision-surprise
+  low-extension as fixed rank 5;
 - VBB / VCP / Space observe-only buckets where nonzero forward rows exist.
 
 Minimum forward package:
@@ -315,6 +335,14 @@ production-visible field:
 - broad OHLCV factor mining that only rediscovers momentum;
 - commodity/ETF/macro proxy leadership variants that merely relabel broad beta
   or cyclical beta;
+- fixed theme-basket breadth/thrust variants, including semiconductor/AI
+  hardware baskets, unless supported by new PIT ETF/constituent/catalyst,
+  borrow/options/ownership, or forward replacement-value evidence;
+- OPEX-week, quarter-end, holiday-adjacent, or other calendar leadership
+  variants unless the new date field beats turn-of-month and the accepted
+  allocator after costs in every canonical window;
+- pre-earnings liquid leadership, low-bar, DTE, or earnings-calendar timing
+  variants unless a new PIT expectation-trajectory field is present;
 - broad 5-day winner continuation variants unless they solve drawdown/tail and
   beat the accepted low-deployment ETF comparator;
 - gap-and-hold, breadth-confirmed gap-and-hold, post-thrust inside-day
@@ -325,6 +353,9 @@ production-visible field:
 - extra core-flow, VIXY/volatility-relief, or breadth confirmation layered on
   an already accepted candidate source unless it improves all windows versus
   that accepted source, not only the core baseline;
+- adding an already accepted standalone helper as another source-priority
+  allocator row unless the added source has distinct evidence and improves all
+  windows versus the current allocator;
 - low-deployment ETF threshold, ETF-list, hold-day, or notional retunes;
 - lagged free-data consensus source-set/source-family/timing/notional retunes
   that do not beat the accepted lagged independent-family comparator;
@@ -337,6 +368,8 @@ production-visible field:
   surprise, average surprise, pre-event RS, score, rank, or scalar retunes;
 - SEC item-code / phrase / same-day absorption retries without richer semantic
   provenance or relation structure;
+- broad SEC business-update labels, including generic 8-K Item 8.01/7.01/1.01
+  leadership, without richer event semantics or relation provenance;
 - raw SEC same-family bursts, first/follow-on recurrence, same-ticker
   cross-family transitions, same-sector SEC peer transfer, or same-sector
   event breadth retries;
