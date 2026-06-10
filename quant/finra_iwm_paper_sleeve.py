@@ -123,6 +123,21 @@ US_MARKET_HOLIDAYS = {
     date(2027, 12, 24),
 }
 
+# Auto-extend with the rule-generated NYSE calendar through next year so
+# business-day math never silently goes stale. The pinned set above stays
+# authoritative for verified years (tests assert generator == pins for
+# 2025-2027), so replay over frozen windows is unaffected.
+try:
+    try:
+        from market_calendar import nyse_holidays_through as _nyse_holidays_through
+    except ImportError:  # pragma: no cover - package-style imports in tests
+        from quant.market_calendar import nyse_holidays_through as _nyse_holidays_through
+    US_MARKET_HOLIDAYS = frozenset(
+        US_MARKET_HOLIDAYS | _nyse_holidays_through(date.today().year + 1)
+    )
+except Exception:  # pragma: no cover - generator failure falls back to pins
+    US_MARKET_HOLIDAYS = frozenset(US_MARKET_HOLIDAYS)
+
 PUBLICATION_OVERRIDES = {
     date(2025, 11, 14): date(2025, 11, 25),
     date(2025, 11, 28): date(2025, 12, 9),

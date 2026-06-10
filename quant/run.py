@@ -657,6 +657,27 @@ def main():
             },
         }
 
+    # ── Step 1.6: Macro event calendar refresh (append-only data update) ─────
+    # Accumulates future NFP/CPI/FOMC dates from official schedules into
+    # data/reference/macro_events_overlay.json (weekly throttle). Never edits
+    # hand-verified seed history; total failure changes nothing and the
+    # intraday report's calendar audit remains the alarm.
+    try:
+        from macro_events_refresh import refresh_macro_events_overlay
+        _macro_cal = refresh_macro_events_overlay()
+        if _macro_cal.get("added"):
+            log.info(
+                "Macro event calendar: appended %s future date(s) from "
+                "official schedules", _macro_cal["added"],
+            )
+        elif _macro_cal.get("status") == "failed":
+            log.warning(
+                "Macro event calendar refresh failed (will retry next run): %s",
+                _macro_cal.get("errors"),
+            )
+    except Exception as e:
+        log.warning(f"Macro event calendar refresh skipped: {e}")
+
     # ── Step 2: Market Regime ─────────────────────────────────────────────────
     _print_section("STEP 2 — Market regime")
     try:

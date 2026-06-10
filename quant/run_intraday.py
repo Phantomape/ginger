@@ -225,6 +225,19 @@ def main(no_news: bool = False, offline: bool = False, data_dir=None) -> dict:
     except Exception as e:
         log.error("Pending actions load failed: %s", e)
 
+    if not offline:
+        try:
+            try:
+                from macro_events_refresh import refresh_macro_events_overlay
+            except ImportError:  # pragma: no cover - package-style imports
+                from quant.macro_events_refresh import refresh_macro_events_overlay
+            refresh_summary = refresh_macro_events_overlay(date_iso)
+            if refresh_summary.get("added"):
+                log.info("Macro calendar: appended %s future date(s) from "
+                         "official schedules", refresh_summary["added"])
+        except Exception as e:
+            log.warning("Macro calendar refresh skipped: %s", e)
+
     macro = build_macro_context(date_iso)
 
     calendar_findings = []

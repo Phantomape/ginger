@@ -22,7 +22,19 @@ the intraday report's DATA QUALITY section, so staleness is never silent.
 
 from __future__ import annotations
 
+import json
+import logging
 from datetime import date, timedelta
+
+logger = logging.getLogger(__name__)
+
+VALID_FAMILIES = {"NFP", "CPI", "FOMC"}
+
+# Overlay rows (auto-fetched from official schedules by macro_events_refresh)
+# may only ADD events strictly after this date — the day overlay support
+# landed. Everything at or before it is hand-verified seed history that
+# replay/experiment semantics depend on; automation must never touch it.
+OVERLAY_MIN_DATE = "2026-06-10"
 
 MACRO_EVENTS = [
     {"date": "2024-10-04", "family": "NFP", "label": "Sep 2024 Employment Situation"},
@@ -95,6 +107,85 @@ MACRO_EVENTS = [
     {"date": "2026-12-09", "family": "FOMC", "label": "Dec 2026 FOMC decision"},
     {"date": "2026-12-10", "family": "CPI", "label": "Nov 2026 CPI"},
 ]
+
+
+def overlay_path():
+    """Path of the auto-maintained overlay file (data/reference/...)."""
+    try:
+        from data_paths import data_artifact_path
+    except ImportError:  # pragma: no cover - package-style imports in tests
+        from quant.data_paths import data_artifact_path
+    return data_artifact_path("macro_events_overlay")
+
+
+def _valid_overlay_row(row) -> bool:
+    if not isinstance(row, dict):
+        return False
+    date_iso = row.get("date")
+    if not isinstance(date_iso, str) or len(date_iso) != 10:
+        return False
+    try:
+        date.fromisoformat(date_iso)
+    except ValueError:
+        return False
+    if date_iso <= OVERLAY_MIN_DATE:
+        return False
+    return row.get("family") in VALID_FAMILIES and bool(row.get("label"))
+
+
+def load_overlay_events(path=None) -> list[dict]:
+    """Validated overlay rows; invalid/old rows are dropped (and logged)."""
+    target = path if path is not None else overlay_path()
+    try:
+        with open(target, "r", encoding="utf-8") as handle:
+            payload = json.load(handle)
+    except FileNotFoundError:
+        return []
+    except Exception as e:
+        logger.warning("macro events overlay unreadable (%s) — ignoring", e)
+        return []
+    rows = payload.get("events", []) if isinstance(payload, dict) else payload
+    if not isinstance(rows, list):
+        return []
+    valid, seen = [], set()
+    for row in rows:
+        if not _valid_overlay_row(row):
+            logger.warning("macro events overlay: dropping invalid row %r", row)
+            continue
+        key = (row["date"], row["family"])
+        if key in seen:
+            continue
+        seen.add(key)
+        valid.append({"date": row["date"], "family": row["family"],
+                      "label": str(row["label"])})
+    valid.sort(key=lambda r: (r["date"], r["family"]))
+    return valid
+
+
+def attach_overlay(path=None) -> int:
+    """Merge overlay rows into MACRO_EVENTS in place (identity preserved).
+
+    In-place mutation matters: the macro relief sleeve and several experiments
+    hold references to this exact list object.
+    """
+    existing = {(e["date"], e["family"]) for e in MACRO_EVENTS}
+    added = 0
+    for row in load_overlay_events(path):
+        key = (row["date"], row["family"])
+        if key in existing:
+            continue
+        MACRO_EVENTS.append(row)
+        existing.add(key)
+        added += 1
+    if added:
+        MACRO_EVENTS.sort(key=lambda r: (r["date"], r["family"]))
+    return added
+
+
+try:
+    attach_overlay()
+except Exception as e:  # pragma: no cover - overlay must never break imports
+    logger.warning("macro events overlay attach failed: %s", e)
 
 
 def macro_events_on(date_iso: str) -> list[dict]:

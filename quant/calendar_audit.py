@@ -93,35 +93,48 @@ def audit_macro_events(today_iso: str, warn_ahead_days: int = DEFAULT_WARN_AHEAD
     return findings
 
 
-def audit_market_holidays(today_iso: str, warn_ahead_days: int = DEFAULT_WARN_AHEAD_DAYS) -> list[dict]:
-    try:
-        from finra_iwm_paper_sleeve import US_MARKET_HOLIDAYS
-    except ImportError:  # pragma: no cover
+def audit_market_holidays(
+    today_iso: str,
+    warn_ahead_days: int = DEFAULT_WARN_AHEAD_DAYS,
+    holidays=None,
+) -> list[dict]:
+    """Coverage check for the market holiday set.
+
+    The set is rule-generated through next year at import time
+    (quant/market_calendar.py), so findings here indicate the generator or
+    its wiring regressed — not a routine data-entry chore.
+    """
+    if holidays is None:
         try:
-            from quant.finra_iwm_paper_sleeve import US_MARKET_HOLIDAYS
-        except Exception as e:
+            from finra_iwm_paper_sleeve import US_MARKET_HOLIDAYS as holidays
+        except ImportError:  # pragma: no cover
+            try:
+                from quant.finra_iwm_paper_sleeve import (
+                    US_MARKET_HOLIDAYS as holidays,
+                )
+            except Exception as e:
+                return [_finding("us_market_holidays", "error",
+                                 f"could not load US_MARKET_HOLIDAYS: {e}")]
+        except Exception as e:  # pragma: no cover - defensive
             return [_finding("us_market_holidays", "error",
                              f"could not load US_MARKET_HOLIDAYS: {e}")]
-    except Exception as e:  # pragma: no cover - defensive
-        return [_finding("us_market_holidays", "error",
-                         f"could not load US_MARKET_HOLIDAYS: {e}")]
 
     today = date.fromisoformat(today_iso)
-    last_year = max(d.year for d in US_MARKET_HOLIDAYS)
+    last_year = max(d.year for d in holidays)
     coverage_end = date(last_year, 12, 31)
     if coverage_end < today:
         return [_finding(
             "us_market_holidays", "stale",
-            f"US_MARKET_HOLIDAYS ends {last_year} — business-day math in "
-            "finra_iwm_paper_sleeve treats newer holidays as trading days; "
-            "append the official NYSE calendar",
+            f"market holiday coverage ends {last_year} — the rule-generated "
+            "extension in finra_iwm_paper_sleeve / market_calendar is not "
+            "working; business-day math will treat holidays as trading days",
             coverage_end=str(coverage_end),
         )]
     if coverage_end <= today + timedelta(days=warn_ahead_days):
         return [_finding(
             "us_market_holidays", "expiring",
-            f"US_MARKET_HOLIDAYS ends {last_year} — append next year's NYSE "
-            "calendar before January",
+            f"market holiday coverage ends {last_year} — auto-extension "
+            "should already cover next year; check market_calendar wiring",
             coverage_end=str(coverage_end),
         )]
     return []

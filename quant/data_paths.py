@@ -51,6 +51,10 @@ def atomic_write_json(obj, filepath: str | Path, *, indent=2,
 
 DATA_ARTIFACTS: dict[str, tuple[str, str]] = {
     "crypto_positions": ("state/crypto/crypto_positions.json", "crypto_positions.json"),
+    "macro_events_overlay": (
+        "reference/macro_events_overlay.json",
+        "macro_events_overlay.json",
+    ),
     "pending_actions": ("state/execution/pending_actions.json", "pending_actions.json"),
     "pilot_competition_decisions": (
         "ledgers/pilot_competition_decisions.jsonl",

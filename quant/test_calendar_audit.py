@@ -45,11 +45,22 @@ def test_macro_audit_reports_stale_after_coverage_end():
 
 
 def test_holiday_audit_current_then_expiring_then_stale():
-    assert audit_market_holidays("2026-06-10") == []
-    expiring = audit_market_holidays("2027-12-01")
+    from datetime import date
+
+    fixed = {date(2027, 1, 1), date(2027, 12, 24)}  # coverage through 2027
+    assert audit_market_holidays("2026-06-10", holidays=fixed) == []
+    expiring = audit_market_holidays("2027-12-01", holidays=fixed)
     assert len(expiring) == 1 and expiring[0]["severity"] == "expiring"
-    stale = audit_market_holidays("2028-01-05")
+    stale = audit_market_holidays("2028-01-05", holidays=fixed)
     assert len(stale) == 1 and stale[0]["severity"] == "stale"
+
+
+def test_holiday_audit_live_set_extends_through_next_year():
+    # The sleeve's set is rule-extended through (current year + 1) at import,
+    # so the live audit must be clean today.
+    from datetime import date as _date
+
+    assert audit_market_holidays(_date.today().isoformat()) == []
 
 
 def test_finra_pins_info_after_last_pin_only():
