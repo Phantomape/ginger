@@ -1,0 +1,268 @@
+{
+  "acceptance_rule": "Observed-only diagnostic: no strategy acceptance. Evidence is useful only if bucket counts cover all three windows, aggregate target rows >=60, top bucket average PnL exceeds bottom bucket by at least 100 dollars, and at least two windows have the same direction without concentration failure.",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "allowed_write_scope": [
+    "data/experiments",
+    "data/experiments/exp-20260610-014/exp_20260610_014_revision_source_priority_allocator_extension.json",
+    "data/experiments/exp-20260610-020/exp_20260610_020_accepted_allocator_tail_state_attribution.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "experiments/cards",
+    "experiments/cards/exp-20260610-020.md",
+    "experiments/logs",
+    "experiments/logs/exp-20260610-020.json",
+    "experiments/manifests",
+    "experiments/manifests/exp-20260610-020.json",
+    "experiments/tickets",
+    "experiments/tickets/exp-20260610-020.json",
+    "quant/experiments",
+    "quant/experiments/exp_20260610_020_accepted_allocator_tail_state_attribution.py"
+  ],
+  "artifact": "data/experiments/exp-20260610-020/exp_20260610_020_accepted_allocator_tail_state_attribution.json",
+  "baseline_result_file": "data/experiments/exp-20260610-014/exp_20260610_014_revision_source_priority_allocator_extension.json",
+  "card_file": "experiments/cards/exp-20260610-020.md",
+  "causal_components": [
+    "read_only_historical_replay",
+    "bucket_attribution",
+    "no_strategy_change",
+    "no_production_change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "accepted_allocator_return_extension_tail_state_bucket_v1",
+  "claimed_at": "2026-06-10T17:57:08+00:00",
+  "completed_at": "2026-06-10T18:08:10Z",
+  "created_at": "2026-06-10T17:56:40+00:00",
+  "decision": "observed_only_positive_tail_state_field_lead",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260610-020",
+  "experiment_uid": "expuid-ae4c480b54624dd5",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260610-020",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-10T17:56:40+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "accepted_allocator_tail_state_attribution"
+  },
+  "hypothesis": "Accepted helper source-priority allocator selected rows may show stable replacement-value separation by production-visible return-extension tail-state buckets, informing whether future allocator routing needs a tail-risk field instead of more source additions.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "accepted_allocator_return_extension_tail_state_bucket_v1"
+  ],
+  "log": "experiments/logs/exp-20260610-020.json",
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260610-014",
+    "exp-20260610-019",
+    "exp-20260609-007"
+  ],
+  "new_evidence_type": "production_visible_tail_state_attribution",
+  "owner": "alpha-explore-automation",
+  "prediction": {
+    "confidence_reason": "Current playbook asks for tail-state field-building before more momentum/helper stacking. The accepted allocator has enough rows, but prior tail-state and winner-continuation diagnostics often failed, so this is attribution only.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "non_monotonic_buckets",
+      "source_family_confounding",
+      "window_instability",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-10T17:56:26+00:00",
+    "success_probability": 0.24
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "artifact": "data/experiments/exp-20260610-020/exp_20260610_020_accepted_allocator_tail_state_attribution.json",
+    "calibration": {
+      "actual_evidence_passed": true,
+      "actual_success": 1,
+      "brier_score": 0.5776,
+      "failure_modes_observed": [],
+      "predicted_success_probability": 0.24
+    },
+    "card": "experiments/cards/exp-20260610-020.md",
+    "decision": "observed_only_positive_tail_state_field_lead",
+    "gate4": {
+      "best_worst": {
+        "avg_pnl_edge": 120.36,
+        "best_avg_pnl": 134.88,
+        "best_bucket": "pullback_repair",
+        "eligible_bucket_count": 5,
+        "worst_avg_pnl": 14.52,
+        "worst_bucket": "extended_momentum"
+      },
+      "concentration": {
+        "max_single_positive_pnl_share": 0.040379,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "passed": true,
+        "positive_pnl_hhi": 0.01553,
+        "positive_pnl_hhi_guardrail": 0.35,
+        "positive_pnl_sum": 50208.94,
+        "top_positive_tickers": [
+          {
+            "positive_pnl": 2027.39,
+            "share": 0.040379,
+            "ticker": "QBTS"
+          },
+          {
+            "positive_pnl": 1691.76,
+            "share": 0.033694,
+            "ticker": "AAOI"
+          },
+          {
+            "positive_pnl": 1634.63,
+            "share": 0.032557,
+            "ticker": "GDS"
+          },
+          {
+            "positive_pnl": 1614.89,
+            "share": 0.032163,
+            "ticker": "PLTR"
+          },
+          {
+            "positive_pnl": 1586.38,
+            "share": 0.031596,
+            "ticker": "AU"
+          },
+          {
+            "positive_pnl": 1487.06,
+            "share": 0.029617,
+            "ticker": "MU"
+          },
+          {
+            "positive_pnl": 1326.45,
+            "share": 0.026419,
+            "ticker": "TER"
+          },
+          {
+            "positive_pnl": 1323.55,
+            "share": 0.026361,
+            "ticker": "MRVL"
+          },
+          {
+            "positive_pnl": 1298.34,
+            "share": 0.025859,
+            "ticker": "PRMB"
+          },
+          {
+            "positive_pnl": 1160.87,
+            "share": 0.023121,
+            "ticker": "ALAB"
+          }
+        ]
+      },
+      "decision": "observed_only_positive_tail_state_field_lead",
+      "direction_details": {
+        "late_strong": {
+          "avg_pnl_edge": 98.03,
+          "best_avg_pnl": 63.81,
+          "best_bucket_count": 4,
+          "comparable": true,
+          "passed": true,
+          "worst_avg_pnl": -34.22,
+          "worst_bucket_count": 18
+        },
+        "mid_weak": {
+          "avg_pnl_edge": 162.06,
+          "best_avg_pnl": 205.87,
+          "best_bucket_count": 5,
+          "comparable": true,
+          "passed": true,
+          "worst_avg_pnl": 43.81,
+          "worst_bucket_count": 26
+        },
+        "old_thin": {
+          "avg_pnl_edge": 103.78,
+          "best_avg_pnl": 126.03,
+          "best_bucket_count": 8,
+          "comparable": true,
+          "passed": true,
+          "worst_avg_pnl": 22.25,
+          "worst_bucket_count": 15
+        }
+      },
+      "direction_window_min": 2,
+      "direction_windows": 3,
+      "evidence_passed": true,
+      "failed_reasons": [],
+      "missing_return_path_count": 0,
+      "observed_only": true,
+      "return_path_coverage": 1.0,
+      "return_path_coverage_min": 0.95,
+      "row_count": 330,
+      "strategy_gate4_applicable": false,
+      "windows_with_rows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ]
+    },
+    "log": "experiments/logs/exp-20260610-020.json",
+    "numeric_gate4_passed": false,
+    "observed_only": true,
+    "post_run_reflection": {
+      "forbidden_near_neighbor_retry": "Do not retune allocator source rank, top-N, notional, hold days, cooldown, or tail-state thresholds on the same frozen windows from this observed-only result.",
+      "new_evidence_required": "A retry needs closed forward allocator replacement rows, a predeclared tail-state field collected daily, or a frozen out-of-sample threshold derived before routing.",
+      "why_result_happened": "The production-visible return-extension bucket showed stable separation across all three windows: pullback_repair had the best average PnL while extended_momentum was worst. This is still observed-only because the allocator mixes source families and no routing rule was tested."
+    },
+    "production_impact": {
+      "adapter_status": "observed_only_attribution",
+      "alters_candidate_ranking": false,
+      "alters_exits": false,
+      "alters_orders": false,
+      "alters_signal_generation": false,
+      "alters_sizing": false,
+      "backtester_adapter_changed": false,
+      "daily_snapshot_exposed": false,
+      "default_off_paper_only": true,
+      "execution_envelope": {
+        "kill_switch": "not applicable because no behavior changed",
+        "order_semantics": "no broker order and no new paper entry",
+        "portfolio_displacement": "not changed; existing accepted allocator rows only",
+        "scope": "read-only attribution on accepted default-off paper rows",
+        "trade_enabled": false
+      },
+      "live_ready": false,
+      "live_realism_evaluated": false,
+      "parity_note": "This experiment only reads an accepted allocator artifact and computes production-visible signal-date return-path buckets. No shared policy, daily snapshot, live/default order, ranking, sizing, exit, watchlist, LLM, or news path changes.",
+      "parity_test_added": false,
+      "production_orders_changed": false,
+      "production_signal_path_changed": false,
+      "production_watchlist_changed": false,
+      "replay_only": false,
+      "run_adapter_changed": false,
+      "shared_policy_changed": false,
+      "trade_enabled": false,
+      "uses_free_non_ohlcv": false,
+      "uses_free_ohlcv_only": true,
+      "uses_llm": false
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260610-020.json",
+  "single_causal_variable": "accepted_allocator_return_extension_tail_state_bucket_v1",
+  "status": "observed_only",
+  "summary": "Tail-state buckets separated accepted allocator replacement value, but this remains only a read-only field lead for a future frozen routing experiment.",
+  "ticket_file": "experiments/tickets/exp-20260610-020.json",
+  "trial_family": "accepted_helper_source_priority_allocator_tail_state_attribution",
+  "trial_variant_id": "accepted_allocator_return_extension_tail_state_bucket_v1",
+  "updated_at": "2026-06-10T18:08:10Z"
+}
