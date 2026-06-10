@@ -1,0 +1,195 @@
+{
+  "experiment_id": "exp-20260610-023",
+  "experiment_uid": "expuid-3b97dffb496b4624",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260610-023",
+    "slug": "sec_contract_demand_text_leadership",
+    "reserved_at": "2026-06-10T21:09:10+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "alpha-search-automation",
+  "hypothesis": "candidate_pool: SEC 8-K filings with explicit contract/order/backlog/customer-demand filing-text evidence, when paired with same-day liquid SPY-relative leadership, may identify business-momentum underreaction candidates whose next-open 10d paper continuation beats generic SEC business-update labels.",
+  "change_type": "default_off_paper_candidate_pool_replay_scout",
+  "mechanism_family": "production_visible_free_sec_event_ohlcv_candidate_pool",
+  "trial_family": "sec_contract_demand_text_leadership_candidate_pool",
+  "trial_variant_id": "sec_contract_demand_text_leadership_top1_next_open_10d_v1",
+  "single_causal_variable": "sec_contract_demand_text_leadership_candidate_source_v1",
+  "changed_variable": "sec_contract_demand_text_leadership_candidate_source_v1",
+  "causal_components": [
+    "PIT SEC filing text semantic keyword evidence",
+    "8-K Item 1.01/7.01/8.01",
+    "liquid SPY-relative leadership",
+    "next-open paper entry",
+    "10d hold",
+    "costs",
+    "cooldown",
+    "core-overlap exclusion"
+  ],
+  "prior_trial_count": 5,
+  "nearby_prior_experiments": [
+    "exp-20260610-013",
+    "exp-20260603-012",
+    "exp-20260605-006",
+    "exp-20260605-031",
+    "exp-20260608-013"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "production_visible_free_sec_filing_text_contract_demand_semantics_plus_ohlcv_leadership",
+  "baseline_result_file": "docs/backtesting.md",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "experiments",
+    "data/experiments",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "sec_contract_demand_text_leadership_candidate_source_v1"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Gate 1-4 per docs/backtesting.md: aggregate EV/PnL positive, no EV/PnL regression window, target trades >=20 across all three windows, survival >=5%, drawdown drift <=0.5pp, concentration pass, and beat accepted compression comparator; positive replay lead still requires shared default-off adapter before retention.",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": 0.2,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "thin_text_sample",
+      "generic_contract_language",
+      "window_regression",
+      "drawdown_drift",
+      "compression_comparator_not_beaten"
+    ],
+    "confidence_reason": "Broad SEC item-code labels failed in exp-20260610-013, and the older SEC customer-contract text source failed in exp-20260603-012. This run is materially different because it requires explicit PIT filing text evidence plus the current liquid leadership, next-open, cost, cooldown, and accepted-compression comparator envelope. Success odds remain low because SEC contract language is sparse and can still be boilerplate or already priced.",
+    "recorded_at": "2026-06-10T21:08:56+00:00"
+  },
+  "created_at": "2026-06-10T21:09:10+00:00",
+  "claimed_at": "2026-06-10T21:09:36+00:00",
+  "completed_at": "2026-06-10T21:15:56+00:00",
+  "result": {
+    "decision": "rejected_sec_contract_demand_text_leadership_candidate_pool",
+    "accepted": false,
+    "artifact": "data/experiments/exp-20260610-023/exp_20260610_023_sec_contract_demand_text_leadership.json",
+    "log": "experiments/logs/exp-20260610-023.json",
+    "card": "experiments/cards/exp-20260610-023.md",
+    "aggregate_expected_value_delta": -0.0184,
+    "aggregate_strategy_total_pnl_delta": -300.06,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_sec_contract_demand_text_leadership_candidate_pool",
+      "failed_reasons": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "target_concentration_failed",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten"
+      ],
+      "aggregate_ev_delta": -0.0184,
+      "aggregate_pnl_delta": -300.06,
+      "windows_ev_improved": 0,
+      "windows_ev_regressed": 2,
+      "windows_pnl_improved": 0,
+      "windows_pnl_regressed": 2,
+      "target_trade_count": 2,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0009,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": false,
+        "max_single_positive_pnl_share": null,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": null,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "accepted_compression_comparator": {
+        "experiment_id": "exp-20260608-013",
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "expected_value_score_delta_sum": 0.1608,
+        "total_pnl_delta_sum": 2248.98,
+        "target_trade_count": 44
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.18,
+      "actual_gate4_passed": false,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "target_concentration_failed",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten"
+      ],
+      "brier_score": 0.0324
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "replay_only_no_live_adapter",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_sec_filing_text": true,
+      "uses_free_ohlcv": true,
+      "parity_note": "This experiment changes no production code. A positive result is only a replay lead. Promotion would require a shared default-off adapter that loads the same PIT SEC filing text rows, applies the exact same contract-demand pattern set and exclusions, uses the same signal-date OHLCV leadership gates, overlap exclusion, next-open paper entry, 10-trading-day exit, costs, cooldown, comparator, and concentration guards in historical replay and daily production before any report queue, paper ledger, candidate priority, sizing, watchlist, or order surface could change."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The fixed SEC contract-demand text leadership bundle failed Gate 4. This says explicit SEC customer/contract/order/backlog phrases were not enough to create stable replacement value after next-open execution, costs, 10-day hold, cooldown, overlap controls, and accepted compression comparison. The useful next evidence is named relation/value extraction, not another synonym or price-threshold sweep.",
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping SEC text synonyms, item-code weights, 8-K item subsets, ret20/ret60 relative-strength thresholds, signal-day return, close-location, volume-ratio bounds, top-N, hold-day, cooldown, or paper notional on the same frozen windows.",
+      "new_evidence_required": "A retry needs materially richer PIT semantic evidence: named customer/supplier/counterparty extraction, contract value or duration, pre/post-market timing confirmation, or a replayable source-utility ledger showing which SEC text families beat the displaced candidate after costs."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260610-023.json",
+  "card_file": "experiments/cards/exp-20260610-023.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260610-023.json",
+  "decision": "rejected_sec_contract_demand_text_leadership_candidate_pool",
+  "summary": "The SEC contract-demand text leadership source was rejected; it did not establish a distinct free SEC text/OHLCV candidate-pool edge under the standard three-window protocol.",
+  "artifact": "data/experiments/exp-20260610-023/exp_20260610_023_sec_contract_demand_text_leadership.json",
+  "log": "experiments/logs/exp-20260610-023.json",
+  "aggregate_expected_value_delta": -0.0184,
+  "aggregate_strategy_total_pnl_delta": -300.06,
+  "updated_at": "2026-06-10T21:15:56+00:00"
+}

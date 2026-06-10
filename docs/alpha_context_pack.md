@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1136`
-- Raw records loaded by meta report: `1544`
-- History fingerprint: `f6ad308044f567ee`
+- Strategy records counted: `1140`
+- Raw records loaded by meta report: `1710`
+- History fingerprint: `c67129f6876906d9`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -34,20 +34,19 @@ facts before changing strategy behavior.
   Reason: 1/7 records have sample >= 10; 7/7 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive...
 - `default_off_paper_shared_adapter` priority `0.7477`: experiments `3`, accept `100.00%`, sum EV `+0.7145`, sum PnL `$13,745.66`.
   Reason: 3/3 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; still has ro...
+- `default_off_shared_paper_adapter` priority `0.7476`: experiments `3`, accept `100.00%`, sum EV `+0.3659`, sum PnL `$5,956.53`.
+  Reason: 3/3 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; still has ro...
 - `paper_notional_support_scout` priority `0.7009`: experiments `3`, accept `66.67%`, sum EV `+0.0804`, sum PnL `$1,393.64`.
   Reason: 3/3 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
-- `pilot_or_sleeve` priority `0.6323`: experiments `162`, accept `25.93%`, sum EV `+65.9978`, sum PnL `$1,141,068.75`.
-  Reason: 161/162 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually changes sizing/allocation rather than...
+- `pilot_or_sleeve` priority `0.6282`: experiments `172`, accept `24.42%`, sum EV `+66.9867`, sum PnL `$1,158,973.41`.
+  Reason: 170/172 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually changes sizing/allocation rather than...
   Guardrail: heavily explored family; diminishing-return risk; many prior rejections in this family
-- `slot_or_ranking` priority `0.5788`: experiments `121`, accept `27.27%`, sum EV `+30.8811`, sum PnL `$539,157.32`.
-  Reason: 1/121 records have sample >= 10; 118/121 records show multi-window evidence; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
+- `slot_or_ranking` priority `0.5858`: experiments `139`, accept `26.62%`, sum EV `+42.3712`, sum PnL `$727,509.07`.
+  Reason: 1/139 records have sample >= 10; 136/139 records show multi-window evidence; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
   Guardrail: average drawdown delta worsens; can change survival, trade count, or exit distribution broadly; heavily explored family; diminishing-return risk; many prior rejections in this family
 - `default_off_paper_allocation` priority `0.5641`: experiments `12`, accept `33.33%`, sum EV `+0.0285`, sum PnL `$456.30`.
   Reason: 12/12 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs
   Guardrail: heavily explored family; diminishing-return risk
-- `fundamental_growth_rs_default_off_candidate_pool` priority `0.5443`: experiments `1`, accept `0.00%`, sum EV `+5.2015`, sum PnL `$92,488.83`.
-  Reason: 1/1 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
-  Guardrail: many prior rejections in this family
 
 ## Frozen Or High-Risk Near Neighbors
 
@@ -63,14 +62,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260610-007` `positive_replay_lead_not_promoted_fiftytwo_week_high_proximity_core_flow`: EV `+0.4308`, PnL `$9,295.34`, family `production_visible_free_ohlcv_candidate_pool`, trial `fiftytwo_week_high_proximity_breakout_candidate_pool`.
-  Lesson: The 52-week-high proximity breakout core-flow bundle cleared the canonical three-window gates and beat the accepted compression/core-flow comparators, suggesting anchoring underreaction at the 52-week high added repla...
-- `exp-20260610-008` `accepted_fiftytwo_week_high_proximity_core_flow_shared_default_off_adapter`: EV `+0.4308`, PnL `$9,295.34`, family `production_visible_free_ohlcv_candidate_pool`, trial `fiftytwo_week_high_proximity_breakout_candidate_pool`.
-  Lesson: The shared helper reproduced the private replay lead because it kept the exact 252-day-high proximity, 60-day breakout, leadership and quality gates, core-flow admission, same-ticker overlap exclusion, next-open entry...
-- `exp-20260610-009` `rejected_fiftytwo_week_high_allocator_source_extension`: EV `+1.0193`, PnL `$18,759.55`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
-  Lesson: The source overlapped too much with higher-priority allocator rows or displaced better rows in at least one canonical window. Do not retry by changing 52-week source rank, allocator top-N, source thresholds, notional,...
-- `exp-20260610-010` `rejected_holiday_adjacent_liquid_leadership_candidate_pool`: EV `+0.2391`, PnL `$1,794.24`, family `free_trading_calendar_plus_ohlcv_candidate_pool`, trial `holiday_adjacent_liquid_leadership_candidate_pool`.
-  Lesson: The fixed holiday-adjacent liquid leadership bundle failed Gate 4. The result implies that exchange-holiday timing did not add enough distinct edge beyond liquid momentum after next-open execution, costs, cooldown, ov...
 - `exp-20260610-011` `rejected_pre_earnings_liquid_leadership_candidate_pool`: EV `+0.0627`, PnL `$1,216.54`, family `production_visible_free_earnings_calendar_ohlcv_candidate_pool`, trial `pre_earnings_liquid_leadership_candidate_pool`.
   Lesson: The fixed pre-earnings liquid leadership bundle failed Gate 4. The result implies the direct DTE 6-12 plus positive-surprise snapshot field did not add enough distinct edge beyond liquid momentum after next-open execu...
 - `exp-20260610-012` `rejected_pre_earnings_low_bar_leadership_candidate_pool`: EV `+0.1146`, PnL `$1,830.93`, family `production_visible_free_earnings_calendar_ohlcv_candidate_pool`, trial `pre_earnings_low_bar_leadership_candidate_pool`.
@@ -87,6 +78,14 @@ facts before changing strategy behavior.
   Lesson: The fixed tail-state gate either thinned too much of the accepted compression edge or failed to improve every accepted-comparator window. Compression itself remains accepted; this result only rejects the added breadth...
 - `exp-20260610-018` `rejected_semiconductor_basket_breadth_thrust_candidate_pool`: EV `+0.4748`, PnL `$7,854.11`, family `free_ohlcv_fixed_theme_breadth_alpha`, trial `semiconductor_basket_breadth_thrust_candidate_pool`.
   Lesson: A fixed six-name semiconductor/AI hardware basket is a clean production-visible free-data scout, but if it fails, the mechanism likely collapsed into crowded high-beta technology momentum. The strict comparison to acc...
+- `exp-20260610-019` `rejected_fundamental_growth_rs_allocator_source_extension`: EV `+1.0418`, PnL `$16,541.20`, family `free_sec_companyfacts_plus_ohlcv_rs_candidate_pool`, trial `accepted_default_off_helper_source_priority_allocation`.
+  Lesson: The standalone Companyfacts+RS sleeve remains accepted, but its rows did not add enough incremental replacement value after the accepted allocator's higher-priority rows and same-ticker cooldown. The likely failure mo...
+- `exp-20260610-021` `rejected_tail_state_allocator_routing`: EV `+0.7612`, PnL `$13,019.36`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_helper_source_priority_allocator_tail_state_routing`.
+  Lesson: The observed-only tail-state separation did not translate into a robust same-day routing policy. The likely failure is diagnostic overfit and source-family confounding: lower-priority non-extended rows did not consist...
+- `exp-20260610-022` `rejected_rolling_lead_lag_peer_underreaction_candidate_pool`: EV `-0.3173`, PnL `$-6,968.70`, family `production_visible_free_ohlcv_relation_alpha`, trial `rolling_lead_lag_peer_underreaction_candidate_pool`.
+  Lesson: The simple lead-lag edge either did not add stable information beyond the accepted same-day correlation/core-flow relation, or its delayed reaction was too noisy after next-open execution and 10-day costs. If it passe...
+- `exp-20260610-023` `rejected_sec_contract_demand_text_leadership_candidate_pool`: EV `-0.0184`, PnL `$-300.06`, family `production_visible_free_sec_event_ohlcv_candidate_pool`, trial `sec_contract_demand_text_leadership_candidate_pool`.
+  Lesson: The fixed SEC contract-demand text leadership bundle failed Gate 4. This says explicit SEC customer/contract/order/backlog phrases were not enough to create stable replacement value after next-open execution, costs, 1...
 
 ## Highest-Signal Historical Records
 
@@ -111,9 +110,9 @@ facts before changing strategy behavior.
 
 - [`position_cap_or_cap_release`](lessons/position-cap-or-cap-release.md)
 - [`external_event_satellite_overlay_allocation`](lessons/external-event-satellite-overlay-allocation.md)
+- [`free_sec_companyfacts_plus_ohlcv_rs_candidate_pool`](lessons/free-sec-companyfacts-plus-ohlcv-rs-candidate-pool.md)
 - [`pilot_or_sleeve`](lessons/pilot-or-sleeve.md)
 - [`production_visible_default_off_paper_adapter_for_candidate_pool_alpha`](lessons/production-visible-default-off-paper-adapter-for-candidate-pool-alpha.md)
-- [`free_sec_companyfacts_plus_ohlcv_rs_candidate_pool`](lessons/free-sec-companyfacts-plus-ohlcv-rs-candidate-pool.md)
 - [`filter_or_gate`](lessons/filter-or-gate.md)
 - [`risk_scalar_or_topup`](lessons/risk-scalar-or-topup.md)
 - [`slot_or_ranking`](lessons/slot-or-ranking.md)
@@ -125,4 +124,4 @@ facts before changing strategy behavior.
 ## Line Budget
 
 - Target maximum lines: `420`
-- Actual lines when generated: `128`
+- Actual lines when generated: `127`

@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `30`
-- Accepted / rejected: `3` / `24`
-- Accept rate: `10.00%`
-- Sum EV delta: `+4.4820`
-- Sum PnL delta: `$69,858.67`
-- Latest: `exp-20260610-003` `rejected_industry_leadership_dispersion_candidate_pool` with EV `-0.4171` and PnL `$-6,715.71`.
+- Experiments: `31`
+- Accepted / rejected: `3` / `25`
+- Accept rate: `9.68%`
+- Sum EV delta: `+4.1647`
+- Sum PnL delta: `$62,889.97`
+- Latest: `exp-20260610-022` `rejected_rolling_lead_lag_peer_underreaction_candidate_pool` with EV `-0.3173` and PnL `$-6,968.70`.
 
 ## Retained Or Positive Evidence
 
@@ -24,8 +24,6 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260608-023` `rejected_sector_peer_gap_reaction_transfer_candidate_pool`: EV `+0.5698`, PnL `$7,312.15`, family `production_visible_free_ohlcv_relation_alpha`, trial `sector_peer_gap_reaction_transfer_candidate_pool`.
-  Lesson: Sector-level peer shocks did not add enough ticker-specific relation information beyond broad sector beta. The accepted rolling-corr peer-shock route likely works because it combines ticker-pair specificity with core-...
 - `exp-20260608-024` `rejected_accumulation_base_core_flow_confirmed_candidate_pool`: EV `-0.0908`, PnL `$-2,193.00`, family `production_visible_free_ohlcv_relation_alpha`, trial `accumulation_base_core_flow_confirmation`.
   Lesson: Core-flow confirmation did not make the accumulation-base source robust enough. It either thinned the useful winners, kept the old-window tail, or selected dates where the core stack already owned the cleaner demand s...
 - `exp-20260608-025` `rejected_same_industry_characteristic_peer_shock_candidate_pool`: EV `+0.1070`, PnL `$286.58`, family `production_visible_free_ohlcv_relation_alpha`, trial `same_industry_characteristic_peer_shock_candidate_pool`.
@@ -40,6 +38,8 @@ records before making strategy changes.
   Lesson: The candidate earned most of its aggregate gain in mid_weak while late_strong and old_thin both lost EV/PnL, so the breadth field looks regime-fragile rather than a stable replacement-value source. Its drawdown drift...
 - `exp-20260610-003` `rejected_industry_leadership_dispersion_candidate_pool`: EV `-0.4171`, PnL `$-6,715.71`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_leadership_dispersion_candidate_pool`.
   Lesson: Single-leader industry dispersion must separate sponsorship from ordinary momentum. If it fails, the selected rows are likely too extended, too regime-sensitive, or already covered better by the accepted laggard-repai...
+- `exp-20260610-022` `rejected_rolling_lead_lag_peer_underreaction_candidate_pool`: EV `-0.3173`, PnL `$-6,968.70`, family `production_visible_free_ohlcv_relation_alpha`, trial `rolling_lead_lag_peer_underreaction_candidate_pool`.
+  Lesson: The simple lead-lag edge either did not add stable information beyond the accepted same-day correlation/core-flow relation, or its delayed reaction was too noisy after next-open execution and 10-day costs. If it passe...
 
 ## Retry Discipline
 
@@ -61,9 +61,9 @@ records before making strategy changes.
 
 ## Recent Raw Records
 
-- `exp-20260608-025` source `experiments/logs/exp-20260608-025.json`.
 - `exp-20260608-028` source `experiments/logs/exp-20260608-028.json`.
 - `exp-20260609-010` source `experiments/logs/exp-20260609-010.json`.
 - `exp-20260609-018` source `experiments/logs/exp-20260609-018.json`.
 - `exp-20260609-019` source `experiments/logs/exp-20260609-019.json`.
 - `exp-20260610-003` source `experiments/logs/exp-20260610-003.json`.
+- `exp-20260610-022` source `experiments/logs/exp-20260610-022.json`.

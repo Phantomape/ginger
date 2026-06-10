@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `93`
-- Accepted / rejected: `10` / `77`
-- Accept rate: `10.75%`
-- Sum EV delta: `+54.5390`
-- Sum PnL delta: `$1,102,970.47`
-- Latest: `exp-20260610-016` `rejected_post_earnings_allocator_extension` with EV `+0.9906` and PnL `$15,076.66`.
+- Experiments: `94`
+- Accepted / rejected: `10` / `78`
+- Accept rate: `10.64%`
+- Sum EV delta: `+55.3002`
+- Sum PnL delta: `$1,115,989.83`
+- Latest: `exp-20260610-021` `rejected_tail_state_allocator_routing` with EV `+0.7612` and PnL `$13,019.36`.
 
 ## Retained Or Positive Evidence
 
@@ -30,8 +30,6 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260609-005` `rejected_sec_ftd_finra_lagged_consensus_no_selected_source_rows`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_new_independent_source_family`.
-  Lesson: The SEC FTD + FINRA source produced no selected lagged-consensus trades.
 - `exp-20260609-007` `rejected_no_tail_state_separation`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `tail_state_winner_continuation_candidate_pool`.
   Lesson: The breadth and extension state separated resilient recent winners from tail-risk rows, but it mostly explained generic winner continuation and did not create enough per-trade replacement value after costs. Do not ret...
 - `exp-20260609-017` `rejected_revision_surprise_lagged_consensus_did_not_beat_accepted_lagged_comparator`: EV `-0.0799`, PnL `$-1,763.35`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_new_independent_source_family`.
@@ -46,6 +44,8 @@ records before making strategy changes.
   Lesson: The source overlapped too much with higher-priority allocator rows or displaced better rows in at least one canonical window. Do not retry by changing 52-week source rank, allocator top-N, source thresholds, notional,...
 - `exp-20260610-016` `rejected_post_earnings_allocator_extension`: EV `+0.9906`, PnL `$15,076.66`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
   Lesson: The standalone post-earnings sleeve remains accepted, but its rows did not add enough incremental replacement value after the accepted allocator's higher-priority rows and same-ticker cooldown. The likely failure mode...
+- `exp-20260610-021` `rejected_tail_state_allocator_routing`: EV `+0.7612`, PnL `$13,019.36`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_helper_source_priority_allocator_tail_state_routing`.
+  Lesson: The observed-only tail-state separation did not translate into a robust same-day routing policy. The likely failure is diagnostic overfit and source-family confounding: lower-priority non-extended rows did not consist...
 
 ## Retry Discipline
 
@@ -67,9 +67,9 @@ records before making strategy changes.
 
 ## Recent Raw Records
 
-- `exp-20260610-004` source `experiments/logs/exp-20260610-004.json`.
 - `exp-20260610-005` source `experiments/logs/exp-20260610-005.json`.
 - `exp-20260610-006` source `experiments/logs/exp-20260610-006.json`.
-- `exp-20260610-009` source `experiments/logs/exp-20260610-009.json`.
+- `exp-20260610-009` source `docs/experiment_log.jsonl`.
 - `exp-20260610-014` source `experiments/logs/exp-20260610-014.json`.
 - `exp-20260610-016` source `experiments/logs/exp-20260610-016.json`.
+- `exp-20260610-021` source `experiments/logs/exp-20260610-021.json`.

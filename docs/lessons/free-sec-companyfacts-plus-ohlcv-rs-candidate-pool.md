@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `17`
-- Accepted / rejected: `3` / `14`
-- Accept rate: `17.65%`
-- Sum EV delta: `+89.1546`
-- Sum PnL delta: `$1,455,714.33`
-- Latest: `exp-20260609-006` `rejected_fundamental_growth_rs_quality_gated_top1_replacement` with EV `+1.8267` and PnL `$48,026.19`.
+- Experiments: `18`
+- Accepted / rejected: `3` / `15`
+- Accept rate: `16.67%`
+- Sum EV delta: `+90.1964`
+- Sum PnL delta: `$1,472,255.53`
+- Latest: `exp-20260610-019` `rejected_fundamental_growth_rs_allocator_source_extension` with EV `+1.0418` and PnL `$16,541.20`.
 
 ## Retained Or Positive Evidence
 
@@ -24,8 +24,6 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260528-004` `rejected_fundamental_growth_rs_operating_profit_quality`: EV `+7.5644`, PnL `$121,768.14`, family `free_sec_companyfacts_plus_ohlcv_rs_candidate_pool`, trial `fundamental_growth_rs_operating_profit_quality`.
-  Lesson: drawdown_drift_too_high; target_concentration_failed
 - `exp-20260528-006` `rejected_fundamental_growth_rs_cash_conversion_quality`: EV `+4.1310`, PnL `$82,848.39`, family `free_sec_companyfacts_plus_ohlcv_rs_candidate_pool`, trial `fundamental_growth_rs_cash_conversion_quality`.
   Lesson: drawdown_drift_too_high; target_concentration_failed
 - `exp-20260528-012` `rejected_fundamental_growth_rs_gross_margin_expansion`: EV `+3.6703`, PnL `$66,412.45`, family `free_sec_companyfacts_plus_ohlcv_rs_candidate_pool`, trial `fundamental_growth_rs_gross_margin_expansion_quality`.
@@ -40,6 +38,8 @@ records before making strategy changes.
   Lesson: candidate_pool / capital allocation: within the accepted Companyfacts operating-profit + RS paper source, low PIT capex/revenue is a distinct free SEC capital-intensity field. A small default-off paper notional suppor...
 - `exp-20260609-006` `rejected_fundamental_growth_rs_quality_gated_top1_replacement`: EV `+1.8267`, PnL `$48,026.19`, family `free_sec_companyfacts_plus_ohlcv_rs_candidate_pool`, trial `fundamental_growth_rs_quality_gated_candidate_selection`.
   Lesson: The selector likely rejected high-ranked winners or starved one of the standard windows; the two quality fields are not sufficient as hard candidate-selection gates on the frozen sample. Do not retry by only loosening...
+- `exp-20260610-019` `rejected_fundamental_growth_rs_allocator_source_extension`: EV `+1.0418`, PnL `$16,541.20`, family `free_sec_companyfacts_plus_ohlcv_rs_candidate_pool`, trial `accepted_default_off_helper_source_priority_allocation`.
+  Lesson: The standalone Companyfacts+RS sleeve remains accepted, but its rows did not add enough incremental replacement value after the accepted allocator's higher-priority rows and same-ticker cooldown. The likely failure mo...
 
 ## Retry Discipline
 
@@ -59,9 +59,9 @@ records before making strategy changes.
 
 ## Recent Raw Records
 
-- `exp-20260528-017` source `experiments/logs/exp-20260528-017.json`.
 - `exp-20260528-019` source `experiments/logs/exp-20260528-019.json`.
 - `exp-20260528-020` source `experiments/logs/exp-20260528-020.json`.
 - `exp-20260528-023` source `experiments/logs/exp-20260528-023.json`.
 - `exp-20260529-003` source `experiments/logs/exp-20260529-003.json`.
 - `exp-20260609-006` source `experiments/logs/exp-20260609-006.json`.
+- `exp-20260610-019` source `experiments/logs/exp-20260610-019.json`.
