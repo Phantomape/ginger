@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `90`
-- Accepted / rejected: `9` / `75`
-- Accept rate: `10.00%`
-- Sum EV delta: `+51.5571`
-- Sum PnL delta: `$1,053,937.21`
-- Latest: `exp-20260610-006` `rejected_macro_relief_allocator_extension` with EV `+0.0000` and PnL `$0.00`.
+- Experiments: `91`
+- Accepted / rejected: `9` / `76`
+- Accept rate: `9.89%`
+- Sum EV delta: `+52.5764`
+- Sum PnL delta: `$1,072,696.76`
+- Latest: `exp-20260610-009` `rejected_fiftytwo_week_high_allocator_source_extension` with EV `+1.0193` and PnL `$18,759.55`.
 
 ## Retained Or Positive Evidence
 
@@ -30,8 +30,6 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260606-028` `rejected_peer_shock_lagged_consensus_did_not_beat_accepted_lagged_comparator`: EV `+0.0413`, PnL `$983.18`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_new_independent_source_family`.
-  Lesson: The variant did not beat the current accepted lagged consensus comparator across all three canonical windows.
 - `exp-20260608-026` `rejected_industry_laggard_lagged_consensus_did_not_beat_accepted_lagged_comparator`: EV `-0.0060`, PnL `$217.23`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_new_independent_source_family`.
   Lesson: The variant did not beat the current accepted lagged consensus comparator across all three canonical windows.
 - `exp-20260609-005` `rejected_sec_ftd_finra_lagged_consensus_no_selected_source_rows`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_new_independent_source_family`.
@@ -46,6 +44,8 @@ records before making strategy changes.
   Lesson: The stricter cluster/cost/liquidity qualifier produced too few selected trades and failed raw Form4 replacement value. The data shape shows that adding cluster or senior-owner support to the already sparse forward que...
 - `exp-20260610-006` `rejected_macro_relief_allocator_extension`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
   Lesson: Macro relief was already an accepted standalone helper, but the allocator extension did not add enough incremental replacement value after existing higher-priority helper rows and global cooldown. The likely issue is...
+- `exp-20260610-009` `rejected_fiftytwo_week_high_allocator_source_extension`: EV `+1.0193`, PnL `$18,759.55`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
+  Lesson: The source overlapped too much with higher-priority allocator rows or displaced better rows in at least one canonical window. Do not retry by changing 52-week source rank, allocator top-N, source thresholds, notional,...
 
 ## Retry Discipline
 
@@ -67,9 +67,9 @@ records before making strategy changes.
 
 ## Recent Raw Records
 
-- `exp-20260609-017` source `experiments/logs/exp-20260609-017.json`.
 - `exp-20260609-023` source `experiments/logs/exp-20260609-023.json`.
 - `exp-20260609-025` source `experiments/logs/exp-20260609-025.json`.
 - `exp-20260610-004` source `experiments/logs/exp-20260610-004.json`.
 - `exp-20260610-005` source `experiments/logs/exp-20260610-005.json`.
 - `exp-20260610-006` source `experiments/logs/exp-20260610-006.json`.
+- `exp-20260610-009` source `experiments/logs/exp-20260610-009.json`.

@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1126`
-- Raw records loaded by meta report: `1534`
-- History fingerprint: `8e0e0dc9ade790b9`
+- Strategy records counted: `1127`
+- Raw records loaded by meta report: `1535`
+- History fingerprint: `6f21b50884824cbc`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -39,8 +39,8 @@ facts before changing strategy behavior.
 - `pilot_or_sleeve` priority `0.6323`: experiments `162`, accept `25.93%`, sum EV `+65.9978`, sum PnL `$1,141,068.75`.
   Reason: 161/162 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually changes sizing/allocation rather than...
   Guardrail: heavily explored family; diminishing-return risk; many prior rejections in this family
-- `slot_or_ranking` priority `0.5705`: experiments `118`, accept `27.12%`, sum EV `+27.8992`, sum PnL `$490,124.06`.
-  Reason: 1/118 records have sample >= 10; 115/118 records show multi-window evidence; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
+- `slot_or_ranking` priority `0.5724`: experiments `119`, accept `26.89%`, sum EV `+28.9185`, sum PnL `$508,883.61`.
+  Reason: 1/119 records have sample >= 10; 116/119 records show multi-window evidence; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
   Guardrail: average drawdown delta worsens; can change survival, trade count, or exit distribution broadly; heavily explored family; diminishing-return risk; many prior rejections in this family
 - `default_off_paper_allocation` priority `0.5641`: experiments `12`, accept `33.33%`, sum EV `+0.0285`, sum PnL `$456.30`.
   Reason: 12/12 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs
@@ -63,8 +63,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260609-024` `rejected_early_peer_earnings_sympathy_candidate_pool`: EV `-0.0950`, PnL `$-1,325.52`, family `production_visible_event_peer_relation_alpha`, trial `early_peer_earnings_sympathy_candidate_pool`.
-  Lesson: The source failed to add robust replacement value across the three canonical windows or breached sample/risk gates. The same-day peer sympathy relation did not sufficiently separate true event-information transfer fro...
 - `exp-20260609-025` `rejected_form4_liquidity_cost_cluster_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `form4_liquidity_cost_cluster_candidate_pool`.
   Lesson: The stricter cluster/cost/liquidity qualifier produced too few selected trades and failed raw Form4 replacement value. The data shape shows that adding cluster or senior-owner support to the already sparse forward que...
 - `exp-20260609-026` `positive_replay_lead_not_promoted_turn_of_month_liquid_leadership`: EV `+0.2774`, PnL `$5,287.69`, family `production_visible_free_calendar_ohlcv_candidate_pool`, trial `turn_of_month_liquid_leadership_candidate_pool`.
@@ -87,6 +85,8 @@ facts before changing strategy behavior.
   Lesson: The 52-week-high proximity breakout core-flow bundle cleared the canonical three-window gates and beat the accepted compression/core-flow comparators, suggesting anchoring underreaction at the 52-week high added repla...
 - `exp-20260610-008` `accepted_fiftytwo_week_high_proximity_core_flow_shared_default_off_adapter`: EV `+0.4308`, PnL `$9,295.34`, family `production_visible_free_ohlcv_candidate_pool`, trial `fiftytwo_week_high_proximity_breakout_candidate_pool`.
   Lesson: The shared helper reproduced the private replay lead because it kept the exact 252-day-high proximity, 60-day breakout, leadership and quality gates, core-flow admission, same-ticker overlap exclusion, next-open entry...
+- `exp-20260610-009` `rejected_fiftytwo_week_high_allocator_source_extension`: EV `+1.0193`, PnL `$18,759.55`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
+  Lesson: The source overlapped too much with higher-priority allocator rows or displaced better rows in at least one canonical window. Do not retry by changing 52-week source rank, allocator top-N, source thresholds, notional,...
 
 ## Highest-Signal Historical Records
 
