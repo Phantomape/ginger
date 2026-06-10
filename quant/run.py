@@ -328,6 +328,10 @@ def main():
         build_narrow_range_compression_breakout_snapshot,
         empty_narrow_range_compression_breakout_snapshot,
     )
+    from revision_surprise_low_extension_paper_sleeve import (
+        build_revision_surprise_low_extension_snapshot,
+        empty_revision_surprise_low_extension_snapshot,
+    )
     from accepted_helper_source_priority_allocator_paper_sleeve import (
         build_accepted_helper_source_priority_allocator_snapshot,
         empty_accepted_helper_source_priority_allocator_snapshot,
@@ -3051,6 +3055,40 @@ def main():
         )
 
     try:
+        revision_ohlcv = dict(broad_market_ohlcv)
+        if "SPY" not in revision_ohlcv and spy_ohlcv is not None:
+            revision_ohlcv["SPY"] = spy_ohlcv
+        revision_surprise_low_extension_paper_sleeve = (
+            build_revision_surprise_low_extension_snapshot(
+                as_of=today_iso,
+                ohlcv_by_ticker=revision_ohlcv,
+                core_entries=signals,
+            )
+        )
+        if (
+            revision_surprise_low_extension_paper_sleeve.get("candidate_count", 0) > 0
+            or revision_surprise_low_extension_paper_sleeve.get("pending_count", 0) > 0
+            or revision_surprise_low_extension_paper_sleeve.get("open_position_count", 0) > 0
+            or revision_surprise_low_extension_paper_sleeve.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "Revision surprise low-extension paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
+                revision_surprise_low_extension_paper_sleeve.get("candidate_count", 0),
+                revision_surprise_low_extension_paper_sleeve.get("pending_count", 0),
+                revision_surprise_low_extension_paper_sleeve.get("open_position_count", 0),
+                revision_surprise_low_extension_paper_sleeve.get("closed_count_today", 0),
+                revision_surprise_low_extension_paper_sleeve.get("realized_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"Revision surprise low-extension paper sleeve unavailable: {e}")
+        revision_surprise_low_extension_paper_sleeve = (
+            empty_revision_surprise_low_extension_snapshot(
+                today_iso,
+                "revision_surprise_low_extension_paper_sleeve_build_failed",
+            )
+        )
+
+    try:
         accepted_helper_source_priority_allocator_paper_sleeve = (
             build_accepted_helper_source_priority_allocator_snapshot(
                 as_of=today_iso,
@@ -3059,6 +3097,7 @@ def main():
                     "rolling_peer_shock": rolling_corr_peer_shock_paper_sleeve,
                     "turn_of_month": turn_of_month_liquid_leadership_paper_sleeve,
                     "industry_laggard_repair": industry_relative_laggard_repair_paper_sleeve,
+                    "revision_surprise_low_extension": revision_surprise_low_extension_paper_sleeve,
                     "compression": narrow_range_compression_breakout_paper_sleeve,
                     "industry_stable_core_flow": industry_stable_core_flow_paper_sleeve,
                 },
@@ -3182,6 +3221,7 @@ def main():
     trend_signals_dict["industry_stable_core_flow_paper_sleeve"] = industry_stable_core_flow_paper_sleeve
     trend_signals_dict["turn_of_month_liquid_leadership_paper_sleeve"] = turn_of_month_liquid_leadership_paper_sleeve
     trend_signals_dict["narrow_range_compression_breakout_paper_sleeve"] = narrow_range_compression_breakout_paper_sleeve
+    trend_signals_dict["revision_surprise_low_extension_paper_sleeve"] = revision_surprise_low_extension_paper_sleeve
     trend_signals_dict["accepted_helper_source_priority_allocator_paper_sleeve"] = accepted_helper_source_priority_allocator_paper_sleeve
     trend_signals_dict["ai_optical_paper_sleeve"] = ai_optical_paper_sleeve
     trend_signals_dict["volatility_contraction_paper_sleeve"] = volatility_contraction_paper_sleeve
@@ -3305,6 +3345,7 @@ def main():
         "industry_stable_core_flow_paper_sleeve": industry_stable_core_flow_paper_sleeve,
         "turn_of_month_liquid_leadership_paper_sleeve": turn_of_month_liquid_leadership_paper_sleeve,
         "narrow_range_compression_breakout_paper_sleeve": narrow_range_compression_breakout_paper_sleeve,
+        "revision_surprise_low_extension_paper_sleeve": revision_surprise_low_extension_paper_sleeve,
         "accepted_helper_source_priority_allocator_paper_sleeve": accepted_helper_source_priority_allocator_paper_sleeve,
         "ai_optical_paper_sleeve": ai_optical_paper_sleeve,
         "volatility_contraction_paper_sleeve": volatility_contraction_paper_sleeve,

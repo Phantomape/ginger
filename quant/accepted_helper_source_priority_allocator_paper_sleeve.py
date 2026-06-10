@@ -31,6 +31,9 @@ try:
     from narrow_range_compression_breakout_paper_sleeve import (
         build_narrow_range_compression_breakout_historical_trades,
     )
+    from revision_surprise_low_extension_paper_sleeve import (
+        build_revision_surprise_low_extension_historical_trades,
+    )
     from rolling_corr_peer_shock_paper_sleeve import (
         build_rolling_corr_peer_shock_historical_trades,
     )
@@ -53,6 +56,9 @@ except ImportError:  # pragma: no cover - package-style imports in tests
     from quant.narrow_range_compression_breakout_paper_sleeve import (
         build_narrow_range_compression_breakout_historical_trades,
     )
+    from quant.revision_surprise_low_extension_paper_sleeve import (
+        build_revision_surprise_low_extension_historical_trades,
+    )
     from quant.rolling_corr_peer_shock_paper_sleeve import (
         build_rolling_corr_peer_shock_historical_trades,
     )
@@ -65,8 +71,8 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 
 
 SLEEVE_NAME = "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER"
-RULE_VERSION = "accepted_helper_source_priority_shared_default_off_allocator_v1"
-SOURCE_RULE_VERSION = "accepted_helper_source_priority_top1_allocation_v1"
+RULE_VERSION = "accepted_helper_source_priority_shared_default_off_allocator_v2"
+SOURCE_RULE_VERSION = "accepted_helper_source_priority_top1_with_revision_allocation_v1"
 STATE_SCHEMA_VERSION = 1
 
 DEFAULT_STATE_PATH = (
@@ -144,9 +150,19 @@ SOURCE_PRIORITY: "OrderedDict[str, dict[str, Any]]" = OrderedDict(
             },
         ),
         (
-            "compression",
+            "revision_surprise_low_extension",
             {
                 "rank": 5,
+                "description": "accepted revision-surprise low-extension expectation source",
+                "accepted_experiment": "exp-20260609-011",
+                "accepted_ev_delta_sum": 0.1846,
+                "accepted_pnl_delta_sum": 2893.75,
+            },
+        ),
+        (
+            "compression",
+            {
+                "rank": 6,
                 "description": "accepted narrow range compression breakout",
                 "accepted_experiment": "exp-20260608-013",
                 "accepted_ev_delta_sum": 0.1608,
@@ -156,7 +172,7 @@ SOURCE_PRIORITY: "OrderedDict[str, dict[str, Any]]" = OrderedDict(
         (
             "industry_stable_core_flow",
             {
-                "rank": 6,
+                "rank": 7,
                 "description": "accepted industry stable core-flow",
                 "accepted_experiment": "exp-20260608-008",
                 "accepted_ev_delta_sum": 0.1459,
@@ -595,6 +611,32 @@ def _build_source_trades(
         "scan": turn_audit.get("scan_by_window", {}).get(window_label),
     }
 
+    revision_trades, revision_audit = build_revision_surprise_low_extension_historical_trades(
+        ohlcv_by_ticker=rows_by_ticker,
+        core_entries_by_date=core_entries_by_date,
+        windows=OrderedDict([(window_label, window)]),
+    )
+    revision_normalised = [
+        _normalise_source_row(row, "revision_surprise_low_extension")
+        for row in revision_trades
+    ]
+    source_trades.extend(revision_normalised)
+    source_trade_counts["revision_surprise_low_extension"] = len(revision_normalised)
+    raw_candidate_counts["revision_surprise_low_extension"] = revision_audit.get(
+        "raw_candidate_count_by_window",
+        {},
+    ).get(window_label)
+    source_audits["revision_surprise_low_extension"] = {
+        "rule_version": revision_audit.get("rule_version"),
+        "source_rule_version": revision_audit.get("source_rule_version"),
+        "scan": revision_audit.get("scan_by_window", {}).get(window_label),
+        "contexts": revision_audit.get("contexts_by_window", {}).get(window_label, [])[:25],
+        "source_caveat": (
+            "Daily earnings snapshots are replayable, but EPS estimate provenance "
+            "remains proxy-grade until vendor PIT provenance and forward rows mature."
+        ),
+    }
+
     builders = [
         (
             "industry_laggard_repair",
@@ -639,6 +681,7 @@ def _normalise_source_row(row: dict[str, Any], source_family: str) -> dict[str, 
     signal_date = str(row.get("signal_date") or row.get("date") or "")[:10]
     ticker = str(row.get("ticker") or "").upper()
     score = _source_score(row)
+    uses_revision_data = source_family == "revision_surprise_low_extension"
     return {
         **deepcopy(row),
         "date": signal_date,
@@ -652,7 +695,8 @@ def _normalise_source_row(row: dict[str, Any], source_family: str) -> dict[str, 
         "known_at": "after_signal_day_close_before_next_open_paper_entry",
         "trade_enabled": False,
         "uses_llm": False,
-        "uses_free_ohlcv_only": True,
+        "uses_free_ohlcv_only": not uses_revision_data,
+        "uses_free_non_ohlcv": uses_revision_data,
     }
 
 
@@ -929,7 +973,8 @@ def _production_impact() -> dict[str, Any]:
         "alters_sizing": False,
         "alters_exits": False,
         "uses_llm": False,
-        "uses_free_ohlcv_only": True,
+        "uses_free_ohlcv_only": False,
+        "uses_free_non_ohlcv": True,
         "adapter_status": "shared_default_off_paper_helper",
         "scope": "accepted_helper_source_priority_allocator_paper_attribution",
     }

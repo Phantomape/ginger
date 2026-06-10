@@ -517,6 +517,14 @@ def build_default_off_alpha_attribution_report(
                         or {}
                     ).get("uses_free_ohlcv_only")
                 ),
+                "uses_free_non_ohlcv": (
+                    (
+                        (
+                            accepted_helper_source_priority_allocator_paper_sleeve or {}
+                        ).get("production_impact")
+                        or {}
+                    ).get("uses_free_non_ohlcv")
+                ),
             },
         ),
         _surface_summary(

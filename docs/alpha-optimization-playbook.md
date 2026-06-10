@@ -257,8 +257,14 @@ Needed fields:
 - PEAD bucket with PIT `last_earnings_date`;
 - source freshness and created-after-asof blockers.
 
-Only promote after the PIT revision source and forward replacement rows are
-available.
+Accepted default-off observation: `exp-20260610-014` admits
+`revision_surprise_low_extension` as fixed rank 5 inside the shared
+accepted-helper source-priority allocator. Do not retune revision rank,
+revision thresholds, allocator top-N, notional, hold, or cooldown on frozen
+windows.
+
+Only promote revision-driven behavior to live trading after the PIT revision
+source and forward replacement rows are available.
 
 ### 5. LLM As Bounded Semantic Infrastructure
 

@@ -4,6 +4,7 @@ from datetime import date, timedelta
 
 from quant.accepted_helper_source_priority_allocator_paper_sleeve import (
     RULE_VERSION,
+    SOURCE_PRIORITY,
     SOURCE_RULE_VERSION,
     build_accepted_helper_source_priority_allocator_snapshot,
     empty_accepted_helper_source_priority_allocator_state,
@@ -101,6 +102,41 @@ def test_same_ticker_cooldown_blocks_nearby_repeat() -> None:
     assert [row["signal_date"] for row in selected] == [trading_dates[1]]
     assert rejected[0]["filter_reason"] == "same_ticker_cooldown"
     assert audit["filtered_priority_candidate_count"] == 1
+
+
+def test_revision_source_ranked_ahead_of_compression() -> None:
+    trading_dates = _business_dates(5)
+    signal_date = trading_dates[1]
+
+    selected, rejected, audit = select_accepted_helper_source_priority_rows(
+        source_rows=[
+            {
+                "ticker": "ALT",
+                "date": signal_date,
+                "source_family": "compression",
+                "candidate_score": 999.0,
+            },
+            {
+                "ticker": "TOP",
+                "date": signal_date,
+                "source_family": "revision_surprise_low_extension",
+                "candidate_score": 1.0,
+            },
+        ],
+        trading_dates=trading_dates,
+        create_trades=False,
+    )
+
+    assert SOURCE_PRIORITY["revision_surprise_low_extension"]["rank"] == 5
+    assert SOURCE_PRIORITY["compression"]["rank"] == 6
+    assert [row["ticker"] for row in selected] == ["TOP"]
+    assert selected[0]["source_family"] == "revision_surprise_low_extension"
+    assert selected[0]["source_priority_rank"] == 5
+    assert selected[0]["uses_free_ohlcv_only"] is False
+    assert selected[0]["uses_free_non_ohlcv"] is True
+    assert rejected[0]["source_family"] == "compression"
+    assert rejected[0]["filter_reason"] == "daily_top1_source_priority_limit"
+    assert audit["selected_source_counts"] == {"revision_surprise_low_extension": 1}
 
 
 def test_daily_snapshot_creates_default_off_pending_from_source_snapshots() -> None:
