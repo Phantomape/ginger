@@ -103,6 +103,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            rolling_corr_peer_shock_paper_sleeve=None,
                            industry_relative_laggard_repair_paper_sleeve=None,
                            industry_stable_core_flow_paper_sleeve=None,
+                           accepted_helper_source_priority_allocator_paper_sleeve=None,
                            ai_optical_paper_sleeve=None,
                            volatility_contraction_paper_sleeve=None,
                            volume_breadth_breakout_paper_sleeve=None,
@@ -157,6 +158,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         rolling_corr_peer_shock_paper_sleeve (dict): Default-off rolling-correlation peer-shock paper sleeve
         industry_relative_laggard_repair_paper_sleeve (dict): Default-off industry-relative laggard repair paper sleeve
         industry_stable_core_flow_paper_sleeve (dict): Default-off industry stable core-flow paper sleeve
+        accepted_helper_source_priority_allocator_paper_sleeve (dict): Default-off accepted-helper source-priority allocator
         ai_optical_paper_sleeve (dict): Default-off AI optical IWM-confirmed paper sleeve
         volatility_contraction_paper_sleeve (dict): Default-off QQQ-confirmed volatility-contraction paper sleeve
         volume_breadth_breakout_paper_sleeve (dict): Default-off volume-breadth breakout paper sleeve
@@ -2323,6 +2325,92 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"group={candidate.get('candidate_group_key')} "
                 f"lead20={candidate.get('candidate_ret20_lead_vs_group')} "
                 f"rel_spy={candidate.get('candidate_signal_relative_vs_spy')} "
+                f"score={candidate.get('candidate_score')} "
+                f"signal={candidate.get('signal_date', candidate.get('date'))} "
+                f"notional={notional_text} (paper only)"
+            )
+
+    if accepted_helper_source_priority_allocator_paper_sleeve and (
+        accepted_helper_source_priority_allocator_paper_sleeve.get("candidate_count", 0) > 0
+        or accepted_helper_source_priority_allocator_paper_sleeve.get("pending_count", 0) > 0
+        or accepted_helper_source_priority_allocator_paper_sleeve.get("open_position_count", 0) > 0
+        or accepted_helper_source_priority_allocator_paper_sleeve.get("closed_count_today", 0) > 0
+        or accepted_helper_source_priority_allocator_paper_sleeve.get("closed_position_count", 0) > 0
+        or accepted_helper_source_priority_allocator_paper_sleeve.get("error")
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("ACCEPTED HELPER SOURCE-PRIORITY ALLOCATOR PAPER SLEEVE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Paper: {accepted_helper_source_priority_allocator_paper_sleeve.get('paper_enabled', False)}  |  "
+            f"Trade enabled: {accepted_helper_source_priority_allocator_paper_sleeve.get('trade_enabled', False)}"
+        )
+        if accepted_helper_source_priority_allocator_paper_sleeve.get("error"):
+            lines.append(
+                "  Source status: "
+                f"{accepted_helper_source_priority_allocator_paper_sleeve.get('error')}"
+            )
+        context = (
+            accepted_helper_source_priority_allocator_paper_sleeve.get(
+                "source_priority_context"
+            )
+            or {}
+        )
+        audit = context.get("priority_audit") or {}
+        coverage = context.get("source_coverage") or {}
+        selected_counts = audit.get("selected_source_counts") or {}
+        source_count_text = ", ".join(
+            f"{source}={count}" for source, count in sorted(selected_counts.items())
+        ) or "none"
+        coverage_text = ", ".join(
+            source
+            for source, row in sorted(coverage.items())
+            if isinstance(row, dict) and row.get("present")
+        ) or "none"
+        lines.append(
+            f"  Source: accepted helper conflict allocator  |  "
+            f"Raw: {accepted_helper_source_priority_allocator_paper_sleeve.get('raw_candidate_count', 0)}  |  "
+            f"Selected sources: {source_count_text}"
+        )
+        lines.append(f"  Daily source coverage: {coverage_text}")
+        lines.append(
+            f"  Candidates: {accepted_helper_source_priority_allocator_paper_sleeve.get('candidate_count', 0)}  |  "
+            f"Rejected: {accepted_helper_source_priority_allocator_paper_sleeve.get('rejected_candidate_count', 0)}  |  "
+            f"Pending: {accepted_helper_source_priority_allocator_paper_sleeve.get('pending_count', 0)}  |  "
+            f"Open: {accepted_helper_source_priority_allocator_paper_sleeve.get('open_position_count', 0)}  |  "
+            f"Closed today: {accepted_helper_source_priority_allocator_paper_sleeve.get('closed_count_today', 0)}"
+        )
+        lines.append(
+            "  Realized paper P&L: "
+            f"${accepted_helper_source_priority_allocator_paper_sleeve.get('realized_pnl_to_date', 0.0):,.2f}  |  "
+            f"Unrealized: ${accepted_helper_source_priority_allocator_paper_sleeve.get('unrealized_pnl', 0.0):,.2f}"
+        )
+        gate = (
+            accepted_helper_source_priority_allocator_paper_sleeve.get(
+                "forward_paper_gate"
+            )
+            or {}
+        )
+        if gate:
+            reasons = gate.get("reasons") or []
+            reason_text = ", ".join(reasons) if reasons else "none"
+            lines.append(
+                f"  Forward gate: {gate.get('status', 'unknown')}  |  "
+                f"closed={gate.get('closed_trade_count', 0)} "
+                f"pnl=${gate.get('net_pnl', 0.0):,.2f}  |  "
+                f"blocked_by={reason_text}"
+            )
+        for candidate in (
+            accepted_helper_source_priority_allocator_paper_sleeve.get("candidates") or []
+        )[:5]:
+            notional = candidate.get("paper_notional_usd") or candidate.get("notional_usd")
+            notional_text = (
+                f"${notional:,.0f}" if isinstance(notional, (int, float)) else "n/a"
+            )
+            lines.append(
+                f"  {candidate.get('ticker', '?')}: "
+                f"source={candidate.get('source_family')} "
+                f"rank={candidate.get('source_priority_rank')} "
                 f"score={candidate.get('candidate_score')} "
                 f"signal={candidate.get('signal_date', candidate.get('date'))} "
                 f"notional={notional_text} (paper only)"

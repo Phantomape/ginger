@@ -874,6 +874,8 @@ Candidate route:
 - Historical replay requires a future 10-trading-day exit row before a target
   trade can be accepted; daily observation may emit same-day pending rows
   without future bars and mutates paper state only on exact `as_of` OHLCV rows.
+- `exp-20260610-005` wires the daily snapshot into `run.py` as an input to the
+  accepted-helper source-priority allocator; this does not enable orders.
 
 Agent rule: this sleeve may collect forward replacement-value evidence for the
 accepted alpha only. It must not enable orders, expand the core universe, alter
@@ -910,6 +912,8 @@ Candidate route:
 - Daily observation must not infer last-trading-day labels from truncated
   OHLCV. Month-end candidates require explicit `calendar_dates` or
   `known_month_end_dates`; otherwise the month-end route fails closed.
+- `exp-20260610-005` wires the daily snapshot into `run.py` as an input to the
+  accepted-helper source-priority allocator; this does not enable orders.
 
 Agent rule: this sleeve may collect forward replacement-value evidence for the
 accepted alpha only. It must not enable orders, expand the core universe, alter
@@ -919,6 +923,35 @@ retune turn-window day counts, relative-strength thresholds, close-location,
 volume, volatility, top-N, hold days, cooldown, or notional on the frozen sample
 without closed forward rows or a materially new point-in-time flow-beneficiary
 data edge.
+
+### `quant/accepted_helper_source_priority_allocator_paper_sleeve.py`
+
+Purpose: maintain the default-off
+`ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER` forward observation ledger for the
+positive accepted-helper conflict-allocation replay lead from `exp-20260610-004`
+and the shared adapter promotion from `exp-20260610-005`.
+
+Candidate route:
+
+- Consumes same-day source snapshots from accepted default-off single-stock
+  helper families: `volatility_relief`, `rolling_peer_shock`, `turn_of_month`,
+  `industry_laggard_repair`, `compression`, and `industry_stable_core_flow`.
+- Uses one fixed ex-ante source priority order and selects at most one paper
+  trade per signal date.
+- Applies a 12-trading-day same-ticker cooldown, fixed `$4,000` paper notional,
+  default-off next-session-open paper entry, 10-trading-day close exit, costs,
+  and the same pending/open/closed state semantics as the accepted helper
+  sleeves.
+- Emits source coverage, priority audit, rejected-candidate reasons,
+  pending/open/closed paper state, forward gate, default-off attribution
+  surface, daily quant artifact, and human-report block.
+
+Agent rule: this allocator may collect forward replacement-value evidence for
+the accepted default-off alpha only. It must not enable orders, expand the core
+universe, alter live ranking, sizing, exits, watchlists, LLM/news prompts, or
+consume capital without a separate Gate 1-4 activation-envelope experiment.
+Do not retune source priority order, top-N, paper notional, hold days, cooldown,
+or underlying helper thresholds on the frozen sample.
 
 ### `quant/ai_optical_paper_sleeve.py`
 
@@ -1399,6 +1432,8 @@ Inputs:
 - `volatility_relief_stock_leadership_paper_sleeve`
 - `rolling_corr_peer_shock_paper_sleeve`
 - `industry_relative_laggard_repair_paper_sleeve`
+- `industry_stable_core_flow_paper_sleeve`
+- `accepted_helper_source_priority_allocator_paper_sleeve`
 - `ai_optical_paper_sleeve`
 - `volume_breadth_breakout_paper_sleeve`
 - `post_earnings_underpriced_drift_paper_sleeve`

@@ -1,0 +1,240 @@
+{
+  "accepted": true,
+  "accepted_alpha": true,
+  "accepted_comparators": {
+    "included_source_priority": {
+      "compression": {
+        "accepted_ev_delta_sum": 0.1608,
+        "accepted_experiment": "exp-20260608-013",
+        "accepted_pnl_delta_sum": 2248.98,
+        "description": "accepted narrow range compression breakout",
+        "rank": 5
+      },
+      "industry_laggard_repair": {
+        "accepted_ev_delta_sum": 0.2763,
+        "accepted_experiment": "exp-20260607-008",
+        "accepted_pnl_delta_sum": 4875.91,
+        "description": "accepted industry relative laggard repair",
+        "rank": 4
+      },
+      "industry_stable_core_flow": {
+        "accepted_ev_delta_sum": 0.1459,
+        "accepted_experiment": "exp-20260608-008",
+        "accepted_pnl_delta_sum": 3523.28,
+        "description": "accepted industry stable core-flow",
+        "rank": 6
+      },
+      "rolling_peer_shock": {
+        "accepted_ev_delta_sum": 0.3845,
+        "accepted_experiment": "exp-20260606-025",
+        "accepted_pnl_delta_sum": 6107.66,
+        "description": "accepted rolling correlation peer shock",
+        "rank": 2
+      },
+      "turn_of_month": {
+        "accepted_ev_delta_sum": 0.2774,
+        "accepted_experiment": "exp-20260609-027",
+        "accepted_pnl_delta_sum": 5287.69,
+        "description": "accepted turn-of-month liquid leadership",
+        "rank": 3
+      },
+      "volatility_relief": {
+        "accepted_ev_delta_sum": 0.5732,
+        "accepted_experiment": "exp-20260607-019",
+        "accepted_pnl_delta_sum": 11934.79,
+        "description": "accepted volatility relief stock leadership",
+        "rank": 1
+      }
+    },
+    "positive_replay_lead": "exp-20260610-004"
+  },
+  "aggregate_expected_value_delta": 0.8971,
+  "aggregate_expected_value_delta_pct": 0.113642,
+  "aggregate_pnl_delta": 14502.52,
+  "aggregate_strategy_total_pnl_delta": 14502.52,
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260610-005/exp_20260610_005_accepted_helper_source_priority_allocator.json",
+  "backtest_protocol": {
+    "REGIME_AWARE_EXIT": true,
+    "candidate_ohlcv_source": "data/experiments/exp-20260519-030/warehouse_main.sqlite",
+    "execution_model": "Shared helper builds accepted source rows, selects one paper trade per signal date by fixed source priority, applies a 12-trading-day same-ticker cooldown, then overlays existing helper next-open/10-day paper trade outcomes.",
+    "replay_llm": false,
+    "replay_news": false,
+    "source": "docs/backtesting.md canonical three-window core replay plus shared accepted-helper source-priority allocator overlay",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "calibration": {
+    "actual_gate4_passed": true,
+    "brier_score": 0.0784,
+    "failure_modes_observed": [],
+    "predicted_success_probability": 0.72
+  },
+  "changed_variable": "shared_accepted_helper_source_priority_allocator_v1",
+  "decision": "accepted_shared_default_off_accepted_helper_source_priority_allocator",
+  "expected_value_score_delta": 0.8971,
+  "experiment_id": "exp-20260610-005",
+  "gate4": {
+    "aggregate_ev_delta": 0.8971,
+    "aggregate_pnl_delta": 14502.52,
+    "decision": "accepted_shared_default_off_accepted_helper_source_priority_allocator",
+    "failed_reasons": [],
+    "max_drawdown_worse": 0.0024,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": true,
+    "replay_lead_reproduction_minimums": {
+      "min_ev_delta": 0.897,
+      "min_pnl_delta": 14500.0,
+      "source_experiment": "exp-20260610-004"
+    },
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.045022,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": true,
+      "positive_pnl_hhi": 0.017164,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 327,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_ev_improved": 3,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 3,
+    "windows_pnl_regressed": 0
+  },
+  "hypothesis": "A fixed source-priority allocator across accepted default-off single-stock helpers can improve replacement value by resolving same-day helper conflicts without adding noisy tickers or changing core trading behavior.",
+  "lane": "alpha_search",
+  "log": "experiments/logs/exp-20260610-005.json",
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "numeric_gate4_passed": true,
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune source priority order, top-N, notional, hold, cooldown, or helper thresholds on the frozen windows.",
+    "new_evidence_required": "Future live activation requires forward closed paper outcomes and a narrow activation-envelope Gate 1-4 run; it should not re-search the alpha.",
+    "why_result_happened": "The alpha worked because it expanded the usable candidate pool across several accepted OHLCV helper sensors while limiting same-day overlap to one ex-ante highest-priority paper risk slot. The shared helper removes the prior replay/daily mismatch risk; the remaining limitation is that it is not live-ready until forward rows mature and a separate activation envelope passes."
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260610-004 already passed all three canonical windows as a private replay lead. This experiment should pass if the shared helper faithfully implements the same fixed source-priority top1 allocator and the daily surface exposes the same default-off policy.",
+    "expected_ev_delta": 0.8971,
+    "expected_pnl_delta": 14502.52,
+    "main_failure_modes": [
+      "shared_helper_drift_from_replay_lead",
+      "daily_source_rows_missing",
+      "window_metric_drift",
+      "parity_test_gap"
+    ],
+    "recorded_at": "2026-06-10T04:35:00+00:00",
+    "success_probability": 0.72
+  },
+  "production_accepted": true,
+  "production_impact": {
+    "adapter_status": "shared_default_off_paper_helper",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": true,
+    "daily_snapshot_exposed": true,
+    "default_off_paper_only": true,
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "live_realistic_execution_envelope": {
+      "daily_entry_slots": 1,
+      "failure_handling": "daily snapshot fail-closed to empty snapshot with error reason",
+      "hold_days": 10,
+      "kill_switch": "trade_enabled remains false; helper can be removed from run.py/default-off report",
+      "liquidity_source": "accepted helper rows already require liquid OHLCV universes",
+      "max_active_positions": 8,
+      "order_semantics": "observe-only next-session-open paper entry; no broker order",
+      "portfolio_displacement": "none until a separate activation-envelope experiment",
+      "same_ticker_cooldown_days": 12,
+      "target_notional_per_paper_trade": 4000.0,
+      "trade_enabled": false
+    },
+    "parity_test_added": true,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": true,
+    "trade_enabled": false,
+    "uses_free_ohlcv_only": true,
+    "uses_llm": false
+  },
+  "shared_adapter_required": false,
+  "status": "accepted",
+  "strategy_total_pnl_delta": 14502.52,
+  "timestamp": "2026-06-10T04:30:28Z",
+  "total_pnl_delta": 14502.52,
+  "trial_family": "accepted_default_off_helper_source_priority_allocation",
+  "trial_variant_id": "shared_accepted_helper_source_priority_allocator_v1",
+  "windows": [
+    {
+      "expected_value_after": 5.6078,
+      "expected_value_before": 5.1628,
+      "expected_value_delta": 0.445,
+      "label": "late_strong",
+      "selected_source_counts": {
+        "industry_laggard_repair": 75,
+        "rolling_peer_shock": 13,
+        "turn_of_month": 16
+      },
+      "source_trade_count": 159,
+      "strategy_total_pnl_delta": 4308.44,
+      "target_trade_count": 104
+    },
+    {
+      "expected_value_after": 2.4638,
+      "expected_value_before": 2.1402,
+      "expected_value_delta": 0.3236,
+      "label": "mid_weak",
+      "selected_source_counts": {
+        "compression": 3,
+        "industry_laggard_repair": 71,
+        "rolling_peer_shock": 18,
+        "turn_of_month": 19
+      },
+      "source_trade_count": 183,
+      "strategy_total_pnl_delta": 5979.77,
+      "target_trade_count": 111
+    },
+    {
+      "expected_value_after": 0.7196,
+      "expected_value_before": 0.5911,
+      "expected_value_delta": 0.1285,
+      "label": "old_thin",
+      "selected_source_counts": {
+        "industry_laggard_repair": 72,
+        "rolling_peer_shock": 17,
+        "turn_of_month": 23
+      },
+      "source_trade_count": 176,
+      "strategy_total_pnl_delta": 4214.31,
+      "target_trade_count": 112
+    }
+  ]
+}

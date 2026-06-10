@@ -226,6 +226,7 @@ def build_default_off_alpha_attribution_report(
     rolling_corr_peer_shock_paper_sleeve: dict[str, Any] | None = None,
     industry_relative_laggard_repair_paper_sleeve: dict[str, Any] | None = None,
     industry_stable_core_flow_paper_sleeve: dict[str, Any] | None = None,
+    accepted_helper_source_priority_allocator_paper_sleeve: dict[str, Any] | None = None,
     ai_optical_paper_sleeve: dict[str, Any] | None = None,
     volatility_contraction_paper_sleeve: dict[str, Any] | None = None,
     volume_breadth_breakout_paper_sleeve: dict[str, Any] | None = None,
@@ -465,6 +466,54 @@ def build_default_off_alpha_attribution_report(
                         (industry_stable_core_flow_paper_sleeve or {}).get(
                             "production_impact"
                         )
+                        or {}
+                    ).get("uses_free_ohlcv_only")
+                ),
+            },
+        ),
+        _surface_summary(
+            name="accepted_helper_source_priority_allocator",
+            label="ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER",
+            snapshot=accepted_helper_source_priority_allocator_paper_sleeve,
+            extra_metrics={
+                "rule_version": (
+                    (accepted_helper_source_priority_allocator_paper_sleeve or {}).get(
+                        "rule_version"
+                    )
+                ),
+                "source_rule_version": (
+                    (accepted_helper_source_priority_allocator_paper_sleeve or {}).get(
+                        "source_rule_version"
+                    )
+                ),
+                "raw_candidate_count": (
+                    (accepted_helper_source_priority_allocator_paper_sleeve or {}).get(
+                        "raw_candidate_count"
+                    )
+                ),
+                "selected_source_counts": (
+                    (
+                        (
+                            accepted_helper_source_priority_allocator_paper_sleeve or {}
+                        ).get("source_priority_context")
+                        or {}
+                    )
+                    .get("priority_audit", {})
+                    .get("selected_source_counts")
+                ),
+                "source_coverage": (
+                    (
+                        (
+                            accepted_helper_source_priority_allocator_paper_sleeve or {}
+                        ).get("source_priority_context")
+                        or {}
+                    ).get("source_coverage")
+                ),
+                "uses_free_ohlcv_only": (
+                    (
+                        (
+                            accepted_helper_source_priority_allocator_paper_sleeve or {}
+                        ).get("production_impact")
                         or {}
                     ).get("uses_free_ohlcv_only")
                 ),

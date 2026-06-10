@@ -1,0 +1,151 @@
+from __future__ import annotations
+
+from datetime import date, timedelta
+
+from quant.accepted_helper_source_priority_allocator_paper_sleeve import (
+    RULE_VERSION,
+    SOURCE_RULE_VERSION,
+    build_accepted_helper_source_priority_allocator_snapshot,
+    empty_accepted_helper_source_priority_allocator_state,
+    select_accepted_helper_source_priority_rows,
+)
+
+
+def _business_dates(days: int) -> list[str]:
+    current = date(2026, 1, 5)
+    out: list[str] = []
+    while len(out) < days:
+        if current.weekday() < 5:
+            out.append(current.isoformat())
+        current += timedelta(days=1)
+    return out
+
+
+def _ohlcv(days: int = 20) -> dict[str, list[dict]]:
+    dates = _business_dates(days)
+    payload: dict[str, list[dict]] = {}
+    for ticker, base in {"SPY": 100.0, "TOP": 80.0, "ALT": 75.0}.items():
+        rows = []
+        close = base
+        for idx, day in enumerate(dates):
+            open_ = close
+            close = open_ * (1.0 + 0.001 + idx * 0.0001)
+            rows.append(
+                {
+                    "date": day,
+                    "open": round(open_, 4),
+                    "high": round(close * 1.01, 4),
+                    "low": round(open_ * 0.99, 4),
+                    "close": round(close, 4),
+                    "volume": 1_000_000,
+                }
+            )
+        payload[ticker] = rows
+    return payload
+
+
+def test_selects_fixed_source_priority_top1_per_day() -> None:
+    trading_dates = _business_dates(5)
+    signal_date = trading_dates[1]
+
+    selected, rejected, audit = select_accepted_helper_source_priority_rows(
+        source_rows=[
+            {
+                "ticker": "ALT",
+                "date": signal_date,
+                "source_family": "rolling_peer_shock",
+                "candidate_score": 999.0,
+            },
+            {
+                "ticker": "TOP",
+                "date": signal_date,
+                "source_family": "volatility_relief",
+                "candidate_score": 1.0,
+            },
+        ],
+        trading_dates=trading_dates,
+        create_trades=False,
+    )
+
+    assert [row["ticker"] for row in selected] == ["TOP"]
+    assert selected[0]["source_family"] == "volatility_relief"
+    assert selected[0]["rule_version"] == RULE_VERSION
+    assert selected[0]["source_rule_version"] == SOURCE_RULE_VERSION
+    assert selected[0]["trade_enabled"] is False
+    assert rejected[0]["filter_reason"] == "daily_top1_source_priority_limit"
+    assert audit["selected_source_counts"] == {"volatility_relief": 1}
+
+
+def test_same_ticker_cooldown_blocks_nearby_repeat() -> None:
+    trading_dates = _business_dates(15)
+
+    selected, rejected, audit = select_accepted_helper_source_priority_rows(
+        source_rows=[
+            {
+                "ticker": "TOP",
+                "date": trading_dates[1],
+                "source_family": "volatility_relief",
+                "candidate_score": 1.0,
+            },
+            {
+                "ticker": "TOP",
+                "date": trading_dates[8],
+                "source_family": "volatility_relief",
+                "candidate_score": 2.0,
+            },
+        ],
+        trading_dates=trading_dates,
+        create_trades=False,
+    )
+
+    assert [row["signal_date"] for row in selected] == [trading_dates[1]]
+    assert rejected[0]["filter_reason"] == "same_ticker_cooldown"
+    assert audit["filtered_priority_candidate_count"] == 1
+
+
+def test_daily_snapshot_creates_default_off_pending_from_source_snapshots() -> None:
+    ohlcv = _ohlcv()
+    signal_date = ohlcv["SPY"][5]["date"]
+
+    snapshot = build_accepted_helper_source_priority_allocator_snapshot(
+        as_of=signal_date,
+        source_snapshots={
+            "rolling_peer_shock": {
+                "candidate_count": 1,
+                "candidates": [
+                    {
+                        "ticker": "ALT",
+                        "date": signal_date,
+                        "source_family": "rolling_peer_shock",
+                        "candidate_score": 999.0,
+                    }
+                ],
+            },
+            "volatility_relief": {
+                "candidate_count": 1,
+                "candidates": [
+                    {
+                        "ticker": "TOP",
+                        "date": signal_date,
+                        "source_family": "volatility_relief",
+                        "candidate_score": 1.0,
+                    }
+                ],
+            },
+        },
+        ohlcv_by_ticker=ohlcv,
+        state=empty_accepted_helper_source_priority_allocator_state(),
+        persist=False,
+    )
+
+    assert snapshot["candidate_count"] == 1
+    assert snapshot["new_pending_count"] == 1
+    assert snapshot["pending_count"] == 1
+    assert snapshot["trade_enabled"] is False
+    assert snapshot["production_impact"]["alters_orders"] is False
+    candidate = snapshot["candidates"][0]
+    assert candidate["ticker"] == "TOP"
+    assert candidate["source_family"] == "volatility_relief"
+    assert snapshot["source_priority_context"]["priority_audit"][
+        "selected_source_counts"
+    ] == {"volatility_relief": 1}

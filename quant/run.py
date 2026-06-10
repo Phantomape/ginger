@@ -320,6 +320,18 @@ def main():
         build_industry_stable_core_flow_snapshot,
         empty_industry_stable_core_flow_snapshot,
     )
+    from turn_of_month_liquid_leadership_paper_sleeve import (
+        build_turn_of_month_liquid_leadership_snapshot,
+        empty_turn_of_month_liquid_leadership_snapshot,
+    )
+    from narrow_range_compression_breakout_paper_sleeve import (
+        build_narrow_range_compression_breakout_snapshot,
+        empty_narrow_range_compression_breakout_snapshot,
+    )
+    from accepted_helper_source_priority_allocator_paper_sleeve import (
+        build_accepted_helper_source_priority_allocator_snapshot,
+        empty_accepted_helper_source_priority_allocator_snapshot,
+    )
     from ai_optical_paper_sleeve import (
         build_ai_optical_candidate_universe_from_universe_state,
         build_ai_optical_paper_sleeve_snapshot,
@@ -2953,6 +2965,130 @@ def main():
         )
 
     try:
+        if not broad_market_candidate_universe.get("tickers"):
+            turn_of_month_liquid_leadership_paper_sleeve = (
+                empty_turn_of_month_liquid_leadership_snapshot(
+                    today_iso,
+                    "broad_market_candidate_universe_unavailable",
+                )
+            )
+        else:
+            turn_of_month_ohlcv = dict(broad_market_ohlcv)
+            if "SPY" not in turn_of_month_ohlcv and spy_ohlcv is not None:
+                turn_of_month_ohlcv["SPY"] = spy_ohlcv
+            turn_of_month_liquid_leadership_paper_sleeve = (
+                build_turn_of_month_liquid_leadership_snapshot(
+                    as_of=today_iso,
+                    ohlcv_by_ticker=turn_of_month_ohlcv,
+                    candidate_universe=broad_market_candidate_universe,
+                    core_entries=signals,
+                )
+            )
+        if (
+            turn_of_month_liquid_leadership_paper_sleeve.get("candidate_count", 0) > 0
+            or turn_of_month_liquid_leadership_paper_sleeve.get("pending_count", 0) > 0
+            or turn_of_month_liquid_leadership_paper_sleeve.get("open_position_count", 0) > 0
+            or turn_of_month_liquid_leadership_paper_sleeve.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "Turn-of-month liquid leadership paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
+                turn_of_month_liquid_leadership_paper_sleeve.get("candidate_count", 0),
+                turn_of_month_liquid_leadership_paper_sleeve.get("pending_count", 0),
+                turn_of_month_liquid_leadership_paper_sleeve.get("open_position_count", 0),
+                turn_of_month_liquid_leadership_paper_sleeve.get("closed_count_today", 0),
+                turn_of_month_liquid_leadership_paper_sleeve.get("realized_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"Turn-of-month liquid leadership paper sleeve unavailable: {e}")
+        turn_of_month_liquid_leadership_paper_sleeve = (
+            empty_turn_of_month_liquid_leadership_snapshot(
+                today_iso,
+                "turn_of_month_liquid_leadership_paper_sleeve_build_failed",
+            )
+        )
+
+    try:
+        if not broad_market_candidate_universe.get("tickers"):
+            narrow_range_compression_breakout_paper_sleeve = (
+                empty_narrow_range_compression_breakout_snapshot(
+                    today_iso,
+                    "broad_market_candidate_universe_unavailable",
+                )
+            )
+        else:
+            compression_ohlcv = dict(broad_market_ohlcv)
+            if "SPY" not in compression_ohlcv and spy_ohlcv is not None:
+                compression_ohlcv["SPY"] = spy_ohlcv
+            narrow_range_compression_breakout_paper_sleeve = (
+                build_narrow_range_compression_breakout_snapshot(
+                    as_of=today_iso,
+                    ohlcv_by_ticker=compression_ohlcv,
+                    candidate_universe=broad_market_candidate_universe,
+                    core_entries=signals,
+                )
+            )
+        if (
+            narrow_range_compression_breakout_paper_sleeve.get("candidate_count", 0) > 0
+            or narrow_range_compression_breakout_paper_sleeve.get("pending_count", 0) > 0
+            or narrow_range_compression_breakout_paper_sleeve.get("open_position_count", 0) > 0
+            or narrow_range_compression_breakout_paper_sleeve.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "Narrow-range compression breakout paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
+                narrow_range_compression_breakout_paper_sleeve.get("candidate_count", 0),
+                narrow_range_compression_breakout_paper_sleeve.get("pending_count", 0),
+                narrow_range_compression_breakout_paper_sleeve.get("open_position_count", 0),
+                narrow_range_compression_breakout_paper_sleeve.get("closed_count_today", 0),
+                narrow_range_compression_breakout_paper_sleeve.get("realized_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"Narrow-range compression breakout paper sleeve unavailable: {e}")
+        narrow_range_compression_breakout_paper_sleeve = (
+            empty_narrow_range_compression_breakout_snapshot(
+                today_iso,
+                "narrow_range_compression_breakout_paper_sleeve_build_failed",
+            )
+        )
+
+    try:
+        accepted_helper_source_priority_allocator_paper_sleeve = (
+            build_accepted_helper_source_priority_allocator_snapshot(
+                as_of=today_iso,
+                source_snapshots={
+                    "volatility_relief": volatility_relief_stock_leadership_paper_sleeve,
+                    "rolling_peer_shock": rolling_corr_peer_shock_paper_sleeve,
+                    "turn_of_month": turn_of_month_liquid_leadership_paper_sleeve,
+                    "industry_laggard_repair": industry_relative_laggard_repair_paper_sleeve,
+                    "compression": narrow_range_compression_breakout_paper_sleeve,
+                    "industry_stable_core_flow": industry_stable_core_flow_paper_sleeve,
+                },
+                ohlcv_by_ticker=broad_market_ohlcv,
+            )
+        )
+        if (
+            accepted_helper_source_priority_allocator_paper_sleeve.get("candidate_count", 0) > 0
+            or accepted_helper_source_priority_allocator_paper_sleeve.get("pending_count", 0) > 0
+            or accepted_helper_source_priority_allocator_paper_sleeve.get("open_position_count", 0) > 0
+            or accepted_helper_source_priority_allocator_paper_sleeve.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "Accepted-helper source-priority allocator paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
+                accepted_helper_source_priority_allocator_paper_sleeve.get("candidate_count", 0),
+                accepted_helper_source_priority_allocator_paper_sleeve.get("pending_count", 0),
+                accepted_helper_source_priority_allocator_paper_sleeve.get("open_position_count", 0),
+                accepted_helper_source_priority_allocator_paper_sleeve.get("closed_count_today", 0),
+                accepted_helper_source_priority_allocator_paper_sleeve.get("realized_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"Accepted-helper source-priority allocator paper sleeve unavailable: {e}")
+        accepted_helper_source_priority_allocator_paper_sleeve = (
+            empty_accepted_helper_source_priority_allocator_snapshot(
+                today_iso,
+                "accepted_helper_source_priority_allocator_paper_sleeve_build_failed",
+            )
+        )
+
+    try:
         crypto_sleeve = build_crypto_sleeve_advice(load_crypto_config())
         if crypto_sleeve.get("enabled"):
             crypto_action = crypto_sleeve.get("action", {}).get("action")
@@ -2994,6 +3130,7 @@ def main():
         rolling_corr_peer_shock_paper_sleeve=rolling_corr_peer_shock_paper_sleeve,
         industry_relative_laggard_repair_paper_sleeve=industry_relative_laggard_repair_paper_sleeve,
         industry_stable_core_flow_paper_sleeve=industry_stable_core_flow_paper_sleeve,
+        accepted_helper_source_priority_allocator_paper_sleeve=accepted_helper_source_priority_allocator_paper_sleeve,
         ai_optical_paper_sleeve=ai_optical_paper_sleeve,
         volatility_contraction_paper_sleeve=volatility_contraction_paper_sleeve,
         volume_breadth_breakout_paper_sleeve=volume_breadth_breakout_paper_sleeve,
@@ -3043,6 +3180,9 @@ def main():
     trend_signals_dict["rolling_corr_peer_shock_paper_sleeve"] = rolling_corr_peer_shock_paper_sleeve
     trend_signals_dict["industry_relative_laggard_repair_paper_sleeve"] = industry_relative_laggard_repair_paper_sleeve
     trend_signals_dict["industry_stable_core_flow_paper_sleeve"] = industry_stable_core_flow_paper_sleeve
+    trend_signals_dict["turn_of_month_liquid_leadership_paper_sleeve"] = turn_of_month_liquid_leadership_paper_sleeve
+    trend_signals_dict["narrow_range_compression_breakout_paper_sleeve"] = narrow_range_compression_breakout_paper_sleeve
+    trend_signals_dict["accepted_helper_source_priority_allocator_paper_sleeve"] = accepted_helper_source_priority_allocator_paper_sleeve
     trend_signals_dict["ai_optical_paper_sleeve"] = ai_optical_paper_sleeve
     trend_signals_dict["volatility_contraction_paper_sleeve"] = volatility_contraction_paper_sleeve
     trend_signals_dict["volume_breadth_breakout_paper_sleeve"] = volume_breadth_breakout_paper_sleeve
@@ -3100,6 +3240,7 @@ def main():
         rolling_corr_peer_shock_paper_sleeve = rolling_corr_peer_shock_paper_sleeve,
         industry_relative_laggard_repair_paper_sleeve = industry_relative_laggard_repair_paper_sleeve,
         industry_stable_core_flow_paper_sleeve = industry_stable_core_flow_paper_sleeve,
+        accepted_helper_source_priority_allocator_paper_sleeve = accepted_helper_source_priority_allocator_paper_sleeve,
         ai_optical_paper_sleeve = ai_optical_paper_sleeve,
         volatility_contraction_paper_sleeve = volatility_contraction_paper_sleeve,
         volume_breadth_breakout_paper_sleeve = volume_breadth_breakout_paper_sleeve,
@@ -3162,6 +3303,9 @@ def main():
         "rolling_corr_peer_shock_paper_sleeve": rolling_corr_peer_shock_paper_sleeve,
         "industry_relative_laggard_repair_paper_sleeve": industry_relative_laggard_repair_paper_sleeve,
         "industry_stable_core_flow_paper_sleeve": industry_stable_core_flow_paper_sleeve,
+        "turn_of_month_liquid_leadership_paper_sleeve": turn_of_month_liquid_leadership_paper_sleeve,
+        "narrow_range_compression_breakout_paper_sleeve": narrow_range_compression_breakout_paper_sleeve,
+        "accepted_helper_source_priority_allocator_paper_sleeve": accepted_helper_source_priority_allocator_paper_sleeve,
         "ai_optical_paper_sleeve": ai_optical_paper_sleeve,
         "volatility_contraction_paper_sleeve": volatility_contraction_paper_sleeve,
         "volume_breadth_breakout_paper_sleeve": volume_breadth_breakout_paper_sleeve,

@@ -95,6 +95,29 @@ def test_default_off_alpha_attribution_rolls_up_blockers_without_orders():
                 "reasons": ["not_enough_closed_forward_paper_trades"],
             },
         },
+        accepted_helper_source_priority_allocator_paper_sleeve={
+            "candidate_count": 1,
+            "raw_candidate_count": 3,
+            "pending_count": 1,
+            "trade_enabled": False,
+            "rule_version": "accepted_helper_source_priority_shared_default_off_allocator_v1",
+            "source_rule_version": "accepted_helper_source_priority_top1_allocation_v1",
+            "source_priority_context": {
+                "priority_audit": {
+                    "selected_source_counts": {"volatility_relief": 1},
+                },
+                "source_coverage": {
+                    "volatility_relief": {"present": True},
+                    "rolling_peer_shock": {"present": True},
+                },
+            },
+            "production_impact": {"uses_free_ohlcv_only": True},
+            "forward_paper_gate": {
+                "passed": False,
+                "status": "blocked",
+                "reasons": ["not_enough_closed_forward_paper_trades"],
+            },
+        },
     )
 
     assert report["read_only"] is True
@@ -111,12 +134,22 @@ def test_default_off_alpha_attribution_rolls_up_blockers_without_orders():
     stable_surface = next(
         row for row in report["surfaces"] if row["name"] == "industry_stable_core_flow"
     )
+    allocator_surface = next(
+        row
+        for row in report["surfaces"]
+        if row["name"] == "accepted_helper_source_priority_allocator"
+    )
     assert rolling_surface["trade_enabled"] is False
     assert rolling_surface["extra_metrics"]["same_day_core_flow_required"] is True
     assert rolling_surface["extra_metrics"]["uses_free_ohlcv_only"] is True
     assert stable_surface["trade_enabled"] is False
     assert stable_surface["extra_metrics"]["core_flow_confirmed_dates"] == 1
     assert stable_surface["extra_metrics"]["uses_free_ohlcv_only"] is True
+    assert allocator_surface["trade_enabled"] is False
+    assert allocator_surface["extra_metrics"]["selected_source_counts"] == {
+        "volatility_relief": 1,
+    }
+    assert allocator_surface["extra_metrics"]["uses_free_ohlcv_only"] is True
     top_reasons = {row["reason"] for row in report["top_blockers"]}
     assert "closed_pilot_outcomes" in top_reasons
     assert "min_closed_trades" in top_reasons
@@ -212,6 +245,37 @@ def test_report_generator_renders_default_off_alpha_attribution():
                 }
             ],
         },
+        accepted_helper_source_priority_allocator_paper_sleeve={
+            "candidate_count": 1,
+            "raw_candidate_count": 2,
+            "pending_count": 1,
+            "trade_enabled": False,
+            "paper_enabled": True,
+            "source_priority_context": {
+                "priority_audit": {
+                    "selected_source_counts": {"volatility_relief": 1},
+                },
+                "source_coverage": {
+                    "volatility_relief": {"present": True},
+                    "rolling_peer_shock": {"present": True},
+                },
+            },
+            "forward_paper_gate": {
+                "passed": False,
+                "status": "blocked",
+                "reasons": ["not_enough_closed_forward_paper_trades"],
+            },
+            "candidates": [
+                {
+                    "ticker": "TOP",
+                    "source_family": "volatility_relief",
+                    "source_priority_rank": 1,
+                    "candidate_score": 1001.2,
+                    "date": "2026-05-24",
+                    "paper_notional_usd": 4000.0,
+                }
+            ],
+        },
     )
 
     report = generate_daily_report(
@@ -288,6 +352,37 @@ def test_report_generator_renders_default_off_alpha_attribution():
                 }
             ],
         },
+        accepted_helper_source_priority_allocator_paper_sleeve={
+            "candidate_count": 1,
+            "raw_candidate_count": 2,
+            "pending_count": 1,
+            "trade_enabled": False,
+            "paper_enabled": True,
+            "source_priority_context": {
+                "priority_audit": {
+                    "selected_source_counts": {"volatility_relief": 1},
+                },
+                "source_coverage": {
+                    "volatility_relief": {"present": True},
+                    "rolling_peer_shock": {"present": True},
+                },
+            },
+            "forward_paper_gate": {
+                "passed": False,
+                "status": "blocked",
+                "reasons": ["not_enough_closed_forward_paper_trades"],
+            },
+            "candidates": [
+                {
+                    "ticker": "TOP",
+                    "source_family": "volatility_relief",
+                    "source_priority_rank": 1,
+                    "candidate_score": 1001.2,
+                    "date": "2026-05-24",
+                    "paper_notional_usd": 4000.0,
+                }
+            ],
+        },
     )
 
     assert "DEFAULT-OFF ALPHA ATTRIBUTION" in report
@@ -302,3 +397,6 @@ def test_report_generator_renders_default_off_alpha_attribution():
     assert "INDUSTRY STABLE CORE-FLOW PAPER SLEEVE" in report
     assert "Core-flow dates: 1" in report
     assert "group=technology/software" in report
+    assert "ACCEPTED HELPER SOURCE-PRIORITY ALLOCATOR PAPER SLEEVE" in report
+    assert "Selected sources: volatility_relief=1" in report
+    assert "source=volatility_relief" in report

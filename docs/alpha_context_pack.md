@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1119`
-- Raw records loaded by meta report: `1527`
-- History fingerprint: `f314049df358e471`
+- Strategy records counted: `1123`
+- Raw records loaded by meta report: `1665`
+- History fingerprint: `9e594839397563ea`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -34,20 +34,19 @@ facts before changing strategy behavior.
   Reason: 1/7 records have sample >= 10; 7/7 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive...
 - `default_off_paper_shared_adapter` priority `0.7477`: experiments `3`, accept `100.00%`, sum EV `+0.7145`, sum PnL `$13,745.66`.
   Reason: 3/3 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; still has ro...
+- `default_off_shared_paper_adapter` priority `0.7476`: experiments `3`, accept `100.00%`, sum EV `+0.3659`, sum PnL `$5,956.53`.
+  Reason: 3/3 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; still has ro...
 - `paper_notional_support_scout` priority `0.7009`: experiments `3`, accept `66.67%`, sum EV `+0.0804`, sum PnL `$1,393.64`.
   Reason: 3/3 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
-- `pilot_or_sleeve` priority `0.6322`: experiments `162`, accept `25.93%`, sum EV `+65.9978`, sum PnL `$1,141,068.75`.
-  Reason: 161/162 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually changes sizing/allocation rather than...
+- `pilot_or_sleeve` priority `0.6282`: experiments `172`, accept `24.42%`, sum EV `+66.9867`, sum PnL `$1,158,973.41`.
+  Reason: 170/172 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually changes sizing/allocation rather than...
   Guardrail: heavily explored family; diminishing-return risk; many prior rejections in this family
-- `slot_or_ranking` priority `0.5687`: experiments `115`, accept `26.96%`, sum EV `+27.0021`, sum PnL `$475,621.54`.
-  Reason: 1/115 records have sample >= 10; 112/115 records show multi-window evidence; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
+- `slot_or_ranking` priority `0.5727`: experiments `123`, accept `27.64%`, sum EV `+28.7963`, sum PnL `$504,626.58`.
+  Reason: 1/123 records have sample >= 10; 120/123 records show multi-window evidence; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
   Guardrail: average drawdown delta worsens; can change survival, trade count, or exit distribution broadly; heavily explored family; diminishing-return risk; many prior rejections in this family
 - `default_off_paper_allocation` priority `0.5641`: experiments `12`, accept `33.33%`, sum EV `+0.0285`, sum PnL `$456.30`.
   Reason: 12/12 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs
   Guardrail: heavily explored family; diminishing-return risk
-- `fundamental_growth_rs_default_off_candidate_pool` priority `0.5443`: experiments `1`, accept `0.00%`, sum EV `+5.2015`, sum PnL `$92,488.83`.
-  Reason: 1/1 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
-  Guardrail: many prior rejections in this family
 
 ## Frozen Or High-Risk Near Neighbors
 
@@ -63,14 +62,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260609-016` `rejected_gap_hold_core_flow_confirmed_candidate_pool`: EV `+0.3278`, PnL `$6,000.13`, family `production_visible_free_ohlcv_candidate_pool`, trial `gap_hold_core_flow_confirmed_candidate_pool`.
-  Lesson: Same-day core-flow admission can reduce bad market states, but it may also remove the few independent gap-hold winners and leave a sample that cannot beat the accepted compression and relation adapters after next-open...
-- `exp-20260609-017` `rejected_revision_surprise_lagged_consensus_did_not_beat_accepted_lagged_comparator`: EV `-0.0799`, PnL `$-1,763.35`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_new_independent_source_family`.
-  Lesson: The variant did not beat the current accepted lagged consensus comparator across all three canonical windows.
-- `exp-20260609-018` `rejected_industry_pullback_reclaim_candidate_pool`: EV `-0.0568`, PnL `$-2,726.00`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_pullback_reclaim_candidate_pool`.
-  Lesson: The fixed SMA50 pullback/reclaim source failed Gate 4 or did not beat accepted relation comparators. The mechanism likely collapses into a familiar laggard-repair/value-trap pattern: a moving-average reclaim inside a...
-- `exp-20260609-019` `rejected_industry_breadth_acceleration_leader_candidate_pool`: EV `+0.3669`, PnL `$9,509.62`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_breadth_acceleration_leader_candidate_pool`.
-  Lesson: The candidate earned most of its aggregate gain in mid_weak while late_strong and old_thin both lost EV/PnL, so the breadth field looks regime-fragile rather than a stable replacement-value source. Its drawdown drift...
 - `exp-20260609-020` `rejected_ftd_finra_no_core_flow`: EV `+0.0000`, PnL `$0.00`, family `free_sec_settlement_plus_borrow_pressure_displacement`, trial `sec_ftd_finra_no_core_flow_candidate_pool`.
   Lesson: The no-core-flow displacement field did not beat the accepted FTD+FINRA comparator. The likely failure is that same-day core-flow presence is not a reliable crowding proxy here; excluding those dates removes some vali...
 - `exp-20260609-022` `rejected_vixy_vixm_term_relief_leadership_candidate_pool`: EV `+0.4168`, PnL `$6,257.05`, family `production_visible_free_ohlcv_cross_asset_candidate_pool`, trial `volatility_term_structure_relief_candidate_pool`.
@@ -87,6 +78,14 @@ facts before changing strategy behavior.
   Lesson: The shared helper reproduced the private replay lead because it kept the exact calendar window, liquid sector-known universe, SPY-relative leadership, close/volume/volatility guards, same-ticker selected-core overlap...
 - `exp-20260610-001` `rejected_opex_week_liquid_leadership_candidate_pool`: EV `+0.0793`, PnL `$1,809.25`, family `production_visible_free_calendar_ohlcv_candidate_pool`, trial `opex_week_liquid_leadership_candidate_pool`.
   Lesson: The OPEX-week liquid leadership bundle failed Gate 4. The result implies expiry-week timing did not add enough distinct edge beyond liquid momentum and the accepted turn-of-month calendar route after next-open executi...
+- `exp-20260610-002` `rejected_quarter_end_preclose_liquid_leadership_candidate_pool`: EV `+0.1534`, PnL `$2,420.83`, family `production_visible_free_calendar_ohlcv_candidate_pool`, trial `quarter_end_preclose_liquid_leadership_candidate_pool`.
+  Lesson: The quarter-end pre-close liquid leadership bundle failed Gate 4. The result implies quarter-end pre-close timing did not add enough distinct edge beyond liquid momentum and the accepted turn-of-month route after next...
+- `exp-20260610-003` `rejected_industry_leadership_dispersion_candidate_pool`: EV `-0.4171`, PnL `$-6,715.71`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_leadership_dispersion_candidate_pool`.
+  Lesson: Single-leader industry dispersion must separate sponsorship from ordinary momentum. If it fails, the selected rows are likely too extended, too regime-sensitive, or already covered better by the accepted laggard-repai...
+- `exp-20260610-004` `positive_replay_lead_not_promoted_accepted_helper_source_priority_allocation`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
+  Lesson: The source-priority allocator added enough replacement value over the strongest included helper to justify a shared-helper parity follow-up. Its value likely came from avoiding same-day overlapping helper exposure whi...
+- `exp-20260610-005` `accepted_shared_default_off_accepted_helper_source_priority_allocator`: EV `+0.8971`, PnL `$14,502.52`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
+  Lesson: The alpha worked because it expanded the usable candidate pool across several accepted OHLCV helper sensors while limiting same-day overlap to one ex-ante highest-priority paper risk slot. The shared helper removes th...
 
 ## Highest-Signal Historical Records
 
@@ -119,10 +118,10 @@ facts before changing strategy behavior.
 - [`slot_or_ranking`](lessons/slot-or-ranking.md)
 - [`event_or_llm`](lessons/event-or-llm.md)
 - [`exit_policy`](lessons/exit-policy.md)
-- [`production_visible_free_ohlcv_relation_alpha`](lessons/production-visible-free-ohlcv-relation-alpha.md)
 - [`default_off_paper_adapter`](lessons/default-off-paper-adapter.md)
+- [`production_visible_free_ohlcv_relation_alpha`](lessons/production-visible-free-ohlcv-relation-alpha.md)
 
 ## Line Budget
 
 - Target maximum lines: `420`
-- Actual lines when generated: `128`
+- Actual lines when generated: `127`

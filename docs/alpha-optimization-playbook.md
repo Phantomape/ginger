@@ -477,6 +477,47 @@ Do not retune turn-window day counts, ret20/ret60 leadership thresholds,
 close-location, volume, volatility, top-N, hold-day, cooldown, or notional
 thresholds on the frozen sample.
 
+### Accepted-Helper Source-Priority Allocator
+
+This is a free-OHLCV capital-allocation/candidate-pool conflict policy. The
+edge is not another helper threshold; it is treating accepted helper families as
+competing sensors and keeping the highest-priority same-day paper row.
+
+Accepted shared adapter: `exp-20260610-005`, promoting the positive replay lead
+from `exp-20260610-004`.
+
+Mechanism:
+
+- source priority: `volatility_relief`, `rolling_peer_shock`, `turn_of_month`,
+  `industry_laggard_repair`, `compression`, `industry_stable_core_flow`;
+- lifecycle: top-1 selected source row per signal date, fixed `$4,000` paper
+  notional, 12-trading-day same-ticker cooldown, underlying helper
+  next-open/10-trading-day paper outcome semantics, costs included;
+- status: shared default-off paper only, no live orders.
+
+Evidence:
+
+- aggregate EV `+0.8971`;
+- PnL `+$14,502.52`;
+- all three canonical windows improved;
+- target paper trades: `327`;
+- max drawdown drift `+0.0024`, within the `0.005` guard;
+- concentration passed (`max_single_positive_pnl_share=0.045022`,
+  `positive_pnl_hhi=0.017164`);
+- shared helper reproduced the replay lead and daily run exposes the same
+  default-off source-priority surface.
+
+Next valid work:
+
+- collect closed forward replacement-value rows from the shared allocator;
+- before live deployment, run a separate activation-envelope Gate 1-4 with
+  notional/cap/liquidity/slippage/displacement/kill switch/order semantics;
+- prefer a materially new independent data edge over another helper-order or
+  threshold search.
+
+Do not retune source priority order, source top-N, paper notional, hold-day,
+cooldown, or underlying accepted helper thresholds on the frozen sample.
+
 ### Lagged Independent Free-Data Consensus
 
 The accepted consensus route is that a current accepted-source paper candidate
