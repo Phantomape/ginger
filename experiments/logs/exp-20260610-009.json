@@ -1,0 +1,470 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_comparators": {
+    "accepted_allocator": {
+      "aggregate_ev_delta": 0.8971,
+      "aggregate_pnl_delta": 14502.52,
+      "experiment_id": "exp-20260610-005",
+      "window_deltas": {
+        "late_strong": {
+          "ev": 0.445,
+          "pnl": 4308.44
+        },
+        "mid_weak": {
+          "ev": 0.3236,
+          "pnl": 5979.77
+        },
+        "old_thin": {
+          "ev": 0.1285,
+          "pnl": 4214.31
+        }
+      }
+    },
+    "fiftytwo_week_high_standalone": {
+      "aggregate_ev_delta": 0.4308,
+      "aggregate_pnl_delta": 9295.34,
+      "experiment_id": "exp-20260610-008"
+    },
+    "included_source_priority": {
+      "compression": {
+        "accepted_ev_delta_sum": 0.1608,
+        "accepted_experiment": "exp-20260608-013",
+        "accepted_pnl_delta_sum": 2248.98,
+        "description": "accepted narrow range compression breakout",
+        "rank": 6
+      },
+      "fiftytwo_week_high_proximity": {
+        "accepted_ev_delta_sum": 0.4308,
+        "accepted_experiment": "exp-20260610-008",
+        "accepted_pnl_delta_sum": 9295.34,
+        "description": "accepted 52-week-high proximity core-flow",
+        "rank": 2
+      },
+      "industry_laggard_repair": {
+        "accepted_ev_delta_sum": 0.2763,
+        "accepted_experiment": "exp-20260607-008",
+        "accepted_pnl_delta_sum": 4875.91,
+        "description": "accepted industry relative laggard repair",
+        "rank": 5
+      },
+      "industry_stable_core_flow": {
+        "accepted_ev_delta_sum": 0.1459,
+        "accepted_experiment": "exp-20260608-008",
+        "accepted_pnl_delta_sum": 3523.28,
+        "description": "accepted industry stable core-flow",
+        "rank": 7
+      },
+      "rolling_peer_shock": {
+        "accepted_ev_delta_sum": 0.3845,
+        "accepted_experiment": "exp-20260606-025",
+        "accepted_pnl_delta_sum": 6107.66,
+        "description": "accepted rolling correlation peer shock",
+        "rank": 3
+      },
+      "turn_of_month": {
+        "accepted_ev_delta_sum": 0.2774,
+        "accepted_experiment": "exp-20260609-027",
+        "accepted_pnl_delta_sum": 5287.69,
+        "description": "accepted turn-of-month liquid leadership",
+        "rank": 4
+      },
+      "volatility_relief": {
+        "accepted_ev_delta_sum": 0.5732,
+        "accepted_experiment": "exp-20260607-019",
+        "accepted_pnl_delta_sum": 11934.79,
+        "description": "accepted volatility relief stock leadership",
+        "rank": 1
+      }
+    }
+  },
+  "aggregate_expected_value_delta": 1.0193,
+  "aggregate_expected_value_delta_pct": 0.129122,
+  "aggregate_strategy_total_pnl_delta": 18759.55,
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260610-009/exp_20260610_009_fiftytwo_allocator_source_extension.json",
+  "artifact_md": "experiments/artifacts/exp-20260610-009_fiftytwo_allocator_source_extension.md",
+  "backtest_protocol": {
+    "REGIME_AWARE_EXIT": true,
+    "candidate_ohlcv_source": "data/experiments/exp-20260519-030/warehouse_main.sqlite",
+    "execution_model": "Shared helper builds accepted source rows including the 52-week-high proximity core-flow helper, selects one paper trade per signal date by fixed source priority, applies a 12-trading-day same-ticker cooldown, then overlays next-open/10-day paper trade outcomes.",
+    "replay_llm": false,
+    "replay_news": false,
+    "source": "docs/backtesting.md canonical three-window core replay plus shared accepted-helper source-priority allocator overlay",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "baseline_result_file": "docs/backtesting.md current canonical baseline and same-run before_metrics inside this artifact",
+  "calibration": {
+    "actual_gate4_passed": false,
+    "brier_score": 0.1444,
+    "failure_modes_observed": [
+      "accepted_allocator_window_comparator_regression"
+    ],
+    "predicted_success_probability": 0.38
+  },
+  "changed_variable": "fiftytwo_week_high_source_family_added_to_accepted_helper_source_priority_allocator_v1",
+  "decision": "rejected_fiftytwo_week_high_allocator_source_extension",
+  "expected_value_score_delta": 1.0193,
+  "experiment_id": "exp-20260610-009",
+  "full_stack": {
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "complete": false,
+      "kill_switch_drawdown_pct": null,
+      "max_capital_pct": 0.32,
+      "max_concurrent": 8,
+      "max_displacement": 1,
+      "min_dollar_volume": 75000000.0,
+      "missing": [
+        "kill_switch_drawdown_pct",
+        "sleeve_drawdown_stop_pct"
+      ],
+      "notes": "Top-1/day accepted-helper allocator, fixed $4,000 paper notional, 8 max active default-off paper positions, 10-trading-day hold, and 12-trading-day same-ticker cooldown. Source helpers keep their own liquidity guards; the 52-week source requires at least $75M 20-day average dollar volume. This experiment is not live-ready because the allocator still needs a dedicated realized-ledger kill switch before any trade_enabled=true release.",
+      "order_semantics": "next_open_paper_only",
+      "sleeve_drawdown_stop_pct": null,
+      "slippage_bps": 5.0
+    },
+    "gate4_canonical_status": "passed",
+    "gate4_strict_materiality_status": "blocked",
+    "live_readiness": {
+      "blockers": [
+        "forward_rows_immature:0/30",
+        "forward_pnl_not_positive",
+        "replacement_value_not_passed",
+        "execution_envelope_incomplete",
+        "kill_switch_parity_not_passed"
+      ],
+      "closed_forward_trades": 0,
+      "envelope_missing": [
+        "kill_switch_drawdown_pct",
+        "sleeve_drawdown_stop_pct"
+      ],
+      "forward_pnl": null,
+      "kill_switch_parity_passed": false,
+      "min_closed_forward_trades": 30,
+      "ready": false,
+      "replacement_value_passed": false
+    },
+    "verdict": {
+      "anti_js": "No JavaScript was used.",
+      "execution_envelope": {
+        "base_notional": 4000.0,
+        "complete": false,
+        "kill_switch_drawdown_pct": null,
+        "max_capital_pct": 0.32,
+        "max_concurrent": 8,
+        "max_displacement": 1,
+        "min_dollar_volume": 75000000.0,
+        "missing": [
+          "kill_switch_drawdown_pct",
+          "sleeve_drawdown_stop_pct"
+        ],
+        "notes": "Top-1/day accepted-helper allocator, fixed $4,000 paper notional, 8 max active default-off paper positions, 10-trading-day hold, and 12-trading-day same-ticker cooldown. Source helpers keep their own liquidity guards; the 52-week source requires at least $75M 20-day average dollar volume. This experiment is not live-ready because the allocator still needs a dedicated realized-ledger kill switch before any trade_enabled=true release.",
+        "order_semantics": "next_open_paper_only",
+        "sleeve_drawdown_stop_pct": null,
+        "slippage_bps": 5.0
+      },
+      "gate4": {
+        "hard_failures": [],
+        "materiality": null,
+        "passed": true,
+        "promotion_gate": {
+          "checks": {
+            "adjusted_trade_sample": true,
+            "adjusted_window_coverage": true,
+            "drawdown_worse_guard": true,
+            "ev_improved_window_coverage": true,
+            "no_ev_regressed_windows": true,
+            "positive_aggregate_ev": true,
+            "positive_aggregate_pnl": true,
+            "tail_concentration_cap": true,
+            "tail_concentration_evidence": true,
+            "tail_concentration_not_worse": true
+          },
+          "concentration_checks": [
+            {
+              "baseline": 0.5,
+              "cap_passed": true,
+              "delta": -0.445259,
+              "max_allowed": 0.5,
+              "name": "single_ticker_positive_share",
+              "not_worse": true,
+              "value": 0.054741
+            },
+            {
+              "baseline": 0.6,
+              "cap_passed": true,
+              "delta": -0.404837,
+              "max_allowed": 0.6,
+              "name": "top_5_contribution_pct",
+              "not_worse": true,
+              "value": 0.195163
+            },
+            {
+              "baseline": 0.35,
+              "cap_passed": true,
+              "delta": -0.331483,
+              "max_allowed": 0.35,
+              "name": "hhi_concentration",
+              "not_worse": true,
+              "value": 0.018517
+            }
+          ],
+          "hard_failures": [],
+          "metrics": {
+            "adjusted_trade_count": 327,
+            "adjusted_window_count": 3,
+            "adjusted_windows": [],
+            "aggregate_ev_delta": 1.0193,
+            "aggregate_pnl_delta": 18759.55,
+            "max_drawdown_worse": 0.0026,
+            "windows_ev_improved": 3.0,
+            "windows_ev_regressed": 0.0
+          },
+          "passed": true,
+          "status": "passed",
+          "thresholds": {
+            "concentration_tolerance": 0.0,
+            "max_drawdown_worse": 0.005,
+            "max_ev_regressed_windows": 0,
+            "max_hhi_concentration": 0.35,
+            "max_single_ticker_positive_share": 0.5,
+            "max_top_5_contribution_pct": 0.6,
+            "min_adjusted_trades": 9,
+            "min_adjusted_windows": 2,
+            "min_aggregate_ev_delta": 0.0,
+            "min_aggregate_pnl_delta": 0.0,
+            "min_ev_improved_windows": 2,
+            "require_tail_concentration_evidence": true,
+            "require_tail_concentration_not_worse": true
+          },
+          "warnings": []
+        },
+        "status": "passed",
+        "warnings": []
+      },
+      "gate4_passed": false,
+      "live_readiness": {
+        "blockers": [
+          "forward_rows_immature:0/30",
+          "forward_pnl_not_positive",
+          "replacement_value_not_passed",
+          "execution_envelope_incomplete",
+          "kill_switch_parity_not_passed"
+        ],
+        "closed_forward_trades": 0,
+        "envelope_missing": [
+          "kill_switch_drawdown_pct",
+          "sleeve_drawdown_stop_pct"
+        ],
+        "forward_pnl": null,
+        "kill_switch_parity_passed": false,
+        "min_closed_forward_trades": 30,
+        "ready": false,
+        "replacement_value_passed": false
+      },
+      "live_ready": false,
+      "next_step": "Roll back the allocator source extension and log the failure. The binding accepted-allocator comparator gate did not pass.",
+      "verdict": "reject"
+    }
+  },
+  "full_stack_verdict": "reject",
+  "gate4": {
+    "accepted_allocator_comparator": {
+      "aggregate_ev_delta": 0.8971,
+      "aggregate_pnl_delta": 14502.52,
+      "experiment_id": "exp-20260610-005",
+      "window_deltas": {
+        "late_strong": {
+          "ev": 0.445,
+          "pnl": 4308.44
+        },
+        "mid_weak": {
+          "ev": 0.3236,
+          "pnl": 5979.77
+        },
+        "old_thin": {
+          "ev": 0.1285,
+          "pnl": 4214.31
+        }
+      }
+    },
+    "aggregate_ev_delta": 1.0193,
+    "aggregate_pnl_delta": 18759.55,
+    "comparator_regressions": [
+      "late_strong_ev",
+      "late_strong_pnl"
+    ],
+    "decision": "rejected_fiftytwo_week_high_allocator_source_extension",
+    "failed_reasons": [
+      "accepted_allocator_window_comparator_regression"
+    ],
+    "max_drawdown_worse": 0.0026,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": false,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.054741,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": true,
+      "positive_pnl_hhi": 0.018517,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 327,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_ev_improved": 3,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 3,
+    "windows_pnl_regressed": 0
+  },
+  "hypothesis": "Accepted 52-week-high proximity core-flow rows may add independent replacement value when admitted as a fixed rank-2 source family into the accepted helper source-priority allocator.",
+  "lane": "alpha_search",
+  "log": "experiments/logs/exp-20260610-009.json",
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry by changing 52-week source rank, allocator top-N, source thresholds, notional, hold days, or cooldown on the same frozen windows.",
+    "new_evidence_required": "Next useful evidence is closed forward allocator displacement rows under the shared daily snapshot, plus a dedicated allocator kill-switch parity design before any live activation.",
+    "why_result_happened": "The source overlapped too much with higher-priority allocator rows or displaced better rows in at least one canonical window."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "candidate-pool/allocation alpha: add the already accepted 52-week-high proximity core-flow source to the accepted helper allocator at fixed rank 2, based on accepted standalone EV.",
+    "2_history_check": {
+      "exp-20260610-005": "Accepted source-priority allocator without 52-week source: aggregate EV +0.8971 and PnL +$14,502.52. This is the binding comparator.",
+      "exp-20260610-006": "Rejected macro-relief source extension: positive versus core but did not beat exp-20260610-005 and regressed old_thin versus comparator.",
+      "exp-20260610-008": "Accepted 52-week-high proximity core-flow shared helper: aggregate EV +0.4308 and PnL +$9,295.34 with all three windows positive."
+    },
+    "3_single_decision_hypothesis": "fiftytwo_week_high_source_family_added_to_accepted_helper_source_priority_allocator_v1",
+    "4_acceptance_standard": "docs/backtesting.md canonical three windows. Must improve aggregate EV/PnL, have no EV/PnL regression windows, satisfy sample/survival/drawdown/concentration guards, and beat exp-20260610-005 aggregate and per-window EV/PnL comparator.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260610_009_fiftytwo_allocator_source_extension.py"
+  },
+  "prediction": {
+    "confidence_reason": "Money-making mechanism: accepted 52-week-high proximity core-flow rows capture anchoring underreaction at fresh long-term highs on days with same-day core A/B demand, while the allocator currently cannot see that source. Historical evidence: exp-20260610-008 accepted the shared 52-week helper with aggregate EV +0.4308 and PnL +$9,295.34 across all three windows, and exp-20260610-005 accepted the allocator without it. Main disconfirming risk: exp-20260610-006 showed accepted source-family additions can be redundant; 52-week rows may overlap higher-priority allocator winners or displace old_thin winners, causing comparator failure or drawdown drift.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "source_overlap_with_existing_allocator",
+      "accepted_allocator_comparator_not_beaten",
+      "window_regression",
+      "drawdown_drift",
+      "daily_snapshot_wiring_gap"
+    ],
+    "recorded_at": "2026-06-10T07:06:16+00:00",
+    "success_probability": 0.38
+  },
+  "production_accepted": false,
+  "production_impact": {
+    "adapter_status": "replay_only_rejected_source_extension",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "default_off_paper_only": true,
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "complete": false,
+      "kill_switch_drawdown_pct": null,
+      "max_capital_pct": 0.32,
+      "max_concurrent": 8,
+      "max_displacement": 1,
+      "min_dollar_volume": 75000000.0,
+      "missing": [
+        "kill_switch_drawdown_pct",
+        "sleeve_drawdown_stop_pct"
+      ],
+      "notes": "Top-1/day accepted-helper allocator, fixed $4,000 paper notional, 8 max active default-off paper positions, 10-trading-day hold, and 12-trading-day same-ticker cooldown. Source helpers keep their own liquidity guards; the 52-week source requires at least $75M 20-day average dollar volume. This experiment is not live-ready because the allocator still needs a dedicated realized-ledger kill switch before any trade_enabled=true release.",
+      "order_semantics": "next_open_paper_only",
+      "sleeve_drawdown_stop_pct": null,
+      "slippage_bps": 5.0
+    },
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "parity_note": "The fixed source-extension replay failed its binding accepted-allocator comparator, so shared allocator, run.py daily snapshot wiring, and parity test changes were rolled back. No production helper, report, paper ledger, ranking, sizing, watchlist, exit, LLM, news, or order surface retains this rejected source admission.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_free_ohlcv_only": true,
+    "uses_llm": false
+  },
+  "status": "rejected",
+  "timestamp": "2026-06-10T07:31:16Z",
+  "total_pnl_delta": 18759.55,
+  "trial_family": "accepted_default_off_helper_source_priority_allocation",
+  "trial_variant_id": "fiftytwo_week_high_source_family_added_to_accepted_helper_source_priority_allocator_v1",
+  "windows": [
+    {
+      "expected_value_after": 5.5155,
+      "expected_value_before": 5.1628,
+      "expected_value_delta": 0.3527,
+      "fiftytwo_week_high_selected_count": 14,
+      "label": "late_strong",
+      "selected_source_counts": {
+        "fiftytwo_week_high_proximity": 14,
+        "industry_laggard_repair": 74,
+        "turn_of_month": 16
+      },
+      "strategy_total_pnl_delta": 3618.78,
+      "target_trade_count": 104
+    },
+    {
+      "expected_value_after": 2.595,
+      "expected_value_before": 2.1402,
+      "expected_value_delta": 0.4548,
+      "fiftytwo_week_high_selected_count": 16,
+      "label": "mid_weak",
+      "selected_source_counts": {
+        "compression": 3,
+        "fiftytwo_week_high_proximity": 16,
+        "industry_laggard_repair": 70,
+        "rolling_peer_shock": 4,
+        "turn_of_month": 18
+      },
+      "strategy_total_pnl_delta": 8393.87,
+      "target_trade_count": 111
+    },
+    {
+      "expected_value_after": 0.8029,
+      "expected_value_before": 0.5911,
+      "expected_value_delta": 0.2118,
+      "fiftytwo_week_high_selected_count": 20,
+      "label": "old_thin",
+      "selected_source_counts": {
+        "fiftytwo_week_high_proximity": 20,
+        "industry_laggard_repair": 70,
+        "turn_of_month": 22
+      },
+      "strategy_total_pnl_delta": 6746.9,
+      "target_trade_count": 112
+    }
+  ]
+}
