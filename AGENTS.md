@@ -68,7 +68,8 @@ data/backtests/backtest_results_*.json
 - 实验命令流程、reserve / claim / closeout、full-stack 模板：`docs/agent_experiment_protocol.md`
 - 当前 alpha 短记忆：`docs/alpha_context_pack.md`
 - 当前状态短入口：`docs/current_state_snapshot.md`
-- alpha 方向、frozen zones、机制经验：`docs/alpha-optimization-playbook.md`
+- alpha 当前方向、frozen zones、anti-repeat：`docs/alpha-optimization-playbook.md`
+- 机制证据卡和外部研究映射：`docs/alpha_mechanism_cards.md`、`docs/alpha_external_research_map.md`（按需深读）
 - production/backtest parity 核心合同：`docs/production_backtest_parity.md`
 - adapter / sleeve parity 表：`docs/production_backtest_parity_matrix.md`（按需深读）
 - data edge / context layer 核心合同：`docs/data_edge_context_layers.md`

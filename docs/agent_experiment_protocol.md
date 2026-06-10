@@ -12,7 +12,9 @@ commands to run and what an experiment must leave behind.
 - `docs/backtesting.md`: Gate 1-4 commands, windows, baselines, metrics.
 - `docs/alpha_context_pack.md`: compact alpha memory for current runs.
 - `docs/current_state_snapshot.md`: compact current-state entrypoint.
-- `docs/alpha-optimization-playbook.md`: alpha directions and frozen zones.
+- `docs/alpha-optimization-playbook.md`: current alpha directions and frozen zones.
+- `docs/alpha_mechanism_cards.md`: accepted/rejected mechanism evidence cards.
+- `docs/alpha_external_research_map.md`: research-literature idea map.
 - `docs/production_backtest_parity.md`: core shared-policy parity contract.
 - `docs/production_backtest_parity_matrix.md`: per-adapter parity rows.
 - `docs/data_edge_context_layers.md`: data-edge operating contract.
