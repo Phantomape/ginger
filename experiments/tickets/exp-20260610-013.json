@@ -1,0 +1,175 @@
+{
+  "experiment_id": "exp-20260610-013",
+  "experiment_uid": "expuid-44e7057ed8144032",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260610-013",
+    "slug": "sec_business_update_event_leadership",
+    "reserved_at": "2026-06-10T11:05:56+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "alpha-search-automation",
+  "hypothesis": "entry/candidate_pool: PIT-safe SEC 8-K business-update events (Items 8.01, 7.01, and 1.01) paired with same-day liquid SPY-relative leadership may identify underreaction candidates whose next-open continuation adds replacement value. It uses only free event snapshots and OHLCV fields known before the paper entry.",
+  "change_type": "default_off_paper_candidate_pool_replay_scout",
+  "mechanism_family": "production_visible_free_sec_event_ohlcv_candidate_pool",
+  "trial_family": "sec_business_update_event_leadership_candidate_pool",
+  "trial_variant_id": "sec_business_update_event_leadership_top1_next_open_10d_v1",
+  "single_causal_variable": "sec_business_update_event_leadership_candidate_source_v1",
+  "changed_variable": "sec_business_update_event_leadership_candidate_source_v1",
+  "causal_components": [
+    "event snapshot subtype bundle",
+    "OHLCV leadership gates",
+    "core-overlap exclusion",
+    "historical replay",
+    "Gate 1-4 artifact",
+    "negative reflection"
+  ],
+  "prior_trial_count": 3,
+  "nearby_prior_experiments": [
+    "exp-20260509-023",
+    "exp-20260525-030",
+    "exp-20260525-033",
+    "exp-20260608-013"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "production_visible_free_sec_8k_business_update_event_snapshot_plus_ohlcv_leadership",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260610_013_sec_business_update_event_leadership.py",
+    "data/experiments/exp-20260610-013/exp_20260610_013_sec_business_update_event_leadership.json",
+    "experiments/cards/exp-20260610-013.md",
+    "experiments/manifests/exp-20260610-013.json",
+    "experiments/tickets/exp-20260610-013.json",
+    "experiments/logs/exp-20260610-013.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "sec_business_update_event_leadership_candidate_source_v1"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.16,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "event_field_too_generic",
+      "window_regression",
+      "drawdown_drift",
+      "compression_comparator_not_beaten",
+      "thin_sample"
+    ],
+    "confidence_reason": "Event snapshots cover all three canonical windows and SEC business-update 8-K items are production-visible free data, but prior observed-only event-sensitive universe work and catalyst dossier attempts were not enough to prove a tradable source. This scout checks whether same-day liquid leadership supplies the missing displacement edge.",
+    "recorded_at": "2026-06-10T11:05:42+00:00"
+  },
+  "created_at": "2026-06-10T11:05:56+00:00",
+  "claimed_at": "2026-06-10T11:06:08+00:00",
+  "completed_at": "2026-06-10T11:16:06+00:00",
+  "result": {
+    "decision": "rejected_sec_business_update_event_leadership_candidate_pool",
+    "accepted": false,
+    "artifact": "data/experiments/exp-20260610-013/exp_20260610_013_sec_business_update_event_leadership.json",
+    "log": "experiments/logs/exp-20260610-013.json",
+    "card": "experiments/cards/exp-20260610-013.md",
+    "aggregate_expected_value_delta": 0.0068,
+    "aggregate_strategy_total_pnl_delta": 15.63,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_sec_business_update_event_leadership_candidate_pool",
+      "failed_reasons": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "target_concentration_failed",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten"
+      ],
+      "aggregate_ev_delta": 0.0068,
+      "aggregate_pnl_delta": 15.63,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 1,
+      "windows_pnl_improved": 1,
+      "windows_pnl_regressed": 1,
+      "target_trade_count": 5,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": false,
+        "max_single_positive_pnl_share": 0.483194,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.405344,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "accepted_compression_comparator": {
+        "experiment_id": "exp-20260608-013",
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "expected_value_score_delta_sum": 0.1608,
+        "total_pnl_delta_sum": 2248.98,
+        "target_trade_count": 44
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.16,
+      "actual_gate4_passed": false,
+      "failure_modes_observed": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "target_concentration_failed",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten"
+      ],
+      "brier_score": 0.0256
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "replay_only_no_live_adapter",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "parity_note": "This experiment changes no production code. A positive result is only a replay lead. Promotion would require a shared default-off adapter that loads the same signal-date event snapshot, applies the same SEC 8-K Item 8.01/7.01/1.01 subtype bundle, source-confidence and PIT checks, liquid sector-known stock universe, SPY-relative leadership gates, close-quality gates, same-ticker core-overlap exclusion, next-open paper entry, 10-trading-day exit, costs, cooldown, accepted compression comparator, and concentration controls in both historical replay and daily production before any report queue, paper ledger, candidate priority, sizing, watchlist, or order surface could change."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The fixed SEC business-update event leadership bundle failed Gate 4. The result implies the broad 8-K Item 8.01/7.01/1.01 labels did not add enough distinct edge beyond liquid momentum after next-open execution, costs, 10-day hold, cooldown, and overlap/concentration controls. The useful lesson is to seek richer PIT event-strength classification, not more item-code or momentum threshold tuning.",
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping SEC item weights, item subsets, ret20/ret60 relative-strength thresholds, signal-day return, close-location, volume-ratio bounds, top-N, hold-day, cooldown, or paper notional on the same frozen windows.",
+      "new_evidence_required": "A retry needs materially richer free PIT event evidence, such as parsed agreement/product/customer/buyback/guidance semantics from the filing text, event-time before/after close verification, or a shared daily snapshot field that separates economically material 8-K business updates from generic Item 8.01/7.01 filings. Pure subtype or momentum threshold tuning stays frozen."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260610-013.json",
+  "card_file": "experiments/cards/exp-20260610-013.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260610-013.json",
+  "decision": "rejected_sec_business_update_event_leadership_candidate_pool",
+  "summary": "The SEC business-update event leadership source was rejected; it did not establish a distinct free SEC event/OHLCV candidate-pool edge under the standard three-window protocol.",
+  "artifact": "data/experiments/exp-20260610-013/exp_20260610_013_sec_business_update_event_leadership.json",
+  "log": "experiments/logs/exp-20260610-013.json",
+  "aggregate_expected_value_delta": 0.0068,
+  "aggregate_strategy_total_pnl_delta": 15.63,
+  "updated_at": "2026-06-10T11:16:06+00:00"
+}
