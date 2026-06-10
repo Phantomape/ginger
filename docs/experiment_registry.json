@@ -14110,8 +14110,200 @@
       "trial_family": "turn_of_month_liquid_leadership_shared_default_off_adapter",
       "trial_variant_id": "turn_of_month_liquid_leadership_shared_default_off_adapter_v1",
       "updated_at": "2026-06-09T23:30:34+00:00"
+    },
+    {
+      "experiment_id": "exp-20260610-001",
+      "experiment_uid": "expuid-76e39d267bd04d0b",
+      "hub_identity": {
+        "scheme": "hf_hub_local_v1",
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260610-001",
+        "slug": "opex_week_liquid_leadership",
+        "reserved_at": "2026-06-10T00:06:53+00:00",
+        "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+      },
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search-automation",
+      "hypothesis": "entry/candidate_pool: monthly options-expiration-week dealer roll and rebalance flow may make liquid sector-known stocks that already show SPY-relative leadership and high close quality continue after next-open entry. It uses only free calendar and OHLCV data.",
+      "change_type": "default_off_paper_candidate_pool",
+      "mechanism_family": "production_visible_free_calendar_ohlcv_candidate_pool",
+      "trial_family": "opex_week_liquid_leadership_candidate_pool",
+      "trial_variant_id": "opex_week_liquid_leadership_top1_next_open_10d_v1",
+      "single_causal_variable": "opex_week_liquid_leadership_candidate_source_v1",
+      "changed_variable": "opex_week_liquid_leadership_candidate_source_v1",
+      "causal_components": [
+        "fixed OPEX week calendar label",
+        "liquid sector-known stock universe",
+        "SPY-relative leadership gates",
+        "close and volume quality gates",
+        "same-ticker core-overlap exclusion",
+        "top-1 next-open paper entry",
+        "10-day hold",
+        "costs",
+        "cooldown",
+        "concentration gate"
+      ],
+      "prior_trial_count": 0,
+      "nearby_prior_experiments": [
+        "exp-20260609-027",
+        "exp-20260609-026",
+        "exp-20260606-020",
+        "exp-20260605-032",
+        "exp-20260608-013"
+      ],
+      "multiple_testing_risk_bucket": "moderate",
+      "new_evidence_type": "production_visible_free_calendar_opex_week_liquid_leadership_field",
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260610_001_opex_week_liquid_leadership.py",
+        "data/experiments/exp-20260610-001/exp_20260610_001_opex_week_liquid_leadership.json",
+        "experiments/cards/exp-20260610-001.md",
+        "experiments/manifests/exp-20260610-001.json",
+        "experiments/tickets/exp-20260610-001.json",
+        "experiments/logs/exp-20260610-001.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "must_not_touch": [],
+      "locked_variables": [
+        "opex_week_liquid_leadership_candidate_source_v1"
+      ],
+      "evaluation_windows": [],
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "prediction": {
+        "success_probability": 0.13,
+        "expected_ev_delta": null,
+        "expected_pnl_delta": null,
+        "main_failure_modes": [
+          "generic_momentum_not_opex_edge",
+          "window_regression",
+          "drawdown_drift_too_high",
+          "accepted_compression_comparator_not_beaten",
+          "thin_opex_sample"
+        ],
+        "confidence_reason": "Free PIT calendar plus OHLCV is production-visible and recent turn-of-month evidence suggests calendar-flow can work, but scheduled macro/calendar neighbors are mixed and this must not retune the accepted turn-of-month route.",
+        "recorded_at": "2026-06-10T00:06:39+00:00"
+      },
+      "created_at": "2026-06-10T00:06:53+00:00",
+      "claimed_at": "2026-06-10T00:07:04+00:00",
+      "completed_at": "2026-06-10T00:12:22+00:00",
+      "result": {
+        "decision": "rejected_opex_week_liquid_leadership_candidate_pool",
+        "accepted": false,
+        "accepted_alpha": false,
+        "numeric_gate4_passed": false,
+        "artifact": "data/experiments/exp-20260610-001/exp_20260610_001_opex_week_liquid_leadership.json",
+        "log": "experiments/logs/exp-20260610-001.json",
+        "card": "experiments/cards/exp-20260610-001.md",
+        "aggregate_expected_value_delta": 0.0793,
+        "aggregate_strategy_total_pnl_delta": 1809.25,
+        "gate4": {
+          "passed": false,
+          "decision": "rejected_opex_week_liquid_leadership_candidate_pool",
+          "failed_reasons": [
+            "window_ev_regression",
+            "window_pnl_regression",
+            "fewer_than_two_ev_improved_windows",
+            "drawdown_drift_too_high",
+            "accepted_compression_ev_not_beaten",
+            "accepted_compression_pnl_not_beaten",
+            "accepted_turn_of_month_ev_not_beaten",
+            "accepted_turn_of_month_pnl_not_beaten"
+          ],
+          "aggregate_ev_delta": 0.0793,
+          "aggregate_pnl_delta": 1809.25,
+          "windows_ev_improved": 1,
+          "windows_ev_regressed": 2,
+          "windows_pnl_improved": 1,
+          "windows_pnl_regressed": 2,
+          "target_trade_count": 93,
+          "target_trade_count_min": 20,
+          "target_windows": [
+            "late_strong",
+            "mid_weak",
+            "old_thin"
+          ],
+          "target_window_count_min": 3,
+          "max_drawdown_worse": 0.0109,
+          "max_drawdown_worse_guardrail": 0.005,
+          "minimum_core_survival_rate": 0.7925,
+          "survival_guard_passed": true,
+          "target_concentration": {
+            "passed": true,
+            "max_single_positive_pnl_share": 0.191645,
+            "max_single_positive_pnl_share_guardrail": 0.5,
+            "positive_pnl_hhi": 0.068917,
+            "positive_pnl_hhi_guardrail": 0.35
+          },
+          "accepted_comparators": {
+            "compression": {
+              "experiment_id": "exp-20260608-013",
+              "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+              "expected_value_score_delta_sum": 0.1608,
+              "total_pnl_delta_sum": 2248.98,
+              "target_trade_count": 44
+            },
+            "turn_of_month": {
+              "experiment_id": "exp-20260609-027",
+              "decision": "accepted_turn_of_month_liquid_leadership_shared_default_off_adapter",
+              "expected_value_score_delta_sum": 0.2774,
+              "total_pnl_delta_sum": 5287.69,
+              "target_trade_count": 73
+            }
+          }
+        },
+        "calibration": {
+          "predicted_success_probability": 0.13,
+          "actual_gate4_passed": false,
+          "failure_modes_observed": [
+            "window_ev_regression",
+            "window_pnl_regression",
+            "fewer_than_two_ev_improved_windows",
+            "drawdown_drift_too_high",
+            "accepted_compression_ev_not_beaten",
+            "accepted_compression_pnl_not_beaten",
+            "accepted_turn_of_month_ev_not_beaten",
+            "accepted_turn_of_month_pnl_not_beaten"
+          ],
+          "brier_score": 0.0169
+        },
+        "production_impact": {
+          "trade_enabled": false,
+          "alters_orders": false,
+          "adapter_status": "replay_only_no_live_adapter",
+          "shared_policy_changed": false,
+          "backtester_adapter_changed": false,
+          "run_adapter_changed": false,
+          "replay_only": true,
+          "parity_test_added": false,
+          "production_signal_path_changed": false,
+          "production_orders_changed": false,
+          "production_watchlist_changed": false,
+          "alters_signal_generation": false,
+          "alters_candidate_ranking": false,
+          "alters_sizing": false,
+          "alters_exits": false,
+          "parity_note": "This experiment changes no production code. A positive result would require a shared default-off adapter that computes the same trading-day monthly options-expiration week labels, sector-known liquid stock universe, SPY-relative leadership gates, close-quality gates, same-ticker core-overlap exclusion, next-open paper entry, 10-trading-day exit, costs, cooldown, accepted calendar/compression comparators, and concentration controls in both historical replay and daily production before any report queue, paper ledger, candidate priority, sizing, watchlist, or order surface could change."
+        },
+        "post_run_reflection": {
+          "why_result_happened": "The OPEX-week liquid leadership bundle failed Gate 4. The result implies expiry-week timing did not add enough distinct edge beyond liquid momentum and the accepted turn-of-month calendar route after next-open execution, costs, cooldown, and overlap/concentration controls.",
+          "forbidden_near_neighbor_retry": "Do not retry by sweeping OPEX week length, third-Friday handling, ret20/ret60 relative-strength thresholds, signal-day return, close-location, volume-ratio bounds, top-N, hold-day, cooldown, or paper notional on the same frozen windows.",
+          "new_evidence_required": "A retry needs materially new evidence that identifies true OPEX flow beneficiaries, such as point-in-time options open interest, dealer gamma proxies, index/ETF rebalance rows, or forward daily-snapshot replacement value. Pure threshold retunes stay frozen."
+        }
+      },
+      "ticket_file": "experiments/tickets/exp-20260610-001.json",
+      "card_file": "experiments/cards/exp-20260610-001.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260610-001.json",
+      "decision": "rejected_opex_week_liquid_leadership_candidate_pool",
+      "summary": "The OPEX-week liquid leadership source was rejected; it did not establish a distinct free-calendar/OHLCV candidate-pool edge under the standard three-window protocol and accepted-comparator checks.",
+      "artifact": "data/experiments/exp-20260610-001/exp_20260610_001_opex_week_liquid_leadership.json",
+      "log": "experiments/logs/exp-20260610-001.json",
+      "aggregate_expected_value_delta": 0.0793,
+      "aggregate_strategy_total_pnl_delta": 1809.25,
+      "updated_at": "2026-06-10T00:12:22+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-09T23:30:34+00:00"
+  "updated_at": "2026-06-10T00:12:22+00:00"
 }
