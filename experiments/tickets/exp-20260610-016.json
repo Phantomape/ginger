@@ -1,0 +1,205 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "aggregate_expected_value_delta": 0.9906,
+  "aggregate_strategy_total_pnl_delta": 15076.66,
+  "allowed_write_scope": [
+    "data/experiments/exp-20260610-016/exp_20260610_016_post_earnings_allocator_source_extension.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "experiments/cards/exp-20260610-016.md",
+    "experiments/logs/exp-20260610-016.json",
+    "experiments/manifests/exp-20260610-016.json",
+    "experiments/tickets/exp-20260610-016.json",
+    "quant/experiments/exp_20260610_016_post_earnings_allocator_source_extension.py"
+  ],
+  "artifact": "data/experiments/exp-20260610-016/exp_20260610_016_post_earnings_allocator_source_extension.json",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260610-016.md",
+  "causal_components": [
+    "historical replay",
+    "source-priority allocator replay",
+    "comparator gate",
+    "execution envelope",
+    "failed-or-lead closeout"
+  ],
+  "change_type": "replay_only_candidate_pool_source_extension_scout",
+  "changed_variable": "post_earnings_underpriced_source_family_added_to_accepted_helper_source_priority_allocator_v1",
+  "claimed_at": "2026-06-10T14:04:21+00:00",
+  "completed_at": "2026-06-10T14:11:01Z",
+  "created_at": "2026-06-10T14:04:02+00:00",
+  "decision": "rejected_post_earnings_allocator_extension",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260610-016",
+  "experiment_uid": "expuid-1d94e663bc4d45ee",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260610-016",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-10T14:04:02+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "post_earnings_allocator_source_extension"
+  },
+  "hypothesis": "candidate-pool/allocation alpha: accepted post-earnings underpriced drift rows may add an event-information source to the accepted source-priority allocator, filling dates where pure OHLCV/revision helpers are absent or weaker.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "post_earnings_underpriced_source_family_added_to_accepted_helper_source_priority_allocator_v1"
+  ],
+  "log": "experiments/logs/exp-20260610-016.json",
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260602-026",
+    "exp-20260610-005",
+    "exp-20260610-014",
+    "exp-20260610-006",
+    "exp-20260610-009"
+  ],
+  "new_evidence_type": "accepted_event_source_family_extension_scout",
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "confidence_reason": "The post-earnings underpriced helper is an accepted shared default-off source with all three windows positive, but the current accepted allocator is a high comparator and source extensions often fail by overlapping or displacing better rows.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "accepted_allocator_window_comparator_regression",
+      "source_overlap_displaces_better_rows",
+      "post_earnings_sample_too_thin",
+      "earnings_snapshot_data_shape_gap"
+    ],
+    "recorded_at": "2026-06-10T14:03:47+00:00",
+    "success_probability": 0.22
+  },
+  "prior_trial_count": 5,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "aggregate_expected_value_delta": 0.9906,
+    "aggregate_strategy_total_pnl_delta": 15076.66,
+    "artifact": "data/experiments/exp-20260610-016/exp_20260610_016_post_earnings_allocator_source_extension.json",
+    "calibration": {
+      "actual_gate4_passed": false,
+      "brier_score": 0.0484,
+      "failure_modes_observed": [
+        "accepted_allocator_pnl_comparator_not_beaten",
+        "accepted_allocator_window_comparator_regression"
+      ],
+      "predicted_success_probability": 0.22
+    },
+    "card": "experiments/cards/exp-20260610-016.md",
+    "decision": "rejected_post_earnings_allocator_extension",
+    "gate4": {
+      "accepted_allocator_comparator": {
+        "aggregate_ev_delta": 0.972,
+        "aggregate_pnl_delta": 15197.05,
+        "experiment_id": "exp-20260610-014",
+        "window_deltas": {
+          "late_strong": {
+            "ev": 0.5079,
+            "pnl": 4879.33
+          },
+          "mid_weak": {
+            "ev": 0.3356,
+            "pnl": 6103.41
+          },
+          "old_thin": {
+            "ev": 0.1285,
+            "pnl": 4214.31
+          }
+        }
+      },
+      "aggregate_ev_delta": 0.9906,
+      "aggregate_pnl_delta": 15076.66,
+      "comparator_regressions": [
+        "mid_weak_ev",
+        "mid_weak_pnl",
+        "old_thin_ev",
+        "old_thin_pnl"
+      ],
+      "decision": "rejected_post_earnings_allocator_extension",
+      "failed_reasons": [
+        "accepted_allocator_pnl_comparator_not_beaten",
+        "accepted_allocator_window_comparator_regression"
+      ],
+      "max_drawdown_worse": 0.002,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "passed": false,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "max_single_positive_pnl_share": 0.043745,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "passed": true,
+        "positive_pnl_hhi": 0.017144,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "target_trade_count": 334,
+      "target_trade_count_min": 20,
+      "target_window_count_min": 3,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "windows_ev_improved": 3,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 3,
+      "windows_pnl_regressed": 0
+    },
+    "log": "experiments/logs/exp-20260610-016.json",
+    "numeric_gate4_passed": false,
+    "post_run_reflection": {
+      "forbidden_near_neighbor_retry": "Do not retry by changing post-earnings source rank, post-earnings helper thresholds, allocator top-N, notional, hold days, or cooldown on the same frozen windows.",
+      "new_evidence_required": "A retry needs closed forward allocator displacement rows, a shared historical/daily post-earnings allocator helper, or a materially different event-quality field rather than source priority retuning.",
+      "why_result_happened": "The standalone post-earnings sleeve remains accepted, but its rows did not add enough incremental replacement value after the accepted allocator's higher-priority rows and same-ticker cooldown. The likely failure mode is overlap/displacement, not a defect in the original post-earnings helper."
+    },
+    "production_accepted": false,
+    "production_impact": {
+      "adapter_status": "replay_only_source_extension_scout",
+      "alters_candidate_ranking": false,
+      "alters_exits": false,
+      "alters_orders": false,
+      "alters_signal_generation": false,
+      "alters_sizing": false,
+      "backtester_adapter_changed": false,
+      "daily_snapshot_exposed": false,
+      "default_off_paper_only": true,
+      "execution_envelope": {
+        "daily_entry_slots": 1,
+        "failure_handling": "missing earnings snapshots or OHLCV rows create rejected source candidates only",
+        "hold_days": 10,
+        "kill_switch": "trade_enabled remains false; no production adapter changes in this scout",
+        "liquidity_source": "accepted post-earnings helper liquidity gates plus next-open paper fill",
+        "max_active_positions": 8,
+        "order_semantics": "observe-only next-session-open paper entry; no broker order",
+        "portfolio_displacement": "none unless a later shared helper and activation envelope pass",
+        "same_ticker_cooldown_days": 12,
+        "target_notional_per_paper_trade": 4000.0,
+        "trade_enabled": false
+      },
+      "live_ready": false,
+      "live_realism_evaluated": true,
+      "parity_note": "This experiment changes no production code. It rebuilds accepted helper source rows in a replay runner and adds post-earnings underpriced drift rows from the existing shared daily candidate builder. A positive result would require adding the source to the shared allocator helper, daily snapshot wiring, and parity tests before retention.",
+      "parity_test_added": false,
+      "production_orders_changed": false,
+      "production_signal_path_changed": false,
+      "production_watchlist_changed": false,
+      "replay_only": true,
+      "run_adapter_changed": false,
+      "shared_policy_changed": false,
+      "trade_enabled": false,
+      "uses_free_non_ohlcv": true,
+      "uses_free_ohlcv_only": false,
+      "uses_llm": false
+    },
+    "shared_adapter_required": false
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260610-016.json",
+  "single_causal_variable": "post_earnings_underpriced_source_family_added_to_accepted_helper_source_priority_allocator_v1",
+  "status": "rejected",
+  "summary": "The post-earnings source extension failed to beat the current accepted source-priority allocator comparator.",
+  "ticket_file": "experiments/tickets/exp-20260610-016.json",
+  "trial_family": "accepted_default_off_helper_source_priority_allocation",
+  "trial_variant_id": "post_earnings_underpriced_source_family_added_to_accepted_helper_source_priority_allocator_v1",
+  "updated_at": "2026-06-10T14:11:01Z"
+}
