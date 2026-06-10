@@ -63,7 +63,7 @@ records before making strategy changes.
   Latest failure: `exp-20260603-016` The VCP-expanded consensus improved versus the core baseline but underperformed the current accepted independent-source consensus. Source-set expansions must beat the accepted comparator before retention or adapter pr...
 - `accepted_free_data_cross_source_consensus_source_timing` / `lagged_independent_source_family_confirmation_prior_3_trading_days`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260604-008`.
 - `form4_liquidity_cost_cluster_candidate_pool` / `form4_liquidity_cost_cluster_qualifier_v1`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260609-025`.
-  Latest failure: `exp-20260609-025`
+  Latest failure: `exp-20260609-025` 
 
 ## Recent Raw Records
 

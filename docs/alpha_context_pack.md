@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1118`
-- Raw records loaded by meta report: `1526`
-- History fingerprint: `20349084f4a95bac`
+- Strategy records counted: `1119`
+- Raw records loaded by meta report: `1527`
+- History fingerprint: `f314049df358e471`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -63,8 +63,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260609-015` `rejected_persistent_revision_surprise_overlay`: EV `+0.0000`, PnL `$0.00`, family `analyst_revision_expectation_trajectory`, trial `analyst_revision_surprise_persistence_candidate_pool`.
-  Lesson: The overlay asks for persistent 7d and 30d revision evidence after the accepted helper has already required a strong 20-snapshot EPS revision, positive surprise history, and a low-extension breakout. If it underperfor...
 - `exp-20260609-016` `rejected_gap_hold_core_flow_confirmed_candidate_pool`: EV `+0.3278`, PnL `$6,000.13`, family `production_visible_free_ohlcv_candidate_pool`, trial `gap_hold_core_flow_confirmed_candidate_pool`.
   Lesson: Same-day core-flow admission can reduce bad market states, but it may also remove the few independent gap-hold winners and leave a sample that cannot beat the accepted compression and relation adapters after next-open...
 - `exp-20260609-017` `rejected_revision_surprise_lagged_consensus_did_not_beat_accepted_lagged_comparator`: EV `-0.0799`, PnL `$-1,763.35`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_new_independent_source_family`.
@@ -87,6 +85,8 @@ facts before changing strategy behavior.
   Lesson: The fixed turn-of-month liquid leadership bundle cleared the canonical three-window gates and beat the accepted compression comparator, suggesting the calendar-flow timing contributed replacement value beyond generic...
 - `exp-20260609-027` `accepted_turn_of_month_liquid_leadership_shared_default_off_adapter`: EV `+0.2774`, PnL `$5,287.69`, family `production_visible_free_calendar_ohlcv_candidate_pool`, trial `turn_of_month_liquid_leadership_shared_default_off_adapter`.
   Lesson: The shared helper reproduced the private replay lead because it kept the exact calendar window, liquid sector-known universe, SPY-relative leadership, close/volume/volatility guards, same-ticker selected-core overlap...
+- `exp-20260610-001` `rejected_opex_week_liquid_leadership_candidate_pool`: EV `+0.0793`, PnL `$1,809.25`, family `production_visible_free_calendar_ohlcv_candidate_pool`, trial `opex_week_liquid_leadership_candidate_pool`.
+  Lesson: The OPEX-week liquid leadership bundle failed Gate 4. The result implies expiry-week timing did not add enough distinct edge beyond liquid momentum and the accepted turn-of-month calendar route after next-open executi...
 
 ## Highest-Signal Historical Records
 
