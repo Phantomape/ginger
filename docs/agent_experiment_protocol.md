@@ -17,7 +17,6 @@ commands to run and what an experiment must leave behind.
 - `docs/alpha_external_research_map.md`: research-literature idea map.
 - `docs/production_backtest_parity.md`: core shared-policy parity contract.
 - `docs/production_backtest_parity_matrix.md`: per-adapter parity rows.
-- `docs/data_edge_context_layers.md`: data-edge operating contract.
 - `docs/experiment_ticket_schema.md`: ticket fields and conflict rules.
 - `docs/experiment_log_format.md`: JSON / JSONL closeout shape.
 
@@ -144,6 +143,29 @@ Positive private replay scouts are allowed only when data shape is uncertain or
 the idea is too speculative to justify a helper. A positive scout must be
 recorded as `positive_replay_lead_not_promoted`, explain why shared-paper-first
 was skipped, and name the exact helper/parity work required.
+
+## Data-Edge Promotion
+
+Concrete data surfaces, sidecars, sleeves, attribution scripts, artifact
+schemas, and meta-research tools live in code, tests, experiment artifacts, and
+generated lessons. Use `rg` over `quant/`, `experiments/`, and `data/` when
+selecting a concrete surface.
+
+Before a context field can affect entry, exit, ranking, sizing, orders, or live
+capital, answer:
+
+1. Is the field produced in production, not only in a research script?
+2. Is the field saved in an append-only, replayable daily artifact?
+3. Does the backtester have point-in-time access to it?
+4. Has attribution shown monotonic or otherwise interpretable predictive value?
+5. Does the proposed change alter only one independent decision hypothesis?
+6. Does the change pass `docs/backtesting.md` Gate 1-4?
+7. Is the experiment recorded whether accepted or rejected?
+
+If the answer to 1-4 is no, keep the field read-only and continue accumulating
+history. If the field is already PIT-safe, replayable, and easy for daily output
+to emit, do not force passive-only staging; start the serious test as a
+shared-paper-first helper.
 
 ## Full-Stack Candidate-Pool Contract
 

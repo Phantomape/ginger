@@ -54,7 +54,6 @@ docs/current_state_snapshot.md
 docs/agent_experiment_protocol.md
 docs/production_backtest_parity.md
 docs/alpha-optimization-playbook.md
-docs/data_edge_context_layers.md
 docs/experiment_log_format.md
 docs/iteration_analysis.md
 docs/experiment_log.jsonl
@@ -73,7 +72,6 @@ data/backtests/backtest_results_*.json
 - 外部研究映射：`docs/alpha_external_research_map.md`（按需深读，不能替代回测）
 - production/backtest parity 核心合同：`docs/production_backtest_parity.md`
 - adapter / sleeve parity 表：`docs/production_backtest_parity_matrix.md`（按需深读）
-- data edge / context layer 核心合同：`docs/data_edge_context_layers.md`
 - JSON/JSONL 记录格式：`docs/experiment_log_format.md`
 
 常用工具：
