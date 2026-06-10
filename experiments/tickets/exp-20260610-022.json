@@ -1,0 +1,144 @@
+{
+  "acceptance_rule": "Replay-only Gate 4 must improve aggregate EV/PnL, avoid per-window EV/PnL regressions, pass survival/drawdown/concentration/sample guards, and beat the accepted rolling-correlation peer-shock comparator before promotion work. Positive replay remains lead only until shared daily helper parity exists.",
+  "aggregate_expected_value_delta": -0.3173,
+  "aggregate_strategy_total_pnl_delta": -6968.7,
+  "allowed_write_scope": [
+    "data/experiments/exp-20260610-022/exp_20260610_022_rolling_lead_lag_peer_underreaction.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "experiments/cards/exp-20260610-022.md",
+    "experiments/logs/exp-20260610-022.json",
+    "experiments/manifests/exp-20260610-022.json",
+    "experiments/tickets/exp-20260610-022.json",
+    "quant/experiments/exp_20260610_022_rolling_lead_lag_peer_underreaction.py"
+  ],
+  "artifact": "data/experiments/exp-20260610-022/exp_20260610_022_rolling_lead_lag_peer_underreaction.json",
+  "baseline_result_file": "data\\experiments\\exp-20260602-003\\exp_20260602_003_post_earnings_explicit_continuation.json",
+  "card_file": "experiments/cards/exp-20260610-022.md",
+  "causal_components": [
+    "PIT rolling lead-lag edge",
+    "lagged peer shock",
+    "liquid candidate leadership",
+    "next-open paper entry",
+    "10-day paper exit",
+    "Gate 1-4 replay-only verdict"
+  ],
+  "change_type": "candidate_pool_private_replay_scout",
+  "changed_variable": "rolling_lead_lag_peer_underreaction_candidate_source_v1",
+  "claimed_at": "2026-06-10T20:06:58+00:00",
+  "completed_at": "2026-06-10T20:13:34Z",
+  "created_at": "2026-06-10T20:06:49+00:00",
+  "decision": "rejected_rolling_lead_lag_peer_underreaction_candidate_pool",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260610-022",
+  "experiment_uid": "expuid-8ad179163c82462e",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260610-022",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-10T20:06:49+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "rolling_lead_lag_peer_underreaction"
+  },
+  "hypothesis": "Lagged lead-lag OHLCV relations may identify liquid stocks that underreact one trading day after a strongly related peer moves first, adding a distinct free-data candidate-pool source beyond same-day rolling-correlation peer shock.",
+  "implementation_mode": "private_replay_scout",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "core entry/ranking/sizing/exits; accepted helper allocator; live/default orders"
+  ],
+  "log": "experiments/logs/exp-20260610-022.json",
+  "mechanism_family": "production_visible_free_ohlcv_relation_alpha",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/backtester.py",
+    "quant/constants.py",
+    "live/default orders",
+    "core ranking",
+    "sizing",
+    "exits",
+    "LLM/news prompts"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260606-024",
+    "exp-20260606-025",
+    "exp-20260608-025",
+    "exp-20260608-028",
+    "exp-20260610-003"
+  ],
+  "new_evidence_type": "new_dynamic_lead_lag_edge_construction",
+  "owner": "codex-alpha-search",
+  "prediction": {
+    "confidence_reason": "Accepted rolling-correlation peer shock proves relation-specific OHLCV edges can work, but many sector/industry peer variants failed. This tests a materially different lagged edge construction with only signal-date and prior OHLCV; data-shape and comparator risk keep confidence low.",
+    "expected_ev_delta": 0.12,
+    "expected_pnl_delta": 2200.0,
+    "main_failure_modes": [
+      "lead_lag_edge_unstable",
+      "accepted_peer_shock_comparator_not_beaten",
+      "window_regression",
+      "concentration_failed",
+      "thin_sample"
+    ],
+    "recorded_at": "2026-06-10T20:06:35+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 4,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "aggregate_expected_value_delta": -0.3173,
+    "aggregate_strategy_total_pnl_delta": -6968.7,
+    "artifact": "data/experiments/exp-20260610-022/exp_20260610_022_rolling_lead_lag_peer_underreaction.json",
+    "calibration": {
+      "actual_gate4_passed": false,
+      "actual_numeric_gate4_passed": false,
+      "actual_success": 0,
+      "brier_score": 0.0324,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "drawdown_drift_too_high",
+        "accepted_peer_shock_ev_comparator_not_beaten",
+        "accepted_peer_shock_pnl_comparator_not_beaten"
+      ],
+      "predicted_success_probability": 0.18
+    },
+    "decision": "rejected_rolling_lead_lag_peer_underreaction_candidate_pool",
+    "gate4_failed_reasons": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "drawdown_drift_too_high",
+      "accepted_peer_shock_ev_comparator_not_beaten",
+      "accepted_peer_shock_pnl_comparator_not_beaten"
+    ],
+    "log": "experiments/logs/exp-20260610-022.json",
+    "numeric_gate4_passed": false
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260610-022.json",
+  "single_causal_variable": "rolling_lead_lag_peer_underreaction_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The lead-lag peer-underreaction source did not clear Gate 4 or did not beat the accepted peer-shock comparator; do not promote or locally retune this lead-lag relation family on frozen windows.",
+  "ticket_file": "experiments/tickets/exp-20260610-022.json",
+  "trial_family": "rolling_lead_lag_peer_underreaction_candidate_pool",
+  "trial_variant_id": "lead_lag_positive_peer_move_top1_next_open_10d_v1",
+  "updated_at": "2026-06-10T20:13:34Z"
+}
