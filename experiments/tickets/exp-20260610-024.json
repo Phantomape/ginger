@@ -1,0 +1,198 @@
+{
+  "experiment_id": "exp-20260610-024",
+  "experiment_uid": "expuid-31da359088df417e",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260610-024",
+    "slug": "sec_earnings_cadence_surprise_absorption",
+    "reserved_at": "2026-06-10T22:11:50+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "codex-alpha-search",
+  "hypothesis": "candidate_pool: SEC 8-K Item 2.02 earnings releases after a long issuer-specific filing cadence gap, when paired with same-day liquid SPY-relative price and volume absorption, may identify low-information-flow earnings underreaction candidates for next-open 10d paper drift.",
+  "change_type": "default_off_paper_candidate_pool_replay_scout",
+  "mechanism_family": "production_visible_sec_event_timing_alpha",
+  "trial_family": "sec_earnings_cadence_surprise_absorption_candidate_pool",
+  "trial_variant_id": "sec_earnings_cadence_surprise_absorption_top1_next_open_10d_v1",
+  "single_causal_variable": "sec_earnings_cadence_surprise_absorption_candidate_source_v1",
+  "changed_variable": "sec_earnings_cadence_surprise_absorption_candidate_source_v1",
+  "causal_components": [
+    "sec_8k_item_202_only",
+    "cadence_gap_ge_45d",
+    "price_absorption",
+    "top1_next_open_10d"
+  ],
+  "prior_trial_count": 4,
+  "nearby_prior_experiments": [
+    "exp-20260602-026",
+    "exp-20260609-012",
+    "exp-20260610-023"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "production_visible_sec_earnings_filing_cadence_gap_x_price_absorption_field",
+  "baseline_result_file": "docs/backtesting.md",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "data/experiments",
+    "experiments/logs",
+    "experiments/artifacts",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "must_not_touch": [
+    "live/default orders",
+    "core signal generation",
+    "sizing",
+    "exits",
+    "LLM/news decision logic"
+  ],
+  "locked_variables": [
+    "core A/B strategy",
+    "backtesting.md windows",
+    "next-open entry",
+    "10-trading-day paper hold",
+    "trade_enabled=false"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Gate 1-4: aggregate EV/PnL improve across all three canonical windows, drawdown does not materially worsen, mapped candidate sample/trade count is statistically meaningful; positive scout must not be promoted without shared default-off parity.",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": 0.12,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "post_earnings_near_neighbor_no_incremental_edge",
+      "mapped_sample_too_small",
+      "old_thin_drawdown_regression",
+      "sec_text_replay_proxy_not_production_ready"
+    ],
+    "confidence_reason": "The field is free and PIT-keyed with 232 mapped SEC 8-K rows across three windows, and cadence/timing is distinct from prior SEC phrase and payload tests. Confidence remains low because all rows are earnings-release related and prior SEC text candidate pools have been noisy or sample-limited.",
+    "recorded_at": "2026-06-10T22:11:36+00:00"
+  },
+  "created_at": "2026-06-10T22:11:50+00:00",
+  "claimed_at": "2026-06-10T22:12:17+00:00",
+  "completed_at": "2026-06-10T22:18:12+00:00",
+  "result": {
+    "decision": "rejected_sec_earnings_cadence_surprise_absorption_candidate_pool",
+    "accepted": false,
+    "artifact": "data/experiments/exp-20260610-024/exp_20260610_024_sec_earnings_cadence_surprise_absorption.json",
+    "log": "experiments/logs/exp-20260610-024.json",
+    "card": "experiments/cards/exp-20260610-024.md",
+    "aggregate_expected_value_delta": -0.018,
+    "aggregate_strategy_total_pnl_delta": -436.46,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_sec_earnings_cadence_surprise_absorption_candidate_pool",
+      "failed_reasons": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_concentration_failed",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten"
+      ],
+      "aggregate_ev_delta": -0.018,
+      "aggregate_pnl_delta": -436.46,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 2,
+      "windows_pnl_improved": 1,
+      "windows_pnl_regressed": 2,
+      "target_trade_count": 5,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0011,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": false,
+        "max_single_positive_pnl_share": 1.0,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 1.0,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "accepted_compression_comparator": {
+        "experiment_id": "exp-20260608-013",
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "expected_value_score_delta_sum": 0.1608,
+        "total_pnl_delta_sum": 2248.98,
+        "target_trade_count": 44
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.18,
+      "actual_gate4_passed": false,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_concentration_failed",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten"
+      ],
+      "brier_score": 0.0324
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "replay_only_no_live_adapter",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_sec_filing_text": true,
+      "uses_free_ohlcv": true,
+      "parity_note": "This experiment changes no production code. A positive result is only a replay lead. Promotion would require a shared default-off adapter that loads the same PIT SEC filing text rows, applies the exact same Item 2.02, issuer cadence gap, text completeness, signal-date OHLCV absorption gates, overlap exclusion, next-open paper entry, 10-trading-day exit, costs, cooldown, comparator, and concentration guards in historical replay and daily production before any report queue, paper ledger, candidate priority, sizing, watchlist, or order surface could change."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The fixed SEC earnings cadence surprise absorption bundle failed Gate 4. That means cadence/timing alone did not create a stable edge beyond existing post-earnings and OHLCV helpers after next-open execution, costs, 10-day hold, cooldown, overlap controls, and accepted compression comparison. The useful next evidence is richer earnings information, not a cadence or price-threshold sweep.",
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping cadence-gap days, word-count thresholds, Item 2.02 subsets, ret20/ret60 relative-strength thresholds, signal-day return, close-location, volume-ratio bounds, top-N, hold-day, cooldown, or paper notional on the same frozen windows.",
+      "new_evidence_required": "A retry needs materially richer PIT event evidence: filing time relative to earnings calendar, reported surprise versus estimates, guidance direction, or a source-utility ledger that shows which earnings filing cadence buckets beat the displaced candidate after costs."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260610-024.json",
+  "card_file": "experiments/cards/exp-20260610-024.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260610-024.json",
+  "decision": "rejected_sec_earnings_cadence_surprise_absorption_candidate_pool",
+  "summary": "The SEC earnings cadence surprise absorption source was rejected; it did not establish a distinct free SEC timing/OHLCV candidate-pool edge under the standard three-window protocol.",
+  "artifact": "data/experiments/exp-20260610-024/exp_20260610_024_sec_earnings_cadence_surprise_absorption.json",
+  "log": "experiments/logs/exp-20260610-024.json",
+  "aggregate_expected_value_delta": -0.018,
+  "aggregate_strategy_total_pnl_delta": -436.46,
+  "updated_at": "2026-06-10T22:18:12+00:00"
+}
