@@ -69,7 +69,8 @@ data/backtests/backtest_results_*.json
 - 当前 alpha 短记忆：`docs/alpha_context_pack.md`
 - 当前状态短入口：`docs/current_state_snapshot.md`
 - alpha 方向、frozen zones、机制经验：`docs/alpha-optimization-playbook.md`
-- production/backtest parity 合同和 adapter 表：`docs/production_backtest_parity.md`
+- production/backtest parity 核心合同：`docs/production_backtest_parity.md`
+- adapter / sleeve parity 表：`docs/production_backtest_parity_matrix.md`（按需深读）
 - data edge、context layer、attribution surface：`docs/data_edge_context_layers.md`
 - JSON/JSONL 记录格式：`docs/experiment_log_format.md`
 

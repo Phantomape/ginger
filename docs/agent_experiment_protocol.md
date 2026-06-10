@@ -2,7 +2,8 @@
 
 Operational runbook for experiments. Durable rules live in `AGENTS.md`;
 canonical metrics and windows live in `docs/backtesting.md`; production parity
-lives in `docs/production_backtest_parity.md`. This file tells agents which
+lives in `docs/production_backtest_parity.md`, with adapter rows in
+`docs/production_backtest_parity_matrix.md`. This file tells agents which
 commands to run and what an experiment must leave behind.
 
 ## Source Map
@@ -12,7 +13,8 @@ commands to run and what an experiment must leave behind.
 - `docs/alpha_context_pack.md`: compact alpha memory for current runs.
 - `docs/current_state_snapshot.md`: compact current-state entrypoint.
 - `docs/alpha-optimization-playbook.md`: alpha directions and frozen zones.
-- `docs/production_backtest_parity.md`: shared policy and adapter parity.
+- `docs/production_backtest_parity.md`: core shared-policy parity contract.
+- `docs/production_backtest_parity_matrix.md`: per-adapter parity rows.
 - `docs/data_edge_context_layers.md`: context, attribution, data-edge surfaces.
 - `docs/experiment_ticket_schema.md`: ticket fields and conflict rules.
 - `docs/experiment_log_format.md`: JSON / JSONL closeout shape.
