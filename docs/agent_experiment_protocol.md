@@ -13,12 +13,11 @@ commands to run and what an experiment must leave behind.
 - `docs/alpha_context_pack.md`: compact alpha memory for current runs.
 - `docs/current_state_snapshot.md`: compact current-state entrypoint.
 - `docs/alpha-optimization-playbook.md`: current alpha directions and frozen zones.
-- `docs/alpha_mechanism_cards.md`: accepted/rejected mechanism evidence cards.
+- `docs/lessons/*.md`: generated mechanism evidence cards.
 - `docs/alpha_external_research_map.md`: research-literature idea map.
 - `docs/production_backtest_parity.md`: core shared-policy parity contract.
 - `docs/production_backtest_parity_matrix.md`: per-adapter parity rows.
 - `docs/data_edge_context_layers.md`: data-edge operating contract.
-- `docs/data_edge_context_layers_catalog.md`: concrete surface/tool catalog.
 - `docs/experiment_ticket_schema.md`: ticket fields and conflict rules.
 - `docs/experiment_log_format.md`: JSON / JSONL closeout shape.
 
@@ -31,16 +30,19 @@ multiple docs.
 2. Answer the five pre-run questions in the ticket, card, artifact, or log.
 3. Reserve an ID before writing runner, artifact, data, ticket, or log files.
 4. Claim the ticket before work when other agents may be active.
-5. Implement the single predeclared decision hypothesis or policy bundle.
-6. Run Gate 1-4 with the canonical protocol in `docs/backtesting.md`.
-7. Record production impact and parity boundary.
-8. Write artifact, log, card, ticket, manifest, and JSONL closeout.
-9. Run `scripts/experiment.py audit --lean-strict`.
-10. Commit when the task or automation requires a committed experiment result.
+5. For production-visible candidate-pool or paper-sleeve alpha, use the
+   full-stack candidate-pool contract by default.
+6. Implement the single predeclared decision hypothesis or policy bundle.
+7. Run Gate 1-4 with the canonical protocol in `docs/backtesting.md`.
+8. Record production impact and parity boundary.
+9. Write artifact, log, card, ticket, manifest, and JSONL closeout.
+10. Run `scripts/experiment.py audit --lean-strict`.
+11. Commit when the task or automation requires a committed experiment result.
 
 ## Reserve
 
-Preferred command:
+Default alpha-search reservation for production-visible candidate-pool or
+paper-sleeve ideas:
 
 ```powershell
 .\.venv\Scripts\python.exe -B scripts\experiment.py new `
@@ -48,7 +50,7 @@ Preferred command:
   --hypothesis "One sentence hypothesis." `
   --change-type candidate_pool_full_stack `
   --decision-variable "single decision hypothesis or fixed policy bundle" `
-  --causal-components "shared helper,daily snapshot,parity test" `
+  --causal-components "shared helper,historical replay,daily snapshot,parity test,execution envelope,full-stack verdict" `
   --file-slug short_slug `
   --nearby-prior-experiments exp-YYYYMMDD-NNN `
   --success-probability 0.35 `
@@ -56,9 +58,13 @@ Preferred command:
   --confidence-reason "Mechanism, prior evidence, and disconfirmers."
 ```
 
-Use `--change-type candidate_pool_full_stack` for high-potential,
-production-visible default-off candidate-pool or paper-sleeve alpha unless the
-data shape is genuinely uncertain.
+Use `--change-type candidate_pool_full_stack` as the default for
+production-visible default-off candidate-pool or paper-sleeve alpha. Choose a
+different alpha change type only when the decision variable is not a
+candidate-pool source, paper sleeve, source allocator, or replacement-value
+route. Mark the ticket `implementation_mode=private_replay_scout` only when the
+data shape is genuinely uncertain or the idea is too speculative to justify the
+shared helper up front; record that escape reason before running the scout.
 
 For measurement repair:
 
@@ -106,12 +112,21 @@ Do not split a single policy bundle merely to satisfy old field names.
 `single_causal_variable` means one attributable decision hypothesis, not one
 file or one parameter.
 
+For production-visible candidate-pool alpha, those four blocks should be
+satisfied through the full-stack candidate-pool contract by default: shared
+helper, historical replay, daily default-off snapshot, parity test, declared
+execution envelope, Gate-4 verdict, and closeout artifact in one experiment.
+If any of those pieces are skipped, the record must explain the blocker and the
+result cannot be called accepted alpha merely because a replay was positive.
+
 ## Shared-Paper-First
 
 Use shared-paper-first when the signal can be available in both historical
 replay and daily production observation: free OHLCV, official event calendars,
 accepted default-off sleeve snapshots, filed-date bounded fundamentals,
 publication-date bounded FINRA/SEC rows, or produced core-entry context.
+For candidate-pool alpha, the default runnable form of shared-paper-first is
+the full-stack candidate-pool contract below.
 
 Minimum implementation:
 
@@ -130,13 +145,33 @@ the idea is too speculative to justify a helper. A positive scout must be
 recorded as `positive_replay_lead_not_promoted`, explain why shared-paper-first
 was skipped, and name the exact helper/parity work required.
 
-## Full-Stack Candidate-Pool Path
+## Full-Stack Candidate-Pool Contract
 
-For candidate-pool alpha, prefer the one-shot full-stack path:
+For production-visible candidate-pool alpha, the one-shot full-stack contract
+is the default experiment specification, not a follow-up promotion path. Start
+here when the candidate source can be computed point-in-time and exposed by the
+daily default-off path.
 
 - Template: `quant/experiments/_templates/candidate_pool_full_stack_template.py`
 - Verdict helper: `quant/full_stack_candidate_pool.py`
 - Change type: `candidate_pool_full_stack`
+
+The contract bundles:
+
+- one fixed candidate-pool decision hypothesis or source-allocation policy;
+- one shared helper used by both historical replay and daily default-off output;
+- one replay path that measures the after result on canonical windows;
+- one daily snapshot, report, or ledger path that exposes the same rule version
+  with `trade_enabled=False`;
+- one focused parity test for representative candidate behavior;
+- one declared live-realistic execution envelope, even if live is not eligible;
+- one full-stack verdict recorded through `quant/full_stack_candidate_pool.py`
+  or an equivalent artifact block.
+
+The scout-then-adapter two-round split is the exception, allowed only when the
+data shape is genuinely uncertain. A positive replay scout must be promoted
+through this same contract - shared sleeve, parity tests, declared execution
+envelope, full-stack verdict - not through an ad hoc adapter-only follow-up.
 
 Verdicts:
 
@@ -149,6 +184,17 @@ Verdicts:
 
 An incomplete execution envelope blocks only `live_eligible`; it does not block
 `accepted_paper_pending_forward`. Declare the envelope up front anyway.
+
+Gate-4 evaluation note: `evaluate_gate4` includes the AGENTS.md scout
+materiality floor (>= $500 average per-trade PnL delta or >= 5pp average return
+delta). That floor is calibrated for support-field / notional-scalar scouts on
+existing sleeves; at the fixed $4,000 paper notional used by candidate-pool
+adapters it would reject every accepted comparator (for example
+exp-20260608-013 at roughly $51/trade). For new candidate-pool sources, run
+`evaluate_gate4` both ways - strict (`check_materiality=True`) for the record
+and canonical (`check_materiality=False`) for the decision - and treat beating
+the closest accepted comparator after costs as the binding materiality
+standard. Record both blocks in the artifact.
 
 ## Gate Execution
 

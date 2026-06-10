@@ -50,7 +50,11 @@ Priority rules:
 - Prefer replacement value against the displaced candidate over standalone PnL.
 - Prefer shared-paper-first experiments for high-potential default-off paper
   alpha: the first serious test should use a shared historical replay plus daily
-  snapshot helper, not private runner-only selection code.
+  snapshot helper, not private runner-only selection code. The default runnable
+  form is the full-stack candidate-pool contract
+  (`--change-type candidate_pool_full_stack`, see
+  `docs/agent_experiment_protocol.md`), which reaches a paper-sleeve verdict in
+  one experiment instead of a scout round plus a promotion round.
 - Prefer shared production/backtest policy over replay-only logic. A positive
   private replay scout is only a lead until a shared helper reproduces it.
 - Treat high aggregate EV with window regression or drawdown drift as a rejected
@@ -121,12 +125,17 @@ Default next question for any new broad candidate pool:
 - whether the result survives costs, concentration, and drawdown before any
   notional, top-N, hold-day, or cooldown tuning.
 
-## Mechanism Detail Files
+## Detail Sources
 
-Accepted/rejected mechanism cards live in `docs/alpha_mechanism_cards.md`.
+Generated mechanism memory lives in `docs/lessons/*.md`; exact facts live in
+`experiments/tickets`, `experiments/logs`, `experiments/cards`,
+`experiments/artifacts`, and committed code.
+
 External research mappings live in `docs/alpha_external_research_map.md`.
 
-Use those files only when choosing or auditing a concrete family. Keep this playbook focused on the current operating readout, queue, and anti-repeat rules.
+Use detail sources only when choosing or auditing a concrete family. Keep this
+playbook focused on the current operating readout, queue, and anti-repeat
+rules.
 
 ## Research Queue
 
@@ -282,10 +291,6 @@ not an autonomous trade call; it is a timestamped, schema-bound, retrievable
 field with source coverage, calibration, uncertainty, and failure-mode metadata.
 If the field cannot be replayed or compared against a displaced candidate after
 costs, keep it out of trading logic.
-
-## External Research Detail
-
-For literature-derived ideas, read `docs/alpha_external_research_map.md` and convert only replayable, production-visible fields into experiments.
 
 ## Anti-Repeat Rules
 

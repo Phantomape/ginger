@@ -3,7 +3,10 @@
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
 
-The current operating rules, readout, research queue, and anti-repeat rules remain in `docs/alpha-optimization-playbook.md`.
+This is an idea map, not an accepted-strategy source. The current operating
+rules, readout, research queue, and anti-repeat rules remain in
+`docs/alpha-optimization-playbook.md`; accepted/rejected experiment facts live
+in raw experiment records and generated `docs/lessons/*.md`.
 
 ## External Research Mapped To Ginger
 

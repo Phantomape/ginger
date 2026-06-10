@@ -69,11 +69,11 @@ data/backtests/backtest_results_*.json
 - 当前 alpha 短记忆：`docs/alpha_context_pack.md`
 - 当前状态短入口：`docs/current_state_snapshot.md`
 - alpha 当前方向、frozen zones、anti-repeat：`docs/alpha-optimization-playbook.md`
-- 机制证据卡和外部研究映射：`docs/alpha_mechanism_cards.md`、`docs/alpha_external_research_map.md`（按需深读）
+- 机制级短记忆：`docs/lessons/*.md`（按需深读，生成文件）
+- 外部研究映射：`docs/alpha_external_research_map.md`（按需深读，不能替代回测）
 - production/backtest parity 核心合同：`docs/production_backtest_parity.md`
 - adapter / sleeve parity 表：`docs/production_backtest_parity_matrix.md`（按需深读）
 - data edge / context layer 核心合同：`docs/data_edge_context_layers.md`
-- 具体 surface / sidecar / sleeve 目录：`docs/data_edge_context_layers_catalog.md`（按需深读）
 - JSON/JSONL 记录格式：`docs/experiment_log_format.md`
 
 常用工具：

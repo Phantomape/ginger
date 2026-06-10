@@ -38,11 +38,15 @@ Current high-value surface families:
 - theme density, crowding, and exhaustion;
 - relative strength and residual leadership surfaces.
 
-## Catalog
+## Code Is The Catalog
 
-Detailed module notes, accepted/rejected adjacent uses, attribution scripts, default-off sleeve semantics, and meta-research tool descriptions live in `docs/data_edge_context_layers_catalog.md`.
+Concrete surfaces, sidecars, sleeves, attribution scripts, artifact schemas, and
+meta-research tools live in code, tests, experiment artifacts, and generated
+lessons. Do not duplicate module-by-module explanations here.
 
-Keep this file as the startup contract. Update the catalog when adding or changing a concrete surface, sidecar, sleeve, or attribution tool.
+Use `rg` over `quant/`, `experiments/`, and `data/` when selecting a concrete
+surface. Update this document only when the operating principle, promotion
+boundary, or pre-experiment checklist changes.
 
 ## Agent checklist before using these tools in a strategy experiment
 
