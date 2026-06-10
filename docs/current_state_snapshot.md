@@ -6,9 +6,9 @@ complete state database.
 
 ## Source Snapshot
 
-- Strategy records counted: `1125`
-- Accepted strategy records: `191`
-- History fingerprint: `329c121ca304b04e`
+- Strategy records counted: `1126`
+- Accepted strategy records: `192`
+- History fingerprint: `8e0e0dc9ade790b9`
 - Generated from committed experiment logs when using `--git-ref HEAD`.
 
 ## Exact State Sources
@@ -34,8 +34,6 @@ complete state database.
 
 ## Recent Accepted Strategy Records
 
-- `exp-20260604-027` `accepted_default_off_sec_ftd_finra_shared_adapter`: EV `+0.0000`, PnL `$0.00`, family `default_off_paper_adapter`, trial `default_off_paper_adapter`.
-  Lesson: Promote the positive SEC FTD plus FINRA borrow-pressure replay lead into a shared default-off paper adapter so production can collect forward replacement-value evidence without changing live orders.
 - `exp-20260606-001` `accepted_shared_default_off_low_deployment_etf_cash_substitute_adapter`: EV `+3.0292`, PnL `$44,306.91`, family `low_deployment_etf_cash_substitute_shared_adapter`, trial `low_deployment_etf_cash_substitute_shared_adapter`.
   Lesson: Low core deployment leaves replacement-value gaps; the accepted low-deployment ETF cash-substitute replay should reproduce as a shared default-off paper adapter with next-open entry, 10-trading-day close exit, one ope...
 - `exp-20260606-020` `accepted_macro_relief_top2_shared_default_off_paper_adapter`: EV `+0.1813`, PnL `$3,062.78`, family `free_official_macro_calendar_plus_ohlcv_candidate_pool`, trial `macro_relief_leadership_candidate_pool`.
@@ -58,11 +56,11 @@ complete state database.
   Lesson: The shared helper reproduced the private replay lead because it kept the exact calendar window, liquid sector-known universe, SPY-relative leadership, close/volume/volatility guards, same-ticker selected-core overlap...
 - `exp-20260610-005` `accepted_shared_default_off_accepted_helper_source_priority_allocator`: EV `+0.8971`, PnL `$14,502.52`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
   Lesson: The alpha worked because it expanded the usable candidate pool across several accepted OHLCV helper sensors while limiting same-day overlap to one ex-ante highest-priority paper risk slot. The shared helper removes th...
+- `exp-20260610-008` `accepted_fiftytwo_week_high_proximity_core_flow_shared_default_off_adapter`: EV `+0.4308`, PnL `$9,295.34`, family `production_visible_free_ohlcv_candidate_pool`, trial `fiftytwo_week_high_proximity_breakout_candidate_pool`.
+  Lesson: The shared helper reproduced the private replay lead because it kept the exact 252-day-high proximity, 60-day breakout, leadership and quality gates, core-flow admission, same-ticker overlap exclusion, next-open entry...
 
 ## Recent Production-Visible Or Default-Off Accepted Records
 
-- `exp-20260606-020` `accepted_macro_relief_top2_shared_default_off_paper_adapter`: EV `+0.1813`, PnL `$3,062.78`, family `free_official_macro_calendar_plus_ohlcv_candidate_pool`, trial `macro_relief_leadership_candidate_pool`.
-  Lesson: The positive exp-20260606-019 macro relief top-2 stock leadership source can be implemented as one shared default-off paper adapter without changing the three-window evidence or creating a production/backtest mismatch.
 - `exp-20260606-025` `accepted_rolling_corr_peer_shock_shared_default_off_adapter`: EV `+0.0000`, PnL `$0.00`, family `production_visible_free_ohlcv_relation_alpha`, trial `rolling_corr_peer_shock_default_off_shared_adapter`.
   Lesson: The core-flow confirmed rolling-correlation peer-shock lead remains valuable when candidate generation is moved into a shared default-off paper adapter used by both historical replay and daily snapshot tests.
 - `exp-20260606-026` `accepted`: EV `+0.0000`, PnL `$0.00`, family `default_off_forward_adapter_wiring`, trial `default_off_forward_adapter_wiring`.
@@ -81,6 +79,8 @@ complete state database.
   Lesson: The shared helper reproduced the private replay lead because it kept the exact calendar window, liquid sector-known universe, SPY-relative leadership, close/volume/volatility guards, same-ticker selected-core overlap...
 - `exp-20260610-005` `accepted_shared_default_off_accepted_helper_source_priority_allocator`: EV `+0.8971`, PnL `$14,502.52`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
   Lesson: The alpha worked because it expanded the usable candidate pool across several accepted OHLCV helper sensors while limiting same-day overlap to one ex-ante highest-priority paper risk slot. The shared helper removes th...
+- `exp-20260610-008` `accepted_fiftytwo_week_high_proximity_core_flow_shared_default_off_adapter`: EV `+0.4308`, PnL `$9,295.34`, family `production_visible_free_ohlcv_candidate_pool`, trial `fiftytwo_week_high_proximity_breakout_candidate_pool`.
+  Lesson: The shared helper reproduced the private replay lead because it kept the exact 252-day-high proximity, 60-day breakout, leadership and quality gates, core-flow admission, same-ticker overlap exclusion, next-open entry...
 
 ## Current Research Queue Pointers
 

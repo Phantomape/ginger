@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1125`
-- Raw records loaded by meta report: `1533`
-- History fingerprint: `329c121ca304b04e`
+- Strategy records counted: `1126`
+- Raw records loaded by meta report: `1534`
+- History fingerprint: `8e0e0dc9ade790b9`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -63,8 +63,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260609-023` `rejected_compression_lagged_consensus_did_not_beat_accepted_lagged_comparator`: EV `+0.0104`, PnL `$-53.34`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_new_independent_source_family`.
-  Lesson: The variant did not beat the current accepted lagged consensus comparator across all three canonical windows.
 - `exp-20260609-024` `rejected_early_peer_earnings_sympathy_candidate_pool`: EV `-0.0950`, PnL `$-1,325.52`, family `production_visible_event_peer_relation_alpha`, trial `early_peer_earnings_sympathy_candidate_pool`.
   Lesson: The source failed to add robust replacement value across the three canonical windows or breached sample/risk gates. The same-day peer sympathy relation did not sufficiently separate true event-information transfer fro...
 - `exp-20260609-025` `rejected_form4_liquidity_cost_cluster_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `form4_liquidity_cost_cluster_candidate_pool`.
@@ -87,6 +85,8 @@ facts before changing strategy behavior.
   Lesson: Macro relief was already an accepted standalone helper, but the allocator extension did not add enough incremental replacement value after existing higher-priority helper rows and global cooldown. The likely issue is...
 - `exp-20260610-007` `positive_replay_lead_not_promoted_fiftytwo_week_high_proximity_core_flow`: EV `+0.4308`, PnL `$9,295.34`, family `production_visible_free_ohlcv_candidate_pool`, trial `fiftytwo_week_high_proximity_breakout_candidate_pool`.
   Lesson: The 52-week-high proximity breakout core-flow bundle cleared the canonical three-window gates and beat the accepted compression/core-flow comparators, suggesting anchoring underreaction at the 52-week high added repla...
+- `exp-20260610-008` `accepted_fiftytwo_week_high_proximity_core_flow_shared_default_off_adapter`: EV `+0.4308`, PnL `$9,295.34`, family `production_visible_free_ohlcv_candidate_pool`, trial `fiftytwo_week_high_proximity_breakout_candidate_pool`.
+  Lesson: The shared helper reproduced the private replay lead because it kept the exact 252-day-high proximity, 60-day breakout, leadership and quality gates, core-flow admission, same-ticker overlap exclusion, next-open entry...
 
 ## Highest-Signal Historical Records
 
