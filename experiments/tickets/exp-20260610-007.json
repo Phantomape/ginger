@@ -1,0 +1,168 @@
+{
+  "experiment_id": "exp-20260610-007",
+  "experiment_uid": "expuid-631c26c84ebe4b01",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260610-007",
+    "slug": "fiftytwo_week_high_proximity_core_flow",
+    "reserved_at": "2026-06-10T05:15:10+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "positive_replay_lead_not_promoted",
+  "lane": "alpha_search",
+  "owner": "alpha-search-automation",
+  "hypothesis": "entry/candidate_pool: anchoring underreaction at the 52-week high (George-Hwang 2004) should make liquid sector-known stocks that push into a fresh 52-week-high zone (within 3% of the trailing 252-day high and breaking a new 60-day high) with SPY-relative leadership and strong close/volume quality continue after next-open entry, especially when the same day already shows core A/B entry flow. Uses only free OHLCV.",
+  "change_type": "default_off_paper_candidate_pool",
+  "mechanism_family": "production_visible_free_ohlcv_candidate_pool",
+  "trial_family": "fiftytwo_week_high_proximity_breakout_candidate_pool",
+  "trial_variant_id": "fiftytwo_week_high_proximity_core_flow_top1_next_open_10d_v1",
+  "single_causal_variable": "fiftytwo_week_high_proximity_core_flow_candidate_source_v1",
+  "changed_variable": "fiftytwo_week_high_proximity_core_flow_candidate_source_v1",
+  "causal_components": [
+    "candidate source helper",
+    "extended-lookback snapshot loader",
+    "3-window before/after metrics",
+    "gate4 comparator"
+  ],
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260608-013",
+    "exp-20260608-008",
+    "exp-20260606-015",
+    "exp-20260608-016",
+    "exp-20260609-027"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "production_visible_free_ohlcv_fiftytwo_week_high_proximity_field",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260610_007_fiftytwo_week_high_proximity_core_flow.py",
+    "data/experiments/exp-20260610-007/exp_20260610_007_fiftytwo_week_high_proximity_core_flow.json",
+    "experiments/cards/exp-20260610-007.md",
+    "experiments/manifests/exp-20260610-007.json",
+    "experiments/tickets/exp-20260610-007.json",
+    "experiments/logs/exp-20260610-007.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "52-week-high proximity breakout candidate source gated by same-day core-flow with same-ticker overlap exclusion, fixed top-1 next-open 10-day bundle"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.15,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "generic_momentum_not_anchoring_edge",
+      "window_regression",
+      "drawdown_drift_too_high",
+      "accepted_compression_comparator_not_beaten",
+      "thin_sample"
+    ],
+    "confidence_reason": "52-week-high proximity is a recognized anomaly distinct from trailing momentum (George-Hwang 2004), not in the rejected/anti-repeat list, free-OHLCV PIT-safe, and uses the accepted core-flow displacement anchor; but broad breakout/momentum pools have repeatedly failed drawdown/tail and comparator checks here, so prior is low.",
+    "recorded_at": "2026-06-10T05:15:10+00:00"
+  },
+  "created_at": "2026-06-10T05:15:10+00:00",
+  "claimed_at": null,
+  "completed_at": "2026-06-10T05:20:51+00:00",
+  "result": {
+    "decision": "positive_replay_lead_not_promoted_fiftytwo_week_high_proximity_core_flow",
+    "accepted": false,
+    "accepted_alpha": false,
+    "numeric_gate4_passed": true,
+    "artifact": "data/experiments/exp-20260610-007/exp_20260610_007_fiftytwo_week_high_proximity_core_flow.json",
+    "log": "experiments/logs/exp-20260610-007.json",
+    "card": "experiments/cards/exp-20260610-007.md",
+    "aggregate_expected_value_delta": 0.4308,
+    "aggregate_strategy_total_pnl_delta": 9295.34,
+    "gate4": {
+      "passed": true,
+      "decision": "positive_replay_lead_not_promoted_fiftytwo_week_high_proximity_core_flow",
+      "failed_reasons": [],
+      "aggregate_ev_delta": 0.4308,
+      "aggregate_pnl_delta": 9295.34,
+      "windows_ev_improved": 3,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 3,
+      "windows_pnl_regressed": 0,
+      "target_trade_count": 54,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0027,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.18657,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.075653,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "accepted_comparators": {
+        "compression": {
+          "experiment_id": "exp-20260608-013",
+          "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+          "expected_value_score_delta_sum": 0.1608,
+          "total_pnl_delta_sum": 2248.98,
+          "target_trade_count": 44
+        },
+        "core_flow": {
+          "experiment_id": "exp-20260608-008",
+          "decision": "accepted_industry_stable_core_flow_shared_default_off_adapter",
+          "expected_value_score_delta_sum": 0.1459,
+          "total_pnl_delta_sum": 3731.54,
+          "target_trade_count": 47
+        }
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.15,
+      "actual_gate4_passed": true,
+      "failure_modes_observed": [],
+      "brier_score": 0.7225
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "replay_only_no_live_adapter",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "parity_note": "This experiment changes no production code. A positive result would require a shared default-off adapter that computes the same liquid sector-known universe, trailing 252-day-high proximity, 60-day new-high breakout, SPY-relative leadership, close/volume quality gates, same-day core A/B entry-flow confirmation, same-ticker core-overlap exclusion, next-open paper entry, 10-trading-day exit, costs, cooldown, accepted compression/core-flow comparators, and concentration controls in both historical replay and daily production before any report queue, paper ledger, candidate priority, sizing, watchlist, or order surface could change. The extended candidate-snapshot lookback only reads past, point-in-time bars and never future data."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The 52-week-high proximity breakout core-flow bundle cleared the canonical three-window gates and beat the accepted compression/core-flow comparators, suggesting anchoring underreaction at the 52-week high added replacement value beyond generic liquid momentum. It remains only a replay lead because no shared daily adapter or production parity path was added.",
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping the 52-week proximity threshold, the 252-day-high or 60-day breakout lookbacks, ret20/ret60 relative-strength thresholds, signal-day return, close-location, volume-ratio bounds, top-N, hold-day, cooldown, or paper notional on the same frozen windows.",
+      "new_evidence_required": "A retry needs materially new evidence beyond price-anchor geometry, such as a point-in-time fundamental/quality gate that separates durable 52-week-high leaders from exhausted ones, an options/borrow structure field, or forward daily-snapshot replacement value. Pure threshold retunes stay frozen."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260610-007.json",
+  "card_file": "experiments/cards/exp-20260610-007.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260610-007.json",
+  "decision": "positive_replay_lead_not_promoted_fiftytwo_week_high_proximity_core_flow",
+  "summary": "The 52-week-high proximity breakout core-flow source passed as a replay-only promotion lead, but no production surface changed and a shared default-off parity adapter is required before use.",
+  "artifact": "data/experiments/exp-20260610-007/exp_20260610_007_fiftytwo_week_high_proximity_core_flow.json",
+  "log": "experiments/logs/exp-20260610-007.json",
+  "aggregate_expected_value_delta": 0.4308,
+  "aggregate_strategy_total_pnl_delta": 9295.34,
+  "updated_at": "2026-06-10T05:20:51+00:00"
+}
