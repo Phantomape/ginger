@@ -70,6 +70,6 @@ records before making strategy changes.
 - `exp-20260610-004` source `experiments/logs/exp-20260610-004.json`.
 - `exp-20260610-005` source `experiments/logs/exp-20260610-005.json`.
 - `exp-20260610-006` source `experiments/logs/exp-20260610-006.json`.
-- `exp-20260610-009` source `docs/experiment_log.jsonl`.
+- `exp-20260610-009` source `experiments/logs/exp-20260610-009.json`.
 - `exp-20260610-014` source `experiments/logs/exp-20260610-014.json`.
 - `exp-20260610-016` source `experiments/logs/exp-20260610-016.json`.
