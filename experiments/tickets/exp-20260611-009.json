@@ -1,0 +1,85 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260611_009_pocket_pivot_accumulation_leadership.py",
+    "data/experiments/exp-20260611-009/exp_20260611_009_pocket_pivot_accumulation_leadership.json",
+    "experiments/cards/exp-20260611-009.md",
+    "experiments/manifests/exp-20260611-009.json",
+    "experiments/tickets/exp-20260611-009.json",
+    "experiments/logs/exp-20260611-009.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260611-009.md",
+  "causal_components": [],
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "pocket_pivot_accumulation_leadership_candidate_source_v1",
+  "claimed_at": "2026-06-11T06:13:20+00:00",
+  "completed_at": "2026-06-11T06:19:37Z",
+  "created_at": "2026-06-11T06:13:13+00:00",
+  "decision": "rejected_pocket_pivot_accumulation_leadership_candidate_pool",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260611-009",
+  "experiment_uid": "expuid-00fea630901d43fb",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260611-009",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-11T06:13:13+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "pocket_pivot_accumulation_leadership"
+  },
+  "hypothesis": "Pocket-pivot accumulation leadership (an up signal day whose up-volume exceeds the prior 10-day max down-volume while the stock is in an uptrend but not at a new high) may identify stealth institutional accumulation and produce default-off next-open 10-day replacement value.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "pocket_pivot_accumulation_leadership_candidate_source_v1"
+  ],
+  "mechanism_family": "default_off_paper_candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "confidence_reason": "Mechanism: the pocket pivot (O'Neil/Morales) flags stealth institutional accumulation when signal-day up-volume exceeds the maximum down-day volume of the prior 10 days inside an existing uptrend but before a new-high breakout. This is a distinct production-visible free-OHLCV volume-signature field, not a new-high breakout (52-week-high exp-20260610-008), a range compression+expansion (compression exp-20260608-013), or quiet low-volume accumulation; pocket pivots require a volume surge, the opposite of quiet. Nearby evidence: distribution-day absorption leadership (exp-20260611-007) accepted, showing institutional-flow OHLCV labels can add replacement value; but most broad momentum relabels (gap-and-hold, accumulation-base) failed, so main disconfirming risk is that the volume signature only rediscovers momentum and fails to beat the accepted compression comparator after costs and concentration.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "ohlcv_momentum_relabel",
+      "accepted_compression_comparator_not_beaten",
+      "old_thin_regression",
+      "tail_concentration",
+      "thin_sample"
+    ],
+    "recorded_at": "2026-06-11T06:12:52+00:00",
+    "success_probability": 0.15
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": 0.7434,
+    "aggregate_strategy_total_pnl_delta": 11832.15,
+    "artifact": "data/experiments/exp-20260611-009/exp_20260611_009_pocket_pivot_accumulation_leadership.json",
+    "calibration": {
+      "actual_gate4_passed": false,
+      "brier_score": 0.0225,
+      "failure_modes_observed": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "drawdown_drift_too_high"
+      ],
+      "predicted_success_probability": 0.15
+    },
+    "decision": "rejected_pocket_pivot_accumulation_leadership_candidate_pool",
+    "log": "experiments/logs/exp-20260611-009.json",
+    "numeric_gate4_passed": false
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260611-009.json",
+  "single_causal_variable": "pocket_pivot_accumulation_leadership_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The pocket-pivot accumulation source did not clear Gate 4 or the accepted compression comparator. Do not promote or retry this fixed OHLCV pocket-pivot definition on the same frozen windows without materially new PIT flow or forward replacement-value data.",
+  "ticket_file": "experiments/tickets/exp-20260611-009.json",
+  "trial_family": "default_off_paper_candidate_pool",
+  "trial_variant_id": "exp-20260611-009"
+}

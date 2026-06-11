@@ -350,6 +350,13 @@ production-visible field:
   market-pullback reclaim variants unless they add a new independent
   production-visible displacement field and beat accepted compression/relation
   comparators;
+- pocket-pivot volume-signature variants (signal-day up-volume above the prior
+  N-day max down-volume inside an uptrend / pre-breakout base): exp-20260611-009
+  fired ~1/day (360 trades), was strong in late_strong/mid_weak but regressed
+  old_thin on EV and PnL with drawdown drift, so the volume signature is too
+  broad and only relabels momentum; do not retry by sweeping down-volume
+  lookback, pocket volume ratio, base-high distance, trend SMA, or extension
+  guards without a new PIT flow field or forward replacement rows;
 - extra core-flow, VIXY/volatility-relief, or breadth confirmation layered on
   an already accepted candidate source unless it improves all windows versus
   that accepted source, not only the core baseline;
