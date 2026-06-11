@@ -3228,6 +3228,19 @@ def main():
     }
     _accumulate_ohlcv_warehouse(extra_ohlcv_frames, "cached_extra")
 
+    try:
+        from forward_replacement_value import enrich_all_sleeve_states
+
+        forward_replacement_value_summary = enrich_all_sleeve_states(today_iso)
+        if forward_replacement_value_summary.get("rows_enriched"):
+            log.info(
+                "Forward replacement-value enrichment: %d closed sleeve rows enriched",
+                forward_replacement_value_summary.get("rows_enriched", 0),
+            )
+    except Exception as e:
+        log.warning(f"Forward replacement-value enrichment unavailable: {e}")
+        forward_replacement_value_summary = {"status": "error", "error": str(e)}
+
     default_off_alpha_attribution = build_default_off_alpha_attribution_report(
         as_of=today_iso,
         pilot_attribution=pilot_attribution,
@@ -3272,6 +3285,7 @@ def main():
     trend_signals_dict["pilot_attribution"] = pilot_attribution
     trend_signals_dict["ai_infra_aggressive_attribution"] = ai_infra_aggressive_attribution
     trend_signals_dict["default_off_alpha_attribution"] = default_off_alpha_attribution
+    trend_signals_dict["forward_replacement_value_summary"] = forward_replacement_value_summary
     trend_signals_dict["form4_event_queue"] = form4_event_queue
     trend_signals_dict["form4_event_sleeve"] = form4_event_sleeve
     trend_signals_dict["sec_event_queue"] = sec_event_queue
