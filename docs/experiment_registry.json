@@ -19008,8 +19008,257 @@
       "aggregate_expected_value_delta": -0.0184,
       "aggregate_strategy_total_pnl_delta": -300.06,
       "updated_at": "2026-06-11T00:17:26+00:00"
+    },
+    {
+      "experiment_id": "exp-20260611-002",
+      "experiment_uid": "expuid-37016a3d70b94a4b",
+      "hub_identity": {
+        "scheme": "hf_hub_local_v1",
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260611-002",
+        "slug": "fiftytwo_week_high_finra_borrow_pressure",
+        "reserved_at": "2026-06-11T01:08:12+00:00",
+        "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+      },
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search-automation",
+      "hypothesis": "candidate_pool: the accepted 52-week-high core-flow source may mix durable forced-covering continuation with generic exhausted breakouts. Requiring the latest published FINRA borrow-pressure row on or before the signal date should isolate squeeze/short-covering continuation using free PIT data.",
+      "change_type": "default_off_paper_candidate_pool_replay_scout",
+      "mechanism_family": "borrow_pressure_52w_candidate_pool_scout",
+      "trial_family": "fiftytwo_week_high_finra_borrow_pressure_candidate_pool",
+      "trial_variant_id": "fiftytwo_week_high_finra_borrow_pressure_top1_next_open_10d_v1",
+      "single_causal_variable": "fiftytwo_week_high_finra_borrow_pressure_core_flow_candidate_source_v1",
+      "changed_variable": "fiftytwo_week_high_finra_borrow_pressure_core_flow_candidate_source_v1",
+      "causal_components": [
+        "accepted_52w_core_flow_candidate_source",
+        "latest_published_finra_days_to_cover_ge_3",
+        "positive_finra_short_interest_change",
+        "next_open_10d_paper_replay"
+      ],
+      "prior_trial_count": 0,
+      "nearby_prior_experiments": [
+        "exp-20260610-008",
+        "exp-20260610-015",
+        "exp-20260529-017",
+        "exp-20260603-007"
+      ],
+      "multiple_testing_risk_bucket": "moderate",
+      "new_evidence_type": "published_finra_borrow_pressure_overlay_on_accepted_52w_core_flow",
+      "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260611_002_fiftytwo_week_high_finra_borrow_pressure.py",
+        "data/experiments/exp-20260611-002/exp_20260611_002_fiftytwo_week_high_finra_borrow_pressure.json",
+        "experiments/cards/exp-20260611-002.md",
+        "experiments/manifests/exp-20260611-002.json",
+        "experiments/tickets/exp-20260611-002.json",
+        "experiments/logs/exp-20260611-002.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "must_not_touch": [
+        "quant/run.py",
+        "production order path",
+        "core ranking",
+        "core sizing",
+        "core exits",
+        "LLM/news path"
+      ],
+      "locked_variables": [
+        "52w geometry",
+        "core-flow anchor",
+        "next-open entry",
+        "10-trading-day hold",
+        "cost",
+        "cooldown",
+        "top-1",
+        "accepted comparator thresholds"
+      ],
+      "evaluation_windows": [
+        {
+          "start": "2025-10-23",
+          "end": "2026-04-21"
+        },
+        {
+          "start": "2025-04-23",
+          "end": "2025-10-22"
+        },
+        {
+          "start": "2024-10-02",
+          "end": "2025-04-22"
+        }
+      ],
+      "acceptance_rule": "Gate 1-4 per docs/backtesting.md; accept only as replay lead if aggregate EV/PnL improve, no EV/PnL regression window, target sample >=20 across three windows, survival >=5%, drawdown drift <=0.5pp, concentration guard passes, and accepted 52w comparator is beaten; positive replay still requires shared helper before production.",
+      "prediction": {
+        "success_probability": 0.14,
+        "expected_ev_delta": null,
+        "expected_pnl_delta": null,
+        "main_failure_modes": [
+          "sample_too_thin",
+          "borrow_pressure_lags_price_anchor",
+          "accepted_52w_comparator_not_beaten",
+          "concentration_failed",
+          "window_regression"
+        ],
+        "confidence_reason": "Playbook asks for a durable-vs-exhausted 52-week-high separator and borrow/ownership structure is explicitly named as useful new evidence. FINRA publication-date rows are free and already have shared policy precedent, but hard gates on accepted 52w recently thinned samples.",
+        "recorded_at": "2026-06-11T01:08:05+00:00"
+      },
+      "created_at": "2026-06-11T01:08:12+00:00",
+      "claimed_at": "2026-06-11T01:08:23+00:00",
+      "completed_at": "2026-06-11T01:13:19+00:00",
+      "result": {
+        "decision": "rejected_fiftytwo_week_high_finra_borrow_pressure_candidate_pool",
+        "accepted": false,
+        "accepted_alpha": false,
+        "numeric_gate4_passed": false,
+        "artifact": "data/experiments/exp-20260611-002/exp_20260611_002_fiftytwo_week_high_finra_borrow_pressure.json",
+        "log": "experiments/logs/exp-20260611-002.json",
+        "card": "experiments/cards/exp-20260611-002.md",
+        "aggregate_expected_value_delta": 0.0,
+        "aggregate_strategy_total_pnl_delta": 0.0,
+        "gate4": {
+          "passed": false,
+          "decision": "rejected_fiftytwo_week_high_finra_borrow_pressure_candidate_pool",
+          "failed_reasons": [
+            "aggregate_ev_not_positive",
+            "aggregate_pnl_not_positive",
+            "fewer_than_two_ev_improved_windows",
+            "target_sample_too_small",
+            "target_window_coverage_too_small",
+            "target_concentration_failed",
+            "accepted_compression_ev_not_beaten",
+            "accepted_compression_pnl_not_beaten",
+            "accepted_core_flow_ev_not_beaten",
+            "accepted_core_flow_pnl_not_beaten",
+            "accepted_52w_ev_not_beaten",
+            "accepted_52w_pnl_not_beaten",
+            "accepted_52w_window_comparator_regression"
+          ],
+          "aggregate_ev_delta": 0.0,
+          "aggregate_pnl_delta": 0.0,
+          "windows_ev_improved": 0,
+          "windows_ev_regressed": 0,
+          "windows_pnl_improved": 0,
+          "windows_pnl_regressed": 0,
+          "target_trade_count": 0,
+          "target_trade_count_min": 20,
+          "target_windows": [],
+          "target_window_count_min": 3,
+          "max_drawdown_worse": 0.0,
+          "max_drawdown_worse_guardrail": 0.005,
+          "minimum_core_survival_rate": 0.7925,
+          "survival_guard_passed": true,
+          "target_concentration": {
+            "passed": false,
+            "max_single_positive_pnl_share": null,
+            "max_single_positive_pnl_share_guardrail": 0.5,
+            "positive_pnl_hhi": null,
+            "positive_pnl_hhi_guardrail": 0.35
+          },
+          "accepted_comparators": {
+            "compression": {
+              "experiment_id": "exp-20260608-013",
+              "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+              "expected_value_score_delta_sum": 0.1608,
+              "total_pnl_delta_sum": 2248.98,
+              "target_trade_count": 44
+            },
+            "core_flow": {
+              "experiment_id": "exp-20260608-008",
+              "decision": "accepted_industry_stable_core_flow_shared_default_off_adapter",
+              "expected_value_score_delta_sum": 0.1459,
+              "total_pnl_delta_sum": 3731.54,
+              "target_trade_count": 47
+            },
+            "fiftytwo_week_high": {
+              "experiment_id": "exp-20260610-008",
+              "decision": "accepted_fiftytwo_week_high_proximity_core_flow_shared_default_off_adapter",
+              "expected_value_score_delta_sum": 0.4308,
+              "total_pnl_delta_sum": 9295.34,
+              "target_trade_count": 54,
+              "by_window": {
+                "late_strong": {
+                  "expected_value_delta": 0.0921,
+                  "pnl_delta": 1813.52
+                },
+                "mid_weak": {
+                  "expected_value_delta": 0.2571,
+                  "pnl_delta": 4836.19
+                },
+                "old_thin": {
+                  "expected_value_delta": 0.0816,
+                  "pnl_delta": 2645.63
+                }
+              },
+              "window_regressions": [
+                "late_strong_ev",
+                "late_strong_pnl",
+                "mid_weak_ev",
+                "mid_weak_pnl",
+                "old_thin_ev",
+                "old_thin_pnl"
+              ]
+            }
+          }
+        },
+        "calibration": {
+          "predicted_success_probability": 0.14,
+          "actual_gate4_passed": false,
+          "failure_modes_observed": [
+            "aggregate_ev_not_positive",
+            "aggregate_pnl_not_positive",
+            "fewer_than_two_ev_improved_windows",
+            "target_sample_too_small",
+            "target_window_coverage_too_small",
+            "target_concentration_failed",
+            "accepted_compression_ev_not_beaten",
+            "accepted_compression_pnl_not_beaten",
+            "accepted_core_flow_ev_not_beaten",
+            "accepted_core_flow_pnl_not_beaten",
+            "accepted_52w_ev_not_beaten",
+            "accepted_52w_pnl_not_beaten",
+            "accepted_52w_window_comparator_regression"
+          ],
+          "brier_score": 0.0196
+        },
+        "production_impact": {
+          "trade_enabled": false,
+          "alters_orders": false,
+          "adapter_status": "private_replay_scout_no_shared_finra_52w_adapter",
+          "shared_policy_changed": false,
+          "backtester_adapter_changed": false,
+          "run_adapter_changed": false,
+          "replay_only": true,
+          "parity_test_added": false,
+          "production_signal_path_changed": false,
+          "production_orders_changed": false,
+          "production_watchlist_changed": false,
+          "alters_signal_generation": false,
+          "alters_candidate_ranking": false,
+          "alters_sizing": false,
+          "alters_exits": false,
+          "uses_llm": false,
+          "uses_free_finra_short_interest": true,
+          "parity_note": "This experiment changes no production code. It reads only FINRA short-interest rows whose publication_date is on or before the signal date in historical replay. A positive result cannot be promoted until a shared helper computes the same latest-published FINRA gate, 52-week proximity, core-flow, next-open paper entry, 10-trading-day exit, cost, cooldown, concentration, and daily default-off snapshot semantics in both historical replay and production observation."
+        },
+        "post_run_reflection": {
+          "why_result_happened": "The FINRA borrow-pressure gate did not add enough replacement value over the accepted 52-week-high helper. The likely causes are that FINRA short-interest publications lag the price-anchor event, the gate removes too many useful underreaction rows, or crowded short-pressure names have already consumed the squeeze before next-open execution and costs.",
+          "forbidden_near_neighbor_retry": "Do not retry by sweeping FINRA days-to-cover, short-interest-change thresholds, FINRA score percentiles, 52-week proximity, 252/60-day lookbacks, top-N, hold-day, cooldown, or paper notional on the same frozen windows.",
+          "new_evidence_required": "A retry needs materially different PIT evidence separating durable and exhausted 52-week-high leaders, such as borrow-cost or availability history, institutional ownership changes, options-implied move/skew, or closed forward replacement-value rows. Pure FINRA or 52-week threshold retunes stay frozen."
+        }
+      },
+      "ticket_file": "experiments/tickets/exp-20260611-002.json",
+      "card_file": "experiments/cards/exp-20260611-002.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260611-002.json",
+      "decision": "rejected_fiftytwo_week_high_finra_borrow_pressure_candidate_pool",
+      "summary": "The 52-week-high FINRA borrow-pressure source was rejected; it did not improve the accepted 52-week-high default-off candidate pool.",
+      "artifact": "data/experiments/exp-20260611-002/exp_20260611_002_fiftytwo_week_high_finra_borrow_pressure.json",
+      "log": "experiments/logs/exp-20260611-002.json",
+      "aggregate_expected_value_delta": 0.0,
+      "aggregate_strategy_total_pnl_delta": 0.0,
+      "updated_at": "2026-06-11T01:13:19+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-11T00:17:26+00:00"
+  "updated_at": "2026-06-11T01:13:19+00:00"
 }
