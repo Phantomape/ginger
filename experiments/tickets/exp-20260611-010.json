@@ -1,0 +1,248 @@
+{
+  "acceptance_rule": "Gate 1-4 must beat exp-20260611-005 accepted allocator aggregate and every per-window EV/PnL comparator with no drawdown/survival/concentration failure; positive replay must be promoted through shared default-off parity before acceptance.",
+  "aggregate_expected_value_delta": 2.2104,
+  "aggregate_strategy_total_pnl_delta": 40966.24,
+  "allowed_write_scope": [
+    "data/experiments/exp-20260611-010/exp_20260611_010_allocator_prune_industry_laggard.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "experiments/cards/exp-20260611-010.md",
+    "experiments/logs/exp-20260611-010.json",
+    "experiments/manifests/exp-20260611-010.json",
+    "experiments/tickets/exp-20260611-010.json",
+    "quant/experiments/exp_20260611_010_allocator_prune_industry_laggard.py"
+  ],
+  "artifact": "data/experiments/exp-20260611-010/exp_20260611_010_allocator_prune_industry_laggard.json",
+  "baseline_result_file": "data/experiments/exp-20260611-005/exp_20260611_005_lagged_consensus_shared_allocator_source.json",
+  "card_file": "experiments/cards/exp-20260611-010.md",
+  "causal_components": [
+    "source-pruning policy",
+    "historical replay",
+    "runner-local rejected variant",
+    "full-stack verdict"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "accepted_allocator_prune_industry_laggard_repair_source_v1",
+  "claimed_at": "2026-06-11T07:07:14+00:00",
+  "completed_at": "2026-06-11T07:22:45+00:00",
+  "created_at": "2026-06-11T07:06:36+00:00",
+  "decision": "rejected_allocator_prune_industry_laggard_repair_source",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260611-010",
+  "experiment_uid": "expuid-d19ea1777bea45fb",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260611-010",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-11T07:06:36+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "allocator_prune_industry_laggard"
+  },
+  "hypothesis": "candidate_pool/allocation: pruning the low-average, high-frequency industry_laggard_repair source from the accepted source-priority allocator may improve replacement value by avoiding noisy repair rows while keeping lagged consensus, volatility relief, rolling peer shock, turn-of-month, revision, compression, and stable core-flow fixed.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "allocator_source_set_industry_laggard_repair"
+  ],
+  "log": "experiments/logs/exp-20260611-010.json",
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "live/default orders",
+    "core ranking",
+    "core sizing",
+    "core exits",
+    "LLM/news path"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260611-005",
+    "exp-20260611-008",
+    "exp-20260611-003",
+    "exp-20260610-009",
+    "exp-20260610-016"
+  ],
+  "new_evidence_type": "source_level_historical_attribution",
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "success_probability": 0.28,
+    "expected_ev_delta": 0.25,
+    "expected_pnl_delta": 5000.0,
+    "main_failure_modes": [
+      "old_thin_regression",
+      "removes_useful_replacement_rows",
+      "no_trade_gap_not_replaced",
+      "accepted_allocator_comparator_not_beaten"
+    ],
+    "confidence_reason": "Source-level attribution from exp-20260611-005 shows industry_laggard_repair selected 193 of 331 allocator trades with low aggregate average PnL and negative late/mid window contribution, but it was positive in old_thin so comparator risk is material.",
+    "recorded_at": "2026-06-11T07:06:19+00:00"
+  },
+  "prior_trial_count": 1,
+  "result": {
+    "decision": "rejected_allocator_prune_industry_laggard_repair_source",
+    "artifact": "data/experiments/exp-20260611-010/exp_20260611_010_allocator_prune_industry_laggard.json",
+    "log": "experiments/logs/exp-20260611-010.json",
+    "card": "experiments/cards/exp-20260611-010.md",
+    "aggregate_expected_value_delta": 2.2104,
+    "aggregate_strategy_total_pnl_delta": 40966.24,
+    "accepted": false,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_allocator_prune_industry_laggard_repair_source",
+      "failed_reasons": [
+        "accepted_allocator_window_comparator_regression"
+      ],
+      "comparator_regressions": [
+        "old_thin_ev",
+        "old_thin_pnl"
+      ],
+      "aggregate_ev_delta": 2.2104,
+      "aggregate_pnl_delta": 40966.24,
+      "windows_ev_improved": 3,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 3,
+      "windows_pnl_regressed": 0,
+      "target_trade_count": 166,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": -0.0021,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "accepted_allocator_comparator": {
+        "experiment_id": "exp-20260611-005",
+        "aggregate_ev_delta": 2.1849,
+        "aggregate_pnl_delta": 40397.21,
+        "window_deltas": {
+          "late_strong": {
+            "ev": 0.9092,
+            "pnl": 9431.68
+          },
+          "mid_weak": {
+            "ev": 0.6352,
+            "pnl": 11133.95
+          },
+          "old_thin": {
+            "ev": 0.6405,
+            "pnl": 19831.58
+          }
+        }
+      },
+      "source_attribution_baseline": {
+        "source": "data/experiments/exp-20260611-005/exp_20260611_005_lagged_consensus_shared_allocator_source.json",
+        "industry_laggard_repair": {
+          "trade_count": 193,
+          "aggregate_pnl": 2023.56,
+          "average_pnl": 10.48,
+          "windows": {
+            "late_strong": {
+              "trade_count": 69,
+              "pnl": -659.17,
+              "average_pnl": -9.55
+            },
+            "mid_weak": {
+              "trade_count": 59,
+              "pnl": -419.21,
+              "average_pnl": -7.11
+            },
+            "old_thin": {
+              "trade_count": 65,
+              "pnl": 3101.94,
+              "average_pnl": 47.72
+            }
+          }
+        }
+      },
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.277761,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.102559,
+        "positive_pnl_hhi_guardrail": 0.35,
+        "top5_positive_share": 0.54611
+      },
+      "parity_test_added": false,
+      "shared_adapter_module": "runner_local_rejected_variant"
+    },
+    "calibration": {
+      "predicted_success_probability": 0.28,
+      "actual_gate4_passed": false,
+      "failure_modes_observed": [
+        "accepted_allocator_window_comparator_regression"
+      ],
+      "brier_score": 0.0784
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "shared_default_off_paper_helper",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "default_off_paper_only": true,
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_ohlcv_only": false,
+      "uses_free_non_ohlcv": true,
+      "live_realism_evaluated": true,
+      "live_ready": false,
+      "execution_envelope": {
+        "base_notional": 4000.0,
+        "max_capital_pct": 0.32,
+        "min_dollar_volume": null,
+        "slippage_bps": 5.0,
+        "max_displacement": 1,
+        "max_concurrent": 8,
+        "order_semantics": "next_open_paper_only",
+        "kill_switch_drawdown_pct": null,
+        "sleeve_drawdown_stop_pct": null,
+        "notes": "Top-1/day accepted-helper allocator, fixed $4,000 paper notional, 8 max active default-off paper positions, 10-trading-day hold, and 12-trading-day same-ticker cooldown. Lagged consensus inherits the accepted source helper's underlying liquidity/data gates. It is not live-ready until forward rows, replacement value, and allocator kill switch parity mature.",
+        "missing": [
+          "min_dollar_volume",
+          "kill_switch_drawdown_pct",
+          "sleeve_drawdown_stop_pct"
+        ],
+        "complete": false
+      },
+      "parity_note": "Replay-only source-pruning scout. The shared accepted-helper allocator and daily production observation path remain at the accepted exp-20260611-005 source set unless the pruning policy beats the accepted allocator comparator and is promoted through a shared helper plus parity test."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The industry_laggard_repair source looked weak in late/mid attribution, but removing it eliminated too many useful old_thin or date-coverage replacement rows and did not beat the accepted allocator across the binding comparator.",
+      "forbidden_near_neighbor_retry": "Do not retry by changing industry_laggard rank, selective pruning thresholds, allocator top-N, notional, hold days, or cooldown on the same frozen windows.",
+      "new_evidence_required": "Retry only with closed forward source-level displacement rows or a new PIT quality field that separates useful industry repair rows from noisy ones before selection."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260611-010.json",
+  "single_causal_variable": "accepted_allocator_prune_industry_laggard_repair_source_v1",
+  "status": "rejected",
+  "summary": "Pruning industry_laggard_repair failed the accepted allocator comparator.",
+  "ticket_file": "experiments/tickets/exp-20260611-010.json",
+  "trial_family": "accepted_default_off_helper_source_priority_allocation",
+  "trial_variant_id": "accepted_allocator_prune_industry_laggard_repair_source_v1",
+  "updated_at": "2026-06-11T07:22:45+00:00"
+}
