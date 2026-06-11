@@ -1,0 +1,207 @@
+{
+  "experiment_id": "exp-20260611-007",
+  "experiment_uid": "expuid-dfc5dfeed1a74ac6",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260611-007",
+    "slug": "distribution_day_absorption_shared_adapter",
+    "reserved_at": "2026-06-11T05:04:06+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "accepted",
+  "lane": "alpha_search",
+  "owner": "alpha-search",
+  "hypothesis": "Distribution-day absorption leadership may identify liquid stocks where institutional demand absorbs recent SPY/QQQ high-volume selloff pressure and produces next-open 10-day replacement value. The alpha is only acceptable if the fixed exp006 policy bundle reproduces through one shared historical and daily helper.",
+  "change_type": "candidate_pool_full_stack",
+  "mechanism_family": "production_visible_free_ohlcv_tail_state_candidate_pool",
+  "trial_family": "distribution_day_absorption_leadership_shared_default_off_adapter",
+  "trial_variant_id": "distribution_day_absorption_leadership_shared_default_off_adapter_v1",
+  "single_causal_variable": "distribution_day_absorption_leadership_shared_default_off_candidate_source_v1",
+  "changed_variable": "distribution_day_absorption_leadership_shared_default_off_candidate_source_v1",
+  "causal_components": [
+    "shared helper",
+    "historical replay",
+    "daily snapshot",
+    "parity test",
+    "execution envelope",
+    "full-stack verdict"
+  ],
+  "prior_trial_count": 1,
+  "nearby_prior_experiments": [
+    "exp-20260611-006",
+    "exp-20260608-013",
+    "exp-20260609-001",
+    "exp-20260528-010"
+  ],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "positive_replay_lead_shared_adapter_promotion",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "data/experiments/exp-20260611-007/exp_20260611_007_distribution_day_absorption_shared_adapter.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/production_backtest_parity_matrix.md",
+    "experiments/cards/exp-20260611-007.md",
+    "experiments/logs/exp-20260611-007.json",
+    "experiments/manifests/exp-20260611-007.json",
+    "experiments/tickets/exp-20260611-007.json",
+    "quant/distribution_day_absorption_leadership_paper_sleeve.py",
+    "quant/experiments/exp_20260611_007_distribution_day_absorption_shared_adapter.py",
+    "quant/run.py",
+    "quant/test_distribution_day_absorption_leadership_paper_sleeve.py"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "distribution_day_absorption_leadership_shared_default_off_candidate_source_v1"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.62,
+    "expected_ev_delta": 0.5286,
+    "expected_pnl_delta": 10432.91,
+    "main_failure_modes": [
+      "shared_helper_drift_from_replay",
+      "daily_snapshot_wiring_gap",
+      "accepted_comparator_not_reproduced",
+      "forward_rows_immature"
+    ],
+    "confidence_reason": "The immediate prior replay lead exp-20260611-006 used only point-in-time OHLCV, improved all three canonical windows, produced 113 target trades, passed drawdown and concentration, and beat the accepted compression comparator. The main risk is implementation drift when moving the fixed rule into a shared daily/backtest helper plus the fact that it remains default-off until forward replacement rows mature.",
+    "recorded_at": "2026-06-11T05:03:47+00:00"
+  },
+  "created_at": "2026-06-11T05:04:06+00:00",
+  "claimed_at": "2026-06-11T05:04:17+00:00",
+  "completed_at": "2026-06-11T05:18:43+00:00",
+  "result": {
+    "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+    "artifact": "data/experiments/exp-20260611-007/exp_20260611_007_distribution_day_absorption_shared_adapter.json",
+    "log": "experiments/logs/exp-20260611-007.json",
+    "card": "experiments/cards/exp-20260611-007.md",
+    "aggregate_expected_value_delta": 0.5286,
+    "aggregate_strategy_total_pnl_delta": 10432.91,
+    "accepted": true,
+    "gate4": {
+      "passed": true,
+      "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+      "failed_reasons": [],
+      "aggregate_ev_delta": 0.5286,
+      "aggregate_pnl_delta": 10432.91,
+      "windows_ev_improved": 3,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 3,
+      "windows_pnl_regressed": 0,
+      "target_trade_count": 113,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0001,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.103323,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.046219,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "lead_reproduction": {
+        "passed": true,
+        "source_lead_experiment_id": "exp-20260611-006",
+        "source_lead_artifact": "data/experiments/exp-20260611-006/exp_20260611_006_distribution_day_absorption_leadership.json",
+        "aggregate_expected_value_score_delta_drift": 0.0,
+        "aggregate_total_pnl_delta_drift": 0.0,
+        "trade_count_drift": 0,
+        "by_window": {
+          "late_strong": {
+            "expected_value_score_drift": 0.0,
+            "total_pnl_drift": 0.0,
+            "target_trade_count": 40
+          },
+          "mid_weak": {
+            "expected_value_score_drift": 0.0,
+            "total_pnl_drift": 0.0,
+            "target_trade_count": 33
+          },
+          "old_thin": {
+            "expected_value_score_drift": 0.0,
+            "total_pnl_drift": 0.0,
+            "target_trade_count": 40
+          }
+        },
+        "max_ev_drift": 0.0002,
+        "max_pnl_drift": 1.0
+      },
+      "accepted_compression_comparator": {
+        "experiment_id": "exp-20260608-013",
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "expected_value_score_delta_sum": 0.1608,
+        "total_pnl_delta_sum": 2248.98,
+        "target_trade_count": 44
+      },
+      "parity_test_added": true,
+      "shared_adapter_module": "quant/distribution_day_absorption_leadership_paper_sleeve.py"
+    },
+    "calibration": {
+      "predicted_success_probability": 0.62,
+      "actual_gate4_passed": true,
+      "failure_modes_observed": [],
+      "brier_score": 0.1444,
+      "surprise_note": "Shared helper reproduced the positive replay lead."
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "shared_default_off_helper_with_daily_snapshot",
+      "shared_policy_changed": true,
+      "backtester_adapter_changed": true,
+      "run_adapter_changed": true,
+      "replay_only": false,
+      "default_off_paper_only": true,
+      "daily_snapshot_exposed": true,
+      "parity_test_added": true,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "live_realism_evaluated": true,
+      "live_ready": false,
+      "uses_llm": false,
+      "uses_free_ohlcv_only": true,
+      "activation_envelope": {
+        "intended_notional": "default-off paper only at fixed $4,000 notional",
+        "capital_cap": "max 8 default-off paper positions; no live capital",
+        "liquidity_slippage_model": "price >= $10, ADV20 >= $50M, next-open entry, target-side sell slippage, and round-trip cost",
+        "portfolio_displacement": "paper overlay versus core/cash baseline only; no live slot or capital displacement",
+        "exposure_limits": "top-1/day, 10-trading-day same-ticker cooldown, concentration gate",
+        "kill_switch": "future activation requires closed forward replacement-value gate and drawdown/concentration kill switch",
+        "order_semantics": "no orders emitted; pending/open/closed paper ledger only",
+        "failure_handling": "snapshot fails closed to empty default-off payload"
+      },
+      "parity_note": "Historical replay and daily observation share quant/distribution_day_absorption_leadership_paper_sleeve.py. The helper is default-off and cannot alter orders, core ranking, sizing, exits, watchlists, LLM, or news behavior."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The shared helper reproduced the private replay lead because it kept the exact distribution-pressure context, absorption/reclaim candidate fields, SPY/QQQ relative leadership, next-open entry, 10-day exit, cost, top-1, cooldown, and same-ticker core-overlap semantics while adding a daily pending/open/closed state surface.",
+      "forbidden_near_neighbor_retry": "Do not sweep distribution-day count, index volume ratio, index return thresholds, reclaim distance, candidate ret5/ret20, close-location, volume, top-N, hold-day, cooldown, or paper notional on the frozen windows.",
+      "new_evidence_required": "Next useful evidence is closed forward replacement-value rows from the shared default-off ledger or an orthogonal PIT flow/catalyst provenance layer. Live activation requires a separate activation-envelope Gate 1-4 if the execution envelope changes."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260611-007.json",
+  "card_file": "experiments/cards/exp-20260611-007.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260611-007.json",
+  "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+  "summary": "Accepted for shared default-off paper observation only. The positive distribution-day absorption replay lead reproduced through a shared daily/backtest helper, but live activation remains blocked by forward replacement-value maturation.",
+  "artifact": "data/experiments/exp-20260611-007/exp_20260611_007_distribution_day_absorption_shared_adapter.json",
+  "log": "experiments/logs/exp-20260611-007.json",
+  "aggregate_expected_value_delta": 0.5286,
+  "aggregate_strategy_total_pnl_delta": 10432.91,
+  "updated_at": "2026-06-11T05:18:43+00:00"
+}
