@@ -1,0 +1,382 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_comparators": {
+    "accepted_allocator": {
+      "aggregate_ev_delta": 2.1849,
+      "aggregate_pnl_delta": 40397.21,
+      "experiment_id": "exp-20260611-005",
+      "window_deltas": {
+        "late_strong": {
+          "ev": 0.9092,
+          "pnl": 9431.68
+        },
+        "mid_weak": {
+          "ev": 0.6352,
+          "pnl": 11133.95
+        },
+        "old_thin": {
+          "ev": 0.6405,
+          "pnl": 19831.58
+        }
+      }
+    },
+    "accepted_sec_ftd_finra_standalone": {
+      "aggregate_ev_delta": 0.442,
+      "aggregate_pnl_delta": 10100.49,
+      "experiment_id": "exp-20260604-026",
+      "promoted_by": "exp-20260604-027",
+      "target_trade_count": 121,
+      "window_deltas": {
+        "late_strong": {
+          "ev": 0.2225,
+          "pnl": 2867.33
+        },
+        "mid_weak": {
+          "ev": 0.0482,
+          "pnl": 2052.72
+        },
+        "old_thin": {
+          "ev": 0.1713,
+          "pnl": 5180.44
+        }
+      }
+    },
+    "included_source_priority": {
+      "compression": {
+        "accepted_ev_delta_sum": 0.1608,
+        "accepted_experiment": "exp-20260608-013",
+        "accepted_pnl_delta_sum": 2248.98,
+        "description": "accepted narrow range compression breakout",
+        "rank": 8
+      },
+      "industry_laggard_repair": {
+        "accepted_ev_delta_sum": 0.2763,
+        "accepted_experiment": "exp-20260607-008",
+        "accepted_pnl_delta_sum": 4875.91,
+        "description": "accepted industry relative laggard repair",
+        "rank": 6
+      },
+      "industry_stable_core_flow": {
+        "accepted_ev_delta_sum": 0.1459,
+        "accepted_experiment": "exp-20260608-008",
+        "accepted_pnl_delta_sum": 3523.28,
+        "description": "accepted industry stable core-flow",
+        "rank": 9
+      },
+      "lagged_cross_source_consensus": {
+        "accepted_ev_delta_sum": 1.9949,
+        "accepted_experiment": "exp-20260604-009",
+        "accepted_pnl_delta_sum": 35553.87,
+        "description": "accepted lagged cross-source consensus",
+        "rank": 1
+      },
+      "revision_surprise_low_extension": {
+        "accepted_ev_delta_sum": 0.1846,
+        "accepted_experiment": "exp-20260609-011",
+        "accepted_pnl_delta_sum": 2893.75,
+        "description": "accepted revision-surprise low-extension expectation source",
+        "rank": 7
+      },
+      "rolling_peer_shock": {
+        "accepted_ev_delta_sum": 0.3845,
+        "accepted_experiment": "exp-20260606-025",
+        "accepted_pnl_delta_sum": 6107.66,
+        "description": "accepted rolling correlation peer shock",
+        "rank": 4
+      },
+      "sec_ftd_finra_pressure": {
+        "accepted_ev_delta_sum": 0.442,
+        "accepted_experiment": "exp-20260604-027",
+        "accepted_pnl_delta_sum": 10100.49,
+        "description": "accepted SEC FTD + FINRA settlement and borrow pressure",
+        "rank": 3
+      },
+      "turn_of_month": {
+        "accepted_ev_delta_sum": 0.2774,
+        "accepted_experiment": "exp-20260609-027",
+        "accepted_pnl_delta_sum": 5287.69,
+        "description": "accepted turn-of-month liquid leadership",
+        "rank": 5
+      },
+      "volatility_relief": {
+        "accepted_ev_delta_sum": 0.5732,
+        "accepted_experiment": "exp-20260607-019",
+        "accepted_pnl_delta_sum": 11934.79,
+        "description": "accepted volatility relief stock leadership",
+        "rank": 2
+      }
+    }
+  },
+  "aggregate_expected_value_delta": 2.0594,
+  "aggregate_expected_value_delta_pct": 0.260878,
+  "aggregate_strategy_total_pnl_delta": 36436.28,
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260611-015/exp_20260611_015_sec_ftd_finra_allocator_source.json",
+  "backtest_protocol": {
+    "REGIME_AWARE_EXIT": true,
+    "candidate_ohlcv_source": "data/experiments/exp-20260519-030/warehouse_main.sqlite",
+    "execution_model": "Experiment runner temporarily installs rank-3 SEC FTD+FINRA rows into the accepted-helper allocator module, selects one paper trade per signal date by fixed source priority, applies a 12-trading-day same-ticker cooldown, then overlays next-open/10-day paper outcomes. No shared production/default-off helper changes are retained by this replay-only scout.",
+    "replay_llm": false,
+    "replay_news": false,
+    "source": "docs/backtesting.md canonical three-window core replay plus shared accepted-helper source-priority allocator overlay",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "baseline_result_file": "docs/backtesting.md current canonical baseline and same-run before_metrics inside this artifact",
+  "calibration": {
+    "actual_gate4_passed": false,
+    "actual_retained_as_alpha": false,
+    "brier_score": 0.0961,
+    "failure_modes_observed": [
+      "accepted_allocator_ev_comparator_not_beaten",
+      "accepted_allocator_pnl_comparator_not_beaten",
+      "accepted_allocator_window_comparator_regression"
+    ],
+    "predicted_success_probability": 0.31
+  },
+  "changed_variable": "sec_ftd_finra_rank3_shared_allocator_source_v1",
+  "decision": "rejected_sec_ftd_finra_rank3_allocator_source",
+  "expected_value_score_delta": 2.0594,
+  "experiment_id": "exp-20260611-015",
+  "gate4": {
+    "accepted_allocator_comparator": {
+      "aggregate_ev_delta": 2.1849,
+      "aggregate_pnl_delta": 40397.21,
+      "experiment_id": "exp-20260611-005",
+      "window_deltas": {
+        "late_strong": {
+          "ev": 0.9092,
+          "pnl": 9431.68
+        },
+        "mid_weak": {
+          "ev": 0.6352,
+          "pnl": 11133.95
+        },
+        "old_thin": {
+          "ev": 0.6405,
+          "pnl": 19831.58
+        }
+      }
+    },
+    "accepted_sec_ftd_finra_comparator": {
+      "aggregate_ev_delta": 0.442,
+      "aggregate_pnl_delta": 10100.49,
+      "experiment_id": "exp-20260604-026",
+      "promoted_by": "exp-20260604-027",
+      "target_trade_count": 121,
+      "window_deltas": {
+        "late_strong": {
+          "ev": 0.2225,
+          "pnl": 2867.33
+        },
+        "mid_weak": {
+          "ev": 0.0482,
+          "pnl": 2052.72
+        },
+        "old_thin": {
+          "ev": 0.1713,
+          "pnl": 5180.44
+        }
+      }
+    },
+    "aggregate_ev_delta": 2.0594,
+    "aggregate_pnl_delta": 36436.28,
+    "comparator_regressions": [
+      "late_strong_pnl",
+      "mid_weak_ev",
+      "mid_weak_pnl",
+      "old_thin_ev",
+      "old_thin_pnl"
+    ],
+    "decision": "rejected_sec_ftd_finra_rank3_allocator_source",
+    "failed_reasons": [
+      "accepted_allocator_ev_comparator_not_beaten",
+      "accepted_allocator_pnl_comparator_not_beaten",
+      "accepted_allocator_window_comparator_regression"
+    ],
+    "max_drawdown_worse": -0.0008,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "parity_test_added": false,
+    "passed": false,
+    "shared_adapter_module": "runner_local_replay_variant",
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.201585,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": true,
+      "positive_pnl_hhi": 0.056812,
+      "positive_pnl_hhi_guardrail": 0.35,
+      "top5_positive_share": 0.389674
+    },
+    "target_trade_count": 337,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_ev_improved": 3,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 3,
+    "windows_pnl_regressed": 0
+  },
+  "hypothesis": "candidate_pool/allocation: accepted SEC FTD+FINRA settlement-and-borrow-pressure rows may add distinct replacement value as a fixed source in the accepted helper source-priority allocator because official fail-to-deliver pressure plus FINRA days-to-cover is orthogonal to OHLCV morphology and can expand the candidate pool without adding noise tickers.",
+  "lane": "alpha_search",
+  "log": "experiments/logs/exp-20260611-015.json",
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "numeric_gate4_passed": false,
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry by changing FTD+FINRA rank, FTD/FINRA thresholds, allocator top-N, notional, hold days, or cooldown on the same frozen windows.",
+    "new_evidence_required": "Retry only with closed forward allocator displacement rows or a materially different PIT free-data supply/catalyst source.",
+    "why_result_happened": "The official settlement/borrow-pressure source did not add enough incremental replacement value after lagged consensus and volatility relief. It likely overlaps accepted short-pressure evidence or displaces better lower-rank rows."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "candidate_pool/allocation: accepted SEC FTD+FINRA settlement-and-borrow-pressure rows may add distinct replacement value as a fixed source in the accepted helper source-priority allocator because official fail-to-deliver pressure plus FINRA days-to-cover is orthogonal to OHLCV morphology and can expand the candidate pool without adding noise tickers.",
+    "2_history_check": {
+      "exp-20260604-026": "Accepted positive replay lead: SEC FTD+FINRA aggregate EV +0.4420, PnL +$10,100.49, 121 trades, all three windows positive.",
+      "exp-20260604-027": "Promoted exp-20260604-026 into a shared default-off paper adapter; live/default orders remained disabled.",
+      "exp-20260609-005": "FTD+FINRA as lagged-consensus source family was rejected because it selected no new lagged-consensus rows.",
+      "exp-20260609-020": "FTD+FINRA no-core-flow variant was positive versus core but failed the accepted FTD+FINRA comparator, especially old_thin.",
+      "exp-20260611-005": "Current binding accepted allocator: aggregate EV +2.1849 and PnL +$40,397.21. This experiment must beat it aggregate and per-window.",
+      "exp-20260611-008": "Distribution source extension was positive versus core but rejected because late_strong and old_thin did not beat the accepted allocator.",
+      "exp-20260611-010": "Allocator source pruning was rejected because old_thin did not beat the accepted allocator comparator."
+    },
+    "3_single_causal_variable": "One fixed policy bundle: accepted SEC FTD+FINRA rows enter the shared accepted-helper allocator as rank 3, after lagged consensus and volatility relief and before rolling peer shock. Existing top-1/day, paper notional, hold, costs, cooldown, core behavior, LLM/news, and live/default orders remain fixed.",
+    "4_acceptance_standard": "Use docs/backtesting.md three canonical windows. Accept only if aggregate EV/PnL improve, no EV/PnL window regresses, sample/survival/drawdown/concentration guards pass, and exp-20260611-005 accepted allocator aggregate plus every per-window EV/PnL comparator is beaten. A positive replay-only result is not retained without shared helper/daily parity promotion.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260611_015_sec_ftd_finra_allocator_source.py"
+  },
+  "prediction": {
+    "confidence_reason": "SEC FTD+FINRA was accepted standalone and uses official free non-OHLCV data, but adding standalone helpers to the accepted allocator has often failed the binding comparator.",
+    "expected_ev_delta": 0.3,
+    "expected_pnl_delta": 6000.0,
+    "main_failure_modes": [
+      "redundant_with_lagged_consensus",
+      "displaces_better_allocator_rows",
+      "old_thin_regression",
+      "accepted_allocator_comparator_not_beaten"
+    ],
+    "recorded_at": "2026-06-11T12:07:09+00:00",
+    "success_probability": 0.31
+  },
+  "production_accepted": false,
+  "production_impact": {
+    "adapter_status": "replay_only_runner_local_allocator_source_scout",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "default_off_paper_only": true,
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "complete": false,
+      "kill_switch_drawdown_pct": null,
+      "max_capital_pct": 0.32,
+      "max_concurrent": 8,
+      "max_displacement": 1,
+      "min_dollar_volume": null,
+      "missing": [
+        "min_dollar_volume",
+        "kill_switch_drawdown_pct",
+        "sleeve_drawdown_stop_pct"
+      ],
+      "notes": "Top-1/day accepted-helper allocator, fixed $4,000 paper notional, 8 max active default-off paper positions, 10-trading-day hold, and 12-trading-day same-ticker cooldown. Lagged consensus inherits the accepted source helper's underlying liquidity/data gates. It is not live-ready until forward rows, replacement value, and allocator kill switch parity mature.",
+      "order_semantics": "next_open_paper_only",
+      "sleeve_drawdown_stop_pct": null,
+      "slippage_bps": 5.0
+    },
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "parity_note": "Replay-only allocator source scout. The shared accepted-helper allocator and daily production observation path remain at the accepted exp-20260611-005 source set unless this rank-3 source beats the accepted allocator comparator and is separately promoted through a shared helper plus parity tests.",
+    "parity_test_added": false,
+    "production_accepted": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_free_non_ohlcv": true,
+    "uses_free_ohlcv_only": false,
+    "uses_llm": false
+  },
+  "status": "rejected",
+  "timestamp": "2026-06-11T12:18:03Z",
+  "total_pnl_delta": 36436.28,
+  "trial_family": "accepted_default_off_helper_source_priority_allocation",
+  "trial_variant_id": "sec_ftd_finra_rank3_shared_allocator_source_v1",
+  "windows": [
+    {
+      "expected_value_after": 6.0775,
+      "expected_value_before": 5.1628,
+      "expected_value_delta": 0.9147,
+      "label": "late_strong",
+      "sec_ftd_finra_selected_count": 25,
+      "selected_source_counts": {
+        "industry_laggard_repair": 51,
+        "lagged_cross_source_consensus": 10,
+        "revision_surprise_low_extension": 1,
+        "rolling_peer_shock": 9,
+        "sec_ftd_finra_pressure": 25,
+        "turn_of_month": 10
+      },
+      "strategy_total_pnl_delta": 9021.26,
+      "target_trade_count": 106
+    },
+    {
+      "expected_value_after": 2.6895,
+      "expected_value_before": 2.1402,
+      "expected_value_delta": 0.5493,
+      "label": "mid_weak",
+      "sec_ftd_finra_selected_count": 26,
+      "selected_source_counts": {
+        "compression": 2,
+        "industry_laggard_repair": 45,
+        "lagged_cross_source_consensus": 16,
+        "revision_surprise_low_extension": 3,
+        "rolling_peer_shock": 11,
+        "sec_ftd_finra_pressure": 26,
+        "turn_of_month": 13
+      },
+      "strategy_total_pnl_delta": 8925.73,
+      "target_trade_count": 116
+    },
+    {
+      "expected_value_after": 1.1865,
+      "expected_value_before": 0.5911,
+      "expected_value_delta": 0.5954,
+      "label": "old_thin",
+      "sec_ftd_finra_selected_count": 26,
+      "selected_source_counts": {
+        "industry_laggard_repair": 48,
+        "lagged_cross_source_consensus": 17,
+        "rolling_peer_shock": 9,
+        "sec_ftd_finra_pressure": 26,
+        "turn_of_month": 15
+      },
+      "strategy_total_pnl_delta": 18489.29,
+      "target_trade_count": 115
+    }
+  ]
+}
