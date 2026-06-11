@@ -249,6 +249,28 @@ entries. It remains observe-only: `trade_enabled=false`, no live/default
 orders, and no core universe, ranking, sizing, exit, watchlist, LLM/news, or
 activation behavior may diverge between replay and production.
 
+## Accepted-Helper Source-Priority Allocator Paper Adapter
+
+`exp-20260611-005` promotes the positive replay lead from `exp-20260611-004`
+into `quant/accepted_helper_source_priority_allocator_paper_sleeve.py`.
+Backtests and production observation must use the same shared default-off
+allocator semantics: accepted lagged cross-source consensus rows are admitted
+as fixed rank 1, followed by volatility relief, rolling peer shock,
+turn-of-month, industry-relative laggard repair, revision-surprise
+low-extension, narrow-range compression, and industry-stable core-flow. The
+allocator selects top-1/day, uses fixed `$4,000` paper notional, applies the
+12-trading-day same-ticker cooldown, and keeps each underlying helper's own
+PIT data boundary and candidate gates.
+
+Historical replay sources lagged-consensus rows from the accepted
+`exp-20260604-009` lagged independent source-family artifact; daily production
+passes the shared `free_data_cross_source_consensus_paper_sleeve` snapshot into
+the same allocator source family. The helper emits source-priority context,
+candidate/rejection metadata, pending/open/closed paper ledger state, and
+forward paper gate metadata. It remains observe-only: `trade_enabled=false`,
+no live/default orders, and no core universe, ranking, sizing, exit, watchlist,
+LLM/news, or activation behavior may diverge between replay and production.
+
 ## Decision Matrix
 
 | Decision point | Shared source | Backtester use | Production use | Allowed difference |

@@ -3093,6 +3093,7 @@ def main():
             build_accepted_helper_source_priority_allocator_snapshot(
                 as_of=today_iso,
                 source_snapshots={
+                    "lagged_cross_source_consensus": free_data_cross_source_consensus_paper_sleeve,
                     "volatility_relief": volatility_relief_stock_leadership_paper_sleeve,
                     "rolling_peer_shock": rolling_corr_peer_shock_paper_sleeve,
                     "turn_of_month": turn_of_month_liquid_leadership_paper_sleeve,

@@ -72,8 +72,14 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 
 SLEEVE_NAME = "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER"
 RULE_VERSION = "accepted_helper_source_priority_shared_default_off_allocator_v2"
-SOURCE_RULE_VERSION = "accepted_helper_source_priority_top1_with_revision_allocation_v1"
+SOURCE_RULE_VERSION = "accepted_helper_source_priority_top1_with_lagged_consensus_allocation_v1"
 STATE_SCHEMA_VERSION = 1
+LAGGED_CONSENSUS_SOURCE_ARTIFACT = (
+    DATA_ROOT
+    / "experiments"
+    / "exp-20260604-008"
+    / "lagged_independent_source_consensus.json"
+)
 
 DEFAULT_STATE_PATH = (
     DATA_ROOT / "paper_sleeves" / "accepted_helper_source_priority_allocator" / "state.json"
@@ -110,9 +116,19 @@ DEFAULT_CONFIG = {
 SOURCE_PRIORITY: "OrderedDict[str, dict[str, Any]]" = OrderedDict(
     [
         (
-            "volatility_relief",
+            "lagged_cross_source_consensus",
             {
                 "rank": 1,
+                "description": "accepted lagged cross-source consensus",
+                "accepted_experiment": "exp-20260604-009",
+                "accepted_ev_delta_sum": 1.9949,
+                "accepted_pnl_delta_sum": 35553.87,
+            },
+        ),
+        (
+            "volatility_relief",
+            {
+                "rank": 2,
                 "description": "accepted volatility relief stock leadership",
                 "accepted_experiment": "exp-20260607-019",
                 "accepted_ev_delta_sum": 0.5732,
@@ -122,7 +138,7 @@ SOURCE_PRIORITY: "OrderedDict[str, dict[str, Any]]" = OrderedDict(
         (
             "rolling_peer_shock",
             {
-                "rank": 2,
+                "rank": 3,
                 "description": "accepted rolling correlation peer shock",
                 "accepted_experiment": "exp-20260606-025",
                 "accepted_ev_delta_sum": 0.3845,
@@ -132,7 +148,7 @@ SOURCE_PRIORITY: "OrderedDict[str, dict[str, Any]]" = OrderedDict(
         (
             "turn_of_month",
             {
-                "rank": 3,
+                "rank": 4,
                 "description": "accepted turn-of-month liquid leadership",
                 "accepted_experiment": "exp-20260609-027",
                 "accepted_ev_delta_sum": 0.2774,
@@ -142,7 +158,7 @@ SOURCE_PRIORITY: "OrderedDict[str, dict[str, Any]]" = OrderedDict(
         (
             "industry_laggard_repair",
             {
-                "rank": 4,
+                "rank": 5,
                 "description": "accepted industry relative laggard repair",
                 "accepted_experiment": "exp-20260607-008",
                 "accepted_ev_delta_sum": 0.2763,
@@ -152,7 +168,7 @@ SOURCE_PRIORITY: "OrderedDict[str, dict[str, Any]]" = OrderedDict(
         (
             "revision_surprise_low_extension",
             {
-                "rank": 5,
+                "rank": 6,
                 "description": "accepted revision-surprise low-extension expectation source",
                 "accepted_experiment": "exp-20260609-011",
                 "accepted_ev_delta_sum": 0.1846,
@@ -162,7 +178,7 @@ SOURCE_PRIORITY: "OrderedDict[str, dict[str, Any]]" = OrderedDict(
         (
             "compression",
             {
-                "rank": 6,
+                "rank": 7,
                 "description": "accepted narrow range compression breakout",
                 "accepted_experiment": "exp-20260608-013",
                 "accepted_ev_delta_sum": 0.1608,
@@ -172,7 +188,7 @@ SOURCE_PRIORITY: "OrderedDict[str, dict[str, Any]]" = OrderedDict(
         (
             "industry_stable_core_flow",
             {
-                "rank": 7,
+                "rank": 8,
                 "description": "accepted industry stable core-flow",
                 "accepted_experiment": "exp-20260608-008",
                 "accepted_ev_delta_sum": 0.1459,
@@ -551,6 +567,19 @@ def _build_source_trades(
     raw_candidate_counts: OrderedDict[str, int | None] = OrderedDict()
     source_audits: OrderedDict[str, Any] = OrderedDict()
 
+    lagged_consensus_trades, lagged_consensus_audit = (
+        _build_lagged_cross_source_consensus_historical_trades(
+            dates=dates,
+            window_label=window_label,
+        )
+    )
+    source_trades.extend(lagged_consensus_trades)
+    source_trade_counts["lagged_cross_source_consensus"] = len(lagged_consensus_trades)
+    raw_candidate_counts["lagged_cross_source_consensus"] = lagged_consensus_audit[
+        "raw_candidate_count"
+    ]
+    source_audits["lagged_cross_source_consensus"] = lagged_consensus_audit
+
     volatility = build_volatility_relief_stock_leadership_historical_trades(
         ohlcv_by_ticker=rows_by_ticker,
         dates=dates,
@@ -674,6 +703,71 @@ def _build_source_trades(
     }
 
 
+def _build_lagged_cross_source_consensus_historical_trades(
+    *,
+    dates: list[str],
+    window_label: str,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    date_set = set(dates)
+    payload: dict[str, Any] = {}
+    if LAGGED_CONSENSUS_SOURCE_ARTIFACT.exists():
+        with LAGGED_CONSENSUS_SOURCE_ARTIFACT.open("r", encoding="utf-8") as handle:
+            loaded = json.load(handle)
+        if isinstance(loaded, dict):
+            payload = loaded
+
+    rows = (payload.get("target_trades_by_window") or {}).get(window_label, [])
+    source_rows: list[dict[str, Any]] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        signal_date = str(row.get("signal_date") or row.get("date") or "")[:10]
+        ticker = str(row.get("ticker") or "").upper()
+        if signal_date not in date_set or not ticker:
+            continue
+        source_rows.append(
+            _normalise_source_row(
+                {
+                    **deepcopy(row),
+                    "date": signal_date,
+                    "signal_date": signal_date,
+                    "ticker": ticker,
+                    "source_family": "lagged_cross_source_consensus",
+                    "source_score": _lagged_consensus_source_score(row),
+                    "candidate_score": _lagged_consensus_source_score(row),
+                    "source_artifact": str(
+                        LAGGED_CONSENSUS_SOURCE_ARTIFACT.relative_to(DATA_ROOT.parent)
+                    ).replace("\\", "/"),
+                },
+                "lagged_cross_source_consensus",
+            )
+        )
+
+    target_summary = payload.get("target_summary") or {}
+    trades_by_window = target_summary.get("trades_by_window") or {}
+    return source_rows, {
+        "rule_version": "accepted_free_data_cross_source_consensus_shared_v1",
+        "source_rule_version": SOURCE_RULE_VERSION,
+        "source_artifact": str(
+            LAGGED_CONSENSUS_SOURCE_ARTIFACT.relative_to(DATA_ROOT.parent)
+        ).replace("\\", "/"),
+        "source_trade_count": len(source_rows),
+        "raw_candidate_count": trades_by_window.get(window_label, len(source_rows)),
+        "unique_source_tickers": len({row["ticker"] for row in source_rows}),
+        "selected_source_family_combos": dict(
+            Counter("+".join(row.get("source_families") or []) for row in source_rows)
+        ),
+        "selected_source_name_combos": dict(
+            Counter("+".join(row.get("source_names") or []) for row in source_rows)
+        ),
+        "known_at": (
+            "accepted lagged consensus rows from exp-20260604-009 artifact; "
+            "daily snapshots use free_data_cross_source_consensus_paper_sleeve"
+        ),
+        "daily_entry_slots": 1,
+    }
+
+
 def _normalise_source_row(row: dict[str, Any], source_family: str) -> dict[str, Any]:
     if source_family not in SOURCE_PRIORITY:
         source_family = str(row.get("source_family") or "")
@@ -681,7 +775,10 @@ def _normalise_source_row(row: dict[str, Any], source_family: str) -> dict[str, 
     signal_date = str(row.get("signal_date") or row.get("date") or "")[:10]
     ticker = str(row.get("ticker") or "").upper()
     score = _source_score(row)
-    uses_revision_data = source_family == "revision_surprise_low_extension"
+    uses_free_non_ohlcv = source_family in {
+        "lagged_cross_source_consensus",
+        "revision_surprise_low_extension",
+    }
     return {
         **deepcopy(row),
         "date": signal_date,
@@ -695,8 +792,8 @@ def _normalise_source_row(row: dict[str, Any], source_family: str) -> dict[str, 
         "known_at": "after_signal_day_close_before_next_open_paper_entry",
         "trade_enabled": False,
         "uses_llm": False,
-        "uses_free_ohlcv_only": not uses_revision_data,
-        "uses_free_non_ohlcv": uses_revision_data,
+        "uses_free_ohlcv_only": not uses_free_non_ohlcv,
+        "uses_free_non_ohlcv": uses_free_non_ohlcv,
     }
 
 
@@ -920,7 +1017,17 @@ def _source_score(row: dict[str, Any]) -> float:
     ):
         if row.get(key) is not None:
             return _float(row.get(key))
+    if row.get("source_family_count") is not None or row.get("source_count") is not None:
+        return _lagged_consensus_source_score(row)
     return 0.0
+
+
+def _lagged_consensus_source_score(row: dict[str, Any]) -> float:
+    family_count = int(_float(row.get("source_family_count")))
+    source_count = int(_float(row.get("source_count")))
+    prior_families = int(_float(row.get("prior_confirmation_family_count")))
+    lagged = 1.0 if row.get("has_lagged_independent_confirmation") else 0.0
+    return family_count * 100.0 + source_count * 10.0 + prior_families + lagged
 
 
 def _trading_dates(rows_by_ticker: dict[str, list[dict[str, Any]]]) -> list[str]:

@@ -104,6 +104,42 @@ def test_same_ticker_cooldown_blocks_nearby_repeat() -> None:
     assert audit["filtered_priority_candidate_count"] == 1
 
 
+def test_lagged_consensus_source_ranked_first() -> None:
+    trading_dates = _business_dates(5)
+    signal_date = trading_dates[1]
+
+    selected, rejected, audit = select_accepted_helper_source_priority_rows(
+        source_rows=[
+            {
+                "ticker": "ALT",
+                "date": signal_date,
+                "source_family": "volatility_relief",
+                "candidate_score": 999.0,
+            },
+            {
+                "ticker": "TOP",
+                "date": signal_date,
+                "source_family": "lagged_cross_source_consensus",
+                "source_family_count": 2,
+                "source_count": 3,
+                "has_lagged_independent_confirmation": True,
+            },
+        ],
+        trading_dates=trading_dates,
+        create_trades=False,
+    )
+
+    assert SOURCE_PRIORITY["lagged_cross_source_consensus"]["rank"] == 1
+    assert SOURCE_PRIORITY["volatility_relief"]["rank"] == 2
+    assert [row["ticker"] for row in selected] == ["TOP"]
+    assert selected[0]["source_family"] == "lagged_cross_source_consensus"
+    assert selected[0]["uses_free_ohlcv_only"] is False
+    assert selected[0]["uses_free_non_ohlcv"] is True
+    assert rejected[0]["source_family"] == "volatility_relief"
+    assert rejected[0]["filter_reason"] == "daily_top1_source_priority_limit"
+    assert audit["selected_source_counts"] == {"lagged_cross_source_consensus": 1}
+
+
 def test_revision_source_ranked_ahead_of_compression() -> None:
     trading_dates = _business_dates(5)
     signal_date = trading_dates[1]
@@ -127,11 +163,11 @@ def test_revision_source_ranked_ahead_of_compression() -> None:
         create_trades=False,
     )
 
-    assert SOURCE_PRIORITY["revision_surprise_low_extension"]["rank"] == 5
-    assert SOURCE_PRIORITY["compression"]["rank"] == 6
+    assert SOURCE_PRIORITY["revision_surprise_low_extension"]["rank"] == 6
+    assert SOURCE_PRIORITY["compression"]["rank"] == 7
     assert [row["ticker"] for row in selected] == ["TOP"]
     assert selected[0]["source_family"] == "revision_surprise_low_extension"
-    assert selected[0]["source_priority_rank"] == 5
+    assert selected[0]["source_priority_rank"] == 6
     assert selected[0]["uses_free_ohlcv_only"] is False
     assert selected[0]["uses_free_non_ohlcv"] is True
     assert rejected[0]["source_family"] == "compression"
@@ -185,3 +221,50 @@ def test_daily_snapshot_creates_default_off_pending_from_source_snapshots() -> N
     assert snapshot["source_priority_context"]["priority_audit"][
         "selected_source_counts"
     ] == {"volatility_relief": 1}
+
+
+def test_daily_snapshot_uses_lagged_consensus_snapshot_as_rank_one_source() -> None:
+    ohlcv = _ohlcv()
+    signal_date = ohlcv["SPY"][5]["date"]
+
+    snapshot = build_accepted_helper_source_priority_allocator_snapshot(
+        as_of=signal_date,
+        source_snapshots={
+            "lagged_cross_source_consensus": {
+                "candidate_count": 1,
+                "candidates": [
+                    {
+                        "ticker": "TOP",
+                        "date": signal_date,
+                        "source_family_count": 2,
+                        "source_count": 3,
+                        "has_lagged_independent_confirmation": True,
+                    }
+                ],
+            },
+            "volatility_relief": {
+                "candidate_count": 1,
+                "candidates": [
+                    {
+                        "ticker": "ALT",
+                        "date": signal_date,
+                        "source_family": "volatility_relief",
+                        "candidate_score": 999.0,
+                    }
+                ],
+            },
+        },
+        ohlcv_by_ticker=ohlcv,
+        state=empty_accepted_helper_source_priority_allocator_state(),
+        persist=False,
+    )
+
+    assert snapshot["candidate_count"] == 1
+    assert snapshot["trade_enabled"] is False
+    candidate = snapshot["candidates"][0]
+    assert candidate["ticker"] == "TOP"
+    assert candidate["source_family"] == "lagged_cross_source_consensus"
+    assert candidate["source_priority_rank"] == 1
+    assert snapshot["source_priority_context"]["priority_audit"][
+        "selected_source_counts"
+    ] == {"lagged_cross_source_consensus": 1}
