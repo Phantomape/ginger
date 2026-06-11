@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `99`
-- Accepted / rejected: `11` / `81`
-- Accept rate: `11.11%`
-- Sum EV delta: `+62.0191`
-- Sum PnL delta: `$1,240,909.18`
-- Latest: `exp-20260611-010` `rejected_allocator_prune_industry_laggard_repair_source` with EV `+2.2104` and PnL `$40,966.24`.
+- Experiments: `100`
+- Accepted / rejected: `11` / `82`
+- Accept rate: `11.00%`
+- Sum EV delta: `+64.0785`
+- Sum PnL delta: `$1,277,345.46`
+- Latest: `exp-20260611-015` `rejected_sec_ftd_finra_rank3_allocator_source` with EV `+2.0594` and PnL `$36,436.28`.
 
 ## Retained Or Positive Evidence
 
@@ -30,8 +30,6 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260609-025` `rejected_form4_liquidity_cost_cluster_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `form4_liquidity_cost_cluster_candidate_pool`.
-  Lesson: The stricter cluster/cost/liquidity qualifier produced too few selected trades and failed raw Form4 replacement value. The data shape shows that adding cluster or senior-owner support to the already sparse forward que...
 - `exp-20260610-006` `rejected_macro_relief_allocator_extension`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
   Lesson: Macro relief was already an accepted standalone helper, but the allocator extension did not add enough incremental replacement value after existing higher-priority helper rows and global cooldown. The likely issue is...
 - `exp-20260610-009` `rejected_fiftytwo_week_high_allocator_source_extension`: EV `+1.0193`, PnL `$18,759.55`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
@@ -46,6 +44,8 @@ records before making strategy changes.
   Lesson: The new source did not add enough incremental replacement value after lagged consensus and volatility relief; it likely displaced better lower-rank allocator rows or duplicated accepted pressure beta. Do not retry by...
 - `exp-20260611-010` `rejected_allocator_prune_industry_laggard_repair_source`: EV `+2.2104`, PnL `$40,966.24`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
   Lesson: The industry_laggard_repair source looked weak in late/mid attribution, but removing it eliminated too many useful old_thin or date-coverage replacement rows and did not beat the accepted allocator across the binding...
+- `exp-20260611-015` `rejected_sec_ftd_finra_rank3_allocator_source`: EV `+2.0594`, PnL `$36,436.28`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
+  Lesson: The official settlement/borrow-pressure source did not add enough incremental replacement value after lagged consensus and volatility relief. It likely overlaps accepted short-pressure evidence or displaces better low...
 
 ## Retry Discipline
 
@@ -67,9 +67,9 @@ records before making strategy changes.
 
 ## Recent Raw Records
 
-- `exp-20260610-021` source `experiments/logs/exp-20260610-021.json`.
 - `exp-20260611-003` source `experiments/logs/exp-20260611-003.json`.
 - `exp-20260611-004` source `experiments/logs/exp-20260611-004.json`.
 - `exp-20260611-005` source `experiments/logs/exp-20260611-005.json`.
 - `exp-20260611-008` source `experiments/logs/exp-20260611-008.json`.
 - `exp-20260611-010` source `experiments/logs/exp-20260611-010.json`.
+- `exp-20260611-015` source `experiments/logs/exp-20260611-015.json`.

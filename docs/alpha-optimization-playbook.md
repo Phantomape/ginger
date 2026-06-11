@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-06-10.
+Last refreshed: 2026-06-11.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -133,6 +133,24 @@ accepted source-priority allocator. The useful question is now source
 arbitration and distinct evidence, not more date labels, helper stacking, or
 hand-built theme baskets.
 
+The June 11 readout strengthens the same conclusion. Lagged independent
+free-data consensus became the next accepted shared allocator source because it
+added distinct multi-source confirmation across all windows after being moved
+into the shared daily/backtest boundary. Distribution-day absorption leadership
+also earned an accepted default-off shared helper, but nearby additions show the
+new boundary: VBB allocator rows, distribution rank-3/precompression variants,
+low-beta defensive distribution-pressure variants, SEC FTD/FINRA rank-3 rows,
+slot-sliced core candidates, and allocator source pruning can all look positive
+versus the core baseline while failing the accepted allocator or accepted
+distribution comparator. SEC text/event ideas also remain weak unless the
+semantic field is materially richer: complexity and change-density,
+periodic-report absorption, delayed SEC confirmation, and quantified
+counterparty commitment did not add reliable replacement value. Pocket-pivot,
+market follow-through, and peer-revision shock variants reinforced that broad
+momentum or confirmation labels are not enough. The durable queue is therefore
+forward maturation, relation/source evidence, and comparator-aware allocator
+arbitration, not another rank, threshold, or helper-stacking sweep.
+
 Default next question for any new broad candidate pool:
 
 - what exact relation makes this ticker a better replacement than cash, ETF
@@ -174,7 +192,8 @@ evidence on accepted paper adapters:
   52-week-high proximity core-flow (full-stack
   `accepted_paper_pending_forward`, exp-20260610-008);
 - accepted-helper source-priority allocator with revision-surprise
-  low-extension as fixed rank 5;
+  low-extension and lagged consensus as fixed accepted sources;
+- distribution-day absorption leadership shared default-off adapter;
 - VBB / VCP / Space observe-only buckets where nonzero forward rows exist.
 
 Minimum forward package:
@@ -363,6 +382,15 @@ production-visible field:
 - adding an already accepted standalone helper as another source-priority
   allocator row unless the added source has distinct evidence and improves all
   windows versus the current allocator;
+- adding VBB, distribution absorption variants, SEC FTD/FINRA confirmation, or
+  slot-sliced core rows into the accepted allocator without new forward
+  replacement-value evidence or a field that beats the current accepted
+  allocator and accepted distribution comparator;
+- distribution-pressure low-beta / low-volatility defensive-leadership
+  variants unless they beat accepted distribution-day absorption and show why
+  they are not merely stale resilience or slow low-beta laggard exposure;
+- pruning accepted allocator sources based only on late/mid source attribution
+  when old_thin coverage or displacement rows may be doing the work;
 - low-deployment ETF threshold, ETF-list, hold-day, or notional retunes;
 - lagged free-data consensus source-set/source-family/timing/notional retunes
   that do not beat the accepted lagged independent-family comparator;
@@ -377,6 +405,10 @@ production-visible field:
   provenance or relation structure;
 - broad SEC business-update labels, including generic 8-K Item 8.01/7.01/1.01
   leadership, without richer event semantics or relation provenance;
+- SEC filing complexity, change-density, periodic-report absorption, delayed
+  confirmation, or quantified counterparty/customer commitment variants unless
+  the retry has materially richer PIT semantic provenance and beats accepted
+  SEC/event and non-text comparators after costs;
 - raw SEC same-family bursts, first/follow-on recurrence, same-ticker
   cross-family transitions, same-sector SEC peer transfer, or same-sector
   event breadth retries;

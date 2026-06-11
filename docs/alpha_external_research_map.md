@@ -522,3 +522,175 @@ Implementable fields:
 - `narrative_unwind_risk_bucket`
 
 Source: <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6805805>
+
+### Trading-Signal Reasoning Benchmarks
+
+FinTradeBench (updated June 2026) stresses a practical limitation for LLM use:
+retrieval helps textual fundamentals, but current models still struggle with
+trading-signal and hybrid fundamentals-plus-OHLCV reasoning. For Ginger, this
+argues against asking an LLM whether a pullback or breakout is actionable. The
+LLM should instead fill bounded fields that can be audited against numeric
+signals and replacement value.
+
+Implementable fields:
+
+- `financial_reasoning_benchmark_version`
+- `fundamental_signal_conflict_bucket`
+- `trading_signal_reasoning_failure_bucket`
+- `llm_numeric_audit_passed`
+- `hybrid_fundamental_ohlcv_reason_code`
+- `retrieval_helped_text_not_price_flag`
+- `llm_signal_reasoning_replay_hash`
+
+Controls:
+
+- store the exact numeric indicators shown to the model;
+- separate textual-fundamental retrieval quality from OHLCV reasoning quality;
+- never let a free-form LLM interpretation override deterministic breakout,
+  pullback, volume, or risk fields without Gate 1-4 evidence.
+
+Source: <https://arxiv.org/html/2603.19225v4>
+
+### Anonymized LLM-GNN Signal Validation
+
+BlindTrade proposes anonymizing daily S&P 500 constituents before LLM scoring,
+combining specialized LLM perspectives with graph aggregation, and validating
+signals with IC and negative controls. The usable lesson is not the RL policy;
+it is the anti-memorization and signal-validation protocol. Ginger should use
+anonymization, PIT constituents, random-shuffle controls, and per-agent score
+attribution before trusting LLM text signals.
+
+Implementable fields:
+
+- `ticker_anonymization_protocol_id`
+- `pit_constituent_source_id`
+- `llm_perspective_agent_id`
+- `agent_score_ic_bucket`
+- `agent_score_shuffle_control_delta`
+- `semantic_graph_encoder_version`
+- `llm_reason_embedding_similarity_bucket`
+- `llm_signal_memorization_risk_bucket`
+
+Controls:
+
+- score only securities that were PIT-eligible at the decision date;
+- run negative controls such as shuffled scores or anonymized ticker aliases;
+- keep specialized LLM perspectives separate before any ensemble or allocator;
+- use IC and replacement-value attribution, not only portfolio PnL.
+
+Source: <https://arxiv.org/html/2603.17692v1>
+
+### Execution-Assumption Reproducibility Audit
+
+The June 2026 review "Beyond Agent Architecture" finds that LLM trading papers
+often describe architectures more clearly than the assumptions that decide
+whether results are economically interpretable: data provenance, split timing,
+execution semantics, turnover, costs, universe definition, and artifacts. This
+directly maps to Ginger's Gate 1-4 and experiment closeout rules.
+
+Implementable fields:
+
+- `execution_assumption_matrix_version`
+- `data_provenance_tier`
+- `temporal_split_discipline_bucket`
+- `order_timing_semantics_id`
+- `turnover_cost_model_version`
+- `universe_definition_pit_flag`
+- `artifact_reproducibility_tier`
+- `agent_result_protocol_comparability_bucket`
+
+Controls:
+
+- reject agent or LLM alpha records that lack PIT universe, cost, turnover,
+  execution-timing, and artifact hashes;
+- report result sensitivity to one-way cost and turnover when the strategy
+  reallocates frequently;
+- treat architecture novelty as irrelevant unless the measurement protocol is
+  comparable to accepted local baselines.
+
+Source: <https://arxiv.org/abs/2606.08285>
+
+### LLM-Guided State And Reward Interfaces
+
+GIFT uses an LLM to design state-enhancement and reward-shaping interfaces for
+financial RL, then freezes the selected interface before evaluation. This is a
+useful boundary for Ginger: the LLM may propose interpretable factor channels
+or reward diagnostics offline, but the evaluated policy and feature interface
+must be fixed before Gate 1 and must not call the LLM during the test window.
+
+Implementable fields:
+
+- `state_interface_version`
+- `llm_generated_factor_channel_id`
+- `reward_shaping_rule_set_id`
+- `interface_freeze_timestamp`
+- `state_reward_diagnostic_ic_bucket`
+- `reward_stability_bucket`
+- `rollout_diagnostic_revision_count`
+- `test_time_llm_calls_flag`
+
+Controls:
+
+- freeze generated feature/reward code before evaluation;
+- record diagnostic feedback used to revise the interface;
+- forbid test-time LLM updates or hidden reward edits;
+- compare against fixed-feature and fixed-reward controls, after costs.
+
+Source: <https://arxiv.org/html/2606.08450v1>
+
+### Correlation-Aware Portfolio Evaluation
+
+PortBench emphasizes full-pipeline portfolio evaluation with explicit
+correlation information, stress-regime tests, investor-profile constraints, and
+standard risk metrics. For Ginger, the production translation is to score
+paper candidates by portfolio displacement and correlation/crowding impact,
+not standalone next-open PnL alone.
+
+Implementable fields:
+
+- `candidate_correlation_context_version`
+- `intra_sleeve_correlation_bucket`
+- `inter_sleeve_correlation_bucket`
+- `correlation_adjusted_replacement_value`
+- `profile_constraint_alignment_bucket`
+- `stress_regime_performance_bucket`
+- `portfolio_correlation_penalty_bucket`
+- `diversification_budget_remaining`
+
+Controls:
+
+- evaluate candidate additions against the exact displaced candidate or cash;
+- include correlation and exposure impact in forward paper ledgers;
+- report stress-regime performance separately from normal-market averages;
+- do not promote an alpha that wins only by adding crowded beta exposure.
+
+Source: <https://arxiv.org/html/2605.27887v2>
+
+### Constrained Macro-Prior LLM Agents
+
+Recent commodity-related ETF allocation work uses fixed macro evidence tables,
+zero-temperature cached outputs, explicit Hawkish/Dovish priors, stationary
+bootstrap Sharpe tests, and transaction-cost sensitivity. The local lesson is
+that LLMs can be bounded interpreters of a precomputed macro state, but the
+prior, evidence table, prompt, output cache, cost model, and benchmark must all
+be replayable.
+
+Implementable fields:
+
+- `macro_prior_agent_id`
+- `macro_evidence_table_hash`
+- `macro_prior_interpretation_bucket`
+- `macro_agent_disagreement_bucket`
+- `macro_agent_output_cache_hash`
+- `macro_tilt_cost_sensitivity_bucket`
+- `bootstrap_sharpe_difference_bucket`
+- `macro_release_vintage_quality_bucket`
+
+Controls:
+
+- provide only release-aware macro features and no future returns;
+- cache all model outputs by date and agent type;
+- compare against deterministic rule and passive risk benchmarks;
+- report one-way cost sensitivity and multiple-testing caveats.
+
+Source: <https://arxiv.org/html/2606.08283v1>
