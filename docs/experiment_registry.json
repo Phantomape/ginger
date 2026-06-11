@@ -20982,8 +20982,140 @@
       "aggregate_expected_value_delta": 0.0768,
       "aggregate_strategy_total_pnl_delta": 1799.3,
       "updated_at": "2026-06-11T10:15:02+00:00"
+    },
+    {
+      "experiment_id": "exp-20260611-014",
+      "experiment_uid": "expuid-31e73cdb150b46b9",
+      "hub_identity": {
+        "scheme": "hf_hub_local_v1",
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260611-014",
+        "slug": "distribution_absorption_precompression",
+        "reserved_at": "2026-06-11T11:08:52+00:00",
+        "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+      },
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search-automation",
+      "hypothesis": "candidate_pool: after accepted SPY/QQQ distribution pressure, an absorption leader whose prior five sessions compressed versus its own 20-session range may represent supply contraction before reclaim, improving replacement value versus the accepted distribution source.",
+      "change_type": "private_replay_candidate_pool_scout",
+      "mechanism_family": "free_ohlcv_pressure_absorption",
+      "trial_family": "distribution_absorption_intersection",
+      "trial_variant_id": "distribution_absorption_pre_pressure_compression_filter_v1",
+      "single_causal_variable": "distribution_absorption_pre_pressure_compression_filter_v1",
+      "changed_variable": "distribution_absorption_pre_pressure_compression_filter_v1",
+      "causal_components": [
+        "canonical three-window replay",
+        "accepted_distribution_candidate_builder",
+        "pre-signal_ohlcv_compression_filter",
+        "accepted_distribution_and_compression_comparators",
+        "artifact_log_registry_closeout"
+      ],
+      "prior_trial_count": 0,
+      "nearby_prior_experiments": [
+        "exp-20260611-007",
+        "exp-20260611-009",
+        "exp-20260611-011",
+        "exp-20260608-013"
+      ],
+      "multiple_testing_risk_bucket": "moderate",
+      "new_evidence_type": "fixed_intersection_of_two_accepted_ohlcv_mechanisms",
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260611_014_*.py",
+        "data/experiments/exp-20260611-014/**",
+        "experiments/logs/exp-20260611-014.json",
+        "experiments/cards/exp-20260611-014.md",
+        "experiments/manifests/exp-20260611-014.json",
+        "experiments/tickets/exp-20260611-014.json",
+        "docs/experiment_registry.json",
+        "docs/experiment_log.jsonl"
+      ],
+      "must_not_touch": [],
+      "locked_variables": [
+        "distribution_absorption_pre_pressure_compression_filter_v1"
+      ],
+      "evaluation_windows": [],
+      "acceptance_rule": "Gate 1-4 on canonical windows; aggregate EV/PnL positive; no window EV/PnL regression; target trades >=20; drawdown delta <=0.005; concentration pass; beat accepted distribution and compression comparators, otherwise reject and do not promote.",
+      "prediction": {
+        "success_probability": 0.14,
+        "expected_ev_delta": 0.18,
+        "expected_pnl_delta": 3000.0,
+        "main_failure_modes": [
+          "sample_thinning",
+          "old_thin_regression",
+          "accepted_distribution_comparator_not_beaten",
+          "compression_overlap_not_incremental"
+        ],
+        "confidence_reason": "Both source mechanisms have prior accepted evidence, but recent source additions and confirmation layers usually failed. This is a low-confidence replay scout to avoid building shared production code before incremental data shape is known.",
+        "recorded_at": "2026-06-11T11:08:44Z"
+      },
+      "created_at": "2026-06-11T11:08:52+00:00",
+      "claimed_at": "2026-06-11T11:09:01+00:00",
+      "completed_at": "2026-06-11T11:22:22+00:00",
+      "result": {
+        "decision": "rejected_distribution_absorption_precompression_candidate_pool",
+        "status": "rejected",
+        "expected_value_score_delta": 0.3983,
+        "total_pnl_delta": 7102.81,
+        "gate_4": {
+          "passed": false,
+          "decision": "rejected_distribution_absorption_precompression_candidate_pool",
+          "failed_reasons": [
+            "accepted_distribution_ev_comparator_not_beaten",
+            "accepted_distribution_pnl_comparator_not_beaten"
+          ],
+          "aggregate_ev_delta": 0.3983,
+          "aggregate_pnl_delta": 7102.81,
+          "windows_ev_improved": 3,
+          "windows_ev_regressed": 0,
+          "windows_pnl_improved": 3,
+          "windows_pnl_regressed": 0,
+          "target_trade_count": 88,
+          "target_trade_count_min": 20,
+          "target_windows": [
+            "late_strong",
+            "mid_weak",
+            "old_thin"
+          ],
+          "target_window_count_min": 3,
+          "max_drawdown_worse": -0.0001,
+          "max_drawdown_worse_guardrail": 0.005,
+          "minimum_core_survival_rate": 0.7925,
+          "survival_guard_passed": true,
+          "accepted_distribution_comparator": {
+            "experiment_id": "exp-20260611-007",
+            "decision": "accepted_distribution_day_absorption_leadership_shared_adapter",
+            "expected_value_score_delta_sum": 0.5286,
+            "total_pnl_delta_sum": 10432.91,
+            "target_trade_count": 113
+          },
+          "accepted_compression_comparator": {
+            "experiment_id": "exp-20260608-013",
+            "decision": "accepted_compression_breakout_like_source",
+            "expected_value_score_delta_sum": 0.1608,
+            "total_pnl_delta_sum": 2248.98
+          },
+          "target_concentration": {
+            "passed": true,
+            "max_single_positive_pnl_share": 0.108862,
+            "max_single_positive_pnl_share_guardrail": 0.5,
+            "positive_pnl_hhi": 0.044473,
+            "positive_pnl_hhi_guardrail": 0.35
+          }
+        },
+        "artifact": "data/experiments/exp-20260611-014/exp_20260611_014_distribution_absorption_precompression.json",
+        "log": "experiments/logs/exp-20260611-014.json",
+        "card": "experiments/cards/exp-20260611-014.md",
+        "lean_quality_passed": true
+      },
+      "ticket_file": "experiments/tickets/exp-20260611-014.json",
+      "card_file": "experiments/cards/exp-20260611-014.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260611-014.json",
+      "lean_quality_passed": true,
+      "updated_at": "2026-06-11T11:22:22+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-11T10:15:02+00:00"
+  "updated_at": "2026-06-11T11:22:22+00:00"
 }
