@@ -150,6 +150,12 @@ market follow-through, and peer-revision shock variants reinforced that broad
 momentum or confirmation labels are not enough. The durable queue is therefore
 forward maturation, relation/source evidence, and comparator-aware allocator
 arbitration, not another rank, threshold, or helper-stacking sweep.
+Forward maturation measurement also moved from blocker to usable surface:
+exp-20260611-020 repaired 36/36 existing closed forward rows with
+cost-adjusted replacement-value fields versus cash, SPY, and QQQ. Future
+forward activation reads should use `replacement_value_vs_cash_usd`,
+`replacement_value_vs_spy_usd`, and `replacement_value_vs_qqq_usd`; raw paper
+PnL is no longer sufficient evidence.
 
 Default next question for any new broad candidate pool:
 
@@ -205,6 +211,11 @@ Minimum forward package:
 - concentration and top-contributor share;
 - replay-vs-forward parity status;
 - reason no live order was placed.
+
+Since exp-20260611-020, closed rows in `data/paper_sleeves/*/state.json`
+carry replacement-value fields where comparable data exists. A readiness audit
+should wait for materially more closed rows per adapter and use those fields as
+the activation surface, not rerun a generic "replacement fields missing" audit.
 
 ### 2. Tail-State Classifier For Momentum And Broad Candidate Pools
 
