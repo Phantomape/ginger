@@ -30,19 +30,19 @@ from typing import Any
 
 try:
     from constants import ROUND_TRIP_COST_PCT
-    from data_paths import atomic_write_json, data_artifact_path
+    from data_paths import DATA_ROOT, atomic_write_json
     from fill_model import SLIPPAGE_BPS_ENTRY, SLIPPAGE_BPS_TARGET, apply_slippage
     from ohlcv_warehouse import DEFAULT_WAREHOUSE_PATH
 except ImportError:  # pragma: no cover - package-style import fallback
     from quant.constants import ROUND_TRIP_COST_PCT
-    from quant.data_paths import atomic_write_json, data_artifact_path
+    from quant.data_paths import DATA_ROOT, atomic_write_json
     from quant.fill_model import SLIPPAGE_BPS_ENTRY, SLIPPAGE_BPS_TARGET, apply_slippage
     from quant.ohlcv_warehouse import DEFAULT_WAREHOUSE_PATH
 
 
 RULE_VERSION = "forward_replacement_value_v1"
 COMPARATOR_TICKERS = ("SPY", "QQQ")
-ARTIFACT_KEY = "paper_sleeves/forward_replacement_value.jsonl"
+ARTIFACT_RELPATH = Path("paper_sleeves") / "forward_replacement_value.jsonl"
 
 # Plausible bounds for a derived paper notional; outside this range the
 # derivation is treated as failed rather than silently recorded.
@@ -248,8 +248,8 @@ def enrich_all_sleeve_states(
     Appends one JSONL record per newly enriched row to the shared artifact and
     returns an observe-only summary. Safe to call repeatedly per day.
     """
-    root = Path(sleeves_root) if sleeves_root else data_artifact_path("paper_sleeves")
-    artifact = Path(artifact_path) if artifact_path else data_artifact_path(ARTIFACT_KEY)
+    root = Path(sleeves_root) if sleeves_root else DATA_ROOT / "paper_sleeves"
+    artifact = Path(artifact_path) if artifact_path else DATA_ROOT / ARTIFACT_RELPATH
     if bars_by_ticker is None:
         bars_by_ticker = load_comparator_bars(warehouse_path)
 
