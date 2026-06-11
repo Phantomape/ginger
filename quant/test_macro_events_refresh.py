@@ -58,7 +58,12 @@ def test_refresh_appends_only_new_future_dates(tmp_path, monkeypatch):
     monkeypatch.delenv("FRED_API_KEY", raising=False)
     overlay = tmp_path / "macro_events_overlay.json"
     before_rows = list(macro_events.MACRO_EVENTS)
+    seeded_rows = [
+        row for row in before_rows
+        if row["date"] <= "2026-12-10" and (row["date"], row["family"]) != ("2026-08-12", "CPI")
+    ]
     try:
+        macro_events.MACRO_EVENTS[:] = seeded_rows
         summary = refresh_macro_events_overlay(
             "2026-06-10", path=overlay, http_get=_fake_http_get, force=True
         )
@@ -73,7 +78,7 @@ def test_refresh_appends_only_new_future_dates(tmp_path, monkeypatch):
         # Future-year FOMC accumulates.
         assert ("2027-01-27", "FOMC") in keys
         # In-memory list was extended in place (identity preserved).
-        assert len(macro_events.MACRO_EVENTS) == len(before_rows) + summary["added"]
+        assert len(macro_events.MACRO_EVENTS) == len(seeded_rows) + summary["added"]
         import macro_relief_leadership_paper_sleeve as sleeve
         assert sleeve.MACRO_EVENTS is macro_events.MACRO_EVENTS
         assert macro_events.macro_events_on("2026-08-12")

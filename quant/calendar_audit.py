@@ -48,12 +48,31 @@ def _iter_months(start: tuple[int, int], end: tuple[int, int]):
         year, month = (year + 1, 1) if month == 12 else (year, month + 1)
 
 
-def audit_macro_events(today_iso: str, warn_ahead_days: int = DEFAULT_WARN_AHEAD_DAYS) -> list[dict]:
+def _coverage_from_events(events) -> dict[str, str]:
+    coverage: dict[str, str] = {}
+    for event in events:
+        family = event["family"]
+        date_iso = event["date"]
+        if family not in coverage or date_iso > coverage[family]:
+            coverage[family] = date_iso
+    return coverage
+
+
+def audit_macro_events(
+    today_iso: str,
+    warn_ahead_days: int = DEFAULT_WARN_AHEAD_DAYS,
+    events=None,
+) -> list[dict]:
     findings: list[dict] = []
     today = date.fromisoformat(today_iso)
     horizon = today + timedelta(days=warn_ahead_days)
+    event_rows = MACRO_EVENTS if events is None else events
 
-    coverage = calendar_family_coverage()
+    coverage = (
+        calendar_family_coverage()
+        if events is None
+        else _coverage_from_events(event_rows)
+    )
     for family in sorted(coverage):
         end = date.fromisoformat(coverage[family])
         if end < today:
@@ -75,7 +94,7 @@ def audit_macro_events(today_iso: str, warn_ahead_days: int = DEFAULT_WARN_AHEAD
     # history (e.g. delayed releases), future gaps are maintenance bugs.
     for family in MONTHLY_FAMILIES:
         months_with_release = {
-            _month_key(e["date"]) for e in MACRO_EVENTS if e["family"] == family
+            _month_key(e["date"]) for e in event_rows if e["family"] == family
         }
         if not months_with_release:
             continue

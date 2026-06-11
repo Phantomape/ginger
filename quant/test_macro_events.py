@@ -54,9 +54,9 @@ def test_upcoming_macro_events_window():
 
 
 def test_calendar_coverage():
-    assert macro_events.calendar_coverage_end() == "2026-12-10"
     coverage = macro_events.calendar_family_coverage()
-    assert coverage["NFP"] == "2026-12-04"
-    assert coverage["FOMC"] == "2026-12-09"
-    assert coverage["CPI"] == "2026-12-10"
-    assert macro_events.calendar_coverage_end("NFP") == "2026-12-04"
+    assert coverage["NFP"] >= "2026-12-04"
+    assert coverage["FOMC"] >= "2026-12-09"
+    assert coverage["CPI"] >= "2026-12-10"
+    assert macro_events.calendar_coverage_end() == max(coverage.values())
+    assert macro_events.calendar_coverage_end("NFP") == coverage["NFP"]
