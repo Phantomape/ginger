@@ -109,6 +109,31 @@ Window labels used in experiment logs:
 | `mid_weak` | `2025-04-23 -> 2025-10-22` | `data\ohlcv\ohlcv_snapshot_20250423_20251022.json` |
 | `old_thin` | `2024-10-02 -> 2025-04-22` | `data\ohlcv\ohlcv_snapshot_20241002_20250422.json` |
 
+## Recent Observe-Only Window
+
+New experiments should also report a recent diagnostic window when the data is
+available and the extra run is practical. This window is observation only. It
+must never block, accept, reject, roll back, or promote a strategy change.
+
+| Label | Date range | Source | Gate role |
+| --- | --- | --- | --- |
+| `recent_observe` | `2026-04-22 -> <LATEST_COMPLETE_TRADING_DAY>` | broad warehouse `ohlcv` table | observe-only diagnostic |
+
+Use the broad warehouse command shape:
+
+```powershell
+.\.venv\Scripts\python.exe quant\backtester.py --start 2026-04-22 --end <LATEST_COMPLETE_TRADING_DAY> --ohlcv-warehouse data\experiments\exp-20260519-030\warehouse_main.sqlite
+```
+
+Record recent-window output under `observe_only_windows` or an explicitly named
+`recent_observe` block, not inside the Gate-4 decision block. Exclude it from
+all acceptance arithmetic: aggregate EV/PnL deltas, window-improvement counts,
+window-regression checks, drawdown guards, survival guards, concentration
+guards, materiality checks, and comparator pass/fail logic. If the recent
+window is unavailable, missing, stale, too short, or contradictory, record the
+observation and continue using only the three fixed canonical windows for
+Gate 1-4.
+
 Current accepted fixed-window metrics use the production-faithful PIT earnings
 snapshot `days_to_earnings` replay accepted in `exp-20260601-025` plus the
 explicit same-day post-earnings continuation semantics accepted in
