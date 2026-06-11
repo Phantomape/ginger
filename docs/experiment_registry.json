@@ -21583,8 +21583,195 @@
       "aggregate_expected_value_delta": 0.4695,
       "aggregate_strategy_total_pnl_delta": 5770.87,
       "updated_at": "2026-06-11T13:23:36+00:00"
+    },
+    {
+      "experiment_id": "exp-20260611-017",
+      "experiment_uid": "expuid-666686d733c540de",
+      "hub_identity": {
+        "scheme": "hf_hub_local_v1",
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260611-017",
+        "slug": "sec_quantified_counterparty_commitment",
+        "reserved_at": "2026-06-11T14:07:27+00:00",
+        "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+      },
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search-automation",
+      "hypothesis": "candidate_pool: SEC 8-K / EX-99 filing text with named customer, counterparty, partner, or supplier language plus quantified value, duration, or capacity commitment may identify stronger delayed absorption candidates than the rejected generic SEC contract-demand text bucket when same-day liquid leadership confirms the event.",
+      "change_type": "default_off_paper_candidate_pool_replay_scout",
+      "mechanism_family": "production_visible_free_sec_event_ohlcv_candidate_pool",
+      "trial_family": "sec_quantified_counterparty_commitment_candidate_pool",
+      "trial_variant_id": "sec_quantified_counterparty_commitment_top1_next_open_10d_v1",
+      "single_causal_variable": "sec_quantified_counterparty_commitment_text_absorption_candidate_source_v1",
+      "changed_variable": "sec_quantified_counterparty_commitment_text_absorption_candidate_source_v1",
+      "causal_components": [
+        "PIT SEC text scanner",
+        "quantified counterparty commitment semantic gate",
+        "existing OHLCV leadership envelope",
+        "next-open 10d default-off paper overlay",
+        "Gate 1-4 record"
+      ],
+      "prior_trial_count": 6,
+      "nearby_prior_experiments": [
+        "exp-20260610-023",
+        "exp-20260603-012",
+        "exp-20260610-013",
+        "exp-20260611-012",
+        "exp-20260611-013",
+        "exp-20260611-007"
+      ],
+      "multiple_testing_risk_bucket": "moderate",
+      "new_evidence_type": "named_counterparty_plus_quantified_value_duration_or_capacity_sec_text",
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260611_017_sec_quantified_counterparty_commitment.py",
+        "data/experiments/exp-20260611-017/exp_20260611_017_sec_quantified_counterparty_commitment.json",
+        "experiments/cards/exp-20260611-017.md",
+        "experiments/manifests/exp-20260611-017.json",
+        "experiments/tickets/exp-20260611-017.json",
+        "experiments/logs/exp-20260611-017.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "must_not_touch": [],
+      "locked_variables": [
+        "sec_quantified_counterparty_commitment_text_absorption_candidate_source_v1"
+      ],
+      "evaluation_windows": [],
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "prediction": {
+        "success_probability": 0.16,
+        "expected_ev_delta": 0.25,
+        "expected_pnl_delta": 3000.0,
+        "main_failure_modes": [
+          "thin_sample",
+          "boilerplate_counterparty_context",
+          "already_priced_event",
+          "accepted_distribution_comparator_not_beaten",
+          "old_thin_regression"
+        ],
+        "confidence_reason": "Prior generic SEC contract-demand text failed with only two noisy DE trades. This run is materially narrower evidence requested by that failure: named counterparty/customer plus quantified value, term, or capacity. Success odds remain low because the field is sparse and still only replay-only unless promoted through a shared adapter.",
+        "recorded_at": "2026-06-11T14:07:12+00:00"
+      },
+      "created_at": "2026-06-11T14:07:27+00:00",
+      "claimed_at": "2026-06-11T14:07:44+00:00",
+      "completed_at": "2026-06-11T14:16:40+00:00",
+      "result": {
+        "decision": "rejected_sec_quantified_counterparty_commitment_candidate_pool",
+        "accepted": false,
+        "artifact": "data/experiments/exp-20260611-017/exp_20260611_017_sec_quantified_counterparty_commitment.json",
+        "log": "experiments/logs/exp-20260611-017.json",
+        "card": "experiments/cards/exp-20260611-017.md",
+        "aggregate_expected_value_delta": 0.0,
+        "aggregate_strategy_total_pnl_delta": 0.0,
+        "gate4": {
+          "passed": false,
+          "decision": "rejected_sec_quantified_counterparty_commitment_candidate_pool",
+          "failed_reasons": [
+            "aggregate_ev_not_positive",
+            "aggregate_pnl_not_positive",
+            "fewer_than_two_ev_improved_windows",
+            "target_sample_too_small",
+            "target_window_coverage_too_small",
+            "target_concentration_failed",
+            "accepted_compression_ev_not_beaten",
+            "accepted_compression_pnl_not_beaten",
+            "accepted_distribution_ev_not_beaten",
+            "accepted_distribution_pnl_not_beaten"
+          ],
+          "aggregate_ev_delta": 0.0,
+          "aggregate_pnl_delta": 0.0,
+          "windows_ev_improved": 0,
+          "windows_ev_regressed": 0,
+          "windows_pnl_improved": 0,
+          "windows_pnl_regressed": 0,
+          "target_trade_count": 0,
+          "target_trade_count_min": 20,
+          "target_windows": [],
+          "target_window_count_min": 3,
+          "max_drawdown_worse": 0.0,
+          "max_drawdown_worse_guardrail": 0.005,
+          "minimum_core_survival_rate": 0.7925,
+          "survival_guard_passed": true,
+          "target_concentration": {
+            "passed": false,
+            "max_single_positive_pnl_share": null,
+            "max_single_positive_pnl_share_guardrail": 0.5,
+            "positive_pnl_hhi": null,
+            "positive_pnl_hhi_guardrail": 0.35
+          },
+          "accepted_compression_comparator": {
+            "experiment_id": "exp-20260608-013",
+            "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+            "expected_value_score_delta_sum": 0.1608,
+            "total_pnl_delta_sum": 2248.98,
+            "target_trade_count": 44
+          },
+          "accepted_distribution_comparator": {
+            "experiment_id": "exp-20260611-007",
+            "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+            "expected_value_score_delta_sum": 0.5286,
+            "total_pnl_delta_sum": 10432.91,
+            "target_trade_count": 113
+          }
+        },
+        "calibration": {
+          "predicted_success_probability": 0.16,
+          "actual_gate4_passed": false,
+          "failure_modes_observed": [
+            "aggregate_ev_not_positive",
+            "aggregate_pnl_not_positive",
+            "fewer_than_two_ev_improved_windows",
+            "target_sample_too_small",
+            "target_window_coverage_too_small",
+            "target_concentration_failed",
+            "accepted_compression_ev_not_beaten",
+            "accepted_compression_pnl_not_beaten",
+            "accepted_distribution_ev_not_beaten",
+            "accepted_distribution_pnl_not_beaten"
+          ],
+          "brier_score": 0.0256
+        },
+        "production_impact": {
+          "trade_enabled": false,
+          "alters_orders": false,
+          "adapter_status": "replay_only_no_live_adapter",
+          "shared_policy_changed": false,
+          "backtester_adapter_changed": false,
+          "run_adapter_changed": false,
+          "replay_only": true,
+          "parity_test_added": false,
+          "production_signal_path_changed": false,
+          "production_orders_changed": false,
+          "production_watchlist_changed": false,
+          "alters_signal_generation": false,
+          "alters_candidate_ranking": false,
+          "alters_sizing": false,
+          "alters_exits": false,
+          "uses_llm": false,
+          "uses_free_sec_filing_text": true,
+          "uses_free_ohlcv": true,
+          "parity_note": "This experiment changes no production code. A positive result would remain only a replay lead. Promotion would require one shared default-off adapter that loads the same PIT SEC filing text, applies the exact same named-counterparty and quantified-commitment semantic gate, uses the same signal-date OHLCV leadership envelope, overlap exclusion, next-open paper entry, 10-trading-day exit, costs, cooldown, comparator, and concentration guards in both historical replay and daily production before any report queue, paper ledger, candidate priority, sizing, watchlist, or order surface could change."
+        },
+        "post_run_reflection": {
+          "why_result_happened": "The fixed quantified counterparty commitment bundle failed Gate 4. This means the richer SEC text field was not enough to create stable replacement value after next-open execution, costs, 10-day hold, cooldown, core-overlap controls, sample guards, and accepted distribution comparison.",
+          "forbidden_near_neighbor_retry": "Do not retry by sweeping SEC text synonyms, counterparty regexes, 8-K item subsets, semantic-score threshold, ret20/ret60 relative strength thresholds, signal-day return, close-location, volume bounds, top-N, hold-day, cooldown, or paper notional on the same frozen windows.",
+          "new_evidence_required": "A retry needs materially new PIT evidence outside this text field, such as a broader free data edge in customer/supplier relations, source-utility labels, or forward daily parity observations showing this semantic bucket displaces accepted distribution or allocator candidates."
+        }
+      },
+      "ticket_file": "experiments/tickets/exp-20260611-017.json",
+      "card_file": "experiments/cards/exp-20260611-017.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260611-017.json",
+      "decision": "rejected_sec_quantified_counterparty_commitment_candidate_pool",
+      "summary": "The SEC quantified counterparty commitment source was rejected; the richer free SEC text field did not establish a distinct candidate-pool edge under the standard three-window protocol.",
+      "artifact": "data/experiments/exp-20260611-017/exp_20260611_017_sec_quantified_counterparty_commitment.json",
+      "log": "experiments/logs/exp-20260611-017.json",
+      "aggregate_expected_value_delta": 0.0,
+      "aggregate_strategy_total_pnl_delta": 0.0,
+      "updated_at": "2026-06-11T14:16:40+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-11T13:23:36+00:00"
+  "updated_at": "2026-06-11T14:16:40+00:00"
 }
