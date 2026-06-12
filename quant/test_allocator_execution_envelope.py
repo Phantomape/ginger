@@ -107,3 +107,18 @@ def test_daily_snapshot_exposes_envelope_and_kill_switch():
     assert ks["rule_version"] == sleeve.EXECUTION_ENVELOPE["rule_version"]
     assert ks["triggered"] is False
     assert payload["trade_enabled"] is False
+
+
+def test_v2_profit_giveback_does_not_false_trigger():
+    # v1 failure mode (exp-20260612-022): giveback of accumulated profits
+    # tripped the fixed-bucket basis; v2 measures against realized-equity peak.
+    bucket = float(sleeve.EXECUTION_ENVELOPE["bucket_notional_usd"])
+    gain = bucket * 0.625
+    giveback = -(bucket * 0.125)
+    trades = [
+        _trade("2026-05-01", "2026-05-10", gain),
+        _trade("2026-05-11", "2026-05-20", giveback, ticker="BBB"),
+    ]
+    state = sleeve.evaluate_kill_switch_state(trades)
+    assert state["triggered"] is False
+    assert state["max_realized_drawdown_pct_of_peak_equity"] < 0.15

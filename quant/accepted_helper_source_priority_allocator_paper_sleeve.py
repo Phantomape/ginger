@@ -1097,7 +1097,7 @@ def _production_impact() -> dict[str, Any]:
 # unconstrained replay semantics. trade_enabled stays False.
 
 EXECUTION_ENVELOPE: dict[str, Any] = {
-    "rule_version": "accepted_helper_source_priority_allocator_execution_envelope_v1",
+    "rule_version": "accepted_helper_source_priority_allocator_execution_envelope_v2",
     "mode": "dedicated_bucket_zero_core_displacement",
     "bucket_notional_usd": 32_000.0,
     "base_notional_usd": BASE_NOTIONAL_USD,
@@ -1108,8 +1108,14 @@ EXECUTION_ENVELOPE: dict[str, Any] = {
     "order_semantics": "next_trading_day_open_market_order",
     "missed_fill_policy": "skip_no_chase",
     "halt_policy": "halt_remaining_window_once_triggered",
-    "kill_switch_basis": "cumulative_realized_pnl_drawdown_vs_bucket_notional",
-    "kill_switch_drawdown_pct": 0.08,
+    "kill_switch_basis": "realized_drawdown_vs_realized_equity_peak",
+    "kill_switch_drawdown_pct": 0.15,
+    "kill_switch_calibration_note": (
+        "15pct is about 1.5x the worst healthy-window giveback (about 10pct of "
+        "peak equity in late_strong); calibrated on frozen windows, so the "
+        "in-sample no-false-trigger check is partially circular and the binding "
+        "validation is OOS plus genuine forward rows (exp-20260612-024)"
+    ),
     "core_displacement": 0,
     "slippage_model": (
         "entry/exit 5bps plus ROUND_TRIP_COST_PCT per quant/fill_model.py and "
@@ -1147,7 +1153,8 @@ def evaluate_kill_switch_state(
     for row in rows:
         cumulative += _float(row.get("pnl"))
         peak = max(peak, cumulative)
-        drawdown = (peak - cumulative) / bucket if bucket > 0 else 0.0
+        equity_peak = bucket + peak
+        drawdown = (peak - cumulative) / equity_peak if equity_peak > 0 else 0.0
         max_drawdown = max(max_drawdown, drawdown)
         if not triggered and drawdown >= threshold:
             triggered = True
@@ -1158,7 +1165,7 @@ def evaluate_kill_switch_state(
         "kill_switch_drawdown_pct": threshold,
         "closed_trade_count": len(rows),
         "realized_pnl_usd": leader._round(cumulative, 2),
-        "max_realized_drawdown_pct_of_bucket": leader._round(max_drawdown, 6),
+        "max_realized_drawdown_pct_of_peak_equity": leader._round(max_drawdown, 6),
         "triggered": triggered,
         "trigger_exit_date": trigger_exit_date,
     }
