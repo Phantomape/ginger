@@ -208,8 +208,14 @@ def load_sec_ftd_rows(path: Path | str = DEFAULT_FTD_ROWS_PATH) -> list[dict[str
     rows_path = Path(path)
     if not rows_path.exists():
         return []
-    with rows_path.open("r", encoding="utf-8") as handle:
-        payload = json.load(handle)
+    # An unreadable archive (for example an unsmudged git-LFS pointer left in
+    # the worktree, see exp-20260611-027) must behave like a missing archive so
+    # the builder can fall through to its SEC network rebuild instead of dying.
+    try:
+        with rows_path.open("r", encoding="utf-8") as handle:
+            payload = json.load(handle)
+    except (json.JSONDecodeError, UnicodeDecodeError, OSError):
+        return []
     if isinstance(payload, dict):
         payload = payload.get("rows") or []
     return _normalise_ftd_rows(payload if isinstance(payload, list) else [])

@@ -1,0 +1,81 @@
+{
+  "experiment_id": "exp-20260611-027",
+  "experiment_uid": "expuid-7d8d0ca4acef487c",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260611-027",
+    "slug": "lfs_pointer_data_restoration",
+    "reserved_at": "2026-06-11T23:55:38+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "accepted",
+  "lane": "measurement_repair",
+  "owner": "claude-scheduled-alpha",
+  "hypothesis": "51 data files under data/non_ohlcv became unsmudged git-LFS pointers on 2026-06-05, silently killing the SEC FTD+FINRA sleeve and corrupting the coverage manifest; restoring from the local LFS object cache and dropping LFS tracking for all but oversized files repairs the accumulation surface and prevents recurrence.",
+  "change_type": "identity_or_measurement_repair",
+  "mechanism_family": "data_accumulation_integrity",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "lfs_pointer_data_restoration_v1",
+  "single_causal_variable": "lfs_pointer_restoration_and_attribute_descoping",
+  "changed_variable": "lfs_pointer_restoration_and_attribute_descoping",
+  "causal_components": [
+    "lfs checkout restore",
+    "manifest hybrid repair",
+    "gitattributes descope",
+    "loader pointer guard",
+    "pointer guard test"
+  ],
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260611-020"
+  ],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "not_declared",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260611_027_lfs_pointer_data_restoration.py",
+    "data/experiments/exp-20260611-027/exp_20260611_027_lfs_pointer_data_restoration.json",
+    "experiments/cards/exp-20260611-027.md",
+    "experiments/manifests/exp-20260611-027.json",
+    "experiments/tickets/exp-20260611-027.json",
+    "experiments/logs/exp-20260611-027.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "lfs_pointer_restoration_and_attribute_descoping"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.85,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "lfs_object_missing_for_some_file",
+      "renormalize_repo_bloat",
+      "manifest_append_lines_lost"
+    ],
+    "confidence_reason": "All 51 pointer files were verified to have their objects in the local .git/lfs/objects cache, so restoration is offline and lossless; the only delicate step is preserving the JSONL rows appended after the pointer line in coverage_manifest.jsonl before materializing, and the main residual risk is repo size growth from de-LFS renormalization.",
+    "recorded_at": "2026-06-11T23:55:23+00:00"
+  },
+  "created_at": "2026-06-11T23:55:38+00:00",
+  "claimed_at": "2026-06-11T23:55:47+00:00",
+  "completed_at": "2026-06-12T00:03:18+00:00",
+  "result": {
+    "decision": "accepted_measurement_repair_lfs_pointer_data_restoration",
+    "artifact": "data/experiments/exp-20260611-027/exp_20260611_027_lfs_pointer_data_restoration.json",
+    "log": "experiments/logs/exp-20260611-027.json",
+    "restored_pointer_files": 51,
+    "coverage_manifest_rows": 536,
+    "sec_ftd_rows": 12291,
+    "accepted": true
+  },
+  "ticket_file": "experiments/tickets/exp-20260611-027.json",
+  "card_file": "experiments/cards/exp-20260611-027.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260611-027.json",
+  "decision": "accepted_measurement_repair_lfs_pointer_data_restoration",
+  "updated_at": "2026-06-12T00:03:18+00:00"
+}

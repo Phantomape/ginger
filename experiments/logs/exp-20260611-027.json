@@ -1,0 +1,104 @@
+{
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair_lfs_pointer_data_restoration",
+    "actual_success": 1,
+    "brier_score": 0.0225,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "lfs_object_missing_for_some_file",
+      "renormalize_repo_bloat",
+      "manifest_append_lines_lost"
+    ],
+    "predicted_success_probability": 0.85,
+    "realized_failure_mode": null,
+    "surprise_note": "All 51 objects were present in the local LFS cache, so no network or SEC refetch was needed; the only surprise was the coverage manifest being a two-layer pointer hybrid, recovered by reading the inner object directly."
+  },
+  "causal_components": [
+    "lfs object cache restore",
+    "manifest hybrid rebuild",
+    "gitattributes descope",
+    "loader pointer tolerance",
+    "pointer guard test"
+  ],
+  "change_summary": "Materialized all 51 LFS pointer files from .git/lfs/objects, rebuilt coverage_manifest.jsonl (536 rows, 20241002-20260610) from the inner LFS object plus appended rows, hardened load_sec_ftd_rows against unreadable archives, added an LFS pointer guard test, and reserved LFS for oversized files only.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "lfs_pointer_restoration_and_attribute_descoping",
+  "component": "data/non_ohlcv + .gitattributes + quant/sec_ftd_finra_paper_sleeve.py",
+  "decision": "accepted_measurement_repair_lfs_pointer_data_restoration",
+  "experiment_id": "exp-20260611-027",
+  "hypothesis": "51 data files under data/non_ohlcv became unsmudged git-LFS pointers on 2026-06-05, silently killing the SEC FTD+FINRA sleeve and corrupting the coverage manifest; restoring from the local LFS object cache and dropping LFS tracking for all but oversized files repairs the accumulation surface and prevents recurrence.",
+  "implementation_mode": "measurement_repair",
+  "lane": "measurement_repair",
+  "mechanism_family": "data_accumulation_integrity",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260611-020",
+    "exp-20260608-021"
+  ],
+  "new_evidence_type": "measurement_surface_repair",
+  "next_retry_requires": [
+    "guard test firing with process attribution"
+  ],
+  "notes": "Repair verified by re-runnable checks in this runner plus the full quant pytest suite (1285 passed). Gate 4 backtests are unaffected: no strategy, backtester, or shared policy changed.",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not re-add broad LFS patterns (data/non_ohlcv/**, docs/experiment_log.jsonl) without a worktree materialization guard; do not bypass the pointer guard test.",
+    "new_evidence_required": "If the guard test ever fires again, capture the reflog and the offending process before restoring, so the unsmudged operation can be identified and fixed at the source.",
+    "why_result_happened": "git stores only pointers in the index for LFS-tracked paths; a checkout-like operation on 2026-06-05 rewrote 51 worktree files without the smudge step while every object remained in .git/lfs/objects. Loaders read the worktree directly, so the FTD sleeve crashed before its own network-rebuild fallback."
+  },
+  "prediction": {
+    "confidence_reason": "All 51 pointer files were verified to have their objects in the local .git/lfs/objects cache, so restoration is offline and lossless; the only delicate step is preserving the JSONL rows appended after the pointer line in coverage_manifest.jsonl before materializing, and the main residual risk is repo size growth from de-LFS renormalization.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "lfs_object_missing_for_some_file",
+      "renormalize_repo_bloat",
+      "manifest_append_lines_lost"
+    ],
+    "recorded_at": "2026-06-11T23:55:23+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_attribution_only": true,
+    "parity_note": "Data restoration and repo-config change only. The SEC FTD+FINRA sleeve resumes daily accumulation with unchanged rule version; no decision logic touched.",
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    ".gitattributes",
+    "quant/sec_ftd_finra_paper_sleeve.py",
+    "quant/test_no_lfs_pointer_data_files.py",
+    "quant/experiments/exp_20260611_027_lfs_pointer_data_restoration.py",
+    "data/experiments/exp-20260611-027/exp_20260611_027_lfs_pointer_data_restoration.json",
+    "data/non_ohlcv/coverage_manifest.jsonl",
+    "data/non_ohlcv/sec_ftd/rows.json"
+  ],
+  "status": "accepted",
+  "timestamp": "2026-06-12T00:03:18+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "lfs_pointer_data_restoration_v1",
+  "verification": {
+    "coverage_manifest_date_range": [
+      "20241002",
+      "20260610"
+    ],
+    "coverage_manifest_rows": 536,
+    "finra_rows": 527,
+    "lfs_descoped": true,
+    "lfs_kept_for_oversized": true,
+    "remaining_pointer_files": [],
+    "sec_ftd_date_range": [
+      "2024-07-01",
+      "2026-05-14"
+    ],
+    "sec_ftd_rows": 12291
+  }
+}

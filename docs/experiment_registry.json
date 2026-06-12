@@ -22228,6 +22228,17 @@
       "updated_at": "2026-06-11T16:31:43+00:00"
     },
     {
+      "experiment_id": "exp-20260611-021",
+      "status": "claimed",
+      "lane": "measurement_repair",
+      "owner": "agent-fable",
+      "hypothesis": "Two default-off paper sleeves never produce daily forward evidence due to adapter input-shape bugs: rolling_corr _normalise_ohlcv_rows rejects pandas DataFrames from run.py (permanent missing_ohlcv), and industry_relative/industry_stable _resolve_sector_entries prefers governance records without sector fields over the broad-market sector cache (permanent missing_sector_entries). Fixing input normalisation and sector-source fallback restores the daily default-off forward pipeline for these sleeves without altering any entry/exit/ranking rule.",
+      "ticket_file": "experiments/tickets/exp-20260611-021.json",
+      "card_file": "experiments/cards/exp-20260611-021.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260611-021.json",
+      "updated_at": "2026-06-11T16:56:35+00:00"
+    },
+    {
       "acceptance_rule": "Use docs/backtesting.md three canonical windows as unchanged before/after baseline, then require at least one sleeve to pass closed forward replacement-value activation gates: min 30 closed rows, positive replacement value versus cash/SPY/QQQ where available, win rate >= 45%, concentration within caps, and no live readiness blocker.",
       "allowed_write_scope": [
         "quant/experiments",
@@ -22308,6 +22319,316 @@
       "trial_variant_id": "current_forward_replacement_value_activation_readiness_v1",
       "decision": "rejected_no_forward_activation_ready_default_off_sleeve",
       "updated_at": "2026-06-11T17:09:59+00:00"
+    },
+    {
+      "acceptance_rule": "Observed-only field-building succeeds only if safe/middle/high-risk tail-state buckets have at least 100 combined target trades, high-risk buckets show worse average PnL and worse loss-tail than safe buckets in all three canonical windows and at least three source families; otherwise no field promotion.",
+      "accepted": false,
+      "accepted_alpha": false,
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260611_023_winner_continuation_tail_state_attribution.py",
+        "data/experiments/exp-20260611-023",
+        "experiments/logs/exp-20260611-023.json",
+        "experiments/tickets/exp-20260611-023.json",
+        "experiments/cards/exp-20260611-023.md",
+        "experiments/manifests/exp-20260611-023.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "artifact": "data/experiments/exp-20260611-023/exp_20260611_023_winner_continuation_tail_state_attribution.json",
+      "baseline_result_file": "data\\backtests\\backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260611-023.md",
+      "causal_components": [
+        "existing rejected target trades",
+        "production-visible OHLCV features",
+        "tail-state bucket",
+        "loss-tail attribution",
+        "no strategy behavior change"
+      ],
+      "change_type": "observed_only_tail_state_attribution",
+      "changed_variable": "winner_continuation_tail_state_bucket_v1_read_only_attribution",
+      "claimed_at": "2026-06-11T17:58:17+00:00",
+      "completed_at": "2026-06-11T18:06:17+00:00",
+      "created_at": "2026-06-11T17:57:58+00:00",
+      "decision": "rejected_no_stable_tail_state_separation",
+      "evaluation_windows": [],
+      "expected_value_score_delta": 0.0,
+      "experiment_id": "exp-20260611-023",
+      "experiment_uid": "expuid-612f78672ddc4d69",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260611-023",
+        "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-11T17:57:58+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "winner_continuation_tail_state_attribution"
+      },
+      "hypothesis": "candidate_pool diagnostic: recently rejected broad momentum/default-off candidate sources may share a production-visible tail-state bucket where high extension plus high volatility explains loss-tail and comparator failure.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "winner_continuation_tail_state_bucket_v1_read_only_attribution"
+      ],
+      "log": "experiments/logs/exp-20260611-023.json",
+      "mechanism_family": "momentum_tail_state_classifier",
+      "multiple_testing_risk_bucket": "moderate",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260610-021",
+        "exp-20260611-009",
+        "exp-20260611-011",
+        "exp-20260611-014",
+        "exp-20260611-019"
+      ],
+      "new_evidence_type": "cross_source_rejected_candidate_trade_attribution",
+      "owner": "codex-alpha-explore",
+      "prediction": {
+        "success_probability": 0.24,
+        "expected_ev_delta": 0.0,
+        "expected_pnl_delta": 0.0,
+        "main_failure_modes": [
+          "diagnostic_overfit",
+          "source_family_confounding",
+          "no_cross_window_monotonicity",
+          "tail_state_fields_only_relabel_momentum"
+        ],
+        "confidence_reason": "Recent pocket-pivot, follow-through, distribution-precompression, and low-beta defensive candidates failed despite intuitive momentum labels; playbook explicitly asks for tail-state field-building before promotion. The same OHLCV fields are production-visible, but exp-20260610-021 warned that tail-state routing can overfit, so success is modest.",
+        "recorded_at": "2026-06-11T17:57:43+00:00"
+      },
+      "prior_trial_count": 1,
+      "result": {
+        "decision": "rejected_no_stable_tail_state_separation",
+        "artifact": "data/experiments/exp-20260611-023/exp_20260611_023_winner_continuation_tail_state_attribution.json",
+        "log": "experiments/logs/exp-20260611-023.json",
+        "accepted": false,
+        "accepted_alpha": false,
+        "combined_target_trades": 667,
+        "window_pass_count": 2,
+        "source_family_pass_count": 1,
+        "failed_reasons": [
+          "tail_state_not_stable_across_all_windows",
+          "tail_state_not_stable_across_enough_source_families"
+        ],
+        "calibration": {
+          "actual_decision": "rejected_no_stable_tail_state_separation",
+          "actual_success": 0,
+          "predicted_success_probability": 0.24,
+          "brier_score": 0.0576,
+          "predicted_failure_modes": [
+            "diagnostic_overfit",
+            "source_family_confounding",
+            "no_cross_window_monotonicity",
+            "tail_state_fields_only_relabel_momentum"
+          ],
+          "predicted_failure_mode_hit": true,
+          "realized_failure_mode": "tail_state_not_stable_across_all_windows;tail_state_not_stable_across_enough_source_families",
+          "surprise_note": "The fixed bucket did not separate loss-tail robustly enough across windows and sources."
+        },
+        "post_run_reflection": {
+          "why_result_happened": "The fixed bucket had enough sample (667 closed target trades), but robustness failed: only 2 of 3 windows and 1 of 4 source families passed high-risk versus safe separation. Mid_weak rewarded the hot high-volatility bucket, so the broad momentum failures are source-specific rather than explained by one simple extension-volatility state.",
+          "forbidden_near_neighbor_retry": "Do not retune ret5/ret20, volatility, volume, close-location, hold-day, notional, or source-rank thresholds on these frozen artifacts. Do not promote the bucket directly into an allocator.",
+          "new_evidence_required": "A retry needs a materially different PIT tail-risk field, forward closed replacement-value rows, or a shared helper that tests the bucket against accepted compression, distribution, and allocator comparators."
+        },
+        "production_impact": {
+          "shared_policy_changed": false,
+          "backtester_adapter_changed": false,
+          "run_adapter_changed": false,
+          "replay_only": false,
+          "trade_enabled": false,
+          "daily_snapshot_exposed": false,
+          "default_off_attribution_only": true,
+          "parity_test_added": false,
+          "alters_signal_generation": false,
+          "alters_candidate_ranking": false,
+          "alters_sizing": false,
+          "alters_exits": false,
+          "alters_orders": false,
+          "uses_llm": false,
+          "uses_free_ohlcv_only": true,
+          "live_realism_evaluated": true,
+          "live_ready": false,
+          "activation_envelope": {
+            "intended_notional": "no activation proposed; read-only attribution over closed paper trades",
+            "capital_cap": "not activated",
+            "liquidity_slippage_model": "inherited from each source experiment's closed paper trade rows",
+            "portfolio_displacement": "diagnostic only; no displaced candidate or order",
+            "order_semantics": "no orders emitted",
+            "kill_switch": "not applicable until a later shared default-off helper passes Gate 1-4",
+            "failure_handling": "missing fields are counted in dependency audit; no behavior changes"
+          },
+          "parity_note": "The runner only reads completed artifacts and baseline metrics. A positive result would require a later shared daily/backtest helper before any ranking, sizing, report queue, or order surface changes."
+        }
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260611-023.json",
+      "single_causal_variable": "winner_continuation_tail_state_bucket_v1_read_only_attribution",
+      "status": "rejected",
+      "ticket_file": "experiments/tickets/exp-20260611-023.json",
+      "total_pnl_delta": 0.0,
+      "trial_family": "broad_momentum_tail_state_attribution",
+      "trial_variant_id": "winner_continuation_tail_state_bucket_v1",
+      "updated_at": "2026-06-11T18:06:17+00:00"
+    },
+    {
+      "experiment_id": "exp-20260611-024",
+      "experiment_uid": "expuid-b70dbc33b11f4c14",
+      "hub_identity": {
+        "scheme": "hf_hub_local_v1",
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260611-024",
+        "slug": "peer_earnings_sympathy_target_surprise_quality",
+        "reserved_at": "2026-06-11T18:11:54+00:00",
+        "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+      },
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "hypothesis": "Exact-industry peer earnings sympathy may work only when the target peer has its own repeat positive surprise history, separating real earnings-quality sympathy from generic peer momentum.",
+      "change_type": "replay_only_candidate_pool_scout",
+      "mechanism_family": "production_visible_event_peer_relation_alpha",
+      "trial_family": "peer_earnings_sympathy_target_surprise_quality_candidate_pool",
+      "trial_variant_id": "peer_earnings_sympathy_target_surprise_quality_top1_next_open_10d_v1",
+      "single_causal_variable": "peer_earnings_sympathy_target_surprise_quality_candidate_source_v1",
+      "changed_variable": "peer_earnings_sympathy_target_surprise_quality_candidate_source_v1",
+      "causal_components": [],
+      "prior_trial_count": 3,
+      "nearby_prior_experiments": [
+        "exp-20260607-013",
+        "exp-20260609-024",
+        "exp-20260611-016"
+      ],
+      "multiple_testing_risk_bucket": "high",
+      "new_evidence_type": "target_peer_positive_surprise_history_quality_discriminator",
+      "baseline_result_file": "data/experiments/exp-20260609-024/exp_20260609_024_early_peer_earnings_sympathy.json",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260611_024_peer_earnings_sympathy_target_surprise_quality.py",
+        "data/experiments/exp-20260611-024",
+        "experiments/logs/exp-20260611-024.json",
+        "experiments/cards/exp-20260611-024.md",
+        "experiments/manifests/exp-20260611-024.json",
+        "experiments/tickets/exp-20260611-024.json",
+        "docs/experiment_log.jsonl"
+      ],
+      "must_not_touch": [
+        "quant/rolling_corr_peer_shock_paper_sleeve.py",
+        "quant/industry_relative_laggard_repair_paper_sleeve.py",
+        "quant/industry_stable_core_flow_paper_sleeve.py"
+      ],
+      "locked_variables": [
+        "core_backtest_policy",
+        "accepted_allocator_sources",
+        "revision_rank",
+        "peer_relation_prior_experiment_parameters_except_target_quality_gate"
+      ],
+      "evaluation_windows": [],
+      "acceptance_rule": "Gate 1-4 canonical three-window net EV/PnL improvement with no unacceptable drawdown/concentration degradation; positive result remains replay lead until shared default-off adapter parity exists.",
+      "prediction": {
+        "success_probability": 0.12,
+        "expected_ev_delta": 0.05,
+        "expected_pnl_delta": 1000.0,
+        "main_failure_modes": [
+          "window_regression",
+          "thin_sample",
+          "concentration_failed",
+          "earnings_peer_transfer_near_neighbor",
+          "accepted_relation_comparator_not_beaten",
+          "target_surprise_history_not_incremental",
+          "sympathy_reaction_is_generic_momentum"
+        ],
+        "confidence_reason": "Peer earnings transfer failed when it was broad same-sector similarity, and the upcoming-earnings prewarm variant added a DTE proxy. The previous same-day exact-industry sympathy scout also failed. This run keeps that event-peer relation fixed and adds only a PIT target-quality discriminator: the peer must have its own repeat positive surprise history.",
+        "recorded_at": "2026-06-11T18:11:39+00:00"
+      },
+      "created_at": "2026-06-11T18:11:54+00:00",
+      "claimed_at": "2026-06-11T18:12:04+00:00",
+      "completed_at": "2026-06-11T18:17:12+00:00",
+      "result": {
+        "decision": "rejected_peer_sympathy_target_surprise_quality_candidate_pool",
+        "accepted": false,
+        "artifact": "data/experiments/exp-20260611-024/exp_20260611_024_peer_earnings_sympathy_target_surprise_quality.json",
+        "log": "experiments/logs/exp-20260611-024.json",
+        "card": "experiments/cards/exp-20260611-024.md",
+        "aggregate_expected_value_delta": 0.0269,
+        "aggregate_strategy_total_pnl_delta": 280.05,
+        "gate4": {
+          "passed": false,
+          "decision": "rejected_peer_sympathy_target_surprise_quality_candidate_pool",
+          "failed_reasons": [
+            "window_ev_regression",
+            "window_pnl_regression",
+            "target_sample_too_small",
+            "target_concentration_failed"
+          ],
+          "aggregate_ev_delta": 0.0269,
+          "aggregate_pnl_delta": 280.05,
+          "windows_ev_improved": 2,
+          "windows_ev_regressed": 1,
+          "windows_pnl_improved": 2,
+          "windows_pnl_regressed": 1,
+          "target_trade_count": 5,
+          "target_trade_count_min": 20,
+          "target_windows": [
+            "late_strong",
+            "mid_weak",
+            "old_thin"
+          ],
+          "target_window_count_min": 3,
+          "max_drawdown_worse": 0.0001,
+          "max_drawdown_worse_guardrail": 0.005,
+          "minimum_core_survival_rate": 0.7925,
+          "survival_guard_passed": true,
+          "target_concentration": {
+            "passed": false,
+            "max_single_positive_pnl_share": 0.692932,
+            "max_single_positive_pnl_share_guardrail": 0.5,
+            "positive_pnl_hhi": 0.547904,
+            "positive_pnl_hhi_guardrail": 0.35
+          }
+        },
+        "calibration": {
+          "predicted_success_probability": 0.12,
+          "actual_success": 0,
+          "actual_gate4_passed": false,
+          "actual_ev_delta": 0.0269,
+          "actual_pnl_delta": 280.05,
+          "failure_modes_observed": [
+            "window_ev_regression",
+            "window_pnl_regression",
+            "target_sample_too_small",
+            "target_concentration_failed"
+          ],
+          "brier_score": 0.0144
+        },
+        "production_impact": {
+          "trade_enabled": false,
+          "alters_orders": false,
+          "adapter_status": "replay_only_no_live_adapter",
+          "shared_policy_changed": false,
+          "backtester_adapter_changed": false,
+          "run_adapter_changed": false,
+          "replay_only": true,
+          "parity_test_added": false,
+          "production_signal_path_changed": false,
+          "production_orders_changed": false,
+          "production_watchlist_changed": false,
+          "alters_signal_generation": false,
+          "alters_candidate_ranking": false,
+          "alters_sizing": false,
+          "alters_exits": false,
+          "parity_note": "This experiment changes no production code. A positive result would require a shared default-off adapter that computes the same PIT earnings event, exact-industry relation, same-day peer sympathy reaction, target peer surprise-history quality, bounded OHLCV fields, same-ticker core-overlap exclusion, next-open paper entry, 10-trading-day exit, costs, cooldown, and concentration controls in both replay and daily production before any report queue, paper ledger, candidate priority, sizing, watchlist, or order surface could change."
+        },
+        "post_run_reflection": {
+          "why_result_happened": "The source failed to add robust replacement value across the three canonical windows or breached sample/risk gates. The target surprise-history gate either thinned useful peers or did not add incremental information beyond same-day peer-sympathy momentum under next-open entry, 10-day exit, costs, and slippage.",
+          "forbidden_near_neighbor_retry": "Do not retry by sweeping issuer reaction, signal return, event-to-signal return, target surprise thresholds, close-location, volume, volatility, top-N, hold-day, cooldown, or paper notional thresholds on these frozen windows.",
+          "new_evidence_required": "A retry requires materially different PIT evidence such as analyst-count/estimate trajectory, estimate dispersion, customer/supplier links, peer expectation revision, or closed forward replacement rows."
+        }
+      },
+      "ticket_file": "experiments/tickets/exp-20260611-024.json",
+      "card_file": "experiments/cards/exp-20260611-024.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260611-024.json",
+      "decision": "rejected_peer_sympathy_target_surprise_quality_candidate_pool",
+      "summary": "The peer earnings sympathy target surprise-quality source did not clear Gate 4; do not promote or locally retune this event-peer quality relation on the frozen windows.",
+      "artifact": "data/experiments/exp-20260611-024/exp_20260611_024_peer_earnings_sympathy_target_surprise_quality.json",
+      "log": "experiments/logs/exp-20260611-024.json",
+      "aggregate_expected_value_delta": 0.0269,
+      "aggregate_strategy_total_pnl_delta": 280.05,
+      "updated_at": "2026-06-11T18:17:13+00:00"
     },
     {
       "experiment_id": "exp-20260611-025",
@@ -22491,8 +22812,276 @@
       "aggregate_expected_value_delta": 0.0008,
       "aggregate_strategy_total_pnl_delta": 28.18,
       "updated_at": "2026-06-11T19:21:18+00:00"
+    },
+    {
+      "experiment_id": "exp-20260611-026",
+      "experiment_uid": "expuid-d05c3f1c133b418a",
+      "hub_identity": {
+        "scheme": "hf_hub_local_v1",
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260611-026",
+        "slug": "form4_sale_absorption_leadership",
+        "reserved_at": "2026-06-11T20:05:56+00:00",
+        "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+      },
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "hypothesis": "candidate_pool: large PIT-safe Form 4 insider sales are usually an overhang, but if the issuer still closes with liquid SPY-relative leadership on the usable trade date, the tape may be revealing institutional demand strong enough to absorb insider supply and continue after next-open paper entry.",
+      "change_type": "default_off_paper_candidate_pool_replay_scout",
+      "mechanism_family": "production_visible_free_sec_form4_ohlcv_candidate_pool",
+      "trial_family": "form4_sale_absorption_leadership_candidate_pool",
+      "trial_variant_id": "form4_sale_absorption_leadership_top1_next_open_10d_v1",
+      "single_causal_variable": "form4_sale_absorption_leadership_candidate_source_v1",
+      "changed_variable": "form4_sale_absorption_leadership_candidate_source_v1",
+      "causal_components": [
+        "PIT Form4 sale disclosure",
+        "same-day OHLCV absorption",
+        "next-open 10-day default-off paper replay",
+        "no production behavior change"
+      ],
+      "prior_trial_count": 5,
+      "nearby_prior_experiments": [
+        "exp-20260530-011",
+        "exp-20260531-002",
+        "exp-20260604-005",
+        "exp-20260609-025",
+        "exp-20260611-007"
+      ],
+      "multiple_testing_risk_bucket": "high",
+      "new_evidence_type": "form4_sale_supply_absorption_plus_ohlcv_leadership",
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260611_026_form4_sale_absorption_leadership.py",
+        "data/experiments/exp-20260611-026/exp_20260611_026_form4_sale_absorption_leadership.json",
+        "experiments/cards/exp-20260611-026.md",
+        "experiments/manifests/exp-20260611-026.json",
+        "experiments/tickets/exp-20260611-026.json",
+        "experiments/logs/exp-20260611-026.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "must_not_touch": [],
+      "locked_variables": [
+        "form4_sale_absorption_leadership_candidate_source_v1"
+      ],
+      "evaluation_windows": [],
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "prediction": {
+        "success_probability": 0.13,
+        "expected_ev_delta": 0.2,
+        "expected_pnl_delta": 2500.0,
+        "main_failure_modes": [
+          "sale_disclosures_are_routine_10b5_1_noise",
+          "candidate_pool_concentrates_in_mega_cap_tech",
+          "insider_sale_overhang_offsets_leadership",
+          "accepted_distribution_comparator_not_beaten",
+          "window_regression"
+        ],
+        "confidence_reason": "Prior Form 4 purchase and owner-count/liquidity variants were not durable enough. This run tests the opposite evidence class: whether large disclosed insider sale supply that fails to break same-day liquid leadership identifies institutional absorption. The idea is production-visible through free SEC Form 4 rows but remains a private replay scout because the sale-side data shape is uncertain.",
+        "recorded_at": "2026-06-11T21:10:00+00:00"
+      },
+      "created_at": "2026-06-11T20:05:56+00:00",
+      "claimed_at": "2026-06-11T20:06:05+00:00",
+      "completed_at": "2026-06-11T20:18:30+00:00",
+      "result": {
+        "decision": "rejected_form4_sale_absorption_leadership_candidate_pool",
+        "accepted": false,
+        "artifact": "data/experiments/exp-20260611-026/exp_20260611_026_form4_sale_absorption_leadership.json",
+        "log": "experiments/logs/exp-20260611-026.json",
+        "card": "experiments/cards/exp-20260611-026.md",
+        "aggregate_expected_value_delta": -0.134,
+        "aggregate_strategy_total_pnl_delta": -1537.49,
+        "gate4": {
+          "passed": false,
+          "decision": "rejected_form4_sale_absorption_leadership_candidate_pool",
+          "failed_reasons": [
+            "aggregate_ev_not_positive",
+            "aggregate_pnl_not_positive",
+            "window_ev_regression",
+            "window_pnl_regression",
+            "fewer_than_two_ev_improved_windows",
+            "accepted_compression_ev_not_beaten",
+            "accepted_compression_pnl_not_beaten",
+            "accepted_distribution_ev_not_beaten",
+            "accepted_distribution_pnl_not_beaten"
+          ],
+          "aggregate_ev_delta": -0.134,
+          "aggregate_pnl_delta": -1537.49,
+          "windows_ev_improved": 1,
+          "windows_ev_regressed": 2,
+          "windows_pnl_improved": 1,
+          "windows_pnl_regressed": 2,
+          "target_trade_count": 31,
+          "target_trade_count_min": 20,
+          "target_windows": [
+            "late_strong",
+            "mid_weak",
+            "old_thin"
+          ],
+          "target_window_count_min": 3,
+          "max_drawdown_worse": 0.0024,
+          "max_drawdown_worse_guardrail": 0.005,
+          "minimum_core_survival_rate": 0.7925,
+          "survival_guard_passed": true,
+          "target_concentration": {
+            "passed": true,
+            "max_single_positive_pnl_share": 0.361487,
+            "max_single_positive_pnl_share_guardrail": 0.5,
+            "positive_pnl_hhi": 0.210059,
+            "positive_pnl_hhi_guardrail": 0.35
+          },
+          "accepted_compression_comparator": {
+            "experiment_id": "exp-20260608-013",
+            "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+            "expected_value_score_delta_sum": 0.1608,
+            "total_pnl_delta_sum": 2248.98,
+            "target_trade_count": 44
+          },
+          "accepted_distribution_comparator": {
+            "experiment_id": "exp-20260611-007",
+            "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+            "expected_value_score_delta_sum": 0.5286,
+            "total_pnl_delta_sum": 10432.91,
+            "target_trade_count": 113
+          }
+        },
+        "calibration": {
+          "predicted_success_probability": 0.13,
+          "actual_gate4_passed": false,
+          "failure_modes_observed": [
+            "aggregate_ev_not_positive",
+            "aggregate_pnl_not_positive",
+            "window_ev_regression",
+            "window_pnl_regression",
+            "fewer_than_two_ev_improved_windows",
+            "accepted_compression_ev_not_beaten",
+            "accepted_compression_pnl_not_beaten",
+            "accepted_distribution_ev_not_beaten",
+            "accepted_distribution_pnl_not_beaten"
+          ],
+          "brier_score": 0.0169
+        },
+        "production_impact": {
+          "trade_enabled": false,
+          "alters_orders": false,
+          "adapter_status": "replay_only_no_live_adapter",
+          "shared_policy_changed": false,
+          "backtester_adapter_changed": false,
+          "run_adapter_changed": false,
+          "replay_only": true,
+          "parity_test_added": false,
+          "production_signal_path_changed": false,
+          "production_orders_changed": false,
+          "production_watchlist_changed": false,
+          "alters_signal_generation": false,
+          "alters_candidate_ranking": false,
+          "alters_sizing": false,
+          "alters_exits": false,
+          "uses_llm": false,
+          "uses_free_sec_form4": true,
+          "uses_free_ohlcv": true,
+          "parity_note": "This experiment changes no production code. A positive result would remain only a replay lead. Promotion would require one shared default-off adapter that loads the same PIT Form 4 transaction rows, uses the same non-derivative sale definition, minimum sale value, signal-date OHLCV leadership envelope, same-ticker core overlap exclusion, top-1 next-open paper entry, 10-trading-day exit, costs, cooldown, comparator, and concentration guards in both historical replay and daily production before any report queue, paper ledger, candidate priority, sizing, watchlist, or order surface could change."
+        },
+        "post_run_reflection": {
+          "why_result_happened": "The Form 4 sale absorption source did not clear Gate 4. Large insider sale disclosures were either routine, already absorbed before entry, or concentrated in names where the sale overhang did not provide an incremental candidate-pool edge beyond the existing liquid leadership envelope.",
+          "forbidden_near_neighbor_retry": "Do not retry by sweeping sale-value thresholds, owner roles, 10b5-1 flags, top-N, notional, hold days, or cooldown on these windows.",
+          "new_evidence_required": "A retry needs materially new PIT evidence, such as forward daily replacement value on sale clusters, explicit post-sale ownership-retention context, or a shared default-off daily Form 4 sale-absorption adapter with non-replay observations. Pure threshold, role, 10b5-1, or liquidity retunes stay frozen."
+        }
+      },
+      "ticket_file": "experiments/tickets/exp-20260611-026.json",
+      "card_file": "experiments/cards/exp-20260611-026.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260611-026.json",
+      "decision": "rejected_form4_sale_absorption_leadership_candidate_pool",
+      "summary": "The Form 4 sale absorption leadership source was rejected; it did not establish a distinct free SEC Form 4/OHLCV candidate-pool edge under the standard three-window protocol.",
+      "artifact": "data/experiments/exp-20260611-026/exp_20260611_026_form4_sale_absorption_leadership.json",
+      "log": "experiments/logs/exp-20260611-026.json",
+      "aggregate_expected_value_delta": -0.134,
+      "aggregate_strategy_total_pnl_delta": -1537.49,
+      "updated_at": "2026-06-11T20:18:30+00:00"
+    },
+    {
+      "experiment_id": "exp-20260611-027",
+      "experiment_uid": "expuid-7d8d0ca4acef487c",
+      "hub_identity": {
+        "scheme": "hf_hub_local_v1",
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260611-027",
+        "slug": "lfs_pointer_data_restoration",
+        "reserved_at": "2026-06-11T23:55:38+00:00",
+        "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+      },
+      "status": "accepted",
+      "lane": "measurement_repair",
+      "owner": "claude-scheduled-alpha",
+      "hypothesis": "51 data files under data/non_ohlcv became unsmudged git-LFS pointers on 2026-06-05, silently killing the SEC FTD+FINRA sleeve and corrupting the coverage manifest; restoring from the local LFS object cache and dropping LFS tracking for all but oversized files repairs the accumulation surface and prevents recurrence.",
+      "change_type": "identity_or_measurement_repair",
+      "mechanism_family": "data_accumulation_integrity",
+      "trial_family": "identity_or_measurement_repair",
+      "trial_variant_id": "lfs_pointer_data_restoration_v1",
+      "single_causal_variable": "lfs_pointer_restoration_and_attribute_descoping",
+      "changed_variable": "lfs_pointer_restoration_and_attribute_descoping",
+      "causal_components": [
+        "lfs checkout restore",
+        "manifest hybrid repair",
+        "gitattributes descope",
+        "loader pointer guard",
+        "pointer guard test"
+      ],
+      "prior_trial_count": 0,
+      "nearby_prior_experiments": [
+        "exp-20260611-020"
+      ],
+      "multiple_testing_risk_bucket": "minimal",
+      "new_evidence_type": "not_declared",
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260611_027_lfs_pointer_data_restoration.py",
+        "data/experiments/exp-20260611-027/exp_20260611_027_lfs_pointer_data_restoration.json",
+        "experiments/cards/exp-20260611-027.md",
+        "experiments/manifests/exp-20260611-027.json",
+        "experiments/tickets/exp-20260611-027.json",
+        "experiments/logs/exp-20260611-027.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "must_not_touch": [],
+      "locked_variables": [
+        "lfs_pointer_restoration_and_attribute_descoping"
+      ],
+      "evaluation_windows": [],
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "prediction": {
+        "success_probability": 0.85,
+        "expected_ev_delta": null,
+        "expected_pnl_delta": null,
+        "main_failure_modes": [
+          "lfs_object_missing_for_some_file",
+          "renormalize_repo_bloat",
+          "manifest_append_lines_lost"
+        ],
+        "confidence_reason": "All 51 pointer files were verified to have their objects in the local .git/lfs/objects cache, so restoration is offline and lossless; the only delicate step is preserving the JSONL rows appended after the pointer line in coverage_manifest.jsonl before materializing, and the main residual risk is repo size growth from de-LFS renormalization.",
+        "recorded_at": "2026-06-11T23:55:23+00:00"
+      },
+      "created_at": "2026-06-11T23:55:38+00:00",
+      "claimed_at": "2026-06-11T23:55:47+00:00",
+      "completed_at": "2026-06-12T00:03:18+00:00",
+      "result": {
+        "decision": "accepted_measurement_repair_lfs_pointer_data_restoration",
+        "artifact": "data/experiments/exp-20260611-027/exp_20260611_027_lfs_pointer_data_restoration.json",
+        "log": "experiments/logs/exp-20260611-027.json",
+        "restored_pointer_files": 51,
+        "coverage_manifest_rows": 536,
+        "sec_ftd_rows": 12291,
+        "accepted": true
+      },
+      "ticket_file": "experiments/tickets/exp-20260611-027.json",
+      "card_file": "experiments/cards/exp-20260611-027.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260611-027.json",
+      "decision": "accepted_measurement_repair_lfs_pointer_data_restoration",
+      "updated_at": "2026-06-12T00:03:18+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-11T19:21:18+00:00"
+  "updated_at": "2026-06-12T00:03:18+00:00"
 }
