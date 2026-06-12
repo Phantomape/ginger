@@ -1,0 +1,200 @@
+{
+  "experiment_id": "exp-20260612-026",
+  "experiment_uid": "expuid-b1e152b0a57e4078",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260612-026",
+    "slug": "sec_auditor_change_absorption",
+    "reserved_at": "2026-06-12T23:18:30+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "alpha-search-automation",
+  "hypothesis": "candidate_pool: PIT SEC 8-K Item 4.01 auditor/accountant change events, when same-day OHLCV leadership confirms absorption, may identify governance-uncertainty events already accepted by the market and continuing after next-open entry.",
+  "change_type": "default_off_paper_candidate_pool_replay_scout",
+  "mechanism_family": "production_visible_free_sec_event_ohlcv_candidate_pool",
+  "trial_family": "sec_auditor_change_absorption_candidate_pool",
+  "trial_variant_id": "sec_auditor_change_absorption_top1_next_open_10d_v1",
+  "single_causal_variable": "sec_auditor_change_absorption_candidate_source_v1",
+  "changed_variable": "sec_auditor_change_absorption_candidate_source_v1",
+  "causal_components": [
+    "PIT SEC 8-K Item 4.01 event rows",
+    "same-day OHLCV leadership envelope",
+    "same-ticker core overlap exclusion",
+    "top1 next-open paper entry",
+    "10 trading day hold",
+    "standard costs/cooldown/comparators"
+  ],
+  "prior_trial_count": 5,
+  "nearby_prior_experiments": [
+    "exp-20260610-013",
+    "exp-20260610-023",
+    "exp-20260611-017",
+    "exp-20260611-025",
+    "exp-20260612-005"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "sec_8k_item_401_auditor_change_event_plus_ohlcv_confirmation",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260612_026_sec_auditor_change_absorption.py",
+    "data/experiments/exp-20260612-026/exp_20260612_026_sec_auditor_change_absorption.json",
+    "experiments/cards/exp-20260612-026.md",
+    "experiments/manifests/exp-20260612-026.json",
+    "experiments/tickets/exp-20260612-026.json",
+    "experiments/logs/exp-20260612-026.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "sec_auditor_change_absorption_candidate_source_v1"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Gate 1-4 per docs/backtesting.md; require aggregate EV/PnL improvement, no material drawdown/survival degradation, adequate target sample across three canonical windows, and accepted compression/distribution comparators beaten; positive replay still requires shared default-off parity before promotion.",
+  "prediction": {
+    "success_probability": 0.08,
+    "expected_ev_delta": 0.02,
+    "expected_pnl_delta": 500.0,
+    "main_failure_modes": [
+      "thin_item_401_sample",
+      "governance_event_noise",
+      "accepted_comparator_not_beaten",
+      "window_regression",
+      "concentration_failed"
+    ],
+    "confidence_reason": "Direct Item 4.01 has not been three-window tested, but prior SEC item/text candidates mostly failed and raw Item 4.01 coverage is sparse. This is a low-probability free/PIT semantic candidate-source check rather than a threshold retune.",
+    "recorded_at": "2026-06-12T23:17:58+00:00"
+  },
+  "created_at": "2026-06-12T23:18:30+00:00",
+  "claimed_at": "2026-06-12T23:18:36+00:00",
+  "completed_at": "2026-06-12T23:24:56+00:00",
+  "result": {
+    "decision": "rejected_sec_auditor_change_absorption_candidate_pool",
+    "accepted": false,
+    "artifact": "data/experiments/exp-20260612-026/exp_20260612_026_sec_auditor_change_absorption.json",
+    "log": "experiments/logs/exp-20260612-026.json",
+    "card": "experiments/cards/exp-20260612-026.md",
+    "aggregate_expected_value_delta": 0.0,
+    "aggregate_strategy_total_pnl_delta": 0.0,
+    "gate4": {
+      "accepted_compression_comparator": {
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "expected_value_score_delta_sum": 0.1608,
+        "experiment_id": "exp-20260608-013",
+        "target_trade_count": 44,
+        "total_pnl_delta_sum": 2248.98
+      },
+      "accepted_distribution_comparator": {
+        "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+        "expected_value_score_delta_sum": 0.5286,
+        "experiment_id": "exp-20260611-007",
+        "target_trade_count": 113,
+        "total_pnl_delta_sum": 10432.91
+      },
+      "aggregate_ev_delta": 0.0,
+      "aggregate_pnl_delta": 0.0,
+      "decision": "rejected_sec_auditor_change_absorption_candidate_pool",
+      "failed_reasons": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "target_concentration_failed",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "max_drawdown_worse": 0.0,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "passed": false,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "max_single_positive_pnl_share": null,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "passed": false,
+        "positive_pnl_hhi": null,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "target_trade_count": 0,
+      "target_trade_count_min": 20,
+      "target_window_count_min": 3,
+      "target_windows": [],
+      "windows_ev_improved": 0,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 0,
+      "windows_pnl_regressed": 0
+    },
+    "calibration": {
+      "actual_gate4_passed": false,
+      "brier_score": 0.0064,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "target_concentration_failed",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "predicted_success_probability": 0.08
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "replay_only_no_live_adapter",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_sec_filing_events": true,
+      "uses_free_ohlcv": true,
+      "parity_note": "This experiment changes no production code. A positive result would remain only a replay lead. Promotion would require one shared default-off adapter that loads the same PIT SEC filing event rows, applies the exact same 8-K Item 4.01 auditor-change gate, uses the same signal-date OHLCV leadership envelope, same-ticker core overlap exclusion, next-open paper entry, 10-trading-day exit, costs, cooldown, comparator, and concentration guards in historical replay and daily production before any report queue, paper ledger, candidate priority, sizing, watchlist, or order surface could change."
+    },
+    "post_run_reflection": {
+      "forbidden_near_neighbor_retry": "Do not retry by adding adjacent SEC item codes, weakening the OHLCV leadership gate, or changing top-N/hold/notional/cooldown on these frozen windows.",
+      "new_evidence_required": "A retry needs materially new PIT evidence that distinguishes benign auditor transitions from adverse resignations, such as Item 4.01 disagreement/resignation text, EX-16 wording, forward daily replacement value, or a shared default-off adapter with closed paper outcomes. Pure item-code retunes stay frozen.",
+      "why_result_happened": "The Item 4.01 source did not clear Gate 4. The source scan shows the free PIT event field is extremely sparse across the standard windows, and the surviving price-confirmed sample is not large enough to establish a standalone candidate-pool edge against accepted free-data comparators."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260612-026.json",
+  "card_file": "experiments/cards/exp-20260612-026.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260612-026.json",
+  "decision": "rejected_sec_auditor_change_absorption_candidate_pool",
+  "summary": "The SEC auditor-change absorption source was rejected; it did not establish a distinct free SEC event/OHLCV candidate-pool edge under the standard three-window protocol.",
+  "artifact": "data/experiments/exp-20260612-026/exp_20260612_026_sec_auditor_change_absorption.json",
+  "log": "experiments/logs/exp-20260612-026.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "updated_at": "2026-06-12T23:24:56+00:00"
+}
