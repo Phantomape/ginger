@@ -1,0 +1,122 @@
+{
+  "acceptance_rule": "Accept only if aggregate EV and PnL improve versus exp-20260603-022, no canonical window EV or PnL regresses, drawdown drift is within 50bp, survival remains above 5%, trade count remains statistically meaningful, and any positive retained behavior is promoted through the shared default-off post-earnings adapter before production use.",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "data/experiments",
+    "experiments/logs",
+    "experiments/tickets",
+    "docs/experiments/tickets",
+    "experiments/cards",
+    "experiments/artifacts",
+    "experiments/manifests",
+    "docs/experiment_log.jsonl"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260603-022/exp_20260603_022_post_earnings_non_core_overlap_shared_support.json",
+  "card_file": "experiments/cards/exp-20260612-008.md",
+  "causal_components": [],
+  "change_type": "default_off_paper_candidate_pool_scout",
+  "changed_variable": "post_earnings_underpriced_exclude_event_plus_one_candidate_offset_v1",
+  "claimed_at": "2026-06-12T06:17:29+00:00",
+  "completed_at": "2026-06-12T06:24:16+00:00",
+  "created_at": "2026-06-12T06:09:06+00:00",
+  "decision": "rejected_post_earnings_event_plus_one_exclusion",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260612-008",
+  "experiment_uid": "expuid-e9219b3e010a41b2",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260612-008",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-12T06:09:06+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "post_earnings_event_plus_one_exclusion"
+  },
+  "hypothesis": "Within the accepted post-earnings underpriced default-off sleeve, event+1 entries may be noisy digestion-day fills; excluding that offset may improve candidate quality without adding tickers.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "post_earnings_underpriced_exclude_event_plus_one_candidate_offset_v1"
+  ],
+  "mechanism_family": "post_earnings_underpriced_drift",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260602-026",
+    "exp-20260602-027",
+    "exp-20260603-004",
+    "exp-20260603-020",
+    "exp-20260603-022",
+    "exp-20260604-001"
+  ],
+  "new_evidence_type": "production_visible_earnings_event_timing_offset_field",
+  "owner": "codex-alpha-search",
+  "prediction": {
+    "confidence_reason": "Precheck of accepted post-earnings trades shows event+1 is a negative bucket while offset 0 and later absorption are mostly positive, but the touched sample is small and the current stack is already heavily filtered.",
+    "expected_ev_delta": 0.02,
+    "expected_pnl_delta": 700.0,
+    "main_failure_modes": [
+      "thin_touched_sample",
+      "window_regression",
+      "post_earnings_stack_saturated",
+      "event_timing_overfit"
+    ],
+    "recorded_at": "2026-06-12T06:08:26+00:00",
+    "success_probability": 0.21
+  },
+  "prior_trial_count": 8,
+  "registry_update_error": "PermissionError: [WinError 5] \u62d2\u7edd\u8bbf\u95ee\u3002: 'D:\\\\Github\\\\ginger\\\\experiments\\\\tickets\\\\.exp-20260612-008.json.at_bl0zb.tmp' -> 'D:\\\\Github\\\\ginger\\\\experiments\\\\tickets\\\\exp-20260612-008.json'",
+  "result": {
+    "after_result_file": "data/experiments/exp-20260612-008/post_earnings_event_plus_one_exclusion_after_aggregate.json",
+    "artifact": "data/experiments/exp-20260612-008/exp_20260612_008_post_earnings_event_plus_one_exclusion.json",
+    "before_result_file": "data/experiments/exp-20260612-008/post_earnings_event_plus_one_exclusion_before_aggregate.json",
+    "decision": "rejected",
+    "delta_metrics": {
+      "expected_value_score": 0.0357,
+      "total_pnl": 992.01,
+      "windows_ev_regressed": 0,
+      "windows_pnl_regressed": 0
+    },
+    "expected_value_score_delta": 0.0357,
+    "gate4_decision": "rejected_post_earnings_event_plus_one_exclusion",
+    "log": "experiments/logs/exp-20260612-008.json",
+    "metric_gate4_passed": false,
+    "production_impact": {
+      "backtester_adapter_changed": false,
+      "default_off_paper_only": true,
+      "llm_or_news_changed": false,
+      "parity_rule": "post_earnings_event_plus_one_exclusion_v1",
+      "production_core_ranking_changed": false,
+      "production_exit_changed": false,
+      "production_orders_changed": false,
+      "production_signal_path_changed": false,
+      "production_sizing_changed": false,
+      "production_watchlist_changed": false,
+      "registry_reserve_note": "experiment.py new wrote the ticket temp file but failed os.replace on this Windows ACL; the temp ticket was moved into place as experiments/tickets/exp-20260612-008.json. claim could not run because registry lacked the ID.",
+      "replay_only": true,
+      "retained_behavior": false,
+      "run_adapter_changed": false,
+      "shared_policy_changed": false,
+      "trade_enabled": false
+    },
+    "summary": "Rejected. Event+1 exclusion removed a visibly weak pocket, but it touched too few target trades to clear the standard sample floor.",
+    "total_pnl_delta": 992.01
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260612-008.json",
+  "single_causal_variable": "post_earnings_underpriced_exclude_event_plus_one_candidate_offset_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260612-008.json",
+  "trial_family": "post_earnings_underpriced_event_plus_one_exclusion",
+  "trial_variant_id": "post_earnings_event_plus_one_exclusion_v1"
+}

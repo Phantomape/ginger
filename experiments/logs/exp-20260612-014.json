@@ -1,0 +1,240 @@
+{
+  "accepted": false,
+  "aggregate_expected_value_delta": -0.046,
+  "aggregate_expected_value_delta_pct": -0.005827,
+  "aggregate_strategy_total_pnl_delta": -607.78,
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260612-014/exp_20260612_014_dynamic_corr_cluster_breadth_leadership.json",
+  "backtest_protocol": {
+    "REGIME_AWARE_EXIT": true,
+    "candidate_ohlcv_source": "data/experiments/exp-20260519-030/warehouse_main.sqlite",
+    "execution_model": "Signal uses only close-of-day OHLCV available on signal date. Paper entry is next available open with existing entry slippage; exit is the close 10 trading days after the signal with target-side sell slippage and ROUND_TRIP_COST_PCT.",
+    "implementation_mode": "private_replay_scout",
+    "replay_llm": false,
+    "replay_news": false,
+    "source": "docs/backtesting.md canonical three-window core replay plus replay-only broad warehouse default-off paper overlay",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "calibration": {
+    "actual_gate4_passed": false,
+    "brier_score": 0.0361,
+    "failure_modes_observed": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "target_sample_too_small",
+      "target_concentration_failed",
+      "accepted_peer_shock_ev_not_beaten",
+      "accepted_peer_shock_pnl_not_beaten"
+    ],
+    "predicted_failure_mode_hit": true,
+    "predicted_success_probability": 0.19
+  },
+  "causal_components": [
+    "dynamic_correlation_cluster",
+    "same_day_core_flow_anchor",
+    "cluster_breadth_confirmation",
+    "non_core_candidate_exclusion",
+    "next_open_paper_entry",
+    "10d_exit",
+    "costs",
+    "three_window_gate4"
+  ],
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "dynamic_corr_cluster_core_flow_breadth_candidate_source_v1",
+  "decision": "rejected_dynamic_corr_cluster_breadth_candidate_pool",
+  "experiment_id": "exp-20260612-014",
+  "gate4": {
+    "accepted_peer_shock_comparator": {
+      "decision": "accepted_rolling_corr_peer_shock_shared_default_off_adapter",
+      "expected_value_score_delta_sum": 0.3845,
+      "experiment_id": "exp-20260606-025",
+      "target_trade_count": 48,
+      "total_pnl_delta_sum": 6107.66
+    },
+    "aggregate_ev_delta": -0.046,
+    "aggregate_pnl_delta": -607.78,
+    "decision": "rejected_dynamic_corr_cluster_breadth_candidate_pool",
+    "failed_reasons": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "target_sample_too_small",
+      "target_concentration_failed",
+      "accepted_peer_shock_ev_not_beaten",
+      "accepted_peer_shock_pnl_not_beaten"
+    ],
+    "max_drawdown_worse": 0.0017,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": false,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.847996,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": false,
+      "positive_pnl_hhi": 0.742203,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 7,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_ev_improved": 0,
+    "windows_ev_regressed": 3,
+    "windows_pnl_improved": 0,
+    "windows_pnl_regressed": 3
+  },
+  "hypothesis": "Dynamic correlation-cluster breadth anchored on same-day core-flow entries can identify free-OHLCV relation candidates that outperform the accepted single-pair peer-shock helper without adding noisy tickers.",
+  "implementation_mode": "private_replay_scout",
+  "lane": "alpha_search",
+  "log": "experiments/logs/exp-20260612-014.json",
+  "mechanism_family": "production_visible_free_ohlcv_relation_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260606-025",
+    "exp-20260608-025",
+    "exp-20260610-022",
+    "exp-20260609-019"
+  ],
+  "negative_reflection": "If rejected, the likely reason is that same-day cluster breadth selects stocks already explained by market beta and broad flow; the accepted single-pair peer shock is more selective.",
+  "new_evidence_type": "free_ohlcv_dynamic_correlation_cluster_breadth",
+  "numeric_gate4_passed": false,
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry by sweeping cluster correlation, positive fraction, member count, volume ratio, candidate extension, top-N, hold-day, cooldown, or paper-notional thresholds on these frozen windows.",
+    "new_evidence_required": "Retry only with materially new point-in-time relation evidence, such as external free supplier/customer/ETF constituent maps, forward replacement-value rows, or a shared helper that demonstrates daily production parity.",
+    "why_result_happened": "The dynamic correlation-cluster breadth source did not clear Gate 4 or the accepted peer-shock comparator. Cluster breadth around core-flow anchors appears to relabel broad beta/flow sponsorship instead of creating incremental replacement candidates."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "candidate-pool alpha: when a same-day core-flow anchor is confirmed by broad dynamic-correlation cluster breadth, liquid non-core cluster members may be better replacement candidates than arbitrary broad-market additions.",
+    "2_history_check": {
+      "exp-20260606-025": "Accepted rolling-correlation peer shock shared helper set the relation comparator at +0.3845 EV and +$6,107.66 PnL.",
+      "exp-20260608-025": "Same-industry characteristic peer shock was rejected; this uses dynamic correlation plus core-flow anchoring instead of static industry/characteristic peers.",
+      "exp-20260609-019": "Industry breadth acceleration was rejected; this avoids static sector breadth and requires a live core-flow anchor plus PIT rolling correlations.",
+      "exp-20260610-022": "Rolling lead-lag peer underreaction was rejected; this tests same-day cluster breadth confirmation instead of lagged one-peer underreaction."
+    },
+    "3_single_causal_variable": "dynamic_corr_cluster_core_flow_breadth_candidate_source_v1",
+    "4_acceptance_standard": "Same three canonical windows. Aggregate EV/PnL must be positive, no EV/PnL regression window, at least 20 paper trades across all three windows, survival >=5%, drawdown drift <=0.5pp, concentration pass, and accepted peer-shock comparator beaten on EV and PnL.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260612_014_dynamic_corr_cluster_breadth_leadership.py"
+  },
+  "prediction": {
+    "confidence_reason": "Accepted rolling-correlation peer shock proves a free-OHLCV relation edge can exist; rejected static industry, lead-lag, and breadth variants show this must add anchor-conditioned cluster breadth evidence rather than broader noise.",
+    "expected_ev_delta": 0.16,
+    "expected_pnl_delta": 2800.0,
+    "main_failure_modes": [
+      "correlation_cluster_relabels_beta",
+      "accepted_peer_shock_comparator_not_beaten",
+      "window_regression",
+      "concentration_failed",
+      "thin_sample"
+    ],
+    "recorded_at": "2026-06-12T16:07:23+00:00",
+    "success_probability": 0.19
+  },
+  "prior_trial_count": 4,
+  "production_impact": {
+    "adapter_status": "replay_only_dynamic_corr_cluster_breadth_scout",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "default_off_paper_only": true,
+    "execution_envelope": {
+      "daily_entry_slots": 1,
+      "hold_days": 10,
+      "kill_switch": "not live; positive replay requires shared helper parity, forward replacement-value rows, and a separate activation envelope",
+      "liquidity_source": "signal-date price >= $10 and ADV20 >= $50M",
+      "max_active_positions": 8,
+      "order_semantics": "observe-only next-session-open paper entry; no broker order",
+      "portfolio_displacement": "none; replay-only paper overlay versus core baseline",
+      "same_ticker_cooldown_days": 10,
+      "target_notional_per_paper_trade": 4000.0,
+      "trade_enabled": false
+    },
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "parity_note": "This experiment changes no production path. A positive result remains a replay lead until a shared default-off helper computes the same anchor, rolling-correlation, cluster breadth, candidate gates, core overlap exclusion, next-open paper entry, 10-day exit, costs, cooldown, comparator, and concentration controls in historical replay and daily production snapshots.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_free_ohlcv_only": true,
+    "uses_llm": false
+  },
+  "registry_persistence_note": "experiment.py reservation created the ticket temp file but this Windows ACL denied atomic rename for ticket/registry writes. The recovered ticket, per-experiment artifact, card, manifest, and log preserve the run; no production code was changed.",
+  "rejection_reason": "aggregate_ev_not_positive; aggregate_pnl_not_positive; window_ev_regression; window_pnl_regression; fewer_than_two_ev_improved_windows; target_sample_too_small; target_concentration_failed; accepted_peer_shock_ev_not_beaten; accepted_peer_shock_pnl_not_beaten",
+  "related_files": [
+    "quant/experiments/exp_20260612_014_dynamic_corr_cluster_breadth_leadership.py",
+    "data/experiments/exp-20260612-014/exp_20260612_014_dynamic_corr_cluster_breadth_leadership.json",
+    "experiments/logs/exp-20260612-014.json",
+    "experiments/tickets/exp-20260612-014.json",
+    "experiments/cards/exp-20260612-014.md",
+    "experiments/manifests/exp-20260612-014.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "status": "rejected",
+  "timestamp": "2026-06-12T16:18:44Z",
+  "trial_family": "dynamic_corr_cluster_breadth_leadership_candidate_pool",
+  "trial_variant_id": "core_flow_corr_cluster_breadth_top1_next_open_10d_v1",
+  "windows": [
+    {
+      "cluster_context_count": 1,
+      "expected_value_after": 5.1467,
+      "expected_value_before": 5.1628,
+      "expected_value_delta": -0.0161,
+      "label": "late_strong",
+      "strategy_total_pnl_delta": -102.91,
+      "target_trade_count": 1
+    },
+    {
+      "cluster_context_count": 5,
+      "expected_value_after": 2.1181,
+      "expected_value_before": 2.1402,
+      "expected_value_delta": -0.0221,
+      "label": "mid_weak",
+      "strategy_total_pnl_delta": -244.11,
+      "target_trade_count": 5
+    },
+    {
+      "cluster_context_count": 3,
+      "expected_value_after": 0.5833,
+      "expected_value_before": 0.5911,
+      "expected_value_delta": -0.0078,
+      "label": "old_thin",
+      "strategy_total_pnl_delta": -260.76,
+      "target_trade_count": 1
+    }
+  ]
+}
