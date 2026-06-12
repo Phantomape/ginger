@@ -1,0 +1,176 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "aggregate_expected_value_delta": 1.7976,
+  "aggregate_strategy_total_pnl_delta": 35180.13,
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260612_023_form144_sale_notice_absorption.py",
+    "data/experiments/exp-20260612-023/exp_20260612_023_form144_sale_notice_absorption.json",
+    "experiments/cards/exp-20260612-023.md",
+    "experiments/manifests/exp-20260612-023.json",
+    "experiments/tickets/exp-20260612-023.json",
+    "experiments/logs/exp-20260612-023.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "artifact": "data/experiments/exp-20260612-023/exp_20260612_023_form144_sale_notice_absorption.json",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260612-023.md",
+  "causal_components": [
+    "SEC form-index Form 144 event archive",
+    "issuer ticker mapping",
+    "absorption gates",
+    "next-open paper entry",
+    "10d exit",
+    "three-window Gate 1-4"
+  ],
+  "change_type": "experiment_local_replay_candidate_pool",
+  "changed_variable": "form144_sale_notice_absorption_candidate_source_v1",
+  "claimed_at": "2026-06-12T22:06:58+00:00",
+  "completed_at": "2026-06-12T22:15:17Z",
+  "created_at": "2026-06-12T22:06:49+00:00",
+  "decision": "rejected_form144_sale_notice_absorption_candidate_pool",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260612-023",
+  "experiment_uid": "expuid-09d7c6396c8540d9",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260612-023",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-12T22:06:49+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "form144_sale_notice_absorption"
+  },
+  "hypothesis": "candidate_pool: Form 144 planned-sale notices that are absorbed by same-day price/liquidity may identify supply-overhang absorption. The fixed policy tests whether those candidates add next-open 10-day paper EV after liquidity, price, absorption, core-overlap, top-1/day, and cooldown guards.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "form144_sale_notice_absorption_candidate_source_v1"
+  ],
+  "log": "experiments/logs/exp-20260612-023.json",
+  "mechanism_family": "production_visible_free_sec_sale_notice_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260611-026",
+    "exp-20260611-007"
+  ],
+  "new_evidence_type": "pit_sec_form144_sale_notice_archive",
+  "owner": "codex-alpha-search",
+  "prediction": {
+    "confidence_reason": "Mechanism: Form 144 is a free SEC planned-sale notice that may expose supply overhang before or during distribution; if the stock absorbs that notice with non-weak same-day price/relative action and enough liquidity, the remaining drift may be positive. Nearby history: Form 4 sale absorption failed, so this is only worth a scout because Form 144 is an earlier supply notice with broader coverage, not a completed-sale disclosure. Main disconfirmer: Form 144 may be stale, routine, or simply negative supply already captured by the rejected Form 4 sale lane.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "form144_is_stale_or_negative_supply",
+      "form4_sale_absorption_neighbor_failed",
+      "thin_declared_universe_sample",
+      "window_regression",
+      "accepted_comparator_not_beaten"
+    ],
+    "recorded_at": "2026-06-12T22:06:17+00:00",
+    "success_probability": 0.22
+  },
+  "prior_trial_count": 1,
+  "registry_persistence_error": "PermissionError(13, '\u62d2\u7edd\u8bbf\u95ee\u3002')",
+  "registry_persistence_note": "persist_self_registered_result is the intended registry/ticket path. On this Windows checkout, atomic ticket replacement can be denied by ACL state; the runner falls back to a non-atomic update of this experiment's ticket while preserving the artifact, log, card, manifest, and JSONL record.",
+  "result": {
+    "accepted": false,
+    "aggregate_expected_value_delta": 1.7976,
+    "aggregate_strategy_total_pnl_delta": 35180.13,
+    "artifact": "data/experiments/exp-20260612-023/exp_20260612_023_form144_sale_notice_absorption.json",
+    "calibration": {
+      "actual_gate4_passed": false,
+      "brier_score": 0.0484,
+      "failure_modes_observed": [
+        "drawdown_drift_too_high"
+      ],
+      "predicted_failure_mode_hit": true,
+      "predicted_success_probability": 0.22
+    },
+    "card": "experiments/cards/exp-20260612-023.md",
+    "decision": "rejected_form144_sale_notice_absorption_candidate_pool",
+    "gate4": {
+      "accepted_distribution_comparator": {
+        "decision": "accepted_distribution_day_absorption_leadership_shared_adapter",
+        "expected_value_score_delta_sum": 0.5286,
+        "experiment_id": "exp-20260611-007",
+        "target_trade_count": 113,
+        "total_pnl_delta_sum": 10432.91
+      },
+      "aggregate_ev_delta": 1.7976,
+      "aggregate_pnl_delta": 35180.13,
+      "decision": "rejected_form144_sale_notice_absorption_candidate_pool",
+      "failed_reasons": [
+        "drawdown_drift_too_high"
+      ],
+      "max_drawdown_worse": 0.0831,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "nearby_form4_sale_neighbor": {
+        "decision": "rejected_form4_sale_absorption_leadership_candidate_pool",
+        "expected_value_score_delta_sum": -0.134,
+        "experiment_id": "exp-20260611-026",
+        "total_pnl_delta_sum": -1537.49
+      },
+      "passed": false,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "max_single_positive_pnl_share": 0.053867,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "passed": true,
+        "positive_pnl_hhi": 0.018298,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "target_trade_count": 373,
+      "target_trade_count_min": 20,
+      "target_window_count_min": 3,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "windows_ev_improved": 3,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 3,
+      "windows_pnl_regressed": 0
+    },
+    "log": "experiments/logs/exp-20260612-023.json",
+    "numeric_gate4_passed": false,
+    "post_run_reflection": {
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping liquidity, price, signal-return, relative-strength, close-location, volume-ratio, top-N, hold-day, cooldown, or notional thresholds, and do not simply merge this with the rejected Form 4 sale absorption lane.",
+      "new_evidence_required": "Parsed Form 144 document fields, holder role, planned-sale size as percent of float, a broader PIT universe, or forward replacement-value rows from a shared helper.",
+      "why_result_happened": "The fixed Form 144 bundle failed Gate 4. The likely reason is that planned-sale notices are routine or stale supply signals; same-day absorption did not add enough fresh demand evidence beyond generic leadership and the accepted distribution absorption comparator."
+    },
+    "production_impact": {
+      "adapter_status": "replay_only_no_live_adapter",
+      "alters_candidate_ranking": false,
+      "alters_exits": false,
+      "alters_orders": false,
+      "alters_signal_generation": false,
+      "alters_sizing": false,
+      "backtester_adapter_changed": false,
+      "implementation_mode": "private_replay_scout",
+      "live_ready": false,
+      "live_realism_evaluated": false,
+      "parity_note": "No production code changes. Positive replay would require a shared default-off helper plus daily EDGAR Form 144 snapshot parity before any accepted-alpha claim.",
+      "parity_test_added": false,
+      "private_replay_scout_escape_reason": "The Form 144 event archive is built from local EDGAR form-index files inside this experiment. No shared daily helper or production daily index fetcher exists yet, so a positive result is lead-only until the same event build, absorption gates, overlap exclusion, next-open paper entry, costs, hold, and cooldown are implemented in shared historical replay and daily default-off snapshots.",
+      "production_orders_changed": false,
+      "production_signal_path_changed": false,
+      "production_watchlist_changed": false,
+      "replay_only": true,
+      "run_adapter_changed": false,
+      "shared_policy_changed": false,
+      "trade_enabled": false,
+      "uses_free_ohlcv": true,
+      "uses_free_sec_filing_events": true,
+      "uses_llm": false
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260612-023.json",
+  "single_causal_variable": "form144_sale_notice_absorption_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The Form 144 absorbed-sale-notice source was rejected under the standard three-window protocol and accepted distribution-day absorption comparator.",
+  "ticket_file": "experiments/tickets/exp-20260612-023.json",
+  "trial_family": "form144_sale_notice_absorption_candidate_pool",
+  "trial_variant_id": "form144_absorbed_top1_next_open_10d_v1"
+}
