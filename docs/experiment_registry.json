@@ -23908,14 +23908,89 @@
     },
     {
       "experiment_id": "exp-20260612-012",
-      "status": "claimed",
+      "experiment_uid": "expuid-002e79d25cb34dca",
+      "hub_identity": {
+        "scheme": "hf_hub_local_v1",
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260612-012",
+        "slug": "forward_replacement_value_current_state_repair",
+        "reserved_at": "2026-06-12T07:56:16+00:00",
+        "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+      },
+      "status": "accepted",
       "lane": "measurement_repair",
       "owner": "codex",
       "hypothesis": "Canonical per-sleeve forward replacement-value accumulation must match current paper sleeve state after non-session phantom-row quarantine.",
+      "change_type": "forward_replacement_value_accumulation_repair",
+      "mechanism_family": "forward_replacement_value_measurement_repair",
+      "trial_family": "paper_sleeve_forward_accumulation_integrity",
+      "trial_variant_id": "canonical_forward_replacement_value_current_state_v1",
+      "single_causal_variable": "canonical_forward_replacement_value_artifact_matches_current_sleeve_state",
+      "changed_variable": "canonical_forward_replacement_value_artifact_matches_current_sleeve_state",
+      "causal_components": [
+        "state_vs_artifact_reconciliation",
+        "current_state_materialization",
+        "quarantined_row_exclusion"
+      ],
+      "prior_trial_count": 3,
+      "nearby_prior_experiments": [
+        "exp-20260611-020",
+        "exp-20260611-022",
+        "exp-20260612-001",
+        "exp-20260612-010"
+      ],
+      "multiple_testing_risk_bucket": "minimal",
+      "new_evidence_type": "current_paper_sleeve_state_reconciliation",
+      "baseline_result_file": "data/paper_sleeves/forward_replacement_value.jsonl",
+      "allowed_write_scope": [
+        "quant/forward_replacement_value.py",
+        "quant/test_forward_replacement_value.py",
+        "data/paper_sleeves/forward_replacement_value.jsonl",
+        "data/experiments/exp-20260612-012/",
+        "quant/experiments/exp_20260612_012_forward_replacement_value_current_state_repair.py",
+        "experiments/logs/exp-20260612-012.json",
+        "experiments/cards/exp-20260612-012.md",
+        "experiments/tickets/exp-20260612-012.json",
+        "experiments/manifests/exp-20260612-012.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "must_not_touch": [],
+      "locked_variables": [
+        "canonical_forward_replacement_value_artifact_matches_current_sleeve_state"
+      ],
+      "evaluation_windows": [],
+      "acceptance_rule": "accepted if canonical forward replacement JSONL contains only rows present in current sleeve state and focused audit/tests pass",
+      "prediction": {
+        "success_probability": 0.9,
+        "expected_ev_delta": 0.0,
+        "expected_pnl_delta": 0.0,
+        "main_failure_modes": [
+          "append_only_contract_conflict",
+          "stale_readiness_rows",
+          "state_snapshot_mismatch"
+        ],
+        "confidence_reason": "State and latest snapshots are already aligned; only shared replacement JSONL still contains seven quarantined low_deployment rows.",
+        "recorded_at": "2026-06-12T07:55:59+00:00"
+      },
+      "created_at": "2026-06-12T07:56:16+00:00",
+      "claimed_at": "2026-06-12T07:56:27+00:00",
+      "completed_at": "2026-06-12T18:01:30+00:00",
+      "result": {
+        "decision": "accepted_measurement_repair_forward_replacement_value_current_state_repair",
+        "artifact": "data/experiments/exp-20260612-012/exp_20260612_012_forward_replacement_value_current_state_repair.json",
+        "log": "experiments/logs/exp-20260612-012.json",
+        "archive": "data/experiments/exp-20260612-012/forward_replacement_value_pre_repair.jsonl",
+        "before_rows": 38,
+        "after_rows": 31,
+        "stale_rows_removed": 7,
+        "accepted": true
+      },
       "ticket_file": "experiments/tickets/exp-20260612-012.json",
       "card_file": "experiments/cards/exp-20260612-012.md",
       "revision_manifest_file": "experiments/manifests/exp-20260612-012.json",
-      "updated_at": "2026-06-12T07:56:27+00:00"
+      "decision": "accepted_measurement_repair_forward_replacement_value_current_state_repair",
+      "updated_at": "2026-06-12T18:01:30+00:00"
     },
     {
       "experiment_id": "exp-20260612-013",
@@ -24213,8 +24288,334 @@
       "aggregate_expected_value_delta": -0.1226,
       "aggregate_strategy_total_pnl_delta": -2385.92,
       "updated_at": "2026-06-12T16:36:51+00:00"
+    },
+    {
+      "experiment_id": "exp-20260612-016",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "codex-alpha-search",
+      "hypothesis": "candidate_pool: archive-first non-amended SCHEDULE 13G filings that map to exactly one public issuer ticker may identify passive or institutional accumulation candidates. The fixed policy tests whether those candidates add next-open default-off paper EV after liquidity, price, history, core-overlap, top-1/day, and cooldown guards.",
+      "change_type": "experiment_local_replay_candidate_pool",
+      "mechanism_family": "production_visible_free_sec_ownership_event_candidate_pool",
+      "trial_family": "sec_13g_passive_stake_initiation_candidate_pool",
+      "trial_variant_id": "sec_13g_archive_first_top1_next_open_10d_v1",
+      "single_causal_variable": "sec_13g_passive_stake_initiation_candidate_source_v1",
+      "changed_variable": "sec_13g_passive_stake_initiation_candidate_source_v1",
+      "prior_trial_count": 2,
+      "nearby_prior_experiments": [
+        "exp-20260612-015",
+        "exp-20260609-025",
+        "exp-20260611-007"
+      ],
+      "multiple_testing_risk_bucket": "moderate",
+      "new_evidence_type": "pit_sec_13g_ownership_event_archive",
+      "prediction": {
+        "success_probability": 0.24,
+        "expected_ev_delta": 0.08,
+        "expected_pnl_delta": 2500.0,
+        "main_failure_modes": [
+          "issuer_reporting_owner_ambiguity",
+          "13g_annual_batch_lag",
+          "no_same_window_predictive_edge",
+          "too_many_microcap_noisy_rows",
+          "overlap_with_existing_core_winners"
+        ],
+        "confidence_reason": "Mechanism: non-amended SCHEDULE 13G filings can reveal large passive or institutional ownership stakes that may keep supporting liquid leaders after disclosure. The source is free EDGAR metadata and has more breadth than the rejected 13D/Form4 ownership scouts. Main disconfirmer: 13G filings are often stale annual batch reports, so next-open paper entries may see no fresh edge.",
+        "recorded_at": "2026-06-12T18:09:02Z"
+      },
+      "decision": "rejected_sec_13g_passive_stake_candidate_pool",
+      "summary": "The SEC 13G passive-stake source was rejected under the standard three-window protocol and current accepted distribution-day comparator.",
+      "artifact": "data/experiments/exp-20260612-016/exp_20260612_016_sec_13g_passive_stake_initiation.json",
+      "log": "experiments/logs/exp-20260612-016.json",
+      "ticket_file": "experiments/tickets/exp-20260612-016.json",
+      "card_file": "experiments/cards/exp-20260612-016.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260612-016.json",
+      "aggregate_expected_value_delta": -0.0603,
+      "aggregate_strategy_total_pnl_delta": -1063.94,
+      "result": {
+        "decision": "rejected_sec_13g_passive_stake_candidate_pool",
+        "accepted": false,
+        "numeric_gate4_passed": false,
+        "artifact": "data/experiments/exp-20260612-016/exp_20260612_016_sec_13g_passive_stake_initiation.json",
+        "log": "experiments/logs/exp-20260612-016.json",
+        "card": "experiments/cards/exp-20260612-016.md",
+        "aggregate_expected_value_delta": -0.0603,
+        "aggregate_strategy_total_pnl_delta": -1063.94,
+        "post_run_reflection": {
+          "why_result_happened": "The fixed 13G passive-stake bundle failed Gate 4. The most likely reasons are that 13G filings are annual/batch and often stale by the filing date, issuer-level first-in-archive events lose holder-level information, and the liquid momentum/core-overlap envelope admits mostly already-priced large-cap ownership confirmations rather than fresh edge.",
+          "forbidden_near_neighbor_retry": "Do not retry by sweeping liquidity, price, history, top-N, hold-day, cooldown, notional, or ambiguity thresholds, by re-admitting 13G/A amendments, or by treating reporting-owner CIKs as issuer tickers on the same frozen windows.",
+          "new_evidence_required": "A retry needs parsed 13G documents with holder identity, stake percentage, item category, change from prior filing, or a shared daily helper that can generate closed forward replacement-value rows."
+        }
+      },
+      "completed_at": "2026-06-12T18:16:24+00:00",
+      "updated_at": "2026-06-12T18:16:24+00:00"
+    },
+    {
+      "experiment_id": "exp-20260612-017",
+      "status": "accepted",
+      "lane": "measurement_repair",
+      "owner": "agent-fable",
+      "hypothesis": "Production data layout has four consolidation debts that make tooling miss or mistrust data: (1) the production-critical OHLCV warehouse lives under data/experiments/exp-20260519-030/ where it reads as disposable experiment output; (2) legacy earnings_snapshot copies at data root and legacy_root/ duplicate organized files and get picked up by daily_artifact_glob; (3) other legacy root-level copies (space_catalyst ledgers, universe_registry) shadow organized locations; (4) three observe-only sleeves (platform_rs20_no_gap, sec_10k_liquidity, space_catalyst) persist only nonstandard forward_watch/summary surfaces so standard state.json+snapshots.jsonl tooling skips them. Relocating the warehouse to data/warehouse/ (with LFS pattern + legacy fallback), deleting shadowed legacy copies, and adding a shared standard-layout writer used by the three sleeves consolidates the data plane without changing any trading rule.",
+      "ticket_file": "experiments/tickets/exp-20260612-017.json",
+      "card_file": "experiments/cards/exp-20260612-017.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260612-017.json",
+      "updated_at": "2026-06-12T18:19:36+00:00"
+    },
+    {
+      "experiment_id": "exp-20260612-018",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "claude-fable-regime-router",
+      "hypothesis": "The accepted lagged cross-source consensus paper sleeve earns most of its edge when the prior-close market state is mixed|balanced|normal (+7.8%/trade vs +2.1% elsewhere per exp-20260606-022); a frozen single-cell paper notional tilt toward that state should raise combined EV without changing entries, exits, candidates, or live orders.",
+      "ticket_file": "experiments/tickets/exp-20260612-018.json",
+      "card_file": "experiments/cards/exp-20260612-018.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260612-018.json",
+      "updated_at": "2026-06-12T20:08:22+00:00"
+    },
+    {
+      "experiment_id": "exp-20260612-019",
+      "experiment_uid": "expuid-a65f142ee8984ba7",
+      "hub_identity": {
+        "scheme": "hf_hub_local_v1",
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260612-019",
+        "slug": "post_acceptance_oos_replay_readiness",
+        "reserved_at": "2026-06-12T20:07:50+00:00",
+        "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+      },
+      "status": "accepted",
+      "lane": "measurement_repair",
+      "owner": "claude-scheduled-alpha",
+      "hypothesis": "Accepted default-off paper sleeves show near-zero closed forward rows mainly because production accumulated on a starved 27-57 name fallback universe until the 2026-06-12 repairs; a read-only post-acceptance out-of-sample replay (2026-04-22 to 2026-06-11, after the frozen Gate-4 windows) through the shared helpers on the unified universe, with cost-adjusted replacement-value fields kept strictly separate from genuine forward rows, restores a usable per-sleeve activation-readiness surface.",
+      "change_type": "identity_or_measurement_repair",
+      "mechanism_family": "measurement_repair",
+      "trial_family": "forward_readiness_measurement",
+      "trial_variant_id": "exp-20260612-019",
+      "single_causal_variable": "post_acceptance_oos_replay_readiness_surface_v1",
+      "changed_variable": "post_acceptance_oos_replay_readiness_surface_v1",
+      "causal_components": [
+        "shared_helper_oos_replay",
+        "replacement_value_fields",
+        "forward_vs_replay_segmentation",
+        "readiness_report"
+      ],
+      "prior_trial_count": 0,
+      "nearby_prior_experiments": [
+        "exp-20260611-020",
+        "exp-20260612-002",
+        "exp-20260612-004",
+        "exp-20260612-010",
+        "exp-20260612-012"
+      ],
+      "multiple_testing_risk_bucket": "minimal",
+      "new_evidence_type": "not_declared",
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260612_019_post_acceptance_oos_replay_readiness.py",
+        "data/experiments/exp-20260612-019/exp_20260612_019_post_acceptance_oos_replay_readiness.json",
+        "experiments/cards/exp-20260612-019.md",
+        "experiments/manifests/exp-20260612-019.json",
+        "experiments/tickets/exp-20260612-019.json",
+        "experiments/logs/exp-20260612-019.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "must_not_touch": [],
+      "locked_variables": [
+        "post_acceptance_oos_replay_readiness_surface_v1"
+      ],
+      "evaluation_windows": [],
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "prediction": null,
+      "created_at": "2026-06-12T20:07:50+00:00",
+      "claimed_at": "2026-06-12T20:07:57+00:00",
+      "completed_at": "2026-06-12T20:16:53+00:00",
+      "result": {
+        "decision": "accepted_measurement_repair_post_acceptance_oos_replay_readiness",
+        "accepted": true,
+        "artifact": "data/experiments/exp-20260612-019/exp_20260612_019_post_acceptance_oos_replay_readiness.json",
+        "log": "experiments/logs/exp-20260612-019.json",
+        "card": "experiments/cards/exp-20260612-019.md",
+        "readiness_report": [
+          {
+            "sleeve_key": "accepted_helper_source_priority_allocator",
+            "readiness_bucket": "activation_gate_candidate",
+            "combined_closed_count": 24,
+            "combined_rv_cash_usd": 5383.04,
+            "combined_rv_spy_usd": 3738.16,
+            "oos_closed_count": 24,
+            "oos_rv_spy_usd": 3738.16,
+            "oos_top_ticker_positive_pnl_share": 0.26,
+            "forward_closed_count": 0,
+            "forward_rv_cash_usd": 0,
+            "replay_status": "ok"
+          },
+          {
+            "sleeve_key": "industry_relative_laggard_repair",
+            "readiness_bucket": "activation_gate_candidate",
+            "combined_closed_count": 22,
+            "combined_rv_cash_usd": 6618.74,
+            "combined_rv_spy_usd": 5132.36,
+            "oos_closed_count": 22,
+            "oos_rv_spy_usd": 5132.36,
+            "oos_top_ticker_positive_pnl_share": 0.1793,
+            "forward_closed_count": 0,
+            "forward_rv_cash_usd": 0,
+            "replay_status": "ok"
+          },
+          {
+            "sleeve_key": "rolling_corr_peer_shock",
+            "readiness_bucket": "continue_accumulation",
+            "combined_closed_count": 7,
+            "combined_rv_cash_usd": 785.54,
+            "combined_rv_spy_usd": 265.03,
+            "oos_closed_count": 7,
+            "oos_rv_spy_usd": 265.03,
+            "oos_top_ticker_positive_pnl_share": 1.0,
+            "forward_closed_count": 0,
+            "forward_rv_cash_usd": 0,
+            "replay_status": "ok"
+          },
+          {
+            "sleeve_key": "distribution_day_absorption_leadership",
+            "readiness_bucket": "continue_accumulation",
+            "combined_closed_count": 4,
+            "combined_rv_cash_usd": 784.18,
+            "combined_rv_spy_usd": 653.45,
+            "oos_closed_count": 4,
+            "oos_rv_spy_usd": 653.45,
+            "oos_top_ticker_positive_pnl_share": 0.5623,
+            "forward_closed_count": 0,
+            "forward_rv_cash_usd": 0,
+            "replay_status": "ok"
+          },
+          {
+            "sleeve_key": "revision_surprise_low_extension",
+            "readiness_bucket": "continue_accumulation",
+            "combined_closed_count": 4,
+            "combined_rv_cash_usd": -275.95,
+            "combined_rv_spy_usd": -694.69,
+            "oos_closed_count": 4,
+            "oos_rv_spy_usd": -694.69,
+            "oos_top_ticker_positive_pnl_share": 1.0,
+            "forward_closed_count": 0,
+            "forward_rv_cash_usd": 0,
+            "replay_status": "ok"
+          },
+          {
+            "sleeve_key": "turn_of_month_liquid_leadership",
+            "readiness_bucket": "continue_accumulation",
+            "combined_closed_count": 4,
+            "combined_rv_cash_usd": -923.02,
+            "combined_rv_spy_usd": -1302.57,
+            "oos_closed_count": 4,
+            "oos_rv_spy_usd": -1302.57,
+            "oos_top_ticker_positive_pnl_share": 1.0,
+            "forward_closed_count": 0,
+            "forward_rv_cash_usd": 0,
+            "replay_status": "ok"
+          },
+          {
+            "sleeve_key": "narrow_range_compression_breakout",
+            "readiness_bucket": "continue_accumulation",
+            "combined_closed_count": 2,
+            "combined_rv_cash_usd": -200.4,
+            "combined_rv_spy_usd": -489.77,
+            "oos_closed_count": 2,
+            "oos_rv_spy_usd": -489.77,
+            "oos_top_ticker_positive_pnl_share": 1.0,
+            "forward_closed_count": 0,
+            "forward_rv_cash_usd": 0,
+            "replay_status": "ok"
+          },
+          {
+            "sleeve_key": "industry_stable_core_flow",
+            "readiness_bucket": "continue_accumulation",
+            "combined_closed_count": 1,
+            "combined_rv_cash_usd": 160.18,
+            "combined_rv_spy_usd": 206.76,
+            "oos_closed_count": 1,
+            "oos_rv_spy_usd": 206.76,
+            "oos_top_ticker_positive_pnl_share": 1.0,
+            "forward_closed_count": 0,
+            "forward_rv_cash_usd": 0,
+            "replay_status": "ok"
+          },
+          {
+            "sleeve_key": "companyfacts_peer_confirmed_filing_drift",
+            "readiness_bucket": "continue_accumulation",
+            "combined_closed_count": 0,
+            "combined_rv_cash_usd": 0.0,
+            "combined_rv_spy_usd": 0.0,
+            "oos_closed_count": 0,
+            "oos_rv_spy_usd": 0,
+            "oos_top_ticker_positive_pnl_share": null,
+            "forward_closed_count": 0,
+            "forward_rv_cash_usd": 0.0,
+            "replay_status": "ok"
+          },
+          {
+            "sleeve_key": "fiftytwo_week_high_proximity",
+            "readiness_bucket": "continue_accumulation",
+            "combined_closed_count": 0,
+            "combined_rv_cash_usd": 0.0,
+            "combined_rv_spy_usd": 0.0,
+            "oos_closed_count": 0,
+            "oos_rv_spy_usd": 0,
+            "oos_top_ticker_positive_pnl_share": null,
+            "forward_closed_count": 0,
+            "forward_rv_cash_usd": 0.0,
+            "replay_status": "ok"
+          },
+          {
+            "sleeve_key": "volatility_relief_leadership",
+            "readiness_bucket": "continue_accumulation",
+            "combined_closed_count": 0,
+            "combined_rv_cash_usd": 0.0,
+            "combined_rv_spy_usd": 0.0,
+            "oos_closed_count": 0,
+            "oos_rv_spy_usd": 0,
+            "oos_top_ticker_positive_pnl_share": null,
+            "forward_closed_count": 0,
+            "forward_rv_cash_usd": 0,
+            "replay_status": "ok"
+          }
+        ],
+        "production_impact": {
+          "trade_enabled": false,
+          "alters_orders": false,
+          "replay_only": true,
+          "shared_policy_changed": false,
+          "sleeve_state_files_modified": false,
+          "production_impact": "read_only_audit"
+        },
+        "post_run_reflection": {
+          "why_result_happened": "Genuine forward rows are near zero because daily sleeve accumulation ran on the starved fallback universe; the OOS replay quantifies what the unified universe would have produced after acceptance, without rewriting forward history.",
+          "forbidden_near_neighbor_retry": "Do not backfill replay rows into sleeve state/snapshot files and do not treat OOS replay rows as production-forward evidence.",
+          "new_evidence_required": "Activation of any activation_gate_candidate sleeve needs its declared execution envelope plus a narrow activation Gate 1-4, and genuine forward rows accumulating under the unified universe."
+        }
+      },
+      "ticket_file": "experiments/tickets/exp-20260612-019.json",
+      "card_file": "experiments/cards/exp-20260612-019.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260612-019.json",
+      "decision": "accepted_measurement_repair_post_acceptance_oos_replay_readiness",
+      "summary": "Strictly after the frozen Gate-4 windows (which end 2026-04-21), so this replay is out-of-sample for every accepted adapter. It is still replay, not production-forward evidence: it cannot prove the daily pipeline emits the same candidates. Activation still requires the declared envelope and a narrow activation Gate 1-4 per adapter.",
+      "artifact": "data/experiments/exp-20260612-019/exp_20260612_019_post_acceptance_oos_replay_readiness.json",
+      "log": "experiments/logs/exp-20260612-019.json",
+      "updated_at": "2026-06-12T20:16:53+00:00"
+    },
+    {
+      "experiment_id": "exp-20260612-020",
+      "status": "claimed",
+      "lane": "alpha_search",
+      "owner": "claude-fable-regime-router",
+      "hypothesis": "The mixed|balanced|normal state tilt on the accepted consensus sleeve (exp-20260612-018: +7.4% aggregate EV, zero regression, improved drawdown, rejected only on APP single-ticker concentration) becomes acceptable when the tilt carries a per-ticker repetition cap: only a ticker's first N in-cell entries within a trailing 60-trading-day window receive the 1.5x paper notional tilt, diluting single-name dependence below the 50% concentration guard.",
+      "ticket_file": "experiments/tickets/exp-20260612-020.json",
+      "card_file": "experiments/cards/exp-20260612-020.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260612-020.json",
+      "updated_at": "2026-06-12T20:17:00+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-12T16:36:51+00:00"
+  "updated_at": "2026-06-12T20:17:00+00:00"
 }
