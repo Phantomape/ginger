@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1170`
-- Raw records loaded by meta report: `1586`
-- History fingerprint: `b43d6e13d7a41ed5`
+- Strategy records counted: `1172`
+- Raw records loaded by meta report: `1589`
+- History fingerprint: `d12a27d9d41da31e`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -41,8 +41,8 @@ facts before changing strategy behavior.
 - `pilot_or_sleeve` priority `0.6320`: experiments `163`, accept `25.77%`, sum EV `+65.9978`, sum PnL `$1,141,068.75`.
   Reason: 162/163 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually changes sizing/allocation rather than...
   Guardrail: heavily explored family; diminishing-return risk; many prior rejections in this family
-- `slot_or_ranking` priority `0.5815`: experiments `128`, accept `25.78%`, sum EV `+39.2775`, sum PnL `$689,676.30`.
-  Reason: 1/128 records have sample >= 10; 125/128 records show multi-window evidence; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
+- `slot_or_ranking` priority `0.5805`: experiments `129`, accept `25.58%`, sum EV `+39.2775`, sum PnL `$689,676.30`.
+  Reason: 1/129 records have sample >= 10; 126/129 records show multi-window evidence; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
   Guardrail: average drawdown delta worsens; can change survival, trade count, or exit distribution broadly; heavily explored family; diminishing-return risk; many prior rejections in this family
 - `default_off_paper_allocation` priority `0.5641`: experiments `12`, accept `33.33%`, sum EV `+0.0285`, sum PnL `$456.30`.
   Reason: 12/12 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs
@@ -62,10 +62,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260611-017` `rejected_sec_quantified_counterparty_commitment_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `production_visible_free_sec_event_ohlcv_candidate_pool`, trial `sec_quantified_counterparty_commitment_candidate_pool`.
-  Lesson: The fixed quantified counterparty commitment bundle failed Gate 4. This means the richer SEC text field was not enough to create stable replacement value after next-open execution, costs, 10-day hold, cooldown, core-o...
-- `exp-20260611-018` `rejected_slot_sliced_core_candidate_paper_source`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_internal_candidate_pool`, trial `slot_sliced_core_candidate_paper_source`.
-  Lesson: The slot-sliced core candidate source did not clear Gate 4 or the accepted allocator comparator. The accepted core/allocator stack appears to be ranking out these candidates for good reason or the paper overlay adds c...
 - `exp-20260611-019` `rejected_distribution_pressure_low_beta_defensive_leadership_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `production_visible_free_ohlcv_tail_state_candidate_pool`, trial `distribution_pressure_low_beta_defensive_leadership_candidate_pool`.
   Lesson: The distribution-pressure low-beta defensive leadership source did not clear Gate 4 or the accepted distribution-day comparator. This defensive filter either removes the convex post-pressure winners or only relabels p...
 - `exp-20260611-022` `rejected_no_forward_activation_ready_default_off_sleeve`: EV `+0.0000`, PnL `$0.00`, family `forward_replacement_value_readiness_audit`, trial `default_off_forward_replacement_value_activation_readiness`.
@@ -86,6 +82,10 @@ facts before changing strategy behavior.
   Lesson: The dynamic correlation-cluster breadth source did not clear Gate 4 or the accepted peer-shock comparator. Cluster breadth around core-flow anchors appears to relabel broad beta/flow sponsorship instead of creating in...
 - `exp-20260612-015` `rejected_sec_13d_activist_stake_candidate_pool`: EV `-0.1226`, PnL `$-2,385.92`, family `production_visible_free_sec_ownership_event_candidate_pool`, trial `sec_13d_activist_stake_initiation_candidate_pool`.
   Lesson: The fixed 13D activist-stake bundle failed Gate 4. The most likely reasons are a thin declared-universe sample (large activist targets are rarer and better covered), the filing pop being priced before next-open paper...
+- `exp-20260612-022` `rejected_allocator_envelope_as_declared`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `allocator_activation_envelope`.
+  Lesson: The declared envelope failed its gate; see failed_reasons. Do not loosen the kill switch or grow the bucket just to pass; redesign needs either fewer overlapping holds or a deliberate bucket-size decision with its own...
+- `exp-20260612-024` `accepted_allocator_activation_envelope_gate_v2`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `allocator_activation_envelope`.
+  Lesson: The allocator selects at most one ex-ante ranked row per day, so the concurrency cap mostly trims overlapping tail entries; retention and kill-switch outcomes quantify exactly what production can execute. Do not sweep...
 
 ## Highest-Signal Historical Records
 

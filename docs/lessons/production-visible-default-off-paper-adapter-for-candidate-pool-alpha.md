@@ -6,17 +6,15 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `100`
-- Accepted / rejected: `11` / `82`
-- Accept rate: `11.00%`
+- Experiments: `102`
+- Accepted / rejected: `12` / `83`
+- Accept rate: `11.76%`
 - Sum EV delta: `+64.0785`
 - Sum PnL delta: `$1,277,345.46`
-- Latest: `exp-20260611-015` `rejected_sec_ftd_finra_rank3_allocator_source` with EV `+2.0594` and PnL `$36,436.28`.
+- Latest: `exp-20260612-024` `accepted_allocator_activation_envelope_gate_v2` with EV `+0.0000` and PnL `$0.00`.
 
 ## Retained Or Positive Evidence
 
-- `exp-20260603-022` `accepted_post_earnings_non_core_overlap_shared_support`: EV `+0.0300`, PnL `$247.93`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `post_earnings_underpriced_core_non_overlap_support`.
-  Lesson: Within the accepted post-earnings underpriced drift paper sleeve, candidates with no same-day core A/B overlap are a cleaner independent event-alpha bucket and deserve a small default-off paper-notional support scalar.
 - `exp-20260604-009` `accepted_lagged_consensus_shared_default_off_adapter`: EV `+1.9949`, PnL `$35,553.87`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_source_timing_adapter`.
   Lesson: exp-20260604-008 improved core and the accepted same-day consensus comparator across all three windows; this run adds the shared helper, source-history contract, and focused tests without enabling orders.
 - `exp-20260607-019` `accepted_volatility_relief_stock_leadership_shared_default_off_adapter`: EV `+0.5732`, PnL `$11,934.79`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `volatility_relief_stock_leadership_shared_adapter`.
@@ -27,11 +25,11 @@ records before making strategy changes.
   Lesson: The revision rows added replacement value on dates where expectation revision evidence displaced pure OHLCV rows or supplied coverage on dates where the higher-priority helpers had weaker candidates. The shared helper...
 - `exp-20260611-005` `accepted_lagged_consensus_shared_allocator_source_extension`: EV `+2.1849`, PnL `$40,397.21`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
   Lesson: The lagged consensus rows added distinct multi-source confirmation and improved replacement value across all canonical windows after being moved into the shared allocator/daily snapshot boundary. Do not retry by chang...
+- `exp-20260612-024` `accepted_allocator_activation_envelope_gate_v2`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `allocator_activation_envelope`.
+  Lesson: The allocator selects at most one ex-ante ranked row per day, so the concurrency cap mostly trims overlapping tail entries; retention and kill-switch outcomes quantify exactly what production can execute. Do not sweep...
 
 ## Rejections And Failure Lessons
 
-- `exp-20260610-006` `rejected_macro_relief_allocator_extension`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
-  Lesson: Macro relief was already an accepted standalone helper, but the allocator extension did not add enough incremental replacement value after existing higher-priority helper rows and global cooldown. The likely issue is...
 - `exp-20260610-009` `rejected_fiftytwo_week_high_allocator_source_extension`: EV `+1.0193`, PnL `$18,759.55`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
   Lesson: The source overlapped too much with higher-priority allocator rows or displaced better rows in at least one canonical window. Do not retry by changing 52-week source rank, allocator top-N, source thresholds, notional,...
 - `exp-20260610-016` `rejected_post_earnings_allocator_extension`: EV `+0.9906`, PnL `$15,076.66`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
@@ -46,6 +44,8 @@ records before making strategy changes.
   Lesson: The industry_laggard_repair source looked weak in late/mid attribution, but removing it eliminated too many useful old_thin or date-coverage replacement rows and did not beat the accepted allocator across the binding...
 - `exp-20260611-015` `rejected_sec_ftd_finra_rank3_allocator_source`: EV `+2.0594`, PnL `$36,436.28`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
   Lesson: The official settlement/borrow-pressure source did not add enough incremental replacement value after lagged consensus and volatility relief. It likely overlaps accepted short-pressure evidence or displaces better low...
+- `exp-20260612-022` `rejected_allocator_envelope_as_declared`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `allocator_activation_envelope`.
+  Lesson: The declared envelope failed its gate; see failed_reasons. Do not loosen the kill switch or grow the bucket just to pass; redesign needs either fewer overlapping holds or a deliberate bucket-size decision with its own...
 
 ## Retry Discipline
 
@@ -67,9 +67,9 @@ records before making strategy changes.
 
 ## Recent Raw Records
 
-- `exp-20260611-003` source `experiments/logs/exp-20260611-003.json`.
-- `exp-20260611-004` source `experiments/logs/exp-20260611-004.json`.
 - `exp-20260611-005` source `experiments/logs/exp-20260611-005.json`.
 - `exp-20260611-008` source `experiments/logs/exp-20260611-008.json`.
 - `exp-20260611-010` source `experiments/logs/exp-20260611-010.json`.
 - `exp-20260611-015` source `experiments/logs/exp-20260611-015.json`.
+- `exp-20260612-022` source `experiments/logs/exp-20260612-022.json`.
+- `exp-20260612-024` source `experiments/logs/exp-20260612-024.json`.

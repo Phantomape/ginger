@@ -6,9 +6,9 @@ complete state database.
 
 ## Source Snapshot
 
-- Strategy records counted: `1170`
-- Accepted strategy records: `195`
-- History fingerprint: `b43d6e13d7a41ed5`
+- Strategy records counted: `1172`
+- Accepted strategy records: `196`
+- History fingerprint: `d12a27d9d41da31e`
 - Generated from committed experiment logs when using `--git-ref HEAD`.
 
 ## Exact State Sources
@@ -34,8 +34,6 @@ complete state database.
 
 ## Recent Accepted Strategy Records
 
-- `exp-20260606-026` `accepted`: EV `+0.0000`, PnL `$0.00`, family `default_off_forward_adapter_wiring`, trial `default_off_forward_adapter_wiring`.
-  Lesson: The accepted rolling-correlation peer-shock alpha should now be wired into daily default-off observation so it can collect forward closed replacement-value rows using the same helper semantics that passed the three-wi...
 - `exp-20260607-008` `accepted_industry_relative_laggard_repair_shared_default_off_adapter`: EV `+0.2763`, PnL `$6,208.99`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_relative_laggard_repair_shared_default_off_adapter`.
   Lesson: The shared helper reproduced the private replay lead with the same fixed policy bundle, indicating the alpha came from the industry relative lag plus same-day repair relation rather than runner-only implementation qui...
 - `exp-20260607-019` `accepted_volatility_relief_stock_leadership_shared_default_off_adapter`: EV `+0.5732`, PnL `$11,934.79`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `volatility_relief_stock_leadership_shared_adapter`.
@@ -58,11 +56,11 @@ complete state database.
   Lesson: The lagged consensus rows added distinct multi-source confirmation and improved replacement value across all canonical windows after being moved into the shared allocator/daily snapshot boundary. Do not retry by chang...
 - `exp-20260611-007` `accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter`: EV `+0.5286`, PnL `$10,432.91`, family `production_visible_free_ohlcv_tail_state_candidate_pool`, trial `distribution_day_absorption_leadership_shared_default_off_adapter`.
   Lesson: The shared helper reproduced the private replay lead because it kept the exact distribution-pressure context, absorption/reclaim candidate fields, SPY/QQQ relative leadership, next-open entry, 10-day exit, cost, top-1...
+- `exp-20260612-024` `accepted_allocator_activation_envelope_gate_v2`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `allocator_activation_envelope`.
+  Lesson: The allocator selects at most one ex-ante ranked row per day, so the concurrency cap mostly trims overlapping tail entries; retention and kill-switch outcomes quantify exactly what production can execute. Do not sweep...
 
 ## Recent Production-Visible Or Default-Off Accepted Records
 
-- `exp-20260607-019` `accepted_volatility_relief_stock_leadership_shared_default_off_adapter`: EV `+0.5732`, PnL `$11,934.79`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `volatility_relief_stock_leadership_shared_adapter`.
-  Lesson: Shared replay matched the exp-20260607-018 lead because the alpha came from a distinct VIXY volatility-compression state plus liquid stock leadership, not runner-only implementation details. Do not retry by sweeping V...
 - `exp-20260608-008` `accepted_industry_stable_core_flow_shared_default_off_adapter`: EV `+0.1459`, PnL `$3,731.54`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_stable_core_flow_shared_default_off_adapter`.
   Lesson: Core-flow confirmation removed enough pure industry beta to keep the fixed stable-leader source within Gate 4 bounds, and the shared helper reproduced the private replay lead without changing live orders or core ranki...
 - `exp-20260608-013` `accepted_narrow_range_compression_breakout_shared_default_off_adapter`: EV `+0.1608`, PnL `$2,248.98`, family `production_visible_free_ohlcv_candidate_pool`, trial `narrow_range_compression_breakout_shared_default_off_adapter`.
@@ -81,6 +79,8 @@ complete state database.
   Lesson: The lagged consensus rows added distinct multi-source confirmation and improved replacement value across all canonical windows after being moved into the shared allocator/daily snapshot boundary. Do not retry by chang...
 - `exp-20260611-007` `accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter`: EV `+0.5286`, PnL `$10,432.91`, family `production_visible_free_ohlcv_tail_state_candidate_pool`, trial `distribution_day_absorption_leadership_shared_default_off_adapter`.
   Lesson: The shared helper reproduced the private replay lead because it kept the exact distribution-pressure context, absorption/reclaim candidate fields, SPY/QQQ relative leadership, next-open entry, 10-day exit, cost, top-1...
+- `exp-20260612-024` `accepted_allocator_activation_envelope_gate_v2`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `allocator_activation_envelope`.
+  Lesson: The allocator selects at most one ex-ante ranked row per day, so the concurrency cap mostly trims overlapping tail entries; retention and kill-switch outcomes quantify exactly what production can execute. Do not sweep...
 
 ## Current Research Queue Pointers
 
