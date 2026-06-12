@@ -27,11 +27,11 @@ GUARDED_FILES = [
     REPO_ROOT / "docs" / "experiment_log.jsonl",
 ]
 
-# LFS pointer files are ~130 bytes; anything bigger cannot be a pointer.
-MAX_POINTER_SIZE = 400
-
-
 def _pointer_files() -> list[Path]:
+    # No size short-circuit: a pointerized file that later received appended
+    # rows grows past pointer size but is still corrupt (exp-20260612-006
+    # found docs/experiment_log.jsonl as a 5.6MB pointer/append hybrid), so
+    # every guarded file gets its first bytes checked.
     hits: list[Path] = []
     candidates: list[Path] = [p for p in GUARDED_FILES if p.exists()]
     for root in GUARDED_DIRS:
@@ -40,8 +40,6 @@ def _pointer_files() -> list[Path]:
         candidates.extend(p for p in root.rglob("*") if p.is_file())
     for path in candidates:
         try:
-            if path.stat().st_size > MAX_POINTER_SIZE:
-                continue
             with path.open("rb") as handle:
                 head = handle.read(len(LFS_HEADER))
         except OSError:
