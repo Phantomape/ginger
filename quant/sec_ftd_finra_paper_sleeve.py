@@ -33,6 +33,7 @@ try:
         _finra_rows_by_ticker,
         fetch_finra_short_interest_rows,
         load_finra_short_interest_rows,
+        refresh_finra_short_interest_archive,
         save_finra_short_interest_archive,
     )
     from volume_breadth_breakout_paper_sleeve import (
@@ -60,6 +61,7 @@ except ImportError:  # pragma: no cover - package-style imports in tests
         _finra_rows_by_ticker,
         fetch_finra_short_interest_rows,
         load_finra_short_interest_rows,
+        refresh_finra_short_interest_archive,
         save_finra_short_interest_archive,
     )
     from quant.volume_breadth_breakout_paper_sleeve import (
@@ -141,6 +143,8 @@ DEFAULT_CONFIG = {
     "hold_days": 10,
     "round_trip_cost_pct": ROUND_TRIP_COST_PCT,
     "fetch_lookback_days": 700,
+    "max_ftd_archive_staleness_days": 21,
+    "max_finra_archive_staleness_days": 16,
     "allow_network_fetch": True,
     "block_same_day_core_overlap": True,
     "forward_gate_min_closed_trades": 20,
@@ -238,6 +242,64 @@ def save_sec_ftd_archive(
     with files_out.open("w", encoding="utf-8") as handle:
         json.dump({"files": _safe(files), "updated_at": utc_now_iso()}, handle, indent=2, sort_keys=True)
         handle.write("\n")
+
+
+def refresh_sec_ftd_archive(
+    *,
+    existing_rows: list[dict[str, Any]],
+    tickers: set[str],
+    as_of: str,
+    lookback_days: int = 700,
+    max_staleness_days: int = 21,
+    fetch_fn=None,
+    save: bool = True,
+) -> tuple[list[dict[str, Any]], str, list[dict[str, Any]]]:
+    """Refresh the SEC fails-to-deliver archive when it has gone stale.
+
+    The archive used to be fetched only when empty, so once populated it froze
+    at its last settlement date (exp-20260612-003). The SEC publishes each
+    half-month FTD file two to four weeks after the period ends, so an archive
+    whose newest settlement is older than ``max_staleness_days`` calendar days
+    is checked for newer files; already-cached month zips are read locally and
+    only missing periods hit the network. On any fetch failure the stale
+    archive is kept rather than discarded.
+    """
+    fetch = fetch_fn or fetch_sec_ftd_rows
+    existing = _normalise_ftd_rows(existing_rows or [])
+    as_of_day = _parse_day(as_of)
+    if as_of_day is None:
+        return existing, "invalid_as_of_date", []
+
+    if not existing:
+        rows, files = fetch(tickers=tickers, as_of=as_of, lookback_days=lookback_days)
+        rows = _normalise_ftd_rows(rows)
+        if rows and save:
+            save_sec_ftd_archive(rows=rows, files=files)
+        return rows, ("network_fetch" if rows else "network_fetch_empty"), files
+
+    newest = max(_parse_day(str(row.get("settlement_date"))) or as_of_day for row in existing)
+    staleness = (as_of_day - newest).days
+    if staleness <= int(max_staleness_days):
+        return existing, "local_archive_fresh", []
+
+    refresh_lookback = min(int(lookback_days), staleness + 75)
+    new_rows, files = fetch(tickers=tickers, as_of=as_of, lookback_days=refresh_lookback)
+    new_rows = _normalise_ftd_rows(new_rows)
+    merged = {}
+    for row in existing:
+        merged[(str(row.get("ticker")), str(row.get("settlement_date")))] = row
+    added = 0
+    for row in new_rows:
+        key = (str(row.get("ticker")), str(row.get("settlement_date")))
+        if key not in merged:
+            added += 1
+        merged[key] = row
+    rows = _normalise_ftd_rows(list(merged.values()))
+    if added:
+        if save:
+            save_sec_ftd_archive(rows=rows, files=files)
+        return rows, "local_archive_refreshed", files
+    return rows, "local_archive_stale_refresh_empty", files
 
 
 def fetch_sec_ftd_rows(
@@ -449,30 +511,28 @@ def build_sec_ftd_finra_paper_sleeve_snapshot(
     if ftd_rows is None:
         ftd_rows = load_sec_ftd_rows()
         ftd_source_status = "local_archive" if ftd_rows else "missing_local_archive"
-        if not ftd_rows and cfg.get("allow_network_fetch", True):
-            ftd_rows, ftd_files = fetch_sec_ftd_rows(
+        if cfg.get("allow_network_fetch", True):
+            ftd_rows, ftd_source_status, ftd_files = refresh_sec_ftd_archive(
+                existing_rows=ftd_rows,
                 tickers=candidate_tickers,
                 as_of=as_of_date,
                 lookback_days=int(cfg["fetch_lookback_days"]),
+                max_staleness_days=int(cfg["max_ftd_archive_staleness_days"]),
             )
-            ftd_source_status = "network_fetch" if ftd_rows else "network_fetch_empty"
-            if ftd_rows:
-                save_sec_ftd_archive(rows=ftd_rows, files=ftd_files)
 
     finra_source_status = "provided"
     finra_files: list[dict[str, Any]] = []
     if finra_rows is None:
         finra_rows = load_finra_short_interest_rows()
         finra_source_status = "local_archive" if finra_rows else "missing_local_archive"
-        if not finra_rows and cfg.get("allow_network_fetch", True):
-            finra_rows, finra_files = fetch_finra_short_interest_rows(
+        if cfg.get("allow_network_fetch", True):
+            finra_rows, finra_source_status, finra_files = refresh_finra_short_interest_archive(
+                existing_rows=finra_rows,
                 tickers=candidate_tickers,
                 as_of=as_of_date,
                 lookback_days=int(cfg["fetch_lookback_days"]),
+                max_staleness_days=int(cfg["max_finra_archive_staleness_days"]),
             )
-            finra_source_status = "network_fetch" if finra_rows else "network_fetch_empty"
-            if finra_rows:
-                save_finra_short_interest_archive(rows=finra_rows, files=finra_files)
 
     ftd_rows = _normalise_ftd_rows(ftd_rows or [])
     finra_rows = _normalise_finra_rows(finra_rows or [])
