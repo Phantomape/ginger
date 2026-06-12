@@ -219,6 +219,12 @@ def _float_or_none(value: Any) -> float | None:
         return None
 
 
+try:
+    from us_market_calendar import is_us_equity_session
+except ImportError:  # pragma: no cover - package-style import fallback
+    from quant.us_market_calendar import is_us_equity_session
+
+
 def _advance_open_positions(
     state: dict[str, Any],
     *,
@@ -226,6 +232,10 @@ def _advance_open_positions(
     current_prices: dict[str, float],
     config: dict[str, Any],
 ) -> list[dict[str, Any]]:
+    if not is_us_equity_session(as_of):
+        # Non-session run dates (weekends/NYSE holidays) carry only stale
+        # bars; they must not age holds or close positions (exp-20260612-001).
+        return []
     still_open = []
     closed_today = []
     hold_days = int(config["hold_days"])
@@ -269,6 +279,10 @@ def _fill_pending_entries(
     current_prices: dict[str, float],
     config: dict[str, Any],
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    if not is_us_equity_session(as_of):
+        # Non-session run dates must not fill entries at stale prices;
+        # pending entries wait for the next session (exp-20260612-001).
+        return [], []
     if not config.get("paper_enabled", True):
         return [], []
 

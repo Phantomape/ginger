@@ -1,0 +1,112 @@
+{
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair_non_session_sleeve_guard",
+    "actual_success": 1,
+    "brier_score": 0.04,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "holiday_table_wrong",
+      "behavior_change_on_trading_days",
+      "module_pattern_divergence"
+    ],
+    "predicted_success_probability": 0.8,
+    "realized_failure_mode": null,
+    "surprise_note": "All sixteen target functions shared identical signatures and return shapes, so one patch covered every module; no existing test relied on weekend advancement."
+  },
+  "causal_components": [
+    "shared session calendar",
+    "fill guard",
+    "advance guard",
+    "phantom row quarantine",
+    "calendar tests"
+  ],
+  "change_summary": "Added quant/us_market_calendar.py (computed NYSE holiday rules), guarded _advance_open_positions and _fill_pending_entries in all eight affected sleeve modules with non-session early returns, removed the 7 duplicate non-session low_deployment_etf closed rows (archived), and tagged the two Saturday-entry SEC event rows with non_session_entry_fill.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "non_session_sleeve_state_advancement_guard",
+  "component": "quant/us_market_calendar.py + 8 sleeve modules",
+  "decision": "accepted_measurement_repair_non_session_sleeve_guard",
+  "experiment_id": "exp-20260612-001",
+  "hypothesis": "Eight sleeve modules advance hold-day counters and fill pending entries on any run date including weekends and holidays, shortening nominal holds by about 30 percent and booking phantom non-session rows with stale Friday bars; a shared US equity session calendar guard plus quarantine of the existing phantom rows repairs forward-evidence integrity.",
+  "implementation_mode": "measurement_repair",
+  "lane": "measurement_repair",
+  "mechanism_family": "data_accumulation_integrity",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260611-027",
+    "exp-20260611-020",
+    "exp-20260608-021"
+  ],
+  "new_evidence_type": "measurement_surface_repair",
+  "next_retry_requires": [
+    "special NYSE closure observed in forward rows"
+  ],
+  "notes": "Verified by re-runnable checks in this runner plus the full quant pytest suite (1291 passed, including 6 new calendar tests). Gate 4 backtests unaffected: replay paths already used per-date bars.",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not re-introduce run-date-keyed advancement or fills; do not hand-edit sleeve closed rows outside an archived, experiment-logged quarantine like this one.",
+    "new_evidence_required": "If a future special NYSE closure produces a phantom row, extend nyse_holidays with an explicit special-closure set and add the date to the calendar tests.",
+    "why_result_happened": "The daily run executes every calendar day while the latest downloadable bar is the prior session; older sleeves keyed advancement on the run date instead of bar dates, so weekends aged holds and booked duplicate same-day rows at stale prices. A pure calendar-rule session test fixes this without plumbing market data into eight state machines."
+  },
+  "prediction": {
+    "confidence_reason": "The audit confirmed weekend rows in low_deployment_etf (7 phantom duplicates), sec_leadership and sec_negative (Saturday entries at stale Friday opens), and the as_of != last_seen increment pattern in eight modules; the guard is a pure early-return on non-session dates computed from deterministic NYSE holiday rules, so trading-day behavior is unchanged by construction and the main risk is an error in the holiday calculation itself, covered by focused tests.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "holiday_table_wrong",
+      "behavior_change_on_trading_days",
+      "module_pattern_divergence"
+    ],
+    "recorded_at": "2026-06-12T00:31:13+00:00",
+    "success_probability": 0.8
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_attribution_only": true,
+    "parity_note": "Default-off paper sleeve state machines only. Hold-day aging now counts US equity sessions, matching backtest replay semantics; live/default orders, core ranking, and the backtester are untouched.",
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "quant/us_market_calendar.py",
+    "quant/test_us_market_calendar.py",
+    "quant/broad_market_paper_sleeve.py",
+    "quant/core_misfit_paper_sleeve.py",
+    "quant/form4_event_sleeve.py",
+    "quant/sec_event_sleeve.py",
+    "quant/sec_financial_report_event_sleeve.py",
+    "quant/sec_leadership_event_sleeve.py",
+    "quant/sec_negative_event_sleeve.py",
+    "quant/state_surface_sleeve.py",
+    "data/experiments/exp-20260612-001/quarantined_low_deployment_rows.json"
+  ],
+  "status": "accepted",
+  "timestamp": "2026-06-12T00:37:45+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "non_session_sleeve_guard_v1",
+  "verification": {
+    "all_modules_guarded": true,
+    "calendar_examples": {
+      "2026-05-25_memorial_day": false,
+      "2026-06-11_thursday": true
+    },
+    "guards_present": {
+      "broad_market_paper_sleeve.py": true,
+      "core_misfit_paper_sleeve.py": true,
+      "form4_event_sleeve.py": true,
+      "sec_event_sleeve.py": true,
+      "sec_financial_report_event_sleeve.py": true,
+      "sec_leadership_event_sleeve.py": true,
+      "sec_negative_event_sleeve.py": true,
+      "state_surface_sleeve.py": true
+    },
+    "low_deployment_closed_rows": 17,
+    "untagged_non_session_rows": []
+  }
+}
