@@ -1,0 +1,90 @@
+{
+  "experiment_id": "exp-20260612-004",
+  "experiment_uid": "expuid-2c38ea50234749bc",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260612-004",
+    "slug": "sleeve_health_report",
+    "reserved_at": "2026-06-12T05:37:04+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "accepted",
+  "lane": "measurement_repair",
+  "owner": "claude-scheduled-alpha",
+  "hypothesis": "Sleeve builders that early-return empty snapshots persist nothing and write no skip record, so dead accumulation surfaces are invisible (the FTD sleeve was silent for six days and six accepted helpers never persisted state); a central daily sleeve-health report that records every sleeve's build status and on-disk snapshot staleness makes stalls visible within one day.",
+  "change_type": "identity_or_measurement_repair",
+  "mechanism_family": "data_accumulation_integrity",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "sleeve_health_report_v1",
+  "single_causal_variable": "central_daily_sleeve_health_and_staleness_report",
+  "changed_variable": "central_daily_sleeve_health_and_staleness_report",
+  "causal_components": [
+    "sleeve health module",
+    "run wiring",
+    "staleness sessions metric",
+    "append-only health log",
+    "focused tests"
+  ],
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260612-002"
+  ],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "not_declared",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260612_004_sleeve_health_report.py",
+    "data/experiments/exp-20260612-004/exp_20260612_004_sleeve_health_report.json",
+    "experiments/cards/exp-20260612-004.md",
+    "experiments/manifests/exp-20260612-004.json",
+    "experiments/tickets/exp-20260612-004.json",
+    "experiments/logs/exp-20260612-004.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "central_daily_sleeve_health_and_staleness_report"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.8,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "payload_key_drift",
+      "staleness_false_positives_on_new_sleeves",
+      "health_log_growth"
+    ],
+    "confidence_reason": "The audit traced three independent silent stalls to the same pattern of early-return-without-persistence; a read-side central report over the daily snapshot payloads plus on-disk snapshots.jsonl freshness needs no change to any sleeve builder, so trading-day behavior is untouched and the main risks are key-name drift in run.py payloads and false stale flags for sleeves that legitimately emit rarely, both handled by session-based thresholds and explicit never-persisted status.",
+    "recorded_at": "2026-06-12T05:36:33+00:00"
+  },
+  "created_at": "2026-06-12T05:37:04+00:00",
+  "claimed_at": "2026-06-12T05:37:25+00:00",
+  "completed_at": "2026-06-12T05:41:54+00:00",
+  "result": {
+    "decision": "accepted_measurement_repair_sleeve_health_report",
+    "artifact": "data/experiments/exp-20260612-004/exp_20260612_004_sleeve_health_report.json",
+    "log": "experiments/logs/exp-20260612-004.json",
+    "failing_builds": [
+      "industry_relative_laggard_repair_paper_sleeve",
+      "industry_stable_core_flow_paper_sleeve",
+      "narrow_range_compression_breakout_paper_sleeve",
+      "rolling_corr_peer_shock_paper_sleeve",
+      "sec_ftd_finra_paper_sleeve"
+    ],
+    "stalled_sleeves": [
+      "platform_rs20_no_gap",
+      "sec_10k_liquidity",
+      "space_catalyst"
+    ],
+    "accepted": true
+  },
+  "ticket_file": "experiments/tickets/exp-20260612-004.json",
+  "card_file": "experiments/cards/exp-20260612-004.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260612-004.json",
+  "decision": "accepted_measurement_repair_sleeve_health_report",
+  "updated_at": "2026-06-12T05:41:54+00:00"
+}

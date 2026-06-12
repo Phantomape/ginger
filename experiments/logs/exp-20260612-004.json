@@ -1,0 +1,106 @@
+{
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair_sleeve_health_report",
+    "actual_success": 1,
+    "brier_score": 0.04,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "payload_key_drift",
+      "staleness_false_positives_on_new_sleeves",
+      "health_log_growth"
+    ],
+    "predicted_success_probability": 0.8,
+    "realized_failure_mode": null,
+    "surprise_note": "Validation against the real 2026-06-10 payloads reproduced every stall the audit had found manually: five failing builds and three never-persisted legacy dirs, with 28 fresh surfaces."
+  },
+  "causal_components": [
+    "sleeve health module",
+    "run wiring",
+    "staleness sessions metric",
+    "append-only health log",
+    "focused tests"
+  ],
+  "change_summary": "Added quant/sleeve_health.py (build status from daily payloads + snapshots.jsonl staleness in US equity sessions, one JSONL health row per day) and wired it into quant/run.py after the sleeve payload assembly with warning logs for failing or stalled sleeves.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "central_daily_sleeve_health_and_staleness_report",
+  "component": "quant/sleeve_health.py + quant/run.py",
+  "decision": "accepted_measurement_repair_sleeve_health_report",
+  "experiment_id": "exp-20260612-004",
+  "hypothesis": "Sleeve builders that early-return empty snapshots persist nothing and write no skip record, so dead accumulation surfaces are invisible; a central daily sleeve-health report that records every sleeve build status and on-disk snapshot staleness makes stalls visible within one day.",
+  "implementation_mode": "measurement_repair",
+  "lane": "measurement_repair",
+  "mechanism_family": "data_accumulation_integrity",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260612-002",
+    "exp-20260612-003",
+    "exp-20260611-027"
+  ],
+  "new_evidence_type": "measurement_surface_repair",
+  "next_retry_requires": [
+    "per-sleeve cadence overrides if false positives appear"
+  ],
+  "notes": "Verified by re-runnable checks in this runner (real-payload validation catches the known stalls) plus the full quant pytest suite (1308 passed, including 4 new tests).",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not silence or threshold-away health warnings instead of fixing the underlying sleeve; do not move health reporting into individual builders where new sleeves can forget it.",
+    "new_evidence_required": "If a sleeve legitimately emits less than weekly, add a per-sleeve expected-cadence override instead of raising the global threshold.",
+    "why_result_happened": "Three independent silent stalls shared one pattern: early-return without persistence. Rather than patching every builder, a central read-side report over the payloads the run already assembles plus on-disk freshness covers current and future sleeves uniformly."
+  },
+  "prediction": {
+    "confidence_reason": "The audit traced three independent silent stalls to the same pattern of early-return-without-persistence; a read-side central report over the daily snapshot payloads plus on-disk snapshots.jsonl freshness needs no change to any sleeve builder, so trading-day behavior is untouched and the main risks are key-name drift in run.py payloads and false stale flags for sleeves that legitimately emit rarely, both handled by session-based thresholds and explicit never-persisted status.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "payload_key_drift",
+      "staleness_false_positives_on_new_sleeves",
+      "health_log_growth"
+    ],
+    "recorded_at": "2026-06-12T05:36:33+00:00",
+    "success_probability": 0.8
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_attribution_only": true,
+    "parity_note": "Read-side observability only: scans already-built daily payloads and snapshot files, appends a health row, and logs warnings. No sleeve builder, order, or replay path changed.",
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "quant/sleeve_health.py",
+    "quant/test_sleeve_health.py",
+    "quant/run.py",
+    "quant/experiments/exp_20260612_004_sleeve_health_report.py",
+    "data/paper_sleeves/sleeve_health.jsonl"
+  ],
+  "status": "accepted",
+  "timestamp": "2026-06-12T05:41:54+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "sleeve_health_report_v1",
+  "verification": {
+    "failing_builds": [
+      "industry_relative_laggard_repair_paper_sleeve",
+      "industry_stable_core_flow_paper_sleeve",
+      "narrow_range_compression_breakout_paper_sleeve",
+      "rolling_corr_peer_shock_paper_sleeve",
+      "sec_ftd_finra_paper_sleeve"
+    ],
+    "fresh_disk_count": 29,
+    "health_row_persisted_or_present": true,
+    "known_stalls_detected": true,
+    "report_asof": "2026-06-11",
+    "run_wired": true,
+    "stalled_sleeves": [
+      "platform_rs20_no_gap",
+      "sec_10k_liquidity",
+      "space_catalyst"
+    ]
+  }
+}

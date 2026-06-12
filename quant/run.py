@@ -3332,6 +3332,22 @@ def main():
     trend_signals_dict["non_ohlcv_snapshot"] = non_ohlcv_snapshot
     trend_signals_dict["crypto_sleeve"] = crypto_sleeve
 
+    try:
+        from sleeve_health import build_sleeve_health_report
+
+        sleeve_health_report = build_sleeve_health_report(today_iso, trend_signals_dict)
+        if sleeve_health_report.get("failing_builds") or sleeve_health_report.get("stalled_sleeves"):
+            log.warning(
+                "Sleeve health: failing_builds=%s stalled_sleeves=%s",
+                sleeve_health_report.get("failing_builds"),
+                sleeve_health_report.get("stalled_sleeves"),
+            )
+    except Exception as e:
+        log.warning(f"Sleeve health report unavailable: {e}")
+        sleeve_health_report = {"status": "error", "error": str(e)}
+    trend_signals_dict["sleeve_health_report"] = sleeve_health_report
+
+
     # ── Step 7: Quant report ──────────────────────────────────────────────────
     _print_section("STEP 7 — Quant report")
     report = generate_daily_report(
