@@ -936,16 +936,6 @@ def _resolve_sector_entries(
     candidate_universe: dict[str, Any] | list[str] | None,
     rows_by_ticker: dict[str, list[dict[str, Any]]],
 ) -> dict[str, dict[str, Any]]:
-    if sector_entries:
-        raw_entries = sector_entries
-    elif isinstance(candidate_universe, dict) and isinstance(candidate_universe.get("records"), dict):
-        raw_entries = candidate_universe["records"]
-    elif isinstance(candidate_universe, dict) and isinstance(candidate_universe.get("entries"), dict):
-        raw_entries = candidate_universe["entries"]
-    else:
-        cache = broad_market_sector_map.load_cache()
-        raw_entries = cache.get("entries", {}) if isinstance(cache, dict) else {}
-
     allowed = (
         {str(ticker).upper() for ticker in candidate_universe}
         if isinstance(candidate_universe, list)
@@ -954,6 +944,32 @@ def _resolve_sector_entries(
     if isinstance(candidate_universe, dict) and candidate_universe.get("tickers"):
         allowed = {str(ticker).upper() for ticker in candidate_universe.get("tickers") or []}
 
+    sources: list[dict[str, Any]] = []
+    if sector_entries:
+        sources.append(sector_entries)
+    if isinstance(candidate_universe, dict):
+        for key in ("records", "entries"):
+            if isinstance(candidate_universe.get(key), dict):
+                sources.append(candidate_universe[key])
+    for raw_entries in sources:
+        out = _filter_sector_entries(raw_entries, allowed=allowed, rows_by_ticker=rows_by_ticker)
+        if out:
+            return out
+
+    # Governance fallback feeds carry ticker/title/theme metadata without any
+    # sector fields, so an empty resolution falls through to the persisted
+    # broad-market sector cache restricted to the same allowed tickers.
+    cache = broad_market_sector_map.load_cache()
+    cache_entries = cache.get("entries", {}) if isinstance(cache, dict) else {}
+    return _filter_sector_entries(cache_entries, allowed=allowed, rows_by_ticker=rows_by_ticker)
+
+
+def _filter_sector_entries(
+    raw_entries: dict[str, Any],
+    *,
+    allowed: set[str],
+    rows_by_ticker: dict[str, list[dict[str, Any]]],
+) -> dict[str, dict[str, Any]]:
     out: dict[str, dict[str, Any]] = {}
     for ticker, meta in raw_entries.items():
         ticker_u = str(ticker).upper()

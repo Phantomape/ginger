@@ -210,3 +210,81 @@ def test_daily_snapshot_advances_pending_to_closed_using_historical_fill_model(t
     assert closed["exit_date"] == trades[0]["exit_date"]
     assert closed["pnl_pct_net"] == trades[0]["pnl_pct_net"]
     assert closed["trade_enabled"] is False
+
+
+def _governance_universe(tickers: list[str]) -> dict:
+    return {
+        "status": "universe_state_observation_feed",
+        "tickers": sorted(tickers),
+        "records": {
+            ticker: {
+                "ticker": ticker,
+                "title": f"{ticker} Inc",
+                "status": "active",
+                "theme": "space",
+            }
+            for ticker in tickers
+        },
+    }
+
+
+def test_snapshot_accepts_dataframe_ohlcv_from_daily_run() -> None:
+    pd = __import__("pandas")
+    ohlcv = _ohlcv()
+    as_of = ohlcv["SPY"][70]["date"]
+    frames = {
+        ticker: pd.DataFrame(
+            [
+                {
+                    "Open": row["open"],
+                    "High": row["high"],
+                    "Low": row["low"],
+                    "Close": row["close"],
+                    "Volume": row["volume"],
+                }
+                for row in rows
+            ],
+            index=pd.to_datetime([row["date"] for row in rows]),
+        )
+        for ticker, rows in ohlcv.items()
+    }
+
+    snapshot = build_rolling_corr_peer_shock_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker=frames,
+        core_entries=[{"ticker": "CORE", "entry_signal": "A"}],
+        sector_entries=_sector_entries(),
+        state=empty_rolling_corr_peer_shock_paper_state(),
+        persist=False,
+    )
+
+    assert snapshot.get("error") is None
+    assert snapshot["candidate_count"] == 1
+    assert snapshot["candidates"][0]["ticker"] == "LAG"
+
+
+def test_sector_entries_fall_back_to_sector_cache_for_governance_feed(monkeypatch) -> None:
+    import types
+
+    from quant import rolling_corr_peer_shock_paper_sleeve as sleeve_module
+
+    monkeypatch.setattr(
+        sleeve_module,
+        "broad_market_sector_map",
+        types.SimpleNamespace(load_cache=lambda *args, **kwargs: {"entries": _sector_entries()}),
+    )
+    ohlcv = _ohlcv()
+    as_of = ohlcv["SPY"][70]["date"]
+
+    snapshot = build_rolling_corr_peer_shock_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker=ohlcv,
+        core_entries=[{"ticker": "CORE", "entry_signal": "A"}],
+        candidate_universe=_governance_universe(["PEER", "LAG", "CORE"]),
+        state=empty_rolling_corr_peer_shock_paper_state(),
+        persist=False,
+    )
+
+    assert snapshot.get("error") is None
+    assert snapshot["candidate_count"] == 1
+    assert snapshot["candidates"][0]["ticker"] == "LAG"

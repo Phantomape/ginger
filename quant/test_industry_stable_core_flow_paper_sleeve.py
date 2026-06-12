@@ -215,3 +215,44 @@ def test_daily_snapshot_advances_pending_to_closed_using_same_fill_model(tmp_pat
     assert closed["exit_date"] == trades[0]["exit_date"]
     assert closed["pnl_pct_net"] == trades[0]["pnl_pct_net"]
     assert closed["trade_enabled"] is False
+
+
+def test_sector_entries_fall_back_to_sector_cache_for_governance_feed(monkeypatch) -> None:
+    import types
+
+    from quant import industry_stable_core_flow_paper_sleeve as sleeve_module
+
+    monkeypatch.setattr(
+        sleeve_module,
+        "broad_market_sector_map",
+        types.SimpleNamespace(load_cache=lambda *args, **kwargs: {"entries": _sector_entries()}),
+    )
+    ohlcv = _ohlcv()
+    signal_day = ohlcv["SPY"][70]["date"]
+    tickers = ["MEM1", "MEM2", "MEM3", "MEM4", "MEM5", "LEAD"]
+    governance_universe = {
+        "status": "universe_state_observation_feed",
+        "tickers": sorted(tickers),
+        "records": {
+            ticker: {
+                "ticker": ticker,
+                "title": f"{ticker} Inc",
+                "status": "active",
+                "theme": "space",
+            }
+            for ticker in tickers
+        },
+    }
+
+    snapshot = build_industry_stable_core_flow_snapshot(
+        as_of=signal_day,
+        ohlcv_by_ticker=ohlcv,
+        core_entries=[{"ticker": "CORE", "strategy": "trend_long"}],
+        candidate_universe=governance_universe,
+        state=empty_industry_stable_core_flow_state(),
+        persist=False,
+    )
+
+    assert snapshot.get("error") is None
+    assert snapshot["candidate_count"] == 1
+    assert snapshot["candidates"][0]["ticker"] == "LEAD"

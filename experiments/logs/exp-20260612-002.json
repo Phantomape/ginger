@@ -1,0 +1,107 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0625,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "yfinance bulk rate limiting",
+      "stale warehouse rows for delisted tickers inflate feed",
+      "run.py runtime blowup",
+      "feed shape mismatch with sleeve loaders"
+    ],
+    "predicted_success_probability": 0.75,
+    "realized_failure_mode": "none_material_delisted_ticker_debris_only",
+    "surprise_level": "low",
+    "surprise_note": "Initial 1358-ticker backfill completed in 40 seconds - vendor rate limiting never materialized; the only failures were genuinely delisted/renamed tickers which the feed freshness gate excludes by design."
+  },
+  "causal_components": [
+    "warehouse_incremental_refresh",
+    "broad_universe_feed_generation",
+    "run_py_warehouse_batch_ohlcv"
+  ],
+  "change_summary": "Broad-market daily data plane: (1) quant/ohlcv_warehouse_refresh.py incrementally refreshes the warehouse for the declared broad universe (sector-cache ok + PEAD broad 500 + references; per-ticker gap-bucketed chunked bulk fetch, update_existing=False); (2) quant/broad_market_universe_feed.py generates the authoritative data/state/broad_market_paper/universe.json from sector-cache ok entries intersected with fresh warehouse coverage, records carry sector/industry so sleeves resolve sectors directly; (3) run.py broad sleeve block runs refresh+feed (env opt-out BROAD_UNIVERSE_REFRESH_DISABLED / BROAD_UNIVERSE_FEED_DISABLED) and loads universe OHLCV via warehouse batch read with per-ticker vendor fallback only for small (<=30) fallback feeds. No entry/exit/ranking/sizing rule changed; live orders untouched.",
+  "change_type": "measurement_repair",
+  "changed_variable": "daily broad-market data plane: incremental warehouse refresh + warehouse-backed authoritative universe feed + warehouse batch OHLCV reads in run.py broad sleeve block",
+  "component": "quant/ohlcv_warehouse_refresh.py, quant/broad_market_universe_feed.py, quant/test_ohlcv_warehouse_refresh.py, quant/test_broad_market_universe_feed.py, quant/run.py, data/state/broad_market_paper/universe.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260612-002",
+  "hypothesis": "Daily default-off paper sleeves starve because production runs on a 27-57 name fallback universe while accepted replays were validated on the ~1241-ticker sector-cache/warehouse universe. The warehouse only accumulates daily for tickers run.py fetches (90/8511 fresh; rest frozen at 2026-04-24), so universe unification requires a data plane: (1) incremental daily warehouse refresh for the broad universe, (2) generating the authoritative data/state/broad_market_paper/universe.json from warehouse freshness x sector cache, (3) feeding broad sleeve OHLCV from warehouse batch reads instead of per-ticker yfinance calls. This restores replay/daily universe parity and unblocks forward evidence accumulation (Gate 5 path) without changing any entry/exit/ranking/sizing rule.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "before/after universe feed status + warehouse freshness probe + daily sleeve feed counts",
+  "next_retry_requires": [],
+  "notes": "Before: loader status=missing, daily sleeves ran on 27-57 name fallback universes; warehouse 89/8511 tickers fresh. After: initial backfill fetched 1321/1358 tickers and inserted 41086 rows in 40s (37 failures are delisted/renamed names, auto-excluded by the feed freshness gate); feed generated with 1229 tickers (1235 eligible minus 6 stale); loader status=loaded; warehouse batch read of 1230 frames in 2.4s; daily-shaped simulation of rolling_corr + both industry sleeves on the real feed runs clean (error null) and industry_relative produced its first real candidate (1 selected of 8 raw). Sleeve build time ~20-24s each on 1229 names - expect a few minutes added to the daily run across broad sleeves. Steady-state daily refresh fetches only 1-day gaps. Full quant suite 1298 passed. Artifacts: before/after loader status, before/after warehouse freshness probes, refresh_run_summary.json, feed_generation_summary.json, after_daily_simulation.py/.json.",
+  "parameters": {
+    "locked_variables": [
+      "daily broad-market data plane: incremental warehouse refresh + warehouse-backed authoritative universe feed + warehouse batch OHLCV reads in run.py broad sleeve block"
+    ],
+    "single_causal_variable": "daily broad-market data plane: incremental warehouse refresh + warehouse-backed authoritative universe feed + warehouse batch OHLCV reads in run.py broad sleeve block"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "TODO",
+    "new_evidence_required": "TODO",
+    "realized_failure_mode": "none_material_delisted_ticker_debris_only",
+    "why_result_happened": "Initial 1358-ticker backfill completed in 40 seconds - vendor rate limiting never materialized; the only failures were genuinely delisted/renamed tickers which the feed freshness gate excludes by design."
+  },
+  "prediction": {
+    "confidence_reason": "All building blocks proven: get_ohlcv_many bulk fetch, upsert_ohlcv_frames, load_warehouse_ohlcv_frames (exp-20260607-003 pattern), loader accepts tickers+records shape. Main risk is vendor-side rate limiting on the initial ~1200-ticker backfill.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "yfinance bulk rate limiting",
+      "stale warehouse rows for delisted tickers inflate feed",
+      "run.py runtime blowup",
+      "feed shape mismatch with sleeve loaders"
+    ],
+    "recorded_at": "2026-06-12T01:01:43+00:00",
+    "success_probability": 0.75
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260612-002/before_loader_status.json",
+    "data/experiments/exp-20260612-002/after_daily_simulation.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-06-12T04:57:33+00:00",
+  "trial_family": "measurement_repair",
+  "trial_variant_id": "exp-20260612-002"
+}

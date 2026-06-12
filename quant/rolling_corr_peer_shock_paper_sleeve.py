@@ -1062,34 +1062,56 @@ def _pearson_corr(left: list[float], right: list[float]) -> float | None:
 
 def _normalise_ohlcv_by_ticker(payload: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
     return {
-        str(ticker).upper(): _normalise_ohlcv_rows(rows)
-        for ticker, rows in payload.items()
-        if _normalise_ohlcv_rows(rows)
+        str(ticker).upper(): rows
+        for ticker, data in payload.items()
+        if (rows := _normalise_ohlcv_rows(data))
     }
 
 
 def _normalise_ohlcv_rows(rows: Any) -> list[dict[str, Any]]:
-    if not isinstance(rows, list):
-        return []
     out: list[dict[str, Any]] = []
-    for row in rows:
-        if not isinstance(row, dict):
-            continue
-        day = row.get("date") or row.get("Date")
-        if not day:
-            continue
-        out.append(
-            {
-                "date": _date10(day),
-                "open": _positive_float(row.get("open", row.get("Open"))),
-                "high": _positive_float(row.get("high", row.get("High"))),
-                "low": _positive_float(row.get("low", row.get("Low"))),
-                "close": _positive_float(row.get("close", row.get("Close"))),
-                "volume": _nonnegative_float(row.get("volume", row.get("Volume"))),
-            }
-        )
+    if rows is None:
+        return out
+    if hasattr(rows, "iterrows"):
+        for idx, row in rows.iterrows():
+            normalised = _normalise_ohlcv_row(row, idx)
+            if normalised is not None:
+                out.append(normalised)
+    elif isinstance(rows, list):
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            normalised = _normalise_ohlcv_row(row, None)
+            if normalised is not None:
+                out.append(normalised)
     out.sort(key=lambda row: row["date"])
     return out
+
+
+def _normalise_ohlcv_row(row: Any, idx: Any) -> dict[str, Any] | None:
+    def pick(*names: str) -> Any:
+        for name in names:
+            try:
+                value = row.get(name)
+            except AttributeError:
+                value = None
+            if value is not None:
+                return value
+        return None
+
+    day = pick("date", "Date")
+    if day is None or (isinstance(day, str) and not day):
+        day = idx
+    if day is None or (isinstance(day, str) and not day):
+        return None
+    return {
+        "date": _date10(day),
+        "open": _positive_float(pick("open", "Open")),
+        "high": _positive_float(pick("high", "High")),
+        "low": _positive_float(pick("low", "Low")),
+        "close": _positive_float(pick("close", "Close")),
+        "volume": _nonnegative_float(pick("volume", "Volume")),
+    }
 
 
 def _resolve_sector_entries(
@@ -1098,19 +1120,36 @@ def _resolve_sector_entries(
     candidate_universe: dict[str, Any] | list[str] | None,
     rows_by_ticker: dict[str, list[dict[str, Any]]],
 ) -> dict[str, dict[str, Any]]:
-    if sector_entries:
-        raw_entries = sector_entries
-    else:
-        if isinstance(candidate_universe, dict) and isinstance(candidate_universe.get("entries"), dict):
-            raw_entries = candidate_universe["entries"]
-        else:
-            cache = broad_market_sector_map.load_cache()
-            raw_entries = cache.get("entries", {}) if isinstance(cache, dict) else {}
     allowed = (
         {str(ticker).upper() for ticker in candidate_universe}
         if isinstance(candidate_universe, list)
         else set(rows_by_ticker)
     )
+
+    sources: list[dict[str, Any]] = []
+    if sector_entries:
+        sources.append(sector_entries)
+    if isinstance(candidate_universe, dict) and isinstance(candidate_universe.get("entries"), dict):
+        sources.append(candidate_universe["entries"])
+    for raw_entries in sources:
+        out = _filter_sector_entries(raw_entries, allowed=allowed, rows_by_ticker=rows_by_ticker)
+        if out:
+            return out
+
+    # Governance fallback feeds carry ticker/title/theme metadata without any
+    # sector fields, so an empty resolution falls through to the persisted
+    # broad-market sector cache restricted to the same allowed tickers.
+    cache = broad_market_sector_map.load_cache()
+    cache_entries = cache.get("entries", {}) if isinstance(cache, dict) else {}
+    return _filter_sector_entries(cache_entries, allowed=allowed, rows_by_ticker=rows_by_ticker)
+
+
+def _filter_sector_entries(
+    raw_entries: dict[str, Any],
+    *,
+    allowed: set[str],
+    rows_by_ticker: dict[str, list[dict[str, Any]]],
+) -> dict[str, dict[str, Any]]:
     out: dict[str, dict[str, Any]] = {}
     for ticker, meta in raw_entries.items():
         ticker_u = str(ticker).upper()

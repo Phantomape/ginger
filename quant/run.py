@@ -2697,6 +2697,50 @@ def main():
     broad_market_candidate_universe = {"status": "not_built", "tickers": []}
     broad_market_ohlcv = {}
     try:
+        # exp-20260612-002: daily broad-market data plane. Keep the warehouse
+        # fresh for the broad universe, then regenerate the authoritative
+        # universe feed so sleeves stop starving on the governance fallback.
+        if not _env_flag("BROAD_UNIVERSE_REFRESH_DISABLED"):
+            try:
+                from ohlcv_warehouse_refresh import refresh_warehouse_ohlcv
+
+                broad_universe_refresh_summary = refresh_warehouse_ohlcv(
+                    as_of=today_iso,
+                    logger=log,
+                )
+                log.info(
+                    "Broad-universe warehouse refresh: status=%s universe=%d stale=%d "
+                    "fetched=%d inserted=%d (%.1fs)",
+                    broad_universe_refresh_summary.get("status"),
+                    broad_universe_refresh_summary.get("universe_size", 0),
+                    broad_universe_refresh_summary.get("stale_count", 0),
+                    broad_universe_refresh_summary.get("fetched_ticker_count", 0),
+                    broad_universe_refresh_summary.get("inserted", 0),
+                    broad_universe_refresh_summary.get("duration_seconds", 0.0),
+                )
+            except Exception as broad_refresh_error:
+                log.warning(
+                    "Broad-universe warehouse refresh failed: %s", broad_refresh_error
+                )
+        if not _env_flag("BROAD_UNIVERSE_FEED_DISABLED"):
+            try:
+                from broad_market_universe_feed import (
+                    generate_broad_market_paper_universe,
+                )
+
+                broad_universe_feed_summary = generate_broad_market_paper_universe(
+                    as_of=today_iso,
+                )
+                log.info(
+                    "Broad-market paper universe feed generated: tickers=%d excluded=%s",
+                    len(broad_universe_feed_summary.get("tickers") or []),
+                    broad_universe_feed_summary.get("excluded_counts"),
+                )
+            except Exception as broad_feed_error:
+                log.warning(
+                    "Broad-market paper universe feed generation failed: %s",
+                    broad_feed_error,
+                )
         broad_market_candidate_universe = load_broad_market_candidate_universe()
         if (
             broad_market_candidate_universe.get("status") == "missing"
@@ -2721,21 +2765,63 @@ def main():
         broad_market_ohlcv = {}
         broad_market_tickers = set(broad_market_candidate_universe.get("tickers") or [])
         if broad_market_tickers:
-            for ticker in sorted(broad_market_tickers | {"SPY"}):
+            broad_market_wanted = sorted(broad_market_tickers | {"SPY"})
+            for ticker in broad_market_wanted:
                 if ticker in ohlcv_dict:
                     broad_market_ohlcv[ticker] = ohlcv_dict[ticker]
-                    continue
-                if ticker == "SPY" and spy_ohlcv is not None:
+                elif ticker == "SPY" and spy_ohlcv is not None:
                     broad_market_ohlcv[ticker] = spy_ohlcv
-                    continue
-                try:
-                    broad_market_ohlcv[ticker] = _cached_ohlcv(ticker)
-                except Exception as ticker_error:
-                    log.warning(
-                        "Broad-market paper OHLCV unavailable for %s: %s",
-                        ticker,
-                        ticker_error,
-                    )
+            broad_market_missing = [
+                ticker for ticker in broad_market_wanted if ticker not in broad_market_ohlcv
+            ]
+            if broad_market_missing and DEFAULT_WAREHOUSE_PATH.exists():
+                # exp-20260612-002: batch SQLite read for the broad universe
+                # instead of one vendor call per ticker.
+                from ohlcv_warehouse import load_warehouse_ohlcv_frames
+
+                _bm_wh_end = pd.Timestamp(today_iso)
+                _bm_wh_start = _bm_wh_end - pd.Timedelta(days=400)
+                _bm_wh_frames = load_warehouse_ohlcv_frames(
+                    DEFAULT_WAREHOUSE_PATH,
+                    broad_market_missing,
+                    start=_bm_wh_start,
+                    end=_bm_wh_end,
+                )
+                _bm_wh_loaded = 0
+                for ticker, frame in _bm_wh_frames.items():
+                    if frame is not None and not frame.empty:
+                        broad_market_ohlcv[ticker] = frame
+                        _bm_wh_loaded += 1
+                broad_market_missing = [
+                    ticker
+                    for ticker in broad_market_missing
+                    if ticker not in broad_market_ohlcv
+                ]
+                log.info(
+                    "Broad-market paper OHLCV: %d from session cache, %d from warehouse, "
+                    "%d unresolved",
+                    len(broad_market_ohlcv) - _bm_wh_loaded,
+                    _bm_wh_loaded,
+                    len(broad_market_missing),
+                )
+            if broad_market_missing and len(broad_market_missing) <= 30:
+                # Small feeds (e.g. the governance observation fallback) keep
+                # the original per-ticker cached fetch path.
+                for ticker in broad_market_missing:
+                    try:
+                        broad_market_ohlcv[ticker] = _cached_ohlcv(ticker)
+                    except Exception as ticker_error:
+                        log.warning(
+                            "Broad-market paper OHLCV unavailable for %s: %s",
+                            ticker,
+                            ticker_error,
+                        )
+            elif broad_market_missing:
+                log.warning(
+                    "Broad-market paper OHLCV missing for %d universe tickers "
+                    "(no warehouse rows; skipping per-ticker vendor fetches)",
+                    len(broad_market_missing),
+                )
         broad_market_tradeable_universe = (
             set(universe)
             | set(pilot_universe)
