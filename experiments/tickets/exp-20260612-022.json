@@ -1,0 +1,121 @@
+{
+  "experiment_id": "exp-20260612-022",
+  "experiment_uid": "expuid-5ec769c398a844e9",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260612-022",
+    "slug": "allocator_activation_envelope_gate",
+    "reserved_at": "2026-06-12T21:57:52+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "claude-scheduled-alpha",
+  "hypothesis": "The accepted source-priority allocator can hold its replay edge inside a declared dedicated-bucket execution envelope: 8 max concurrent positions (matching the production daily cap that replay never enforced), USD 4k notional in a USD 32k bucket, realized-drawdown kill switch at 8pct, next-open no-chase orders, zero core displacement; enforcing the envelope in replay across the canonical windows must retain >=80pct of the unconstrained EV delta with no window flipping negative and no kill-switch trigger.",
+  "change_type": "activation_envelope_gate",
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "trial_family": "allocator_activation_envelope",
+  "trial_variant_id": "allocator_dedicated_bucket_envelope_v1",
+  "single_causal_variable": "accepted_helper_source_priority_allocator_execution_envelope_v1",
+  "changed_variable": "accepted_helper_source_priority_allocator_execution_envelope_v1",
+  "causal_components": [
+    "envelope_constants",
+    "shared_kill_switch_policy",
+    "replay_envelope_enforcement",
+    "daily_snapshot_envelope_visibility",
+    "parity_test"
+  ],
+  "prior_trial_count": 4,
+  "nearby_prior_experiments": [
+    "exp-20260610-014",
+    "exp-20260611-005",
+    "exp-20260611-008",
+    "exp-20260612-019"
+  ],
+  "multiple_testing_risk_bucket": "low",
+  "new_evidence_type": "execution_envelope_constraint_measurement",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/accepted_helper_source_priority_allocator_paper_sleeve.py",
+    "quant/test_allocator_execution_envelope.py",
+    "quant/experiments/exp_20260612_0NN_allocator_activation_envelope_gate.py",
+    "data/experiments/exp-20260612-0NN/",
+    "experiments/cards/exp-20260612-0NN.md",
+    "experiments/manifests/exp-20260612-0NN.json",
+    "experiments/tickets/exp-20260612-0NN.json",
+    "experiments/logs/exp-20260612-0NN.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "accepted_helper_source_priority_allocator_execution_envelope_v1"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.6,
+    "expected_ev_delta": -0.5,
+    "expected_pnl_delta": -8000.0,
+    "main_failure_modes": [
+      "concurrency_cap_binds_hard",
+      "kill_switch_false_trigger_mid_weak",
+      "retention_below_80pct",
+      "window_flips_negative"
+    ],
+    "confidence_reason": "The allocator fires about 0.9 trades per day with a 10-day hold, so steady-state concurrency is about 9; production daily already caps open positions at 8 while accepted replay never enforced the cap. The allocator ranks by ex-ante priority, so skipped marginal trades should be lower value, but if the skipped tail carries the PnL or mid_weak drawdown crosses 8pct of the bucket the declared envelope fails.",
+    "recorded_at": "2026-06-12T21:57:20Z"
+  },
+  "created_at": "2026-06-12T21:57:52+00:00",
+  "claimed_at": "2026-06-12T21:57:59+00:00",
+  "completed_at": "2026-06-12T22:07:44+00:00",
+  "result": {
+    "decision": "rejected_allocator_envelope_as_declared",
+    "accepted": false,
+    "artifact": "data/experiments/exp-20260612-022/exp_20260612_022_allocator_activation_envelope_gate.json",
+    "log": "experiments/logs/exp-20260612-022.json",
+    "card": "experiments/cards/exp-20260612-022.md",
+    "gate4": {
+      "passed": false,
+      "failed_reasons": [
+        "kill_switch_triggered:late_strong"
+      ],
+      "before_ev_delta_sum": 2.2171,
+      "after_ev_delta_sum": 1.846,
+      "ev_retention": 0.832619,
+      "min_ev_retention": 0.8,
+      "decision": "rejected_allocator_envelope_as_declared"
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "shared_policy_changed": true,
+      "shared_policy_note": "EXECUTION_ENVELOPE, evaluate_kill_switch_state, and apply_execution_envelope_to_trades added to the shared allocator helper; daily snapshot now exposes execution_envelope and kill_switch_state. Selection, ranking, sizing, exits, and order behavior unchanged; sleeve remains default-off paper.",
+      "parity_test_added": true,
+      "parity_test": "quant/test_allocator_execution_envelope.py",
+      "replay_only": false,
+      "daily_snapshot_exposed": true,
+      "live_realism_evaluated": true,
+      "live_ready": false,
+      "remaining_live_blockers": [
+        "genuine forward closed rows under the unified universe",
+        "replay_vs_forward_parity_on_forward_rows",
+        "operator_decision_on_pilot_notional"
+      ]
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The declared envelope failed its gate; see failed_reasons. Do not loosen the kill switch or grow the bucket just to pass; redesign needs either fewer overlapping holds or a deliberate bucket-size decision with its own gate.",
+      "forbidden_near_neighbor_retry": "Do not sweep bucket size, concurrency cap, kill-switch threshold, or ADV floor on the frozen windows to manufacture a pass.",
+      "new_evidence_required": "Genuine forward closed rows under the unified universe plus replay-vs-forward parity; then live pilot sizing is an operator config decision behind the kill switch."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260612-022.json",
+  "card_file": "experiments/cards/exp-20260612-022.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260612-022.json",
+  "decision": "rejected_allocator_envelope_as_declared",
+  "summary": "Production daily caps open positions at max_active_positions=8 while the accepted replay never enforced concurrency; this gate measures the constrained replay so accepted metrics and production behavior match.",
+  "artifact": "data/experiments/exp-20260612-022/exp_20260612_022_allocator_activation_envelope_gate.json",
+  "log": "experiments/logs/exp-20260612-022.json",
+  "updated_at": "2026-06-12T22:07:44+00:00"
+}

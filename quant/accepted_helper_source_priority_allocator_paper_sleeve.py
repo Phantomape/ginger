@@ -861,6 +861,8 @@ def _snapshot_payload(
         ),
         "unrealized_pnl": leader._unrealized_pnl(open_positions, rows_by_ticker, as_of),
         "forward_paper_gate": leader._forward_paper_gate(closed, config),
+        "execution_envelope": EXECUTION_ENVELOPE,
+        "kill_switch_state": evaluate_kill_switch_state(closed),
         "parameters": _parameter_summary(config),
         "production_impact": _production_impact(),
         "next_action": "paper_observe_forward_outcomes_only_no_orders",
@@ -1085,3 +1087,151 @@ def _production_impact() -> dict[str, Any]:
         "adapter_status": "shared_default_off_paper_helper",
         "scope": "accepted_helper_source_priority_allocator_paper_attribution",
     }
+
+
+# --- Execution envelope (exp-20260612-022) -------------------------------
+# Declared dedicated-bucket live-realistic envelope for this sleeve. The
+# daily path already caps open positions via max_active_positions; replay
+# never enforced it. apply_execution_envelope_to_trades() lets replay measure
+# the same constraint plus the kill switch without changing the accepted
+# unconstrained replay semantics. trade_enabled stays False.
+
+EXECUTION_ENVELOPE: dict[str, Any] = {
+    "rule_version": "accepted_helper_source_priority_allocator_execution_envelope_v1",
+    "mode": "dedicated_bucket_zero_core_displacement",
+    "bucket_notional_usd": 32_000.0,
+    "base_notional_usd": BASE_NOTIONAL_USD,
+    "max_concurrent_positions": 8,
+    "max_capital_pct_of_bucket": 1.0,
+    "min_avg_dollar_volume_20d": 10_000_000.0,
+    "max_notional_pct_of_adv20": 0.001,
+    "order_semantics": "next_trading_day_open_market_order",
+    "missed_fill_policy": "skip_no_chase",
+    "halt_policy": "halt_remaining_window_once_triggered",
+    "kill_switch_basis": "cumulative_realized_pnl_drawdown_vs_bucket_notional",
+    "kill_switch_drawdown_pct": 0.08,
+    "core_displacement": 0,
+    "slippage_model": (
+        "entry/exit 5bps plus ROUND_TRIP_COST_PCT per quant/fill_model.py and "
+        "quant/constants.py; conservative for 4k USD orders above the ADV floor"
+    ),
+    "cash_management_note": (
+        "idle bucket cash may sit in the accepted low-deployment ETF substitute "
+        "at operator level; not part of sleeve trade policy"
+    ),
+    "trade_enabled": False,
+}
+
+
+def evaluate_kill_switch_state(
+    closed_trades: list[dict[str, Any]] | None,
+    *,
+    envelope: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    env = {**EXECUTION_ENVELOPE, **(envelope or {})}
+    bucket = _float(env["bucket_notional_usd"])
+    threshold = _float(env["kill_switch_drawdown_pct"])
+    rows = sorted(
+        [
+            row
+            for row in closed_trades or []
+            if isinstance(row, dict) and row.get("exit_date")
+        ],
+        key=lambda row: str(row.get("exit_date") or "")[:10],
+    )
+    cumulative = 0.0
+    peak = 0.0
+    max_drawdown = 0.0
+    triggered = False
+    trigger_exit_date = None
+    for row in rows:
+        cumulative += _float(row.get("pnl"))
+        peak = max(peak, cumulative)
+        drawdown = (peak - cumulative) / bucket if bucket > 0 else 0.0
+        max_drawdown = max(max_drawdown, drawdown)
+        if not triggered and drawdown >= threshold:
+            triggered = True
+            trigger_exit_date = str(row.get("exit_date") or "")[:10]
+    return {
+        "rule_version": env["rule_version"],
+        "bucket_notional_usd": bucket,
+        "kill_switch_drawdown_pct": threshold,
+        "closed_trade_count": len(rows),
+        "realized_pnl_usd": leader._round(cumulative, 2),
+        "max_realized_drawdown_pct_of_bucket": leader._round(max_drawdown, 6),
+        "triggered": triggered,
+        "trigger_exit_date": trigger_exit_date,
+    }
+
+
+def apply_execution_envelope_to_trades(
+    trades: list[dict[str, Any]] | None,
+    *,
+    envelope: dict[str, Any] | None = None,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
+    """Enforce the declared execution envelope on a replay trade stream.
+
+    Returns (kept, skipped, audit). Concurrency counts positions whose
+    [entry_date, exit_date] span covers the new entry date (exit-day close
+    still occupies a slot at the next open). Kill switch halts all further
+    entries for the remainder of the stream once realized drawdown crosses
+    the threshold. Read-only: input rows are not mutated.
+    """
+    env = {**EXECUTION_ENVELOPE, **(envelope or {})}
+    max_open = int(env["max_concurrent_positions"])
+    min_adv = _float(env["min_avg_dollar_volume_20d"])
+    ordered = sorted(
+        [row for row in trades or [] if isinstance(row, dict)],
+        key=lambda row: (str(row.get("entry_date") or "")[:10], str(row.get("ticker") or "")),
+    )
+    kept: list[dict[str, Any]] = []
+    skipped: list[dict[str, Any]] = []
+    halted = False
+    halt_entry_date = None
+    for row in ordered:
+        entry_date = str(row.get("entry_date") or "")[:10]
+        exit_date = str(row.get("exit_date") or "")[:10]
+        if not entry_date or not exit_date:
+            skipped.append({**row, "envelope_skip_reason": "missing_entry_or_exit_date"})
+            continue
+        if halted:
+            skipped.append({**row, "envelope_skip_reason": "kill_switch_halt"})
+            continue
+        adv_raw = row.get("candidate_avg_dollar_volume_20d")
+        if adv_raw is not None and 0.0 <= _float(adv_raw, default=-1.0) < min_adv:
+            skipped.append({**row, "envelope_skip_reason": "below_min_adv_floor"})
+            continue
+        realized_before = [
+            kept_row
+            for kept_row in kept
+            if str(kept_row.get("exit_date") or "")[:10] < entry_date
+        ]
+        kill_state = evaluate_kill_switch_state(realized_before, envelope=env)
+        if kill_state["triggered"]:
+            halted = True
+            halt_entry_date = entry_date
+            skipped.append({**row, "envelope_skip_reason": "kill_switch_halt"})
+            continue
+        open_count = sum(
+            1
+            for kept_row in kept
+            if str(kept_row.get("entry_date") or "")[:10] <= entry_date
+            and str(kept_row.get("exit_date") or "")[:10] >= entry_date
+        )
+        if open_count >= max_open:
+            skipped.append({**row, "envelope_skip_reason": "max_concurrent_positions"})
+            continue
+        kept.append(row)
+    audit = {
+        "rule_version": env["rule_version"],
+        "max_concurrent_positions": max_open,
+        "min_avg_dollar_volume_20d": min_adv,
+        "input_trade_count": len(ordered),
+        "kept_trade_count": len(kept),
+        "skipped_trade_count": len(skipped),
+        "skip_reasons": dict(Counter(str(row.get("envelope_skip_reason")) for row in skipped)),
+        "kill_switch_halted": halted,
+        "kill_switch_halt_entry_date": halt_entry_date,
+        "final_kill_switch_state": evaluate_kill_switch_state(kept, envelope=env),
+    }
+    return kept, skipped, audit
