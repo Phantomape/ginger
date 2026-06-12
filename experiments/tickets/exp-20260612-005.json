@@ -1,0 +1,208 @@
+{
+  "experiment_id": "exp-20260612-005",
+  "experiment_uid": "expuid-0033c72803494689",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260612-005",
+    "slug": "sec_periodic_filing_timing_surprise",
+    "reserved_at": "2026-06-12T05:48:52+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "alpha-search-automation",
+  "hypothesis": "candidate_pool: PIT SEC 10-Q/10-K filings with unusually fast filing lag (10-Q <= 30 days, 10-K <= 55 days from report_date to filing_date), when same-day OHLCV leadership confirms absorption, may identify higher-quality timely reporters whose next-open continuation adds replacement value beyond generic periodic-report momentum.",
+  "change_type": "default_off_paper_candidate_pool_replay_scout",
+  "mechanism_family": "production_visible_free_sec_event_ohlcv_candidate_pool",
+  "trial_family": "sec_periodic_filing_timing_surprise_candidate_pool",
+  "trial_variant_id": "sec_periodic_filing_timing_surprise_top1_next_open_10d_v1",
+  "single_causal_variable": "sec_periodic_filing_timing_surprise_price_confirmed_candidate_source_v1",
+  "changed_variable": "sec_periodic_filing_timing_surprise_price_confirmed_candidate_source_v1",
+  "causal_components": [
+    "PIT SEC filing lag/timeliness field",
+    "historical replay",
+    "Gate1-4 artifact",
+    "negative-or-lead closeout"
+  ],
+  "prior_trial_count": 4,
+  "nearby_prior_experiments": [
+    "exp-20260611-012",
+    "exp-20260611-025",
+    "exp-20260611-017",
+    "exp-20260601-027"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "sec_periodic_filing_lag_timing_field",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_*_sec_periodic_filing_timing_surprise.py",
+    "data/experiments/exp-*/",
+    "experiments/logs/exp-*.json",
+    "experiments/cards/exp-*.md",
+    "experiments/tickets/exp-*.json",
+    "experiments/manifests/exp-*.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/*paper_sleeve.py",
+    "operator_inputs/open_positions.json",
+    "data/open_positions.json"
+  ],
+  "locked_variables": [
+    "core ranking",
+    "core sizing",
+    "core exits",
+    "live orders",
+    "LLM path",
+    "accepted source consensus",
+    "SEC text labels",
+    "item-code semantics"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Gate 1-4 per docs/backtesting.md: aggregate EV/PnL positive, no unacceptable drawdown or survival degradation, at least two windows improve, target sample and concentration pass, and accepted compression/distribution comparators beaten; positive replay remains lead until shared helper parity exists.",
+  "prediction": {
+    "success_probability": 0.12,
+    "expected_ev_delta": 0.05,
+    "expected_pnl_delta": 1000.0,
+    "main_failure_modes": [
+      "periodic_timing_is_routine_noise",
+      "thin_sample",
+      "accepted_distribution_comparator_not_beaten",
+      "window_regression",
+      "concentration_failed"
+    ],
+    "confidence_reason": "SEC periodic-report absorption and SEC financing item-code scouts failed, but filing timeliness is a different free PIT field. The positive precedent is exp-20260601-027 Companyfacts filing timeliness support; this run asks whether the same timing edge can stand alone as a production-visible SEC event candidate source.",
+    "recorded_at": "2026-06-12T05:48:28+00:00"
+  },
+  "created_at": "2026-06-12T05:48:52+00:00",
+  "claimed_at": "2026-06-12T05:50:10+00:00",
+  "completed_at": "2026-06-12T05:59:24+00:00",
+  "result": {
+    "decision": "rejected_sec_periodic_filing_timing_surprise_candidate_pool",
+    "accepted": false,
+    "artifact": "data/experiments/exp-20260612-005/exp_20260612_005_sec_periodic_filing_timing_surprise.json",
+    "log": "experiments/logs/exp-20260612-005.json",
+    "card": "experiments/cards/exp-20260612-005.md",
+    "aggregate_expected_value_delta": 0.0033,
+    "aggregate_strategy_total_pnl_delta": 127.91,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_sec_periodic_filing_timing_surprise_candidate_pool",
+      "failed_reasons": [
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "target_concentration_failed",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "aggregate_ev_delta": 0.0033,
+      "aggregate_pnl_delta": 127.91,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 2,
+      "windows_pnl_regressed": 0,
+      "target_trade_count": 4,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": false,
+        "max_single_positive_pnl_share": 0.533201,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.502205,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "accepted_compression_comparator": {
+        "experiment_id": "exp-20260608-013",
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "expected_value_score_delta_sum": 0.1608,
+        "total_pnl_delta_sum": 2248.98,
+        "target_trade_count": 44
+      },
+      "accepted_distribution_comparator": {
+        "experiment_id": "exp-20260611-007",
+        "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+        "expected_value_score_delta_sum": 0.5286,
+        "total_pnl_delta_sum": 10432.91,
+        "target_trade_count": 113
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.12,
+      "actual_gate4_passed": false,
+      "failure_modes_observed": [
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "target_concentration_failed",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "brier_score": 0.0144
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "replay_only_no_live_adapter",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_sec_filing_events": true,
+      "uses_free_ohlcv": true,
+      "parity_note": "This experiment changes no production code. A positive result remains only a replay lead. Promotion would require one shared default-off adapter that loads the same PIT SEC filing event rows, computes the same report-date-to-filing-date lag thresholds, applies the same signal-date OHLCV leadership envelope, overlap exclusion, next-open paper entry, 10-trading-day exit, costs, cooldown, comparator, and concentration guards in historical replay and daily production before any report queue, paper ledger, candidate priority, sizing, watchlist, or order surface could change."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The fast filing-lag source did not clear the canonical Gate 4 bar. The result suggests SEC periodic timeliness by itself is not a distinct standalone candidate pool under next-open execution and accepted source comparators. Its historical value may be as a support feature inside fundamental-growth selection rather than as a separate event-led entry source.",
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping 10-Q/10-K lag cutoffs, including amendments, changing top-N/hold/notional/cooldown, or weakening same-day leadership gates on these frozen windows.",
+      "new_evidence_required": "A retry needs materially new PIT timing evidence, such as ticker-specific historical filing cadence relative to its own prior deadlines, auditor-change context, or forward daily replacement value from a shared default-off adapter. Pure 10-Q/10-K lag threshold retunes stay frozen."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260612-005.json",
+  "card_file": "experiments/cards/exp-20260612-005.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260612-005.json",
+  "decision": "rejected_sec_periodic_filing_timing_surprise_candidate_pool",
+  "summary": "The SEC periodic filing timing source was rejected; it did not establish a distinct free SEC event/OHLCV candidate-pool edge under the standard three-window protocol.",
+  "artifact": "data/experiments/exp-20260612-005/exp_20260612_005_sec_periodic_filing_timing_surprise.json",
+  "log": "experiments/logs/exp-20260612-005.json",
+  "aggregate_expected_value_delta": 0.0033,
+  "aggregate_strategy_total_pnl_delta": 127.91,
+  "updated_at": "2026-06-12T05:59:24+00:00"
+}
