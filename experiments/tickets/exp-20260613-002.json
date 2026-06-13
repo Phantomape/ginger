@@ -1,0 +1,231 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "data/experiments/exp-20260613-002/exp_20260613_002_industry_stable_state_router.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "experiments/cards/exp-20260613-002.md",
+    "experiments/logs/exp-20260613-002.json",
+    "experiments/manifests/exp-20260613-002.json",
+    "experiments/tickets/exp-20260613-002.json",
+    "quant/experiments/exp_20260613_002_industry_stable_state_router.py"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260613-002.md",
+  "causal_components": [
+    "historical replay",
+    "source-state router",
+    "Gate 1-4",
+    "execution envelope",
+    "closeout artifact"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "industry_stable_core_flow_mixed_balanced_normal_rank4_state_router_v1",
+  "claimed_at": "2026-06-13T00:07:09+00:00",
+  "completed_at": "2026-06-13T00:28:05+00:00",
+  "created_at": "2026-06-13T00:07:00+00:00",
+  "decision": "rejected_industry_stable_state_router",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260613-002",
+  "experiment_uid": "expuid-b45cf9bd3aef4643",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260613-002",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-13T00:07:00+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "industry_stable_state_router"
+  },
+  "hypothesis": "allocation/routing alpha: route the only exp-20260612-027 ex-top surviving source-state cell, industry_stable_core_flow x mixed|balanced|normal, ahead of allocator rank >=4 sources.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "industry_stable_core_flow_mixed_balanced_normal_rank4_state_router_v1"
+  ],
+  "mechanism_family": "regime_router",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260612-027",
+    "exp-20260612-018",
+    "exp-20260612-020",
+    "exp-20260611-005"
+  ],
+  "new_evidence_type": "observed_only_ex_top_ticker_survivor",
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "success_probability": 0.3,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "accepted_allocator_comparator_not_beaten",
+      "late_strong_regression",
+      "drawdown_drift",
+      "concentration_failed"
+    ],
+    "confidence_reason": "exp-20260612-027 found only one source-state survivor after ex-top-ticker robustness: industry_stable_core_flow x mixed|balanced|normal, 32 rows, 31 tickers, positive all three windows, top ticker only 20.9 percent. Risk remains high because the cell was screened on frozen windows and routing can displace stronger accepted allocator rows.",
+    "recorded_at": "2026-06-13T00:06:28+00:00"
+  },
+  "prior_trial_count": 3,
+  "result": {
+    "decision": "rejected_industry_stable_state_router",
+    "full_stack_verdict": "reject",
+    "artifact": "data/experiments/exp-20260613-002/exp_20260613_002_industry_stable_state_router.json",
+    "log": "experiments/logs/exp-20260613-002.json",
+    "card": "experiments/cards/exp-20260613-002.md",
+    "direct_expected_value_delta_vs_accepted_allocator": -0.001,
+    "direct_total_pnl_delta_vs_accepted_allocator": -399.1,
+    "accepted": false,
+    "gate4": {
+      "accepted_allocator_comparator": {
+        "aggregate_ev_delta": 2.1849,
+        "aggregate_pnl_delta": 40397.21,
+        "experiment_id": "exp-20260611-005",
+        "window_deltas": {
+          "late_strong": {
+            "ev": 0.9092,
+            "pnl": 9431.68
+          },
+          "mid_weak": {
+            "ev": 0.6352,
+            "pnl": 11133.95
+          },
+          "old_thin": {
+            "ev": 0.6405,
+            "pnl": 19831.58
+          }
+        }
+      },
+      "aggregate_ev_delta_vs_core": 2.2161,
+      "aggregate_pnl_delta_vs_core": 40660.93,
+      "comparator_regressions": [
+        "mid_weak_ev",
+        "mid_weak_pnl",
+        "old_thin_ev",
+        "old_thin_pnl"
+      ],
+      "decision": "rejected_industry_stable_state_router",
+      "direct_ev_delta_vs_accepted_allocator": -0.001,
+      "direct_pnl_delta_vs_accepted_allocator": -399.1,
+      "direct_windows_ev_improved": 1,
+      "direct_windows_ev_regressed": 2,
+      "direct_windows_pnl_improved": 1,
+      "direct_windows_pnl_regressed": 2,
+      "failed_reasons": [
+        "direct_ev_vs_accepted_allocator_not_positive",
+        "direct_pnl_vs_accepted_allocator_not_positive",
+        "direct_window_ev_regression_vs_accepted_allocator",
+        "direct_window_pnl_regression_vs_accepted_allocator",
+        "router_selected_sample_too_small",
+        "router_target_concentration_failed",
+        "accepted_allocator_window_comparator_regression"
+      ],
+      "max_direct_drawdown_worse": 0.0002,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "passed": false,
+      "router_concentration": {
+        "max_single_positive_pnl_share": null,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "passed": false,
+        "positive_by_ticker_pnl": {},
+        "positive_pnl_hhi": null,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "router_selected_trade_count": 3,
+      "router_selected_trade_count_min": 9,
+      "router_selected_window_count_min": 3,
+      "router_selected_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "max_single_positive_pnl_share": 0.203587,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "passed": true,
+        "positive_pnl_hhi": 0.060993,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "target_trade_count": 336,
+      "target_trade_count_min": 20,
+      "target_window_count_min": 3,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ]
+    },
+    "calibration": {
+      "actual_gate4_passed": false,
+      "brier_score": 0.09,
+      "failure_modes_observed": [
+        "direct_ev_vs_accepted_allocator_not_positive",
+        "direct_pnl_vs_accepted_allocator_not_positive",
+        "direct_window_ev_regression_vs_accepted_allocator",
+        "direct_window_pnl_regression_vs_accepted_allocator",
+        "router_selected_sample_too_small",
+        "router_target_concentration_failed",
+        "accepted_allocator_window_comparator_regression"
+      ],
+      "predicted_success_probability": 0.3
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "replay_only_state_router_scout",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "default_off_paper_only": true,
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_ohlcv_only": true,
+      "live_realism_evaluated": true,
+      "live_ready": false,
+      "execution_envelope": {
+        "base_notional": 4000.0,
+        "max_capital_pct": 0.32,
+        "min_dollar_volume": 10000000.0,
+        "slippage_bps": 5.0,
+        "max_displacement": 1,
+        "max_concurrent": 8,
+        "order_semantics": "next_open_paper_only",
+        "kill_switch_drawdown_pct": 0.15,
+        "sleeve_drawdown_stop_pct": null,
+        "notes": "Same accepted-helper allocator bucket as exp-20260612-024: fixed $4,000 paper notional, top-1/day, max 8 concurrent default-off paper positions, 10-trading-day hold, 12-trading-day same-ticker cooldown, and no core displacement. This scout does not change production; a positive result would require moving the state router into the shared allocator helper and daily snapshot parity before retention.",
+        "missing": [
+          "sleeve_drawdown_stop_pct"
+        ],
+        "complete": false
+      },
+      "parity_note": "No production/shared helper is changed by this replay-only scout. If Gate 4 passes, the result remains a positive lead until the identical state-router rule is implemented in the shared allocator helper and daily default-off snapshot with parity tests. If Gate 4 fails, no strategy logic is retained."
+    },
+    "post_run_reflection": {
+      "forbidden_near_neighbor_retry": "Do not retry by moving this cell to rank 1/2/3, changing the state bucket, relaxing concentration, changing top-N, hold, cooldown, notional, or excluding specific tickers on the same frozen windows.",
+      "new_evidence_required": "A retry needs closed forward allocator replacement rows for industry_stable_core_flow in the mixed|balanced|normal state or a materially new relation/state field that survives the same ex-top-ticker screen before Gate 1-4.",
+      "why_result_happened": "The source-state router either displaced stronger accepted allocator rows or did not add enough direct replacement value after rank-1 to rank-3 sources kept priority."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260613-002.json",
+  "single_causal_variable": "industry_stable_core_flow_mixed_balanced_normal_rank4_state_router_v1",
+  "status": "rejected",
+  "summary": "The state-router replay failed Gate 4 and is not retained.",
+  "ticket_file": "experiments/tickets/exp-20260613-002.json",
+  "trial_family": "market_state_conditioned_sleeve_router",
+  "trial_variant_id": "industry_stable_core_flow_mixed_balanced_normal_rank4_router_v1",
+  "artifact": "data/experiments/exp-20260613-002/exp_20260613_002_industry_stable_state_router.json",
+  "log": "experiments/logs/exp-20260613-002.json",
+  "direct_expected_value_delta_vs_accepted_allocator": -0.001,
+  "direct_total_pnl_delta_vs_accepted_allocator": -399.1,
+  "updated_at": "2026-06-13T00:28:05+00:00"
+}
