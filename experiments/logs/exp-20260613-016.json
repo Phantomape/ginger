@@ -1,0 +1,216 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_comparators": {
+    "exp-20260608-013_compression_absorption": {
+      "aggregate_expected_value_delta": 0.1608,
+      "aggregate_pnl_delta": 2248.98,
+      "note": "accepted default-off OHLCV compression/absorption paper source"
+    },
+    "exp-20260611-005_lagged_consensus_allocator": {
+      "aggregate_expected_value_delta": 2.1849,
+      "aggregate_pnl_delta": 40397.21,
+      "note": "accepted shared allocator source extension, higher-complexity comparator"
+    },
+    "exp-20260611-007_distribution_day_absorption": {
+      "aggregate_expected_value_delta": 0.5286,
+      "aggregate_pnl_delta": 10432.91,
+      "note": "accepted shared distribution-day absorption adapter"
+    }
+  },
+  "aggregate_expected_value_delta": 0.4277,
+  "aggregate_strategy_total_pnl_delta": -684.9,
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260613-016/exp_20260613_016_overnight_absorption_leadership.json",
+  "backtest_protocol": {
+    "REGIME_AWARE_EXIT": true,
+    "candidate_ohlcv_source": "data/warehouse/warehouse_main.sqlite",
+    "execution_model": "Signal uses only close-of-day OHLCV available on the signal date. Paper entry is next available open with existing entry slippage; exit is the close 10 trading days after the signal with target-side sell slippage and ROUND_TRIP_COST_PCT.",
+    "replay_llm": false,
+    "replay_news": false,
+    "source": "docs/backtesting.md canonical three-window core replay plus replay-only broad warehouse default-off paper overlay",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "baseline_result_file": "data/experiments/exp-20260613-016/exp_20260613_016_overnight_absorption_leadership.json#before_metrics",
+  "calibration": {
+    "actual_gate4_passed": false,
+    "brier_score": 0.0256,
+    "failure_modes_observed": [
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "drawdown_drift_too_high"
+    ],
+    "predicted_success_probability": 0.16
+  },
+  "card": "experiments/cards/exp-20260613-016.md",
+  "changed_variable": "overnight_absorption_leadership_candidate_source_v1",
+  "decision": "rejected_overnight_absorption_leadership_candidate_pool",
+  "experiment_id": "exp-20260613-016",
+  "gate4": {
+    "accepted_comparator_readout": {
+      "exp-20260608-013_compression_absorption": {
+        "aggregate_expected_value_delta": 0.1608,
+        "aggregate_pnl_delta": 2248.98,
+        "beaten": false,
+        "ev_delta_gap": 0.2669,
+        "note": "accepted default-off OHLCV compression/absorption paper source",
+        "pnl_delta_gap": -2933.88
+      },
+      "exp-20260611-005_lagged_consensus_allocator": {
+        "aggregate_expected_value_delta": 2.1849,
+        "aggregate_pnl_delta": 40397.21,
+        "beaten": false,
+        "ev_delta_gap": -1.7572,
+        "note": "accepted shared allocator source extension, higher-complexity comparator",
+        "pnl_delta_gap": -41082.11
+      },
+      "exp-20260611-007_distribution_day_absorption": {
+        "aggregate_expected_value_delta": 0.5286,
+        "aggregate_pnl_delta": 10432.91,
+        "beaten": false,
+        "ev_delta_gap": -0.1009,
+        "note": "accepted shared distribution-day absorption adapter",
+        "pnl_delta_gap": -11117.81
+      }
+    },
+    "aggregate_ev_delta": 0.4277,
+    "aggregate_pnl_delta": -684.9,
+    "decision": "rejected_overnight_absorption_leadership_candidate_pool",
+    "failed_reasons": [
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "drawdown_drift_too_high"
+    ],
+    "max_drawdown_worse": 0.0364,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": false,
+    "promotion_blockers": [],
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.039969,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": true,
+      "positive_pnl_hhi": 0.015981,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 376,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_ev_improved": 1,
+    "windows_ev_regressed": 2,
+    "windows_pnl_improved": 1,
+    "windows_pnl_regressed": 2
+  },
+  "hypothesis": "candidate_pool: persistent positive overnight repricing with muted intraday follow-through may identify liquid stocks where institutional demand accumulates outside regular hours without signal-day chase.",
+  "lane": "alpha_search",
+  "log": "experiments/logs/exp-20260613-016.json",
+  "mechanism_family": "overnight_intraday_return_decomposition",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry this family by only changing 10-day lookback, thresholds, cooldown, hold days, or daily top-N on the same frozen windows.",
+    "new_evidence_required": "A retry needs materially new PIT evidence, such as auction or pre-market breadth data, forward replacement-value rows, or a production-visible event field explaining why overnight demand should persist.",
+    "why_result_happened": "The signal likely relabeled ordinary momentum or overnight gap mean reversion instead of finding durable absorption. Any window regression, drawdown drift, or concentration failure means the multi-day overnight decomposition did not add robust replacement value beyond existing accepted OHLCV sleeves."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "candidate_pool alpha: persistent overnight repricing with muted intraday action may identify demand absorbed outside regular hours while avoiding single-day gap chase.",
+    "2_history_check": {
+      "exp-20260601-009": "Only a proposed/read-only overnight-vs-intraday component mean card; no runner or Gate 1-4 result exists.",
+      "exp-20260608-013": "Accepted OHLCV compression/absorption is a comparator; this test is candidate-pool expansion, not a parameter retry.",
+      "exp-20260609-002/004": "Gap-and-hold style attempts were single-event gap tests and failed; this test uses a multi-day decomposition and caps signal-day chase."
+    },
+    "3_single_causal_variable": "overnight_absorption_leadership_candidate_source_v1",
+    "4_acceptance_standard": "Same three canonical windows. Aggregate EV/PnL must be positive; no EV/PnL regression window; at least 20 paper trades across all 3 windows; survival >=5%; drawdown drift <=0.5pp; concentration pass. Positive replay-only output is a lead, not production acceptance, until shared parity exists.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260613_016_overnight_absorption_leadership.py"
+  },
+  "prediction": {
+    "confidence_reason": "Prior overnight/intraday work was only proposed/read-only and broad OHLCV pools often fail old_thin, but this uses PIT OHLCV and a distinct multi-day overnight-minus-intraday structure instead of single gap chasing.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "generic_momentum_relabel",
+      "window_regression",
+      "drawdown_drift",
+      "accepted_comparator_not_beaten",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-13T12:09:13Z",
+    "success_probability": 0.16
+  },
+  "production_accepted": false,
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper computes the same overnight/intraday decomposition, liquidity gates, same-ticker core overlap exclusion, cooldown, next-open paper entry, 10-trading-day exit, costs, and concentration controls in both historical replay and the daily production snapshot.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "status": "rejected",
+  "timestamp": "2026-06-13T12:15:35Z",
+  "trial_family": "overnight_absorption_leadership_candidate_pool",
+  "trial_variant_id": "overnight_absorption_leadership_candidate_source_v1",
+  "windows": [
+    {
+      "expected_value_after": 5.7884,
+      "expected_value_before": 5.1628,
+      "expected_value_delta": 0.6256,
+      "label": "late_strong",
+      "pnl_delta": 7680.07,
+      "raw_candidate_count": 2857,
+      "target_trade_count": 122
+    },
+    {
+      "expected_value_after": 2.126,
+      "expected_value_before": 2.1402,
+      "expected_value_delta": -0.0142,
+      "label": "mid_weak",
+      "pnl_delta": -524.72,
+      "raw_candidate_count": 3111,
+      "target_trade_count": 126
+    },
+    {
+      "expected_value_after": 0.4074,
+      "expected_value_before": 0.5911,
+      "expected_value_delta": -0.1837,
+      "label": "old_thin",
+      "pnl_delta": -7840.25,
+      "raw_candidate_count": 2751,
+      "target_trade_count": 128
+    }
+  ]
+}
