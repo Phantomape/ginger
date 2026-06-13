@@ -1,0 +1,239 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_comparators": {
+    "exp-20260608-013_narrow_range_compression": {
+      "aggregate_expected_value_delta": 0.1608,
+      "aggregate_pnl_delta": 2248.98,
+      "note": "accepted shared default-off narrow-range compression breakout adapter"
+    },
+    "exp-20260611-005_lagged_consensus_allocator": {
+      "aggregate_expected_value_delta": 2.1849,
+      "aggregate_pnl_delta": 40397.21,
+      "note": "accepted shared allocator source extension"
+    },
+    "exp-20260611-007_distribution_day_absorption": {
+      "aggregate_expected_value_delta": 0.5286,
+      "aggregate_pnl_delta": 10432.91,
+      "note": "accepted shared distribution-day absorption adapter"
+    }
+  },
+  "aggregate_expected_value_delta": -0.0676,
+  "aggregate_strategy_total_pnl_delta": -112.15,
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260613-021/exp_20260613_021_market_weakness_resilience_leadership.json",
+  "backtest_protocol": {
+    "REGIME_AWARE_EXIT": true,
+    "candidate_ohlcv_source": "data/warehouse/warehouse_main.sqlite",
+    "execution_model": "Signal uses only close-of-day OHLCV available on signal date. Market weakness and beta-adjusted resilience are known after the signal close. Paper entry is next available open with existing entry slippage; exit is the close 10 trading days after signal with target-side sell slippage and ROUND_TRIP_COST_PCT.",
+    "replay_llm": false,
+    "replay_news": false,
+    "source": "docs/backtesting.md canonical three-window core replay plus replay-only broad warehouse default-off paper overlay",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "baseline_result_file": "data/experiments/exp-20260613-021/exp_20260613_021_market_weakness_resilience_leadership.json#before_metrics",
+  "calibration": {
+    "actual_gate4_passed": false,
+    "brier_score": 0.04,
+    "failure_modes_observed": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression"
+    ],
+    "predicted_success_probability": 0.2
+  },
+  "card": "experiments/cards/exp-20260613-021.md",
+  "changed_variable": "market_weakness_resilience_leadership_v1",
+  "decision": "rejected_market_weakness_resilience_leadership_candidate_pool",
+  "experiment_id": "exp-20260613-021",
+  "gate4": {
+    "accepted_comparator_checks": {
+      "exp-20260608-013_narrow_range_compression": {
+        "note": "accepted shared default-off narrow-range compression breakout adapter",
+        "observed_ev_delta": -0.0676,
+        "observed_pnl_delta": -112.15,
+        "passed": false,
+        "required_ev_delta": 0.1608,
+        "required_pnl_delta": 2248.98
+      },
+      "exp-20260611-005_lagged_consensus_allocator": {
+        "note": "accepted shared allocator source extension",
+        "observed_ev_delta": -0.0676,
+        "observed_pnl_delta": -112.15,
+        "passed": false,
+        "required_ev_delta": 2.1849,
+        "required_pnl_delta": 40397.21
+      },
+      "exp-20260611-007_distribution_day_absorption": {
+        "note": "accepted shared distribution-day absorption adapter",
+        "observed_ev_delta": -0.0676,
+        "observed_pnl_delta": -112.15,
+        "passed": false,
+        "required_ev_delta": 0.5286,
+        "required_pnl_delta": 10432.91
+      }
+    },
+    "aggregate_ev_delta": -0.0676,
+    "aggregate_pnl_delta": -112.15,
+    "decision": "rejected_market_weakness_resilience_leadership_candidate_pool",
+    "failed_reasons": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression"
+    ],
+    "max_drawdown_worse": 0.0008,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": false,
+    "promotion_blockers": [],
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.122473,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": true,
+      "positive_pnl_hhi": 0.058477,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 60,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_ev_improved": 2,
+    "windows_ev_regressed": 1,
+    "windows_pnl_improved": 2,
+    "windows_pnl_regressed": 1
+  },
+  "hypothesis": "candidate_pool alpha: high-beta liquid leaders that remain positive on a beta-adjusted 5d basis during SPY/QQQ weakness may indicate idiosyncratic demand rather than generic defensive exposure.",
+  "lane": "alpha_search",
+  "log": "experiments/logs/exp-20260613-021.json",
+  "mechanism_family": "production_visible_free_ohlcv_market_weakness_resilience",
+  "negative_reflection": "The field likely still relabeled relative-strength momentum during short pullbacks. Requiring meaningful beta avoided the low-beta defensive retry, but the selected rows did not clear the full three-window EV/PnL/drawdown/sample standard.",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry nearby SPY/QQQ weakness, beta, 5d resilience, volume, hold-day, notional, cooldown, or top-N threshold variants on these frozen windows.",
+    "new_evidence_required": "A valid retry needs a materially new PIT flow or relation field, such as options/borrow/ownership confirmation or closed forward replacement rows from a shared daily helper.",
+    "realized_failure_mode": "market_weakness_resilience_generic_momentum_relabel",
+    "why_result_happened": "The field likely still relabeled relative-strength momentum during short pullbacks. Requiring meaningful beta avoided the low-beta defensive retry, but the selected rows did not clear the full three-window EV/PnL/drawdown/sample standard."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "candidate_pool alpha: high-beta liquid leaders that remain positive on a beta-adjusted 5d basis during SPY/QQQ weakness may indicate idiosyncratic demand rather than generic defensive exposure.",
+    "2_history_check": {
+      "exp-20260605-033": "Rejected single-day cross-section pressure resilience in all three windows. This run changes the field to multi-day SPY/QQQ weakness plus prior beta-adjusted resilience and requires meaningful beta.",
+      "exp-20260611-019": "Rejected distribution-pressure low-beta defensive leadership. This run explicitly excludes low-beta defensive behavior by requiring SPY beta >= 0.70.",
+      "exp-20260613-016": "Rejected overnight absorption leadership. This run avoids overnight/intraday decomposition.",
+      "exp-20260613-019": "Rejected post-thrust pause/reclaim. This run uses market weakness resilience, not a post-thrust price-action retry.",
+      "exp-20260613-020": "Rejected seasoned first-seen leadership due drawdown drift. This run does not use warehouse first-seen age or listing proxy fields."
+    },
+    "3_single_decision_hypothesis": "market_weakness_resilience_leadership_v1",
+    "4_acceptance_standard": "Use docs/backtesting.md three canonical windows. Aggregate EV/PnL must be positive, no window EV/PnL regression, at least 20 paper trades across all 3 windows, survival >=5%, drawdown drift <=0.5pp, and concentration pass. Replay-only positives are leads until shared daily/backtest parity exists.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260613_021_market_weakness_resilience_leadership.py"
+  },
+  "prediction": {
+    "confidence_reason": "Resilience during multi-day market weakness is a distinct selection axis from rejected thrust, compression, and single-day pressure sources. Requiring meaningful SPY beta tries to avoid simply buying low-beta defensive laggards, but the field may still relabel crowded relative-strength momentum.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "momentum_relabel",
+      "window_regression",
+      "drawdown_drift_too_high",
+      "accepted_comparator_not_beaten",
+      "market_weakness_sample_too_small"
+    ],
+    "recorded_at": "2026-06-13T16:22:35Z",
+    "success_probability": 0.2
+  },
+  "production_accepted": false,
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "default_off_paper_only": true,
+    "execution_envelope": {
+      "daily_entry_slots": 1,
+      "failure_handling": "missing OHLCV, SPY/QQQ pair, next open, or 10d exit rejects the paper candidate",
+      "hold_days": 10,
+      "kill_switch": "trade_enabled remains false; no production adapter changes",
+      "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+      "order_semantics": "observe-only next-session-open paper entry; no broker order",
+      "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+      "same_ticker_cooldown_days": 10,
+      "target_notional_per_paper_trade": 4000.0,
+      "trade_enabled": false
+    },
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper computes the same SPY/QQQ weakness context, prior SPY beta, beta-adjusted 5d resilience, liquidity gates, same-ticker core-overlap exclusion, cooldown, next-open paper entry, 10-trading-day exit, costs, and concentration controls in both historical replay and the daily production snapshot.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_free_ohlcv_only": true,
+    "uses_llm": false
+  },
+  "status": "rejected",
+  "timestamp": "2026-06-13T17:09:32Z",
+  "trial_family": "market_weakness_resilience_leadership_candidate_pool",
+  "trial_variant_id": "market_weakness_resilience_leadership_v1",
+  "windows": [
+    {
+      "expected_value_after": 5.0227,
+      "expected_value_before": 5.1628,
+      "expected_value_delta": -0.1401,
+      "label": "late_strong",
+      "market_weakness_day_count": 26,
+      "pnl_delta": -1869.28,
+      "raw_candidate_count": 742,
+      "target_trade_count": 26
+    },
+    {
+      "expected_value_after": 2.1951,
+      "expected_value_before": 2.1402,
+      "expected_value_delta": 0.0549,
+      "label": "mid_weak",
+      "market_weakness_day_count": 6,
+      "pnl_delta": 848.92,
+      "raw_candidate_count": 116,
+      "target_trade_count": 6
+    },
+    {
+      "expected_value_after": 0.6087,
+      "expected_value_before": 0.5911,
+      "expected_value_delta": 0.0176,
+      "label": "old_thin",
+      "market_weakness_day_count": 32,
+      "pnl_delta": 908.21,
+      "raw_candidate_count": 448,
+      "target_trade_count": 28
+    }
+  ]
+}
