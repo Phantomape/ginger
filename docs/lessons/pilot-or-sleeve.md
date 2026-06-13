@@ -9,7 +9,7 @@ records before making strategy changes.
 - Experiments: `84`
 - Accepted / rejected: `29` / `54`
 - Accept rate: `34.52%`
-- Sum EV delta: `+41.3484`
+- Sum EV delta: `+40.4441`
 - Sum PnL delta: `$548,673.66`
 - Latest: `exp-20260605-012` `rejected_space_same_theme_activation_readiness` with EV `+0.0000` and PnL `$0.00`.
 
@@ -51,18 +51,18 @@ records before making strategy changes.
 
 - `space_forward_same_theme_activation_readiness` / `space_official_cohort_10d_same_theme_replacement_activation_scope_v1`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260605-012`.
   Latest failure: `exp-20260605-012` no_official_cohort_passed_same_theme_replacement_gate
+- `pilot_or_sleeve` / `allocation_sizing_probe`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260425-023, exp-20260502-018`.
+  Latest failure: `exp-20260502-018` Gate 4 failed. The best daily-range haircut did not improve EV in a majority of the three fixed windows and/or failed the required magnitude thresholds.
 - `pilot_or_sleeve` / `space_data_vendor_breakout_risk_scalar`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260511-019, exp-20260511-031`.
 - `pilot_or_sleeve` / `space_fast_5d_satcom_trend_only_pool_membership`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260515-015, exp-20260515-029`.
   Latest failure: `exp-20260515-029` Gate 4 failed: current-stack fast-5d satcom trend-only candidate membership did not improve the fixed three-window protocol without regression.
-- `pilot_or_sleeve` / `space_forward_replacement_5d_confirmation_risk_scalar`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260514-010, exp-20260514-011`.
-  Latest failure: `exp-20260514-011` No tested 5d confirmation scalar improved aggregate EV/PnL across the three windows without a window-level EV regression, drawdown or survival violation, or zero-adjustment result.
-- `pilot_or_sleeve` / `space_satcom_breadth_risk_scalar`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260511-025, exp-20260511-026`.
-  Latest failure: `exp-20260511-026` No IRDM/VSAT/SATS risk scalar cleared the pre-registered three-window gate versus the accepted exp-20260511-021 Space forward stack.
-- `pilot_or_sleeve` / `space_vsat_forward_candidate_risk_scalar`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260514-014, exp-20260514-015`.
-  Latest failure: `exp-20260514-015` No tested VSAT-only forward-candidate scalar improved aggregate EV/PnL across the three windows without a window-level EV regression, drawdown or survival violation, or zero-adjustment/zero-trade result.
+- `pilot_or_sleeve` / `space_forward_replacement_5d_confirmation_risk_scalar`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260514-011, exp-20260514-010`.
+  Latest failure: `exp-20260514-010` No tested 5d confirmation scalar improved aggregate EV/PnL across the three windows without a window-level EV regression, drawdown or survival violation, or zero-adjustment result.
+- `pilot_or_sleeve` / `space_vsat_forward_candidate_risk_scalar`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260514-015, exp-20260514-014`.
+  Latest failure: `exp-20260514-014` No tested VSAT-only forward-candidate scalar improved aggregate EV/PnL across the three windows without a window-level EV regression, drawdown or survival violation, or zero-adjustment/zero-trade result.
 - `pilot_or_sleeve` / `top3_sector_diversity_rank_notional_profile`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260519-016, exp-20260519-017`.
   Latest failure: `exp-20260519-017` Failed Gate 4 under the canonical three-window state-surface paper protocol.
-- `pilot_or_sleeve` / `unknown`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260505-030, exp-20260522-010`.
+- `pilot_or_sleeve` / `unknown`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260522-010, exp-20260505-030`.
   Latest failure: `exp-20260505-030` Do not retry nearby item-code inclusion/exclusion on the same frozen sample. A valid retry needs forward leadership queue paper outcomes, full 5.02 filing text/LLM semantics, or a closed replacement-value sample versu...
 
 ## Recent Raw Records

@@ -7,18 +7,18 @@ records before making strategy changes.
 ## Current Conclusion
 
 - Experiments: `41`
-- Accepted / rejected: `13` / `23`
-- Accept rate: `31.71%`
-- Sum EV delta: `+0.4766`
-- Sum PnL delta: `$-91,047.37`
+- Accepted / rejected: `12` / `24`
+- Accept rate: `29.27%`
+- Sum EV delta: `-0.0808`
+- Sum PnL delta: `$-105,133.46`
 - Latest: `exp-20260602-003` `accepted_explicit_post_earnings_continuation_policy` with EV `+0.0000` and PnL `$0.00`.
 
 ## Retained Or Positive Evidence
 
+- `exp-20260514-041` `accepted`: EV `+0.0000`, PnL `$0.00`, family `event_or_llm`, trial `event_or_llm`.
+  Lesson: Space official catalysts with broad 10d confirmation against cash, SPY, QQQ, UFO, and ARKX may deserve conservative trend risk allocation even when the evidence is not purely same-theme. This tests a production-visibl...
 - `exp-20260515-021` `accept`: EV `+0.2769`, PnL `$12,791.00`, family `event_or_llm`, trial `event_or_llm`.
   Lesson: Official Space trend signals tied to defense-budget government contract events whose mature 10d profile beat cash and the same-theme basket may deserve a small extra default-off allocation.
-- `exp-20260516-012` `accept`: EV `+0.5574`, PnL `$14,086.09`, family `event_or_llm`, trial `event_or_llm`.
-  Lesson: Source-diverse official Space trend signals whose event profile contains both customer demand validation and government budget validation may deserve a distinct default-off allocation scalar.
 - `exp-20260516-014` `accept`: EV `+0.5574`, PnL `$14,086.09`, family `event_or_llm`, trial `event_or_llm`.
   Lesson: Source-diverse official Space trend signals whose event profile contains both customer demand validation and government budget validation may deserve a distinct default-off allocation scalar.
 - `exp-20260518-009` `accepted_default_off_sec_neutral_underreaction_notional`: EV `+0.7177`, PnL `$16,836.09`, family `event_or_llm`, trial `event_or_llm`.
@@ -53,8 +53,9 @@ records before making strategy changes.
   Latest failure: `exp-20260530-019` thin_diverse_sample; avg_pnl_lift_below_threshold; avg_return_lift_below_threshold; window_lift_count_below_threshold
 - `pre_entry_catalyst_freshness_attribution` / `high_confidence_pre_entry_catalyst_freshness_bucket_v1`: risk `low`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260530-018`.
   Latest failure: `exp-20260530-018` Rejected: fresh high-confidence catalyst timing did not clear avg_pnl_lift, avg_return_lift.
+- `event_or_llm` / `allocation_sizing_probe`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260425-010-healthcare-deep-breakout-probe, exp-20260425-019`.
+  Latest failure: `exp-20260425-019` Rejected/deferred on multi-window evidence. The result is promising but entirely single-window; promoting it would codify a two-trade same-day Energy loss cluster without independent validation.
 - `event_or_llm` / `post_earnings_continuation_confirmed_v1`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260602-003`.
-- `event_or_llm` / `space_dual_catalyst_source_diversity_trend_scalar`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260516-012, exp-20260516-014`.
 - `event_or_llm` / `broad_market_leadership_candidate_pool_profile`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260519-034`.
   Latest failure: `exp-20260519-034` Best broad-market leadership profile failed one or more Gate 4 replacement-value constraints.
 - `event_or_llm` / `candidate_pool_expansion`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260505-009`.

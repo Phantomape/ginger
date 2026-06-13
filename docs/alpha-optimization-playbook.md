@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-06-11.
+Last refreshed: 2026-06-13.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -169,6 +169,20 @@ on the same windows. Do not sweep scalar, cell boundaries, state lookbacks,
 top-N, hold, cooldown, or allocator rank. The next evidence must be closed
 forward industry-stable core-flow rows tagged with entry-time state and
 replacement value.
+
+The later June 13 batch narrows the queue further. Source-choice diagnostics
+show a real ex-post arbitration gap, but source maturity, source percentile,
+candidate microstructure, same-ticker confirmation, alpha-score rows, and
+front-loaded extension filters did not create a usable ex-ante allocator rule:
+they either lost to the accepted allocator, had too few changed selections, or
+regressed windows. Broad OHLCV variants also stayed weak: overnight absorption,
+SPY-residual compression, and post-thrust pause/reclaim mostly relabeled
+crowded momentum and failed on PnL, drawdown, or accepted-compression
+comparators. New SEC ownership surfaces are now ingestible after the 13F repair,
+but first alpha attempts were negative or fragile: Form 144 isolated sale
+absorption, 13F sponsorship acceleration, and 13F new-holder initiation all
+failed window/drawdown gates. Treat 13F/Form144 as delayed ownership/crowding
+context first, not standalone entry alpha.
 
 Default next question for any new broad candidate pool:
 
@@ -410,6 +424,19 @@ production-visible field:
   slot-sliced core rows into the accepted allocator without new forward
   replacement-value evidence or a field that beats the current accepted
   allocator and accepted distribution comparator;
+- source maturity, source-score percentile, candidate microstructure,
+  same-ticker source confirmation, alpha-score rank rows, front-loaded
+  extension filters, or other accepted-allocator arbitration retunes unless the
+  new field is ex-ante, changes enough selections, and beats the accepted
+  allocator in every canonical window;
+- SPY-residual compression, overnight absorption leadership, and post-thrust
+  pause/reclaim variants unless supported by a materially new PIT flow,
+  options, borrow, event-quality, or forward replacement-value field;
+- 13F sponsorship acceleration, 13F new-holder initiation, Form 144 isolated
+  sale notice absorption, or adjacent ownership-disclosure entry rules as
+  standalone alpha; use these delayed disclosures first for crowding,
+  overhang, and context attribution, and require a new timing/provenance edge
+  before any default-off candidate-pool retry;
 - distribution-pressure low-beta / low-volatility defensive-leadership
   variants unless they beat accepted distribution-day absorption and show why
   they are not merely stale resilience or slow low-beta laggard exposure;

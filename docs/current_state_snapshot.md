@@ -6,9 +6,9 @@ complete state database.
 
 ## Source Snapshot
 
-- Strategy records counted: `1172`
-- Accepted strategy records: `196`
-- History fingerprint: `d12a27d9d41da31e`
+- Strategy records counted: `1279`
+- Accepted strategy records: `223`
+- History fingerprint: `998ff7aad9209f08`
 - Generated from committed experiment logs when using `--git-ref HEAD`.
 
 ## Exact State Sources
@@ -34,61 +34,61 @@ complete state database.
 
 ## Recent Accepted Strategy Records
 
-- `exp-20260607-008` `accepted_industry_relative_laggard_repair_shared_default_off_adapter`: EV `+0.2763`, PnL `$6,208.99`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_relative_laggard_repair_shared_default_off_adapter`.
-  Lesson: The shared helper reproduced the private replay lead with the same fixed policy bundle, indicating the alpha came from the industry relative lag plus same-day repair relation rather than runner-only implementation qui...
-- `exp-20260607-019` `accepted_volatility_relief_stock_leadership_shared_default_off_adapter`: EV `+0.5732`, PnL `$11,934.79`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `volatility_relief_stock_leadership_shared_adapter`.
-  Lesson: Shared replay matched the exp-20260607-018 lead because the alpha came from a distinct VIXY volatility-compression state plus liquid stock leadership, not runner-only implementation details. Do not retry by sweeping V...
-- `exp-20260608-008` `accepted_industry_stable_core_flow_shared_default_off_adapter`: EV `+0.1459`, PnL `$3,731.54`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_stable_core_flow_shared_default_off_adapter`.
-  Lesson: Core-flow confirmation removed enough pure industry beta to keep the fixed stable-leader source within Gate 4 bounds, and the shared helper reproduced the private replay lead without changing live orders or core ranki...
-- `exp-20260608-013` `accepted_narrow_range_compression_breakout_shared_default_off_adapter`: EV `+0.1608`, PnL `$2,248.98`, family `production_visible_free_ohlcv_candidate_pool`, trial `narrow_range_compression_breakout_shared_default_off_adapter`.
-  Lesson: The shared helper reproduced the private replay lead because it kept the exact compression, range-expansion, volume, high-close, SPY-relative trend, next-open entry, 10-day exit, cost, top-1, cooldown, and same-ticker...
-- `exp-20260609-011` `accepted_shared_default_off_revision_surprise_low_extension_adapter`: EV `+0.0000`, PnL `$0.00`, family `analyst_revision_expectation_trajectory`, trial `analyst_revision_surprise_low_extension_candidate_pool`.
-  Lesson: The result reproduced the exp-20260608-011 positive lead because the shared helper preserved the exact same economic bundle: improving EPS estimates, positive surprise history, liquid breakout confirmation, and a sele...
-- `exp-20260609-027` `accepted_turn_of_month_liquid_leadership_shared_default_off_adapter`: EV `+0.2774`, PnL `$5,287.69`, family `production_visible_free_calendar_ohlcv_candidate_pool`, trial `turn_of_month_liquid_leadership_shared_default_off_adapter`.
-  Lesson: The shared helper reproduced the private replay lead because it kept the exact calendar window, liquid sector-known universe, SPY-relative leadership, close/volume/volatility guards, same-ticker selected-core overlap...
-- `exp-20260610-005` `accepted_shared_default_off_accepted_helper_source_priority_allocator`: EV `+0.8971`, PnL `$14,502.52`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
-  Lesson: The alpha worked because it expanded the usable candidate pool across several accepted OHLCV helper sensors while limiting same-day overlap to one ex-ante highest-priority paper risk slot. The shared helper removes th...
-- `exp-20260610-008` `accepted_fiftytwo_week_high_proximity_core_flow_shared_default_off_adapter`: EV `+0.4308`, PnL `$9,295.34`, family `production_visible_free_ohlcv_candidate_pool`, trial `fiftytwo_week_high_proximity_breakout_candidate_pool`.
-  Lesson: The shared helper reproduced the private replay lead because it kept the exact 252-day-high proximity, 60-day breakout, leadership and quality gates, core-flow admission, same-ticker overlap exclusion, next-open entry...
-- `exp-20260610-014` `accepted_shared_default_off_revision_allocator_source_extension`: EV `+0.9720`, PnL `$15,197.05`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
-  Lesson: The revision rows added replacement value on dates where expectation revision evidence displaced pure OHLCV rows or supplied coverage on dates where the higher-priority helpers had weaker candidates. The shared helper...
-- `exp-20260611-005` `accepted_lagged_consensus_shared_allocator_source_extension`: EV `+2.1849`, PnL `$40,397.21`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
-  Lesson: The lagged consensus rows added distinct multi-source confirmation and improved replacement value across all canonical windows after being moved into the shared allocator/daily snapshot boundary. Do not retry by chang...
-- `exp-20260611-007` `accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter`: EV `+0.5286`, PnL `$10,432.91`, family `production_visible_free_ohlcv_tail_state_candidate_pool`, trial `distribution_day_absorption_leadership_shared_default_off_adapter`.
-  Lesson: The shared helper reproduced the private replay lead because it kept the exact distribution-pressure context, absorption/reclaim candidate fields, SPY/QQQ relative leadership, next-open entry, 10-day exit, cost, top-1...
-- `exp-20260612-024` `accepted_allocator_activation_envelope_gate_v2`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `allocator_activation_envelope`.
-  Lesson: The allocator selects at most one ex-ante ranked row per day, so the concurrency cap mostly trims overlapping tail entries; retention and kill-switch outcomes quantify exactly what production can execute. Do not sweep...
+- `exp-20260513-003` `accepted_for_shared_policy_implementation`: EV `+0.0626`, PnL `$2,223.59`, family `filter_or_gate`, trial `filter_or_gate`.
+  Lesson: Signals whose own signal-day candle closes green may have stronger next-session follow-through; allocate slightly more risk rather than changing entry filters.
+- `exp-20260514-025` `accepted`: EV `+0.0000`, PnL `$0.00`, family `slot_or_ranking`, trial `slot_or_ranking`.
+  Lesson: Space replacement-strength allocation should be strongest when closed 10d same-theme replacement value, trend continuation, and a company-release customer-win catalyst all agree. On top of accepted exp-20260514-024, a...
+- `exp-20260514-044` `accepted`: EV `+0.0000`, PnL `$0.00`, family `slot_or_ranking`, trial `slot_or_ranking`.
+  Lesson: Space peer-nonleader trend signals may represent delayed catch-up rather than weakness when the closed 10d event-state profile is positive versus cash, SPY, QQQ, UFO, and ARKX. A conservative extra allocation should i...
+- `exp-20260514-050` `accepted_promoted_shared_policy`: EV `+0.0380`, PnL `$1,472.29`, family `position_cap_or_cap_release`, trial `position_cap_or_cap_release`.
+  Lesson: The accepted Commodity trend near-high sleeve mixes gold ETFs and SLV, but GLD/IAU already have a separate accepted target policy and show stable cap-bound trend follow-through across the canonical windows. A gold-onl...
+- `exp-20260514-051` `accept`: EV `+0.1849`, PnL `$5,851.10`, family `risk_scalar_or_topup`, trial `risk_scalar_or_topup`.
+  Lesson: Official Space trend signals tied to defense-budget/government-contract catalysts with weak 5d absorption but broad positive 10d benchmark confirmation deserve a small risk top-up.
+- `exp-20260518-023` `accepted_shared_default_off_policy_rank1_ret20_dominance_notional`: EV `+0.0000`, PnL `$0.00`, family `state_aware_candidate_pool_allocation`, trial `state_aware_candidate_pool_allocation`.
+  Lesson: When rank 1 strongly leads rank 2 on 20-day excess return versus SPY and also has a material composite score lead, the queue is exposing confirmed leadership rather than a rank-2 disagreement. A bounded rank-1-heavy p...
+- `exp-20260518-027` `accepted_default_off_state_surface_rank1_ret60_residual_notional`: EV `+0.0000`, PnL `$0.00`, family `slot_or_ranking`, trial `slot_or_ranking`.
+  Lesson: After the accepted top-2 Technology cohesion profile has priority, residual state-surface queues with a very extended rank-1 60-day return are more crowded in rank 1 and should transfer bounded paper notional toward r...
+- `exp-20260519-028` `accepted_default_off_state_surface_queue_lag_support_notional`: EV `+0.0000`, PnL `$0.00`, family `slot_or_ranking`, trial `slot_or_ranking`.
+  Lesson: Selected state-surface paper candidates whose raw rank lags their queue position are replacement-value winners created by core exclusions/slot ordering, so they deserve a bounded notional support scalar.
+- `exp-20260526-014` `accepted_shared_volume_breadth_breakout_paper_adapter`: EV `+0.7124`, PnL `$13,225.50`, family `volume_breadth_breakout_shared_paper_adapter`, trial `volume_breadth_breakout_shared_paper_adapter`.
+  Lesson: The positive exp-20260526-013 free-OHLCV volume-breadth breakout lead should be retained only if the exact rule can be moved into a shared default-off adapter that production can expose without changing live orders or...
+- `exp-20260529-020` `accepted_default_off_space_trend_high_close_intraday_thrust_sleeve`: EV `+0.7787`, PnL `$13,067.92`, family `governed_space_trend_high_close_intraday_thrust_fixed_notional_paper_sleeve`, trial `governed_space_trend_high_close_intraday_thrust_fixed_notional_paper_sleeve`.
+  Lesson: Governed full-history Space observation candidates may have cleaner additive fixed-notional paper replacement value when the accepted trend_long high-close signal also posts at least a 4% signal-day open-to-close gain...
+- `exp-20260530-010` `accepted_default_off_finra_iwm_shared_adapter`: EV `+0.0000`, PnL `$0.00`, family `finra_iwm_same_ticker_cooldown_candidate_pool`, trial `finra_iwm_same_ticker_cooldown_candidate_pool`.
+  Lesson: The accepted FINRA short-pressure IWM-confirmed seven-day same-ticker cooldown candidate pool should become a shared default-off paper adapter so production can collect forward replacement-value evidence without chang...
+- `exp-20260606-025` `accepted_rolling_corr_peer_shock_shared_default_off_adapter`: EV `+0.0000`, PnL `$0.00`, family `production_visible_free_ohlcv_relation_alpha`, trial `rolling_corr_peer_shock_default_off_shared_adapter`.
+  Lesson: The core-flow confirmed rolling-correlation peer-shock lead remains valuable when candidate generation is moved into a shared default-off paper adapter used by both historical replay and daily snapshot tests.
 
 ## Recent Production-Visible Or Default-Off Accepted Records
 
-- `exp-20260608-008` `accepted_industry_stable_core_flow_shared_default_off_adapter`: EV `+0.1459`, PnL `$3,731.54`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_stable_core_flow_shared_default_off_adapter`.
-  Lesson: Core-flow confirmation removed enough pure industry beta to keep the fixed stable-leader source within Gate 4 bounds, and the shared helper reproduced the private replay lead without changing live orders or core ranki...
-- `exp-20260608-013` `accepted_narrow_range_compression_breakout_shared_default_off_adapter`: EV `+0.1608`, PnL `$2,248.98`, family `production_visible_free_ohlcv_candidate_pool`, trial `narrow_range_compression_breakout_shared_default_off_adapter`.
-  Lesson: The shared helper reproduced the private replay lead because it kept the exact compression, range-expansion, volume, high-close, SPY-relative trend, next-open entry, 10-day exit, cost, top-1, cooldown, and same-ticker...
-- `exp-20260609-011` `accepted_shared_default_off_revision_surprise_low_extension_adapter`: EV `+0.0000`, PnL `$0.00`, family `analyst_revision_expectation_trajectory`, trial `analyst_revision_surprise_low_extension_candidate_pool`.
-  Lesson: The result reproduced the exp-20260608-011 positive lead because the shared helper preserved the exact same economic bundle: improving EPS estimates, positive surprise history, liquid breakout confirmation, and a sele...
-- `exp-20260609-027` `accepted_turn_of_month_liquid_leadership_shared_default_off_adapter`: EV `+0.2774`, PnL `$5,287.69`, family `production_visible_free_calendar_ohlcv_candidate_pool`, trial `turn_of_month_liquid_leadership_shared_default_off_adapter`.
-  Lesson: The shared helper reproduced the private replay lead because it kept the exact calendar window, liquid sector-known universe, SPY-relative leadership, close/volume/volatility guards, same-ticker selected-core overlap...
-- `exp-20260610-005` `accepted_shared_default_off_accepted_helper_source_priority_allocator`: EV `+0.8971`, PnL `$14,502.52`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
-  Lesson: The alpha worked because it expanded the usable candidate pool across several accepted OHLCV helper sensors while limiting same-day overlap to one ex-ante highest-priority paper risk slot. The shared helper removes th...
-- `exp-20260610-008` `accepted_fiftytwo_week_high_proximity_core_flow_shared_default_off_adapter`: EV `+0.4308`, PnL `$9,295.34`, family `production_visible_free_ohlcv_candidate_pool`, trial `fiftytwo_week_high_proximity_breakout_candidate_pool`.
-  Lesson: The shared helper reproduced the private replay lead because it kept the exact 252-day-high proximity, 60-day breakout, leadership and quality gates, core-flow admission, same-ticker overlap exclusion, next-open entry...
-- `exp-20260610-014` `accepted_shared_default_off_revision_allocator_source_extension`: EV `+0.9720`, PnL `$15,197.05`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
-  Lesson: The revision rows added replacement value on dates where expectation revision evidence displaced pure OHLCV rows or supplied coverage on dates where the higher-priority helpers had weaker candidates. The shared helper...
-- `exp-20260611-005` `accepted_lagged_consensus_shared_allocator_source_extension`: EV `+2.1849`, PnL `$40,397.21`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
-  Lesson: The lagged consensus rows added distinct multi-source confirmation and improved replacement value across all canonical windows after being moved into the shared allocator/daily snapshot boundary. Do not retry by chang...
-- `exp-20260611-007` `accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter`: EV `+0.5286`, PnL `$10,432.91`, family `production_visible_free_ohlcv_tail_state_candidate_pool`, trial `distribution_day_absorption_leadership_shared_default_off_adapter`.
-  Lesson: The shared helper reproduced the private replay lead because it kept the exact distribution-pressure context, absorption/reclaim candidate fields, SPY/QQQ relative leadership, next-open entry, 10-day exit, cost, top-1...
-- `exp-20260612-024` `accepted_allocator_activation_envelope_gate_v2`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `allocator_activation_envelope`.
-  Lesson: The allocator selects at most one ex-ante ranked row per day, so the concurrency cap mostly trims overlapping tail entries; retention and kill-switch outcomes quantify exactly what production can execute. Do not sweep...
+- `exp-20260514-044` `accepted`: EV `+0.0000`, PnL `$0.00`, family `slot_or_ranking`, trial `slot_or_ranking`.
+  Lesson: Space peer-nonleader trend signals may represent delayed catch-up rather than weakness when the closed 10d event-state profile is positive versus cash, SPY, QQQ, UFO, and ARKX. A conservative extra allocation should i...
+- `exp-20260514-050` `accepted_promoted_shared_policy`: EV `+0.0380`, PnL `$1,472.29`, family `position_cap_or_cap_release`, trial `position_cap_or_cap_release`.
+  Lesson: The accepted Commodity trend near-high sleeve mixes gold ETFs and SLV, but GLD/IAU already have a separate accepted target policy and show stable cap-bound trend follow-through across the canonical windows. A gold-onl...
+- `exp-20260514-051` `accept`: EV `+0.1849`, PnL `$5,851.10`, family `risk_scalar_or_topup`, trial `risk_scalar_or_topup`.
+  Lesson: Official Space trend signals tied to defense-budget/government-contract catalysts with weak 5d absorption but broad positive 10d benchmark confirmation deserve a small risk top-up.
+- `exp-20260518-023` `accepted_shared_default_off_policy_rank1_ret20_dominance_notional`: EV `+0.0000`, PnL `$0.00`, family `state_aware_candidate_pool_allocation`, trial `state_aware_candidate_pool_allocation`.
+  Lesson: When rank 1 strongly leads rank 2 on 20-day excess return versus SPY and also has a material composite score lead, the queue is exposing confirmed leadership rather than a rank-2 disagreement. A bounded rank-1-heavy p...
+- `exp-20260518-027` `accepted_default_off_state_surface_rank1_ret60_residual_notional`: EV `+0.0000`, PnL `$0.00`, family `slot_or_ranking`, trial `slot_or_ranking`.
+  Lesson: After the accepted top-2 Technology cohesion profile has priority, residual state-surface queues with a very extended rank-1 60-day return are more crowded in rank 1 and should transfer bounded paper notional toward r...
+- `exp-20260519-028` `accepted_default_off_state_surface_queue_lag_support_notional`: EV `+0.0000`, PnL `$0.00`, family `slot_or_ranking`, trial `slot_or_ranking`.
+  Lesson: Selected state-surface paper candidates whose raw rank lags their queue position are replacement-value winners created by core exclusions/slot ordering, so they deserve a bounded notional support scalar.
+- `exp-20260526-014` `accepted_shared_volume_breadth_breakout_paper_adapter`: EV `+0.7124`, PnL `$13,225.50`, family `volume_breadth_breakout_shared_paper_adapter`, trial `volume_breadth_breakout_shared_paper_adapter`.
+  Lesson: The positive exp-20260526-013 free-OHLCV volume-breadth breakout lead should be retained only if the exact rule can be moved into a shared default-off adapter that production can expose without changing live orders or...
+- `exp-20260529-020` `accepted_default_off_space_trend_high_close_intraday_thrust_sleeve`: EV `+0.7787`, PnL `$13,067.92`, family `governed_space_trend_high_close_intraday_thrust_fixed_notional_paper_sleeve`, trial `governed_space_trend_high_close_intraday_thrust_fixed_notional_paper_sleeve`.
+  Lesson: Governed full-history Space observation candidates may have cleaner additive fixed-notional paper replacement value when the accepted trend_long high-close signal also posts at least a 4% signal-day open-to-close gain...
+- `exp-20260530-010` `accepted_default_off_finra_iwm_shared_adapter`: EV `+0.0000`, PnL `$0.00`, family `finra_iwm_same_ticker_cooldown_candidate_pool`, trial `finra_iwm_same_ticker_cooldown_candidate_pool`.
+  Lesson: The accepted FINRA short-pressure IWM-confirmed seven-day same-ticker cooldown candidate pool should become a shared default-off paper adapter so production can collect forward replacement-value evidence without chang...
+- `exp-20260606-025` `accepted_rolling_corr_peer_shock_shared_default_off_adapter`: EV `+0.0000`, PnL `$0.00`, family `production_visible_free_ohlcv_relation_alpha`, trial `rolling_corr_peer_shock_default_off_shared_adapter`.
+  Lesson: The core-flow confirmed rolling-correlation peer-shock lead remains valuable when candidate generation is moved into a shared default-off paper adapter used by both historical replay and daily snapshot tests.
 
 ## Current Research Queue Pointers
 
-- `production_visible_default_off_paper_adapter_for_candidate_pool_alpha` priority `0.8479`, experiments `2`, accept `100.00%`.
-- `candidate_pool_full_stack` priority `0.8477`, experiments `1`, accept `100.00%`.
-- `default_off_paper_adapter` priority `0.8173`, experiments `7`, accept `85.71%`.
-- `default_off_paper_shared_adapter` priority `0.7477`, experiments `3`, accept `100.00%`.
-- `paper_notional_support_scout` priority `0.7009`, experiments `3`, accept `66.67%`.
+- `candidate_pool_full_stack` priority `0.8476`, experiments `1`, accept `100.00%`.
+- `production_visible_default_off_paper_adapter_for_candidate_pool_alpha` priority `0.8186`, experiments `3`, accept `100.00%`.
+- `default_off_paper_adapter` priority `0.7975`, experiments `14`, accept `85.71%`.
+- `default_off_paper_shared_adapter` priority `0.7476`, experiments `3`, accept `100.00%`.
+- `default_off_shared_paper_adapter` priority `0.7476`, experiments `3`, accept `100.00%`.
 
 ## State Migration Note
 

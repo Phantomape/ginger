@@ -6,10 +6,10 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `68`
-- Accepted / rejected: `24` / `43`
-- Accept rate: `35.29%`
-- Sum EV delta: `+0.8597`
+- Experiments: `87`
+- Accepted / rejected: `33` / `52`
+- Accept rate: `37.93%`
+- Sum EV delta: `-0.5488`
 - Sum PnL delta: `$-62,664.98`
 - Latest: `exp-20260524-021` `rejected` with EV `+0.0000` and PnL `$0.00`.
 
@@ -49,21 +49,19 @@ records before making strategy changes.
 
 ## Retry Discipline
 
-- `slot_or_ranking` / `space_forward_replacement_company_source_trend_risk_scalar`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260514-025, exp-20260514-026`.
+- `slot_or_ranking` / `allocation_rule`: risk `low`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260421-016, exp-20260421-017, exp-20260421-020, exp-20260425-021`.
+- `slot_or_ranking` / `exit_rule`: risk `low`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260417-002, exp-20260420-006, exp-20260421-029, exp-20260422-009`.
+  Latest failure: `exp-20260422-009` Rejected on Gate 4 multi-window stability. The rule regressed `expected_value_score` in the primary, bull, and weak windows, with materially worse Sharpe in every window. Trade-level loser markers did not translate in...
+- `slot_or_ranking` / `allocation_sizing_rule`: risk `low`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260425-011, exp-20260425-014, exp-20260425-015`.
+- `slot_or_ranking` / `ranking_rule`: risk `low`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260419-002, exp-20260419-008, exp-20260420-001`.
+  Latest failure: `exp-20260420-001` Rejected for null effect. The experiment added no measurable value once the current breakout filter/ranking stack was already in place. That means `above_200ma` is either redundant with the existing breakout quality l...
+- `slot_or_ranking` / `slot_interaction_rule`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260421-025, exp-20260422-005`.
+  Latest failure: `exp-20260422-005` Rejected because same-day C crowding management did not recover a stable edge. The top-1-by-TQS rule remained far below the accepted A+B baseline across the primary and all three subwindows, and it was near-null versu...
+- `slot_or_ranking` / `space_forward_replacement_company_source_trend_risk_scalar`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260514-026, exp-20260514-025`.
+- `slot_or_ranking` / `allocation_sizing_probe`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260425-020`.
+  Latest failure: `exp-20260425-020` Rejected on Gate 4 multi-window evidence. No tested broad residual sector sleeve improved a majority of non-overlapping windows, and the most positive Communication Services result had no validating exposure outside o...
 - `slot_or_ranking` / `alpha_search`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260524-021`.
   Latest failure: `exp-20260524-021` 
-- `slot_or_ranking` / `alpha_search_entry_execution_state_exception`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260428-023`.
-  Latest failure: `exp-20260428-023` No adverse-gap exception predicate passed Gate 4. Full-risk/high-TQS exceptions regressed all three windows; Commodity trend exceptions damaged late_strong EV and drawdown; Energy breakout was inert.
-- `slot_or_ranking` / `alpha_search_state_gated_slot_routing`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260428-032`.
-  Latest failure: `exp-20260428-032` Index-distance gating of scarce-slot breakout deferral did not improve allocation robustly enough for promotion.
-- `slot_or_ranking` / `breakout_financials_dte_risk_multiplier`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260517-007`.
-  Latest failure: `exp-20260517-007` Lowering the breakout Financials 8-14 DTE risk scalar did not clear the full Gate 4 sample and robustness requirements; do not promote or keep sweeping this two-row DTE pocket on frozen windows.
-- `slot_or_ranking` / `candidate_pool_crypto_beta_regime_guarded`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260506-012`.
-  Latest failure: `exp-20260506-012` No crypto-beta guarded candidate-pool variant passed the three-window Gate 4 policy.
-- `slot_or_ranking` / `candidate_pool_liquid_proxy_etf_expansion`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260501-025`.
-  Latest failure: `exp-20260501-025` No liquid proxy ETF universe variant passed fixed-window Gate 4.
-- `slot_or_ranking` / `candidate_ranking`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260430-025`.
-  Latest failure: `exp-20260430-025` The best tested ordering failed the fixed-window majority/materiality gate.
 
 ## Recent Raw Records
 

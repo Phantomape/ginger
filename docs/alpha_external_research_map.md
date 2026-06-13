@@ -694,3 +694,162 @@ Controls:
 - report one-way cost sensitivity and multiple-testing caveats.
 
 Source: <https://arxiv.org/html/2606.08283v1>
+
+### Domain-Trained Time-Series Foundation Models
+
+2025-2026 time-series foundation-model papers are useful, but the practical
+lesson is not zero-shot forecasting. The stronger pattern is sample-efficient
+adaptation or pretraining on financial data, with off-the-shelf zero-shot
+models often weaker than domain-specific baselines. For Ginger, this maps to
+read-only state embeddings and volatility/risk fields before any ranking or
+entry use.
+
+Implementable fields:
+
+- `tsfm_model_family`
+- `tsfm_pretraining_domain`
+- `tsfm_finetune_window_id`
+- `tsfm_zero_shot_vs_domain_delta_bucket`
+- `tsfm_volatility_forecast_bucket`
+- `tsfm_equity_spread_forecast_bucket`
+- `tsfm_embedding_replay_hash`
+- `tsfm_after_cost_replacement_value_bucket`
+
+Controls:
+
+- compare zero-shot, fine-tuned, and simple benchmark models separately;
+- freeze the model/version and feature window before Gate 1;
+- use embeddings first for volatility, drawdown, and state diagnostics;
+- require after-cost replacement value before any candidate-pool promotion.
+
+Sources:
+
+- <https://arxiv.org/abs/2507.07296>
+- <https://arxiv.org/abs/2511.18578>
+- <https://arxiv.org/abs/2505.11163>
+
+### Limit-Order-Book And Microstructure Reality Check
+
+Recent LOB work reinforces two local rules: market-microstructure features can
+carry information, but predictability is fragile after spread, horizon, and
+regime changes; realistic queue simulation matters for execution research.
+Ginger should not map these papers to daily close-only entry rules. The usable
+near-term form is a data-quality and execution-envelope surface around spread,
+order-flow imbalance, and stale-price risk.
+
+Implementable fields:
+
+- `lob_feature_source_id`
+- `order_flow_imbalance_bucket`
+- `spread_cost_bucket`
+- `queue_depth_pressure_bucket`
+- `microstructure_horizon_bucket`
+- `microstructure_predictability_decay_bucket`
+- `execution_queue_model_version`
+- `microstructure_cost_adjusted_signal_flag`
+
+Controls:
+
+- use only timestamped intraday/LOB rows available before the intended order;
+- define trend labels relative to spread and fees, not raw direction alone;
+- keep LOB classifiers out of daily paper alpha until data coverage and
+  execution semantics are replayable;
+- use queue models first to stress-test fill assumptions and slippage.
+
+Sources:
+
+- <https://arxiv.org/abs/2501.08822>
+- <https://arxiv.org/abs/2502.15757>
+- <https://arxiv.org/abs/2505.22678>
+- <https://arxiv.org/abs/2504.13521>
+
+### Dynamic Relation Graphs Need Edge Provenance
+
+2025 dynamic stock-relationship transformer work again points to time-varying
+edges, not static sectors. The useful implementation detail is to evaluate
+edge-construction methods separately: Kendall/Spearman/Pearson/mutual
+information, global/local scopes, decay, and stability can be fields. The
+local anti-repeat remains: a graph model is not alpha if it only propagates
+broad beta or stale momentum.
+
+Implementable fields:
+
+- `dynamic_graph_metric_id`
+- `dynamic_graph_scope_bucket`
+- `edge_metric_family`
+- `edge_stability_lookback_bucket`
+- `edge_update_timestamp`
+- `edge_noise_suppression_method`
+- `relation_cluster_volatility_bucket`
+- `relation_edge_comparator_delta`
+
+Controls:
+
+- persist every edge matrix with an as-of timestamp and source universe;
+- compare edge families by displacement value, not prediction loss alone;
+- use relation clusters first for risk/concentration diagnostics;
+- require accepted relation-comparator evidence before entry/ranking use.
+
+Source: <https://arxiv.org/abs/2506.18717>
+
+### Event-Aware LLM Labels Are Features, Not Decisions
+
+Recent work using LLM-labeled tweet events supports schema-bound semantic
+annotation, especially when labels are aligned to forward returns and published
+with reproducible code. The Ginger-compatible version is event-family and
+sentiment-intensity labeling with source coverage, timestamp, and comparator
+discipline. It does not justify direct LLM buy/sell authority or raw sentiment
+averages.
+
+Implementable fields:
+
+- `llm_event_label_schema_version`
+- `llm_event_label_source_type`
+- `llm_event_sentiment_intensity_bucket`
+- `llm_event_label_multiclass_set`
+- `llm_event_label_forward_horizon`
+- `llm_event_label_ic_bucket`
+- `llm_event_label_coverage_fraction`
+- `llm_event_label_replacement_value_bucket`
+
+Controls:
+
+- archive source text, model id, schema, and extraction timestamp;
+- separate event label, sentiment strength, and source credibility;
+- require negative controls and after-cost comparator tests before paper use;
+- treat social/news labels as noisy until forward replacement rows mature.
+
+Source: <https://arxiv.org/abs/2508.07408>
+
+### 13F Is Delayed Ownership And Crowding Context
+
+13F research and disclosure rules make the timing caveat explicit: filings are
+quarterly and delayed, omit shorts, and can encode crowding or already-consumed
+information rather than fresh sponsorship. This matches the June 13 local
+failures for 13F sponsorship acceleration and new-holder initiation. The first
+production use should be attribution, crowding, and overhang context; direct
+entry alpha needs a new timing edge.
+
+Implementable fields:
+
+- `sec13f_report_period`
+- `sec13f_filed_at`
+- `sec13f_reporting_delay_days`
+- `sec13f_holder_count_delta_bucket`
+- `sec13f_position_imbalance_bucket`
+- `sec13f_crowding_risk_bucket`
+- `sec13f_contrarian_pressure_bucket`
+- `sec13f_disclosure_timing_edge_bucket`
+
+Controls:
+
+- use filing timestamp, not report-period end, as the earliest decision time;
+- never infer short exposure from 13F holdings;
+- measure crowding/contrarian value separately from sponsorship narratives;
+- require direct comparison against accepted relation/allocator sources before
+  treating 13F as a candidate-pool source.
+
+Sources:
+
+- <https://arxiv.org/abs/2209.08825>
+- <https://www.sec.gov/divisions/investment/13ffaq>

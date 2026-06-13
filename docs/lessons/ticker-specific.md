@@ -7,21 +7,23 @@ records before making strategy changes.
 ## Current Conclusion
 
 - Experiments: `10`
-- Accepted / rejected: `1` / `9`
-- Accept rate: `10.00%`
+- Accepted / rejected: `2` / `8`
+- Accept rate: `20.00%`
 - Sum EV delta: `+5.0483`
 - Sum PnL delta: `$107,064.89`
 - Latest: `exp-20260527-025` `rejected_broad_market_idiosyncratic_residual_leadership` with EV `+0.0000` and PnL `$0.00`.
 
 ## Retained Or Positive Evidence
 
+- `exp-20260425-009` `accepted_data`: EV `+0.0000`, PnL `$0.00`, family `ticker_specific`, trial `ticker_specific`.
+  Lesson: This is alpha-enabling data work that directly follows exp-20260425-008's missing-proxy finding.
 - `exp-20260516-039` `accepted_promoted_shared_policy`: EV `+0.0143`, PnL `$607.71`, family `ticker_specific`, trial `ticker_specific`.
   Lesson: TSM is persistently negative in the current medium-term core long system; if it cannot be rescued by faster lifecycle evidence, a ticker-specific core risk scalar should remove or sharply reduce its medium-term risk b...
 
 ## Rejections And Failure Lessons
 
-- `exp-20260504-028` `rejected`: EV `+0.0000`, PnL `$0.00`, family `ticker_specific`, trial `ticker_specific`.
-  Lesson: Candidate-pool expansion did not produce stable three-window improvement. The broad ETF basket added late_strong winners but hurt mid_weak and old_thin; XLE alone still hurt mid_weak and worsened late_strong Sharpe/dr...
+- `exp-20260430-008` `rejected`: EV `+0.0000`, PnL `$0.00`, family `ticker_specific`, trial `ticker_specific`.
+  Lesson: Full bundle improved only late_strong while damaging mid_weak and old_thin. Narrow subsets failed Gate 4 or were materially negative.
 - `exp-20260515-017` `rejected_sector_etf_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `ticker_specific`, trial `ticker_specific`.
   Lesson: Single ETF/proxy candidate additions from the existing PIT snapshots did not beat the accepted core universe; the best non-negative variants were inert with zero trades.
 - `exp-20260515-030` `rejected_current_stack_sector_relative_thrust_risk`: EV `+0.0104`, PnL `$776.33`, family `ticker_specific`, trial `ticker_specific`.
@@ -39,8 +41,7 @@ records before making strategy changes.
 
 ## Retry Discipline
 
-- `ticker_specific` / `alpha_search_candidate_pool_expansion`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260504-028`.
-  Latest failure: `exp-20260504-028` Candidate-pool expansion did not produce stable three-window improvement. The broad ETF basket added late_strong winners but hurt mid_weak and old_thin; XLE alone still hurt mid_weak and worsened late_strong Sharpe/dr...
+- `ticker_specific` / `alpha_enabling_data_expansion`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260425-009`.
 - `ticker_specific` / `broad_market_beta_adjusted_idiosyncratic_residual_ret20`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260527-025`.
   Latest failure: `exp-20260527-025` Idiosyncratic residual leadership did not clear the strict three-window broad-market materiality gate.
 - `ticker_specific` / `broad_market_recent_repeat_notional_scalar`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260520-014`.
