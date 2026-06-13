@@ -1,0 +1,237 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_comparators": {
+    "exp-20260608-013_narrow_range_compression": {
+      "aggregate_expected_value_delta": 0.1608,
+      "aggregate_pnl_delta": 2248.98,
+      "note": "accepted shared default-off narrow-range compression breakout adapter"
+    },
+    "exp-20260611-005_lagged_consensus_allocator": {
+      "aggregate_expected_value_delta": 2.1849,
+      "aggregate_pnl_delta": 40397.21,
+      "note": "accepted shared allocator source extension"
+    },
+    "exp-20260611-007_distribution_day_absorption": {
+      "aggregate_expected_value_delta": 0.5286,
+      "aggregate_pnl_delta": 10432.91,
+      "note": "accepted shared distribution-day absorption adapter"
+    }
+  },
+  "aggregate_expected_value_delta": 0.1172,
+  "aggregate_strategy_total_pnl_delta": -319.67,
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260613-018/exp_20260613_018_spy_residual_compression_breakout.json",
+  "backtest_protocol": {
+    "REGIME_AWARE_EXIT": true,
+    "candidate_ohlcv_source": "data/warehouse/warehouse_main.sqlite",
+    "execution_model": "Signal uses only close-of-day OHLCV available on the signal date. SPY beta and residual compression use only prior bars; the signal-day residual is known after that close. Paper entry is next available open with existing entry slippage; exit is the close 10 trading days after signal with target-side sell slippage and ROUND_TRIP_COST_PCT.",
+    "replay_llm": false,
+    "replay_news": false,
+    "source": "docs/backtesting.md canonical three-window core replay plus replay-only broad warehouse default-off paper overlay",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "baseline_result_file": "data/experiments/exp-20260613-018/exp_20260613_018_spy_residual_compression_breakout.json#before_metrics",
+  "calibration": {
+    "actual_gate4_passed": false,
+    "brier_score": 0.0289,
+    "failure_modes_observed": [
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "drawdown_drift_too_high",
+      "accepted_compression_comparator_not_beaten"
+    ],
+    "predicted_success_probability": 0.17
+  },
+  "card": "experiments/cards/exp-20260613-018.md",
+  "changed_variable": "spy_residual_compression_breakout_candidate_source_v1",
+  "decision": "rejected_spy_residual_compression_breakout_candidate_pool",
+  "experiment_id": "exp-20260613-018",
+  "gate4": {
+    "accepted_comparator_readout": {
+      "exp-20260608-013_narrow_range_compression": {
+        "aggregate_expected_value_delta": 0.1608,
+        "aggregate_pnl_delta": 2248.98,
+        "beaten": false,
+        "ev_delta_gap": -0.0436,
+        "note": "accepted shared default-off narrow-range compression breakout adapter",
+        "pnl_delta_gap": -2568.65
+      },
+      "exp-20260611-005_lagged_consensus_allocator": {
+        "aggregate_expected_value_delta": 2.1849,
+        "aggregate_pnl_delta": 40397.21,
+        "beaten": false,
+        "ev_delta_gap": -2.0677,
+        "note": "accepted shared allocator source extension",
+        "pnl_delta_gap": -40716.88
+      },
+      "exp-20260611-007_distribution_day_absorption": {
+        "aggregate_expected_value_delta": 0.5286,
+        "aggregate_pnl_delta": 10432.91,
+        "beaten": false,
+        "ev_delta_gap": -0.4114,
+        "note": "accepted shared distribution-day absorption adapter",
+        "pnl_delta_gap": -10752.58
+      }
+    },
+    "aggregate_ev_delta": 0.1172,
+    "aggregate_pnl_delta": -319.67,
+    "decision": "rejected_spy_residual_compression_breakout_candidate_pool",
+    "failed_reasons": [
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "drawdown_drift_too_high",
+      "accepted_compression_comparator_not_beaten"
+    ],
+    "max_drawdown_worse": 0.0386,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": false,
+    "promotion_blockers": [],
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.040171,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": true,
+      "positive_pnl_hhi": 0.013452,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 384,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_ev_improved": 1,
+    "windows_ev_regressed": 2,
+    "windows_pnl_improved": 2,
+    "windows_pnl_regressed": 1
+  },
+  "hypothesis": "candidate_pool alpha: after removing market beta, residual volatility compression plus a positive signal-day residual breakout may identify stock-specific accumulation not captured by raw narrow-range compression.",
+  "lane": "alpha_search",
+  "log": "experiments/logs/exp-20260613-018.json",
+  "mechanism_family": "free_ohlcv_spy_residual_compression_breakout",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry this family by only changing beta lookback, residual-vol ratio, signal residual threshold, cooldown, hold days, or daily top-N on the same frozen windows.",
+    "new_evidence_required": "A retry needs materially new PIT evidence, such as borrow/ETF flow, options-implied idiosyncratic pressure, or forward replacement-value rows from a shared helper.",
+    "why_result_happened": "The residual compression field did not add robust replacement value beyond accepted raw compression. Any regression, drawdown drift, concentration issue, or comparator miss means the rule likely relabeled ordinary momentum or market beta rather than finding durable idiosyncratic accumulation."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "candidate_pool alpha: after removing market beta, residual volatility compression plus a positive signal-day residual breakout may identify stock-specific accumulation not captured by raw narrow-range compression.",
+    "2_history_check": {
+      "exp-20260608-013": "Accepted shared narrow-range compression breakout: aggregate EV +0.1608 and PnL +$2,248.98. This is the binding closest comparator.",
+      "exp-20260608-017": "Rejected quiet tight-range accumulation. This run does not rely on raw range quietness alone.",
+      "exp-20260609-004": "Rejected high-volume thrust plus inside-day dry-up. This run avoids post-thrust volume-dryup retuning.",
+      "exp-20260610-017": "Rejected compression tail-state filter. This run does not filter the accepted helper; it tests a different residual-to-SPY field."
+    },
+    "3_single_decision_hypothesis": "spy_residual_compression_breakout_candidate_source_v1",
+    "4_acceptance_standard": "Use docs/backtesting.md three canonical windows. Aggregate EV/PnL must be positive, no window EV/PnL regression, at least 20 paper trades across all 3 windows, survival >=5%, drawdown drift <=0.5pp, concentration pass, and exp-20260608-013 aggregate EV/PnL comparator must be beaten. Positive replay-only output is a lead, not production acceptance, until shared parity exists.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260613_018_spy_residual_compression_breakout.py"
+  },
+  "prediction": {
+    "confidence_reason": "Accepted raw compression proves coiled OHLCV structures can work, while many tight-range and absorption neighbors failed. SPY residual compression is a materially different PIT field that may isolate stock-specific continuation, but it could still relabel momentum.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "accepted_compression_comparator_not_beaten",
+      "window_regression",
+      "drawdown_drift",
+      "concentration_failed",
+      "generic_momentum_relabel"
+    ],
+    "recorded_at": "2026-06-13T14:05:50Z",
+    "success_probability": 0.17
+  },
+  "production_accepted": false,
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "default_off_paper_only": true,
+    "execution_envelope": {
+      "daily_entry_slots": 1,
+      "failure_handling": "missing OHLCV, SPY pair, or next-open/exit rejects the paper candidate",
+      "hold_days": 10,
+      "kill_switch": "trade_enabled remains false; no production adapter changes",
+      "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+      "order_semantics": "observe-only next-session-open paper entry; no broker order",
+      "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+      "same_ticker_cooldown_days": 10,
+      "target_notional_per_paper_trade": 4000.0,
+      "trade_enabled": false
+    },
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper computes the same SPY beta, residual-vol compression, signal residual breakout, liquidity gates, same-ticker core overlap exclusion, cooldown, next-open paper entry, 10-trading-day exit, costs, and concentration controls in both historical replay and the daily production snapshot.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_free_ohlcv_only": true,
+    "uses_llm": false
+  },
+  "status": "rejected",
+  "timestamp": "2026-06-13T14:16:19Z",
+  "trial_family": "spy_residual_compression_breakout_candidate_pool",
+  "trial_variant_id": "spy_residual_compression_breakout_candidate_source_v1",
+  "windows": [
+    {
+      "expected_value_after": 5.1339,
+      "expected_value_before": 5.1628,
+      "expected_value_delta": -0.0289,
+      "label": "late_strong",
+      "pnl_delta": 947.16,
+      "raw_candidate_count": 3107,
+      "target_trade_count": 122
+    },
+    {
+      "expected_value_after": 2.4827,
+      "expected_value_before": 2.1402,
+      "expected_value_delta": 0.3425,
+      "label": "mid_weak",
+      "pnl_delta": 6050.23,
+      "raw_candidate_count": 3579,
+      "target_trade_count": 126
+    },
+    {
+      "expected_value_after": 0.3947,
+      "expected_value_before": 0.5911,
+      "expected_value_delta": -0.1964,
+      "label": "old_thin",
+      "pnl_delta": -7317.06,
+      "raw_candidate_count": 3012,
+      "target_trade_count": 136
+    }
+  ]
+}
