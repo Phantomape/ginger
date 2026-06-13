@@ -1,0 +1,181 @@
+{
+  "accepted": false,
+  "aggregate_expected_value_delta": -0.0392,
+  "aggregate_expected_value_delta_pct": -0.004966,
+  "aggregate_strategy_total_pnl_delta": -1722.21,
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260613-019/exp_20260613_019_post_thrust_pause_quality.json",
+  "backtest_protocol": {
+    "REGIME_AWARE_EXIT": true,
+    "candidate_ohlcv_source": "data/warehouse/warehouse_main.sqlite",
+    "execution_model": "Signal uses only close-of-day OHLCV available on signal date. Paper entry is next available open with existing entry slippage; exit is the close 10 trading days after the signal with target-side sell slippage and ROUND_TRIP_COST_PCT.",
+    "replay_llm": false,
+    "replay_news": false,
+    "source": "docs/backtesting.md canonical three-window core replay plus replay-only broad warehouse default-off paper overlay",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "calibration": {
+    "actual_gate4_passed": false,
+    "brier_score": 0.0256,
+    "failure_modes_observed": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "drawdown_drift_too_high"
+    ],
+    "predicted_success_probability": 0.16
+  },
+  "changed_variable": "post_thrust_pause_quality_bucket_v1",
+  "decision": "rejected_post_thrust_pause_quality_candidate_pool",
+  "experiment_id": "exp-20260613-019",
+  "gate4": {
+    "aggregate_ev_delta": -0.0392,
+    "aggregate_pnl_delta": -1722.21,
+    "decision": "rejected_post_thrust_pause_quality_candidate_pool",
+    "failed_reasons": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "drawdown_drift_too_high"
+    ],
+    "max_drawdown_worse": 0.0155,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": false,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.065979,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": true,
+      "positive_pnl_hhi": 0.02562,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 192,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_ev_improved": 1,
+    "windows_ev_regressed": 2,
+    "windows_pnl_improved": 1,
+    "windows_pnl_regressed": 2
+  },
+  "hypothesis": "Post-thrust stocks that pause orderly for 1-3 trading days and then reclaim near the pause high may represent absorbed demand rather than gap-chase noise, creating a production-visible default-off candidate pool with better 10d replacement value than generic post-thrust inside-day or gap-hold candidates.",
+  "lane": "alpha_search",
+  "log": "experiments/logs/exp-20260613-019.json",
+  "mechanism_family": "production_visible_free_ohlcv_tail_state_candidate_pool",
+  "negative_reflection": "The pause/reclaim structure still mostly relabeled crowded short horizon momentum. Mid-window rebounds helped, but late_strong and old_thin reversed enough that aggregate EV and PnL fell and old_thin drawdown worsened beyond the Gate 4 limit.",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry nearby post-thrust pause, gap-hold, inside-day, hold-day, notional, cooldown, or reclaim-threshold variants on these frozen windows without a materially new PIT information field.",
+    "new_evidence_required": "A retry needs external PIT confirmation such as event quality, revision trajectory, ownership sponsorship, or forward replacement rows; free-OHLCV threshold nudges are insufficient evidence.",
+    "realized_failure_mode": "window_regression_and_drawdown_drift_from_generic_post_thrust_momentum",
+    "why_result_happened": "The pause/reclaim structure still mostly relabeled crowded short horizon momentum. Mid-window rebounds helped, but late_strong and old_thin reversed enough that aggregate EV and PnL fell and old_thin drawdown worsened beyond the Gate 4 limit."
+  },
+  "prediction": {
+    "confidence_reason": "The playbook asks for tail-state field building, but nearby gap-hold and post-thrust scouts failed. An orderly multi-day pause plus reclaim is materially more specific yet still broad-OHLCV and production-visible.",
+    "expected_ev_delta": 0.2,
+    "expected_pnl_delta": 3000.0,
+    "main_failure_modes": [
+      "window_regression",
+      "drawdown_drift_too_high",
+      "gap_chase_noise",
+      "post_thrust_inside_day_repeat",
+      "target_sample_too_small"
+    ],
+    "recorded_at": "2026-06-13T15:09:35Z",
+    "success_probability": 0.16
+  },
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "default_off_paper_only": true,
+    "execution_envelope": {
+      "daily_entry_slots": 1,
+      "failure_handling": "missing OHLCV, next open, or exit close rejects the paper candidate",
+      "hold_days": 10,
+      "kill_switch": "trade_enabled remains false; no production adapter changes",
+      "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+      "order_semantics": "observe-only next-session-open paper entry; no broker order",
+      "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+      "same_ticker_cooldown_days": 10,
+      "target_notional_per_paper_trade": 4000.0,
+      "trade_enabled": false
+    },
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper computes the same thrust, pause, reclaim, liquidity, same-ticker core-overlap exclusion, cooldown, next-open paper entry, 10-trading-day exit, costs, and concentration controls in both historical replay and the daily snapshot.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_free_ohlcv_only": true,
+    "uses_llm": false
+  },
+  "status": "rejected",
+  "timestamp": "2026-06-13T15:23:31Z",
+  "trial_family": "post_thrust_pause_quality_candidate_pool",
+  "trial_variant_id": "post_thrust_pause_quality_top1_next_open_10d_v1",
+  "windows": [
+    {
+      "candidate_day_count": 63,
+      "expected_value_after": 4.9824,
+      "expected_value_before": 5.1628,
+      "expected_value_delta": -0.1804,
+      "label": "late_strong",
+      "strategy_total_pnl_delta": -1203.38,
+      "target_trade_count": 63
+    },
+    {
+      "candidate_day_count": 75,
+      "expected_value_after": 2.4175,
+      "expected_value_before": 2.1402,
+      "expected_value_delta": 0.2773,
+      "label": "mid_weak",
+      "strategy_total_pnl_delta": 4677.67,
+      "target_trade_count": 70
+    },
+    {
+      "candidate_day_count": 64,
+      "expected_value_after": 0.455,
+      "expected_value_before": 0.5911,
+      "expected_value_delta": -0.1361,
+      "label": "old_thin",
+      "strategy_total_pnl_delta": -5196.5,
+      "target_trade_count": 59
+    }
+  ]
+}
