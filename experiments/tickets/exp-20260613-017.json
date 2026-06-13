@@ -1,0 +1,198 @@
+{
+  "experiment_id": "exp-20260613-017",
+  "experiment_uid": "expuid-ad821be76f984971",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260613-017",
+    "slug": "sec13f_new_holder_initiation",
+    "reserved_at": "2026-06-13T13:03:57+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "alpha-search-automation",
+  "hypothesis": "candidate_pool: true new SEC 13F holders between two fully ended filing windows, confirmed by liquid same-day leadership, may add durable next-open paper alpha distinct from stale aggregate sponsorship growth.",
+  "change_type": "experiment_local_replay_candidate_pool",
+  "mechanism_family": "production_visible_free_sec_13f_candidate_pool",
+  "trial_family": "sec13f_new_holder_initiation_candidate_pool",
+  "trial_variant_id": "sec13f_new_holder_initiation_liquid_leadership_top1_10d_v1",
+  "single_causal_variable": "sec13f_new_holder_initiation_liquid_leadership_candidate_source_v1",
+  "changed_variable": "sec13f_new_holder_initiation_liquid_leadership_candidate_source_v1",
+  "causal_components": [
+    "pit-sec13f-window-pair",
+    "new-holder-count-share",
+    "value-weighted-initiation",
+    "liquid-leadership-gates",
+    "next-open-paper-entry",
+    "ten-day-exit",
+    "three-window-gate"
+  ],
+  "prior_trial_count": 3,
+  "nearby_prior_experiments": [
+    "exp-20260613-014",
+    "exp-20260612-015",
+    "exp-20260612-016"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "pit_sec_13f_true_new_holder_initiation",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260613_017_sec13f_new_holder_initiation.py",
+    "data/experiments/exp-20260613-017/exp_20260613_017_sec13f_new_holder_initiation.json",
+    "experiments/cards/exp-20260613-017.md",
+    "experiments/manifests/exp-20260613-017.json",
+    "experiments/tickets/exp-20260613-017.json",
+    "experiments/logs/exp-20260613-017.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "sec13f_new_holder_initiation_liquid_leadership_candidate_source_v1"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "stale_quarterly_data",
+      "window_regression",
+      "not_incremental",
+      "drawdown_drift",
+      "concentration_failed"
+    ],
+    "confidence_reason": "exp-20260613-014 rejected aggregate 13F holder/value growth, but its reflection called for true new-position signals. This tests a materially different PIT 13F field while acknowledging quarterly staleness and accepted allocator comparators.",
+    "recorded_at": "2026-06-13T13:03:22+00:00"
+  },
+  "created_at": "2026-06-13T13:03:57+00:00",
+  "claimed_at": "2026-06-13T13:04:06+00:00",
+  "completed_at": "2026-06-13T13:14:20+00:00",
+  "result": {
+    "decision": "rejected_sec13f_new_holder_initiation_candidate_pool",
+    "accepted": false,
+    "numeric_gate4_passed": false,
+    "artifact": "data/experiments/exp-20260613-017/exp_20260613_017_sec13f_new_holder_initiation.json",
+    "log": "experiments/logs/exp-20260613-017.json",
+    "card": "experiments/cards/exp-20260613-017.md",
+    "aggregate_expected_value_delta": -0.3281,
+    "aggregate_strategy_total_pnl_delta": -5152.99,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_sec13f_new_holder_initiation_candidate_pool",
+      "failed_reasons": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "drawdown_drift_too_high"
+      ],
+      "aggregate_ev_delta": -0.3281,
+      "aggregate_pnl_delta": -5152.99,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 2,
+      "windows_pnl_improved": 1,
+      "windows_pnl_regressed": 2,
+      "target_trade_count": 344,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0408,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.069775,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.025587,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "accepted_allocator_comparator": {
+        "experiment_id": "exp-20260611-005",
+        "decision": "accepted_source_consensus_allocator_extension",
+        "expected_value_score_delta_sum": 2.1849,
+        "total_pnl_delta_sum": 40397.21,
+        "note": "Promotion comparator only. This private 13F scout is still lead-only without a shared daily helper even if numeric Gate 4 passes."
+      },
+      "accepted_allocator_comparator_beaten": {
+        "ev": false,
+        "pnl": false
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.18,
+      "actual_gate4_passed": false,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "drawdown_drift_too_high"
+      ],
+      "brier_score": 0.0324
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "private_replay_scout_no_live_adapter",
+      "implementation_mode": "private_replay_scout",
+      "private_replay_scout_escape_reason": "The raw 13F manager-set aggregation is implemented only in this experiment. A positive result is lead-only until a shared helper computes the same new-holder field in historical replay and daily default-off snapshots.",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "default_off_paper_only": true,
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_sec_13f": true,
+      "uses_free_ohlcv": true,
+      "live_realism_evaluated": false,
+      "live_ready": false,
+      "execution_envelope": {
+        "trade_enabled": false,
+        "paper_notional_usd": 4000.0,
+        "daily_entry_slots": 1,
+        "same_ticker_cooldown_days": 20,
+        "hold_days": 10,
+        "min_avg_dollar_volume_20d": 50000000.0,
+        "order_semantics": "observe-only next-session-open paper entry; no broker order",
+        "portfolio_displacement": "none unless a later shared helper and activation envelope pass",
+        "kill_switch": "trade_enabled remains false; no production adapter changes in this scout",
+        "failure_handling": "missing 13F pair, OHLCV, next open, or exit bar rejects the paper candidate"
+      },
+      "parity_note": "This experiment changes no production code. A positive result remains a replay lead until a shared default-off helper computes the same PIT 13F window pair, new-holder manager sets, leadership gates, overlap exclusion, entry, exit, costs, cooldown, and ledger fields identically in historical replay and daily production snapshots."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The true new-holder 13F field failed Gate 4. New institutional manager initiations are still quarterly/stale, overlap liquid leadership already captured by accepted sources, or do not reduce old-window drawdown enough after next-open costs.",
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping new-holder count, new-holder share, new-holder value share, ADV, close-location, ret20/ret60, top-N, hold-day, cooldown, or notional thresholds on the same frozen windows.",
+      "new_evidence_required": "Need manager identity/quality, sector-normalized new-holder surprise, independent options/borrow evidence, or forward replacement-value rows from a shared helper."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260613-017.json",
+  "card_file": "experiments/cards/exp-20260613-017.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260613-017.json",
+  "decision": "rejected_sec13f_new_holder_initiation_candidate_pool",
+  "summary": "The true new-holder 13F candidate source was rejected under the standard three-window protocol.",
+  "artifact": "data/experiments/exp-20260613-017/exp_20260613_017_sec13f_new_holder_initiation.json",
+  "log": "experiments/logs/exp-20260613-017.json",
+  "aggregate_expected_value_delta": -0.3281,
+  "aggregate_strategy_total_pnl_delta": -5152.99,
+  "updated_at": "2026-06-13T13:14:20+00:00"
+}
