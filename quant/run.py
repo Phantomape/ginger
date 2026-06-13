@@ -3048,6 +3048,13 @@ def main():
             industry_stable_core_flow_ohlcv = dict(broad_market_ohlcv)
             if "SPY" not in industry_stable_core_flow_ohlcv and spy_ohlcv is not None:
                 industry_stable_core_flow_ohlcv["SPY"] = spy_ohlcv
+            if "QQQ" not in industry_stable_core_flow_ohlcv:
+                if "QQQ" in ohlcv_dict:
+                    industry_stable_core_flow_ohlcv["QQQ"] = ohlcv_dict["QQQ"]
+                elif qqq_ohlcv is not None:
+                    industry_stable_core_flow_ohlcv["QQQ"] = qqq_ohlcv
+                else:
+                    industry_stable_core_flow_ohlcv["QQQ"] = _cached_ohlcv("QQQ")
             industry_stable_core_flow_paper_sleeve = (
                 build_industry_stable_core_flow_snapshot(
                     as_of=today_iso,

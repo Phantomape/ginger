@@ -23,12 +23,14 @@ from typing import Any
 try:
     import broad_market_sector_map
     import macro_relief_leadership_paper_sleeve as leader
+    import market_state_router
     from constants import ROUND_TRIP_COST_PCT
     from data_paths import DATA_ROOT
     from fill_model import SLIPPAGE_BPS_ENTRY, SLIPPAGE_BPS_TARGET, apply_slippage
 except ImportError:  # pragma: no cover - package-style imports in tests
     from quant import broad_market_sector_map
     from quant import macro_relief_leadership_paper_sleeve as leader
+    from quant import market_state_router
     from quant.constants import ROUND_TRIP_COST_PCT
     from quant.data_paths import DATA_ROOT
     from quant.fill_model import SLIPPAGE_BPS_ENTRY, SLIPPAGE_BPS_TARGET, apply_slippage
@@ -38,6 +40,9 @@ SLEEVE_NAME = "INDUSTRY_STABLE_CORE_FLOW_PAPER"
 RULE_VERSION = "industry_stable_core_flow_shared_default_off_adapter_v1"
 SOURCE_RULE_VERSION = "industry_stable_core_flow_confirmed_candidate_source_v1"
 BASE_SOURCE_RULE_VERSION = "industry_stable_leadership_candidate_source_v1"
+STATE_ROUTER_RULE_VERSION = "industry_stable_core_flow_state_tilt_mixed_balanced_normal_shared_v1"
+STATE_ROUTER_CELL = market_state_router.MIXED_BALANCED_NORMAL_CELL
+STATE_ROUTER_NOTIONAL_SCALAR = 1.5
 STATE_SCHEMA_VERSION = 1
 
 DEFAULT_STATE_PATH = (
@@ -112,6 +117,10 @@ DEFAULT_CONFIG = {
     "max_candidate_vol_vs_group_multiple": 1.20,
     "core_flow_confirmation_required": True,
     "same_ticker_core_overlap_excluded": True,
+    "state_router_enabled": True,
+    "state_router_cell": STATE_ROUTER_CELL,
+    "state_router_notional_scalar": STATE_ROUTER_NOTIONAL_SCALAR,
+    "state_router_rule_version": STATE_ROUTER_RULE_VERSION,
     "forward_gate_min_closed_trades": 60,
     "forward_gate_positive_net_pnl": True,
     "forward_gate_min_win_rate": 0.50,
@@ -151,6 +160,7 @@ def empty_industry_stable_core_flow_snapshot(as_of: str, reason: str) -> dict[st
         "raw_candidate_count": 0,
         "rejected_candidate_count": 0,
         "new_pending_count": 0,
+        "state_router": _state_router_summary([], [], DEFAULT_CONFIG),
         "filled_count": 0,
         "closed_count_today": 0,
         "pending_count": 0,
@@ -261,6 +271,11 @@ def build_industry_stable_core_flow_snapshot(
         existing_state=working_state,
         config=cfg,
     )
+    selected = _apply_state_router_to_trades(
+        selected,
+        rows_by_ticker=rows_by_ticker,
+        config=cfg,
+    )
     new_pending_entries: list[dict[str, Any]] = []
     if cfg.get("paper_enabled", True):
         for trade in selected:
@@ -340,6 +355,11 @@ def build_industry_stable_core_flow_historical_trades(
         selected, rejected = select_industry_stable_core_flow_paper_trades(
             rows_by_ticker=rows_by_ticker,
             candidates=candidates,
+            config=cfg,
+        )
+        selected = _apply_state_router_to_trades(
+            selected,
+            rows_by_ticker=rows_by_ticker,
             config=cfg,
         )
         window_trades = [{**row, "window": label} for row in selected]
@@ -828,6 +848,77 @@ def _candidate_from_stats(
     }
 
 
+def _apply_state_router_to_trades(
+    trades: list[dict[str, Any]],
+    *,
+    rows_by_ticker: dict[str, list[dict[str, Any]]],
+    config: dict[str, Any],
+) -> list[dict[str, Any]]:
+    return [
+        _apply_state_router_to_trade(trade, rows_by_ticker=rows_by_ticker, config=config)
+        for trade in trades
+    ]
+
+
+def _apply_state_router_to_trade(
+    trade: dict[str, Any],
+    *,
+    rows_by_ticker: dict[str, list[dict[str, Any]]],
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    row = deepcopy(trade)
+    enabled = bool(config.get("state_router_enabled", True))
+    cell = str(config.get("state_router_cell") or STATE_ROUTER_CELL)
+    scalar = float(config.get("state_router_notional_scalar") or STATE_ROUTER_NOTIONAL_SCALAR)
+    entry_date = str(row.get("entry_date") or "")[:10]
+    state = (
+        market_state_router.state_for_entry_date(
+            ohlcv_by_ticker=rows_by_ticker,
+            entry_date=entry_date,
+        )
+        if entry_date
+        else None
+    )
+    combined_state = state.get("combined_state") if state else None
+    cell_match = combined_state == cell
+    applies = bool(enabled and cell_match)
+    status = "disabled"
+    if enabled and state is None:
+        status = "state_unavailable"
+    elif enabled and cell_match:
+        status = "cell_match_scaled"
+    elif enabled:
+        status = "cell_miss"
+
+    base_notional = leader._float_or_none(row.get("paper_notional_usd"))
+    base_pnl = leader._float_or_none(row.get("pnl"))
+    row.update(
+        {
+            "entry_market_state": state,
+            "combined_state": combined_state,
+            "state_router_cell": cell,
+            "state_router_cell_match": cell_match,
+            "state_router_applied": applies,
+            "state_router_enabled": enabled,
+            "state_router_status": status,
+            "state_router_rule_version": str(
+                config.get("state_router_rule_version") or STATE_ROUTER_RULE_VERSION
+            ),
+            "state_router_scalar": scalar if applies else 1.0,
+            "state_router_base_paper_notional_usd": leader._round(base_notional, 2),
+            "state_router_base_pnl": leader._round(base_pnl, 2),
+            "state_router_incremental_pnl": 0.0,
+        }
+    )
+    if applies and base_notional is not None:
+        row["paper_notional_usd"] = leader._round(base_notional * scalar, 2)
+        row["notional_usd"] = leader._round(base_notional * scalar, 2)
+    if applies and base_pnl is not None:
+        row["state_router_incremental_pnl"] = leader._round(base_pnl * (scalar - 1.0), 2)
+        row["pnl"] = leader._round(base_pnl * scalar, 2)
+    return row
+
+
 def _pending_entry_from_trade(trade: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
     out = deepcopy(trade)
     for key in (
@@ -841,13 +932,16 @@ def _pending_entry_from_trade(trade: dict[str, Any], config: dict[str, Any]) -> 
         "pnl_pct_net",
     ):
         out.pop(key, None)
+    notional = leader._positive_float(trade.get("paper_notional_usd"))
+    if notional is None:
+        notional = float(config["paper_notional_usd"])
     out.update(
         {
             "sleeve": SLEEVE_NAME,
             "rule_version": RULE_VERSION,
             "source_rule_version": SOURCE_RULE_VERSION,
-            "paper_notional_usd": float(config["paper_notional_usd"]),
-            "notional_usd": float(config["paper_notional_usd"]),
+            "paper_notional_usd": leader._round(notional, 2),
+            "notional_usd": leader._round(notional, 2),
             "entry_timing": "next_session_open",
             "hold_days": int(config["hold_days"]),
             "paper_status": "pending_entry",
@@ -904,6 +998,7 @@ def _snapshot_payload(
         "candidate_universe": _candidate_universe_summary(candidate_universe, rows_by_ticker),
         "new_pending_entries": new_pending_entries,
         "new_pending_count": len(new_pending_entries),
+        "state_router": _state_router_summary(selected, new_pending_entries, config),
         "pending_entries": pending,
         "pending_count": len(pending),
         "filled_today": filled_today,
@@ -927,6 +1022,33 @@ def _snapshot_payload(
         "parameters": _parameter_summary(config),
         "production_impact": _production_impact(),
         "next_action": "paper_observe_forward_outcomes_only_no_orders",
+    }
+
+
+def _state_router_summary(
+    selected: list[dict[str, Any]],
+    new_pending_entries: list[dict[str, Any]],
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    rows = selected or new_pending_entries or []
+    statuses = Counter(str(row.get("state_router_status") or "unknown") for row in rows)
+    states = Counter(str(row.get("combined_state") or "unknown") for row in rows)
+    applied = [row for row in rows if row.get("state_router_applied")]
+    return {
+        "enabled": bool(config.get("state_router_enabled", True)),
+        "rule_version": str(config.get("state_router_rule_version") or STATE_ROUTER_RULE_VERSION),
+        "cell": str(config.get("state_router_cell") or STATE_ROUTER_CELL),
+        "notional_scalar": float(
+            config.get("state_router_notional_scalar") or STATE_ROUTER_NOTIONAL_SCALAR
+        ),
+        "known_at": market_state_router.STATE_KNOWN_AT,
+        "uses_free_ohlcv_only": True,
+        "requires_tickers": ["SPY", "QQQ"],
+        "selected_count": len(selected),
+        "new_pending_count": len(new_pending_entries),
+        "applied_count": len(applied),
+        "status_counts": dict(sorted(statuses.items())),
+        "combined_state_counts": dict(sorted(states.items())),
     }
 
 
@@ -1101,6 +1223,10 @@ def _parameter_summary(config: dict[str, Any]) -> dict[str, Any]:
         "max_candidate_vol_vs_group_multiple",
         "core_flow_confirmation_required",
         "same_ticker_core_overlap_excluded",
+        "state_router_enabled",
+        "state_router_cell",
+        "state_router_notional_scalar",
+        "state_router_rule_version",
     ]
     return {key: config[key] for key in keys}
 
@@ -1156,6 +1282,11 @@ def _production_impact() -> dict[str, Any]:
         "alters_exits": False,
         "uses_llm": False,
         "uses_free_ohlcv_only": True,
+        "state_router_rule_version": STATE_ROUTER_RULE_VERSION,
+        "state_router_cell": STATE_ROUTER_CELL,
+        "state_router_notional_scalar": STATE_ROUTER_NOTIONAL_SCALAR,
+        "state_router_known_at": market_state_router.STATE_KNOWN_AT,
+        "state_router_requires_tickers": ["SPY", "QQQ"],
         "adapter_status": "shared_default_off_paper_helper",
         "scope": "default_off_industry_stable_core_flow_paper_attribution",
     }

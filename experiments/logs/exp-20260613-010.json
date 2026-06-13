@@ -1,0 +1,209 @@
+{
+  "after_metrics": {
+    "expected_value_score": 8.1155,
+    "total_pnl": 240339.25
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "expected_value_score": 8.0351,
+    "total_pnl": 238466.66
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": 0.0804,
+    "actual_pnl_delta": 1872.59,
+    "actual_success": 1,
+    "expected_ev_delta": 0.0804,
+    "expected_pnl_delta": 1872.59,
+    "predicted_success_probability": 0.55,
+    "realized_failure_mode": "none_passed_all_guards"
+  },
+  "change_type": "default_off_paper_allocation",
+  "changed_variable": "industry_stable_core_flow_shared_state_tilt_default_off_helper_v1",
+  "component": "quant/market_state_router.py, quant/industry_stable_core_flow_paper_sleeve.py, quant/run.py, quant/test_market_state_router.py, quant/test_industry_stable_core_flow_paper_sleeve.py, quant/experiments/exp_20260613_010_iscf_shared_state_tilt.py, data/experiments/exp-20260613-010/exp_20260613_010_iscf_shared_state_tilt.json, experiments/logs/exp-20260613-010.json, experiments/tickets/exp-20260613-010.json, experiments/cards/exp-20260613-010.md, experiments/manifests/exp-20260613-010.json, docs/experiment_log.jsonl, docs/production_backtest_parity_matrix.md, docs/alpha-optimization-playbook.md",
+  "decision": "accepted_iscf_shared_state_tilt_default_off_helper",
+  "delta_metrics": {
+    "expected_value_score": 0.0804,
+    "total_pnl": 1872.59
+  },
+  "experiment_id": "exp-20260613-010",
+  "gate4": {
+    "aggregate_ev_delta": 0.0804,
+    "aggregate_ev_delta_pct": 0.010006,
+    "aggregate_pnl_delta": 1872.59,
+    "comparator": "shared helper with state_router_enabled=false identity",
+    "drawdown_guard_passed": true,
+    "ev_delta_by_window": {
+      "late_strong": 0.0013,
+      "mid_weak": 0.0551,
+      "old_thin": 0.024
+    },
+    "in_cell_concentration_guard_passed": true,
+    "in_cell_positive_hhi": 0.113927,
+    "in_cell_single_ticker_positive_share": 0.209419,
+    "in_cell_trade_count_total": 32,
+    "in_cell_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "incremental_concentration_guard_passed": true,
+    "incremental_positive_hhi": 0.113927,
+    "incremental_single_ticker_positive_share": 0.20942,
+    "max_drawdown_delta_by_window": {
+      "late_strong": 0.0004,
+      "mid_weak": 0.0,
+      "old_thin": -0.0005
+    },
+    "max_drawdown_worse_guardrail": 0.005,
+    "max_drawdown_worse_max": 0.0004,
+    "max_single_ticker_positive_share": 0.5,
+    "minimum_ev_improved_windows": 2,
+    "minimum_in_cell_trades_total": 18,
+    "minimum_in_cell_windows": 3,
+    "passed": true,
+    "pnl_delta_by_window": {
+      "late_strong": 31.02,
+      "mid_weak": 1104.75,
+      "old_thin": 736.82
+    },
+    "sample_guard_passed": true,
+    "tilted_trade_count_total": 32,
+    "windows_ev_improved": 3,
+    "windows_ev_regressed": 0,
+    "windows_pnl_regressed": 0
+  },
+  "history_check": {
+    "exp-20260612-027": "Observed ISCF x mixed|balanced|normal as the sole ex-top-clean source-state survivor.",
+    "exp-20260613-002": "Rejected allocator routing; landing point should be the sleeve, not allocator source priority.",
+    "exp-20260613-005": "Accepted replay-only 1.5x sleeve state tilt: aggregate EV +0.0804, PnL +$1,872.59, zero window regression.",
+    "exp-20260613-008": "Observed no net-new robust cells; do not add more cells now.",
+    "exp-20260613-009": "Rejected further source arbitration; avoid allocator retunes."
+  },
+  "hypothesis": "The accepted industry_stable_core_flow sleeve's mixed|balanced|normal rows carry enough edge that a fixed 1.5x default-off paper notional tilt should reproduce exp-20260613-005 through the shared helper without changing entries, exits, candidate generation, live orders, or core behavior.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "used_llm": false,
+    "why_not_llm": "Deterministic OHLCV state fields."
+  },
+  "mechanism_family": "regime_router",
+  "parameters": {
+    "after_config": {
+      "state_router_enabled": true
+    },
+    "identity_config": {
+      "state_router_enabled": false
+    },
+    "landing_point": "industry_stable_core_flow shared default-off paper sleeve",
+    "locked_variables": [
+      "sleeve candidate generation and gates",
+      "sleeve entry/exit timing and hold days",
+      "state cell definition",
+      "core entries/exits/sizing",
+      "all other sleeves and accepted allocator",
+      "live/default orders",
+      "LLM/news behavior"
+    ],
+    "notional_scalar": 1.5,
+    "router_cell": "mixed|balanced|normal"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not sweep scalar, cell boundaries, lookbacks, top-N, hold days, cooldown, candidate gates, or allocator rank on the frozen windows. Do not add the macro_relief thin cell until forward rows mature.",
+    "new_evidence_required": "Closed forward default-off ISCF rows tagged with entry market state, showing positive mixed|balanced|normal replacement value out of sample.",
+    "realized_failure_mode": "none_passed_all_guards",
+    "why_result_happened": "The shared helper should match exp-20260613-005 because the fixed cell/scalar is identical and only moves from runner-local logic into the production-visible default-off helper."
+  },
+  "production_impact": {
+    "adapter_status": "shared_default_off_paper_helper",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": true,
+    "daily_snapshot_exposed": true,
+    "default_off_paper_only": true,
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "daily_entry_slots": 1,
+      "hold_days": 10,
+      "kill_switch": "default-off only; future live eligibility requires forward gate and activation experiment",
+      "max_active_positions": 8,
+      "min_dollar_volume": 50000000.0,
+      "order_semantics": "next_open_paper_only_no_orders_emitted",
+      "portfolio_displacement": "same selected sleeve rows; only paper weight changes",
+      "same_ticker_cooldown_days": 15,
+      "tilted_notional": 6000.0
+    },
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "parity_note": "Historical replay and daily default-off snapshot call quant/industry_stable_core_flow_paper_sleeve.py and the shared quant/market_state_router.py. quant/run.py now passes QQQ into this sleeve's daily OHLCV dict, matching historical SPY/QQQ state inputs. No orders, core ranking, sizing, exits, watchlist, LLM, or news path changes.",
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": true,
+    "trade_enabled": false,
+    "uses_free_ohlcv_only": true,
+    "uses_llm": false
+  },
+  "related_files": [
+    "quant/market_state_router.py",
+    "quant/industry_stable_core_flow_paper_sleeve.py",
+    "quant/run.py",
+    "quant/test_market_state_router.py",
+    "quant/test_industry_stable_core_flow_paper_sleeve.py",
+    "quant/experiments/exp_20260613_010_iscf_shared_state_tilt.py",
+    "data/experiments/exp-20260613-010/exp_20260613_010_iscf_shared_state_tilt.json",
+    "experiments/logs/exp-20260613-010.json",
+    "experiments/tickets/exp-20260613-010.json",
+    "experiments/cards/exp-20260613-010.md",
+    "experiments/manifests/exp-20260613-010.json",
+    "docs/experiment_log.jsonl",
+    "docs/production_backtest_parity_matrix.md",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "status": "accepted",
+  "timestamp": "2026-06-13T07:21:46Z",
+  "trial_family": "market_state_conditioned_sleeve_router",
+  "trial_variant_id": "industry_stable_core_flow_shared_state_tilt_v1",
+  "windows": [
+    {
+      "expected_value_after": 5.187,
+      "expected_value_before": 5.1857,
+      "expected_value_delta": 0.0013,
+      "in_cell_trade_count": 8,
+      "label": "late_strong",
+      "strategy_total_pnl_after": 117619.74,
+      "strategy_total_pnl_before": 117588.72,
+      "strategy_total_pnl_delta": 31.02,
+      "target_trade_count": 12,
+      "tilted_trade_count": 8
+    },
+    {
+      "expected_value_after": 2.2702,
+      "expected_value_before": 2.2151,
+      "expected_value_delta": 0.0551,
+      "in_cell_trade_count": 11,
+      "label": "mid_weak",
+      "strategy_total_pnl_after": 80789.63,
+      "strategy_total_pnl_before": 79684.88,
+      "strategy_total_pnl_delta": 1104.75,
+      "target_trade_count": 16,
+      "tilted_trade_count": 11
+    },
+    {
+      "expected_value_after": 0.6583,
+      "expected_value_before": 0.6343,
+      "expected_value_delta": 0.024,
+      "in_cell_trade_count": 13,
+      "label": "old_thin",
+      "strategy_total_pnl_after": 41929.88,
+      "strategy_total_pnl_before": 41193.06,
+      "strategy_total_pnl_delta": 736.82,
+      "target_trade_count": 19,
+      "tilted_trade_count": 13
+    }
+  ]
+}

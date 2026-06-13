@@ -5,6 +5,8 @@ from datetime import date, timedelta
 from quant.industry_stable_core_flow_paper_sleeve import (
     RULE_VERSION,
     SOURCE_RULE_VERSION,
+    STATE_ROUTER_CELL,
+    STATE_ROUTER_NOTIONAL_SCALAR,
     build_industry_stable_core_flow_historical_trades,
     build_industry_stable_core_flow_snapshot,
     empty_industry_stable_core_flow_state,
@@ -54,6 +56,10 @@ def _returns(kind: str, days: int = 86, signal_day: int = 70) -> list[float]:
     if kind == "spy":
         values[signal_day] = 0.001
         return values
+    if kind == "qqq":
+        values = [0.0012 for _ in range(days)]
+        values[signal_day] = 0.0012
+        return values
     if kind == "member":
         for idx in range(signal_day - 20, signal_day + 1):
             values[idx] = 0.0032
@@ -67,9 +73,15 @@ def _returns(kind: str, days: int = 86, signal_day: int = 70) -> list[float]:
     raise AssertionError(kind)
 
 
-def _ohlcv() -> dict[str, list[dict]]:
+def _ohlcv(*, include_qqq: bool = False) -> dict[str, list[dict]]:
     signal_day = 70
     payload = {"SPY": _rows(base=100.0, returns=_returns("spy"), signal_day=signal_day)}
+    if include_qqq:
+        payload["QQQ"] = _rows(
+            base=100.0,
+            returns=_returns("qqq"),
+            signal_day=signal_day,
+        )
     for ticker in ["MEM1", "MEM2", "MEM3", "MEM4", "MEM5"]:
         payload[ticker] = _rows(
             base=80.0,
@@ -170,6 +182,58 @@ def test_historical_replay_and_daily_snapshot_share_candidate() -> None:
     assert trades[0]["ticker"] == snapshot["candidates"][0]["ticker"] == "LEAD"
     assert trades[0]["decision_id"] == snapshot["candidates"][0]["decision_id"]
     assert audit["selected_by_window"]["fixture"] == 1
+
+
+def test_state_router_tilts_historical_and_daily_pending_notional() -> None:
+    ohlcv = _ohlcv(include_qqq=True)
+    signal_day = ohlcv["SPY"][70]["date"]
+    exit_day = ohlcv["SPY"][80]["date"]
+
+    trades, _audit = build_industry_stable_core_flow_historical_trades(
+        ohlcv_by_ticker=ohlcv,
+        core_entries_by_date={signal_day: [{"ticker": "CORE"}]},
+        windows={"fixture": {"start": signal_day, "end": exit_day}},
+        sector_entries=_sector_entries(),
+    )
+    snapshot = build_industry_stable_core_flow_snapshot(
+        as_of=signal_day,
+        ohlcv_by_ticker=ohlcv,
+        core_entries=[{"ticker": "CORE"}],
+        sector_entries=_sector_entries(),
+        state=empty_industry_stable_core_flow_state(),
+        persist=False,
+    )
+
+    assert len(trades) == 1
+    trade = trades[0]
+    pending = snapshot["new_pending_entries"][0]
+    assert trade["combined_state"] == STATE_ROUTER_CELL
+    assert trade["state_router_applied"] is True
+    assert trade["state_router_scalar"] == STATE_ROUTER_NOTIONAL_SCALAR
+    assert trade["state_router_base_paper_notional_usd"] == 4000.0
+    assert trade["paper_notional_usd"] == 6000.0
+    assert pending["paper_notional_usd"] == 6000.0
+    assert pending["combined_state"] == STATE_ROUTER_CELL
+    assert snapshot["state_router"]["applied_count"] == 1
+
+
+def test_state_router_can_be_disabled_for_identity_comparator() -> None:
+    ohlcv = _ohlcv(include_qqq=True)
+    signal_day = ohlcv["SPY"][70]["date"]
+    exit_day = ohlcv["SPY"][80]["date"]
+
+    trades, _audit = build_industry_stable_core_flow_historical_trades(
+        ohlcv_by_ticker=ohlcv,
+        core_entries_by_date={signal_day: [{"ticker": "CORE"}]},
+        windows={"fixture": {"start": signal_day, "end": exit_day}},
+        sector_entries=_sector_entries(),
+        config={"state_router_enabled": False},
+    )
+
+    assert len(trades) == 1
+    assert trades[0]["combined_state"] == STATE_ROUTER_CELL
+    assert trades[0]["state_router_applied"] is False
+    assert trades[0]["paper_notional_usd"] == 4000.0
 
 
 def test_daily_snapshot_advances_pending_to_closed_using_same_fill_model(tmp_path) -> None:

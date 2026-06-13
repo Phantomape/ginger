@@ -157,6 +157,19 @@ forward activation reads should use `replacement_value_vs_cash_usd`,
 `replacement_value_vs_spy_usd`, and `replacement_value_vs_qqq_usd`; raw paper
 PnL is no longer sufficient evidence.
 
+The June 13 regime-router readout adds one retained state-conditioned paper
+allocation, not a broad license to tune regimes. The only robust cell promoted
+so far is `industry_stable_core_flow x mixed|balanced|normal`: exp-20260613-005
+found the replay-only 1.5x notional tilt positive across all three canonical
+windows, and exp-20260613-010 reproduced it through the shared default-off
+helper with aggregate EV `+0.0804`, PnL `+$1,872.59`, 32 tilted rows, zero
+window regression, and concentration/drawdown guards passing. It is still
+`accepted_paper_pending_forward`, not live-ready, because the cell was screened
+on the same windows. Do not sweep scalar, cell boundaries, state lookbacks,
+top-N, hold, cooldown, or allocator rank. The next evidence must be closed
+forward industry-stable core-flow rows tagged with entry-time state and
+replacement value.
+
 Default next question for any new broad candidate pool:
 
 - what exact relation makes this ticker a better replacement than cash, ETF
