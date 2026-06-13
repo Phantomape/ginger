@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1279`
-- Raw records loaded by meta report: `3379`
-- History fingerprint: `998ff7aad9209f08`
+- Strategy records counted: `1280`
+- Raw records loaded by meta report: `3381`
+- History fingerprint: `e07774bcd33d6985`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -63,8 +63,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260613-005` `accepted`: EV `+0.0804`, PnL `$1,872.59`, family `regime_router`, trial `market_state_conditioned_sleeve_router`.
-  Lesson: First accepted in the regime-router line. All guards clean: agg EV +0.0804 (+1.0%), PnL +$1,873, three windows improved zero regressed, in-cell AND incremental single-ticker share both 20.9% (TOST, well under 50% cap...
 - `exp-20260613-006` `rejected_source_score_percentile_allocator`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_allocator_source_arbitration`.
   Lesson: Raw source-score percentiles were not enough to arbitrate same-day source conflicts better than the accepted fixed priority. The oracle gap from exp-20260613-003 is likely coming from information not captured by each...
 - `exp-20260613-009` `rejected_candidate_microstructure_allocator`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_allocator_source_arbitration`.
@@ -87,6 +85,8 @@ facts before changing strategy behavior.
   Lesson: The residual compression field did not add robust replacement value beyond accepted raw compression. Any regression, drawdown drift, concentration issue, or comparator miss means the rule likely relabeled ordinary mom...
 - `exp-20260613-019` `rejected_post_thrust_pause_quality_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `production_visible_free_ohlcv_tail_state_candidate_pool`, trial `post_thrust_pause_quality_candidate_pool`.
   Lesson: The pause/reclaim structure still mostly relabeled crowded short horizon momentum. Mid-window rebounds helped, but late_strong and old_thin reversed enough that aggregate EV and PnL fell and old_thin drawdown worsened...
+- `exp-20260613-020` `rejected_seasoned_new_listing_leadership_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `production_visible_free_ohlcv_candidate_pool_expansion`, trial `seasoned_new_listing_leadership_candidate_pool`.
+  Lesson: The observable first-seen leadership field mostly selected crowded young momentum names. It produced enough candidates, but the 10-day replacement value did not clear the three-window Gate 4 drawdown, PnL, EV, and com...
 
 ## Highest-Signal Historical Records
 
