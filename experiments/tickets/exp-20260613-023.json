@@ -1,0 +1,59 @@
+{
+  "experiment_id": "exp-20260613-023",
+  "experiment_uid": "expuid-7bb2da313f2e4921",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260613-023",
+    "slug": "replace_narrow_data_universe_ingestion_env_gated_companyfacts_refresh_with_broad",
+    "reserved_at": "2026-06-13T17:46:20+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "proposed",
+  "lane": "measurement_repair",
+  "owner": "agent-opus",
+  "hypothesis": "Production data ingestion (SEC companyfacts, kova fundamentals, earnings snapshot, options chains, FINRA short interest) was narrow (~40-58 tickers) and/or frozen because each stream consumed the narrow data_universe (watchlist+pilots) and companyfacts refresh was env-gated off (KOVA_REFRESH_COMPANYFACTS=False), and one-shot backfills had no daily refresh owner. Widening every stream to the broad ~1229 universe feed and wiring each to attempt a fetch every production run eliminates silent staleness and prevents alpha distortion from a non-representative narrow sample. Measurement repair, not an alpha change: trade_enabled stays False, no orders/ranking/sizing/exits change.",
+  "change_type": "measurement_repair",
+  "mechanism_family": "data_ingestion_coverage_repair",
+  "trial_family": "data_ingestion_coverage_repair",
+  "trial_variant_id": "exp-20260613-023",
+  "single_causal_variable": "Replace narrow data_universe ingestion + env-gated companyfacts refresh with broad-universe-fed, always-attempted daily ingestion across all fundamental/alt data streams",
+  "changed_variable": "Replace narrow data_universe ingestion + env-gated companyfacts refresh with broad-universe-fed, always-attempted daily ingestion across all fundamental/alt data streams",
+  "causal_components": [],
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "not_declared",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260613_023_replace_narrow_data_universe_ingestion_env_gated_companyfacts_refresh_with_broad.py",
+    "data/experiments/exp-20260613-023/exp_20260613_023_replace_narrow_data_universe_ingestion_env_gated_companyfacts_refresh_with_broad.json",
+    "experiments/cards/exp-20260613-023.md",
+    "experiments/manifests/exp-20260613-023.json",
+    "experiments/tickets/exp-20260613-023.json",
+    "experiments/logs/exp-20260613-023.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "Replace narrow data_universe ingestion + env-gated companyfacts refresh with broad-universe-fed, always-attempted daily ingestion across all fundamental/alt data streams"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [],
+    "confidence_reason": "Pure data-coverage/cadence repair: broad universe feed (1229) already exists and is reused by paper sleeves; per-stream fetchers already tolerate per-ticker failures; no strategy logic, order, or backtest-口径 change.",
+    "recorded_at": "2026-06-13T17:45:46+00:00"
+  },
+  "created_at": "2026-06-13T17:46:20+00:00",
+  "claimed_at": null,
+  "completed_at": null,
+  "result": null,
+  "ticket_file": "experiments/tickets/exp-20260613-023.json",
+  "card_file": "experiments/cards/exp-20260613-023.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260613-023.json"
+}

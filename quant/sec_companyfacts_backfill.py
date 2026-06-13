@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-from data_paths import resolve_daily_artifact_path
+from data_paths import data_artifact_path, resolve_daily_artifact_path
 from sec_ticker_map import normalize_cik
 
 
@@ -149,7 +149,12 @@ def fetch_companyfacts(
 
 
 def _ticker_to_cik_map() -> dict[str, str]:
-    payload = _load_json(DATA_DIR / "sec_company_tickers.json", {})
+    # exp-20260613-023: resolve via the canonical organized path
+    # (data/reference/sec_company_tickers.json, with legacy root fallback).
+    # The file was relocated under data/reference/, so the old
+    # DATA_DIR / "sec_company_tickers.json" path silently returned an empty
+    # map -> every ticker failed CIK resolution -> companyfacts never refreshed.
+    payload = _load_json(data_artifact_path("sec_company_tickers"), {})
     rows = payload.values() if isinstance(payload, dict) else payload
     out: dict[str, str] = {}
     for row in rows or []:

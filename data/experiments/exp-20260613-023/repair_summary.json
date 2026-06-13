@@ -1,0 +1,47 @@
+{
+  "experiment_id": "exp-20260613-023",
+  "lane": "measurement_repair",
+  "title": "Broad-universe + always-attempt daily ingestion for fundamental/alt data streams",
+  "as_of": "2026-06-13",
+  "trade_enabled": false,
+  "production_impact": {
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "scope": "data_ingestion_coverage_and_cadence_repair"
+  },
+  "root_causes": [
+    "All fundamental/alt ingestion consumed the narrow data_universe (~58 = watchlist + pilots) instead of the broad ~1229 universe feed.",
+    "companyfacts refresh was env-gated off (KOVA_REFRESH_COMPANYFACTS default False) AND stale_days=None meant already-cached CIK files were treated as permanently fresh -> cache frozen at 2026-06-04.",
+    "DEEPER BUG: sec_companyfacts_backfill._ticker_to_cik_map read DATA_DIR/'sec_company_tickers.json' (data/ root) which no longer exists after the file was relocated to data/reference/; the map silently resolved to EMPTY, so every ticker failed CIK resolution and companyfacts would have refreshed nothing even with the flag on. Same broken path in form4_backfill and sec_filing_backfill (these had a narrower fallback, so they kept working but on a reduced map)."
+  ],
+  "fixes": {
+    "quant/run.py": [
+      "Compute broad_ingest_universe (broad feed union trade universe, ~1229) once early, with safe fallback to data_universe.",
+      "Rank broad universe by 30d dollar volume (warehouse) into options_ingest_tickers so the free options source attempts the most-liquid names.",
+      "Wire fetch_broad_universe_earnings(tickers=broad_ingest_universe) after the core earnings snapshot (additive merge, batched/rate-limited).",
+      "options: options_tickers=options_ingest_tickers + options_max_tickers=OPTIONS_MAX_TICKERS||250.",
+      "kova: tickers=broad_ingest_universe; refresh_companyfacts default True; companyfacts_stale_days=KOVA_COMPANYFACTS_STALE_DAYS||2.0.",
+      "FINRA: candidate universe unioned with broad_ingest_universe (cadence stays bi-weekly/regulatory)."
+    ],
+    "quant/kova_data_sidecar.py": "persist_kova_data_snapshot gains companyfacts_stale_days, threaded into backfill args.",
+    "quant/fetch_broad_earnings_snapshot.py": "fetch_broad_universe_earnings gains optional tickers= (uses caller universe, else PEAD ~500).",
+    "quant/sec_companyfacts_backfill.py": "_ticker_to_cik_map uses data_artifact_path('sec_company_tickers') (reference/ + legacy fallback).",
+    "quant/form4_backfill.py": "same canonical CIK-map path fix.",
+    "quant/sec_filing_backfill.py": "same canonical CIK-map path fix."
+  },
+  "verification": {
+    "pytest": "1314 passed (full quant suite)",
+    "broad_earnings_merge_probe": "earnings snapshot 58 -> 62 tickers; non-watchlist KEYS/ZBRA/AOS/PNR landed with real next_earnings_date + eps_estimate.",
+    "companyfacts_cik_resolution": "ticker->CIK map 0 -> 10341 after path fix; AAPL/MSFT/NVDA resolved; backfill wrote 492 rows, 0 errors; 3 CIK cache files re-fetched (were frozen 2026-06-04).",
+    "form4_sec_filing_cik_map": "0/fallback -> 10341 each.",
+    "options_dollar_volume_ranking": "1333 ranked, 1229 in broad universe; top5 = MU,NVDA,MSFT,AMD,AAPL (most liquid first)."
+  },
+  "physical_limits_documented": {
+    "options_onclickmedia": "free source cannot cover the full universe; capped at the ~250 most-liquid by dollar volume, still attempted every run.",
+    "finra_short_interest": "FINRA publishes bi-weekly for all exchange-listed securities; coverage widened to broad universe but cadence stays bi-weekly (regulatory, not daily) -- attempted every run, new cycle pulled when published."
+  },
+  "next_run_expectation": "Full broad coverage materializes on the next production run.py; companyfacts cache rolls fresh on a 2-day stale throttle; earnings/kova/finra cover ~1229 names."
+}

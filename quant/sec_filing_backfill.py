@@ -10,7 +10,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
-from data_paths import resolve_daily_artifact_path
+from data_paths import data_artifact_path, resolve_daily_artifact_path
 from sec_submissions import fetch_submission
 from sec_ticker_map import load_company_ticker_map, normalize_cik
 
@@ -99,7 +99,10 @@ def usable_trade_date(accepted_at: datetime | None, filing_date: str | None) -> 
 
 
 def _ticker_to_cik_map() -> dict[str, str]:
-    payload = _load_json(DATA_DIR / "sec_company_tickers.json", {})
+    # exp-20260613-023: canonical organized path (data/reference/...) with legacy
+    # fallback; the old DATA_DIR root path was empty after the file relocation,
+    # silently dropping the broad ticker->CIK map to the narrower fallback below.
+    payload = _load_json(data_artifact_path("sec_company_tickers"), {})
     rows = payload.values() if isinstance(payload, dict) else payload
     direct: dict[str, str] = {}
     for row in rows or []:

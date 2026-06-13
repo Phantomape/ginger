@@ -501,6 +501,63 @@ def main():
         "OHLCV_WAREHOUSE_PATH",
         str(DEFAULT_WAREHOUSE_PATH),
     )
+
+    # ── Broad ingestion universe (exp-20260613-023) ───────────────────────────
+    # Fundamental/alternative data streams (SEC companyfacts, kova fundamentals,
+    # earnings snapshot, FINRA short interest) must attempt the broad ~1200-name
+    # universe on every production run so a narrow watchlist sample cannot
+    # silently distort or freeze them. Falls back to the trade universe if the
+    # feed is unavailable, so there is no regression when the feed is missing.
+    try:
+        _broad_feed = load_broad_market_candidate_universe()
+        _broad_feed_tickers = {str(t).upper() for t in (_broad_feed.get("tickers") or [])}
+    except Exception as _broad_exc:  # pragma: no cover - defensive
+        _broad_feed_tickers = set()
+        log.warning(
+            f"Broad ingestion universe unavailable, using trade universe: {_broad_exc}"
+        )
+    broad_ingest_universe = sorted(_broad_feed_tickers | {str(t).upper() for t in data_universe})
+    log.info(
+        "Broad ingestion universe: %d tickers (feed=%d, trade=%d)",
+        len(broad_ingest_universe),
+        len(_broad_feed_tickers),
+        len(data_universe),
+    )
+    # Options come from a free source that cannot cover the full universe, so
+    # rank the broad universe by recent dollar volume and let the per-stream cap
+    # take the most-liquid names. Still attempted every run; trade-universe names
+    # are always included first.
+    options_ingest_tickers = list(data_universe)
+    try:
+        import sqlite3 as _sqlite3
+        from datetime import timedelta as _timedelta
+
+        _cut = (datetime.now() - _timedelta(days=30)).strftime("%Y-%m-%d")
+        _wh = _sqlite3.connect(ohlcv_warehouse_path)
+        try:
+            _ranked = [
+                str(row[0]).upper()
+                for row in _wh.execute(
+                    "SELECT ticker, AVG(close * volume) AS dv FROM ohlcv "
+                    "WHERE date >= ? GROUP BY ticker ORDER BY dv DESC",
+                    (_cut,),
+                )
+            ]
+        finally:
+            _wh.close()
+        _broad_set = set(broad_ingest_universe)
+        _ranked_in = [t for t in _ranked if t in _broad_set]
+        options_ingest_tickers = list(
+            dict.fromkeys([str(t).upper() for t in data_universe] + _ranked_in)
+        )
+        log.info(
+            "Options ingestion universe ranked by dollar volume: %d candidates",
+            len(options_ingest_tickers),
+        )
+    except Exception as _opt_exc:  # pragma: no cover - defensive
+        log.warning(
+            f"Options liquidity ranking unavailable, using trade universe: {_opt_exc}"
+        )
     ohlcv_warehouse_enabled = not _env_flag(
         "DISABLE_OHLCV_WAREHOUSE_ACCUMULATION",
         False,
@@ -723,6 +780,28 @@ def main():
     # Without this snapshot, the backtester uses None for both fields, capping
     # C-strategy confidence at 0.83 and preventing quality filtering.
     persist_earnings_snapshot(earnings_dict, as_of=datetime.now(), logger=log)
+    # Broad-universe earnings merge (exp-20260613-023): attempt yfinance earnings
+    # for the broad universe on every run so coverage is not capped at the
+    # ~58-name watchlist. Additive merge — core watchlist rows are never
+    # overwritten; per-ticker failures are tolerated and never abort the run.
+    try:
+        from fetch_broad_earnings_snapshot import fetch_broad_universe_earnings
+
+        broad_earnings_summary = fetch_broad_universe_earnings(
+            as_of=datetime.now(),
+            tickers=broad_ingest_universe,
+            batch_size=_env_int("EARNINGS_BROAD_BATCH_SIZE") or 40,
+            batch_sleep_secs=_env_float("EARNINGS_BROAD_BATCH_SLEEP_SECS", 1.0),
+        )
+        log.info(
+            "Broad earnings merge: status=%s fetched=%s eps=%s failed=%s",
+            broad_earnings_summary.get("status"),
+            broad_earnings_summary.get("tickers_fetched"),
+            broad_earnings_summary.get("tickers_with_eps_estimate"),
+            broad_earnings_summary.get("tickers_failed"),
+        )
+    except Exception as e:
+        log.warning(f"Broad earnings merge unavailable: {e}")
     try:
         estimate_revision_summary = persist_estimate_revision_ledger(
             as_of=today_iso,
@@ -767,10 +846,11 @@ def main():
             universe=data_universe,
             refresh_earnings=False,
             refresh_options=True,
-            options_tickers=data_universe,
+            options_tickers=options_ingest_tickers,
             option_underlying_prices=option_underlying_prices,
             options_max_expirations=2,
             options_max_strikes_per_side=12,
+            options_max_tickers=_env_int("OPTIONS_MAX_TICKERS") or 250,
             logger_obj=log,
         )
         non_ohlcv_snapshot = (
@@ -844,7 +924,7 @@ def main():
         kova_companyfacts_lookback_days = _env_int("KOVA_COMPANYFACTS_LOOKBACK_DAYS")
         kova_data_snapshot = persist_kova_data_snapshot(
             asof_date=today_iso,
-            tickers=data_universe,
+            tickers=broad_ingest_universe,
             data_dir="data/kova",
             non_ohlcv_dir="data/non_ohlcv",
             ohlcv_data=kova_ohlcv_dict,
@@ -852,7 +932,12 @@ def main():
             refresh_intraday=_env_flag("KOVA_REFRESH_INTRADAY", False),
             intervals=kova_intervals,
             month=os.environ.get("KOVA_INTRADAY_MONTH") or None,
-            refresh_companyfacts=_env_flag("KOVA_REFRESH_COMPANYFACTS", False),
+            # exp-20260613-023: refresh companyfacts on every run (was env-gated
+            # off, which froze the cache at 2026-06-04) and pass a finite
+            # stale_days so already-cached CIK files are re-fetched on a throttle
+            # instead of being treated as permanently fresh (stale_days=None).
+            refresh_companyfacts=_env_flag("KOVA_REFRESH_COMPANYFACTS", True),
+            companyfacts_stale_days=_env_float("KOVA_COMPANYFACTS_STALE_DAYS", 2.0),
             companyfacts_max_ciks=_env_int("KOVA_COMPANYFACTS_MAX_CIKS"),
             companyfacts_lookback_days=(
                 kova_companyfacts_lookback_days
@@ -2479,12 +2564,23 @@ def main():
         finra_iwm_ohlcv["SPY"] = spy_ohlcv
         if "IWM" not in finra_iwm_ohlcv or finra_iwm_ohlcv.get("IWM") is None:
             finra_iwm_ohlcv["IWM"] = _cached_ohlcv("IWM")
+        # exp-20260613-023: FINRA publishes short interest for ALL exchange-listed
+        # securities (free, bi-weekly), so widen the candidate filter to the broad
+        # universe instead of only the names with daily OHLCV loaded. Cadence stays
+        # bi-weekly (regulatory); coverage is no longer capped at the watchlist.
         finra_iwm_candidate_universe = {
             "status": "daily_data_universe",
             "tickers": sorted(
-                ticker
-                for ticker, frame in finra_iwm_ohlcv.items()
-                if frame is not None and str(ticker).upper() not in {"SPY", "IWM"}
+                {
+                    ticker
+                    for ticker, frame in finra_iwm_ohlcv.items()
+                    if frame is not None and str(ticker).upper() not in {"SPY", "IWM"}
+                }
+                | {
+                    t
+                    for t in broad_ingest_universe
+                    if str(t).upper() not in {"SPY", "IWM"}
+                }
             ),
         }
         finra_iwm_paper_sleeve = build_finra_iwm_paper_sleeve_snapshot(

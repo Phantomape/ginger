@@ -103,14 +103,17 @@ def _prefetch_ticker(ticker: str) -> dict:
 def fetch_broad_universe_earnings(
     as_of: datetime | None = None,
     *,
+    tickers: list[str] | None = None,
     base_dir: str | None = None,
     batch_size: int = DEFAULT_BATCH_SIZE,
     batch_sleep_secs: float = DEFAULT_BATCH_SLEEP_SECS,
     dry_run: bool = False,
 ) -> dict:
-    """Fetch earnings data for ~500 broad-universe tickers and merge into snapshot.
+    """Fetch earnings data for a broad universe of tickers and merge into snapshot.
 
-    Returns a summary dict with fetch statistics.
+    When ``tickers`` is provided (e.g. the production broad-market universe feed,
+    ~1200 names) it is used directly; otherwise the curated PEAD broad universe
+    (~500) is used. Returns a summary dict with fetch statistics.
     """
     configure_yfinance_runtime()
     if as_of is None:
@@ -118,10 +121,19 @@ def fetch_broad_universe_earnings(
     if base_dir is None:
         base_dir = str(daily_artifact_path("earnings_snapshot", as_of.strftime("%Y%m%d")).parent)
 
-    # Filter to only tickers NOT already in the core watchlist.
-    # Even if there's overlap it's fine: merge_earnings_into_snapshot skips
-    # tickers already in the snapshot, so no data is overwritten.
-    broad_tickers = get_pead_broad_universe_tickers()
+    # Use the caller-supplied universe when given, else the curated PEAD set.
+    # Either way merge_earnings_into_snapshot skips tickers already in the
+    # snapshot, so core watchlist data is never overwritten.
+    if tickers:
+        seen: set[str] = set()
+        broad_tickers = []
+        for raw in tickers:
+            sym = str(raw).strip().upper()
+            if sym and sym not in seen:
+                seen.add(sym)
+                broad_tickers.append(sym)
+    else:
+        broad_tickers = get_pead_broad_universe_tickers()
 
     logger.info(
         "%s: Fetching broad-universe earnings for %d tickers (as_of=%s, batch=%d, sleep=%.1fs)",
