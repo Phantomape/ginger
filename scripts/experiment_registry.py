@@ -129,7 +129,15 @@ def _atomic_write_text(text, path):
             f.write(text)
             f.flush()
             os.fsync(f.fileno())
-        os.replace(tmp, path)
+        try:
+            os.replace(tmp, path)
+        except PermissionError:
+            if os.name != "nt":
+                raise
+            with path.open("w", encoding="utf-8") as f:
+                f.write(text)
+                f.flush()
+                os.fsync(f.fileno())
         tmp = None
     finally:
         if tmp and os.path.exists(tmp):
