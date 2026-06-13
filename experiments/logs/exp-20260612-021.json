@@ -1,0 +1,157 @@
+{
+  "after_metrics": {
+    "expected_value_score": 8.1704,
+    "max_drawdown_pct": 0.1133,
+    "sharpe": null,
+    "sharpe_daily": 2.848033,
+    "survival_rate": 0.823171,
+    "total_pnl": 241059.98,
+    "total_return_pct": 2.4106,
+    "trade_count": 61,
+    "win_rate": 0.573761
+  },
+  "before_metrics": {
+    "expected_value_score": 7.8941,
+    "max_drawdown_pct": 0.1119,
+    "sharpe": null,
+    "sharpe_daily": 2.781967,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "total_return_pct": 2.3485,
+    "trade_count": 61,
+    "win_rate": 0.573761
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": 0.2763,
+    "actual_pnl_delta": 6208.99,
+    "actual_success": 0,
+    "brier_score": 0.04,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": 0.2763,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": 6208.99,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "forward_rows_immature",
+      "forward_replacement_value_negative",
+      "concentration_guard_failure",
+      "parity_gap"
+    ],
+    "predicted_success_probability": 0.2,
+    "realized_failure_mode": "forward_rows_immature",
+    "surprise_level": "very_low",
+    "surprise_note": "Predicted forward immaturity was confirmed; no production activation should occur from replay-only evidence."
+  },
+  "causal_components": [
+    "accepted shared helper three-window edge",
+    "post-acceptance OOS replay replacement value",
+    "genuine forward closed-row gate",
+    "live-realistic notional and concentration envelope",
+    "no signal retune"
+  ],
+  "change_summary": "Activation-envelope review for accepted industry-relative laggard repair; no signal, sizing, ranking, exit, run.py, or helper changes.",
+  "change_type": "activation_envelope",
+  "changed_variable": "activation_envelope_only_no_signal_change",
+  "component": "quant/experiments/exp_20260612_021_industry_laggard_activation_envelope.py, data/experiments/exp-20260612-021/, experiments/tickets/exp-20260612-021.json, experiments/logs/exp-20260612-021.json",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": 0.2763,
+    "max_drawdown_pct": 0.0014,
+    "sharpe_daily": 0.066066,
+    "survival_rate": 0.0,
+    "total_pnl": 6208.99,
+    "total_return_pct": 0.0621,
+    "trade_count": 0,
+    "win_rate": 0.0
+  },
+  "experiment_id": "exp-20260612-021",
+  "hypothesis": "Industry-relative laggard repair has enough accepted three-window edge and post-acceptance OOS replay strength to justify a live-realistic activation envelope review without changing its signal logic.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "industry_relative_laggard_repair",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260607-008",
+    "exp-20260612-019",
+    "exp-20260611-020"
+  ],
+  "new_evidence_type": "accepted_three_window_plus_post_acceptance_oos_replay_and_forward_rows",
+  "next_retry_requires": [
+    "At least 60 genuine closed production-forward rows for this shared helper.",
+    "Forward net PnL must be positive, win rate must be at least 50%, and concentration guards must pass.",
+    "Do not retune thresholds, hold days, cooldown, slots, or notional as a near-neighbor retry."
+  ],
+  "notes": "Three-window accepted helper evidence remains positive (+0.2763 EV, +$6,208.99 PnL, 306 target paper trades), but live activation is rejected because genuine production-forward rows are 0 closed and 1 pending; OOS replay (22 closed, +$5,132.36 RV vs SPY) is a lead only.",
+  "parameters": {
+    "locked_variables": [
+      "entry filters",
+      "exit hold_days",
+      "cooldown",
+      "daily slots",
+      "notional",
+      "ranking",
+      "sleeve helper logic"
+    ],
+    "single_causal_variable": "industry_relative_laggard_repair_live_activation_envelope_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not re-run activation by lowering the forward-row gate or by retuning thresholds, hold days, cooldown, daily slots, notional, or candidate rank.",
+    "new_evidence_required": "Genuine production-forward closed rows from the shared default-off helper, not replay-only OOS rows.",
+    "realized_failure_mode": "forward_rows_immature",
+    "why_result_happened": "The historical alpha remains positive, and OOS replay is promising, but production state has 0 closed rows and 1 pending entry. Activating from replay-only evidence would create a backtest/production mismatch."
+  },
+  "prediction": {
+    "confidence_reason": "Accepted helper edge is strong enough for review, but exp-20260612-019 showed genuine forward closed rows are probably still near zero.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "forward_rows_immature",
+      "forward_replacement_value_negative",
+      "concentration_guard_failure",
+      "parity_gap"
+    ],
+    "recorded_at": "2026-06-12T21:05:51+00:00",
+    "success_probability": 0.2
+  },
+  "prior_trial_count": 2,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "Forward activation gate failed: 0 genuine closed production-forward rows versus the 60-row minimum.",
+  "related_files": [
+    "quant/experiments/exp_20260612_021_industry_laggard_activation_envelope.py",
+    "data/experiments/exp-20260612-021/exp_20260612_021_industry_laggard_activation_envelope.json",
+    "data/experiments/exp-20260612-021/before_accepted_stack_aggregate.json",
+    "data/experiments/exp-20260612-021/after_industry_laggard_shared_helper_aggregate.json",
+    "experiments/tickets/exp-20260612-021.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-06-12T21:13:18+00:00",
+  "trial_family": "default_off_to_activation_envelope",
+  "trial_variant_id": "v1_forward_gate_no_retune"
+}

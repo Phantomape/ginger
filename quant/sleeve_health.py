@@ -25,7 +25,7 @@ except ImportError:  # pragma: no cover - package-style import fallback
     from quant.us_market_calendar import is_us_equity_session
 
 
-RULE_VERSION = "sleeve_health_report_v1"
+RULE_VERSION = "sleeve_health_report_v2"
 HEALTH_LOG_RELPATH = Path("paper_sleeves") / "sleeve_health.jsonl"
 
 # Snapshot payload keys in the daily run that describe sleeve-like surfaces.
@@ -81,6 +81,34 @@ def _last_snapshot_date(snapshot_path: Path) -> str | None:
     return str(row.get("asof_date") or row.get("date") or "")[:10] or None
 
 
+def _json_surface_date(path: Path) -> str | None:
+    try:
+        row = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    if not isinstance(row, dict):
+        return None
+    for key in ("asof_date", "date", "updated_at", "generated_at"):
+        value = str(row.get(key) or "")[:10]
+        if value:
+            return value
+    return None
+
+
+def _latest_summary_surface(sleeve_dir: Path) -> tuple[str | None, str | None]:
+    """Return the freshest summary-style date for non-snapshot surfaces."""
+    latest_date: str | None = None
+    latest_name: str | None = None
+    for path in sorted(sleeve_dir.glob("*summary.json")):
+        date = _json_surface_date(path)
+        if not date:
+            continue
+        if latest_date is None or date > latest_date:
+            latest_date = date
+            latest_name = path.name
+    return latest_date, latest_name
+
+
 def build_sleeve_health_report(
     as_of: str,
     sleeve_payloads: dict[str, Any],
@@ -114,8 +142,21 @@ def build_sleeve_health_report(
         for sleeve_dir in sorted(p for p in root.iterdir() if p.is_dir()):
             last_date = _last_snapshot_date(sleeve_dir / "snapshots.jsonl")
             if last_date is None:
-                entry: dict[str, Any] = {"status": "never_persisted", "last_snapshot": None}
-                stalled.append(sleeve_dir.name)
+                summary_date, summary_name = _latest_summary_surface(sleeve_dir)
+                if summary_date is None:
+                    entry: dict[str, Any] = {"status": "never_persisted", "last_snapshot": None}
+                    stalled.append(sleeve_dir.name)
+                else:
+                    staleness = sessions_between(summary_date, as_of_date)
+                    entry = {
+                        "status": "stale_summary" if staleness > int(stale_session_threshold) else "fresh_summary",
+                        "last_snapshot": None,
+                        "last_summary": summary_date,
+                        "summary_file": summary_name,
+                        "staleness_sessions": staleness,
+                    }
+                    if entry["status"] == "stale_summary":
+                        stalled.append(sleeve_dir.name)
             else:
                 staleness = sessions_between(last_date, as_of_date)
                 entry = {
@@ -152,7 +193,10 @@ def build_sleeve_health_report(
                             row = json.loads(line)
                         except json.JSONDecodeError:
                             continue
-                        if str(row.get("asof_date")) == as_of_date:
+                        if (
+                            str(row.get("asof_date")) == as_of_date
+                            and str(row.get("rule_version") or "") == RULE_VERSION
+                        ):
                             already = True
                             break
             except OSError:

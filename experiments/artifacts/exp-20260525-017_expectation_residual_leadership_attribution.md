@@ -18,9 +18,9 @@ Observed-only alpha search. No entries, exits, ranking, sizing, LLM/news, or ord
   },
   "candidates_with_eps_estimate_delta_7d": 5,
   "closed_forward_outcomes": {
-    "10d": 21,
-    "20d": 20,
-    "5d": 26
+    "10d": 30,
+    "20d": 21,
+    "5d": 30
   },
   "expectation_join_status_counts": {
     "ledger_row_not_usable": 12,
@@ -53,8 +53,8 @@ Observed-only alpha search. No entries, exits, ranking, sizing, LLM/news, or ord
 |---|---:|---:|---:|---:|---:|
 | A_positive_expectation_and_residual_leader | 0 | 0 |  | 0 |  |
 | B_positive_expectation_only | 0 | 0 |  | 0 |  |
-| C_residual_leader_only | 13 | 10 | -1.5413% | 7 | -6.7270% |
-| D_neither | 17 | 16 | 0.5012% | 14 | 0.0609% |
+| C_residual_leader_only | 13 | 13 | -3.6313% | 13 | -6.5487% |
+| D_neither | 17 | 17 | 0.0331% | 17 | -1.7556% |
 
 ## Reconstructed Scout
 
@@ -77,7 +77,7 @@ Non-PIT reconstructed rows are shown only for research triage. They cannot pass 
     "non_pit_reconstructed": 12,
     "pit_usable": 16
   },
-  "total_usable_candidates": 26
+  "total_usable_candidates": 30
 }
 ```
 
@@ -85,8 +85,8 @@ Non-PIT reconstructed rows are shown only for research triage. They cannot pass 
 |---|---:|---:|---:|---:|---:|
 | A_positive_expectation_and_residual_leader | 0 | 0 |  | 0 |  |
 | B_positive_expectation_only | 0 | 0 |  | 0 |  |
-| C_residual_leader_only | 13 | 10 | -1.5413% | 7 | -6.7270% |
-| D_neither | 17 | 16 | 0.5012% | 14 | 0.0609% |
+| C_residual_leader_only | 13 | 13 | -3.6313% | 13 | -6.5487% |
+| D_neither | 17 | 17 | 0.0331% | 17 | -1.7556% |
 
 ## Gate
 
@@ -94,15 +94,14 @@ Non-PIT reconstructed rows are shown only for research triage. They cannot pass 
 {
   "bucket_a_closed_5d_outcomes": 0,
   "data_gap_reasons": [
-    "bucket_a_closed_5d_outcomes",
-    "total_usable_candidates"
+    "bucket_a_closed_5d_outcomes"
   ],
   "decision": "observed_only_data_gap",
   "minimum_bucket_a_closed_5d_outcomes": 8,
   "minimum_total_usable_candidates": 30,
   "passed": false,
   "reason": "insufficient_bucket_or_total_sample",
-  "total_usable_candidates": 26
+  "total_usable_candidates": 30
 }
 ```
 

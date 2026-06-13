@@ -116,6 +116,7 @@ def test_enrich_all_sleeve_states_roundtrip(tmp_path):
     assert summary["status"] == "ok"
     assert summary["rows_enriched"] == 1
     assert summary["sleeves"]["demo_sleeve"]["rows_enriched"] == 1
+    assert summary["artifact_rows"] == 1
 
     saved = json.loads(state_path.read_text(encoding="utf-8"))
     assert saved["closed_positions"][0]["replacement_value_rule_version"] == frv.RULE_VERSION
@@ -132,7 +133,50 @@ def test_enrich_all_sleeve_states_roundtrip(tmp_path):
         artifact_path=artifact,
     )
     assert summary2["rows_enriched"] == 0
+    assert summary2["artifact_rows"] == 1
     assert len(artifact.read_text(encoding="utf-8").splitlines()) == 1
+
+
+def test_rebuild_current_state_artifact_removes_stale_rows_and_archives(tmp_path):
+    root = tmp_path / "paper_sleeves"
+    sleeve_dir = root / "demo_sleeve"
+    sleeve_dir.mkdir(parents=True)
+    state = {"closed_positions": [_row()]}
+    frv.enrich_state_closed_rows(state, BARS, "2026-06-11", "demo_sleeve")
+    (sleeve_dir / "state.json").write_text(json.dumps(state), encoding="utf-8")
+
+    current_record = frv.current_state_replacement_records(root)[0][0]
+    stale_record = {
+        **current_record,
+        "decision_id": "STALE:removed",
+        "ticker": "QQQ",
+        "entry_date": "2026-05-16",
+        "exit_date": "2026-05-16",
+        "status": "missing_comparator_bars",
+    }
+    artifact = tmp_path / "forward_replacement_value.jsonl"
+    artifact.write_text(
+        json.dumps(current_record, sort_keys=True)
+        + "\n"
+        + json.dumps(stale_record, sort_keys=True)
+        + "\n",
+        encoding="utf-8",
+    )
+    archive = tmp_path / "archive" / "before.jsonl"
+
+    summary = frv.rebuild_current_state_artifact(
+        sleeves_root=root,
+        artifact_path=artifact,
+        archive_path=archive,
+    )
+
+    rows = [json.loads(line) for line in artifact.read_text(encoding="utf-8").splitlines()]
+    assert summary["previous_rows"] == 2
+    assert summary["rows_written"] == 1
+    assert len(summary["previous_rows_not_in_current_state"]) == 1
+    assert summary["previous_rows_not_in_current_state"][0]["decision_id"] == "STALE:removed"
+    assert rows == [current_record]
+    assert "STALE:removed" in archive.read_text(encoding="utf-8")
 
 
 def test_production_impact_is_observe_only():

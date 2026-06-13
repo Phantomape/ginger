@@ -17,6 +17,7 @@ from statistics import mean, median
 from typing import Any
 
 from data_paths import data_artifact_path
+from sleeve_standard_layout import write_standard_sleeve_surfaces
 from pilot_sleeve import (
     SPACE_CATALYST_SHADOW_SLEEVE_NAME,
     SPACE_CATALYST_THEME_SEGMENTS,
@@ -2551,6 +2552,36 @@ def persist_space_catalyst_event_ledger(
     with summary.open("w", encoding="utf-8") as handle:
         json.dump(out, handle, indent=2, sort_keys=True)
         handle.write("\n")
+    # exp-20260612-017: also publish the standard sleeve surfaces so
+    # state.json/snapshots.jsonl tooling does not skip this sleeve. Event rows
+    # are observe-only measurements, not trades, so only compact identifiers go
+    # into pending_entries and the trade lists stay empty.
+    pending_rows = [
+        {
+            "ticker": row.get("ticker"),
+            "event_date": row.get("event_date"),
+            "event_id": row.get("event_id"),
+            "semantic_bucket": row.get("semantic_bucket"),
+            "status": row.get("status"),
+        }
+        for row in (snapshot.get("event_rows") or [])
+        if isinstance(row, dict) and str(row.get("status") or "") != "closed"
+    ]
+    out["standard_surfaces"] = write_standard_sleeve_surfaces(
+        sleeve_dir=summary.parent,
+        sleeve_name=SPACE_CATALYST_EVENT_LEDGER_NAME,
+        rule_version=SPACE_CATALYST_EVENT_LEDGER_RULE_VERSION,
+        asof_date=snapshot.get("asof_date"),
+        pending_entries=pending_rows,
+        extra_snapshot_fields={
+            "active_event_count": snapshot.get("active_event_count", 0),
+            "event_row_count": snapshot.get("event_row_count", 0),
+            "closed_decision_count": snapshot.get("closed_decision_count", 0),
+            "pending_decision_count": snapshot.get("pending_decision_count", 0),
+            "ledger_appended_count": appended,
+            "ledger_row_count": len(history),
+        },
+    )
     return {**snapshot, "persistence": out}
 
 

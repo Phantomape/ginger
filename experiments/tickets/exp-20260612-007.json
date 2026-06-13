@@ -1,0 +1,112 @@
+{
+  "experiment_id": "exp-20260612-007",
+  "experiment_uid": "expuid-4d4c74e766d149b8",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260612-007",
+    "slug": "state_surface_expiry_near_high_extension",
+    "reserved_at": "2026-06-12T06:04:11+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "claude-fable-exit-policy",
+  "hypothesis": "State-surface paper sleeve positions that are still near their trailing 60-session high at fixed 20-day hold expiry carry unfinished right-tail momentum; a bounded expiry-conditional hold extension should capture post-expiry continuation (e.g. SNXX 2026-06-11) without changing entries, ranking, sizing, or live orders.",
+  "change_type": "default_off_paper_exit_policy",
+  "mechanism_family": "exit_policy",
+  "trial_family": "state_surface_exit_lifecycle",
+  "trial_variant_id": "state_surface_expiry_near_high_hold_extension_v1",
+  "single_causal_variable": "expiry_conditional_near_high_hold_extension",
+  "changed_variable": "expiry_conditional_near_high_hold_extension",
+  "causal_components": [
+    "near-high-at-expiry condition",
+    "extension-days sweep",
+    "capacity re-simulation",
+    "three-window replay",
+    "artifact/log updates"
+  ],
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260518-001",
+    "exp-20260512-002",
+    "exp-20260520-001"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "not_declared",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260612_007_state_surface_expiry_near_high_extension.py",
+    "data/experiments/exp-20260612-007/exp_20260612_007_state_surface_expiry_near_high_extension.json",
+    "experiments/cards/exp-20260612-007.md",
+    "experiments/manifests/exp-20260612-007.json",
+    "experiments/tickets/exp-20260612-007.json",
+    "experiments/logs/exp-20260612-007.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "expiry_conditional_near_high_hold_extension"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.15,
+    "expected_ev_delta": 0.8,
+    "expected_pnl_delta": 4000.0,
+    "main_failure_modes": [
+      "extension_giveback_reversal",
+      "capacity_blocking_losses",
+      "single_ticker_concentration",
+      "window_instability",
+      "below_10pct_ev_bar"
+    ],
+    "confidence_reason": "Mechanism: top-rank state-surface momentum names that remain near 60d highs at expiry show continued leadership (SNXX/CRDO forward rows; convexity of catalysts landing on extended leaders). Prior evidence is adverse: exp-20260518-001 rejected all fixed hold horizons and exit_policy family accepts only 16.7%; this differs by conditioning extension on a PIT near-high state at expiry rather than retuning the global hold. Main disconfirmer: giveback after expiry and capacity blocking may erase the tail gains, and the state_surface hard bar requires >10% aggregate EV lift.",
+    "recorded_at": "2026-06-12T06:03:49+00:00"
+  },
+  "created_at": "2026-06-12T06:04:11+00:00",
+  "claimed_at": "2026-06-12T06:04:20+00:00",
+  "completed_at": "2026-06-12T06:11:56+00:00",
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260612-007/exp_20260612_007_before_aggregate.json",
+    "after_result_file": "data/experiments/exp-20260612-007/exp_20260612_007_after_aggregate.json",
+    "delta_metrics": {
+      "expected_value_score": 0.823,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0146,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "total_pnl": 10347.87
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.15,
+      "brier_score": 0.0225,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.8,
+      "actual_ev_delta": 0.823,
+      "ev_prediction_error": 0.023,
+      "expected_pnl_delta": 4000.0,
+      "actual_pnl_delta": 10347.87,
+      "pnl_prediction_error": 6347.87,
+      "predicted_failure_modes": [
+        "extension_giveback_reversal",
+        "capacity_blocking_losses",
+        "single_ticker_concentration",
+        "window_instability",
+        "below_10pct_ev_bar"
+      ],
+      "realized_failure_mode": "window_instability",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Predicted failure occurred but with informative structure: 5-day extensions at 0.95 near-high threshold added +5.2% aggregate EV from late_strong/mid_weak continuation, yet old_thin regressed (giveback in weak tape) and 10-day extensions destroyed value outright (-5.8%/-6.1% EV), so the right tail exists but is short-lived and regime-dependent."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260612-007.json",
+  "card_file": "experiments/cards/exp-20260612-007.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260612-007.json"
+}

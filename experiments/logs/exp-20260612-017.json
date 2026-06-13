@@ -1,0 +1,107 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.04,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "sqlite locked by concurrent scheduled run during move",
+      "LFS pattern mismatch commits oversized blob",
+      "replay framework path breakage",
+      "snapshot row schema mismatch with sleeve_health"
+    ],
+    "predicted_success_probability": 0.8,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "The feared sqlite lock during relocation never happened; the only friction was LFS pattern coverage, addressed by adding data/warehouse/*.sqlite to .gitattributes before the move."
+  },
+  "causal_components": [
+    "warehouse_relocation",
+    "legacy_duplicate_removal",
+    "standard_sleeve_surface_adapter"
+  ],
+  "change_summary": "Data layout consolidation: (1) warehouse_main.sqlite relocated from data/experiments/exp-20260519-030/ to data/warehouse/ via git mv with a new LFS pattern for data/warehouse/*.sqlite; ohlcv_warehouse.DEFAULT_WAREHOUSE_PATH now resolves the canonical path with a read-side legacy fallback, build_broad_market_sector_cache and five live replay framework modules import the resolved path instead of hardcoding; (2) deleted legacy duplicates shadowed by organized locations: 4 root earnings_snapshot files, 6 legacy_root earnings copies, root space_catalyst seeds+ledger, root universe_registry.json; (3) new quant/sleeve_standard_layout.py writes standard state.json+snapshots.jsonl surfaces (observe-only semantics, no fabricated trades) and is wired into platform_rs20_watch, sec_10k_forward_watch and space_catalyst event-ledger persists; surfaces bootstrapped for 2026-06-11. No trading rule, run.py, or order path changes.",
+  "change_type": "measurement_repair",
+  "changed_variable": "data layout consolidation bundle: warehouse relocation + legacy duplicate removal + standard sleeve surface adapter for three observe-only sleeves",
+  "component": ".gitattributes, quant/ohlcv_warehouse.py, quant/build_broad_market_sector_cache.py, quant/sleeve_standard_layout.py, quant/test_sleeve_standard_layout.py, quant/platform_rs20_watch.py, quant/sec_10k_forward_watch.py, quant/space_catalyst_sleeve.py, quant/experiments/exp_20260605_033_cross_section_pressure_resilience_candidate_pool.py, quant/experiments/exp_20260601_006_broad_universe_alpha_score_ranking_validation.py, quant/experiments/exp_20260605_007_broad_universe_companyfacts_asset.py, quant/experiments/exp_20260606_004_broad_5d_winner_continuation_candidate_pool.py, quant/experiments/exp_20260606_021_market_state_family_replacement_value_attribution.py, data/warehouse, data/paper_sleeves, data/daily/snapshots/earnings/legacy_root",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260612-017",
+  "hypothesis": "Production data layout has four consolidation debts that make tooling miss or mistrust data: (1) the production-critical OHLCV warehouse lives under data/experiments/exp-20260519-030/ where it reads as disposable experiment output; (2) legacy earnings_snapshot copies at data root and legacy_root/ duplicate organized files and get picked up by daily_artifact_glob; (3) other legacy root-level copies (space_catalyst ledgers, universe_registry) shadow organized locations; (4) three observe-only sleeves (platform_rs20_no_gap, sec_10k_liquidity, space_catalyst) persist only nonstandard forward_watch/summary surfaces so standard state.json+snapshots.jsonl tooling skips them. Relocating the warehouse to data/warehouse/ (with LFS pattern + legacy fallback), deleting shadowed legacy copies, and adding a shared standard-layout writer used by the three sleeves consolidates the data plane without changing any trading rule.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "before/after path resolution + sleeve health disk_status classification + test suite",
+  "next_retry_requires": [],
+  "notes": "Before: warehouse resolved inside the experiment directory; the three watch sleeves were summary-fallback surfaces (fresh_summary) invisible to standard state/snapshot tooling; daily_artifact_glob returned duplicate earnings dates from root copies. After: warehouse resolves at data/warehouse/warehouse_main.sqlite (row count verified intact), sleeve_health classifies all three sleeves as standard fresh snapshot sleeves, earnings glob has 453 files with no duplicate dates, and data root holds only live meta_research reports. 3 new tests; full quant suite 1289 passed with 5 deselected failures that belong to the concurrently claimed exp-20260612-009 (llm_advisor/import_advice rework in flight, files outside this ticket's scope). Concurrency note: this ticket deliberately avoided run.py and data_paths.py because exp-20260612-009 holds them.",
+  "parameters": {
+    "locked_variables": [
+      "data layout consolidation bundle: warehouse relocation + legacy duplicate removal + standard sleeve surface adapter for three observe-only sleeves"
+    ],
+    "single_causal_variable": "data layout consolidation bundle: warehouse relocation + legacy duplicate removal + standard sleeve surface adapter for three observe-only sleeves"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "TODO",
+    "new_evidence_required": "TODO",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The feared sqlite lock during relocation never happened; the only friction was LFS pattern coverage, addressed by adding data/warehouse/*.sqlite to .gitattributes before the move."
+  },
+  "prediction": {
+    "confidence_reason": "Only two production modules hardcode the warehouse path; five live replay framework modules identified by grep; sleeve_health already directory-scans so standard surfaces are picked up automatically; adapters reuse the persist functions' existing inputs.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "sqlite locked by concurrent scheduled run during move",
+      "LFS pattern mismatch commits oversized blob",
+      "replay framework path breakage",
+      "snapshot row schema mismatch with sleeve_health"
+    ],
+    "recorded_at": "2026-06-12T18:09:58+00:00",
+    "success_probability": 0.8
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260612-017/before_layout.json",
+    "data/experiments/exp-20260612-017/after_layout.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-06-12T18:19:36+00:00",
+  "trial_family": "measurement_repair",
+  "trial_variant_id": "exp-20260612-017"
+}

@@ -1,0 +1,94 @@
+{
+  "experiment_id": "exp-20260613-007",
+  "experiment_uid": "expuid-798fb7593e4c4a6c",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260613-007",
+    "slug": "sec13f_universe_ingestion",
+    "reserved_at": "2026-06-13T03:14:05+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "accepted",
+  "lane": "measurement_repair",
+  "owner": "agent-fable",
+  "hypothesis": "13F institutional holdings never accumulate as real data: the kova sidecar writes only skipped placeholders because it needs a CUSIP->ticker map and a SEC zip whose hardcoded URL template ({year}q{quarter}) silently broke when SEC switched to filing-window naming (01mar2026-31may2026) around 2024 - undetected because no env config ever triggered the download. A universe-scoped issuer-name CUSIP map (free, from company_tickers titles) plus a window-aware downloader yields real per-ticker institutional holdings for ~79% of the broad universe, refreshing when each new ~quarterly filing window is released, without changing any trading rule.",
+  "change_type": "measurement_repair",
+  "mechanism_family": "measurement_repair",
+  "trial_family": "measurement_repair",
+  "trial_variant_id": "exp-20260613-007",
+  "single_causal_variable": "13F universe-scoped real ingestion: window-aware SEC downloader + issuer-name CUSIP->ticker map + per-ticker holdings aggregation for the broad universe",
+  "changed_variable": "13F universe-scoped real ingestion: window-aware SEC downloader + issuer-name CUSIP->ticker map + per-ticker holdings aggregation for the broad universe",
+  "causal_components": [
+    "sec13f_filing_window_downloader",
+    "issuer_name_cusip_ticker_map",
+    "universe_holdings_aggregation"
+  ],
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "real holdings ingestion coverage vs prior skipped-placeholder stream",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/sec13f_universe_map.py",
+    "quant/sec13f_ingest.py",
+    "quant/test_sec13f_universe_map.py",
+    "quant/test_sec13f_ingest.py",
+    "data/non_ohlcv/sec13f_institutional"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "13F universe-scoped real ingestion: window-aware SEC downloader + issuer-name CUSIP->ticker map + per-ticker holdings aggregation for the broad universe"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Window-aware downloader resolves the latest available SEC 13F filing-window zip as-of a date; issuer-name CUSIP map maps a meaningful fraction (>60%) of the broad universe to real holdings; idempotent ingestion writes real per-ticker institutional aggregates (holder_count, total_value, total_shares) to a dedicated path and re-parses only when a new window appears; tests pass with a synthetic offline zip; no trading rule change; run.py/kova_data_sidecar.py untouched (held by exp-20260612-009), daily wiring staged for follow-up.",
+  "prediction": {
+    "success_probability": 0.85,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "name-match false positives map wrong ticker",
+      "SEC rate limiting on 99MB download",
+      "memory blowup parsing 3M rows",
+      "filing-window date math off-by-one near release boundary"
+    ],
+    "confidence_reason": "Probe already downloaded the real 99MB Q1-2026 window, parsed 3.006M rows, and name-matched 975/1229 universe tickers (79%); only new files touched so no concurrency collision with exp-009.",
+    "recorded_at": "2026-06-13T03:13:26+00:00"
+  },
+  "created_at": "2026-06-13T03:14:05+00:00",
+  "claimed_at": "2026-06-13T03:14:11+00:00",
+  "completed_at": "2026-06-13T03:22:34+00:00",
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260613-007/before.json",
+    "after_result_file": "data/experiments/exp-20260613-007/after.json",
+    "delta_metrics": {},
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.85,
+      "brier_score": 0.0225,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "name-match false positives map wrong ticker",
+        "SEC rate limiting on 99MB download",
+        "memory blowup parsing 3M rows",
+        "filing-window date math off-by-one near release boundary"
+      ],
+      "realized_failure_mode": "none_material_unit_label_corrected",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "The hardcoded SEC 13F URL had been dead since the ~2024 switch to filing-window naming but nobody noticed because no env config ever triggered a download - same silent-rot pattern as forward_tester. Name-match coverage (79%) was higher than feared."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260613-007.json",
+  "card_file": "experiments/cards/exp-20260613-007.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260613-007.json"
+}

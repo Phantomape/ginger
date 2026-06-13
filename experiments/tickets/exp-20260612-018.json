@@ -1,0 +1,112 @@
+{
+  "experiment_id": "exp-20260612-018",
+  "experiment_uid": "expuid-927dcdd815e84a50",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260612-018",
+    "slug": "state_router_consensus_tilt",
+    "reserved_at": "2026-06-12T20:04:09+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "claude-fable-regime-router",
+  "hypothesis": "The accepted lagged cross-source consensus paper sleeve earns most of its edge when the prior-close market state is mixed|balanced|normal (+7.8%/trade vs +2.1% elsewhere per exp-20260606-022); a frozen single-cell paper notional tilt toward that state should raise combined EV without changing entries, exits, candidates, or live orders.",
+  "change_type": "default_off_paper_allocation",
+  "mechanism_family": "regime_router",
+  "trial_family": "market_state_conditioned_sleeve_router",
+  "trial_variant_id": "consensus_sleeve_mixed_balanced_normal_tilt_v1",
+  "single_causal_variable": "market_state_conditioned_consensus_notional_tilt_single_cell",
+  "changed_variable": "market_state_conditioned_consensus_notional_tilt_single_cell",
+  "causal_components": [
+    "frozen 606-022 state classifier reuse",
+    "single predeclared cell mixed|balanced|normal",
+    "scalar sweep 1.25/1.5",
+    "identity parity check",
+    "three-window overlay replay",
+    "shared helper + parity test only if accepted"
+  ],
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260606-022",
+    "exp-20260606-021",
+    "exp-20260604-008",
+    "exp-20260604-009"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "not_declared",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260612_018_state_router_consensus_tilt.py",
+    "data/experiments/exp-20260612-018/exp_20260612_018_state_router_consensus_tilt.json",
+    "experiments/cards/exp-20260612-018.md",
+    "experiments/manifests/exp-20260612-018.json",
+    "experiments/tickets/exp-20260612-018.json",
+    "experiments/logs/exp-20260612-018.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "market_state_conditioned_consensus_notional_tilt_single_cell"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.45,
+    "expected_ev_delta": 0.5,
+    "expected_pnl_delta": 8000.0,
+    "main_failure_modes": [
+      "single_ticker_concentration",
+      "drawdown_drift",
+      "sharpe_shape_degradation",
+      "thin_cell_sample",
+      "in_sample_cell_screening_circularity"
+    ],
+    "confidence_reason": "Mechanism: exp-20260606-022 found the consensus sleeve's per-trade edge is 3.7x larger in the mixed|balanced|normal prior-close state, positive in all three windows with n=39 and only 4.5% cross-sleeve overlap, and explicitly queued this frozen router Gate 1-4. A bounded notional tilt on already-accepted rows should mechanically lift EV. Main disconfirmers: the cell was screened on these same windows (circularity, so verdict is capped at accepted_paper_pending_forward and real evidence is forward rows), APP carries 11/39 in-cell trades so concentration may fail, and scaling up late-window variance can degrade combined Sharpe enough to lose EV despite higher PnL.",
+    "recorded_at": "2026-06-12T20:03:38+00:00"
+  },
+  "created_at": "2026-06-12T20:04:09+00:00",
+  "claimed_at": "2026-06-12T20:04:18+00:00",
+  "completed_at": "2026-06-12T20:08:22+00:00",
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [
+      "total_pnl improved 5.61%"
+    ],
+    "before_result_file": "data/experiments/exp-20260612-018/exp_20260612_018_state_router_consensus_tilt_before_aggregate.json",
+    "after_result_file": "data/experiments/exp-20260612-018/exp_20260612_018_state_router_consensus_tilt_after_aggregate.json",
+    "delta_metrics": {
+      "expected_value_score": 0.7366,
+      "total_pnl": 15166.85
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.45,
+      "brier_score": 0.2025,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "low",
+      "expected_ev_delta": 0.5,
+      "actual_ev_delta": 0.7366,
+      "ev_prediction_error": 0.2366,
+      "expected_pnl_delta": 8000.0,
+      "actual_pnl_delta": 15166.85,
+      "pnl_prediction_error": 7166.85,
+      "predicted_failure_modes": [
+        "single_ticker_concentration",
+        "drawdown_drift",
+        "sharpe_shape_degradation",
+        "thin_cell_sample",
+        "in_sample_cell_screening_circularity"
+      ],
+      "realized_failure_mode": "single_ticker_concentration",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "EV, PnL, and drawdown were all clean (+7.4% aggregate EV, three windows improved, zero regressed, DD improved everywhere) and the predicted top failure mode still killed it: APP alone carries 51.4% of in-cell positive PnL versus the predeclared 50% cap, and the share is scalar-invariant so no tested tilt could pass."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260612-018.json",
+  "card_file": "experiments/cards/exp-20260612-018.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260612-018.json"
+}

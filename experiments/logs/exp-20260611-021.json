@@ -1,0 +1,104 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.01,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": null,
+    "predicted_failure_modes": [
+      "fallback changes replay parity",
+      "DataFrame date index not parsed",
+      "sector cache stale"
+    ],
+    "predicted_success_probability": 0.9,
+    "realized_failure_mode": null,
+    "surprise_level": "very_low",
+    "surprise_note": "Warehouse freshness gap: only 90/8511 tickers accumulate daily; broad mass frozen at 2026-04-24, so PEAD broad sleeve already reads stale frames in production."
+  },
+  "causal_components": [
+    "rolling_corr_dataframe_ohlcv_normalisation",
+    "industry_sector_source_fallback"
+  ],
+  "change_summary": "Measurement repair: rolling_corr _normalise_ohlcv_rows now accepts pandas DataFrames (the run.py daily shape) via the proven iterrows pattern; _resolve_sector_entries in rolling_corr, industry_relative_laggard_repair and industry_stable_core_flow now falls through empty sector resolutions (governance records carry no sector fields) to the persisted broad-market sector cache restricted to the same allowed tickers. No entry/exit/ranking/sizing rule changed; replay paths passing explicit sector_entries that resolve non-empty are byte-identical.",
+  "change_type": "measurement_repair",
+  "changed_variable": "daily sleeve adapter input normalisation: DataFrame-aware OHLCV rows in rolling_corr + non-empty-result sector source fallback in industry_relative and industry_stable",
+  "component": "quant/rolling_corr_peer_shock_paper_sleeve.py, quant/industry_relative_laggard_repair_paper_sleeve.py, quant/industry_stable_core_flow_paper_sleeve.py, quant/test_rolling_corr_peer_shock_paper_sleeve.py, quant/test_industry_relative_laggard_repair_paper_sleeve.py, quant/test_industry_stable_core_flow_paper_sleeve.py",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260611-021",
+  "hypothesis": "Two default-off paper sleeves never produce daily forward evidence due to adapter input-shape bugs: rolling_corr _normalise_ohlcv_rows rejects pandas DataFrames from run.py (permanent missing_ohlcv), and industry_relative/industry_stable _resolve_sector_entries prefers governance records without sector fields over the broad-market sector cache (permanent missing_sector_entries). Fixing input normalisation and sector-source fallback restores the daily default-off forward pipeline for these sleeves without altering any entry/exit/ranking rule.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "daily snapshot before/after on identical run.py-shaped inputs",
+  "next_retry_requires": [],
+  "notes": "Before artifact: on production-shaped inputs (DataFrame OHLCV + governance fallback universe) rolling_corr returned missing_ohlcv and both industry sleeves returned missing_sector_entries before writing state - these sleeves never produced a daily forward snapshot since wiring into run.py. After: all three run the full pipeline (error null). Repro: data/experiments/exp-20260611-021/repro_input_shape.py. 4 new regression tests; full quant suite 1284 passed. Side observation (warehouse_coverage_observation.json): warehouse_main.sqlite holds 8511 tickers but only 90 are fresh through 2026-06-10; 8316 frozen at 2026-04-24 snapshot seed. Daily accumulation only covers tickers run.py fetches, so the exp-20260607-003 PEAD broad warehouse read is consuming ~7-week-stale frames, and pointing more sleeves at the warehouse without a daily refresh job would evaluate on stale data. Universe unification needs: (1) incremental daily warehouse refresh for the broad universe, (2) generate data/broad_market_paper_universe.json from warehouse coverage + sector cache + liquidity filters, (3) feed sleeves via load_warehouse_ohlcv_frames batch reads.",
+  "parameters": {
+    "locked_variables": [
+      "daily sleeve adapter input normalisation: DataFrame-aware OHLCV rows in rolling_corr + non-empty-result sector source fallback in industry_relative and industry_stable"
+    ],
+    "single_causal_variable": "daily sleeve adapter input normalisation: DataFrame-aware OHLCV rows in rolling_corr + non-empty-result sector source fallback in industry_relative and industry_stable"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "TODO",
+    "new_evidence_required": "TODO",
+    "realized_failure_mode": null,
+    "why_result_happened": "Warehouse freshness gap: only 90/8511 tickers accumulate daily; broad mass frozen at 2026-04-24, so PEAD broad sleeve already reads stale frames in production."
+  },
+  "prediction": {
+    "confidence_reason": "Bugs reproduced by code inspection; fix ports an already-proven DataFrame normalisation pattern and adds a fallback that only activates when resolution is empty.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "fallback changes replay parity",
+      "DataFrame date index not parsed",
+      "sector cache stale"
+    ],
+    "recorded_at": "2026-06-11T16:55:33+00:00",
+    "success_probability": 0.9
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260611-021/before.json",
+    "data/experiments/exp-20260611-021/after.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-06-12T00:29:49+00:00",
+  "trial_family": "measurement_repair",
+  "trial_variant_id": "exp-20260611-021"
+}

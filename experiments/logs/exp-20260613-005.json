@@ -1,0 +1,129 @@
+﻿{
+    "after_metrics":  {
+                          "expected_value_score":  8.1155,
+                          "max_drawdown_pct":  null,
+                          "sharpe":  null,
+                          "sharpe_daily":  null,
+                          "survival_rate":  null,
+                          "total_pnl":  240339.25,
+                          "total_return_pct":  null,
+                          "trade_count":  null,
+                          "win_rate":  null
+                      },
+    "before_metrics":  {
+                           "expected_value_score":  8.0351,
+                           "max_drawdown_pct":  null,
+                           "sharpe":  null,
+                           "sharpe_daily":  null,
+                           "survival_rate":  null,
+                           "total_pnl":  238466.66,
+                           "total_return_pct":  null,
+                           "trade_count":  null,
+                           "win_rate":  null
+                       },
+    "calibration":  {
+                        "actual_decision":  "accepted",
+                        "actual_ev_delta":  0.0804,
+                        "actual_pnl_delta":  1872.59,
+                        "actual_success":  1,
+                        "brier_score":  0.3025,
+                        "calibration_direction":  "underconfident",
+                        "ev_prediction_error":  -0.2196,
+                        "expected_ev_delta":  0.3,
+                        "expected_pnl_delta":  4000.0,
+                        "pnl_prediction_error":  -2127.41,
+                        "predicted_failure_mode_hit":  false,
+                        "predicted_failure_modes":  [
+                                                        "late_strong_zero_regression",
+                                                        "thin_sleeve_overlay_materiality",
+                                                        "concentration_above_cap",
+                                                        "sharpe_shape_degradation",
+                                                        "in_sample_cell_screening_circularity"
+                                                    ],
+                        "predicted_success_probability":  0.45,
+                        "realized_failure_mode":  "none_passed_all_guards",
+                        "surprise_level":  "medium",
+                        "surprise_note":  "First accepted in the regime-router line. All guards clean: agg EV +0.0804 (+1.0%), PnL +$1,873, three windows improved zero regressed, in-cell AND incremental single-ticker share both 20.9% (TOST, well under 50% cap that killed the consensus cell), drawdown drift +0.04bp. Confirms the predicted weak spot: late_strong EV delta is +0.0013 / PnL +$31 -- barely positive, so the cell genuinely earns its keep in calm mid-trend and weak tape, not in strong trend. Effect is small (sleeve-overlay layer, 47 rows) and in-sample, so verdict is correctly capped at accepted_paper_pending_forward."
+                    },
+    "causal_components":  [
+                              "frozen 606-022 state classifier",
+                              "frozen cell mixed|balanced|normal",
+                              "sleeve historical trades from shared builder",
+                              "scalar sweep 1.25/1.5",
+                              "dual concentration guards",
+                              "identity overlay parity",
+                              "three-window overlay replay"
+                          ],
+    "change_summary":  "Accepted (paper-pending-forward) the industry_stable_core_flow sleeve state-conditioned notional tilt: 1.5x on mixed|balanced|normal rows lifted the sleeve overlay aggregate EV +0.0804 (+1.0%) and PnL +$1,873 across all three windows with zero regression, TOST concentration 20.9% under both guards, drawdown flat; landing point is the sleeve (allocator selects 0 of its rows). Replay-only, no production surface changed.",
+    "change_type":  "default_off_paper_allocation",
+    "changed_variable":  "industry_stable_core_flow_sleeve_state_conditioned_notional_tilt",
+    "component":  "quant/experiments/exp_20260613_005_iscf_state_tilt.py, data/experiments/exp-20260613-005/exp_20260613_005_iscf_state_tilt.json, experiments/cards/exp-20260613-005.md, experiments/manifests/exp-20260613-005.json, experiments/tickets/exp-20260613-005.json, experiments/logs/exp-20260613-005.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+    "date_range":  {
+
+                   },
+    "decision":  "accepted",
+    "delta_metrics":  {
+                          "expected_value_score":  0.0804,
+                          "total_pnl":  1872.59
+                      },
+    "experiment_id":  "exp-20260613-005",
+    "hypothesis":  "The accepted industry_stable_core_flow default-off paper sleeve (exp-20260608-007) earns +2.9%/trade in the mixed|balanced|normal market state versus -0.2%/trade in all other states (exp-20260612-027, edge survives ex-top-ticker screen: TOST only 20.9% of in-cell positive PnL, positive all three windows raw and ex-top); a bounded notional tilt on that sleeve\u0027s in-state rows should raise its overlay EV without changing entries, exits, or live orders. Landing point is the sleeve itself, not the allocator: the source is fully crowded out of the accepted allocator daily-top1 priority (exp-20260611-005 selected 0 industry_stable_core_flow rows).",
+    "llm_metrics":  {
+                        "used_llm":  false
+                    },
+    "market_regime_summary":  {
+
+                              },
+    "mechanism_family":  "regime_router",
+    "multiple_testing_risk_bucket":  "moderate",
+    "nearby_prior_experiments":  [
+                                     "exp-20260612-027",
+                                     "exp-20260612-018",
+                                     "exp-20260612-020",
+                                     "exp-20260608-007"
+                                 ],
+    "new_evidence_type":  "not_declared",
+    "next_retry_requires":  [
+
+                            ],
+    "notes":  "",
+    "parameters":  {
+                       "locked_variables":  [
+                                                "industry_stable_core_flow_sleeve_state_conditioned_notional_tilt"
+                                            ],
+                       "single_causal_variable":  "industry_stable_core_flow_sleeve_state_conditioned_notional_tilt"
+                   },
+    "post_run_reflection":  {
+                                "forbidden_near_neighbor_retry":  "Do not tune the accepted variant on the frozen windows: no scalar sweep beyond 1.25/1.5, no widening/narrowing of the cell definition, no second source x state cell from exp-20260612-027 promoted without its own ex-top-ticker screen and reservation. Do not re-attempt the consensus-cell or compression-cell tilts (rejected/single-name). The accepted tilt is held as paper-pending-forward, not pushed toward live, until forward rows mature.",
+                                "new_evidence_required":  "To lift the verdict from accepted_paper_pending_forward to live-eligible: closed forward default-off rows of the industry_stable_core_flow sleeve tagged with their entry-time market state, showing the mixed|balanced|normal in-state edge persists out-of-sample (the current pass is partly in-sample because the cell was screened on these same windows). To raise materiality: the effect is small (+1.0% EV, +`$1,873) because the standalone sleeve overlay is only 47 rows; a larger payoff would require either the source earning allocator slots (currently 0, blocked by daily-top1 priority) or additional independent ex-top-ticker-clean cells stacking into a real router, each reserved separately.",
+                                "realized_failure_mode":  "none_passed_all_guards",
+                                "why_result_happened":  "First accepted in the regime-router line. All guards clean: agg EV +0.0804 (+1.0%), PnL +$1,873, three windows improved zero regressed, in-cell AND incremental single-ticker share both 20.9% (TOST, well under 50% cap that killed the consensus cell), drawdown drift +0.04bp. Confirms the predicted weak spot: late_strong EV delta is +0.0013 / PnL +$31 -- barely positive, so the cell genuinely earns its keep in calm mid-trend and weak tape, not in strong trend. Effect is small (sleeve-overlay layer, 47 rows) and in-sample, so verdict is correctly capped at accepted_paper_pending_forward."
+                            },
+    "prediction":  {
+                       "confidence_reason":  "Mechanism: exp-20260612-027 isolated this cell as the single source x state combination surviving the ex-top-ticker robustness screen across 28 cells and 380 tickers; the sleeve\u0027s design (industry-group strength + stability gates + core-flow confirmation, leader rotates by group) makes it structurally diversified, and quality leadership should pay most in a calm mid-trend balanced tape with no broad beta to ride. Unlike the consensus cell (rejected on APP concentration in exp-20260612-018/020), TOST tops out at 20.9% of in-cell positive PnL so concentration guards should pass. Main disconfirmers: the cell is weakest in late_strong (+0.19%/trade) so zero-regression risk concentrates there; the standalone sleeve overlay is small (47 rows) so the EV lift may miss materiality; and the cell was screened on the same windows so any pass caps at accepted_paper_pending_forward.",
+                       "expected_ev_delta":  0.3,
+                       "expected_pnl_delta":  4000.0,
+                       "main_failure_modes":  [
+                                                  "late_strong_zero_regression",
+                                                  "thin_sleeve_overlay_materiality",
+                                                  "concentration_above_cap",
+                                                  "sharpe_shape_degradation",
+                                                  "in_sample_cell_screening_circularity"
+                                              ],
+                       "recorded_at":  "2026-06-13T02:59:30+00:00",
+                       "success_probability":  0.45
+                   },
+    "prior_trial_count":  0,
+    "rejection_reason":  null,
+    "related_files":  [
+                          "data/experiments/exp-20260613-005/exp_20260613_005_iscf_state_tilt_before_aggregate.json",
+                          "data/experiments/exp-20260613-005/exp_20260613_005_iscf_state_tilt_after_aggregate.json"
+                      ],
+    "secondary_windows":  [
+
+                          ],
+    "status":  "accepted",
+    "timestamp":  "2026-06-13T03:05:37+00:00",
+    "trial_family":  "market_state_conditioned_sleeve_router",
+    "trial_variant_id":  "industry_stable_core_flow_state_tilt_v1"
+}

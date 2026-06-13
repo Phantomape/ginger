@@ -1,0 +1,80 @@
+{
+  "after_metrics": {
+    "artifact_rows": 31,
+    "rows_by_status": {
+      "enriched": 29,
+      "missing_comparator_bars": 2
+    },
+    "rows_not_in_current_state": 0
+  },
+  "before_metrics": {
+    "artifact_rows": 38,
+    "rows_by_status": {
+      "enriched": 29,
+      "missing_comparator_bars": 9
+    },
+    "rows_not_in_current_state": 7
+  },
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair_forward_replacement_value_current_state_repair",
+    "actual_success": 1,
+    "predicted_failure_modes": [
+      "append_only_contract_conflict",
+      "stale_readiness_rows",
+      "state_snapshot_mismatch"
+    ],
+    "predicted_success_probability": 0.9,
+    "realized_failure_mode": null,
+    "surprise_note": "The per-sleeve state and latest snapshots were already aligned; only the shared replacement-value JSONL still retained the quarantined low_deployment_etf rows."
+  },
+  "causal_components": [
+    "state_vs_artifact_reconciliation",
+    "current_state_materialization",
+    "quarantined_row_exclusion"
+  ],
+  "change_summary": "Rebuilt data/paper_sleeves/forward_replacement_value.jsonl from current state.json replacement rows, archived the prior 38-row artifact, and removed the seven low_deployment_etf rows that exp-20260612-001 had already quarantined from state.",
+  "change_type": "forward_replacement_value_accumulation_repair",
+  "changed_variable": "canonical_forward_replacement_value_artifact_matches_current_sleeve_state",
+  "decision": "accepted_measurement_repair_forward_replacement_value_current_state_repair",
+  "delta_metrics": {
+    "artifact_rows": -7,
+    "quarantined_low_deployment_rows_removed": 7,
+    "rows_not_in_current_state": -7
+  },
+  "experiment_id": "exp-20260612-012",
+  "hypothesis": "Canonical per-sleeve forward replacement-value accumulation must match current paper sleeve state after non-session phantom-row quarantine.",
+  "implementation_mode": "measurement_repair",
+  "lane": "measurement_repair",
+  "mechanism_family": "forward_replacement_value_measurement_repair",
+  "notes": "Gate 4 backtests were not run because this is a measurement surface repair. Strategy behavior is unchanged; the acceptance check is state/artifact/snapshot reconciliation plus focused pytest coverage.",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not consume forward_replacement_value.jsonl as immutable history for activation decisions; use it as the current canonical state-derived evidence surface, with old versions archived inside measurement-repair experiments.",
+    "new_evidence_required": "Future activation work should wait for more current-state closed replacement rows and should treat status=missing_comparator_bars or non_session_entry_fill rows as coverage blockers, not enriched comparator evidence.",
+    "why_result_happened": "The original enrichment wrote an append-only artifact. Later measurement repair correctly removed non-session phantom rows from low_deployment_etf state, but append-only replacement evidence retained them. A current-state materialization keeps cross-sleeve forward evidence aligned with sleeve state."
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_attribution_only": true,
+    "parity_note": "Measurement materialization only. Daily replacement-value enrichment now rewrites the canonical JSONL from current sleeve state, but no sleeve admission, fill, close, ranking, sizing, exit, or order semantics changed.",
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "quant/forward_replacement_value.py",
+    "quant/test_forward_replacement_value.py",
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "data/experiments/exp-20260612-012/forward_replacement_value_pre_repair.jsonl",
+    "quant/experiments/exp_20260612_012_forward_replacement_value_current_state_repair.py"
+  ],
+  "status": "accepted",
+  "timestamp": "2026-06-12T18:01:28+00:00",
+  "trial_family": "paper_sleeve_forward_accumulation_integrity",
+  "trial_variant_id": "canonical_forward_replacement_value_current_state_v1"
+}

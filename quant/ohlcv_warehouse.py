@@ -11,8 +11,17 @@ import pandas as pd
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_WAREHOUSE_PATH = (
+# exp-20260612-017: the warehouse is production infrastructure, not experiment
+# output. Canonical home is data/warehouse/; the legacy exp-20260519-030 path
+# is honored read-side for checkouts that have not picked up the relocation.
+_CANONICAL_WAREHOUSE_PATH = REPO_ROOT / "data" / "warehouse" / "warehouse_main.sqlite"
+LEGACY_WAREHOUSE_PATH = (
     REPO_ROOT / "data" / "experiments" / "exp-20260519-030" / "warehouse_main.sqlite"
+)
+DEFAULT_WAREHOUSE_PATH = (
+    _CANONICAL_WAREHOUSE_PATH
+    if _CANONICAL_WAREHOUSE_PATH.exists() or not LEGACY_WAREHOUSE_PATH.exists()
+    else LEGACY_WAREHOUSE_PATH
 )
 DEFAULT_REFERENCE_TICKERS = {
     "SPY",

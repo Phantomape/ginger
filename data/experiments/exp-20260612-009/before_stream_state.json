@@ -1,0 +1,35 @@
+{
+  "captured_at": "2026-06-12T06:15:00Z",
+  "source": "data/experiments/exp-20260612-002/data_inventory_scan.json + cache freshness probes (2026-06-12 session)",
+  "streams": {
+    "forward_tests": {
+      "dir": "data/daily/forward_tests",
+      "families": {"forward_test": {"count": 4, "last": "20260220"}, "strategy_attribution": {"count": 4, "last": "20260220"}},
+      "days_stale": 111,
+      "writer": "quant/forward_tester.py manual CLI only; never wired into run.py"
+    },
+    "investment_advice": {
+      "dir": "data/daily/llm/advice",
+      "count": 4,
+      "last": "20260220",
+      "days_stale": 111,
+      "writer_condition": "run.py step 9 only writes when OPENAI_API_KEY present; operator has no key"
+    },
+    "llm_prompt_resp": {
+      "dir": "data/daily/llm/responses",
+      "business_day_coverage_pct": 57,
+      "last": "20260611",
+      "writer": "manual import_advice.py only"
+    },
+    "kova": {
+      "dirs": ["data/kova/snapshots", "data/kova/fundamentals", "data/kova/institutional", "data/kova/intraday", "data/kova/rs_proxy"],
+      "business_day_coverage_pct": 47,
+      "note": "daily since 2026-05-26; companyfacts surface rides never-refreshed cache (KOVA_REFRESH_COMPANYFACTS default False; fetch refresh=False hardcoded)"
+    },
+    "reference_caches": {
+      "broad_market_sector_map.json": {"generated_at": "2026-05-27T05:25:19Z", "entries": 1448, "refresher": "manual script only"},
+      "sec_company_tickers.json": {"mtime_age_days": 40.2, "refresher": "manual script only"},
+      "sec_companyfacts_cache": {"files": 1424, "newest_mtime_age_days": 7.0, "refresher": "manual backfill only; cached CIKs never refetched"}
+    }
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "accepted": true,
+  "after_health": {
+    "failing_builds": [],
+    "rule_version": "sleeve_health_report_v2",
+    "stalled_sleeves": [],
+    "summary_surface_statuses": {
+      "platform_rs20_no_gap": {
+        "last_snapshot": null,
+        "last_summary": "2026-06-11",
+        "staleness_sessions": 0,
+        "status": "fresh_summary",
+        "summary_file": "summary.json"
+      },
+      "sec_10k_liquidity": {
+        "last_snapshot": null,
+        "last_summary": "2026-06-11",
+        "staleness_sessions": 0,
+        "status": "fresh_summary",
+        "summary_file": "summary.json"
+      },
+      "space_catalyst": {
+        "last_snapshot": null,
+        "last_summary": "2026-06-11",
+        "staleness_sessions": 0,
+        "status": "fresh_summary",
+        "summary_file": "event_state_shadow_summary.json"
+      }
+    }
+  },
+  "asof_date": "2026-06-11",
+  "before_health": {
+    "failing_builds": [
+      "industry_relative_laggard_repair_paper_sleeve",
+      "industry_stable_core_flow_paper_sleeve",
+      "narrow_range_compression_breakout_paper_sleeve",
+      "rolling_corr_peer_shock_paper_sleeve",
+      "sec_ftd_finra_paper_sleeve"
+    ],
+    "rule_version": "sleeve_health_report_v1",
+    "stalled_sleeves": [
+      "platform_rs20_no_gap",
+      "sec_10k_liquidity",
+      "space_catalyst"
+    ],
+    "summary_surface_statuses": {
+      "platform_rs20_no_gap": {
+        "last_snapshot": null,
+        "status": "never_persisted"
+      },
+      "sec_10k_liquidity": {
+        "last_snapshot": null,
+        "status": "never_persisted"
+      },
+      "space_catalyst": {
+        "last_snapshot": null,
+        "status": "never_persisted"
+      }
+    }
+  },
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair_sleeve_health_legacy_surface_classification",
+    "actual_success": 1,
+    "predicted_failure_modes": [],
+    "predicted_success_probability": null,
+    "realized_failure_mode": null,
+    "surprise_note": "The only remaining health failures were stale diagnostics from the v1 report and non-snapshot directories with fresh summary files."
+  },
+  "change_summary": "sleeve_health_report_v2 reads summary.json and *_summary.json dates when snapshots.jsonl is absent, classifies fresh summaries as fresh_summary, preserves never_persisted for true dead dirs, and appends a v2 correction row for the 2026-06-11 health surface.",
+  "decision": "accepted_measurement_repair_sleeve_health_legacy_surface_classification",
+  "experiment_id": "exp-20260612-010",
+  "hypothesis": "Legacy or non-standard paper-sleeve accumulation surfaces that persist fresh summary/shadow-ledger files should not be reported as stalled merely because they do not use snapshots.jsonl.",
+  "next_retry_requires": [
+    "new non-snapshot surface without dated summary"
+  ],
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not silence health warnings globally; add explicit persistence shape recognition for any future non-snapshot surface.",
+    "new_evidence_required": "A future non-snapshot surface without a dated summary file should add one rather than being excluded from health.",
+    "why_result_happened": "The health report assumed every paper-sleeve directory should be snapshot-backed, but several older observe-only surfaces are summary-backed by design. Reading summary dates preserves stale detection while avoiding false dead-sleeve alerts."
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_attribution_only": true,
+    "parity_note": "Read-side health classification only. No sleeve state machine, candidate rule, order path, or backtest policy changed.",
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "recomputed_health": {
+    "failing_builds": [],
+    "rule_version": "sleeve_health_report_v2",
+    "stalled_sleeves": [],
+    "summary_surface_statuses": {
+      "platform_rs20_no_gap": {
+        "last_snapshot": null,
+        "last_summary": "2026-06-11",
+        "staleness_sessions": 0,
+        "status": "fresh_summary",
+        "summary_file": "summary.json"
+      },
+      "sec_10k_liquidity": {
+        "last_snapshot": null,
+        "last_summary": "2026-06-11",
+        "staleness_sessions": 0,
+        "status": "fresh_summary",
+        "summary_file": "summary.json"
+      },
+      "space_catalyst": {
+        "last_snapshot": null,
+        "last_summary": "2026-06-11",
+        "staleness_sessions": 0,
+        "status": "fresh_summary",
+        "summary_file": "event_state_shadow_summary.json"
+      }
+    }
+  },
+  "related_files": [
+    "quant/sleeve_health.py",
+    "quant/test_sleeve_health.py",
+    "data/paper_sleeves/sleeve_health.jsonl",
+    "quant/experiments/exp_20260612_010_sleeve_health_legacy_surface_classification.py"
+  ],
+  "status": "accepted",
+  "tests": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_sleeve_health.py"
+  ],
+  "timestamp": "2026-06-12T06:32:19+00:00"
+}

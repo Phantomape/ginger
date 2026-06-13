@@ -1,0 +1,114 @@
+{
+  "experiment_id": "exp-20260612-020",
+  "experiment_uid": "expuid-51fa9f0e88294ec7",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260612-020",
+    "slug": "state_router_per_ticker_cap",
+    "reserved_at": "2026-06-12T20:16:53+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "claude-fable-regime-router",
+  "hypothesis": "The mixed|balanced|normal state tilt on the accepted consensus sleeve (exp-20260612-018: +7.4% aggregate EV, zero regression, improved drawdown, rejected only on APP single-ticker concentration) becomes acceptable when the tilt carries a per-ticker repetition cap: only a ticker's first N in-cell entries within a trailing 60-trading-day window receive the 1.5x paper notional tilt, diluting single-name dependence below the 50% concentration guard.",
+  "change_type": "default_off_paper_allocation",
+  "mechanism_family": "regime_router",
+  "trial_family": "market_state_conditioned_sleeve_router",
+  "trial_variant_id": "consensus_tilt_per_ticker_repetition_cap_v1",
+  "single_causal_variable": "state_router_consensus_tilt_with_per_ticker_repetition_cap",
+  "changed_variable": "state_router_consensus_tilt_with_per_ticker_repetition_cap",
+  "causal_components": [
+    "frozen 606-022 state classifier reuse",
+    "frozen cell mixed|balanced|normal",
+    "fixed 1.5x scalar",
+    "per-ticker trailing-60d tilt cap N in 2 or 3",
+    "dual concentration guards",
+    "identity parity check",
+    "three-window overlay replay",
+    "shared helper + parity test only if accepted"
+  ],
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260612-018",
+    "exp-20260606-022",
+    "exp-20260604-008",
+    "exp-20260604-009"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "not_declared",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260612_020_state_router_per_ticker_cap.py",
+    "data/experiments/exp-20260612-020/exp_20260612_020_state_router_per_ticker_cap.json",
+    "experiments/cards/exp-20260612-020.md",
+    "experiments/manifests/exp-20260612-020.json",
+    "experiments/tickets/exp-20260612-020.json",
+    "experiments/logs/exp-20260612-020.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "state_router_consensus_tilt_with_per_ticker_repetition_cap"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.4,
+    "expected_ev_delta": 0.5,
+    "expected_pnl_delta": 9000.0,
+    "main_failure_modes": [
+      "concentration_still_above_cap",
+      "tilted_sample_too_thin",
+      "ev_lift_shrinks_below_zero_regression",
+      "window_instability",
+      "in_sample_cell_screening_circularity"
+    ],
+    "confidence_reason": "Mechanism: exp-20260612-018 proved the state-conditioned tilt direction (EV/PnL/drawdown all improved, zero window regression) and failed solely because APP carries 51.4% of in-cell positive PnL, a scalar-invariant property. Capping tilt at a ticker's first N in-cell entries per trailing 60 trading days removes most APP/MU repetition (11 and 8 in-cell rows) while keeping the diversified majority tilted, so the incremental PnL share should drop well below 50%. Main disconfirmers: APP rows may be the bulk of the cell's positive PnL so even capped exposure could keep the in-cell share above 50%; capping shrinks tilted rows to roughly 21-26 so the EV lift may thin out; and the cell remains in-sample-screened, capping any pass at accepted_paper_pending_forward.",
+    "recorded_at": "2026-06-12T20:16:21+00:00"
+  },
+  "created_at": "2026-06-12T20:16:53+00:00",
+  "claimed_at": "2026-06-12T20:17:00+00:00",
+  "completed_at": "2026-06-12T20:21:02+00:00",
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [
+      "total_pnl improved 5.65%"
+    ],
+    "before_result_file": "data/experiments/exp-20260612-020/exp_20260612_020_state_router_per_ticker_cap_before_aggregate.json",
+    "after_result_file": "data/experiments/exp-20260612-020/exp_20260612_020_state_router_per_ticker_cap_after_aggregate.json",
+    "delta_metrics": {
+      "expected_value_score": 0.7101,
+      "total_pnl": 15275.7
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.4,
+      "brier_score": 0.16,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "low",
+      "expected_ev_delta": 0.5,
+      "actual_ev_delta": 0.7101,
+      "ev_prediction_error": 0.2101,
+      "expected_pnl_delta": 9000.0,
+      "actual_pnl_delta": 15275.7,
+      "pnl_prediction_error": 6275.7,
+      "predicted_failure_modes": [
+        "concentration_still_above_cap",
+        "tilted_sample_too_thin",
+        "ev_lift_shrinks_below_zero_regression",
+        "window_instability",
+        "in_sample_cell_screening_circularity"
+      ],
+      "realized_failure_mode": "concentration_still_above_cap",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "The cap backfired directionally: APP's in-cell entries are temporally dispersed (re-qualifying across months, so a trailing-60-trading-day repetition cap rarely binds it) while diversifier names like MU cluster within one window and got capped hard, so both concentration shares ROSE (in-cell 51.4%->52.8%/53.2%, incremental 56.0%/58.6%). The cell's apparent regime edge is substantially a persistent single-name (APP) effect, not a fixable weighting artifact."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260612-020.json",
+  "card_file": "experiments/cards/exp-20260612-020.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260612-020.json"
+}

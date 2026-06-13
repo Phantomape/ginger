@@ -1,0 +1,107 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0225,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "name-match false positives map wrong ticker",
+      "SEC rate limiting on 99MB download",
+      "memory blowup parsing 3M rows",
+      "filing-window date math off-by-one near release boundary"
+    ],
+    "predicted_success_probability": 0.85,
+    "realized_failure_mode": "none_material_unit_label_corrected",
+    "surprise_level": "very_low",
+    "surprise_note": "The hardcoded SEC 13F URL had been dead since the ~2024 switch to filing-window naming but nobody noticed because no env config ever triggered a download - same silent-rot pattern as forward_tester. Name-match coverage (79%) was higher than feared."
+  },
+  "causal_components": [
+    "sec13f_filing_window_downloader",
+    "issuer_name_cusip_ticker_map",
+    "universe_holdings_aggregation"
+  ],
+  "change_summary": "Universe-scoped real 13F institutional-holdings ingestion. New quant/sec13f_universe_map.py builds a free CUSIP->ticker map by normalized issuer-name match against company_tickers titles, scoped to the broad universe (drops normalized-name collisions and same-CUSIP conflicts). New quant/sec13f_ingest.py adds a filing-window-aware downloader (SEC switched {year}q{quarter} -> 01mar2026-31may2026 naming ~2024; the old hardcoded URL had been silently 404ing), latest-available-window computation with HEAD-check fallback near release boundaries, and idempotent per-window ingestion that aggregates per-ticker institutional holdings (holder_count, total_value_usd, total_shares, report_period) for the universe and writes holdings_<window>.json + latest.json. Source zip gitignored (regenerable), aggregated artifact tracked. run.py/kova_data_sidecar.py deliberately untouched (held by exp-20260612-009); daily wiring staged in STAGED_run_py_wiring.md.",
+  "change_type": "measurement_repair",
+  "changed_variable": "13F universe-scoped real ingestion: window-aware SEC downloader + issuer-name CUSIP->ticker map + per-ticker holdings aggregation for the broad universe",
+  "component": "quant/sec13f_universe_map.py, quant/sec13f_ingest.py, quant/test_sec13f_universe_map.py, quant/test_sec13f_ingest.py, data/non_ohlcv/sec13f_institutional",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260613-007",
+  "hypothesis": "13F institutional holdings never accumulate as real data: the kova sidecar writes only skipped placeholders because it needs a CUSIP->ticker map and a SEC zip whose hardcoded URL template ({year}q{quarter}) silently broke when SEC switched to filing-window naming (01mar2026-31may2026) around 2024 - undetected because no env config ever triggered the download. A universe-scoped issuer-name CUSIP map (free, from company_tickers titles) plus a window-aware downloader yields real per-ticker institutional holdings for ~79% of the broad universe, refreshing when each new ~quarterly filing window is released, without changing any trading rule.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "real holdings ingestion coverage vs prior skipped-placeholder stream",
+  "next_retry_requires": [],
+  "notes": "Before: data/kova/institutional/sec13f_ownership_*.jsonl wrote 58 all-skipped placeholder rows/day (0 real holdings) because of a missing CUSIP map and a dead hardcoded URL. After: real ingestion of the 01mar2026-31may2026 window (Q1 2026 holdings) covers 971/1229 universe tickers (79%) with sane aggregates (AAPL 4483 holders / $2.70T / 11.18B shares, matches reality). Probe downloaded the real 99MB zip and parsed 3.006M rows. 9 new tests (offline synthetic zip + window date math + idempotency); full quant suite 1305 passed (5 deselected belong to in-flight exp-20260612-009). Caveat: SEC reports the 13F VALUE column in whole dollars since 2023, so the output field is total_value_usd (the upstream parser key value_usd_thousands is legacy-named). Idempotent per window: daily call is a no-op until a new ~quarterly window releases (~4x/year, mid Feb/May/Aug/Nov); next window 01jun2026-31aug2026 ~early Sep 2026.",
+  "parameters": {
+    "locked_variables": [
+      "13F universe-scoped real ingestion: window-aware SEC downloader + issuer-name CUSIP->ticker map + per-ticker holdings aggregation for the broad universe"
+    ],
+    "single_causal_variable": "13F universe-scoped real ingestion: window-aware SEC downloader + issuer-name CUSIP->ticker map + per-ticker holdings aggregation for the broad universe"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "TODO",
+    "new_evidence_required": "TODO",
+    "realized_failure_mode": "none_material_unit_label_corrected",
+    "why_result_happened": "The hardcoded SEC 13F URL had been dead since the ~2024 switch to filing-window naming but nobody noticed because no env config ever triggered a download - same silent-rot pattern as forward_tester. Name-match coverage (79%) was higher than feared."
+  },
+  "prediction": {
+    "confidence_reason": "Probe already downloaded the real 99MB Q1-2026 window, parsed 3.006M rows, and name-matched 975/1229 universe tickers (79%); only new files touched so no concurrency collision with exp-009.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "name-match false positives map wrong ticker",
+      "SEC rate limiting on 99MB download",
+      "memory blowup parsing 3M rows",
+      "filing-window date math off-by-one near release boundary"
+    ],
+    "recorded_at": "2026-06-13T03:13:26+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260613-007/before.json",
+    "data/experiments/exp-20260613-007/after.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-06-13T03:22:34+00:00",
+  "trial_family": "measurement_repair",
+  "trial_variant_id": "exp-20260613-007"
+}

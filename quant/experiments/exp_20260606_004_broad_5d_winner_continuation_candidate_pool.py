@@ -51,7 +51,8 @@ ARTIFACT_MD = REPO_ROOT / "experiments" / "artifacts" / f"{EXPERIMENT_ID}_{STEM}
 EXPERIMENT_LOG = REPO_ROOT / "docs" / "experiment_log.jsonl"
 REGISTRY_JSON = REPO_ROOT / "docs" / "experiment_registry.json"
 
-WAREHOUSE = REPO_ROOT / "data" / "experiments" / "exp-20260519-030" / "warehouse_main.sqlite"
+# exp-20260612-017: warehouse relocated to data/warehouse/; resolve via module.
+from ohlcv_warehouse import DEFAULT_WAREHOUSE_PATH as WAREHOUSE  # noqa: E402
 
 FORMATION_DAYS = 5
 CORE_MOMENTUM_DAYS = 20

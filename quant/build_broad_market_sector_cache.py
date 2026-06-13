@@ -30,11 +30,10 @@ from broad_market_sector_map import (  # noqa: E402
     coverage_report,
     load_cache,
 )
+from ohlcv_warehouse import DEFAULT_WAREHOUSE_PATH  # noqa: E402
 
 
-WAREHOUSE_SQLITE = (
-    REPO_ROOT / "data" / "experiments" / "exp-20260519-030" / "warehouse_main.sqlite"
-)
+WAREHOUSE_SQLITE = DEFAULT_WAREHOUSE_PATH
 
 
 def _warehouse_tickers() -> list[str]:

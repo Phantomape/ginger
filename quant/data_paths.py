@@ -306,8 +306,6 @@ DAILY_ARTIFACTS: dict[str, tuple[str, str]] = {
     "earnings_snapshot": ("daily/snapshots/earnings", "earnings_snapshot_{date}.json"),
     "event_snapshot": ("daily/snapshots/events", "event_snapshot_{date}.json"),
     "universe_state": ("daily/universe", "universe_state_{date}.json"),
-    "forward_test": ("daily/forward_tests", "forward_test_{date}.json"),
-    "strategy_attribution": ("daily/forward_tests", "strategy_attribution_{date}.json"),
 }
 
 

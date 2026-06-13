@@ -72,7 +72,9 @@ from exp_20260531_006_full_universe_alpha_score_quantile_forward_return import (
     judge as quantile_judge,
 )
 
-WAREHOUSE = REPO_ROOT / "data" / "experiments" / "exp-20260519-030" / "warehouse_main.sqlite"
+# exp-20260612-017: warehouse relocated to data/warehouse/; resolve via module.
+from ohlcv_warehouse import DEFAULT_WAREHOUSE_PATH as WAREHOUSE  # noqa: E402
+
 EXP_DIR = REPO_ROOT / "data" / "experiments" / "exp-20260601-006"
 DEFAULT_OUTPUT = EXP_DIR / "broad_universe_alpha_score_ranking_validation.json"
 

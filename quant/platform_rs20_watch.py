@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from data_paths import data_artifact_path
+from sleeve_standard_layout import write_standard_sleeve_surfaces
 
 
 SCHEMA_VERSION = 1
@@ -183,6 +184,22 @@ def persist_platform_rs20_forward_watch(
     with summary.open("w", encoding="utf-8") as handle:
         json.dump(out, handle, indent=2, sort_keys=True)
         handle.write("\n")
+    # exp-20260612-017: also publish the standard sleeve surfaces so
+    # state.json/snapshots.jsonl tooling does not skip this watch sleeve.
+    out["standard_surfaces"] = write_standard_sleeve_surfaces(
+        sleeve_dir=summary.parent,
+        sleeve_name=WATCH_NAME,
+        rule_version=RULE_VERSION,
+        asof_date=snapshot.get("asof_date"),
+        pending_entries=snapshot.get("candidates") or [],
+        extra_snapshot_fields={
+            "platform_missed_count": snapshot.get("platform_missed_count", 0),
+            "platform_rs20_missed_count": snapshot.get("platform_rs20_missed_count", 0),
+            "no_gap_rs20_watch_count": snapshot.get("no_gap_rs20_watch_count", 0),
+            "ledger_appended_count": appended,
+            "ledger_row_count": len(history),
+        },
+    )
     return {**snapshot, "persistence": out}
 
 

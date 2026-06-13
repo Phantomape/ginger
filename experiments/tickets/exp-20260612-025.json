@@ -1,0 +1,91 @@
+{
+  "experiment_id": "exp-20260612-025",
+  "experiment_uid": "expuid-5fc2c0c5429f4caa",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260612-025",
+    "slug": "sec_auditor_change_absorption",
+    "reserved_at": "2026-06-12T23:17:30+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "proposed",
+  "lane": "alpha_search",
+  "owner": "alpha-search-automation",
+  "hypothesis": "candidate_pool: SEC 8-K Item 4.01 auditor/accountant change events, only when same-day liquid leadership confirms absorption, may signal governance uncertainty already resolved by price and produce next-open continuation beyond generic SEC event noise.",
+  "change_type": "default_off_paper_candidate_pool_replay_scout",
+  "mechanism_family": "production_visible_free_sec_event_ohlcv_candidate_pool",
+  "trial_family": "sec_auditor_change_absorption_candidate_pool",
+  "trial_variant_id": "sec_auditor_change_absorption_top1_next_open_10d_v1",
+  "single_causal_variable": "sec_auditor_change_absorption_candidate_source_v1",
+  "changed_variable": "sec_auditor_change_absorption_candidate_source_v1",
+  "causal_components": [
+    "PIT SEC 8-K Item 4.01 event rows",
+    "same-day OHLCV leadership envelope",
+    "same-ticker core overlap exclusion",
+    "top1 next-open paper entry",
+    "10 trading day hold",
+    "standard costs/cooldown/comparators"
+  ],
+  "prior_trial_count": 5,
+  "nearby_prior_experiments": [
+    "exp-20260610-013",
+    "exp-20260610-023",
+    "exp-20260611-017",
+    "exp-20260611-025",
+    "exp-20260612-005"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "sec_8k_item_401_auditor_change_event_plus_ohlcv_confirmation",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260612_025_sec_auditor_change_absorption.py",
+    "data/experiments/exp-20260612-025/exp_20260612_025_sec_auditor_change_absorption.json",
+    "experiments/cards/exp-20260612-025.md",
+    "experiments/manifests/exp-20260612-025.json",
+    "experiments/tickets/exp-20260612-025.json",
+    "experiments/logs/exp-20260612-025.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "sec_auditor_change_absorption_candidate_source_v1"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Gate 1-4 per docs/backtesting.md; require aggregate EV/PnL improvement, no material drawdown/survival degradation, adequate target sample across three canonical windows, and accepted compression/distribution comparators beaten; positive replay still requires shared default-off parity before promotion.",
+  "prediction": {
+    "success_probability": 0.08,
+    "expected_ev_delta": 0.02,
+    "expected_pnl_delta": 500.0,
+    "main_failure_modes": [
+      "thin_item_401_sample",
+      "governance_event_noise",
+      "accepted_comparator_not_beaten",
+      "window_regression",
+      "concentration_failed"
+    ],
+    "confidence_reason": "Direct Item 4.01 has not been three-window tested; however prior SEC item/text candidates mostly failed and raw Item 4.01 coverage appears very sparse, so this is a low-probability but free/PIT semantic candidate-source check rather than a threshold retune.",
+    "recorded_at": "2026-06-12T23:16:58+00:00"
+  },
+  "created_at": "2026-06-12T23:17:30+00:00",
+  "claimed_at": null,
+  "completed_at": null,
+  "result": null,
+  "ticket_file": "experiments/tickets/exp-20260612-025.json",
+  "card_file": "experiments/cards/exp-20260612-025.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260612-025.json"
+}

@@ -1,0 +1,198 @@
+{
+  "experiment_id": "exp-20260612-016",
+  "experiment_uid": "expuid-35ae19d464f94d53",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260612-016",
+    "slug": "sec_13g_passive_stake_initiation",
+    "reserved_at": "2026-06-12T18:09:33+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "codex-alpha-search",
+  "hypothesis": "candidate_pool: archive-first non-amended SCHEDULE 13G filings that map to exactly one public issuer ticker may identify passive or institutional accumulation candidates. The fixed policy tests whether those candidates add next-open default-off paper EV after liquidity, price, history, core-overlap, top-1/day, and cooldown guards.",
+  "change_type": "experiment_local_replay_candidate_pool",
+  "mechanism_family": "production_visible_free_sec_ownership_event_candidate_pool",
+  "trial_family": "sec_13g_passive_stake_initiation_candidate_pool",
+  "trial_variant_id": "sec_13g_archive_first_top1_next_open_10d_v1",
+  "single_causal_variable": "sec_13g_passive_stake_initiation_candidate_source_v1",
+  "changed_variable": "sec_13g_passive_stake_initiation_candidate_source_v1",
+  "causal_components": [
+    "SEC form-index SCHEDULE 13G non-amendment events",
+    "issuer CIK ticker mapping",
+    "next-open entry",
+    "10 trading-day hold",
+    "liquidity and price envelope",
+    "momentum confirmation",
+    "core-overlap exclusion",
+    "one candidate per day"
+  ],
+  "prior_trial_count": 2,
+  "nearby_prior_experiments": [
+    "exp-20260612-015",
+    "exp-20260609-025",
+    "exp-20260611-007"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "pit_sec_13g_ownership_event_archive",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260612_*_sec_13g_passive_stake_initiation.py",
+    "data/experiments/exp-20260612-*",
+    "experiments/logs/exp-20260612-*.json",
+    "experiments/cards/exp-20260612-*.md",
+    "experiments/tickets/exp-20260612-*.json",
+    "experiments/manifests/exp-20260612-*.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "SC 13G issuer-mapped passive stake initiation candidate pool"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Gate 1-4: compare before/after on late_strong, mid_weak, old_thin; accept only if aggregate EV and PnL improve without unacceptable drawdown, trade-count, survival, concentration, or production-parity regression. Private replay positive is only a lead until shared default-off helper and daily snapshot parity exist.",
+  "prediction": {
+    "success_probability": 0.24,
+    "expected_ev_delta": 0.08,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "issuer_reporting_owner_ambiguity",
+      "13g_annual_batch_lag",
+      "no_same_window_predictive_edge",
+      "too_many_microcap_noisy_rows",
+      "overlap_with_existing_core_winners"
+    ],
+    "confidence_reason": "Mechanism: non-amended SCHEDULE 13G filings can reveal large passive or institutional ownership stakes that may keep supporting liquid leaders after disclosure. The source is free EDGAR metadata and has more breadth than the rejected 13D/Form4 ownership scouts. Main disconfirmer: 13G filings are often stale annual batch reports, so next-open paper entries may see no fresh edge.",
+    "recorded_at": "2026-06-12T18:09:02Z"
+  },
+  "created_at": "2026-06-12T18:09:33+00:00",
+  "claimed_at": "2026-06-12T18:09:53+00:00",
+  "completed_at": "2026-06-12T18:16:24+00:00",
+  "result": {
+    "decision": "rejected_sec_13g_passive_stake_candidate_pool",
+    "accepted": false,
+    "numeric_gate4_passed": false,
+    "artifact": "data/experiments/exp-20260612-016/exp_20260612_016_sec_13g_passive_stake_initiation.json",
+    "log": "experiments/logs/exp-20260612-016.json",
+    "card": "experiments/cards/exp-20260612-016.md",
+    "aggregate_expected_value_delta": -0.0603,
+    "aggregate_strategy_total_pnl_delta": -1063.94,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_sec_13g_passive_stake_candidate_pool",
+      "failed_reasons": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "drawdown_drift_too_high",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "aggregate_ev_delta": -0.0603,
+      "aggregate_pnl_delta": -1063.94,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 2,
+      "windows_pnl_improved": 1,
+      "windows_pnl_regressed": 2,
+      "target_trade_count": 123,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0218,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.142071,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.045781,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "accepted_distribution_comparator": {
+        "experiment_id": "exp-20260611-007",
+        "decision": "accepted_distribution_day_absorption_leadership_shared_adapter",
+        "expected_value_score_delta_sum": 0.5286,
+        "total_pnl_delta_sum": 10432.91,
+        "target_trade_count": 113
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.24,
+      "actual_gate4_passed": false,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "drawdown_drift_too_high",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "brier_score": 0.0576
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "replay_only_no_live_adapter",
+      "implementation_mode": "private_replay_scout",
+      "private_replay_scout_escape_reason": "The SCHEDULE 13G event archive is created from local EDGAR form-index files inside this experiment; no shared daily helper or production daily-index fetcher exists yet. A positive result is lead-only until the same issuer mapping, ambiguity drop, dedupe, liquidity gates, overlap exclusion, next-open paper entry, costs, hold, and cooldown run in shared historical replay and daily default-off snapshots.",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "live_realism_evaluated": false,
+      "live_ready": false,
+      "uses_llm": false,
+      "uses_free_sec_filing_events": true,
+      "uses_free_ohlcv": true,
+      "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper builds the same SCHEDULE 13G events from the daily EDGAR index in production and matches the historical replay output."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The fixed 13G passive-stake bundle failed Gate 4. The most likely reasons are that 13G filings are annual/batch and often stale by the filing date, issuer-level first-in-archive events lose holder-level information, and the liquid momentum/core-overlap envelope admits mostly already-priced large-cap ownership confirmations rather than fresh edge.",
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping liquidity, price, history, top-N, hold-day, cooldown, notional, or ambiguity thresholds, by re-admitting 13G/A amendments, or by treating reporting-owner CIKs as issuer tickers on the same frozen windows.",
+      "new_evidence_required": "A retry needs parsed 13G documents with holder identity, stake percentage, item category, change from prior filing, or a shared daily helper that can generate closed forward replacement-value rows."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260612-016.json",
+  "card_file": "experiments/cards/exp-20260612-016.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260612-016.json",
+  "decision": "rejected_sec_13g_passive_stake_candidate_pool",
+  "summary": "The SEC 13G passive-stake source was rejected under the standard three-window protocol and current accepted distribution-day comparator.",
+  "artifact": "data/experiments/exp-20260612-016/exp_20260612_016_sec_13g_passive_stake_initiation.json",
+  "log": "experiments/logs/exp-20260612-016.json",
+  "aggregate_expected_value_delta": -0.0603,
+  "aggregate_strategy_total_pnl_delta": -1063.94,
+  "updated_at": "2026-06-12T18:16:24+00:00"
+}

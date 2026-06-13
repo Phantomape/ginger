@@ -3511,376 +3511,26 @@ def test_signal_has_entry_note():
     assert sig_c is not None and "entry_note" in sig_c, "Strategy C signal must have entry_note"
 
 
-def test_forward_tester_handles_wrapped_json():
-    """forward_tester must handle investment_advice JSON wrapper {advice_parsed: {...}}.
-
-    F2/F3 fix: llm_advisor.save_advice() stores: {"advice_parsed": {...}, "advice_raw": "..."}.
-    The forward tester previously read top-level keys directly, missing the inner data.
-    """
-    import json
-    import tempfile
-    import os
-    from forward_tester import evaluate_file
-
-    # Build a minimal investment_advice wrapper
-    inner = {
-        "new_trade": "NO NEW TRADE",
-        "second_new_trade": "NO SECOND TRADE",
-        "position_actions": [],
-    }
-    wrapped = {
-        "timestamp": "2020-01-01T00:00:00",
-        "advice_raw": "NO NEW TRADE",
-        "advice_parsed": inner,
-        "token_usage": None,
-    }
-
-    # Write to a temp file with the expected naming convention (old enough to evaluate)
-    with tempfile.NamedTemporaryFile(
-        mode="w", suffix=".json",
-        prefix="investment_advice_20200101_",
-        delete=False,
-    ) as f:
-        json.dump(wrapped, f)
-        tmppath = f.name
-
-    # Rename to match expected pattern investment_advice_YYYYMMDD.json
-    dated_path = os.path.join(os.path.dirname(tmppath), "investment_advice_20200101.json")
-    os.rename(tmppath, dated_path)
-
-    try:
-        result = evaluate_file(dated_path, n_days=5)
-        # Result should not be None (date is in the past) and should have no errors
-        # from the JSON parsing (empty position_actions is fine)
-        assert result is not None, "evaluate_file should return results for past dates"
-        assert result["position_results"] == [], "Empty position_actions → empty results"
-    finally:
-        if os.path.exists(dated_path):
-            os.remove(dated_path)
 
 
 # ── forward_tester gap-fill price accuracy ───────────────────────────────────
 
-def test_check_stop_gap_fill_uses_open_not_low(monkeypatch):
-    """Gap-down stop: fill is based on Open (not daily Low), then sell-side
-    slippage (SLIPPAGE_BPS_STOP = 10 bps) is applied on top.
-
-    Scenario: Entry $100, stop $95.
-      Day 1: stock gaps down — opens at $92 (below stop), trades to low of $89.
-    Expected: stop_hit_price = $92 * (1 - 0.001) = $91.908  (NOT $89 low, NOT raw $92).
-    """
-    import pandas as pd
-    from datetime import date
-    from forward_tester import check_stop_or_target_hit, SLIPPAGE_BPS_STOP
-
-    entry_date   = date(2024, 1, 2)
-    # Simulated daily bars: day 0 = entry date (excluded), day 1 = first eval day
-    idx = pd.to_datetime(["2024-01-02", "2024-01-03"])
-    fake_data = pd.DataFrame({
-        "Open":  [100.0, 92.0],   # day 1 opens at $92 — gap through $95 stop
-        "High":  [101.0, 93.0],
-        "Low":   [ 99.0, 89.0],   # intraday low $89 — should NOT be used as fill
-        "Close": [100.0, 91.0],
-    }, index=idx)
-
-    import forward_tester
-    monkeypatch.setattr(forward_tester, "get_daily_prices_during_period",
-                        lambda *args, **kwargs: fake_data)
-
-    result = check_stop_or_target_hit(
-        ticker       = "TEST",
-        entry_date   = entry_date,
-        entry_price  = 100.0,
-        stop_price   = 95.0,
-        target_price = 115.0,
-        n_days       = 10,
-    )
-
-    assert result["stop_hit"],     "Stop must be detected when day-low breaches stop"
-    assert result["stop_hit_day"] == 1
-    assert result["exit_reason"] == "stop"
-    expected_fill = round(92.0 * (1 - SLIPPAGE_BPS_STOP / 10000.0), 4)
-    assert result["stop_hit_price"] == expected_fill, (
-        f"Gap-fill stop must use Open ($92) with {SLIPPAGE_BPS_STOP}bps sell slippage → "
-        f"${expected_fill}, got {result['stop_hit_price']}"
-    )
-    # Sanity: fill must be BELOW the Open (sell-side slippage is adverse).
-    assert result["stop_hit_price"] < 92.0
 
 
-def test_check_stop_intraday_fill_uses_stop_price(monkeypatch):
-    """Intraday stop: fill is based on stop_price with sell-side slippage.
-
-    Scenario: Entry $100, stop $95.
-      Day 1: opens at $97 (above stop), sells down to low $93.
-    Expected: stop_hit_price = $95 * (1 - 0.001) = $94.905  (NOT $93 low, NOT raw $95).
-    """
-    import pandas as pd
-    from datetime import date
-    from forward_tester import check_stop_or_target_hit, SLIPPAGE_BPS_STOP
-
-    entry_date = date(2024, 1, 2)
-    idx = pd.to_datetime(["2024-01-02", "2024-01-03"])
-    fake_data = pd.DataFrame({
-        "Open":  [100.0, 97.0],   # opens above stop — no gap
-        "High":  [101.0, 97.5],
-        "Low":   [ 99.0, 93.0],   # sells through stop intraday
-        "Close": [100.0, 94.0],
-    }, index=idx)
-
-    import forward_tester
-    monkeypatch.setattr(forward_tester, "get_daily_prices_during_period",
-                        lambda *args, **kwargs: fake_data)
-
-    result = check_stop_or_target_hit(
-        ticker       = "TEST",
-        entry_date   = entry_date,
-        entry_price  = 100.0,
-        stop_price   = 95.0,
-        target_price = 115.0,
-        n_days       = 10,
-    )
-
-    assert result["stop_hit"],     "Intraday stop must be detected when low < stop"
-    assert result["stop_hit_day"] == 1
-    assert result["exit_reason"] == "stop"
-    expected_fill = round(95.0 * (1 - SLIPPAGE_BPS_STOP / 10000.0), 4)
-    assert result["stop_hit_price"] == expected_fill, (
-        f"Intraday fill must be stop ($95) with {SLIPPAGE_BPS_STOP}bps sell slippage → "
-        f"${expected_fill}, got {result['stop_hit_price']}"
-    )
 
 
-def test_check_stop_not_hit_when_low_above_stop(monkeypatch):
-    """Stop must NOT be marked hit when daily Low remains above the stop price."""
-    import pandas as pd
-    from datetime import date
-    from forward_tester import check_stop_or_target_hit
-
-    entry_date = date(2024, 1, 2)
-    idx = pd.to_datetime(["2024-01-02", "2024-01-03", "2024-01-04"])
-    fake_data = pd.DataFrame({
-        "Open":  [100.0, 98.0, 99.0],
-        "High":  [101.0, 99.0, 105.0],
-        "Low":   [ 99.0, 96.0, 98.0],   # low stays at $96, above $95 stop
-        "Close": [100.0, 97.0, 103.0],
-    }, index=idx)
-
-    import forward_tester
-    monkeypatch.setattr(forward_tester, "get_daily_prices_during_period",
-                        lambda *args, **kwargs: fake_data)
-
-    result = check_stop_or_target_hit(
-        ticker       = "TEST",
-        entry_date   = entry_date,
-        entry_price  = 100.0,
-        stop_price   = 95.0,
-        target_price = 115.0,
-        n_days       = 10,
-    )
-
-    assert not result["stop_hit"],  "Stop must NOT fire when low stays above stop price"
-    assert result["stop_hit_price"] is None
 
 
 # ── forward_tester target-fill price accuracy (P0-3) ─────────────────────────
 
-def test_target_fill_gap_up_uses_open(monkeypatch):
-    """When the stock gaps UP through the target on open, target_hit_price
-    must be based on Open (bonus over target), with sell-side slippage.
-
-    Scenario: Entry $100, target $110.
-      Day 1: stock gaps up — opens at $112 (above target), high $113.
-    Expected: target_hit_price = $112 * (1 - 0.0005) = $111.944.
-    """
-    import pandas as pd
-    from datetime import date
-    from forward_tester import check_stop_or_target_hit, SLIPPAGE_BPS_TARGET
-
-    entry_date = date(2024, 1, 2)
-    idx = pd.to_datetime(["2024-01-02", "2024-01-03"])
-    fake_data = pd.DataFrame({
-        "Open":  [100.0, 112.0],  # gap-up above target
-        "High":  [101.0, 113.0],
-        "Low":   [ 99.0, 111.5],
-        "Close": [100.0, 112.5],
-    }, index=idx)
-
-    import forward_tester
-    monkeypatch.setattr(forward_tester, "get_daily_prices_during_period",
-                        lambda *args, **kwargs: fake_data)
-
-    result = check_stop_or_target_hit(
-        ticker       = "TEST",
-        entry_date   = entry_date,
-        entry_price  = 100.0,
-        stop_price   = 95.0,
-        target_price = 110.0,
-        n_days       = 10,
-    )
-
-    assert result["target_hit"], "Target must fire when Open >= target"
-    assert result["target_hit_day"] == 1
-    assert result["exit_reason"] == "target"
-    expected_fill = round(112.0 * (1 - SLIPPAGE_BPS_TARGET / 10000.0), 4)
-    assert result["target_hit_price"] == expected_fill, (
-        f"Gap-up target fill must be Open ($112) with {SLIPPAGE_BPS_TARGET}bps → "
-        f"${expected_fill}, got {result['target_hit_price']}"
-    )
-    # Must be above raw target (gap-up gives a bonus even after slippage)
-    assert result["target_hit_price"] > 110.0
 
 
-def test_target_fill_intraday_uses_target_minus_slippage(monkeypatch):
-    """When target is hit intraday (not at open), fill ≈ target minus slippage.
-
-    Scenario: Entry $100, target $110.
-      Day 1: opens $105, high $111 (hits target intraday).
-    Expected: target_hit_price = $110 * (1 - 0.0005) = $109.945.
-    """
-    import pandas as pd
-    from datetime import date
-    from forward_tester import check_stop_or_target_hit, SLIPPAGE_BPS_TARGET
-
-    entry_date = date(2024, 1, 2)
-    idx = pd.to_datetime(["2024-01-02", "2024-01-03"])
-    fake_data = pd.DataFrame({
-        "Open":  [100.0, 105.0],
-        "High":  [101.0, 111.0],   # intraday high clips target
-        "Low":   [ 99.0, 104.0],
-        "Close": [100.0, 109.0],
-    }, index=idx)
-
-    import forward_tester
-    monkeypatch.setattr(forward_tester, "get_daily_prices_during_period",
-                        lambda *args, **kwargs: fake_data)
-
-    result = check_stop_or_target_hit(
-        ticker       = "TEST",
-        entry_date   = entry_date,
-        entry_price  = 100.0,
-        stop_price   = 95.0,
-        target_price = 110.0,
-        n_days       = 10,
-    )
-
-    assert result["target_hit"]
-    assert result["exit_reason"] == "target"
-    expected_fill = round(110.0 * (1 - SLIPPAGE_BPS_TARGET / 10000.0), 4)
-    assert result["target_hit_price"] == expected_fill
-    assert result["target_hit_price"] < 110.0   # sell slippage is adverse
 
 
-def test_same_day_stop_and_target_prefers_stop(monkeypatch):
-    """If both stop and target are touched the SAME day, exit_reason is 'stop'
-    (conservative: assume worst path of the day fires first)."""
-    import pandas as pd
-    from datetime import date
-    from forward_tester import check_stop_or_target_hit
-
-    entry_date = date(2024, 1, 2)
-    idx = pd.to_datetime(["2024-01-02", "2024-01-03"])
-    # Whipsaw: opens $100, ranges 94 to 111 (hits both 95 stop and 110 target)
-    fake_data = pd.DataFrame({
-        "Open":  [100.0, 100.0],
-        "High":  [101.0, 111.0],
-        "Low":   [ 99.0,  94.0],
-        "Close": [100.0,  98.0],
-    }, index=idx)
-
-    import forward_tester
-    monkeypatch.setattr(forward_tester, "get_daily_prices_during_period",
-                        lambda *args, **kwargs: fake_data)
-
-    result = check_stop_or_target_hit(
-        ticker       = "TEST",
-        entry_date   = entry_date,
-        entry_price  = 100.0,
-        stop_price   = 95.0,
-        target_price = 110.0,
-        n_days       = 10,
-    )
-
-    assert result["stop_hit"] and result["target_hit"]
-    assert result["exit_reason"] == "stop", \
-        "Same-day whipsaw must assume stop fires first (conservative)"
 
 
-def test_apply_slippage_direction():
-    """Buy slippage raises price, sell slippage lowers it; symmetric in bps."""
-    from forward_tester import apply_slippage
-    assert apply_slippage(100.0, 10, "buy")  == 100.1000
-    assert apply_slippage(100.0, 10, "sell") == 99.9000
-    assert apply_slippage(100.0, 0,  "buy")  == 100.0
-    assert apply_slippage(None,   5, "buy")  is None
 
 
-def test_evaluate_file_new_trade_uses_next_day_open_entry(monkeypatch, tmp_path):
-    """End-to-end: new_trade entry fill = next-day Open + buy slippage, and
-    realized_pnl_pct_net bakes in the round-trip commission.
-
-    Scenario: rec_date close $100, next-day Open $101, target $110 hit intraday.
-      entry_fill  = 101 * 1.0005 = 101.0505
-      target_fill = 110 * 0.9995 = 109.945
-      realized    = 109.945 / 101.0505 - 1 - 0.0035 ≈ +0.0845
-    """
-    import json
-    import pandas as pd
-    from datetime import date, timedelta
-    import forward_tester as ft
-    from forward_tester import (
-        evaluate_file, SLIPPAGE_BPS_ENTRY, SLIPPAGE_BPS_TARGET, ROUND_TRIP_COST,
-    )
-
-    rec = date.today() - timedelta(days=30)   # safely in the past
-    rec_str = rec.strftime("%Y%m%d")
-
-    advice_path = tmp_path / f"investment_advice_{rec_str}.json"
-    advice_path.write_text(json.dumps({
-        "advice_parsed": {
-            "position_actions": [],
-            "new_trade": {
-                "ticker":       "TEST",
-                "direction":    "long",
-                "confidence":   0.8,
-                "stop_price":   95.0,
-                "target_price": 110.0,
-            },
-        }
-    }))
-
-    # Stub price fetches so the test is deterministic / offline.
-    monkeypatch.setattr(ft, "get_close_price",
-                        lambda ticker, d: (100.0, d) if d == rec else (108.0, d))
-    monkeypatch.setattr(ft, "get_next_open_price",
-                        lambda ticker, d: (101.0, d + timedelta(days=1)))
-
-    # Intraday target-hit bar series.
-    def fake_daily(ticker, start, end):
-        idx = pd.to_datetime([rec, rec + timedelta(days=1)])
-        return pd.DataFrame({
-            "Open":  [100.0, 105.0],
-            "High":  [101.0, 111.0],
-            "Low":   [ 99.0, 104.0],
-            "Close": [100.0, 109.0],
-        }, index=idx)
-    monkeypatch.setattr(ft, "get_daily_prices_during_period", fake_daily)
-
-    result = evaluate_file(str(advice_path))
-    nt = result["new_trade_result"]
-
-    expected_entry  = round(101.0 * (1 + SLIPPAGE_BPS_ENTRY  / 10000.0), 4)
-    expected_target = round(110.0 * (1 - SLIPPAGE_BPS_TARGET / 10000.0), 4)
-    expected_net    = round(expected_target / expected_entry - 1 - ROUND_TRIP_COST, 4)
-
-    assert nt["entry_open_price"] == 101.0
-    assert nt["entry_fill_price"] == expected_entry
-    assert nt["exit_reason"]      == "target"
-    assert nt["exit_fill_price"]  == expected_target
-    assert nt["realized_pnl_pct_net"] == expected_net, (
-        f"realized_pnl_pct_net must reflect fill prices + round-trip cost. "
-        f"expected {expected_net}, got {nt['realized_pnl_pct_net']}"
-    )
 
 
 # ── UNKNOWN regime treated as NEUTRAL ────────────────────────────────────────
@@ -5896,22 +5546,8 @@ def test_sharpe_fallback_for_short_history(tmp_path):
 
 # ── P1-1: Forward tester multi-window ────────────────────────────────────────
 
-def test_forward_tester_multi_window_results_present():
-    """Multi-window fields should appear in new_trade_result when data available."""
-    from forward_tester import EVAL_WINDOWS
-    assert 10 in EVAL_WINDOWS
-    assert 20 in EVAL_WINDOWS
-    assert 30 in EVAL_WINDOWS
 
 
-def test_forward_tester_backward_compat():
-    """return_10d_pct must remain as primary field (backward compat)."""
-    # Verify the constant and function signatures haven't changed
-    from forward_tester import EVAL_DAYS, evaluate_file
-    assert EVAL_DAYS == 10
-    import inspect
-    sig = inspect.signature(evaluate_file)
-    assert "n_days" in sig.parameters
 
 
 # ── P2-2: Backtester scaffold ────────────────────────────────────────────────
@@ -6155,112 +5791,8 @@ def test_fill_model_helpers_consistent_with_raw_apply_slippage():
 
 # ── forward_tester position_actions fill model (P0-3 Part 3) ─────────────────
 
-def test_evaluate_file_position_action_exit_uses_slippage(monkeypatch, tmp_path):
-    """EXIT/REDUCE position_actions must record a fill-model-grounded realized
-    P&L (`realized_exit_pnl_pct_net`) alongside the legacy close-to-close
-    direction signal (`return_10d_pct`).
-
-    Pre-fix gap: position_actions were evaluated only on close-to-close returns,
-    so the realized P&L of an actual sell was invisible to downstream per-
-    strategy attribution.
-
-    Scenario: avg_cost=$100, position is underwater on rec_date (close $92).
-      next-day Open $90, sell slippage 10bp → fill $89.91
-      realized_exit_pnl_pct     = 89.91 / 100 - 1  = -0.1009
-      realized_exit_pnl_pct_net = -0.1009 - 0.0035 = -0.1044
-    """
-    import json
-    from datetime import date, timedelta
-    import forward_tester as ft
-    from forward_tester import (
-        evaluate_file, SLIPPAGE_BPS_STOP, ROUND_TRIP_COST,
-    )
-
-    rec = date.today() - timedelta(days=30)
-    rec_str = rec.strftime("%Y%m%d")
-
-    advice_path = tmp_path / f"investment_advice_{rec_str}.json"
-    advice_path.write_text(json.dumps({
-        "advice_parsed": {
-            "position_actions": [
-                {"ticker": "TEST", "action": "EXIT", "confidence": 0.9,
-                 "exit_rule_triggered": "NONE"},
-            ],
-            "new_trade": None,
-        }
-    }))
-
-    pos_path = tmp_path / "open_positions.json"
-    pos_path.write_text(json.dumps({
-        "positions": [{"ticker": "TEST", "avg_cost": 100.0}]
-    }))
-
-    # rec_date close $92 (already underwater), eval_date close $88
-    monkeypatch.setattr(ft, "get_close_price",
-        lambda ticker, d: (92.0, d) if d == rec else (88.0, d))
-    # Next-day Open $90 — worse than rec_date close (adverse gap)
-    monkeypatch.setattr(ft, "get_next_open_price",
-        lambda ticker, d: (90.0, d + timedelta(days=1)))
-
-    result = evaluate_file(str(advice_path), open_positions_path=str(pos_path))
-    pr = result["position_results"][0]
-
-    expected_fill = round(90.0 * (1 - SLIPPAGE_BPS_STOP / 10000.0), 4)
-    expected_gross = round(expected_fill / 100.0 - 1, 4)
-    expected_net   = round(expected_gross - ROUND_TRIP_COST, 4)
-
-    assert pr["exit_fill_price"]            == expected_fill
-    assert pr["realized_exit_pnl_pct"]      == expected_gross
-    assert pr["realized_exit_pnl_pct_net"]  == expected_net
-    # Net realized P&L must be strictly worse than the gross (commission drag).
-    assert pr["realized_exit_pnl_pct_net"] < pr["realized_exit_pnl_pct"]
-    # And strictly worse than close-to-close price_rec vs avg_cost baseline,
-    # because Open was lower than rec_date close and slippage further lowers it.
-    assert pr["realized_exit_pnl_pct_net"] < pr["pnl_vs_cost_pct"]
 
 
-def test_evaluate_file_position_action_hold_has_no_exit_fill(monkeypatch, tmp_path):
-    """HOLD actions do not execute a sale, so exit_fill_price and
-    realized_exit_pnl_pct_net must be None (fill model only applies to EXIT/REDUCE)."""
-    import json
-    from datetime import date, timedelta
-    import forward_tester as ft
-    from forward_tester import evaluate_file
-
-    rec = date.today() - timedelta(days=30)
-    rec_str = rec.strftime("%Y%m%d")
-
-    advice_path = tmp_path / f"investment_advice_{rec_str}.json"
-    advice_path.write_text(json.dumps({
-        "advice_parsed": {
-            "position_actions": [
-                {"ticker": "TEST", "action": "HOLD", "confidence": 0.7,
-                 "exit_rule_triggered": "NONE"},
-            ],
-            "new_trade": None,
-        }
-    }))
-
-    pos_path = tmp_path / "open_positions.json"
-    pos_path.write_text(json.dumps({
-        "positions": [{"ticker": "TEST", "avg_cost": 100.0}]
-    }))
-
-    monkeypatch.setattr(ft, "get_close_price",
-        lambda ticker, d: (105.0, d) if d == rec else (110.0, d))
-    monkeypatch.setattr(ft, "get_next_open_price",
-        lambda ticker, d: (106.0, d + timedelta(days=1)))
-
-    result = evaluate_file(str(advice_path), open_positions_path=str(pos_path))
-    pr = result["position_results"][0]
-
-    assert pr["action"] == "HOLD"
-    assert pr["exit_fill_price"]           is None
-    assert pr["realized_exit_pnl_pct"]     is None
-    assert pr["realized_exit_pnl_pct_net"] is None
-    # return_10d_pct must still be populated so direction-correctness grading
-    # continues to work unchanged.
-    assert pr["return_10d_pct"] is not None
 
 
 # ── backtester END-TO-END fill-model integration (P0-3 Part 2) ───────────────
@@ -6645,119 +6177,18 @@ def test_regime_compute_with_ohlcv_override():
 
 # ── forward_tester profit-lock timing quality ────────────────────────────────
 
-def test_forward_tester_profit_lock_reports_peak_capture():
-    """A profit-lock REDUCE that sells at +20% while the stock runs to +40%
-    must be direction_correct but timing_incorrect, with ≈16.7% foregone gain
-    and ≈50% peak capture (cost-to-peak formulation)."""
-    import pandas as pd
-    from datetime import date
-    from forward_tester import (
-        evaluate_profit_lock_timing, action_is_correct, PROFIT_LOCKING_RULES,
-    )
-
-    rec_date  = date(2024, 1, 2)
-    eval_date = date(2024, 1, 16)
-    # avg_cost $100, rule fires at $120 close → window High peaks at $140
-    idx = pd.to_datetime([
-        "2024-01-02", "2024-01-03", "2024-01-04", "2024-01-05",
-        "2024-01-08", "2024-01-09", "2024-01-10", "2024-01-11",
-        "2024-01-12", "2024-01-16",
-    ])
-    fake_daily = pd.DataFrame({
-        "Open":  [120.0, 122.0, 125.0, 128.0, 132.0, 135.0, 138.0, 139.0, 136.0, 130.0],
-        "High":  [121.0, 124.0, 127.0, 130.0, 134.0, 137.0, 140.0, 139.5, 138.0, 133.0],
-        "Low":   [119.0, 121.0, 124.0, 127.0, 131.0, 134.0, 137.0, 136.0, 130.0, 128.0],
-        "Close": [120.0, 123.0, 126.0, 129.0, 133.0, 136.0, 139.0, 137.0, 132.0, 131.0],
-    }, index=idx)
-
-    result = evaluate_profit_lock_timing(
-        ticker          = "TEST",
-        rec_date        = rec_date,
-        eval_date       = eval_date,
-        sell_price      = 120.0,
-        avg_cost        = 100.0,
-        _daily_override = fake_daily,
-    )
-
-    assert result["data_available"]      is True
-    assert result["max_price_in_window"] == 140.0
-    # foregone = (140 - 120) / 120 = 0.1667
-    assert result["foregone_gain_pct"]   == pytest.approx(0.1667, abs=1e-3)
-    # peak_capture = (120 - 100) / (140 - 100) = 0.5
-    assert result["peak_capture_pct"]    == pytest.approx(0.5,    abs=1e-3)
-    assert result["timing_correct"]      is False, (
-        "16.7% foregone gain is well above the 5% tolerance — must be flagged"
-    )
-
-    # Direction is still correct for a profit-locking reduce: rule fired as planned.
-    assert all(rule in PROFIT_LOCKING_RULES for rule in
-               ["PROFIT_TARGET", "SIGNAL_TARGET", "PROFIT_LADDER_50", "PROFIT_LADDER_30"])
-    assert action_is_correct("REDUCE", return_10d=0.0, exit_rule="PROFIT_TARGET") is True
 
 
-def test_forward_tester_profit_lock_timing_correct_when_near_peak():
-    """When a profit-lock sell is within 5% of the window's peak, timing_correct=True
-    and foregone_gain_pct < 0.05."""
-    import pandas as pd
-    from datetime import date
-    from forward_tester import evaluate_profit_lock_timing
-
-    rec_date  = date(2024, 1, 2)
-    eval_date = date(2024, 1, 16)
-    # Sell at $120, window High only reaches $121 (0.83% above sell → within 5%)
-    idx = pd.to_datetime([
-        "2024-01-02", "2024-01-03", "2024-01-04", "2024-01-05",
-        "2024-01-08", "2024-01-09",
-    ])
-    fake_daily = pd.DataFrame({
-        "Open":  [120.0, 120.2, 120.5, 120.8, 120.3, 119.5],
-        "High":  [120.8, 120.9, 121.0, 120.9, 120.4, 119.8],
-        "Low":   [119.5, 119.9, 120.1, 120.3, 119.7, 118.9],
-        "Close": [120.0, 120.3, 120.6, 120.4, 120.0, 119.0],
-    }, index=idx)
-
-    result = evaluate_profit_lock_timing(
-        ticker          = "TEST",
-        rec_date        = rec_date,
-        eval_date       = eval_date,
-        sell_price      = 120.0,
-        avg_cost        = 100.0,
-        _daily_override = fake_daily,
-    )
-
-    assert result["data_available"]      is True
-    assert result["max_price_in_window"] == 121.0
-    # foregone = (121 - 120) / 120 ≈ 0.00833
-    assert result["foregone_gain_pct"]   == pytest.approx(0.0083, abs=1e-3)
-    assert result["foregone_gain_pct"]   < 0.05
-    assert result["timing_correct"]      is True
 
 
-def test_forward_tester_non_profit_lock_reduce_still_uses_return_direction():
-    """REDUCE with a non-profit-lock rule (e.g., TRAILING_STOP) must still be
-    graded by the original return_direction logic — profit-lock special case
-    should not affect it."""
-    from forward_tester import action_is_correct, PROFIT_LOCKING_RULES
-
-    assert "TRAILING_STOP"         not in PROFIT_LOCKING_RULES
-    assert "EXIT"                  not in PROFIT_LOCKING_RULES
-    assert "APPROACHING_HARD_STOP" not in PROFIT_LOCKING_RULES
-
-    # Negative return → REDUCE for risk was correct (cut a loser)
-    assert action_is_correct("REDUCE", return_10d=-0.05, exit_rule="TRAILING_STOP") is True
-    # Positive return → reducing was wrong (price rose afterwards)
-    assert action_is_correct("REDUCE", return_10d= 0.05, exit_rule="TRAILING_STOP") is False
-    # Baseline REDUCE without any rule — same return-direction logic
-    assert action_is_correct("REDUCE", return_10d=-0.02) is True
-    assert action_is_correct("REDUCE", return_10d= 0.02) is False
 
 
 # ── import_advice.py manual-import helper ────────────────────────────────────
 
 def test_import_advice_parses_fenced_json(tmp_path):
     """The import helper must extract JSON from markdown-fenced responses
-    (the typical ChatGPT/Claude web UI output) and write the wrapper format
-    forward_tester expects to data/investment_advice_<date>.json."""
+    (the typical ChatGPT/Claude web UI output) and write the canonical
+    llm_prompt_resp_<date>.json replay wrapper."""
     import json
     from import_advice import import_advice
 
@@ -6787,7 +6218,7 @@ Let me know if you want me to explain the NVDA thesis."""
     )
     import os as _os
     assert _os.path.exists(out_path)
-    assert _os.path.basename(out_path) == "investment_advice_20260410.json"
+    assert _os.path.basename(out_path) == "llm_prompt_resp_20260410.json"
 
     with open(out_path, encoding="utf-8") as f:
         wrapper = json.load(f)
@@ -7225,92 +6656,8 @@ def test_backtester_run_returns_by_strategy(monkeypatch):
     assert bucket["avg_R"] is not None
 
 
-def test_forward_tester_preserves_strategy_from_new_trade(monkeypatch, tmp_path):
-    """forward_tester must echo `strategy` from the LLM advice into new_trade_result
-    and compute initial_risk_pct from entry_fill_price - stop_price.
-    """
-    import json
-    import pandas as pd
-    from datetime import date, timedelta
-    import forward_tester as ft
-    from forward_tester import evaluate_file
-
-    rec = date.today() - timedelta(days=30)
-    rec_str = rec.strftime("%Y%m%d")
-
-    advice_path = tmp_path / f"investment_advice_{rec_str}.json"
-    advice_path.write_text(json.dumps({
-        "advice_parsed": {
-            "position_actions": [],
-            "new_trade": {
-                "ticker":       "TEST",
-                "direction":    "long",
-                "confidence":   0.8,
-                "stop_price":   95.0,
-                "target_price": 110.0,
-                "strategy":     "trend_long",
-            },
-        }
-    }))
-
-    monkeypatch.setattr(ft, "get_close_price",
-                        lambda ticker, d: (100.0, d) if d == rec else (108.0, d))
-    monkeypatch.setattr(ft, "get_next_open_price",
-                        lambda ticker, d: (101.0, d + timedelta(days=1)))
-    def fake_daily(ticker, start, end):
-        idx = pd.to_datetime([rec, rec + timedelta(days=1)])
-        return pd.DataFrame({
-            "Open":  [100.0, 105.0], "High":  [101.0, 106.0],
-            "Low":   [ 99.0, 104.0], "Close": [100.0, 105.0],
-        }, index=idx)
-    monkeypatch.setattr(ft, "get_daily_prices_during_period", fake_daily)
-
-    result = evaluate_file(str(advice_path))
-    nt = result["new_trade_result"]
-    assert nt["strategy"] == "trend_long"
-    assert nt["initial_risk_pct"] is not None
-    assert nt["initial_risk_pct"] > 0
-    # Entry fill ~101.05, stop 95 → risk ≈ (101.05-95)/101.05 ≈ 0.0599
-    assert 0.04 < nt["initial_risk_pct"] < 0.08
 
 
-def test_aggregate_forward_tests_across_files(tmp_path, monkeypatch):
-    """aggregate_forward_tests rolls up realized_pnl_pct_net across multiple
-    forward_test_*.json files, missing strategy bucketed as 'unknown'.
-    """
-    import json
-    import forward_tester as ft
-
-    def write(fname, nt):
-        (tmp_path / fname).write_text(json.dumps({"new_trade_result": nt}))
-
-    write("forward_test_20260101.json",
-          {"strategy": "trend_long",   "realized_pnl_pct_net":  0.04,
-           "initial_risk_pct": 0.02})
-    write("forward_test_20260102.json",
-          {"strategy": "trend_long",   "realized_pnl_pct_net": -0.01,
-           "initial_risk_pct": 0.02})
-    write("forward_test_20260103.json",
-          {"strategy": "breakout_long","realized_pnl_pct_net":  0.08,
-           "initial_risk_pct": 0.03})
-    # Legacy file with no strategy → bucket 'unknown'
-    write("forward_test_20260104.json",
-          {"realized_pnl_pct_net": 0.02})
-    # File with no realized P&L → skipped
-    write("forward_test_20260105.json",
-          {"strategy": "trend_long", "return_10d_pct": 0.05})
-
-    pattern = str(tmp_path / "forward_test_*.json")
-    out = ft.aggregate_forward_tests(pattern=pattern)
-
-    assert set(out.keys()) == {"trend_long", "breakout_long", "unknown"}
-    assert out["trend_long"]["trade_count"]   == 2
-    assert out["breakout_long"]["trade_count"] == 1
-    assert out["unknown"]["trade_count"]       == 1
-    # trend_long has full initial_risk coverage → avg_R populated
-    assert out["trend_long"]["avg_R"] is not None
-    # unknown bucket lacks initial_risk_pct → avg_R=None
-    assert out["unknown"]["avg_R"] is None
 
 
 # ── CLAUDE3 convergence calculator + benchmarks ──────────────────────────────

@@ -1,0 +1,76 @@
+{
+  "experiment_id": "exp-20260612-009",
+  "experiment_uid": "expuid-50e44151426941a5",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260612-009",
+    "slug": "daily_accumulation_repair_bundle",
+    "reserved_at": "2026-06-12T06:13:22+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "claimed",
+  "lane": "measurement_repair",
+  "owner": "agent-fable",
+  "hypothesis": "Several daily data streams never accumulate or accumulate only by manual action: forward_tester is a manual CLI dead since 2026-02-20 and its only artifact consumer role is obsolete (operator workflow is prompt->GPT->import_advice); the OPENAI auto-call branch never runs (no key) yet investment_advice_*.json remains the nominal canonical artifact; broad_market_sector_map.json / sec_company_tickers.json / sec companyfacts cache have no daily-path refresher; kova companyfacts surface rides a never-refreshed cache because KOVA_REFRESH_COMPANYFACTS defaults off and refresh=False is hardcoded. Removing the dead path, making llm_prompt_resp the single canonical response artifact, and wiring throttled rolling refreshers restores trustworthy accumulation without touching any trading rule.",
+  "change_type": "measurement_repair",
+  "mechanism_family": "measurement_repair",
+  "trial_family": "measurement_repair",
+  "trial_variant_id": "exp-20260612-009",
+  "single_causal_variable": "daily data accumulation repair bundle: forward_tester retirement + llm response canonicalization + reference cache rolling refreshers + kova companyfacts staleness refresh",
+  "changed_variable": "daily data accumulation repair bundle: forward_tester retirement + llm response canonicalization + reference cache rolling refreshers + kova companyfacts staleness refresh",
+  "causal_components": [
+    "forward_tester_retirement",
+    "llm_response_canonicalization",
+    "reference_cache_rolling_refresh",
+    "kova_companyfacts_stale_refresh"
+  ],
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "before/after stream freshness probes + test suite",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/forward_tester.py",
+    "quant/test_quant.py",
+    "quant/data_paths.py",
+    "quant/risk_engine.py",
+    "quant/llm_advisor.py",
+    "quant/import_advice.py",
+    "quant/run.py",
+    "quant/reference_cache_refresh.py",
+    "quant/test_reference_cache_refresh.py",
+    "quant/sec_companyfacts_backfill.py",
+    "quant/kova_data_sidecar.py",
+    "quant/llm_backlog.py",
+    "data/daily/forward_tests",
+    "data/daily/llm/advice"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "daily data accumulation repair bundle: forward_tester retirement + llm response canonicalization + reference cache rolling refreshers + kova companyfacts staleness refresh"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "forward_tester.py and its tests removed with full suite green; run.py step 9 always saves prompt+decision log and import_advice writes llm_prompt_resp as the canonical artifact; reference_cache_refresh keeps sector map (rolling batch), sec_company_tickers (weekly) and companyfacts cache (rolling cap, stale-days) fresh from the daily path with env opt-outs; kova companyfacts default-on with stale refresh; no entry/exit/ranking/sizing change; live orders unchanged.",
+  "prediction": {
+    "success_probability": 0.8,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "hidden forward_tester consumer",
+      "test suite coupling",
+      "yfinance info rate limiting in rolling sector refresh",
+      "SEC rate limiting",
+      "import_advice format regression breaking replay"
+    ],
+    "confidence_reason": "Three exploration reports mapped every reader/writer; investment_advice readers are forward_tester (being removed) and pending_actions (reads both prefixes); backtester replay reads only llm_prompt_resp; refreshers reuse existing build_cache/refresh_company_tickers/fetch_companyfacts primitives.",
+    "recorded_at": "2026-06-12T06:12:44+00:00"
+  },
+  "created_at": "2026-06-12T06:13:22+00:00",
+  "claimed_at": "2026-06-12T06:13:30+00:00",
+  "completed_at": null,
+  "result": null,
+  "ticket_file": "experiments/tickets/exp-20260612-009.json",
+  "card_file": "experiments/cards/exp-20260612-009.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260612-009.json"
+}

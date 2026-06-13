@@ -1,0 +1,215 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "aggregate_accepted_allocator_ev_delta_vs_core": 2.2171,
+  "aggregate_accepted_allocator_pnl_delta_vs_core": 41060.03,
+  "aggregate_oracle_ev_gap_vs_accepted_allocator": 1.9417,
+  "aggregate_oracle_pnl_gap_vs_accepted_allocator": 29941.8,
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260613-003/exp_20260613_003_allocator_source_competition_opportunity.json",
+  "calibration": {
+    "actual_direction_success": true,
+    "actual_ev_gap_vs_accepted_allocator": 1.9417,
+    "actual_gate4_policy_passed": false,
+    "actual_pnl_gap_vs_accepted_allocator": 29941.8,
+    "actual_policy_success": false,
+    "brier_score_direction": 0.2025,
+    "failure_modes_observed": [
+      "uses_future_pnl_oracle",
+      "no_ex_ante_field",
+      "no_production_policy_change"
+    ],
+    "predicted_success_probability": 0.55,
+    "surprise_note": "The direction signal was stronger than the conservative pre-run estimate because all three windows showed positive oracle gap, but the policy remains rejected since future PnL is unavailable at decision time."
+  },
+  "card": "experiments/cards/exp-20260613-003.md",
+  "changed_variable": "same_day_source_choice_oracle_upper_bound_v1",
+  "decision": "observed_only_material_source_arbitration_gap_requires_ex_ante_field",
+  "experiment_id": "exp-20260613-003",
+  "gate4": {
+    "aggregate_ev_gap_vs_accepted_allocator": 1.9417,
+    "aggregate_pnl_gap_vs_accepted_allocator": 29941.8,
+    "decision": "observed_only_material_source_arbitration_gap_requires_ex_ante_field",
+    "failed_reasons": [
+      "uses_future_pnl_oracle",
+      "no_ex_ante_field",
+      "no_production_policy_change"
+    ],
+    "material_thresholds": {
+      "min_oracle_ev_gap": 0.5,
+      "min_oracle_pnl_gap": 10000.0,
+      "min_positive_gap_windows": 2
+    },
+    "note": "Gate 4 cannot accept this as a strategy because the after path is an ex-post oracle. The only valid output is whether source arbitration remains worth a future shared, ex-ante alpha attempt.",
+    "observed_direction_material": true,
+    "oracle_trade_count": 336,
+    "passed": false,
+    "windows_pnl_improved_vs_accepted_allocator": 3
+  },
+  "hypothesis": "candidate_pool/allocation attribution: the accepted helper source-priority allocator may still leave money in same-day source competition. A large multi-window oracle gap would imply the next alpha direction should be a production-safe ex-ante source arbitration field based on free relation/source-maturity data, not another source priority or threshold retune.",
+  "lane": "alpha_search",
+  "log": "experiments/logs/exp-20260613-003.json",
+  "mechanism_family": "accepted_helper_source_priority_allocator",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry by changing source ranks, allocator top-N, fixed state cells, notional, hold days, cooldown, or accepted helper thresholds on the same frozen windows.",
+    "negative_reflection": "This is negative as a policy even if the oracle gap is large: future PnL is unavailable at decision time, so no strategy change is retained.",
+    "new_evidence_required": "Point-in-time free relation/source-maturity data that explains oracle switches before the next open, implemented through a shared default-off helper if tested.",
+    "why_result_happened": "The accepted fixed-priority allocator leaves measurable opportunity when lower-priority same-day rows later outperform the selected source. The gap is not executable because it uses future PnL; the usable work is to look for free, point-in-time relation/source-maturity fields that explain those switches before entry."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "candidate_pool/allocation attribution: the accepted helper source-priority allocator may still leave money in same-day source competition. A large multi-window oracle gap would imply the next alpha direction should be a production-safe ex-ante source arbitration field based on free relation/source-maturity data, not another source priority or threshold retune.",
+    "2_history_check": {
+      "exp-20260611-005": "Accepted lagged consensus rank-1 shared allocator source. This is the current production-visible default-off allocator boundary.",
+      "exp-20260612-027": "Broad source-state attribution found one stable-core-flow state lead but was observed-only and required router validation.",
+      "exp-20260613-002": "Stable-core-flow state router was rejected: positive versus core but failed versus the accepted allocator and selected only three forward rows.",
+      "recent_frozen_near_neighbors": "52-week/source extension, SEC/FINRA, Companyfacts support/quality retunes, distribution-state router, slot-sliced core, and allocator pruning variants are recent rejected/frozen paths."
+    },
+    "3_single_causal_variable": "One observed-only policy question: is there material same-day source competition opportunity inside the accepted allocator? No executable strategy parameter is changed.",
+    "4_acceptance_standard": "docs/backtesting.md canonical three-window comparison. Because this uses future PnL to select the best competing source row, it cannot be accepted as a paper/live policy. It can only accept or reject the next research direction.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260613_003_allocator_source_competition_opportunity.py"
+  },
+  "prediction": {
+    "confidence_reason": "Recent source-extension and state-router failures show direct allocator retunes are mostly redundant, but the accepted allocator still sees many same-day lower-priority rows; an oracle gap is plausible if fixed source priority discards independent evidence on crowded signal dates.",
+    "expected_ev_delta": 1.0,
+    "expected_pnl_delta": 15000.0,
+    "main_failure_modes": [
+      "accepted_priority_already_captures_most_same_day_edge",
+      "oracle_gap_concentrated_in_one_window",
+      "oracle_gap_not_explainable_by_point_in_time_fields",
+      "future_pnl_oracle_not_tradeable"
+    ],
+    "recorded_at": "2026-06-13T00:18:00+00:00",
+    "success_probability": 0.55
+  },
+  "production_accepted": false,
+  "production_impact": {
+    "adapter_status": "observed_only_no_policy_change",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "default_off_paper_only": false,
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "parity_note": "Observed-only oracle attribution. Historical replay reuses the shared accepted allocator source rows, but no source priority, helper, daily snapshot, report, ranking, sizing, exit, watchlist, LLM/news, or order surface is changed.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_free_non_ohlcv": true,
+    "uses_free_ohlcv_only": false,
+    "uses_llm": false
+  },
+  "status": "observed_only",
+  "timestamp": "2026-06-13T01:30:22Z",
+  "trial_family": "accepted_allocator_source_arbitration_attribution",
+  "trial_variant_id": "same_day_source_choice_oracle_upper_bound_v1",
+  "windows": [
+    {
+      "accepted_allocator_delta_vs_core": {
+        "expected_value_score": 0.9414,
+        "max_drawdown_pct": -0.0016,
+        "sharpe_daily": 0.39,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.101,
+        "survival_rate": 0.0,
+        "total_pnl": 10094.5,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "accepted_allocator_expected_value": 6.1042,
+      "accepted_trade_count": 111,
+      "core_expected_value": 5.1628,
+      "label": "late_strong",
+      "oracle_delta_vs_accepted_allocator": {
+        "expected_value_score": 0.8761,
+        "max_drawdown_pct": -0.0035,
+        "sharpe_daily": 0.31,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.0943,
+        "survival_rate": 0.0,
+        "total_pnl": 9435.59,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "oracle_expected_value": 6.9803,
+      "oracle_positive_switch_count": 25,
+      "oracle_trade_count": 111
+    },
+    {
+      "accepted_allocator_delta_vs_core": {
+        "expected_value_score": 0.6352,
+        "max_drawdown_pct": 0.0011,
+        "sharpe_daily": 0.37,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.1113,
+        "survival_rate": 0.0,
+        "total_pnl": 11133.95,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "accepted_allocator_expected_value": 2.7754,
+      "accepted_trade_count": 113,
+      "core_expected_value": 2.1402,
+      "label": "mid_weak",
+      "oracle_delta_vs_accepted_allocator": {
+        "expected_value_score": 0.6811,
+        "max_drawdown_pct": -0.0033,
+        "sharpe_daily": 0.33,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.1124,
+        "survival_rate": 0.0,
+        "total_pnl": 11234.5,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "oracle_expected_value": 3.4565,
+      "oracle_positive_switch_count": 34,
+      "oracle_trade_count": 113
+    },
+    {
+      "accepted_allocator_delta_vs_core": {
+        "expected_value_score": 0.6405,
+        "max_drawdown_pct": -0.0149,
+        "sharpe_daily": 0.58,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.1983,
+        "survival_rate": 0.0,
+        "total_pnl": 19831.58,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "accepted_allocator_expected_value": 1.2316,
+      "accepted_trade_count": 112,
+      "core_expected_value": 0.5911,
+      "label": "old_thin",
+      "oracle_delta_vs_accepted_allocator": {
+        "expected_value_score": 0.3845,
+        "max_drawdown_pct": -0.0052,
+        "sharpe_daily": 0.28,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.0927,
+        "survival_rate": 0.0,
+        "total_pnl": 9271.71,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "oracle_expected_value": 1.6161,
+      "oracle_positive_switch_count": 23,
+      "oracle_trade_count": 112
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "experiment_id": "exp-20260611-021",
+  "experiment_uid": "expuid-142d204d8ad8474e",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260611-021",
+    "slug": "daily_sleeve_input_shape_repair",
+    "reserved_at": "2026-06-11T16:55:49+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "accepted",
+  "lane": "measurement_repair",
+  "owner": "agent-fable",
+  "hypothesis": "Two default-off paper sleeves never produce daily forward evidence due to adapter input-shape bugs: rolling_corr _normalise_ohlcv_rows rejects pandas DataFrames from run.py (permanent missing_ohlcv), and industry_relative/industry_stable _resolve_sector_entries prefers governance records without sector fields over the broad-market sector cache (permanent missing_sector_entries). Fixing input normalisation and sector-source fallback restores the daily default-off forward pipeline for these sleeves without altering any entry/exit/ranking rule.",
+  "change_type": "measurement_repair",
+  "mechanism_family": "measurement_repair",
+  "trial_family": "measurement_repair",
+  "trial_variant_id": "exp-20260611-021",
+  "single_causal_variable": "daily sleeve adapter input normalisation: DataFrame-aware OHLCV rows in rolling_corr + non-empty-result sector source fallback in industry_relative and industry_stable",
+  "changed_variable": "daily sleeve adapter input normalisation: DataFrame-aware OHLCV rows in rolling_corr + non-empty-result sector source fallback in industry_relative and industry_stable",
+  "causal_components": [
+    "rolling_corr_dataframe_ohlcv_normalisation",
+    "industry_sector_source_fallback"
+  ],
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "daily snapshot before/after on identical run.py-shaped inputs",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/rolling_corr_peer_shock_paper_sleeve.py",
+    "quant/industry_relative_laggard_repair_paper_sleeve.py",
+    "quant/industry_stable_core_flow_paper_sleeve.py",
+    "quant/test_rolling_corr_peer_shock_paper_sleeve.py",
+    "quant/test_industry_relative_laggard_repair_paper_sleeve.py",
+    "quant/test_industry_stable_core_flow_paper_sleeve.py"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "daily sleeve adapter input normalisation: DataFrame-aware OHLCV rows in rolling_corr + non-empty-result sector source fallback in industry_relative and industry_stable"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "With production-shaped inputs (DataFrame OHLCV + governance fallback universe), rolling_corr no longer returns missing_ohlcv and both industry sleeves resolve a non-empty sector map from the sector cache; existing sleeve tests pass; no trading rule or threshold changes.",
+  "prediction": {
+    "success_probability": 0.9,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "fallback changes replay parity",
+      "DataFrame date index not parsed",
+      "sector cache stale"
+    ],
+    "confidence_reason": "Bugs reproduced by code inspection; fix ports an already-proven DataFrame normalisation pattern and adds a fallback that only activates when resolution is empty.",
+    "recorded_at": "2026-06-11T16:55:33+00:00"
+  },
+  "created_at": "2026-06-11T16:55:49+00:00",
+  "claimed_at": "2026-06-11T16:56:35+00:00",
+  "completed_at": "2026-06-12T00:29:48+00:00",
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260611-021/before.json",
+    "after_result_file": "data/experiments/exp-20260611-021/after.json",
+    "delta_metrics": {},
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.9,
+      "brier_score": 0.01,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": null,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": null,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "fallback changes replay parity",
+        "DataFrame date index not parsed",
+        "sector cache stale"
+      ],
+      "realized_failure_mode": null,
+      "predicted_failure_mode_hit": null,
+      "surprise_note": "Warehouse freshness gap: only 90/8511 tickers accumulate daily; broad mass frozen at 2026-04-24, so PEAD broad sleeve already reads stale frames in production."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260611-021.json",
+  "card_file": "experiments/cards/exp-20260611-021.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260611-021.json"
+}

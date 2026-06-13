@@ -110,13 +110,24 @@ def fetch_companyfacts(
     refresh: bool = False,
     user_agent: str = DEFAULT_USER_AGENT,
     sleep_seconds: float = 0.11,
+    stale_days: float | None = None,
 ) -> dict[str, Any]:
+    """Fetch (or read cached) SEC companyfacts for one CIK.
+
+    ``stale_days`` treats a cached file older than that many days as a miss,
+    so daily callers can keep facts current without forcing a full refresh.
+    """
     cik_norm = normalize_cik(cik)
     if not cik_norm:
         raise ValueError(f"invalid cik: {cik!r}")
     path = companyfacts_cache_path(cik_norm, cache_dir)
     if path.exists() and not refresh:
-        return json.loads(path.read_text(encoding="utf-8"))
+        cache_fresh = (
+            stale_days is None
+            or (time.time() - path.stat().st_mtime) < float(stale_days) * 86400.0
+        )
+        if cache_fresh:
+            return json.loads(path.read_text(encoding="utf-8"))
 
     request = urllib.request.Request(
         SEC_COMPANYFACTS_URL.format(cik=cik_norm),
@@ -282,6 +293,7 @@ def backfill_companyfacts(args: argparse.Namespace) -> dict[str, Any]:
                     refresh=args.refresh,
                     user_agent=args.user_agent,
                     sleep_seconds=args.sleep_seconds,
+                    stale_days=getattr(args, "stale_days", None),
                 )
                 rows = iter_selected_fact_rows(
                     payload,

@@ -206,10 +206,10 @@ def _trade_quality_score(sig, features):
             + 0.15 × momentum_norm         (momentum_10d_pct / 0.10, clamped to [-1, 1])
 
     NOTE: Weights (0.40/0.25/0.20/0.15) are heuristic — chosen by domain intuition,
-    not calibrated against historical data.  Once the forward_tester accumulates 30+
-    trades per configuration, these weights should be calibrated by running a
-    single-parameter sweep via the backtester.  Until then, treat them as reasonable
-    defaults subject to revision.
+    not calibrated against historical data.  Once paper-sleeve forward evidence
+    accumulates 30+ closed trades per configuration, these weights should be
+    calibrated by running a single-parameter sweep via the backtester.  Until
+    then, treat them as reasonable defaults subject to revision.
 
     Returns:
         float: 0.0 – 1.0

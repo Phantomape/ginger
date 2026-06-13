@@ -35,6 +35,7 @@ import exp_20260426_041_opening_range_continuation_shadow as shadow  # noqa: E40
 import exp_20260510_007_low_deployment_dynamic_etf_overlay as overlay_helper  # noqa: E402
 import exp_20260525_011_opening_range_top1_fixed_notional_sleeve as sleeve  # noqa: E402
 from data_layer import get_universe  # noqa: E402
+from ohlcv_warehouse import DEFAULT_WAREHOUSE_PATH  # noqa: E402
 
 
 EXPERIMENT_ID = "exp-20260605-033"
@@ -44,7 +45,8 @@ TRIAL_VARIANT_ID = "cross_section_pressure_resilience_candidate_source_v1"
 CHANGED_VARIABLE = "cross_section_pressure_resilience_candidate_source_v1"
 RULE_VERSION = CHANGED_VARIABLE
 
-WAREHOUSE = REPO_ROOT / "data" / "experiments" / "exp-20260519-030" / "warehouse_main.sqlite"
+# exp-20260612-017: warehouse relocated to data/warehouse/; resolve via module.
+WAREHOUSE = DEFAULT_WAREHOUSE_PATH
 SECTOR_MAP = REPO_ROOT / "data" / "reference" / "broad_market_sector_map.json"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / f"exp_20260605_033_{STEM}.json"

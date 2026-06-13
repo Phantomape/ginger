@@ -1,0 +1,146 @@
+{
+  "acceptance_rule": "Observed-only field-building succeeds only if safe/middle/high-risk tail-state buckets have at least 100 combined target trades, high-risk buckets show worse average PnL and worse loss-tail than safe buckets in all three canonical windows and at least three source families; otherwise no field promotion.",
+  "accepted": false,
+  "accepted_alpha": false,
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260611_023_winner_continuation_tail_state_attribution.py",
+    "data/experiments/exp-20260611-023",
+    "experiments/logs/exp-20260611-023.json",
+    "experiments/tickets/exp-20260611-023.json",
+    "experiments/cards/exp-20260611-023.md",
+    "experiments/manifests/exp-20260611-023.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "artifact": "data/experiments/exp-20260611-023/exp_20260611_023_winner_continuation_tail_state_attribution.json",
+  "baseline_result_file": "data\\backtests\\backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260611-023.md",
+  "causal_components": [
+    "existing rejected target trades",
+    "production-visible OHLCV features",
+    "tail-state bucket",
+    "loss-tail attribution",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_tail_state_attribution",
+  "changed_variable": "winner_continuation_tail_state_bucket_v1_read_only_attribution",
+  "claimed_at": "2026-06-11T17:58:17+00:00",
+  "completed_at": "2026-06-11T18:06:17+00:00",
+  "created_at": "2026-06-11T17:57:58+00:00",
+  "decision": "rejected_no_stable_tail_state_separation",
+  "evaluation_windows": [],
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260611-023",
+  "experiment_uid": "expuid-612f78672ddc4d69",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260611-023",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-11T17:57:58+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "winner_continuation_tail_state_attribution"
+  },
+  "hypothesis": "candidate_pool diagnostic: recently rejected broad momentum/default-off candidate sources may share a production-visible tail-state bucket where high extension plus high volatility explains loss-tail and comparator failure.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "winner_continuation_tail_state_bucket_v1_read_only_attribution"
+  ],
+  "log": "experiments/logs/exp-20260611-023.json",
+  "mechanism_family": "momentum_tail_state_classifier",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260610-021",
+    "exp-20260611-009",
+    "exp-20260611-011",
+    "exp-20260611-014",
+    "exp-20260611-019"
+  ],
+  "new_evidence_type": "cross_source_rejected_candidate_trade_attribution",
+  "owner": "codex-alpha-explore",
+  "prediction": {
+    "success_probability": 0.24,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "diagnostic_overfit",
+      "source_family_confounding",
+      "no_cross_window_monotonicity",
+      "tail_state_fields_only_relabel_momentum"
+    ],
+    "confidence_reason": "Recent pocket-pivot, follow-through, distribution-precompression, and low-beta defensive candidates failed despite intuitive momentum labels; playbook explicitly asks for tail-state field-building before promotion. The same OHLCV fields are production-visible, but exp-20260610-021 warned that tail-state routing can overfit, so success is modest.",
+    "recorded_at": "2026-06-11T17:57:43+00:00"
+  },
+  "prior_trial_count": 1,
+  "result": {
+    "decision": "rejected_no_stable_tail_state_separation",
+    "artifact": "data/experiments/exp-20260611-023/exp_20260611_023_winner_continuation_tail_state_attribution.json",
+    "log": "experiments/logs/exp-20260611-023.json",
+    "accepted": false,
+    "accepted_alpha": false,
+    "combined_target_trades": 667,
+    "window_pass_count": 2,
+    "source_family_pass_count": 1,
+    "failed_reasons": [
+      "tail_state_not_stable_across_all_windows",
+      "tail_state_not_stable_across_enough_source_families"
+    ],
+    "calibration": {
+      "actual_decision": "rejected_no_stable_tail_state_separation",
+      "actual_success": 0,
+      "predicted_success_probability": 0.24,
+      "brier_score": 0.0576,
+      "predicted_failure_modes": [
+        "diagnostic_overfit",
+        "source_family_confounding",
+        "no_cross_window_monotonicity",
+        "tail_state_fields_only_relabel_momentum"
+      ],
+      "predicted_failure_mode_hit": true,
+      "realized_failure_mode": "tail_state_not_stable_across_all_windows;tail_state_not_stable_across_enough_source_families",
+      "surprise_note": "The fixed bucket did not separate loss-tail robustly enough across windows and sources."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The fixed bucket had enough sample (667 closed target trades), but robustness failed: only 2 of 3 windows and 1 of 4 source families passed high-risk versus safe separation. Mid_weak rewarded the hot high-volatility bucket, so the broad momentum failures are source-specific rather than explained by one simple extension-volatility state.",
+      "forbidden_near_neighbor_retry": "Do not retune ret5/ret20, volatility, volume, close-location, hold-day, notional, or source-rank thresholds on these frozen artifacts. Do not promote the bucket directly into an allocator.",
+      "new_evidence_required": "A retry needs a materially different PIT tail-risk field, forward closed replacement-value rows, or a shared helper that tests the bucket against accepted compression, distribution, and allocator comparators."
+    },
+    "production_impact": {
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": false,
+      "trade_enabled": false,
+      "daily_snapshot_exposed": false,
+      "default_off_attribution_only": true,
+      "parity_test_added": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "alters_orders": false,
+      "uses_llm": false,
+      "uses_free_ohlcv_only": true,
+      "live_realism_evaluated": true,
+      "live_ready": false,
+      "activation_envelope": {
+        "intended_notional": "no activation proposed; read-only attribution over closed paper trades",
+        "capital_cap": "not activated",
+        "liquidity_slippage_model": "inherited from each source experiment's closed paper trade rows",
+        "portfolio_displacement": "diagnostic only; no displaced candidate or order",
+        "order_semantics": "no orders emitted",
+        "kill_switch": "not applicable until a later shared default-off helper passes Gate 1-4",
+        "failure_handling": "missing fields are counted in dependency audit; no behavior changes"
+      },
+      "parity_note": "The runner only reads completed artifacts and baseline metrics. A positive result would require a later shared daily/backtest helper before any ranking, sizing, report queue, or order surface changes."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260611-023.json",
+  "single_causal_variable": "winner_continuation_tail_state_bucket_v1_read_only_attribution",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260611-023.json",
+  "total_pnl_delta": 0.0,
+  "trial_family": "broad_momentum_tail_state_attribution",
+  "trial_variant_id": "winner_continuation_tail_state_bucket_v1",
+  "updated_at": "2026-06-11T18:06:17+00:00"
+}

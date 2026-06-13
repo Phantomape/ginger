@@ -1,0 +1,130 @@
+﻿{
+    "after_metrics":  {
+                          "expected_value_score":  16.676,
+                          "max_drawdown_pct":  0.1164,
+                          "sharpe":  null,
+                          "sharpe_daily":  null,
+                          "survival_rate":  0.7925,
+                          "total_pnl":  400995.98,
+                          "total_return_pct":  null,
+                          "trade_count":  85,
+                          "win_rate":  0.646
+                      },
+    "before_metrics":  {
+                           "expected_value_score":  15.853,
+                           "max_drawdown_pct":  0.1164,
+                           "sharpe":  null,
+                           "sharpe_daily":  null,
+                           "survival_rate":  0.7925,
+                           "total_pnl":  390648.11,
+                           "total_return_pct":  null,
+                           "trade_count":  85,
+                           "win_rate":  0.6314
+                       },
+    "calibration":  {
+                        "actual_decision":  "rejected",
+                        "actual_ev_delta":  0.823,
+                        "actual_pnl_delta":  10347.87,
+                        "actual_success":  0,
+                        "brier_score":  0.0225,
+                        "calibration_direction":  "directionally_calibrated",
+                        "ev_prediction_error":  0.023,
+                        "expected_ev_delta":  0.8,
+                        "expected_pnl_delta":  4000.0,
+                        "pnl_prediction_error":  6347.87,
+                        "predicted_failure_mode_hit":  true,
+                        "predicted_failure_modes":  [
+                                                        "extension_giveback_reversal",
+                                                        "capacity_blocking_losses",
+                                                        "single_ticker_concentration",
+                                                        "window_instability",
+                                                        "below_10pct_ev_bar"
+                                                    ],
+                        "predicted_success_probability":  0.15,
+                        "realized_failure_mode":  "window_instability",
+                        "surprise_level":  "very_low",
+                        "surprise_note":  "Predicted failure occurred but with informative structure: 5-day extensions at 0.95 near-high threshold added +5.2% aggregate EV from late_strong/mid_weak continuation, yet old_thin regressed (giveback in weak tape) and 10-day extensions destroyed value outright (-5.8%/-6.1% EV), so the right tail exists but is short-lived and regime-dependent."
+                    },
+    "causal_components":  [
+                              "near-high-at-expiry condition",
+                              "extension-days sweep",
+                              "capacity re-simulation",
+                              "three-window replay",
+                              "artifact/log updates"
+                          ],
+    "change_summary":  "Rejected expiry-conditional near-high hold extension on the state-surface paper sleeve: best variant (near_high\u003e=0.95, +5 trading days) gained +0.823 aggregate EV (+5.19%) and +$10,348 PnL but regressed old_thin and missed the AGENTS.md \u003e10% state-surface EV bar; no production surface changed.",
+    "change_type":  "default_off_paper_exit_policy",
+    "changed_variable":  "expiry_conditional_near_high_hold_extension",
+    "component":  "quant/experiments/exp_20260612_007_state_surface_expiry_near_high_extension.py, data/experiments/exp-20260612-007/exp_20260612_007_state_surface_expiry_near_high_extension.json, experiments/cards/exp-20260612-007.md, experiments/manifests/exp-20260612-007.json, experiments/tickets/exp-20260612-007.json, experiments/logs/exp-20260612-007.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+    "date_range":  {
+
+                   },
+    "decision":  "rejected",
+    "delta_metrics":  {
+                          "expected_value_score":  0.823,
+                          "max_drawdown_pct":  0.0,
+                          "survival_rate":  0.0,
+                          "total_pnl":  10347.87,
+                          "trade_count":  0,
+                          "win_rate":  0.0146
+                      },
+    "experiment_id":  "exp-20260612-007",
+    "hypothesis":  "State-surface paper sleeve positions that are still near their trailing 60-session high at fixed 20-day hold expiry carry unfinished right-tail momentum; a bounded expiry-conditional hold extension should capture post-expiry continuation (e.g. SNXX 2026-06-11) without changing entries, ranking, sizing, or live orders.",
+    "llm_metrics":  {
+                        "used_llm":  false
+                    },
+    "market_regime_summary":  {
+
+                              },
+    "mechanism_family":  "exit_policy",
+    "multiple_testing_risk_bucket":  "moderate",
+    "nearby_prior_experiments":  [
+                                     "exp-20260518-001",
+                                     "exp-20260512-002",
+                                     "exp-20260520-001"
+                                 ],
+    "new_evidence_type":  "not_declared",
+    "next_retry_requires":  [
+
+                            ],
+    "notes":  "",
+    "parameters":  {
+                       "locked_variables":  [
+                                                "expiry_conditional_near_high_hold_extension"
+                                            ],
+                       "single_causal_variable":  "expiry_conditional_near_high_hold_extension"
+                   },
+    "post_run_reflection":  {
+                                "forbidden_near_neighbor_retry":  "Do not retry near-high expiry extensions with nearby thresholds (0.85-1.0) or extension lengths (3-15 trading days) on the frozen three windows; do not convert this into a trailing-stop or MFE-giveback variant on the same sleeve (exp-20260503-009/exp-20260502-014 already rejected that family); do not retry unconditional hold changes (exp-20260518-001).",
+                                "new_evidence_required":  "A retry needs either (a) closed forward default-off rows showing post-expiry continuation attribution on live snapshots (e.g. SNXX/CRDO-style rank-1 exits later than 2026-06), or (b) a regime/tail-state gate that provably shuts the extension off in weak tape (old_thin-like), tested as its own single hypothesis against the accepted exp-20260520-001 baseline.",
+                                "realized_failure_mode":  "window_instability",
+                                "why_result_happened":  "Predicted failure occurred but with informative structure: 5-day extensions at 0.95 near-high threshold added +5.2% aggregate EV from late_strong/mid_weak continuation, yet old_thin regressed (giveback in weak tape) and 10-day extensions destroyed value outright (-5.8%/-6.1% EV), so the right tail exists but is short-lived and regime-dependent."
+                            },
+    "prediction":  {
+                       "confidence_reason":  "Mechanism: top-rank state-surface momentum names that remain near 60d highs at expiry show continued leadership (SNXX/CRDO forward rows; convexity of catalysts landing on extended leaders). Prior evidence is adverse: exp-20260518-001 rejected all fixed hold horizons and exit_policy family accepts only 16.7%; this differs by conditioning extension on a PIT near-high state at expiry rather than retuning the global hold. Main disconfirmer: giveback after expiry and capacity blocking may erase the tail gains, and the state_surface hard bar requires \u003e10% aggregate EV lift.",
+                       "expected_ev_delta":  0.8,
+                       "expected_pnl_delta":  4000.0,
+                       "main_failure_modes":  [
+                                                  "extension_giveback_reversal",
+                                                  "capacity_blocking_losses",
+                                                  "single_ticker_concentration",
+                                                  "window_instability",
+                                                  "below_10pct_ev_bar"
+                                              ],
+                       "recorded_at":  "2026-06-12T06:03:49+00:00",
+                       "success_probability":  0.15
+                   },
+    "prior_trial_count":  0,
+    "rejection_reason":  "No AGENTS.md Gate 4 acceptance condition was met.",
+    "related_files":  [
+                          "data/experiments/exp-20260612-007/exp_20260612_007_before_aggregate.json",
+                          "data/experiments/exp-20260612-007/exp_20260612_007_after_aggregate.json"
+                      ],
+    "secondary_windows":  [
+
+                          ],
+    "status":  "rejected",
+    "timestamp":  "2026-06-12T06:11:56+00:00",
+    "trial_family":  "state_surface_exit_lifecycle",
+    "trial_variant_id":  "state_surface_expiry_near_high_hold_extension_v1"
+}

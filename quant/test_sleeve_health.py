@@ -18,6 +18,16 @@ def _mk_sleeve(root, name, last_asof=None):
         (d / "snapshots.jsonl").write_text(
             json.dumps({"asof_date": last_asof}) + chr(10), encoding="utf-8"
         )
+    return d
+
+
+def _mk_summary_sleeve(root, name, updated_at):
+    d = root / name
+    d.mkdir(parents=True)
+    (d / "summary.json").write_text(
+        json.dumps({"updated_at": updated_at, "asof_date": updated_at[:10]}) + chr(10),
+        encoding="utf-8",
+    )
 
 
 def test_sessions_between_skips_weekends():
@@ -31,6 +41,8 @@ def test_report_flags_failing_builds_and_stale_dirs(tmp_path):
     root = tmp_path / "paper_sleeves"
     _mk_sleeve(root, "fresh_sleeve", "2026-06-10")
     _mk_sleeve(root, "stale_sleeve", "2026-06-04")
+    _mk_summary_sleeve(root, "summary_sleeve", "2026-06-11T05:00:00+00:00")
+    _mk_summary_sleeve(root, "stale_summary_sleeve", "2026-06-04T05:00:00+00:00")
     _mk_sleeve(root, "dead_sleeve")
     payloads = {
         "fresh_sleeve_paper_sleeve": {"asof_date": "2026-06-11", "candidate_count": 1},
@@ -47,8 +59,11 @@ def test_report_flags_failing_builds_and_stale_dirs(tmp_path):
     assert "unrelated_payload" not in report["build_status"]
     assert report["disk_status"]["fresh_sleeve"]["status"] == "fresh"
     assert report["disk_status"]["stale_sleeve"]["status"] == "stale"
+    assert report["disk_status"]["summary_sleeve"]["status"] == "fresh_summary"
+    assert report["disk_status"]["summary_sleeve"]["last_summary"] == "2026-06-11"
+    assert report["disk_status"]["stale_summary_sleeve"]["status"] == "stale_summary"
     assert report["disk_status"]["dead_sleeve"]["status"] == "never_persisted"
-    assert report["stalled_sleeves"] == ["dead_sleeve", "stale_sleeve"]
+    assert report["stalled_sleeves"] == ["dead_sleeve", "stale_sleeve", "stale_summary_sleeve"]
 
 
 def test_report_appends_once_per_asof(tmp_path):

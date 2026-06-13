@@ -1,0 +1,111 @@
+{
+  "experiment_id": "exp-20260613-005",
+  "experiment_uid": "expuid-e4322c825da34ae0",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260613-005",
+    "slug": "iscf_state_tilt",
+    "reserved_at": "2026-06-13T03:00:06+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "accepted",
+  "lane": "alpha_search",
+  "owner": "claude-fable-regime-router",
+  "hypothesis": "The accepted industry_stable_core_flow default-off paper sleeve (exp-20260608-007) earns +2.9%/trade in the mixed|balanced|normal market state versus -0.2%/trade in all other states (exp-20260612-027, edge survives ex-top-ticker screen: TOST only 20.9% of in-cell positive PnL, positive all three windows raw and ex-top); a bounded notional tilt on that sleeve's in-state rows should raise its overlay EV without changing entries, exits, or live orders. Landing point is the sleeve itself, not the allocator: the source is fully crowded out of the accepted allocator daily-top1 priority (exp-20260611-005 selected 0 industry_stable_core_flow rows).",
+  "change_type": "default_off_paper_allocation",
+  "mechanism_family": "regime_router",
+  "trial_family": "market_state_conditioned_sleeve_router",
+  "trial_variant_id": "industry_stable_core_flow_state_tilt_v1",
+  "single_causal_variable": "industry_stable_core_flow_sleeve_state_conditioned_notional_tilt",
+  "changed_variable": "industry_stable_core_flow_sleeve_state_conditioned_notional_tilt",
+  "causal_components": [
+    "frozen 606-022 state classifier",
+    "frozen cell mixed|balanced|normal",
+    "sleeve historical trades from shared builder",
+    "scalar sweep 1.25/1.5",
+    "dual concentration guards",
+    "identity overlay parity",
+    "three-window overlay replay"
+  ],
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260612-027",
+    "exp-20260612-018",
+    "exp-20260612-020",
+    "exp-20260608-007"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "not_declared",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260613_005_iscf_state_tilt.py",
+    "data/experiments/exp-20260613-005/exp_20260613_005_iscf_state_tilt.json",
+    "experiments/cards/exp-20260613-005.md",
+    "experiments/manifests/exp-20260613-005.json",
+    "experiments/tickets/exp-20260613-005.json",
+    "experiments/logs/exp-20260613-005.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "industry_stable_core_flow_sleeve_state_conditioned_notional_tilt"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.45,
+    "expected_ev_delta": 0.3,
+    "expected_pnl_delta": 4000.0,
+    "main_failure_modes": [
+      "late_strong_zero_regression",
+      "thin_sleeve_overlay_materiality",
+      "concentration_above_cap",
+      "sharpe_shape_degradation",
+      "in_sample_cell_screening_circularity"
+    ],
+    "confidence_reason": "Mechanism: exp-20260612-027 isolated this cell as the single source x state combination surviving the ex-top-ticker robustness screen across 28 cells and 380 tickers; the sleeve's design (industry-group strength + stability gates + core-flow confirmation, leader rotates by group) makes it structurally diversified, and quality leadership should pay most in a calm mid-trend balanced tape with no broad beta to ride. Unlike the consensus cell (rejected on APP concentration in exp-20260612-018/020), TOST tops out at 20.9% of in-cell positive PnL so concentration guards should pass. Main disconfirmers: the cell is weakest in late_strong (+0.19%/trade) so zero-regression risk concentrates there; the standalone sleeve overlay is small (47 rows) so the EV lift may miss materiality; and the cell was screened on the same windows so any pass caps at accepted_paper_pending_forward.",
+    "recorded_at": "2026-06-13T02:59:30+00:00"
+  },
+  "created_at": "2026-06-13T03:00:06+00:00",
+  "claimed_at": "2026-06-13T03:00:51+00:00",
+  "completed_at": "2026-06-13T03:05:37+00:00",
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260613-005/exp_20260613_005_iscf_state_tilt_before_aggregate.json",
+    "after_result_file": "data/experiments/exp-20260613-005/exp_20260613_005_iscf_state_tilt_after_aggregate.json",
+    "delta_metrics": {
+      "expected_value_score": 0.0804,
+      "total_pnl": 1872.59
+    },
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.45,
+      "brier_score": 0.3025,
+      "calibration_direction": "underconfident",
+      "surprise_level": "medium",
+      "expected_ev_delta": 0.3,
+      "actual_ev_delta": 0.0804,
+      "ev_prediction_error": -0.2196,
+      "expected_pnl_delta": 4000.0,
+      "actual_pnl_delta": 1872.59,
+      "pnl_prediction_error": -2127.41,
+      "predicted_failure_modes": [
+        "late_strong_zero_regression",
+        "thin_sleeve_overlay_materiality",
+        "concentration_above_cap",
+        "sharpe_shape_degradation",
+        "in_sample_cell_screening_circularity"
+      ],
+      "realized_failure_mode": "none_passed_all_guards",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "First accepted in the regime-router line. All guards clean: agg EV +0.0804 (+1.0%), PnL +$1,873, three windows improved zero regressed, in-cell AND incremental single-ticker share both 20.9% (TOST, well under 50% cap that killed the consensus cell), drawdown drift +0.04bp. Confirms the predicted weak spot: late_strong EV delta is +0.0013 / PnL +$31 -- barely positive, so the cell genuinely earns its keep in calm mid-trend and weak tape, not in strong trend. Effect is small (sleeve-overlay layer, 47 rows) and in-sample, so verdict is correctly capped at accepted_paper_pending_forward."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260613-005.json",
+  "card_file": "experiments/cards/exp-20260613-005.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260613-005.json"
+}

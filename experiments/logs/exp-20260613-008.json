@@ -1,0 +1,122 @@
+﻿{
+    "after_metrics":  {
+                          "expected_value_score":  0.0,
+                          "max_drawdown_pct":  null,
+                          "sharpe":  null,
+                          "sharpe_daily":  null,
+                          "survival_rate":  null,
+                          "total_pnl":  0.0,
+                          "total_return_pct":  null,
+                          "trade_count":  null,
+                          "win_rate":  null
+                      },
+    "before_metrics":  {
+                           "expected_value_score":  0.0,
+                           "max_drawdown_pct":  null,
+                           "sharpe":  null,
+                           "sharpe_daily":  null,
+                           "survival_rate":  null,
+                           "total_pnl":  0.0,
+                           "total_return_pct":  null,
+                           "trade_count":  null,
+                           "win_rate":  null
+                       },
+    "calibration":  {
+                        "actual_decision":  "observed_only",
+                        "actual_ev_delta":  0.0,
+                        "actual_pnl_delta":  0.0,
+                        "actual_success":  null,
+                        "brier_score":  null,
+                        "calibration_direction":  "not_scored",
+                        "ev_prediction_error":  0.0,
+                        "expected_ev_delta":  0.0,
+                        "expected_pnl_delta":  0.0,
+                        "pnl_prediction_error":  0.0,
+                        "predicted_failure_mode_hit":  true,
+                        "predicted_failure_modes":  [
+                                                        "sleeves_too_thin_per_state_cell",
+                                                        "consensus_cell_fails_ex_top",
+                                                        "edge_only_one_window",
+                                                        "single_name_dominates",
+                                                        "cross_sleeve_duplicate_rows"
+                                                    ],
+                        "predicted_success_probability":  0.4,
+                        "realized_failure_mode":  "sleeves_too_thin_per_state_cell",
+                        "surprise_level":  "not_scored",
+                        "surprise_note":  "Zero net-new survivors, both predicted failure modes hit. The two near-misses are informative: MACRO_RELIEF x mixed|balanced|normal has a STRONGER edge than the accepted iscf cell (edge +4.95pp, ex-top +3.26pp vs iscf +2.21pp) but only n=6 (below the 12-row floor); consensus x same cell fails exactly on APP concentration again. SEC_FTD_FINRA, despite 121 rows (the most), produced no screenable cell -- its state structure is weak/absent. mixed|balanced|normal is now the gold state confirmed across iscf, macro_relief, consensus, and multiple 027 near-misses: calm mid-trend balanced tape is where quality/leadership signals pay."
+                    },
+    "causal_components":  [
+
+                          ],
+    "change_summary":  "Observed-only ex-top-ticker re-screen of the six accepted default-off sleeves (266 rows, 133 tickers, 14 cells): zero net-new router cells survived; the only strong lead is MACRO_RELIEF x mixed|balanced|normal but it is below the row floor (n=6); no strategy behavior changed.",
+    "change_type":  "observed_only_state_attribution",
+    "changed_variable":  "accepted_sleeve_market_state_cells_under_ex_top_ticker_screen",
+    "component":  "quant/experiments/exp_20260613_008_accepted_sleeve_ex_top_state_screen.py, data/experiments/exp-20260613-008/exp_20260613_008_accepted_sleeve_ex_top_state_screen.json, experiments/cards/exp-20260613-008.md, experiments/manifests/exp-20260613-008.json, experiments/tickets/exp-20260613-008.json, experiments/logs/exp-20260613-008.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+    "date_range":  {
+
+                   },
+    "decision":  "observed_only",
+    "delta_metrics":  {
+                          "expected_value_score":  0.0,
+                          "total_pnl":  0.0
+                      },
+    "experiment_id":  "exp-20260613-008",
+    "hypothesis":  "Apply the exp-20260612-027 ex-top-ticker robustness screen to the six accepted default-off paper sleeves attributed in exp-20260606-022, which were screened without that robustness check, to surface additional independent source x market-state cells whose edge survives removing the top ticker, supplying more clean cells for a multi-cell regime router beyond the industry_stable_core_flow cell accepted in exp-20260613-005.",
+    "llm_metrics":  {
+                        "used_llm":  false
+                    },
+    "market_regime_summary":  {
+
+                              },
+    "mechanism_family":  "regime_router",
+    "multiple_testing_risk_bucket":  "high",
+    "nearby_prior_experiments":  [
+                                     "exp-20260606-022",
+                                     "exp-20260612-027",
+                                     "exp-20260613-005"
+                                 ],
+    "new_evidence_type":  "not_declared",
+    "next_retry_requires":  [
+
+                            ],
+    "notes":  "",
+    "parameters":  {
+                       "locked_variables":  [
+                                                "accepted_sleeve_market_state_cells_under_ex_top_ticker_screen"
+                                            ],
+                       "single_causal_variable":  "accepted_sleeve_market_state_cells_under_ex_top_ticker_screen"
+                   },
+    "post_run_reflection":  {
+                                "forbidden_near_neighbor_retry":  "Do not Gate-4 the MACRO_RELIEF x mixed|balanced|normal cell now: n=6 is below the 12-row floor and a tilt experiment on 6 rows is noise-fitting. Do not lower the row floor or relax the ex-top screen to manufacture survivors. Do not retry the consensus cell (APP). Do not re-screen SEC_FTD_FINRA with a different classifier hoping to find structure that is not there.",
+                                "new_evidence_required":  "MACRO_RELIEF x mixed|balanced|normal is a real forward-maturation lead, NOT an accepted cell: its edge (+4.95pp, ex-top +3.26pp) beats the accepted iscf cell but the sample is 6 rows. Re-screen it once the macro_relief sleeve accumulates \u003e=12 closed rows in that state from forward default-off observation, then if it still clears ex-top, reserve a single frozen Gate 1-4 sleeve tilt (exp-20260613-005 template). A genuine multi-cell router needs \u003e=2-3 independently ex-top-clean cells with adequate sample; today there is 1 confirmed (iscf, accepted) + 1 thin lead (macro_relief), which is not enough. The durable cross-cutting finding to carry forward: mixed|balanced|normal (calm mid-trend balanced tape) is the state where quality/leadership sleeves earn their edge.",
+                                "realized_failure_mode":  "sleeves_too_thin_per_state_cell",
+                                "why_result_happened":  "Zero net-new survivors, both predicted failure modes hit. The two near-misses are informative: MACRO_RELIEF x mixed|balanced|normal has a STRONGER edge than the accepted iscf cell (edge +4.95pp, ex-top +3.26pp vs iscf +2.21pp) but only n=6 (below the 12-row floor); consensus x same cell fails exactly on APP concentration again. SEC_FTD_FINRA, despite 121 rows (the most), produced no screenable cell -- its state structure is weak/absent. mixed|balanced|normal is now the gold state confirmed across iscf, macro_relief, consensus, and multiple 027 near-misses: calm mid-trend balanced tape is where quality/leadership signals pay."
+                            },
+    "prediction":  {
+                       "confidence_reason":  "exp-20260613-005 proved one ex-top-clean cell is acceptable and the ex-top-ticker screen is the discriminator that caught APP in consensus and the single-name compression cell. exp-20260606-022 showed these six sleeves carry state structure but never applied the robustness check, so re-screening is a cheap read-only pass. Disconfirmer: four sleeves had only 19-22 rows so most per-state cells fall below the 12-row floor; only SEC_FTD_FINRA (121 rows) and consensus (64) are likely screenable, and consensus already fails ex-top on APP.",
+                       "expected_ev_delta":  0.0,
+                       "expected_pnl_delta":  0.0,
+                       "main_failure_modes":  [
+                                                  "sleeves_too_thin_per_state_cell",
+                                                  "consensus_cell_fails_ex_top",
+                                                  "edge_only_one_window",
+                                                  "single_name_dominates",
+                                                  "cross_sleeve_duplicate_rows"
+                                              ],
+                       "recorded_at":  "2026-06-13T03:18:08+00:00",
+                       "success_probability":  0.4
+                   },
+    "prior_trial_count":  0,
+    "rejection_reason":  null,
+    "related_files":  [
+                          "data/experiments/exp-20260613-008/exp_20260613_008_accepted_sleeve_ex_top_state_screen_before_aggregate.json",
+                          "data/experiments/exp-20260613-008/exp_20260613_008_accepted_sleeve_ex_top_state_screen_after_aggregate.json"
+                      ],
+    "secondary_windows":  [
+
+                          ],
+    "status":  "observed_only",
+    "timestamp":  "2026-06-13T03:21:01+00:00",
+    "trial_family":  "market_state_conditioned_sleeve_router",
+    "trial_variant_id":  "accepted_sleeve_ex_top_state_screen_v1"
+}

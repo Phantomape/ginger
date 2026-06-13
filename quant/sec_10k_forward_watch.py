@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from data_paths import data_artifact_path
+from sleeve_standard_layout import write_standard_sleeve_surfaces
 
 
 SCHEMA_VERSION = 1
@@ -228,6 +229,22 @@ def persist_sec_10k_forward_watch(
     with summary.open("w", encoding="utf-8") as handle:
         json.dump(out, handle, indent=2, sort_keys=True)
         handle.write("\n")
+    # exp-20260612-017: also publish the standard sleeve surfaces so
+    # state.json/snapshots.jsonl tooling does not skip this watch sleeve.
+    out["standard_surfaces"] = write_standard_sleeve_surfaces(
+        sleeve_dir=summary.parent,
+        sleeve_name=WATCH_NAME,
+        rule_version=RULE_VERSION,
+        asof_date=snapshot.get("asof_date"),
+        pending_entries=snapshot.get("candidates") or [],
+        extra_snapshot_fields={
+            "ten_k_event_count": snapshot.get("ten_k_event_count", 0),
+            "pit_safe_10k_count": snapshot.get("pit_safe_10k_count", 0),
+            "liquidity_qualified_count": snapshot.get("liquidity_qualified_count", 0),
+            "ledger_appended_count": appended,
+            "ledger_row_count": len(history),
+        },
+    )
     return {**snapshot, "persistence": out}
 
 

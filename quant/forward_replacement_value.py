@@ -168,6 +168,164 @@ def _closed_rows(state):
     return []
 
 
+def replacement_artifact_key(record):
+    """Stable identity for one closed forward replacement-value row."""
+    return (
+        str(record.get("sleeve_key") or ""),
+        str(record.get("decision_id") or ""),
+        str(record.get("ticker") or ""),
+        str(record.get("entry_date") or ""),
+        str(record.get("exit_date") or ""),
+    )
+
+
+def _state_row_key(sleeve_key, row):
+    return (
+        str(sleeve_key or ""),
+        str(row.get("decision_id") or ""),
+        str(row.get("ticker") or ""),
+        str(row.get("entry_date") or ""),
+        str(row.get("exit_date") or row.get("entry_date") or ""),
+    )
+
+
+def _record_from_state_row(row, sleeve_key):
+    if not row.get("replacement_value_rule_version"):
+        return None
+    pnl = _to_float(row.get("pnl_usd") if row.get("pnl_usd") is not None else row.get("pnl"))
+    entry_date = str(row.get("entry_date") or "")
+    exit_date = str(row.get("exit_date") or row.get("entry_date") or "")
+    return {
+        "rule_version": row.get("replacement_value_rule_version") or RULE_VERSION,
+        "asof_date": row.get("replacement_value_asof"),
+        "sleeve_key": sleeve_key,
+        "decision_id": row.get("decision_id"),
+        "ticker": row.get("ticker"),
+        "entry_date": entry_date or None,
+        "exit_date": exit_date or None,
+        "pnl_usd": round(pnl, 2) if pnl is not None else None,
+        "notional_usd": row.get("replacement_value_notional_usd"),
+        "notional_method": row.get("replacement_value_notional_method"),
+        "status": row.get("replacement_value_status"),
+        "replacement_value_vs_cash_usd": row.get("replacement_value_vs_cash_usd"),
+        "replacement_value_vs_spy_usd": row.get("replacement_value_vs_spy_usd"),
+        "replacement_value_vs_qqq_usd": row.get("replacement_value_vs_qqq_usd"),
+        "comparator_detail": row.get("replacement_value_comparator_detail"),
+    }
+
+
+def _read_jsonl_records(path):
+    rows = []
+    path = Path(path)
+    if not path.exists():
+        return rows
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            rows.append(json.loads(line))
+        except json.JSONDecodeError:
+            continue
+    return rows
+
+
+def current_state_replacement_records(sleeves_root=None):
+    """Return canonical replacement-value rows from current sleeve state files."""
+    root = Path(sleeves_root) if sleeves_root else DATA_ROOT / "paper_sleeves"
+    records = []
+    skipped_missing_replacement = []
+    if not root.is_dir():
+        return records, skipped_missing_replacement
+    for state_path in sorted(root.glob("*/state.json")):
+        sleeve_key = state_path.parent.name
+        try:
+            state = json.loads(state_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        for row in _closed_rows(state):
+            record = _record_from_state_row(row, sleeve_key)
+            if record is None:
+                skipped_missing_replacement.append(
+                    {
+                        "sleeve_key": sleeve_key,
+                        "decision_id": row.get("decision_id"),
+                        "ticker": row.get("ticker"),
+                        "entry_date": row.get("entry_date"),
+                        "exit_date": row.get("exit_date"),
+                    }
+                )
+                continue
+            records.append(record)
+    records.sort(key=replacement_artifact_key)
+    return records, skipped_missing_replacement
+
+
+def _write_jsonl(path, records):
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name("." + path.name + ".tmp")
+    text = "".join(json.dumps(record, sort_keys=True) + "\n" for record in records)
+    tmp.write_text(text, encoding="utf-8")
+    tmp.replace(path)
+
+
+def rebuild_current_state_artifact(
+    *,
+    sleeves_root=None,
+    artifact_path=None,
+    archive_path=None,
+):
+    """Materialize the shared artifact from current sleeve state.
+
+    This keeps ``forward_replacement_value.jsonl`` as the canonical current
+    per-sleeve accumulation surface instead of an append-only file that can
+    retain rows later quarantined from state.
+    """
+    root = Path(sleeves_root) if sleeves_root else DATA_ROOT / "paper_sleeves"
+    artifact = Path(artifact_path) if artifact_path else DATA_ROOT / ARTIFACT_RELPATH
+    previous_records = _read_jsonl_records(artifact)
+    if archive_path and artifact.exists():
+        archive = Path(archive_path)
+        archive.parent.mkdir(parents=True, exist_ok=True)
+        archive.write_text(artifact.read_text(encoding="utf-8"), encoding="utf-8")
+
+    current_records, skipped_missing_replacement = current_state_replacement_records(root)
+    current_keys = {replacement_artifact_key(record) for record in current_records}
+    previous_rows_not_in_current_state = [
+        {
+            "sleeve_key": record.get("sleeve_key"),
+            "decision_id": record.get("decision_id"),
+            "ticker": record.get("ticker"),
+            "entry_date": record.get("entry_date"),
+            "exit_date": record.get("exit_date"),
+            "status": record.get("status"),
+        }
+        for record in previous_records
+        if replacement_artifact_key(record) not in current_keys
+    ]
+
+    _write_jsonl(artifact, current_records)
+
+    rows_by_status = {}
+    rows_by_sleeve = {}
+    for record in current_records:
+        status = str(record.get("status") or "unknown")
+        sleeve_key = str(record.get("sleeve_key") or "unknown")
+        rows_by_status[status] = rows_by_status.get(status, 0) + 1
+        rows_by_sleeve[sleeve_key] = rows_by_sleeve.get(sleeve_key, 0) + 1
+
+    return {
+        "status": "ok",
+        "artifact_path": str(artifact),
+        "previous_rows": len(previous_records),
+        "rows_written": len(current_records),
+        "rows_by_status": rows_by_status,
+        "rows_by_sleeve": rows_by_sleeve,
+        "previous_rows_not_in_current_state": previous_rows_not_in_current_state,
+        "skipped_missing_replacement": skipped_missing_replacement,
+    }
+
+
 def enrich_state_closed_rows(state, bars_by_ticker, asof_date, sleeve_key=""):
     """Add replacement-value fields to closed rows that lack them.
 
@@ -245,8 +403,9 @@ def enrich_all_sleeve_states(
 ):
     """Enrich every ``data/paper_sleeves/*/state.json`` closed row in place.
 
-    Appends one JSONL record per newly enriched row to the shared artifact and
-    returns an observe-only summary. Safe to call repeatedly per day.
+    The shared JSONL artifact is then rebuilt from current state so rows later
+    quarantined from a sleeve cannot remain in activation evidence. Safe to
+    call repeatedly per day.
     """
     root = Path(sleeves_root) if sleeves_root else DATA_ROOT / "paper_sleeves"
     artifact = Path(artifact_path) if artifact_path else DATA_ROOT / ARTIFACT_RELPATH
@@ -285,16 +444,20 @@ def enrich_all_sleeve_states(
             "statuses": sorted({record["status"] for record in records}),
         }
 
-    if new_records:
-        artifact.parent.mkdir(parents=True, exist_ok=True)
-        with artifact.open("a", encoding="utf-8") as handle:
-            for record in new_records:
-                handle.write(json.dumps(record, sort_keys=True) + chr(10))
+    artifact_summary = rebuild_current_state_artifact(
+        sleeves_root=root,
+        artifact_path=artifact,
+    )
     summary["rows_enriched"] = len(new_records)
     by_status = {}
     for record in new_records:
         by_status[record["status"]] = by_status.get(record["status"], 0) + 1
     summary["rows_enriched_by_status"] = by_status
+    summary["artifact_rows"] = artifact_summary["rows_written"]
+    summary["artifact_rows_by_status"] = artifact_summary["rows_by_status"]
+    summary["artifact_previous_rows_not_in_current_state"] = len(
+        artifact_summary["previous_rows_not_in_current_state"]
+    )
     summary["artifact_path"] = str(artifact)
     summary["status"] = "ok"
     return summary

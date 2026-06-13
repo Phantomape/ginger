@@ -37,13 +37,8 @@ TRIAL_FAMILY = "market_state_family_replacement_value_attribution"
 TRIAL_VARIANT_ID = "observed_only_core_trade_state_family_attribution_v1"
 CHANGED_VARIABLE = "market_state_strategy_family_attribution_v1"
 
-WAREHOUSE = (
-    REPO_ROOT
-    / "data"
-    / "experiments"
-    / "exp-20260519-030"
-    / "warehouse_main.sqlite"
-)
+# exp-20260612-017: warehouse relocated to data/warehouse/; resolve via module.
+from ohlcv_warehouse import DEFAULT_WAREHOUSE_PATH as WAREHOUSE  # noqa: E402
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / f"exp_20260606_021_{STEM}.json"
 LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"

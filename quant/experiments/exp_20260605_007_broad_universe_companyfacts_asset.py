@@ -60,7 +60,8 @@ from sec_companyfacts_backfill import (  # noqa: E402
 from kova_data_sidecar import derive_companyfacts_growth_rows  # noqa: E402
 from sec_ticker_map import normalize_cik  # noqa: E402
 
-WAREHOUSE = REPO_ROOT / "data" / "experiments" / "exp-20260519-030" / "warehouse_main.sqlite"
+# exp-20260612-017: warehouse relocated to data/warehouse/; resolve via module.
+from ohlcv_warehouse import DEFAULT_WAREHOUSE_PATH as WAREHOUSE  # noqa: E402
 OUT_DIR = REPO_ROOT / "data" / "kova" / "fundamentals"
 EXP_DIR = REPO_ROOT / "data" / "experiments" / "exp-20260605-007"
 

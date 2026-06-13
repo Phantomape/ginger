@@ -1,0 +1,102 @@
+{
+  "experiment_id": "exp-20260613-008",
+  "experiment_uid": "expuid-29289c0aa74b400c",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260613-008",
+    "slug": "accepted_sleeve_ex_top_state_screen",
+    "reserved_at": "2026-06-13T03:18:56+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "observed_only",
+  "lane": "alpha_search",
+  "owner": "claude-fable-regime-router",
+  "hypothesis": "Apply the exp-20260612-027 ex-top-ticker robustness screen to the six accepted default-off paper sleeves attributed in exp-20260606-022, which were screened without that robustness check, to surface additional independent source x market-state cells whose edge survives removing the top ticker, supplying more clean cells for a multi-cell regime router beyond the industry_stable_core_flow cell accepted in exp-20260613-005.",
+  "change_type": "observed_only_state_attribution",
+  "mechanism_family": "regime_router",
+  "trial_family": "market_state_conditioned_sleeve_router",
+  "trial_variant_id": "accepted_sleeve_ex_top_state_screen_v1",
+  "single_causal_variable": "accepted_sleeve_market_state_cells_under_ex_top_ticker_screen",
+  "changed_variable": "accepted_sleeve_market_state_cells_under_ex_top_ticker_screen",
+  "causal_components": [],
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260606-022",
+    "exp-20260612-027",
+    "exp-20260613-005"
+  ],
+  "multiple_testing_risk_bucket": "high",
+  "new_evidence_type": "not_declared",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260613_008_accepted_sleeve_ex_top_state_screen.py",
+    "data/experiments/exp-20260613-008/exp_20260613_008_accepted_sleeve_ex_top_state_screen.json",
+    "experiments/cards/exp-20260613-008.md",
+    "experiments/manifests/exp-20260613-008.json",
+    "experiments/tickets/exp-20260613-008.json",
+    "experiments/logs/exp-20260613-008.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "accepted_sleeve_market_state_cells_under_ex_top_ticker_screen"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.4,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "sleeves_too_thin_per_state_cell",
+      "consensus_cell_fails_ex_top",
+      "edge_only_one_window",
+      "single_name_dominates",
+      "cross_sleeve_duplicate_rows"
+    ],
+    "confidence_reason": "exp-20260613-005 proved one ex-top-clean cell is acceptable and the ex-top-ticker screen is the discriminator that caught APP in consensus and the single-name compression cell. exp-20260606-022 showed these six sleeves carry state structure but never applied the robustness check, so re-screening is a cheap read-only pass. Disconfirmer: four sleeves had only 19-22 rows so most per-state cells fall below the 12-row floor; only SEC_FTD_FINRA (121 rows) and consensus (64) are likely screenable, and consensus already fails ex-top on APP.",
+    "recorded_at": "2026-06-13T03:18:08+00:00"
+  },
+  "created_at": "2026-06-13T03:18:56+00:00",
+  "claimed_at": "2026-06-13T03:19:33+00:00",
+  "completed_at": "2026-06-13T03:21:01+00:00",
+  "result": {
+    "decision": "observed_only",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260613-008/exp_20260613_008_accepted_sleeve_ex_top_state_screen_before_aggregate.json",
+    "after_result_file": "data/experiments/exp-20260613-008/exp_20260613_008_accepted_sleeve_ex_top_state_screen_after_aggregate.json",
+    "delta_metrics": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0
+    },
+    "calibration": {
+      "actual_decision": "observed_only",
+      "actual_success": null,
+      "predicted_success_probability": 0.4,
+      "brier_score": null,
+      "calibration_direction": "not_scored",
+      "surprise_level": "not_scored",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": 0.0,
+      "ev_prediction_error": 0.0,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "pnl_prediction_error": 0.0,
+      "predicted_failure_modes": [
+        "sleeves_too_thin_per_state_cell",
+        "consensus_cell_fails_ex_top",
+        "edge_only_one_window",
+        "single_name_dominates",
+        "cross_sleeve_duplicate_rows"
+      ],
+      "realized_failure_mode": "sleeves_too_thin_per_state_cell",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Zero net-new survivors, both predicted failure modes hit. The two near-misses are informative: MACRO_RELIEF x mixed|balanced|normal has a STRONGER edge than the accepted iscf cell (edge +4.95pp, ex-top +3.26pp vs iscf +2.21pp) but only n=6 (below the 12-row floor); consensus x same cell fails exactly on APP concentration again. SEC_FTD_FINRA, despite 121 rows (the most), produced no screenable cell -- its state structure is weak/absent. mixed|balanced|normal is now the gold state confirmed across iscf, macro_relief, consensus, and multiple 027 near-misses: calm mid-trend balanced tape is where quality/leadership signals pay."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260613-008.json",
+  "card_file": "experiments/cards/exp-20260613-008.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260613-008.json"
+}

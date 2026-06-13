@@ -1,0 +1,393 @@
+{
+  "activation_envelope": {
+    "blockers": [
+      "forward_rows_immature",
+      "forward_positive_pnl_not_proven",
+      "forward_win_rate_not_proven"
+    ],
+    "checks": {
+      "forward_concentration_evaluable": false,
+      "forward_hhi_passed": false,
+      "forward_min_closed_trades_passed": false,
+      "forward_min_win_rate_passed": false,
+      "forward_positive_net_pnl_passed": false,
+      "forward_single_ticker_concentration_passed": false,
+      "gate2_runtime_fields_passed": true,
+      "gate3_survival_passed": true,
+      "oos_replay_positive_but_not_activation_evidence": true,
+      "shared_helper_parity_passed": true,
+      "three_window_gate4_passed": true
+    },
+    "current_production_state_summary": {
+      "closed_position_count": 0,
+      "exists": true,
+      "open_position_count": 0,
+      "path": "data\\paper_sleeves\\industry_relative_laggard_repair\\state.json",
+      "pending_entry_count": 1,
+      "updated_at": "2026-06-12T05:39:35+00:00"
+    },
+    "decision": "rejected_activation_envelope_forward_immature",
+    "genuine_forward_from_readiness_artifact": {
+      "forward_closed_count": 0,
+      "forward_first_entry": null,
+      "forward_last_entry": null,
+      "forward_pnl_usd": 0,
+      "forward_rv_cash_usd": 0,
+      "forward_rv_spy_usd": 0,
+      "open_position_count": 0,
+      "pending_entry_count": 1
+    },
+    "live_realistic_envelope": {
+      "capital_cap": "No live capital in this experiment. Candidate activation would remain capped to $4,000 notional, one entry per day, ADV >= $50M, and no core portfolio displacement without a separate acceptance ticket.",
+      "intended_order_semantics": "Keep observe-only paper ledger until forward gate passes; future activation would use next-session-open entry and 10-trading-day exit from the shared helper.",
+      "kill_switch": "Do not enable live trading unless closed forward rows >= 60, net forward PnL > 0, win rate >= 50%, and positive PnL concentration guards pass.",
+      "orders_changed": false,
+      "ranking_changed": false,
+      "signal_logic_changed": false,
+      "sizing_changed": false,
+      "trade_enabled": false
+    },
+    "oos_replay_summary": {
+      "evidence_note": "OOS replay is useful as a lead, but it is not genuine production-forward evidence and cannot activate live orders.",
+      "oos_closed_count": 22,
+      "oos_pnl_usd": 6618.74,
+      "oos_positive_concentration": {
+        "max_single_ticker_positive_share": 0.179277,
+        "positive_pnl_hhi": 0.109119,
+        "positive_pnl_total": 8481.78,
+        "positive_ticker_count": 16
+      },
+      "oos_rv_cash_usd": 6618.74,
+      "oos_rv_qqq_usd": 3546.98,
+      "oos_rv_spy_usd": 5132.36,
+      "oos_top_ticker_positive_pnl_share": 0.1793,
+      "oos_unique_tickers": 22,
+      "oos_win_rate": 0.7273,
+      "readiness_bucket": "activation_gate_candidate"
+    },
+    "thresholds": {
+      "daily_entry_slots": 1,
+      "forward_gate_max_positive_hhi": 0.35,
+      "forward_gate_max_single_ticker_positive_share": 0.5,
+      "forward_gate_min_closed_trades": 60,
+      "forward_gate_min_win_rate": 0.5,
+      "hold_days": 10,
+      "min_avg_dollar_volume_20d": 50000000.0,
+      "paper_notional_usd": 4000.0,
+      "same_ticker_cooldown_days": 15
+    }
+  },
+  "anti_js": "No JavaScript was used.",
+  "change_type": "activation_envelope",
+  "changed_variable": "industry_relative_laggard_repair_live_activation_envelope_v1",
+  "decision": "rejected_activation_envelope_forward_immature",
+  "experiment_id": "exp-20260612-021",
+  "gate1": {
+    "after_metrics": {
+      "late_strong": {
+        "expected_value_score": 5.2407,
+        "max_consecutive_losses": 2,
+        "max_drawdown_pct": 0.0686,
+        "sharpe_daily": 4.43,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "strategy_total_return_pct": 1.183,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.5146,
+        "total_pnl": 118297.6,
+        "trade_count": 18,
+        "win_rate": 0.8333,
+        "worst_trade_pct": -0.0397
+      },
+      "mid_weak": {
+        "expected_value_score": 2.2522,
+        "max_consecutive_losses": 6,
+        "max_drawdown_pct": 0.1133,
+        "sharpe_daily": 2.81,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "strategy_total_return_pct": 0.8015,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.5493,
+        "total_pnl": 80150.86,
+        "trade_count": 21,
+        "win_rate": 0.5238,
+        "worst_trade_pct": -0.0897
+      },
+      "old_thin": {
+        "expected_value_score": 0.6775,
+        "max_consecutive_losses": 4,
+        "max_drawdown_pct": 0.096,
+        "sharpe_daily": 1.59,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "strategy_total_return_pct": 0.4261,
+        "survival_rate": 0.8667,
+        "tail_loss_share": 0.5193,
+        "total_pnl": 42611.52,
+        "trade_count": 22,
+        "win_rate": 0.4091,
+        "worst_trade_pct": -0.0635
+      }
+    },
+    "baseline_protocol": "docs/backtesting.md fixed three-window accepted-stack baseline",
+    "before_metrics": {
+      "late_strong": {
+        "expected_value_score": 5.1628,
+        "max_consecutive_losses": 2,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "strategy_total_return_pct": 1.1707,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.5146,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "win_rate": 0.8333,
+        "worst_trade_pct": -0.0397
+      },
+      "mid_weak": {
+        "expected_value_score": 2.1402,
+        "max_consecutive_losses": 6,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "strategy_total_return_pct": 0.7811,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.5493,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "win_rate": 0.5238,
+        "worst_trade_pct": -0.0897
+      },
+      "old_thin": {
+        "expected_value_score": 0.5911,
+        "max_consecutive_losses": 4,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "strategy_total_return_pct": 0.3967,
+        "survival_rate": 0.8667,
+        "tail_loss_share": 0.5193,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "win_rate": 0.4091,
+        "worst_trade_pct": -0.0635
+      }
+    },
+    "delta_metrics": {
+      "aggregate": {
+        "after_expected_value_score_sum": 8.1704,
+        "after_total_pnl_sum": 241059.98,
+        "baseline_expected_value_score_sum": 7.8941,
+        "baseline_total_pnl_sum": 234850.99,
+        "expected_value_score_delta_pct": 0.035001,
+        "expected_value_score_delta_sum": 0.2763,
+        "max_drawdown_delta_max": 0.0021,
+        "target_trade_count_sum": 306,
+        "total_pnl_delta_pct": 0.026438,
+        "total_pnl_delta_sum": 6208.99,
+        "windows_ev_improved": 3,
+        "windows_ev_regressed": 0,
+        "windows_pnl_improved": 3,
+        "windows_pnl_regressed": 0
+      },
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": 0.0779,
+          "max_drawdown_pct": 0.0021,
+          "signals_generated": 0,
+          "signals_survived": 0,
+          "survival_rate": 0.0,
+          "total_pnl": 1224.68,
+          "trade_count": 0,
+          "win_rate": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": 0.112,
+          "max_drawdown_pct": 0.0014,
+          "signals_generated": 0,
+          "signals_survived": 0,
+          "survival_rate": 0.0,
+          "total_pnl": 2040.75,
+          "trade_count": 0,
+          "win_rate": 0.0
+        },
+        "old_thin": {
+          "expected_value_score": 0.0864,
+          "max_drawdown_pct": -0.0041,
+          "signals_generated": 0,
+          "signals_survived": 0,
+          "survival_rate": 0.0,
+          "total_pnl": 2943.56,
+          "trade_count": 0,
+          "win_rate": 0.0
+        }
+      }
+    },
+    "passed": true,
+    "source_experiment_id": "exp-20260607-008"
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_open_positions_entry_date_target_price": {
+      "entry_date_present": true,
+      "missing_entry_date_tickers": [],
+      "missing_target_price_tickers": [],
+      "passed": true,
+      "path": "operator_inputs\\open_positions.json",
+      "position_count": 6,
+      "target_price_present": true
+    },
+    "source_experiment_gate2": {
+      "open_positions": {
+        "missing_entry_date_tickers": [],
+        "missing_target_price_tickers": [],
+        "passed": true,
+        "path": "operator_inputs/open_positions.json",
+        "position_count": 11
+      },
+      "passed": true,
+      "runtime_fields": [
+        "warehouse ohlcv Date/Open/High/Low/Close/Volume",
+        "SPY daily OHLCV",
+        "data/reference/broad_market_sector_map.json sector/industry/status",
+        "operator_inputs/open_positions.json entry_date",
+        "operator_inputs/open_positions.json target_price",
+        "same-day baseline A/B entries from current core replay"
+      ]
+    }
+  },
+  "gate3": {
+    "by_window": {
+      "late_strong": {
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      "mid_weak": {
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      "old_thin": {
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    },
+    "passed": true
+  },
+  "gate4": {
+    "passed": true,
+    "source_experiment_gate4": {
+      "aggregate_ev_delta": 0.2763,
+      "aggregate_pnl_delta": 6208.99,
+      "decision": "accepted_industry_relative_laggard_repair_shared_default_off_adapter",
+      "failed_reasons": [],
+      "lead_reproduction": {
+        "aggregate_expected_value_score_delta_drift": 0.0,
+        "aggregate_total_pnl_delta_drift": 0.0,
+        "by_window": {
+          "late_strong": {
+            "expected_value_score_drift": 0.0,
+            "total_pnl_drift": 0.0,
+            "trade_count": 102
+          },
+          "mid_weak": {
+            "expected_value_score_drift": 0.0,
+            "total_pnl_drift": 0.0,
+            "trade_count": 101
+          },
+          "old_thin": {
+            "expected_value_score_drift": 0.0,
+            "total_pnl_drift": 0.0,
+            "trade_count": 103
+          }
+        },
+        "max_ev_drift": 0.0002,
+        "max_pnl_drift": 1.0,
+        "passed": true,
+        "source_lead_artifact": "data/experiments/exp-20260607-007/exp_20260607_007_industry_relative_laggard_repair.json",
+        "trade_count_drift": 0
+      },
+      "max_drawdown_worse": 0.0021,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "parity_test_added": true,
+      "passed": true,
+      "shared_adapter_module": "quant/industry_relative_laggard_repair_paper_sleeve.py",
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "max_single_positive_pnl_share": 0.0551,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "passed": true,
+        "positive_pnl_hhi": 0.020381,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "target_trade_count": 306,
+      "target_trade_count_min": 20,
+      "target_window_count_min": 3,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "windows_ev_improved": 3,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 3,
+      "windows_pnl_regressed": 0
+    },
+    "three_window_before_after_summary": {
+      "after_expected_value_score_sum": 8.1704,
+      "after_total_pnl_sum": 241059.98,
+      "before_expected_value_score_sum": 7.8941,
+      "before_total_pnl_sum": 234850.99,
+      "expected_value_score_delta_sum": 0.2763,
+      "target_trade_count_sum": 306,
+      "total_pnl_delta_sum": 6208.99,
+      "windows_ev_improved": 3,
+      "windows_pnl_improved": 3
+    }
+  },
+  "hypothesis": "Industry-relative laggard repair has enough accepted three-window edge and OOS replay strength to justify live-realistic activation only if genuine production-forward rows meet the declared gate.",
+  "lane": "alpha_search",
+  "nearby_prior_experiments": [
+    "exp-20260607-008",
+    "exp-20260612-019",
+    "exp-20260611-020"
+  ],
+  "next_retry_requires": "At least 60 genuine closed production-forward rows for this shared helper, with positive net PnL, win rate >= 50%, and concentration guards passing. Do not retune thresholds, hold days, cooldown, slots, or notional as a near-neighbor retry.",
+  "post_run_reflection": "The alpha still looks economically interesting: Gate 1-4 accepted three-window evidence remains +0.2763 EV and +$6,208.99 with 306 target paper trades, and post-acceptance OOS replay shows 22 closed trades with +$5,132.36 RV vs SPY. The activation hypothesis fails because genuine production-forward evidence is 0 closed rows and one pending entry. Enabling live or default-on behavior here would convert replay-only evidence into a production decision and create the exact backtest/production inconsistency the protocol forbids.",
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "helper_rule_version": "industry_relative_laggard_repair_shared_default_off_adapter_v1",
+    "parity_note": "This run is read-only and leaves the shared helper default-off. Positive OOS replay was not promoted because genuine forward production rows are still immature.",
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "source_rule_version": "industry_relative_laggard_repair_candidate_source_v1",
+    "trade_enabled": false
+  },
+  "related_files": [
+    "quant/industry_relative_laggard_repair_paper_sleeve.py",
+    "quant/test_industry_relative_laggard_repair_paper_sleeve.py",
+    "data\\experiments\\exp-20260607-008\\exp_20260607_008_industry_relative_laggard_repair_shared_adapter.json",
+    "data\\experiments\\exp-20260612-019\\exp_20260612_019_post_acceptance_oos_replay_readiness.json",
+    "data\\paper_sleeves\\industry_relative_laggard_repair\\state.json"
+  ],
+  "source_artifacts": {
+    "accepted_shared_helper": "data\\experiments\\exp-20260607-008\\exp_20260607_008_industry_relative_laggard_repair_shared_adapter.json",
+    "after_aggregate": "data\\experiments\\exp-20260612-021\\after_industry_laggard_shared_helper_aggregate.json",
+    "before_aggregate": "data\\experiments\\exp-20260612-021\\before_accepted_stack_aggregate.json",
+    "post_acceptance_readiness": "data\\experiments\\exp-20260612-019\\exp_20260612_019_post_acceptance_oos_replay_readiness.json"
+  },
+  "status": "rejected",
+  "timestamp": "2026-06-12T21:11:42+00:00"
+}

@@ -1,0 +1,131 @@
+{
+  "acceptance_standard": "docs/backtesting.md Gate 1-4 three canonical windows. This experiment cannot accept live or paper policy because it uses future PnL oracle selection; it can only accept or reject the research direction.",
+  "allowed_write_scope": [
+    "data/experiments/exp-20260613-003/exp_20260613_003_allocator_source_competition_opportunity.json",
+    "experiments/cards/exp-20260613-003.md",
+    "experiments/logs/exp-20260613-003.json",
+    "experiments/manifests/exp-20260613-003.json",
+    "experiments/tickets/exp-20260613-003.json",
+    "quant/experiments/exp_20260613_003_allocator_source_competition_opportunity.py"
+  ],
+  "calibration": {
+    "actual_direction_success": true,
+    "actual_ev_gap_vs_accepted_allocator": 1.9417,
+    "actual_gate4_policy_passed": false,
+    "actual_pnl_gap_vs_accepted_allocator": 29941.8,
+    "actual_policy_success": false,
+    "brier_score_direction": 0.2025,
+    "failure_modes_observed": [
+      "uses_future_pnl_oracle",
+      "no_ex_ante_field",
+      "no_production_policy_change"
+    ],
+    "predicted_success_probability": 0.55,
+    "surprise_note": "The direction signal was stronger than the conservative pre-run estimate because all three windows showed positive oracle gap, but the policy remains rejected since future PnL is unavailable at decision time."
+  },
+  "change_type": "candidate_pool_source_arbitration_attribution",
+  "claimed_at": "2026-06-13T00:18:00+00:00",
+  "completed_at": "2026-06-13T01:30:22Z",
+  "created_at": "2026-06-13T00:18:00+00:00",
+  "decision": "observed_only_material_source_arbitration_gap_requires_ex_ante_field",
+  "experiment_id": "exp-20260613-003",
+  "hypothesis": "The strongest current alpha direction is not another frozen threshold/source retune, but discovering whether the accepted helper source-priority allocator still has material same-day source competition opportunity. If an ex-post source-choice oracle shows a large, multi-window gap over the accepted allocator, the next production-safe alpha should build a shared ex-ante arbitration field from free relation/source-maturity data; if not, allocator source arbitration should be deprioritized.",
+  "lane": "alpha_search",
+  "mechanism_family": "accepted_helper_source_priority_allocator",
+  "owner": "alpha-search-automation",
+  "pre_run_history_check": {
+    "exp-20260611-005": "Accepted lagged consensus rank-1 shared allocator source; current binding allocator surface.",
+    "exp-20260612-027": "Observed broad source-state attribution found one stable-core-flow state lead, but it was only a state/source cell and required a follow-up router.",
+    "exp-20260613-002": "Rejected state router: positive versus core but failed to beat accepted allocator directly and selected only three rows.",
+    "recent_rejected_near_neighbors": "52-week/source extension, SEC/FINRA, Companyfacts threshold/support, distribution-state router, slot-sliced core, and allocator pruning variants are frozen or recently rejected."
+  },
+  "prediction": {
+    "confidence_reason": "Recent source-extension and state-router failures show direct allocator retunes are mostly redundant, but the accepted allocator still sees many same-day lower-priority rows; an oracle gap is plausible if fixed source priority discards independent evidence on crowded signal dates.",
+    "expected_ev_delta": 1.0,
+    "expected_pnl_delta": 15000.0,
+    "main_failure_modes": [
+      "accepted_priority_already_captures_most_same_day_edge",
+      "oracle_gap_concentrated_in_one_window",
+      "oracle_gap_not_explainable_by_point_in_time_fields",
+      "future_pnl_oracle_not_tradeable"
+    ],
+    "recorded_at": "2026-06-13T00:18:00+00:00",
+    "success_probability": 0.55
+  },
+  "repro_command": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260613_003_allocator_source_competition_opportunity.py",
+  "result": {
+    "accepted": false,
+    "artifact": "data/experiments/exp-20260613-003/exp_20260613_003_allocator_source_competition_opportunity.json",
+    "calibration": {
+      "actual_direction_success": true,
+      "actual_ev_gap_vs_accepted_allocator": 1.9417,
+      "actual_gate4_policy_passed": false,
+      "actual_pnl_gap_vs_accepted_allocator": 29941.8,
+      "actual_policy_success": false,
+      "brier_score_direction": 0.2025,
+      "failure_modes_observed": [
+        "uses_future_pnl_oracle",
+        "no_ex_ante_field",
+        "no_production_policy_change"
+      ],
+      "predicted_success_probability": 0.55,
+      "surprise_note": "The direction signal was stronger than the conservative pre-run estimate because all three windows showed positive oracle gap, but the policy remains rejected since future PnL is unavailable at decision time."
+    },
+    "card": "experiments/cards/exp-20260613-003.md",
+    "gate4": {
+      "aggregate_ev_gap_vs_accepted_allocator": 1.9417,
+      "aggregate_pnl_gap_vs_accepted_allocator": 29941.8,
+      "decision": "observed_only_material_source_arbitration_gap_requires_ex_ante_field",
+      "failed_reasons": [
+        "uses_future_pnl_oracle",
+        "no_ex_ante_field",
+        "no_production_policy_change"
+      ],
+      "material_thresholds": {
+        "min_oracle_ev_gap": 0.5,
+        "min_oracle_pnl_gap": 10000.0,
+        "min_positive_gap_windows": 2
+      },
+      "note": "Gate 4 cannot accept this as a strategy because the after path is an ex-post oracle. The only valid output is whether source arbitration remains worth a future shared, ex-ante alpha attempt.",
+      "observed_direction_material": true,
+      "oracle_trade_count": 336,
+      "passed": false,
+      "windows_pnl_improved_vs_accepted_allocator": 3
+    },
+    "log": "experiments/logs/exp-20260613-003.json",
+    "post_run_reflection": {
+      "forbidden_near_neighbor_retry": "Do not retry by changing source ranks, allocator top-N, fixed state cells, notional, hold days, cooldown, or accepted helper thresholds on the same frozen windows.",
+      "negative_reflection": "This is negative as a policy even if the oracle gap is large: future PnL is unavailable at decision time, so no strategy change is retained.",
+      "new_evidence_required": "Point-in-time free relation/source-maturity data that explains oracle switches before the next open, implemented through a shared default-off helper if tested.",
+      "why_result_happened": "The accepted fixed-priority allocator leaves measurable opportunity when lower-priority same-day rows later outperform the selected source. The gap is not executable because it uses future PnL; the usable work is to look for free, point-in-time relation/source-maturity fields that explain those switches before entry."
+    },
+    "production_impact": {
+      "adapter_status": "observed_only_no_policy_change",
+      "alters_candidate_ranking": false,
+      "alters_exits": false,
+      "alters_orders": false,
+      "alters_signal_generation": false,
+      "alters_sizing": false,
+      "backtester_adapter_changed": false,
+      "daily_snapshot_exposed": false,
+      "default_off_paper_only": false,
+      "live_ready": false,
+      "live_realism_evaluated": true,
+      "parity_note": "Observed-only oracle attribution. Historical replay reuses the shared accepted allocator source rows, but no source priority, helper, daily snapshot, report, ranking, sizing, exit, watchlist, LLM/news, or order surface is changed.",
+      "parity_test_added": false,
+      "production_orders_changed": false,
+      "production_signal_path_changed": false,
+      "production_watchlist_changed": false,
+      "replay_only": true,
+      "run_adapter_changed": false,
+      "shared_policy_changed": false,
+      "trade_enabled": false,
+      "uses_free_non_ohlcv": true,
+      "uses_free_ohlcv_only": false,
+      "uses_llm": false
+    }
+  },
+  "single_decision_hypothesis": "Observed-only source competition opportunity audit for accepted allocator rows; no source priority, threshold, notional, hold, cooldown, ranking, sizing, exit, LLM, news, watchlist, or order behavior changes.",
+  "status": "observed_only",
+  "summary": "Observed-only result found a material same-day source-choice upper bound over the accepted allocator. The next alpha direction should be a shared ex-ante source-arbitration field, not a priority retune."
+}

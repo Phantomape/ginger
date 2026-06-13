@@ -41,6 +41,11 @@ DOC_LOG = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}_{STEM}.json"
 DOC_TICKET = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}_{STEM}.json"
 DOC_ARTIFACT = REPO_ROOT / "experiments" / "artifacts" / f"{EXPERIMENT_ID}_{STEM}.md"
 EXPERIMENT_LOG_JSONL = REPO_ROOT / "docs" / "experiment_log.jsonl"
+# Original reservation time (git add commit d78fecab). The daily observer
+# refresh must keep this stable: audit enforcement buckets read created_at
+# first, and a ticket carrying only a daily-bumped updated_at gets
+# misclassified as post-enforcement debt.
+TICKET_CREATED_AT = "2026-05-25T16:18:49+00:00"
 
 FORWARD_HORIZONS = (5, 10, 20)
 RESIDUAL_LEADER_STATES = {"residual_leader", "strong_residual_leader"}
@@ -1273,6 +1278,13 @@ def _experiment_log_entry(payload: dict[str, Any]) -> dict[str, Any]:
 def persist(payload: dict[str, Any], *, update_experiment_log: bool = True) -> None:
     _write_json(OUT_JSON, payload)
     _write_json(DOC_LOG, payload)
+    created_at = TICKET_CREATED_AT
+    if DOC_TICKET.exists():
+        try:
+            existing_ticket = json.loads(DOC_TICKET.read_text(encoding="utf-8"))
+            created_at = existing_ticket.get("created_at") or created_at
+        except (OSError, json.JSONDecodeError):
+            pass
     _write_json(
         DOC_TICKET,
         {
@@ -1284,6 +1296,7 @@ def persist(payload: dict[str, Any], *, update_experiment_log: bool = True) -> N
             "single_causal_variable": CHANGED_VARIABLE,
             "artifact_file": _repo_rel(OUT_JSON),
             "result_file": _repo_rel(DOC_LOG),
+            "created_at": created_at,
             "updated_at": payload["timestamp"],
         },
     )

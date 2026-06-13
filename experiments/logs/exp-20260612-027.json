@@ -1,0 +1,128 @@
+﻿{
+    "after_metrics":  {
+                          "expected_value_score":  0.0,
+                          "max_drawdown_pct":  null,
+                          "sharpe":  null,
+                          "sharpe_daily":  null,
+                          "survival_rate":  null,
+                          "total_pnl":  0.0,
+                          "total_return_pct":  null,
+                          "trade_count":  null,
+                          "win_rate":  null
+                      },
+    "before_metrics":  {
+                           "expected_value_score":  0.0,
+                           "max_drawdown_pct":  null,
+                           "sharpe":  null,
+                           "sharpe_daily":  null,
+                           "survival_rate":  null,
+                           "total_pnl":  0.0,
+                           "total_return_pct":  null,
+                           "trade_count":  null,
+                           "win_rate":  null
+                       },
+    "calibration":  {
+                        "actual_decision":  "observed_only",
+                        "actual_ev_delta":  0.0,
+                        "actual_pnl_delta":  0.0,
+                        "actual_success":  null,
+                        "brier_score":  null,
+                        "calibration_direction":  "not_scored",
+                        "ev_prediction_error":  0.0,
+                        "expected_ev_delta":  0.0,
+                        "expected_pnl_delta":  0.0,
+                        "pnl_prediction_error":  0.0,
+                        "predicted_failure_mode_hit":  false,
+                        "predicted_failure_modes":  [
+                                                        "no_cell_survives_ex_top_screen",
+                                                        "state_cells_too_thin_per_source",
+                                                        "edge_only_in_one_window",
+                                                        "broad_momentum_smear_across_states",
+                                                        "cross_source_duplicate_rows"
+                                                    ],
+                        "predicted_success_probability":  0.35,
+                        "realized_failure_mode":  "none_observed_only_with_survivor",
+                        "surprise_level":  "not_scored",
+                        "surprise_note":  "One cell cleanly survived the ex-top-ticker screen: industry_stable_core_flow x mixed|balanced|normal (n=32, 31 unique tickers, top ticker TOST only 20.9% of positive PnL, in-cell +2.93%/trade vs -0.22% in all other states, edge +3.14pp, ex-top edge +2.21pp, positive all 3 windows both raw and ex-top). The near-misses validated the screen: lagged consensus x same cell failed exactly on APP 51.4% share, and compression x same cell collapsed from +2.3pp to +0.1pp ex-top."
+                    },
+    "causal_components":  [
+                              "frozen 606-022 state classifier on canonical window snapshots",
+                              "allocator _build_source_trades full source rows",
+                              "allocator-selected row marking",
+                              "per source-state cell attribution",
+                              "predeclared router-readiness screen with ex-top-ticker robustness",
+                              "no strategy change"
+                          ],
+    "change_summary":  "Observed-only broad-universe state attribution over 7 allocator source families (617 rows, 380 tickers, 28 cells): exactly one router candidate survived the predeclared ex-top-ticker robustness screen (industry_stable_core_flow x mixed|balanced|normal); justifies one separate frozen Gate 1-4 router experiment; no strategy behavior changed.",
+    "change_type":  "observed_only_state_attribution",
+    "changed_variable":  "broad_source_market_state_attribution_with_ex_top_ticker_screen",
+    "component":  "quant/experiments/exp_20260612_027_broad_state_source_attribution.py, data/experiments/exp-20260612-027/exp_20260612_027_broad_state_source_attribution.json, experiments/cards/exp-20260612-027.md, experiments/manifests/exp-20260612-027.json, experiments/tickets/exp-20260612-027.json, experiments/logs/exp-20260612-027.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+    "date_range":  {
+
+                   },
+    "decision":  "observed_only",
+    "delta_metrics":  {
+                          "expected_value_score":  0.0,
+                          "total_pnl":  0.0
+                      },
+    "experiment_id":  "exp-20260612-027",
+    "hypothesis":  "Broad-universe accepted allocator sources (~1237-ticker warehouse, 8 source families, expected 1000+ source trades) may contain market-state cells whose edge survives an ex-top-ticker robustness screen, identifying regime-router candidates that the thin 20-ticker consensus-sleeve sample could not support.",
+    "llm_metrics":  {
+                        "used_llm":  false
+                    },
+    "market_regime_summary":  {
+
+                              },
+    "mechanism_family":  "regime_router",
+    "multiple_testing_risk_bucket":  "high",
+    "nearby_prior_experiments":  [
+                                     "exp-20260606-022",
+                                     "exp-20260612-018",
+                                     "exp-20260612-020",
+                                     "exp-20260611-005"
+                                 ],
+    "new_evidence_type":  "not_declared",
+    "next_retry_requires":  [
+
+                            ],
+    "notes":  "",
+    "parameters":  {
+                       "locked_variables":  [
+                                                "broad_source_market_state_attribution_with_ex_top_ticker_screen"
+                                            ],
+                       "single_causal_variable":  "broad_source_market_state_attribution_with_ex_top_ticker_screen"
+                   },
+    "post_run_reflection":  {
+                                "forbidden_near_neighbor_retry":  "Do not Gate-4 the near-miss cells: lagged consensus x mixed|balanced|normal remains blocked on APP concentration (exp-20260612-018/020), compression x same cell is single-name driven (ex-top edge +0.1pp), and the broad_down industry_laggard cell has n=5. Do not re-screen the same 28 cells with relaxed thresholds or alternative state classifiers to manufacture more survivors.",
+                                "new_evidence_required":  "The one survivor (industry_stable_core_flow x mixed|balanced|normal) is now the predeclared candidate for a single frozen Gate 1-4 router experiment: bounded notional tilt on that source inside the accepted allocator stack, comparator = accepted exp-20260611-005 allocator, with the same dual concentration guards. Caveat for that experiment: the cell edge is weakest in late_strong (+0.19%/trade), so zero-regression risk is concentrated there. For everything else, new evidence means closed forward rows.",
+                                "realized_failure_mode":  "none_observed_only_with_survivor",
+                                "why_result_happened":  "One cell cleanly survived the ex-top-ticker screen: industry_stable_core_flow x mixed|balanced|normal (n=32, 31 unique tickers, top ticker TOST only 20.9% of positive PnL, in-cell +2.93%/trade vs -0.22% in all other states, edge +3.14pp, ex-top edge +2.21pp, positive all 3 windows both raw and ex-top). The near-misses validated the screen: lagged consensus x same cell failed exactly on APP 51.4% share, and compression x same cell collapsed from +2.3pp to +0.1pp ex-top."
+                            },
+    "prediction":  {
+                       "confidence_reason":  "Mechanism: the consensus-sleeve state cell failed only on single-name concentration (exp-20260612-018/020), and its ex-APP edge stayed positive in 2 of 3 windows, suggesting state structure exists but the 64-row core-universe sample is too thin to separate regime effect from one name. The broad allocator sources offer 10-20x more rows across 1237 tickers where no single name should dominate a cell. Main disconfirmers: per-source state cells may still be thin once split 8 ways by 15 states, broad momentum sources may show uniform state response (smear), and with ~120 cells screened the multiple-testing risk is high, which is why this run is observed-only and any candidate must clear the predeclared ex-top-ticker robustness screen before a separate Gate 1-4.",
+                       "expected_ev_delta":  0.0,
+                       "expected_pnl_delta":  0.0,
+                       "main_failure_modes":  [
+                                                  "no_cell_survives_ex_top_screen",
+                                                  "state_cells_too_thin_per_source",
+                                                  "edge_only_in_one_window",
+                                                  "broad_momentum_smear_across_states",
+                                                  "cross_source_duplicate_rows"
+                                              ],
+                       "recorded_at":  "2026-06-12T23:41:52+00:00",
+                       "success_probability":  0.35
+                   },
+    "prior_trial_count":  0,
+    "rejection_reason":  null,
+    "related_files":  [
+                          "data/experiments/exp-20260612-027/exp_20260612_027_broad_state_source_attribution_before_aggregate.json",
+                          "data/experiments/exp-20260612-027/exp_20260612_027_broad_state_source_attribution_after_aggregate.json"
+                      ],
+    "secondary_windows":  [
+
+                          ],
+    "status":  "observed_only",
+    "timestamp":  "2026-06-12T23:49:42+00:00",
+    "trial_family":  "market_state_conditioned_sleeve_router",
+    "trial_variant_id":  "broad_source_state_attribution_ex_top_screen_v1"
+}
