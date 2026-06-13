@@ -9,7 +9,6 @@ import json
 import logging
 from datetime import datetime
 from pathlib import Path
-from openai import OpenAI
 from data_paths import DATA_ROOT, daily_artifact_path, resolve_daily_artifact_path
 from operator_input_paths import open_positions_path, repo_relative
 from open_position_schema import (
@@ -21,6 +20,11 @@ from open_position_schema import (
 )
 
 logger = logging.getLogger(__name__)
+
+# Kept as a module attribute for older tests and callers that monkeypatch the
+# former API client path. The production path now always persists a prompt for
+# manual import instead of issuing an API call here.
+OpenAI = None
 
 
 def _load_json_if_exists(path):
@@ -786,24 +790,33 @@ def _save_prompt_file(date_str, system_message, user_message, trade_news, trend_
     return str(prompt_file)
 
 
-def get_investment_advice(trade_news, open_positions=None, trend_signals=None, model="gpt-4o", max_tokens=4000, save_prompt_only=True):
+def get_investment_advice(
+    trade_news,
+    open_positions=None,
+    trend_signals=None,
+    model="gpt-4o",
+    max_tokens=4000,
+    save_prompt_only=True,
+):
     """
-    Get investment advice from OpenAI based on filtered trade news and trend signals.
+    Build and persist the daily LLM prompt + decision log.
+
+    The operator workflow is manual by design: the prompt is pasted into an
+    external LLM and the response is imported via import_advice.py, which
+    writes the canonical llm_prompt_resp_<date>.json replay artifact. There is
+    no API-call branch (exp-20260612-009 removed the never-used OpenAI path).
 
     Args:
         trade_news (list): List of filtered trade news items
         open_positions (dict): Optional open positions data
         trend_signals (dict): Optional trend signal data
-        model (str): OpenAI model to use (default: gpt-4o, latest and most capable)
-        max_tokens (int): Maximum tokens in response
-        save_prompt_only (bool): If True, save prompt to file instead of calling API
 
     Returns:
         dict: {
             "success": bool,
             "advice": str or None,
             "error": str or None,
-            "token_usage": dict or None
+            "token_usage": None
         }
     """
     # Load open positions if not provided
@@ -843,79 +856,16 @@ def get_investment_advice(trade_news, open_positions=None, trend_signals=None, m
             "token_usage": None
         }
 
-    # If save_prompt_only, save to file and return
-    if save_prompt_only:
-        try:
-            return {
-                "success": True,
-                "advice": f"Prompt saved to {prompt_file}\n\nTo use this prompt:\n1. Copy the content\n2. Paste into ChatGPT or Claude\n3. Review the structured JSON response",
-                "error": None,
-                "token_usage": None
-            }
-        except Exception as e:
-            logger.error(f"Failed to save prompt: {e}")
-            return {
-                "success": False,
-                "advice": None,
-                "error": f"Failed to save prompt: {e}",
-                "token_usage": None
-            }
-
-    # Call OpenAI API
-    api_key = os.environ.get("OPENAI_API_KEY")
-    if not api_key:
-        logger.error("OPENAI_API_KEY environment variable not set")
-        return {
-            "success": False,
-            "advice": None,
-            "error": "OPENAI_API_KEY environment variable not set. Please set it before running.",
-            "token_usage": None
-        }
-
-    try:
-        logger.info(f"Calling OpenAI API with model: {model}")
-        client = OpenAI(api_key=api_key)
-
-        response = client.chat.completions.create(
-            model=model,
-            messages=[
-                {
-                    "role": "system",
-                    "content": system_message
-                },
-                {
-                    "role": "user",
-                    "content": user_message
-                }
-            ],
-            max_tokens=max_tokens,
-            temperature=0.1  # Near-zero for strict rule-following; 0.3 caused occasional rule violations
-        )
-
-        advice = response.choices[0].message.content
-        token_usage = {
-            "prompt_tokens": response.usage.prompt_tokens,
-            "completion_tokens": response.usage.completion_tokens,
-            "total_tokens": response.usage.total_tokens
-        }
-
-        logger.info(f"OpenAI API call successful. Tokens used: {token_usage['total_tokens']}")
-
-        return {
-            "success": True,
-            "advice": advice,
-            "error": None,
-            "token_usage": token_usage
-        }
-
-    except Exception as e:
-        logger.error(f"OpenAI API call failed: {e}")
-        return {
-            "success": False,
-            "advice": None,
-            "error": str(e),
-            "token_usage": None
-        }
+    return {
+        "success": True,
+        "advice": (
+            f"Prompt saved to {prompt_file}\n\nTo use this prompt:\n"
+            "1. Copy the content\n2. Paste into ChatGPT or Claude\n"
+            "3. Import the structured JSON response via import_advice.py"
+        ),
+        "error": None,
+        "token_usage": None
+    }
 
 
 def parse_json_advice(advice_text):
@@ -960,9 +910,7 @@ def save_advice(advice, filepath, token_usage=None):
         parsed_advice = parse_json_advice(advice)
         basename = os.path.basename(filepath)
         data_dir = _archive_root_for_output(filepath)
-        advice_date = None
-        if basename.startswith("investment_advice_") and basename.endswith(".json"):
-            advice_date = basename[len("investment_advice_"):-len(".json")]
+        advice_date = _dated_advice_basename_date(basename)
 
         pending_overrides = []
         if isinstance(parsed_advice, dict):
@@ -1010,12 +958,10 @@ def save_advice(advice, filepath, token_usage=None):
                 for item in pending_overrides
             ]
 
-        if basename.startswith("investment_advice_") and basename.endswith(".json"):
-            date_str = basename[len("investment_advice_"):-len(".json")]
-            if len(date_str) == 8 and date_str.isdigit():
-                archive_context = _build_archive_context(date_str, data_dir)
-                if archive_context:
-                    output["archive_context"] = archive_context
+        if advice_date:
+            archive_context = _build_archive_context(advice_date, data_dir)
+            if archive_context:
+                output["archive_context"] = archive_context
 
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(output, f, indent=2, ensure_ascii=False)
@@ -1029,8 +975,26 @@ def save_advice(advice, filepath, token_usage=None):
         return False
 
 
+def _dated_advice_basename_date(basename):
+    """Extract YYYYMMDD from a dated advice/replay basename, else None.
+
+    llm_prompt_resp_<date>.json is the canonical replay artifact; the
+    investment_advice_<date>.json prefix is kept for legacy archives.
+    """
+    for prefix in ("llm_prompt_resp_", "investment_advice_"):
+        if basename.startswith(prefix) and basename.endswith(".json"):
+            date_str = basename[len(prefix):-len(".json")]
+            if len(date_str) == 8 and date_str.isdigit():
+                return date_str
+    return None
+
+
 def _maybe_write_replay_log(filepath, output):
-    """Mirror real dated advice files to llm replay logs for backtest parity."""
+    """Mirror legacy dated advice files to llm replay logs for backtest parity.
+
+    Writes targeted directly at llm_prompt_resp_<date>.json ARE the replay
+    log, so only the legacy investment_advice_ prefix needs mirroring.
+    """
     basename = os.path.basename(filepath)
     if not basename.startswith("investment_advice_") or not basename.endswith(".json"):
         return
