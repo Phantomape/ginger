@@ -1,0 +1,197 @@
+{
+  "accepted": false,
+  "aggregate_expected_value_delta": 1.7485,
+  "aggregate_expected_value_delta_pct": 0.221495,
+  "aggregate_strategy_total_pnl_delta": 32887.89,
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260613-020/exp_20260613_020_seasoned_new_listing_leadership.json",
+  "backtest_protocol": {
+    "REGIME_AWARE_EXIT": true,
+    "candidate_ohlcv_source": "data/warehouse/warehouse_main.sqlite",
+    "execution_model": "Signal uses only close-of-day OHLCV and warehouse first-seen state observable on the signal date. Paper entry is next available open with existing entry slippage; exit is the close 10 trading days after the signal with target-side sell slippage and ROUND_TRIP_COST_PCT.",
+    "replay_llm": false,
+    "replay_news": false,
+    "source": "docs/backtesting.md canonical three-window core replay plus replay-only broad warehouse default-off paper overlay",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "calibration": {
+    "actual_gate4_passed": false,
+    "brier_score": 0.0324,
+    "failure_modes_observed": [
+      "drawdown_drift_too_high"
+    ],
+    "predicted_success_probability": 0.18
+  },
+  "changed_variable": "seasoned_new_listing_leadership_candidate_source_v1",
+  "decision": "rejected_seasoned_new_listing_leadership_candidate_pool",
+  "experiment_id": "exp-20260613-020",
+  "gate4": {
+    "accepted_comparator_checks": {
+      "exp-20260608-013_narrow_range_compression": {
+        "note": "accepted shared default-off narrow-range compression breakout adapter",
+        "observed_ev_delta": 1.7485,
+        "observed_pnl_delta": 32887.89,
+        "passed": true,
+        "required_ev_delta": 0.1608,
+        "required_pnl_delta": 2248.98
+      },
+      "exp-20260611-005_lagged_consensus_allocator": {
+        "note": "accepted shared allocator source extension",
+        "observed_ev_delta": 1.7485,
+        "observed_pnl_delta": 32887.89,
+        "passed": false,
+        "required_ev_delta": 2.1849,
+        "required_pnl_delta": 40397.21
+      },
+      "exp-20260611-007_distribution_day_absorption": {
+        "note": "accepted shared distribution-day absorption adapter",
+        "observed_ev_delta": 1.7485,
+        "observed_pnl_delta": 32887.89,
+        "passed": true,
+        "required_ev_delta": 0.5286,
+        "required_pnl_delta": 10432.91
+      }
+    },
+    "aggregate_ev_delta": 1.7485,
+    "aggregate_pnl_delta": 32887.89,
+    "decision": "rejected_seasoned_new_listing_leadership_candidate_pool",
+    "failed_reasons": [
+      "drawdown_drift_too_high"
+    ],
+    "max_drawdown_worse": 0.0335,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": false,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.105396,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": true,
+      "positive_pnl_hhi": 0.060981,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 300,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_ev_improved": 3,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 3,
+    "windows_pnl_regressed": 0
+  },
+  "hypothesis": "Liquid common stocks newly observable in the warehouse may become more tradeable after the first 63 trading days, when early listing noise has settled but before the first-seen edge fully decays. A PIT first-seen age plus relative-strength leadership filter may expand the candidate pool without adding arbitrary noisy tickers.",
+  "lane": "alpha_search",
+  "log": "experiments/logs/exp-20260613-020.json",
+  "mechanism_family": "production_visible_free_ohlcv_candidate_pool_expansion",
+  "negative_reflection": "The observable first-seen leadership field mostly selected crowded young momentum names. It produced enough candidates, but the 10-day replacement value did not clear the three-window Gate 4 drawdown, PnL, EV, and comparator standards.",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry nearby age, RS, moving-average, close-location, ADV, hold-day, notional, or cooldown variants on the same frozen windows without a materially new PIT information field.",
+    "new_evidence_required": "A retry needs an independent free data edge, such as true listing date, lockup/float change, revenue revision, or sponsorship confirmation, rather than OHLCV threshold nudges.",
+    "realized_failure_mode": "generic_momentum_relabel_or_window_regression",
+    "why_result_happened": "The observable first-seen leadership field mostly selected crowded young momentum names. It produced enough candidates, but the 10-day replacement value did not clear the three-window Gate 4 drawdown, PnL, EV, and comparator standards."
+  },
+  "prediction": {
+    "confidence_reason": "Static recent-listing/platform cohorts failed because they were hand lists with negative forward returns, but PIT warehouse first-seen age over a broad liquid universe is materially different and can expand the candidate pool without adding arbitrary noisy tickers. Risk is high because left-censor exclusion makes the sample sparse and the remaining signal may still relabel momentum.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "observable_first_seen_sample_too_small",
+      "generic_momentum_relabel",
+      "window_regression",
+      "old_thin_listing_coverage_gap",
+      "accepted_comparator_not_beaten"
+    ],
+    "recorded_at": "2026-06-13T15:26:30Z",
+    "success_probability": 0.18
+  },
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "default_off_paper_only": true,
+    "execution_envelope": {
+      "daily_entry_slots": 1,
+      "failure_handling": "missing OHLCV, SPY pair, next open, or 10d exit rejects the paper candidate",
+      "hold_days": 10,
+      "kill_switch": "trade_enabled remains false; no production adapter changes",
+      "liquidity_source": "price >= $10 and ADV20 >= $20M from PIT OHLCV",
+      "order_semantics": "observe-only next-session-open paper entry; no broker order",
+      "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+      "same_ticker_cooldown_days": 10,
+      "target_notional_per_paper_trade": 4000.0,
+      "trade_enabled": false
+    },
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper computes the same warehouse first-seen left-censor exclusion, first-seen age, common-share shape, liquidity, relative-strength, moving-average, close-location, same-ticker core-overlap exclusion, cooldown, next-open paper entry, 10-trading-day exit, costs, and concentration controls in both historical replay and the daily production snapshot.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_free_ohlcv_only": true,
+    "uses_llm": false
+  },
+  "status": "rejected",
+  "timestamp": "2026-06-13T16:14:36Z",
+  "trial_family": "seasoned_new_listing_leadership_candidate_pool",
+  "trial_variant_id": "seasoned_new_listing_leadership_candidate_source_v1",
+  "windows": [
+    {
+      "candidate_day_count": 112,
+      "expected_value_after": 5.2645,
+      "expected_value_before": 5.1628,
+      "expected_value_delta": 0.1017,
+      "label": "late_strong",
+      "strategy_total_pnl_delta": 5353.32,
+      "target_trade_count": 94
+    },
+    {
+      "candidate_day_count": 123,
+      "expected_value_after": 3.771,
+      "expected_value_before": 2.1402,
+      "expected_value_delta": 1.6308,
+      "label": "mid_weak",
+      "strategy_total_pnl_delta": 27519.38,
+      "target_trade_count": 116
+    },
+    {
+      "candidate_day_count": 123,
+      "expected_value_after": 0.6071,
+      "expected_value_before": 0.5911,
+      "expected_value_delta": 0.016,
+      "label": "old_thin",
+      "strategy_total_pnl_delta": 15.19,
+      "target_trade_count": 90
+    }
+  ]
+}
