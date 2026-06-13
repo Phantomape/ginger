@@ -1,0 +1,241 @@
+{
+  "experiment_id": "exp-20260613-030",
+  "experiment_uid": "expuid-7465b3c1fe9246ff",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260613-030",
+    "slug": "fiftytwo_week_high_pre_breakout_range_contraction",
+    "reserved_at": "2026-06-13T22:09:46+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "alpha-search-automation",
+  "hypothesis": "candidate_pool: accepted 52-week-high core-flow candidates may be cleaner when the ten sessions before the breakout have compressed normalized true range versus the prior fifty sessions. Compression should indicate coiled sponsorship rather than already-expanded chase.",
+  "change_type": "default_off_paper_candidate_pool_replay_scout",
+  "mechanism_family": "production_visible_free_ohlcv_candidate_pool",
+  "trial_family": "fiftytwo_week_high_pre_breakout_range_contraction_candidate_pool",
+  "trial_variant_id": "fiftytwo_week_high_pre_breakout_range_contraction_top1_next_open_10d_v1",
+  "single_causal_variable": "fiftytwo_week_high_pre_breakout_range_contraction_context_v1",
+  "changed_variable": "fiftytwo_week_high_pre_breakout_range_contraction_context_v1",
+  "causal_components": [
+    "accepted_52w_core_flow_candidate_source",
+    "pre_breakout_true_range_contraction_context",
+    "next_open_paper_entry",
+    "10_trading_day_exit",
+    "costs",
+    "cooldown",
+    "three_window_gate4"
+  ],
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260610-008",
+    "exp-20260610-015",
+    "exp-20260611-002",
+    "exp-20260608-013",
+    "exp-20260613-018",
+    "exp-20260613-019"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "production_visible_free_ohlcv_pre_breakout_range_contraction_on_accepted_52w",
+  "baseline_result_file": "data/experiments/exp-20260610-008/exp_20260610_008_fiftytwo_week_high_proximity_full_stack.json",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "experiments/logs",
+    "experiments/tickets",
+    "experiments/cards",
+    "experiments/manifests",
+    "data/experiments",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/backtester.py",
+    "quant/fiftytwo_week_high_proximity_paper_sleeve.py"
+  ],
+  "locked_variables": [
+    "52w proximity threshold",
+    "252d high lookback",
+    "60d breakout lookback",
+    "top1",
+    "hold_days",
+    "notional",
+    "cooldown",
+    "entry/exit semantics"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Gate 1-4 per docs/backtesting.md; accept only if aggregate EV and PnL improve versus core, no canonical window regresses, target trades >=20 across all 3 windows, survival >=5%, drawdown drift <=0.5pp, concentration passes, and accepted 52w comparator exp-20260610-008 is beaten; positive replay still requires shared helper before production use.",
+  "prediction": {
+    "success_probability": 0.13,
+    "expected_ev_delta": 0.1,
+    "expected_pnl_delta": 1500.0,
+    "main_failure_modes": [
+      "sample_too_thin",
+      "accepted_52w_comparator_not_beaten",
+      "compression_relabels_existing_helper",
+      "window_regression",
+      "concentration_failed"
+    ],
+    "confidence_reason": "Accepted 52w proves the anchor but prior quality/FINRA overlays thinned samples; pre-breakout contraction is free PIT OHLCV and materially different from 52w threshold retuning, but hard filters on accepted helpers often fail.",
+    "recorded_at": "2026-06-13T22:09:13+00:00"
+  },
+  "created_at": "2026-06-13T22:09:46+00:00",
+  "claimed_at": "2026-06-13T22:10:42+00:00",
+  "completed_at": "2026-06-13T22:17:16+00:00",
+  "result": {
+    "decision": "rejected_fiftytwo_week_high_pre_breakout_range_contraction_candidate_pool",
+    "accepted": false,
+    "accepted_alpha": false,
+    "numeric_gate4_passed": false,
+    "artifact": "data/experiments/exp-20260613-030/exp_20260613_030_fiftytwo_week_high_pre_breakout_range_contraction.json",
+    "log": "experiments/logs/exp-20260613-030.json",
+    "card": "experiments/cards/exp-20260613-030.md",
+    "aggregate_expected_value_delta": 0.2009,
+    "aggregate_strategy_total_pnl_delta": 3303.79,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_fiftytwo_week_high_pre_breakout_range_contraction_candidate_pool",
+      "failed_reasons": [
+        "accepted_core_flow_pnl_not_beaten",
+        "accepted_52w_ev_not_beaten",
+        "accepted_52w_pnl_not_beaten",
+        "accepted_52w_window_comparator_regression"
+      ],
+      "aggregate_ev_delta": 0.2009,
+      "aggregate_pnl_delta": 3303.79,
+      "windows_ev_improved": 3,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 3,
+      "windows_pnl_regressed": 0,
+      "target_trade_count": 41,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0016,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.175617,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.096238,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "accepted_comparators": {
+        "compression": {
+          "experiment_id": "exp-20260608-013",
+          "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+          "expected_value_score_delta_sum": 0.1608,
+          "total_pnl_delta_sum": 2248.98,
+          "target_trade_count": 44
+        },
+        "core_flow": {
+          "experiment_id": "exp-20260608-008",
+          "decision": "accepted_industry_stable_core_flow_shared_default_off_adapter",
+          "expected_value_score_delta_sum": 0.1459,
+          "total_pnl_delta_sum": 3731.54,
+          "target_trade_count": 47
+        },
+        "fiftytwo_week_high": {
+          "experiment_id": "exp-20260610-008",
+          "decision": "accepted_fiftytwo_week_high_proximity_core_flow_shared_default_off_adapter",
+          "expected_value_score_delta_sum": 0.4308,
+          "total_pnl_delta_sum": 9295.34,
+          "target_trade_count": 54,
+          "by_window": {
+            "late_strong": {
+              "expected_value_delta": 0.0921,
+              "pnl_delta": 1813.52
+            },
+            "mid_weak": {
+              "expected_value_delta": 0.2571,
+              "pnl_delta": 4836.19
+            },
+            "old_thin": {
+              "expected_value_delta": 0.0816,
+              "pnl_delta": 2645.63
+            }
+          },
+          "window_regressions": [
+            "late_strong_ev",
+            "late_strong_pnl",
+            "mid_weak_ev",
+            "mid_weak_pnl",
+            "old_thin_ev",
+            "old_thin_pnl"
+          ]
+        }
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.13,
+      "actual_gate4_passed": false,
+      "failure_modes_observed": [
+        "accepted_core_flow_pnl_not_beaten",
+        "accepted_52w_ev_not_beaten",
+        "accepted_52w_pnl_not_beaten",
+        "accepted_52w_window_comparator_regression"
+      ],
+      "brier_score": 0.0169
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "private_replay_scout_no_shared_52w_contraction_adapter",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "default_off_paper_only": true,
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_ohlcv_only": true,
+      "live_realism_evaluated": false,
+      "live_ready": false,
+      "parity_note": "This experiment changes no production code. It reads only signal-date and prior OHLCV in historical replay. A positive result cannot be promoted until a shared helper computes the same accepted 52-week source, pre-breakout true-range contraction gate, core-flow anchor, next-open paper entry, 10-trading-day exit, costs, cooldown, concentration controls, and daily default-off snapshot semantics in both historical replay and production observation."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The contraction overlay did not add enough replacement value over the accepted 52-week helper. It either thinned a strong accepted source, selected too few multi-window candidates, or duplicated the already accepted narrow-range compression mechanism without beating the 52-week comparator.",
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping ATR10/ATR50 ratio, max ATR10, 52-week proximity, 252/60-day lookbacks, top-N, hold-day, cooldown, or paper notional on the same frozen windows.",
+      "new_evidence_required": "A retry needs materially different evidence separating durable from exhausted 52-week-high leaders, such as PIT ownership, borrow/availability, options-implied pressure, or validated forward daily replacement rows. Do not sweep the contraction thresholds, 52-week geometry, hold, cooldown, top-N, or notional."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260613-030.json",
+  "card_file": "experiments/cards/exp-20260613-030.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260613-030.json",
+  "decision": "rejected_fiftytwo_week_high_pre_breakout_range_contraction_candidate_pool",
+  "summary": "The 52-week pre-breakout range contraction source was rejected; it did not improve the accepted 52-week-high default-off candidate pool under the standard three-window protocol.",
+  "artifact": "data/experiments/exp-20260613-030/exp_20260613_030_fiftytwo_week_high_pre_breakout_range_contraction.json",
+  "log": "experiments/logs/exp-20260613-030.json",
+  "aggregate_expected_value_delta": 0.2009,
+  "aggregate_strategy_total_pnl_delta": 3303.79,
+  "updated_at": "2026-06-13T22:17:16+00:00"
+}
