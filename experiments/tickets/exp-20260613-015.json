@@ -1,0 +1,225 @@
+{
+  "acceptance_rule": "Must improve aggregate EV/PnL versus same-run accepted allocator across docs/backtesting.md three windows, no direct EV/PnL window regressions, pass drawdown/sample/concentration, and cannot be accepted without shared helper/daily parity.",
+  "allowed_write_scope": [
+    "data/experiments/exp-20260613-015",
+    "data/experiments/exp-20260613-015/exp_20260613_015_source_confirmation_allocator.json",
+    "experiments/cards/exp-20260613-015.md",
+    "experiments/logs/exp-20260613-015.json",
+    "experiments/manifests/exp-20260613-015.json",
+    "experiments/tickets/exp-20260613-015.json",
+    "quant/experiments/exp_20260613_015_source_confirmation_allocator.py"
+  ],
+  "baseline_result_file": "docs/backtesting.md",
+  "calibration": {
+    "actual_ev_delta_vs_accepted_allocator": 0.0229,
+    "actual_gate4_passed": false,
+    "actual_pnl_delta_vs_accepted_allocator": 444.37,
+    "actual_success": 0,
+    "brier_score": 0.0441,
+    "failure_modes_observed": [
+      "changed_selection_sample_too_small"
+    ],
+    "predicted_failure_mode_hit": false,
+    "predicted_success_probability": 0.21
+  },
+  "card_file": "experiments/cards/exp-20260613-015.md",
+  "causal_components": [],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "same_ticker_independent_source_confirmation_arbitration_v1",
+  "claimed_at": "2026-06-13T11:09:18+00:00",
+  "completed_at": "2026-06-13T11:15:18Z",
+  "created_at": "2026-06-13T11:09:11+00:00",
+  "decision": "rejected_source_confirmation_allocator",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260613-015",
+  "experiment_uid": "expuid-f60a354b545b4225",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260613-015",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-13T11:09:11+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "source_confirmation_allocator"
+  },
+  "hypothesis": "candidate_pool/allocation: same-ticker independent accepted-source confirmations within a short PIT lookback may identify stronger same-day allocator conflict winners than fixed source priority, without adding tickers or changing sizing/exits.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "source_priority_rank",
+    "top1_per_day",
+    "notional",
+    "hold_days",
+    "cooldown",
+    "core_strategy",
+    "live_orders"
+  ],
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [
+    "quant/accepted_helper_source_priority_allocator_paper_sleeve.py",
+    "production",
+    "operator_inputs"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260611-005",
+    "exp-20260613-003",
+    "exp-20260613-004",
+    "exp-20260613-006",
+    "exp-20260613-009"
+  ],
+  "new_evidence_type": "PIT independent source confirmation breadth/freshness over accepted allocator source rows",
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "confidence_reason": "exp-20260613-003 left a same-day source-choice oracle gap, while exp-20260613-004/006/009 rejected source-maturity, source-score, and microstructure arbitration. Same-ticker independent confirmation breadth is PIT and production-visible, but the accepted lagged consensus source may already capture much of it.",
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "accepted_allocator_already_captures_consensus",
+      "confirmation_rows_too_sparse",
+      "window_regression",
+      "source_concentration",
+      "shared_helper_parity_missing"
+    ],
+    "recorded_at": "2026-06-13T11:08:54+00:00",
+    "success_probability": 0.21
+  },
+  "prior_trial_count": 3,
+  "result": {
+    "accepted": false,
+    "artifact": "data/experiments/exp-20260613-015/exp_20260613_015_source_confirmation_allocator.json",
+    "calibration": {
+      "actual_ev_delta_vs_accepted_allocator": 0.0229,
+      "actual_gate4_passed": false,
+      "actual_pnl_delta_vs_accepted_allocator": 444.37,
+      "actual_success": 0,
+      "brier_score": 0.0441,
+      "failure_modes_observed": [
+        "changed_selection_sample_too_small"
+      ],
+      "predicted_failure_mode_hit": false,
+      "predicted_success_probability": 0.21
+    },
+    "card": "experiments/cards/exp-20260613-015.md",
+    "gate4": {
+      "accepted_allocator_comparator": {
+        "aggregate_ev_delta": 2.1849,
+        "aggregate_pnl_delta": 40397.21,
+        "experiment_id": "exp-20260611-005",
+        "window_deltas": {
+          "late_strong": {
+            "ev": 0.9092,
+            "pnl": 9431.68
+          },
+          "mid_weak": {
+            "ev": 0.6352,
+            "pnl": 11133.95
+          },
+          "old_thin": {
+            "ev": 0.6405,
+            "pnl": 19831.58
+          }
+        }
+      },
+      "aggregate_ev_delta_vs_core": 2.24,
+      "aggregate_pnl_delta_vs_core": 41504.4,
+      "changed_selection_count": 1,
+      "changed_selection_count_min": 9,
+      "comparator_regressions": [],
+      "decision": "rejected_source_confirmation_allocator",
+      "direct_ev_delta_vs_accepted_allocator": 0.0229,
+      "direct_pnl_delta_vs_accepted_allocator": 444.37,
+      "direct_windows_ev_improved": 1,
+      "direct_windows_ev_regressed": 0,
+      "direct_windows_pnl_improved": 1,
+      "direct_windows_pnl_regressed": 0,
+      "failed_reasons": [
+        "changed_selection_sample_too_small"
+      ],
+      "max_direct_drawdown_worse": 0.0,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "note": "Even if numeric Gate 4 passes, this runner is not accepted alpha because the shared daily allocator helper was not changed.",
+      "numeric_gate4_passed": false,
+      "passed": false,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "max_single_positive_pnl_share": 0.201482,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "passed": true,
+        "positive_pnl_hhi": 0.059847,
+        "positive_pnl_hhi_guardrail": 0.35,
+        "top5_positive_share": 0.423454
+      },
+      "target_trade_count": 336,
+      "target_trade_count_min": 20,
+      "target_window_count_min": 3,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ]
+    },
+    "log": "experiments/logs/exp-20260613-015.json",
+    "post_run_reflection": {
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping source-confirmation lookback, distinct-source threshold, score weights, source rank, top-N, notional, hold days, or cooldown on the same frozen windows.",
+      "negative_reflection": "If rejected, the confirmation field was too sparse or already absorbed by the accepted lagged-consensus source. If positive, the result remains non-accepted because shared helper parity is missing.",
+      "new_evidence_required": "A valid retry needs closed forward source-competition rows, a new PIT relation map, or a richer production-visible source quality field recorded in daily snapshots.",
+      "why_result_happened": "Same-ticker source confirmation either arrived too sparsely or mostly duplicated the accepted lagged-consensus signal. It did not explain the oracle source-choice gap better than the accepted fixed priority."
+    },
+    "production_impact": {
+      "adapter_status": "replay_only_source_confirmation_scout",
+      "alters_candidate_ranking": false,
+      "alters_exits": false,
+      "alters_orders": false,
+      "alters_signal_generation": false,
+      "alters_sizing": false,
+      "backtester_adapter_changed": false,
+      "daily_snapshot_exposed": false,
+      "default_off_paper_only": true,
+      "execution_envelope": {
+        "base_notional": 4000.0,
+        "kill_switch_drawdown_pct": 0.15,
+        "max_capital_pct": 0.32,
+        "max_concurrent": 8,
+        "max_displacement": 1,
+        "min_dollar_volume": 10000000.0,
+        "notes": "Same accepted-helper allocator bucket as exp-20260611-005. This scout does not change production; positive evidence would require a shared helper and daily snapshot parity before retention.",
+        "order_semantics": "next_open_paper_only",
+        "slippage_bps": 5.0
+      },
+      "live_ready": false,
+      "live_realism_evaluated": true,
+      "parity_note": "Replay-only source-confirmation scout. It reuses accepted allocator source rows and only uses rows visible on or before each signal date. No source priority, helper, daily snapshot, report, ranking, sizing, exit, watchlist, LLM/news, or order surface is changed.",
+      "parity_test_added": false,
+      "production_orders_changed": false,
+      "production_signal_path_changed": false,
+      "production_watchlist_changed": false,
+      "replay_only": true,
+      "run_adapter_changed": false,
+      "shared_policy_changed": false,
+      "trade_enabled": false,
+      "uses_free_non_ohlcv": true,
+      "uses_free_ohlcv_only": false,
+      "uses_llm": false
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260613-015.json",
+  "single_causal_variable": "same_ticker_independent_source_confirmation_arbitration_v1",
+  "status": "rejected",
+  "summary": "The source-confirmation allocator failed the accepted allocator comparison; no strategy or production behavior is retained.",
+  "ticket_file": "experiments/tickets/exp-20260613-015.json",
+  "trial_family": "accepted_allocator_source_arbitration",
+  "trial_variant_id": "same_ticker_independent_source_confirmation_arbitration_v1"
+}
