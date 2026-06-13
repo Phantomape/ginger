@@ -1,0 +1,236 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "data/experiments/exp-20260613-006/exp_20260613_006_source_score_percentile_allocator.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "experiments/cards/exp-20260613-006.md",
+    "experiments/logs/exp-20260613-006.json",
+    "experiments/manifests/exp-20260613-006.json",
+    "experiments/tickets/exp-20260613-006.json",
+    "quant/experiments/exp_20260613_006_source_score_percentile_allocator.py"
+  ],
+  "baseline_result_file": "docs/backtesting.md",
+  "calibration": {
+    "actual_ev_delta_vs_accepted_allocator": -0.937,
+    "actual_gate4_passed": false,
+    "actual_pnl_delta_vs_accepted_allocator": -18018.86,
+    "actual_success": 0,
+    "brier_score": 0.0484,
+    "failure_modes_observed": [
+      "direct_ev_vs_accepted_allocator_not_positive",
+      "direct_pnl_vs_accepted_allocator_not_positive",
+      "direct_window_ev_regression_vs_accepted_allocator",
+      "direct_window_pnl_regression_vs_accepted_allocator",
+      "direct_drawdown_drift_too_high",
+      "accepted_allocator_ev_comparator_not_beaten",
+      "accepted_allocator_pnl_comparator_not_beaten"
+    ],
+    "predicted_failure_mode_hit": false,
+    "predicted_success_probability": 0.22
+  },
+  "card_file": "experiments/cards/exp-20260613-006.md",
+  "causal_components": [
+    "accepted allocator source rows",
+    "prior source-score percentile",
+    "top1 per day",
+    "next-open paper entry",
+    "10d exit",
+    "costs",
+    "three-window Gate 4"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "source_score_percentile_allocator_arbitration_v1",
+  "claimed_at": "2026-06-13T03:06:50.3665137Z",
+  "completed_at": "2026-06-13T03:17:44Z",
+  "created_at": "2026-06-13T03:05:37+00:00",
+  "decision": "rejected_source_score_percentile_allocator",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260613-006",
+  "experiment_uid": "expuid-e0a8b02e03c64789",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260613-006",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-13T03:05:37+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "source_score_percentile_allocator"
+  },
+  "hypothesis": "Accepted allocator same-day source conflicts may improve when selecting the candidate whose source-specific score is unusually strong versus that source's own prior history, using only signal-date rows and prior source-score distributions.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "source_score_percentile_allocator_arbitration_v1"
+  ],
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260611-005",
+    "exp-20260613-003",
+    "exp-20260613-004",
+    "exp-20260608-009"
+  ],
+  "new_evidence_type": "new_production_visible_source_quality_percentile_field",
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "confidence_reason": "exp-20260613-003 showed a material same-day source-choice oracle gap, while exp-20260613-004 showed trailing PnL maturity is too noisy. A source-internal score percentile is ex-ante and avoids cross-source raw-score comparability, but risk is high because score fields may still relabel accepted priority or overfit frozen windows.",
+    "expected_ev_delta": 0.18,
+    "expected_pnl_delta": 3000.0,
+    "main_failure_modes": [
+      "score_percentile_not_comparable",
+      "accepted_allocator_comparator_not_beaten",
+      "window_regression",
+      "history_too_thin",
+      "source_family_concentration"
+    ],
+    "recorded_at": "2026-06-13T03:04:57+00:00",
+    "success_probability": 0.22
+  },
+  "prior_trial_count": 2,
+  "result": {
+    "accepted": false,
+    "artifact": "data/experiments/exp-20260613-006/exp_20260613_006_source_score_percentile_allocator.json",
+    "calibration": {
+      "actual_ev_delta_vs_accepted_allocator": -0.937,
+      "actual_gate4_passed": false,
+      "actual_pnl_delta_vs_accepted_allocator": -18018.86,
+      "actual_success": 0,
+      "brier_score": 0.0484,
+      "failure_modes_observed": [
+        "direct_ev_vs_accepted_allocator_not_positive",
+        "direct_pnl_vs_accepted_allocator_not_positive",
+        "direct_window_ev_regression_vs_accepted_allocator",
+        "direct_window_pnl_regression_vs_accepted_allocator",
+        "direct_drawdown_drift_too_high",
+        "accepted_allocator_ev_comparator_not_beaten",
+        "accepted_allocator_pnl_comparator_not_beaten"
+      ],
+      "predicted_failure_mode_hit": false,
+      "predicted_success_probability": 0.22
+    },
+    "card": "experiments/cards/exp-20260613-006.md",
+    "gate4": {
+      "accepted_allocator_comparator": {
+        "aggregate_ev_delta": 2.1849,
+        "aggregate_pnl_delta": 40397.21,
+        "experiment_id": "exp-20260611-005",
+        "window_deltas": {
+          "late_strong": {
+            "ev": 0.9092,
+            "pnl": 9431.68
+          },
+          "mid_weak": {
+            "ev": 0.6352,
+            "pnl": 11133.95
+          },
+          "old_thin": {
+            "ev": 0.6405,
+            "pnl": 19831.58
+          }
+        }
+      },
+      "aggregate_ev_delta_vs_core": 1.2801,
+      "aggregate_pnl_delta_vs_core": 23041.17,
+      "changed_selection_count": 89,
+      "changed_selection_count_min": 9,
+      "comparator_regressions": [
+        "late_strong_direct_ev",
+        "late_strong_direct_pnl",
+        "mid_weak_direct_ev",
+        "mid_weak_direct_pnl",
+        "old_thin_direct_ev",
+        "old_thin_direct_pnl"
+      ],
+      "decision": "rejected_source_score_percentile_allocator",
+      "direct_ev_delta_vs_accepted_allocator": -0.937,
+      "direct_pnl_delta_vs_accepted_allocator": -18018.86,
+      "direct_windows_ev_improved": 0,
+      "direct_windows_ev_regressed": 3,
+      "direct_windows_pnl_improved": 0,
+      "direct_windows_pnl_regressed": 3,
+      "failed_reasons": [
+        "direct_ev_vs_accepted_allocator_not_positive",
+        "direct_pnl_vs_accepted_allocator_not_positive",
+        "direct_window_ev_regression_vs_accepted_allocator",
+        "direct_window_pnl_regression_vs_accepted_allocator",
+        "direct_drawdown_drift_too_high",
+        "accepted_allocator_ev_comparator_not_beaten",
+        "accepted_allocator_pnl_comparator_not_beaten"
+      ],
+      "max_direct_drawdown_worse": 0.0053,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "note": "Even if numeric Gate 4 passes, this runner is not accepted alpha because the shared daily allocator helper was not changed.",
+      "numeric_gate4_passed": false,
+      "passed": false,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "max_single_positive_pnl_share": 0.170864,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "passed": true,
+        "positive_pnl_hhi": 0.04553,
+        "positive_pnl_hhi_guardrail": 0.35,
+        "top5_positive_share": 0.350911
+      },
+      "target_trade_count": 337,
+      "target_trade_count_min": 20,
+      "target_window_count_min": 3,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ]
+    },
+    "log": "experiments/logs/exp-20260613-006.json",
+    "post_run_reflection": {
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping percentile min-history, percentile tie-breakers, source rank, top-N, notional, hold days, or cooldown on the same frozen windows.",
+      "negative_reflection": "If rejected, source-internal score percentile was either too coarse or too source/regime dependent to explain the oracle gap. If positive, the result remains non-accepted because shared helper parity is missing.",
+      "new_evidence_required": "A valid retry needs closed forward source-competition rows, a materially richer PIT source-quality field, or shared daily source-score history recorded before replay promotion.",
+      "why_result_happened": "Raw source-score percentiles were not enough to arbitrate same-day source conflicts better than the accepted fixed priority. The oracle gap from exp-20260613-003 is likely coming from information not captured by each source's own raw score distribution, or from source fields whose percentile ranks are too regime/sample dependent."
+    },
+    "production_impact": {
+      "adapter_status": "replay_only_source_score_percentile_scout",
+      "alters_candidate_ranking": false,
+      "alters_exits": false,
+      "alters_orders": false,
+      "alters_signal_generation": false,
+      "alters_sizing": false,
+      "backtester_adapter_changed": false,
+      "daily_snapshot_exposed": false,
+      "default_off_paper_only": true,
+      "execution_envelope": {
+        "base_notional": 4000.0,
+        "kill_switch_drawdown_pct": 0.15,
+        "max_capital_pct": 0.32,
+        "max_concurrent": 8,
+        "max_displacement": 1,
+        "min_dollar_volume": 10000000.0,
+        "notes": "Same accepted-helper allocator execution envelope as exp-20260611-005. This scout does not change production; positive evidence would require a shared helper and daily snapshot parity before retention.",
+        "order_semantics": "next_open_paper_only",
+        "same_ticker_cooldown_days": 12,
+        "slippage_bps": 5.0
+      },
+      "live_ready": false,
+      "live_realism_evaluated": true,
+      "parity_note": "Replay-only source-score percentile scout. It reuses accepted allocator source rows and only uses each source family's prior signal-day source scores at each signal date. No source priority, helper, daily snapshot, report, ranking, sizing, exit, watchlist, LLM/news, or order surface is changed.",
+      "parity_test_added": false,
+      "production_orders_changed": false,
+      "production_signal_path_changed": false,
+      "production_watchlist_changed": false,
+      "replay_only": true,
+      "run_adapter_changed": false,
+      "shared_policy_changed": false,
+      "trade_enabled": false,
+      "uses_free_non_ohlcv": true,
+      "uses_free_ohlcv_only": false,
+      "uses_llm": false
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260613-006.json",
+  "single_causal_variable": "source_score_percentile_allocator_arbitration_v1",
+  "status": "rejected",
+  "summary": "The source-score percentile allocator failed the accepted allocator comparison; no strategy or production behavior is retained.",
+  "ticket_file": "experiments/tickets/exp-20260613-006.json",
+  "trial_family": "accepted_allocator_source_arbitration",
+  "trial_variant_id": "source_score_percentile_allocator_arbitration_v1"
+}
