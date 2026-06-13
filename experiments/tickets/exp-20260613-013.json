@@ -1,0 +1,180 @@
+{
+  "experiment_id": "exp-20260613-013",
+  "experiment_uid": "expuid-d010144c59f14474",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260613-013",
+    "slug": "form144_isolated_sale_notice_absorption",
+    "reserved_at": "2026-06-13T09:08:34+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "codex-alpha-search",
+  "hypothesis": "candidate_pool: Form 144 planned-sale notices may work better when the filing is isolated rather than clustered. Clustered same-ticker notices imply persistent planned-sale supply; isolated notices with same-day price/liquidity absorption are more likely to reflect real demand overcoming known supply.",
+  "change_type": "experiment_local_replay_candidate_pool",
+  "mechanism_family": "production_visible_free_sec_sale_notice_candidate_pool",
+  "trial_family": "form144_sale_notice_absorption_candidate_pool",
+  "trial_variant_id": "form144_isolated_absorbed_top1_next_open_10d_v1",
+  "single_causal_variable": "form144_isolated_sale_notice_absorption_candidate_source_v1",
+  "changed_variable": "form144_isolated_sale_notice_absorption_candidate_source_v1",
+  "causal_components": [
+    "SEC form-index Form 144 archive",
+    "issuer-day and trailing-cluster event-quality field",
+    "same-day absorption gates",
+    "next-open paper entry",
+    "10d exit",
+    "costs",
+    "three-window Gate 1-4"
+  ],
+  "prior_trial_count": 1,
+  "nearby_prior_experiments": [
+    "exp-20260612-023",
+    "exp-20260611-026",
+    "exp-20260611-007"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "pit_sec_form144_cluster_event_quality_field",
+  "baseline_result_file": "data/backtests/backtest_results_20260422_20251022.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260613_*_form144_isolated_sale_notice_absorption.py",
+    "data/experiments/exp-20260613-*",
+    "experiments/logs/exp-20260613-*.json",
+    "experiments/cards/exp-20260613-*.md",
+    "experiments/tickets/exp-20260613-*.json",
+    "experiments/manifests/exp-20260613-*.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "form144_isolated_sale_notice_absorption_candidate_source_v1"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": 0.12,
+    "expected_pnl_delta": 1800.0,
+    "main_failure_modes": [
+      "drawdown_drift_persists",
+      "sample_thinned",
+      "cluster_count_not_independent",
+      "accepted_distribution_comparator_not_beaten"
+    ],
+    "confidence_reason": "Base Form 144 scout improved EV/PnL in all windows but failed old_thin drawdown. A PIT Form144-specific cluster field from the same SEC form index may separate routine supply programs from absorbable isolated notices, but nearby Form4/Form144 sale lanes failed risk gates.",
+    "recorded_at": "2026-06-13T09:08:00+00:00"
+  },
+  "created_at": "2026-06-13T09:08:34+00:00",
+  "claimed_at": "2026-06-13T09:08:47+00:00",
+  "completed_at": "2026-06-13T09:13:07+00:00",
+  "result": {
+    "decision": "rejected_form144_isolated_sale_notice_absorption_candidate_pool",
+    "accepted": false,
+    "numeric_gate4_passed": false,
+    "artifact": "data/experiments/exp-20260613-013/exp_20260613_013_form144_isolated_sale_notice_absorption.json",
+    "log": "experiments/logs/exp-20260613-013.json",
+    "card": "experiments/cards/exp-20260613-013.md",
+    "aggregate_expected_value_delta": 1.4394,
+    "aggregate_strategy_total_pnl_delta": 22080.96,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_form144_isolated_sale_notice_absorption_candidate_pool",
+      "failed_reasons": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "drawdown_drift_too_high"
+      ],
+      "aggregate_ev_delta": 1.4394,
+      "aggregate_pnl_delta": 22080.96,
+      "windows_ev_improved": 2,
+      "windows_ev_regressed": 1,
+      "windows_pnl_improved": 2,
+      "windows_pnl_regressed": 1,
+      "max_drawdown_worse": 0.1055,
+      "max_drawdown_worse_guardrail": 0.005,
+      "target_trade_count": 365,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.079492,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.019216,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "accepted_distribution_comparator": {
+        "experiment_id": "exp-20260611-007",
+        "decision": "accepted_distribution_day_absorption_leadership_shared_adapter",
+        "expected_value_score_delta_sum": 0.5286,
+        "total_pnl_delta_sum": 10432.91,
+        "target_trade_count": 113
+      },
+      "nearby_form4_sale_neighbor": {
+        "experiment_id": "exp-20260611-026",
+        "decision": "rejected_form4_sale_absorption_leadership_candidate_pool",
+        "expected_value_score_delta_sum": -0.134,
+        "total_pnl_delta_sum": -1537.49
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.18,
+      "actual_gate4_passed": false,
+      "failure_modes_observed": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "drawdown_drift_too_high"
+      ],
+      "predicted_failure_mode_hit": true,
+      "brier_score": 0.0324
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "replay_only_no_live_adapter",
+      "implementation_mode": "private_replay_scout",
+      "private_replay_scout_escape_reason": "The isolated Form 144 cluster field is built from local EDGAR form index files inside this experiment. No shared daily helper or production daily Form 144 cluster snapshot exists yet, so a positive result is lead-only until the event build, cluster rule, absorption gates, overlap exclusion, next-open paper entry, costs, hold, and cooldown are implemented in shared historical replay and daily default-off snapshots.",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "live_realism_evaluated": false,
+      "live_ready": false,
+      "uses_llm": false,
+      "uses_free_sec_filing_events": true,
+      "uses_free_ohlcv": true,
+      "parity_note": "No production code changes. Positive replay would require a shared default-off helper plus daily EDGAR Form 144 cluster snapshot parity before any accepted-alpha claim."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The isolated Form 144 cluster rule did not clear Gate 4. The fixed cluster field either removed too much sample or did not separate genuine absorbed supply from routine planned-sale notices enough to beat drawdown and accepted-comparator gates.",
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping same-day/trailing cluster thresholds, liquidity, price, signal-return, relative-strength, close-location, volume-ratio, top-N, hold-day, cooldown, or notional thresholds, and do not simply merge this with rejected Form 4 sale absorption.",
+      "new_evidence_required": "Parsed Form 144 document fields, holder role, planned-sale size as percent of float, holder identity, a broader PIT universe, or forward replacement-value rows from a shared helper."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260613-013.json",
+  "card_file": "experiments/cards/exp-20260613-013.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260613-013.json",
+  "decision": "rejected_form144_isolated_sale_notice_absorption_candidate_pool",
+  "summary": "The isolated Form 144 candidate source was rejected under the standard three-window protocol and accepted distribution-day absorption comparator.",
+  "artifact": "data/experiments/exp-20260613-013/exp_20260613_013_form144_isolated_sale_notice_absorption.json",
+  "log": "experiments/logs/exp-20260613-013.json",
+  "aggregate_expected_value_delta": 1.4394,
+  "aggregate_strategy_total_pnl_delta": 22080.96,
+  "updated_at": "2026-06-13T09:13:07+00:00"
+}
