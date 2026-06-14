@@ -1156,9 +1156,10 @@ def create_ticket(
             "slug": file_part,
             "reserved_at": created_at,
             "reservation_rule": (
-                "Create the ticket under registry lock before writing runners, "
-                "artifacts, data, or logs. Existing IDs are rejected across "
-                "registry, JSONL, tickets, logs, artifacts, data, and runners."
+                "Reserve the ticket (atomic O_EXCL create) before writing "
+                "runners, artifacts, data, or logs. Existing IDs are rejected "
+                "across registry, JSONL, tickets, logs, artifacts, data, and "
+                "runners."
             ),
         },
         "status": "proposed",
