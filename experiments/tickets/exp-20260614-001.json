@@ -1,0 +1,109 @@
+{
+  "experiment_id": "exp-20260614-001",
+  "experiment_uid": "expuid-db981b281ab04209",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260614-001",
+    "slug": "accepted_allocator_correlation_crowding",
+    "reserved_at": "2026-06-14T00:08:10+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "alpha-search-automation",
+  "hypothesis": "Same-day accepted-helper candidates may improve when the chosen row has lower PIT OHLCV correlation crowding versus competing candidates, avoiding crowded beta without changing source families, sizing, exits, or trade_enabled defaults.",
+  "change_type": "candidate_pool_full_stack",
+  "mechanism_family": "accepted_helper_allocator_arbitration",
+  "trial_family": "allocator_correlation_crowding",
+  "trial_variant_id": "v1",
+  "single_causal_variable": "accepted_allocator_low_correlation_crowding_arbitration_v1",
+  "changed_variable": "accepted_allocator_low_correlation_crowding_arbitration_v1",
+  "causal_components": [
+    "historical_replay",
+    "accepted_helper_source_rows",
+    "pit_ohlcv_correlation_crowding_field",
+    "gate_1_4_verdict"
+  ],
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260611-005",
+    "exp-20260613-003",
+    "exp-20260613-004",
+    "exp-20260613-006",
+    "exp-20260613-009",
+    "exp-20260613-015"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "pit_ohlcv_peer_correlation_crowding",
+  "baseline_result_file": "docs/backtesting.md#canonical-core-baseline",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260613_032_accepted_allocator_correlation_crowding.py",
+    "data/experiments/exp-20260613-032",
+    "experiments/logs/exp-20260613-032.json",
+    "experiments/logs/exp-20260614-001.json",
+    "experiments/cards/exp-20260613-032.md",
+    "experiments/manifests/exp-20260613-032.json",
+    "experiments/tickets/exp-20260613-032.json",
+    "experiments/artifacts/exp-20260613-032_accepted_allocator_correlation_crowding.md"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "BASE_NOTIONAL_USD=4000",
+    "HOLD_DAYS=10",
+    "MAX_PAPER_TRADES_PER_DAY=1",
+    "SAME_TICKER_COOLDOWN_DAYS=12",
+    "trade_enabled=false",
+    "accepted_source_families"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Gate 1-4: aggregate EV/PnL must improve versus canonical core and must not regress most windows; accepted-helper comparator should not be materially worse; survival >= 5%; target selection count must remain meaningful; positive retained only as default-off shared/helper parity work.",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": 0.25,
+    "expected_pnl_delta": 3500.0,
+    "main_failure_modes": [
+      "accepted_priority_already_best",
+      "correlation_field_too_noisy",
+      "changed_selection_count_too_low",
+      "window_regression",
+      "accepted_comparator_not_beaten"
+    ],
+    "confidence_reason": "Source-choice oracle gap exists, while prior failed arbitration attempts used source metadata, price microstructure, or confirmation rather than portfolio correlation crowding.",
+    "recorded_at": "2026-06-14T00:07:36+00:00"
+  },
+  "created_at": "2026-06-14T00:08:10+00:00",
+  "claimed_at": null,
+  "completed_at": "2026-06-14T00:15:58Z",
+  "decision": "rejected_superseded_duplicate_reservation",
+  "summary": "Duplicate empty reservation superseded by exp-20260613-033.",
+  "result": {
+    "accepted": false,
+    "artifact": null,
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.18,
+      "brier_score": 0.0324,
+      "realized_failure_mode": "superseded_duplicate_reservation"
+    },
+    "superseded_by": "exp-20260613-033",
+    "reason": "Initial reserve command timed out after creating this empty duplicate reservation; no runner or artifact was written under this ID."
+  },
+  "ticket_file": "experiments/tickets/exp-20260614-001.json",
+  "card_file": "experiments/cards/exp-20260614-001.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260614-001.json"
+}

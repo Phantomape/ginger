@@ -1,0 +1,60 @@
+{
+  "experiment_id": "exp-20260614-001",
+  "timestamp": "2026-06-14T00:15:58Z",
+  "lane": "alpha_search",
+  "status": "rejected",
+  "decision": "rejected_superseded_duplicate_reservation",
+  "accepted": false,
+  "accepted_alpha": false,
+  "production_accepted": false,
+  "hypothesis": "Same-day accepted-helper candidates may improve when the chosen row has lower PIT OHLCV correlation crowding versus competing candidates, avoiding crowded beta without changing source families, sizing, exits, or trade_enabled defaults.",
+  "change_summary": "Duplicate empty reservation superseded by exp-20260613-033.",
+  "changed_variable": "accepted_allocator_low_correlation_crowding_arbitration_v1",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": 0.25,
+    "expected_pnl_delta": 3500.0,
+    "main_failure_modes": [
+      "accepted_priority_already_best",
+      "correlation_field_too_noisy",
+      "changed_selection_count_too_low",
+      "window_regression",
+      "accepted_comparator_not_beaten"
+    ],
+    "confidence_reason": "Source-choice oracle gap exists, while prior failed arbitration attempts used source metadata, price microstructure, or confirmation rather than portfolio correlation crowding.",
+    "recorded_at": "2026-06-14T00:07:36+00:00"
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_success": 0,
+    "predicted_success_probability": 0.18,
+    "brier_score": 0.0324,
+    "calibration_direction": "directionally_calibrated",
+    "expected_ev_delta": 0.25,
+    "actual_ev_delta": 0.0,
+    "expected_pnl_delta": 3500.0,
+    "actual_pnl_delta": 0.0,
+    "realized_failure_mode": "superseded_duplicate_reservation",
+    "predicted_failure_mode_hit": false,
+    "surprise_note": "The reserve command timed out after creating this duplicate ID, so the actual test was rerun and closed as exp-20260613-033."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The first reserve command timed out after writing a ticket, so this ID became an empty duplicate of the actual exp-20260613-033 run.",
+    "forbidden_near_neighbor_retry": "Do not reuse this ID or treat it as an independent alpha result; use exp-20260613-033 for the measured correlation-crowding verdict.",
+    "new_evidence_required": "Any retry needs a materially different PIT relation field or forward replacement rows, not another duplicate reservation."
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "alters_orders": false,
+    "shared_policy_changed": false,
+    "production_orders_changed": false,
+    "replay_only": true
+  },
+  "related_files": [
+    "experiments/tickets/exp-20260614-001.json",
+    "experiments/cards/exp-20260614-001.md",
+    "experiments/manifests/exp-20260614-001.json",
+    "experiments/logs/exp-20260614-001.json"
+  ],
+  "anti_js": "No JavaScript was used."
+}
