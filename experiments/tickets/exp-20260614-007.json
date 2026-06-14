@@ -1,0 +1,194 @@
+{
+  "experiment_id": "exp-20260614-007",
+  "experiment_uid": "expuid-885f8eb3b47d4428",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260614-007",
+    "slug": "earnings_peer_underreaction",
+    "reserved_at": "2026-06-14T05:06:11+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "alpha-search-automation",
+  "hypothesis": "Earnings-related SEC filing winners may transfer delayed demand to high-correlation same-industry peers that have not yet reacted by the first post-event close.",
+  "change_type": "default_off_paper_candidate_pool_replay_scout",
+  "mechanism_family": "production_visible_free_sec_event_relation_candidate_pool",
+  "trial_family": "earnings_catalyst_peer_underreaction_candidate_pool",
+  "trial_variant_id": "sec_earnings_catalyst_peer_underreaction_top1_next_open_10d_v1",
+  "single_causal_variable": "earnings_peer_underreaction_candidate_source_v1",
+  "changed_variable": "earnings_peer_underreaction_candidate_source_v1",
+  "causal_components": [
+    "sec-event-catalyst-reaction",
+    "rolling-correlation-peer-selection",
+    "next-open-paper-entry",
+    "gate1-4-record"
+  ],
+  "prior_trial_count": 4,
+  "nearby_prior_experiments": [
+    "exp-20260606-025",
+    "exp-20260613-028",
+    "exp-20260614-006",
+    "exp-20260614-004"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "free_sec_event_catalyst_plus_ohlcv_relation_edge",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260614_007_earnings_peer_underreaction.py",
+    "data/experiments/exp-20260614-007/exp_20260614_007_earnings_peer_underreaction.json",
+    "experiments/cards/exp-20260614-007.md",
+    "experiments/manifests/exp-20260614-007.json",
+    "experiments/tickets/exp-20260614-007.json",
+    "experiments/logs/exp-20260614-007.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "earnings_peer_underreaction_candidate_source_v1"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.23,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "same_sector_peer_transfer_still_noisy",
+      "sec_event_overlap_with_accepted_financial_report",
+      "window_regression",
+      "drawdown_drift",
+      "thin_sample"
+    ],
+    "confidence_reason": "Accepted rolling-correlation relation alpha shows peer relations can work, while generic same-sector and correlation-breakdown variants failed. This test adds a free PIT SEC earnings catalyst and requires the candidate peer to underreact before next-open paper entry; main risk is that the catalyst effect is already priced or duplicated by accepted SEC financial-report and peer-shock helpers.",
+    "recorded_at": "2026-06-14T05:05:38+00:00"
+  },
+  "created_at": "2026-06-14T05:06:11+00:00",
+  "claimed_at": "2026-06-14T05:06:20+00:00",
+  "completed_at": "2026-06-14T05:18:11+00:00",
+  "result": {
+    "decision": "rejected_earnings_peer_underreaction_candidate_pool",
+    "accepted": false,
+    "numeric_gate4_passed": false,
+    "artifact": "data/experiments/exp-20260614-007/exp_20260614_007_earnings_peer_underreaction.json",
+    "log": "experiments/logs/exp-20260614-007.json",
+    "aggregate_expected_value_delta": 0.0483,
+    "aggregate_strategy_total_pnl_delta": 645.52,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_earnings_peer_underreaction_candidate_pool",
+      "failed_reasons": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "target_sample_too_small",
+        "target_concentration_failed",
+        "accepted_rolling_corr_peer_shock_ev_not_beaten",
+        "accepted_rolling_corr_peer_shock_pnl_not_beaten"
+      ],
+      "aggregate_ev_delta": 0.0483,
+      "aggregate_pnl_delta": 645.52,
+      "windows_ev_improved": 2,
+      "windows_ev_regressed": 1,
+      "windows_pnl_improved": 2,
+      "windows_pnl_regressed": 1,
+      "target_trade_count": 11,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0002,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": false,
+        "max_single_positive_pnl_share": 0.671806,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.494068,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "rolling_corr_peer_shock_comparator": {
+        "experiment_id": "exp-20260606-025",
+        "decision": "accepted_rolling_corr_peer_shock_shared_default_off_adapter",
+        "aggregate_expected_value_delta": 0.3845,
+        "aggregate_pnl_delta": 6107.66
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.23,
+      "actual_gate4_passed": false,
+      "actual_success": 0,
+      "failure_modes_observed": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "target_sample_too_small",
+        "target_concentration_failed",
+        "accepted_rolling_corr_peer_shock_ev_not_beaten",
+        "accepted_rolling_corr_peer_shock_pnl_not_beaten"
+      ],
+      "brier_score": 0.0529,
+      "expected_ev_delta": null,
+      "actual_ev_delta": 0.0483,
+      "expected_pnl_delta": null,
+      "actual_pnl_delta": 645.52
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "private_replay_scout_no_shared_adapter",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "default_off_paper_only": true,
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_sec_event_metadata": true,
+      "uses_free_ohlcv": true,
+      "live_realism_evaluated": true,
+      "live_ready": false,
+      "execution_envelope": {
+        "trade_enabled": false,
+        "target_notional_per_paper_trade": 4000.0,
+        "daily_entry_slots": 1,
+        "same_ticker_cooldown_days": 10,
+        "hold_days": 10,
+        "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+        "order_semantics": "observe-only next-session-open paper entry; no broker order",
+        "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+        "kill_switch": "trade_enabled remains false; no production adapter changes",
+        "failure_handling": "missing SEC event date, OHLCV, correlation, next open, or 10d exit rejects the paper candidate"
+      },
+      "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper computes the same SEC earnings catalyst set, first post-event reaction, same-industry rolling-correlation peer relation, underreaction gate, same-ticker core-overlap exclusion, cooldown, next-open paper entry, 10-day exit, costs, and concentration controls in both historical replay and daily production."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "If rejected, the SEC catalyst did not make same-industry peer transfer durable enough after next-open execution, costs, and competition with the accepted rolling-correlation relation helper. The likely edge either remains with the direct SEC financial-report sleeve or needs a stronger economic relation than industry plus prior correlation.",
+      "outcome_summary": "Aggregate EV delta +0.0483; aggregate PnL delta $+645.52.",
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping catalyst reaction thresholds, correlation lookback/minimum, industry-vs-sector grouping, candidate underreaction gap, volume/close/ret guards, top-N, hold days, cooldown, or notional on these frozen windows.",
+      "new_evidence_required": "Need named economic relation provenance or closed forward replacement-value rows before revisiting SEC catalyst peer underreaction."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260614-007.json",
+  "card_file": "experiments/cards/exp-20260614-007.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260614-007.json",
+  "decision": "rejected_earnings_peer_underreaction_candidate_pool",
+  "summary": "The SEC earnings-catalyst peer-underreaction source did not clear Gate 4 or did not beat the accepted rolling-correlation peer-shock comparator. Do not promote or tune this fixed peer transfer definition on the same frozen windows.",
+  "artifact": "data/experiments/exp-20260614-007/exp_20260614_007_earnings_peer_underreaction.json",
+  "log": "experiments/logs/exp-20260614-007.json",
+  "aggregate_expected_value_delta": 0.0483,
+  "aggregate_strategy_total_pnl_delta": 645.52,
+  "updated_at": "2026-06-14T05:18:11+00:00"
+}
