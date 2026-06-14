@@ -34584,8 +34584,206 @@
       "aggregate_expected_value_delta": 0.9921,
       "aggregate_strategy_total_pnl_delta": 21322.65,
       "updated_at": "2026-06-14T16:26:40+00:00"
+    },
+    {
+      "experiment_id": "exp-20260614-021",
+      "experiment_uid": "expuid-18afae5135ee4963",
+      "hub_identity": {
+        "scheme": "hf_hub_local_v1",
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260614-021",
+        "slug": "cash_conversion_low_deployment",
+        "reserved_at": "2026-06-14T17:04:24+00:00",
+        "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+      },
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search-automation",
+      "hypothesis": "Keeping the exp-20260614-020 annual cash-conversion quality signal fixed, a max-active-one default-off paper deployment may preserve the all-window edge while reducing the drawdown drift that rejected the full daily deployment.",
+      "change_type": "candidate_pool_low_deployment_replay_stage",
+      "mechanism_family": "production_visible_free_sec_companyfacts_quality_candidate_pool",
+      "trial_family": "cash_conversion_quality_low_deployment_candidate_pool",
+      "trial_variant_id": "annual_cash_conversion_quality_max_active_1_next_open_10d_v1",
+      "single_causal_variable": "cash_conversion_quality_low_deployment_sub_sleeve_v1",
+      "changed_variable": "cash_conversion_quality_low_deployment_sub_sleeve_v1",
+      "causal_components": [
+        "shared helper",
+        "historical replay",
+        "daily default-off snapshot",
+        "parity test",
+        "execution envelope",
+        "full-stack verdict"
+      ],
+      "prior_trial_count": 1,
+      "nearby_prior_experiments": [
+        "exp-20260614-020",
+        "exp-20260528-016",
+        "exp-20260528-019",
+        "exp-20260529-003",
+        "exp-20260614-007"
+      ],
+      "multiple_testing_risk_bucket": "low",
+      "new_evidence_type": "drawdown_aware_deployment_of_sec_cash_conversion_quality",
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260614_021_cash_conversion_low_deployment.py",
+        "data/experiments/exp-20260614-021/exp_20260614_021_cash_conversion_low_deployment.json",
+        "experiments/cards/exp-20260614-021.md",
+        "experiments/manifests/exp-20260614-021.json",
+        "experiments/tickets/exp-20260614-021.json",
+        "experiments/logs/exp-20260614-021.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "must_not_touch": [],
+      "locked_variables": [
+        "cash_conversion_quality_low_deployment_sub_sleeve_v1"
+      ],
+      "evaluation_windows": [],
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "prediction": {
+        "success_probability": 0.32,
+        "expected_ev_delta": null,
+        "expected_pnl_delta": null,
+        "main_failure_modes": [
+          "sample_too_thin",
+          "old_thin_still_tail_heavy",
+          "accepted_fundamental_comparator_not_beaten",
+          "accepted_comparator_not_beaten",
+          "drawdown_drift_too_high"
+        ],
+        "confidence_reason": "exp-20260614-020 showed annual SEC cash-conversion quality was positive in all three canonical windows and failed only because full daily deployment created excess drawdown. A max-active-one paper sub-sleeve is a distinct risk-allocation/deployment hypothesis, not a threshold sweep. Main disconfirmers: the lower deployment may leave too little sample/PnL, or old_thin losses may still dominate.",
+        "recorded_at": "2026-06-14T17:03:52+00:00"
+      },
+      "created_at": "2026-06-14T17:04:24+00:00",
+      "claimed_at": "2026-06-14T17:04:41+00:00",
+      "completed_at": "2026-06-14T17:12:55+00:00",
+      "result": {
+        "decision": "rejected_cash_conversion_low_deployment_candidate_pool",
+        "accepted": false,
+        "numeric_gate4_passed": false,
+        "artifact": "data/experiments/exp-20260614-021/exp_20260614_021_cash_conversion_low_deployment.json",
+        "log": "experiments/logs/exp-20260614-021.json",
+        "aggregate_expected_value_delta": 0.2557,
+        "aggregate_strategy_total_pnl_delta": 2304.95,
+        "gate4": {
+          "passed": false,
+          "decision": "rejected_cash_conversion_low_deployment_candidate_pool",
+          "failed_reasons": [
+            "window_ev_regression",
+            "window_pnl_regression",
+            "drawdown_drift_too_high"
+          ],
+          "aggregate_ev_delta": 0.2557,
+          "aggregate_pnl_delta": 2304.95,
+          "windows_ev_improved": 2,
+          "windows_ev_regressed": 1,
+          "windows_pnl_improved": 2,
+          "windows_pnl_regressed": 1,
+          "target_trade_count": 40,
+          "target_trade_count_min": 20,
+          "target_windows": [
+            "late_strong",
+            "mid_weak",
+            "old_thin"
+          ],
+          "target_window_count_min": 3,
+          "max_drawdown_worse": 0.0065,
+          "max_drawdown_worse_guardrail": 0.005,
+          "minimum_core_survival_rate": 0.7925,
+          "survival_guard_passed": true,
+          "target_concentration": {
+            "passed": true,
+            "max_single_positive_pnl_share": 0.328875,
+            "max_single_positive_pnl_share_guardrail": 0.5,
+            "positive_pnl_hhi": 0.191925,
+            "positive_pnl_hhi_guardrail": 0.35
+          },
+          "accepted_compression_comparator": {
+            "experiment_id": "exp-20260608-013",
+            "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+            "aggregate_expected_value_delta": 0.1608,
+            "aggregate_pnl_delta": 2248.98
+          },
+          "accepted_distribution_reference_comparator": {
+            "experiment_id": "exp-20260611-007",
+            "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+            "aggregate_expected_value_delta": 0.5286,
+            "aggregate_pnl_delta": 10432.91
+          }
+        },
+        "calibration": {
+          "predicted_success_probability": 0.32,
+          "actual_gate4_passed": false,
+          "actual_success": 0,
+          "failure_modes_observed": [
+            "window_ev_regression",
+            "window_pnl_regression",
+            "drawdown_drift_too_high"
+          ],
+          "brier_score": 0.1024,
+          "expected_ev_delta": null,
+          "actual_ev_delta": 0.2557,
+          "expected_pnl_delta": null,
+          "actual_pnl_delta": 2304.95
+        },
+        "production_impact": {
+          "trade_enabled": false,
+          "alters_orders": false,
+          "adapter_status": "runner_local_replay_until_gate4_passes",
+          "shared_policy_changed": false,
+          "backtester_adapter_changed": false,
+          "run_adapter_changed": false,
+          "replay_only": true,
+          "default_off_paper_only": true,
+          "daily_snapshot_exposed": false,
+          "parity_test_added": false,
+          "production_signal_path_changed": false,
+          "production_orders_changed": false,
+          "production_watchlist_changed": false,
+          "alters_signal_generation": false,
+          "alters_candidate_ranking": false,
+          "alters_sizing": false,
+          "alters_exits": false,
+          "uses_llm": false,
+          "uses_free_sec_companyfacts": true,
+          "uses_free_ohlcv": true,
+          "live_realism_evaluated": true,
+          "live_ready": false,
+          "execution_envelope": {
+            "trade_enabled": false,
+            "target_notional_per_paper_trade": 4000.0,
+            "max_active_paper_positions": 1,
+            "daily_entry_slots": 1,
+            "same_ticker_cooldown_days": 10,
+            "hold_days": 10,
+            "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+            "order_semantics": "observe-only next-session-open paper entry; no broker order",
+            "portfolio_displacement": "none unless shared helper and activation gate pass",
+            "kill_switch": "trade_enabled remains false; no production adapter changes",
+            "failure_handling": "missing annual net_income/operating_cash_flow on a matching fiscal year end, missing assets, missing OHLCV, missing next open, or missing 10d exit rejects the paper candidate"
+          },
+          "parity_note": "The initial replay changes no production code. A positive result must be promoted in this same experiment through a shared default-off helper that computes the same PIT annual accruals / cash-conversion quality gate, liquid SPY-relative confirmation, max-active-one deployment, cooldown, next-open paper entry, 10-day exit, costs, and concentration controls in both historical replay and daily production."
+        },
+        "post_run_reflection": {
+          "why_result_happened": "Rejected. The max-active-one deployment of the fixed annual cash-conversion quality source did not clear Gate 4 versus the accepted compression comparator (failed: window_ev_regression, window_pnl_regression, drawdown_drift_too_high). Reducing deployment may have removed too much sample/PnL, or old_thin tail behavior may not be solved by active-position capping.",
+          "outcome_summary": "Aggregate EV delta +0.2557; aggregate PnL delta $+2,304.95; max drawdown drift +0.0065; 40 paper trades.",
+          "forbidden_near_neighbor_retry": "Do not retry by sweeping cash-conversion ratio, accruals/assets threshold, annual fact freshness, RS/close/volume/vol guards, top-N, hold days, cooldown, or notional on these frozen windows.",
+          "new_evidence_required": "Need a materially different PIT earnings-quality field (TTM same-period accruals, accrual-change momentum, or quarterly cash-flow when reported) or closed forward replacement-value rows before revisiting cash-conversion quality."
+        }
+      },
+      "ticket_file": "experiments/tickets/exp-20260614-021.json",
+      "card_file": "experiments/cards/exp-20260614-021.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260614-021.json",
+      "decision": "rejected_cash_conversion_low_deployment_candidate_pool",
+      "summary": "The max-active-one annual cash-conversion quality deployment did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, drawdown_drift_too_high). Do not promote or retune this low-deployment bundle on the same frozen windows.",
+      "artifact": "data/experiments/exp-20260614-021/exp_20260614_021_cash_conversion_low_deployment.json",
+      "log": "experiments/logs/exp-20260614-021.json",
+      "aggregate_expected_value_delta": 0.2557,
+      "aggregate_strategy_total_pnl_delta": 2304.95,
+      "updated_at": "2026-06-14T17:12:55+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-14T16:26:40+00:00"
+  "updated_at": "2026-06-14T17:12:55+00:00"
 }
