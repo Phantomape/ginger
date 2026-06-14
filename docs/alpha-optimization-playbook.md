@@ -251,6 +251,13 @@ and market-pullback reclaim tests suggest a real but crowded continuation
 surface with unacceptable tail/comparator risk. The next experiment should be
 diagnostic/field-building before adapter promotion.
 
+June 14 readout: `exp-20260614-010` rejected an accepted-allocator
+market-breadth support tail-state bucket. Virtually removing
+`weak_or_narrow_market_support` rows regressed EV and PnL in all three
+canonical windows (aggregate EV `-0.6320`, PnL `$-13,584.41`). Treat broad
+market breadth as attribution context for the allocator, not as a frozen-window
+allocator tail filter.
+
 Candidate fields:
 
 - `winner_continuation_tail_state_bucket`
@@ -426,7 +433,8 @@ production-visible field:
   allocator and accepted distribution comparator;
 - source maturity, source-score percentile, candidate microstructure,
   same-ticker source confirmation, alpha-score rank rows, front-loaded
-  extension filters, or other accepted-allocator arbitration retunes unless the
+  extension filters, accepted-allocator market-breadth support filters, or other
+  accepted-allocator arbitration retunes unless the
   new field is ex-ante, changes enough selections, and beats the accepted
   allocator in every canonical window;
 - SPY-residual compression, overnight absorption leadership, and post-thrust

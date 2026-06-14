@@ -1,0 +1,201 @@
+{
+  "experiment_id": "exp-20260614-010",
+  "experiment_uid": "expuid-d9cf11911ed74c56",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260614-010",
+    "slug": "allocator_market_breadth_tail_readout",
+    "reserved_at": "2026-06-14T08:10:23+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "codex-alpha-search",
+  "hypothesis": "Tail-state alpha hypothesis: accepted allocator rows may have materially different replacement value when market breadth confirms the signal-date move; a read-only three-window attribution can identify whether a production-visible breadth-support bucket deserves a later default-off paper gate.",
+  "change_type": "read_only_tail_state_classifier_attribution",
+  "mechanism_family": "tail_state_classifier_for_momentum_candidate_pools",
+  "trial_family": "accepted_allocator_tail_state_classifier",
+  "trial_variant_id": "accepted_allocator_market_breadth_support_bucket_readout_v1",
+  "single_causal_variable": "accepted_allocator_market_breadth_support_bucket_readout_v1",
+  "changed_variable": "accepted_allocator_market_breadth_support_bucket_readout_v1",
+  "causal_components": [
+    "accepted allocator closed rows",
+    "signal-date market breadth support bucket",
+    "three-window PnL/EV attribution",
+    "no strategy behavior change"
+  ],
+  "prior_trial_count": 1,
+  "nearby_prior_experiments": [
+    "exp-20260613-011 rejected front-loaded extension tail exclusion; exp-20260613-009 rejected allocator source extension; broad OHLCV momentum retunes frozen"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "read_only_three_window_allocator_tail_state_attribution",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260614_010_allocator_market_breadth_tail_readout.py",
+    "data/experiments/exp-20260614-010",
+    "experiments/cards/exp-20260614-010.md",
+    "experiments/logs/exp-20260614-010.json",
+    "experiments/manifests/exp-20260614-010.json",
+    "experiments/tickets/exp-20260614-010.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/backtester.py",
+    "quant/accepted_helper_source_priority_allocator_paper_sleeve.py",
+    "quant/sec_financial_report_event_sleeve.py"
+  ],
+  "locked_variables": [
+    "accepted allocator source priority",
+    "notional",
+    "hold days",
+    "cooldown",
+    "exits",
+    "production orders",
+    "ranking",
+    "sizing",
+    "LLM/news paths"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Observed-only pass requires >=20 allocator rows, all three canonical windows reported, no strategy behavior change, and a clearly separated breadth-support bucket; no promotion without a later shared default-off policy and Gate 1-4.",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "breadth_bucket_does_not_separate",
+      "source_family_mix_explains_result",
+      "old_thin_tail_dominates",
+      "no_promotion_from_read_only"
+    ],
+    "confidence_reason": "The playbook asks for tail-state classifier field-building, while exp-20260613-011 rejected a nearby front-loaded extension filter. This fixed readout uses a distinct market-participation field and keeps all strategy behavior unchanged.",
+    "recorded_at": "2026-06-14T08:10:07Z"
+  },
+  "created_at": "2026-06-14T08:10:23+00:00",
+  "claimed_at": null,
+  "completed_at": "2026-06-14T08:22:22+00:00",
+  "result": {
+    "decision": "rejected_market_breadth_tail_state_classifier",
+    "accepted": false,
+    "accepted_alpha": false,
+    "artifact": "data/experiments/exp-20260614-010/exp_20260614_010_allocator_market_breadth_tail_readout.json",
+    "log": "experiments/logs/exp-20260614-010.json",
+    "card": "experiments/cards/exp-20260614-010.md",
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_market_breadth_tail_state_classifier",
+      "failed_reasons": [
+        "window_ev_regression:late_strong",
+        "window_pnl_regression:late_strong",
+        "window_ev_regression:mid_weak",
+        "window_pnl_regression:mid_weak",
+        "window_ev_regression:old_thin",
+        "window_pnl_regression:old_thin",
+        "aggregate_ev_not_improved",
+        "aggregate_pnl_not_improved"
+      ],
+      "before_expected_value_score_sum": 9.8512,
+      "virtual_after_expected_value_score_sum": 9.2192,
+      "expected_value_score_delta": -0.632,
+      "before_total_pnl_sum": 273518.33,
+      "virtual_after_total_pnl_sum": 259933.92,
+      "total_pnl_delta": -13584.41,
+      "before_trade_count": 290,
+      "virtual_after_trade_count": 175,
+      "weak_breadth_removed_trade_count": 115,
+      "windows_ev_improved": 0,
+      "windows_ev_regressed": 3,
+      "windows_pnl_improved": 0,
+      "windows_pnl_regressed": 3,
+      "window_rows": {
+        "late_strong": {
+          "before_ev": 5.9612,
+          "after_ev": 5.7532,
+          "ev_delta": -0.208,
+          "before_pnl": 126031.98,
+          "after_pnl": 124262.27,
+          "pnl_delta": -1769.71,
+          "drawdown_delta": 0.0011,
+          "before_trades": 95,
+          "after_trades": 49,
+          "removed_trades": 46
+        },
+        "mid_weak": {
+          "before_ev": 2.6416,
+          "after_ev": 2.6313,
+          "ev_delta": -0.0103,
+          "before_pnl": 87467.73,
+          "after_pnl": 87417.31,
+          "pnl_delta": -50.42,
+          "drawdown_delta": 0.0004,
+          "before_trades": 95,
+          "after_trades": 75,
+          "removed_trades": 20
+        },
+        "old_thin": {
+          "before_ev": 1.2484,
+          "after_ev": 0.8347,
+          "ev_delta": -0.4137,
+          "before_pnl": 60018.62,
+          "after_pnl": 48254.34,
+          "pnl_delta": -11764.28,
+          "drawdown_delta": 0.0045,
+          "before_trades": 100,
+          "after_trades": 51,
+          "removed_trades": 49
+        }
+      },
+      "acceptance_rule": "Observed-only virtual gate requires aggregate EV/PnL improvement versus the accepted allocator envelope, no canonical-window EV/PnL regression, weak-breadth sample >= 8, virtual-after trades >= 20, survival >= 5%, and no production behavior change. Passing this gate would only justify a later shared default-off helper; it is not retained."
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "default_off_paper_only": false,
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_ohlcv_only": true,
+      "live_realism_evaluated": true,
+      "live_ready": false,
+      "production_consistency_note": "No production or shared helper behavior changed. A positive virtual result would remain a read-only lead until the same market-breadth bucket is implemented in a shared default-off helper and daily snapshot with parity tests."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The market-breadth tail bucket did not cleanly separate accepted allocator losers from winners. Failure reasons: window_ev_regression:late_strong, window_pnl_regression:late_strong, window_ev_regression:mid_weak, window_pnl_regression:mid_weak, window_ev_regression:old_thin, window_pnl_regression:old_thin, aggregate_ev_not_improved, aggregate_pnl_not_improved. The accepted allocator already mixes event, revision, volatility, relation, and industry-flow sources; broad breadth can remove valid relief/rotation trades as easily as crowded continuation tails.",
+      "forbidden_near_neighbor_retry": "Do not sweep breadth fractions, SMA lookbacks, SPY/QQQ cutoffs, allocator source ranks, top-N, notional, hold days, cooldown, or the execution envelope on these frozen windows.",
+      "new_evidence_required": "A retry needs materially new tail-state evidence such as forward closed replacement rows, same-day displacement type, or a PIT flow field beyond OHLCV breadth."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260614-010.json",
+  "card_file": "experiments/cards/exp-20260614-010.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260614-010.json",
+  "decision": "rejected_market_breadth_tail_state_classifier",
+  "summary": "Market-breadth tail readout over accepted allocator envelope rejected; EV delta -0.632, PnL delta -13584.41.",
+  "artifact": "data/experiments/exp-20260614-010/exp_20260614_010_allocator_market_breadth_tail_readout.json",
+  "log": "experiments/logs/exp-20260614-010.json",
+  "updated_at": "2026-06-14T08:22:22+00:00"
+}
