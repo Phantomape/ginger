@@ -24,6 +24,8 @@ LEADERSHIP_MAX_EXCESS_REACTION = -0.02
 FINANCIAL_REPORT_EVENT_FAMILIES = ("earnings_8k", "periodic_report")
 FINANCIAL_REPORT_T1_EXCLUDED_COHORTS = ("platform_pool",)
 FINANCIAL_REPORT_T1_MIN_EXCESS_RETURN_VS_SPY = 0.01
+FINANCIAL_REPORT_RS20_RULE_VERSION = "sec_financial_report_pre_entry_rs20_v1"
+FINANCIAL_REPORT_RS20_MIN_EXCESS_RETURN = 0.05
 GOVERNANCE_TARGET_CELLS = {
     ("shareholder_vote", "negative_excess_0_to_minus_2pct"),
     ("charter_or_securities_change", "positive_excess_0_to_2pct"),
@@ -547,6 +549,70 @@ def evaluate_t1_excess_drift(
     }
 
 
+def evaluate_financial_report_pre_entry_rs20(
+    row: dict[str, Any],
+    ohlcv_by_ticker: dict[str, Any],
+    spy_ohlcv: Any,
+) -> dict[str, Any]:
+    ticker = str(row.get("ticker") or "").upper()
+    usable = str(row.get("usable_trade_date") or "")[:10]
+    ticker_rows = _normalize_ohlcv_rows(ohlcv_by_ticker.get(ticker))
+    spy_rows = _normalize_ohlcv_rows(spy_ohlcv)
+    base = {
+        "rs20_rule_version": FINANCIAL_REPORT_RS20_RULE_VERSION,
+        "rs20_leader_min_excess_return": FINANCIAL_REPORT_RS20_MIN_EXCESS_RETURN,
+    }
+    if not ticker or not usable or not ticker_rows or not spy_rows:
+        return {
+            **base,
+            "rs20_price_status": "missing_ticker_spy_or_usable_date",
+            "rs20_leader_bucket": "missing_rs20",
+        }
+
+    event_idx = _idx_on_or_after(ticker_rows, usable)
+    spy_idx = _idx_on_or_after(spy_rows, usable)
+    if event_idx is None or spy_idx is None:
+        return {
+            **base,
+            "rs20_price_status": "missing_event_trading_date",
+            "rs20_leader_bucket": "missing_rs20",
+        }
+
+    anchor_idx = event_idx + 1
+    spy_anchor_idx = spy_idx + 1
+    start_idx = anchor_idx - 20
+    spy_start_idx = spy_anchor_idx - 20
+    ticker_ret20 = _close_return_between(ticker_rows, start_idx, anchor_idx)
+    spy_ret20 = _close_return_between(spy_rows, spy_start_idx, spy_anchor_idx)
+    ticker_anchor = ticker_rows[anchor_idx] if anchor_idx < len(ticker_rows) else None
+    spy_anchor = spy_rows[spy_anchor_idx] if spy_anchor_idx < len(spy_rows) else None
+    ticker_start = ticker_rows[start_idx] if 0 <= start_idx < len(ticker_rows) else None
+    spy_start = spy_rows[spy_start_idx] if 0 <= spy_start_idx < len(spy_rows) else None
+    excess = (
+        ticker_ret20 - spy_ret20
+        if isinstance(ticker_ret20, (int, float))
+        and isinstance(spy_ret20, (int, float))
+        else None
+    )
+    bucket = (
+        "leader_ge_5pp"
+        if excess is not None and excess >= FINANCIAL_REPORT_RS20_MIN_EXCESS_RETURN
+        else "below_5pp_or_missing"
+    )
+    return {
+        **base,
+        "rs20_price_status": "covered" if excess is not None else "missing_rs20_price",
+        "rs20_start_date": ticker_start["date"] if ticker_start else None,
+        "rs20_anchor_date": ticker_anchor["date"] if ticker_anchor else None,
+        "spy_rs20_start_date": spy_start["date"] if spy_start else None,
+        "spy_rs20_anchor_date": spy_anchor["date"] if spy_anchor else None,
+        "ticker_ret20": round(ticker_ret20, 6) if ticker_ret20 is not None else None,
+        "spy_ret20": round(spy_ret20, 6) if spy_ret20 is not None else None,
+        "ticker_minus_spy_ret20": round(excess, 6) if excess is not None else None,
+        "rs20_leader_bucket": bucket,
+    }
+
+
 def qualifies_sec_negative_reaction_event(event: dict[str, Any]) -> bool:
     item_codes = {str(item) for item in event.get("eight_k_item_codes") or []}
     reaction = event.get("reaction_excess_return")
@@ -835,6 +901,11 @@ def build_sec_financial_report_t1_queue(
                 text_by_accession,
             ),
             **evaluate_t1_excess_drift(row, ohlcv_by_ticker, spy_ohlcv),
+            **evaluate_financial_report_pre_entry_rs20(
+                row,
+                ohlcv_by_ticker,
+                spy_ohlcv,
+            ),
         }
         if event.get("t1_date") != as_of_date:
             continue
@@ -897,6 +968,9 @@ def build_sec_financial_report_t1_queue(
             "included_event_families": list(FINANCIAL_REPORT_EVENT_FAMILIES),
             "excluded_cohorts": list(FINANCIAL_REPORT_T1_EXCLUDED_COHORTS),
             "min_t1_excess_return_vs_spy": FINANCIAL_REPORT_T1_MIN_EXCESS_RETURN_VS_SPY,
+            "rs20_rule_version": FINANCIAL_REPORT_RS20_RULE_VERSION,
+            "rs20_anchor": "ticker T+1 close before next-session paper entry open",
+            "rs20_leader_min_excess_return": FINANCIAL_REPORT_RS20_MIN_EXCESS_RETURN,
             "primary_horizon_trading_days": PRIMARY_HORIZON_TRADING_DAYS,
             "entry_timing": "next_trading_day_open_after_t1_close",
             "source_experiment": "exp-20260510-027",
@@ -1180,6 +1254,17 @@ def _financial_report_t1_candidate_payload(
         "spy_t1_return": event.get("spy_t1_return"),
         "t1_excess_return_vs_spy": event.get("t1_excess_return_vs_spy"),
         "drift_bucket": event.get("drift_bucket"),
+        "rs20_rule_version": event.get("rs20_rule_version"),
+        "rs20_price_status": event.get("rs20_price_status"),
+        "rs20_start_date": event.get("rs20_start_date"),
+        "rs20_anchor_date": event.get("rs20_anchor_date"),
+        "spy_rs20_start_date": event.get("spy_rs20_start_date"),
+        "spy_rs20_anchor_date": event.get("spy_rs20_anchor_date"),
+        "ticker_ret20": event.get("ticker_ret20"),
+        "spy_ret20": event.get("spy_ret20"),
+        "ticker_minus_spy_ret20": event.get("ticker_minus_spy_ret20"),
+        "rs20_leader_min_excess_return": event.get("rs20_leader_min_excess_return"),
+        "rs20_leader_bucket": event.get("rs20_leader_bucket"),
         "trade_enabled": False,
         "action": "observe_only",
         "counterfactual": _counterfactual_payload(core_signals),

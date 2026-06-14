@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import json
+from datetime import date, timedelta
 from pathlib import Path
 
 from sec_event_queue import (
+    FINANCIAL_REPORT_RS20_MIN_EXCESS_RETURN,
+    FINANCIAL_REPORT_RS20_RULE_VERSION,
     FINANCIAL_REPORT_T1_MIN_EXCESS_RETURN_VS_SPY,
     GOVERNANCE_QUEUE_NAME,
     FINANCIAL_REPORT_T1_QUEUE_NAME,
@@ -59,6 +62,18 @@ def _ohlcv_rows(closes: list[float]):
     return [
         {"date": date, "open": close_price, "close": close_price}
         for date, close_price in zip(dates, closes)
+    ]
+
+
+def _dated_ohlcv_rows(start: str, closes: list[float]):
+    start_date = date.fromisoformat(start)
+    return [
+        {
+            "date": (start_date + timedelta(days=index)).isoformat(),
+            "open": close_price,
+            "close": close_price,
+        }
+        for index, close_price in enumerate(closes)
     ]
 
 
@@ -181,6 +196,45 @@ def test_financial_report_t1_queue_is_default_off_and_uses_positive_excess_drift
     assert candidate["t1_excess_return_vs_spy"] == 0.02
     assert candidate["trade_enabled"] is False
     assert candidate["counterfactual"]["alternatives"][0]["ticker"] == "NVDA"
+    assert queue["production_impact"]["alters_orders"] is False
+
+
+def test_financial_report_t1_queue_adds_pre_entry_rs20_fields():
+    ticker_rows = _dated_ohlcv_rows(
+        "2026-04-14",
+        [98.0] + [100.0] * 19 + [120.0, 124.0],
+    )
+    spy_rows = _dated_ohlcv_rows(
+        "2026-04-14",
+        [99.0] + [100.0] * 19 + [103.0, 104.0],
+    )
+    row = _row(
+        ticker="LEAD",
+        accession_number="0014",
+        usable_trade_date=ticker_rows[20]["date"],
+        filing_date=ticker_rows[20]["date"],
+    )
+
+    queue = build_sec_financial_report_t1_queue(
+        [row],
+        as_of=ticker_rows[21]["date"],
+        ohlcv_by_ticker={"LEAD": ticker_rows},
+        spy_ohlcv=spy_rows,
+    )
+
+    assert queue["candidate_count"] == 1
+    assert queue["parameters"]["rs20_rule_version"] == FINANCIAL_REPORT_RS20_RULE_VERSION
+    assert queue["parameters"]["rs20_leader_min_excess_return"] == (
+        FINANCIAL_REPORT_RS20_MIN_EXCESS_RETURN
+    )
+    candidate = queue["candidates"][0]
+    assert candidate["rs20_rule_version"] == FINANCIAL_REPORT_RS20_RULE_VERSION
+    assert candidate["rs20_price_status"] == "covered"
+    assert candidate["rs20_anchor_date"] == ticker_rows[21]["date"]
+    assert candidate["spy_rs20_anchor_date"] == spy_rows[21]["date"]
+    assert candidate["ticker_minus_spy_ret20"] > FINANCIAL_REPORT_RS20_MIN_EXCESS_RETURN
+    assert candidate["rs20_leader_bucket"] == "leader_ge_5pp"
+    assert candidate["trade_enabled"] is False
     assert queue["production_impact"]["alters_orders"] is False
 
 

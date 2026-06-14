@@ -13,6 +13,8 @@ from sec_financial_report_event_sleeve import (
     DEFAULT_NEUTRAL_UNDERREACTION_SPY_T1_CONTEXT_SCALAR,
     DEFAULT_NEUTRAL_UNDERREACTION_SPY_T1_RETURN_MIN,
     DEFAULT_PERIODIC_REPORT_NOTIONAL_SCALAR,
+    DEFAULT_RS20_LEADER_MIN_EXCESS_RETURN,
+    DEFAULT_RS20_LEADER_NOTIONAL_SCALAR,
     SLEEVE_NAME,
     build_fact_tone_gap_attribution,
     build_sec_financial_report_event_sleeve_snapshot,
@@ -44,6 +46,7 @@ def _candidate(
     negative_phrase_hits: list[str] | None = None,
     guidance_raise_hits: list[str] | None = None,
     guidance_cut_hits: list[str] | None = None,
+    ticker_minus_spy_ret20: float | None = None,
 ) -> dict[str, object]:
     candidate = {
         "ticker": ticker,
@@ -70,6 +73,13 @@ def _candidate(
         candidate["guidance_raise_hits"] = guidance_raise_hits
     if guidance_cut_hits is not None:
         candidate["guidance_cut_hits"] = guidance_cut_hits
+    if ticker_minus_spy_ret20 is not None:
+        candidate["ticker_minus_spy_ret20"] = ticker_minus_spy_ret20
+        candidate["rs20_leader_bucket"] = (
+            "leader_ge_5pp"
+            if ticker_minus_spy_ret20 >= DEFAULT_RS20_LEADER_MIN_EXCESS_RETURN
+            else "below_5pp_or_missing"
+        )
     return candidate
 
 
@@ -501,6 +511,66 @@ def test_financial_report_sleeve_scales_earnings_release_text_market_context_wit
     assert by_ticker["MISS"]["event_notional_rule"] == "base"
     assert second["trade_enabled"] is False
     assert all(position["trade_enabled"] is False for position in second["open_positions"])
+
+
+def test_financial_report_sleeve_scales_rs20_leader_without_orders():
+    first = build_sec_financial_report_event_sleeve_snapshot(
+        sec_financial_report_t1_queue=_queue(
+            _candidate("LEAD", "0001", 0.04, ticker_minus_spy_ret20=0.06),
+            _candidate("BASE", "0002", 0.03, ticker_minus_spy_ret20=0.04),
+        ),
+        as_of="2026-05-05",
+        state=empty_sec_financial_report_event_sleeve_state(),
+        persist=False,
+    )
+    second = build_sec_financial_report_event_sleeve_snapshot(
+        sec_financial_report_t1_queue=_queue(),
+        as_of="2026-05-06",
+        open_prices={"LEAD": 100.0, "BASE": 100.0},
+        current_prices={"LEAD": 100.0, "BASE": 100.0},
+        state=_state_from_snapshot(first),
+        persist=False,
+    )
+
+    by_ticker = {position["ticker"]: position for position in second["open_positions"]}
+
+    assert DEFAULT_RS20_LEADER_MIN_EXCESS_RETURN == 0.05
+    assert DEFAULT_RS20_LEADER_NOTIONAL_SCALAR == 1.15
+    assert second["parameters"]["rs20_leader_notional_enabled"] is True
+    assert by_ticker["LEAD"]["notional"] == pytest.approx(17_250.0)
+    assert by_ticker["LEAD"]["event_notional_scalar"] == pytest.approx(1.15)
+    assert by_ticker["LEAD"]["event_notional_rule"] == (
+        "base+rs20_leader_notional_scalar"
+    )
+    assert by_ticker["BASE"]["notional"] == 15_000.0
+    assert by_ticker["BASE"]["event_notional_rule"] == "base"
+    assert second["trade_enabled"] is False
+    assert all(position["trade_enabled"] is False for position in second["open_positions"])
+    assert second["production_impact"]["alters_orders"] is False
+
+
+def test_financial_report_sleeve_can_disable_rs20_leader_scalar():
+    first = build_sec_financial_report_event_sleeve_snapshot(
+        sec_financial_report_t1_queue=_queue(
+            _candidate("LEAD", "0001", 0.04, ticker_minus_spy_ret20=0.06),
+        ),
+        as_of="2026-05-05",
+        state=empty_sec_financial_report_event_sleeve_state(),
+        persist=False,
+    )
+    second = build_sec_financial_report_event_sleeve_snapshot(
+        sec_financial_report_t1_queue=_queue(),
+        as_of="2026-05-06",
+        open_prices={"LEAD": 100.0},
+        current_prices={"LEAD": 100.0},
+        state=_state_from_snapshot(first),
+        config={"rs20_leader_notional_enabled": False},
+        persist=False,
+    )
+
+    assert second["open_positions"][0]["notional"] == 15_000.0
+    assert second["open_positions"][0]["event_notional_rule"] == "base"
+    assert second["production_impact"]["alters_orders"] is False
 
 
 def test_financial_report_sleeve_can_disable_neutral_underreaction_scalar():

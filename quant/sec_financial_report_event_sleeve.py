@@ -43,6 +43,9 @@ DEFAULT_NEUTRAL_UNDERREACTION_SPY_T1_CONTEXT_SCALAR = 1.5
 DEFAULT_NEUTRAL_UNDERREACTION_SPY_T1_RETURN_MIN = -0.005
 DEFAULT_EARNINGS_RELEASE_TEXT_SPY_T1_CONTEXT_SCALAR = 1.10
 DEFAULT_EARNINGS_RELEASE_TEXT_SPY_T1_RETURN_MIN = -0.005
+DEFAULT_RS20_LEADER_NOTIONAL_ENABLED = True
+DEFAULT_RS20_LEADER_NOTIONAL_SCALAR = 1.15
+DEFAULT_RS20_LEADER_MIN_EXCESS_RETURN = 0.05
 DEFAULT_MAX_POSITIONS = 3
 DEFAULT_STATE_PATH = data_artifact_path("sec_financial_report_event_sleeve_paper_state")
 DEFAULT_SNAPSHOT_LOG_PATH = data_artifact_path(
@@ -66,6 +69,9 @@ DEFAULT_CONFIG = {
     "earnings_release_text_spy_t1_context_enabled": True,
     "earnings_release_text_spy_t1_context_scalar": DEFAULT_EARNINGS_RELEASE_TEXT_SPY_T1_CONTEXT_SCALAR,
     "earnings_release_text_spy_t1_return_min": DEFAULT_EARNINGS_RELEASE_TEXT_SPY_T1_RETURN_MIN,
+    "rs20_leader_notional_enabled": DEFAULT_RS20_LEADER_NOTIONAL_ENABLED,
+    "rs20_leader_notional_scalar": DEFAULT_RS20_LEADER_NOTIONAL_SCALAR,
+    "rs20_leader_min_excess_return": DEFAULT_RS20_LEADER_MIN_EXCESS_RETURN,
     "hold_days": PRIMARY_HORIZON_TRADING_DAYS,
     "round_trip_cost_pct": ROUND_TRIP_COST_PCT,
     "fill_price_policy": "pending_next_session_open_when_available",
@@ -431,6 +437,12 @@ def _candidate_event_notional(
             scalar *= text_context_scalar
             rule = f"{rule}+earnings_release_text_spy_t1_context_scalar"
 
+    if _candidate_rs20_leader(candidate, config):
+        rs20_scalar = _float_or_none(config.get("rs20_leader_notional_scalar"))
+        if rs20_scalar is not None and rs20_scalar > 0:
+            scalar *= rs20_scalar
+            rule = f"{rule}+rs20_leader_notional_scalar"
+
     return base * scalar, scalar, rule
 
 
@@ -481,6 +493,16 @@ def _candidate_earnings_release_text_spy_t1_context(
     if spy_t1_return is None or min_spy_t1_return is None:
         return False
     return spy_t1_return >= min_spy_t1_return
+
+
+def _candidate_rs20_leader(candidate: dict[str, Any], config: dict[str, Any]) -> bool:
+    if not bool(config.get("rs20_leader_notional_enabled", True)):
+        return False
+    excess = _float_or_none(candidate.get("ticker_minus_spy_ret20"))
+    minimum = _float_or_none(config.get("rs20_leader_min_excess_return"))
+    if excess is None or minimum is None:
+        return False
+    return excess >= minimum
 
 
 def _queue_with_fact_tone_gap_attribution(queue: dict[str, Any]) -> dict[str, Any]:
