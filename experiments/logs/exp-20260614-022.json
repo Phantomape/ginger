@@ -1,0 +1,73 @@
+{
+  "after_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": 0.0,
+    "total_return_pct": null,
+    "trade_count": 0,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": 0.0,
+    "total_return_pct": null,
+    "trade_count": 0,
+    "win_rate": null
+  },
+  "causal_components": [],
+  "change_summary": "Widened rs_proxy coverage from ~57 (core ohlcv_dict only) to the broad ingest universe by seeding kova_ohlcv_dict from broad warehouse frames (converted to list-of-dicts; raw frames have an unnamed index that normalize_ohlcv_mapping drops). Overlays fresh core OHLCV + SPY on top. Degrades to core dict on failure.",
+  "change_type": "measurement_repair",
+  "changed_variable": "rs_proxy_broad_ohlcv_source_v1",
+  "component": "quant/experiments/exp_20260614_022_rs_proxy_ohlcv_source_widened_from_core_ohlcv_dict_57_to_broad_warehouse_frames.py, data/experiments/exp-20260614-022/exp_20260614_022_rs_proxy_ohlcv_source_widened_from_core_ohlcv_dict_57_to_broad_warehouse_frames.json, experiments/cards/exp-20260614-022.md, experiments/manifests/exp-20260614-022.json, experiments/tickets/exp-20260614-022.json, experiments/logs/exp-20260614-022.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "total_pnl": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260614-022",
+  "hypothesis": "rs_proxy (kova relative-strength proxy) is derived from in-memory OHLCV, so feeding only the core ~57-name ohlcv_dict capped its coverage at 57 while every other fundamental/alt stream went broad (1105-1246) after exp-20260613-023. Seeding the rs_proxy OHLCV from broad warehouse frames for the broad ingest universe widens it to the broad universe with no order/ranking/sizing/exit change.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "data_ingestion_coverage_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260613-023"
+  ],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "measurement_repair: rs_proxy is derived from in-memory OHLCV, so it was capped at the core universe while exp-20260613-023 widened the fetched streams. Verified: compute_rs_proxy_rows now yields 1230 tickers (was 57). No orders/ranking/sizing/exits change; rs_proxy is observe/replay data. quant/run.py only; sidecar tests pass (8/8).",
+  "parameters": {
+    "locked_variables": [
+      "rs_proxy OHLCV source widened from core ohlcv_dict (~57) to broad warehouse frames for the broad ingest universe"
+    ],
+    "single_causal_variable": "rs_proxy OHLCV source widened from core ohlcv_dict (~57) to broad warehouse frames for the broad ingest universe"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "TODO",
+    "new_evidence_required": "TODO",
+    "realized_failure_mode": null,
+    "why_result_happened": "TODO"
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260614-022/rs_proxy_coverage_before.json",
+    "data/experiments/exp-20260614-022/rs_proxy_coverage_after.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-06-14T17:39:37+00:00",
+  "trial_family": "data_ingestion_coverage_repair",
+  "trial_variant_id": "exp-20260614-022"
+}

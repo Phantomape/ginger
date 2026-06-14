@@ -739,6 +739,24 @@ def main():
     except Exception as e:
         log.warning(f"Macro event calendar refresh skipped: {e}")
 
+    # exp-20260612-009: keep unowned reference caches fresh from the daily path.
+    # Sector map rolls a stale slice (caps the yfinance burst); SEC company
+    # tickers refresh weekly. Env opt-outs: REFERENCE_CACHE_REFRESH_DISABLED,
+    # SECTOR_CACHE_REFRESH_DISABLED, SEC_TICKER_REFRESH_DISABLED.
+    try:
+        from reference_cache_refresh import refresh_reference_caches
+        _ref_cache = refresh_reference_caches(universe=broad_ingest_universe)
+        _sector = _ref_cache.get("sector_cache", {})
+        _tickers = _ref_cache.get("sec_company_tickers", {})
+        if _sector.get("refreshed_count") or _tickers.get("refreshed"):
+            log.info(
+                "Reference caches: sector refreshed=%s, sec_tickers refreshed=%s",
+                _sector.get("refreshed_count", 0),
+                _tickers.get("refreshed", False),
+            )
+    except Exception as e:
+        log.warning(f"Reference cache refresh skipped: {e}")
+
     # ── Step 2: Market Regime ─────────────────────────────────────────────────
     _print_section("STEP 2 — Market regime")
     try:
@@ -913,7 +931,51 @@ def main():
     # ── Step 4: Feature Layer ─────────────────────────────────────────────────
     _print_section("STEP 4 — Feature layer")
     try:
-        kova_ohlcv_dict = dict(ohlcv_dict)
+        # exp-20260614-022: rs_proxy is derived from this in-memory OHLCV, so
+        # seeding it only from the core ohlcv_dict (~57 names) capped rs_proxy at
+        # ~57 while every other stream went broad after exp-20260613-023. Seed
+        # from broad warehouse frames (returns-only need) for the broad ingest
+        # universe, then overlay the fresh in-memory core OHLCV + SPY on top so
+        # core names keep today's data. Degrades to the core dict on any failure.
+        kova_ohlcv_dict: dict[str, Any] = {}
+        try:
+            if ohlcv_warehouse_enabled and broad_ingest_universe:
+                from datetime import timedelta as _td
+                from ohlcv_warehouse import load_warehouse_ohlcv_frames
+                _rs_start = (datetime.now().date() - _td(days=320)).isoformat()
+                _wh_frames = load_warehouse_ohlcv_frames(
+                    ohlcv_warehouse_path,
+                    tickers=set(broad_ingest_universe) | {"SPY"},
+                    start=_rs_start,
+                    end=today_iso,
+                )
+                # Convert to the list-of-dicts shape rs_proxy expects. The
+                # warehouse frame index is an unnamed DatetimeIndex, so passing
+                # frames straight through normalize_ohlcv_mapping drops every row
+                # (reset_index yields an "index" column, not "Date").
+                for _tk, _fr in _wh_frames.items():
+                    kova_ohlcv_dict[_tk] = [
+                        {
+                            "Date": str(_idx.date()),
+                            "Open": float(_r["Open"]),
+                            "High": float(_r["High"]),
+                            "Low": float(_r["Low"]),
+                            "Close": float(_r["Close"]),
+                            "Volume": float(_r["Volume"]),
+                        }
+                        for _idx, _r in _fr.iterrows()
+                    ]
+                log.info(
+                    "rs_proxy broad OHLCV seed: %d tickers from warehouse",
+                    len(kova_ohlcv_dict),
+                )
+        except Exception as _rs_e:
+            log.warning(
+                "rs_proxy broad warehouse seed failed, using core OHLCV: %s", _rs_e
+            )
+            kova_ohlcv_dict = {}
+        for _t, _rows in ohlcv_dict.items():
+            kova_ohlcv_dict[_t] = _rows  # fresh in-memory core overrides warehouse
         if spy_ohlcv is not None:
             kova_ohlcv_dict["SPY"] = spy_ohlcv
         kova_intervals = tuple(
