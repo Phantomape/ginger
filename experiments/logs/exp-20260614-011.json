@@ -1,0 +1,207 @@
+{
+  "accepted_comparators": {
+    "binding_allocator": {
+      "aggregate_ev_delta": 2.1849,
+      "aggregate_pnl_delta": 40397.21,
+      "experiment_id": "exp-20260611-005",
+      "window_deltas": {
+        "late_strong": {
+          "ev": 0.9092,
+          "pnl": 9431.68
+        },
+        "mid_weak": {
+          "ev": 0.6352,
+          "pnl": 11133.95
+        },
+        "old_thin": {
+          "ev": 0.6405,
+          "pnl": 19831.58
+        }
+      }
+    },
+    "same_run_accepted_allocator_control": {
+      "after_expected_value_score_sum": 9.5503,
+      "after_total_pnl_sum": 265449.46,
+      "baseline_expected_value_score_sum": 7.4351,
+      "baseline_total_pnl_sum": 224378.65,
+      "expected_value_score_delta_pct": 0.284488,
+      "expected_value_score_delta_sum": 2.1152,
+      "max_drawdown_delta_max": 0.0011,
+      "target_trade_count_sum": 336,
+      "total_pnl_delta_pct": 0.183042,
+      "total_pnl_delta_sum": 41070.81,
+      "windows_ev_improved": 3,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 3,
+      "windows_pnl_regressed": 0
+    }
+  },
+  "aggregate_expected_value_delta": 2.0207,
+  "aggregate_strategy_total_pnl_delta": 38614.73,
+  "artifact": "data/experiments/exp-20260614-011/exp_20260614_011_source_pair_conflict_router.json",
+  "backtest_protocol": "docs/backtesting.md canonical three fixed windows, same-run core baseline, same-run accepted allocator control, and replay-only source-pair conflict router overlay.",
+  "baseline_result_file": "docs/backtesting.md current canonical baseline and same-run before_metrics inside this artifact",
+  "card": "experiments/cards/exp-20260614-011.md",
+  "change_type": "alpha_search_allocation",
+  "changed_files": [
+    "quant/experiments/exp_20260614_011_source_pair_conflict_router.py",
+    "data/experiments/exp-20260614-011/exp_20260614_011_source_pair_conflict_router.json",
+    "experiments/logs/exp-20260614-011.json",
+    "experiments/cards/exp-20260614-011.md",
+    "experiments/manifests/exp-20260614-011.json",
+    "experiments/tickets/exp-20260614-011.json"
+  ],
+  "changed_variable": "source_pair_conflict_router_v1",
+  "decision": "rejected",
+  "direct_expected_value_delta_vs_accepted": -0.0945,
+  "direct_pnl_delta_vs_accepted": -2456.08,
+  "experiment_id": "exp-20260614-011",
+  "gate4": {
+    "accepted_allocator_comparator": {
+      "aggregate_ev_delta": 2.1849,
+      "aggregate_pnl_delta": 40397.21,
+      "experiment_id": "exp-20260611-005",
+      "window_deltas": {
+        "late_strong": {
+          "ev": 0.9092,
+          "pnl": 9431.68
+        },
+        "mid_weak": {
+          "ev": 0.6352,
+          "pnl": 11133.95
+        },
+        "old_thin": {
+          "ev": 0.6405,
+          "pnl": 19831.58
+        }
+      }
+    },
+    "aggregate_ev_delta_vs_core": 2.0207,
+    "aggregate_pnl_delta_vs_core": 38614.73,
+    "changed_selection_count": 20,
+    "changed_selection_count_min": 9,
+    "decision": "rejected",
+    "direct_ev_delta_vs_accepted": -0.0945,
+    "direct_pnl_delta_vs_accepted": -2456.08,
+    "direct_windows_ev_improved": 0,
+    "direct_windows_ev_regressed": 2,
+    "direct_windows_pnl_improved": 0,
+    "direct_windows_pnl_regressed": 2,
+    "failed_reasons": [
+      "direct_ev_vs_accepted_allocator_not_positive",
+      "direct_pnl_vs_accepted_allocator_not_positive",
+      "direct_window_ev_regression_vs_accepted_allocator",
+      "direct_window_pnl_regression_vs_accepted_allocator",
+      "accepted_allocator_ev_comparator_not_beaten",
+      "accepted_allocator_pnl_comparator_not_beaten"
+    ],
+    "max_direct_drawdown_worse": 0.0001,
+    "max_drawdown_worse_guardrail": 0.005,
+    "min_survival_rate": 0.7925,
+    "numeric_gate4_passed": false,
+    "positive_pnl_hhi": 0.063225,
+    "target_trade_count": 336,
+    "target_trade_count_min": 20,
+    "top5_positive_pnl_share": 0.43789
+  },
+  "history_check": {
+    "exp-20260613-003": "Observed-only oracle found material same-day source-choice gap, but used future PnL and could not be promoted.",
+    "exp-20260613-004": "Trailing absolute source-family PnL maturity failed.",
+    "exp-20260613-006": "Source-score percentile arbitration failed.",
+    "exp-20260613-009": "Candidate microstructure arbitration failed.",
+    "exp-20260613-015": "Same-ticker source confirmation failed.",
+    "exp-20260613-033": "Correlation crowding scout failed."
+  },
+  "hypothesis": "allocation/ranking: accepted allocator same-day source conflicts may be improved by routing only when a specific challenger-vs-priority source-family pair has prior closed relative outperformance, while falling back to the accepted fixed priority otherwise.",
+  "lane": "alpha_search",
+  "log": "experiments/logs/exp-20260614-011.json",
+  "mechanism_family": "accepted_allocator_source_arbitration",
+  "no_javascript_used": true,
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry by sweeping pair lookback, min-history, or avg-gap thresholds on the same frozen windows. New evidence would require forward closed conflict rows or a genuinely new production-visible relation field.",
+    "negative_reflection": "If rejected, the source-family pair field was still too thin or too noisy to explain the oracle gap. If positive, it remains non-accepted because shared helper parity and daily shadow-candidate outcome tracking are missing.",
+    "new_evidence_required": "Forward default-off source-conflict outcome ledger or a separate relation-aware candidate-pool source, not another allocator source arbitration scalar.",
+    "why_result_happened": "The same-day source-choice oracle gap is not explained by simple pair-relative source-family history. Prior source arbitration failures plus this result suggest the accepted fixed priority is already capturing most deterministic source conflict structure on the frozen windows."
+  },
+  "production_impact": {
+    "adapter_status": "replay_only_source_pair_conflict_router_scout",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "default_off_paper_only": true,
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "kill_switch_drawdown_pct": 0.15,
+      "max_capital_pct": 0.32,
+      "max_concurrent": 8,
+      "max_displacement": 1,
+      "min_dollar_volume": 10000000.0,
+      "notes": "Same accepted-helper allocator execution envelope as exp-20260611-005. This scout does not change production; positive evidence would require a shared helper, a daily shadow-candidate outcome ledger, and snapshot parity before retention.",
+      "order_semantics": "next_open_paper_only",
+      "same_ticker_cooldown_days": 12,
+      "slippage_bps": 5.0
+    },
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "parity_note": "Replay-only source-pair router. It reuses accepted allocator source rows and only uses prior closed pair-relative outcomes at each signal date. No source priority, helper, daily snapshot, report, ranking, sizing, exit, watchlist, LLM/news, or order surface is changed.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_free_non_ohlcv": true,
+    "uses_free_ohlcv_only": false,
+    "uses_llm": false
+  },
+  "rejection_reason": "direct_ev_vs_accepted_allocator_not_positive; direct_pnl_vs_accepted_allocator_not_positive; direct_window_ev_regression_vs_accepted_allocator; direct_window_pnl_regression_vs_accepted_allocator; accepted_allocator_ev_comparator_not_beaten; accepted_allocator_pnl_comparator_not_beaten",
+  "reproduction_commands": [
+    ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260614_011_source_pair_conflict_router.py"
+  ],
+  "single_causal_variable": "source_pair_conflict_router_v1",
+  "status": "rejected",
+  "timestamp": "2026-06-14T09:24:44Z",
+  "trial_family": "accepted_allocator_source_arbitration",
+  "trial_variant_id": "source_pair_conflict_router_v1",
+  "windows": [
+    {
+      "accepted_allocator_expected_value": 5.9288,
+      "changed_selection_count": 0,
+      "direct_expected_value_delta_vs_accepted": 0.0,
+      "direct_pnl_delta_vs_accepted": 0.0,
+      "end": "2026-04-21",
+      "expected_value_before": 5.0131,
+      "source_pair_expected_value": 5.9288,
+      "start": "2025-10-23",
+      "window": "late_strong"
+    },
+    {
+      "accepted_allocator_expected_value": 2.5582,
+      "changed_selection_count": 11,
+      "direct_expected_value_delta_vs_accepted": -0.0414,
+      "direct_pnl_delta_vs_accepted": -813.03,
+      "end": "2025-10-22",
+      "expected_value_before": 1.9498,
+      "source_pair_expected_value": 2.5168,
+      "start": "2025-04-23",
+      "window": "mid_weak"
+    },
+    {
+      "accepted_allocator_expected_value": 1.0633,
+      "changed_selection_count": 9,
+      "direct_expected_value_delta_vs_accepted": -0.0531,
+      "direct_pnl_delta_vs_accepted": -1643.05,
+      "end": "2025-04-22",
+      "expected_value_before": 0.4722,
+      "source_pair_expected_value": 1.0102,
+      "start": "2024-10-02",
+      "window": "old_thin"
+    }
+  ]
+}
