@@ -6,11 +6,10 @@ from experiment_registry import (
     DEFAULT_LOG,
     get_experiment,
     judge_results,
-    locked_registry_update,
-    load_registry,
     print_json,
+    rebuild_registry_from_tickets,
     save_experiment_log_entry,
-    update_result,
+    update_result_decontended,
 )
 
 
@@ -78,26 +77,26 @@ def main():
     )
     args = parser.parse_args()
 
-    registry_snapshot = load_registry(args.registry)
+    # Tickets are authoritative; read from them so a best-effort-stale registry
+    # cache can't make a freshly-reserved id look unknown at close time.
+    registry_snapshot = rebuild_registry_from_tickets(args.registry)
     experiment = get_experiment(registry_snapshot, args.experiment_id)
     if not experiment:
         raise SystemExit(f"unknown experiment_id: {args.experiment_id}")
 
     judgement = judge_results(args.before, args.after)
     if args.write_registry:
-        experiment = locked_registry_update(
+        # registry-decontention step 2: per-id ticket lock, no global registry lock.
+        experiment = update_result_decontended(
             args.registry,
-            lambda registry: update_result(
-                registry,
-                args.experiment_id,
-                judgement,
-                args.before,
-                args.after,
-                status_override=args.status_override,
-                realized_failure_mode=args.realized_failure_mode,
-                surprise_note=args.surprise_note,
-                allow_missing_prediction=args.allow_missing_prediction,
-            ),
+            args.experiment_id,
+            judgement,
+            args.before,
+            args.after,
+            status_override=args.status_override,
+            realized_failure_mode=args.realized_failure_mode,
+            surprise_note=args.surprise_note,
+            allow_missing_prediction=args.allow_missing_prediction,
             timeout_seconds=args.lock_timeout_seconds,
         )
 

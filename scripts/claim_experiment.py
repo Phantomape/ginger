@@ -2,8 +2,7 @@
 
 from experiment_registry import (
     add_common_registry_arg,
-    claim_ticket,
-    locked_registry_update,
+    claim_experiment_decontended,
     print_json,
 )
 
@@ -19,14 +18,12 @@ def main():
     parser.add_argument("--force", action="store_true")
     args = parser.parse_args()
 
-    ticket, conflicts = locked_registry_update(
+    # registry-decontention step 2: per-id ticket lock, no global registry lock.
+    ticket, conflicts = claim_experiment_decontended(
         args.registry,
-        lambda registry: claim_ticket(
-            registry,
-            args.experiment_id,
-            args.owner,
-            force=args.force,
-        ),
+        args.experiment_id,
+        args.owner,
+        force=args.force,
         timeout_seconds=args.lock_timeout_seconds,
     )
     if conflicts:

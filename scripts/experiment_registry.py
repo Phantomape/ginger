@@ -1273,14 +1273,7 @@ def reserve_experiment(registry_path, *, timeout_seconds=DEFAULT_LOCK_TIMEOUT_SE
                 raise
             last_exc = exc
             continue
-        try:
-            locked_registry_update(
-                registry_path,
-                lambda reg: _sync_index_entry(reg, ticket),
-                timeout_seconds=timeout_seconds,
-            )
-        except Exception:
-            pass
+        _best_effort_cache_upsert(registry_path, ticket, timeout_seconds)
         return ticket
     raise last_exc or RuntimeError("failed to reserve an available experiment id")
 
@@ -1307,8 +1300,13 @@ def find_conflicts(registry, experiment):
     conflicts = []
     scopes = _conflict_scopes(experiment.get("allowed_write_scope") or [])
     locked = set(experiment.get("locked_variables") or [])
+    experiment_id = experiment.get("experiment_id")
     for other in iter_experiments(registry):
-        if other is experiment:
+        # Skip self by id, not by object identity: iter_experiments materializes
+        # entries by re-reading the ticket file, so the self entry is a distinct
+        # object from `experiment` and an identity check would let an experiment
+        # spuriously conflict with itself.
+        if other.get("experiment_id") == experiment_id:
             continue
         if other.get("status") not in ACTIVE_STATUSES:
             continue
@@ -1646,6 +1644,100 @@ def update_result(
     if "_tickets_dir" in registry:
         save_ticket(exp, _registry_tickets_dir(registry))
         _sync_index_entry(registry, exp)
+    return exp
+
+
+def _best_effort_cache_upsert(registry_path, ticket, timeout_seconds=DEFAULT_LOCK_TIMEOUT_SECONDS):
+    """Refresh the docs/experiment_registry.json index entry for one ticket under
+    a brief lock. Best-effort: the ticket file is authoritative and the registry
+    index is rebuildable from tickets, so a contended/missed refresh must never
+    fail an already-durable per-id ticket write."""
+    try:
+        locked_registry_update(
+            registry_path,
+            lambda reg: _sync_index_entry(reg, ticket),
+            timeout_seconds=timeout_seconds,
+        )
+    except Exception:
+        pass
+
+
+def rebuild_registry_from_tickets(registry_path):
+    """Build a registry view (workspace dir keys + full ticket dicts) by scanning
+    experiments/tickets/*.json, WITHOUT reading docs/experiment_registry.json.
+
+    Tickets are the source of truth; this is the lock-free read view used by
+    conflict detection (and any reader that needs guaranteed-fresh data).
+    """
+    ctx = _file_backed_registry_context(registry_path)
+    tickets_dir = Path(ctx["_tickets_dir"])
+    experiments = []
+    if tickets_dir.exists():
+        for path in sorted(tickets_dir.glob("exp-*.json")):
+            try:
+                with path.open(encoding="utf-8-sig") as f:
+                    ticket = json.load(f)
+            except (OSError, json.JSONDecodeError):
+                continue
+            if isinstance(ticket, dict) and ticket.get("experiment_id"):
+                experiments.append(ticket)
+    ctx["experiments"] = experiments
+    return ctx
+
+
+def claim_experiment_decontended(registry_path, experiment_id, owner, *, force=False,
+                                 timeout_seconds=DEFAULT_LOCK_TIMEOUT_SECONDS):
+    """Claim a ticket without the global registry lock (registry-decontention
+    step 2). The cross-experiment conflict view is read lock-free from tickets
+    (advisory; a few-ms-stale overlap view is acceptable); the claim mutation is
+    serialized by a per-id ticket lock so two agents cannot both claim the same
+    id. The registry cache is refreshed best-effort afterwards."""
+    view = rebuild_registry_from_tickets(registry_path)
+    tickets_dir = Path(view["_tickets_dir"])
+    target = ticket_path(experiment_id, tickets_dir)
+    with file_lock(target, timeout_seconds=timeout_seconds):
+        current = load_ticket(experiment_id, tickets_dir)
+        if current is None:
+            raise ValueError(f"unknown experiment_id: {experiment_id}")
+        view["experiments"] = [
+            e for e in view["experiments"]
+            if e.get("experiment_id") != experiment_id
+        ]
+        view["experiments"].append(current)
+        ticket, conflicts = claim_ticket(view, experiment_id, owner, force=force)
+    if not conflicts or force:
+        _best_effort_cache_upsert(registry_path, ticket, timeout_seconds)
+    return ticket, conflicts
+
+
+def update_result_decontended(registry_path, experiment_id, judgement, before_path,
+                              after_path, *, status_override=None,
+                              realized_failure_mode=None, surprise_note=None,
+                              allow_missing_prediction=False,
+                              timeout_seconds=DEFAULT_LOCK_TIMEOUT_SECONDS):
+    """Record an experiment result without the global registry lock (step 2).
+    Close touches a single ticket, so a per-id ticket lock fully serializes it;
+    the registry cache is refreshed best-effort afterwards."""
+    ctx = _file_backed_registry_context(registry_path)
+    tickets_dir = Path(ctx["_tickets_dir"])
+    target = ticket_path(experiment_id, tickets_dir)
+    with file_lock(target, timeout_seconds=timeout_seconds):
+        current = load_ticket(experiment_id, tickets_dir)
+        if current is None:
+            raise ValueError(f"unknown experiment_id: {experiment_id}")
+        ctx["experiments"] = [current]
+        exp = update_result(
+            ctx,
+            experiment_id,
+            judgement,
+            before_path,
+            after_path,
+            status_override=status_override,
+            realized_failure_mode=realized_failure_mode,
+            surprise_note=surprise_note,
+            allow_missing_prediction=allow_missing_prediction,
+        )
+    _best_effort_cache_upsert(registry_path, exp, timeout_seconds)
     return exp
 
 
