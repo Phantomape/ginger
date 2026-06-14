@@ -173,10 +173,24 @@ def revision_manifest_path(experiment_id, manifests_dir=DEFAULT_MANIFESTS_DIR):
 
 def save_ticket(ticket, tickets_dir=DEFAULT_TICKETS_DIR, *, overwrite=True):
     path = ticket_path(ticket["experiment_id"], tickets_dir)
-    if not overwrite and path.exists():
-        raise FileExistsError(path)
-    _atomic_write_text(
-        json.dumps(ticket, indent=2, ensure_ascii=False) + "\n", path)
+    text = json.dumps(ticket, indent=2, ensure_ascii=False) + "\n"
+    if not overwrite:
+        # Atomic exclusive create (registry-decontention step 0): the ticket
+        # file's existence IS the reservation. O_EXCL closes the check-then-write
+        # TOCTOU race where two concurrent reservers both pass an exists() check
+        # and clobber each other. We write straight to the final path (no
+        # same-dir .tmp), so a hard-kill mid-write leaves at most a short ticket
+        # at a known id -- never an orphaned `.<id>.json.<rand>.tmp`. Raises
+        # FileExistsError if the id is already taken, preserving the prior
+        # overwrite=False contract.
+        path.parent.mkdir(parents=True, exist_ok=True)
+        fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            f.write(text)
+            f.flush()
+            os.fsync(f.fileno())
+        return path
+    _atomic_write_text(text, path)
     return path
 
 
