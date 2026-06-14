@@ -1,0 +1,35 @@
+{
+  "experiment_id": "exp-20260613-023",
+  "lane": "measurement_repair",
+  "step": "broad_universe_historical_backfill_of_PIT_complete_SEC_streams",
+  "as_of": "2026-06-14",
+  "window": {"start": "2024-08-01", "end": "2026-06-13", "covers_standard_windows": ["old_thin", "mid_weak", "late_strong"]},
+  "universe": {"source": "data/state/broad_market_paper/universe.json", "tickers": 1229},
+  "rationale": "Only point-in-time-complete SEC streams were backfilled (each CIK fetch returns full filed-date history). Daily PIT snapshot streams (kova fundamentals/rs_proxy/intraday daily, earnings snapshot, news) were deliberately NOT backfilled: reconstructing past daily snapshots would inject lookahead/fabricated PIT and break production/backtest parity -- those accrue forward via the fixed run.py only.",
+  "rate_limit_discipline": "All SEC jobs run strictly sequentially (companyfacts breadth -> form4 -> sec_filing -> companyfacts --refresh) at 0.15s/req to respect SEC ~10 req/s per-IP fair-access; the --refresh job polled the backfill done-marker before starting so it never ran concurrently.",
+  "results": {
+    "companyfacts_breadth": {"tickers_mapped": "1229/1229", "rows_written": 455461, "error_count": 2, "benign_errors": ["IBN(ICICI ADR) 404", "OZK 404"]},
+    "form4": {"tickers_mapped": "1229/1229", "filings_seen": 126097, "rows_written": 312825, "open_market_purchase_count": 3901, "ten_b5_1_count": 59270, "option_exercise_count": 121347, "error_count": 0},
+    "sec_filing": {"tickers_mapped": "1229/1229", "rows_written": 34160, "submission_chunks_listed": 1348, "error_count": 0},
+    "companyfacts_refresh_to_latest": {"tickers_mapped": "1229/1229", "rows_written": 456503, "error_count": 2, "benign_errors": ["IBN 404", "OZK 404"]}
+  },
+  "verification": {
+    "companyfacts_cache_freshness": "before: 3 files <=3d fresh / 1421 frozen @06-04; after: 1235 files <=3d fresh (out-of-universe leftovers make up the 192 still <=10d of 1427 total).",
+    "form4_xml_cik_dirs": "before ~10 (reduced CIK map); after 1157 (the ~72 names without dirs are ETFs/funds with no Form 4 insiders).",
+    "sec_submissions_cache_cik": 1236,
+    "cik_map_resolution": "1229/1229 across all three streams (was 0 / reduced before the data_artifact_path('sec_company_tickers') fix)."
+  },
+  "artifacts": {
+    "row_files_under_exp_dir_bytes": {"backfill_companyfacts_rows.jsonl": 267169292, "backfill_form4_rows.jsonl": 602624748, "backfill_sec_filing_rows.jsonl": 31831392, "refresh_companyfacts_rows.jsonl": 267759099},
+    "note": "~1.1GB of parsed PIT row outputs; production consumers read the data/cache/sec/* caches. Consider gitignore/LFS for these row dumps before commit."
+  },
+  "unblocks": [
+    "Historical-replay leg of the companyfacts 'positive lead, requires forward rows' cluster (exp-20260601-021, exp-20260602-001, exp-20260605-014).",
+    "Form 4 insider line (15 positive-but-underpowered experiments) now has 3,901 broad open-market purchases vs a starved narrow sample.",
+    "companyfacts hard-rejects 'no discriminator' (e.g. exp-20260504-014) can be re-checked on non-frozen broad fundamentals."
+  ],
+  "still_not_fixed": [
+    "data/reference/broad_market_sector_map.json (2026-05-27 one-shot, anchors the 1229 feed) still has no scheduled refresh owner.",
+    "Daily PIT snapshot breadth (kova/earnings/rs_proxy) accrues forward only -- first broad daily materialization happens on the next full run.py after the 2026-06-13 fix commit (today's 00:21 run predated it)."
+  ]
+}
