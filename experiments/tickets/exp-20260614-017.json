@@ -1,0 +1,196 @@
+{
+  "experiment_id": "exp-20260614-017",
+  "experiment_uid": "expuid-ce972c4d02734f7d",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260614-017",
+    "slug": "sec_dividend_increase_text_leadership",
+    "reserved_at": "2026-06-14T15:12:37+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "codex-alpha-search",
+  "hypothesis": "candidate_pool: PIT SEC filing text that explicitly announces a dividend increase, when paired with same-day liquid SPY-relative leadership, may identify disciplined capital-return underreaction candidates without expanding into noisy tickers.",
+  "change_type": "default_off_paper_candidate_pool_replay_scout",
+  "mechanism_family": "production_visible_free_sec_event_ohlcv_candidate_pool",
+  "trial_family": "sec_dividend_increase_text_leadership_candidate_pool",
+  "trial_variant_id": "sec_dividend_increase_text_leadership_top1_next_open_10d_v1",
+  "single_causal_variable": "sec_dividend_increase_text_leadership_candidate_source_v1",
+  "changed_variable": "sec_dividend_increase_text_leadership_candidate_source_v1",
+  "causal_components": [
+    "PIT SEC filing text dividend-increase evidence span",
+    "8-K Item 7.01/8.01/2.02 rows",
+    "liquid sector-known OHLCV leadership",
+    "next-open paper entry",
+    "10-trading-day hold",
+    "cooldown",
+    "core-overlap exclusion",
+    "compression/distribution comparator gates"
+  ],
+  "prior_trial_count": 4,
+  "nearby_prior_experiments": [
+    "exp-20260520-039",
+    "exp-20260529-015",
+    "exp-20260610-013",
+    "exp-20260611-017"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "production_visible_free_sec_filing_text_dividend_increase_semantics_plus_ohlcv_leadership",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260614_017_sec_dividend_increase_text_leadership.py",
+    "data/experiments/exp-20260614-017/exp_20260614_017_sec_dividend_increase_text_leadership.json",
+    "experiments/cards/exp-20260614-017.md",
+    "experiments/manifests/exp-20260614-017.json",
+    "experiments/tickets/exp-20260614-017.json",
+    "experiments/logs/exp-20260614-017.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "sec_dividend_increase_text_leadership_candidate_source_v1"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.14,
+    "expected_ev_delta": 0.12,
+    "expected_pnl_delta": 1800.0,
+    "main_failure_modes": [
+      "thin_sample",
+      "already_priced_capital_return",
+      "accepted_event_comparator_not_beaten",
+      "window_regression",
+      "concentration_failed"
+    ],
+    "confidence_reason": "Broad SEC business-update text and buyback capacity failed, but dividend increases are a narrower board-approved capital-return field with replayable source spans. Odds remain low because the event may be fully priced or too sparse.",
+    "recorded_at": "2026-06-14T15:12:05+00:00"
+  },
+  "created_at": "2026-06-14T15:12:37+00:00",
+  "claimed_at": "2026-06-14T15:12:47+00:00",
+  "completed_at": "2026-06-14T15:19:36+00:00",
+  "result": {
+    "decision": "rejected_sec_dividend_increase_text_leadership_candidate_pool",
+    "accepted": false,
+    "accepted_alpha": false,
+    "production_accepted": false,
+    "artifact": "data/experiments/exp-20260614-017/exp_20260614_017_sec_dividend_increase_text_leadership.json",
+    "log": "experiments/logs/exp-20260614-017.json",
+    "card": "experiments/cards/exp-20260614-017.md",
+    "aggregate_expected_value_delta": -0.0184,
+    "aggregate_strategy_total_pnl_delta": -300.06,
+    "gate4": {
+      "accepted_compression_comparator": {
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "expected_value_score_delta_sum": 0.1608,
+        "experiment_id": "exp-20260608-013",
+        "target_trade_count": 44,
+        "total_pnl_delta_sum": 2248.98
+      },
+      "accepted_distribution_comparator": {
+        "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+        "expected_value_score_delta_sum": 0.5286,
+        "experiment_id": "exp-20260611-007",
+        "total_pnl_delta_sum": 10432.91
+      },
+      "aggregate_ev_delta": -0.0184,
+      "aggregate_pnl_delta": -300.06,
+      "decision": "rejected_sec_dividend_increase_text_leadership_candidate_pool",
+      "failed_reasons": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "target_concentration_failed",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "max_drawdown_worse": 0.0009,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "passed": false,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "max_single_positive_pnl_share": null,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "passed": false,
+        "positive_pnl_hhi": null,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "target_trade_count": 2,
+      "target_trade_count_min": 20,
+      "target_window_count_min": 3,
+      "target_windows": [
+        "mid_weak",
+        "old_thin"
+      ],
+      "windows_ev_improved": 0,
+      "windows_ev_regressed": 2,
+      "windows_pnl_improved": 0,
+      "windows_pnl_regressed": 2
+    },
+    "calibration": {
+      "actual_gate4_passed": false,
+      "brier_score": 0.0196,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "target_concentration_failed",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "predicted_success_probability": 0.14
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "replay_only_no_live_adapter",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_sec_filing_text": true,
+      "uses_free_ohlcv": true,
+      "parity_note": "This experiment changes no production code. A positive result would remain only a replay lead. Promotion would require one shared default-off adapter that loads the same PIT SEC filing text, applies the exact same dividend-increase semantic gate, uses the same signal-date OHLCV leadership envelope, overlap exclusion, next-open paper entry, 10-trading-day exit, costs, cooldown, comparator, and concentration guards in both historical replay and daily production before any report queue, paper ledger, candidate priority, sizing, watchlist, or order surface could change."
+    },
+    "post_run_reflection": {
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping dividend regex synonyms, item-code weights, ret20/ret60 relative-strength thresholds, signal-day return, close-location, volume bounds, top-N, hold-day, cooldown, or paper notional on the same frozen windows.",
+      "new_evidence_required": "A valid retry needs materially new PIT evidence, such as source-utility forward rows, declared dividend-growth history, payout/cash-flow surprise fields, or a shared daily helper showing replacement value against displaced candidates.",
+      "why_result_happened": "The fixed SEC dividend-increase text leadership bundle failed Gate 4. The event is either too sparse, too already priced, or mostly captured by existing compression/distribution sources after next-open execution, costs, cooldown, and overlap controls."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260614-017.json",
+  "card_file": "experiments/cards/exp-20260614-017.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260614-017.json",
+  "decision": "rejected_sec_dividend_increase_text_leadership_candidate_pool",
+  "summary": "The SEC dividend-increase text leadership source was rejected; it did not establish a distinct SEC text/OHLCV candidate-pool edge under the standard three-window protocol and accepted comparators.",
+  "artifact": "data/experiments/exp-20260614-017/exp_20260614_017_sec_dividend_increase_text_leadership.json",
+  "log": "experiments/logs/exp-20260614-017.json",
+  "aggregate_expected_value_delta": -0.0184,
+  "aggregate_strategy_total_pnl_delta": -300.06,
+  "updated_at": "2026-06-14T15:19:36+00:00"
+}
