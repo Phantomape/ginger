@@ -32,6 +32,22 @@ def _workspace_root_for_registry(registry_path):
     return path.parent.parent if path.parent.name == "docs" else path.parent
 
 
+def _sweep_stale_artifacts_quietly():
+    """Best-effort: clear abandoned .tmp/.lock residue from hard-killed concurrent
+    ops before running an experiment command. Never raises -- a sweep failure must
+    not block lifecycle work."""
+    try:
+        import importlib.util
+
+        sweep_path = Path(__file__).resolve().parents[1] / "quant" / "stale_artifact_sweep.py"
+        spec = importlib.util.spec_from_file_location("stale_artifact_sweep", sweep_path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        module.sweep_quietly()
+    except Exception:
+        pass
+
+
 def _run_delegate(program, argv, main_func, *main_args):
     original_argv = sys.argv[:]
     sys.argv = [program, *argv]
@@ -194,6 +210,8 @@ def main():
     remainder = sys.argv[2:]
     if command not in commands:
         raise SystemExit(f"unknown command: {command}")
+
+    _sweep_stale_artifacts_quietly()
 
     if command in {"new", "reserve"}:
         from create_experiment_ticket import main as create_main
