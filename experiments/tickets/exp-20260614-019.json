@@ -1,0 +1,159 @@
+{
+  "acceptance_rule": "Three-window aggregate EV and PnL must improve with no majority window regression and adequate event sample; replay-only positives require shared default-off helper before acceptance.",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "experiments",
+    "data/experiments"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "calibration": {
+    "actual_decision": "rejected_directional_but_unstable",
+    "actual_ev_delta": 0.0181,
+    "actual_pnl_delta": -822.8,
+    "actual_success": 0,
+    "brier_score": 0.0484,
+    "calibration_direction": "directionally_calibrated_low_confidence_rejection",
+    "ev_prediction_error": -0.1319,
+    "pnl_prediction_error": -3322.8,
+    "predicted_failure_mode_hit": true,
+    "predicted_success_probability": 0.22,
+    "realized_failure_mode": "EV positive but PnL negative with two EV/PnL window regressions",
+    "surprise_level": "low",
+    "surprise_note": "The owner-conviction ratio produced a small positive EV delta but failed PnL and window stability, matching the predeclared instability risks."
+  },
+  "card_file": "experiments/cards/exp-20260614-019.md",
+  "causal_components": [
+    "broad Form 4 PIT sample",
+    "owner-conviction ratio gate",
+    "liquid broad warehouse pricing",
+    "10 trading day one-position event sleeve",
+    "canonical three-window Gate 1-4"
+  ],
+  "change_type": "candidate_pool_private_replay_scout",
+  "changed_variable": "broad_form4_owner_conviction_purchase_candidate_source_v1",
+  "claimed_at": "2026-06-14T16:07:50+00:00",
+  "completed_at": "2026-06-14T16:16:33+00:00",
+  "created_at": "2026-06-14T16:07:34+00:00",
+  "decision": "rejected_directional_but_unstable",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260614-019",
+  "experiment_uid": "expuid-fd3e330da7a244a4",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260614-019",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-14T16:07:34+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "form4_owner_conviction_broad_sample"
+  },
+  "hypothesis": "Broad PIT Form 4 open-market purchases where the reported buy is material relative to the owner's post-transaction holdings may identify higher-conviction insider demand than the rejected broad clustered-buy rule, improving candidate-pool event-sleeve EV without adding noisy tickers.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "core universe",
+    "core signal generation",
+    "core ranking",
+    "core sizing",
+    "core exits",
+    "event notional",
+    "event hold days",
+    "event capacity",
+    "round-trip cost",
+    "LLM/news replay settings"
+  ],
+  "mechanism_family": "form4_owner_conviction_event_sleeve",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "production trade_enabled defaults",
+    "run.py live order path",
+    "core ranking/sizing/exits",
+    "LLM/news replay"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260614-018",
+    "exp-20260503-053",
+    "exp-20260603-010",
+    "exp-20260605-001"
+  ],
+  "new_evidence_type": "broad Form 4 archive plus previously untested purchase-size-vs-owner-holdings discriminator",
+  "owner": "codex",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not sweep the 10% owner-conviction ratio, $100k transaction floor, 10b5-1 handling, event capacity, notional, or hold days on the same broad Form 4 archive.",
+    "new_evidence_required": "A materially different insider-quality dimension, PIT forward paper outcomes, or a shared default-off helper with replacement-value evidence would be required before retry.",
+    "why_result_happened": "Owner-conviction ratio selected commitment but not favorable price drift: unusually large buys relative to post-transaction holdings can occur at smaller or structurally risky issuers, producing a tiny aggregate EV gain, negative aggregate PnL, and two EV/PnL window regressions."
+  },
+  "prediction": {
+    "confidence_reason": "The previous broad clustered-buy replay rejected simple breadth/cluster logic, but explicitly left buy-size-vs-owner-holdings as a different insider-quality discriminator; older ownership/role tests were sample-starved and predated the broad archive.",
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "broad insider quality does not beat core",
+      "low selected sample",
+      "one ticker dominates gains",
+      "EV positive but PnL negative",
+      "window regression"
+    ],
+    "recorded_at": "2026-06-14T16:07:17+00:00",
+    "success_probability": 0.22
+  },
+  "prior_trial_count": 5,
+  "result": {
+    "after": "data/experiments/exp-20260614-019/form4_owner_conviction_broad_sample_after_aggregate.json",
+    "aggregate_delta": {
+      "after_ev_sum": 7.9122,
+      "after_pnl_sum": 234028.19,
+      "after_trade_count": 95,
+      "aggregate_ev_delta": 0.0181,
+      "aggregate_ev_delta_pct": 0.002293,
+      "aggregate_pnl_delta": -822.8,
+      "aggregate_pnl_delta_pct": -0.003503,
+      "baseline_ev_sum": 7.8941,
+      "baseline_pnl_sum": 234850.99,
+      "baseline_trade_count": 61,
+      "event_trade_count": 34,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 2,
+      "windows_pnl_improved": 1,
+      "windows_pnl_regressed": 2
+    },
+    "artifact": "data/experiments/exp-20260614-019/form4_owner_conviction_broad_sample.json",
+    "before": "data/experiments/exp-20260614-019/form4_owner_conviction_broad_sample_before_aggregate.json",
+    "calibration": {
+      "predicted_ev_delta": 0.15,
+      "predicted_pnl_delta": 2500.0,
+      "predicted_success_probability": 0.22,
+      "realized_ev_delta": 0.0181,
+      "realized_failure_mode": "EV tiny-positive but PnL negative with two EV/PnL-regressing windows",
+      "realized_pnl_delta": -822.8,
+      "surprise_note": "The sample was adequate at 34 selected event trades, but the edge was regime-specific: late_strong won while the two weaker windows more than offset it."
+    },
+    "candidate_snapshot": "data/experiments/exp-20260614-019/form4_owner_conviction_broad_sample_candidates.jsonl",
+    "decision": "rejected_directional_but_unstable",
+    "log": "experiments/logs/exp-20260614-019.json",
+    "next_action": "Do not sweep owner-conviction thresholds on the same archive; new evidence would need a different quality dimension or forward paper outcomes.",
+    "post_run_reflection": {
+      "forbidden_near_neighbor_retry": "Do not sweep the 10% owner-conviction floor, the $100k value floor, 10b5-1 handling, event capacity, notional, or hold days on the same broad archive.",
+      "new_evidence_required": "A valid retry needs a different evidence source, such as forward paper outcomes for this exact rule or an orthogonal quality signal like verified CEO/CFO non-plan buys paired with fundamental confirmation from a shared default-off helper.",
+      "why_result_happened": "Owner-conviction ratio selected commitment but not stable favorable drift: late_strong benefited, while mid_weak and old_thin both lost event PnL and regressed EV. The likely mechanism is that a large buy relative to a small post-transaction holding can identify insiders adding risk after weakness or in structurally stressed issuers, so the ratio is not a standalone quality edge."
+    },
+    "report": "experiments/artifacts/exp-20260614-019_form4_owner_conviction_broad_sample.md"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260614-019.json",
+  "single_causal_variable": "broad_form4_owner_conviction_purchase_candidate_source_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260614-019.json",
+  "trial_family": "broad_form4_purchase_quality",
+  "trial_variant_id": "owner_conviction_ratio_v1"
+}
