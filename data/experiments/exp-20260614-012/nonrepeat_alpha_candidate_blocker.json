@@ -1,0 +1,555 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260614-012/nonrepeat_alpha_candidate_blocker.json",
+  "artifact_md": "experiments/artifacts/exp-20260614-012_nonrepeat_alpha_candidate_blocker.md",
+  "calibration": {
+    "actual_decision": "blocked_no_valid_nonrepeat_alpha_candidate_after_latest_history_scan",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 0,
+    "brier_score": 0.0064,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "predicted_failure_mode_hit": true,
+    "predicted_success_probability": 0.08,
+    "realized_failure_mode": "recent_ex_ante_lanes_failed_and_remaining_data_lanes_are_too_thin"
+  },
+  "candidate_reviews": [
+    {
+      "alpha_hypothesis": "Upward estimate drift after earnings should identify expectation underreaction and expand the candidate pool with a non-price data edge.",
+      "candidate": "analyst_estimate_revision_pead",
+      "current_evidence": {
+        "candidate_match_rate": 0.0,
+        "estimate_revision_usable_rows": 53,
+        "matched_candidate_rows": 0,
+        "pit_safe_rate": 0.042502,
+        "row_count": 1247,
+        "source": "data/non_ohlcv/estimate_revision_ledger_summary_20260613.json",
+        "up_revision_rows": 1
+      },
+      "decision": "blocked_data_coverage_too_thin",
+      "history_check": [
+        "exp-20260526-031",
+        "exp-20260604-020",
+        "exp-20260610-025",
+        "exp-20260614-005"
+      ],
+      "retry_requires": "PIT estimate breadth, dispersion, and revision rows matched to candidates across all canonical windows.",
+      "why_not_run": "Only 53 usable prior-event rows, 1 up-revision row, and 0 matched candidate rows are present for the latest ledger; a three-window Gate 1-4 alpha would be mostly empty."
+    },
+    {
+      "alpha_hypothesis": "A mature default-off paper helper with closed true-trigger replacement value could be promoted without adding frozen historical filters.",
+      "candidate": "accepted_default_off_forward_activation",
+      "current_evidence": {
+        "activation_ready_count": 0,
+        "activation_ready_sleeves": [],
+        "source": "experiments/logs/exp-20260614-003.json",
+        "top_forward_rows": [
+          {
+            "activation_ready": false,
+            "closed_count": 17,
+            "reject_reasons": [
+              "true_trigger_closed_rows_below_20",
+              "low_deployment_rows_are_off_trigger_observations"
+            ],
+            "rv_cash": 4690.01,
+            "rv_qqq": 7517.99,
+            "rv_spy": 8952.04,
+            "sleeve_dir": "low_deployment_etf",
+            "true_trigger_closed_count": 0
+          },
+          {
+            "activation_ready": false,
+            "closed_count": 3,
+            "reject_reasons": [
+              "true_trigger_closed_rows_below_20"
+            ],
+            "rv_cash": 7240.23,
+            "rv_qqq": 6166.42,
+            "rv_spy": 6760.53,
+            "sleeve_dir": "state_surface",
+            "true_trigger_closed_count": 3
+          },
+          {
+            "activation_ready": false,
+            "closed_count": 3,
+            "reject_reasons": [
+              "true_trigger_closed_rows_below_20"
+            ],
+            "rv_cash": -3030.14,
+            "rv_qqq": -1550.64,
+            "rv_spy": -2047.47,
+            "sleeve_dir": "volume_breadth_breakout",
+            "true_trigger_closed_count": 3
+          },
+          {
+            "activation_ready": false,
+            "closed_count": 2,
+            "reject_reasons": [
+              "true_trigger_closed_rows_below_20"
+            ],
+            "rv_cash": 738.67,
+            "rv_qqq": -447.87,
+            "rv_spy": -363.42,
+            "sleeve_dir": "sec_negative",
+            "true_trigger_closed_count": 2
+          },
+          {
+            "activation_ready": false,
+            "closed_count": 2,
+            "reject_reasons": [
+              "true_trigger_closed_rows_below_20"
+            ],
+            "rv_cash": 286.6,
+            "rv_qqq": 1342.52,
+            "rv_spy": 1086.41,
+            "sleeve_dir": "fundamental_growth_rs",
+            "true_trigger_closed_count": 2
+          }
+        ]
+      },
+      "decision": "blocked_no_activation_ready_sleeve",
+      "history_check": [
+        "exp-20260608-021",
+        "exp-20260611-022",
+        "exp-20260612-019",
+        "exp-20260614-003"
+      ],
+      "retry_requires": "At least 20 closed true-trigger forward rows for one sleeve with replacement value versus cash, SPY, and QQQ.",
+      "why_not_run": "The latest activation audit found 0 activation-ready sleeves; low-deployment ETF rows were off-trigger observations, not true-trigger closed rows."
+    },
+    {
+      "alpha_hypothesis": "Financial-report filing drift may have durable edge when combined with a new filing-quality or evidence-span discriminator.",
+      "candidate": "sec_financial_report_next_extension",
+      "current_evidence": {
+        "accepted_comparator": "exp-20260614-004 accepted RS20 leader 1.15x default-off support",
+        "allocator_extension": "exp-20260614-009 rejected versus accepted allocator",
+        "platform_rs20_no_gap": {
+          "candidate_count": 0,
+          "ledger_row_count": 0,
+          "source": "data/paper_sleeves/platform_rs20_no_gap/summary.json"
+        },
+        "sec_10k_liquidity": {
+          "candidate_count": 0,
+          "ledger_row_count": 0,
+          "source": "data/paper_sleeves/sec_10k_liquidity/summary.json",
+          "ten_k_event_count": 0
+        }
+      },
+      "decision": "blocked_near_neighbor_or_empty_forward_watch",
+      "history_check": [
+        "exp-20260614-004",
+        "exp-20260614-009",
+        "exp-20260612-005",
+        "exp-20260611-017"
+      ],
+      "retry_requires": "A materially new PIT SEC text/evidence-span field with replayable rows, not another RS threshold or source-priority sweep.",
+      "why_not_run": "The accepted SEC RS20 helper should not be retuned, the allocator source extension regressed, and two obvious daily watches have 0 candidates."
+    },
+    {
+      "alpha_hypothesis": "Open-market insider buying or external-issuer ownership relationships may identify informed demand beyond price-only signals.",
+      "candidate": "form4_insider_or_external_issuer_edge",
+      "current_evidence": {
+        "excluded_external_issuer_rows": 1171,
+        "open_market_purchase_count": 131,
+        "rows_written": 27879,
+        "source": "data/non_ohlcv/form4_backfill_summary_20241002_20260502.json",
+        "tickers_mapped": 51,
+        "transaction_code_p_count": 234
+      },
+      "decision": "blocked_frozen_near_neighbor",
+      "history_check": [
+        "exp-20260613-026",
+        "exp-20260609-025",
+        "exp-20260610-006",
+        "exp-20260612-020",
+        "exp-20260613-017"
+      ],
+      "retry_requires": "A new field such as forward ownership-normalized external-issuer relation mapping, not another transaction-code or threshold variant.",
+      "why_not_run": "The backfill has data, but recent Form4 direct, role, ownership, withholding, sale-pressure, and overlap variants have already been rejected or frozen."
+    },
+    {
+      "alpha_hypothesis": "Fresh fundamental growth with peer confirmation could add broad candidate-pool replacement value.",
+      "candidate": "companyfacts_peer_or_quality_extension",
+      "current_evidence": {
+        "operating_efficiency": "exp-20260613-031 rejected versus accepted low-liability comparator",
+        "peer_price_absorption": "exp-20260605-016 rejected",
+        "positive_replay_lead": "exp-20260605-014",
+        "shared_adapter_promotion": "exp-20260605-015 rejected on window regression and drawdown drift"
+      },
+      "decision": "blocked_frozen_companyfacts_neighborhood",
+      "history_check": [
+        "exp-20260605-014",
+        "exp-20260605-015",
+        "exp-20260605-016",
+        "exp-20260613-031"
+      ],
+      "retry_requires": "New free-data relation or forward paper rows; do not sweep growth, peer, cooldown, or liability thresholds on frozen windows.",
+      "why_not_run": "The broad Companyfacts family already has accepted low-liability/recency/low-volume helpers and rejected nearby peer/quality variants."
+    },
+    {
+      "alpha_hypothesis": "Same-day source conflicts could be improved by choosing the ex-ante source most likely to outperform.",
+      "candidate": "accepted_allocator_source_arbitration",
+      "current_evidence": {
+        "oracle_gap": "exp-20260613-003 observed a source-choice gap, but it used future PnL",
+        "recent_ex_ante_tests": "correlation crowding, SEC source extension, market-breadth tail, and source-pair router all failed accepted-allocator comparator tests"
+      },
+      "decision": "blocked_ex_ante_fields_failed",
+      "history_check": [
+        "exp-20260613-003",
+        "exp-20260613-033",
+        "exp-20260614-009",
+        "exp-20260614-010",
+        "exp-20260614-011"
+      ],
+      "retry_requires": "New forward source-conflict rows or a new relation/provenance field that was not present in the failed routers.",
+      "why_not_run": "The oracle gap is real but recent production-visible ex-ante fields failed to harvest it; another source-priority parameter sweep would be a duplicate."
+    }
+  ],
+  "card": "experiments/cards/exp-20260614-012.md",
+  "change_type": "alpha_candidate_selection_blocker_proof",
+  "changed_variable": "highest_priority_nonrepeat_alpha_candidate_selection_v2",
+  "coverage_snapshot": {
+    "accepted_adapter_forward_activation": {
+      "activation_ready_count": 0,
+      "activation_ready_sleeves": [],
+      "source": "experiments/logs/exp-20260614-003.json",
+      "top_forward_rows": [
+        {
+          "activation_ready": false,
+          "closed_count": 17,
+          "reject_reasons": [
+            "true_trigger_closed_rows_below_20",
+            "low_deployment_rows_are_off_trigger_observations"
+          ],
+          "rv_cash": 4690.01,
+          "rv_qqq": 7517.99,
+          "rv_spy": 8952.04,
+          "sleeve_dir": "low_deployment_etf",
+          "true_trigger_closed_count": 0
+        },
+        {
+          "activation_ready": false,
+          "closed_count": 3,
+          "reject_reasons": [
+            "true_trigger_closed_rows_below_20"
+          ],
+          "rv_cash": 7240.23,
+          "rv_qqq": 6166.42,
+          "rv_spy": 6760.53,
+          "sleeve_dir": "state_surface",
+          "true_trigger_closed_count": 3
+        },
+        {
+          "activation_ready": false,
+          "closed_count": 3,
+          "reject_reasons": [
+            "true_trigger_closed_rows_below_20"
+          ],
+          "rv_cash": -3030.14,
+          "rv_qqq": -1550.64,
+          "rv_spy": -2047.47,
+          "sleeve_dir": "volume_breadth_breakout",
+          "true_trigger_closed_count": 3
+        },
+        {
+          "activation_ready": false,
+          "closed_count": 2,
+          "reject_reasons": [
+            "true_trigger_closed_rows_below_20"
+          ],
+          "rv_cash": 738.67,
+          "rv_qqq": -447.87,
+          "rv_spy": -363.42,
+          "sleeve_dir": "sec_negative",
+          "true_trigger_closed_count": 2
+        },
+        {
+          "activation_ready": false,
+          "closed_count": 2,
+          "reject_reasons": [
+            "true_trigger_closed_rows_below_20"
+          ],
+          "rv_cash": 286.6,
+          "rv_qqq": 1342.52,
+          "rv_spy": 1086.41,
+          "sleeve_dir": "fundamental_growth_rs",
+          "true_trigger_closed_count": 2
+        }
+      ]
+    },
+    "estimate_revision_20260613": {
+      "candidate_match_rate": 0.0,
+      "estimate_revision_usable_rows": 53,
+      "matched_candidate_rows": 0,
+      "pit_safe_rate": 0.042502,
+      "row_count": 1247,
+      "source": "data/non_ohlcv/estimate_revision_ledger_summary_20260613.json",
+      "up_revision_rows": 1
+    },
+    "form4_backfill_20241002_20260502": {
+      "excluded_external_issuer_rows": 1171,
+      "open_market_purchase_count": 131,
+      "rows_written": 27879,
+      "source": "data/non_ohlcv/form4_backfill_summary_20241002_20260502.json",
+      "tickers_mapped": 51,
+      "transaction_code_p_count": 234
+    },
+    "platform_rs20_no_gap_forward_watch": {
+      "candidate_count": 0,
+      "ledger_row_count": 0,
+      "source": "data/paper_sleeves/platform_rs20_no_gap/summary.json"
+    },
+    "sec_10k_liquidity_forward_watch": {
+      "candidate_count": 0,
+      "ledger_row_count": 0,
+      "source": "data/paper_sleeves/sec_10k_liquidity/summary.json",
+      "ten_k_event_count": 0
+    }
+  },
+  "decision": "blocked_no_valid_nonrepeat_alpha_candidate_after_latest_history_scan",
+  "experiment_id": "exp-20260614-012",
+  "gate1": {
+    "aggregate_baseline": {
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_max": 0.1119,
+      "min_survival_rate": 0.7925,
+      "total_pnl_sum": 234850.99,
+      "trade_count_sum": 61
+    },
+    "baseline_source": "docs/backtesting.md",
+    "by_window_baseline": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23",
+        "strategy_total_return_pct": 1.1707,
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "win_rate": 0.8333
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23",
+        "strategy_total_return_pct": 0.7811,
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "win_rate": 0.5238
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02",
+        "strategy_total_return_pct": 0.3967,
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "win_rate": 0.4091
+      }
+    }
+  },
+  "gate2": {
+    "entry_date_required_for_future_alpha": true,
+    "note": "No executable signal rows, target prices, or exit contracts were created in this blocker record.",
+    "passed_for_noop_blocker_record": true,
+    "target_price_required_for_future_alpha": true
+  },
+  "gate3": {
+    "filter_added": false,
+    "survival_guard_passed": true,
+    "survival_rate_min": 0.7925
+  },
+  "gate4": {
+    "aggregate_expected_value_delta": 0.0,
+    "aggregate_strategy_total_pnl_delta": 0.0,
+    "aggregate_trade_count_delta": 0,
+    "by_window": {
+      "late_strong": {
+        "after_expected_value_score": 5.1628,
+        "after_total_pnl": 117072.92,
+        "after_trade_count": 18,
+        "before_expected_value_score": 5.1628,
+        "before_total_pnl": 117072.92,
+        "before_trade_count": 18,
+        "expected_value_score_delta": 0.0,
+        "strategy_total_pnl_delta": 0.0,
+        "trade_count_delta": 0
+      },
+      "mid_weak": {
+        "after_expected_value_score": 2.1402,
+        "after_total_pnl": 78110.11,
+        "after_trade_count": 21,
+        "before_expected_value_score": 2.1402,
+        "before_total_pnl": 78110.11,
+        "before_trade_count": 21,
+        "expected_value_score_delta": 0.0,
+        "strategy_total_pnl_delta": 0.0,
+        "trade_count_delta": 0
+      },
+      "old_thin": {
+        "after_expected_value_score": 0.5911,
+        "after_total_pnl": 39667.96,
+        "after_trade_count": 22,
+        "before_expected_value_score": 0.5911,
+        "before_total_pnl": 39667.96,
+        "before_trade_count": 22,
+        "expected_value_score_delta": 0.0,
+        "strategy_total_pnl_delta": 0.0,
+        "trade_count_delta": 0
+      }
+    },
+    "failed_reasons": [
+      "no_valid_nonrepeat_candidate",
+      "required_new_data_or_forward_rows_absent",
+      "running_a_strategy_backtest_would_duplicate_frozen_near_neighbors"
+    ],
+    "passed": false,
+    "strategy_behavior_changed": false
+  },
+  "hypothesis": "Choose the strongest non-repeat production-visible alpha direction after the latest June 14 experiments; only launch if it has PIT/free-data coverage across the canonical three windows and is not a frozen near-neighbor.",
+  "lane": "alpha_search",
+  "log": "experiments/logs/exp-20260614-012.json",
+  "post_run_reflection": {
+    "best_next_alpha_direction": "Build a new production-visible free-data edge, with priority on PIT estimate breadth/dispersion or SEC evidence-span fields; do not optimize current price/allocator thresholds.",
+    "forbidden_near_neighbor_retry": "Do not sweep SEC RS20 thresholds/scalars, accepted allocator source priority, source-pair history, market breadth tail buckets, Form4 transaction thresholds, Companyfacts peer/quality thresholds, calendar/TOM rules, or analyst revision filters on the current sparse rows.",
+    "new_evidence_required": "Collect new free PIT estimate breadth/dispersion/provenance rows, SEC evidence-span semantics, customer/supplier or external-issuer relation mappings, or at least 20 closed true-trigger forward rows before another Gate 1-4 alpha launch.",
+    "why_negative_or_blocked": "The negative conclusion is about alpha selection quality, not a software bug: current local evidence says the next high-EV work needs a new free PIT field or forward closed rows.",
+    "why_no_strategy_experiment": "A fresh strategy run would either retest a frozen near-neighbor or operate on empty/insufficient rows, making the Gate 4 evidence unreliable.",
+    "why_result_happened": "The blocker is stronger than exp-20260614-005 because the intervening relation, SEC allocator, market-breadth tail, and source-pair router experiments also failed accepted comparators, while analyst revision and forward activation data remain too sparse."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "The next viable alpha should expand or improve the candidate pool with a new free PIT data edge or mature default-off paper evidence.",
+    "2_history_check": [
+      {
+        "changed_variable": "accepted_default_off_paper_adapter_forward_maturity_activation_rule_v1",
+        "decision": "rejected_no_forward_activation_ready",
+        "experiment_id": "exp-20260614-003",
+        "reason": {
+          "forbidden_near_neighbor_retry": "Do not activate low_deployment_etf from off-trigger rows, and do not sweep low-deployment thresholds, ETF lists, hold days, paper notional, accepted allocator priority, or post-earnings/FTD/Companyfacts state thresholds on the frozen windows.",
+          "new_evidence_required": "At least 20 closed true-trigger forward rows for one shared default-off helper with replacement value enriched versus cash, SPY, and QQQ, plus a documented shared exit/target contract and daily snapshot parity before any production-facing change.",
+          "why_result_happened": "The accepted default-off paper sleeve surface is still dominated by immature forward samples. The only sleeve with a near-usable closed count is low_deployment_etf, but its 17 positive rows were recorded while core deployment was above the low-deployment reference threshold, so they do not validate the actual cash-slack activation condition."
+        }
+      },
+      {
+        "changed_variable": "sec_financial_report_rs20_leader_notional_scalar",
+        "decision": "accepted_default_off_sec_financial_report_rs20_leader_notional_1.15x",
+        "experiment_id": "exp-20260614-004",
+        "reason": {
+          "forbidden_near_neighbor_retry": "Do not retune this same SEC financial-report RS lookback, 5pp threshold, or 1.15x scalar without forward replacement-value evidence or a materially new free-data discriminator.",
+          "new_evidence_required": "Closed forward daily paper outcomes, concentration/capacity checks, and a live-realistic execution envelope are required before any live-ready promotion.",
+          "why_result_happened": "The RS20 leader bucket appears to capture durable pre-entry institutional absorption inside the already accepted SEC financial-report T+1 drift queue. The support bucket had 24 closed trades across the three fixed windows, improved EV/PnL in every window, and left survival and trade count unchanged."
+        }
+      },
+      {
+        "changed_variable": "highest_priority_alpha_candidate_launch_decision_v1",
+        "decision": "blocked_no_valid_nonrepeat_alpha_candidate",
+        "experiment_id": "exp-20260614-005",
+        "reason": {
+          "forbidden_near_neighbor_retry": "Do not sweep revision/PEAD, peer earnings, low-deployment activation, options/FINRA, Form4, SEC semantic, industry relation, compression, or 52-week thresholds on the frozen windows without new data.",
+          "new_evidence_required": "Retry only with new free PIT estimate breadth, dispersion, or provenance fields; SEC evidence-span extraction; or at least 20 closed true-trigger default-off forward rows with replacement value versus cash, SPY, and QQQ.",
+          "next_new_evidence": "Seek new free PIT estimate breadth/dispersion/provenance, SEC evidence-span extraction, or closed true-trigger default-off forward rows.",
+          "why_negative_or_blocked": "The blocker is not a bug. It is an alpha-quality constraint: another parameter run would most likely create an unreliable duplicate experiment.",
+          "why_no_strategy_experiment": "The strongest candidates were either recent rejected/frozen near-neighbors or lacked the PIT/forward data maturity required for a credible three-window test.",
+          "why_result_happened": "The blocker happened because the strongest apparent alpha lanes were already covered by recent failed or accepted comparator experiments, while the remaining production-visible paper candidates lacked closed true-trigger forward rows."
+        }
+      },
+      {
+        "changed_variable": "correlation_breakdown_idiosyncratic_leader_candidate_source_v1",
+        "decision": "rejected_correlation_breakdown_idiosyncratic_leader_candidate_pool",
+        "experiment_id": "exp-20260614-006",
+        "reason": "window_ev_regression; window_pnl_regression; drawdown_drift_too_high"
+      },
+      {
+        "changed_variable": "earnings_peer_underreaction_candidate_source_v1",
+        "decision": "rejected_earnings_peer_underreaction_candidate_pool",
+        "experiment_id": "exp-20260614-007",
+        "reason": "window_ev_regression; window_pnl_regression; target_sample_too_small; target_concentration_failed; accepted_rolling_corr_peer_shock_ev_not_beaten; accepted_rolling_corr_peer_shock_pnl_not_beaten"
+      },
+      {
+        "changed_variable": "sec_financial_report_t1_drift_source_family_added_to_accepted_helper_source_priority_allocator_v1",
+        "decision": "rejected_sec_financial_report_allocator_source_extension",
+        "experiment_id": "exp-20260614-009",
+        "reason": "direct_window_ev_regression_vs_accepted_allocator; direct_window_pnl_regression_vs_accepted_allocator; direct_drawdown_drift_too_high; accepted_allocator_ev_comparator_not_beaten; accepted_allocator_pnl_comparator_not_beaten; accepted_allocator_window_comparator_regression"
+      },
+      {
+        "changed_variable": "accepted_allocator_market_breadth_support_bucket_readout_v1",
+        "decision": "rejected_market_breadth_tail_state_classifier",
+        "experiment_id": "exp-20260614-010",
+        "reason": {
+          "forbidden_near_neighbor_retry": "Do not sweep breadth fractions, SMA lookbacks, SPY/QQQ cutoffs, allocator source ranks, top-N, notional, hold days, cooldown, or the execution envelope on these frozen windows.",
+          "new_evidence_required": "A retry needs materially new tail-state evidence such as forward closed replacement rows, same-day displacement type, or a PIT flow field beyond OHLCV breadth.",
+          "why_result_happened": "The market-breadth tail bucket did not cleanly separate accepted allocator losers from winners. Failure reasons: window_ev_regression:late_strong, window_pnl_regression:late_strong, window_ev_regression:mid_weak, window_pnl_regression:mid_weak, window_ev_regression:old_thin, window_pnl_regression:old_thin, aggregate_ev_not_improved, aggregate_pnl_not_improved. The accepted allocator already mixes event, revision, volatility, relation, and industry-flow sources; broad breadth can remove valid relief/rotation trades as easily as crowded continuation tails."
+        }
+      },
+      {
+        "changed_variable": "source_pair_conflict_router_v1",
+        "decision": "rejected",
+        "experiment_id": "exp-20260614-011",
+        "reason": "direct_ev_vs_accepted_allocator_not_positive; direct_pnl_vs_accepted_allocator_not_positive; direct_window_ev_regression_vs_accepted_allocator; direct_window_pnl_regression_vs_accepted_allocator; accepted_allocator_ev_comparator_not_beaten; accepted_allocator_pnl_comparator_not_beaten"
+      },
+      {
+        "changed_variable": "broad_companyfacts_peer_confirmed_filing_drift_shared_adapter_v1",
+        "decision": "rejected_default_off_broad_companyfacts_peer_confirmed_adapter",
+        "experiment_id": "exp-20260605-015",
+        "reason": "window_ev_regression;window_pnl_regression;drawdown_drift_too_high"
+      },
+      {
+        "changed_variable": "broad_companyfacts_peer_price_absorption_candidate_source_v1",
+        "decision": "rejected_broad_companyfacts_peer_price_absorption_candidate_pool",
+        "experiment_id": "exp-20260605-016",
+        "reason": "window_ev_regression;window_pnl_regression"
+      },
+      {
+        "changed_variable": "operating_efficiency_assets_candidate_source_v1",
+        "decision": "rejected_operating_efficiency_assets_candidate_pool",
+        "experiment_id": "exp-20260613-031",
+        "reason": "aggregate_ev_not_above_accepted_exp017; aggregate_pnl_not_above_accepted_exp017; window_ev_regressed_vs_accepted_exp017; window_pnl_regressed_vs_accepted_exp017"
+      }
+    ],
+    "3_single_decision_hypothesis": "highest_priority_nonrepeat_alpha_candidate_selection_v2",
+    "4_acceptance_standard": "Launch only if the candidate is non-repeat, has three-window PIT/free-data coverage, can satisfy Gate 1-4, and has a shared production/backtest parity path if positive.",
+    "5_reproducibility": "See data/experiments/exp-20260614-012/nonrepeat_alpha_candidate_blocker.json and experiments/artifacts/exp-20260614-012_nonrepeat_alpha_candidate_blocker.md."
+  },
+  "prediction": {
+    "confidence_reason": "After exp-20260614-005, the newly tested relation, SEC allocator, tail-state, and source-router lanes also failed; remaining promising estimate/forward lanes lack rows.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "all_high_potential_lanes_frozen",
+      "data_coverage_too_thin",
+      "no_new_production_visible_pit_field"
+    ],
+    "recorded_at": "2026-06-14T10:15:13Z",
+    "success_probability": 0.08
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_note": "No strategy or production path changed. A positive future alpha must be shared-paper-first with historical replay plus daily default-off snapshot parity.",
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "runner": "quant/experiments/exp_20260614_012_nonrepeat_alpha_candidate_blocker.py",
+  "status": "blocked",
+  "timestamp": "2026-06-14T10:15:13Z"
+}

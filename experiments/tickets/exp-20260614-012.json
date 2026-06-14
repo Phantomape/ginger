@@ -1,0 +1,150 @@
+{
+  "acceptance_rule": "Proceed only if a non-repeat candidate has canonical three-window PIT/free-data coverage, production/backtest shared-helper path, and no frozen near-neighbor; otherwise close blocked with evidence and do not change strategy logic.",
+  "allowed_write_scope": [
+    "experiments/",
+    "data/experiments/",
+    "docs/experiment_log.jsonl",
+    "quant/experiments/"
+  ],
+  "baseline_result_file": "docs/backtesting.md",
+  "card_file": "experiments/cards/exp-20260614-012.md",
+  "causal_components": [
+    "history_scan",
+    "data_coverage_probe",
+    "anti_repeat_check",
+    "gate1_4_blocker_proof"
+  ],
+  "change_type": "alpha_candidate_selection_blocker_proof",
+  "changed_variable": "highest_priority_nonrepeat_alpha_candidate_selection_v2",
+  "claimed_at": null,
+  "completed_at": "2026-06-14T10:15:13Z",
+  "created_at": "2026-06-14T10:11:25+00:00",
+  "decision": "blocked_no_valid_nonrepeat_alpha_candidate_after_latest_history_scan",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260614-012",
+  "experiment_uid": "expuid-a94b3d3c2996439b",
+  "gate4": {
+    "aggregate_expected_value_delta": 0.0,
+    "aggregate_strategy_total_pnl_delta": 0.0,
+    "aggregate_trade_count_delta": 0,
+    "by_window": {
+      "late_strong": {
+        "after_expected_value_score": 5.1628,
+        "after_total_pnl": 117072.92,
+        "after_trade_count": 18,
+        "before_expected_value_score": 5.1628,
+        "before_total_pnl": 117072.92,
+        "before_trade_count": 18,
+        "expected_value_score_delta": 0.0,
+        "strategy_total_pnl_delta": 0.0,
+        "trade_count_delta": 0
+      },
+      "mid_weak": {
+        "after_expected_value_score": 2.1402,
+        "after_total_pnl": 78110.11,
+        "after_trade_count": 21,
+        "before_expected_value_score": 2.1402,
+        "before_total_pnl": 78110.11,
+        "before_trade_count": 21,
+        "expected_value_score_delta": 0.0,
+        "strategy_total_pnl_delta": 0.0,
+        "trade_count_delta": 0
+      },
+      "old_thin": {
+        "after_expected_value_score": 0.5911,
+        "after_total_pnl": 39667.96,
+        "after_trade_count": 22,
+        "before_expected_value_score": 0.5911,
+        "before_total_pnl": 39667.96,
+        "before_trade_count": 22,
+        "expected_value_score_delta": 0.0,
+        "strategy_total_pnl_delta": 0.0,
+        "trade_count_delta": 0
+      }
+    },
+    "failed_reasons": [
+      "no_valid_nonrepeat_candidate",
+      "required_new_data_or_forward_rows_absent",
+      "running_a_strategy_backtest_would_duplicate_frozen_near_neighbors"
+    ],
+    "passed": false,
+    "strategy_behavior_changed": false
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260614-012",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-14T10:11:25+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "nonrepeat_alpha_candidate_blocker"
+  },
+  "hypothesis": "candidate_pool / ranking: choose the strongest non-repeat production-visible alpha direction after the latest June 14 experiments; only launch if it has PIT/free-data coverage across the canonical three windows and is not a frozen near-neighbor.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "canonical_windows",
+    "accepted_allocator_priority",
+    "SEC_RS20_scalar",
+    "Companyfacts_peer_thresholds",
+    "Form4_thresholds",
+    "calendar_TOM_rules",
+    "trade_enabled_false"
+  ],
+  "mechanism_family": "alpha_direction_selection",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/portfolio.py",
+    "quant/*production*",
+    "live order paths"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260614-003",
+    "exp-20260614-004",
+    "exp-20260614-005",
+    "exp-20260614-006",
+    "exp-20260614-007",
+    "exp-20260614-009",
+    "exp-20260614-010",
+    "exp-20260614-011",
+    "exp-20260605-015",
+    "exp-20260605-016"
+  ],
+  "new_evidence_type": "latest_history_plus_data_coverage_blocker_proof",
+  "owner": "alpha-search",
+  "post_run_reflection": {
+    "best_next_alpha_direction": "Build a new production-visible free-data edge, with priority on PIT estimate breadth/dispersion or SEC evidence-span fields; do not optimize current price/allocator thresholds.",
+    "forbidden_near_neighbor_retry": "Do not sweep SEC RS20 thresholds/scalars, accepted allocator source priority, source-pair history, market breadth tail buckets, Form4 transaction thresholds, Companyfacts peer/quality thresholds, calendar/TOM rules, or analyst revision filters on the current sparse rows.",
+    "new_evidence_required": "Collect new free PIT estimate breadth/dispersion/provenance rows, SEC evidence-span semantics, customer/supplier or external-issuer relation mappings, or at least 20 closed true-trigger forward rows before another Gate 1-4 alpha launch.",
+    "why_negative_or_blocked": "The negative conclusion is about alpha selection quality, not a software bug: current local evidence says the next high-EV work needs a new free PIT field or forward closed rows.",
+    "why_no_strategy_experiment": "A fresh strategy run would either retest a frozen near-neighbor or operate on empty/insufficient rows, making the Gate 4 evidence unreliable.",
+    "why_result_happened": "The blocker is stronger than exp-20260614-005 because the intervening relation, SEC allocator, market-breadth tail, and source-pair router experiments also failed accepted comparators, while analyst revision and forward activation data remain too sparse."
+  },
+  "prediction": {
+    "confidence_reason": "Recent records show positive leads require new data rather than another threshold sweep; analyst revision and forward adapters are data-thin, while Form4/Companyfacts/SEC/allocator/calendar near-neighbors are already frozen or accepted comparators.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "all_high_potential_lanes_frozen",
+      "data_coverage_too_thin",
+      "no_new_production_visible_pit_field"
+    ],
+    "recorded_at": "2026-06-14T10:10:53+00:00",
+    "success_probability": 0.08
+  },
+  "prior_trial_count": 1,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "artifact": "data/experiments/exp-20260614-012/nonrepeat_alpha_candidate_blocker.json",
+    "decision": "blocked_no_valid_nonrepeat_alpha_candidate_after_latest_history_scan",
+    "log": "experiments/logs/exp-20260614-012.json",
+    "runner": "quant/experiments/exp_20260614_012_nonrepeat_alpha_candidate_blocker.py",
+    "summary": "The blocker is stronger than exp-20260614-005 because the intervening relation, SEC allocator, market-breadth tail, and source-pair router experiments also failed accepted comparators, while analyst revision and forward activation data remain too sparse."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260614-012.json",
+  "single_causal_variable": "highest_priority_nonrepeat_alpha_candidate_selection_v2",
+  "status": "blocked",
+  "ticket_file": "experiments/tickets/exp-20260614-012.json",
+  "trial_family": "nonrepeat_alpha_candidate_launch",
+  "trial_variant_id": "blocker_after_20260614_recent_rejections"
+}
