@@ -1227,6 +1227,64 @@ def create_ticket(
     return ticket
 
 
+def _file_backed_registry_context(registry_path):
+    """Registry-like context with workspace dir keys resolved from the registry
+    path, WITHOUT loading docs/experiment_registry.json.
+
+    The reserve path uses this so it never needs the full (1.8 MB) registry
+    object to allocate an id: the ticket file is the source of truth.
+    """
+    path = Path(registry_path)
+    workspace_root = path.parent.parent if path.parent.name == "docs" else path.parent
+    return {
+        "_repo_root": str(workspace_root),
+        "_tickets_dir": str(workspace_root / "experiments" / "tickets"),
+        "_logs_dir": str(workspace_root / "experiments" / "logs"),
+        "_cards_dir": str(workspace_root / "experiments" / "cards"),
+        "_manifests_dir": str(workspace_root / "experiments" / "manifests"),
+        "experiments": [],
+    }
+
+
+def reserve_experiment(registry_path, *, timeout_seconds=DEFAULT_LOCK_TIMEOUT_SECONDS,
+                       max_attempts=64, **ticket_kwargs):
+    """Reserve an experiment WITHOUT holding the global registry lock across the
+    heavy id-collision scan (registry-decontention step 1).
+
+    The ticket file is the atomic source of truth: ``create_ticket`` allocates an
+    id (lock-free filesystem scan) and writes the ticket via O_EXCL (step 0), so
+    two concurrent reservers cannot take the same id -- the loser gets a
+    FileExistsError-derived ValueError and retries the next sequence number.
+    ``docs/experiment_registry.json`` is then refreshed best-effort under a brief
+    lock (index entry only, NOT the scan), keeping it a current-but-non-
+    authoritative cache for legacy readers. A contended/missed cache refresh
+    never fails an already-durable reservation.
+    """
+    explicit = ticket_kwargs.get("experiment_id") is not None
+    last_exc = None
+    for _ in range(max_attempts):
+        context = _file_backed_registry_context(registry_path)
+        try:
+            ticket = create_ticket(context, **ticket_kwargs)
+        except ValueError as exc:
+            # Auto-allocated ids retry the next sequence number on collision;
+            # explicit ids and non-collision validation errors propagate.
+            if explicit or "already exists" not in str(exc):
+                raise
+            last_exc = exc
+            continue
+        try:
+            locked_registry_update(
+                registry_path,
+                lambda reg: _sync_index_entry(reg, ticket),
+                timeout_seconds=timeout_seconds,
+            )
+        except Exception:
+            pass
+        return ticket
+    raise last_exc or RuntimeError("failed to reserve an available experiment id")
+
+
 def _path_overlaps(left, right):
     a = _normalize_scope(left)
     b = _normalize_scope(right)

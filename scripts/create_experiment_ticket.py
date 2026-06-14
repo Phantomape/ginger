@@ -2,12 +2,11 @@
 
 from experiment_registry import (
     add_common_registry_arg,
-    create_ticket,
-    locked_registry_update,
     normalize_prediction,
     parse_csv,
     parse_windows,
     print_json,
+    reserve_experiment,
 )
 
 
@@ -116,35 +115,34 @@ def main(description=__doc__):
         confidence_reason=args.confidence_reason,
     )
 
-    ticket = locked_registry_update(
+    # registry-decontention step 1: reserve via the lock-free O_EXCL ticket path
+    # (the heavy id-collision scan no longer runs under the global registry lock).
+    ticket = reserve_experiment(
         args.registry,
-        lambda registry: create_ticket(
-            registry,
-            experiment_id=args.experiment_id,
-            lane=args.lane,
-            hypothesis=args.hypothesis,
-            change_type=args.change_type,
-            single_causal_variable=args.single_causal_variable,
-            causal_components=parse_csv(args.causal_components),
-            mechanism_family=args.mechanism_family,
-            trial_family=args.trial_family,
-            trial_variant_id=args.trial_variant_id,
-            changed_variable=args.changed_variable,
-            prior_trial_count=args.prior_trial_count,
-            nearby_prior_experiments=parse_csv(args.nearby_prior_experiments),
-            multiple_testing_risk_bucket=args.multiple_testing_risk_bucket,
-            new_evidence_type=args.new_evidence_type,
-            baseline_result_file=args.baseline_result_file,
-            allowed_write_scope=parse_csv(args.allowed_write_scope),
-            must_not_touch=parse_csv(args.must_not_touch),
-            locked_variables=parse_csv(args.locked_variables),
-            evaluation_windows=parse_windows(args.window),
-            acceptance_rule=args.acceptance_rule,
-            owner=args.owner,
-            file_slug=args.file_slug,
-            exclusive_scope_ok=args.exclusive_scope_ok,
-            prediction=prediction,
-        ),
+        experiment_id=args.experiment_id,
+        lane=args.lane,
+        hypothesis=args.hypothesis,
+        change_type=args.change_type,
+        single_causal_variable=args.single_causal_variable,
+        causal_components=parse_csv(args.causal_components),
+        mechanism_family=args.mechanism_family,
+        trial_family=args.trial_family,
+        trial_variant_id=args.trial_variant_id,
+        changed_variable=args.changed_variable,
+        prior_trial_count=args.prior_trial_count,
+        nearby_prior_experiments=parse_csv(args.nearby_prior_experiments),
+        multiple_testing_risk_bucket=args.multiple_testing_risk_bucket,
+        new_evidence_type=args.new_evidence_type,
+        baseline_result_file=args.baseline_result_file,
+        allowed_write_scope=parse_csv(args.allowed_write_scope),
+        must_not_touch=parse_csv(args.must_not_touch),
+        locked_variables=parse_csv(args.locked_variables),
+        evaluation_windows=parse_windows(args.window),
+        acceptance_rule=args.acceptance_rule,
+        owner=args.owner,
+        file_slug=args.file_slug,
+        exclusive_scope_ok=args.exclusive_scope_ok,
+        prediction=prediction,
         timeout_seconds=args.lock_timeout_seconds,
     )
     print_json(ticket)
