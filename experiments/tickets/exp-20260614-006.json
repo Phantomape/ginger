@@ -1,0 +1,191 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260614_006_correlation_breakdown_idiosyncratic_leader.py",
+    "data/experiments/exp-20260614-006/exp_20260614_006_correlation_breakdown_idiosyncratic_leader.json",
+    "experiments/cards/exp-20260614-006.md",
+    "experiments/manifests/exp-20260614-006.json",
+    "experiments/tickets/exp-20260614-006.json",
+    "experiments/logs/exp-20260614-006.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "card_file": "experiments/cards/exp-20260614-006.md",
+  "causal_components": [
+    "pit rolling peer correlation",
+    "peer basket nonconfirmation",
+    "leader breakout",
+    "top1 next-open paper replay",
+    "gate1-4 verdict"
+  ],
+  "change_type": "default_off_paper_candidate_pool_replay_scout",
+  "changed_variable": "correlation_breakdown_idiosyncratic_leader_candidate_source_v1",
+  "claimed_at": "2026-06-14T04:06:53+00:00",
+  "completed_at": "2026-06-14T04:28:08+00:00",
+  "created_at": "2026-06-14T04:06:35+00:00",
+  "decision": "rejected_correlation_breakdown_idiosyncratic_leader_candidate_pool",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260614-006",
+  "experiment_uid": "expuid-2100df19cf7e4f9f",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260614-006",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-14T04:06:35+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "correlation_breakdown_idiosyncratic_leader"
+  },
+  "hypothesis": "candidate_pool: previously correlated industry peers that break upward while their high-correlation peer basket does not confirm may identify idiosyncratic demand, not generic industry beta.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "correlation_breakdown_idiosyncratic_leader_candidate_source_v1"
+  ],
+  "mechanism_family": "production_visible_free_ohlcv_relation_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260606-025",
+    "exp-20260609-014",
+    "exp-20260610-022",
+    "exp-20260613-028",
+    "exp-20260613-027"
+  ],
+  "new_evidence_type": "production_visible_free_ohlcv_correlation_breakdown_peer_nonconfirmation_field",
+  "owner": "codex-alpha-search",
+  "prediction": {
+    "success_probability": 0.16,
+    "expected_ev_delta": 0.12,
+    "expected_pnl_delta": 1800.0,
+    "main_failure_modes": [
+      "generic_momentum_relabel",
+      "peer_relation_noise",
+      "window_regression",
+      "drawdown_drift_too_high",
+      "accepted_peer_comparator_not_beaten"
+    ],
+    "confidence_reason": "Accepted rolling-correlation peer shock shows relation alpha can work, but recent high-order and same-sector peer variants failed. This tests a different ex-ante field: upward decorrelation from a prior high-correlation same-industry basket with peer nonconfirmation.",
+    "recorded_at": "2026-06-14T04:06:03+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected_correlation_breakdown_idiosyncratic_leader_candidate_pool",
+    "accepted": false,
+    "numeric_gate4_passed": false,
+    "artifact": "data/experiments/exp-20260614-006/exp_20260614_006_correlation_breakdown_idiosyncratic_leader.json",
+    "log": "experiments/logs/exp-20260614-006.json",
+    "card": "experiments/cards/exp-20260614-006.md",
+    "aggregate_expected_value_delta": 0.9401,
+    "aggregate_strategy_total_pnl_delta": 9840.64,
+    "gate4": {
+      "accepted_relation_comparators": {
+        "exp-20260607-008_industry_relative_laggard_repair": {
+          "aggregate_expected_value_delta": 0.2763,
+          "aggregate_pnl_delta": 6208.99,
+          "note": "accepted shared industry-relative laggard repair adapter"
+        },
+        "exp-20260608-008_industry_stable_core_flow": {
+          "aggregate_expected_value_delta": 0.1459,
+          "aggregate_pnl_delta": 3731.54,
+          "note": "accepted shared industry-stable core-flow adapter"
+        }
+      },
+      "aggregate_ev_delta": 0.9401,
+      "aggregate_pnl_delta": 9840.64,
+      "decision": "rejected_correlation_breakdown_idiosyncratic_leader_candidate_pool",
+      "failed_reasons": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "drawdown_drift_too_high"
+      ],
+      "max_drawdown_worse": 0.0793,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "passed": false,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "max_single_positive_pnl_share": 0.068538,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "passed": true,
+        "positive_pnl_hhi": 0.020539,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "target_trade_count": 337,
+      "target_trade_count_min": 20,
+      "target_window_count_min": 3,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "windows_ev_improved": 2,
+      "windows_ev_regressed": 1,
+      "windows_pnl_improved": 2,
+      "windows_pnl_regressed": 1
+    },
+    "calibration": {
+      "actual_gate4_passed": false,
+      "brier_score": 0.0256,
+      "failure_modes_observed": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "drawdown_drift_too_high"
+      ],
+      "predicted_success_probability": 0.16
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "private_replay_scout_no_shared_adapter",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "default_off_paper_only": true,
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_ohlcv_only": true,
+      "live_realism_evaluated": true,
+      "live_ready": false,
+      "execution_envelope": {
+        "trade_enabled": false,
+        "target_notional_per_paper_trade": 4000.0,
+        "daily_entry_slots": 1,
+        "same_ticker_cooldown_days": 10,
+        "hold_days": 10,
+        "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+        "order_semantics": "observe-only next-session-open paper entry; no broker order",
+        "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+        "kill_switch": "trade_enabled remains false; no production adapter changes",
+        "failure_handling": "missing OHLCV, peer context, next open, or 10d exit rejects the paper candidate"
+      },
+      "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper computes the same same-industry peer basket, prior rolling-correlation filter, signal-day peer nonconfirmation, leader gates, same-ticker core-overlap exclusion, cooldown, next-open paper entry, 10-trading-day exit, costs, and concentration controls in both historical replay and daily production."
+    },
+    "post_run_reflection": {
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping correlation lookback, peer count, correlation threshold, peer nonconfirmation threshold, volume, hold-day, cooldown, top-N, or notional on these frozen windows.",
+      "new_evidence_required": "A valid retry needs a materially richer PIT relation or flow field, such as options/borrow/ownership confirmation, timestamped event relation provenance, or closed forward replacement rows from a shared daily helper.",
+      "realized_failure_mode": "generic_momentum_or_peer_relation_noise",
+      "why_result_happened": "The prior-correlation/nonconfirmation field did not clear Gate 4. The likely reason is that same-industry decorrelation still relabels short-horizon momentum or noisy peer baskets; it did not beat accepted relation comparators after next-open execution, costs, cooldown, drawdown, and concentration checks."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260614-006.json",
+  "single_causal_variable": "correlation_breakdown_idiosyncratic_leader_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The correlation-breakdown idiosyncratic-leader source was rejected; it did not establish a distinct relation edge under the standard three-window protocol.",
+  "ticket_file": "experiments/tickets/exp-20260614-006.json",
+  "trial_family": "correlation_breakdown_idiosyncratic_leader_candidate_pool",
+  "trial_variant_id": "correlation_breakdown_idiosyncratic_leader_top1_next_open_10d_v1",
+  "artifact": "data/experiments/exp-20260614-006/exp_20260614_006_correlation_breakdown_idiosyncratic_leader.json",
+  "log": "experiments/logs/exp-20260614-006.json",
+  "aggregate_expected_value_delta": 0.9401,
+  "aggregate_strategy_total_pnl_delta": 9840.64,
+  "updated_at": "2026-06-14T04:28:08+00:00"
+}
