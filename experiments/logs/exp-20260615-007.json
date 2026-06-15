@@ -1,0 +1,300 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260615-007/exp_20260615_007_gross_margin_rs_allocator_source_extension.json",
+  "artifact_md": "experiments/artifacts/exp-20260615-007_gross_margin_rs_allocator_source_extension.md",
+  "calibration": {
+    "actual_decision": "blocked_duplicate_prior_gross_margin_allocator_source_extension",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 0,
+    "brier_score": 0.0324,
+    "predicted_failure_mode_hit": false,
+    "predicted_success_probability": 0.18,
+    "realized_failure_mode": "duplicate_prior_experiment"
+  },
+  "candidate_reviews": [
+    {
+      "alpha_hypothesis": "Accepted gross-margin RS rows might add independent replacement value inside the source-priority allocator.",
+      "candidate": "gross_margin_rs_allocator_source_extension",
+      "current_evidence": {
+        "duplicate_confirmed": true,
+        "example_selected_rows": [
+          {
+            "gross_margin_pass_v1": true,
+            "gross_margin_rule_version": "gross_margin_quality_candidate_source_v1",
+            "signal_date": "2025-10-24",
+            "source_family": "fundamental_growth_rs",
+            "source_priority_accepted_experiment": "exp-20260528-017",
+            "source_priority_rank": 8,
+            "source_rule_version": "accepted_helper_source_priority_top1_with_fundamental_growth_rs_replay_v1",
+            "ticker": "CRDO",
+            "window": "late_strong"
+          },
+          {
+            "gross_margin_pass_v1": true,
+            "gross_margin_rule_version": "gross_margin_quality_candidate_source_v1",
+            "signal_date": "2025-04-23",
+            "source_family": "fundamental_growth_rs",
+            "source_priority_accepted_experiment": "exp-20260528-017",
+            "source_priority_rank": 8,
+            "source_rule_version": "accepted_helper_source_priority_top1_with_fundamental_growth_rs_replay_v1",
+            "ticker": "PLTR",
+            "window": "mid_weak"
+          },
+          {
+            "gross_margin_pass_v1": true,
+            "gross_margin_rule_version": "gross_margin_quality_candidate_source_v1",
+            "signal_date": "2024-10-15",
+            "source_family": "fundamental_growth_rs",
+            "source_priority_accepted_experiment": "exp-20260528-017",
+            "source_priority_rank": 8,
+            "source_rule_version": "accepted_helper_source_priority_top1_with_fundamental_growth_rs_replay_v1",
+            "ticker": "APP",
+            "window": "old_thin"
+          }
+        ],
+        "interpretation": "The prior allocator-extension replay already selected fundamental_growth_rs rows that pass the accepted gross-margin quality rule. A new gross_margin_rs source-extension replay would measure the same source-family admission under a new label.",
+        "prior_artifact": "data/experiments/exp-20260610-019/exp_20260610_019_fundamental_growth_rs_allocator_source_extension.json",
+        "prior_decision": "rejected_fundamental_growth_rs_allocator_source_extension",
+        "prior_experiment_id": "exp-20260610-019",
+        "selected_fundamental_growth_rs_rows_by_window": {
+          "late_strong": 8,
+          "mid_weak": 11,
+          "old_thin": 14
+        },
+        "selected_rows_with_gross_margin_pass_by_window": {
+          "late_strong": 8,
+          "mid_weak": 11,
+          "old_thin": 14
+        },
+        "source_trade_counts_by_window": {
+          "late_strong": 154,
+          "mid_weak": 386,
+          "old_thin": 331
+        }
+      },
+      "decision": "blocked_duplicate_prior",
+      "history_check": [
+        "exp-20260601-026",
+        "exp-20260610-019"
+      ],
+      "retry_requires": "A materially new source field or forward allocator displacement rows, not a relabeled gross-margin source-family admission.",
+      "why_not_run": "exp-20260610-019 already used current shared helper rows with gross_margin_pass_v1=True as the added allocator source."
+    },
+    {
+      "alpha_hypothesis": "FINRA short-pressure plus IWM confirmation could add borrow-pressure replacement candidates.",
+      "candidate": "finra_iwm_shared_adapter_or_source_extension",
+      "current_evidence": {
+        "accepted_cost_liquidity_support": "exp-20260601-029",
+        "accepted_shared_adapter": "exp-20260530-010",
+        "allocator_source_extension": "exp-20260611-015 rejected SEC FTD + FINRA allocator source",
+        "shared_helper_exists": "quant/finra_iwm_paper_sleeve.py"
+      },
+      "decision": "blocked_already_shared_or_frozen",
+      "history_check": [
+        "exp-20260530-010",
+        "exp-20260601-029",
+        "exp-20260611-015"
+      ],
+      "retry_requires": "New PIT borrow-cost/availability evidence or forward rows.",
+      "why_not_run": "The adapter promotion is already done and borrow-pressure source extension/retune lanes are frozen without new PIT borrow-cost or availability data."
+    },
+    {
+      "alpha_hypothesis": "Short-formation continuation might create a pure OHLCV candidate pool after controlling for ret20 momentum.",
+      "candidate": "broad_5d_winner_or_ret5_ret20_tail_candidate_pool",
+      "current_evidence": {
+        "candidate_pool_retries": "broad 5d winner continuation and market-confirmed/low-deployment variants rejected",
+        "read_only_lead": "exp-20260601-008 proposed ret5 top-quintile incrementality",
+        "tail_filter": "exp-20260609-007 forbids ret5/ret20 threshold and tail-state sweeps"
+      },
+      "decision": "blocked_frozen_near_neighbor",
+      "history_check": [
+        "exp-20260601-008",
+        "exp-20260606-004",
+        "exp-20260606-005",
+        "exp-20260606-006",
+        "exp-20260609-007"
+      ],
+      "retry_requires": "A new PIT flow/event-quality field or forward replacement rows.",
+      "why_not_run": "A new ret5/ret20 candidate-pool replay would duplicate frozen broad recent-winner continuation experiments."
+    },
+    {
+      "alpha_hypothesis": "Free Companyfacts quality fields may sharpen momentum candidates.",
+      "candidate": "companyfacts_quality_next_variant",
+      "current_evidence": {
+        "cash_conversion": "positive but rejected on drawdown; TTM and acceleration variants closed",
+        "diluted_share_contraction": "rejected",
+        "industry_relative_asset_growth": "rejected on old_thin, drawdown, concentration"
+      },
+      "decision": "blocked_frozen_near_neighbor",
+      "history_check": [
+        "exp-20260614-020",
+        "exp-20260614-025",
+        "exp-20260614-027",
+        "exp-20260614-029",
+        "exp-20260615-006"
+      ],
+      "retry_requires": "New PIT relation/ownership context or forward replacement rows.",
+      "why_not_run": "The remaining simple Companyfacts quality variants would be threshold/field mining near recent rejected experiments."
+    }
+  ],
+  "change_type": "alpha_candidate_selection_blocker_proof",
+  "changed_variable": "gross_margin_rs_source_family_added_to_accepted_helper_source_priority_allocator_v1",
+  "decision": "blocked_duplicate_prior_gross_margin_allocator_source_extension",
+  "experiment_id": "exp-20260615-007",
+  "gate1": {
+    "aggregate_baseline": {
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_max": 0.1119,
+      "min_survival_rate": 0.7925,
+      "total_pnl_sum": 234850.99,
+      "trade_count_sum": 61
+    },
+    "baseline_source": "docs/backtesting.md",
+    "by_window_baseline": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "max_drawdown_pct": 0.0665,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23",
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "max_drawdown_pct": 0.1119,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23",
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "max_drawdown_pct": 0.1001,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02",
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22
+      }
+    },
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_required_for_future_alpha": true,
+    "note": "No executable signal rows, target prices, or exit contracts were created.",
+    "passed_for_noop_blocker_record": true,
+    "target_price_required_for_future_alpha": true
+  },
+  "gate3": {
+    "filter_added": false,
+    "survival_guard_passed": true,
+    "survival_rate_min": 0.7925
+  },
+  "gate4": {
+    "aggregate_expected_value_delta": 0.0,
+    "aggregate_strategy_total_pnl_delta": 0.0,
+    "aggregate_trade_count_delta": 0,
+    "by_window": {
+      "late_strong": {
+        "after_expected_value_score": 5.1628,
+        "after_total_pnl": 117072.92,
+        "after_trade_count": 18,
+        "before_expected_value_score": 5.1628,
+        "before_total_pnl": 117072.92,
+        "before_trade_count": 18,
+        "expected_value_score_delta": 0.0,
+        "strategy_total_pnl_delta": 0.0,
+        "trade_count_delta": 0
+      },
+      "mid_weak": {
+        "after_expected_value_score": 2.1402,
+        "after_total_pnl": 78110.11,
+        "after_trade_count": 21,
+        "before_expected_value_score": 2.1402,
+        "before_total_pnl": 78110.11,
+        "before_trade_count": 21,
+        "expected_value_score_delta": 0.0,
+        "strategy_total_pnl_delta": 0.0,
+        "trade_count_delta": 0
+      },
+      "old_thin": {
+        "after_expected_value_score": 0.5911,
+        "after_total_pnl": 39667.96,
+        "after_trade_count": 22,
+        "before_expected_value_score": 0.5911,
+        "before_total_pnl": 39667.96,
+        "before_trade_count": 22,
+        "expected_value_score_delta": 0.0,
+        "strategy_total_pnl_delta": 0.0,
+        "trade_count_delta": 0
+      }
+    },
+    "decision": "blocked_duplicate_prior_gross_margin_allocator_source_extension",
+    "failed_reasons": [
+      "duplicate_prior_experiment",
+      "all_checked_high_potential_lanes_frozen_or_already_shared",
+      "running_a_strategy_backtest_would_duplicate_frozen_near_neighbors"
+    ],
+    "passed": false,
+    "strategy_behavior_changed": false
+  },
+  "hypothesis": "Test whether accepted Companyfacts gross-margin RS rows add independent replacement value as a fixed source family inside the accepted helper source-priority allocator.",
+  "lane": "alpha_search",
+  "log": "experiments/logs/exp-20260615-007.json",
+  "mechanism_family": "alpha_direction_selection",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260601-026",
+    "exp-20260610-019",
+    "exp-20260610-014",
+    "exp-20260613-031"
+  ],
+  "new_evidence_type": "duplicate_detection_for_accepted_source_extension",
+  "post_run_reflection": {
+    "best_next_alpha_direction": "New free-data edge: PIT estimate breadth/dispersion/provenance, customer/supplier relation evidence, or forward closed rows from accepted default-off adapters.",
+    "forbidden_near_neighbor_retry": "Do not retry gross-margin/Fundamental Growth RS allocator source extension by changing source-family label, rank, top-N, notional, hold days, cooldown, or gross-margin threshold on the frozen windows.",
+    "new_evidence_required": "Use a materially new production-visible PIT field, forward allocator displacement rows, or closed true-trigger replacement value evidence before another allocator-source launch.",
+    "why_negative_or_blocked": "The blocker is about alpha selection quality, not a software bug. The current high-EV path needs a new PIT field or forward rows.",
+    "why_no_strategy_experiment": "Running the replay would relabel a prior frozen source-extension experiment rather than test a new causal decision.",
+    "why_result_happened": "The strongest apparent alpha was not new: exp-20260610-019 already admitted current gross-margin-enabled Fundamental Growth RS rows into the allocator and rejected it versus the accepted allocator comparator."
+  },
+  "prediction": {
+    "confidence_reason": "Gross-margin RS is an accepted shared default-off adapter with large positive historical evidence, but source extensions often fail by displacing better allocator rows; low-priority insertion limits but also reduces impact.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "source_overlap_displaces_better_rows",
+      "accepted_allocator_window_comparator_regression",
+      "gross_margin_rows_too_overlapping",
+      "old_thin_regression"
+    ],
+    "recorded_at": "2026-06-15T06:43:13+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 2,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_note": "No strategy or production path changed. The proposed positive source-extension would have required shared allocator wiring, but the history check blocked it as a duplicate before code.",
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "status": "blocked",
+  "timestamp": "2026-06-15T06:50:16Z",
+  "trial_family": "accepted_default_off_helper_source_priority_allocation",
+  "trial_variant_id": "gross_margin_rs_source_family_added_to_accepted_helper_source_priority_allocator_v1"
+}

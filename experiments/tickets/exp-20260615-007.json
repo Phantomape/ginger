@@ -1,0 +1,176 @@
+{
+  "acceptance_rule": "Use docs/backtesting.md canonical three windows; aggregate EV/PnL positive; no window EV/PnL regression; sample/survival/drawdown/concentration guards pass; beat current accepted allocator aggregate and per-window EV/PnL comparator. Positive replay lead still requires shared allocator wiring before retention.",
+  "allowed_write_scope": [
+    "data/experiments/exp-20260615-007/exp_20260615_007_gross_margin_rs_allocator_source_extension.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "experiments/artifacts/exp-20260615-007_gross_margin_rs_allocator_source_extension.md",
+    "experiments/cards/exp-20260615-007.md",
+    "experiments/logs/exp-20260615-007.json",
+    "experiments/manifests/exp-20260615-007.json",
+    "experiments/tickets/exp-20260615-007.json",
+    "quant/experiments/exp_20260615_007_gross_margin_rs_allocator_source_extension.py"
+  ],
+  "artifact": "data/experiments/exp-20260615-007/exp_20260615_007_gross_margin_rs_allocator_source_extension.json",
+  "artifact_md": "experiments/artifacts/exp-20260615-007_gross_margin_rs_allocator_source_extension.md",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260615-007.md",
+  "causal_components": [
+    "replay-only source extension",
+    "historical three-window replay",
+    "allocator comparator readout",
+    "artifact/log closeout"
+  ],
+  "change_type": "alpha_candidate_selection_blocker_proof",
+  "changed_variable": "gross_margin_rs_source_family_added_to_accepted_helper_source_priority_allocator_v1",
+  "claimed_at": "2026-06-15T06:44:10+00:00",
+  "completed_at": "2026-06-15T06:50:18+00:00",
+  "created_at": "2026-06-15T06:43:32+00:00",
+  "decision": "blocked_duplicate_prior_gross_margin_allocator_source_extension",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260615-007",
+  "experiment_uid": "expuid-b27a0c2d4b0a4ee2",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260615-007",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-15T06:43:32+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "gross_margin_rs_source_family_added_to_accepted_helper_source_priority_allocator"
+  },
+  "hypothesis": "Test whether accepted Companyfacts gross-margin RS rows add independent replacement value as a fixed source family inside the accepted helper source-priority allocator.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "all accepted allocator source priorities except adding low-priority gross_margin_rs",
+    "gross-margin RS adapter thresholds",
+    "allocator daily top1",
+    "allocator same-ticker cooldown",
+    "paper notional",
+    "10-trading-day hold",
+    "core signal generation/ranking/sizing/exits",
+    "live/default orders"
+  ],
+  "log": "experiments/logs/exp-20260615-007.json",
+  "mechanism_family": "alpha_direction_selection",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260601-026",
+    "exp-20260610-019",
+    "exp-20260610-014",
+    "exp-20260613-031"
+  ],
+  "new_evidence_type": "duplicate_detection_for_accepted_source_extension",
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "source_overlap_displaces_better_rows",
+      "accepted_allocator_window_comparator_regression",
+      "gross_margin_rows_too_overlapping",
+      "old_thin_regression"
+    ],
+    "confidence_reason": "Gross-margin RS is an accepted shared default-off adapter with large positive historical evidence, but source extensions often fail by displacing better allocator rows; low-priority insertion limits but also reduces impact.",
+    "recorded_at": "2026-06-15T06:43:13+00:00"
+  },
+  "prior_trial_count": 2,
+  "result": {
+    "decision": "blocked_duplicate_prior_gross_margin_allocator_source_extension",
+    "accepted": false,
+    "accepted_alpha": false,
+    "numeric_gate4_passed": false,
+    "artifact": "data/experiments/exp-20260615-007/exp_20260615_007_gross_margin_rs_allocator_source_extension.json",
+    "log": "experiments/logs/exp-20260615-007.json",
+    "gate4": {
+      "passed": false,
+      "decision": "blocked_duplicate_prior_gross_margin_allocator_source_extension",
+      "strategy_behavior_changed": false,
+      "aggregate_expected_value_delta": 0.0,
+      "aggregate_strategy_total_pnl_delta": 0.0,
+      "aggregate_trade_count_delta": 0,
+      "by_window": {
+        "late_strong": {
+          "before_expected_value_score": 5.1628,
+          "after_expected_value_score": 5.1628,
+          "expected_value_score_delta": 0.0,
+          "before_total_pnl": 117072.92,
+          "after_total_pnl": 117072.92,
+          "strategy_total_pnl_delta": 0.0,
+          "before_trade_count": 18,
+          "after_trade_count": 18,
+          "trade_count_delta": 0
+        },
+        "mid_weak": {
+          "before_expected_value_score": 2.1402,
+          "after_expected_value_score": 2.1402,
+          "expected_value_score_delta": 0.0,
+          "before_total_pnl": 78110.11,
+          "after_total_pnl": 78110.11,
+          "strategy_total_pnl_delta": 0.0,
+          "before_trade_count": 21,
+          "after_trade_count": 21,
+          "trade_count_delta": 0
+        },
+        "old_thin": {
+          "before_expected_value_score": 0.5911,
+          "after_expected_value_score": 0.5911,
+          "expected_value_score_delta": 0.0,
+          "before_total_pnl": 39667.96,
+          "after_total_pnl": 39667.96,
+          "strategy_total_pnl_delta": 0.0,
+          "before_trade_count": 22,
+          "after_trade_count": 22,
+          "trade_count_delta": 0
+        }
+      },
+      "failed_reasons": [
+        "duplicate_prior_experiment",
+        "all_checked_high_potential_lanes_frozen_or_already_shared",
+        "running_a_strategy_backtest_would_duplicate_frozen_near_neighbors"
+      ]
+    },
+    "calibration": {
+      "predicted_success_probability": 0.18,
+      "actual_success": 0,
+      "actual_decision": "blocked_duplicate_prior_gross_margin_allocator_source_extension",
+      "actual_ev_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "brier_score": 0.0324,
+      "realized_failure_mode": "duplicate_prior_experiment",
+      "predicted_failure_mode_hit": false
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "production_orders_changed": false,
+      "production_signal_path_changed": false,
+      "production_watchlist_changed": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "parity_note": "No strategy or production path changed. The proposed positive source-extension would have required shared allocator wiring, but the history check blocked it as a duplicate before code."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The strongest apparent alpha was not new: exp-20260610-019 already admitted current gross-margin-enabled Fundamental Growth RS rows into the allocator and rejected it versus the accepted allocator comparator.",
+      "why_no_strategy_experiment": "Running the replay would relabel a prior frozen source-extension experiment rather than test a new causal decision.",
+      "why_negative_or_blocked": "The blocker is about alpha selection quality, not a software bug. The current high-EV path needs a new PIT field or forward rows.",
+      "forbidden_near_neighbor_retry": "Do not retry gross-margin/Fundamental Growth RS allocator source extension by changing source-family label, rank, top-N, notional, hold days, cooldown, or gross-margin threshold on the frozen windows.",
+      "new_evidence_required": "Use a materially new production-visible PIT field, forward allocator displacement rows, or closed true-trigger replacement value evidence before another allocator-source launch.",
+      "best_next_alpha_direction": "New free-data edge: PIT estimate breadth/dispersion/provenance, customer/supplier relation evidence, or forward closed rows from accepted default-off adapters."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260615-007.json",
+  "single_causal_variable": "gross_margin_rs_source_family_added_to_accepted_helper_source_priority_allocator_v1",
+  "status": "blocked",
+  "summary": "The strongest apparent alpha was not new: exp-20260610-019 already admitted current gross-margin-enabled Fundamental Growth RS rows into the allocator and rejected it versus the accepted allocator comparator.",
+  "ticket_file": "experiments/tickets/exp-20260615-007.json",
+  "trial_family": "accepted_default_off_helper_source_priority_allocation",
+  "trial_variant_id": "gross_margin_rs_source_family_added_to_accepted_helper_source_priority_allocator_v1",
+  "updated_at": "2026-06-15T06:50:18+00:00",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0
+}
