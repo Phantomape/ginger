@@ -333,6 +333,28 @@ canonical windows (aggregate EV `-0.6320`, PnL `$-13,584.41`). Treat broad
 market breadth as attribution context for the allocator, not as a frozen-window
 allocator tail filter.
 
+June 15 readout: `exp-20260615-019` (measurement_repair) built the first
+diagnostic surface for this queue: a mechanical PIT regime classifier
+(probability over `risk_on_trend / choppy_range / risk_off_stress`, plus
+`risk_off_score` and `bull_score`, from free index OHLCV + 50d-SMA breadth,
+conventional non-optimized constants) and read-only conditional attribution of
+accepted-sleeve replay trades by entry-day regime. Finding: both the accepted
+Fundamental-Growth-RS sleeve and the rejected deferred-revenue scout lose
+specifically in `choppy_range` (FGRS −$197.56/trade, 27% win; deferred
+−$179.36/trade, 17% win) while staying clearly positive in BOTH `risk_on_trend`
+and `risk_off_stress`. So the loss axis is directionless chop, NOT stress:
+Spearman(`risk_off_score`, PnL) ≈ 0, meaning a naive monotonic "cut in risk-off"
+tilt would not help — the useful construct is a chop indicator (low `bull_score`
+AND low `risk_off_score`). This is a LEAD, not actionable: it is not a clean
+3-window confirmation (`mid_weak` was classified ~entirely risk-on, ~0 chop
+trades) and chop-bucket N is modest. Next step is a portfolio-level SOFT chop
+down-tilt across accepted default-off sleeves, validated on forward
+state-tagged replacement-value rows, never a hard per-window on/off gate. Do not
+retune the regime constants or thresholds on the frozen windows. Classifier and
+attribution live in
+`quant/experiments/exp_20260615_019_pit_regime_state_attribution.py`; promote to
+a shared daily regime artifact + parity test before any execution role.
+
 Candidate fields:
 
 - `winner_continuation_tail_state_bucket`
