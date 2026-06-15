@@ -390,6 +390,19 @@ the daily market context so the live field is full-fidelity; (2) validate the
 regime, never by re-slicing the frozen windows; (3) do not tune regime constants
 or the exposure floor on these windows.
 
+`exp-20260615-028` then upgraded the LIVE daily fidelity: `quant/market_context.py`
+now emits `spy_drawdown_from_high` + `spy_vol_ratio` (the stress axis) from the
+SPY frame the daily path already supplies, so the production `regime_chop` field
+moves from thin to stress_only with NO run.py change, and the adapter reports a
+fidelity tier. Verified upgrade in Spearman(p_choppy, PnL): FGRS thin −0.173 →
+stress_only −0.219 → full −0.324; deferred thin +0.045 (no signal) → stress_only
+−0.171 → full −0.241. Breadth (the last increment to full fidelity) needs the
+run.py call site to pass universe frames and is DEFERRED behind exp-20260607-003's
+active run.py claim — `build_readonly_market_state_context` already accepts an
+optional `universe_ohlcv_by_ticker` param, so the remaining wiring is one kwarg
+once run.py frees up. Then validate the exposure_scalar soft tilt on forward /
+live-pilot rows; do not tune constants on frozen windows.
+
 Candidate fields:
 
 - `winner_continuation_tail_state_bucket`

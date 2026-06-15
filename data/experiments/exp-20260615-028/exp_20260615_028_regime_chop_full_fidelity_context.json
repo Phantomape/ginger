@@ -1,0 +1,63 @@
+{
+  "accepted": false,
+  "anti_js": "No JavaScript was used.",
+  "builds_on": [
+    "exp-20260615-019",
+    "exp-20260615-025"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "full_fidelity_daily_regime_chop_context_plumbing",
+  "code_changes": {
+    "quant/market_context.py": "added spy_drawdown_from_high, spy_vol_ratio, optional breadth",
+    "quant/regime_chop_state.py": "thin adapter now consumes drawdown/vol/breadth and reports fidelity tier",
+    "quant/run.py": "NOT changed (blocked by exp-20260607-003 run.py claim); breadth wiring deferred"
+  },
+  "decision": "daily_regime_chop_stress_axis_plumbed_breadth_wiring_deferred",
+  "experiment_id": "exp-20260615-028",
+  "fidelity_spearmans": {
+    "deferred_revenue_demand_acceleration_exp017": {
+      "full_spearman_pchop_vs_pnl": -0.241,
+      "n": 150,
+      "stress_only_spearman_pchop_vs_pnl": -0.1708,
+      "thin_spearman_pchop_vs_pnl": 0.0447
+    },
+    "fundamental_growth_rs_low_liability": {
+      "full_spearman_pchop_vs_pnl": -0.3236,
+      "n": 336,
+      "stress_only_spearman_pchop_vs_pnl": -0.2194,
+      "thin_spearman_pchop_vs_pnl": -0.1731
+    }
+  },
+  "hypothesis": "Adding SPY drawdown/vol (and optional breadth) to the daily market-state context lifts the production regime_chop field from the thin tier toward the full-fidelity construct exp-025 validated.",
+  "lane": "measurement_repair",
+  "mechanism_family": "full_fidelity_daily_regime_chop_context",
+  "next_evidence_needed": "Once exp-20260607-003 releases run.py, pass universe_ohlcv_by_ticker to build_readonly_market_state_context for full-fidelity breadth. Then validate the exposure_scalar soft tilt on forward / live-pilot rows tagged with entry-time regime_chop. Do not tune constants on frozen windows.",
+  "production_fidelity_after_change": "stress_only_no_breadth",
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_market_state_field_enriched": true,
+    "parity_note": "build_readonly_market_state_context now emits spy_drawdown_from_high and spy_vol_ratio from the SPY frame it already receives; the daily regime_chop field upgrades from thin to stress_only with no run.py change. The field stays inside the diagnostic_only market-state snapshot and changes no orders. Breadth (full fidelity) needs the run.py call site to pass universe frames; deferred behind exp-20260607-003.",
+    "production_watchlist_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_llm": false
+  },
+  "related_files": [
+    "quant/experiments/exp_20260615_028_regime_chop_full_fidelity_context.py",
+    "quant/market_context.py",
+    "quant/regime_chop_state.py",
+    "quant/test_market_context_regime_features.py",
+    "data/experiments/exp-20260615-028/exp_20260615_028_regime_chop_full_fidelity_context.json"
+  ],
+  "rule_version": "regime_chop_state_v1",
+  "status": "observed_only",
+  "stress_axis_upgrade_confirmed": true,
+  "timestamp": "2026-06-15T21:24:07Z"
+}

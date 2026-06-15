@@ -108,3 +108,16 @@ def test_thin_market_context_adapter_flags_fidelity():
     out = rc.regime_chop_from_market_context({"spy_pct_from_ma": 0.02, "spy_20d_return": 0.01, "vix": 18.0})
     assert out["fidelity"] == "thin_market_context_no_breadth_no_drawdown"
     assert out["regime_label"] in rc.REGIME_LABELS
+
+
+def test_market_context_fidelity_tiers():
+    stress_only = rc.regime_chop_from_market_context(
+        {"spy_pct_from_ma": 0.02, "spy_20d_return": 0.01, "spy_drawdown_from_high": -0.03, "spy_vol_ratio": 1.1}
+    )
+    assert stress_only["fidelity"] == "stress_only_no_breadth"
+    full = rc.regime_chop_from_market_context(
+        {"spy_pct_from_ma": 0.02, "spy_20d_return": 0.01, "spy_drawdown_from_high": -0.03, "spy_vol_ratio": 1.1, "breadth": 0.6}
+    )
+    assert full["fidelity"] == "full_breadth_and_drawdown"
+    assert "breadth" in full["feature_keys_used"]
+    assert "drawdown_from_high" in full["feature_keys_used"]

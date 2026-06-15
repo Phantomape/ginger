@@ -243,7 +243,17 @@ def regime_chop_from_market_context(context: dict[str, Any] | None) -> dict[str,
         "ret20": ctx.get("spy_20d_return"),
         "vix": ctx.get("vix"),
         "vix_change": ctx.get("vix_10d_change"),
+        "drawdown_from_high": ctx.get("spy_drawdown_from_high"),
+        "vol_ratio": ctx.get("spy_vol_ratio"),
+        "breadth": ctx.get("breadth"),
     }
     out = regime_chop_from_features(feats)
-    out["fidelity"] = "thin_market_context_no_breadth_no_drawdown"
+    has_breadth = _f(ctx.get("breadth")) is not None
+    has_stress = _f(ctx.get("spy_drawdown_from_high")) is not None and _f(ctx.get("spy_vol_ratio")) is not None
+    if has_breadth and has_stress:
+        out["fidelity"] = "full_breadth_and_drawdown"
+    elif has_stress:
+        out["fidelity"] = "stress_only_no_breadth"
+    else:
+        out["fidelity"] = "thin_market_context_no_breadth_no_drawdown"
     return out
