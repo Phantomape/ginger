@@ -1,0 +1,297 @@
+{
+  "experiment_id": "exp-20260615-027",
+  "experiment_uid": "expuid-9ee9042b31ee4e25",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260615-027",
+    "slug": "post_kpi_alpha_direction_blocker",
+    "reserved_at": "2026-06-15T21:09:19+00:00",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "alpha-search-automation",
+  "hypothesis": "Post-KPI-history scan may identify one non-repeat production-visible free-data alpha candidate; launch only if it has all-window PIT evidence and shared-paper/daily parity, otherwise block strategy changes and document the next data-edge direction.",
+  "change_type": "alpha_direction_selection",
+  "mechanism_family": "free_data_candidate_pool_prioritization",
+  "trial_family": "alpha_direction_triage",
+  "trial_variant_id": "post_kpi_blocker_scan_v1",
+  "single_causal_variable": "highest_priority_nonrepeat_alpha_candidate_selection_after_post_kpi_history_scan_v1",
+  "changed_variable": "highest_priority_nonrepeat_alpha_candidate_selection_after_post_kpi_history_scan_v1",
+  "causal_components": [
+    "history_scan",
+    "anti_repeat_gate",
+    "pit_coverage_check",
+    "shared_paper_parity_readiness",
+    "gate4_applicability_decision"
+  ],
+  "prior_trial_count": 2,
+  "nearby_prior_experiments": [
+    "exp-20260615-014",
+    "exp-20260615-015",
+    "exp-20260615-021",
+    "exp-20260615-024",
+    "exp-20260615-026",
+    "exp-20260611-005"
+  ],
+  "multiple_testing_risk_bucket": "low",
+  "new_evidence_type": "experiment_log_and_data_surface_coverage_audit",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "experiments",
+    "data/experiments",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "highest_priority_nonrepeat_alpha_candidate_selection_after_post_kpi_history_scan_v1"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Proceed to strategy alpha only if a reviewed direction is non-frozen, PIT-safe across all three canonical windows, and implementable through shared-paper/default-off parity before acceptance.",
+  "prediction": {
+    "success_probability": 0.15,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "all_candidates_frozen",
+      "data_surface_insufficient",
+      "no_shared_daily_parity",
+      "no_gate4_ready_policy_bundle"
+    ],
+    "confidence_reason": "Recent exp-20260615 history rejected SEC KPI/Form4 variants and blocked regime/forward-only lanes; only a materially new PIT data edge should proceed.",
+    "recorded_at": "2026-06-15T21:15:19+00:00"
+  },
+  "created_at": "2026-06-15T21:09:19+00:00",
+  "claimed_at": "2026-06-15T21:09:41+00:00",
+  "completed_at": "2026-06-15T21:15:19+00:00",
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "decision": "rejected_no_gate4_ready_nonrepeat_alpha_candidate",
+    "artifact": "data/experiments/exp-20260615-027/post_kpi_alpha_direction_blocker.json",
+    "before_result_file": "data/experiments/exp-20260615-027/before_baseline.json",
+    "after_result_file": "data/experiments/exp-20260615-027/after_no_strategy_change.json",
+    "log": "experiments/logs/exp-20260615-027.json",
+    "runner": "quant/experiments/exp_20260615_027_post_kpi_alpha_direction_blocker.py",
+    "delta_metrics": {
+      "aggregate_expected_value_score": 0.0,
+      "aggregate_total_pnl": 0.0,
+      "trade_count": 0,
+      "signals_generated": 0,
+      "signals_survived": 0,
+      "survival_rate": 0.0,
+      "max_drawdown_pct": 0.0
+    },
+    "gate4": {
+      "applicable": false,
+      "passed": false,
+      "reason": "No strategy policy was launched because reviewed directions failed anti-repeat, PIT coverage, forward sample, or shared-paper parity readiness checks.",
+      "aggregate_before": {
+        "expected_value_score": 7.8941,
+        "total_pnl": 234850.99,
+        "trade_count": 61,
+        "signals_generated": 164,
+        "signals_survived": 135,
+        "survival_rate": 0.8232,
+        "min_survival_rate": 0.7925,
+        "max_drawdown_pct": 0.1119
+      },
+      "aggregate_after": {
+        "expected_value_score": 7.8941,
+        "total_pnl": 234850.99,
+        "trade_count": 61,
+        "signals_generated": 164,
+        "signals_survived": 135,
+        "survival_rate": 0.8232,
+        "min_survival_rate": 0.7925,
+        "max_drawdown_pct": 0.1119
+      },
+      "aggregate_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "survival_rate": 0.0,
+        "max_drawdown_pct": 0.0
+      },
+      "by_window": {
+        "late_strong": {
+          "before_expected_value_score": 5.1628,
+          "after_expected_value_score": 5.1628,
+          "delta_expected_value_score": 0.0,
+          "before_total_pnl": 117072.92,
+          "after_total_pnl": 117072.92,
+          "delta_total_pnl": 0.0,
+          "before_trade_count": 18,
+          "after_trade_count": 18,
+          "delta_trade_count": 0,
+          "before_survival_rate": 0.8039,
+          "after_survival_rate": 0.8039,
+          "delta_survival_rate": 0.0,
+          "before_max_drawdown_pct": 0.0665,
+          "after_max_drawdown_pct": 0.0665,
+          "delta_max_drawdown_pct": 0.0
+        },
+        "mid_weak": {
+          "before_expected_value_score": 2.1402,
+          "after_expected_value_score": 2.1402,
+          "delta_expected_value_score": 0.0,
+          "before_total_pnl": 78110.11,
+          "after_total_pnl": 78110.11,
+          "delta_total_pnl": 0.0,
+          "before_trade_count": 21,
+          "after_trade_count": 21,
+          "delta_trade_count": 0,
+          "before_survival_rate": 0.7925,
+          "after_survival_rate": 0.7925,
+          "delta_survival_rate": 0.0,
+          "before_max_drawdown_pct": 0.1119,
+          "after_max_drawdown_pct": 0.1119,
+          "delta_max_drawdown_pct": 0.0
+        },
+        "old_thin": {
+          "before_expected_value_score": 0.5911,
+          "after_expected_value_score": 0.5911,
+          "delta_expected_value_score": 0.0,
+          "before_total_pnl": 39667.96,
+          "after_total_pnl": 39667.96,
+          "delta_total_pnl": 0.0,
+          "before_trade_count": 22,
+          "after_trade_count": 22,
+          "delta_trade_count": 0,
+          "before_survival_rate": 0.8667,
+          "after_survival_rate": 0.8667,
+          "delta_survival_rate": 0.0,
+          "before_max_drawdown_pct": 0.1001,
+          "after_max_drawdown_pct": 0.1001,
+          "delta_max_drawdown_pct": 0.0
+        }
+      }
+    },
+    "calibration": {
+      "actual_decision": "rejected_no_gate4_ready_nonrepeat_alpha_candidate",
+      "actual_success": 0,
+      "predicted_success_probability": 0.15,
+      "brier_score": 0.0225,
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": 0.0,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "realized_failure_mode": "no_gate4_ready_policy_bundle",
+      "predicted_failure_mode_hit": true
+    },
+    "summary": "The strongest recent alpha-looking paths are not launchable today: SEC KPI and Form4 variants just failed the canonical windows, the chop/regime path lacks forward rows and a shared daily artifact, options data is forward-only or PIT unsafe historically, and estimate revisions are not yet matched to candidate rows across the three windows."
+  },
+  "ticket_file": "experiments/tickets/exp-20260615-027.json",
+  "card_file": "experiments/cards/exp-20260615-027.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260615-027.json",
+  "post_run_reflection": {
+    "why_result_happened": "The strongest recent alpha-looking paths are not launchable today: SEC KPI and Form4 variants just failed the canonical windows, the chop/regime path lacks forward rows and a shared daily artifact, options data is forward-only or PIT unsafe historically, and estimate revisions are not yet matched to candidate rows across the three windows.",
+    "why_no_strategy_experiment": "A strategy replay would either retest a frozen near-neighbor or use data that cannot be replayed PIT-safely and production-visibly. That would not be a trustworthy alpha measurement and would risk backtest/production inconsistency.",
+    "why_negative_or_blocked": "The pre-run hypothesis that at least one non-repeat production-visible candidate was ready failed. The correct result is to reject launch and preserve the alpha direction evidence for the next run.",
+    "forbidden_near_neighbor_retry": "Do not retry SEC SaaS/KPI keyword spans, Form4 role/liability/hold/notional tweaks, chop-threshold/weight sweeps, accepted allocator source retunes, FINRA/FTD threshold retunes, or Companyfacts quality thresholds without materially new PIT fields.",
+    "new_evidence_required": "Construct a free PIT data edge first: analyst revision breadth, dispersion, and analyst-count features matched to candidates across all three canonical windows, or structured SEC customer and supplier contract-economics fields with daily default-off parity.",
+    "best_next_alpha_direction": "Optimize candidate-pool data edges, not thresholds. First priority is PIT analyst revision breadth/dispersion matched to historical candidates; second priority is structured SEC customer/supplier contract economics. Either must be implemented shared-paper-first before acceptance."
+  },
+  "gate4": {
+    "applicable": false,
+    "passed": false,
+    "reason": "No strategy policy was launched because reviewed directions failed anti-repeat, PIT coverage, forward sample, or shared-paper parity readiness checks.",
+    "aggregate_before": {
+      "expected_value_score": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "min_survival_rate": 0.7925,
+      "max_drawdown_pct": 0.1119
+    },
+    "aggregate_after": {
+      "expected_value_score": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "min_survival_rate": 0.7925,
+      "max_drawdown_pct": 0.1119
+    },
+    "aggregate_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "max_drawdown_pct": 0.0
+    },
+    "by_window": {
+      "late_strong": {
+        "before_expected_value_score": 5.1628,
+        "after_expected_value_score": 5.1628,
+        "delta_expected_value_score": 0.0,
+        "before_total_pnl": 117072.92,
+        "after_total_pnl": 117072.92,
+        "delta_total_pnl": 0.0,
+        "before_trade_count": 18,
+        "after_trade_count": 18,
+        "delta_trade_count": 0,
+        "before_survival_rate": 0.8039,
+        "after_survival_rate": 0.8039,
+        "delta_survival_rate": 0.0,
+        "before_max_drawdown_pct": 0.0665,
+        "after_max_drawdown_pct": 0.0665,
+        "delta_max_drawdown_pct": 0.0
+      },
+      "mid_weak": {
+        "before_expected_value_score": 2.1402,
+        "after_expected_value_score": 2.1402,
+        "delta_expected_value_score": 0.0,
+        "before_total_pnl": 78110.11,
+        "after_total_pnl": 78110.11,
+        "delta_total_pnl": 0.0,
+        "before_trade_count": 21,
+        "after_trade_count": 21,
+        "delta_trade_count": 0,
+        "before_survival_rate": 0.7925,
+        "after_survival_rate": 0.7925,
+        "delta_survival_rate": 0.0,
+        "before_max_drawdown_pct": 0.1119,
+        "after_max_drawdown_pct": 0.1119,
+        "delta_max_drawdown_pct": 0.0
+      },
+      "old_thin": {
+        "before_expected_value_score": 0.5911,
+        "after_expected_value_score": 0.5911,
+        "delta_expected_value_score": 0.0,
+        "before_total_pnl": 39667.96,
+        "after_total_pnl": 39667.96,
+        "delta_total_pnl": 0.0,
+        "before_trade_count": 22,
+        "after_trade_count": 22,
+        "delta_trade_count": 0,
+        "before_survival_rate": 0.8667,
+        "after_survival_rate": 0.8667,
+        "delta_survival_rate": 0.0,
+        "before_max_drawdown_pct": 0.1001,
+        "after_max_drawdown_pct": 0.1001,
+        "delta_max_drawdown_pct": 0.0
+      }
+    }
+  },
+  "updated_at": "2026-06-15T21:15:19+00:00"
+}
