@@ -9,10 +9,10 @@
     "reserved_at": "2026-06-14T21:04:21+00:00",
     "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
   },
-  "status": "proposed",
+  "status": "rejected",
   "lane": "alpha_search",
-  "owner": "alpha-search-automation",
-  "hypothesis": "PIT TTM cash-flow acceleration may sharpen the rejected cash-conversion quality lead by requiring current same-period TTM cash conversion to improve versus prior TTM, isolating earnings quality acceleration rather than static quality.",
+  "owner": "codex-alpha-search",
+  "hypothesis": "Interim TTM cash conversion that accelerates versus the comparable prior-year TTM may isolate true earnings-quality acceleration inside liquid leaders, reducing the broad drawdown of static annual accruals/cash-conversion quality.",
   "change_type": "default_off_paper_candidate_pool_replay_scout",
   "mechanism_family": "production_visible_free_sec_companyfacts_quality_candidate_pool",
   "trial_family": "ttm_cash_conversion_acceleration_candidate_pool",
@@ -25,16 +25,15 @@
     "10d fixed hold",
     "costed default-off replay"
   ],
-  "prior_trial_count": 0,
+  "prior_trial_count": 4,
   "nearby_prior_experiments": [
     "exp-20260614-020",
     "exp-20260614-021",
     "exp-20260614-023",
-    "exp-20260614-024",
-    "exp-20260614-025"
+    "exp-20260615-018"
   ],
-  "multiple_testing_risk_bucket": "low",
-  "new_evidence_type": "free_sec_companyfacts_ttm_cash_conversion_acceleration_plus_ohlcv",
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "free_sec_companyfacts_interim_ttm_cash_conversion_acceleration_plus_ohlcv",
   "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
   "allowed_write_scope": [
     "quant/experiments/exp_20260614_026_ttm_cash_conversion_acceleration.py",
@@ -63,14 +62,138 @@
       "thin_acceleration_sample",
       "accepted_comparator_not_beaten"
     ],
-    "confidence_reason": "The annual and TTM cash-conversion quality scouts were directionally strong but rejected on drawdown; requiring cash conversion to accelerate versus the prior comparable TTM is a distinct PIT Companyfacts field, not a deployment, stop, threshold, hold, cooldown, or notional retry.",
+    "confidence_reason": "The annual and annual-improvement cash-conversion scouts were directionally strong but rejected on drawdown/window fragility; requiring interim TTM cash conversion to accelerate versus the prior same-period TTM is a distinct PIT Companyfacts field, not a deployment, stop, threshold, hold, cooldown, or notional retry.",
     "recorded_at": "2026-06-14T21:03:48+00:00"
   },
   "created_at": "2026-06-14T21:04:21+00:00",
-  "claimed_at": null,
-  "completed_at": null,
-  "result": null,
+  "claimed_at": "2026-06-15T23:03:59+00:00",
+  "completed_at": "2026-06-15T23:15:59+00:00",
+  "result": {
+    "decision": "rejected_ttm_cash_conversion_acceleration_candidate_pool",
+    "accepted": false,
+    "numeric_gate4_passed": false,
+    "artifact": "data/experiments/exp-20260614-026/exp_20260614_026_ttm_cash_conversion_acceleration.json",
+    "log": "experiments/logs/exp-20260614-026.json",
+    "aggregate_expected_value_delta": 0.1311,
+    "aggregate_strategy_total_pnl_delta": 4444.02,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_ttm_cash_conversion_acceleration_candidate_pool",
+      "failed_reasons": [
+        "window_ev_regression",
+        "fewer_than_two_ev_improved_windows",
+        "target_window_coverage_too_small",
+        "accepted_compression_ev_not_beaten",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "aggregate_ev_delta": 0.1311,
+      "aggregate_pnl_delta": 4444.02,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 1,
+      "windows_pnl_improved": 2,
+      "windows_pnl_regressed": 0,
+      "target_trade_count": 76,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0033,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.464292,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.287171,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "accepted_compression_comparator": {
+        "experiment_id": "exp-20260608-013",
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "aggregate_expected_value_delta": 0.1608,
+        "aggregate_pnl_delta": 2248.98
+      },
+      "accepted_distribution_comparator": {
+        "experiment_id": "exp-20260611-007",
+        "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+        "aggregate_expected_value_delta": 0.5286,
+        "aggregate_pnl_delta": 10432.91
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.21,
+      "actual_gate4_passed": false,
+      "actual_success": 0,
+      "failure_modes_observed": [
+        "window_ev_regression",
+        "fewer_than_two_ev_improved_windows",
+        "target_window_coverage_too_small",
+        "accepted_compression_ev_not_beaten",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "brier_score": 0.0441,
+      "expected_ev_delta": 0.35,
+      "actual_ev_delta": 0.1311,
+      "expected_pnl_delta": 5000.0,
+      "actual_pnl_delta": 4444.02
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "private_replay_scout_no_shared_adapter",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "default_off_paper_only": true,
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_sec_companyfacts": true,
+      "uses_free_ohlcv": true,
+      "live_realism_evaluated": true,
+      "live_ready": false,
+      "execution_envelope": {
+        "trade_enabled": false,
+        "target_notional_per_paper_trade": 4000.0,
+        "daily_entry_slots": 1,
+        "same_ticker_cooldown_days": 10,
+        "hold_days": 10,
+        "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+        "order_semantics": "observe-only next-session-open paper entry; no broker order",
+        "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+        "kill_switch": "trade_enabled remains false; no production adapter changes",
+        "failure_handling": "missing interim net_income/operating_cash_flow YTD facts, missing prior annual or prior comparable YTD facts, missing assets, missing OHLCV, missing next open, or missing 10d exit rejects the paper candidate"
+      },
+      "parity_note": "This experiment changes no production path. A positive result is only a replay lead until a shared default-off helper computes the same PIT interim TTM cash-conversion acceleration gate, liquid SPY-relative confirmation, cooldown, next-open paper entry, 10-day exit, costs, and concentration controls in both historical replay and daily production snapshots."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "Gate 4 failed. The TTM acceleration discriminator either made the sample too thin or still behaved like a price-confirmed Companyfacts momentum overlay. Failed reasons: window_ev_regression, fewer_than_two_ev_improved_windows, target_window_coverage_too_small, accepted_compression_ev_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten.",
+      "outcome_summary": "Aggregate EV delta +0.1311; aggregate PnL delta $+4,444.02; max drawdown drift +0.0033; 76 paper trades.",
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping TTM cash-conversion acceleration, cash-conversion ratio, accruals/assets, fact freshness, RS/close/volume/vol guards, top-N, hold days, cooldown, or notional on these frozen windows.",
+      "new_evidence_required": "A retry needs materially different PIT earnings-quality evidence such as quarterly cash-flow where directly reported, analyst breadth/dispersion confirmation, or closed forward replacement rows; do not sweep TTM acceleration, static accruals, price-confirmation, top-N, hold, cooldown, or notional thresholds."
+    }
+  },
   "ticket_file": "experiments/tickets/exp-20260614-026.json",
   "card_file": "experiments/cards/exp-20260614-026.md",
-  "revision_manifest_file": "experiments/manifests/exp-20260614-026.json"
+  "revision_manifest_file": "experiments/manifests/exp-20260614-026.json",
+  "decision": "rejected_ttm_cash_conversion_acceleration_candidate_pool",
+  "summary": "The interim TTM cash-conversion acceleration source did not clear Gate 4. Do not promote it or tune TTM acceleration/static quality thresholds on these frozen windows.",
+  "artifact": "data/experiments/exp-20260614-026/exp_20260614_026_ttm_cash_conversion_acceleration.json",
+  "log": "experiments/logs/exp-20260614-026.json",
+  "aggregate_expected_value_delta": 0.1311,
+  "aggregate_strategy_total_pnl_delta": 4444.02,
+  "updated_at": "2026-06-15T23:15:59+00:00"
 }

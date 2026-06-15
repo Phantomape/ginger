@@ -261,6 +261,16 @@ too thin, the analyst-revision ledger exists but has zero candidate matches,
 and FINRA/FTD still needs a real borrow-cost / hard-to-borrow / availability
 field.
 
+The final cash-conversion follow-up also closed negative. `exp-20260614-026`
+tested interim TTM same-period cash-conversion acceleration, the next
+discriminator suggested after the static accruals drawdown failure. It improved
+aggregate EV/PnL (`+0.1311`, `+$4,444`) and kept drawdown within the 0.5pp
+guard, but failed Gate 4: `late_strong` EV regressed, `old_thin` had zero target
+coverage, only one window improved EV, and it did not beat accepted compression
+or distribution comparators. Treat this as evidence that the cash-conversion
+family is exhausted on frozen windows unless new forward replacement rows or a
+materially different PIT evidence surface appears.
+
 ## Detail Sources
 
 Generated mechanism memory lives in `docs/lessons/*.md`; exact facts live in
@@ -628,6 +638,13 @@ production-visible field:
   sharper PIT discriminator (TTM same-period accruals, accrual-change momentum,
   quarterly cash-flow where reported) or closed forward replacement-value rows,
   not another risk-envelope or threshold sweep;
+- interim TTM same-period cash-conversion acceleration retries that sweep TTM
+  acceleration, comparable-period lag, fact-age, RS/close/volume guards, top-N,
+  hold, cooldown, or notional on the frozen windows: `exp-20260614-026` improved
+  aggregate EV/PnL but failed late_strong EV, old_thin coverage, and accepted
+  comparator gates. A valid retry now needs closed forward replacement-value
+  rows, analyst breadth/dispersion confirmation, or a materially different PIT
+  quarterly cash-flow evidence surface;
 - raw Companyfacts deferred-revenue / contract-liability / RPO demand
   acceleration candidate-pool retries that sweep demand-growth, demand/revenue,
   current-demand floor, concept priority, fact-age, prior-gap, RS/close/volume,
