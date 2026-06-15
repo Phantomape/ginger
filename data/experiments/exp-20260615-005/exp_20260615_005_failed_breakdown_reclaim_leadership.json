@@ -1,0 +1,304 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260615-005/exp_20260615_005_failed_breakdown_reclaim_leadership.json",
+  "calibration": {
+    "actual_ev_delta": 0.0,
+    "actual_gate4_passed": false,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 0,
+    "brier_score": 0.0324,
+    "failure_modes_observed": [
+      "preflight_duplicate_near_repeat",
+      "prior_window_regression",
+      "prior_drawdown_drift"
+    ],
+    "predicted_failure_mode_hit": true,
+    "predicted_success_probability": 0.18
+  },
+  "candidate_reviews": [
+    {
+      "alpha_hypothesis": "candidate_pool: liquid operating-company stocks that briefly undercut a prior range and reclaim it with positive relative strength may reflect supply exhaustion / stop-run absorption.",
+      "candidate": "failed_breakdown_reclaim_leadership",
+      "decision": "rejected_preflight_duplicate_near_repeat",
+      "history_check": [
+        "exp-20260601-012"
+      ],
+      "retry_requires": "A materially new PIT flow, options, borrow, event-quality, or forward replacement-value field; do not sweep reclaim thresholds.",
+      "why_not_run": "The same undercut/reclaim absorption mechanism already lost two of three windows and worsened drawdown in exp-20260601-012."
+    },
+    {
+      "alpha_hypothesis": "Free SEC Companyfacts can improve candidate-pool quality when the field is orthogonal.",
+      "candidate": "companyfacts_quality_extensions",
+      "decision": "blocked_frozen_neighborhood",
+      "history_check": [
+        "exp-20260528-017",
+        "exp-20260614-020",
+        "exp-20260614-025",
+        "exp-20260615-002",
+        "exp-20260615-003"
+      ],
+      "retry_requires": "A sharper PIT discriminator or closed forward replacement rows.",
+      "why_not_run": "Recent cash-conversion, TTM accruals, asset-growth, and cash-backed asset-growth leads were positive but rejected on drawdown/window/comparator gates; obvious threshold retries are frozen."
+    },
+    {
+      "alpha_hypothesis": "Richer SEC text provenance can separate true fundamental catalysts from generic language.",
+      "candidate": "sec_text_evidence_spans",
+      "decision": "blocked_generic_or_comparator_captured",
+      "history_check": [
+        "exp-20260614-013",
+        "exp-20260614-015",
+        "exp-20260614-017",
+        "exp-20260615-001"
+      ],
+      "retry_requires": "Less generic PIT semantic provenance with source spans and table/commentary separation.",
+      "why_not_run": "AI-demand, guidance-quality, dividend, and deleveraging/liquidity text variants were too sparse or failed the accepted SEC RS20 comparator."
+    },
+    {
+      "alpha_hypothesis": "Ownership disclosures may identify informed demand or crowding.",
+      "candidate": "ownership_or_form4_standalone_entries",
+      "decision": "blocked_delayed_or_frozen",
+      "history_check": [
+        "exp-20260613-014",
+        "exp-20260613-017",
+        "exp-20260614-018"
+      ],
+      "retry_requires": "Forward replacement value or a timing/provenance edge, not another count threshold.",
+      "why_not_run": "13F and Form 4 standalone entry rules recently failed or are reserved for context until timing/cluster-quality evidence matures."
+    },
+    {
+      "alpha_hypothesis": "LLM/estimate semantics could add a non-price data edge.",
+      "candidate": "llm_soft_ranking_or_estimate_revision",
+      "decision": "blocked_data_coverage_too_thin",
+      "history_check": [
+        "exp-20260614-012"
+      ],
+      "retry_requires": "PIT breadth/dispersion/provenance rows across all canonical windows.",
+      "why_not_run": "Local estimate revision and LLM soft-ranking rows are too sparse for a credible three-window Gate 1-4 alpha launch."
+    }
+  ],
+  "card": "experiments/cards/exp-20260615-005.md",
+  "change_type": "preflight_duplicate_alpha_rejection",
+  "changed_variable": "failed_breakdown_reclaim_leadership_candidate_source_v1",
+  "decision": "rejected_preflight_duplicate_near_repeat",
+  "experiment_id": "exp-20260615-005",
+  "gate1": {
+    "aggregate_baseline": {
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_max": 0.1119,
+      "min_survival_rate": 0.7925,
+      "total_pnl_sum": 234850.99,
+      "trade_count_sum": 61
+    },
+    "baseline_source": "docs/backtesting.md",
+    "by_window_baseline": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23",
+        "strategy_total_return_pct": 1.1707,
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23",
+        "strategy_total_return_pct": 0.7811,
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02",
+        "strategy_total_return_pct": 0.3967,
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22
+      }
+    }
+  },
+  "gate2": {
+    "entry_date_required_for_future_alpha": true,
+    "note": "No executable signal rows, target prices, exits, or orders were created.",
+    "passed_for_noop_preflight_record": true,
+    "target_price_required_for_future_alpha": true
+  },
+  "gate3": {
+    "filter_added": false,
+    "survival_guard_passed": true,
+    "survival_rate_min": 0.7925
+  },
+  "gate4": {
+    "aggregate_expected_value_delta": 0.0,
+    "aggregate_strategy_total_pnl_delta": 0.0,
+    "aggregate_trade_count_delta": 0,
+    "by_window": {
+      "late_strong": {
+        "after_expected_value_score": 5.1628,
+        "after_total_pnl": 117072.92,
+        "after_trade_count": 18,
+        "before_expected_value_score": 5.1628,
+        "before_total_pnl": 117072.92,
+        "before_trade_count": 18,
+        "expected_value_score_delta": 0.0,
+        "strategy_total_pnl_delta": 0.0,
+        "trade_count_delta": 0
+      },
+      "mid_weak": {
+        "after_expected_value_score": 2.1402,
+        "after_total_pnl": 78110.11,
+        "after_trade_count": 21,
+        "before_expected_value_score": 2.1402,
+        "before_total_pnl": 78110.11,
+        "before_trade_count": 21,
+        "expected_value_score_delta": 0.0,
+        "strategy_total_pnl_delta": 0.0,
+        "trade_count_delta": 0
+      },
+      "old_thin": {
+        "after_expected_value_score": 0.5911,
+        "after_total_pnl": 39667.96,
+        "after_trade_count": 22,
+        "before_expected_value_score": 0.5911,
+        "before_total_pnl": 39667.96,
+        "before_trade_count": 22,
+        "expected_value_score_delta": 0.0,
+        "strategy_total_pnl_delta": 0.0,
+        "trade_count_delta": 0
+      }
+    },
+    "decision": "rejected_preflight_duplicate_near_repeat",
+    "failed_reasons": [
+      "preflight_duplicate_near_repeat",
+      "exact_prior_gate4_rejection",
+      "running_backtest_would_duplicate_frozen_near_neighbor"
+    ],
+    "passed": false,
+    "strategy_behavior_changed": false
+  },
+  "hypothesis": "Liquid sector-known stocks that briefly undercut a 20-day low and then reclaim the prior range with positive relative strength may reflect supply exhaustion/stop-run absorption.",
+  "lane": "alpha_search",
+  "log": "experiments/logs/exp-20260615-005.json",
+  "mechanism_family": "production_visible_free_ohlcv_relation_alpha",
+  "owner": "alpha-search-automation",
+  "post_run_reflection": {
+    "best_next_alpha_direction": "Stop optimizing price-only reclaim/quality thresholds. The next high-potential alpha should add a new free PIT data edge: estimate breadth/dispersion/provenance, richer SEC evidence spans, or relation/ownership context with forward replacement-value rows.",
+    "forbidden_near_neighbor_retry": "Do not retry failed-breakdown, undercut/reclaim, overnight absorption, post-thrust pause, or gap/reclaim variants by sweeping lookbacks, volume, close-location, RS, hold, cooldown, or notional thresholds on the frozen windows.",
+    "new_evidence_required": "A retry needs a materially new PIT flow, options, borrow, event-quality, or closed forward replacement-value field, plus a shared default-off helper if the evidence is positive.",
+    "why_negative_or_blocked": "The negative conclusion is about alpha selection quality, not a software bug: current local evidence points away from another price-only reclaim rule.",
+    "why_no_strategy_experiment": "A fresh strategy run would duplicate a frozen near-neighbor and would not create trustworthy new evidence under the experiment protocol.",
+    "why_result_happened": "The proposed failed-breakdown/reclaim alpha was not run because exp-20260601-012 already tested the same undercut/reclaim absorption mechanism and failed Gate 4: aggregate EV -0.4741, PnL -$5,869.16, two regressed windows, and drawdown drift +0.83pp."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "candidate_pool: liquid operating-company stocks that briefly undercut a prior range and reclaim it with positive relative strength may reflect supply exhaustion / stop-run absorption.",
+    "2_history_check": {
+      "exp-20260601-012": "Exact near-neighbor undercut/reclaim absorption already rejected: aggregate EV -0.4741, PnL -$5,869.16, late_strong and mid_weak regressed, max drawdown drift +0.83pp.",
+      "exp-20260605-033": "Rejected cross-section pressure/resilience candidate pool.",
+      "exp-20260611-019": "Rejected adjacent price/pressure source family.",
+      "exp-20260613-016": "Rejected overnight absorption leadership.",
+      "exp-20260613-019": "Rejected related relation/microstructure candidate pool.",
+      "exp-20260613-021": "Rejected adjacent scarce-leadership relation route."
+    },
+    "3_single_decision_hypothesis": "failed_breakdown_reclaim_leadership_candidate_source_v1",
+    "4_acceptance_standard": "Use docs/backtesting.md canonical three windows. A runnable alpha must be non-repeat, PIT, production-visible or have a clear shared default-off parity path, improve aggregate EV/PnL without window regression, preserve survival, and avoid unacceptable drawdown drift.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260615_005_failed_breakdown_reclaim_leadership.py"
+  },
+  "prediction": {
+    "confidence_reason": "The ex-ante idea looked plausible as a PIT OHLCV stop-run absorption field, but history check found exp-20260601-012 already rejected the same undercut/reclaim mechanism across the canonical three windows.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "generic_reversal_relabel",
+      "window_regression",
+      "drawdown_drift",
+      "accepted_comparator_not_beaten",
+      "preflight_duplicate_near_repeat"
+    ],
+    "recorded_at": "2026-06-15T03:09:01+00:00",
+    "success_probability": 0.18
+  },
+  "prior_duplicate": {
+    "aggregate": {
+      "after_expected_value_score_sum": 5.8855,
+      "after_total_pnl_sum": 186669.45,
+      "before_expected_value_score_sum": 6.3596,
+      "before_total_pnl_sum": 192538.61,
+      "expected_value_score_delta_sum": -0.4741,
+      "max_drawdown_delta_max": 0.0083,
+      "target_trade_count_sum": 97,
+      "total_pnl_delta_sum": -5869.16
+    },
+    "artifact": "experiments/logs/exp-20260601-012.json",
+    "by_window": {
+      "late_strong": {
+        "after_expected_value_score": 3.6508,
+        "before_expected_value_score": 4.1082,
+        "expected_value_score_delta": -0.4574,
+        "target_trade_count": 35,
+        "total_pnl_delta": -6349.32
+      },
+      "mid_weak": {
+        "after_expected_value_score": 2.0996,
+        "before_expected_value_score": 2.1405,
+        "expected_value_score_delta": -0.0409,
+        "target_trade_count": 29,
+        "total_pnl_delta": -1207.23
+      },
+      "old_thin": {
+        "after_expected_value_score": 0.1351,
+        "before_expected_value_score": 0.1109,
+        "expected_value_score_delta": 0.0242,
+        "target_trade_count": 33,
+        "total_pnl_delta": 1687.39
+      }
+    },
+    "card": "experiments/cards/exp-20260601-012.md",
+    "changed_variable": "undercut_reclaim_absorption_candidate_source_v1",
+    "decision": "rejected_undercut_reclaim_absorption_candidate_pool",
+    "experiment_id": "exp-20260601-012",
+    "failed_reasons": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "drawdown_drift_too_high",
+      "baseline_drift_blocks_promotion"
+    ]
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "default_off_paper_only": false,
+    "live_ready": false,
+    "parity_note": "No strategy or production path changed. A positive future alpha must be shared-paper-first with historical replay plus daily default-off snapshot parity.",
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "runner": "quant/experiments/exp_20260615_005_failed_breakdown_reclaim_leadership.py",
+  "single_causal_variable": "failed_breakdown_reclaim_leadership_candidate_source_v1",
+  "status": "rejected",
+  "timestamp": "2026-06-15T03:22:34Z",
+  "trial_family": "failed_breakdown_reclaim_leadership_candidate_pool",
+  "trial_variant_id": "failed_breakdown_reclaim_leadership_candidate_source_v1"
+}
