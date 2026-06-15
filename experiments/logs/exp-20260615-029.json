@@ -1,0 +1,1037 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_sec_rs20_comparator": {
+    "aggregate_expected_value_delta": 0.158184,
+    "aggregate_pnl_delta": 3235.38,
+    "decision": "accepted_default_off_sec_financial_report_rs20_leader_notional_1.15x",
+    "experiment_id": "exp-20260614-004"
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 5.0534,
+      "max_consecutive_losses": 2,
+      "max_drawdown_pct": 0.0669,
+      "sharpe_daily": 4.35,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "strategy_total_return_pct": 1.1617,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5146,
+      "total_pnl": 116166.34,
+      "trade_count": 18,
+      "win_rate": 0.8333,
+      "worst_trade_pct": -0.0397
+    },
+    "mid_weak": {
+      "expected_value_score": 2.1402,
+      "max_consecutive_losses": 6,
+      "max_drawdown_pct": 0.1119,
+      "sharpe_daily": 2.74,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "strategy_total_return_pct": 0.7811,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.5493,
+      "total_pnl": 78110.11,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "worst_trade_pct": -0.0897
+    },
+    "old_thin": {
+      "expected_value_score": 0.5911,
+      "max_consecutive_losses": 4,
+      "max_drawdown_pct": 0.1001,
+      "sharpe_daily": 1.49,
+      "signals_generated": 60,
+      "signals_survived": 52,
+      "strategy_total_return_pct": 0.3967,
+      "survival_rate": 0.8667,
+      "tail_loss_share": 0.5193,
+      "total_pnl": 39667.96,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "worst_trade_pct": -0.0635
+    }
+  },
+  "anti_js": "No JavaScript was used.",
+  "backtest_protocol": {
+    "REGIME_AWARE_EXIT": true,
+    "candidate_ohlcv_source": "data/warehouse/warehouse_main.sqlite",
+    "execution_model": "SEC text and close-of-day OHLCV are known by signal date. Signal date is the first post-event T+1 close. Named counterparty confirmation uses only counterparty OHLCV through signal date. Paper entry is next available open with existing entry slippage; exit is the close 10 trading days after signal with target-side sell slippage and ROUND_TRIP_COST_PCT.",
+    "replay_llm": false,
+    "replay_news": false,
+    "sec_text_source": "data/non_ohlcv/sec_filing_text_20241002_20260421.jsonl",
+    "source": "docs/backtesting.md canonical three-window core replay plus replay-only SEC named-counterparty relation evidence-span default-off paper overlay",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 5.1628,
+      "max_consecutive_losses": 2,
+      "max_drawdown_pct": 0.0665,
+      "sharpe_daily": 4.41,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "strategy_total_return_pct": 1.1707,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5146,
+      "total_pnl": 117072.92,
+      "trade_count": 18,
+      "win_rate": 0.8333,
+      "worst_trade_pct": -0.0397
+    },
+    "mid_weak": {
+      "expected_value_score": 2.1402,
+      "max_consecutive_losses": 6,
+      "max_drawdown_pct": 0.1119,
+      "sharpe_daily": 2.74,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "strategy_total_return_pct": 0.7811,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.5493,
+      "total_pnl": 78110.11,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "worst_trade_pct": -0.0897
+    },
+    "old_thin": {
+      "expected_value_score": 0.5911,
+      "max_consecutive_losses": 4,
+      "max_drawdown_pct": 0.1001,
+      "sharpe_daily": 1.49,
+      "signals_generated": 60,
+      "signals_survived": 52,
+      "strategy_total_return_pct": 0.3967,
+      "survival_rate": 0.8667,
+      "tail_loss_share": 0.5193,
+      "total_pnl": 39667.96,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "worst_trade_pct": -0.0635
+    }
+  },
+  "calibration": {
+    "actual_gate4_passed": false,
+    "actual_success": 0,
+    "brier_score": 0.0324,
+    "failure_modes_observed": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "accepted_sec_rs20_ev_not_beaten",
+      "accepted_sec_rs20_pnl_not_beaten",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "target_sample_too_small",
+      "target_window_coverage_too_small",
+      "target_concentration_failed"
+    ],
+    "predicted_failure_mode_hit": true,
+    "predicted_success_probability": 0.18
+  },
+  "change_type": "candidate_pool_private_replay_scout",
+  "changed_variable": "sec_named_counterparty_contract_economics_candidate_source_v1",
+  "decision": "rejected_sec_named_counterparty_contract_economics_candidate_pool",
+  "delta_metrics": {
+    "aggregate": {
+      "after_expected_value_score_sum": 7.7847,
+      "after_total_pnl_sum": 233944.41,
+      "baseline_expected_value_score_sum": 7.8941,
+      "baseline_total_pnl_sum": 234850.99,
+      "expected_value_score_delta_pct": -0.013858,
+      "expected_value_score_delta_sum": -0.1094,
+      "max_drawdown_delta_max": 0.0004,
+      "target_trade_count_sum": 1,
+      "total_pnl_delta_pct": -0.00386,
+      "total_pnl_delta_sum": -906.58,
+      "windows_ev_improved": 0,
+      "windows_ev_regressed": 1,
+      "windows_pnl_improved": 0,
+      "windows_pnl_regressed": 1
+    },
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": -0.1094,
+        "max_drawdown_pct": 0.0004,
+        "sharpe_daily": -0.06,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": -0.009,
+        "survival_rate": 0.0,
+        "total_pnl": -906.58,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "win_rate": 0.0
+      }
+    }
+  },
+  "expected_value_score_delta": -0.1094,
+  "experiment_id": "exp-20260615-029",
+  "filtered_candidates_sample_by_window": {
+    "late_strong": [],
+    "mid_weak": [],
+    "old_thin": []
+  },
+  "gate1": {
+    "baseline_artifact": "data/experiments/exp-20260615-029/exp_20260615_029_sec_named_counterparty_contract_economics.json#before_metrics",
+    "baseline_metrics": {
+      "late_strong": {
+        "expected_value_score": 5.1628,
+        "max_consecutive_losses": 2,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "strategy_total_return_pct": 1.1707,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.5146,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "win_rate": 0.8333,
+        "worst_trade_pct": -0.0397
+      },
+      "mid_weak": {
+        "expected_value_score": 2.1402,
+        "max_consecutive_losses": 6,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "strategy_total_return_pct": 0.7811,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.5493,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "win_rate": 0.5238,
+        "worst_trade_pct": -0.0897
+      },
+      "old_thin": {
+        "expected_value_score": 0.5911,
+        "max_consecutive_losses": 4,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "strategy_total_return_pct": 0.3967,
+        "survival_rate": 0.8667,
+        "tail_loss_share": 0.5193,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "win_rate": 0.4091,
+        "worst_trade_pct": -0.0635
+      }
+    },
+    "passed": true
+  },
+  "gate2": {
+    "open_positions": {
+      "missing_entry_date_tickers": [],
+      "missing_target_price_tickers": [],
+      "passed": true,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 9
+    },
+    "passed": true,
+    "runtime_fields": [
+      "SEC filing text accession_number",
+      "SEC filing text combined_text",
+      "SEC filing text usable_trade_date",
+      "warehouse ohlcv Date/Open/High/Low/Close/Volume",
+      "SPY daily OHLCV",
+      "operator_inputs/open_positions.json entry_date",
+      "operator_inputs/open_positions.json target_price"
+    ]
+  },
+  "gate3": {
+    "candidate_pool_changed": false,
+    "minimum_core_survival_rate": 0.7925,
+    "new_core_filter_added": false,
+    "note": "No new core filter or entry rule was added. The SEC named-counterparty relation source is additive default-off paper, so core signals generated/survived are unchanged from baseline.",
+    "passed": true
+  },
+  "gate4": {
+    "accepted_sec_rs20_comparator": {
+      "aggregate_expected_value_delta": 0.158184,
+      "aggregate_pnl_delta": 3235.38,
+      "decision": "accepted_default_off_sec_financial_report_rs20_leader_notional_1.15x",
+      "experiment_id": "exp-20260614-004"
+    },
+    "aggregate_ev_delta": -0.1094,
+    "aggregate_pnl_delta": -906.58,
+    "decision": "rejected_sec_named_counterparty_contract_economics_candidate_pool",
+    "failed_reasons": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "accepted_sec_rs20_ev_not_beaten",
+      "accepted_sec_rs20_pnl_not_beaten",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "target_sample_too_small",
+      "target_window_coverage_too_small",
+      "target_concentration_failed"
+    ],
+    "max_drawdown_worse": 0.0004,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": false,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": null,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": false,
+      "positive_pnl_hhi": null,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 1,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong"
+    ],
+    "windows_ev_improved": 0,
+    "windows_ev_regressed": 1,
+    "windows_pnl_improved": 0,
+    "windows_pnl_regressed": 1
+  },
+  "hypothesis": "candidate_pool: SEC earnings-release text that names a public customer, cloud/platform partner, or supplier in a quantified contract/revenue/customer-growth evidence span, confirmed by both issuer T+1 strength and counterparty 20d strength versus SPY, may isolate relation-backed demand underreaction.",
+  "implementation_mode": "private_replay_scout",
+  "interpretation": "The named-counterparty SEC relation source did not clear Gate 4 and is not promoted.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "mechanism_family": "production_visible_free_sec_text_relation_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260603-012",
+    "exp-20260615-012",
+    "exp-20260615-013",
+    "exp-20260615-022",
+    "exp-20260615-026"
+  ],
+  "new_evidence_type": "sec_text_named_counterparty_relation_plus_ohlcv_confirmation",
+  "next_retry_requires": [
+    "normalized customer/supplier identity",
+    "contract duration and funding certainty",
+    "named-counterparty revenue exposure",
+    "shared helper plus daily snapshot parity for any positive replay"
+  ],
+  "parameters": {
+    "counterparties": [
+      {
+        "name": "Amazon/AWS",
+        "patterns": [
+          "\\bamazon\\b",
+          "\\baws\\b",
+          "\\bamazon web services\\b"
+        ],
+        "ticker": "AMZN"
+      },
+      {
+        "name": "Microsoft/Azure",
+        "patterns": [
+          "\\bmicrosoft\\b",
+          "\\bazure\\b"
+        ],
+        "ticker": "MSFT"
+      },
+      {
+        "name": "Alphabet/Google",
+        "patterns": [
+          "\\balphabet\\b",
+          "\\bgoogle\\b",
+          "\\bgoogle cloud\\b"
+        ],
+        "ticker": "GOOG"
+      },
+      {
+        "name": "NVIDIA",
+        "patterns": [
+          "\\bnvidia\\b",
+          "\\bgpu\\b",
+          "\\bnvidia ai\\b"
+        ],
+        "ticker": "NVDA"
+      },
+      {
+        "name": "Broadcom",
+        "patterns": [
+          "\\bbroadcom\\b"
+        ],
+        "ticker": "AVGO"
+      },
+      {
+        "name": "Apple",
+        "patterns": [
+          "\\bapple\\b",
+          "\\bios\\b",
+          "\\bapp store\\b"
+        ],
+        "ticker": "AAPL"
+      },
+      {
+        "name": "Meta",
+        "patterns": [
+          "\\bmeta\\b",
+          "\\bfacebook\\b",
+          "\\binstagram\\b"
+        ],
+        "ticker": "META"
+      },
+      {
+        "name": "Oracle",
+        "patterns": [
+          "\\boracle\\b",
+          "\\boci\\b",
+          "\\boracle cloud\\b"
+        ],
+        "ticker": "ORCL"
+      },
+      {
+        "name": "Salesforce",
+        "patterns": [
+          "\\bsalesforce\\b",
+          "\\bslack\\b"
+        ],
+        "ticker": "CRM"
+      },
+      {
+        "name": "ServiceNow",
+        "patterns": [
+          "\\bservicenow\\b"
+        ],
+        "ticker": "NOW"
+      },
+      {
+        "name": "Tesla",
+        "patterns": [
+          "\\btesla\\b"
+        ],
+        "ticker": "TSLA"
+      },
+      {
+        "name": "Walmart",
+        "patterns": [
+          "\\bwalmart\\b"
+        ],
+        "ticker": "WMT"
+      },
+      {
+        "name": "Target",
+        "patterns": [
+          "\\btarget\\b"
+        ],
+        "ticker": "TGT"
+      },
+      {
+        "name": "JPMorgan",
+        "patterns": [
+          "\\bjpmorgan\\b",
+          "\\bjpmorgan chase\\b"
+        ],
+        "ticker": "JPM"
+      },
+      {
+        "name": "Visa",
+        "patterns": [
+          "\\bvisa\\b"
+        ],
+        "ticker": "V"
+      },
+      {
+        "name": "Mastercard",
+        "patterns": [
+          "\\bmastercard\\b"
+        ],
+        "ticker": "MA"
+      },
+      {
+        "name": "Exxon Mobil",
+        "patterns": [
+          "\\bexxon\\b",
+          "\\bexxonmobil\\b"
+        ],
+        "ticker": "XOM"
+      },
+      {
+        "name": "Chevron",
+        "patterns": [
+          "\\bchevron\\b"
+        ],
+        "ticker": "CVX"
+      },
+      {
+        "name": "Boeing",
+        "patterns": [
+          "\\bboeing\\b"
+        ],
+        "ticker": "BA"
+      },
+      {
+        "name": "Lockheed Martin",
+        "patterns": [
+          "\\blockheed\\b",
+          "\\blockheed martin\\b"
+        ],
+        "ticker": "LMT"
+      },
+      {
+        "name": "RTX",
+        "patterns": [
+          "\\brtx\\b",
+          "\\braytheon\\b",
+          "\\bcollins aerospace\\b"
+        ],
+        "ticker": "RTX"
+      },
+      {
+        "name": "Palantir",
+        "patterns": [
+          "\\bpalantir\\b"
+        ],
+        "ticker": "PLTR"
+      },
+      {
+        "name": "Snowflake",
+        "patterns": [
+          "\\bsnowflake\\b"
+        ],
+        "ticker": "SNOW"
+      },
+      {
+        "name": "Datadog",
+        "patterns": [
+          "\\bdatadog\\b"
+        ],
+        "ticker": "DDOG"
+      }
+    ],
+    "counterparty_lookback_days": 20,
+    "counterparty_ma_days": 50,
+    "economic_patterns": [
+      "\\brevenue\\b",
+      "\\bsales\\b",
+      "\\bdemand\\b",
+      "\\borders?\\b",
+      "\\bbookings?\\b",
+      "\\bbacklog\\b",
+      "\\bremaining performance obligations?\\b",
+      "\\brpo\\b",
+      "\\bsubscription\\b",
+      "\\bproduct revenue\\b",
+      "\\bcustomer growth\\b",
+      "\\blarge customers?\\b",
+      "\\benterprise customers?\\b",
+      "\\bdeployment\\b",
+      "\\badoption\\b"
+    ],
+    "hold_days": 10,
+    "magnitude_patterns": [
+      "\\$[0-9][0-9,.]*\\s*(?:million|billion|mm|bn)?",
+      "[0-9]+(?:\\.[0-9]+)?\\s*%",
+      "[0-9]+(?:\\.[0-9]+)?\\s*percent",
+      "[0-9]+(?:\\.[0-9]+)?x",
+      "[0-9][0-9,.]*\\s*(?:million|billion|mm|bn)",
+      "[0-9][0-9,.]*\\s*(?:customers|accounts|orders|contracts|units|deployments)"
+    ],
+    "max_paper_trades_per_day": 1,
+    "max_t1_return": 0.16,
+    "min_avg_dollar_volume_20d": 50000000.0,
+    "min_counterparty_ret20_excess_spy": 0.0,
+    "min_price": 10.0,
+    "min_t1_excess_spy": 0.006,
+    "min_t1_return": 0.0,
+    "negative_span_patterns": [
+      "risk factors?",
+      "cautionary",
+      "uncertaint",
+      "adversely",
+      "may not",
+      "could not",
+      "cancel(?:led|lation)?",
+      "termination",
+      "delay(?:ed|s)?",
+      "declin(?:e|ed|ing)",
+      "decreas(?:e|ed|ing)",
+      "\\blower\\b",
+      "down\\b",
+      "weak(?:er|ness)?",
+      "soft(?:er|ness)?",
+      "churn",
+      "going concern",
+      "substantial doubt"
+    ],
+    "paper_notional_usd": 4000.0,
+    "quality_patterns": [
+      "\\bgrowth\\b",
+      "\\bgrew\\b",
+      "\\bincreas(?:e|ed|ing|es)\\b",
+      "\\bexpanded\\b",
+      "\\baccelerat(?:e|ed|ion|ing)\\b",
+      "\\bnew\\b",
+      "\\bnet new\\b",
+      "\\brecord\\b",
+      "\\bmulti[- ]year\\b",
+      "\\blong[- ]term\\b",
+      "\\bstrategic\\b",
+      "\\bfunded\\b",
+      "\\bcommitted\\b"
+    ],
+    "relation_patterns": [
+      "\\bcustomers?\\b",
+      "\\bpartners?(?:hip)?\\b",
+      "\\bsuppliers?\\b",
+      "\\bvendors?\\b",
+      "\\bagreements?\\b",
+      "\\bcontracts?\\b",
+      "\\bcollaboration\\b",
+      "\\balliance\\b",
+      "\\bplatform\\b",
+      "\\bcloud\\b",
+      "\\bintegrat(?:e|ed|ion)\\b",
+      "\\bmarketplace\\b"
+    ],
+    "same_ticker_cooldown_days": 10
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry by sweeping counterparty name lists, relation terms, numeric regexes, T+1, counterparty RS20, MA50, ADV/price, top-N, hold-day, cooldown, or notional thresholds on the same frozen windows.",
+    "new_evidence_required": "A valid retry needs materially richer PIT relation provenance, such as normalized customer/supplier identity from exhibits, contract duration/funding certainty, revenue exposure by named counterparty, or closed forward replacement-value rows from a shared daily helper.",
+    "why_result_happened": "The named-counterparty SEC relation source did not clear Gate 4. The likely reason is that explicit customer, supplier, or platform-partner disclosures are too sparse, too often generic co-marketing language, or already priced by issuer T+1 and counterparty strength before next-open execution."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "candidate_pool: SEC earnings-release text that names a public customer, cloud/platform partner, or supplier in a quantified contract/revenue/customer-growth evidence span, confirmed by both issuer T+1 strength and counterparty 20d strength versus SPY, may isolate relation-backed demand underreaction.",
+    "2_history_check": {
+      "exp-20260603-012": "SEC customer contract business-win candidate pool was rejected; this run requires a named public counterparty and relation-side OHLCV strength rather than contract/customer item parsing alone.",
+      "exp-20260615-012": "Generic order/backlog/RPO demand text was rejected.",
+      "exp-20260615-013": "Quantified backlog/RPO/book-to-bill text was too sparse.",
+      "exp-20260615-022": "Selected Companyfacts demand-obligation acceleration failed late_strong and accepted-comparator gates.",
+      "exp-20260615-026": "SaaS/subscription operating KPI text failed with only four event trades and late_strong regression."
+    },
+    "3_single_decision_hypothesis": "sec_named_counterparty_contract_economics_candidate_source_v1",
+    "4_acceptance_standard": "Use docs/backtesting.md canonical three windows. Aggregate EV/PnL must be positive, no window EV/PnL regression, at least 20 paper trades across all 3 windows, survival >=5%, drawdown drift <=0.5pp, concentration pass, and exp-20260614-004 SEC RS20 accepted comparator must be beaten. Replay-only positives are leads until shared daily/backtest parity exists.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260615_029_sec_named_counterparty_contract_economics.py"
+  },
+  "prediction": {
+    "confidence_reason": "Recent SEC demand text and Companyfacts demand-obligation variants failed because they were generic or sparse. Requiring an explicit named counterparty plus relation-side strength is a materially different PIT relation field, but sample risk is high.",
+    "expected_ev_delta": 0.12,
+    "expected_pnl_delta": 2200.0,
+    "main_failure_modes": [
+      "thin_sample",
+      "named_counterparty_false_positive",
+      "already_priced_by_t1",
+      "accepted_sec_rs20_comparator_not_beaten",
+      "window_regression"
+    ],
+    "recorded_at": "2026-06-15T22:05:04+00:00",
+    "success_probability": 0.18
+  },
+  "production_impact": {
+    "adapter_status": "private_replay_scout_no_shared_adapter",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "default_off_paper_only": true,
+    "execution_envelope": {
+      "daily_entry_slots": 1,
+      "failure_handling": "missing SEC text, named counterparty evidence, issuer OHLCV, counterparty OHLCV, next open, or 10d exit rejects the paper candidate",
+      "hold_days": 10,
+      "kill_switch": "trade_enabled remains false; no production adapter changes",
+      "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+      "order_semantics": "observe-only next-session-open paper entry; no broker order",
+      "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+      "same_ticker_cooldown_days": 10,
+      "target_notional_per_paper_trade": 4000.0,
+      "trade_enabled": false
+    },
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper computes the same SEC financial-report text set, named-counterparty evidence extractor, counterparty OHLCV confirmation, T+1 reaction gate, liquidity gate, overlap exclusion, cooldown, next-open paper entry, 10-day exit, costs, and concentration controls in both historical replay and daily production.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_free_ohlcv": true,
+    "uses_free_sec_filing_text": true,
+    "uses_llm": false
+  },
+  "raw_candidate_counts": {
+    "late_strong": 1,
+    "mid_weak": 0,
+    "old_thin": 0
+  },
+  "rejection_reason": "aggregate_ev_not_positive; aggregate_pnl_not_positive; accepted_sec_rs20_ev_not_beaten; accepted_sec_rs20_pnl_not_beaten; window_ev_regression; window_pnl_regression; fewer_than_two_ev_improved_windows; target_sample_too_small; target_window_coverage_too_small; target_concentration_failed",
+  "related_files": [
+    "quant/experiments/exp_20260615_029_sec_named_counterparty_contract_economics.py",
+    "data/experiments/exp-20260615-029/exp_20260615_029_sec_named_counterparty_contract_economics.json",
+    "experiments/logs/exp-20260615-029.json",
+    "experiments/tickets/exp-20260615-029.json",
+    "experiments/cards/exp-20260615-029.md",
+    "experiments/manifests/exp-20260615-029.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "scan_by_window": {
+    "late_strong": {
+      "candidate_count": 1,
+      "candidate_days": 1,
+      "evidence_samples": [
+        {
+          "date": "2025-10-30",
+          "named_counterparty_contract_economics_spans": [
+            {
+              "counterparties": [
+                {
+                  "name": "Alphabet/Google",
+                  "ticker": "GOOG"
+                }
+              ],
+              "economic_terms": [
+                "\\brevenue\\b"
+              ],
+              "magnitude_terms": [
+                "\\$[0-9][0-9,.]*\\s*(?:million|billion|mm|bn)?",
+                "[0-9][0-9,.]*\\s*(?:million|billion|mm|bn)"
+              ],
+              "quality_terms": [
+                "\\bgrowth\\b",
+                "\\bnew\\b",
+                "\\blong[- ]term\\b",
+                "\\bstrategic\\b"
+              ],
+              "relation_terms": [
+                "\\bpartners?(?:hip)?\\b",
+                "\\bagreements?\\b",
+                "\\bplatform\\b"
+              ],
+              "text": "EX-99.1 2 tm2529509d1_ex99-1.htm EXHIBIT 99.1 Exhibit 99.1 TeraWulf Expands Strategic Partnership with Fluidstack Through New 168 MW AI Compute Joint Venture 25-year lease agreement represents approximately $9.5 billion in contracted revenue Google backstops $1.3 billion of Fluidstack\u2019s long-term lease obligations in support of project debt Exclusive right to partner with Fluid"
+            }
+          ],
+          "spans": [
+            {
+              "counterparties": [
+                {
+                  "name": "Alphabet/Google",
+                  "ticker": "GOOG"
+                }
+              ],
+              "economic_terms": [
+                "\\brevenue\\b"
+              ],
+              "magnitude_terms": [
+                "\\$[0-9][0-9,.]*\\s*(?:million|billion|mm|bn)?",
+                "[0-9][0-9,.]*\\s*(?:million|billion|mm|bn)"
+              ],
+              "quality_terms": [
+                "\\bgrowth\\b",
+                "\\bnew\\b",
+                "\\blong[- ]term\\b",
+                "\\bstrategic\\b"
+              ],
+              "relation_terms": [
+                "\\bpartners?(?:hip)?\\b",
+                "\\bagreements?\\b",
+                "\\bplatform\\b"
+              ],
+              "text": "EX-99.1 2 tm2529509d1_ex99-1.htm EXHIBIT 99.1 Exhibit 99.1 TeraWulf Expands Strategic Partnership with Fluidstack Through New 168 MW AI Compute Joint Venture 25-year lease agreement represents approximately $9.5 billion in contracted revenue Google backstops $1.3 billion of Fluidstack\u2019s long-term lease obligations in support of project debt Exclusive right to partner with Fluid"
+            }
+          ],
+          "t1_excess_return_vs_spy": 0.033067,
+          "ticker": "WULF"
+        }
+      ],
+      "loaded_text_rows": 306,
+      "reject_counts": {
+        "counterparty_strength_not_confirmed": 1,
+        "no_named_counterparty_contract_economics_span": 287,
+        "t1_excess_below_min": 4,
+        "t1_return_not_positive": 13
+      },
+      "rule_version": "sec_named_counterparty_contract_economics_candidate_source_v1",
+      "source_path": "data/non_ohlcv/sec_filing_text_20241002_20260421.jsonl",
+      "unique_candidate_tickers": 1
+    },
+    "mid_weak": {
+      "candidate_count": 0,
+      "candidate_days": 0,
+      "evidence_samples": [],
+      "loaded_text_rows": 306,
+      "reject_counts": {
+        "adv20_below_min": 1,
+        "counterparty_strength_not_confirmed": 3,
+        "missing_event_idx": 2,
+        "no_named_counterparty_contract_economics_span": 287,
+        "signal_date_outside_window": 1,
+        "t1_excess_below_min": 3,
+        "t1_return_not_positive": 9
+      },
+      "rule_version": "sec_named_counterparty_contract_economics_candidate_source_v1",
+      "source_path": "data/non_ohlcv/sec_filing_text_20241002_20260421.jsonl",
+      "unique_candidate_tickers": 0
+    },
+    "old_thin": {
+      "candidate_count": 0,
+      "candidate_days": 0,
+      "evidence_samples": [],
+      "loaded_text_rows": 306,
+      "reject_counts": {
+        "counterparty_strength_not_confirmed": 2,
+        "missing_event_idx": 9,
+        "no_named_counterparty_contract_economics_span": 287,
+        "t1_excess_below_min": 3,
+        "t1_return_not_positive": 5
+      },
+      "rule_version": "sec_named_counterparty_contract_economics_candidate_source_v1",
+      "source_path": "data/non_ohlcv/sec_filing_text_20241002_20260421.jsonl",
+      "unique_candidate_tickers": 0
+    }
+  },
+  "status": "rejected",
+  "target_trade_summary": {
+    "by_ticker_count": {
+      "WULF": 1
+    },
+    "by_ticker_pnl": {
+      "WULF": -906.58
+    },
+    "by_window_pnl": {
+      "late_strong": -906.58,
+      "mid_weak": 0,
+      "old_thin": 0
+    },
+    "max_single_positive_pnl_share": null,
+    "positive_by_ticker_pnl": {},
+    "positive_pnl_hhi": null,
+    "total_pnl": -906.58,
+    "total_trade_count": 1,
+    "windows_with_target_trades": [
+      "late_strong"
+    ]
+  },
+  "target_trades_by_window": {
+    "late_strong": [
+      {
+        "accepted_at": "2025-10-28T12:08:24",
+        "accession_number": "0001104659-25-102858",
+        "alters_orders": false,
+        "archive_url": null,
+        "avg_dollar_volume_20d": 628167278.9,
+        "best_counterparty_confirmation": {
+          "close": 281.5179,
+          "close_above_ma50": true,
+          "date": "2025-10-30",
+          "ma50": 242.4606,
+          "name": "Alphabet/Google",
+          "passed": true,
+          "ret20": 0.143935,
+          "ret20_excess_vs_spy": 0.128081,
+          "spy_ret20": 0.015854,
+          "status": "covered",
+          "ticker": "GOOG"
+        },
+        "candidate_score": 7.846706,
+        "counterparty_confirmations": [
+          {
+            "close": 281.5179,
+            "close_above_ma50": true,
+            "date": "2025-10-30",
+            "ma50": 242.4606,
+            "name": "Alphabet/Google",
+            "passed": true,
+            "ret20": 0.143935,
+            "ret20_excess_vs_spy": 0.128081,
+            "spy_ret20": 0.015854,
+            "status": "covered",
+            "ticker": "GOOG"
+          }
+        ],
+        "date": "2025-10-30",
+        "eight_k_item_codes": [
+          "1.01",
+          "2.02",
+          "7.01",
+          "9.01"
+        ],
+        "entry_date": "2025-10-31",
+        "entry_price": 15.0275,
+        "entry_raw_open": 15.02,
+        "event_family": "earnings_8k",
+        "event_trading_date": "2025-10-29",
+        "evidence_span_rule_version": "sec_named_counterparty_contract_economics_candidate_source_v1",
+        "exit_date": "2025-11-13",
+        "exit_price": 11.6742,
+        "exit_raw_close": 11.68,
+        "filing_date": "2025-10-28",
+        "form_base": "8-K",
+        "form_type": "8-K",
+        "guidance_cut_hits": 0,
+        "guidance_raise_hits": 0,
+        "hold_days": 10,
+        "index_url": "https://www.sec.gov/Archives/edgar/data/1083301/000110465925102858/index.json",
+        "language_bucket": "neutral_or_mixed_language",
+        "language_score": 0,
+        "named_counterparty_contract_economics_evidence": {
+          "ai_terms": {
+            "GOOG": 1
+          },
+          "counterparties": [
+            {
+              "name": "Alphabet/Google",
+              "ticker": "GOOG"
+            }
+          ],
+          "counterparty_terms": {
+            "GOOG": 1
+          },
+          "demand_terms": {
+            "\\brevenue\\b": 1
+          },
+          "economic_terms": {
+            "\\brevenue\\b": 1
+          },
+          "magnitude_terms": {
+            "[0-9][0-9,.]*\\s*(?:million|billion|mm|bn)": 1,
+            "\\$[0-9][0-9,.]*\\s*(?:million|billion|mm|bn)?": 1
+          },
+          "quality_terms": {
+            "\\bgrowth\\b": 1,
+            "\\blong[- ]term\\b": 1,
+            "\\bnew\\b": 1,
+            "\\bstrategic\\b": 1
+          },
+          "rejected_negative_spans": 0,
+          "rejected_no_economic_terms": 4,
+          "rejected_no_magnitude_or_quality": 0,
+          "relation_terms": {
+            "\\bagreements?\\b": 1,
+            "\\bpartners?(?:hip)?\\b": 1,
+            "\\bplatform\\b": 1
+          },
+          "span_count": 1,
+          "spans": [
+            {
+              "counterparties": [
+                {
+                  "name": "Alphabet/Google",
+                  "ticker": "GOOG"
+                }
+              ],
+              "economic_terms": [
+                "\\brevenue\\b"
+              ],
+              "magnitude_terms": [
+                "\\$[0-9][0-9,.]*\\s*(?:million|billion|mm|bn)?",
+                "[0-9][0-9,.]*\\s*(?:million|billion|mm|bn)"
+              ],
+              "quality_terms": [
+                "\\bgrowth\\b",
+                "\\bnew\\b",
+                "\\blong[- ]term\\b",
+                "\\bstrategic\\b"
+              ],
+              "relation_terms": [
+                "\\bpartners?(?:hip)?\\b",
+                "\\bagreements?\\b",
+                "\\bplatform\\b"
+              ],
+              "text": "EX-99.1 2 tm2529509d1_ex99-1.htm EXHIBIT 99.1 Exhibit 99.1 TeraWulf Expands Strategic Partnership with Fluidstack Through New 168 MW AI Compute Joint Venture 25-year lease agreement represents approximately $9.5 billion in contracted revenue Google backstops $1.3 billion of Fluidstack\u2019s long-term lease obligations in support of project debt Exclusive right to partner with Fluid"
+            }
+          ]
+        },
+        "named_counterparty_rule_version": "sec_named_counterparty_contract_economics_candidate_source_v1",
+        "negative_phrase_hits": 1,
+        "paper_notional_usd": 4000.0,
+        "pnl": -906.58,
+        "pnl_pct_net": -0.226644,
+        "positive_phrase_hits": 1,
+        "primary_document": "tm2529509d1_8k.htm",
+        "rule_version": "sec_named_counterparty_contract_economics_candidate_source_v1",
+        "same_day_ab_entry_count": 0,
+        "same_ticker_ab_overlap": false,
+        "signal_date": "2025-10-30",
+        "spy_t1_return": -0.010998,
+        "strategy": "sec_named_counterparty_contract_economics",
+        "t1_close_price": 14.82,
+        "t1_excess_return_vs_spy": 0.033067,
+        "t1_return": 0.022069,
+        "text_event_type": "earnings_release_text",
+        "ticker": "WULF",
+        "trade_enabled": false,
+        "usable_trade_date": "2025-10-29"
+      }
+    ],
+    "mid_weak": [],
+    "old_thin": []
+  },
+  "timestamp": "2026-06-15T22:11:52Z",
+  "total_pnl_delta": -906.58,
+  "trial_family": "sec_named_counterparty_contract_economics_candidate_pool",
+  "trial_variant_id": "sec_named_counterparty_contract_economics_top1_next_open_10d_v1",
+  "warehouse_coverage_by_window": {
+    "late_strong": {
+      "loaded_ticker_count": 50,
+      "sec_text_ticker_count": 48,
+      "source": "data/warehouse/warehouse_main.sqlite"
+    },
+    "mid_weak": {
+      "loaded_ticker_count": 50,
+      "sec_text_ticker_count": 48,
+      "source": "data/warehouse/warehouse_main.sqlite"
+    },
+    "old_thin": {
+      "loaded_ticker_count": 50,
+      "sec_text_ticker_count": 48,
+      "source": "data/warehouse/warehouse_main.sqlite"
+    }
+  }
+}
