@@ -1000,17 +1000,24 @@ def save_revision_manifest(
     overwrite=True,
 ):
     path = revision_manifest_path(ticket["experiment_id"], manifests_dir)
-    if not overwrite and path.exists():
-        raise FileExistsError(path)
     manifest = build_revision_manifest(
         ticket,
         repo_root=repo_root,
         ticket_file=ticket_file,
         card_file=card_file,
     )
-    _atomic_write_text(
-        json.dumps(manifest, indent=2, ensure_ascii=False, sort_keys=True) + "\n",
-        path)
+    text = json.dumps(manifest, indent=2, ensure_ascii=False, sort_keys=True) + "\n"
+    if not overwrite:
+        # Atomic exclusive create, consistent with save_ticket / save_experiment_card:
+        # no TOCTOU exists()-then-write race and no same-dir .tmp residue.
+        path.parent.mkdir(parents=True, exist_ok=True)
+        fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            f.write(text)
+            f.flush()
+            os.fsync(f.fileno())
+        return path
+    _atomic_write_text(text, path)
     return path
 
 

@@ -30,7 +30,13 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 DEFAULT_TMP_MAX_AGE_S = 300.0      # 5 min: orphan atomic-write temp
-DEFAULT_LOCK_MAX_AGE_S = 900.0     # 15 min: abandoned lock
+# 30 min: abandoned lock. Conservative because this age threshold is the ONLY
+# gate for git's own .lock files (which are not the experiment-lock JSON format,
+# so _lock_is_dead can't read a pid/released_at from them) -- a long-running git
+# gc/repack must not have its lock yanked. Experiment locks (registry/log/ticket)
+# are JSON with pid+released_at, so they're cleaned promptly via _lock_is_dead
+# regardless of this age, and are unaffected by the longer window.
+DEFAULT_LOCK_MAX_AGE_S = 1800.0
 
 # Directories that accumulate experiment residue (scanned one level; os.scandir
 # is used rather than Path.glob so dot-prefixed temp files are matched).
