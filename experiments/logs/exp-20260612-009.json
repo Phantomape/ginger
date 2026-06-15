@@ -1,0 +1,110 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.04,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "hidden forward_tester consumer",
+      "test suite coupling",
+      "yfinance info rate limiting in rolling sector refresh",
+      "SEC rate limiting",
+      "import_advice format regression breaking replay"
+    ],
+    "predicted_success_probability": 0.8,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "Three of four components were already committed piecemeal by the auto-committer while the ticket stayed open; only the reference-cache refresher remained. exp-20260613-023 had meanwhile absorbed the companyfacts portion and surfaced that the sec_company_tickers relocation broke CIK resolution until repathed."
+  },
+  "causal_components": [
+    "forward_tester_retirement",
+    "llm_response_canonicalization",
+    "reference_cache_rolling_refresh",
+    "kova_companyfacts_stale_refresh"
+  ],
+  "change_summary": "Daily data accumulation repair bundle, completed across the auto-committer and this takeover. Components 1/2/4 landed earlier as separate commits: forward_tester.py retired (manual CLI dead since 2026-02-20, zero importers); LLM response canonicalized (OPENAI auto-call path removed, llm_prompt_resp is the single canonical response artifact, import_advice preserved for the manual prompt->GPT->paste flow); kova companyfacts default-on (refresh_companyfacts default True). This takeover finished the missing component 3: new quant/reference_cache_refresh.py keeps the two unowned reference caches fresh from the daily path - sector map via an oldest-first rolling slice (>21d stale, cap 120/day, build_cache skip_existing=False so the yfinance burst is bounded and the universe re-queries over several days) and sec_company_tickers via a 7-day TTL HTTP refresh - wired into run.py after the macro-events refresh with env opt-outs (REFERENCE_CACHE_REFRESH_DISABLED / SECTOR_CACHE_REFRESH_DISABLED / SEC_TICKER_REFRESH_DISABLED). Companyfacts refresh was already covered by exp-20260613-023 so it is deliberately out of this module's scope. No entry/exit/ranking/sizing change; live orders unchanged.",
+  "change_type": "measurement_repair",
+  "changed_variable": "daily data accumulation repair bundle: forward_tester retirement + llm response canonicalization + reference cache rolling refreshers + kova companyfacts staleness refresh",
+  "component": "quant/forward_tester.py, quant/test_quant.py, quant/data_paths.py, quant/risk_engine.py, quant/llm_advisor.py, quant/import_advice.py, quant/run.py, quant/reference_cache_refresh.py, quant/test_reference_cache_refresh.py, quant/sec_companyfacts_backfill.py, quant/kova_data_sidecar.py, quant/llm_backlog.py, data/daily/forward_tests, data/daily/llm/advice",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260612-009",
+  "hypothesis": "Several daily data streams never accumulate or accumulate only by manual action: forward_tester is a manual CLI dead since 2026-02-20 and its only artifact consumer role is obsolete (operator workflow is prompt->GPT->import_advice); the OPENAI auto-call branch never runs (no key) yet investment_advice_*.json remains the nominal canonical artifact; broad_market_sector_map.json / sec_company_tickers.json / sec companyfacts cache have no daily-path refresher; kova companyfacts surface rides a never-refreshed cache because KOVA_REFRESH_COMPANYFACTS defaults off and refresh=False is hardcoded. Removing the dead path, making llm_prompt_resp the single canonical response artifact, and wiring throttled rolling refreshers restores trustworthy accumulation without touching any trading rule.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "before/after stream freshness probes + test suite",
+  "next_retry_requires": [],
+  "notes": "Taken over after the original claim stalled with components 1/2/4 committed piecemeal by the auto-committer but the ticket left open and component 3 (reference cache refresher) never built. At takeover the sector map was ~18d stale (content 2026-05-27, anchors the broad-universe feed) and sec_company_tickers ~42d stale, with no daily refresher for either. Built + wired the refresher; 6 new offline tests (stale-slice selection, rolling build of only the stale slice, no-op when fresh, TTL throttle, orchestration + env opt-outs); full quant suite 1323 passed (the 5 previously-failing LLM tests now pass since component 2 landed). Note: exp-20260613-023 separately fixed a latent bug where backfill modules read the pre-relocation data/sec_company_tickers.json path (empty CIK map) - now data_artifact_path. Environment note: closed amid active scheduled runs (dates advanced to 06-14) with registry write contention.",
+  "parameters": {
+    "locked_variables": [
+      "daily data accumulation repair bundle: forward_tester retirement + llm response canonicalization + reference cache rolling refreshers + kova companyfacts staleness refresh"
+    ],
+    "single_causal_variable": "daily data accumulation repair bundle: forward_tester retirement + llm response canonicalization + reference cache rolling refreshers + kova companyfacts staleness refresh"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "TODO",
+    "new_evidence_required": "TODO",
+    "realized_failure_mode": "none",
+    "why_result_happened": "Three of four components were already committed piecemeal by the auto-committer while the ticket stayed open; only the reference-cache refresher remained. exp-20260613-023 had meanwhile absorbed the companyfacts portion and surfaced that the sec_company_tickers relocation broke CIK resolution until repathed."
+  },
+  "prediction": {
+    "confidence_reason": "Three exploration reports mapped every reader/writer; investment_advice readers are forward_tester (being removed) and pending_actions (reads both prefixes); backtester replay reads only llm_prompt_resp; refreshers reuse existing build_cache/refresh_company_tickers/fetch_companyfacts primitives.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "hidden forward_tester consumer",
+      "test suite coupling",
+      "yfinance info rate limiting in rolling sector refresh",
+      "SEC rate limiting",
+      "import_advice format regression breaking replay"
+    ],
+    "recorded_at": "2026-06-12T06:12:44+00:00",
+    "success_probability": 0.8
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260612-009/before.json",
+    "data/experiments/exp-20260612-009/after.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-06-14T07:20:22+00:00",
+  "trial_family": "measurement_repair",
+  "trial_variant_id": "exp-20260612-009"
+}

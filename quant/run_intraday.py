@@ -18,14 +18,17 @@ Flags:
 from __future__ import annotations
 
 import argparse
+import json
 import logging
+import os
 import sys
+from pathlib import Path
 
 import pandas as pd
 
 try:
     from data_layer import get_ohlcv_many
-    from data_paths import DATA_ROOT, atomic_write_json, atomic_write_text
+    from data_paths import DATA_ROOT
     from intraday_quotes import get_intraday_quotes, quote_source_summary
     from intraday_review import (
         INDEX_TICKERS,
@@ -44,7 +47,7 @@ try:
     from trend_signals import load_open_positions
 except ImportError:  # pragma: no cover - package-style imports in tests
     from quant.data_layer import get_ohlcv_many
-    from quant.data_paths import DATA_ROOT, atomic_write_json, atomic_write_text
+    from quant.data_paths import DATA_ROOT
     from quant.intraday_quotes import get_intraday_quotes, quote_source_summary
     from quant.intraday_review import (
         INDEX_TICKERS,
@@ -64,6 +67,22 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 log = logging.getLogger("run_intraday")
+
+
+def _write_intraday_text(text: str, filepath: str | Path) -> None:
+    path = Path(filepath)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as handle:
+        handle.write(text)
+        handle.flush()
+        os.fsync(handle.fileno())
+
+
+def _write_intraday_json(obj, filepath: str | Path, *, indent=2, default=None) -> None:
+    _write_intraday_text(
+        json.dumps(obj, indent=indent, ensure_ascii=False, default=default),
+        filepath,
+    )
 
 
 def _completed_closes(ohlcv_dict: dict, asof_et_date) -> dict[str, float]:
@@ -301,20 +320,20 @@ def main(no_news: bool = False, offline: bool = False, data_dir=None) -> dict:
     outputs = []
     try:
         path = intraday_output_path("report", date_str, time_label, data_dir)
-        atomic_write_text(report_text, path)
+        _write_intraday_text(report_text, path)
         outputs.append(path)
         path = intraday_output_path("llm_prompt", date_str, time_label, data_dir)
-        atomic_write_text(prompt_text, path)
+        _write_intraday_text(prompt_text, path)
         outputs.append(path)
         path = intraday_output_path("snapshot", date_str, time_label, data_dir)
-        atomic_write_json(review, path, default=str)
+        _write_intraday_json(review, path, default=str)
         outputs.append(path)
         if news_payload:
             path = intraday_output_path("news_raw", date_str, time_label, data_dir)
-            atomic_write_json(news_payload["raw_items"], path, default=str)
+            _write_intraday_json(news_payload["raw_items"], path, default=str)
             outputs.append(path)
             path = intraday_output_path("trade_news", date_str, time_label, data_dir)
-            atomic_write_json(news_payload["trade_items"], path, default=str)
+            _write_intraday_json(news_payload["trade_items"], path, default=str)
             outputs.append(path)
     except Exception as e:
         log.error("Failed writing intraday artifacts: %s", e)

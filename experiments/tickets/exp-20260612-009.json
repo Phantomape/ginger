@@ -9,7 +9,7 @@
     "reserved_at": "2026-06-12T06:13:22+00:00",
     "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
   },
-  "status": "claimed",
+  "status": "accepted",
   "lane": "measurement_repair",
   "owner": "agent-fable",
   "hypothesis": "Several daily data streams never accumulate or accumulate only by manual action: forward_tester is a manual CLI dead since 2026-02-20 and its only artifact consumer role is obsolete (operator workflow is prompt->GPT->import_advice); the OPENAI auto-call branch never runs (no key) yet investment_advice_*.json remains the nominal canonical artifact; broad_market_sector_map.json / sec_company_tickers.json / sec companyfacts cache have no daily-path refresher; kova companyfacts surface rides a never-refreshed cache because KOVA_REFRESH_COMPANYFACTS defaults off and refresh=False is hardcoded. Removing the dead path, making llm_prompt_resp the single canonical response artifact, and wiring throttled rolling refreshers restores trustworthy accumulation without touching any trading rule.",
@@ -68,8 +68,38 @@
   },
   "created_at": "2026-06-12T06:13:22+00:00",
   "claimed_at": "2026-06-12T06:13:30+00:00",
-  "completed_at": null,
-  "result": null,
+  "completed_at": "2026-06-14T07:20:22+00:00",
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260612-009/before.json",
+    "after_result_file": "data/experiments/exp-20260612-009/after.json",
+    "delta_metrics": {},
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.8,
+      "brier_score": 0.04,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "hidden forward_tester consumer",
+        "test suite coupling",
+        "yfinance info rate limiting in rolling sector refresh",
+        "SEC rate limiting",
+        "import_advice format regression breaking replay"
+      ],
+      "realized_failure_mode": "none",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "Three of four components were already committed piecemeal by the auto-committer while the ticket stayed open; only the reference-cache refresher remained. exp-20260613-023 had meanwhile absorbed the companyfacts portion and surfaced that the sec_company_tickers relocation broke CIK resolution until repathed."
+    }
+  },
   "ticket_file": "experiments/tickets/exp-20260612-009.json",
   "card_file": "experiments/cards/exp-20260612-009.md",
   "revision_manifest_file": "experiments/manifests/exp-20260612-009.json"
