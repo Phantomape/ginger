@@ -355,6 +355,20 @@ attribution live in
 `quant/experiments/exp_20260615_019_pit_regime_state_attribution.py`; promote to
 a shared daily regime artifact + parity test before any execution role.
 
+`exp-20260615-023` then tested the industry-standard chop axis and REJECTED it:
+swapping the exp-019 trend-state regime for Kaufman Efficiency Ratio (ER) of SPY
+plus a continuous exposure scalar did NOT reproduce the separation and arguably
+inverted it (FGRS ER terciles non-monotonic, Spearman +0.105; deferred low-ER
+chop was the BEST bucket, Spearman −0.114). The ER day distribution shows why:
+`late_strong`, the strongest window, had the LOWEST mean ER (0.157), because a
+steady grind-up has low index path-efficiency. So ER conflates "low net move
+with wiggles" with the structurally-below-trend market that actually hurt these
+strategies. Lesson: the ER / Choppiness-Index convention does not transfer here;
+the relevant chop axis is the 2D trend-state × breadth construct from exp-019
+(SPY near/below 200d MA + weak breadth, not stressed), not index path-efficiency.
+Retain the exp-019 regime label; do not substitute ER or retune ER window /
+exposure floor on the frozen windows.
+
 Candidate fields:
 
 - `winner_continuation_tail_state_bucket`

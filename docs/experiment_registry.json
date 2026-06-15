@@ -39274,6 +39274,124 @@
       "updated_at": "2026-06-15T17:28:25+00:00"
     },
     {
+      "acceptance_rule": "Replay lead only unless all three canonical windows improve and forward state-tagged replacement rows include enough choppy_range closed outcomes; no production promotion without shared daily regime artifact and parity test.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260615_021_pit_regime_soft_chop_down_tilt.py",
+        "data/experiments/exp-20260615-021/exp_20260615_021_pit_regime_soft_chop_down_tilt.json",
+        "experiments/cards/exp-20260615-021.md",
+        "experiments/manifests/exp-20260615-021.json",
+        "experiments/tickets/exp-20260615-021.json",
+        "experiments/logs/exp-20260615-021.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "artifact": "data/experiments/exp-20260615-021/exp_20260615_021_pit_regime_soft_chop_down_tilt.json",
+      "baseline_result_file": "data\\experiments\\exp-20260615-019\\exp_20260615_019_pit_regime_state_attribution.json",
+      "card_file": "experiments/cards/exp-20260615-021.md",
+      "causal_components": [
+        "frozen exp019 PIT regime classifier",
+        "0.5x choppy_range notional",
+        "1.0x non-chop notional",
+        "historical replay attribution",
+        "forward-row readiness check",
+        "no production behavior change"
+      ],
+      "change_type": "risk_allocation_replay_lead",
+      "changed_variable": "fixed_choppy_range_soft_down_tilt_default_off_replay_v1",
+      "claimed_at": "2026-06-15T17:58:20+00:00",
+      "completed_at": "2026-06-15T18:03:01+00:00",
+      "created_at": "2026-06-15T17:58:11+00:00",
+      "decision": "rejected_soft_chop_down_tilt_not_promotable",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260615-021",
+      "experiment_uid": "expuid-aa6448fb26ff4f1a",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260615-021",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-15T17:58:11+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "pit_regime_soft_chop_down_tilt"
+      },
+      "hypothesis": "Risk allocation alpha: a fixed soft 0.5x notional down-tilt for default-off paper trades whose entry date is classified as choppy_range by the frozen exp-20260615-019 PIT regime model may cut directionless-chop losses while preserving risk_on and risk_off winners.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "fixed_choppy_range_soft_down_tilt_default_off_replay_v1"
+      ],
+      "log": "experiments/logs/exp-20260615-021.json",
+      "mechanism_family": "tail_state_classifier_for_momentum_candidate_pools",
+      "multiple_testing_risk_bucket": "moderate",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260615-019",
+        "exp-20260614-010",
+        "exp-20260613-005"
+      ],
+      "new_evidence_type": "exp019_pit_regime_attribution_lead",
+      "owner": "codex-alpha-explore",
+      "prediction": {
+        "confidence_reason": "exp019 found choppy_range losses in FGRS and deferred-revenue attribution, but forward rows had no choppy coverage and exp20260614-010 rejected a harder breadth tail filter, so this is a low-probability replay-lead test.",
+        "expected_ev_delta": 0.05,
+        "expected_pnl_delta": 1200.0,
+        "main_failure_modes": [
+          "forward_rows_too_thin",
+          "mid_weak_no_chop_coverage",
+          "window_regression",
+          "replay_only_not_promotable"
+        ],
+        "recorded_at": "2026-06-15T18:03:01+00:00",
+        "success_probability": 0.18
+      },
+      "prior_trial_count": 2,
+      "result": {
+        "accepted": false,
+        "artifact": "data/experiments/exp-20260615-021/exp_20260615_021_pit_regime_soft_chop_down_tilt.json",
+        "decision": "rejected_soft_chop_down_tilt_not_promotable",
+        "gate4": {
+          "decision": "rejected_soft_chop_down_tilt_not_promotable",
+          "failed_reasons": [
+            "forward_choppy_replacement_rows_too_thin",
+            "replay_only_no_shared_daily_regime_artifact"
+          ],
+          "forward_choppy_replacement_rows": 0,
+          "note": "This runner does not recompute canonical core EV because it is a read-only notional overlay on default-off paper rows. It can only create a lead; acceptance requires a shared daily regime artifact, parity test, and full Gate 1-4 replay.",
+          "passed": false,
+          "primary_aggregate_pnl_delta": 1499.44,
+          "primary_artifact": "data/experiments/exp-20260611-005/exp_20260611_005_lagged_consensus_shared_allocator_source.json",
+          "primary_choppy_trade_count": 44,
+          "primary_windows_improved": 3,
+          "primary_windows_regressed": 0
+        },
+        "log": "experiments/logs/exp-20260615-021.json",
+        "production_impact": {
+          "alters_candidate_ranking": false,
+          "alters_exits": false,
+          "alters_orders": false,
+          "alters_signal_generation": false,
+          "alters_sizing": false,
+          "backtester_adapter_changed": false,
+          "daily_snapshot_exposed": false,
+          "live_ready": false,
+          "live_realism_evaluated": false,
+          "parity_note": "No production path changed. A retry/promotion would require a shared daily PIT regime artifact, adapter parity test, and enough closed forward replacement-value rows tagged as choppy_range.",
+          "parity_test_added": false,
+          "replay_only": true,
+          "run_adapter_changed": false,
+          "shared_policy_changed": false,
+          "trade_enabled": false,
+          "uses_llm": false
+        }
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260615-021.json",
+      "single_causal_variable": "fixed_choppy_range_soft_down_tilt_default_off_replay_v1",
+      "status": "rejected",
+      "summary": "rejected_soft_chop_down_tilt_not_promotable",
+      "ticket_file": "experiments/tickets/exp-20260615-021.json",
+      "trial_family": "pit_regime_soft_chop_down_tilt",
+      "trial_variant_id": "choppy_range_weight_0p50_nonchop_1p00_v1",
+      "updated_at": "2026-06-15T18:03:01+00:00"
+    },
+    {
       "experiment_id": "exp-20260615-022",
       "experiment_uid": "expuid-a4c21cf9dce44ab0",
       "hub_identity": {
@@ -39481,8 +39599,104 @@
       "aggregate_expected_value_delta": 0.438,
       "aggregate_strategy_total_pnl_delta": 12628.19,
       "updated_at": "2026-06-15T18:15:59+00:00"
+    },
+    {
+      "experiment_id": "exp-20260615-023",
+      "experiment_uid": "expuid-314ced3f39914849",
+      "hub_identity": {
+        "scheme": "hf_hub_local_v1",
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260615-023",
+        "slug": "efficiency_ratio_chop_exposure",
+        "reserved_at": "2026-06-15T18:48:24+00:00",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+      },
+      "status": "observed_only",
+      "lane": "measurement_repair",
+      "owner": "alpha-search-automation",
+      "hypothesis": "Kaufman Efficiency Ratio of SPY (directional efficiency) is a cleaner PIT chop axis than the ad-hoc bull/stress regime label; a continuous exposure scalar (floor+(1-floor)*ER) is the vol-target-style soft tilt suggested by industry practice, not a hard on/off gate.",
+      "change_type": "identity_or_measurement_repair",
+      "mechanism_family": "pit_efficiency_ratio_chop_axis_diagnostic",
+      "trial_family": "identity_or_measurement_repair",
+      "trial_variant_id": "exp-20260615-023",
+      "single_causal_variable": "efficiency_ratio_chop_axis_and_continuous_exposure_scalar",
+      "changed_variable": "efficiency_ratio_chop_axis_and_continuous_exposure_scalar",
+      "causal_components": [],
+      "prior_trial_count": 0,
+      "nearby_prior_experiments": [],
+      "multiple_testing_risk_bucket": "minimal",
+      "new_evidence_type": "not_declared",
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260615_023_efficiency_ratio_chop_exposure.py",
+        "data/experiments/exp-20260615-023/exp_20260615_023_efficiency_ratio_chop_exposure.json",
+        "experiments/cards/exp-20260615-023.md",
+        "experiments/manifests/exp-20260615-023.json",
+        "experiments/tickets/exp-20260615-023.json",
+        "experiments/logs/exp-20260615-023.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "must_not_touch": [],
+      "locked_variables": [
+        "efficiency_ratio_chop_axis_and_continuous_exposure_scalar"
+      ],
+      "evaluation_windows": [],
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "prediction": null,
+      "created_at": "2026-06-15T18:48:24+00:00",
+      "claimed_at": "2026-06-15T18:48:35+00:00",
+      "completed_at": "2026-06-15T18:50:30+00:00",
+      "result": {
+        "decision": "measurement_repair_efficiency_ratio_chop_axis_and_exposure_scalar_built",
+        "accepted": false,
+        "artifact": "data/experiments/exp-20260615-023/exp_20260615_023_efficiency_ratio_chop_exposure.json",
+        "log": "experiments/logs/exp-20260615-023.json",
+        "comparison_to_exp019": {
+          "exp019_spearman_risk_off_vs_pnl_fgrs": -0.0444,
+          "exp019_spearman_risk_off_vs_pnl_deferred": 0.0851,
+          "this_run_spearman_er_vs_pnl_fgrs": 0.1048,
+          "this_run_spearman_er_vs_pnl_deferred": -0.1141,
+          "note": "A materially more positive Spearman(ER, PnL) than the ~0 Spearman(risk_off_score, PnL) confirms the loss axis is directionless chop and that ER captures it; a still-near-zero ER Spearman would mean ER is not the right chop measure either."
+        },
+        "production_impact": {
+          "replay_only": true,
+          "shared_policy_changed": false,
+          "run_adapter_changed": false,
+          "backtester_adapter_changed": false,
+          "parity_test_added": false,
+          "trade_enabled": false,
+          "alters_orders": false,
+          "alters_signal_generation": false,
+          "alters_candidate_ranking": false,
+          "alters_sizing": false,
+          "alters_exits": false,
+          "production_watchlist_changed": false,
+          "uses_llm": false,
+          "parity_note": "Diagnostic only. Promoting the ER exposure scalar to a portfolio soft tilt requires a shared daily ER artifact, a parity test, and forward state-tagged replacement-value rows (or the manual live pilot scorecard), never a hard per-window gate."
+        }
+      },
+      "ticket_file": "experiments/tickets/exp-20260615-023.json",
+      "card_file": "experiments/cards/exp-20260615-023.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260615-023.json",
+      "decision": "measurement_repair_efficiency_ratio_chop_axis_and_exposure_scalar_built",
+      "summary": "measurement_repair_efficiency_ratio_chop_axis_and_exposure_scalar_built",
+      "artifact": "data/experiments/exp-20260615-023/exp_20260615_023_efficiency_ratio_chop_exposure.json",
+      "log": "experiments/logs/exp-20260615-023.json",
+      "updated_at": "2026-06-15T18:50:30+00:00"
+    },
+    {
+      "experiment_id": "exp-20260615-024",
+      "status": "claimed",
+      "lane": "alpha_search",
+      "owner": "alpha-search-automation",
+      "hypothesis": "candidate_pool/entry: PIT SEC Form 4 CEO/CFO/President non-plan open-market purchases, when paired with already-known SEC Companyfacts low-liability confirmation, may isolate informed insider demand with better replacement value than broad clustered or owner-conviction Form 4 buys.",
+      "ticket_file": "experiments/tickets/exp-20260615-024.json",
+      "card_file": "experiments/cards/exp-20260615-024.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260615-024.json",
+      "updated_at": "2026-06-15T19:10:10+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-15T18:15:59+00:00"
+  "updated_at": "2026-06-15T19:10:10+00:00"
 }
