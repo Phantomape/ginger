@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-06-13.
+Last refreshed: 2026-06-15.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -184,6 +184,49 @@ absorption, 13F sponsorship acceleration, and 13F new-holder initiation all
 failed window/drawdown gates. Treat 13F/Form144 as delayed ownership/crowding
 context first, not standalone entry alpha.
 
+A separate June 14 scout adds one informative non-momentum lead.
+`exp-20260614-020` tested a genuinely new free SEC field: annual accruals /
+cash-conversion quality (NetIncome vs OperatingCashFlow, matched on the same
+fiscal-year end, scaled by assets), which the accepted fundamental_growth_rs
+CompanyfactsFundamentalIndex never loads. As a fixed top-1 next-open 10-day
+default-off candidate pool it was positively predictive: aggregate EV `+0.99`,
+PnL `+$21,322`, positive EV/PnL in all three windows with no regression, clean
+concentration (HHI 0.12), beating the accepted compression and distribution
+comparators on gross deltas. It was nonetheless REJECTED on the binding
+guardrail: drawdown drift `+5.2pp` versus the 0.5pp cap. The cause is
+deployment size, not signal weakness: 36/47 universe names pass the quality
+gate so price confirmation does most of the discrimination, and overlaying 369
+trades (~10 concurrent momentum-tilted positions) scales both PnL and drawdown.
+This is the "high aggregate EV with drawdown drift is a rejected clue, not a
+retained strategy" rule in action. Follow-up tests closed the obvious risk
+envelope path: `exp-20260614-021` low deployment still regressed `old_thin`, and
+`exp-20260614-023` daily-close 7% protective stop still regressed
+`late_strong`/`old_thin` EV and left drawdown drift at `+3.17pp`. The useful
+next step is no longer another deployment cap or stop. It is a sharper PIT
+quality discriminator (TTM same-period accruals, accrual-change momentum,
+quarterly cash-flow where reported) or materially new closed forward
+replacement-value rows. It is NOT a threshold sweep of the rejected fixed
+bundle.
+
+The June 14 batch adds one narrow retained allocation field and closes several
+tempting near-neighbors. The retained result is `exp-20260614-004`: within the
+already accepted SEC financial-report T+1 drift sleeve, pre-entry 20-session
+SPY-relative leadership (`ticker_minus_spy_ret20 >= 5pp`) earned a default-off
+1.15x paper-notional scalar, improving aggregate EV by `+0.1582` and PnL by
+`+$3,235.38` across all three fixed windows with 24 RS20-leader closed trades
+and no survival/trade-count change. Keep it default-off and do not retune the
+lookback, threshold, or scalar without forward replacement rows. The rest of
+the day mostly tightened anti-repeat boundaries: forward activation is still
+not ready because accepted adapters lack enough mature closed rows; same-day
+source-pair routers still do not beat the accepted allocator; relation variants
+based on correlation breakdown or earnings peer underreaction failed accepted
+relation comparators; SEC AI-demand, forward-guidance-quality, and dividend
+text labels were too sparse or already captured by SEC RS20 / accepted
+comparators; Kova Companyfacts capital efficiency overlapped accepted
+Companyfacts low-liability/RS; broad clustered Form 4 open-market buying was
+slightly negative even with broad sample; and accepted-allocator market breadth
+is attribution context, not a tail filter.
+
 Default next question for any new broad candidate pool:
 
 - what exact relation makes this ticker a better replacement than cash, ETF
@@ -193,6 +236,30 @@ Default next question for any new broad candidate pool:
   not only against the core baseline;
 - whether the result survives costs, concentration, and drawdown before any
   notional, top-N, hold-day, or cooldown tuning.
+
+The June 15 readout is another warning against treating positive aggregate EV
+as accepted evidence when the accepted comparator, window, and drawdown tests
+fail. Industry-relative asset-growth quality (`exp-20260615-006`), free
+cash-flow / capex coverage quality (`exp-20260615-008`), and operating
+leverage acceleration (`exp-20260615-016`) were all legitimate PIT SEC
+Companyfacts candidate-pool attempts and each showed positive aggregate EV.
+They were rejected because at least one canonical window or drawdown/comparator
+guard failed, usually with old_thin or late_strong fragility and target
+concentration. The lesson is not "try another Companyfacts threshold"; it is
+that free fundamental fields need either a sharper PIT discriminator or a
+different relation surface before they deserve another shared-paper-first run.
+The same batch kept 13F in the context bucket: low-crowding sponsorship
+leadership (`exp-20260615-009`) regressed aggregate EV/PnL and drawdown, so
+13F remains delayed ownership/crowding context rather than direct entry timing.
+Quantified SEC backlog/RPO/book-to-bill text (`exp-20260615-013`) was too
+sparse at 3 trades and failed the accepted SEC RS20 comparator; generic
+quantified-demand text is not enough without structured customer/supplier
+contract economics. The non-repeat blocker scan (`exp-20260615-015`) found no
+Gate-4-ready fresh alpha: low-deployment ETF has 17 closed positive rows but
+threshold/list/hold/notional retunes are frozen, state-surface rows are still
+too thin, the analyst-revision ledger exists but has zero candidate matches,
+and FINRA/FTD still needs a real borrow-cost / hard-to-borrow / availability
+field.
 
 ## Detail Sources
 
@@ -227,6 +294,8 @@ evidence on accepted paper adapters:
 - accepted-helper source-priority allocator with revision-surprise
   low-extension and lagged consensus as fixed accepted sources;
 - distribution-day absorption leadership shared default-off adapter;
+- SEC financial-report T+1 drift with RS20-leader default-off notional support
+  from `exp-20260614-004`;
 - VBB / VCP / Space observe-only buckets where nonzero forward rows exist.
 
 Minimum forward package:
@@ -243,6 +312,12 @@ Since exp-20260611-020, closed rows in `data/paper_sleeves/*/state.json`
 carry replacement-value fields where comparable data exists. A readiness audit
 should wait for materially more closed rows per adapter and use those fields as
 the activation surface, not rerun a generic "replacement fields missing" audit.
+
+June 15 status: low-deployment ETF has only 17 positive closed rows and its
+threshold/list/hold/notional retunes are frozen; the state-surface sleeve has
+only 3 relevant rows; and the analyst-revision ledger has 1246 rows but zero
+candidate matches. Forward work should build missing match surfaces and collect
+more closed replacement-value rows before any activation or retune experiment.
 
 ### 2. Tail-State Classifier For Momentum And Broad Candidate Pools
 
@@ -350,6 +425,11 @@ windows.
 Only promote revision-driven behavior to live trading after the PIT revision
 source and forward replacement rows are available.
 
+June 15 status: a revision ledger now exists, but the candidate match surface is
+empty. The next useful step is not replaying revision thresholds; it is joining
+revision breadth/dispersion/velocity onto historical candidates with as-of
+timestamps and source freshness so replacement value can be measured.
+
 ### 5. LLM As Bounded Semantic Infrastructure
 
 LLM remains useful for event understanding, not direct trading authority.
@@ -431,6 +511,9 @@ production-visible field:
   slot-sliced core rows into the accepted allocator without new forward
   replacement-value evidence or a field that beats the current accepted
   allocator and accepted distribution comparator;
+- source-pair conflict routers, pair-relative source-family history, or other
+  accepted-allocator arbitration retunes unless the rule changes enough
+  selections and beats the accepted allocator in every canonical window;
 - source maturity, source-score percentile, candidate microstructure,
   same-ticker source confirmation, alpha-score rank rows, front-loaded
   extension filters, accepted-allocator market-breadth support filters, or other
@@ -458,10 +541,42 @@ production-visible field:
 - Companyfacts support-scalar mining, quality-gated top-1 replacement,
   same-industry peer confirmation, fresh-underreaction, or dual-growth
   threshold variants;
+- Companyfacts broad quality candidate pools based on industry-relative asset
+  growth, free-cash-flow / capex coverage, operating leverage acceleration, or
+  adjacent scalar/threshold/top-N/hold/cooldown variants on frozen windows;
+  June 15 evidence says these fields can be directionally useful but fail
+  accepted-window, drawdown, concentration, or comparator gates without a new
+  PIT discriminator;
+- accruals / cash-conversion quality (annual NetIncome vs OperatingCashFlow)
+  candidate-pool retries that sweep cash-conversion ratio, accruals/assets
+  threshold, fact freshness, RS/close/volume guards, top-N, hold, cooldown,
+  notional, deployment cap, or protective-stop level on the frozen windows:
+  exp-20260614-020 already showed the fixed bundle is positively predictive
+  (EV `+0.99`, PnL `+$21,322`, all windows positive) but rejected on `+5.2pp`
+  drawdown drift; exp-20260614-021 low deployment and exp-20260614-023 7%
+  daily-close protective stop both failed Gate 4. A valid retry now requires a
+  sharper PIT discriminator (TTM same-period accruals, accrual-change momentum,
+  quarterly cash-flow where reported) or closed forward replacement-value rows,
+  not another risk-envelope or threshold sweep;
+- raw Companyfacts deferred-revenue / contract-liability / RPO demand
+  acceleration candidate-pool retries that sweep demand-growth, demand/revenue,
+  current-demand floor, concept priority, fact-age, prior-gap, RS/close/volume,
+  top-N, hold, cooldown, or notional thresholds on the frozen windows:
+  exp-20260615-017 was directionally positive (aggregate EV `+0.4288`, PnL
+  `+$12,317.53`, 2/3 windows up, DD drift `+0.29pp` within cap, 150 trades) but
+  REJECTED on `window_ev_regression` (late_strong EV `-0.0824`) and
+  `accepted_distribution_ev_not_beaten`. A valid retry needs a selected PIT
+  Companyfacts daily surface, a cleaner cross-industry concept taxonomy, or
+  closed forward replacement-value rows, not another threshold sweep of the
+  rejected fixed bundle;
 - post-earnings high-liquidity, sector-residual, core-overlap, DTE, latest
   surprise, average surprise, pre-event RS, score, rank, or scalar retunes;
 - SEC item-code / phrase / same-day absorption retries without richer semantic
   provenance or relation structure;
+- SEC quantified backlog, RPO, bookings, book-to-bill, or customer-order text
+  retries that only expand regexes or phrase lists; a valid retry needs
+  structured customer/supplier contract economics, PIT numeric extraction, and
+  a sample large enough to beat accepted SEC RS20 after costs;
 - broad SEC business-update labels, including generic 8-K Item 8.01/7.01/1.01
   leadership, without richer event semantics or relation provenance;
 - SEC filing complexity, change-density, periodic-report absorption, delayed
@@ -474,8 +589,24 @@ production-visible field:
 - sector-level, same-industry characteristic-similar, negative-shock, or
   SEC-provenanced peer-shock retries unless the relation edge is stronger than
   rolling-correlation peer shock and has explicit PIT provenance;
+- correlation-breakdown idiosyncratic leader and earnings-catalyst peer
+  underreaction variants unless the new relation field beats accepted
+  rolling-correlation / industry relation comparators after costs;
 - Form 4 owner-count or liquidity-intensity retries without forward
   replacement value;
+- broad clustered Form 4 open-market purchase candidate pools as standalone
+  alpha; first use them for insider-interest context and require a timing or
+  cluster-quality edge before retry;
+- 13F low-crowding or low-sponsorship leadership filters as direct entry alpha;
+  use 13F first for crowding, ownership-delay, and overhang attribution unless a
+  new filing-timing or provenance edge beats accepted relation/allocator
+  comparators;
+- SEC AI-demand evidence-span, forward-guidance-quality evidence-span, or SEC
+  dividend-increase text leadership variants unless the semantic field is less
+  generic, less sparse, and beats the accepted SEC RS20 support comparator;
+- Kova Companyfacts capital-efficiency / operating-efficiency candidate pools
+  unless they add a field orthogonal to accepted Companyfacts low-liability/RS
+  and beat that comparator in all canonical windows;
 - Space price-action, ETF relative, defense-budget, low-thrust absorption, or
   theme-segment retunes on frozen windows;
 - missing archive/text availability as an alpha field.
