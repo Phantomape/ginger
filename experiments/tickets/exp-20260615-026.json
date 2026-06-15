@@ -1,0 +1,171 @@
+{
+  "experiment_id": "exp-20260615-026",
+  "experiment_uid": "expuid-d282c69de13546c3",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260615-026",
+    "slug": "sec_saas_operating_kpi_text",
+    "reserved_at": "2026-06-15T20:16:23+00:00",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "alpha-search-automation",
+  "hypothesis": "candidate_pool: SEC earnings-release text with quantified SaaS/subscription operating KPI evidence such as ARR, NRR, product revenue, subscription revenue, RPO, or large-customer growth, confirmed by T+1 SPY-relative strength, may expand the candidate pool with better demand-underreaction quality than generic backlog/RPO text.",
+  "change_type": "candidate_pool_private_replay_scout",
+  "mechanism_family": "production_visible_free_sec_text_business_kpi_candidate_pool",
+  "trial_family": "sec_saas_operating_kpi_evidence_span_candidate_pool",
+  "trial_variant_id": "sec_saas_operating_kpi_top1_next_open_10d_v1",
+  "single_causal_variable": "sec_saas_operating_kpi_text_candidate_source_v1",
+  "changed_variable": "sec_saas_operating_kpi_text_candidate_source_v1",
+  "causal_components": [
+    "PIT SEC text spans",
+    "SaaS KPI anchors",
+    "numeric magnitude/growth evidence",
+    "T+1 SPY-relative confirmation",
+    "next-open 10d paper hold"
+  ],
+  "prior_trial_count": 4,
+  "nearby_prior_experiments": [
+    "exp-20260615-012",
+    "exp-20260615-013",
+    "exp-20260615-017",
+    "exp-20260615-022"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "sec_text_saas_operating_kpi_numeric_evidence_span",
+  "baseline_result_file": "data/backtests/backtest_results_20260422_1819.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260615_026_sec_saas_operating_kpi_text.py",
+    "data/experiments/exp-20260615-026",
+    "experiments/cards/exp-20260615-026.md",
+    "experiments/logs/exp-20260615-026.json",
+    "experiments/manifests/exp-20260615-026.json",
+    "experiments/tickets/exp-20260615-026.json"
+  ],
+  "must_not_touch": [
+    "live orders",
+    "core ranking",
+    "core sizing",
+    "exits",
+    "Form4 logic",
+    "chop regime logic",
+    "buyback logic"
+  ],
+  "locked_variables": [
+    "hold_days=10",
+    "base_notional_usd=4000",
+    "max_trades_per_day=1",
+    "same_ticker_cooldown_days=10",
+    "min_t1_excess_spy=0.006",
+    "min_price=10",
+    "min_avg_dollar_volume_20d=50000000"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Gate 1-4 per docs/backtesting.md; accepted only if aggregate EV/PnL improve materially, all-window risk/sample guardrails pass, and result beats accepted SEC RS20 comparator; private replay positive is lead only until shared helper/daily parity.",
+  "prediction": {
+    "success_probability": 0.12,
+    "expected_ev_delta": 0.2,
+    "expected_pnl_delta": 5000.0,
+    "main_failure_modes": [
+      "sparse_events",
+      "software_concentration",
+      "already_priced_by_t1_reaction",
+      "accepted_sec_rs20_comparator_not_beaten",
+      "late_strong_regression"
+    ],
+    "confidence_reason": "Generic SEC backlog/RPO text was too sparse and not incremental. SaaS operating KPIs such as ARR, NRR, product revenue, subscription revenue, and large-customer growth may carry richer free SEC data edge, but the sample is likely thin and sector-concentrated.",
+    "recorded_at": "2026-06-15T20:18:00+00:00"
+  },
+  "created_at": "2026-06-15T20:16:23+00:00",
+  "claimed_at": "2026-06-15T20:16:34+00:00",
+  "completed_at": "2026-06-15T20:23:58+00:00",
+  "result": {
+    "decision": "rejected_sec_saas_operating_kpi_candidate_pool",
+    "artifact": "data/experiments/exp-20260615-026/exp_20260615_026_sec_saas_operating_kpi_text.json",
+    "log": "experiments/logs/exp-20260615-026.json",
+    "aggregate_expected_value_delta": -0.044,
+    "aggregate_strategy_total_pnl_delta": 66.95,
+    "accepted": false,
+    "accepted_alpha": false,
+    "calibration": {
+      "predicted_success_probability": 0.12,
+      "actual_gate4_passed": false,
+      "actual_success": 0,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "accepted_sec_rs20_ev_not_beaten",
+        "accepted_sec_rs20_pnl_not_beaten",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "target_sample_too_small",
+        "target_concentration_failed"
+      ],
+      "predicted_failure_mode_hit": true,
+      "brier_score": 0.0144
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260615-026.json",
+  "card_file": "experiments/cards/exp-20260615-026.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260615-026.json",
+  "implementation_mode": "private_replay_scout",
+  "decision": "rejected_sec_saas_operating_kpi_candidate_pool",
+  "summary": "The SEC SaaS/subscription operating KPI source did not clear Gate 4 and is not promoted.",
+  "production_impact": {
+    "trade_enabled": false,
+    "alters_orders": false,
+    "adapter_status": "private_replay_scout_no_shared_adapter",
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "default_off_paper_only": true,
+    "daily_snapshot_exposed": false,
+    "parity_test_added": false,
+    "production_signal_path_changed": false,
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "uses_llm": false,
+    "uses_free_sec_filing_text": true,
+    "uses_free_ohlcv": true,
+    "live_realism_evaluated": true,
+    "live_ready": false,
+    "execution_envelope": {
+      "trade_enabled": false,
+      "target_notional_per_paper_trade": 4000.0,
+      "daily_entry_slots": 1,
+      "same_ticker_cooldown_days": 10,
+      "hold_days": 10,
+      "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+      "order_semantics": "observe-only next-session-open paper entry; no broker order",
+      "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+      "kill_switch": "trade_enabled remains false; no production adapter changes",
+      "failure_handling": "missing SEC text, evidence span, OHLCV, next open, or 10d exit rejects the paper candidate"
+    },
+    "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper computes the same SEC financial-report text set, SaaS operating KPI evidence-span extractor, T+1 reaction gate, liquidity gate, overlap exclusion, cooldown, next-open paper entry, 10-day exit, costs, and concentration controls in both historical replay and daily production."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The SEC SaaS/subscription operating KPI evidence source did not clear Gate 4. The likely reason is that ARR, NRR, product revenue, subscription revenue, RPO, and large-customer disclosures are too sparse in this archive, too software-concentrated, overlap the accepted SEC RS20 support field, or are already priced by the T+1 confirmation before next-open execution.",
+    "forbidden_near_neighbor_retry": "Do not retry by sweeping ARR/NRR/product-revenue/RPO term lists, numeric regexes, SaaS context words, T+1, ADV/price, top-N, hold-day, cooldown, or notional thresholds on the same frozen windows.",
+    "new_evidence_required": "A valid retry needs materially richer PIT operating KPI structure, such as KPI type normalization, magnitude versus prior period, customer-cohort mix, sector-specific baselines, or closed forward rows from a shared daily helper."
+  },
+  "updated_at": "2026-06-15T20:23:58+00:00"
+}
