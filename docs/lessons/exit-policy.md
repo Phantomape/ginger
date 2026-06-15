@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `18`
-- Accepted / rejected: `3` / `15`
-- Accept rate: `16.67%`
-- Sum EV delta: `-0.5082`
-- Sum PnL delta: `$-5,986.23`
-- Latest: `exp-20260524-023` `rejected_broad_market_correlation_crowding` with EV `+0.0000` and PnL `$0.00`.
+- Experiments: `20`
+- Accepted / rejected: `3` / `17`
+- Accept rate: `15.00%`
+- Sum EV delta: `+0.3148`
+- Sum PnL delta: `$4,361.64`
+- Latest: `exp-20260614-001` `rejected_superseded_duplicate_reservation` with EV `+0.0000` and PnL `$0.00`.
 
 ## Retained Or Positive Evidence
 
@@ -24,10 +24,6 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260511-106` `rejected_lunar_manufacturing_trend_target_extension`: EV `-0.0788`, PnL `$0.00`, family `exit_policy`, trial `exit_policy`.
-  Lesson: LUNR/RDW trend target extension did not beat the accepted exp-105 Space stack under the three-window gate. Keep non-launch official Space trend signals at the accepted 5 ATR target.
-- `exp-20260511-110` `rejected_space_breakout_stop_width`: EV `-0.2752`, PnL `$0.00`, family `exit_policy`, trial `exit_policy`.
-  Lesson: Wider official Space breakout stops did not beat the accepted exp-105 Space stack under the three-window gate. Space breakout fragility is not solved by simply giving breakouts more stop room.
 - `exp-20260511-111` `rejected_data_vendor_trend_target_extension`: EV `-0.3228`, PnL `$0.00`, family `exit_policy`, trial `exit_policy`.
   Lesson: PL/BKSY data-vendor trend target widening did not beat the accepted exp-105 Space stack under the three-window gate. The current evidence supports keeping data-vendor trend targets at the broad 5 ATR official Space se...
 - `exp-20260512-002` `rejected_hold_days`: EV `-0.1265`, PnL `$0.00`, family `exit_policy`, trial `exit_policy`.
@@ -40,9 +36,17 @@ records before making strategy changes.
   Lesson: Best short policy failed the paper-only shadow gate.
 - `exp-20260524-023` `rejected_broad_market_correlation_crowding`: EV `+0.0000`, PnL `$0.00`, family `exit_policy`, trial `exit_policy`.
   Lesson: Correlation-crowding replacement did not clear the strict three-window broad-market materiality gate.
+- `exp-20260612-007` `rejected`: EV `+0.8230`, PnL `$10,347.87`, family `exit_policy`, trial `state_surface_exit_lifecycle`.
+  Lesson: Predicted failure occurred but with informative structure: 5-day extensions at 0.95 near-high threshold added +5.2% aggregate EV from late_strong/mid_weak continuation, yet old_thin regressed (giveback in weak tape) a...
+- `exp-20260614-001` `rejected_superseded_duplicate_reservation`: EV `+0.0000`, PnL `$0.00`, family `exit_policy`, trial `exit_policy`.
+  Lesson: The first reserve command timed out after writing a ticket, so this ID became an empty duplicate of the actual exp-20260613-033 run. Do not reuse this ID or treat it as an independent alpha result; use exp-20260613-03...
 
 ## Retry Discipline
 
+- `state_surface_exit_lifecycle` / `expiry_conditional_near_high_hold_extension`: risk `low`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260612-007`.
+  Latest failure: `exp-20260612-007` No AGENTS.md Gate 4 acceptance condition was met.
+- `exit_policy` / `accepted_allocator_low_correlation_crowding_arbitration_v1`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260614-001`.
+  Latest failure: `exp-20260614-001` 
 - `exit_policy` / `broad_market_trailing20_positive_correlation_crowding_cap`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260524-023`.
   Latest failure: `exp-20260524-023` Correlation-crowding replacement did not clear the strict three-window broad-market materiality gate.
 - `exit_policy` / `exit_lifecycle_financials_leader_target_width`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260501-020`.
@@ -54,16 +58,12 @@ records before making strategy changes.
   Latest failure: `exp-20260426-053` No AGENTS.md Gate 4 acceptance condition was met.
 - `exit_policy` / `exit_target_width_precious_metals_state_replay`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260508-016`.
   Latest failure: `exp-20260508-016` All variants failed majority-window EV/Gate 4 robustness.
-- `exit_policy` / `mfe_giveback_plus_sma_breakdown_protective_exit_trigger`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260502-014`.
-  Latest failure: `exp-20260502-014` No tested MFE-giveback SMA protective exit passed the multi-window Gate 4 robustness bar.
-- `exit_policy` / `sec_financial_report_event_sleeve_hold_days`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260512-002`.
-  Latest failure: `exp-20260512-002` No tested hold period cleared the three-window lifecycle gate.
 
 ## Recent Raw Records
 
-- `exp-20260511-111` source `experiments/logs/exp-20260511-111.json`.
-- `exp-20260512-002` source `experiments/logs/exp-20260512-002.json`.
 - `exp-20260512-019` source `experiments/logs/exp-20260512-019.json`.
 - `exp-20260513-017` source `experiments/logs/exp-20260513-017.json`.
 - `exp-20260517-003` source `experiments/logs/exp-20260517-003.json`.
 - `exp-20260524-023` source `experiments/logs/exp-20260524-023.json`.
+- `exp-20260612-007` source `experiments/logs/exp-20260612-007.json`.
+- `exp-20260614-001` source `experiments/logs/exp-20260614-001.json`.

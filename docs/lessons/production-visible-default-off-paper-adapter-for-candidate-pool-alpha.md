@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `108`
-- Accepted / rejected: `12` / `89`
-- Accept rate: `11.11%`
+- Experiments: `110`
+- Accepted / rejected: `12` / `91`
+- Accept rate: `10.91%`
 - Sum EV delta: `+64.1138`
 - Sum PnL delta: `$1,277,939.23`
-- Latest: `exp-20260613-015` `rejected_source_confirmation_allocator` with EV `+0.0000` and PnL `$0.00`.
+- Latest: `exp-20260614-009` `rejected_sec_financial_report_allocator_source_extension` with EV `+0.0000` and PnL `$0.00`.
 
 ## Retained Or Positive Evidence
 
@@ -30,10 +30,6 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260611-015` `rejected_sec_ftd_finra_rank3_allocator_source`: EV `+2.0594`, PnL `$36,436.28`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
-  Lesson: The official settlement/borrow-pressure source did not add enough incremental replacement value after lagged consensus and volatility relief. It likely overlaps accepted short-pressure evidence or displaces better low...
-- `exp-20260612-013` `rejected_distribution_lagged_consensus_did_not_beat_accepted_lagged_comparator`: EV `+0.0353`, PnL `$593.77`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_new_independent_source_family`.
-  Lesson: The variant did not beat the current accepted lagged consensus comparator across all three canonical windows.
 - `exp-20260612-022` `rejected_allocator_envelope_as_declared`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `allocator_activation_envelope`.
   Lesson: The declared envelope failed its gate; see failed_reasons. Do not loosen the kill switch or grow the bucket just to pass; redesign needs either fewer overlapping holds or a deliberate bucket-size decision with its own...
 - `exp-20260613-004` `rejected_source_maturity_allocator`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_allocator_source_arbitration`.
@@ -46,6 +42,10 @@ records before making strategy changes.
   Lesson: The broad alpha_score source did not add distinct replacement value after lagged consensus and relation helpers under the allocator's 10-day envelope. Its standalone 20-day edge likely does not survive displacement by...
 - `exp-20260613-015` `rejected_source_confirmation_allocator`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_allocator_source_arbitration`.
   Lesson: Same-ticker source confirmation either arrived too sparsely or mostly duplicated the accepted lagged-consensus signal. It did not explain the oracle source-choice gap better than the accepted fixed priority. Do not re...
+- `exp-20260613-033` `rejected_correlation_crowding_allocator`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `allocator_correlation_crowding`.
+  Lesson: The correlation-crowding proxy did not improve fixed source priority robustly enough across the canonical windows. This suggests same-day source-choice errors are not primarily a simple crowded-beta issue, or the usef...
+- `exp-20260614-009` `rejected_sec_financial_report_allocator_source_extension`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
+  Lesson: The standalone SEC financial-report sleeve can remain useful, but its event rows did not add robust incremental replacement value after lagged consensus and the accepted allocator stack. The likely failure mode is ove...
 
 ## Retry Discipline
 
@@ -67,9 +67,9 @@ records before making strategy changes.
 
 ## Recent Raw Records
 
-- `exp-20260612-024` source `experiments/logs/exp-20260612-024.json`.
-- `exp-20260613-004` source `experiments/logs/exp-20260613-004.json`.
 - `exp-20260613-006` source `experiments/logs/exp-20260613-006.json`.
 - `exp-20260613-009` source `experiments/logs/exp-20260613-009.json`.
 - `exp-20260613-012` source `experiments/logs/exp-20260613-012.json`.
 - `exp-20260613-015` source `experiments/logs/exp-20260613-015.json`.
+- `exp-20260613-033` source `experiments/logs/exp-20260613-033.json`.
+- `exp-20260614-009` source `experiments/logs/exp-20260614-009.json`.

@@ -275,6 +275,41 @@ Controls:
 
 Source: <https://arxiv.org/abs/2605.19337>
 
+### Memory-Controlled LLM Trading Evaluation
+
+KTD-Fin, published in late May 2026, is a useful benchmark design pattern for
+Ginger because it separates two failures that local experiments repeatedly
+encounter: LLMs can rely on memorized ticker/date priors, and headline returns
+can come from beta or style exposure rather than stock-selection skill. Its
+data-side masking, de-anonymization probe, and Barra-style attribution map
+directly to replayable controls for any LLM-assisted or agentic paper alpha.
+
+Implementable fields:
+
+- `agent_data_masking_protocol_id`
+- `ticker_alias_map_hash`
+- `date_alias_map_hash`
+- `pretraining_memory_exposure_bucket`
+- `deanonymization_probe_success_rate`
+- `agent_style_exposure_bucket`
+- `agent_market_beta_exposure_bucket`
+- `agent_stock_selection_alpha_bucket`
+- `agent_action_violation_count`
+- `agent_abstention_rate`
+
+Controls:
+
+- evaluate LLM/agent signals under ticker/date masking or an equivalent
+  post-cutoff protocol before trusting semantic rationales;
+- decompose returns into market, style, and stock-specific residual components
+  before calling an agent result alpha;
+- keep invalid action/schema violations visible rather than silently fixing
+  them;
+- require replacement value versus the exact displaced accepted helper or cash,
+  not just agent portfolio return.
+
+Source: <https://arxiv.org/abs/2605.28359>
+
 ### Interaction-Native Agent Memory
 
 Recent financial-agent memory work argues for passive context injection,
@@ -820,6 +855,129 @@ Controls:
 - treat social/news labels as noisy until forward replacement rows mature.
 
 Source: <https://arxiv.org/abs/2508.07408>
+
+### Financial ML Falsification Audit
+
+April 2026 work on spurious predictability in financial ML is directly aligned
+with Ginger's frozen-window failures: adaptive specification search can create
+apparently significant backtests even when the data-generating process has no
+true predictability. The local use is a falsification audit around broad scouts
+and high-dimensional candidate generation, not a new alpha model.
+
+Implementable fields:
+
+- `falsification_audit_protocol_id`
+- `induced_null_reference_class`
+- `microstructure_placebo_passed`
+- `workflow_effective_multiplicity`
+- `backtest_inflation_factor`
+- `walk_forward_gap_bucket`
+- `null_environment_signal_rate`
+- `selection_induced_inflation_bucket`
+
+Controls:
+
+- run induced-null and placebo checks before accepting broad ML/LLM candidate
+  searches;
+- report the effective number of tried specifications, not only the final
+  winning replay;
+- treat success under the null as pipeline invalidity, not as a robust signal;
+- forbid threshold sweeps unless the retry adds a materially new
+  production-visible field.
+
+Source: <https://arxiv.org/abs/2604.15531>
+
+### Executable Quant LLM Benchmarks
+
+QuantEval's 2026 benchmark design is useful because it evaluates LLMs on
+quantitative knowledge, reasoning, strategy coding, and deterministic strategy
+backtests. The compatible Ginger lesson is that LLM strategy ideas should
+become frozen code, test fixtures, and replay artifacts before any Gate 1-4
+evidence is counted.
+
+Implementable fields:
+
+- `llm_strategy_code_hash`
+- `llm_generated_strategy_test_protocol`
+- `llm_backtest_config_hash`
+- `llm_strategy_human_review_status`
+- `llm_strategy_execution_cost_model`
+- `llm_strategy_invalid_action_count`
+- `llm_quant_reasoning_failure_bucket`
+
+Controls:
+
+- freeze LLM-generated code and configuration before the first after-run;
+- compare against deterministic baselines and accepted local comparators after
+  costs;
+- log compile, schema, invalid-action, and reasoning failures instead of
+  silently repairing them;
+- keep the LLM in idea-generation or field-construction mode unless a shared
+  policy helper passes Gate 1-4.
+
+Source: <https://arxiv.org/abs/2601.08689>
+
+### Deterministic Numeric Extraction Around LLMs
+
+FinSheet-Bench shows that financial spreadsheet and table reasoning remains a
+material failure mode for LLMs, especially when tasks move beyond simple
+lookups. For Ginger's SEC, filings, and companyfacts work, the conclusion is
+simple: LLMs may help locate or classify evidence, but arithmetic, joins,
+period matching, and PIT fact validation must be deterministic.
+
+Implementable fields:
+
+- `numeric_extraction_parser_version`
+- `numeric_source_table_hash`
+- `llm_numeric_claim_self_check_passed`
+- `deterministic_recompute_delta_bucket`
+- `filing_fact_join_confidence_bucket`
+- `table_layout_complexity_bucket`
+- `spreadsheet_reasoning_risk_bucket`
+
+Controls:
+
+- archive the source table, filing span, fact taxonomy, and parser version;
+- reject candidate rows when deterministic recomputation disagrees with the
+  LLM-produced numeric claim;
+- separate "span found" from "number computed" in all evidence ledgers;
+- require PIT period matching before any extracted numeric field affects
+  candidate pools, ranks, or risk.
+
+Source: <https://arxiv.org/abs/2603.07316>
+
+### Structured Event Representation For Text Alpha
+
+Recent structured-event stock-prediction work supports an important boundary:
+text is more useful when converted into explicit event tuples than when treated
+as raw sentiment. This matches Ginger's repeated SEC text failures. The next
+valid text retry should encode actors, objects, relation type, magnitude,
+horizon, and source provenance, then compare against accepted SEC/event
+comparators.
+
+Implementable fields:
+
+- `structured_event_schema_version`
+- `event_actor_type`
+- `event_object_type`
+- `event_relation_type`
+- `event_magnitude_bucket`
+- `event_horizon_bucket`
+- `event_attention_attribution_bucket`
+- `event_replacement_value_bucket`
+
+Controls:
+
+- store schema-bound event tuples with source id, timestamp, and evidence
+  spans;
+- separate semantic direction, magnitude, and uncertainty from raw positive or
+  negative sentiment;
+- benchmark structured text fields against accepted SEC RS20, relation, and
+  allocator comparators after costs;
+- reject text alphas whose event tuple cannot be replayed from archived source
+  material.
+
+Source: <https://arxiv.org/abs/2512.19484>
 
 ### 13F Is Delayed Ownership And Crowding Context
 

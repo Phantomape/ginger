@@ -6,11 +6,11 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `22`
-- Accepted / rejected: `5` / `17`
-- Accept rate: `22.73%`
-- Sum EV delta: `+2.4369`
-- Sum PnL delta: `$18,745.94`
+- Experiments: `23`
+- Accepted / rejected: `5` / `18`
+- Accept rate: `21.74%`
+- Sum EV delta: `+2.6701`
+- Sum PnL delta: `$24,442.90`
 - Latest: `exp-20260519-002` `accepted_default_off_state_surface_recent_ticker_repeat_notional` with EV `+0.0000` and PnL `$0.00`.
 
 ## Retained Or Positive Evidence
@@ -28,12 +28,12 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260514-008` `rejected_spy_volatility_expansion_core_haircut`: EV `-0.2115`, PnL `$-4,228.43`, family `risk_scalar_or_topup`, trial `risk_scalar_or_topup`.
-  Lesson: SPY 20d-above-60d volatility expansion did not clear Gate 4 as a standalone core sizing haircut.
 - `exp-20260514-012` `rejected_core_nonfinancial_sector_relative_leader_risk`: EV `-0.0010`, PnL `$526.82`, family `risk_scalar_or_topup`, trial `risk_scalar_or_topup`.
   Lesson: Non-Financials sector-relative 20d leadership did not clear Gate 4 as a standalone core sizing top-up.
 - `exp-20260514-032` `rejected_signal_day_green_spy_confirmation`: EV `+0.0000`, PnL `$0.00`, family `risk_scalar_or_topup`, trial `risk_scalar_or_topup`.
   Lesson: Requiring same-day SPY outperformance for the green-candle top-up did not clear the canonical three-window Gate 4.
+- `exp-20260514-052` `reject`: EV `+0.2332`, PnL `$5,696.96`, family `risk_scalar_or_topup`, trial `risk_scalar_or_topup`.
+  Lesson: Gate 4 failed: the selected scalar did not improve enough windows without regression.
 - `exp-20260515-023` `reject`: EV `+0.1573`, PnL `$8,106.45`, family `risk_scalar_or_topup`, trial `risk_scalar_or_topup`.
   Lesson: Gate 4 failed: selected early-RS60 scalar did not improve enough fixed windows without regression.
 - `exp-20260515-027` `rejected_unreduced_trend_price_extension_risk`: EV `-0.0011`, PnL `$-63.68`, family `risk_scalar_or_topup`, trial `risk_scalar_or_topup`.

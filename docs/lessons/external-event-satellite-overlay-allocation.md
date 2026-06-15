@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `50`
-- Accepted / rejected: `9` / `29`
-- Accept rate: `18.00%`
-- Sum EV delta: `+40.0001`
-- Sum PnL delta: `$809,336.52`
-- Latest: `exp-20260524-017` `rejected_event_narrow_cap_weight_haircut` with EV `+0.1646` and PnL `$2,238.78`.
+- Experiments: `49`
+- Accepted / rejected: `9` / `28`
+- Accept rate: `18.37%`
+- Sum EV delta: `+39.8355`
+- Sum PnL delta: `$807,097.74`
+- Latest: `exp-20260523-008` `rejected_event_governance_clean_no503_after503` with EV `+2.3961` and PnL `$95,709.22`.
 
 ## Retained Or Positive Evidence
 
@@ -30,6 +30,8 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
+- `exp-20260522-001` `rejected_event_low_extension_context`: EV `+0.0435`, PnL `$3,631.99`, family `external_event_satellite_overlay_allocation`, trial `event_short_term_extension_context`.
+  Lesson: Best variant `low_extension_context_125` changed aggregate EV by 0.0435 and PnL by 3631.99, but Gate 4 failed: EV improved/regressed windows 1/2, sample_guard_passed=False, risk_guard_passed=True.
 - `exp-20260522-002` `rejected_event_momentum_volume_confirmation_context`: EV `+1.1147`, PnL `$28,172.67`, family `external_event_satellite_overlay_allocation`, trial `event_momentum_volume_confirmation_context`.
   Lesson: Best variant `momentum_volume_confirmation_120` changed aggregate EV by 1.1147 and PnL by 28172.67, but Gate 4 failed: EV improved/regressed windows 3/0, sample_guard_passed=True, risk_guard_passed=False.
 - `exp-20260522-005` `rejected_event_crowded_leadership_context`: EV `+0.4193`, PnL `$9,624.57`, family `external_event_satellite_overlay_allocation`, trial `event_market_state_crowding_context`.
@@ -44,14 +46,10 @@ records before making strategy changes.
   Lesson: No tested core-overlap haircut cleared the three-window EV/PnL/no-regression gate.
 - `exp-20260523-008` `rejected_event_governance_clean_no503_after503`: EV `+2.3961`, PnL `$95,709.22`, family `external_event_satellite_overlay_allocation`, trial `event_governance_clean_no503_after503`.
   Lesson: Best variant `clean_no503_200` changed aggregate EV by 2.3961 and PnL by 95709.22, but Gate 4 failed: EV improved/regressed windows 2/1, sample_guard_passed=True, risk_guard_passed=False.
-- `exp-20260524-017` `rejected_event_narrow_cap_weight_haircut`: EV `+0.1646`, PnL `$2,238.78`, family `external_event_satellite_overlay_allocation`, trial `event_state_context_haircut`.
-  Lesson: Best variant `narrow_cap_weight_025` changed aggregate EV by 0.1646 and PnL by 2238.78, but Gate 4 failed: EV improved/regressed windows 3/0, sample_guard_passed=True, risk_guard_passed=True.
 
 ## Retry Discipline
 
 - `event_source_quality_maturation` / `event_sec_governance_procedural_paper_notional_scalar`: risk `high`, guidance `freeze_nearby_retries_until_new_forward_or_field_evidence`, recent `exp-20260521-005, exp-20260521-006`.
-- `event_state_context_haircut` / `event_narrow_cap_weight_leadership_notional_scalar`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260524-017`.
-  Latest failure: `exp-20260524-017` Best variant `narrow_cap_weight_025` changed aggregate EV by 0.1646 and PnL by 2238.78, but Gate 4 failed: EV improved/regressed windows 3/0, sample_guard_passed=True, risk_guard_passed=True.
 - `event_market_state_crowding_context` / `event_crowded_leadership_context_scalar`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260522-005`.
   Latest failure: `exp-20260522-005` Best variant `crowded_leadership_context_025` changed aggregate EV by 0.4193 and PnL by 9624.57, but Gate 4 failed: EV improved/regressed windows 2/1, sample_guard_passed=True, risk_guard_passed=True.
 - `event_rotation_replacement_value_maturation` / `event_state_rank_pct_top_quartile_paper_notional_scalar`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260521-004`.
@@ -61,12 +59,13 @@ records before making strategy changes.
 - `event_market_state_context_quality` / `event_non_narrow_state_bucket_scalar`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260521-013`.
 - `event_rotation_replacement_value_maturation` / `event_broad_breadth_paper_notional_scalar`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260521-001`.
 - `event_governance_disclosure_quality` / `event_governance_item_5_03_disclosure_quality_scalar`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260522-007`.
+- `event_market_state_context_quality` / `event_positive_state_context_scalar`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260521-012`.
 
 ## Recent Raw Records
 
+- `exp-20260522-006` source `experiments/logs/exp-20260522-006.json`.
 - `exp-20260522-007` source `experiments/logs/exp-20260522-007.json`.
 - `exp-20260522-009` source `experiments/logs/exp-20260522-009.json`.
 - `exp-20260523-001` source `experiments/logs/exp-20260523-001.json`.
 - `exp-20260523-005` source `experiments/logs/exp-20260523-005.json`.
 - `exp-20260523-008` source `experiments/logs/exp-20260523-008.json`.
-- `exp-20260524-017` source `docs/experiment_log.jsonl`.

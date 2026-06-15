@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1280`
-- Raw records loaded by meta report: `3381`
-- History fingerprint: `e07774bcd33d6985`
+- Strategy records counted: `1229`
+- Raw records loaded by meta report: `1661`
+- History fingerprint: `e7a8c31b7ff1a897`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -28,65 +28,64 @@ facts before changing strategy behavior.
 
 ## Current Research Priorities
 
-- `candidate_pool_full_stack` priority `0.8476`: experiments `1`, accept `100.00%`, sum EV `+0.5286`, sum PnL `$10,432.91`.
+- `production_visible_default_off_paper_adapter_for_candidate_pool_alpha` priority `0.8479`: experiments `2`, accept `100.00%`, sum EV `+1.2856`, sum PnL `$25,160.29`.
+  Reason: 2/2 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
+- `candidate_pool_full_stack` priority `0.8477`: experiments `1`, accept `100.00%`, sum EV `+0.5286`, sum PnL `$10,432.91`.
   Reason: 1/1 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
-- `production_visible_default_off_paper_adapter_for_candidate_pool_alpha` priority `0.8186`: experiments `3`, accept `100.00%`, sum EV `+1.7338`, sum PnL `$32,533.07`.
-  Reason: 2/3 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
-- `default_off_paper_adapter` priority `0.7975`: experiments `14`, accept `85.71%`, sum EV `+10.6054`, sum PnL `$184,532.65`.
-  Reason: 14/14 records show multi-window evidence; 2/14 records have sample >= 10; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positi...
-  Guardrail: heavily explored family; diminishing-return risk
-- `default_off_paper_shared_adapter` priority `0.7476`: experiments `3`, accept `100.00%`, sum EV `+0.7145`, sum PnL `$13,745.66`.
+- `default_off_paper_adapter` priority `0.8172`: experiments `7`, accept `85.71%`, sum EV `+4.8031`, sum PnL `$81,956.93`.
+  Reason: 1/7 records have sample >= 10; 7/7 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive...
+- `default_off_paper_shared_adapter` priority `0.7477`: experiments `3`, accept `100.00%`, sum EV `+0.7145`, sum PnL `$13,745.66`.
   Reason: 3/3 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; still has ro...
-- `default_off_shared_paper_adapter` priority `0.7476`: experiments `3`, accept `100.00%`, sum EV `+0.3659`, sum PnL `$5,956.53`.
-  Reason: 3/3 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; still has ro...
-- `paper_notional_support_scout` priority `0.7071`: experiments `7`, accept `71.43%`, sum EV `+0.2083`, sum PnL `$3,614.37`.
-  Reason: 7/7 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
-- `default_off_paper_allocation` priority `0.6359`: experiments `24`, accept `50.00%`, sum EV `+1.2683`, sum PnL `$17,718.79`.
-  Reason: 24/24 records show multi-window evidence; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs
-  Guardrail: average drawdown delta worsens; heavily explored family; diminishing-return risk
-- `pilot_or_sleeve` priority `0.6294`: experiments `314`, accept `25.48%`, sum EV `+122.5765`, sum PnL `$2,156,343.67`.
-  Reason: 311/314 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually changes sizing/allocation rather than...
+- `paper_notional_support_scout` priority `0.7009`: experiments `3`, accept `66.67%`, sum EV `+0.0804`, sum PnL `$1,393.64`.
+  Reason: 3/3 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
+- `pilot_or_sleeve` priority `0.6299`: experiments `163`, accept `25.77%`, sum EV `+65.9978`, sum PnL `$1,141,068.75`.
+  Reason: 162/163 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually changes sizing/allocation rather than...
   Guardrail: heavily explored family; diminishing-return risk; many prior rejections in this family
+- `slot_or_ranking` priority `0.5750`: experiments `141`, accept `24.11%`, sum EV `+39.9441`, sum PnL `$696,827.69`.
+  Reason: 136/141 records show multi-window evidence; 3/141 records have sample >= 10; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
+  Guardrail: average drawdown delta worsens; can change survival, trade count, or exit distribution broadly; heavily explored family; diminishing-return risk; many prior rejections in this family
+- `default_off_paper_allocation` priority `0.5641`: experiments `12`, accept `33.33%`, sum EV `+0.0285`, sum PnL `$456.30`.
+  Reason: 12/12 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs
+  Guardrail: heavily explored family; diminishing-return risk
 
 ## Frozen Or High-Risk Near Neighbors
 
 - `sec_fact_tone_gap_bucket` / `fact_tone_gap_bucket`: `freeze_nearby_retries_until_new_forward_or_field_evidence` after `34` effective trials; recent `exp-20260520-034`.
 - `event_source_quality_maturation` / `event_sec_governance_procedural_paper_notional_scalar`: `freeze_nearby_retries_until_new_forward_or_field_evidence` after `31` effective trials; recent `exp-20260521-005, exp-20260521-006`.
 - `fundamental_growth_rs_quality_gated_candidate_selection` / `fundamental_growth_rs_quality_gated_top1_replacement_v1`: `freeze_nearby_retries_until_new_forward_or_field_evidence` after `25` effective trials; recent `exp-20260609-006`.
-- `position_cap_or_cap_release` / `capital_allocation`: `freeze_nearby_retries_until_new_forward_or_field_evidence` after `25` effective trials; recent `exp-20260430-003, exp-20260430-004, exp-20260430-020, exp-20260430-007, exp-20260506-028`.
 - `fundamental_growth_rs_low_capex_intensity_support` / `fundamental_growth_rs_low_capex_intensity_notional_scalar_v1`: `freeze_nearby_retries_until_new_forward_or_field_evidence` after `23` effective trials; recent `exp-20260529-003`.
 - `fundamental_growth_rs_operating_margin_durability_support` / `fundamental_growth_rs_operating_margin_durability_notional_scalar_v1`: `freeze_nearby_retries_until_new_forward_or_field_evidence` after `23` effective trials; recent `exp-20260528-023`.
 - `state_surface_concentration_context` / `state_surface_trend_stability_support_notional`: `freeze_nearby_retries_until_new_forward_or_field_evidence` after `22` effective trials; recent `exp-20260520-033`.
 - `fundamental_growth_rs_liquidity_sweet_spot_support` / `fundamental_growth_rs_liquidity_sweet_spot_notional_scalar_v1`: `freeze_nearby_retries_until_new_forward_or_field_evidence` after `21` effective trials; recent `exp-20260528-021`.
 - `fundamental_growth_rs_dual_growth_support` / `fundamental_growth_rs_dual_growth_notional_scalar_v1`: `freeze_nearby_retries_until_new_forward_or_field_evidence` after `20` effective trials; recent `exp-20260528-020`.
-- `position_cap_or_cap_release` / `allocation_rule`: `freeze_nearby_retries_until_new_forward_or_field_evidence` after `10` effective trials; recent `exp-20260424-009, exp-20260425-001, exp-20260425-002, exp-20260425-003, exp-20260425-004`.
+- `position_cap_or_cap_release` / `capital_allocation`: `freeze_nearby_retries_until_new_forward_or_field_evidence` after `20` effective trials; recent `exp-20260430-007, exp-20260430-018, exp-20260430-019, exp-20260430-020, exp-20260506-028`.
 
 ## Recent Experiments
 
-- `exp-20260613-006` `rejected_source_score_percentile_allocator`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_allocator_source_arbitration`.
-  Lesson: Raw source-score percentiles were not enough to arbitrate same-day source conflicts better than the accepted fixed priority. The oracle gap from exp-20260613-003 is likely coming from information not captured by each...
-- `exp-20260613-009` `rejected_candidate_microstructure_allocator`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_allocator_source_arbitration`.
-  Lesson: The microstructure quality proxy did not improve fixed source priority robustly enough across the canonical windows. This suggests the exp-20260613-003 oracle gap is not explained by a simple mid-trend/high-close/volu...
-- `exp-20260613-011` `rejected_front_loaded_extension_tail_filter`: EV `+0.0000`, PnL `$0.00`, family `tail_state_classifier_for_momentum_candidate_pools`, trial `accepted_allocator_tail_state_classifier`.
-  Lesson: The front-loaded extension bucket is not a clean decay state for the accepted allocator envelope. Failure reasons: window_ev_regression:late_strong, window_pnl_regression:late_strong, window_ev_regression:mid_weak, wi...
-- `exp-20260613-012` `rejected_alpha_score_allocator_source_extension`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
-  Lesson: The broad alpha_score source did not add distinct replacement value after lagged consensus and relation helpers under the allocator's 10-day envelope. Its standalone 20-day edge likely does not survive displacement by...
-- `exp-20260613-013` `rejected_form144_isolated_sale_notice_absorption_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `production_visible_free_sec_sale_notice_candidate_pool`, trial `form144_sale_notice_absorption_candidate_pool`.
-  Lesson: The isolated Form 144 cluster rule did not clear Gate 4. The fixed cluster field either removed too much sample or did not separate genuine absorbed supply from routine planned-sale notices enough to beat drawdown and...
-- `exp-20260613-014` `rejected_sec13f_sponsorship_acceleration_candidate_pool`: EV `+0.3646`, PnL `$1,461.02`, family `production_visible_free_sec_13f_candidate_pool`, trial `sec13f_sponsorship_acceleration_candidate_pool`.
-  Lesson: The fixed 13F sponsorship bundle failed Gate 4. The most likely reasons are that quarterly aggregate 13F data is stale after a full filing-window delay, holder/value growth is partly market-cap and price-level exposur...
-- `exp-20260613-015` `rejected_source_confirmation_allocator`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_allocator_source_arbitration`.
-  Lesson: Same-ticker source confirmation either arrived too sparsely or mostly duplicated the accepted lagged-consensus signal. It did not explain the oracle source-choice gap better than the accepted fixed priority. Do not re...
-- `exp-20260613-016` `rejected_overnight_absorption_leadership_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `overnight_intraday_return_decomposition`, trial `overnight_absorption_leadership_candidate_pool`.
-  Lesson: The signal likely relabeled ordinary momentum or overnight gap mean reversion instead of finding durable absorption. Any window regression, drawdown drift, or concentration failure means the multi-day overnight decomp...
-- `exp-20260613-017` `rejected_sec13f_new_holder_initiation_candidate_pool`: EV `-0.3281`, PnL `$-5,152.99`, family `production_visible_free_sec_13f_candidate_pool`, trial `sec13f_new_holder_initiation_candidate_pool`.
-  Lesson: The true new-holder 13F field failed Gate 4. New institutional manager initiations are still quarterly/stale, overlap liquid leadership already captured by accepted sources, or do not reduce old-window drawdown enough...
-- `exp-20260613-018` `rejected_spy_residual_compression_breakout_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `free_ohlcv_spy_residual_compression_breakout`, trial `spy_residual_compression_breakout_candidate_pool`.
-  Lesson: The residual compression field did not add robust replacement value beyond accepted raw compression. Any regression, drawdown drift, concentration issue, or comparator miss means the rule likely relabeled ordinary mom...
-- `exp-20260613-019` `rejected_post_thrust_pause_quality_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `production_visible_free_ohlcv_tail_state_candidate_pool`, trial `post_thrust_pause_quality_candidate_pool`.
-  Lesson: The pause/reclaim structure still mostly relabeled crowded short horizon momentum. Mid-window rebounds helped, but late_strong and old_thin reversed enough that aggregate EV and PnL fell and old_thin drawdown worsened...
-- `exp-20260613-020` `rejected_seasoned_new_listing_leadership_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `production_visible_free_ohlcv_candidate_pool_expansion`, trial `seasoned_new_listing_leadership_candidate_pool`.
-  Lesson: The observable first-seen leadership field mostly selected crowded young momentum names. It produced enough candidates, but the 10-day replacement value did not clear the three-window Gate 4 drawdown, PnL, EV, and com...
+- `exp-20260614-027` `rejected_ttm_cash_conversion_acceleration_candidate_pool`: EV `+0.1200`, PnL `$4,789.12`, family `production_visible_free_sec_companyfacts_quality_candidate_pool`, trial `ttm_cash_conversion_acceleration_candidate_pool`.
+  Lesson: The TTM cash-conversion acceleration field did not clear Gate 4 (failed: window_ev_regression, fewer_than_two_ev_improved_windows, target_window_coverage_too_small, target_concentration_failed, accepted_compression_ev...
+- `exp-20260614-028` `rejected_multi_peer_edge_stability_candidate_pool`: EV `+0.5597`, PnL `$5,045.10`, family `production_visible_free_ohlcv_high_order_relation_alpha`, trial `multi_peer_correlation_cluster_edge_stability_candidate_pool`.
+  Lesson: The edge-stability gate tested whether exp-20260609-014's old_thin loss was mostly transient correlation crosstalk. If it failed, stable half-window correlations still did not isolate a durable relation edge after nex...
+- `exp-20260615-001` `rejected_sec_deleveraging_liquidity_repair_candidate_pool`: EV `+0.0892`, PnL `$1,159.65`, family `production_visible_free_sec_text_evidence_span_candidate_pool`, trial `sec_deleveraging_liquidity_repair_evidence_span_candidate_pool`.
+  Lesson: The SEC deleveraging/liquidity repair evidence-span rule did not clear Gate 4. The likely reason is that balance-sheet repair language is either too common in financial-statement tables, already captured by accepted S...
+- `exp-20260615-002` `rejected_low_asset_growth_quality_candidate_pool`: EV `+0.7198`, PnL `$9,638.75`, family `production_visible_free_sec_companyfacts_asset_growth_candidate_pool`, trial `low_asset_growth_quality_candidate_pool`.
+  Lesson: The low asset-growth source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, drawdown_drift_too_high, accepted_distribution_pnl_not_beaten). Do not promote or tune this fixed asset-growth bun...
+- `exp-20260615-003` `rejected_cash_backed_low_asset_growth_quality_candidate_pool`: EV `+0.5933`, PnL `$7,479.79`, family `production_visible_free_sec_companyfacts_composite_quality_candidate_pool`, trial `cash_backed_low_asset_growth_quality_candidate_pool`.
+  Lesson: The cash-backed low asset-growth composite did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, drawdown_drift_too_high, accepted_distribution_pnl_not_beaten). It is not retained or promoted. Do...
+- `exp-20260615-005` `rejected_preflight_duplicate_near_repeat`: EV `+0.0000`, PnL `$0.00`, family `production_visible_free_ohlcv_relation_alpha`, trial `failed_breakdown_reclaim_leadership_candidate_pool`.
+  Lesson: The proposed failed-breakdown/reclaim alpha was not run because exp-20260601-012 already tested the same undercut/reclaim absorption mechanism and failed Gate 4: aggregate EV -0.4741, PnL -$5,869.16, two regressed win...
+- `exp-20260615-007` `blocked_duplicate_prior_gross_margin_allocator_source_extension`: EV `+0.0000`, PnL `$0.00`, family `alpha_direction_selection`, trial `accepted_default_off_helper_source_priority_allocation`.
+  Lesson: The strongest apparent alpha was not new: exp-20260610-019 already admitted current gross-margin-enabled Fundamental Growth RS rows into the allocator and rejected it versus the accepted allocator comparator. Do not r...
+- `exp-20260615-010` `rejected_gross_profitability_quality_candidate_pool`: EV `+0.1758`, PnL `$3,116.78`, family `production_visible_free_sec_companyfacts_gross_profitability_candidate_pool`, trial `gross_profitability_quality_candidate_pool`.
+  Lesson: The sector-relative gross-profitability quality source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, drawdown_drift_too_high, target_concentration_faile...
+- `exp-20260615-011` `rejected_sec_restructuring_cost_reduction_candidate_pool`: EV `+0.0901`, PnL `$676.05`, family `production_visible_free_sec_text_evidence_span_candidate_pool`, trial `sec_restructuring_cost_reduction_evidence_span_candidate_pool`.
+  Lesson: The SEC restructuring/cost-reduction evidence-span rule did not clear Gate 4. The likely reason is that restructuring and cost-discipline language is either lagging/internal clean-up rather than forward demand, alread...
+- `exp-20260615-012` `rejected_sec_order_backlog_demand_candidate_pool`: EV `-0.0085`, PnL `$421.23`, family `production_visible_free_sec_text_evidence_span_candidate_pool`, trial `sec_order_backlog_demand_evidence_span_candidate_pool`.
+  Lesson: The SEC order/backlog demand evidence-span rule did not clear Gate 4. The likely reason is that backlog, bookings, contract award, and RPO language is either sparse, already reflected in the T+1 reaction, too generic...
+- `exp-20260615-013` `rejected_sec_quantified_backlog_growth_candidate_pool`: EV `+0.0269`, PnL `$372.02`, family `production_visible_free_sec_text_evidence_span_candidate_pool`, trial `sec_quantified_backlog_growth_evidence_span_candidate_pool`.
+  Lesson: The quantified SEC backlog/RPO/book-to-bill evidence source did not clear Gate 4. The likely reason is that numeric demand magnitude in earnings-release text is too sparse, still overlaps the accepted SEC RS20 support...
+- `exp-20260615-016` `rejected_operating_leverage_acceleration_candidate_pool`: EV `+0.6802`, PnL `$10,153.60`, family `production_visible_free_sec_companyfacts_operating_leverage_candidate_pool`, trial `operating_leverage_acceleration_candidate_pool`.
+  Lesson: The annual operating-leverage acceleration source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, drawdown_drift_too_high, accepted_distribution_pnl_not_beaten). It is not retained or promot...
 
 ## Highest-Signal Historical Records
 
@@ -104,8 +103,8 @@ facts before changing strategy behavior.
   Lesson: candidate_pool / capital allocation: within the accepted Companyfacts operating-profit + RS paper source, non-declining operating margin versus the prior-year same quarter is a free SEC quality field. A small default-...
 - `exp-20260528-020` `rejected_fundamental_growth_rs_dual_growth_support`: EV `+7.9195`, PnL `$115,317.90`, family `free_sec_companyfacts_plus_ohlcv_rs_candidate_pool`, trial `fundamental_growth_rs_dual_growth_support`.
   Lesson: candidate_pool / capital allocation: within the accepted Companyfacts operating-profit + RS paper source, candidates with both revenue and EPS growth passing may deserve a small default-off paper notional support. The...
-- `exp-20260529-003` `rejected_fundamental_growth_rs_low_capex_intensity_support`: EV `+7.8221`, PnL `$114,862.08`, family `free_sec_companyfacts_plus_ohlcv_rs_candidate_pool`, trial `fundamental_growth_rs_low_capex_intensity_support`.
-  Lesson: candidate_pool / capital allocation: within the accepted Companyfacts operating-profit + RS paper source, low PIT capex/revenue is a distinct free SEC capital-intensity field. A small default-off paper notional suppor...
+- `exp-20260613-031` `rejected_operating_efficiency_assets_candidate_pool`: EV `+7.8821`, PnL `$118,654.91`, family `free_sec_companyfacts_plus_ohlcv_rs_candidate_pool`, trial `fundamental_growth_rs_operating_efficiency_candidate_selection`.
+  Lesson: The selector likely rejected high-ranked winners, starved one or more standard windows, or failed to beat the accepted low-liability stack after next-open execution, costs, and concentration controls. Do not retry by...
 
 ## Mechanism Lesson Cards
 
@@ -118,11 +117,11 @@ facts before changing strategy behavior.
 - [`slot_or_ranking`](lessons/slot-or-ranking.md)
 - [`event_or_llm`](lessons/event-or-llm.md)
 - [`filter_or_gate`](lessons/filter-or-gate.md)
+- [`exit_policy`](lessons/exit-policy.md)
 - [`default_off_paper_adapter`](lessons/default-off-paper-adapter.md)
 - [`production_visible_free_ohlcv_relation_alpha`](lessons/production-visible-free-ohlcv-relation-alpha.md)
-- [`ticker_specific`](lessons/ticker-specific.md)
 
 ## Line Budget
 
 - Target maximum lines: `420`
-- Actual lines when generated: `128`
+- Actual lines when generated: `127`
