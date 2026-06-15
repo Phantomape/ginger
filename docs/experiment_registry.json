@@ -39272,8 +39272,217 @@
       "artifact": "data/experiments/exp-20260615-019/exp_20260615_019_pit_regime_state_attribution.json",
       "log": "experiments/logs/exp-20260615-019.json",
       "updated_at": "2026-06-15T17:28:25+00:00"
+    },
+    {
+      "experiment_id": "exp-20260615-022",
+      "experiment_uid": "expuid-a4c21cf9dce44ab0",
+      "hub_identity": {
+        "scheme": "hf_hub_local_v1",
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260615-022",
+        "slug": "selected_taxonomy_companyfacts_demand",
+        "reserved_at": "2026-06-15T18:12:37+00:00",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+      },
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search-automation",
+      "hypothesis": "candidate_pool: taxonomy-cleaned SEC Companyfacts demand-obligation acceleration, restricted to RPO and current customer contract liabilities, may keep the positive paid/contracted-demand signal from exp-20260615-017 while removing late-window noise from total and noncurrent obligation concepts.",
+      "change_type": "default_off_paper_candidate_pool_replay_scout",
+      "mechanism_family": "production_visible_free_sec_companyfacts_demand_candidate_pool",
+      "trial_family": "deferred_revenue_demand_acceleration_candidate_pool",
+      "trial_variant_id": "selected_taxonomy_companyfacts_demand_obligation_top1_next_open_10d_v1",
+      "single_causal_variable": "selected_taxonomy_companyfacts_demand_obligation_acceleration_candidate_source_v1",
+      "changed_variable": "selected_taxonomy_companyfacts_demand_obligation_acceleration_candidate_source_v1",
+      "causal_components": [],
+      "prior_trial_count": 0,
+      "nearby_prior_experiments": [
+        "exp-20260615-017",
+        "exp-20260615-012",
+        "exp-20260615-013",
+        "exp-20260615-016"
+      ],
+      "multiple_testing_risk_bucket": "moderate",
+      "new_evidence_type": "cleaner_cross_industry_companyfacts_demand_taxonomy",
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "allowed_write_scope": [
+        "quant/experiments",
+        "experiments/logs",
+        "experiments/cards",
+        "experiments/manifests",
+        "experiments/tickets",
+        "data/experiments",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "must_not_touch": [
+        "quant/backtester.py",
+        "live_orders",
+        "run.py"
+      ],
+      "locked_variables": [
+        "top1_next_open_10d",
+        "BASE_NOTIONAL_USD",
+        "HOLD_DAYS",
+        "SAME_TICKER_COOLDOWN_DAYS"
+      ],
+      "evaluation_windows": [
+        {
+          "start": "2025-10-23",
+          "end": "2026-04-21"
+        },
+        {
+          "start": "2025-04-23",
+          "end": "2025-10-22"
+        },
+        {
+          "start": "2024-10-02",
+          "end": "2025-04-22"
+        }
+      ],
+      "acceptance_rule": "docs/backtesting.md Gate 1-4; aggregate EV/PnL positive; no EV/PnL regression window; target trades >=20 across all 3 windows; survival >=5%; drawdown drift <=0.5pp; concentration pass; beat accepted compression and distribution comparators; replay-only positives require shared helper before retention.",
+      "prediction": {
+        "success_probability": 0.18,
+        "expected_ev_delta": 0.25,
+        "expected_pnl_delta": 5000.0,
+        "main_failure_modes": [
+          "late_strong_regression",
+          "concept_taxonomy_too_sparse",
+          "accepted_distribution_ev_not_beaten",
+          "drawdown_drift"
+        ],
+        "confidence_reason": "exp-20260615-017 showed real demand-obligation signal strength with +0.4288 EV and +12317.53 PnL but failed late_strong EV and the accepted distribution EV comparator. This test is lower probability but materially different because it prevents raw Companyfacts concept mixing across RPO, total, current, and noncurrent liability groups while keeping the proven price confirmation and execution envelope fixed.",
+        "recorded_at": "2026-06-15T18:12:04+00:00"
+      },
+      "created_at": "2026-06-15T18:12:37+00:00",
+      "claimed_at": "2026-06-15T18:12:52+00:00",
+      "completed_at": "2026-06-15T18:15:59+00:00",
+      "result": {
+        "decision": "rejected_deferred_revenue_demand_acceleration_candidate_pool",
+        "accepted": false,
+        "numeric_gate4_passed": false,
+        "artifact": "data/experiments/exp-20260615-022/exp_20260615_022_selected_taxonomy_companyfacts_demand.json",
+        "log": "experiments/logs/exp-20260615-022.json",
+        "aggregate_expected_value_delta": 0.438,
+        "aggregate_strategy_total_pnl_delta": 12628.19,
+        "gate4": {
+          "passed": false,
+          "decision": "rejected_deferred_revenue_demand_acceleration_candidate_pool",
+          "failed_reasons": [
+            "window_ev_regression",
+            "accepted_distribution_ev_not_beaten"
+          ],
+          "aggregate_ev_delta": 0.438,
+          "aggregate_pnl_delta": 12628.19,
+          "windows_ev_improved": 2,
+          "windows_ev_regressed": 1,
+          "windows_pnl_improved": 3,
+          "windows_pnl_regressed": 0,
+          "target_trade_count": 148,
+          "target_trade_count_min": 20,
+          "target_windows": [
+            "late_strong",
+            "mid_weak",
+            "old_thin"
+          ],
+          "target_window_count_min": 3,
+          "max_drawdown_worse": 0.0027,
+          "max_drawdown_worse_guardrail": 0.005,
+          "minimum_core_survival_rate": 0.7925,
+          "survival_guard_passed": true,
+          "target_concentration": {
+            "passed": true,
+            "max_single_positive_pnl_share": 0.265224,
+            "max_single_positive_pnl_share_guardrail": 0.5,
+            "positive_pnl_hhi": 0.172045,
+            "positive_pnl_hhi_guardrail": 0.35
+          },
+          "accepted_compression_comparator": {
+            "experiment_id": "exp-20260608-013",
+            "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+            "aggregate_expected_value_delta": 0.1608,
+            "aggregate_pnl_delta": 2248.98
+          },
+          "accepted_distribution_comparator": {
+            "experiment_id": "exp-20260611-007",
+            "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+            "aggregate_expected_value_delta": 0.5286,
+            "aggregate_pnl_delta": 10432.91
+          }
+        },
+        "calibration": {
+          "predicted_success_probability": 0.18,
+          "actual_gate4_passed": false,
+          "actual_success": 0,
+          "failure_modes_observed": [
+            "window_ev_regression",
+            "accepted_distribution_ev_not_beaten"
+          ],
+          "predicted_failure_mode_hit": true,
+          "brier_score": 0.0324,
+          "expected_ev_delta": 0.25,
+          "actual_ev_delta": 0.438,
+          "expected_pnl_delta": 5000.0,
+          "actual_pnl_delta": 12628.19
+        },
+        "production_impact": {
+          "trade_enabled": false,
+          "alters_orders": false,
+          "adapter_status": "private_replay_scout_no_shared_adapter",
+          "shared_policy_changed": false,
+          "backtester_adapter_changed": false,
+          "run_adapter_changed": false,
+          "replay_only": true,
+          "default_off_paper_only": true,
+          "daily_snapshot_exposed": false,
+          "parity_test_added": false,
+          "production_signal_path_changed": false,
+          "production_orders_changed": false,
+          "production_watchlist_changed": false,
+          "alters_signal_generation": false,
+          "alters_candidate_ranking": false,
+          "alters_sizing": false,
+          "alters_exits": false,
+          "uses_llm": false,
+          "uses_free_sec_companyfacts": true,
+          "uses_free_ohlcv": true,
+          "live_realism_evaluated": true,
+          "live_ready": false,
+          "execution_envelope": {
+            "trade_enabled": false,
+            "target_notional_per_paper_trade": 4000.0,
+            "daily_entry_slots": 1,
+            "same_ticker_cooldown_days": 10,
+            "hold_days": 10,
+            "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+            "order_semantics": "observe-only next-session-open paper entry; no broker order",
+            "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+            "kill_switch": "trade_enabled remains false; no production adapter changes",
+            "failure_handling": "missing raw companyfacts demand obligation, stale fact, missing prior comparable demand fact, missing annual revenue scaler, missing OHLCV, missing next open, or missing 10d exit rejects the paper candidate"
+          },
+          "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper and selected Companyfacts daily surface compute the same RPO/current-liability taxonomy gate, liquid SPY-relative confirmation, cooldown, next-open paper entry, 10-day exit, costs, and concentration controls in both historical replay and daily production.",
+          "uses_raw_companyfacts_cache": true,
+          "demand_taxonomy_policy": "rpo_or_current_contract_liability_only"
+        },
+        "post_run_reflection": {
+          "why_result_happened": "The taxonomy-cleaned obligation surface either remained too sparse or still did not create enough window-stable replacement value after costs, next-open execution, and accepted-comparator checks.",
+          "realized_failure_mode": "window_ev_regression, accepted_distribution_ev_not_beaten",
+          "forbidden_near_neighbor_retry": "Do not retry deferred-revenue/RPO demand by sweeping demand-growth, demand/revenue, fact age, prior gap, RS/close/volume, top-N, hold, cooldown, or notional thresholds on these frozen windows.",
+          "new_evidence_required": "A valid follow-up needs a selected PIT Companyfacts daily demand surface, structured contract-economics text linked to the same ticker/date, or closed forward replacement-value rows."
+        }
+      },
+      "ticket_file": "experiments/tickets/exp-20260615-022.json",
+      "card_file": "experiments/cards/exp-20260615-022.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260615-022.json",
+      "decision": "rejected_deferred_revenue_demand_acceleration_candidate_pool",
+      "summary": "The selected-taxonomy Companyfacts demand-obligation source did not clear Gate 4 (failed: window_ev_regression, accepted_distribution_ev_not_beaten). It is not retained or promoted.",
+      "artifact": "data/experiments/exp-20260615-022/exp_20260615_022_selected_taxonomy_companyfacts_demand.json",
+      "log": "experiments/logs/exp-20260615-022.json",
+      "aggregate_expected_value_delta": 0.438,
+      "aggregate_strategy_total_pnl_delta": 12628.19,
+      "updated_at": "2026-06-15T18:15:59+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-15T17:28:25+00:00"
+  "updated_at": "2026-06-15T18:15:59+00:00"
 }
