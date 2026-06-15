@@ -35579,14 +35579,14 @@
     },
     {
       "experiment_id": "exp-20260614-026",
-      "status": "proposed",
+      "status": "claimed",
       "lane": "alpha_search",
-      "owner": "alpha-search-automation",
+      "owner": "codex-alpha-search",
       "hypothesis": "PIT TTM cash-flow acceleration may sharpen the rejected cash-conversion quality lead by requiring current same-period TTM cash conversion to improve versus prior TTM, isolating earnings quality acceleration rather than static quality.",
       "ticket_file": "experiments/tickets/exp-20260614-026.json",
       "card_file": "experiments/cards/exp-20260614-026.md",
       "revision_manifest_file": "experiments/manifests/exp-20260614-026.json",
-      "updated_at": "2026-06-14T21:04:25+00:00"
+      "updated_at": "2026-06-15T23:03:59+00:00"
     },
     {
       "experiment_id": "exp-20260614-027",
@@ -40492,8 +40492,84 @@
         "new_evidence_required": "A valid retry needs materially richer PIT relation provenance, such as normalized customer/supplier identity from exhibits, contract duration/funding certainty, revenue exposure by named counterparty, or closed forward replacement-value rows from a shared daily helper."
       },
       "updated_at": "2026-06-15T22:13:19+00:00"
+    },
+    {
+      "experiment_id": "exp-20260615-030",
+      "experiment_uid": "expuid-c8ea50d9f9d543a2",
+      "hub_identity": {
+        "scheme": "hf_hub_local_v1",
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260615-030",
+        "slug": "regime_tagged_scorecard",
+        "reserved_at": "2026-06-15T23:08:21+00:00",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+      },
+      "status": "observed_only",
+      "lane": "measurement_repair",
+      "owner": "alpha-search-automation",
+      "hypothesis": "A reusable scorecard tagging each closed forward / live-pilot row with its production-faithful (stress-only) entry-time regime_chop and exposure_scalar builds the out-of-sample surface to later validate the chop soft-tilt without re-slicing the frozen windows.",
+      "change_type": "identity_or_measurement_repair",
+      "mechanism_family": "regime_tagged_forward_scorecard",
+      "trial_family": "identity_or_measurement_repair",
+      "trial_variant_id": "exp-20260615-030",
+      "single_causal_variable": "regime_tagged_forward_scorecard_surface",
+      "changed_variable": "regime_tagged_forward_scorecard_surface",
+      "causal_components": [],
+      "prior_trial_count": 0,
+      "nearby_prior_experiments": [],
+      "multiple_testing_risk_bucket": "minimal",
+      "new_evidence_type": "not_declared",
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "allowed_write_scope": [
+        "quant/regime_tagged_scorecard.py",
+        "quant/test_regime_tagged_scorecard.py",
+        "quant/experiments/exp_20260615_030_regime_tagged_scorecard.py",
+        "data/experiments/exp-20260615-030/exp_20260615_030_regime_tagged_scorecard.json",
+        "data/regime_scorecard/regime_tagged_scorecard_latest.json",
+        "experiments/cards/exp-20260615-030.md",
+        "experiments/manifests/exp-20260615-030.json",
+        "experiments/tickets/exp-20260615-030.json",
+        "experiments/logs/exp-20260615-030.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "must_not_touch": [],
+      "locked_variables": [
+        "regime_tagged_forward_scorecard_surface"
+      ],
+      "evaluation_windows": [],
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "prediction": null,
+      "created_at": "2026-06-15T23:08:21+00:00",
+      "claimed_at": "2026-06-15T23:08:41+00:00",
+      "completed_at": "2026-06-15T23:10:30+00:00",
+      "result": {
+        "decision": "regime_tagged_scorecard_surface_built",
+        "accepted": false,
+        "artifact": "data/experiments/exp-20260615-030/exp_20260615_030_regime_tagged_scorecard.json",
+        "scorecard_artifact": "data/regime_scorecard/regime_tagged_scorecard_latest.json",
+        "tagged_rows": 31,
+        "production_impact": {
+          "replay_only": true,
+          "shared_policy_changed": false,
+          "run_adapter_changed": false,
+          "trade_enabled": false,
+          "alters_orders": false,
+          "alters_sizing": false,
+          "uses_llm": false,
+          "parity_note": "Pure measurement surface. The scorecard tags closed forward rows with the same stress-only regime_chop fidelity the daily field emits; re-run it as rows accumulate. It changes no orders and is NOT acceptance evidence for any sizing change until enough closed rows exist for a separate Gate 1-4."
+        }
+      },
+      "ticket_file": "experiments/tickets/exp-20260615-030.json",
+      "card_file": "experiments/cards/exp-20260615-030.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260615-030.json",
+      "decision": "regime_tagged_scorecard_surface_built",
+      "summary": "regime_tagged_scorecard_surface_built",
+      "artifact": "data/experiments/exp-20260615-030/exp_20260615_030_regime_tagged_scorecard.json",
+      "log": "experiments/logs/exp-20260615-030.json",
+      "updated_at": "2026-06-15T23:10:30+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-15T22:13:19+00:00"
+  "updated_at": "2026-06-15T23:10:30+00:00"
 }
