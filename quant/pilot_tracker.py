@@ -1,0 +1,337 @@
+"""Manual small-live PILOT tracker (read-only over data/paper_sleeves/*/state.json).
+
+Operating model (owner decision 2026-06-15, see memory incremental-sleeve-capital):
+the default-off paper-maturation pipeline does not accumulate enough true-trigger
+forward rows to ever clear the >=20 gate, so promising sleeves are promoted
+straight to a small MANUAL live book ($10k) from day one. The owner executes
+fills by hand and is the kill switch. This module does NOT trade and does NOT
+recompute signals; it reads the existing sleeve state the daily pipeline already
+writes and produces the two things a manual operator needs:
+
+  1. a daily RECOMMENDATION SHEET per pilot - today's held + to-enter picks,
+     logged point-in-time (the sleeve state is already PIT);
+  2. a running SCORECARD per pilot - realized PnL and replacement value vs
+     cash / SPY / QQQ, hit rate, trade count, and a pre-committed graduate/kill
+     verdict.
+
+Discipline kept from the retired heavy machinery (the real point of it):
+  - signal stays rule-based and PIT (we read it, never override with hindsight);
+  - every trade scored vs cash/SPY/QQQ (replacement value), not absolute PnL;
+  - graduate/kill rule is pre-committed below, evaluated automatically.
+
+Selection (owner): pilots are chosen by conviction x FIRE RATE, not in-sample EV.
+  - allocator_top1: accepted source-priority allocator, capped to max 1 concurrent
+    position ("top-1", owner does not want dispersion). ~18 picks/mo -> readable
+    in ~5-6 weeks.
+  - distribution_absorption: clean single-name sleeve, ~6/mo, drawdown ~0.
+  - fundamental_growth_rs: the only sleeve currently firing live (already has
+    closed/open rows), so it is the cheapest to take over as a manual pilot.
+
+Run:
+  .venv\\Scripts\\python.exe -B quant\\pilot_tracker.py
+Outputs under data/pilots/.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from typing import Any
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+SLEEVE_DIR = REPO_ROOT / "data" / "paper_sleeves"
+OUT_DIR = REPO_ROOT / "data" / "pilots"
+
+# Per-position live book size. The owner allocates $10k per pilot position.
+PILOT_NOTIONAL_USD = 10_000.0
+
+PILOTS: list[dict[str, Any]] = [
+    {
+        "key": "allocator_top1",
+        "label": "Source-priority allocator (TOP-1 only)",
+        "sleeve": "accepted_helper_source_priority_allocator",
+        "max_concurrent": 1,  # owner: do not disperse; hold at most one
+    },
+    {
+        "key": "distribution_absorption",
+        "label": "Distribution-day absorption leadership",
+        "sleeve": "distribution_day_absorption_leadership",
+        "max_concurrent": None,
+    },
+    {
+        "key": "fundamental_growth_rs",
+        "label": "Fundamental growth + RS",
+        "sleeve": "fundamental_growth_rs",
+        "max_concurrent": None,
+    },
+]
+
+# Pre-committed graduate / kill rule (decide BEFORE collecting, per the model).
+GRADUATE_MIN_CLOSED = 20          # or use elapsed >= ~3 months operationally
+GRADUATE_MIN_RV_SPY_USD = 0.0     # must beat same-day SPY after costs (sum > 0)
+GRADUATE_MAX_BOOK_DD_PCT = 0.15   # realized-curve drawdown ceiling
+
+
+# ---- schema-tolerant field extraction ------------------------------------
+
+def _first(row: dict[str, Any], *names: str) -> Any:
+    for n in names:
+        if n in row and row[n] is not None:
+            return row[n]
+    return None
+
+
+def _num(x: Any) -> float | None:
+    try:
+        return float(x)
+    except (TypeError, ValueError):
+        return None
+
+
+def _ticker(row: dict[str, Any]) -> str:
+    return str(_first(row, "ticker") or "?").upper()
+
+
+def _notional(row: dict[str, Any]) -> float:
+    v = _num(_first(row, "notional_usd", "notional", "paper_notional_usd",
+                    "safe_paper_notional_usd", "baseline_safe_paper_notional_usd"))
+    return v if v and v > 0 else 4000.0
+
+
+def _return_pct(row: dict[str, Any]) -> float | None:
+    return _num(_first(row, "return_pct_net", "net_return_pct", "gross_return_pct"))
+
+
+def _scale(row: dict[str, Any]) -> float:
+    """Rescale sleeve-notional dollars to the pilot's $10k book."""
+    return PILOT_NOTIONAL_USD / _notional(row)
+
+
+def _pilot_pnl(row: dict[str, Any]) -> float | None:
+    ret = _return_pct(row)
+    if ret is not None:
+        return round(ret * PILOT_NOTIONAL_USD, 2)
+    pnl = _num(_first(row, "pnl"))
+    return round(pnl * _scale(row), 2) if pnl is not None else None
+
+
+def _rv(row: dict[str, Any], field: str) -> float | None:
+    v = _num(row.get(field))
+    return round(v * _scale(row), 2) if v is not None else None
+
+
+# ---- load + select --------------------------------------------------------
+
+def _load_state(sleeve: str) -> dict[str, Any]:
+    p = SLEEVE_DIR / sleeve / "state.json"
+    if not p.exists():
+        return {"_missing": True}
+    try:
+        return json.loads(p.read_text(encoding="utf-8"))
+    except Exception as exc:  # noqa: BLE001
+        return {"_error": str(exc)}
+
+
+def _rank_key(row: dict[str, Any]) -> tuple:
+    rank = _num(_first(row, "source_priority_rank"))
+    score = _num(_first(row, "candidate_score", "source_priority_score"))
+    entry = str(_first(row, "entry_date", "signal_date", "date") or "")
+    return (rank if rank is not None else 1e9,
+            -(score if score is not None else -1e9),
+            entry)
+
+
+def _apply_concurrency(open_rows: list[dict[str, Any]], cap: int | None):
+    if cap is None or len(open_rows) <= cap:
+        return list(open_rows), []
+    ordered = sorted(open_rows, key=_rank_key)
+    return ordered[:cap], ordered[cap:]
+
+
+# ---- scorecard ------------------------------------------------------------
+
+def _book_drawdown(closed: list[dict[str, Any]]) -> dict[str, float]:
+    rows = sorted(closed, key=lambda r: str(_first(r, "exit_date", "entry_date") or ""))
+    cum = 0.0
+    peak = 0.0
+    max_dd = 0.0
+    for r in rows:
+        p = _pilot_pnl(r) or 0.0
+        cum += p
+        peak = max(peak, cum)
+        max_dd = max(max_dd, peak - cum)
+    denom = max(peak, PILOT_NOTIONAL_USD)
+    return {"realized_pnl": round(cum, 2),
+            "max_drawdown_usd": round(max_dd, 2),
+            "max_drawdown_pct": round(max_dd / denom, 4) if denom else 0.0}
+
+
+def _scorecard(pilot: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
+    closed = [r for r in (state.get("closed_positions") or []) if isinstance(r, dict)]
+    open_rows = [r for r in (state.get("open_positions") or []) if isinstance(r, dict)]
+    pending = [r for r in (state.get("pending_entries") or []) if isinstance(r, dict)]
+
+    n = len(closed)
+    wins = sum(1 for r in closed if (_pilot_pnl(r) or 0.0) > 0)
+    rv_cash = sum((_rv(r, "replacement_value_vs_cash_usd") or 0.0) for r in closed)
+    rv_spy = sum((_rv(r, "replacement_value_vs_spy_usd") or 0.0) for r in closed)
+    rv_qqq = sum((_rv(r, "replacement_value_vs_qqq_usd") or 0.0) for r in closed)
+    rv_rows = sum(1 for r in closed if r.get("replacement_value_vs_spy_usd") is not None)
+    dd = _book_drawdown(closed)
+
+    # pre-committed verdict
+    if n < GRADUATE_MIN_CLOSED:
+        verdict = "COLLECTING"
+        verdict_note = f"{n}/{GRADUATE_MIN_CLOSED} closed trades; keep tracking"
+    elif rv_spy > GRADUATE_MIN_RV_SPY_USD and dd["max_drawdown_pct"] < GRADUATE_MAX_BOOK_DD_PCT:
+        verdict = "GRADUATE"
+        verdict_note = "beats SPY after costs within drawdown ceiling -> scale up"
+    else:
+        verdict = "KILL"
+        verdict_note = "sample reached but does not beat SPY / breaches drawdown -> stop"
+
+    return {
+        "pilot": pilot["key"],
+        "label": pilot["label"],
+        "sleeve": pilot["sleeve"],
+        "as_of": state.get("updated_at"),
+        "closed_trades": n,
+        "open_positions": len(open_rows),
+        "pending_entries": len(pending),
+        "hit_rate": round(wins / n, 3) if n else None,
+        "realized_pilot_pnl_usd": dd["realized_pnl"],
+        "replacement_value_rows": rv_rows,
+        "rv_vs_cash_usd": round(rv_cash, 2),
+        "rv_vs_spy_usd": round(rv_spy, 2),
+        "rv_vs_qqq_usd": round(rv_qqq, 2),
+        "book_max_drawdown_usd": dd["max_drawdown_usd"],
+        "book_max_drawdown_pct": dd["max_drawdown_pct"],
+        "verdict": verdict,
+        "verdict_note": verdict_note,
+    }
+
+
+# ---- recommendation sheet -------------------------------------------------
+
+def _rec_row(row: dict[str, Any], status: str) -> dict[str, Any]:
+    return {
+        "status": status,
+        "ticker": _ticker(row),
+        "signal_date": _first(row, "signal_date", "date"),
+        "entry_date": _first(row, "entry_date"),
+        "entry_price": _num(_first(row, "entry_price", "entry_raw_open")),
+        "last_price": _num(_first(row, "last_price", "decision_close_price")),
+        "hold_days": _first(row, "hold_days"),
+        "observed_trading_days": _first(row, "observed_trading_days"),
+        "pilot_notional_usd": PILOT_NOTIONAL_USD,
+        "exit_rule": f"time exit after {_first(row, 'hold_days') or '?'} trading days held",
+        "source": _first(row, "source", "primary_source", "strategy"),
+        "source_priority_rank": _first(row, "source_priority_rank"),
+        "candidate_score": _num(_first(row, "candidate_score", "source_priority_score")),
+    }
+
+
+def _recommendations(pilot: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
+    open_rows = [r for r in (state.get("open_positions") or []) if isinstance(r, dict)]
+    pending = [r for r in (state.get("pending_entries") or []) if isinstance(r, dict)]
+    cap = pilot.get("max_concurrent")
+    held, skipped = _apply_concurrency(open_rows, cap)
+    # if we are at the concurrency cap, new pending entries are skipped too
+    pend_allowed, pend_skipped = ([], pending)
+    if cap is None or len(held) < cap:
+        room = None if cap is None else cap - len(held)
+        if room is None:
+            pend_allowed, pend_skipped = pending, []
+        else:
+            pend_ordered = sorted(pending, key=_rank_key)
+            pend_allowed, pend_skipped = pend_ordered[:room], pend_ordered[room:]
+    rows = (
+        [_rec_row(r, "HOLD") for r in held]
+        + [_rec_row(r, "ENTER_NEXT_OPEN") for r in pend_allowed]
+        + [_rec_row(r, "SKIP_concurrency_cap") for r in skipped + pend_skipped]
+    )
+    return {
+        "pilot": pilot["key"],
+        "label": pilot["label"],
+        "sleeve": pilot["sleeve"],
+        "as_of": state.get("updated_at"),
+        "max_concurrent": cap,
+        "actionable": [r for r in rows if r["status"] in ("HOLD", "ENTER_NEXT_OPEN")],
+        "skipped": [r for r in rows if r["status"].startswith("SKIP")],
+    }
+
+
+# ---- render ---------------------------------------------------------------
+
+def _fmt_usd(v: Any) -> str:
+    return f"${v:,.0f}" if isinstance(v, (int, float)) else "-"
+
+
+def _render_md(recs: list[dict[str, Any]], cards: list[dict[str, Any]], as_of: str) -> str:
+    L = [f"# Pilot tracker - as of {as_of}", "",
+         f"Per-position book: {_fmt_usd(PILOT_NOTIONAL_USD)}. Read-only; manual execution.",
+         "Graduate/kill rule (pre-committed): >= {} closed AND sum rv_vs_SPY > 0 AND book DD < {:.0%}."
+         .format(GRADUATE_MIN_CLOSED, GRADUATE_MAX_BOOK_DD_PCT), "",
+         "## Scorecard", "",
+         "| pilot | closed | hit | realized $ | rv_cash | rv_SPY | rv_QQQ | book DD | verdict |",
+         "|---|--:|--:|--:|--:|--:|--:|--:|---|"]
+    for c in cards:
+        L.append("| {label} | {n} | {hr} | {pnl} | {rc} | {rs} | {rq} | {dd} | **{v}** |".format(
+            label=c["label"], n=c["closed_trades"],
+            hr=f'{c["hit_rate"]:.0%}' if c["hit_rate"] is not None else "-",
+            pnl=_fmt_usd(c["realized_pilot_pnl_usd"]), rc=_fmt_usd(c["rv_vs_cash_usd"]),
+            rs=_fmt_usd(c["rv_vs_spy_usd"]), rq=_fmt_usd(c["rv_vs_qqq_usd"]),
+            dd=f'{c["book_max_drawdown_pct"]:.1%}', v=c["verdict"]))
+    L += ["", "## Today's recommendations", ""]
+    for r in recs:
+        L.append(f"### {r['label']}  (`{r['sleeve']}`, max_concurrent={r['max_concurrent']})")
+        if not r["actionable"]:
+            L.append("- _no actionable position today_")
+        for a in r["actionable"]:
+            L.append("- **{st}** {tk} @ entry {ep} (signal {sd}) - {ex}; rank={rk} score={sc}".format(
+                st=a["status"], tk=a["ticker"],
+                ep=f'{a["entry_price"]:.2f}' if isinstance(a["entry_price"], (int, float)) else "next-open",
+                sd=a["signal_date"], ex=a["exit_rule"],
+                rk=a["source_priority_rank"], sc=a["candidate_score"]))
+        for s in r["skipped"]:
+            L.append(f"- _skip_ {s['ticker']} ({s['status']})")
+        L.append("")
+    return "\n".join(L) + "\n"
+
+
+def main() -> None:
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    recs, cards = [], []
+    as_of = ""
+    for pilot in PILOTS:
+        state = _load_state(pilot["sleeve"])
+        if state.get("_missing") or state.get("_error"):
+            cards.append({"pilot": pilot["key"], "label": pilot["label"],
+                          "sleeve": pilot["sleeve"], "closed_trades": 0, "hit_rate": None,
+                          "realized_pilot_pnl_usd": 0, "rv_vs_cash_usd": 0, "rv_vs_spy_usd": 0,
+                          "rv_vs_qqq_usd": 0, "book_max_drawdown_pct": 0.0,
+                          "verdict": "NO_STATE", "verdict_note": state.get("_error", "no state file")})
+            recs.append({"pilot": pilot["key"], "label": pilot["label"], "sleeve": pilot["sleeve"],
+                         "as_of": None, "max_concurrent": pilot.get("max_concurrent"),
+                         "actionable": [], "skipped": []})
+            continue
+        as_of = max(as_of, str(state.get("updated_at") or ""))
+        cards.append(_scorecard(pilot, state))
+        recs.append(_recommendations(pilot, state))
+
+    (OUT_DIR / "pilot_scorecard.json").write_text(
+        json.dumps({"as_of": as_of, "per_position_notional_usd": PILOT_NOTIONAL_USD,
+                    "graduate_rule": {"min_closed": GRADUATE_MIN_CLOSED,
+                                      "min_rv_spy_usd": GRADUATE_MIN_RV_SPY_USD,
+                                      "max_book_dd_pct": GRADUATE_MAX_BOOK_DD_PCT},
+                    "scorecards": cards}, indent=2), encoding="utf-8")
+    (OUT_DIR / f"pilot_recommendations_{as_of[:10] or 'latest'}.json").write_text(
+        json.dumps({"as_of": as_of, "recommendations": recs}, indent=2), encoding="utf-8")
+    md = _render_md(recs, cards, as_of or "latest")
+    (OUT_DIR / "pilot_tracker.md").write_text(md, encoding="utf-8")
+    print(md)
+
+
+if __name__ == "__main__":
+    main()
