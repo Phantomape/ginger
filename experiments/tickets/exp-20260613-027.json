@@ -1,0 +1,227 @@
+{
+  "experiment_id": "exp-20260613-027",
+  "experiment_uid": "expuid-dc68c0cf213b4b74",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260613-027",
+    "slug": "industry_contraction_scarce_leader",
+    "reserved_at": "2026-06-13T19:08:54+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "alpha-search-automation",
+  "hypothesis": "candidate_pool alpha: when a PIT industry cohort is internally weak or below trend, a liquid member that still shows SPY-relative strength, high close location, and stable volume may represent scarce sponsorship rather than generic momentum.",
+  "change_type": "default_off_paper_candidate_pool_replay_scout",
+  "mechanism_family": "production_visible_free_ohlcv_relation_candidate_pool",
+  "trial_family": "industry_contraction_scarce_leader_candidate_pool",
+  "trial_variant_id": "industry_contraction_scarce_leader_top1_next_open_10d_v1",
+  "single_causal_variable": "industry_contraction_scarce_leader_candidate_source_v1",
+  "changed_variable": "industry_contraction_scarce_leader_candidate_source_v1",
+  "causal_components": [
+    "PIT OHLCV industry contraction context",
+    "scarce liquid leader selection",
+    "same-ticker core-overlap exclusion",
+    "next-open paper entry",
+    "10-day exit",
+    "costs",
+    "three-window Gate 1-4"
+  ],
+  "prior_trial_count": 5,
+  "nearby_prior_experiments": [
+    "exp-20260528-034",
+    "exp-20260528-035",
+    "exp-20260528-036",
+    "exp-20260613-021",
+    "exp-20260613-020"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "free_ohlcv_intra_industry_contraction_scarcity_relation_field",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260613_027_industry_contraction_scarce_leader.py",
+    "data/experiments/exp-20260613-027/exp_20260613_027_industry_contraction_scarce_leader.json",
+    "experiments/cards/exp-20260613-027.md",
+    "experiments/manifests/exp-20260613-027.json",
+    "experiments/tickets/exp-20260613-027.json",
+    "experiments/logs/exp-20260613-027.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "industry_contraction_scarce_leader_candidate_source_v1"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "docs/backtesting.md Gate 1-4; aggregate EV/PnL positive, no window EV/PnL regression, >=20 target trades, survival >=5%, drawdown drift <=0.5pp, concentration pass, and positive replay remains lead until shared default-off parity helper exists",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": 0.2,
+    "expected_pnl_delta": 3000.0,
+    "main_failure_modes": [
+      "generic_momentum_relabel",
+      "industry_leadership_retread",
+      "window_regression",
+      "drawdown_drift_too_high",
+      "accepted_comparator_not_beaten"
+    ],
+    "confidence_reason": "Industry-relative relation alpha has accepted examples when the relation is the edge, but plain industry leadership and market weakness resilience failed. This tests a narrower scarcity relation inside weak cohorts using only PIT OHLCV and changes no production behavior.",
+    "recorded_at": "2026-06-13T19:08:22Z"
+  },
+  "created_at": "2026-06-13T19:08:54+00:00",
+  "claimed_at": "2026-06-13T19:09:02+00:00",
+  "completed_at": "2026-06-13T19:16:15+00:00",
+  "result": {
+    "decision": "rejected_industry_contraction_scarce_leader_candidate_pool",
+    "accepted": false,
+    "numeric_gate4_passed": false,
+    "artifact": "data/experiments/exp-20260613-027/exp_20260613_027_industry_contraction_scarce_leader.json",
+    "log": "experiments/logs/exp-20260613-027.json",
+    "card": "experiments/cards/exp-20260613-027.md",
+    "aggregate_expected_value_delta": -0.0416,
+    "aggregate_strategy_total_pnl_delta": -373.82,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_industry_contraction_scarce_leader_candidate_pool",
+      "failed_reasons": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "drawdown_drift_too_high"
+      ],
+      "promotion_blockers": [],
+      "accepted_comparator_checks": {
+        "exp-20260608-013_narrow_range_compression": {
+          "note": "accepted shared default-off narrow-range compression breakout adapter",
+          "required_ev_delta": 0.1608,
+          "required_pnl_delta": 2248.98,
+          "observed_ev_delta": -0.0416,
+          "observed_pnl_delta": -373.82,
+          "passed": false
+        },
+        "exp-20260611-007_distribution_day_absorption": {
+          "note": "accepted shared distribution-day absorption adapter",
+          "required_ev_delta": 0.5286,
+          "required_pnl_delta": 10432.91,
+          "observed_ev_delta": -0.0416,
+          "observed_pnl_delta": -373.82,
+          "passed": false
+        },
+        "exp-20260611-005_lagged_consensus_allocator": {
+          "note": "accepted shared allocator source extension",
+          "required_ev_delta": 2.1849,
+          "required_pnl_delta": 40397.21,
+          "observed_ev_delta": -0.0416,
+          "observed_pnl_delta": -373.82,
+          "passed": false
+        }
+      },
+      "aggregate_ev_delta": -0.0416,
+      "aggregate_pnl_delta": -373.82,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 2,
+      "windows_pnl_improved": 1,
+      "windows_pnl_regressed": 2,
+      "target_trade_count": 282,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0217,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.07545,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.024298,
+        "positive_pnl_hhi_guardrail": 0.35
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.18,
+      "actual_gate4_passed": false,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "drawdown_drift_too_high"
+      ],
+      "brier_score": 0.0324
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "replay_only_no_live_adapter",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "default_off_paper_only": true,
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_ohlcv_only": true,
+      "live_realism_evaluated": true,
+      "live_ready": false,
+      "execution_envelope": {
+        "trade_enabled": false,
+        "target_notional_per_paper_trade": 4000.0,
+        "daily_entry_slots": 1,
+        "same_ticker_cooldown_days": 10,
+        "hold_days": 10,
+        "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+        "order_semantics": "observe-only next-session-open paper entry; no broker order",
+        "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+        "kill_switch": "trade_enabled remains false; no production adapter changes",
+        "failure_handling": "missing OHLCV, next open, or 10d exit rejects the paper candidate"
+      },
+      "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper computes the same industry grouping, contraction context, leader gates, same-ticker core-overlap exclusion, cooldown, next-open paper entry, 10-trading-day exit, costs, and concentration controls in both historical replay and the daily production snapshot."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The field likely still relabeled ordinary industry-relative momentum. Weak-cohort scarcity was not enough to overcome the existing accepted comparators and full three-window Gate 4.",
+      "realized_failure_mode": "industry_contraction_scarcity_generic_momentum_relabel",
+      "forbidden_near_neighbor_retry": "Do not retry nearby industry contraction, down-fraction, SMA, close-location, volume, hold-day, notional, cooldown, or top-N variants on these frozen windows.",
+      "new_evidence_required": "A valid retry needs a materially new PIT relation or flow field, such as borrow/options/ownership evidence or closed forward replacement rows from a shared daily helper."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260613-027.json",
+  "card_file": "experiments/cards/exp-20260613-027.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260613-027.json",
+  "decision": "rejected_industry_contraction_scarce_leader_candidate_pool",
+  "summary": "The industry-contraction scarce-leader source did not clear Gate 4. Do not promote or retry nearby industry-contraction threshold variants on the same frozen windows.",
+  "artifact": "data/experiments/exp-20260613-027/exp_20260613_027_industry_contraction_scarce_leader.json",
+  "log": "experiments/logs/exp-20260613-027.json",
+  "aggregate_expected_value_delta": -0.0416,
+  "aggregate_strategy_total_pnl_delta": -373.82,
+  "updated_at": "2026-06-13T19:16:15+00:00"
+}

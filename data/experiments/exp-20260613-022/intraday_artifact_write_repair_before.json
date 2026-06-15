@@ -1,0 +1,54 @@
+{
+  "experiment_id": "exp-20260613-022",
+  "artifact_type": "measurement_repair_before",
+  "lane": "measurement_repair",
+  "changed_variable": "intraday_artifact_write_acl_fallback_v1",
+  "observed_at": "2026-06-13T17:04:47Z",
+  "commands": [
+    "python .\\quant\\run_intraday.py",
+    ".\\.venv\\Scripts\\python.exe .\\quant\\run_intraday.py"
+  ],
+  "observed_failure": {
+    "system_python": {
+      "executable": "D:\\Anaconda\\python.exe",
+      "failed_before_review": true,
+      "error": "ModuleNotFoundError: No module named 'yfinance'"
+    },
+    "venv_python": {
+      "review_completed": true,
+      "artifact_write_failed": true,
+      "error": "[WinError 5] Access is denied during os.replace from report temp file to final report path",
+      "left_temp_files": [
+        "data/daily/intraday/reports/.intraday_report_20260613_1301ET.txt.0jjsorzz.tmp",
+        "data/daily/intraday/reports/.intraday_report_20260613_1304ET.txt.3hyhryns.tmp"
+      ]
+    }
+  },
+  "diagnosis": {
+    "python_direct_write_probe_succeeded": true,
+    "python_os_replace_probe_failed": true,
+    "python_os_remove_probe_failed": true,
+    "powershell_remove_probe_failed": true,
+    "scope": "artifact persistence only; no entry, exit, ranking, sizing, risk, or EOD artifact behavior changed"
+  },
+  "intraday_review_stdout_summary": {
+    "generated_at_et": "2026-06-13 13:04 ET",
+    "generated_at_pt": "2026-06-13 10:04 PT",
+    "market_closed_weekend_run": true,
+    "regime": "BULL",
+    "breached": [
+      "AMD",
+      "META",
+      "NFLX",
+      "SNOW",
+      "TRIP"
+    ],
+    "approaching": [
+      "AMZN",
+      "APP"
+    ],
+    "trade_filtered_news_items": 8,
+    "quote_coverage": "13/13"
+  },
+  "decision_relevance": "Before state blocked persistence of advisory intraday artifacts even though the risk review itself completed."
+}

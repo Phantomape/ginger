@@ -1,0 +1,922 @@
+{
+  "after_metrics": {
+    "candidate_count": 85,
+    "closed_forward_counts": {
+      "all_scoring_allowed_10d": 0,
+      "all_scoring_allowed_20d": 0,
+      "all_scoring_allowed_5d": 0,
+      "all_scoring_allowed_60d": 0,
+      "downside_20d": 0,
+      "squeeze_20d": 0
+    },
+    "downside_risk_overlay_candidates": 28,
+    "expected_value_score": null,
+    "max_drawdown": null,
+    "options_covered_candidates": 85,
+    "options_scoring_allowed_candidates": 14,
+    "overlap_with_existing_signals": 85,
+    "pit_join_safe_candidates": 21,
+    "pit_join_safe_rate": 0.247059,
+    "production_impact": "none_default_off_shadow_artifact_only",
+    "sharpe_daily": null,
+    "signals_generated": null,
+    "signals_survived": null,
+    "slot_conflict_count": 0,
+    "squeeze_overlay_candidates": 44,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return": null,
+    "trade_count": null,
+    "vs_qqq": null,
+    "vs_spy": null,
+    "win_rate": null
+  },
+  "anti_js": "No JavaScript was used.",
+  "baseline_metrics": {
+    "aggregate": {
+      "expected_value_score_sum": 7.8941,
+      "signals_generated_sum": 164,
+      "signals_survived_sum": 135,
+      "total_pnl_sum": 234850.99,
+      "trade_count_sum": 61
+    },
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": 5.1628,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "win_rate": 0.8333
+      },
+      "mid_weak": {
+        "expected_value_score": 2.1402,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "win_rate": 0.5238
+      },
+      "old_thin": {
+        "expected_value_score": 0.5911,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "win_rate": 0.4091
+      }
+    },
+    "source": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "reason": "No executable strategy or replay baseline changed; accepted core context is recorded separately.",
+    "total_pnl": null
+  },
+  "calibration": {
+    "actual_decision": "observed_only",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": null,
+    "brier_score": null,
+    "calibration_direction": "not_scored_observed_only",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "still_thin_closed_outcomes",
+      "pit_join_sparse",
+      "no_slot_conflict_value",
+      "prior_overlay_rejection_persists"
+    ],
+    "predicted_success_probability": 0.25,
+    "realized_failure_mode": "still_thin_closed_outcomes",
+    "surprise_level": "not_scored",
+    "surprise_note": "Coverage improved from the May 15 audit, but the only available OHLCV snapshot still ends on 2026-05-01, so no option-tagged candidate has closed forward returns."
+  },
+  "causal_components": [
+    "options forward ledger refresh",
+    "closed outcome attribution",
+    "shadow-only verdict"
+  ],
+  "change_summary": "Refreshed the PIT-safe OnClickMedia options forward overlay ledger through 2026-06-12 and checked whether closed candidate outcomes now exist.",
+  "change_type": "default_off_paper_candidate_overlay_forward_attribution",
+  "changed_variable": "forward_options_structure_overlay_closed_outcome_attribution_v1",
+  "commands": {
+    "audit": ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict",
+    "ledger": ".\\.venv\\Scripts\\python.exe -B scripts\\run_options_forward_ledger.py --experiment-id exp-20260613-025 --output-dir data\\experiments\\exp-20260613-025 --ohlcv-snapshot data\\ohlcv\\ohlcv_snapshot_20251023_20260501_with_pilot.json --date 2026-05-05 --date 2026-05-06 --date 2026-05-07 --date 2026-05-08 --date 2026-05-11 --date 2026-05-12 --date 2026-05-13 --date 2026-05-14 --date 2026-05-15 --date 2026-05-18 --date 2026-05-19 --date 2026-05-20 --date 2026-05-21 --date 2026-05-22 --date 2026-05-25 --date 2026-05-26 --date 2026-05-27 --date 2026-05-28 --date 2026-05-29 --date 2026-06-01 --date 2026-06-02 --date 2026-06-03 --date 2026-06-04 --date 2026-06-05 --date 2026-06-08 --date 2026-06-09 --date 2026-06-10 --date 2026-06-11 --date 2026-06-12",
+    "runner": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260613_025_options_forward_closed_outcome_overlay.py"
+  },
+  "component": "scripts/run_options_forward_ledger.py output artifacts; quant/experiments/exp_20260613_025_options_forward_closed_outcome_overlay.py",
+  "date_range": {
+    "end": "2026-06-12",
+    "start": "2026-05-05"
+  },
+  "decision": "shadow_only_no_closed_outcomes",
+  "delta_metrics": {
+    "expected_value_score_delta": null,
+    "reason": "No strategy replay, production path, ranking, sizing, slot, stop, target, or LLM behavior changed.",
+    "total_pnl_delta": null
+  },
+  "experiment_id": "exp-20260613-025",
+  "gate4": {
+    "applicable": false,
+    "decision": "shadow_only_no_closed_outcomes",
+    "passed": false,
+    "promotion_blockers": [
+      "closed_5d_10d_20d_60d_counts_all_zero",
+      "slot_conflict_count_zero",
+      "current_ohlcv_snapshot_ends_2026_05_01_before_option_signal_dates",
+      "vendor_asof_unavailable_for_historical_replay",
+      "earnings_iv_flag_not_wired",
+      "short_interest_or_borrow_join_not_wired"
+    ],
+    "reason": "No strategy, replay policy, production path, ranking, sizing, entry, exit, or LLM behavior changed. The shadow overlay has zero closed 5/10/20/60d outcomes and zero slot-conflict examples."
+  },
+  "hypothesis": "Forward PIT-safe EOD options structure tags may now have enough closed outcomes to explain existing Ginger candidate quality as a shadow overlay, without creating standalone entries.",
+  "implementation_mode": "observed_only_attribution",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "non_ohlcv_options_structure_overlay",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260506-009",
+    "exp-20260515-099"
+  ],
+  "new_evidence_type": "new PIT-safe OnClickMedia option-chain snapshots through 2026-06-12 plus quant signal snapshots through 2026-06-13",
+  "next_retry_requires": [
+    "OHLCV/outcome snapshot covering May-June 2026 signal dates plus at least 20 forward trading days.",
+    "Nonzero closed 5/10/20/60d outcomes for options_scoring_allowed rows.",
+    "Positive scarce-slot conflict value versus same-day entered candidates.",
+    "PIT-safe short-interest or borrow join before squeeze interpretation.",
+    "PIT-safe earnings-date/IV join before earnings-vol overlay interpretation."
+  ],
+  "notes": "Coverage improved to 85 candidate rows and 14 scoring-allowed rows, but closed 5/10/20/60d counts remain zero because OHLCV outcomes stop at 2026-05-01.",
+  "parameters": {
+    "candidate_join_date_mode": "usable_trade_date",
+    "options_quote_date_range": {
+      "end": "2026-06-12",
+      "start": "2026-05-05"
+    },
+    "production_change_allowed": false,
+    "quality_gate": {
+      "min_liquid_tickers": 10,
+      "min_liquidity_pass_rate": 0.05,
+      "min_market_rows_rate": 0.5
+    },
+    "standalone_entries_generated": 0
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune options squeeze/downside thresholds, same-day joins, quote-date joins, or standalone options entries on this frozen sample. Do not promote without closed forward outcomes and PIT-safe joins.",
+    "new_evidence_required": "A retry requires an OHLCV/outcome snapshot covering at least 20 trading days after May-June 2026 candidate dates, plus PIT-safe short-interest/borrow and earnings-date joins before squeeze or earnings-vol tags can be production candidates.",
+    "realized_failure_mode": "still_thin_closed_outcomes",
+    "why_result_happened": "The options collection matured to 29 real quote-date files and 85 joined candidates, but the outcome source did not mature with it. The ledger shows 84 rows where the candidate signal date is missing from OHLCV and one row with no ticker OHLCV snapshot, so the overlay has no closed forward returns or slot-conflict value."
+  },
+  "prediction": {
+    "confidence_reason": "Prior options overlay was blocked by missing closed forward outcomes; new PIT-safe OnClickMedia snapshots now extend through 2026-06-12, but vendor_asof is still absent and options remain overlay-only.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "still_thin_closed_outcomes",
+      "pit_join_sparse",
+      "no_slot_conflict_value",
+      "prior_overlay_rejection_persists"
+    ],
+    "recorded_at": "2026-06-13T18:01:49+00:00",
+    "success_probability": 0.25
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "default_off_shadow_only": true,
+    "exits_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "orders_changed": false,
+    "parity_test_added": false,
+    "production_signal_path_changed": false,
+    "ranking_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "No production promotion: all closed forward counts are zero and slot-conflict count is zero.",
+  "related_files": [
+    "data/experiments/exp-20260613-025/exp_20260613_025_options_forward_closed_outcome_overlay.json",
+    "data/experiments/exp-20260613-025/options_forward_candidate_ledger_report.json",
+    "data/experiments/exp-20260613-025/options_forward_candidate_ledger.jsonl",
+    "data/experiments/exp-20260613-025/options_collection_quality_gate.json",
+    "data/experiments/exp-20260613-025/options_quarantined_quote_dates.json",
+    "experiments/logs/exp-20260613-025.json",
+    "experiments/cards/exp-20260613-025.md",
+    "experiments/tickets/exp-20260613-025.json",
+    "experiments/manifests/exp-20260613-025.json"
+  ],
+  "secondary_windows": [],
+  "shadow_metrics": {
+    "by_options_quote_date": {
+      "2026-05-05": {
+        "candidate_count": 3,
+        "downside_risk_overlay_candidates": 0,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 0,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 3,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 3
+        },
+        "pit_join_safe_candidates": 2,
+        "pit_join_safe_rate": 0.666667,
+        "quality_quarantined_candidates": 3,
+        "quality_usable_candidates": 0,
+        "source_section_counts": {
+          "event_sleeve_bundle": 2,
+          "sec_event_queue": 1
+        },
+        "squeeze_overlay_candidates": 0
+      },
+      "2026-05-06": {
+        "candidate_count": 2,
+        "downside_risk_overlay_candidates": 0,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 2,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 2,
+        "options_scoring_allowed_candidates": 1,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 2
+        },
+        "pit_join_safe_candidates": 1,
+        "pit_join_safe_rate": 0.5,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 2,
+        "source_section_counts": {
+          "event_sleeve_bundle": 2
+        },
+        "squeeze_overlay_candidates": 0
+      },
+      "2026-05-07": {
+        "candidate_count": 6,
+        "downside_risk_overlay_candidates": 4,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 6,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 6,
+        "options_scoring_allowed_candidates": 5,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 6
+        },
+        "pit_join_safe_candidates": 5,
+        "pit_join_safe_rate": 0.833333,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 6,
+        "source_section_counts": {
+          "event_sleeve_bundle": 3,
+          "pilot_signals": 1,
+          "sec_event_queue": 1,
+          "sec_leadership_event_queue": 1
+        },
+        "squeeze_overlay_candidates": 4
+      },
+      "2026-05-08": {
+        "candidate_count": 3,
+        "downside_risk_overlay_candidates": 2,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 3,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 3,
+        "options_scoring_allowed_candidates": 1,
+        "outcome_status_counts": {
+          "ohlcv_snapshot_missing": 1,
+          "signal_date_missing_in_ohlcv": 2
+        },
+        "pit_join_safe_candidates": 1,
+        "pit_join_safe_rate": 0.333333,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 3,
+        "source_section_counts": {
+          "event_sleeve_bundle": 2,
+          "pilot_signals": 1
+        },
+        "squeeze_overlay_candidates": 1
+      },
+      "2026-05-11": {
+        "candidate_count": 2,
+        "downside_risk_overlay_candidates": 0,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 2,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 2,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 2
+        },
+        "pit_join_safe_candidates": 0,
+        "pit_join_safe_rate": 0.0,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 2,
+        "source_section_counts": {
+          "event_sleeve_bundle": 2
+        },
+        "squeeze_overlay_candidates": 2
+      },
+      "2026-05-12": {
+        "candidate_count": 3,
+        "downside_risk_overlay_candidates": 0,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 3,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 3,
+        "options_scoring_allowed_candidates": 2,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 3
+        },
+        "pit_join_safe_candidates": 2,
+        "pit_join_safe_rate": 0.666667,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 3,
+        "source_section_counts": {
+          "event_sleeve_bundle": 2,
+          "sec_governance_event_queue": 1
+        },
+        "squeeze_overlay_candidates": 3
+      },
+      "2026-05-13": {
+        "candidate_count": 2,
+        "downside_risk_overlay_candidates": 0,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 2,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 2,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 2
+        },
+        "pit_join_safe_candidates": 0,
+        "pit_join_safe_rate": 0.0,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 2,
+        "source_section_counts": {
+          "event_sleeve_bundle": 2
+        },
+        "squeeze_overlay_candidates": 2
+      },
+      "2026-05-14": {
+        "candidate_count": 2,
+        "downside_risk_overlay_candidates": 0,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 2,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 2,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 2
+        },
+        "pit_join_safe_candidates": 0,
+        "pit_join_safe_rate": 0.0,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 2,
+        "source_section_counts": {
+          "event_sleeve_bundle": 2
+        },
+        "squeeze_overlay_candidates": 1
+      },
+      "2026-05-15": {
+        "candidate_count": 2,
+        "downside_risk_overlay_candidates": 0,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 2,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 2,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 2
+        },
+        "pit_join_safe_candidates": 0,
+        "pit_join_safe_rate": 0.0,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 2,
+        "source_section_counts": {
+          "event_sleeve_bundle": 2
+        },
+        "squeeze_overlay_candidates": 1
+      },
+      "2026-05-18": {
+        "candidate_count": 2,
+        "downside_risk_overlay_candidates": 1,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 2,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 2,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 2
+        },
+        "pit_join_safe_candidates": 0,
+        "pit_join_safe_rate": 0.0,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 2,
+        "source_section_counts": {
+          "event_sleeve_bundle": 2
+        },
+        "squeeze_overlay_candidates": 0
+      },
+      "2026-05-19": {
+        "candidate_count": 2,
+        "downside_risk_overlay_candidates": 2,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 2,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 2,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 2
+        },
+        "pit_join_safe_candidates": 0,
+        "pit_join_safe_rate": 0.0,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 2,
+        "source_section_counts": {
+          "event_sleeve_bundle": 2
+        },
+        "squeeze_overlay_candidates": 0
+      },
+      "2026-05-20": {
+        "candidate_count": 2,
+        "downside_risk_overlay_candidates": 1,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 2,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 2,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 2
+        },
+        "pit_join_safe_candidates": 0,
+        "pit_join_safe_rate": 0.0,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 2,
+        "source_section_counts": {
+          "event_sleeve_bundle": 2
+        },
+        "squeeze_overlay_candidates": 1
+      },
+      "2026-05-21": {
+        "candidate_count": 3,
+        "downside_risk_overlay_candidates": 3,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 3,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 3,
+        "options_scoring_allowed_candidates": 2,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 3
+        },
+        "pit_join_safe_candidates": 2,
+        "pit_join_safe_rate": 0.666667,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 3,
+        "source_section_counts": {
+          "event_sleeve_bundle": 2,
+          "sec_event_queue": 1
+        },
+        "squeeze_overlay_candidates": 1
+      },
+      "2026-05-22": {
+        "candidate_count": 3,
+        "downside_risk_overlay_candidates": 0,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 3,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 3,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 3
+        },
+        "pit_join_safe_candidates": 0,
+        "pit_join_safe_rate": 0.0,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 3,
+        "source_section_counts": {
+          "event_sleeve_bundle": 3
+        },
+        "squeeze_overlay_candidates": 2
+      },
+      "2026-05-26": {
+        "candidate_count": 3,
+        "downside_risk_overlay_candidates": 0,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 0,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 3,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 3
+        },
+        "pit_join_safe_candidates": 0,
+        "pit_join_safe_rate": 0.0,
+        "quality_quarantined_candidates": 3,
+        "quality_usable_candidates": 0,
+        "source_section_counts": {
+          "event_sleeve_bundle": 3
+        },
+        "squeeze_overlay_candidates": 0
+      },
+      "2026-05-27": {
+        "candidate_count": 3,
+        "downside_risk_overlay_candidates": 1,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 3,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 3,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 3
+        },
+        "pit_join_safe_candidates": 0,
+        "pit_join_safe_rate": 0.0,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 3,
+        "source_section_counts": {
+          "event_sleeve_bundle": 3
+        },
+        "squeeze_overlay_candidates": 0
+      },
+      "2026-05-28": {
+        "candidate_count": 3,
+        "downside_risk_overlay_candidates": 1,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 3,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 3,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 3
+        },
+        "pit_join_safe_candidates": 0,
+        "pit_join_safe_rate": 0.0,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 3,
+        "source_section_counts": {
+          "event_sleeve_bundle": 3
+        },
+        "squeeze_overlay_candidates": 1
+      },
+      "2026-05-29": {
+        "candidate_count": 4,
+        "downside_risk_overlay_candidates": 3,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 4,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 4,
+        "options_scoring_allowed_candidates": 1,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 4
+        },
+        "pit_join_safe_candidates": 1,
+        "pit_join_safe_rate": 0.25,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 4,
+        "source_section_counts": {
+          "event_sleeve_bundle": 3,
+          "signals": 1
+        },
+        "squeeze_overlay_candidates": 2
+      },
+      "2026-06-01": {
+        "candidate_count": 3,
+        "downside_risk_overlay_candidates": 1,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 3,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 3,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 3
+        },
+        "pit_join_safe_candidates": 0,
+        "pit_join_safe_rate": 0.0,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 3,
+        "source_section_counts": {
+          "event_sleeve_bundle": 3
+        },
+        "squeeze_overlay_candidates": 2
+      },
+      "2026-06-02": {
+        "candidate_count": 4,
+        "downside_risk_overlay_candidates": 3,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 4,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 4,
+        "options_scoring_allowed_candidates": 2,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 4
+        },
+        "pit_join_safe_candidates": 2,
+        "pit_join_safe_rate": 0.5,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 4,
+        "source_section_counts": {
+          "event_sleeve_bundle": 3,
+          "sec_governance_event_queue": 1
+        },
+        "squeeze_overlay_candidates": 4
+      },
+      "2026-06-03": {
+        "candidate_count": 4,
+        "downside_risk_overlay_candidates": 1,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 4,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 4,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 4
+        },
+        "pit_join_safe_candidates": 1,
+        "pit_join_safe_rate": 0.25,
+        "quality_quarantined_candidates": 4,
+        "quality_usable_candidates": 0,
+        "source_section_counts": {
+          "event_sleeve_bundle": 4
+        },
+        "squeeze_overlay_candidates": 3
+      },
+      "2026-06-04": {
+        "candidate_count": 4,
+        "downside_risk_overlay_candidates": 0,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 4,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 4,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 4
+        },
+        "pit_join_safe_candidates": 0,
+        "pit_join_safe_rate": 0.0,
+        "quality_quarantined_candidates": 4,
+        "quality_usable_candidates": 0,
+        "source_section_counts": {
+          "event_sleeve_bundle": 4
+        },
+        "squeeze_overlay_candidates": 3
+      },
+      "2026-06-05": {
+        "candidate_count": 4,
+        "downside_risk_overlay_candidates": 1,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 4,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 4,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 4
+        },
+        "pit_join_safe_candidates": 2,
+        "pit_join_safe_rate": 0.5,
+        "quality_quarantined_candidates": 4,
+        "quality_usable_candidates": 0,
+        "source_section_counts": {
+          "event_sleeve_bundle": 3,
+          "sec_governance_event_queue": 1
+        },
+        "squeeze_overlay_candidates": 3
+      },
+      "2026-06-08": {
+        "candidate_count": 4,
+        "downside_risk_overlay_candidates": 1,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 4,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 4,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 4
+        },
+        "pit_join_safe_candidates": 0,
+        "pit_join_safe_rate": 0.0,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 4,
+        "source_section_counts": {
+          "event_sleeve_bundle": 4
+        },
+        "squeeze_overlay_candidates": 3
+      },
+      "2026-06-09": {
+        "candidate_count": 4,
+        "downside_risk_overlay_candidates": 1,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 4,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 4,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 4
+        },
+        "pit_join_safe_candidates": 0,
+        "pit_join_safe_rate": 0.0,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 4,
+        "source_section_counts": {
+          "event_sleeve_bundle": 4
+        },
+        "squeeze_overlay_candidates": 3
+      },
+      "2026-06-10": {
+        "candidate_count": 4,
+        "downside_risk_overlay_candidates": 2,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 4,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 4,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 4
+        },
+        "pit_join_safe_candidates": 0,
+        "pit_join_safe_rate": 0.0,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 4,
+        "source_section_counts": {
+          "event_sleeve_bundle": 4
+        },
+        "squeeze_overlay_candidates": 2
+      },
+      "2026-06-11": {
+        "candidate_count": 4,
+        "downside_risk_overlay_candidates": 0,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 0,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 4,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 4
+        },
+        "pit_join_safe_candidates": 2,
+        "pit_join_safe_rate": 0.5,
+        "quality_quarantined_candidates": 4,
+        "quality_usable_candidates": 0,
+        "source_section_counts": {
+          "event_sleeve_bundle": 3,
+          "sec_governance_event_queue": 1
+        },
+        "squeeze_overlay_candidates": 0
+      },
+      "2026-06-12": {
+        "candidate_count": 0,
+        "downside_risk_overlay_candidates": 0,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 0,
+        "options_candidate_coverage_rate": 0.0,
+        "options_covered_candidates": 0,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {},
+        "pit_join_safe_candidates": 0,
+        "pit_join_safe_rate": 0.0,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 0,
+        "source_section_counts": {},
+        "squeeze_overlay_candidates": 0
+      }
+    },
+    "candidate_count": 85,
+    "downside_risk_overlay_candidates": 28,
+    "earnings_vol_overlay_candidates": 0,
+    "forward_return_of_tagged_candidates": {
+      "all_scoring_allowed": {
+        "closed_10d_count": 0,
+        "closed_20d_count": 0,
+        "closed_5d_count": 0,
+        "closed_60d_count": 0,
+        "count": 14,
+        "forward_10d_mean": null,
+        "forward_20d_mean": null,
+        "forward_20d_win_rate": null,
+        "forward_5d_mean": null,
+        "forward_60d_mean": null,
+        "future_drawdown_20d_mean": null,
+        "future_realized_vol_20d_mean": null
+      },
+      "downside_minus_no_downside_forward_20d": null,
+      "downside_risk_overlay": {
+        "closed_10d_count": 0,
+        "closed_20d_count": 0,
+        "closed_5d_count": 0,
+        "closed_60d_count": 0,
+        "count": 8,
+        "forward_10d_mean": null,
+        "forward_20d_mean": null,
+        "forward_20d_win_rate": null,
+        "forward_5d_mean": null,
+        "forward_60d_mean": null,
+        "future_drawdown_20d_mean": null,
+        "future_realized_vol_20d_mean": null
+      },
+      "no_downside_risk_overlay": {
+        "closed_10d_count": 0,
+        "closed_20d_count": 0,
+        "closed_5d_count": 0,
+        "closed_60d_count": 0,
+        "count": 6,
+        "forward_10d_mean": null,
+        "forward_20d_mean": null,
+        "forward_20d_win_rate": null,
+        "forward_5d_mean": null,
+        "forward_60d_mean": null,
+        "future_drawdown_20d_mean": null,
+        "future_realized_vol_20d_mean": null
+      },
+      "no_squeeze_overlay": {
+        "closed_10d_count": 0,
+        "closed_20d_count": 0,
+        "closed_5d_count": 0,
+        "closed_60d_count": 0,
+        "count": 5,
+        "forward_10d_mean": null,
+        "forward_20d_mean": null,
+        "forward_20d_win_rate": null,
+        "forward_5d_mean": null,
+        "forward_60d_mean": null,
+        "future_drawdown_20d_mean": null,
+        "future_realized_vol_20d_mean": null
+      },
+      "squeeze_minus_no_squeeze_forward_20d": null,
+      "squeeze_overlay": {
+        "closed_10d_count": 0,
+        "closed_20d_count": 0,
+        "closed_5d_count": 0,
+        "closed_60d_count": 0,
+        "count": 9,
+        "forward_10d_mean": null,
+        "forward_20d_mean": null,
+        "forward_20d_win_rate": null,
+        "forward_5d_mean": null,
+        "forward_60d_mean": null,
+        "future_drawdown_20d_mean": null,
+        "future_realized_vol_20d_mean": null
+      }
+    },
+    "option_liquidity_eligible_candidates": 75,
+    "options_candidate_coverage_rate": 1.0,
+    "options_covered_candidates": 85,
+    "options_scoring_allowed_candidates": 14,
+    "outcome_status_counts": {
+      "ohlcv_snapshot_missing": 1,
+      "signal_date_missing_in_ohlcv": 84
+    },
+    "pit_join_safe_candidates": 21,
+    "pit_join_safe_rate": 0.247059,
+    "quality_quarantined_candidates": 22,
+    "quality_usable_candidates": 63,
+    "scarce_slot_opportunity_cost": {
+      "downside_risk_overlay": {
+        "avg_slot_conflict_value_20d": null,
+        "conflict_count": 0,
+        "examples": [],
+        "positive_conflict_fraction": null
+      },
+      "squeeze_overlay": {
+        "avg_slot_conflict_value_20d": null,
+        "conflict_count": 0,
+        "examples": [],
+        "positive_conflict_fraction": null
+      }
+    },
+    "source_section_counts": {
+      "event_sleeve_bundle": 74,
+      "pilot_signals": 2,
+      "sec_event_queue": 3,
+      "sec_governance_event_queue": 4,
+      "sec_leadership_event_queue": 1,
+      "signals": 1
+    },
+    "squeeze_overlay_candidates": 44
+  },
+  "single_causal_variable": "forward_options_structure_overlay_closed_outcome_attribution_v1",
+  "status": "observed_only",
+  "timestamp": "2026-06-13T18:09:42Z",
+  "trial_family": "options_forward_closed_outcome_overlay",
+  "trial_variant_id": "exp-20260613-025"
+}

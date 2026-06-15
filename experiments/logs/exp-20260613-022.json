@@ -1,0 +1,110 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0225,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "direct_write_denied",
+      "artifact_schema_regression",
+      "unicode_encoding_regression"
+    ],
+    "predicted_success_probability": 0.85,
+    "realized_failure_mode": "rename_delete_denied_but_direct_write_allowed",
+    "surprise_level": "very_low",
+    "surprise_note": "The directory allowed ordinary writes but denied both Python os.replace/os.remove and PowerShell Remove-Item, so the safe scoped fix was intraday-only direct flushed artifact writes."
+  },
+  "causal_components": [
+    "intraday direct flushed artifact writer",
+    "artifact verification"
+  ],
+  "change_summary": "Use direct flushed writers for advisory-only intraday artifacts when the artifact directory denies Python rename/delete operations.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "intraday_artifact_write_acl_fallback_v1",
+  "component": "quant/run_intraday.py, data/daily/intraday",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260613-022",
+  "hypothesis": "Repair intraday artifact persistence when the Windows artifact directory allows writes but denies Python rename/delete operations, so advisory reports, prompts, snapshots, and news artifacts are saved.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [
+    "Do not broaden this repair into quant/data_paths.py while exp-20260612-009 owns the shared data-path surface.",
+    "Revisit only if direct flushed intraday writes fail or intraday artifacts later require atomic overwrite guarantees."
+  ],
+  "notes": "Measurement repair only: no entry, exit, ranking, sizing, risk, EOD artifact, operator_inputs, or live order behavior changed. Verified by pytest quant/test_intraday_review.py and a successful venv intraday run writing all five expected artifacts.",
+  "parameters": {
+    "locked_variables": [
+      "intraday_artifact_write_acl_fallback_v1"
+    ],
+    "single_causal_variable": "intraday_artifact_write_acl_fallback_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune shared atomic_write_text/atomic_write_json from this ticket; the accepted scope is advisory-only intraday artifact persistence.",
+    "new_evidence_required": "A broader writer repair needs a conflict-free measurement ticket plus tests across EOD daily artifacts and existing data_paths consumers.",
+    "realized_failure_mode": "rename_delete_denied_but_direct_write_allowed",
+    "why_result_happened": "The directory allowed ordinary writes but denied both Python os.replace/os.remove and PowerShell Remove-Item, so the safe scoped fix was intraday-only direct flushed artifact writes."
+  },
+  "prediction": {
+    "confidence_reason": "The failure reproduced as Python os.replace/os.remove denial while direct final writes succeeded; the repair avoids rename/delete only for advisory intraday artifacts and keeps strategy behavior unchanged.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "direct_write_denied",
+      "artifact_schema_regression",
+      "unicode_encoding_regression"
+    ],
+    "recorded_at": "2026-06-13T17:09:41+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "quant/run_intraday.py",
+    "data/experiments/exp-20260613-022/intraday_artifact_write_repair_before.json",
+    "data/experiments/exp-20260613-022/intraday_artifact_write_repair_after.json",
+    "data/daily/intraday/reports/intraday_report_20260613_1307ET.txt",
+    "data/daily/intraday/snapshots/intraday_review_20260613_1307ET.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-06-13T17:13:15+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260613-022"
+}

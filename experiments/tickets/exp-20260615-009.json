@@ -1,0 +1,185 @@
+{
+  "experiment_id": "exp-20260615-009",
+  "experiment_uid": "expuid-6fbb9f8a4e8b4915",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260615-009",
+    "slug": "sec13f_low_crowding_leadership",
+    "reserved_at": "2026-06-15T08:09:40+00:00",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "alpha-search-automation",
+  "hypothesis": "candidate_pool: among PIT SEC 13F sponsorship-acceleration liquid leaders, the less institutionally crowded names may avoid crowded unwind risk while retaining enough price leadership to add replacement value.",
+  "change_type": "experiment_local_replay_candidate_pool",
+  "mechanism_family": "production_visible_free_sec_13f_candidate_pool",
+  "trial_family": "sec13f_crowding_context_candidate_pool",
+  "trial_variant_id": "sec13f_low_crowding_filter_liquid_leadership_top1_10d_v1",
+  "single_causal_variable": "sec13f_low_crowding_filter_on_liquid_leadership_candidate_source_v1",
+  "changed_variable": "sec13f_low_crowding_filter_on_liquid_leadership_candidate_source_v1",
+  "causal_components": [
+    "low_holder_count_quantile",
+    "low_total_value_quantile",
+    "existing_sec13f_liquid_leadership_entry_exit_envelope"
+  ],
+  "prior_trial_count": 5,
+  "nearby_prior_experiments": [
+    "exp-20260613-014",
+    "exp-20260613-017",
+    "exp-20260614-018",
+    "exp-20260612-015",
+    "exp-20260612-016"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "pit_sec_13f_crowding_context_filter",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_*_sec13f_low_crowding_leadership.py",
+    "data/experiments/exp-*/**",
+    "experiments/logs/exp-*.json",
+    "experiments/cards/exp-*.md",
+    "experiments/manifests/exp-*.json",
+    "experiments/tickets/exp-*.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "experiments/dashboard/experiment_index.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "sec13f_low_crowding_filter_on_liquid_leadership_candidate_source_v1"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.12,
+    "expected_ev_delta": 0.1,
+    "expected_pnl_delta": 1500.0,
+    "main_failure_modes": [
+      "filtered_sample_is_only_loss_avoidance",
+      "underownership_is_quality_trap",
+      "stale_quarterly_data",
+      "window_regression",
+      "drawdown_drift"
+    ],
+    "confidence_reason": "Direct 13F sponsorship and new-holder accumulation failed, but the playbook still allows 13F as crowding context. This test asks whether lower crowding among PIT liquid 13F leaders improves replacement quality. It is artifact-limited, so confidence is low.",
+    "recorded_at": "2026-06-15T08:09:05+00:00"
+  },
+  "created_at": "2026-06-15T08:09:40+00:00",
+  "claimed_at": "2026-06-15T08:09:48+00:00",
+  "completed_at": "2026-06-15T08:16:10+00:00",
+  "result": {
+    "decision": "rejected_sec13f_low_crowding_leadership_filter",
+    "accepted": false,
+    "numeric_gate4_passed": false,
+    "artifact": "data/experiments/exp-20260615-009/exp_20260615_009_sec13f_low_crowding_leadership.json",
+    "log": "experiments/logs/exp-20260615-009.json",
+    "card": "experiments/cards/exp-20260615-009.md",
+    "aggregate_expected_value_delta": -0.0016,
+    "aggregate_strategy_total_pnl_delta": -1127.78,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_sec13f_low_crowding_leadership_filter",
+      "failed_reasons": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "drawdown_drift_too_high"
+      ],
+      "aggregate_ev_delta": -0.0016,
+      "aggregate_pnl_delta": -1127.78,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 2,
+      "windows_pnl_improved": 2,
+      "windows_pnl_regressed": 1,
+      "target_trade_count": 172,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0126,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.112849,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.048195,
+        "positive_pnl_hhi_guardrail": 0.35
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.12,
+      "actual_gate4_passed": false,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "drawdown_drift_too_high"
+      ],
+      "brier_score": 0.0144
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "private_replay_scout_no_shared_adapter",
+      "implementation_mode": "artifact_limited_private_replay_scout",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "default_off_paper_only": true,
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_sec_13f": true,
+      "uses_free_ohlcv": true,
+      "live_realism_evaluated": false,
+      "live_ready": false,
+      "private_replay_scout_escape_reason": "The raw historical SEC 13F candidate universe is not locally cached; this run filters the realized exp-20260613-014 paper candidates only. A positive result would need a shared helper that recomputes PIT 13F crowding fields and the same paper ledger from raw source data.",
+      "execution_envelope": {
+        "trade_enabled": false,
+        "paper_notional_usd": 4000.0,
+        "daily_entry_slots": 1,
+        "same_ticker_cooldown_days": 20,
+        "hold_days": 10,
+        "order_semantics": "observe-only next-session-open paper entry; no broker order",
+        "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+        "kill_switch": "trade_enabled remains false; no production adapter changes",
+        "failure_handling": "missing source trade, threshold field, or baseline replay rejects the paper candidate"
+      },
+      "parity_note": "This experiment changes no production code. Even if numeric Gate 4 passed, it would remain a replay lead until a shared default-off helper computes the same PIT 13F low-crowding thresholds, leadership source, core-overlap handling, next-open entry, 10-day exit, costs, cooldown, and ledger fields in both historical replay and daily snapshots."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The low-crowding filter did not repair direct 13F sponsorship. It removed some crowded winners as well as crowded losers, leaving old_thin still negative. Under-ownership appears closer to stale institutional neglect or smaller-name fragility than to a durable crowded-unwind risk reducer in this sample.",
+      "forbidden_near_neighbor_retry": "Do not retry median/q75, top-N, cooldown, hold-day, notional, ADV, or close-location sweeps on the same exp-20260613-014 artifact-limited 13F sponsorship surface.",
+      "new_evidence_required": "Raw PIT 13F candidate rows, manager identity/quality, sector-relative crowding surprise, or daily default-off forward observations."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260615-009.json",
+  "card_file": "experiments/cards/exp-20260615-009.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260615-009.json",
+  "decision": "rejected_sec13f_low_crowding_leadership_filter",
+  "summary": "The SEC 13F low-crowding leadership filter was rejected under the standard three-window protocol.",
+  "artifact": "data/experiments/exp-20260615-009/exp_20260615_009_sec13f_low_crowding_leadership.json",
+  "log": "experiments/logs/exp-20260615-009.json",
+  "aggregate_expected_value_delta": -0.0016,
+  "aggregate_strategy_total_pnl_delta": -1127.78,
+  "updated_at": "2026-06-15T08:16:10+00:00"
+}

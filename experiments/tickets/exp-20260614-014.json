@@ -1,0 +1,196 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260614_014_kova_companyfacts_capital_efficiency.py",
+    "data/experiments/exp-20260614-014/exp_20260614_014_kova_companyfacts_capital_efficiency.json",
+    "experiments/cards/exp-20260614-014.md",
+    "experiments/manifests/exp-20260614-014.json",
+    "experiments/tickets/exp-20260614-014.json",
+    "experiments/logs/exp-20260614-014.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260614-014.md",
+  "causal_components": [
+    "private replay scout",
+    "filed-date-safe Companyfacts join",
+    "broad warehouse OHLCV replay",
+    "three-window Gate 1-4",
+    "production parity boundary"
+  ],
+  "change_type": "default_off_paper_candidate_pool_scout",
+  "changed_variable": "kova_companyfacts_capital_efficient_growth_candidate_source_v1",
+  "claimed_at": "2026-06-14T13:06:42+00:00",
+  "completed_at": "2026-06-14T13:14:42+00:00",
+  "created_at": "2026-06-14T13:06:34+00:00",
+  "decision": "rejected_kova_companyfacts_capital_efficiency_candidate_pool",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260614-014",
+  "experiment_uid": "expuid-68af55e8071946b9",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260614-014",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-14T13:06:34+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "kova_companyfacts_capital_efficiency"
+  },
+  "hypothesis": "candidate_pool: the broad Kova SEC Companyfacts coverage can expand the paper candidate pool with filed-date-safe capital-efficient growth leaders, improving 10-day next-open replacement value without adding noise tickers.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "kova_companyfacts_capital_efficient_growth_candidate_source_v1"
+  ],
+  "mechanism_family": "free_sec_companyfacts_plus_ohlcv_rs_candidate_pool",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260528-017",
+    "exp-20260613-031",
+    "exp-20260613-020"
+  ],
+  "new_evidence_type": "broad_kova_companyfacts_filed_date_safe_candidate_pool",
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "old_thin_coverage_thin",
+      "companyfacts_near_neighbor_comparator_failed",
+      "concentration_failed",
+      "warehouse_universe_survivorship_bias"
+    ],
+    "confidence_reason": "Mechanism: newly available Kova SEC Companyfacts file covers over 1100 tickers and can filter broad liquid leaders by filed-date-safe operating income/assets plus growth/RS, potentially expanding the candidate pool instead of retuning accepted helper thresholds. Nearby disconfirmers are strong: Companyfacts quality gates and broad OHLCV expansions often failed accepted comparators, and Kova coverage starts in 2025 so old_thin may be thin.",
+    "recorded_at": "2026-06-14T13:06:02+00:00"
+  },
+  "prior_trial_count": 19,
+  "result": {
+    "decision": "rejected_kova_companyfacts_capital_efficiency_candidate_pool",
+    "accepted": false,
+    "accepted_alpha": false,
+    "artifact": "data/experiments/exp-20260614-014/exp_20260614_014_kova_companyfacts_capital_efficiency.json",
+    "log": "experiments/logs/exp-20260614-014.json",
+    "card": "experiments/cards/exp-20260614-014.md",
+    "aggregate_expected_value_delta": -0.095,
+    "aggregate_strategy_total_pnl_delta": 236.1,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_kova_companyfacts_capital_efficiency_candidate_pool",
+      "failed_reasons": [
+        "aggregate_ev_not_positive",
+        "window_ev_regression",
+        "fewer_than_two_ev_improved_windows",
+        "target_window_coverage_too_small",
+        "accepted_companyfacts_ev_not_beaten",
+        "accepted_companyfacts_pnl_not_beaten",
+        "accepted_companyfacts_window_ev_not_beaten:late_strong",
+        "accepted_companyfacts_window_pnl_not_beaten:late_strong",
+        "accepted_companyfacts_window_ev_not_beaten:mid_weak",
+        "accepted_companyfacts_window_pnl_not_beaten:mid_weak",
+        "accepted_companyfacts_window_ev_not_beaten:old_thin",
+        "accepted_companyfacts_window_pnl_not_beaten:old_thin"
+      ],
+      "aggregate_ev_delta": -0.095,
+      "aggregate_pnl_delta": 236.1,
+      "windows_ev_improved": 0,
+      "windows_ev_regressed": 1,
+      "windows_pnl_improved": 1,
+      "windows_pnl_regressed": 0,
+      "target_trade_count": 54,
+      "target_trade_count_min": 30,
+      "target_windows": [
+        "late_strong"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.200673,
+        "max_single_positive_pnl_share_guardrail": 0.4,
+        "positive_pnl_hhi": 0.099284,
+        "positive_pnl_hhi_guardrail": 0.3
+      },
+      "accepted_companyfacts_comparator": {
+        "experiment_id": "exp-20260528-017",
+        "decision": "accepted_candidate_fundamental_growth_rs_low_liability_support",
+        "aggregate_expected_value_delta": 8.5419,
+        "aggregate_pnl_delta": 127144.15,
+        "by_window": {
+          "late_strong": {
+            "expected_value_delta": 2.5177,
+            "pnl_delta": 25684.45
+          },
+          "mid_weak": {
+            "expected_value_delta": 3.9309,
+            "pnl_delta": 55909.19
+          },
+          "old_thin": {
+            "expected_value_delta": 2.0933,
+            "pnl_delta": 45550.51
+          }
+        }
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.18,
+      "actual_gate4_passed": false,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "window_ev_regression",
+        "fewer_than_two_ev_improved_windows",
+        "target_window_coverage_too_small",
+        "accepted_companyfacts_ev_not_beaten",
+        "accepted_companyfacts_pnl_not_beaten"
+      ],
+      "brier_score": 0.0324
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "private_replay_scout_no_shared_adapter",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "default_off_paper_only": true,
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_non_ohlcv": true,
+      "uses_free_ohlcv": true,
+      "live_realism_evaluated": false,
+      "live_ready": false,
+      "parity_note": "Replay-only private scout. No shared helper, run adapter, daily snapshot, production watchlist, order path, core signal, ranking, sizing, or exit behavior changed. A positive result must be promoted through a shared default-off helper plus historical/daily parity before it can be retained as accepted paper alpha."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The broad Kova Companyfacts source did not clear the binding Gate 4/comparator screen. The likely cause is that the filed capital-efficiency filter still overlaps the already accepted Companyfacts low-liability/RS edge, while the broader universe adds old-window coverage and survivorship risk without enough incremental replacement value.",
+      "realized_failure_mode": "companyfacts_comparator_or_broad_universe_incremental_value_failed",
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping operating_income/assets, revenue_yoy, ret20/ret60 RS, liquidity, top-N, hold-day, cooldown, or notional thresholds on the same Kova frozen file.",
+      "new_evidence_required": "A valid retry needs a materially different PIT data edge such as analyst breadth/dispersion, options/borrow/ownership flow, customer/supplier relation provenance, or closed forward replacement rows from a shared daily helper."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260614-014.json",
+  "single_causal_variable": "kova_companyfacts_capital_efficient_growth_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The Kova Companyfacts capital-efficiency source was rejected; it did not prove incremental candidate-pool value under the standard three-window protocol and accepted Companyfacts comparator.",
+  "ticket_file": "experiments/tickets/exp-20260614-014.json",
+  "trial_family": "kova_companyfacts_capital_efficient_growth_candidate_pool",
+  "trial_variant_id": "kova_companyfacts_capital_efficiency_top1_next_open_10d_v1",
+  "implementation_mode": "private_replay_scout",
+  "artifact": "data/experiments/exp-20260614-014/exp_20260614_014_kova_companyfacts_capital_efficiency.json",
+  "log": "experiments/logs/exp-20260614-014.json",
+  "aggregate_expected_value_delta": -0.095,
+  "aggregate_strategy_total_pnl_delta": 236.1,
+  "updated_at": "2026-06-14T13:14:42+00:00"
+}

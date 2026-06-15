@@ -1,0 +1,161 @@
+{
+  "experiment_id": "exp-20260613-025",
+  "experiment_uid": "expuid-5a94b834b15b476a",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260613-025",
+    "slug": "options_forward_closed_outcome_overlay",
+    "reserved_at": "2026-06-13T18:02:24+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "observed_only",
+  "lane": "alpha_search",
+  "owner": "codex-alpha-explore",
+  "hypothesis": "Forward PIT-safe EOD options structure tags may now have enough closed outcomes to explain existing Ginger candidate quality as a shadow overlay, without creating standalone entries.",
+  "change_type": "default_off_paper_candidate_overlay_forward_attribution",
+  "mechanism_family": "non_ohlcv_options_structure_overlay",
+  "trial_family": "options_forward_closed_outcome_overlay",
+  "trial_variant_id": "exp-20260613-025",
+  "single_causal_variable": "forward_options_structure_overlay_closed_outcome_attribution_v1",
+  "changed_variable": "forward_options_structure_overlay_closed_outcome_attribution_v1",
+  "causal_components": [
+    "options forward ledger refresh",
+    "closed outcome attribution",
+    "shadow-only verdict"
+  ],
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260506-009",
+    "exp-20260515-099"
+  ],
+  "multiple_testing_risk_bucket": "low",
+  "new_evidence_type": "new PIT-safe OnClickMedia option-chain snapshots through 2026-06-12 plus quant signal snapshots through 2026-06-13",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260613_025_options_forward_closed_outcome_overlay.py",
+    "data/experiments/exp-20260613-025/exp_20260613_025_options_forward_closed_outcome_overlay.json",
+    "experiments/cards/exp-20260613-025.md",
+    "experiments/manifests/exp-20260613-025.json",
+    "experiments/tickets/exp-20260613-025.json",
+    "experiments/logs/exp-20260613-025.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "forward_options_structure_overlay_closed_outcome_attribution_v1"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.25,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "still_thin_closed_outcomes",
+      "pit_join_sparse",
+      "no_slot_conflict_value",
+      "prior_overlay_rejection_persists"
+    ],
+    "confidence_reason": "Prior options overlay was blocked by missing closed forward outcomes; new PIT-safe OnClickMedia snapshots now extend through 2026-06-12, but vendor_asof is still absent and options remain overlay-only.",
+    "recorded_at": "2026-06-13T18:01:49+00:00"
+  },
+  "created_at": "2026-06-13T18:02:24+00:00",
+  "claimed_at": "2026-06-13T18:02:35+00:00",
+  "completed_at": "2026-06-13T18:09:44+00:00",
+  "result": {
+    "decision": "shadow_only_no_closed_outcomes",
+    "status": "observed_only",
+    "accepted": false,
+    "accepted_alpha": false,
+    "artifact": "data/experiments/exp-20260613-025/exp_20260613_025_options_forward_closed_outcome_overlay.json",
+    "report": "data/experiments/exp-20260613-025/options_forward_candidate_ledger_report.json",
+    "ledger": "data/experiments/exp-20260613-025/options_forward_candidate_ledger.jsonl",
+    "log": "experiments/logs/exp-20260613-025.json",
+    "card": "experiments/cards/exp-20260613-025.md",
+    "numeric_gate4_passed": false,
+    "shadow_metrics": {
+      "candidate_count": 85,
+      "options_scoring_allowed_candidates": 14,
+      "closed_forward_counts": {
+        "all_scoring_allowed_5d": 0,
+        "all_scoring_allowed_10d": 0,
+        "all_scoring_allowed_20d": 0,
+        "all_scoring_allowed_60d": 0,
+        "squeeze_20d": 0,
+        "downside_20d": 0
+      },
+      "slot_conflict_count": 0
+    },
+    "gate4": {
+      "applicable": false,
+      "passed": false,
+      "decision": "shadow_only_no_closed_outcomes",
+      "reason": "No strategy, replay policy, production path, ranking, sizing, entry, exit, or LLM behavior changed. The shadow overlay has zero closed 5/10/20/60d outcomes and zero slot-conflict examples.",
+      "promotion_blockers": [
+        "closed_5d_10d_20d_60d_counts_all_zero",
+        "slot_conflict_count_zero",
+        "current_ohlcv_snapshot_ends_2026_05_01_before_option_signal_dates",
+        "vendor_asof_unavailable_for_historical_replay",
+        "earnings_iv_flag_not_wired",
+        "short_interest_or_borrow_join_not_wired"
+      ]
+    },
+    "production_impact": {
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "production_signal_path_changed": false,
+      "ranking_changed": false,
+      "sizing_changed": false,
+      "exits_changed": false,
+      "orders_changed": false,
+      "trade_enabled": false,
+      "daily_snapshot_exposed": false,
+      "replay_only": true,
+      "default_off_shadow_only": true,
+      "parity_test_added": false,
+      "live_realism_evaluated": false,
+      "live_ready": false
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The options collection matured to 29 real quote-date files and 85 joined candidates, but the outcome source did not mature with it. The ledger shows 84 rows where the candidate signal date is missing from OHLCV and one row with no ticker OHLCV snapshot, so the overlay has no closed forward returns or slot-conflict value.",
+      "realized_failure_mode": "still_thin_closed_outcomes",
+      "forbidden_near_neighbor_retry": "Do not retune options squeeze/downside thresholds, same-day joins, quote-date joins, or standalone options entries on this frozen sample. Do not promote without closed forward outcomes and PIT-safe joins.",
+      "new_evidence_required": "A retry requires an OHLCV/outcome snapshot covering at least 20 trading days after May-June 2026 candidate dates, plus PIT-safe short-interest/borrow and earnings-date joins before squeeze or earnings-vol tags can be production candidates."
+    },
+    "calibration": {
+      "actual_decision": "observed_only",
+      "actual_success": null,
+      "predicted_success_probability": 0.25,
+      "brier_score": null,
+      "calibration_direction": "not_scored_observed_only",
+      "surprise_level": "not_scored",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "still_thin_closed_outcomes",
+        "pit_join_sparse",
+        "no_slot_conflict_value",
+        "prior_overlay_rejection_persists"
+      ],
+      "realized_failure_mode": "still_thin_closed_outcomes",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Coverage improved from the May 15 audit, but the only available OHLCV snapshot still ends on 2026-05-01, so no option-tagged candidate has closed forward returns."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260613-025.json",
+  "card_file": "experiments/cards/exp-20260613-025.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260613-025.json",
+  "decision": "shadow_only_no_closed_outcomes",
+  "summary": "Coverage improved to 85 candidate rows and 14 scoring-allowed rows, but closed 5/10/20/60d counts remain zero because OHLCV outcomes stop at 2026-05-01.",
+  "artifact": "data/experiments/exp-20260613-025/exp_20260613_025_options_forward_closed_outcome_overlay.json",
+  "report": "data/experiments/exp-20260613-025/options_forward_candidate_ledger_report.json",
+  "log": "experiments/logs/exp-20260613-025.json",
+  "updated_at": "2026-06-13T18:09:44+00:00"
+}

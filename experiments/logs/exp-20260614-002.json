@@ -1,0 +1,71 @@
+{
+  "anti_js": "No JavaScript was used.",
+  "calibration": {
+    "actual_decision": "rejected_superseded_near_neighbor",
+    "actual_success": 0,
+    "brier_score": 0.0784,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "window_regression",
+      "thin_sample",
+      "not_incremental_vs_post_earnings_or_peer_comparator"
+    ],
+    "predicted_success_probability": 0.28,
+    "realized_failure_mode": "near_neighbor_already_rejected",
+    "surprise_note": "The stronger blocker was anti-repeat, discovered before writing strategy logic."
+  },
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "true_pit_earnings_peer_reaction_candidate_source_v1",
+  "decision": "rejected_superseded_near_neighbor",
+  "decision_basis": {
+    "exp-20260609-024": "rejected early peer earnings sympathy: aggregate EV -0.0950, PnL -1325.52, all three windows EV/PnL regressed, 21 trades.",
+    "exp-20260611-024": "rejected target surprise-quality fix: aggregate EV +0.0269, PnL +280.05, old_thin regressed, only 5 trades and concentration failed."
+  },
+  "experiment_id": "exp-20260614-002",
+  "hypothesis": "True PIT earnings-snapshot peer reactions may identify post-earnings expectation transfer candidates that avoid the stale SEC 8-K proxy failure.",
+  "implementation_mode": "pre_run_history_check_superseded",
+  "lane": "alpha_search",
+  "mechanism_family": "event_graph_peer_information_transfer",
+  "nearby_prior_experiments": [
+    "exp-20260529-010",
+    "exp-20260530-001",
+    "exp-20260609-024",
+    "exp-20260611-024",
+    "exp-20260602-026",
+    "exp-20260613-028"
+  ],
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry peer earnings sympathy by sweeping issuer reaction, target surprise, close-location, volume, hold, cooldown, top-N, or notional on frozen windows.",
+    "new_evidence_required": "Only reopen with analyst-count/estimate trajectory, estimate dispersion, customer/supplier links, or closed forward replacement rows.",
+    "why_result_happened": "The proposed direction was a near-neighbor of two recent rejected true earnings-snapshot peer-sympathy variants, not a materially new field."
+  },
+  "prediction": {
+    "confidence_reason": "Prior SEC 8-K peer transfer was positive in aggregate but failed late_strong, and the read-only event graph allowed only a true earnings-calendar retest. Current broad earnings snapshots provide a cleaner PIT event surface, but peer-transfer relation alpha has a low recent acceptance rate and comparator risk is high.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "window_regression",
+      "thin_sample",
+      "not_incremental_vs_post_earnings_or_peer_comparator"
+    ],
+    "recorded_at": "2026-06-14T01:05:50+00:00",
+    "success_probability": 0.28
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_ready": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "experiments/tickets/exp-20260614-002.json",
+    "experiments/cards/exp-20260614-002.md",
+    "experiments/logs/exp-20260614-002.json"
+  ],
+  "status": "rejected",
+  "timestamp": "2026-06-14T01:10:40+00:00",
+  "trial_family": "true_pit_earnings_peer_reaction_candidate_pool"
+}

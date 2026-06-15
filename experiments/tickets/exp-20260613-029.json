@@ -1,0 +1,131 @@
+{
+  "after_aggregate": "data/experiments/exp-20260613-029/finra_covering_relief_leadership_after_aggregate.json",
+  "artifact": "data/experiments/exp-20260613-029/exp_20260613_029_finra_covering_relief_leadership.json",
+  "before_aggregate": "data/experiments/exp-20260613-029/finra_covering_relief_leadership_before_aggregate.json",
+  "decision": "rejected_finra_covering_relief_leadership",
+  "experiment_id": "exp-20260613-029",
+  "json": "data/experiments/exp-20260613-029/exp_20260613_029_finra_covering_relief_leadership.json",
+  "status": "rejected_finra_covering_relief_leadership",
+  "summary": "FINRA covering relief did not clear the three-window promotion screen. The likely reason is that biweekly short-interest declines arrive after much of the covering move is already priced, while the accepted rising-pressure family better captures still-unresolved demand/supply imbalance.",
+  "title": "FINRA short-pressure breakout candidate pool",
+  "created_at": "2026-06-13T21:18:27+00:00",
+  "owner": "alpha-search-automation",
+  "hypothesis": "FINRA published short-interest covering relief after prior crowding plus existing liquid breakout leadership may identify cleaner post-overhang continuation candidates than rising short-pressure squeeze rows.",
+  "change_type": "candidate_pool_private_replay_scout",
+  "mechanism_family": "finra_short_interest_covering_relief",
+  "trial_family": "finra_covering_relief_leadership_candidate_pool",
+  "trial_variant_id": "dtc_ge_3_short_change_le_minus_5",
+  "single_causal_variable": "finra_short_interest_covering_relief_leadership_candidate_source_v1",
+  "changed_variable": "finra_short_interest_covering_relief_leadership_candidate_source_v1",
+  "causal_components": [
+    "latest_pit_finra_days_to_cover_ge_3",
+    "latest_pit_finra_short_interest_change_pct_le_minus_5",
+    "existing_finra_iwm_liquid_breakout_leadership_envelope"
+  ],
+  "prior_trial_count": 6,
+  "nearby_prior_experiments": [
+    "exp-20260529-017",
+    "exp-20260530-005",
+    "exp-20260603-006",
+    "exp-20260603-007",
+    "exp-20260604-026",
+    "exp-20260604-027",
+    "exp-20260611-015"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "production_visible_official_finra_covering_relief_field",
+  "log": "experiments/logs/exp-20260613-029.json",
+  "ticket_file": "experiments/tickets/exp-20260613-029.json",
+  "card_file": "experiments/cards/exp-20260613-029.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260613-029.json",
+  "aggregate_expected_value_delta": 0.0283,
+  "aggregate_strategy_total_pnl_delta": 412.44,
+  "lane": "alpha_search",
+  "prediction": {
+    "success_probability": 0.2,
+    "expected_ev_delta": 0.06,
+    "expected_pnl_delta": 1500.0,
+    "main_failure_modes": [
+      "covering_already_exhausted_move",
+      "biweekly_finra_lag",
+      "thin_sample",
+      "late_or_old_window_regression",
+      "overlap_with_accepted_borrow_pressure"
+    ],
+    "confidence_reason": "Accepted FINRA/IWM and FINRA/FTD pressure sources prove the free PIT data is usable, but the covering-relief direction is unvalidated and may lag price.",
+    "recorded_at": "2026-06-13T21:09:21+00:00"
+  },
+  "result": {
+    "decision": "rejected_finra_covering_relief_leadership",
+    "accepted": false,
+    "accepted_alpha": false,
+    "numeric_gate4_passed": false,
+    "artifact": "data/experiments/exp-20260613-029/exp_20260613_029_finra_covering_relief_leadership.json",
+    "log": "experiments/logs/exp-20260613-029.json",
+    "card": "experiments/cards/exp-20260613-029.md",
+    "aggregate_expected_value_delta": 0.0283,
+    "aggregate_strategy_total_pnl_delta": 412.44,
+    "gate4": {
+      "aggregate_ev_delta_positive": true,
+      "aggregate_pnl_delta_positive": true,
+      "failed_reasons": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "target_concentration_failed"
+      ],
+      "max_drawdown_worse": 0.0,
+      "max_drawdown_worse_guardrail": 0.005,
+      "passed": false,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "max_single_positive_pnl_share": 1.0,
+        "max_single_positive_pnl_share_guardrail": 0.4,
+        "passed": false,
+        "positive_pnl_hhi": 1.0,
+        "positive_pnl_hhi_guardrail": 0.3
+      },
+      "target_trade_count": 2,
+      "target_trade_count_min": 20,
+      "target_window_count_min": 3,
+      "target_windows": [
+        "late_strong",
+        "mid_weak"
+      ],
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 1,
+      "windows_pnl_improved": 1,
+      "windows_pnl_regressed": 1
+    },
+    "production_impact": {
+      "backtester_adapter_changed": false,
+      "default_off_paper_only": true,
+      "parity_test_added": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "promotion_requirement": "A positive replay result is not retained as production behavior until the identical FINRA covering-relief admission is implemented in a shared default-off run/backtest adapter with parity tests and daily snapshot visibility.",
+      "replay_only": true,
+      "run_adapter_changed": false,
+      "shared_policy_changed": false,
+      "trade_enabled": false
+    },
+    "post_run_reflection": {
+      "forbidden_near_neighbor_retry": "Do not retry FINRA covering-relief threshold-only variants, and do not retry FTD/FINRA rank or allocator-source arbitration without a new borrow-cost, borrow-availability, or forward replacement dataset.",
+      "nearby_retries_forbidden": [
+        "finra_covering_relief_threshold_only_retune",
+        "ftd_finra_rank_or_source_arbitration_retry_without_new_borrow_data"
+      ],
+      "negative_reflection": "Do not retry nearby FINRA relief thresholds on the same frozen windows. A better retry would need borrow fee, borrow availability, float-normalized short interest, or forward replacement rows that show the relief signal is not stale.",
+      "new_evidence_required": "Forward replacement rows or a materially richer borrow dataset are required: borrow fee, lendable-share availability, or float-normalized short-interest decline with the FINRA publication lag explicitly modeled.",
+      "next_evidence_needed": [
+        "forward replacement rows",
+        "borrow fee or lendable-share availability",
+        "float-normalized short-interest decline with publication lag modeled"
+      ],
+      "why_result_happened": "FINRA covering relief did not clear the three-window promotion screen. The likely reason is that biweekly short-interest declines arrive after much of the covering move is already priced, while the accepted rising-pressure family better captures still-unresolved demand/supply imbalance."
+    }
+  },
+  "updated_at": "2026-06-13T21:18:27+00:00",
+  "completed_at": "2026-06-13T21:18:27+00:00"
+}

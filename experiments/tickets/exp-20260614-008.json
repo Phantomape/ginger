@@ -1,0 +1,99 @@
+{
+  "experiment_id": "exp-20260614-008",
+  "experiment_uid": "expuid-4fad5957518a42b3",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260614-008",
+    "slug": "sec_financial_report_allocator_source_extension",
+    "reserved_at": "2026-06-14T07:29:12+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "proposed",
+  "lane": "alpha_search",
+  "owner": "codex-alpha-search",
+  "hypothesis": "SEC financial-report positive T+1 drift may add a distinct free SEC event-information source to the accepted source-priority allocator when replayed under the allocator 10-day paper envelope.",
+  "change_type": "replay_only_allocator_source_extension",
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "trial_family": "accepted_default_off_helper_source_priority_allocation",
+  "trial_variant_id": "sec_financial_report_t1_drift_rank2_source_family_added_to_allocator_v1",
+  "single_causal_variable": "sec_financial_report_t1_drift_source_family_added_to_accepted_helper_source_priority_allocator_v1",
+  "changed_variable": "sec_financial_report_t1_drift_source_family_added_to_accepted_helper_source_priority_allocator_v1",
+  "causal_components": [
+    "historical replay",
+    "accepted allocator same-run control",
+    "three canonical windows",
+    "production parity boundary",
+    "negative reflection"
+  ],
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260614-004",
+    "exp-20260611-008",
+    "exp-20260611-015",
+    "exp-20260613-012",
+    "exp-20260610-016",
+    "exp-20260610-019"
+  ],
+  "multiple_testing_risk_bucket": "high",
+  "new_evidence_type": "production_visible_free_sec_event_source_family_replay",
+  "baseline_result_file": "experiments/logs/exp-20260611-005.json",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "new data/experiments/<experiment_id>",
+    "experiments/logs",
+    "experiments/tickets",
+    "experiments/cards",
+    "experiments/manifests"
+  ],
+  "must_not_touch": [
+    "quant/run.py",
+    "live orders",
+    "core signal generation",
+    "LLM/news path"
+  ],
+  "locked_variables": [
+    "accepted allocator top1/day",
+    "lagged consensus rank 1",
+    "notional",
+    "hold days",
+    "cooldown",
+    "core strategy",
+    "live orders"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Must improve direct EV and PnL versus same-run accepted allocator in all three canonical windows, beat exp-20260611-005 accepted allocator comparator, pass sample/survival/drawdown/concentration guards; positive replay is not retained until shared daily helper parity is implemented.",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": 0.12,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "accepted_allocator_window_comparator_regression",
+      "source_overlap_displaces_better_rows",
+      "sec_event_not_incremental_after_lagged_consensus",
+      "drawdown_drift"
+    ],
+    "confidence_reason": "SEC financial-report T+1 drift has accepted standalone support and uses free PIT SEC filings, but source-extension attempts often fail after lagged consensus by displacing better rows.",
+    "recorded_at": "2026-06-14T07:28:39+00:00"
+  },
+  "created_at": "2026-06-14T07:29:12+00:00",
+  "claimed_at": null,
+  "completed_at": null,
+  "result": null,
+  "ticket_file": "experiments/tickets/exp-20260614-008.json",
+  "card_file": "experiments/cards/exp-20260614-008.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260614-008.json"
+}

@@ -1,0 +1,88 @@
+{
+  "experiment_id": "exp-20260613-022",
+  "experiment_uid": "expuid-dec83f4781e14a0c",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260613-022",
+    "slug": "intraday_artifact_write_repair",
+    "reserved_at": "2026-06-13T17:10:15+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "accepted",
+  "lane": "measurement_repair",
+  "owner": "codex-automation",
+  "hypothesis": "Repair intraday artifact persistence when the Windows artifact directory allows writes but denies Python rename/delete operations, so advisory reports, prompts, snapshots, and news artifacts are saved.",
+  "change_type": "identity_or_measurement_repair",
+  "mechanism_family": "identity_or_measurement_repair",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260613-022",
+  "single_causal_variable": "intraday_artifact_write_acl_fallback_v1",
+  "changed_variable": "intraday_artifact_write_acl_fallback_v1",
+  "causal_components": [
+    "intraday direct flushed artifact writer",
+    "artifact verification"
+  ],
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "not_declared",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/run_intraday.py",
+    "data/daily/intraday"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "intraday_artifact_write_acl_fallback_v1"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.85,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "direct_write_denied",
+      "artifact_schema_regression",
+      "unicode_encoding_regression"
+    ],
+    "confidence_reason": "The failure reproduced as Python os.replace/os.remove denial while direct final writes succeeded; the repair avoids rename/delete only for advisory intraday artifacts and keeps strategy behavior unchanged.",
+    "recorded_at": "2026-06-13T17:09:41+00:00"
+  },
+  "created_at": "2026-06-13T17:10:15+00:00",
+  "claimed_at": "2026-06-13T17:12:02+00:00",
+  "completed_at": "2026-06-13T17:13:15+00:00",
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260613-022/intraday_artifact_write_repair_before.json",
+    "after_result_file": "data/experiments/exp-20260613-022/intraday_artifact_write_repair_after.json",
+    "delta_metrics": {},
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.85,
+      "brier_score": 0.0225,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": null,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": null,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "direct_write_denied",
+        "artifact_schema_regression",
+        "unicode_encoding_regression"
+      ],
+      "realized_failure_mode": "rename_delete_denied_but_direct_write_allowed",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "The directory allowed ordinary writes but denied both Python os.replace/os.remove and PowerShell Remove-Item, so the safe scoped fix was intraday-only direct flushed artifact writes."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260613-022.json",
+  "card_file": "experiments/cards/exp-20260613-022.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260613-022.json"
+}

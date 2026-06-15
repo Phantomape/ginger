@@ -1,0 +1,246 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_comparators": {
+    "exp-20260608-013_narrow_range_compression": {
+      "aggregate_expected_value_delta": 0.1608,
+      "aggregate_pnl_delta": 2248.98,
+      "note": "accepted shared default-off narrow-range compression breakout adapter"
+    },
+    "exp-20260611-005_lagged_consensus_allocator": {
+      "aggregate_expected_value_delta": 2.1849,
+      "aggregate_pnl_delta": 40397.21,
+      "note": "accepted shared allocator source extension"
+    },
+    "exp-20260611-007_distribution_day_absorption": {
+      "aggregate_expected_value_delta": 0.5286,
+      "aggregate_pnl_delta": 10432.91,
+      "note": "accepted shared distribution-day absorption adapter"
+    }
+  },
+  "aggregate_expected_value_delta": -0.0416,
+  "aggregate_strategy_total_pnl_delta": -373.82,
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260613-027/exp_20260613_027_industry_contraction_scarce_leader.json",
+  "backtest_protocol": {
+    "REGIME_AWARE_EXIT": true,
+    "candidate_ohlcv_source": "data/warehouse/warehouse_main.sqlite",
+    "execution_model": "Signal uses only close-of-day OHLCV and sector-map industry membership available on the signal date. Industry contraction and leader features are known after the signal close. Paper entry is next available open with existing entry slippage; exit is the close 10 trading days after signal with target-side sell slippage and ROUND_TRIP_COST_PCT.",
+    "replay_llm": false,
+    "replay_news": false,
+    "source": "docs/backtesting.md canonical three-window core replay plus replay-only broad warehouse default-off paper overlay",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "baseline_result_file": "data/experiments/exp-20260613-027/exp_20260613_027_industry_contraction_scarce_leader.json#before_metrics",
+  "calibration": {
+    "actual_gate4_passed": false,
+    "brier_score": 0.0324,
+    "failure_modes_observed": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "drawdown_drift_too_high"
+    ],
+    "predicted_success_probability": 0.18
+  },
+  "card": "experiments/cards/exp-20260613-027.md",
+  "changed_variable": "industry_contraction_scarce_leader_candidate_source_v1",
+  "decision": "rejected_industry_contraction_scarce_leader_candidate_pool",
+  "experiment_id": "exp-20260613-027",
+  "gate4": {
+    "accepted_comparator_checks": {
+      "exp-20260608-013_narrow_range_compression": {
+        "note": "accepted shared default-off narrow-range compression breakout adapter",
+        "observed_ev_delta": -0.0416,
+        "observed_pnl_delta": -373.82,
+        "passed": false,
+        "required_ev_delta": 0.1608,
+        "required_pnl_delta": 2248.98
+      },
+      "exp-20260611-005_lagged_consensus_allocator": {
+        "note": "accepted shared allocator source extension",
+        "observed_ev_delta": -0.0416,
+        "observed_pnl_delta": -373.82,
+        "passed": false,
+        "required_ev_delta": 2.1849,
+        "required_pnl_delta": 40397.21
+      },
+      "exp-20260611-007_distribution_day_absorption": {
+        "note": "accepted shared distribution-day absorption adapter",
+        "observed_ev_delta": -0.0416,
+        "observed_pnl_delta": -373.82,
+        "passed": false,
+        "required_ev_delta": 0.5286,
+        "required_pnl_delta": 10432.91
+      }
+    },
+    "aggregate_ev_delta": -0.0416,
+    "aggregate_pnl_delta": -373.82,
+    "decision": "rejected_industry_contraction_scarce_leader_candidate_pool",
+    "failed_reasons": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "drawdown_drift_too_high"
+    ],
+    "max_drawdown_worse": 0.0217,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": false,
+    "promotion_blockers": [],
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.07545,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": true,
+      "positive_pnl_hhi": 0.024298,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 282,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_ev_improved": 1,
+    "windows_ev_regressed": 2,
+    "windows_pnl_improved": 1,
+    "windows_pnl_regressed": 2
+  },
+  "hypothesis": "candidate_pool alpha: when a PIT industry cohort is internally weak or below trend, a liquid member that still shows SPY-relative strength, high close location, and stable volume may represent scarce sponsorship rather than generic momentum.",
+  "lane": "alpha_search",
+  "log": "experiments/logs/exp-20260613-027.json",
+  "mechanism_family": "production_visible_free_ohlcv_relation_candidate_pool",
+  "negative_reflection": "The field likely still relabeled ordinary industry-relative momentum. Weak-cohort scarcity was not enough to overcome the existing accepted comparators and full three-window Gate 4.",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry nearby industry contraction, down-fraction, SMA, close-location, volume, hold-day, notional, cooldown, or top-N variants on these frozen windows.",
+    "new_evidence_required": "A valid retry needs a materially new PIT relation or flow field, such as borrow/options/ownership evidence or closed forward replacement rows from a shared daily helper.",
+    "realized_failure_mode": "industry_contraction_scarcity_generic_momentum_relabel",
+    "why_result_happened": "The field likely still relabeled ordinary industry-relative momentum. Weak-cohort scarcity was not enough to overcome the existing accepted comparators and full three-window Gate 4."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "candidate_pool alpha: when a PIT industry cohort is internally weak or below trend, a liquid member that still shows SPY-relative strength, high close location, and stable volume may represent scarce sponsorship rather than generic momentum.",
+    "2_history_check": {
+      "exp-20260528-034": "Rejected industry-leadership no-core-overlap; this run is not a plain industry leadership retry because the tested relation is industry contraction scarcity.",
+      "exp-20260528-035": "Rejected industry leadership high close; this run uses a fixed weak-cohort context before considering close location.",
+      "exp-20260528-036": "Rejected sector breadth market agreement; this run tests narrow intra-industry weakness, not broad breadth confirmation.",
+      "exp-20260613-020": "Rejected seasoned new listing leadership due drawdown/comparator risk. This run avoids first-seen age and listing proxies.",
+      "exp-20260613-021": "Rejected market weakness beta-resilience. This run avoids SPY/QQQ weakness as the context and uses industry-local contraction."
+    },
+    "3_single_decision_hypothesis": "industry_contraction_scarce_leader_candidate_source_v1",
+    "4_acceptance_standard": "Use docs/backtesting.md three canonical windows. Aggregate EV/PnL must be positive, no window EV/PnL regression, at least 20 paper trades across all 3 windows, survival >=5%, drawdown drift <=0.5pp, and concentration pass. Replay-only positives are leads until shared daily/backtest parity exists.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260613_027_industry_contraction_scarce_leader.py"
+  },
+  "prediction": {
+    "confidence_reason": "Industry-relative relation alpha has accepted examples when the relation is the edge, but plain industry leadership and market weakness resilience failed. This tests a narrower scarcity relation inside weak cohorts using only PIT OHLCV and changes no production behavior.",
+    "expected_ev_delta": 0.2,
+    "expected_pnl_delta": 3000.0,
+    "main_failure_modes": [
+      "generic_momentum_relabel",
+      "industry_leadership_retread",
+      "window_regression",
+      "drawdown_drift_too_high",
+      "accepted_comparator_not_beaten"
+    ],
+    "recorded_at": "2026-06-13T19:08:22Z",
+    "success_probability": 0.18
+  },
+  "production_accepted": false,
+  "production_impact": {
+    "adapter_status": "replay_only_no_live_adapter",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "default_off_paper_only": true,
+    "execution_envelope": {
+      "daily_entry_slots": 1,
+      "failure_handling": "missing OHLCV, next open, or 10d exit rejects the paper candidate",
+      "hold_days": 10,
+      "kill_switch": "trade_enabled remains false; no production adapter changes",
+      "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+      "order_semantics": "observe-only next-session-open paper entry; no broker order",
+      "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+      "same_ticker_cooldown_days": 10,
+      "target_notional_per_paper_trade": 4000.0,
+      "trade_enabled": false
+    },
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper computes the same industry grouping, contraction context, leader gates, same-ticker core-overlap exclusion, cooldown, next-open paper entry, 10-trading-day exit, costs, and concentration controls in both historical replay and the daily production snapshot.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_free_ohlcv_only": true,
+    "uses_llm": false
+  },
+  "status": "rejected",
+  "timestamp": "2026-06-13T19:14:39Z",
+  "trial_family": "industry_contraction_scarce_leader_candidate_pool",
+  "trial_variant_id": "industry_contraction_scarce_leader_top1_next_open_10d_v1",
+  "windows": [
+    {
+      "expected_value_after": 5.0842,
+      "expected_value_before": 5.1628,
+      "expected_value_delta": -0.0786,
+      "industry_contraction_day_count": 122,
+      "label": "late_strong",
+      "passed_industry_context_count": 2314,
+      "pnl_delta": -466.89,
+      "raw_candidate_count": 524,
+      "target_trade_count": 98
+    },
+    {
+      "expected_value_after": 2.214,
+      "expected_value_before": 2.1402,
+      "expected_value_delta": 0.0738,
+      "industry_contraction_day_count": 125,
+      "label": "mid_weak",
+      "passed_industry_context_count": 1609,
+      "pnl_delta": 1529.49,
+      "raw_candidate_count": 313,
+      "target_trade_count": 82
+    },
+    {
+      "expected_value_after": 0.5543,
+      "expected_value_before": 0.5911,
+      "expected_value_delta": -0.0368,
+      "industry_contraction_day_count": 129,
+      "label": "old_thin",
+      "passed_industry_context_count": 2875,
+      "pnl_delta": -1436.42,
+      "raw_candidate_count": 554,
+      "target_trade_count": 102
+    }
+  ]
+}

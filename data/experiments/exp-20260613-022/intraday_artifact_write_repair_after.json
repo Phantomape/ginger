@@ -1,0 +1,66 @@
+{
+  "experiment_id": "exp-20260613-022",
+  "artifact_type": "measurement_repair_after",
+  "lane": "measurement_repair",
+  "changed_variable": "intraday_artifact_write_acl_fallback_v1",
+  "observed_at": "2026-06-13T17:07:41Z",
+  "code_change": {
+    "file": "quant/run_intraday.py",
+    "summary": "Use direct flushed UTF-8 writers for advisory-only intraday report, LLM prompt, snapshot JSON, and news JSON artifacts instead of atomic rename/delete."
+  },
+  "verification_commands": [
+    ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_intraday_review.py -q",
+    ".\\.venv\\Scripts\\python.exe .\\quant\\run_intraday.py"
+  ],
+  "verification_results": {
+    "pytest_intraday_review": "16 passed in 0.82s",
+    "intraday_command_exit_code": 0,
+    "artifact_write_error_present": false,
+    "snapshot_json_loaded": true,
+    "snapshot_positions": 13,
+    "snapshot_trade_filtered_news_items": 8,
+    "report_bytes_utf8_valid": true
+  },
+  "artifacts_written": [
+    "data/daily/intraday/reports/intraday_report_20260613_1307ET.txt",
+    "data/daily/intraday/llm/intraday_llm_prompt_20260613_1307ET.txt",
+    "data/daily/intraday/snapshots/intraday_review_20260613_1307ET.json",
+    "data/daily/intraday/news/intraday_news_raw_20260613_1307ET.json",
+    "data/daily/intraday/news/intraday_trade_news_20260613_1307ET.json"
+  ],
+  "intraday_review_summary": {
+    "generated_at_et": "2026-06-13 13:07 ET",
+    "generated_at_pt": "2026-06-13 10:07 PT",
+    "market_closed_weekend_run": true,
+    "regime": "BULL",
+    "breached": [
+      "AMD",
+      "META",
+      "NFLX",
+      "SNOW",
+      "TRIP"
+    ],
+    "approaching": [
+      "AMZN",
+      "APP"
+    ],
+    "trade_filtered_news_items": 8,
+    "quote_coverage": "13/13"
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "intraday_adapter_changed": true,
+    "replay_only": false,
+    "trade_enabled": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_exits": false,
+    "alters_sizing": false,
+    "daily_eod_artifacts_changed": false,
+    "operator_inputs_changed": false
+  },
+  "decision": "accepted_measurement_repair",
+  "acceptance_basis": "The same intraday advisory run now persists all expected artifacts and the focused intraday test suite passes."
+}
