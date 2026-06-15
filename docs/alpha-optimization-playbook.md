@@ -369,6 +369,27 @@ the relevant chop axis is the 2D trend-state × breadth construct from exp-019
 Retain the exp-019 regime label; do not substitute ER or retune ER window /
 exposure floor on the frozen windows.
 
+`exp-20260615-025` then promoted the exp-019 construct into a shared, tested,
+rule-versioned module `quant/regime_chop_state.py` (`regime_chop_state_v1`):
+regime probabilities + `bull_score` + `risk_off_score` + a continuous
+`exposure_scalar` that softly down-tilts ONLY the choppy regime (floor 0.5,
+never a hard gate). Re-validated through the shared module on the canonical
+windows it reproduced the lead MORE cleanly than the raw label: continuous
+`Spearman(p_choppy, PnL)` = −0.324 (FGRS) / −0.241 (deferred), with mean
+`exposure_scalar` lowest in chop (~0.776) vs risk_on/off (~0.89). The module is
+wired as an additive read-only `regime_chop` field on
+`build_market_state_snapshot` (schema_version 2; the snapshot is already
+diagnostic_only, so zero order effect). IMPORTANT fidelity caveat: the daily
+market-context path supplies only the THIN subset (trend + 20d momentum + VIX,
+no breadth/drawdown), which is materially weaker (THIN replay Spearman −0.17
+FGRS / +0.04 deferred) — breadth/stress are load-bearing. Full-fidelity
+`regime_chop` can be recomputed from SPY+universe bars for any date via the
+shared module. Next steps (NOT done): (1) plumb breadth + SPY drawdown/vol into
+the daily market context so the live field is full-fidelity; (2) validate the
+`exposure_scalar` soft tilt on forward / live-pilot rows tagged with entry-time
+regime, never by re-slicing the frozen windows; (3) do not tune regime constants
+or the exposure floor on these windows.
+
 Candidate fields:
 
 - `winner_continuation_tail_state_bucket`

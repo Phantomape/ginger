@@ -1,0 +1,103 @@
+{
+  "accepted": false,
+  "anti_js": "No JavaScript was used.",
+  "attribution": {
+    "deferred_revenue_demand_acceleration_exp017": {
+      "full_overall_by_regime": {
+        "choppy_range": {
+          "count": 12,
+          "mean_pnl": -179.36,
+          "win_rate": 0.1667
+        },
+        "risk_off_stress": {
+          "count": 24,
+          "mean_pnl": 155.44,
+          "win_rate": 0.7083
+        },
+        "risk_on_trend": {
+          "count": 114,
+          "mean_pnl": 94.2,
+          "win_rate": 0.5702
+        }
+      },
+      "full_spearman_pchop_vs_pnl": -0.241,
+      "mean_exposure_scalar_by_regime": {
+        "choppy_range": 0.7741,
+        "risk_off_stress": 0.9096,
+        "risk_on_trend": 0.8939
+      },
+      "thin_spearman_pchop_vs_pnl": 0.0447,
+      "total_trades": 150
+    },
+    "fundamental_growth_rs_low_liability": {
+      "full_overall_by_regime": {
+        "choppy_range": {
+          "count": 38,
+          "mean_pnl": -189.87,
+          "win_rate": 0.2895
+        },
+        "risk_off_stress": {
+          "count": 48,
+          "mean_pnl": 332.71,
+          "win_rate": 0.625
+        },
+        "risk_on_trend": {
+          "count": 250,
+          "mean_pnl": 463.56,
+          "win_rate": 0.644
+        }
+      },
+      "full_spearman_pchop_vs_pnl": -0.3236,
+      "mean_exposure_scalar_by_regime": {
+        "choppy_range": 0.7763,
+        "risk_off_stress": 0.8953,
+        "risk_on_trend": 0.8865
+      },
+      "thin_spearman_pchop_vs_pnl": -0.1731,
+      "total_trades": 336
+    }
+  },
+  "builds_on": [
+    "exp-20260615-019",
+    "exp-20260615-023"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "shared_pit_regime_chop_exposure_scalar",
+  "decision": "shared_regime_chop_helper_reproduces_lead",
+  "experiment_id": "exp-20260615-025",
+  "fidelity_note": "FULL uses trend+breadth+index-agreement+drawdown+vol (replay / any bar-having daily caller). THIN uses trend+20d momentum only (the production market-state context subset replayable from the canonical snapshots, minus VIX which they lack). Compare full vs thin Spearman to see whether breadth/stress are load-bearing for the daily field.",
+  "full_fidelity_reproduces_chop_separation": true,
+  "hypothesis": "The shared quant/regime_chop_state module reproduces the exp-019 choppy_range loss separation at full fidelity; the continuous exposure_scalar softly down-tilts only the choppy regime.",
+  "lane": "measurement_repair",
+  "mechanism_family": "shared_pit_regime_chop_state_helper",
+  "next_evidence_needed": "Forward / live-pilot rows tagged with entry-time regime_chop and exposure_scalar. Do not tune the regime constants or exposure floor on the frozen windows.",
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_market_state_field_added": "gated_on_full_fidelity_reproduction",
+    "parity_note": "If full fidelity reproduces the lead, regime_chop is added as an additive read-only field on build_market_state_snapshot (the snapshot is already diagnostic_only and changes no orders). Any execution use (portfolio capital tilt) still needs a separate Gate 1-4 plus forward / live-pilot validation.",
+    "parity_test_added": true,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_llm": false
+  },
+  "related_files": [
+    "quant/experiments/exp_20260615_025_regime_chop_shared_promotion.py",
+    "quant/regime_chop_state.py",
+    "quant/test_regime_chop_state.py",
+    "quant/market_state_analysis.py",
+    "data/experiments/exp-20260615-025/exp_20260615_025_regime_chop_shared_promotion.json"
+  ],
+  "rule_version": "regime_chop_state_v1",
+  "shared_module": "quant/regime_chop_state.py",
+  "shared_module_rule_version": "regime_chop_state_v1",
+  "status": "observed_only",
+  "timestamp": "2026-06-15T20:09:05Z"
+}

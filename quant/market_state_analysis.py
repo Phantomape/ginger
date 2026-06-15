@@ -10,6 +10,7 @@ from __future__ import annotations
 from collections import Counter
 
 from regime_engine import classify_market_regime
+from regime_chop_state import regime_chop_from_market_context
 from sentiment_surface import classify_sentiment_surface
 
 
@@ -124,14 +125,16 @@ def build_market_state_snapshot(market_context=None, signals=None, source="unkno
     context, mix = _context_with_signal_mix(market_context, signals)
     regime_report = classify_market_regime(context)
     sentiment_report = classify_sentiment_surface(context)
+    regime_chop = regime_chop_from_market_context(context)
 
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "read_only": True,
         "diagnostic_only": True,
         "source": source,
         "market_regime_report": regime_report,
         "sentiment_surface": sentiment_report,
+        "regime_chop": regime_chop,
         "signal_mix": mix,
         "context": _snapshot_context(context),
         "context_coverage": _context_coverage(context),
@@ -139,5 +142,10 @@ def build_market_state_snapshot(market_context=None, signals=None, source="unkno
             "Read-only snapshot using existing regime_engine and sentiment_surface classifiers.",
             "No entry, ranking, sizing, exit, heat, LLM, news, or order behavior is changed.",
             "Missing context lowers confidence; policy use requires a separate replay-safe experiment.",
+            "regime_chop (exp-20260615-019/025) is an observe-only PIT chop/exposure field; "
+            "the daily market-context path supplies only the THIN fidelity (trend+momentum+VIX, "
+            "no breadth/drawdown), which exp-20260615-025 showed is weaker than the full bar-based "
+            "construct. Full-fidelity regime_chop can be recomputed from SPY+universe bars for any "
+            "date via quant/regime_chop_state.py. Not an executable rule without a separate Gate 1-4.",
         ],
     }
