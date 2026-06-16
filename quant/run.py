@@ -348,6 +348,34 @@ def main():
     today = datetime.now().strftime("%Y%m%d")
     today_iso = datetime.now().date().isoformat()
 
+    from paper_sleeve_runner import run_sleeve as _run_sleeve
+
+    def _sleeve(build, empty_fn, log_label, fail_reason, *, log_metrics=(),
+                activity_keys=None):
+        # Thin local wrapper capturing log + today_iso; collapses each sleeve's
+        # try/activity-log/except-fallback boilerplate into one call.
+        kwargs = {} if activity_keys is None else {"activity_keys": activity_keys}
+        return _run_sleeve(
+            build,
+            empty_fn,
+            logger=log,
+            today_iso=today_iso,
+            log_label=log_label,
+            fail_reason=fail_reason,
+            log_metrics=log_metrics,
+            **kwargs,
+        )
+
+    # Shared metric/activity specs for the SEC forward-event paper sleeves (they
+    # gate on new_pending_count and log pending/open/closed/pnl identically).
+    _EVENT_SLEEVE_METRICS = (
+        ("pending", "pending_count"),
+        ("open", "open_position_count"),
+        ("closed_today", "closed_count_today"),
+        ("pnl", "realized_pnl_to_date"),
+    )
+    _EVENT_SLEEVE_ACTIVITY = ("new_pending_count", "open_position_count", "closed_count_today")
+
     # ── Step 1: Config ────────────────────────────────────────────────────────
     _print_section("STEP 1 — Loading config")
 
@@ -2151,33 +2179,21 @@ def main():
             "sec_event_queue_build_failed",
         )
 
-    try:
-        sec_negative_event_sleeve = build_sec_negative_event_sleeve_snapshot(
+    sec_negative_event_sleeve = _sleeve(
+        lambda: build_sec_negative_event_sleeve_snapshot(
             sec_event_queue=sec_event_queue,
             as_of=today_iso,
             open_prices=current_open_prices,
             current_prices=current_prices,
             open_price_dates=current_open_price_dates,
             current_price_dates=current_price_dates,
-        )
-        if (
-            sec_negative_event_sleeve.get("new_pending_count", 0) > 0
-            or sec_negative_event_sleeve.get("open_position_count", 0) > 0
-            or sec_negative_event_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "SEC negative-reaction paper event sleeve: pending=%d open=%d closed_today=%d pnl=$%s",
-                sec_negative_event_sleeve.get("pending_count", 0),
-                sec_negative_event_sleeve.get("open_position_count", 0),
-                sec_negative_event_sleeve.get("closed_count_today", 0),
-                sec_negative_event_sleeve.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"SEC negative-reaction paper event sleeve unavailable: {e}")
-        sec_negative_event_sleeve = empty_sec_negative_event_sleeve_snapshot(
-            today_iso,
-            "sec_negative_event_sleeve_build_failed",
-        )
+        ),
+        empty_sec_negative_event_sleeve_snapshot,
+        "SEC negative-reaction paper event",
+        "sec_negative_event_sleeve_build_failed",
+        log_metrics=_EVENT_SLEEVE_METRICS,
+        activity_keys=_EVENT_SLEEVE_ACTIVITY,
+    )
 
     try:
         sec_governance_event_queue = build_forward_governance_queue_from_sec_filing_text(
@@ -2200,33 +2216,21 @@ def main():
             "sec_governance_event_queue_build_failed",
         )
 
-    try:
-        sec_governance_event_sleeve = build_sec_event_sleeve_snapshot(
+    sec_governance_event_sleeve = _sleeve(
+        lambda: build_sec_event_sleeve_snapshot(
             sec_event_queue=sec_governance_event_queue,
             as_of=today_iso,
             open_prices=current_open_prices,
             current_prices=current_prices,
             open_price_dates=current_open_price_dates,
             current_price_dates=current_price_dates,
-        )
-        if (
-            sec_governance_event_sleeve.get("new_pending_count", 0) > 0
-            or sec_governance_event_sleeve.get("open_position_count", 0) > 0
-            or sec_governance_event_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "SEC governance paper event sleeve: pending=%d open=%d closed_today=%d pnl=$%s",
-                sec_governance_event_sleeve.get("pending_count", 0),
-                sec_governance_event_sleeve.get("open_position_count", 0),
-                sec_governance_event_sleeve.get("closed_count_today", 0),
-                sec_governance_event_sleeve.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"SEC governance paper event sleeve unavailable: {e}")
-        sec_governance_event_sleeve = empty_sec_event_sleeve_snapshot(
-            today_iso,
-            "sec_governance_event_sleeve_build_failed",
-        )
+        ),
+        empty_sec_event_sleeve_snapshot,
+        "SEC governance paper event",
+        "sec_governance_event_sleeve_build_failed",
+        log_metrics=_EVENT_SLEEVE_METRICS,
+        activity_keys=_EVENT_SLEEVE_ACTIVITY,
+    )
 
     try:
         sec_leadership_event_queue = build_forward_leadership_queue_from_sec_filing_text(
@@ -2249,33 +2253,21 @@ def main():
             "sec_leadership_event_queue_build_failed",
         )
 
-    try:
-        sec_leadership_event_sleeve = build_sec_leadership_event_sleeve_snapshot(
+    sec_leadership_event_sleeve = _sleeve(
+        lambda: build_sec_leadership_event_sleeve_snapshot(
             sec_leadership_event_queue=sec_leadership_event_queue,
             as_of=today_iso,
             open_prices=current_open_prices,
             current_prices=current_prices,
             open_price_dates=current_open_price_dates,
             current_price_dates=current_price_dates,
-        )
-        if (
-            sec_leadership_event_sleeve.get("new_pending_count", 0) > 0
-            or sec_leadership_event_sleeve.get("open_position_count", 0) > 0
-            or sec_leadership_event_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "SEC leadership paper event sleeve: pending=%d open=%d closed_today=%d pnl=$%s",
-                sec_leadership_event_sleeve.get("pending_count", 0),
-                sec_leadership_event_sleeve.get("open_position_count", 0),
-                sec_leadership_event_sleeve.get("closed_count_today", 0),
-                sec_leadership_event_sleeve.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"SEC leadership paper event sleeve unavailable: {e}")
-        sec_leadership_event_sleeve = empty_sec_leadership_event_sleeve_snapshot(
-            today_iso,
-            "sec_leadership_event_sleeve_build_failed",
-        )
+        ),
+        empty_sec_leadership_event_sleeve_snapshot,
+        "SEC leadership paper event",
+        "sec_leadership_event_sleeve_build_failed",
+        log_metrics=_EVENT_SLEEVE_METRICS,
+        activity_keys=_EVENT_SLEEVE_ACTIVITY,
+    )
 
     try:
         sec_financial_report_t1_queue = (
@@ -2301,37 +2293,21 @@ def main():
             "sec_financial_report_t1_queue_build_failed",
         )
 
-    try:
-        sec_financial_report_event_sleeve = (
-            build_sec_financial_report_event_sleeve_snapshot(
-                sec_financial_report_t1_queue=sec_financial_report_t1_queue,
-                as_of=today_iso,
-                open_prices=current_open_prices,
-                current_prices=current_prices,
-                open_price_dates=current_open_price_dates,
-                current_price_dates=current_price_dates,
-            )
-        )
-        if (
-            sec_financial_report_event_sleeve.get("new_pending_count", 0) > 0
-            or sec_financial_report_event_sleeve.get("open_position_count", 0) > 0
-            or sec_financial_report_event_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "SEC financial-report paper sleeve: pending=%d open=%d closed_today=%d pnl=$%s",
-                sec_financial_report_event_sleeve.get("pending_count", 0),
-                sec_financial_report_event_sleeve.get("open_position_count", 0),
-                sec_financial_report_event_sleeve.get("closed_count_today", 0),
-                sec_financial_report_event_sleeve.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"SEC financial-report paper sleeve unavailable: {e}")
-        sec_financial_report_event_sleeve = (
-            empty_sec_financial_report_event_sleeve_snapshot(
-                today_iso,
-                "sec_financial_report_event_sleeve_build_failed",
-            )
-        )
+    sec_financial_report_event_sleeve = _sleeve(
+        lambda: build_sec_financial_report_event_sleeve_snapshot(
+            sec_financial_report_t1_queue=sec_financial_report_t1_queue,
+            as_of=today_iso,
+            open_prices=current_open_prices,
+            current_prices=current_prices,
+            open_price_dates=current_open_price_dates,
+            current_price_dates=current_price_dates,
+        ),
+        empty_sec_financial_report_event_sleeve_snapshot,
+        "SEC financial-report paper",
+        "sec_financial_report_event_sleeve_build_failed",
+        log_metrics=_EVENT_SLEEVE_METRICS,
+        activity_keys=_EVENT_SLEEVE_ACTIVITY,
+    )
 
     try:
         state_surface_queue = build_state_surface_queue(
@@ -2347,8 +2323,8 @@ def main():
             "state_surface_queue_build_failed",
         )
 
-    try:
-        event_sleeve_bundle = build_event_sleeve_bundle_snapshot(
+    event_sleeve_bundle = _sleeve(
+        lambda: build_event_sleeve_bundle_snapshot(
             as_of=today_iso,
             form4_event_queue=form4_event_queue,
             sec_negative_event_queue=sec_event_queue,
@@ -2357,58 +2333,37 @@ def main():
             form4_event_sleeve=form4_event_sleeve,
             sec_negative_event_sleeve=sec_negative_event_sleeve,
             sec_governance_event_sleeve=sec_governance_event_sleeve,
-        )
-        if (
-            event_sleeve_bundle.get("pending_count", 0) > 0
-            or event_sleeve_bundle.get("open_position_count", 0) > 0
-            or event_sleeve_bundle.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "Event overlay bundle paper attribution: pending=%d open=%d closed_today=%d pnl=$%s",
-                event_sleeve_bundle.get("pending_count", 0),
-                event_sleeve_bundle.get("open_position_count", 0),
-                event_sleeve_bundle.get("closed_count_today", 0),
-                event_sleeve_bundle.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"Event overlay bundle attribution unavailable: {e}")
-        event_sleeve_bundle = empty_event_sleeve_bundle_snapshot(
-            today_iso,
-            "event_sleeve_bundle_build_failed",
-        )
+        ),
+        empty_event_sleeve_bundle_snapshot,
+        "Event overlay bundle paper attribution",
+        "event_sleeve_bundle_build_failed",
+        log_metrics=_EVENT_SLEEVE_METRICS,
+        activity_keys=("pending_count", "open_position_count", "closed_count_today"),
+    )
 
-    try:
-        state_surface_sleeve = build_state_surface_sleeve_snapshot(
+    state_surface_sleeve = _sleeve(
+        lambda: build_state_surface_sleeve_snapshot(
             state_surface_queue=state_surface_queue,
             as_of=today_iso,
             open_prices=current_open_prices,
             current_prices=current_prices,
             open_price_dates=current_open_price_dates,
             current_price_dates=current_price_dates,
-        )
-        if (
-            state_surface_sleeve.get("candidate_count", 0) > 0
-            or state_surface_sleeve.get("pending_count", 0) > 0
-            or state_surface_sleeve.get("open_position_count", 0) > 0
-            or state_surface_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "State-surface paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
-                state_surface_sleeve.get("candidate_count", 0),
-                state_surface_sleeve.get("pending_count", 0),
-                state_surface_sleeve.get("open_position_count", 0),
-                state_surface_sleeve.get("closed_count_today", 0),
-                state_surface_sleeve.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"State-surface paper sleeve unavailable: {e}")
-        state_surface_sleeve = empty_state_surface_sleeve_snapshot(
-            today_iso,
-            "state_surface_sleeve_build_failed",
-        )
+        ),
+        empty_state_surface_sleeve_snapshot,
+        "State-surface paper",
+        "state_surface_sleeve_build_failed",
+        log_metrics=[
+            ("candidates", "candidate_count"),
+            ("pending", "pending_count"),
+            ("open", "open_position_count"),
+            ("closed_today", "closed_count_today"),
+            ("pnl", "realized_pnl_to_date"),
+        ],
+    )
 
-    try:
-        core_misfit_paper_sleeve = build_core_misfit_paper_sleeve_snapshot(
+    core_misfit_paper_sleeve = _sleeve(
+        lambda: build_core_misfit_paper_sleeve_snapshot(
             as_of=today_iso,
             candidate_signals=signals,
             entry_execution_plan=entry_execution_plan,
@@ -2416,27 +2371,18 @@ def main():
             current_prices=current_prices,
             open_price_dates=current_open_price_dates,
             current_price_dates=current_price_dates,
-        )
-        if (
-            core_misfit_paper_sleeve.get("candidate_count", 0) > 0
-            or core_misfit_paper_sleeve.get("pending_count", 0) > 0
-            or core_misfit_paper_sleeve.get("open_position_count", 0) > 0
-            or core_misfit_paper_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "Core-misfit paper sleeve: candidates=%d pending=%d open=%d closed_today=%d inverse_pnl=$%s",
-                core_misfit_paper_sleeve.get("candidate_count", 0),
-                core_misfit_paper_sleeve.get("pending_count", 0),
-                core_misfit_paper_sleeve.get("open_position_count", 0),
-                core_misfit_paper_sleeve.get("closed_count_today", 0),
-                core_misfit_paper_sleeve.get("realized_inverse_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"Core-misfit paper sleeve unavailable: {e}")
-        core_misfit_paper_sleeve = empty_core_misfit_paper_sleeve_snapshot(
-            today_iso,
-            "core_misfit_paper_sleeve_build_failed",
-        )
+        ),
+        empty_core_misfit_paper_sleeve_snapshot,
+        "Core-misfit paper",
+        "core_misfit_paper_sleeve_build_failed",
+        log_metrics=[
+            ("candidates", "candidate_count"),
+            ("pending", "pending_count"),
+            ("open", "open_position_count"),
+            ("closed_today", "closed_count_today"),
+            ("inverse_pnl", "realized_inverse_pnl_to_date"),
+        ],
+    )
 
     try:
         ai_optical_source_state = dict(universe_governance_state or {})
