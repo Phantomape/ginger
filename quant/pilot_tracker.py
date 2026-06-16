@@ -35,6 +35,7 @@ Outputs under data/pilots/.
 from __future__ import annotations
 
 import json
+from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
@@ -214,16 +215,39 @@ def _scorecard(pilot: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
 
 # ---- recommendation sheet -------------------------------------------------
 
+def _days_remaining(row: dict[str, Any]) -> int | None:
+    hold = _num(_first(row, "hold_days"))
+    obs = _num(_first(row, "observed_trading_days"))
+    if hold is None or obs is None:
+        return None
+    return int(hold - obs)
+
+
+def _hold_status(row: dict[str, Any]) -> str:
+    rem = _days_remaining(row)
+    if rem is None:
+        return "HOLD"
+    if rem <= 0:
+        return "EXIT_NOW"          # hold elapsed -> sell at next open
+    if rem == 1:
+        return "EXIT_NEXT_SESSION"  # one trading day left
+    return "HOLD"
+
+
 def _rec_row(row: dict[str, Any], status: str) -> dict[str, Any]:
     return {
         "status": status,
         "ticker": _ticker(row),
         "signal_date": _first(row, "signal_date", "date"),
         "entry_date": _first(row, "entry_date"),
+        "exit_date": _first(row, "exit_date"),
         "entry_price": _num(_first(row, "entry_price", "entry_raw_open")),
+        "exit_price": _num(_first(row, "exit_price")),
         "last_price": _num(_first(row, "last_price", "decision_close_price")),
         "hold_days": _first(row, "hold_days"),
-        "observed_trading_days": _first(row, "observed_trading_days"),
+        "days_held": _first(row, "observed_trading_days"),
+        "days_remaining": _days_remaining(row),
+        "pilot_pnl_usd": _pilot_pnl(row),
         "pilot_notional_usd": PILOT_NOTIONAL_USD,
         "exit_rule": f"time exit after {_first(row, 'hold_days') or '?'} trading days held",
         "source": _first(row, "source", "primary_source", "strategy"),
@@ -235,6 +259,8 @@ def _rec_row(row: dict[str, Any], status: str) -> dict[str, Any]:
 def _recommendations(pilot: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
     open_rows = [r for r in (state.get("open_positions") or []) if isinstance(r, dict)]
     pending = [r for r in (state.get("pending_entries") or []) if isinstance(r, dict)]
+    closed = [r for r in (state.get("closed_positions") or []) if isinstance(r, dict)]
+    as_of_day = str(state.get("updated_at") or "")[:10]
     cap = pilot.get("max_concurrent")
     held, skipped = _apply_concurrency(open_rows, cap)
     # if we are at the concurrency cap, new pending entries are skipped too
@@ -246,8 +272,14 @@ def _recommendations(pilot: dict[str, Any], state: dict[str, Any]) -> dict[str, 
         else:
             pend_ordered = sorted(pending, key=_rank_key)
             pend_allowed, pend_skipped = pend_ordered[:room], pend_ordered[room:]
+    # exits the sleeve executed in its most recent update -> operator confirms sale
+    exits_today = [
+        _rec_row(r, "EXIT_EXECUTED")
+        for r in closed
+        if str(_first(r, "exit_date") or "")[:10] == as_of_day and as_of_day
+    ]
     rows = (
-        [_rec_row(r, "HOLD") for r in held]
+        [_rec_row(r, _hold_status(r)) for r in held]
         + [_rec_row(r, "ENTER_NEXT_OPEN") for r in pend_allowed]
         + [_rec_row(r, "SKIP_concurrency_cap") for r in skipped + pend_skipped]
     )
@@ -257,9 +289,30 @@ def _recommendations(pilot: dict[str, Any], state: dict[str, Any]) -> dict[str, 
         "sleeve": pilot["sleeve"],
         "as_of": state.get("updated_at"),
         "max_concurrent": cap,
-        "actionable": [r for r in rows if r["status"] in ("HOLD", "ENTER_NEXT_OPEN")],
+        "actionable": [r for r in rows if not r["status"].startswith("SKIP")],
+        "exits_executed_today": exits_today,
         "skipped": [r for r in rows if r["status"].startswith("SKIP")],
     }
+
+
+# ---- cross-pilot overlap --------------------------------------------------
+
+def _cross_pilot_overlap(recs: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Same ticker held/entered by more than one pilot = stacked real exposure."""
+    by_ticker: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for r in recs:
+        for a in r["actionable"]:
+            by_ticker[a["ticker"]].append({"pilot": r["label"], "status": a["status"]})
+    overlaps = []
+    for ticker, entries in sorted(by_ticker.items()):
+        if len({e["pilot"] for e in entries}) > 1:
+            overlaps.append({
+                "ticker": ticker,
+                "pilots": [e["pilot"] for e in entries],
+                "positions": len(entries),
+                "total_exposure_usd": round(len(entries) * PILOT_NOTIONAL_USD, 2),
+            })
+    return overlaps
 
 
 # ---- render ---------------------------------------------------------------
@@ -268,12 +321,20 @@ def _fmt_usd(v: Any) -> str:
     return f"${v:,.0f}" if isinstance(v, (int, float)) else "-"
 
 
-def _render_md(recs: list[dict[str, Any]], cards: list[dict[str, Any]], as_of: str) -> str:
+def _render_md(recs: list[dict[str, Any]], cards: list[dict[str, Any]],
+               overlaps: list[dict[str, Any]], as_of: str) -> str:
     L = [f"# Pilot tracker - as of {as_of}", "",
          f"Per-position book: {_fmt_usd(PILOT_NOTIONAL_USD)}. Read-only; manual execution.",
          "Graduate/kill rule (pre-committed): >= {} closed AND sum rv_vs_SPY > 0 AND book DD < {:.0%}."
-         .format(GRADUATE_MIN_CLOSED, GRADUATE_MAX_BOOK_DD_PCT), "",
-         "## Scorecard", "",
+         .format(GRADUATE_MIN_CLOSED, GRADUATE_MAX_BOOK_DD_PCT), ""]
+    if overlaps:
+        L += ["## [!] Cross-pilot overlap (stacked exposure on one name)", ""]
+        for o in overlaps:
+            L.append("- **{tk}**: held by {n} pilots ({pl}) -> {ex} real exposure".format(
+                tk=o["ticker"], n=o["positions"], pl=", ".join(o["pilots"]),
+                ex=_fmt_usd(o["total_exposure_usd"])))
+        L.append("")
+    L += ["## Scorecard", "",
          "| pilot | closed | hit | realized $ | rv_cash | rv_SPY | rv_QQQ | book DD | verdict |",
          "|---|--:|--:|--:|--:|--:|--:|--:|---|"]
     for c in cards:
@@ -283,25 +344,46 @@ def _render_md(recs: list[dict[str, Any]], cards: list[dict[str, Any]], as_of: s
             pnl=_fmt_usd(c["realized_pilot_pnl_usd"]), rc=_fmt_usd(c["rv_vs_cash_usd"]),
             rs=_fmt_usd(c["rv_vs_spy_usd"]), rq=_fmt_usd(c["rv_vs_qqq_usd"]),
             dd=f'{c["book_max_drawdown_pct"]:.1%}', v=c["verdict"]))
-    L += ["", "## Today's recommendations", ""]
+    def _px(v: Any) -> str:
+        return f"{v:.2f}" if isinstance(v, (int, float)) else "next-open"
+
+    order = {"EXIT_NOW": 0, "EXIT_NEXT_SESSION": 1, "ENTER_NEXT_OPEN": 2, "HOLD": 3}
+    L += ["", "## Today's signals (BUY / HOLD / SELL)", ""]
     for r in recs:
         L.append(f"### {r['label']}  (`{r['sleeve']}`, max_concurrent={r['max_concurrent']})")
-        if not r["actionable"]:
-            L.append("- _no actionable position today_")
-        for a in r["actionable"]:
-            L.append("- **{st}** {tk} @ entry {ep} (signal {sd}) - {ex}; rank={rk} score={sc}".format(
-                st=a["status"], tk=a["ticker"],
-                ep=f'{a["entry_price"]:.2f}' if isinstance(a["entry_price"], (int, float)) else "next-open",
-                sd=a["signal_date"], ex=a["exit_rule"],
-                rk=a["source_priority_rank"], sc=a["candidate_score"]))
+        acts = sorted(r["actionable"], key=lambda a: order.get(a["status"], 9))
+        exits_done = r.get("exits_executed_today") or []
+        if not acts and not exits_done:
+            L.append("- _no position / no signal today_")
+        for a in acts:
+            if a["status"] in ("EXIT_NOW", "EXIT_NEXT_SESSION"):
+                L.append("- **SELL ({st})** {tk}: hold elapsed (day {dh}/{hd}); entry {ep}, last {lp}".format(
+                    st=a["status"], tk=a["ticker"], dh=a["days_held"], hd=a["hold_days"],
+                    ep=_px(a["entry_price"]), lp=_px(a["last_price"])))
+            elif a["status"] == "ENTER_NEXT_OPEN":
+                L.append("- **BUY (next open)** {tk} (signal {sd}); {ex}; rank={rk} score={sc}".format(
+                    tk=a["ticker"], sd=a["signal_date"], ex=a["exit_rule"],
+                    rk=a["source_priority_rank"], sc=a["candidate_score"]))
+            else:  # HOLD
+                L.append("- hold {tk}: day {dh}/{hd} ({dr} left); entry {ep}, last {lp}".format(
+                    tk=a["ticker"], dh=a["days_held"], hd=a["hold_days"], dr=a["days_remaining"],
+                    ep=_px(a["entry_price"]), lp=_px(a["last_price"])))
+        for e in exits_done:
+            L.append("- _exited today_ {tk} @ {xp} on {xd} (pilot PnL {pnl}) - confirm the sale".format(
+                tk=e["ticker"], xp=_px(e["exit_price"]), xd=e["exit_date"],
+                pnl=_fmt_usd(e["pilot_pnl_usd"])))
         for s in r["skipped"]:
             L.append(f"- _skip_ {s['ticker']} ({s['status']})")
         L.append("")
     return "\n".join(L) + "\n"
 
 
-def main() -> None:
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
+def generate(write: bool = True) -> dict[str, Any]:
+    """Build pilot scorecards + recommendations from sleeve state.
+
+    Read-only. Safe to call from the daily run; never raises into the caller
+    (callers should still wrap in try/except for defence in depth).
+    """
     recs, cards = [], []
     as_of = ""
     for pilot in PILOTS:
@@ -320,17 +402,29 @@ def main() -> None:
         cards.append(_scorecard(pilot, state))
         recs.append(_recommendations(pilot, state))
 
-    (OUT_DIR / "pilot_scorecard.json").write_text(
-        json.dumps({"as_of": as_of, "per_position_notional_usd": PILOT_NOTIONAL_USD,
-                    "graduate_rule": {"min_closed": GRADUATE_MIN_CLOSED,
-                                      "min_rv_spy_usd": GRADUATE_MIN_RV_SPY_USD,
-                                      "max_book_dd_pct": GRADUATE_MAX_BOOK_DD_PCT},
-                    "scorecards": cards}, indent=2), encoding="utf-8")
-    (OUT_DIR / f"pilot_recommendations_{as_of[:10] or 'latest'}.json").write_text(
-        json.dumps({"as_of": as_of, "recommendations": recs}, indent=2), encoding="utf-8")
-    md = _render_md(recs, cards, as_of or "latest")
-    (OUT_DIR / "pilot_tracker.md").write_text(md, encoding="utf-8")
-    print(md)
+    overlaps = _cross_pilot_overlap(recs)
+    scorecard_payload = {
+        "as_of": as_of, "per_position_notional_usd": PILOT_NOTIONAL_USD,
+        "graduate_rule": {"min_closed": GRADUATE_MIN_CLOSED,
+                          "min_rv_spy_usd": GRADUATE_MIN_RV_SPY_USD,
+                          "max_book_dd_pct": GRADUATE_MAX_BOOK_DD_PCT},
+        "cross_pilot_overlap": overlaps,
+        "scorecards": cards,
+    }
+    rec_payload = {"as_of": as_of, "cross_pilot_overlap": overlaps, "recommendations": recs}
+    md = _render_md(recs, cards, overlaps, as_of or "latest")
+    if write:
+        OUT_DIR.mkdir(parents=True, exist_ok=True)
+        (OUT_DIR / "pilot_scorecard.json").write_text(json.dumps(scorecard_payload, indent=2), encoding="utf-8")
+        (OUT_DIR / f"pilot_recommendations_{as_of[:10] or 'latest'}.json").write_text(
+            json.dumps(rec_payload, indent=2), encoding="utf-8")
+        (OUT_DIR / "pilot_tracker.md").write_text(md, encoding="utf-8")
+    return {"as_of": as_of, "scorecards": cards, "recommendations": recs,
+            "cross_pilot_overlap": overlaps, "markdown": md}
+
+
+def main() -> None:
+    print(generate(write=True)["markdown"])
 
 
 if __name__ == "__main__":
