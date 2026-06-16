@@ -25,6 +25,7 @@ try:
         append_manifest_record,
         build_coverage_record,
         build_coverage_report,
+        build_finra_source_coverage_record,
         date_key,
         is_coverage_complete,
         iter_business_days,
@@ -47,6 +48,7 @@ except ImportError:  # pragma: no cover - package-style imports
         append_manifest_record,
         build_coverage_record,
         build_coverage_report,
+        build_finra_source_coverage_record,
         date_key,
         is_coverage_complete,
         iter_business_days,
@@ -223,6 +225,31 @@ def ensure_non_ohlcv_coverage(
             summary["days_generated"] += 1
         if errors:
             summary["errors"].append({"trade_date": day_iso, "errors": errors})
+
+    # Data-source-level coverage: the FINRA short-interest archive is refreshed
+    # forward by the daily sleeve path but is not a per-trade-date artifact, so
+    # record its freshness once per daily/catchup run. This is excluded from
+    # per-date completeness reads (record_type=data_source_coverage) and is
+    # best-effort so it can never break the daily coverage flow.
+    if profile in {"daily", "catchup"}:
+        try:
+            finra_record = build_finra_source_coverage_record(
+                end,
+                data_root=root,
+                non_ohlcv_dir=non_root,
+                mode=profile,
+            )
+            append_manifest_record(finra_record, data_root=root, non_ohlcv_dir=non_root)
+            summary["finra_short_interest_coverage"] = {
+                "status": finra_record["status"],
+                "row_counts": finra_record["row_counts"],
+                "source_watermarks": finra_record["source_watermarks"],
+            }
+        except Exception as exc:  # noqa: BLE001 - coverage monitoring is non-fatal.
+            log.warning("FINRA short-interest coverage record failed: %s", exc)
+            summary.setdefault("errors", []).append(
+                {"stage": "finra_short_interest_coverage", "error": str(exc)}
+            )
 
     if profile == "backtest":
         report = build_coverage_report(

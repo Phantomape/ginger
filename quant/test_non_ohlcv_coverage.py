@@ -6,7 +6,9 @@ from pathlib import Path
 from non_ohlcv_coverage import (
     append_manifest_record,
     build_coverage_record,
+    build_finra_source_coverage_record,
     latest_records_by_date,
+    latest_source_coverage_records,
 )
 
 
@@ -109,3 +111,60 @@ def test_coverage_marks_sec_rows_without_accepted_datetime_as_biased(tmp_path: P
     assert record["status"] == "partial"
     assert record["pit_status"]["overall"] == "biased"
     assert record["pit_status"]["sec_rows_missing_accepted_at"] == 1
+
+
+def _write_finra_archive(data_root: Path, rows: list[dict]) -> None:
+    finra_dir = data_root / "non_ohlcv" / "finra_short_interest"
+    _write_json(finra_dir / "rows.json", {"rows": rows, "updated_at": "2026-06-16T00:00:00+00:00"})
+    _write_json(finra_dir / "source_files.json", {"files": [{"settlement_date": "2026-05-29"}]})
+
+
+def test_finra_source_coverage_record_reports_freshness_and_span(tmp_path: Path) -> None:
+    _write_finra_archive(
+        tmp_path,
+        [
+            {"ticker": "AAPL", "settlement_date": "2024-10-15", "publication_date": "2024-10-24"},
+            {"ticker": "AAPL", "settlement_date": "2026-05-29", "publication_date": "2026-06-09"},
+        ],
+    )
+
+    record = build_finra_source_coverage_record("2026-06-16", data_root=tmp_path)
+
+    assert record["record_type"] == "data_source_coverage"
+    assert record["source_name"] == "finra_short_interest"
+    assert record["status"] == "complete"  # row count present and settlement is fresh
+    assert record["row_counts"]["finra_short_interest_rows"] == 2
+    assert record["source_watermarks"]["settlement_date_max"] == "2026-05-29"
+    assert record["pit_status"]["settlement_date_min"] == "2024-10-15"
+
+
+def test_finra_source_coverage_record_marks_stale_archive_partial(tmp_path: Path) -> None:
+    _write_finra_archive(
+        tmp_path,
+        [{"ticker": "AAPL", "settlement_date": "2025-01-15", "publication_date": "2025-01-24"}],
+    )
+
+    record = build_finra_source_coverage_record("2026-06-16", data_root=tmp_path)
+
+    assert record["status"] == "partial"  # rows exist but newest settlement is far stale
+    assert record["pit_status"]["overall"] == "finra_archive_stale"
+
+
+def test_data_source_coverage_record_does_not_shadow_per_date_completeness(tmp_path: Path) -> None:
+    _write_complete_day(tmp_path, trade_date="2026-06-16")
+    _write_finra_archive(
+        tmp_path,
+        [{"ticker": "AAPL", "settlement_date": "2026-05-29", "publication_date": "2026-06-09"}],
+    )
+
+    daily = build_coverage_record("2026-06-16", mode="daily", data_root=tmp_path)
+    append_manifest_record(daily, data_root=tmp_path)
+    finra_record = build_finra_source_coverage_record("2026-06-16", data_root=tmp_path)
+    append_manifest_record(finra_record, data_root=tmp_path)
+
+    # The FINRA data-source row shares trade_date 2026-06-16 but must not replace
+    # the per-date daily record in completeness reads.
+    latest = latest_records_by_date(data_root=tmp_path)
+    assert latest["2026-06-16"].get("record_type") != "data_source_coverage"
+    assert latest["2026-06-16"]["status"] == "complete"
+    assert "finra_short_interest" in latest_source_coverage_records(data_root=tmp_path)

@@ -180,10 +180,147 @@ def latest_records_by_date(
 ) -> dict[str, dict[str, Any]]:
     latest: dict[str, dict[str, Any]] = {}
     for record in load_manifest_records(non_ohlcv_dir=non_ohlcv_dir, data_root=data_root):
+        # Data-source-level coverage rows (e.g. the FINRA short-interest archive)
+        # share the manifest but are keyed to the run date, not to a per-trade-date
+        # artifact set. They must never shadow the per-date daily/backtest records
+        # that latest_complete_trade_date and catchup resume logic depend on.
+        if record.get("record_type") == "data_source_coverage":
+            continue
         trade_date = record.get("trade_date")
         if trade_date:
             latest[str(trade_date)] = record
     return latest
+
+
+def latest_source_coverage_records(
+    *,
+    non_ohlcv_dir: str | Path | None = None,
+    data_root: str | Path | None = None,
+) -> dict[str, dict[str, Any]]:
+    """Latest data-source-level coverage row per source_name (latest wins)."""
+    latest: dict[str, dict[str, Any]] = {}
+    for record in load_manifest_records(non_ohlcv_dir=non_ohlcv_dir, data_root=data_root):
+        if record.get("record_type") != "data_source_coverage":
+            continue
+        source = record.get("source_name")
+        if source:
+            latest[str(source)] = record
+    return latest
+
+
+def build_finra_source_coverage_record(
+    trade_date: str | date | datetime,
+    *,
+    data_root: str | Path | None = None,
+    non_ohlcv_dir: str | Path | None = None,
+    max_staleness_days: int = 21,
+    experiment_id: str | None = None,
+    mode: str = "daily",
+) -> dict[str, Any]:
+    """Build a data-source-level coverage row for the FINRA short-interest archive.
+
+    The FINRA archive is a single rolling biweekly file refreshed forward by the
+    daily run, so it does not fit the per-trade-date artifact_specs shape. This
+    emits a ``record_type=data_source_coverage`` row (excluded from per-date
+    completeness reads) recording row count, ticker count, publication/settlement
+    span, and freshness so the central manifest can monitor it each day.
+    """
+    non_root = resolve_non_ohlcv_dir(non_ohlcv_dir, data_root=data_root)
+    finra_dir = non_root / "finra_short_interest"
+    rows_path = finra_dir / "rows.json"
+    files_path = finra_dir / "source_files.json"
+
+    rows: list[Any] = []
+    if rows_path.exists():
+        try:
+            payload = json.loads(rows_path.read_text(encoding="utf-8-sig"))
+            rows = payload.get("rows", []) if isinstance(payload, dict) else payload
+        except Exception:  # noqa: BLE001 - coverage record should still be emitted.
+            rows = []
+    if not isinstance(rows, list):
+        rows = []
+
+    file_records: list[Any] = []
+    if files_path.exists():
+        try:
+            files_payload = json.loads(files_path.read_text(encoding="utf-8-sig"))
+            file_records = files_payload.get("files", []) if isinstance(files_payload, dict) else files_payload
+        except Exception:  # noqa: BLE001
+            file_records = []
+    if not isinstance(file_records, list):
+        file_records = []
+
+    pubs = sorted(str(r.get("publication_date"))[:10] for r in rows if isinstance(r, dict) and r.get("publication_date"))
+    setts = sorted(str(r.get("settlement_date"))[:10] for r in rows if isinstance(r, dict) and r.get("settlement_date"))
+    tickers = {str(r.get("ticker")).upper() for r in rows if isinstance(r, dict) and r.get("ticker")}
+    row_count = len(rows)
+
+    trade = parse_trade_date(trade_date)
+    fresh = False
+    if setts:
+        try:
+            newest = datetime.strptime(setts[-1], "%Y-%m-%d").date()
+            fresh = (trade - newest).days <= int(max_staleness_days)
+        except ValueError:
+            fresh = False
+    status = "complete" if (row_count and fresh) else ("partial" if row_count else "failed")
+
+    return {
+        "schema_version": 2,
+        "record_type": "data_source_coverage",
+        "source_name": "finra_short_interest",
+        "experiment_id": experiment_id,
+        "trade_date": iso_date(trade_date),
+        "date_key": date_key(trade_date),
+        "mode": mode,
+        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "status": status,
+        "artifact_status": {
+            "finra_short_interest_rows": {
+                "path": _path_text(rows_path),
+                "kind": "json",
+                "required": False,
+                "status": "present" if row_count else "missing",
+                "row_count": row_count,
+            },
+            "finra_short_interest_source_files": {
+                "path": _path_text(files_path),
+                "kind": "json",
+                "required": False,
+                "status": "present" if file_records else "missing",
+                "row_count": len(file_records),
+            },
+        },
+        "row_counts": {
+            "finra_short_interest_rows": row_count,
+            "finra_source_file_records": len(file_records),
+            "finra_ticker_count": len(tickers),
+        },
+        "source_watermarks": {
+            "publication_date_max": pubs[-1] if pubs else None,
+            "settlement_date_max": setts[-1] if setts else None,
+        },
+        "pit_status": {
+            "overall": "finra_archive_fresh" if fresh else "finra_archive_stale",
+            "pit_safe": True,
+            "publication_date_min": pubs[0] if pubs else None,
+            "settlement_date_min": setts[0] if setts else None,
+            "freshness_max_staleness_days": int(max_staleness_days),
+        },
+        "errors": [],
+        "required_missing": [],
+        "invalid_required": [],
+        "production_impact": {
+            "shared_policy_changed": False,
+            "backtester_adapter_changed": False,
+            "run_adapter_changed": mode in {"daily", "catchup"},
+            "replay_only": True,
+            "alters_signal_generation": False,
+            "alters_candidate_ranking": False,
+            "alters_sizing": False,
+            "alters_orders": False,
+        },
+    }
 
 
 def latest_complete_trade_date(

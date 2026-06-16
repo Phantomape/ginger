@@ -307,11 +307,25 @@ positive, and drawdown drift was `+0.99pp` (>0.5pp cap). This is the same
 rejected clue, not a retained strategy" pattern seen in accruals
 (`exp-20260614-020`), asset growth, and operating leverage: the demand-side
 inventory field is real in 2025 but does not survive the 2024-10→2025-04 window
-after costs. Separately, a coverage probe confirmed the FINRA short-interest
-archive only spans 2025-12-24 onward (0 rows in `old_thin`/`mid_weak`, 423 in
-`late_strong`), so FINRA/short-interest candidate-pool sources structurally
-cannot clear a three-window Gate 4 and belong in the forward-maturation bucket,
-not the frozen-window scout bucket.
+after costs.
+
+FINRA short-interest coverage was then repaired (`exp-20260616-020`,
+measurement_repair). The archive had only spanned 2025-12-24 onward (0 rows in
+`old_thin`/`mid_weak`), but a probe showed the FINRA CDN still hosts the older
+biweekly `shrt*.csv` files back to at least 2023, so the prior "blocked" backfill
+was an environment proxy failure, not missing data. A broad-universe backfill
+added 45,749 rows: the archive now spans settlement `2024-08-15 → 2026-05-29`
+across ~1,440 tickers, with all three canonical windows at 100% settlement
+coverage (`old_thin` 13/13, `mid_weak` 12/12, `late_strong` 12/12). FINRA
+short-interest is therefore **no longer structurally blocked** from a three-window
+Gate 4 — it is now a usable PIT candidate-source surface (short-interest level,
+`days_to_cover`, biweekly `short_interest_change_pct`, covering relief) for a
+future shared-paper-first test, subject to the usual publication-lag PIT rule
+(`usable_trade_date` = FINRA publication date, ~10 business days after
+settlement). The same repair registered FINRA in the central coverage manifest
+as a daily `record_type=data_source_coverage` row (forward refresh already
+accumulates via the daily sleeve path) and fixed a latent shadowing bug where
+data-source rows could falsely advance `latest_complete_trade_date`.
 
 ## Detail Sources
 
