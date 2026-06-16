@@ -332,20 +332,46 @@ re-evaluated the *accepted* FINRA borrow-pressure policy (`days_to_cover >= 3.0`
 AND `short_interest_change_pct > 0`, from `exp-20260603-006`) on the now-complete
 three-window archive, holding the fixed policy constant. It was REJECTED: 107
 trades (healthy sample at last), drawdown drift only `+0.44pp`, but aggregate EV
-`+0.1168` / PnL `+$3,772` with `late_strong` — the very window the source was
-originally accepted on — now REGRESSING (EV `-0.015`, PnL `-$347`). The positive
-contribution is concentrated in `old_thin` (`+$3,932`), the window that had no
-FINRA data before; `mid_weak` is ~flat (`+$188`). It fails both accepted
-compression and distribution comparators. Lesson: the original `exp-20260603-006`
-borrow-pressure accept was effectively recent-window-limited (late_strong was the
-only window with data), and the squeeze-fuel continuation effect does NOT
-generalize across windows — it neither beats the accepted comparators nor holds
-in late_strong out-of-sample. Treat FINRA borrow-pressure as unproven across
-windows; the accepted FINRA/IWM default-off helper should be regarded as
-forward-maturation, not validated alpha. Do not retune the days_to_cover /
-short-change / freshness / RS / top-N / hold / cooldown / notional knobs on these
-frozen windows; a valid retry needs a materially different PIT borrow-cost /
-hard-to-borrow / loan-availability field or closed forward replacement-value rows.
+`+0.1168` / PnL `+$3,772` with `late_strong` REGRESSING (EV `-0.015`, PnL
+`-$347`); gains concentrate in `old_thin` (`+$3,932`), `mid_weak` ~flat (`+$188`).
+It fails both accepted compression and distribution comparators.
+
+Provenance caveat (corrected): the original `exp-20260603-006` accept was NOT
+"late_strong only". Its own snapshot (`data/experiments/exp-20260603-006/
+finra_short_interest_rows.json`, 1,686 rows / 42 tickers / 2024-08-26→2026-04-24)
+covered all three windows and passed cleanly: all 3 windows positive, EV `+0.2585`,
+PnL `+$5,688`, 22 trades, concentration/drawdown OK — a legitimate 3-window accept
+at $4k paper notional (small absolute PnL is normal at that notional). The shared
+archive was later truncated to 2025-12+ (forward-only staleness refresh), which is
+why the live paper sleeve now produces ~0 candidates and 0 closed rows. Two
+things differ between exp-006 and exp-024: (a) exp-024 used the BROAD backfilled
+archive (1,440 tickers) and a LOOSER spec (borrow-pressure + price confirmation
+only, dropping the IWM-confirmation / cost-liquidity gates that exp-006 layered),
+giving 99 vs 13 late_strong candidates; (b) the larger/looser sample flips
+late_strong slightly negative. So exp-024 is evidence that the borrow-pressure
+signal is fragile/spec-dependent, not a clean refutation of the exact exp-006
+stack. Net: FINRA borrow-pressure remains unproven across windows and the
+accepted FINRA/IWM default-off helper should be treated as forward-maturation,
+not validated alpha.
+
+The broad-universe test then settled it: `exp-20260616-024` (core ~47) and
+`exp-20260616-026` (broad ~1,440) bracket the question and BOTH reject. Broad is
+strictly worse: aggregate EV `+0.0393`, PnL `+$109.77` across 327 trades (≈
+$0.34/trade, i.e. zero edge after costs), drawdown drift `+0.88pp` (over cap),
+and the per-window sign FLIPS versus the core run — broad has `late_strong`
+`+$2,382` but `old_thin` `-$2,320` and `mid_weak` EV negative, whereas core had
+`old_thin` positive and `late_strong` negative. A signal whose sign flips by
+universe and window is noise, not a durable edge. Conclusion: FINRA
+short-interest borrow-pressure (high days_to_cover + rising short interest) is
+NOT standalone candidate-pool alpha; the original `exp-20260603-006` `+$5,688`
+accept was a 22-trade small-sample artifact that does not generalize. Use FINRA
+short interest as crowding / overhang / risk context only. Do not retune
+days_to_cover / short-change / freshness / RS / universe / top-N / hold /
+cooldown / notional on the frozen windows; a valid retry needs a materially
+different PIT borrow-cost / hard-to-borrow / loan-availability field or closed
+forward replacement-value rows. The accepted FINRA/IWM default-off paper helper
+is a candidate for retirement (it is default-off, has produced ~0 closed forward
+rows, and the underlying source is now disproven across windows and universes).
 
 ## Detail Sources
 
