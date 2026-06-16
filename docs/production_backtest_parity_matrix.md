@@ -48,6 +48,35 @@ into `run.py`, reports, attribution, watchlists, ranking, sizing, exits, or
 orders before passing Gate 1-4, and must treat the current shared adapter
 candidate module as experiment-only evidence.
 
+## SBC Burden Improvement Paper Adapter
+
+`exp-20260616-015` promoted the positive `exp-20260616-014` replay lead into
+`quant/sbc_burden_improvement_paper_sleeve.py`. Backtests and production
+observation must use the same shared default-off paper adapter semantics: raw
+SEC Companyfacts annual stock-based compensation, revenue, and gross-profit
+facts are admitted only when their filed date is `<= signal_date`; the current
+SBC/revenue ratio must improve versus the prior annual period using the same
+SBC tag; revenue, gross profit, gross margin, current SBC burden, and fact-age
+guards are fixed; signal-date OHLCV must pass the same price, ADV20,
+signal-day return, close-location, realized-volatility, and SPY-relative
+20/60-day leadership gates. Historical replay must require a 10-trading-day
+exit bar before accepting a closed target trade; daily production may emit an
+observe-only same-day pending candidate without future bars, but cannot fill,
+advance, or close paper ledger state unless the ticker has an exact `as_of`
+OHLCV row. The adapter is default-off and paper-only: fixed `$4,000` paper
+notional, top-1/day, 10-trading-day same-ticker cooldown, next-open paper
+entry, 10-trading-day close exit, slippage plus round-trip cost, concentration
+guard before promotion, and forward replacement-value gate. It remains
+observe-only: `trade_enabled=false`, no live/default orders, no core universe
+expansion, and no core ranking, sizing, exit, watchlist, LLM/news, or
+activation behavior may diverge between replay and production.
+
+SBC burden-improvement decision matrix addendum:
+
+| Decision point | Shared source | Backtester use | Production use | Allowed difference |
+| --- | --- | --- | --- | --- |
+| Default-off SBC burden-improvement paper sleeve | `sbc_burden_improvement_paper_sleeve.py`, `run.py` | default core backtests do not trade it; historical evidence comes from positive `exp-20260616-014` and accepted shared-helper promotion `exp-20260616-015`; replay must use the shared helper with raw SEC Companyfacts filed-date `<= signal_date` annual SBC/revenue/gross-profit facts, same-SBC-tag prior-period comparison, fixed dilution-quality gates, signal-date SPY-relative OHLCV confirmation, top-1/day, fixed `$4,000` paper notional, 10-trading-day same-ticker cooldown, next-open paper entry, 10-trading-day close exit, costs, and concentration guard before promotion | daily observation derives candidates from the same broad-market free-OHLCV universe plus `SPY`, reads the same raw Companyfacts cache and warehouse CIK map, may emit same-day pending candidates without future exit bars, and advances pending/open/closed paper ledger state only when exact `as_of` OHLCV rows exist | observe-only; no core universe expansion, no live/default orders, no core ranking/sizing/exit/watchlist/LLM/news changes, and live activation requires >= 30 closed forward 10-day paper trades, positive forward PnL, replacement value, and kill-switch parity under the declared envelope |
+
 ## Post-Earnings Underpriced Drift Paper Adapter
 
 `exp-20260602-026` promoted the positive `exp-20260602-023` lead into

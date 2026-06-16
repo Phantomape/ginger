@@ -434,6 +434,10 @@ def main():
         build_distribution_day_absorption_leadership_snapshot,
         empty_distribution_day_absorption_leadership_snapshot,
     )
+    from sbc_burden_improvement_paper_sleeve import (
+        build_sbc_burden_improvement_paper_sleeve_snapshot,
+        empty_sbc_burden_improvement_paper_sleeve_snapshot,
+    )
     from revision_surprise_low_extension_paper_sleeve import (
         build_revision_surprise_low_extension_snapshot,
         empty_revision_surprise_low_extension_snapshot,
@@ -3596,6 +3600,50 @@ def main():
         )
 
     try:
+        if not broad_market_candidate_universe.get("tickers"):
+            sbc_burden_improvement_paper_sleeve = (
+                empty_sbc_burden_improvement_paper_sleeve_snapshot(
+                    today_iso,
+                    "broad_market_candidate_universe_unavailable",
+                )
+            )
+        else:
+            sbc_burden_ohlcv = dict(broad_market_ohlcv)
+            if "SPY" not in sbc_burden_ohlcv and spy_ohlcv is not None:
+                sbc_burden_ohlcv["SPY"] = spy_ohlcv
+            sbc_burden_improvement_paper_sleeve = (
+                build_sbc_burden_improvement_paper_sleeve_snapshot(
+                    as_of=today_iso,
+                    ohlcv_by_ticker=sbc_burden_ohlcv,
+                    candidate_universe=broad_market_candidate_universe,
+                    open_prices=current_open_prices,
+                    current_prices=current_prices,
+                )
+            )
+        if (
+            sbc_burden_improvement_paper_sleeve.get("candidate_count", 0) > 0
+            or sbc_burden_improvement_paper_sleeve.get("pending_count", 0) > 0
+            or sbc_burden_improvement_paper_sleeve.get("open_position_count", 0) > 0
+            or sbc_burden_improvement_paper_sleeve.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "SBC burden improvement paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
+                sbc_burden_improvement_paper_sleeve.get("candidate_count", 0),
+                sbc_burden_improvement_paper_sleeve.get("pending_count", 0),
+                sbc_burden_improvement_paper_sleeve.get("open_position_count", 0),
+                sbc_burden_improvement_paper_sleeve.get("closed_count_today", 0),
+                sbc_burden_improvement_paper_sleeve.get("realized_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"SBC burden improvement paper sleeve unavailable: {e}")
+        sbc_burden_improvement_paper_sleeve = (
+            empty_sbc_burden_improvement_paper_sleeve_snapshot(
+                today_iso,
+                "sbc_burden_improvement_paper_sleeve_build_failed",
+            )
+        )
+
+    try:
         revision_ohlcv = dict(broad_market_ohlcv)
         if "SPY" not in revision_ohlcv and spy_ohlcv is not None:
             revision_ohlcv["SPY"] = spy_ohlcv
@@ -3778,6 +3826,7 @@ def main():
     trend_signals_dict["turn_of_month_liquid_leadership_paper_sleeve"] = turn_of_month_liquid_leadership_paper_sleeve
     trend_signals_dict["narrow_range_compression_breakout_paper_sleeve"] = narrow_range_compression_breakout_paper_sleeve
     trend_signals_dict["distribution_day_absorption_leadership_paper_sleeve"] = distribution_day_absorption_leadership_paper_sleeve
+    trend_signals_dict["sbc_burden_improvement_paper_sleeve"] = sbc_burden_improvement_paper_sleeve
     trend_signals_dict["revision_surprise_low_extension_paper_sleeve"] = revision_surprise_low_extension_paper_sleeve
     trend_signals_dict["accepted_helper_source_priority_allocator_paper_sleeve"] = accepted_helper_source_priority_allocator_paper_sleeve
     trend_signals_dict["ai_optical_paper_sleeve"] = ai_optical_paper_sleeve
@@ -3923,6 +3972,7 @@ def main():
         "turn_of_month_liquid_leadership_paper_sleeve": turn_of_month_liquid_leadership_paper_sleeve,
         "narrow_range_compression_breakout_paper_sleeve": narrow_range_compression_breakout_paper_sleeve,
         "distribution_day_absorption_leadership_paper_sleeve": distribution_day_absorption_leadership_paper_sleeve,
+        "sbc_burden_improvement_paper_sleeve": sbc_burden_improvement_paper_sleeve,
         "revision_surprise_low_extension_paper_sleeve": revision_surprise_low_extension_paper_sleeve,
         "accepted_helper_source_priority_allocator_paper_sleeve": accepted_helper_source_priority_allocator_paper_sleeve,
         "ai_optical_paper_sleeve": ai_optical_paper_sleeve,
