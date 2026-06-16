@@ -8,6 +8,7 @@ It only generates technical signals based on price action.
 import os
 import json
 import logging
+import math
 from datetime import datetime, timedelta
 import yfinance as yf
 import pandas as pd
@@ -264,8 +265,16 @@ def compute_position_context(ticker, latest_close, open_positions, atr=None, hig
             # Classify breach status: is the hard stop already ABOVE the current price?
             # If so, the position is in a delayed/historic breach state — it should have
             # been exited when the stop was first breached, not treated as a new trigger.
+            # A NaN/missing close must never classify as a breach: every
+            # comparison against NaN is False, so `latest_close > hard_stop`
+            # would fail open into a false DELAYED_BREACH/CRITICAL_EXIT.
             hard_stop_price = exit_levels.get("hard_stop_price", 0)
-            if hard_stop_price <= 0 or latest_close > hard_stop_price:
+            usable_close = (
+                latest_close is not None
+                and math.isfinite(latest_close)
+                and latest_close > 0
+            )
+            if hard_stop_price <= 0 or not usable_close or latest_close > hard_stop_price:
                 breach_status = "OK"
             else:
                 gap_pct = (hard_stop_price - latest_close) / latest_close

@@ -93,6 +93,15 @@ def _normalize_ohlcv_frame(ticker, data):
         return None
 
     data = data[required].dropna(how="all")
+
+    # Drop any bar with no usable Close. The vendor often returns a partial
+    # "today" row before the session has printed a price: OHLC are NaN while a
+    # placeholder Volume keeps the row alive past dropna(how="all"). If that row
+    # survives, iloc[-1] yields a NaN close that poisons every downstream price
+    # comparison — breach status, exit signals, heat — and NaN comparisons fail
+    # *open* into a false DELAYED_BREACH/CRITICAL_EXIT. Anchoring on the last bar
+    # with a real Close keeps "current price" on the last valid trading day.
+    data = data[data["Close"].notna()]
     if data.empty:
         logger.warning("%s: OHLCV slice empty after dropping blank rows", ticker)
         return None

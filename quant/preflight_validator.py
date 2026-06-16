@@ -30,10 +30,25 @@ breach_status per position:
 """
 
 import logging
+import math
 
 from production_parity import suggested_reduce_pct_for_rules
 
 logger = logging.getLogger(__name__)
+
+
+def _is_usable_price(value) -> bool:
+    """True only for a finite, positive numeric price.
+
+    Guards against NaN/None/inf current prices. NaN is especially dangerous
+    here: every comparison against it returns False, so `current_price >
+    hard_stop` fails *open* and a position with missing price data would be
+    silently misclassified as a stop breach (CRITICAL_EXIT → account FIRE).
+    """
+    try:
+        return value is not None and math.isfinite(value) and value > 0
+    except (TypeError, ValueError):
+        return False
 
 # Heat threshold for DEFENSIVE state (below full 8% cap to give early warning)
 DEFENSIVE_HEAT_THRESHOLD = 0.06
@@ -45,6 +60,11 @@ BEAR_STOP_PCT = 0.05   # −5% from current price (vs default −12%)
 def _classify_breach(current_price: float, hard_stop_price: float) -> str:
     """Classify the breach status of a position."""
     if hard_stop_price <= 0:
+        return "OK"
+    # A missing/NaN price is "unknown", never a breach. Returning OK here keeps
+    # a stale-price position out of CRITICAL_EXIT/FIRE; the staleness itself is
+    # surfaced separately as a data warning.
+    if not _is_usable_price(current_price):
         return "OK"
     if current_price > hard_stop_price:
         return "OK"
@@ -168,6 +188,17 @@ def compute_account_state(
             continue
         exit_sigs        = pos_ctx.get("exit_signals", {})
         breach_st        = pos_ctx.get("breach_status", "OK")
+
+        # A held position with no usable close price cannot be evaluated for
+        # exits. Surface it as a data warning so the staleness is visible rather
+        # than masquerading as a clean HOLD (and never as a false breach — see
+        # _classify_breach).
+        if not _is_usable_price(sig.get("close")):
+            data_warnings.append(
+                f"{ticker}: STALE_PRICE — no usable close price "
+                f"({sig.get('close', '?')}); exit signals not evaluated this run."
+            )
+
         triggered        = exit_sigs.get("triggered_rules", [])
         unrealized_pnl   = pos_ctx.get("unrealized_pnl_pct", 0) or 0
         rule_names        = {r.get("rule", "") for r in triggered}

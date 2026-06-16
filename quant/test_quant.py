@@ -1682,6 +1682,84 @@ def test_preflight_legacy_target_review_stays_hold():
     assert "TSLA" not in result["suggested_reduce_pct"]
 
 
+def test_classify_breach_nan_price_is_not_a_breach():
+    """Regression: a NaN/None current price must never classify as a breach.
+
+    NaN comparisons all return False, so `current_price > hard_stop` failed
+    open and a position with a missing close was misread as DELAYED_BREACH ->
+    CRITICAL_EXIT -> account FIRE. See AMZN 2026-06-15 (close=nan, stop=218.44).
+    """
+    from preflight_validator import _classify_breach
+
+    assert _classify_breach(float("nan"), 218.44) == "OK"
+    assert _classify_breach(None, 218.44) == "OK"
+    assert _classify_breach(float("inf"), 218.44) == "OK"
+    # Real breaches still classify correctly.
+    assert _classify_breach(593.48, 617.11) == "DELAYED_BREACH"
+    assert _classify_breach(170.0, 218.44) == "HISTORIC_BREACH"
+    assert _classify_breach(250.0, 218.44) == "OK"
+
+
+def test_account_state_stale_price_position_is_not_fire():
+    """A held position with a NaN close must not trigger CRITICAL_EXIT/FIRE.
+
+    It should stay out of the fire lock and surface a STALE_PRICE data warning
+    instead of masquerading as a clean HOLD or a false breach.
+    """
+    from preflight_validator import (
+        compute_account_state,
+        enrich_positions_with_breach_status,
+    )
+
+    ts = {
+        "signals": {
+            "AMZN": {
+                "close": float("nan"),
+                "daily_high": float("nan"),
+                "position": {
+                    "shares": 10,
+                    "avg_cost": 200.0,
+                    "unrealized_pnl_pct": 0.0,
+                    "exit_levels": {"hard_stop_price": 218.44},
+                    "exit_signals": {"any_triggered": False, "triggered_rules": []},
+                },
+            }
+        }
+    }
+
+    enrich_positions_with_breach_status(ts)
+    assert ts["signals"]["AMZN"]["position"]["breach_status"] == "OK"
+
+    result = compute_account_state(ts, heat_data={}, regime_data={"regime": "NORMAL"})
+    assert result["position_states"]["AMZN"] != "CRITICAL_EXIT"
+    assert result["account_state"] != "FIRE"
+    assert any("STALE_PRICE" in w and "AMZN" in w for w in result["data_warnings"])
+
+
+def test_normalize_ohlcv_drops_trailing_nan_close_bar():
+    """Regression: a vendor's partial 'today' bar (NaN OHLC, placeholder Volume)
+    survives dropna(how='all') and makes iloc[-1] a NaN close. The last bar with
+    a real Close must be the anchor instead."""
+    import numpy as np
+    import pandas as pd
+    from data_layer import _normalize_ohlcv_frame
+
+    idx = pd.date_range("2026-06-11", periods=3, freq="D")
+    df = pd.DataFrame(
+        {
+            "Open": [10.0, 11.0, np.nan],
+            "High": [10.5, 11.5, np.nan],
+            "Low": [9.5, 10.5, np.nan],
+            "Close": [10.2, 11.2, np.nan],
+            "Volume": [100, 100, 0],
+        },
+        index=idx,
+    )
+    out = _normalize_ohlcv_frame("TEST", df)
+    assert len(out) == 2
+    assert out["Close"].iloc[-1] == 11.2
+
+
 def test_same_day_manual_buy_blocks_profit_reduce_rule():
     from preflight_validator import compute_account_state
 
