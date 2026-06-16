@@ -370,8 +370,15 @@ days_to_cover / short-change / freshness / RS / universe / top-N / hold /
 cooldown / notional on the frozen windows; a valid retry needs a materially
 different PIT borrow-cost / hard-to-borrow / loan-availability field or closed
 forward replacement-value rows. The accepted FINRA/IWM default-off paper helper
-is a candidate for retirement (it is default-off, has produced ~0 closed forward
-rows, and the underlying source is now disproven across windows and universes).
+was RETIRED in `exp-20260616-028` (reversible): `DEFAULT_CONFIG["paper_enabled"]
+= False` plus an early short-circuit in `build_finra_iwm_paper_sleeve_snapshot`,
+so the daily run no longer spends broad-universe FINRA compute on a disproven
+source. The FINRA archive, `refresh_finra_short_interest_archive`, and
+`sec_ftd_finra` are untouched; set `paper_enabled=True` to re-activate. Diagnostic
+detail (exp-024/026 loss attribution): the P&L is a near-symmetric wash — 177
+winners `+$39.9k` vs 150 losers `−$39.7k` — and a stop/TP grid only "helped" by
+overfitting the frozen windows (old_thin stayed negative in every config), so
+high days-to-cover is a two-sided dispersion signal, not a directional edge.
 
 ## Detail Sources
 

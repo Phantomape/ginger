@@ -174,7 +174,11 @@ EXCLUDED_TICKERS = {
 
 DEFAULT_CONFIG = {
     "enabled": False,
-    "paper_enabled": True,
+    # exp-20260616-028: retired. The borrow-pressure source was disproven across
+    # windows and universes (exp-20260616-024 core reject, exp-20260616-026 broad
+    # reject with ~$0/trade edge) and produced ~0 closed forward rows. The daily
+    # paper build is gated off here; set paper_enabled=True to re-activate.
+    "paper_enabled": False,
     "trade_enabled": False,
     "paper_notional_usd": 10_000.0,
     "breakout_lookback_days": 20,
@@ -532,6 +536,14 @@ def build_finra_iwm_paper_sleeve_snapshot(
 ) -> dict[str, Any]:
     cfg = _config(config)
     as_of_date = _date10(as_of)
+    # exp-20260616-028: retirement gate. When the sleeve is retired
+    # (paper_enabled=False) short-circuit before any OHLCV/network work so the
+    # daily run stops spending broad-universe FINRA compute on a disproven
+    # source. Reversible: set paper_enabled=True to restore the paper build.
+    if not cfg.get("paper_enabled", True):
+        return empty_finra_iwm_paper_sleeve_snapshot(
+            as_of_date, "retired_default_off_paper_disabled"
+        )
     rows_by_ticker = {
         str(ticker).upper(): _normalise_ohlcv_rows(rows)
         for ticker, rows in (ohlcv_by_ticker or {}).items()

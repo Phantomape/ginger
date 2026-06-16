@@ -130,7 +130,7 @@ def test_finra_iwm_snapshot_admits_top_candidate_without_orders():
         finra_rows=_finra_rows(),
         state=empty_finra_iwm_paper_state(),
         persist=False,
-        config={"allow_network_fetch": False},
+        config={"allow_network_fetch": False, "paper_enabled": True},
     )
 
     assert snapshot["candidate_count"] == 1
@@ -163,6 +163,26 @@ def test_finra_iwm_snapshot_admits_top_candidate_without_orders():
     assert snapshot["new_pending_entries"][0]["notional"] == 10_500.0
 
 
+def test_retired_sleeve_short_circuits_without_candidates():
+    # exp-20260616-028: default config is retired (paper_enabled=False); the
+    # builder must short-circuit to an empty snapshot and admit no candidates,
+    # without needing OHLCV or network.
+    snapshot = build_finra_iwm_paper_sleeve_snapshot(
+        as_of="2026-03-02",
+        ohlcv_by_ticker=_ohlcv(),
+        candidate_universe=["WIN", "LOWDTC", "LOW", "MID"],
+        finra_rows=_finra_rows(),
+        state=empty_finra_iwm_paper_state(),
+        persist=False,
+        config={"allow_network_fetch": False},  # paper_enabled defaults to False (retired)
+    )
+    assert snapshot["candidate_count"] == 0
+    assert snapshot["new_pending_count"] == 0
+    assert snapshot["trade_enabled"] is False
+    assert snapshot["error"] == "retired_default_off_paper_disabled"
+    assert snapshot["data_source"]["status"] == "retired_default_off_paper_disabled"
+
+
 def test_finra_borrow_pressure_gate_blocks_low_days_to_cover_candidate():
     ohlcv = _ohlcv()
     as_of = ohlcv["SPY"][60]["date"]
@@ -174,7 +194,7 @@ def test_finra_borrow_pressure_gate_blocks_low_days_to_cover_candidate():
         finra_rows=_finra_rows(),
         state=empty_finra_iwm_paper_state(),
         persist=False,
-        config={"allow_network_fetch": False, "min_short_pressure_score": 0.0},
+        config={"allow_network_fetch": False, "min_short_pressure_score": 0.0, "paper_enabled": True},
     )
 
     assert snapshot["raw_candidate_count"] == 0
@@ -206,7 +226,7 @@ def test_same_ticker_cooldown_blocks_recent_admitted_candidate():
         finra_rows=_finra_rows(),
         state=state,
         persist=False,
-        config={"allow_network_fetch": False},
+        config={"allow_network_fetch": False, "paper_enabled": True},
     )
 
     assert snapshot["raw_candidate_count"] == 1
@@ -241,7 +261,7 @@ def test_stale_missing_asof_price_does_not_fill_pending_entry():
         finra_rows=_finra_rows(),
         state=state,
         persist=False,
-        config={"allow_network_fetch": False},
+        config={"allow_network_fetch": False, "paper_enabled": True},
     )
 
     assert snapshot["filled_count"] == 0
