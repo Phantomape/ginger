@@ -1,0 +1,203 @@
+{
+  "experiment_id": "exp-20260616-005",
+  "experiment_uid": "expuid-30fad83bdc6940f9",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260616-005",
+    "slug": "sec_tax_burden_relief_candidate_pool",
+    "reserved_at": "2026-06-16T03:04:47+00:00",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "alpha-search",
+  "hypothesis": "candidate_pool: raw SEC Companyfacts annual tax-burden relief (income tax expense / pretax income falling year over year) paired with stable pretax income, stable revenue, and liquid SPY-relative leadership may identify cleaner post-filing after-tax earnings power that price continues to recognize over the next 10 trading days.",
+  "change_type": "default_off_paper_candidate_pool_replay_scout",
+  "mechanism_family": "production_visible_free_sec_companyfacts_tax_burden_candidate_pool",
+  "trial_family": "raw_sec_companyfacts_tax_burden_relief_candidate_pool",
+  "trial_variant_id": "tax_burden_relief_top1_next_open_10d_v1",
+  "single_causal_variable": "raw_sec_companyfacts_tax_burden_relief_candidate_source_v1",
+  "changed_variable": "raw_sec_companyfacts_tax_burden_relief_candidate_source_v1",
+  "causal_components": [
+    "raw SEC Companyfacts tax facts",
+    "pretax income/revenue matching",
+    "liquid OHLCV confirmation",
+    "next-open paper entry",
+    "10d exit",
+    "costs",
+    "three-window Gate 1-4"
+  ],
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260616-003",
+    "exp-20260616-004",
+    "exp-20260615-016",
+    "exp-20260615-008"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "raw_sec_companyfacts_income_tax_expense_effective_rate_pit_field",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260616_005_sec_tax_burden_relief_candidate_pool.py",
+    "data/experiments/exp-20260616-005/exp_20260616_005_sec_tax_burden_relief_candidate_pool.json",
+    "experiments/cards/exp-20260616-005.md",
+    "experiments/manifests/exp-20260616-005.json",
+    "experiments/tickets/exp-20260616-005.json",
+    "experiments/logs/exp-20260616-005.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "raw_sec_companyfacts_tax_burden_relief_candidate_source_v1"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "tax_field_noisy_or_one_off",
+      "window_regression",
+      "old_thin_coverage_gap",
+      "accepted_distribution_not_beaten"
+    ],
+    "confidence_reason": "Mechanism: a lower GAAP tax burden with stable pretax income can raise after-tax earnings power and is a free filed-date bounded SEC field. Nearby raw Companyfacts tests were directionally positive but failed window/drawdown/comparator gates, so probability is low; this tests a different income-statement component, not R&D, interest, demand, cash conversion, asset growth, or operating leverage.",
+    "recorded_at": "2026-06-16T03:04:13+00:00"
+  },
+  "created_at": "2026-06-16T03:04:47+00:00",
+  "claimed_at": "2026-06-16T03:04:55+00:00",
+  "completed_at": "2026-06-16T03:16:02+00:00",
+  "result": {
+    "decision": "rejected_raw_sec_tax_burden_relief_candidate_pool",
+    "accepted": false,
+    "numeric_gate4_passed": false,
+    "artifact": "data/experiments/exp-20260616-005/exp_20260616_005_sec_tax_burden_relief_candidate_pool.json",
+    "log": "experiments/logs/exp-20260616-005.json",
+    "aggregate_expected_value_delta": 0.3207,
+    "aggregate_strategy_total_pnl_delta": 4090.22,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_raw_sec_tax_burden_relief_candidate_pool",
+      "failed_reasons": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "drawdown_drift_too_high",
+        "target_concentration_failed",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "aggregate_ev_delta": 0.3207,
+      "aggregate_pnl_delta": 4090.22,
+      "windows_ev_improved": 2,
+      "windows_ev_regressed": 1,
+      "windows_pnl_improved": 2,
+      "windows_pnl_regressed": 1,
+      "target_trade_count": 81,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0088,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": false,
+        "max_single_positive_pnl_share": 0.736638,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.581574,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "accepted_compression_comparator": {
+        "experiment_id": "exp-20260608-013",
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "aggregate_expected_value_delta": 0.1608,
+        "aggregate_pnl_delta": 2248.98
+      },
+      "accepted_distribution_comparator": {
+        "experiment_id": "exp-20260611-007",
+        "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+        "aggregate_expected_value_delta": 0.5286,
+        "aggregate_pnl_delta": 10432.91
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.18,
+      "actual_gate4_passed": false,
+      "actual_success": 0,
+      "failure_modes_observed": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "drawdown_drift_too_high",
+        "target_concentration_failed",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "brier_score": 0.0324,
+      "expected_ev_delta": null,
+      "actual_ev_delta": 0.3207,
+      "expected_pnl_delta": null,
+      "actual_pnl_delta": 4090.22
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "private_replay_scout_no_shared_adapter",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "default_off_paper_only": true,
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_sec_companyfacts": true,
+      "uses_free_ohlcv": true,
+      "live_realism_evaluated": true,
+      "live_ready": false,
+      "execution_envelope": {
+        "trade_enabled": false,
+        "target_notional_per_paper_trade": 4000.0,
+        "daily_entry_slots": 1,
+        "same_ticker_cooldown_days": 10,
+        "hold_days": 10,
+        "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+        "order_semantics": "observe-only next-session-open paper entry; no broker order",
+        "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+        "kill_switch": "trade_enabled remains false; no production adapter changes",
+        "failure_handling": "missing raw SEC annual tax/pretax/revenue tuple, missing prior annual comparison tuple, stale facts, negative pretax income, missing CIK mapping, missing OHLCV, missing next open, or missing 10d exit rejects the paper candidate"
+      },
+      "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper computes the same raw SEC tag mapping, filed-date PIT annual tax-burden relief gate, stable pretax/revenue checks, liquid SPY-relative confirmation, cooldown, next-open paper entry, 10-day exit, costs, and concentration controls in both historical replay and daily production.",
+      "uses_raw_companyfacts_cache": true
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The raw SEC tax-burden relief source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, drawdown_drift_too_high, target_concentration_failed, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). It is not retained or promoted.",
+      "outcome_summary": "Aggregate EV delta +0.3207; aggregate PnL delta $+4,090.22; max drawdown drift +0.0088; 81 paper trades.",
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping tax-burden relief, current/prior effective tax-rate bounds, pretax/revenue/after-tax growth floors, annual fact freshness, tag lists, RS/close/volume/vol guards, top-N, hold days, cooldown, or notional on these frozen windows.",
+      "new_evidence_required": "A retry needs materially different PIT tax evidence such as durable cash-tax normalization, tax-credit provenance, or post-filing analyst estimate revisions confirming after-tax earnings power. Do not sweep tax-burden thresholds, pretax/revenue growth floors, annual fact freshness, tag lists, RS/close/volume/vol guards, top-N, hold, cooldown, or notional on these frozen windows."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260616-005.json",
+  "card_file": "experiments/cards/exp-20260616-005.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260616-005.json",
+  "decision": "rejected_raw_sec_tax_burden_relief_candidate_pool",
+  "summary": "The raw SEC tax-burden relief source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, drawdown_drift_too_high, target_concentration_failed, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). It is not retained or promoted.",
+  "artifact": "data/experiments/exp-20260616-005/exp_20260616_005_sec_tax_burden_relief_candidate_pool.json",
+  "log": "experiments/logs/exp-20260616-005.json",
+  "aggregate_expected_value_delta": 0.3207,
+  "aggregate_strategy_total_pnl_delta": 4090.22,
+  "updated_at": "2026-06-16T03:16:02+00:00"
+}
