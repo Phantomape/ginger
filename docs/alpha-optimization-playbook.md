@@ -327,6 +327,26 @@ as a daily `record_type=data_source_coverage` row (forward refresh already
 accumulates via the daily sleeve path) and fixed a latent shadowing bug where
 data-source rows could falsely advance `latest_complete_trade_date`.
 
+The immediate out-of-sample test came back negative. `exp-20260616-024`
+re-evaluated the *accepted* FINRA borrow-pressure policy (`days_to_cover >= 3.0`
+AND `short_interest_change_pct > 0`, from `exp-20260603-006`) on the now-complete
+three-window archive, holding the fixed policy constant. It was REJECTED: 107
+trades (healthy sample at last), drawdown drift only `+0.44pp`, but aggregate EV
+`+0.1168` / PnL `+$3,772` with `late_strong` — the very window the source was
+originally accepted on — now REGRESSING (EV `-0.015`, PnL `-$347`). The positive
+contribution is concentrated in `old_thin` (`+$3,932`), the window that had no
+FINRA data before; `mid_weak` is ~flat (`+$188`). It fails both accepted
+compression and distribution comparators. Lesson: the original `exp-20260603-006`
+borrow-pressure accept was effectively recent-window-limited (late_strong was the
+only window with data), and the squeeze-fuel continuation effect does NOT
+generalize across windows — it neither beats the accepted comparators nor holds
+in late_strong out-of-sample. Treat FINRA borrow-pressure as unproven across
+windows; the accepted FINRA/IWM default-off helper should be regarded as
+forward-maturation, not validated alpha. Do not retune the days_to_cover /
+short-change / freshness / RS / top-N / hold / cooldown / notional knobs on these
+frozen windows; a valid retry needs a materially different PIT borrow-cost /
+hard-to-borrow / loan-availability field or closed forward replacement-value rows.
+
 ## Detail Sources
 
 Generated mechanism memory lives in `docs/lessons/*.md`; exact facts live in
