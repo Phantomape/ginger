@@ -2197,12 +2197,47 @@ def experiment_log_exists(experiment_id, logs_dir=DEFAULT_EXPERIMENT_LOGS_DIR):
     return experiment_log_path(experiment_id, logs_dir).exists()
 
 
+# Top-level log/shard fields larger than this are diagnostic dumps (e.g.
+# *_by_window candidate/trade samples) that no tooling consumes and that already
+# live in the experiment artifact (data/experiments/<id>/). They bloat the
+# monolithic log and shards by 100x, so they are stripped to a marker on write.
+LOG_FIELD_MAX_BYTES = 50 * 1024
+
+
+def strip_oversized_fields(row, *, max_field_bytes=LOG_FIELD_MAX_BYTES):
+    """Return a shallow copy of a log record with any top-level field whose JSON
+    serialization exceeds ``max_field_bytes`` replaced by a compact marker. The
+    full value stays in the experiment artifact; the log/shard only needs the
+    compact decision fields. Does NOT mutate the input (callers may also write
+    the full row to the artifact). ``experiment_id`` is never stripped."""
+    if not isinstance(row, dict):
+        return row
+    out = {}
+    for key, value in row.items():
+        if key == "experiment_id":
+            out[key] = value
+            continue
+        try:
+            size = len(json.dumps(value, ensure_ascii=False, default=str))
+        except (TypeError, ValueError):
+            size = 0
+        if size > max_field_bytes:
+            out[key] = (
+                f"<stripped {round(size / 1024)}KB oversized field; "
+                "full value retained in the experiment artifact>"
+            )
+        else:
+            out[key] = value
+    return out
+
+
 def save_experiment_log_entry(row, *, allow_duplicate=False,
                               logs_dir=DEFAULT_EXPERIMENT_LOGS_DIR,
                               timeout_seconds=DEFAULT_LOCK_TIMEOUT_SECONDS):
     experiment_id = row.get("experiment_id")
     if not experiment_id:
         raise ValueError("log row must include experiment_id")
+    row = strip_oversized_fields(row)
     path = experiment_log_path(experiment_id, logs_dir)
     path.parent.mkdir(parents=True, exist_ok=True)
     with file_lock(path, timeout_seconds=timeout_seconds):
@@ -2237,6 +2272,10 @@ def append_log_entry(log_path, row, *, allow_duplicate=False,
     experiment_id = row.get("experiment_id")
     if not experiment_id:
         raise ValueError("log row must include experiment_id")
+    # Keep the monolithic log compact: strip diagnostic dumps that already live in
+    # the experiment artifact. This is the central forward fix -- the current
+    # automation funnels its log writes through here.
+    row = strip_oversized_fields(row)
     path = Path(log_path)
     path.parent.mkdir(parents=True, exist_ok=True)
 
