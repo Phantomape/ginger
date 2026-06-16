@@ -380,6 +380,23 @@ winners `+$39.9k` vs 150 losers `−$39.7k` — and a stop/TP grid only "helped"
 overfitting the frozen windows (old_thin stayed negative in every config), so
 high days-to-cover is a two-sided dispersion signal, not a directional edge.
 
+FINRA line CLOSED (do not reopen without a new paid data source). A directional
+cross-sectional diagnostic (41,910 PIT obs: forward-10d return bucketed by
+days_to_cover and by short_interest_change_pct across the broad universe) found
+NO robust edge: short-interest-change is flat noise; the only hint is the
+lowest-days_to_cover quintile (+0.77% vs ~+0.45% baseline), but it is
+non-monotonic and the low-vs-high spread FLIPS sign in old_thin (−0.45pp) versus
+mid_weak/late_strong (+1.0/+0.4pp). This matches the literature: the robust,
+correctly-signed short-interest anomaly lives in the securities-lending FEE /
+UTILIZATION (Cohen-Diether-Malloy 2007; Engelberg-Reed-Ringgenberg 2018), not in
+FINRA share counts, and that field requires a paid feed (Ortex / S3 / IHS
+Markit). Owner decision 2026-06-16: the paid borrow-fee feed is NOT cost-justified
+for this line; FINRA short interest stays crowding/risk context only. Do not
+re-run share-based FINRA directional or squeeze candidate-pool tests; a valid
+reopen needs a real PIT cost-to-borrow / utilization feed (or a free broker
+borrow-fee field for forward-only observation), not another share-count
+normalization or threshold sweep.
+
 ## Detail Sources
 
 Generated mechanism memory lives in `docs/lessons/*.md`; exact facts live in
