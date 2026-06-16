@@ -73,6 +73,12 @@ GRADUATE_MIN_CLOSED = 20          # or use elapsed >= ~3 months operationally
 GRADUATE_MIN_RV_SPY_USD = 0.0     # must beat same-day SPY after costs (sum > 0)
 GRADUATE_MAX_BOOK_DD_PCT = 0.15   # realized-curve drawdown ceiling
 
+# Manual RISK OVERLAY only - does NOT change the sleeve's measured 10-day-hold
+# logic. The sleeves carry no stop; this flags a held position that has fallen
+# this far below entry so the operator can cut it by hand. Stop-fires should be
+# logged separately so naive-10d vs 10d+stop can be compared later.
+STOP_LOSS_PCT = 0.15              # cut a held position down -15% from entry
+
 
 # ---- schema-tolerant field extraction ------------------------------------
 
@@ -235,15 +241,27 @@ def _hold_status(row: dict[str, Any]) -> str:
 
 
 def _rec_row(row: dict[str, Any], status: str) -> dict[str, Any]:
+    entry = _num(_first(row, "entry_price", "entry_raw_open"))
+    last = _num(_first(row, "last_price", "decision_close_price"))
+    unreal_pct = (last / entry - 1.0) if (entry and last and entry > 0) else None
+    if unreal_pct is None:
+        stop_status = "no_price"          # e.g. allocator rows carry no last_price
+    elif unreal_pct <= -STOP_LOSS_PCT:
+        stop_status = "STOP_HIT"
+    else:
+        stop_status = "OK"
     return {
         "status": status,
         "ticker": _ticker(row),
         "signal_date": _first(row, "signal_date", "date"),
         "entry_date": _first(row, "entry_date"),
         "exit_date": _first(row, "exit_date"),
-        "entry_price": _num(_first(row, "entry_price", "entry_raw_open")),
+        "entry_price": entry,
         "exit_price": _num(_first(row, "exit_price")),
-        "last_price": _num(_first(row, "last_price", "decision_close_price")),
+        "last_price": last,
+        "unrealized_pct": round(unreal_pct, 4) if unreal_pct is not None else None,
+        "stop_loss_pct": STOP_LOSS_PCT,
+        "stop_status": stop_status,
         "hold_days": _first(row, "hold_days"),
         "days_held": _first(row, "observed_trading_days"),
         "days_remaining": _days_remaining(row),
@@ -315,6 +333,21 @@ def _cross_pilot_overlap(recs: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return overlaps
 
 
+def _stop_alerts(recs: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Held positions that have breached the manual stop -> cut by hand today."""
+    alerts = []
+    for r in recs:
+        for a in r["actionable"]:
+            if a.get("stop_status") == "STOP_HIT":
+                alerts.append({
+                    "pilot": r["label"], "ticker": a["ticker"],
+                    "entry_price": a["entry_price"], "last_price": a["last_price"],
+                    "unrealized_pct": a["unrealized_pct"], "stop_loss_pct": a["stop_loss_pct"],
+                    "days_held": a["days_held"], "hold_days": a["hold_days"],
+                })
+    return alerts
+
+
 # ---- render ---------------------------------------------------------------
 
 def _fmt_usd(v: Any) -> str:
@@ -322,11 +355,22 @@ def _fmt_usd(v: Any) -> str:
 
 
 def _render_md(recs: list[dict[str, Any]], cards: list[dict[str, Any]],
-               overlaps: list[dict[str, Any]], as_of: str) -> str:
+               overlaps: list[dict[str, Any]], stop_alerts: list[dict[str, Any]],
+               as_of: str) -> str:
     L = [f"# Pilot tracker - as of {as_of}", "",
          f"Per-position book: {_fmt_usd(PILOT_NOTIONAL_USD)}. Read-only; manual execution.",
          "Graduate/kill rule (pre-committed): >= {} closed AND sum rv_vs_SPY > 0 AND book DD < {:.0%}."
-         .format(GRADUATE_MIN_CLOSED, GRADUATE_MAX_BOOK_DD_PCT), ""]
+         .format(GRADUATE_MIN_CLOSED, GRADUATE_MAX_BOOK_DD_PCT),
+         "Manual stop overlay: cut a held position at -{:.0%} from entry (does not change the sleeve).".format(STOP_LOSS_PCT),
+         ""]
+    if stop_alerts:
+        L += [f"## [!] STOP-LOSS alerts - cut by hand today (stop = -{STOP_LOSS_PCT:.0%})", ""]
+        for s in stop_alerts:
+            L.append("- **SELL {tk}** ({pl}): {up:+.1%} from entry {ep} -> last {lp}".format(
+                tk=s["ticker"], pl=s["pilot"], up=s["unrealized_pct"],
+                ep=f'{s["entry_price"]:.2f}' if isinstance(s["entry_price"], (int, float)) else "?",
+                lp=f'{s["last_price"]:.2f}' if isinstance(s["last_price"], (int, float)) else "?"))
+        L.append("")
     if overlaps:
         L += ["## [!] Cross-pilot overlap (stacked exposure on one name)", ""]
         for o in overlaps:
@@ -365,9 +409,12 @@ def _render_md(recs: list[dict[str, Any]], cards: list[dict[str, Any]],
                     tk=a["ticker"], sd=a["signal_date"], ex=a["exit_rule"],
                     rk=a["source_priority_rank"], sc=a["candidate_score"]))
             else:  # HOLD
-                L.append("- hold {tk}: day {dh}/{hd} ({dr} left); entry {ep}, last {lp}".format(
+                up = a.get("unrealized_pct")
+                tag = " **[STOP_HIT -> SELL]**" if a.get("stop_status") == "STOP_HIT" else ""
+                L.append("- hold {tk}: day {dh}/{hd} ({dr} left); entry {ep}, last {lp} ({up}){tag}".format(
                     tk=a["ticker"], dh=a["days_held"], hd=a["hold_days"], dr=a["days_remaining"],
-                    ep=_px(a["entry_price"]), lp=_px(a["last_price"])))
+                    ep=_px(a["entry_price"]), lp=_px(a["last_price"]),
+                    up=f"{up:+.1%}" if isinstance(up, (int, float)) else "n/a", tag=tag))
         for e in exits_done:
             L.append("- _exited today_ {tk} @ {xp} on {xd} (pilot PnL {pnl}) - confirm the sale".format(
                 tk=e["ticker"], xp=_px(e["exit_price"]), xd=e["exit_date"],
@@ -403,16 +450,20 @@ def generate(write: bool = True) -> dict[str, Any]:
         recs.append(_recommendations(pilot, state))
 
     overlaps = _cross_pilot_overlap(recs)
+    stop_alerts = _stop_alerts(recs)
     scorecard_payload = {
         "as_of": as_of, "per_position_notional_usd": PILOT_NOTIONAL_USD,
         "graduate_rule": {"min_closed": GRADUATE_MIN_CLOSED,
                           "min_rv_spy_usd": GRADUATE_MIN_RV_SPY_USD,
                           "max_book_dd_pct": GRADUATE_MAX_BOOK_DD_PCT},
+        "stop_loss_pct": STOP_LOSS_PCT,
         "cross_pilot_overlap": overlaps,
+        "stop_alerts": stop_alerts,
         "scorecards": cards,
     }
-    rec_payload = {"as_of": as_of, "cross_pilot_overlap": overlaps, "recommendations": recs}
-    md = _render_md(recs, cards, overlaps, as_of or "latest")
+    rec_payload = {"as_of": as_of, "cross_pilot_overlap": overlaps,
+                   "stop_alerts": stop_alerts, "recommendations": recs}
+    md = _render_md(recs, cards, overlaps, stop_alerts, as_of or "latest")
     if write:
         OUT_DIR.mkdir(parents=True, exist_ok=True)
         (OUT_DIR / "pilot_scorecard.json").write_text(json.dumps(scorecard_payload, indent=2), encoding="utf-8")
@@ -420,7 +471,7 @@ def generate(write: bool = True) -> dict[str, Any]:
             json.dumps(rec_payload, indent=2), encoding="utf-8")
         (OUT_DIR / "pilot_tracker.md").write_text(md, encoding="utf-8")
     return {"as_of": as_of, "scorecards": cards, "recommendations": recs,
-            "cross_pilot_overlap": overlaps, "markdown": md}
+            "cross_pilot_overlap": overlaps, "stop_alerts": stop_alerts, "markdown": md}
 
 
 def main() -> None:
