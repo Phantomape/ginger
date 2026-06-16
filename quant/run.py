@@ -956,49 +956,12 @@ def main():
     # C-strategy confidence at 0.83 and preventing quality filtering.
     persist_earnings_snapshot(earnings_dict, as_of=datetime.now(), logger=log)
 
-    # Broad OHLCV accumulation (heavy phase). The pre-prompt path only downloads
-    # data_universe (~60 trade/pilot names); the broad ~1200-name universe is what
-    # keeps the warehouse growing for research/sleeves/rs_proxy. Download the
-    # not-yet-fetched broad names and upsert them into the warehouse. Deferred so
-    # the operator prompt is never blocked by this slow vendor sweep; registered
-    # before the kova sidecar so its warehouse-seeded rs_proxy sees fresh broad
-    # data. Runs only in priority mode with broad accumulation on — a true
-    # light-only run (RUN_BROAD_ACCUMULATION=0) skips it entirely.
-    def _run_broad_ohlcv_accumulation():
-        broad_only = sorted(
-            set(post_prompt_accumulation_universe) - {str(t).upper() for t in data_universe}
-        )
-        if not broad_only:
-            log.info("Broad OHLCV accumulation: no non-trade tickers to fetch.")
-            return
-        chunk = _env_int("BROAD_OHLCV_BATCH_SIZE") or 200
-        log.info(
-            "Broad OHLCV accumulation: fetching %d non-trade tickers (chunk=%d) …",
-            len(broad_only),
-            chunk,
-        )
-        fetched_ok = 0
-        for start in range(0, len(broad_only), chunk):
-            batch = broad_only[start:start + chunk]
-            try:
-                frames = get_ohlcv_many(batch)
-            except Exception as _broad_dl_exc:
-                log.warning(
-                    "Broad OHLCV batch %d-%d failed: %s",
-                    start, start + len(batch), _broad_dl_exc,
-                )
-                continue
-            _accumulate_ohlcv_warehouse(frames, "broad_batch")
-            fetched_ok += sum(1 for _f in frames.values() if _f is not None)
-        log.info(
-            "Broad OHLCV accumulation done: %d/%d tickers fetched into warehouse.",
-            fetched_ok, len(broad_only),
-        )
-
-    if llm_prompt_priority and broad_accumulation and ohlcv_warehouse_enabled:
-        _deferred_after_prompt.append(
-            ("broad_ohlcv_accumulation", _run_broad_ohlcv_accumulation)
-        )
+    # NOTE: broad-universe OHLCV warehouse accumulation is NOT done here. It is
+    # already handled downstream by refresh_warehouse_ohlcv() (exp-20260612-002,
+    # gated by BROAD_UNIVERSE_REFRESH_DISABLED), which is staleness-aware: it only
+    # fetches stale tickers and only their missing day-window. RUN_BROAD_ACCUMULATION
+    # below widens the deferred *sidecars* (earnings / kova / reference cache) to the
+    # broad universe; it deliberately does not re-download broad OHLCV.
 
     # Broad-universe earnings merge (exp-20260613-023): attempt yfinance earnings
     # for the broad universe on every run so coverage is not capped at the
