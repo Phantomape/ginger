@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1339`
-- Raw records loaded by meta report: `1909`
-- History fingerprint: `eb6ae114bb570d73`
+- Strategy records counted: `1340`
+- Raw records loaded by meta report: `1911`
+- History fingerprint: `f73d45ec5b5c6d6d`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -63,8 +63,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260616-005` `rejected_raw_sec_tax_burden_relief_candidate_pool`: EV `+0.3207`, PnL `$4,090.22`, family `production_visible_free_sec_companyfacts_tax_burden_candidate_pool`, trial `raw_sec_companyfacts_tax_burden_relief_candidate_pool`.
-  Lesson: The raw SEC tax-burden relief source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, drawdown_drift_too_high, target_concentration_failed, accepted_distribution_ev_not_beaten, accepted_distr...
 - `exp-20260616-006` `blocked_seasoned_new_listing_independent_data_absent`: EV `+0.0000`, PnL `$0.00`, family `candidate_pool`, trial `seasoned_new_listing_lead`.
   Lesson: exp-20260613-020 was strong enough to revisit conceptually, but it explicitly requires true listing date, lockup/float, revision, or sponsorship confirmation. The local scan found no true listing/lockup/float PIT surf...
 - `exp-20260616-008` `blocked_no_trustworthy_nonrepeat_form144_or_revision_alpha_surface`: EV `+0.0000`, PnL `$0.00`, family `candidate_pool_data_edge`, trial `form144_revision_data_readiness`.
@@ -87,6 +85,8 @@ facts before changing strategy behavior.
   Lesson: The SBC burden source did not add enough incremental allocator replacement value after lagged consensus. It either overlapped existing accepted source dates or displaced better lower-rank allocator rows, especially ve...
 - `exp-20260616-017` `rejected_sbc_per_share_buyback_adjusted_candidate_pool`: EV `+0.1765`, PnL `$4,142.17`, family `production_visible_free_sec_companyfacts_dilution_quality_candidate_pool`, trial `sbc_per_share_buyback_adjusted_candidate_pool`.
   Lesson: The SBC per-share buyback-adjusted source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, target_concentration_failed, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beat...
+- `exp-20260616-018` `rejected_inventory_to_revenue_leanness_candidate_pool`: EV `+0.9345`, PnL `$11,706.74`, family `production_visible_free_sec_companyfacts_inventory_quality_candidate_pool`, trial `inventory_to_revenue_leanness_candidate_pool`.
+  Lesson: The inventory-to-revenue leanness source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, drawdown_drift_too_high). Do not promote or tune this fixed inventory-quality bundle on the same froz...
 
 ## Highest-Signal Historical Records
 
