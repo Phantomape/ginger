@@ -195,6 +195,21 @@ def _env_float(name, default):
         return default
 
 
+# Fixed ingestion-tuning defaults. These were env-overridable knobs that were
+# never set in any deployment, so the env indirection was dead config surface;
+# inlined to module constants. Subsystem on/off toggles (KOVA_REFRESH_*,
+# *_DISABLED, RUN_BROAD_ACCUMULATION, LLM_PROMPT_PRIORITY), manual 13F/intraday
+# inputs, paths, and secrets (ALPHA_VANTAGE_API_KEY) stay env-driven.
+OHLCV_WAREHOUSE_COMMIT_EVERY = 1000
+EARNINGS_BROAD_BATCH_SIZE = 40
+EARNINGS_BROAD_BATCH_SLEEP_SECS = 1.0
+OPTIONS_MAX_TICKERS = 250
+KOVA_COMPANYFACTS_STALE_DAYS = 2.0
+KOVA_COMPANYFACTS_LOOKBACK_DAYS = 820
+KOVA_COMPANYFACTS_MAX_CIKS = None  # None = no cap (full universe)
+KOVA_DATA_SLEEP_SECONDS = 0.11
+
+
 def _run_expectation_residual_leadership_attribution_observer():
     """Refresh the read-only expectation/residual attribution artifact."""
     try:
@@ -752,7 +767,7 @@ def main():
         "OHLCV_WAREHOUSE_UPDATE_EXISTING",
         False,
     )
-    ohlcv_warehouse_commit_every = _env_int("OHLCV_WAREHOUSE_COMMIT_EVERY") or 1000
+    ohlcv_warehouse_commit_every = OHLCV_WAREHOUSE_COMMIT_EVERY
     ohlcv_warehouse_recorded_tickers = set()
     ohlcv_warehouse_processed_tickers = set()
     ohlcv_warehouse_empty_tickers = set()
@@ -1016,8 +1031,8 @@ def main():
             broad_earnings_summary = fetch_broad_universe_earnings(
                 as_of=datetime.now(),
                 tickers=post_prompt_accumulation_universe,
-                batch_size=_env_int("EARNINGS_BROAD_BATCH_SIZE") or 40,
-                batch_sleep_secs=_env_float("EARNINGS_BROAD_BATCH_SLEEP_SECS", 1.0),
+                batch_size=EARNINGS_BROAD_BATCH_SIZE,
+                batch_sleep_secs=EARNINGS_BROAD_BATCH_SLEEP_SECS,
             )
             log.info(
                 "Broad earnings merge: status=%s fetched=%s eps=%s failed=%s",
@@ -1081,7 +1096,7 @@ def main():
             option_underlying_prices=option_underlying_prices,
             options_max_expirations=2,
             options_max_strikes_per_side=12,
-            options_max_tickers=_env_int("OPTIONS_MAX_TICKERS") or 250,
+            options_max_tickers=OPTIONS_MAX_TICKERS,
             logger_obj=log,
         )
         non_ohlcv_snapshot = (
@@ -1204,7 +1219,6 @@ def main():
                 for item in os.environ.get("KOVA_INTRADAY_INTERVALS", "15min,60min").replace(";", ",").split(",")
                 if item.strip()
             )
-            kova_companyfacts_lookback_days = _env_int("KOVA_COMPANYFACTS_LOOKBACK_DAYS")
             kova_data_snapshot = persist_kova_data_snapshot(
                 asof_date=today_iso,
                 tickers=post_prompt_accumulation_universe,
@@ -1220,19 +1234,15 @@ def main():
                 # stale_days so already-cached CIK files are re-fetched on a throttle
                 # instead of being treated as permanently fresh (stale_days=None).
                 refresh_companyfacts=_env_flag("KOVA_REFRESH_COMPANYFACTS", True),
-                companyfacts_stale_days=_env_float("KOVA_COMPANYFACTS_STALE_DAYS", 2.0),
-                companyfacts_max_ciks=_env_int("KOVA_COMPANYFACTS_MAX_CIKS"),
-                companyfacts_lookback_days=(
-                    kova_companyfacts_lookback_days
-                    if kova_companyfacts_lookback_days is not None
-                    else 820
-                ),
+                companyfacts_stale_days=KOVA_COMPANYFACTS_STALE_DAYS,
+                companyfacts_max_ciks=KOVA_COMPANYFACTS_MAX_CIKS,
+                companyfacts_lookback_days=KOVA_COMPANYFACTS_LOOKBACK_DAYS,
                 sec13f_zip=os.environ.get("KOVA_SEC13F_ZIP") or None,
                 sec13f_year=_env_int("KOVA_SEC13F_YEAR"),
                 sec13f_quarter=_env_int("KOVA_SEC13F_QUARTER"),
                 cusip_map=os.environ.get("KOVA_CUSIP_MAP") or None,
                 refresh_sec13f=_env_flag("KOVA_REFRESH_SEC13F", False),
-                sleep_seconds=_env_float("KOVA_DATA_SLEEP_SECONDS", 0.11),
+                sleep_seconds=KOVA_DATA_SLEEP_SECONDS,
             )
             non_ohlcv_snapshot["kova_data_sidecar"] = kova_data_snapshot
             log.info(
