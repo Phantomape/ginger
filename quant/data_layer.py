@@ -132,7 +132,7 @@ def get_ohlcv(ticker, lookback_days=400):
         if normalized is None:
             return None
 
-        logger.info("%s: %s trading days downloaded", ticker, len(normalized))
+        logger.debug("%s: %s trading days downloaded", ticker, len(normalized))
         return normalized
 
     except Exception as e:
@@ -172,7 +172,7 @@ def get_ohlcv_many(tickers, lookback_days=400):
     for ticker in unique_tickers:
         normalized = _normalize_ohlcv_frame(ticker, bulk)
         if normalized is not None:
-            logger.info("%s: %s trading days downloaded", ticker, len(normalized))
+            logger.debug("%s: %s trading days downloaded", ticker, len(normalized))
         results[ticker] = normalized
 
     missing = [ticker for ticker, data in results.items() if data is None]
@@ -185,6 +185,18 @@ def get_ohlcv_many(tickers, lookback_days=400):
         )
         for ticker in missing:
             results[ticker] = get_ohlcv(ticker, lookback_days=lookback_days)
+
+    # Single aggregate line instead of one INFO per ticker — per-ticker detail
+    # is at DEBUG. Spamming ~1200 lines buried the actual STEP 3 signal.
+    ok_frames = [d for d in results.values() if d is not None]
+    total_rows = sum(len(d) for d in ok_frames)
+    logger.info(
+        "OHLCV ready: %d/%d tickers, %d rows total%s",
+        len(ok_frames),
+        len(unique_tickers),
+        total_rows,
+        f", {len(unique_tickers) - len(ok_frames)} missing" if len(ok_frames) < len(unique_tickers) else "",
+    )
 
     return results
 
