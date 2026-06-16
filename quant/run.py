@@ -83,6 +83,19 @@ def _save_json(obj, filepath):
     log.info(f"Saved → {filepath}")
 
 
+def _save_json_best_effort(obj, filepath, artifact_name):
+    try:
+        _save_json(obj, filepath)
+        return True
+    except Exception as e:
+        log.error(
+            "%s save failed; continuing so news/LLM prompt can still be generated: %s",
+            artifact_name,
+            e,
+        )
+        return False
+
+
 def _save_text(text, filepath):
     atomic_write_text(text, filepath)
     log.info(f"Saved → {filepath}")
@@ -192,6 +205,95 @@ def _run_expectation_residual_leadership_attribution_observer():
 
 
 # ── Main pipeline ─────────────────────────────────────────────────────────────
+
+def _collect_trade_news(today, universe, pilot_universe):
+    trade_items = []
+    try:
+        from sources import get_all_sources
+        from parser import parse_feed_with_diagnostics, deduplicate_items, sort_items_by_date
+        from filter import apply_hygiene_filters, apply_trade_filters
+
+        all_items = []
+        source_stats = []
+        sources = get_all_sources(extra_tickers=pilot_universe)
+        log.info(f"Fetching from {len(sources)} RSS sources...")
+        for source in sources:
+            try:
+                items, diagnostics = parse_feed_with_diagnostics(
+                    source["url"], source["source_type"], source.get("metadata", {})
+                )
+                all_items.extend(items)
+                source_stats.append(diagnostics)
+            except Exception as e:
+                log.warning(f"Source {source['url']}: {e}")
+                source_stats.append({
+                    "url": source["url"],
+                    "source_type": source["source_type"],
+                    "metadata": dict(source.get("metadata", {})),
+                    "request_headers_used": {},
+                    "status": None,
+                    "bozo": False,
+                    "bozo_exception": None,
+                    "entry_count": 0,
+                    "parsed_item_count": 0,
+                    "error": str(e),
+                })
+
+        sorted_items = sort_items_by_date(deduplicate_items(all_items))
+        hygiene_items = apply_hygiene_filters(sorted_items)["items"]
+        trade_watchlist = sorted(set(universe) | set(pilot_universe))
+        trade_items = apply_trade_filters(
+            sorted_items,
+            watchlist=trade_watchlist,
+        )["items"]
+
+        _save_json_best_effort(
+            sorted_items,
+            str(daily_artifact_path("news", today)),
+            "raw news",
+        )
+        _save_json_best_effort(
+            source_stats,
+            str(daily_artifact_path("news_source_stats", today)),
+            "news source stats",
+        )
+        _save_json_best_effort(
+            hygiene_items,
+            str(daily_artifact_path("clean_news", today)),
+            "clean news",
+        )
+        _save_json_best_effort(
+            trade_items,
+            str(daily_artifact_path("clean_trade_news", today)),
+            "trade news",
+        )
+
+        log.info(
+            f"News: {len(sorted_items)} raw -> {len(hygiene_items)} hygiene "
+            f"-> {len(trade_items)} trade-filtered"
+        )
+    except Exception as e:
+        log.error(f"News collection failed: {e}")
+    return trade_items
+
+
+def _generate_llm_prompt(trade_items, open_positions, trend_signals_dict):
+    try:
+        from llm_advisor import get_investment_advice
+
+        result = get_investment_advice(
+            trade_items,
+            open_positions=open_positions,
+            trend_signals=trend_signals_dict,
+        )
+        if result["success"]:
+            log.info(result["advice"])
+            return True
+        log.error(f"LLM advisor: {result['error']}")
+    except Exception as e:
+        log.error(f"LLM advisor failed: {e}")
+    return False
+
 
 def main():
     today = datetime.now().strftime("%Y%m%d")
@@ -501,6 +603,30 @@ def main():
         "OHLCV_WAREHOUSE_PATH",
         str(DEFAULT_WAREHOUSE_PATH),
     )
+    llm_prompt_priority = _env_flag("LLM_PROMPT_PRIORITY", True)
+    # Heavy data-accumulation phase. In priority mode the pre-prompt path stays
+    # narrow so the operator's prompt is out fast; once the prompt is written the
+    # SAME process keeps running and accumulates the broad ~1200-name universe
+    # (broad OHLCV -> warehouse, plus kova/SEC/earnings sidecars on the broad
+    # set). This is data-only — it never re-runs the prompt, LLM advice, or
+    # sleeve evaluation. Set RUN_BROAD_ACCUMULATION=0 for a true light-only run
+    # (narrow universe, no broad accumulation — the prior priority-mode behavior).
+    broad_accumulation = _env_flag("RUN_BROAD_ACCUMULATION", True)
+
+    # Deferred work queue: in LLM-prompt-priority mode, broad/alt-data
+    # accumulation that the operator's prompt does not consume is appended here
+    # and drained right after the Step 6A prompt checkpoint, so the prompt is
+    # not blocked by it. When priority is off the blocks run inline (the queue
+    # stays empty) and behavior is unchanged.
+    _deferred_after_prompt: list = []
+
+    def _run_deferred_after_prompt():
+        while _deferred_after_prompt:
+            _job_name, _job = _deferred_after_prompt.pop(0)
+            try:
+                _job()
+            except Exception as _deferred_err:
+                log.warning("Deferred post-prompt job %s failed: %s", _job_name, _deferred_err)
 
     # ── Broad ingestion universe (exp-20260613-023) ───────────────────────────
     # Fundamental/alternative data streams (SEC companyfacts, kova fundamentals,
@@ -523,6 +649,25 @@ def main():
         len(_broad_feed_tickers),
         len(data_universe),
     )
+    prompt_sidecar_universe = data_universe if llm_prompt_priority else broad_ingest_universe
+    # Universe the DEFERRED post-prompt jobs accumulate over. In priority mode the
+    # pre-prompt refreshes stay narrow (fast prompt) but the deferred drain widens
+    # to the broad universe so data still accumulates — unless broad accumulation
+    # is switched off (then it stays narrow, i.e. true light-only). In non-priority
+    # mode prompt_sidecar_universe is already broad, so this is a no-op there.
+    post_prompt_accumulation_universe = (
+        broad_ingest_universe
+        if (llm_prompt_priority and broad_accumulation)
+        else prompt_sidecar_universe
+    )
+    if llm_prompt_priority and len(prompt_sidecar_universe) < len(broad_ingest_universe):
+        log.info(
+            "LLM prompt priority: pre-prompt sidecar refreshes limited to %d trade/pilot tickers; "
+            "broad accumulation (%s) runs on %d tickers after the prompt.",
+            len(prompt_sidecar_universe),
+            "on" if broad_accumulation else "off",
+            len(post_prompt_accumulation_universe),
+        )
     # Options come from a free source that cannot cover the full universe, so
     # rank the broad universe by recent dollar volume and let the per-stream cap
     # take the most-liquid names. Still attempted every run; trade-universe names
@@ -550,6 +695,8 @@ def main():
         options_ingest_tickers = list(
             dict.fromkeys([str(t).upper() for t in data_universe] + _ranked_in)
         )
+        if llm_prompt_priority:
+            options_ingest_tickers = list(data_universe)
         log.info(
             "Options ingestion universe ranked by dollar volume: %d candidates",
             len(options_ingest_tickers),
@@ -743,19 +890,29 @@ def main():
     # Sector map rolls a stale slice (caps the yfinance burst); SEC company
     # tickers refresh weekly. Env opt-outs: REFERENCE_CACHE_REFRESH_DISABLED,
     # SECTOR_CACHE_REFRESH_DISABLED, SEC_TICKER_REFRESH_DISABLED.
-    try:
-        from reference_cache_refresh import refresh_reference_caches
-        _ref_cache = refresh_reference_caches(universe=broad_ingest_universe)
-        _sector = _ref_cache.get("sector_cache", {})
-        _tickers = _ref_cache.get("sec_company_tickers", {})
-        if _sector.get("refreshed_count") or _tickers.get("refreshed"):
-            log.info(
-                "Reference caches: sector refreshed=%s, sec_tickers refreshed=%s",
-                _sector.get("refreshed_count", 0),
-                _tickers.get("refreshed", False),
-            )
-    except Exception as e:
-        log.warning(f"Reference cache refresh skipped: {e}")
+    # The sector-map yfinance .info refresh is the slowest single pre-prompt call
+    # and nothing on the prompt path reads its output (broad sleeves + universe
+    # feed consume it after the Step 6A checkpoint; enrich_signals uses the static
+    # risk_engine.SECTOR_MAP, not this cache), so defer it in priority mode.
+    def _run_reference_cache_refresh():
+        try:
+            from reference_cache_refresh import refresh_reference_caches
+            _ref_cache = refresh_reference_caches(universe=post_prompt_accumulation_universe)
+            _sector = _ref_cache.get("sector_cache", {})
+            _tickers = _ref_cache.get("sec_company_tickers", {})
+            if _sector.get("refreshed_count") or _tickers.get("refreshed"):
+                log.info(
+                    "Reference caches: sector refreshed=%s, sec_tickers refreshed=%s",
+                    _sector.get("refreshed_count", 0),
+                    _tickers.get("refreshed", False),
+                )
+        except Exception as e:
+            log.warning(f"Reference cache refresh skipped: {e}")
+
+    if llm_prompt_priority:
+        _deferred_after_prompt.append(("reference_cache_refresh", _run_reference_cache_refresh))
+    else:
+        _run_reference_cache_refresh()
 
     # ── Step 2: Market Regime ─────────────────────────────────────────────────
     _print_section("STEP 2 — Market regime")
@@ -798,28 +955,82 @@ def main():
     # Without this snapshot, the backtester uses None for both fields, capping
     # C-strategy confidence at 0.83 and preventing quality filtering.
     persist_earnings_snapshot(earnings_dict, as_of=datetime.now(), logger=log)
+
+    # Broad OHLCV accumulation (heavy phase). The pre-prompt path only downloads
+    # data_universe (~60 trade/pilot names); the broad ~1200-name universe is what
+    # keeps the warehouse growing for research/sleeves/rs_proxy. Download the
+    # not-yet-fetched broad names and upsert them into the warehouse. Deferred so
+    # the operator prompt is never blocked by this slow vendor sweep; registered
+    # before the kova sidecar so its warehouse-seeded rs_proxy sees fresh broad
+    # data. Runs only in priority mode with broad accumulation on — a true
+    # light-only run (RUN_BROAD_ACCUMULATION=0) skips it entirely.
+    def _run_broad_ohlcv_accumulation():
+        broad_only = sorted(
+            set(post_prompt_accumulation_universe) - {str(t).upper() for t in data_universe}
+        )
+        if not broad_only:
+            log.info("Broad OHLCV accumulation: no non-trade tickers to fetch.")
+            return
+        chunk = _env_int("BROAD_OHLCV_BATCH_SIZE") or 200
+        log.info(
+            "Broad OHLCV accumulation: fetching %d non-trade tickers (chunk=%d) …",
+            len(broad_only),
+            chunk,
+        )
+        fetched_ok = 0
+        for start in range(0, len(broad_only), chunk):
+            batch = broad_only[start:start + chunk]
+            try:
+                frames = get_ohlcv_many(batch)
+            except Exception as _broad_dl_exc:
+                log.warning(
+                    "Broad OHLCV batch %d-%d failed: %s",
+                    start, start + len(batch), _broad_dl_exc,
+                )
+                continue
+            _accumulate_ohlcv_warehouse(frames, "broad_batch")
+            fetched_ok += sum(1 for _f in frames.values() if _f is not None)
+        log.info(
+            "Broad OHLCV accumulation done: %d/%d tickers fetched into warehouse.",
+            fetched_ok, len(broad_only),
+        )
+
+    if llm_prompt_priority and broad_accumulation and ohlcv_warehouse_enabled:
+        _deferred_after_prompt.append(
+            ("broad_ohlcv_accumulation", _run_broad_ohlcv_accumulation)
+        )
+
     # Broad-universe earnings merge (exp-20260613-023): attempt yfinance earnings
     # for the broad universe on every run so coverage is not capped at the
     # ~58-name watchlist. Additive merge — core watchlist rows are never
     # overwritten; per-ticker failures are tolerated and never abort the run.
-    try:
-        from fetch_broad_earnings_snapshot import fetch_broad_universe_earnings
+    # The operator prompt never reads this merge (core earnings are persisted
+    # above and signals use the in-memory core earnings), so in priority mode it
+    # is deferred until after the Step 6A prompt checkpoint.
+    def _run_broad_earnings_merge():
+        try:
+            from fetch_broad_earnings_snapshot import fetch_broad_universe_earnings
 
-        broad_earnings_summary = fetch_broad_universe_earnings(
-            as_of=datetime.now(),
-            tickers=broad_ingest_universe,
-            batch_size=_env_int("EARNINGS_BROAD_BATCH_SIZE") or 40,
-            batch_sleep_secs=_env_float("EARNINGS_BROAD_BATCH_SLEEP_SECS", 1.0),
-        )
-        log.info(
-            "Broad earnings merge: status=%s fetched=%s eps=%s failed=%s",
-            broad_earnings_summary.get("status"),
-            broad_earnings_summary.get("tickers_fetched"),
-            broad_earnings_summary.get("tickers_with_eps_estimate"),
-            broad_earnings_summary.get("tickers_failed"),
-        )
-    except Exception as e:
-        log.warning(f"Broad earnings merge unavailable: {e}")
+            broad_earnings_summary = fetch_broad_universe_earnings(
+                as_of=datetime.now(),
+                tickers=post_prompt_accumulation_universe,
+                batch_size=_env_int("EARNINGS_BROAD_BATCH_SIZE") or 40,
+                batch_sleep_secs=_env_float("EARNINGS_BROAD_BATCH_SLEEP_SECS", 1.0),
+            )
+            log.info(
+                "Broad earnings merge: status=%s fetched=%s eps=%s failed=%s",
+                broad_earnings_summary.get("status"),
+                broad_earnings_summary.get("tickers_fetched"),
+                broad_earnings_summary.get("tickers_with_eps_estimate"),
+                broad_earnings_summary.get("tickers_failed"),
+            )
+        except Exception as e:
+            log.warning(f"Broad earnings merge unavailable: {e}")
+
+    if llm_prompt_priority:
+        _deferred_after_prompt.append(("broad_earnings_merge", _run_broad_earnings_merge))
+    else:
+        _run_broad_earnings_merge()
     try:
         estimate_revision_summary = persist_estimate_revision_ledger(
             as_of=today_iso,
@@ -930,112 +1141,125 @@ def main():
 
     # ── Step 4: Feature Layer ─────────────────────────────────────────────────
     _print_section("STEP 4 — Feature layer")
-    try:
-        # exp-20260614-022: rs_proxy is derived from this in-memory OHLCV, so
-        # seeding it only from the core ohlcv_dict (~57 names) capped rs_proxy at
-        # ~57 while every other stream went broad after exp-20260613-023. Seed
-        # from broad warehouse frames (returns-only need) for the broad ingest
-        # universe, then overlay the fresh in-memory core OHLCV + SPY on top so
-        # core names keep today's data. Degrades to the core dict on any failure.
-        kova_ohlcv_dict: dict[str, Any] = {}
+
+    # Kova sidecar (companyfacts SEC refresh + rs_proxy broad warehouse seed) is
+    # network-heavy and the operator prompt never reads its output — the
+    # consumers (fundamental_growth_rs / consensus sleeves, non_ohlcv_snapshot
+    # persist at 1957+) all run after the Step 6A checkpoint. So in priority mode
+    # it is deferred until the prompt is out. non_ohlcv_snapshot is the same dict
+    # the deferred job mutates, drained before its first reader.
+    def _run_kova_sidecar():
         try:
-            if ohlcv_warehouse_enabled and broad_ingest_universe:
-                from datetime import timedelta as _td
-                from ohlcv_warehouse import load_warehouse_ohlcv_frames
-                _rs_start = (datetime.now().date() - _td(days=320)).isoformat()
-                _wh_frames = load_warehouse_ohlcv_frames(
-                    ohlcv_warehouse_path,
-                    tickers=set(broad_ingest_universe) | {"SPY"},
-                    start=_rs_start,
-                    end=today_iso,
+            # exp-20260614-022: rs_proxy is derived from this in-memory OHLCV, so
+            # seeding it only from the core ohlcv_dict (~57 names) capped rs_proxy at
+            # ~57 while every other stream went broad after exp-20260613-023. Seed
+            # from broad warehouse frames (returns-only need) for the broad ingest
+            # universe, then overlay the fresh in-memory core OHLCV + SPY on top so
+            # core names keep today's data. Degrades to the core dict on any failure.
+            kova_ohlcv_dict: dict[str, Any] = {}
+            try:
+                if ohlcv_warehouse_enabled and post_prompt_accumulation_universe:
+                    from datetime import timedelta as _td
+                    from ohlcv_warehouse import load_warehouse_ohlcv_frames
+                    _rs_start = (datetime.now().date() - _td(days=320)).isoformat()
+                    _wh_frames = load_warehouse_ohlcv_frames(
+                        ohlcv_warehouse_path,
+                        tickers=set(post_prompt_accumulation_universe) | {"SPY"},
+                        start=_rs_start,
+                        end=today_iso,
+                    )
+                    # Convert to the list-of-dicts shape rs_proxy expects. The
+                    # warehouse frame index is an unnamed DatetimeIndex, so passing
+                    # frames straight through normalize_ohlcv_mapping drops every row
+                    # (reset_index yields an "index" column, not "Date").
+                    for _tk, _fr in _wh_frames.items():
+                        kova_ohlcv_dict[_tk] = [
+                            {
+                                "Date": str(_idx.date()),
+                                "Open": float(_r["Open"]),
+                                "High": float(_r["High"]),
+                                "Low": float(_r["Low"]),
+                                "Close": float(_r["Close"]),
+                                "Volume": float(_r["Volume"]),
+                            }
+                            for _idx, _r in _fr.iterrows()
+                        ]
+                    log.info(
+                        "rs_proxy broad OHLCV seed: %d tickers from warehouse",
+                        len(kova_ohlcv_dict),
+                    )
+            except Exception as _rs_e:
+                log.warning(
+                    "rs_proxy broad warehouse seed failed, using core OHLCV: %s", _rs_e
                 )
-                # Convert to the list-of-dicts shape rs_proxy expects. The
-                # warehouse frame index is an unnamed DatetimeIndex, so passing
-                # frames straight through normalize_ohlcv_mapping drops every row
-                # (reset_index yields an "index" column, not "Date").
-                for _tk, _fr in _wh_frames.items():
-                    kova_ohlcv_dict[_tk] = [
-                        {
-                            "Date": str(_idx.date()),
-                            "Open": float(_r["Open"]),
-                            "High": float(_r["High"]),
-                            "Low": float(_r["Low"]),
-                            "Close": float(_r["Close"]),
-                            "Volume": float(_r["Volume"]),
-                        }
-                        for _idx, _r in _fr.iterrows()
-                    ]
-                log.info(
-                    "rs_proxy broad OHLCV seed: %d tickers from warehouse",
-                    len(kova_ohlcv_dict),
-                )
-        except Exception as _rs_e:
-            log.warning(
-                "rs_proxy broad warehouse seed failed, using core OHLCV: %s", _rs_e
+                kova_ohlcv_dict = {}
+            for _t, _rows in ohlcv_dict.items():
+                kova_ohlcv_dict[_t] = _rows  # fresh in-memory core overrides warehouse
+            if spy_ohlcv is not None:
+                kova_ohlcv_dict["SPY"] = spy_ohlcv
+            kova_intervals = tuple(
+                item.strip()
+                for item in os.environ.get("KOVA_INTRADAY_INTERVALS", "15min,60min").replace(";", ",").split(",")
+                if item.strip()
             )
-            kova_ohlcv_dict = {}
-        for _t, _rows in ohlcv_dict.items():
-            kova_ohlcv_dict[_t] = _rows  # fresh in-memory core overrides warehouse
-        if spy_ohlcv is not None:
-            kova_ohlcv_dict["SPY"] = spy_ohlcv
-        kova_intervals = tuple(
-            item.strip()
-            for item in os.environ.get("KOVA_INTRADAY_INTERVALS", "15min,60min").replace(";", ",").split(",")
-            if item.strip()
-        )
-        kova_companyfacts_lookback_days = _env_int("KOVA_COMPANYFACTS_LOOKBACK_DAYS")
-        kova_data_snapshot = persist_kova_data_snapshot(
-            asof_date=today_iso,
-            tickers=broad_ingest_universe,
-            data_dir="data/kova",
-            non_ohlcv_dir="data/non_ohlcv",
-            ohlcv_data=kova_ohlcv_dict,
-            alpha_vantage_api_key=os.environ.get("ALPHA_VANTAGE_API_KEY"),
-            refresh_intraday=_env_flag("KOVA_REFRESH_INTRADAY", False),
-            intervals=kova_intervals,
-            month=os.environ.get("KOVA_INTRADAY_MONTH") or None,
-            # exp-20260613-023: refresh companyfacts on every run (was env-gated
-            # off, which froze the cache at 2026-06-04) and pass a finite
-            # stale_days so already-cached CIK files are re-fetched on a throttle
-            # instead of being treated as permanently fresh (stale_days=None).
-            refresh_companyfacts=_env_flag("KOVA_REFRESH_COMPANYFACTS", True),
-            companyfacts_stale_days=_env_float("KOVA_COMPANYFACTS_STALE_DAYS", 2.0),
-            companyfacts_max_ciks=_env_int("KOVA_COMPANYFACTS_MAX_CIKS"),
-            companyfacts_lookback_days=(
-                kova_companyfacts_lookback_days
-                if kova_companyfacts_lookback_days is not None
-                else 820
-            ),
-            sec13f_zip=os.environ.get("KOVA_SEC13F_ZIP") or None,
-            sec13f_year=_env_int("KOVA_SEC13F_YEAR"),
-            sec13f_quarter=_env_int("KOVA_SEC13F_QUARTER"),
-            cusip_map=os.environ.get("KOVA_CUSIP_MAP") or None,
-            refresh_sec13f=_env_flag("KOVA_REFRESH_SEC13F", False),
-            sleep_seconds=_env_float("KOVA_DATA_SLEEP_SECONDS", 0.11),
-        )
-        non_ohlcv_snapshot["kova_data_sidecar"] = kova_data_snapshot
-        log.info(
-            "Kova data sidecar: status=%s fundamentals=%s rs=%s intraday=%s institutional=%s",
-            kova_data_snapshot.get("status"),
-            (kova_data_snapshot.get("fundamental_growth") or {}).get("rows_written"),
-            (kova_data_snapshot.get("rs_proxy") or {}).get("rows_written"),
-            (kova_data_snapshot.get("intraday_ohlcv") or {}).get("rows_written"),
-            (kova_data_snapshot.get("institutional_ownership") or {}).get("rows_written"),
-        )
-    except Exception as e:
-        log.warning(f"Kova data sidecar unavailable: {e}")
-        non_ohlcv_snapshot["kova_data_sidecar"] = {
-            "status": "failed",
-            "asof_date": today_iso,
-            "error": str(e),
-            "production_impact": {
-                "alters_signal_generation": False,
-                "alters_candidate_ranking": False,
-                "alters_sizing": False,
-                "alters_exits": False,
-                "alters_orders": False,
-            },
-        }
+            kova_companyfacts_lookback_days = _env_int("KOVA_COMPANYFACTS_LOOKBACK_DAYS")
+            kova_data_snapshot = persist_kova_data_snapshot(
+                asof_date=today_iso,
+                tickers=post_prompt_accumulation_universe,
+                data_dir="data/kova",
+                non_ohlcv_dir="data/non_ohlcv",
+                ohlcv_data=kova_ohlcv_dict,
+                alpha_vantage_api_key=os.environ.get("ALPHA_VANTAGE_API_KEY"),
+                refresh_intraday=_env_flag("KOVA_REFRESH_INTRADAY", False),
+                intervals=kova_intervals,
+                month=os.environ.get("KOVA_INTRADAY_MONTH") or None,
+                # exp-20260613-023: refresh companyfacts on every run (was env-gated
+                # off, which froze the cache at 2026-06-04) and pass a finite
+                # stale_days so already-cached CIK files are re-fetched on a throttle
+                # instead of being treated as permanently fresh (stale_days=None).
+                refresh_companyfacts=_env_flag("KOVA_REFRESH_COMPANYFACTS", True),
+                companyfacts_stale_days=_env_float("KOVA_COMPANYFACTS_STALE_DAYS", 2.0),
+                companyfacts_max_ciks=_env_int("KOVA_COMPANYFACTS_MAX_CIKS"),
+                companyfacts_lookback_days=(
+                    kova_companyfacts_lookback_days
+                    if kova_companyfacts_lookback_days is not None
+                    else 820
+                ),
+                sec13f_zip=os.environ.get("KOVA_SEC13F_ZIP") or None,
+                sec13f_year=_env_int("KOVA_SEC13F_YEAR"),
+                sec13f_quarter=_env_int("KOVA_SEC13F_QUARTER"),
+                cusip_map=os.environ.get("KOVA_CUSIP_MAP") or None,
+                refresh_sec13f=_env_flag("KOVA_REFRESH_SEC13F", False),
+                sleep_seconds=_env_float("KOVA_DATA_SLEEP_SECONDS", 0.11),
+            )
+            non_ohlcv_snapshot["kova_data_sidecar"] = kova_data_snapshot
+            log.info(
+                "Kova data sidecar: status=%s fundamentals=%s rs=%s intraday=%s institutional=%s",
+                kova_data_snapshot.get("status"),
+                (kova_data_snapshot.get("fundamental_growth") or {}).get("rows_written"),
+                (kova_data_snapshot.get("rs_proxy") or {}).get("rows_written"),
+                (kova_data_snapshot.get("intraday_ohlcv") or {}).get("rows_written"),
+                (kova_data_snapshot.get("institutional_ownership") or {}).get("rows_written"),
+            )
+        except Exception as e:
+            log.warning(f"Kova data sidecar unavailable: {e}")
+            non_ohlcv_snapshot["kova_data_sidecar"] = {
+                "status": "failed",
+                "asof_date": today_iso,
+                "error": str(e),
+                "production_impact": {
+                    "alters_signal_generation": False,
+                    "alters_candidate_ranking": False,
+                    "alters_sizing": False,
+                    "alters_exits": False,
+                    "alters_orders": False,
+                },
+            }
+
+    if llm_prompt_priority:
+        _deferred_after_prompt.append(("kova_sidecar", _run_kova_sidecar))
+    else:
+        _run_kova_sidecar()
 
     non_ohlcv_snapshot["estimate_revision_ledger"] = estimate_revision_summary
     features_dict = {}
@@ -1673,6 +1897,36 @@ def main():
                 f"{a['ticker']} +{a['shares_to_buy']}" for a in addon_actions
             ),
         )
+
+    trade_items = []
+    daily_prompt_generated = False
+    if llm_prompt_priority:
+        # Prompt checkpoint: live-relevant context is ready here.  Default-off
+        # paper sleeves and broad-universe observers are useful for research, but
+        # they should not delay the operator's daily LLM handoff.
+        trend_signals_dict["quant_signals"] = signals
+        trend_signals_dict["pilot_quant_signals"] = pilot_signals
+        trend_signals_dict["addon_actions"] = addon_actions
+        trend_signals_dict["entry_filter_audit"] = entry_filter_audit
+        trend_signals_dict["entry_execution_plan"] = entry_execution_plan
+        trend_signals_dict["strategy_entry_execution_plan"] = strategy_entry_execution_plan
+        trend_signals_dict["entry_candidate_review"] = entry_candidate_review
+        trend_signals_dict["market_state_snapshot"] = market_state_snapshot
+        trend_signals_dict["pilot_entry_filter_audit"] = pilot_entry_filter_audit
+        trend_signals_dict["pilot_entry_execution_plan"] = pilot_entry_execution_plan
+        trend_signals_dict["pilot_decision_hashes"] = pilot_decision_hashes
+        trend_signals_dict["ohlcv_warehouse"] = ohlcv_warehouse_summary
+
+        _print_section("STEP 6A - Priority news + LLM prompt")
+        trade_items = _collect_trade_news(today, universe, pilot_universe)
+        daily_prompt_generated = _generate_llm_prompt(
+            trade_items,
+            open_positions,
+            trend_signals_dict,
+        )
+        # Prompt is out — now drain deferred broad/alt-data accumulation that the
+        # operator handoff did not need.
+        _run_deferred_after_prompt()
 
     try:
         low_deployment_etf_overlay = build_low_deployment_etf_overlay_snapshot(
@@ -3599,6 +3853,10 @@ def main():
     trend_signals_dict["sleeve_health_report"] = sleeve_health_report
 
 
+    # Safety net: drain any deferred post-prompt work not already run (e.g. when
+    # the Step 6A checkpoint was skipped). No-op once the queue is empty.
+    _run_deferred_after_prompt()
+
     # ── Step 7: Quant report ──────────────────────────────────────────────────
     _print_section("STEP 7 — Quant report")
     report = generate_daily_report(
@@ -3658,7 +3916,7 @@ def main():
     print("\n" + report)
     save_report(report)
 
-    _save_json({
+    _save_json_best_effort({
         "generated_at":   datetime.now().isoformat(),
         "market_regime":  market_regime,
         "portfolio_heat": portfolio_heat,
@@ -3727,61 +3985,16 @@ def main():
         "heat_blocked_pilot_signals": heat_blocked_pilot_signals,
         "universe_governance": universe_governance_state,
         "features":       features_dict,
-    }, str(daily_artifact_path("quant_signals", today)))
+    }, str(daily_artifact_path("quant_signals", today)), "quant signals")
 
     _run_expectation_residual_leadership_attribution_observer()
 
     # ── Step 8: Fetch & filter news ───────────────────────────────────────────
     _print_section("STEP 8 — News collection")
-    trade_items = []
-    try:
-        from sources import get_all_sources
-        from parser  import parse_feed_with_diagnostics, deduplicate_items, sort_items_by_date
-        from filter  import apply_hygiene_filters, apply_trade_filters
-
-        all_items  = []
-        source_stats = []
-        sources    = get_all_sources(extra_tickers=pilot_universe)
-        log.info(f"Fetching from {len(sources)} RSS sources...")
-        for source in sources:
-            try:
-                items, diagnostics = parse_feed_with_diagnostics(
-                    source["url"], source["source_type"], source.get("metadata", {})
-                )
-                all_items.extend(items)
-                source_stats.append(diagnostics)
-            except Exception as e:
-                log.warning(f"Source {source['url']}: {e}")
-                source_stats.append({
-                    "url": source["url"],
-                    "source_type": source["source_type"],
-                    "metadata": dict(source.get("metadata", {})),
-                    "request_headers_used": {},
-                    "status": None,
-                    "bozo": False,
-                    "bozo_exception": None,
-                    "entry_count": 0,
-                    "parsed_item_count": 0,
-                    "error": str(e),
-                })
-
-        sorted_items  = sort_items_by_date(deduplicate_items(all_items))
-        hygiene_items = apply_hygiene_filters(sorted_items)["items"]
-        trade_watchlist = sorted(set(universe) | set(pilot_universe))
-        trade_items   = apply_trade_filters(
-            sorted_items,
-            watchlist=trade_watchlist,
-        )["items"]
-
-        _save_json(sorted_items,  str(daily_artifact_path("news", today)))
-        _save_json(source_stats,  str(daily_artifact_path("news_source_stats", today)))
-        _save_json(hygiene_items, str(daily_artifact_path("clean_news", today)))
-        _save_json(trade_items,   str(daily_artifact_path("clean_trade_news", today)))
-
-        log.info(f"News: {len(sorted_items)} raw → {len(hygiene_items)} hygiene "
-                 f"→ {len(trade_items)} trade-filtered")
-    except Exception as e:
-        log.error(f"News collection failed: {e}")
+    if daily_prompt_generated:
+        log.info("News already collected for priority LLM prompt; skipping duplicate collection.")
+    else:
+        trade_items = _collect_trade_news(today, universe, pilot_universe)
 
     # ── Step 9: LLM prompt ────────────────────────────────────────────────────
     _print_section("STEP 9 — LLM prompt")
@@ -3794,19 +4007,14 @@ def main():
     # quant/import_advice.py, which writes llm_prompt_resp_YYYYMMDD.json (the
     # canonical artifact backtester --replay-llm consumes). Replay coverage
     # only compounds when the import step happens; llm_backlog tracks gaps.
-    try:
-        from llm_advisor import get_investment_advice
-        result = get_investment_advice(
-            trade_items,           # may be [] on quiet news days — that's fine
-            open_positions = open_positions,
-            trend_signals  = trend_signals_dict,
+    if daily_prompt_generated:
+        log.info("Daily LLM prompt already generated in priority checkpoint.")
+    else:
+        daily_prompt_generated = _generate_llm_prompt(
+            trade_items,           # may be [] on quiet news days; that's fine
+            open_positions,
+            trend_signals_dict,
         )
-        if result["success"]:
-            log.info(result["advice"])
-        else:
-            log.error(f"LLM advisor: {result['error']}")
-    except Exception as e:
-        log.error(f"LLM advisor failed: {e}")
 
     # ── Step 10: Summary ──────────────────────────────────────────────────────
     _print_section("PIPELINE COMPLETE")
@@ -3849,6 +4057,27 @@ def main():
         log.info(f"  P&L (realized):     ${metrics['total_pnl_usd']:,.2f}  "
                  f"WR={metrics['win_rate']*100:.0f}%")
     log.info("")
+
+    # Pilot tracker: regenerate the manual small-live pilot recommendation sheet
+    # and benchmark scorecard from the freshly-written sleeve states. Read-only;
+    # wrapped so a tracker error can never break the daily production run.
+    try:
+        import pilot_tracker
+        _pilot = pilot_tracker.generate(write=True)
+        _overlaps = _pilot.get("cross_pilot_overlap") or []
+        log.info(
+            "  Pilot tracker:      %d pilots, %d cross-pilot overlap(s) -> data/pilots/pilot_tracker.md",
+            len(_pilot.get("scorecards") or []),
+            len(_overlaps),
+        )
+        for _ov in _overlaps:
+            log.warning(
+                "  Pilot overlap:      %s held by %d pilots -> $%s stacked exposure",
+                _ov.get("ticker"), _ov.get("positions", 0),
+                f"{_ov.get('total_exposure_usd', 0.0):,.0f}",
+            )
+    except Exception as exc:  # never let pilot tracking break the daily run
+        log.warning("  Pilot tracker:      skipped (%s)", exc)
 
 
 if __name__ == "__main__":

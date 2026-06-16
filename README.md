@@ -96,6 +96,34 @@ data\quant_signals_YYYYMMDD.json -> pilot_signals
 
 如果配置了 OpenAI API key，系统会尝试生成 LLM 决策；如果 API 不可用，仍可使用 `llm_prompt_YYYYMMDD.txt` 手动复制给 ChatGPT / Claude。
 
+## 运行模式：快速出 prompt + 后台积累 broad universe
+
+`quant\run.py` 默认分两阶段跑（由 `LLM_PROMPT_PRIORITY` 控制，默认开）：
+
+1. **Pre-prompt（窄，约 60 名 trade/pilot universe）**：先把 operator 的 prompt 和核心信号快速产出并写盘。拿到 `llm_prompt_YYYYMMDD.txt` 就可以开始操作。
+2. **Post-prompt（宽，约 1200 名 broad universe）**：prompt 写盘后，**同一进程继续运行**，把 broad universe 的数据补齐 —— broad OHLCV 增量写入 warehouse，以及 SEC companyfacts / kova / earnings 等 sidecar 刷新。这一阶段是**纯数据积累**，不会重新跑 prompt、LLM advice 或 sleeve 评估。
+
+这样既能尽快拿到 prompt，又不丢失全 universe 的数据积累。默认模式下 prompt 之后那段 broad 积累会让整个进程跑得更久，但**不阻塞 operator**：prompt 已经写盘，可以直接用。
+
+环境变量开关：
+
+| 变量 | 默认 | 作用 |
+| --- | --- | --- |
+| `LLM_PROMPT_PRIORITY` | `1` | 两阶段模式（pre-prompt 窄 + post-prompt 宽）。设 `0` 则全部 inline 跑，prompt 会变慢。 |
+| `RUN_BROAD_ACCUMULATION` | `1` | post-prompt 阶段积累 broad universe 数据。设 `0` 为「纯轻量」：只跑约 60 名、不积累 broad（最快）。 |
+| `BROAD_OHLCV_BATCH_SIZE` | `200` | broad OHLCV 下载的分批大小。 |
+| `DISABLE_OHLCV_WAREHOUSE_ACCUMULATION` | `0` | 设 `1` 完全关闭 OHLCV warehouse 写入。 |
+
+典型用法：
+
+```powershell
+# 默认：快速出 prompt，然后后台积累全 universe 数据
+.\.venv\Scripts\python.exe quant\run.py
+
+# 纯轻量：只跑 trade universe，最快出 prompt，不积累 broad 数据
+$env:RUN_BROAD_ACCUMULATION = "0"; .\.venv\Scripts\python.exe quant\run.py
+```
+
 ## 标准回测
 
 标准回测仍然用 `quant\backtester.py`。按 `docs/backtesting.md`，当前固定看三个非重叠窗口：
