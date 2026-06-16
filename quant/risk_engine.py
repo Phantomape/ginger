@@ -235,7 +235,10 @@ def _sector_ret20_dispersion(features_dict):
         if not features:
             continue
         ret20 = features.get("momentum_20d_pct")
-        if isinstance(ret20, (int, float)):
+        # Exclude NaN/inf: a non-finite value (e.g. a nan momentum) survives the
+        # isinstance check but makes statistics.pstdev's internal sum a bare
+        # float, raising "'float' object has no attribute 'numerator'".
+        if isinstance(ret20, (int, float)) and math.isfinite(ret20):
             sector_returns[SECTOR_MAP.get(ticker, "Unknown")].append(float(ret20))
 
     sector_avgs = [
