@@ -1,0 +1,112 @@
+{
+  "after_metrics": {
+    "aggregate": {
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_max": 0.1119,
+      "survival_rate_min": 0.7925,
+      "total_pnl_sum": 234850.99,
+      "trade_count_sum": 61
+    },
+    "windows": {
+      "late_strong": {
+        "expected_value_score": 5.1628,
+        "total_pnl": 117072.92
+      },
+      "mid_weak": {
+        "expected_value_score": 2.1402,
+        "total_pnl": 78110.11
+      },
+      "old_thin": {
+        "expected_value_score": 0.5911,
+        "total_pnl": 39667.96
+      }
+    }
+  },
+  "backtest_protocol": "docs/backtesting.md standard_three_window",
+  "before_metrics": {
+    "aggregate": {
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_max": 0.1119,
+      "survival_rate_min": 0.7925,
+      "total_pnl_sum": 234850.99,
+      "trade_count_sum": 61
+    },
+    "windows": {
+      "late_strong": {
+        "expected_value_score": 5.1628,
+        "total_pnl": 117072.92
+      },
+      "mid_weak": {
+        "expected_value_score": 2.1402,
+        "total_pnl": 78110.11
+      },
+      "old_thin": {
+        "expected_value_score": 0.5911,
+        "total_pnl": 39667.96
+      }
+    }
+  },
+  "change_type": "capital_allocation",
+  "changed_variable": "pullback_in_uptrend_risk_multiplier",
+  "date_range": {
+    "late_strong": "2025-10-23 -> 2026-04-21",
+    "mid_weak": "2025-04-23 -> 2025-10-22",
+    "old_thin": "2024-10-02 -> 2025-04-22"
+  },
+  "decision": "rejected_failed_gate4",
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260522-017",
+  "gate4": {
+    "adjusted_signal_count": 0,
+    "affected_window_count": 0,
+    "changed_trade_count": 0,
+    "concentration_passed": true
+  },
+  "hypothesis": "Core stock signals that remain in a 20d uptrend but have stalled or pulled back over the last 5d may offer better follow-through than straight continuation entries; a small cap-aware risk top-up may improve EV without changing entry filters, ranking, exits, universe, LLM, or news logic.",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260522-013",
+    "exp-20260522-014",
+    "exp-20260522-015"
+  ],
+  "new_evidence_type": "new_production_visible_field",
+  "next_evidence_needed": "Do not retry nearby pullback-in-uptrend multipliers on the same frozen windows. If reversal-vs-continuation remains promising, use a broader production-visible daily-return-path cohort with enough qualified core signals first.",
+  "parameters": {
+    "excluded_sectors": [
+      "Commodities",
+      "ETF"
+    ],
+    "field": "reversal_vs_continuation_state",
+    "selected_multiplier": 1.025,
+    "state_definition": {
+      "continuation": "ret20 > 0 and ret5 > 0",
+      "countertrend_bounce": "ret20 <= 0 and ret5 > 0",
+      "downtrend_persistence": "ret20 <= 0 and ret5 <= 0",
+      "pullback_in_uptrend": "ret20 > 0 and ret5 <= 0"
+    },
+    "swept_multipliers": [
+      1.025,
+      1.05,
+      1.075,
+      1.1
+    ],
+    "target_state": "pullback_in_uptrend"
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "rejection_reason": "Best variant failed adjusted-signal sample guard: adjusted_signal_count=0, changed_trade_count=0, affected_window_count=0; all three canonical windows were unchanged.",
+  "related_files": [
+    "quant/experiments/exp_20260522_017_core_pullback_in_uptrend_topup.py",
+    "experiments/artifacts/exp-20260522-017_core_pullback_in_uptrend_topup.md"
+  ],
+  "timestamp": "2026-05-22T16:19:51.672236+00:00",
+  "total_pnl_delta": 0.0,
+  "trial_family": "core_reversal_vs_continuation_state_risk",
+  "why_not_other_changes": "Skipped LLM soft-ranking due sparse attribution, broad-market due identity drift, event/governance/source scalars due recent repeated drawdown/sample failures, state-surface profile/notional retunes due the strict same-family gate, and nearby max20/efficiency daily-return fields because they were already explored today."
+}

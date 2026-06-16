@@ -1,0 +1,58 @@
+{
+  "after_metrics": {
+    "module_import_check": "run.py + run_quant.py + run_pipeline.py import successfully",
+    "production_exit_logic": "shared regime-aware exit profile enabled by default",
+    "targeted_tests": "6 passed"
+  },
+  "before_metrics": {
+    "backtest_accepted_alpha": "EV 0.5565 with regime-aware exit vs 0.4875 baseline",
+    "production_exit_logic": "fixed ATR_TARGET_MULT=3.5"
+  },
+  "change_summary": "Extracted the entry-day regime-aware exit profile into a shared module (`quant/regime_exit.py`) and wired it into `run.py`, `run_quant.py`, and `run_pipeline.py`. Production signals now use the same target-width mapping as the backtester by default, and exported signals carry `target_mult_used`, `regime_exit_bucket`, and `regime_exit_score` for auditability. Also promoted `REGIME_AWARE_EXIT=True` to constants as the new default.",
+  "change_type": "parity_deployment",
+  "component": "quant/regime_exit.py + quant/constants.py + quant/backtester.py + quant/run.py + quant/run_quant.py + quant/run_pipeline.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "note": "This is a parity deployment, not a new alpha search. The accepted alpha result remains exp-20260419-004; this change ensures daily runs now express that same logic instead of reverting to the old fixed target."
+  },
+  "experiment_id": "exp-20260419-005",
+  "hypothesis": "Once a backtested alpha improvement is accepted, leaving production on the old exit logic creates a research/production mismatch and forfeits the measured edge. Porting the same shared regime-aware exit profile into the daily entry points should preserve parity without changing the already-validated formula.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "deployment_basis": "same accepted exp-20260419-004 evidence set"
+  },
+  "next_retry_requires": [
+    "Monitor forward trades and compare realized exits against `target_mult_used` / `regime_exit_bucket`",
+    "If live behavior diverges, inspect production data quality rather than re-questioning the exit formula first"
+  ],
+  "notes": "Validation included targeted pytest coverage plus direct module import checks for the three production entry points. A sandbox py_compile attempt failed because the environment blocked __pycache__ writes, so import validation was used instead.",
+  "parameters": {
+    "REGIME_AWARE_EXIT": {
+      "new": "shared default on both backtest and production",
+      "old": "backtester opt-in / production fixed 3.5 ATR"
+    },
+    "shared_exit_logic": {
+      "new": "single compute_regime_exit_profile() module used across entry points",
+      "old": "duplicated / backtester-only helper"
+    }
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/regime_exit.py",
+    "quant/constants.py",
+    "quant/backtester.py",
+    "quant/run.py",
+    "quant/run_quant.py",
+    "quant/run_pipeline.py",
+    "quant/test_quant.py"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-04-19T18:05:00-07:00"
+}

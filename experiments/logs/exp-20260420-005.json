@@ -1,0 +1,131 @@
+{
+  "after_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.7531,
+      "max_drawdown_pct": 0.0408,
+      "sharpe_daily": 2.83,
+      "total_return_pct": 0.2661,
+      "trade_count": 28,
+      "win_rate": 0.5714
+    },
+    "window_1": {
+      "expected_value_score": 0.0521,
+      "max_drawdown_pct": 0.0445,
+      "sharpe_daily": 0.89,
+      "total_return_pct": 0.0585,
+      "trade_count": 24,
+      "win_rate": 0.375
+    },
+    "window_2": {
+      "expected_value_score": null,
+      "max_drawdown_pct": 0.0,
+      "sharpe_daily": null,
+      "total_return_pct": 0.0,
+      "trade_count": 0,
+      "win_rate": 0.0
+    }
+  },
+  "before_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.7531,
+      "max_drawdown_pct": 0.0408,
+      "sharpe_daily": 2.83,
+      "total_return_pct": 0.2661,
+      "trade_count": 28,
+      "win_rate": 0.5714
+    },
+    "window_1": {
+      "expected_value_score": 0.0521,
+      "max_drawdown_pct": 0.0445,
+      "sharpe_daily": 0.89,
+      "total_return_pct": 0.0585,
+      "trade_count": 24,
+      "win_rate": 0.375
+    },
+    "window_2": {
+      "expected_value_score": null,
+      "max_drawdown_pct": 0.0,
+      "sharpe_daily": null,
+      "total_return_pct": 0.0,
+      "trade_count": 0,
+      "win_rate": 0.0
+    }
+  },
+  "change_summary": "Implemented an experiment-only `IN_TRADE_REGIME_UPDATE` path in the backtester that, for open `trend_long` winners held at least 2 trading days and up at least 1 ATR, recomputed the target from the prior day's regime profile. Ran paired same-data before/after backtests across the primary window and two non-overlapping secondary windows, then rolled the code back after a strict null result.",
+  "change_type": "exit_rule",
+  "component": "quant/backtester.py + quant/in_trade_regime.py + quant/constants.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "note": "Strict null effect in all measurable windows. The added retargeting logic did not change trade count, win rate, return, drawdown, or EV at all. This implies the current entry-day regime-aware target mapping already captures the relevant information for the sampled trades, so carrying the same mapping forward in-trade adds no incremental edge.",
+    "primary_expected_value_score_delta": 0.0,
+    "primary_max_drawdown_pct_delta": 0.0,
+    "primary_sharpe_daily_delta": 0.0,
+    "primary_total_return_pct_delta": 0.0,
+    "window_1_expected_value_score_delta": 0.0,
+    "window_1_sharpe_daily_delta": 0.0,
+    "window_1_total_return_pct_delta": 0.0,
+    "window_2_expected_value_score_delta": null
+  },
+  "experiment_id": "exp-20260420-005",
+  "hypothesis": "If `regime-aware exit` already improves entry-day target width, extending the same regime mapping into open `trend_long` positions may further improve expected_value_score by retargeting winners using only prior-day observable SPY/QQQ state. Scope was intentionally narrow: no entry changes, no ranking changes, no breakout changes, no LLM changes.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "BULL (slow-melt) with Apr-2026 stress",
+    "window_1": "ripping bull / high-beta leadership",
+    "window_2": "older mixed window with sparse current-universe signal coverage"
+  },
+  "next_retry_requires": [
+    "Do not revisit in-trade target refresh by simply reapplying the same regime score used at entry",
+    "If trend exit alpha is revisited, test a genuinely different mechanism class (for example, a selective trailing/profit-lock rule or a different hold-quality proxy), not another carry-forward of the current regime map",
+    "Prefer the next high-value effort to unlock blocked alpha directions: LLM soft ranking (P-LLM) or C strategy revival (P-ERN)"
+  ],
+  "notes": "Important measurement note from this run: `BacktestEngine(..., config={\"REGIME_AWARE_EXIT\": True})` reproduced the accepted 0.7531 baseline, while the plain CLI invocation can still print a lower 0.4641 stack if `--regime-aware-exit` is omitted. The alpha verdict here is based on paired same-data runs against the accepted stack, not on that CLI-default drift.",
+  "parameters": {
+    "IN_TRADE_REGIME_UPDATE": {
+      "old": false,
+      "trial": true
+    },
+    "inputs": {
+      "allowed": [
+        "previous-day spy_pct_from_ma",
+        "previous-day qqq_pct_from_ma",
+        "previous-day spy_10d_return",
+        "previous-day qqq_10d_return"
+      ],
+      "forbidden": [
+        "same-day index move",
+        "future regime labels"
+      ]
+    },
+    "scope": {
+      "old": "entry-day target only",
+      "trial": "open trend_long winners only"
+    },
+    "update_trigger": {
+      "min_hold_days": 2,
+      "profit_in_atr": ">=1.0"
+    }
+  },
+  "rejection_reason": "Gate 4 failed by null effect. This was not merely 'too small to matter'闂傚倸鍊搁崐鐑芥嚄閸洖纾婚柕濞炬櫅绾惧潡鏌＄仦璇插姎闁哄绶氶弻娑㈠箳閺傝法娈?paired same-data run produced zero change in every measured primary/secondary metric. Keeping extra exit-state complexity with no measurable edge would violate the complexity discipline in AGENTS.md.",
+  "related_files": [
+    "docs/experiment_log.jsonl"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-17",
+      "start": "2025-04-21"
+    },
+    {
+      "end": "2025-04-30",
+      "start": "2024-10-01"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-20T11:40:00-07:00"
+}

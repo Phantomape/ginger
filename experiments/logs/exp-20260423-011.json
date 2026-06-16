@@ -1,0 +1,275 @@
+{
+  "after_metrics": {
+    "hq_exit_s2_p1_d3": {
+      "late_strong": {
+        "expected_value_score": 0.7761,
+        "hold_quality_exits": 0,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.62,
+        "total_return_pct": 0.2144,
+        "trade_count": 23,
+        "win_rate": 0.6087
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1301,
+        "hold_quality_exits": 1,
+        "max_drawdown_pct": 0.0529,
+        "sharpe_daily": 1.24,
+        "total_return_pct": 0.1049,
+        "trade_count": 30,
+        "win_rate": 0.4
+      },
+      "old_thin": {
+        "expected_value_score": 0.0085,
+        "hold_quality_exits": 3,
+        "max_drawdown_pct": 0.0724,
+        "sharpe_daily": 0.33,
+        "total_return_pct": 0.0257,
+        "trade_count": 28,
+        "win_rate": 0.3571
+      }
+    },
+    "hq_exit_s2_p2_d2": {
+      "late_strong": {
+        "expected_value_score": 0.7761,
+        "hold_quality_exits": 0,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.62,
+        "total_return_pct": 0.2144,
+        "trade_count": 23,
+        "win_rate": 0.6087
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1073,
+        "hold_quality_exits": 2,
+        "max_drawdown_pct": 0.0578,
+        "sharpe_daily": 1.14,
+        "total_return_pct": 0.0941,
+        "trade_count": 30,
+        "win_rate": 0.4
+      },
+      "old_thin": {
+        "expected_value_score": 0.0076,
+        "hold_quality_exits": 2,
+        "max_drawdown_pct": 0.0767,
+        "sharpe_daily": 0.31,
+        "total_return_pct": 0.0244,
+        "trade_count": 27,
+        "win_rate": 0.3333
+      }
+    },
+    "hq_exit_s2_p2_d3": {
+      "late_strong": {
+        "expected_value_score": 0.7761,
+        "hold_quality_exits": 0,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.62,
+        "total_return_pct": 0.2144,
+        "trade_count": 23,
+        "win_rate": 0.6087
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1301,
+        "hold_quality_exits": 1,
+        "max_drawdown_pct": 0.0529,
+        "sharpe_daily": 1.24,
+        "total_return_pct": 0.1049,
+        "trade_count": 30,
+        "win_rate": 0.4
+      },
+      "old_thin": {
+        "expected_value_score": 0.0076,
+        "hold_quality_exits": 2,
+        "max_drawdown_pct": 0.0767,
+        "sharpe_daily": 0.31,
+        "total_return_pct": 0.0244,
+        "trade_count": 27,
+        "win_rate": 0.3333
+      }
+    },
+    "hq_exit_s3_p2_d3": {
+      "late_strong": {
+        "expected_value_score": 0.7761,
+        "hold_quality_exits": 0,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.62,
+        "total_return_pct": 0.2144,
+        "trade_count": 23,
+        "win_rate": 0.6087
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1317,
+        "hold_quality_exits": 1,
+        "max_drawdown_pct": 0.0529,
+        "sharpe_daily": 1.25,
+        "total_return_pct": 0.1054,
+        "trade_count": 30,
+        "win_rate": 0.4
+      },
+      "old_thin": {
+        "expected_value_score": 0.0077,
+        "hold_quality_exits": 2,
+        "max_drawdown_pct": 0.0765,
+        "sharpe_daily": 0.31,
+        "total_return_pct": 0.0247,
+        "trade_count": 27,
+        "win_rate": 0.3333
+      }
+    }
+  },
+  "before_metrics": {
+    "accepted_ab_stack": {
+      "late_strong": {
+        "expected_value_score": 0.7761,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.62,
+        "total_return_pct": 0.2144,
+        "trade_count": 23,
+        "win_rate": 0.6087
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1344,
+        "max_drawdown_pct": 0.0523,
+        "sharpe_daily": 1.26,
+        "total_return_pct": 0.1067,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0075,
+        "max_drawdown_pct": 0.0906,
+        "sharpe_daily": 0.31,
+        "total_return_pct": 0.0242,
+        "trade_count": 27,
+        "win_rate": 0.2963
+      }
+    }
+  },
+  "change_summary": "Ran a runtime-only in-memory patch of `quant/backtester.py` that left entries, ranking, sizing, and the accepted A+B stack unchanged, but added a same-day close exit for open `trend_long` positions after a configurable streak of weak hold days. Weak days were measured with current-day `compute_features()` only: `trend_score <= threshold`, `momentum_10d_pct <= threshold`, and `close` at least 2-3% below the position's peak close since entry. Screened four variants across the deterministic late / mid / old OHLCV snapshots, then kept no repository trading logic after measurement.",
+  "change_type": "exit_rule",
+  "component": "runtime-only in-memory patch of `quant/backtester.py` exit loop (rolled back; no repo trading logic changed)",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "best_variant": "hq_exit_s2_p1_d3",
+    "best_variant_ev_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": -0.0043,
+      "old_thin": 0.001
+    },
+    "note": "The family failed the majority-window test. Every screened variant was a strict null in the dominant late-strong window, all four variants regressed the middle window, and the old-window improvements were too small to count as stable edge despite somewhat lower drawdown. This is not a data blocker: the richer multi-day selector fired, but it behaved like weak-tape damage control rather than a general repo-level alpha unlock.",
+    "other_variant_ev_deltas": {
+      "hq_exit_s2_p2_d2": {
+        "late_strong": 0.0,
+        "mid_weak": -0.0271,
+        "old_thin": 0.0001
+      },
+      "hq_exit_s2_p2_d3": {
+        "late_strong": 0.0,
+        "mid_weak": -0.0043,
+        "old_thin": 0.0001
+      },
+      "hq_exit_s3_p2_d3": {
+        "late_strong": 0.0,
+        "mid_weak": -0.0027,
+        "old_thin": 0.0002
+      }
+    }
+  },
+  "experiment_id": "exp-20260423-011",
+  "hypothesis": "If the remaining `trend_long` leak is not another one-day weak-close patch but a richer in-trade hold-quality failure, then already-profitable trend positions should be exited only after repeated deterioration: consecutive weak hold days defined by low `trend_score`, non-positive `momentum_10d_pct`, and a meaningful close-from-peak drawdown. A valid rule must preserve the dominant late-strong window while improving a majority of the deterministic late / mid / old snapshots.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull with Apr-2026 stress",
+    "mid_weak": "ripping bull / high-beta leadership",
+    "old_thin": "mixed-to-weak tape"
+  },
+  "next_retry_requires": [
+    "Do not retry nearby `2/3-day` trend hold-quality exits keyed only off `trend_score`, `momentum_10d_pct`, and close-from-peak drawdown by default",
+    "If `trend_long` exit work returns, require a genuinely richer hold-quality context than deterministic price-state deterioration alone, such as event/semantic context or a new trade-specific state variable",
+    "Prefer a different unblocked alpha branch over more price-only trend-exit micro-permutations"
+  ],
+  "notes": "This stayed a single-causal-variable runtime-only experiment: only the open-position exit selector changed, and only for profitable `trend_long` positions after repeated hold-quality deterioration. Entries, ranking, sizing, and the accepted cohort rules were left unchanged.",
+  "parameters": {
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "screened_variants": {
+      "hq_exit_s2_p1_d3": {
+        "close_from_peak_drawdown_pct": 0.03,
+        "min_profit_pct": 0.01,
+        "momentum_10d_pct_max": 0.0,
+        "trend_score_max": 0.4,
+        "weak_streak_days": 2
+      },
+      "hq_exit_s2_p2_d2": {
+        "close_from_peak_drawdown_pct": 0.02,
+        "min_profit_pct": 0.02,
+        "momentum_10d_pct_max": 0.0,
+        "trend_score_max": 0.4,
+        "weak_streak_days": 2
+      },
+      "hq_exit_s2_p2_d3": {
+        "close_from_peak_drawdown_pct": 0.03,
+        "min_profit_pct": 0.02,
+        "momentum_10d_pct_max": 0.0,
+        "trend_score_max": 0.4,
+        "weak_streak_days": 2
+      },
+      "hq_exit_s3_p2_d3": {
+        "close_from_peak_drawdown_pct": 0.03,
+        "min_profit_pct": 0.02,
+        "momentum_10d_pct_max": 0.0,
+        "trend_score_max": 0.4,
+        "weak_streak_days": 3
+      }
+    },
+    "selector": {
+      "rule": "exit at same-day close only when an already-profitable position has repeated weak hold days defined by trend_score + momentum_10d_pct + close-from-peak deterioration and no stop/target already fired",
+      "strategy": "trend_long"
+    },
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability. Multi-day hold-quality exits built only from deterministic `trend_score`, `momentum_10d_pct`, and close-from-peak deterioration still do not generalize; they preserve the strongest tape but fail to improve the middle window and only marginally rescue the oldest weak window.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "data/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv_snapshot_20241002_20250422.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-23T09:15:17-07:00"
+}

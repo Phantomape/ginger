@@ -1,0 +1,145 @@
+{
+  "after_metrics": {
+    "cross_asset_proxy_coverage": {
+      "late_strong": [
+        "GLD",
+        "SLV",
+        "SPY",
+        "QQQ",
+        "TLT",
+        "IEF",
+        "UUP",
+        "USO",
+        "XLE",
+        "XLU",
+        "XLP",
+        "XLV"
+      ],
+      "mid_weak": [
+        "GLD",
+        "SLV",
+        "SPY",
+        "QQQ",
+        "TLT",
+        "IEF",
+        "UUP",
+        "USO",
+        "XLE",
+        "XLU",
+        "XLP",
+        "XLV"
+      ],
+      "old_thin": [
+        "GLD",
+        "SLV",
+        "SPY",
+        "QQQ",
+        "TLT",
+        "IEF",
+        "UUP",
+        "USO",
+        "XLE",
+        "XLU",
+        "XLP",
+        "XLV"
+      ]
+    }
+  },
+  "before_metrics": {
+    "cross_asset_proxy_coverage": {
+      "late_strong": [
+        "GLD",
+        "SLV",
+        "SPY",
+        "QQQ"
+      ],
+      "mid_weak": [
+        "GLD",
+        "SLV",
+        "SPY",
+        "QQQ"
+      ],
+      "old_thin": [
+        "GLD",
+        "SLV",
+        "SPY",
+        "QQQ"
+      ]
+    }
+  },
+  "change_summary": "Added TLT, IEF, UUP, USO, XLE, XLU, XLP, and XLV OHLCV histories to all three fixed snapshot files using each snapshot's recorded download_start/download_end. Existing ticker histories were not rewritten. Also wrote an augmentation manifest.",
+  "change_type": "alpha_enabling_data_expansion",
+  "component": "data/ohlcv_snapshot_*.json via `quant/experiments/legacy/exp_20260425_009_add_cross_asset_proxies.py`",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "accepted_data",
+  "delta_metrics": {
+    "note": "Data expansion only; no strategy logic changed.",
+    "strategy_delta": null
+  },
+  "experiment_id": "exp-20260425-009",
+  "hypothesis": "The macro branch is blocked by an information-source gap, not by a generic infrastructure issue. Adding missing cross-asset ETF histories to fixed snapshots should enable credible macro-state tests using rates, dollar, energy, and defensive sector proxies.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "purpose": "enable cross-asset macro state tests across late_strong, mid_weak, and old_thin fixed windows"
+  },
+  "next_retry_requires": [
+    "Use these proxies as sensors first; do not let TLT/UUP/XLE/XLU/XLP/XLV become tradable signals without a separate experiment",
+    "Any production macro rule must still pass multi-window Gate 4"
+  ],
+  "notes": "This is alpha-enabling data work that directly follows exp-20260425-008's missing-proxy finding.",
+  "parameters": {
+    "artifact_files": [
+      "quant/experiments/legacy/exp_20260425_009_add_cross_asset_proxies.py",
+      "data/exp_20260425_009_proxy_snapshot_augmentation.json"
+    ],
+    "failed_downloads": [],
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "proxies_added": [
+      "TLT",
+      "IEF",
+      "UUP",
+      "USO",
+      "XLE",
+      "XLU",
+      "XLP",
+      "XLV"
+    ],
+    "rows_added": {
+      "late_strong_each_proxy": 401,
+      "mid_weak_each_proxy": 403,
+      "old_thin_each_proxy": 416
+    },
+    "snapshots": [
+      "data/ohlcv_snapshot_20251023_20260421.json",
+      "data/ohlcv_snapshot_20250423_20251022.json",
+      "data/ohlcv_snapshot_20241002_20250422.json"
+    ]
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "data/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv_snapshot_20241002_20250422.json",
+    "quant/experiments/legacy/exp_20260425_009_add_cross_asset_proxies.py",
+    "data/exp_20260425_009_proxy_snapshot_augmentation.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted_data",
+  "timestamp": "2026-04-25T23:59:45-07:00"
+}

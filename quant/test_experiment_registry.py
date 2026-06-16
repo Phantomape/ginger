@@ -643,14 +643,21 @@ def test_log_draft_can_be_marked_observed_only_and_appended(tmp_path):
         notes="No strategy decision intended.",
     )
     log_path = tmp_path / "experiment_log.jsonl"
-    append_log_entry(log_path, draft)
+    shard = append_log_entry(log_path, draft)
 
     assert draft["status"] == "observed_only"
     assert draft["decision"] == "observed_only"
     assert draft["trial_family"] == "measurement_instrumentation"
     assert draft["changed_variable"] == "log append path"
     assert draft["rejection_reason"] is None
-    assert experiment_id_exists_in_log(log_path, ticket["experiment_id"])
+    # append_log_entry now persists to the per-experiment shard; the retired
+    # monolithic log is no longer written.
+    assert not log_path.exists()
+    assert shard == tmp_path / "experiments" / "logs" / f"{ticket['experiment_id']}.json"
+    assert (
+        json.loads(shard.read_text(encoding="utf-8"))["experiment_id"]
+        == ticket["experiment_id"]
+    )
 
 
 def test_log_draft_includes_prediction_calibration():
@@ -981,34 +988,36 @@ def test_per_experiment_log_entry_is_written_to_own_file(tmp_path):
     assert json.loads(path.read_text(encoding="utf-8"))["decision"] == "observed_only"
 
 
-def test_append_log_rejects_duplicate_experiment_id(tmp_path):
+def test_append_log_entry_is_idempotent_on_repeat(tmp_path):
+    # The retired monolithic appender now writes the per-experiment shard and is
+    # idempotent: a repeat (e.g. the runner already wrote its own shard) is a
+    # no-op rather than a duplicate error.
     row = {"experiment_id": "exp-20990101-001", "decision": "observed_only"}
     log_path = tmp_path / "experiment_log.jsonl"
-    append_log_entry(log_path, row)
+    first = append_log_entry(log_path, row)
+    second = append_log_entry(log_path, row)
 
-    try:
-        append_log_entry(log_path, row)
-    except ValueError as exc:
-        assert "already exists" in str(exc)
-    else:
-        raise AssertionError("duplicate experiment_id was accepted")
+    assert first == second
+    assert first.exists()
+    assert not log_path.exists()
 
 
-def test_append_log_uses_persistent_lock_file_without_blocking_reuse(tmp_path):
-    row = {"experiment_id": "exp-20990101-002", "decision": "observed_only"}
+def test_append_log_entry_writes_shards_not_monolithic_log(tmp_path):
     log_path = tmp_path / "experiment_log.jsonl"
-    append_log_entry(log_path, row)
-    append_log_entry(
+    first = append_log_entry(
+        log_path, {"experiment_id": "exp-20990101-002", "decision": "observed_only"}
+    )
+    second = append_log_entry(
         log_path,
         {"experiment_id": "exp-20990101-003", "decision": "observed_only"},
     )
 
-    assert log_path.exists()
-    lock_path = tmp_path / "experiment_log.jsonl.lock"
-    assert lock_path.exists()
-    lock_payload = json.loads(lock_path.read_text(encoding="utf-8"))
-    assert lock_payload["target"].endswith("experiment_log.jsonl")
-    assert "released_at" in lock_payload
+    logs_dir = tmp_path / "experiments" / "logs"
+    assert first == logs_dir / "exp-20990101-002.json"
+    assert second == logs_dir / "exp-20990101-003.json"
+    assert first.exists() and second.exists()
+    # The retired monolithic log is never written.
+    assert not log_path.exists()
 
 
 def test_locked_registry_update_serializes_read_modify_write(tmp_path):

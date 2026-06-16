@@ -1,0 +1,147 @@
+{
+  "after_metrics": {
+    "trend_industrials_zero_rule": {
+      "primary_window": {
+        "expected_value_score": 0.5382,
+        "max_drawdown_pct": 0.0247,
+        "sharpe_daily": 3.28,
+        "survival_rate": 0.9811,
+        "total_pnl": 16410.36,
+        "total_return_pct": 0.1641,
+        "trade_count": 23,
+        "win_rate": 0.609
+      },
+      "window_1": {
+        "expected_value_score": 0.1489,
+        "max_drawdown_pct": 0.0656,
+        "sharpe_daily": 1.29,
+        "survival_rate": 0.8852,
+        "total_pnl": 11540.15,
+        "total_return_pct": 0.1154,
+        "trade_count": 31,
+        "win_rate": 0.4516
+      },
+      "window_2": {
+        "expected_value_score": 0.0108,
+        "max_drawdown_pct": 0.0821,
+        "sharpe_daily": 0.38,
+        "survival_rate": 0.9714,
+        "total_pnl": 2838.15,
+        "total_return_pct": 0.0284,
+        "trade_count": 35,
+        "win_rate": 0.3429
+      }
+    }
+  },
+  "before_metrics": {
+    "repo_state_baseline": {
+      "primary_window": {
+        "expected_value_score": 0.5027,
+        "max_drawdown_pct": 0.0248,
+        "sharpe_daily": 3.09,
+        "survival_rate": 0.9811,
+        "total_pnl": 16265.53,
+        "total_return_pct": 0.1627,
+        "trade_count": 26,
+        "win_rate": 0.5769
+      },
+      "window_1": {
+        "expected_value_score": 0.0944,
+        "max_drawdown_pct": 0.065,
+        "sharpe_daily": 1.09,
+        "survival_rate": 0.8814,
+        "total_pnl": 8664.5,
+        "total_return_pct": 0.0866,
+        "trade_count": 33,
+        "win_rate": 0.4242
+      },
+      "window_2": {
+        "expected_value_score": 0.0013,
+        "max_drawdown_pct": 0.0984,
+        "sharpe_daily": -0.08,
+        "survival_rate": 0.971,
+        "total_pnl": -1607.92,
+        "total_return_pct": -0.0161,
+        "trade_count": 37,
+        "win_rate": 0.2973
+      }
+    }
+  },
+  "change_summary": "Added a minimal sizing-layer override: `portfolio_engine.size_signals()` now applies `TREND_INDUSTRIALS_RISK_MULTIPLIER = 0.0` when `strategy == 'trend_long'` and `sector == 'Industrials'`. Added a targeted unit test. No signal generation, ranking, exit, or LLM boundary changed.",
+  "change_type": "allocation_rule",
+  "component": "quant/constants.py + quant/portfolio_engine.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-20",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "note": "Gate 4 passed on Sharpe daily in the primary window (+0.19) and the north-star metric improved in all three non-overlapping windows. The override removes a repeated loser cohort without introducing a new filter or touching breakout sizing.",
+    "primary_expected_value_score_delta": 0.0355,
+    "primary_max_drawdown_pct_delta": -0.0001,
+    "primary_sharpe_daily_delta": 0.19,
+    "primary_total_pnl_delta": 144.83,
+    "primary_total_return_pct_delta": 0.0014,
+    "primary_trade_count_delta": -3,
+    "primary_win_rate_delta": 0.0321,
+    "window_1_expected_value_score_delta": 0.0545,
+    "window_1_max_drawdown_pct_delta": 0.0006,
+    "window_1_sharpe_daily_delta": 0.2,
+    "window_1_total_pnl_delta": 2875.65,
+    "window_1_total_return_pct_delta": 0.0288,
+    "window_1_trade_count_delta": -2,
+    "window_1_win_rate_delta": 0.0274,
+    "window_2_expected_value_score_delta": 0.0095,
+    "window_2_max_drawdown_pct_delta": -0.0163,
+    "window_2_sharpe_daily_delta": 0.46,
+    "window_2_total_pnl_delta": 4446.07,
+    "window_2_total_return_pct_delta": 0.0445,
+    "window_2_trade_count_delta": -2,
+    "window_2_win_rate_delta": 0.0456
+  },
+  "experiment_id": "exp-20260421-018",
+  "hypothesis": "In the current repo state, `trend_long` Industrials appear to be a repeated drag cohort across the primary slow-melt window, the ripping-bull comparison window, and the older weak window. Zeroing only that strategy+sector bucket should improve capital allocation without changing entry logic, exit logic, breakout sizing, or the accepted low-TQS breakout cohort rules.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "window_1": "ripping bull / high-beta leadership",
+    "window_2": "older weak-to-mixed tape"
+  },
+  "next_retry_requires": [
+    "Do not generalize this into a broad sector-based trend de-risking framework without new repeated cohort evidence",
+    "If further trend allocation work resumes, start from strategy+sector cohort structure rather than another global trend haircut",
+    "Keep `LLM soft ranking` as the highest-value blocked direction; this accepted rule is an A+B allocation refinement, not an LLM-boundary experiment"
+  ],
+  "notes": "Mechanism implication: current trend weakness is not uniform. Industrials trend setups are the repeated drag cohort in the live repo state, so the next useful allocation edge came from cohort separation inside trend rather than another exit permutation or whole-system sizing dial.",
+  "parameters": {
+    "TREND_INDUSTRIALS_RISK_MULTIPLIER": {
+      "new": 0.0,
+      "old": 1.0
+    },
+    "affected_cohort": "`trend_long` + sector == `Industrials`",
+    "baseline_rule": "current CLI baseline repo state as of 2026-04-21 before this experiment",
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe"
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/constants.py",
+    "quant/portfolio_engine.py",
+    "quant/test_quant.py",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-21T14:21:57-07:00"
+}

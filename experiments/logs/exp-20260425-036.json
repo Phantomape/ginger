@@ -1,0 +1,145 @@
+{
+  "after_metrics": {
+    "best_approx_screens": {
+      "late_strong": {
+        "pnl_delta_usd": 131.68,
+        "triggered_trades": 1,
+        "variant": "d5_negative_and_rs_lag2"
+      },
+      "mid_weak": {
+        "pnl_delta_usd": 0.0,
+        "triggered_trades": 0,
+        "variant": "d5_negative_and_rs_lag2"
+      },
+      "old_thin": {
+        "pnl_delta_usd": 65.96,
+        "triggered_trades": 1,
+        "variant": "d5_negative_and_rs_lag5"
+      }
+    },
+    "damaging_examples": {
+      "mid_weak_d10_negative_and_rs_lag2": "Would exit COIN early for approx -$374.94 instead of actual +$2605.68, delta -$2980.62.",
+      "old_thin_d5_negative_and_rs_lag2": "Would exit NFLX early for approx -$537.34 instead of actual +$2296.79, delta -$2834.13."
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "auditable_trade_count": 16,
+      "expected_value_score": 1.5039,
+      "max_drawdown_pct": 0.0281,
+      "sharpe_daily": 4.24,
+      "total_pnl": 35471.49,
+      "total_return_pct": 0.3547,
+      "trade_count": 21
+    },
+    "mid_weak": {
+      "auditable_trade_count": 15,
+      "expected_value_score": 0.4773,
+      "max_drawdown_pct": 0.0247,
+      "sharpe_daily": 2.35,
+      "total_pnl": 20307.9,
+      "total_return_pct": 0.2031,
+      "trade_count": 21
+    },
+    "old_thin": {
+      "auditable_trade_count": 19,
+      "expected_value_score": 0.131,
+      "max_drawdown_pct": 0.0456,
+      "sharpe_daily": 1.15,
+      "total_pnl": 11388.73,
+      "total_return_pct": 0.1139,
+      "trade_count": 24
+    }
+  },
+  "change_summary": "Added an audit/screen-only script that reruns the current accepted stack, computes day-3/day-5/day-10 in-position diagnostics, and estimates trade-level early-exit PnL for simple decay rules. No production strategy code was changed or promoted.",
+  "change_type": "alpha_search_hold_quality_screen",
+  "component": "quant/experiments/legacy/exp_20260425_036_hold_quality_audit.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "decision_basis": "Best positive approximations were tiny and sparse, while nearby rules cut large delayed winners. The signal is not strong enough to justify a real backtester early-exit implementation."
+  },
+  "experiment_id": "exp-20260425-036",
+  "hypothesis": "After accepted winner-truncation and position-cap improvements, the next distinct alpha mechanism may be capital release from positions whose early hold quality decays. If a position is still weak after 3/5/10 trading days, it may be lower-EV to keep occupying risk budget.",
+  "llm_metrics": {
+    "blocker_relation": "LLM soft-ranking remains blocked by candidate-level replay coverage; this deterministic lifecycle audit does not change LLM responsibilities.",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull where only one weak-hold trigger helped slightly",
+    "mid_weak": "rotation-heavy bull where weak early holds sometimes became major winners",
+    "old_thin": "mixed-to-weak tape where strict loss-only helped one loser but looser weakness rules cut winners"
+  },
+  "next_retry_requires": [
+    "Do not retry generic day-5/day-10 weak-hold early exits by only nudging unrealized-PnL or RS thresholds",
+    "Hold-quality lifecycle work needs a stronger adverse-information source such as fresh negative news, earnings deterioration, sector breakdown, or repeated failed reclaim",
+    "If promoted later, implement through the real backtester because trade-level approximation does not model freed-slot reinvestment"
+  ],
+  "notes": "This was alpha_search, not measurement repair. It deliberately pivoted away from the rejected target-width/post-target branch and changed no production strategy code.",
+  "parameters": {
+    "checkpoints_trading_days": [
+      3,
+      5,
+      10
+    ],
+    "parity_warning": "trade-level approximation only; does not replay freed-slot reinvestment or equity-curve Sharpe",
+    "screened_variants": {
+      "d10_loss_gt3": {
+        "day": 10,
+        "max_unrealized": -0.03
+      },
+      "d10_negative_and_rs_lag2": {
+        "day": 10,
+        "max_rs_vs_spy": -0.02,
+        "max_unrealized": 0.0
+      },
+      "d5_loss_gt3": {
+        "day": 5,
+        "max_unrealized": -0.03
+      },
+      "d5_negative_and_rs_lag2": {
+        "day": 5,
+        "max_rs_vs_spy": -0.02,
+        "max_unrealized": 0.0
+      },
+      "d5_negative_and_rs_lag5": {
+        "day": 5,
+        "max_rs_vs_spy": -0.05,
+        "max_unrealized": 0.0
+      }
+    },
+    "unchanged": [
+      "entries",
+      "normal stop/target exits",
+      "position sizing",
+      "allocation ranking",
+      "LLM responsibilities",
+      "earnings_event_long",
+      "Technology trend 6.0 ATR target",
+      "Commodity trend 7.0 ATR target",
+      "MAX_POSITION_PCT 0.25"
+    ]
+  },
+  "rejection_reason": "Rejected on mechanism quality before production patch. Simple day-5/day-10 hold decay based on unrealized PnL and RS is unstable and risks truncating delayed trend winners.",
+  "related_files": [
+    "quant/experiments/legacy/exp_20260425_036_hold_quality_audit.py",
+    "data/exp_20260425_036_hold_quality_audit.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-25T17:40:05-07:00"
+}

@@ -1,0 +1,190 @@
+{
+  "after_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.9131,
+      "max_drawdown_pct": 0.0262,
+      "sharpe_daily": 3.33,
+      "total_return_pct": 0.2742,
+      "trade_count": 27,
+      "win_rate": 0.5926
+    },
+    "subwindow_1": {
+      "expected_value_score": 0.365,
+      "max_drawdown_pct": 0.0262,
+      "sharpe_daily": 3.44,
+      "total_return_pct": 0.1061,
+      "trade_count": 9
+    },
+    "subwindow_2": {
+      "expected_value_score": 0.3043,
+      "max_drawdown_pct": 0.0267,
+      "sharpe_daily": 2.89,
+      "total_return_pct": 0.1053,
+      "trade_count": 15
+    },
+    "subwindow_3": {
+      "expected_value_score": 0.0502,
+      "max_drawdown_pct": 0.0097,
+      "sharpe_daily": 3.28,
+      "total_return_pct": 0.0153,
+      "trade_count": 4
+    },
+    "window_1": {
+      "expected_value_score": 0.0214,
+      "max_drawdown_pct": 0.0869,
+      "sharpe_daily": 0.5,
+      "total_return_pct": 0.0427,
+      "trade_count": 27,
+      "win_rate": 0.3333
+    },
+    "window_2": {
+      "expected_value_score": 0.003,
+      "max_drawdown_pct": 0.0965,
+      "sharpe_daily": 0.22,
+      "total_return_pct": 0.0137,
+      "trade_count": 30,
+      "win_rate": 0.3
+    }
+  },
+  "before_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.7531,
+      "max_drawdown_pct": 0.0408,
+      "sharpe_daily": 2.83,
+      "total_return_pct": 0.2661,
+      "trade_count": 28,
+      "win_rate": 0.5714
+    },
+    "subwindow_1": {
+      "expected_value_score": 0.365,
+      "max_drawdown_pct": 0.0262,
+      "sharpe_daily": 3.44,
+      "total_return_pct": 0.1061,
+      "trade_count": 9
+    },
+    "subwindow_2": {
+      "expected_value_score": 0.3043,
+      "max_drawdown_pct": 0.0267,
+      "sharpe_daily": 2.89,
+      "total_return_pct": 0.1053,
+      "trade_count": 15
+    },
+    "subwindow_3": {
+      "expected_value_score": 0.0502,
+      "max_drawdown_pct": 0.0097,
+      "sharpe_daily": 3.28,
+      "total_return_pct": 0.0153,
+      "trade_count": 4
+    },
+    "window_1": {
+      "expected_value_score": 0.0214,
+      "max_drawdown_pct": 0.0869,
+      "sharpe_daily": 0.5,
+      "total_return_pct": 0.0427,
+      "trade_count": 27,
+      "win_rate": 0.3333
+    },
+    "window_2": {
+      "expected_value_score": 0.003,
+      "max_drawdown_pct": 0.0965,
+      "sharpe_daily": 0.22,
+      "total_return_pct": 0.0137,
+      "trade_count": 30,
+      "win_rate": 0.3
+    }
+  },
+  "change_summary": "Added an experiment-only backtester flag that reranked only enriched `breakout_long` signals by `trade_quality_score`, then ran paired baseline-vs-trial comparisons against the accepted A+B stack (`REGIME_AWARE_EXIT=True`). The experiment code was rolled back immediately after measurement. No production pipeline, LLM boundary, or sizing rule was changed.",
+  "change_type": "capital_allocation",
+  "component": "quant/backtester.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "note": "The entire primary-window uplift came from removing one losing breakout trade (`IWM` entered 2026-01-22, -$714). Every non-overlapping comparison window outside the full primary sample was a strict null. This is useful evidence that the current breakout ranking stack is already close to locally saturated; TQS re-ranking changes too few real slot collisions to justify promotion.",
+    "primary_expected_value_score_delta": 0.16,
+    "primary_max_drawdown_pct_delta": -0.0146,
+    "primary_sharpe_daily_delta": 0.5,
+    "primary_total_return_pct_delta": 0.0081,
+    "subwindow_1_expected_value_score_delta": 0.0,
+    "subwindow_2_expected_value_score_delta": 0.0,
+    "subwindow_3_expected_value_score_delta": 0.0,
+    "window_1_expected_value_score_delta": 0.0,
+    "window_2_expected_value_score_delta": 0.0
+  },
+  "experiment_id": "exp-20260420-007",
+  "hypothesis": "Within the accepted breakout allocation stack, post-enrichment `trade_quality_score` may contain more scarce-slot information than raw `pct_from_52w_high`. Re-ranking only the `breakout_long` subsequence by `trade_quality_score` first, then `pct_from_52w_high`, could improve EV without changing entry rules, filters, exits, or trend ordering.",
+  "llm_metrics": {
+    "note": "No LLM prompt, role, or attribution changes. Pure quant allocation experiment.",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "BULL (slow-melt) with Apr-2026 stress",
+    "subwindow_1": "late-2025 bull trend",
+    "subwindow_2": "early-2026 bull continuation",
+    "subwindow_3": "Feb-Apr 2026 stress",
+    "window_1": "ripping bull / high-beta leadership",
+    "window_2": "older mixed-to-weaker tape"
+  },
+  "next_retry_requires": [
+    "Do not promote breakout TQS re-ranking as a default rule without new evidence of repeated same-day breakout slot collisions",
+    "If allocation is revisited, require a collision-attribution view that shows which lower-ranked breakout displaced which higher-ranked one before changing ranking again",
+    "Prefer the next alpha search to move to a different mechanism class or a genuinely richer context source, because the current breakout ranking stack appears near local saturation"
+  ],
+  "notes": "Experiment code was fully rolled back after measurement; repository trading logic remains unchanged.",
+  "parameters": {
+    "BREAKOUT_RANK_BY_TQS": {
+      "old": false,
+      "trial": true
+    },
+    "fixed_context": {
+      "BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH": -0.2,
+      "BREAKOUT_RANK_BY_52W_HIGH": true,
+      "REGIME_AWARE_EXIT": true
+    },
+    "ranking_key": {
+      "after": [
+        "trade_quality_score desc within breakout_long",
+        "pct_from_52w_high desc",
+        "confidence_score desc"
+      ],
+      "before": [
+        "pct_from_52w_high desc",
+        "confidence_score desc"
+      ]
+    },
+    "ranking_scope": {
+      "unchanged": "breakout_long subsequence only; non-breakout order preserved"
+    }
+  },
+  "rejection_reason": "Gate 4 failed on stability, not on the primary window. Although the full-window EV improved materially, 5 non-overlapping comparison windows showed zero improvement, so the result is not a stable majority-window gain. Keeping extra allocation complexity for a one-trade sample benefit would violate the anti-overfit discipline in AGENTS.md.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-17",
+      "start": "2025-04-21"
+    },
+    {
+      "end": "2025-04-30",
+      "start": "2024-10-01"
+    },
+    {
+      "end": "2025-12-19",
+      "start": "2025-10-20"
+    },
+    {
+      "end": "2026-02-17",
+      "start": "2025-12-20"
+    },
+    {
+      "end": "2026-04-17",
+      "start": "2026-02-18"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-20T16:05:00-07:00"
+}

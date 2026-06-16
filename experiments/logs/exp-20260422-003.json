@@ -1,0 +1,121 @@
+{
+  "after_metrics": {
+    "primary_replay_llm": {
+      "candidate_dates_missing_count": 28,
+      "candidate_dates_missing_preview": [
+        "20251028",
+        "20251029",
+        "20251030",
+        "20251031",
+        "20251103"
+      ],
+      "candidate_day_coverage_fraction": 0.0968,
+      "candidate_days_covered": 3,
+      "candidate_days_total": 31,
+      "candidate_signal_coverage_fraction": 0.0682,
+      "candidate_signals_covered": 3,
+      "candidate_signals_total": 44,
+      "coverage_fraction": 0.0488,
+      "expected_value_score": 0.8369,
+      "max_drawdown_pct": 0.026,
+      "sharpe_daily": 3.49,
+      "signals_survived": 44,
+      "total_return_pct": 0.2398,
+      "trade_count": 22,
+      "win_rate": 0.6364
+    }
+  },
+  "before_metrics": {
+    "primary_replay_llm": {
+      "candidate_day_coverage_fraction": 0.0968,
+      "candidate_days_covered": 3,
+      "candidate_days_total": 31,
+      "candidate_signal_coverage_fraction": 0.0682,
+      "candidate_signals_covered": 3,
+      "candidate_signals_total": 44,
+      "coverage_fraction": 0.0488,
+      "expected_value_score": 0.8369,
+      "max_drawdown_pct": 0.026,
+      "sharpe_daily": 3.49,
+      "signals_survived": 44,
+      "total_return_pct": 0.2398,
+      "trade_count": 22,
+      "win_rate": 0.6364
+    }
+  },
+  "change_summary": "Extended `quant/backtester.py` LLM attribution so it now records `candidate_dates_covered`, `candidate_dates_missing`, and `candidate_signal_counts_by_date` alongside the existing candidate-day and candidate-signal fractions, and prints a short missing-date preview in CLI output. Added regression coverage in `quant/test_quant.py`. Re-ran the fixed-snapshot primary replay window to confirm the strategy metrics remained unchanged while the blocker became explicit.",
+  "change_type": "measurement_repair",
+  "component": "quant/backtester.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "max_drawdown_pct_delta": 0.0,
+    "note": "Pure blocker-reporting upgrade. Fixed-snapshot replay stayed bit-identical; the new information is the exact operational gap: only 3 of 31 candidate days are covered, leaving 28 uncovered candidate dates in the primary window.",
+    "sharpe_daily_delta": 0.0,
+    "survival_rate_delta": 0.0,
+    "total_return_pct_delta": 0.0,
+    "trade_count_delta": 0,
+    "win_rate_delta": 0.0
+  },
+  "experiment_id": "exp-20260422-003",
+  "hypothesis": "`LLM soft ranking` is still the highest-upside branch, but current blocker reporting only tells us aggregate candidate coverage. If backtester also surfaces the exact missing candidate dates plus per-date candidate counts, then the next replay-coverage push becomes operationally actionable instead of another abstract proof that coverage is 'too low'.",
+  "llm_metrics": {
+    "candidate_day_coverage_fraction": 0.0968,
+    "candidate_signal_coverage_fraction": 0.0682,
+    "coverage_fraction": 0.0488,
+    "llm_attribution_metric": "candidate_dates_missing + candidate_signal_counts_by_date",
+    "llm_change_scope": "attribution/reporting only",
+    "signals_passed_by_llm": 0,
+    "signals_presented": 3,
+    "signals_vetoed_by_llm": 3,
+    "used_llm": true,
+    "veto_rate": 1.0
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "secondary": "ripping bull / high-beta leadership"
+  },
+  "next_retry_requires": [
+    "Do not launch `LLM soft ranking` until replay coverage expands beyond the current 3/31 candidate days in the fixed primary window",
+    "Use the explicit missing candidate-date list to target future replay accumulation instead of reading only aggregate day coverage",
+    "Keep A+B micro-tuning deprioritized; the practical blocker is still LLM sample depth, now with a concrete missing-date inventory"
+  ],
+  "notes": "Validation: `pytest quant/test_quant.py -k \"llm_attribution or replay_llm\"` passed (4 tests). The fixed-snapshot replay CLI now prints a missing candidate-day preview, making the LLM blocker actionable rather than only descriptive.",
+  "parameters": {
+    "cli_context": [
+      "--regime-aware-exit",
+      "--replay-llm",
+      "--ohlcv-snapshot data/ohlcv_snapshot_20251023_20260421.json"
+    ],
+    "data_source": "data/ohlcv_snapshot_20251023_20260421.json",
+    "new_llm_attribution_fields": [
+      "candidate_dates_covered",
+      "candidate_dates_missing",
+      "candidate_signal_counts_by_date"
+    ],
+    "primary_window": {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    "test_command": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe -m pytest quant/test_quant.py -k \"llm_attribution or replay_llm\""
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/backtester.py",
+    "quant/test_quant.py",
+    "docs/experiment_log.jsonl",
+    "data/ohlcv_snapshot_20251023_20260421.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-22T05:07:00-07:00"
+}

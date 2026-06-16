@@ -1,0 +1,218 @@
+{
+  "after_metrics": {
+    "aggregate": {
+      "cien_selected_trade_count": 1,
+      "expected_value_score": 8.3175,
+      "total_pnl": 250987.67,
+      "trade_count": 61
+    },
+    "risk_distribution": {
+      "late_strong": {
+        "max_consecutive_losses": 2,
+        "tail_loss_share": 0.5146,
+        "worst_trade_pct": -0.039653
+      },
+      "mid_weak": {
+        "max_consecutive_losses": 6,
+        "tail_loss_share": 0.5805,
+        "worst_trade_pct": -0.089651
+      },
+      "old_thin": {
+        "max_consecutive_losses": 4,
+        "tail_loss_share": 0.5193,
+        "worst_trade_pct": -0.063499
+      }
+    },
+    "windows": {
+      "late_strong": {
+        "cien_selected_trade_count": 0,
+        "expected_value_score": 5.1628,
+        "max_drawdown_pct": 0.0665,
+        "survival_rate": 0.8077,
+        "total_pnl": 117072.92,
+        "trade_count": 18
+      },
+      "mid_weak": {
+        "cien_selected_trade_count": 1,
+        "expected_value_score": 2.5636,
+        "max_drawdown_pct": 0.1119,
+        "survival_rate": 0.7885,
+        "total_pnl": 94246.79,
+        "trade_count": 21
+      },
+      "old_thin": {
+        "cien_selected_trade_count": 0,
+        "expected_value_score": 0.5911,
+        "max_drawdown_pct": 0.1001,
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22
+      }
+    }
+  },
+  "before_metrics": {
+    "aggregate": {
+      "expected_value_score": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61
+    },
+    "baseline_experiment": "exp-20260520-021",
+    "windows": {
+      "late_strong": {
+        "expected_value_score": 5.1628,
+        "max_drawdown_pct": 0.0665,
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18
+      },
+      "mid_weak": {
+        "expected_value_score": 2.1402,
+        "max_drawdown_pct": 0.1119,
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21
+      },
+      "old_thin": {
+        "expected_value_score": 0.5911,
+        "max_drawdown_pct": 0.1001,
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22
+      }
+    }
+  },
+  "change_summary": "Temporarily add CIEN to the core watchlist and Technology sector map, then exempt only CIEN from Technology-specific risk haircuts in sizing.",
+  "change_type": "risk_allocation_exception",
+  "changed_variable": "CIEN Technology haircut exemption while CIEN remains classified as Technology",
+  "component": "quant/portfolio_engine.py",
+  "date_range": {
+    "late_strong": {
+      "end": "2026-04-21",
+      "ohlcv_snapshot": "data/experiments/exp-20260520-019/ohlcv/exp-20260520-019_late_strong_cien_only_core_promotion_ohlcv.json",
+      "start": "2025-10-23"
+    },
+    "mid_weak": {
+      "end": "2025-10-22",
+      "ohlcv_snapshot": "data/experiments/exp-20260520-019/ohlcv/exp-20260520-019_mid_weak_cien_only_core_promotion_ohlcv.json",
+      "start": "2025-04-23"
+    },
+    "old_thin": {
+      "end": "2025-04-22",
+      "ohlcv_snapshot": "data/experiments/exp-20260520-019/ohlcv/exp-20260520-019_old_thin_cien_only_core_promotion_ohlcv.json",
+      "start": "2024-10-02"
+    },
+    "primary_protocol": "docs/backtesting.md canonical three fixed non-overlapping windows"
+  },
+  "decision": "rejected_and_rolled_back",
+  "delta_metrics": {
+    "aggregate": {
+      "expected_value_score": 0.4234,
+      "total_pnl": 16136.68,
+      "trade_count": 0
+    },
+    "windows": {
+      "late_strong": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "survival_rate": 0.0038,
+        "total_pnl": 0.0,
+        "trade_count": 0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.4234,
+        "max_drawdown_pct": 0.0,
+        "survival_rate": -0.004,
+        "total_pnl": 16136.68,
+        "trade_count": 0
+      },
+      "old_thin": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0
+      }
+    }
+  },
+  "experiment_id": "exp-20260520-022",
+  "gate_assessment": {
+    "gate_1_baseline": "pass",
+    "gate_2_fields": "pass",
+    "gate_3_survival_rate": "pass",
+    "gate_4": "fail",
+    "reason": "The improvement is entirely explained by one CIEN trade in one window. That confirms a potential mechanism conflict but is too sample-thin and ticker-specific for live core promotion."
+  },
+  "hypothesis": "If CIEN's broad-market leadership edge is real but suppressed by broad Technology risk haircuts, then keeping CIEN correctly classified as Technology while exempting only CIEN from Technology-specific sizing haircuts should improve replacement value without sector-taxonomy leakage.",
+  "mechanism_family": "broad_market_forward_maturation",
+  "multiple_testing_risk_bucket": "high",
+  "nearby_prior_experiments": [
+    "exp-20260520-007",
+    "exp-20260520-019",
+    "exp-20260520-021"
+  ],
+  "new_evidence_type": "canonical_fixed_windows_with_cien_backfilled_ohlcv",
+  "next_retry_requires": [
+    "At least 3-5 additional closed forward CIEN or optical-network-infrastructure outcomes",
+    "Replacement-value comparison versus the actual displaced core candidates",
+    "A mechanism-level rule that generalizes beyond one ticker before any live Technology haircut exception"
+  ],
+  "notes": "This experiment answers why CIEN looked good when sector was Unknown: the Technology haircut suppresses the trade. The evidence supports forward maturation, not immediate core production promotion.",
+  "parameters": {
+    "sector_map_additions": {
+      "CIEN": "Technology"
+    },
+    "temporary_haircut_exception": {
+      "exempted_rules": [
+        "trend_tech_tight_gap_risk_multiplier",
+        "trend_tech_gap_risk_multiplier",
+        "trend_tech_near_high_risk_multiplier",
+        "trend_tech_dte_risk_multiplier",
+        "breakout_tech_dte_risk_multiplier"
+      ],
+      "sector_remains": "Technology",
+      "ticker": "CIEN"
+    },
+    "watchlist_additions": [
+      "CIEN"
+    ]
+  },
+  "prior_trial_count": 2,
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "final_code_rolled_back": true,
+    "parity_test_added": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "temporary_shared_policy_tested": true
+  },
+  "rejection_reason": "Positive aggregate result is a single-trade CIEN contribution in mid_weak only; high multiple-testing and ticker-specific exception risk. Keep as paper/default-off sleeve candidate rather than production core rule.",
+  "related_files": [
+    "data/experiments/exp-20260520-022/late_strong_backtest_results.json",
+    "data/experiments/exp-20260520-022/mid_weak_backtest_results.json",
+    "data/experiments/exp-20260520-022/old_thin_backtest_results.json",
+    "data/experiments/exp-20260520-022/cien_technology_haircut_exception_summary.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "selected_cien_trade": {
+    "actual_risk_pct": 0.03715748810865799,
+    "entry_date": "2025-09-05",
+    "entry_price": 115.92,
+    "exit_date": "2025-09-29",
+    "exit_price": 146.0,
+    "exit_reason": "target",
+    "pnl": 18715.28,
+    "pnl_pct_net": 0.255963,
+    "sector": "Technology",
+    "shares": 633,
+    "strategy": "trend_long",
+    "target_mult_used": 6.0,
+    "ticker": "CIEN",
+    "trade_key": "CIEN:2025-09-05:115.9200",
+    "window": "mid_weak"
+  },
+  "status": "rejected",
+  "timestamp": "2026-05-20T10:52:08.3232599-07:00",
+  "trial_family": "cien_core_promotion",
+  "trial_variant_id": "cien_technology_haircut_exception"
+}

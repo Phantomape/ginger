@@ -1,0 +1,205 @@
+{
+  "after_metrics": {
+    "overlay_025": {
+      "late_strong": {
+        "expected_value_score": 0.9023,
+        "macro_added": 12,
+        "macro_profit_factor": 0.0,
+        "macro_sized": 3,
+        "macro_total_pnl": -200.09,
+        "macro_trade_count": 3,
+        "max_drawdown_pct": 0.0238,
+        "sharpe_daily": 3.71,
+        "total_return_pct": 0.2432,
+        "trade_count": 28,
+        "win_rate": 0.5357
+      },
+      "mid_weak": {
+        "expected_value_score": 0.2231,
+        "macro_added": 10,
+        "macro_profit_factor": 0.0,
+        "macro_sized": 3,
+        "macro_total_pnl": -315.15,
+        "macro_trade_count": 3,
+        "max_drawdown_pct": 0.0303,
+        "sharpe_daily": 1.59,
+        "total_return_pct": 0.1403,
+        "trade_count": 34,
+        "win_rate": 0.3824
+      },
+      "old_thin": {
+        "expected_value_score": 0.0258,
+        "macro_added": 29,
+        "macro_profit_factor": 6.711,
+        "macro_sized": 5,
+        "macro_total_pnl": 651.38,
+        "macro_trade_count": 4,
+        "max_drawdown_pct": 0.0723,
+        "sharpe_daily": 0.54,
+        "total_return_pct": 0.0478,
+        "trade_count": 32,
+        "win_rate": 0.375
+      }
+    },
+    "overlay_050": {
+      "late_strong": {
+        "expected_value_score": 0.8887,
+        "macro_added": 12,
+        "macro_profit_factor": 0.0,
+        "macro_sized": 3,
+        "macro_total_pnl": -369.58,
+        "macro_trade_count": 3,
+        "max_drawdown_pct": 0.0238,
+        "sharpe_daily": 3.68,
+        "total_return_pct": 0.2415,
+        "trade_count": 28,
+        "win_rate": 0.5357
+      },
+      "mid_weak": {
+        "expected_value_score": 0.2152,
+        "macro_added": 10,
+        "macro_profit_factor": 0.0,
+        "macro_sized": 3,
+        "macro_total_pnl": -551.64,
+        "macro_trade_count": 3,
+        "max_drawdown_pct": 0.0303,
+        "sharpe_daily": 1.57,
+        "total_return_pct": 0.1371,
+        "trade_count": 34,
+        "win_rate": 0.3824
+      },
+      "old_thin": {
+        "expected_value_score": 0.0335,
+        "macro_added": 29,
+        "macro_profit_factor": 6.711,
+        "macro_sized": 5,
+        "macro_total_pnl": 1361.8,
+        "macro_trade_count": 4,
+        "max_drawdown_pct": 0.0725,
+        "sharpe_daily": 0.61,
+        "total_return_pct": 0.0549,
+        "trade_count": 32,
+        "win_rate": 0.375
+      }
+    }
+  },
+  "before_metrics": {
+    "accepted_ab_baseline": {
+      "late_strong": {
+        "expected_value_score": 0.9534,
+        "max_drawdown_pct": 0.0238,
+        "sharpe_daily": 3.73,
+        "total_return_pct": 0.2556,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.286,
+        "max_drawdown_pct": 0.0232,
+        "sharpe_daily": 2.01,
+        "total_return_pct": 0.1423,
+        "trade_count": 26,
+        "win_rate": 0.4231
+      },
+      "old_thin": {
+        "expected_value_score": 0.0322,
+        "max_drawdown_pct": 0.0766,
+        "sharpe_daily": 0.6,
+        "total_return_pct": 0.0536,
+        "trade_count": 24,
+        "win_rate": 0.3333
+      }
+    }
+  },
+  "change_summary": "Added a runtime-only overlay-budget runner. Macro entry logic is unchanged from exp-20260425-005. A+B signals keep priority; at most one macro signal is appended after A+B; experiment config temporarily expands MAX_POSITIONS by one only for overlay variants; macro sizing is reduced to 0.25x or 0.5x after normal sizing. No production trading code was promoted.",
+  "change_type": "allocation_shape_research",
+  "component": "runtime-only `quant/experiments/legacy/exp_20260425_007_runner.py`, monkeypatching `signal_engine.generate_signals()` and `portfolio_engine.size_signals()` only during measurement",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "note": "The overlay shape reduced trade count and exposure versus v1 but did not solve stability. 0.25x still regressed all three windows. 0.5x produced only a tiny old_thin EV gain (+0.0013) while materially damaging late_strong and mid_weak.",
+    "overlay_025_ev_deltas": {
+      "late_strong": -0.0511,
+      "mid_weak": -0.0629,
+      "old_thin": -0.0064
+    },
+    "overlay_025_sharpe_daily_deltas": {
+      "late_strong": -0.02,
+      "mid_weak": -0.42,
+      "old_thin": -0.06
+    },
+    "overlay_050_ev_deltas": {
+      "late_strong": -0.0647,
+      "mid_weak": -0.0708,
+      "old_thin": 0.0013
+    },
+    "overlay_050_sharpe_daily_deltas": {
+      "late_strong": -0.05,
+      "mid_weak": -0.44,
+      "old_thin": 0.01
+    }
+  },
+  "experiment_id": "exp-20260425-007",
+  "hypothesis": "The macro defensive sleeve may have failed because it was forced to compete with A+B for main slots. Keeping A+B priority while adding at most one reduced-risk macro overlay position should preserve old_thin's macro benefit with less late/mid damage.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted A+B stack dominant tape",
+    "mid_weak": "rotation-heavy bull where macro overlay remained a drag",
+    "old_thin": "mixed-to-weak macro tape where 0.5x overlay had only tiny net benefit"
+  },
+  "next_retry_requires": [
+    "Do not retry the same macro entry recipe merely with another small risk multiplier or one-slot overlay shape",
+    "Do not interpret prior v1 old_thin improvement as proof that slot competition was the main failure mode",
+    "If macro alpha continues, change the information source to explicit cross-asset context such as GLD/SLV/commodity ETF leadership, rates/dollar proxies, or event/macro news context",
+    "Alternatively pause macro and return to another independent alpha class rather than overfitting this defensive-stock continuation recipe"
+  ],
+  "notes": "Production entry, exit, sizing rules, accepted residual cohort haircuts, C strategy, and LLM responsibilities stayed unchanged. This was an allocation-shape test, not a new macro entry or gate test.",
+  "parameters": {
+    "allocation_shape": {
+      "base_priority": "A+B signals are returned first",
+      "limitation": "existing backtester has no native separate slot ledger; this is an expanded-spare-slot approximation, not a full production overlay engine",
+      "overlay_budget": "at most one macro signal appended after A+B",
+      "risk_multipliers": [
+        0.25,
+        0.5
+      ],
+      "slot_model": "MAX_POSITIONS temporarily expanded by 1 for overlay variants"
+    },
+    "artifact_files": [
+      "quant/experiments/legacy/exp_20260425_007_runner.py",
+      "data/exp_20260425_007_results.json"
+    ],
+    "baseline_rule": "accepted A+B stack after exp-20260425-004",
+    "entry_recipe": "same as exp-20260425-005: defensive sectors, index pressure, above_200ma, positive 10d momentum, relative strength vs SPY, trend_score >= 0.55, not within 3 days of earnings",
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "screened_variants": [
+      "baseline_ab",
+      "overlay_025",
+      "overlay_050"
+    ]
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability. A separate reduced-risk overlay does not make the current OHLCV-only macro defensive entry robust: late_strong and mid_weak still suffer, while old_thin improvement is absent at 0.25x and negligible at 0.5x.",
+  "related_files": [
+    "quant/experiments/legacy/exp_20260425_007_runner.py",
+    "data/exp_20260425_007_results.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-25T23:59:00-07:00"
+}

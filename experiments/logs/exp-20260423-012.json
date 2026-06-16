@@ -1,0 +1,181 @@
+{
+  "after_metrics": {
+    "rot_bk000_tr125": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "trade_count": 23,
+        "triggered_signals": 0,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1372,
+        "max_drawdown_pct": 0.0385,
+        "sharpe_daily": 1.26,
+        "trade_count": 27,
+        "triggered_signals": 10,
+        "win_rate": 0.4074
+      },
+      "old_thin": {
+        "expected_value_score": 0.0199,
+        "max_drawdown_pct": 0.0834,
+        "sharpe_daily": 0.47,
+        "trade_count": 25,
+        "triggered_signals": 8,
+        "win_rate": 0.32
+      }
+    },
+    "rot_bk025_tr125": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "trade_count": 23,
+        "triggered_signals": 0,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1308,
+        "max_drawdown_pct": 0.0453,
+        "sharpe_daily": 1.27,
+        "trade_count": 29,
+        "triggered_signals": 8,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0206,
+        "max_drawdown_pct": 0.0806,
+        "sharpe_daily": 0.47,
+        "trade_count": 26,
+        "triggered_signals": 8,
+        "win_rate": 0.3077
+      }
+    }
+  },
+  "before_metrics": {
+    "accepted_ab_stack": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 0.36,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    }
+  },
+  "change_summary": "Ran a runtime-only monkeypatch of `risk_engine.enrich_signals()` and `portfolio_engine.size_signals()` against the deterministic late / mid / old OHLCV snapshots. The patch derived same-day whole-universe participation metrics from the existing per-ticker feature set (`above_200ma`, `momentum_10d_pct`, `breakout_20d`), attached the resulting `narrow_leadership_bull` state to each A+B candidate, and then applied a cross-sleeve sizing rotation on triggered days instead of a breakout-only haircut. No repository trading logic was kept after measurement.",
+  "change_type": "allocation_rule",
+  "component": "runtime-only monkeypatch of `quant/risk_engine.py` + `quant/portfolio_engine.py` sizing path (rolled back; no repo trading logic changed)",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "best_variant": "rot_bk000_tr125",
+    "best_variant_drawdown_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": -0.0126,
+      "old_thin": -0.0069
+    },
+    "best_variant_ev_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0117,
+      "old_thin": 0.009
+    },
+    "note": "This is the first cross-sleeve version of the promising participation-state branch that improved both weaker windows while staying a strict null in the dominant late-strong window. However it still fails the current promotion gate because the primary window had zero triggered state days, so the mechanism remains unproven on present-tense data rather than positively validated."
+  },
+  "experiment_id": "exp-20260423-012",
+  "hypothesis": "If the promising `narrow leadership` participation state is more useful as a cross-sleeve allocator than as another breakout-only haircut, then on days where long-horizon participation is still broad (`above200_breadth >= 0.80`) but short-horizon participation has thinned (`positive_momentum_breadth <= 0.55`), reducing `breakout_long` risk and reallocating that budget toward `trend_long` should preserve the dominant late-strong window while improving the weaker windows.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull with Apr-2026 stress",
+    "mid_weak": "ripping bull / high-beta leadership",
+    "old_thin": "mixed-to-weak tape"
+  },
+  "next_retry_requires": [
+    "Do not keep sweeping nearby breadth thresholds or multiplier shapes inside the same state family by default",
+    "If this branch returns, require either fresh forward data where the state actually triggers in the primary window, or a genuinely different participation proxy with current-window occurrences",
+    "Treat the mechanism as `promising but unaccepted`: cross-sleeve allocation appears directionally better than breakout-only haircut, but it is not yet promotable repo logic"
+  ],
+  "notes": "Gate 2 check: this experiment used only already-present feature fields (`above_200ma`, `momentum_10d_pct`, `breakout_20d`) derived for every ticker on every day, so there was no phantom-field dependency. Single-causal-variable discipline held: only the day-level allocation response changed when the narrow-leadership state fired.",
+  "parameters": {
+    "accepted_stack_context": [
+      "current dirty-tree A+B baseline on deterministic snapshots",
+      "no LLM replay dependency",
+      "no new entry/exit logic"
+    ],
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "screened_variants": {
+      "rot_bk000_tr125": {
+        "breakout_risk_multiplier": 0.0,
+        "trend_risk_multiplier": 1.25
+      },
+      "rot_bk025_tr125": {
+        "breakout_risk_multiplier": 0.25,
+        "trend_risk_multiplier": 1.25
+      }
+    },
+    "state_definition": {
+      "above200_breadth_min": 0.8,
+      "positive_momentum_breadth_max": 0.55
+    },
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "rejection_reason": "Rejected for promotion because the dominant late-strong window stayed a strict null with zero triggered state days. The branch is more promising than the earlier breakout-only haircut family, but it is still blocked by present-tense trigger scarcity rather than by another threshold choice.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "data/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv_snapshot_20241002_20250422.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-23T11:20:00-07:00"
+}

@@ -1,0 +1,96 @@
+{
+  "after_metrics": {
+    "by_strategy": {
+      "breakout_long": {
+        "profit_factor": 3.28,
+        "trade_count": 15
+      },
+      "earnings_event_long": {
+        "profit_factor": 0.33,
+        "trade_count": 12
+      },
+      "trend_long": {
+        "profit_factor": 2.82,
+        "trade_count": 12
+      }
+    },
+    "expected_value_score": 0.2088,
+    "max_drawdown_pct": 0.046,
+    "sharpe": 1.69,
+    "sharpe_daily": 1.53,
+    "survival_rate": 0.975,
+    "trade_count": 39,
+    "win_rate": 0.5128
+  },
+  "before_metrics": {
+    "by_strategy": {
+      "breakout_long": {
+        "profit_factor": 3.276,
+        "trade_count": 15
+      },
+      "earnings_event_long": {
+        "profit_factor": 0.328,
+        "trade_count": 12
+      },
+      "trend_long": {
+        "profit_factor": 3.485,
+        "trade_count": 11
+      }
+    },
+    "expected_value_score": 0.2595,
+    "max_drawdown_pct": 0.0461,
+    "sharpe": 1.83,
+    "sharpe_daily": 1.78,
+    "survival_rate": 0.975,
+    "trade_count": 38,
+    "win_rate": 0.5263
+  },
+  "change_summary": "Added a shared ranking helper that demoted earnings_event_long when positive_surprise_history was missing, while leaving all other signals in existing confidence order. Wired the ranking into backtester.py, run.py, run_quant.py, and run_pipeline.py before slot competition. Added 2 focused tests for the ranking behavior, then reverted the code after Gate 4 failure.",
+  "change_type": "ranking_rule",
+  "component": "quant/backtester.py + quant/run.py + quant/run_quant.py + quant/run_pipeline.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score_delta": -0.0507,
+    "max_drawdown_pct_delta": -0.0001,
+    "sharpe_daily_delta": -0.25,
+    "sharpe_delta": -0.14,
+    "survival_rate_delta": 0.0,
+    "trade_count_delta": 1,
+    "win_rate_delta": -0.0135
+  },
+  "experiment_id": "exp-20260419-002",
+  "hypothesis": "Cross-window instability may come from slot competition, not entry logic. If incomplete-data earnings_event_long signals are demoted in same-day allocation ranking, A/B strategies should reclaim scarce slots and improve expected_value_score without changing entry/exit rules.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "BULL (slow-melt), BEAR in Apr 2026"
+  },
+  "next_retry_requires": [
+    "If revisiting ranking, use a richer and explicitly testable score than a binary strategy penalty",
+    "Need attribution that shows actual same-day slot collisions before changing allocation again",
+    "Do not retry the same 'demote incomplete earnings' heuristic without new evidence that those specific slot collisions are the loss source"
+  ],
+  "notes": "The implementation was fully rolled back after the failed backtest. Focused tests passed before rollback, so this rejection is about alpha direction, not coding quality.",
+  "parameters": {
+    "allocation_ranking": {
+      "new": "incomplete earnings_event_long demoted below all non-penalized signals; others remain confidence ordered",
+      "old": "confidence_score descending"
+    },
+    "penalty_condition": {
+      "positive_surprise_history": "None",
+      "strategy": "earnings_event_long"
+    }
+  },
+  "rejection_reason": "Gate 4 failed immediately in the primary window. The simple allocation demotion did not reduce earnings_event_long trade count at all (12 -> 12), but it did replace one strong trend trade with a weaker trend trade mix, lowering EV 19.5% and Sharpe materially. Conclusion: the instability source is not 'incomplete C should always be ranked behind A/B' as a universal rule.",
+  "related_files": [
+    "docs/experiment_log.jsonl"
+  ],
+  "secondary_windows": [],
+  "status": "rejected",
+  "timestamp": "2026-04-19T11:05:00-07:00"
+}

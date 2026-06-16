@@ -1,0 +1,267 @@
+{
+  "after_metrics": {
+    "best_primary_safe_variant_nlb_gap2_bk008": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1356,
+        "max_drawdown_pct": 0.042,
+        "sharpe_daily": 1.34,
+        "total_return_pct": 0.1012,
+        "trade_count": 26,
+        "win_rate": 0.4231
+      },
+      "old_thin": {
+        "expected_value_score": 0.0165,
+        "max_drawdown_pct": 0.08,
+        "sharpe_daily": 0.43,
+        "total_return_pct": 0.0383,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    },
+    "best_weak_window_variant_nlb_gap_only_gradual": {
+      "late_strong": {
+        "expected_value_score": 0.8289,
+        "max_drawdown_pct": 0.0253,
+        "sharpe_daily": 3.49,
+        "total_return_pct": 0.2375,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1442,
+        "max_drawdown_pct": 0.042,
+        "sharpe_daily": 1.35,
+        "total_return_pct": 0.1068,
+        "trade_count": 26,
+        "win_rate": 0.4231
+      },
+      "old_thin": {
+        "expected_value_score": 0.0267,
+        "max_drawdown_pct": 0.0792,
+        "sharpe_daily": 0.53,
+        "total_return_pct": 0.0504,
+        "trade_count": 25,
+        "win_rate": 0.32
+      }
+    }
+  },
+  "before_metrics": {
+    "accepted_ab_stack": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "survival_rate": 0.8627,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "survival_rate": 0.8627,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 0.36,
+        "survival_rate": 0.8824,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    }
+  },
+  "change_summary": "Ran a runtime-only monkeypatch of `signal_engine.generate_signals()` and `portfolio_engine.size_signals()` so breakout candidates carried four participation-state fields and then screened five graduated deployment shapes across the deterministic late / mid / old OHLCV snapshots. The screened family stayed inside the same mechanism class as `exp-20260423-002`: only breakout risk budget changed, while entries, exits, ranking, and the accepted cohort rules stayed unchanged. No repository trading logic was kept after measurement.",
+  "change_type": "allocation_rule",
+  "component": "runtime-only monkeypatch of `quant/signal_engine.py` + `quant/portfolio_engine.py` sizing path (rolled back; no repo trading logic changed)",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "best_primary_safe_variant_ev_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0101,
+      "old_thin": 0.0056
+    },
+    "best_weak_window_variant_ev_deltas": {
+      "late_strong": -0.0181,
+      "mid_weak": 0.0187,
+      "old_thin": 0.0158
+    },
+    "note": "Graduated deployment improved the weaker windows again, and adding `breakout_breadth` modestly sharpened the mid/old-window rescue. But no screened variant improved the primary late-strong window enough to clear Gate 4: the best primary-safe version stayed a strict null in the late window, while the most effective weak-window rescue regressed the late window. The blocker is therefore no longer 'binary vs graduated'; it is the lack of current-window evidence for this mechanism on present data."
+  },
+  "experiment_id": "exp-20260423-003",
+  "hypothesis": "If `exp-20260423-002` was primary-window null because the deployment shape was too binary, then a richer version of the same forward-looking participation-state breakout-health mechanism should work better: attach whole-universe `above200_breadth`, `positive_momentum_breadth`, `breakout_breadth`, and `breadth_gap` to each breakout candidate, then replace the binary haircut with graduated sizing tiers. A real improvement should keep the weak-window rescue while finally producing present-tense value in the late strong window.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull with Apr-2026 stress",
+    "mid_weak": "ripping bull / high-beta leadership",
+    "old_thin": "mixed-to-weak tape"
+  },
+  "next_retry_requires": [
+    "Do not keep permuting graduated sizing tiers inside the same whole-universe narrow-leadership family by default",
+    "If this branch is revisited, require either fresh forward data that creates a real primary-window test of the state, or a genuinely different participation proxy within the same mechanism family instead of another deployment-shape sweep",
+    "Prefer another unblocked alpha branch over more `binary vs graduated` breakout-health tuning unless new present-tense evidence appears"
+  ],
+  "notes": "This remained a single-causal-variable experiment: only the deployment shape of the forward-looking participation-state breakout haircut changed. The result tightens the doctrine from `exp-20260423-002`: the mechanism remains promising for weaker eras, but graduated deployment alone is not enough to promote it into repo trading logic.",
+  "parameters": {
+    "accepted_stack_context": [
+      "REGIME_AWARE_EXIT",
+      "zero-risk low-TQS non-commodity breakouts",
+      "commodity low-TQS exemption",
+      "zero-risk trend Industrials",
+      "0.25x moderate-gap trend Technology"
+    ],
+    "breadth_fields": [
+      "above200_breadth",
+      "positive_momentum_breadth",
+      "breakout_breadth",
+      "breadth_gap"
+    ],
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "screened_variants": {
+      "nlb_gap2_bk008": [
+        {
+          "above200_min": 0.8,
+          "breakout_max": 0.08,
+          "posmom_max": 0.55,
+          "risk_multiplier": 0.0
+        },
+        {
+          "above200_min": 0.75,
+          "breakout_max": 0.12,
+          "posmom_max": 0.6,
+          "risk_multiplier": 0.25
+        }
+      ],
+      "nlb_gap2_bk010": [
+        {
+          "above200_min": 0.8,
+          "breakout_max": 0.1,
+          "posmom_max": 0.55,
+          "risk_multiplier": 0.0
+        },
+        {
+          "above200_min": 0.75,
+          "breakout_max": 0.14,
+          "posmom_max": 0.6,
+          "risk_multiplier": 0.25
+        }
+      ],
+      "nlb_gap3_gradual": [
+        {
+          "above200_min": 0.82,
+          "breakout_max": 0.08,
+          "posmom_max": 0.52,
+          "risk_multiplier": 0.0
+        },
+        {
+          "above200_min": 0.78,
+          "breakout_max": 0.1,
+          "posmom_max": 0.56,
+          "risk_multiplier": 0.25
+        },
+        {
+          "above200_min": 0.74,
+          "breakout_max": 0.14,
+          "posmom_max": 0.6,
+          "risk_multiplier": 0.5
+        }
+      ],
+      "nlb_gap3_milder": [
+        {
+          "above200_min": 0.82,
+          "breakout_max": 0.08,
+          "posmom_max": 0.52,
+          "risk_multiplier": 0.25
+        },
+        {
+          "above200_min": 0.78,
+          "breakout_max": 0.1,
+          "posmom_max": 0.56,
+          "risk_multiplier": 0.5
+        },
+        {
+          "above200_min": 0.74,
+          "breakout_max": 0.14,
+          "posmom_max": 0.6,
+          "risk_multiplier": 0.75
+        }
+      ],
+      "nlb_gap_only_gradual": [
+        {
+          "above200_min": 0.8,
+          "posmom_max": 0.52,
+          "risk_multiplier": 0.0
+        },
+        {
+          "above200_min": 0.78,
+          "posmom_max": 0.56,
+          "risk_multiplier": 0.25
+        },
+        {
+          "above200_min": 0.74,
+          "posmom_max": 0.6,
+          "risk_multiplier": 0.5
+        }
+      ]
+    },
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "rejection_reason": "Rejected on Gate 4 promotion criteria. The mechanism family still cannot show present-tense value in the current dominant window: the strongest majority-window shapes remained late-window null, and the versions that pushed the weak-window rescue further began to tax the late strong window. This is a clean negative result for deployment-shape tuning inside the same participation-state family, not a data-availability blocker.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "data/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv_snapshot_20241002_20250422.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-23T02:12:41-07:00"
+}

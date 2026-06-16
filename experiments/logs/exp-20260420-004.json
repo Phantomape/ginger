@@ -1,0 +1,80 @@
+{
+  "after_metrics": {
+    "download_status": "backtester.py completed successfully with full SPY/QQQ + stock downloads",
+    "primary_window": {
+      "expected_value_score": 0.7531,
+      "max_drawdown_pct": 0.0408,
+      "sharpe_daily": 2.83,
+      "survival_rate": 1.0,
+      "total_return_pct": 0.2661,
+      "trade_count": 28,
+      "win_rate": 0.5714
+    },
+    "targeted_tests": "2 passed"
+  },
+  "before_metrics": {
+    "blocked_state": {
+      "backtester_status": "No data downloaded",
+      "proxy_env": {
+        "ALL_PROXY": "http://127.0.0.1:9",
+        "HTTPS_PROXY": "http://127.0.0.1:9",
+        "HTTP_PROXY": "http://127.0.0.1:9"
+      },
+      "yfinance_failure_modes": [
+        "OperationalError unable to open database file",
+        "disk I/O error",
+        "curl connection failure to 127.0.0.1:9"
+      ]
+    }
+  },
+  "change_summary": "Added a backtester-only measurement repair that removes broken proxy environment variables pointing to `127.0.0.1:9` before any yfinance calls and redirects yfinance cache files to the system temp directory. Added a targeted test to ensure the proxy sanitizer remains in place.",
+  "change_type": "measurement_repair",
+  "component": "quant/backtester.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "note": "This is not a new alpha experiment, so before/after metrics describe blocked vs runnable state. The important change is that the same accepted strategy stack can once again be measured credibly in the current session."
+  },
+  "experiment_id": "exp-20260420-004",
+  "hypothesis": "The current alpha loop is blocked by environment-level market-data failures, not by strategy logic. If backtester.py strips the broken localhost proxy injection (`127.0.0.1:9`) and forces yfinance's sqlite cache into a known writable temp directory, historical OHLCV downloads should become stable again without changing any signal or risk logic.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "scope": "measurement repair only; no strategy change"
+  },
+  "next_retry_requires": [
+    "If other repo entry points also rely on yfinance, consider applying the same proxy/cache guard there to avoid environment-specific failures outside the backtester",
+    "Resume paired alpha experiments now that the measurement path is restored"
+  ],
+  "notes": "Validated by a real end-to-end backtest run after the fix, plus a targeted unit test for the proxy sanitizer. No strategy logic, LLM behavior, or ranking/filter settings were changed.",
+  "parameters": {
+    "proxy_env_vars_removed": [
+      "HTTP_PROXY",
+      "HTTPS_PROXY",
+      "ALL_PROXY",
+      "http_proxy",
+      "https_proxy",
+      "all_proxy",
+      "GIT_HTTP_PROXY",
+      "GIT_HTTPS_PROXY"
+    ],
+    "removal_condition": "value contains 127.0.0.1:9",
+    "yfinance_cache_location": {
+      "new": "tempdir/ginger_yfinance_cache",
+      "old": "default appdirs path (unstable in current desktop session)"
+    }
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/backtester.py",
+    "quant/test_quant.py",
+    "data/backtest_results_20260420.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-04-20T11:00:00-07:00"
+}

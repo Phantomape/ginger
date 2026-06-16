@@ -1,0 +1,111 @@
+{
+  "after_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.7188,
+      "max_drawdown_pct": 0.026,
+      "sharpe_daily": 3.32,
+      "signals_generated": 49,
+      "signals_survived": 42,
+      "survival_rate": 0.8571,
+      "total_return_pct": 0.2165,
+      "trade_count": 22,
+      "win_rate": 0.6364
+    },
+    "secondary_window": {
+      "expected_value_score": 0.1255,
+      "max_drawdown_pct": 0.0511,
+      "sharpe_daily": 1.21,
+      "signals_generated": 51,
+      "signals_survived": 44,
+      "survival_rate": 0.8627,
+      "total_return_pct": 0.1037,
+      "trade_count": 29
+    }
+  },
+  "before_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.8782,
+      "max_drawdown_pct": 0.026,
+      "sharpe_daily": 3.57,
+      "signals_generated": 51,
+      "signals_survived": 51,
+      "survival_rate": 1.0,
+      "total_return_pct": 0.246,
+      "trade_count": 22,
+      "win_rate": 0.6818
+    },
+    "secondary_window": {
+      "expected_value_score": 0.1255,
+      "max_drawdown_pct": 0.0511,
+      "sharpe_daily": 1.21,
+      "signals_generated": 51,
+      "signals_survived": 46,
+      "survival_rate": 0.902,
+      "total_return_pct": 0.1037,
+      "trade_count": 29
+    }
+  },
+  "change_summary": "Updated `quant/backtester.py` so it now removes already-held tickers before sector-cap competition and applies `compute_portfolio_heat(...)` before sizing new entries, matching the live `run.py` entry path. Added two targeted regression tests that prove a held ticker no longer steals a capped sector slot and that blocked portfolio heat suppresses new entries. Left news veto parity untouched by request.",
+  "change_type": "measurement_repair",
+  "component": "quant/backtester.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "note": "Observed metrics worsened because the parity-aligned backtest is now stricter about fresh entries. One caveat: the two window runs were not perfectly data-identical because yfinance rate-limited a different ticker across reruns (`SPOT` before, `GOOG` after), so the exact deltas should be read as directionally informative rather than perfectly controlled.",
+    "primary_expected_value_score_delta": -0.1594,
+    "primary_max_drawdown_pct_delta": 0.0,
+    "primary_sharpe_daily_delta": -0.25,
+    "primary_survival_rate_delta": -0.1429,
+    "primary_total_return_pct_delta": -0.0295,
+    "primary_trade_count_delta": 0,
+    "primary_win_rate_delta": -0.0454,
+    "secondary_expected_value_score_delta": 0.0,
+    "secondary_sharpe_daily_delta": 0.0,
+    "secondary_survival_rate_delta": -0.0393
+  },
+  "experiment_id": "exp-20260421-028",
+  "hypothesis": "The most important remaining production/backtest parity gaps are not news veto but entry eligibility: backtester still allowed fresh entries when live portfolio heat would block them, and it removed already-held tickers too late to match live sector-cap competition. If both behaviors are aligned to `run.py`, the backtest will become a stricter and more credible proxy for production even if the north-star metric falls.",
+  "llm_metrics": {
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "secondary": "ripping bull / high-beta leadership"
+  },
+  "next_retry_requires": [
+    "If we want a cleaner before/after attribution, rerun the same parity-fixed window from a stable cached OHLCV set or pinned local artifacts",
+    "Use the stricter parity baseline for future alpha experiments rather than the older optimistic one",
+    "Keep news veto parity as a separate causal variable if we revisit it later"
+  ],
+  "notes": "This is an accepted credibility repair, not an alpha improvement. Validation passed via 2 targeted regression tests. The practical outcome is that backtest entry eligibility is now materially closer to live behavior, and the lower EV should be treated as a more conservative baseline rather than a failed strategy experiment.",
+  "parameters": {
+    "excluded_gap": "news veto replay intentionally left unchanged",
+    "parity_fixes": [
+      "already-held ticker filtered before sector cap",
+      "portfolio_heat gate applied before sizing"
+    ],
+    "primary_window": {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    "test_command": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe -m pytest quant/test_quant.py -k \"already_held_before_sector_cap or portfolio_heat_gate_for_new_entries\""
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/backtester.py",
+    "quant/test_quant.py",
+    "docs/experiment_log.jsonl"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-21T23:45:00-07:00"
+}

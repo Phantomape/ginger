@@ -1,0 +1,167 @@
+{
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.1108,
+      "max_drawdown_pct": 0.0238,
+      "sharpe_daily": 3.99,
+      "total_return_pct": 0.2784,
+      "trade_count": 21,
+      "win_rate": 0.7143
+    },
+    "mid_weak": {
+      "expected_value_score": 0.403,
+      "max_drawdown_pct": 0.0205,
+      "sharpe_daily": 2.62,
+      "total_return_pct": 0.1538,
+      "trade_count": 25,
+      "win_rate": 0.44
+    },
+    "old_thin": {
+      "expected_value_score": 0.1121,
+      "max_drawdown_pct": 0.0444,
+      "sharpe_daily": 1.12,
+      "total_return_pct": 0.1001,
+      "trade_count": 24,
+      "win_rate": 0.375
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.0402,
+      "max_drawdown_pct": 0.0238,
+      "sharpe_daily": 3.89,
+      "total_return_pct": 0.2674,
+      "trade_count": 21,
+      "win_rate": 0.7143
+    },
+    "mid_weak": {
+      "expected_value_score": 0.3924,
+      "max_drawdown_pct": 0.0205,
+      "sharpe_daily": 2.59,
+      "total_return_pct": 0.1515,
+      "trade_count": 25,
+      "win_rate": 0.44
+    },
+    "old_thin": {
+      "expected_value_score": 0.0863,
+      "max_drawdown_pct": 0.0444,
+      "sharpe_daily": 0.95,
+      "total_return_pct": 0.0908,
+      "trade_count": 24,
+      "win_rate": 0.375
+    }
+  },
+  "change_summary": "Promoted the narrow Technology trend target-width override into `risk_engine.enrich_signals()` using single-source constant `TREND_TECH_TARGET_ATR_MULT = 6.0`, added a unit test proving only Technology trend signals are retargeted, and fixed one LLM attribution test assertion to match the current 0/N replay-off coverage denominator. Production backtests reproduced the runtime 6.0 ATR metrics across the fixed late_strong, mid_weak, and old_thin snapshot windows.",
+  "change_type": "alpha_search_exit_rule",
+  "component": "quant/risk_engine.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score_delta": {
+      "late_strong": 0.0706,
+      "mid_weak": 0.0106,
+      "old_thin": 0.0258
+    },
+    "gate4_basis": "Accepted because EV improved in all three non-overlapping windows, late_strong Sharpe improved by 0.10, old_thin Sharpe improved by 0.17, and no tested window worsened drawdown or trade count.",
+    "max_drawdown_pct_delta": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": 0.0
+    },
+    "sharpe_daily_delta": {
+      "late_strong": 0.1,
+      "mid_weak": 0.03,
+      "old_thin": 0.17
+    },
+    "total_return_pct_delta": {
+      "late_strong": 0.011,
+      "mid_weak": 0.0023,
+      "old_thin": 0.0093
+    }
+  },
+  "experiment_id": "exp-20260425-028",
+  "hypothesis": "The deferred-positive Technology trend exit-width result from exp-20260425-027 is a real production-path alpha, not a monkeypatch artifact. Promoting only `trend_long | Technology` to a 6.0 ATR target should preserve the fixed-window EV improvements while leaving entries, sizing, ranking, LLM, C strategy, and all non-Technology exits unchanged.",
+  "llm_metrics": {
+    "blocker_relation": "LLM soft ranking remains blocked by candidate-level replay coverage, so this alpha_search deliberately used a deterministic exit-width mechanism instead of LLM ranking.",
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull with Apr-2026 stress",
+    "mid_weak": "rotation-heavy bull / benchmark gap window",
+    "old_thin": "mixed-to-weak tape"
+  },
+  "next_retry_requires": [
+    "Do not broaden this into all trend_long target widening; broad and entry-conditioned trend target widening were already rejected",
+    "Do not continue sweeping 6-8 ATR by default; 6.0 was selected because it improved all windows cleanly without reducing late_strong return",
+    "Future exit-alpha work needs a fresh winner-truncation audit outside Technology trend"
+  ],
+  "notes": "This iteration changed one independent causal variable: Technology trend target width. It did not treat LLM as the problem; it bypassed LLM soft ranking because replay coverage remains insufficient. The main risk is that wider Technology trend targets could give back gains in sharp reversals, but the fixed-window drawdown metrics did not worsen.",
+  "parameters": {
+    "new_target_mult": 6.0,
+    "old_target_source": "shared regime-aware ATR target width",
+    "rule_scope": {
+      "sector": "Technology",
+      "strategy": "trend_long"
+    },
+    "unchanged": [
+      "entries",
+      "sizing",
+      "allocation ranking",
+      "LLM responsibilities",
+      "C strategy",
+      "breakout exits",
+      "non-Technology trend exits"
+    ],
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/constants.py",
+    "quant/risk_engine.py",
+    "quant/test_quant.py",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "data/backtest_results_20260425.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-25T12:08:00-07:00",
+  "verification": [
+    ".venv\\\\Scripts\\\\python.exe -m pytest quant\\\\test_quant.py -q => 284 passed",
+    ".venv\\\\Scripts\\\\python.exe quant\\\\backtester.py --start 2025-10-23 --end 2026-04-21 --regime-aware-exit --ohlcv-snapshot data\\\\ohlcv_snapshot_20251023_20260421.json --no-secondary => EV 1.1108, Sharpe daily 3.99, maxDD 2.38%, trades 21",
+    ".venv\\\\Scripts\\\\python.exe quant\\\\backtester.py --start 2025-04-23 --end 2025-10-22 --regime-aware-exit --ohlcv-snapshot data\\\\ohlcv_snapshot_20250423_20251022.json --no-secondary => EV 0.4030, Sharpe daily 2.62, maxDD 2.05%, trades 25",
+    ".venv\\\\Scripts\\\\python.exe quant\\\\backtester.py --start 2024-10-02 --end 2025-04-22 --regime-aware-exit --ohlcv-snapshot data\\\\ohlcv_snapshot_20241002_20250422.json --no-secondary => EV 0.1121, Sharpe daily 1.12, maxDD 4.44%, trades 24"
+  ]
+}

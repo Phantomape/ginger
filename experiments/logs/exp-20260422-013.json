@@ -1,0 +1,244 @@
+{
+  "after_metrics": {
+    "mult_0_0": {
+      "late_strong": {
+        "expected_value_score": 0.9209,
+        "max_drawdown_pct": 0.0223,
+        "sharpe_daily": 4.24,
+        "total_return_pct": 0.2172,
+        "trade_count": 22,
+        "win_rate": 0.6364
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0798,
+        "max_drawdown_pct": 0.0464,
+        "sharpe_daily": 1.11,
+        "total_return_pct": 0.0719,
+        "trade_count": 28,
+        "win_rate": 0.3214
+      },
+      "old_thin": {
+        "expected_value_score": 0.0081,
+        "max_drawdown_pct": 0.098,
+        "sharpe_daily": 0.32,
+        "total_return_pct": 0.0252,
+        "trade_count": 24,
+        "win_rate": 0.2917
+      }
+    },
+    "mult_0_25": {
+      "late_strong": {
+        "expected_value_score": 0.7532,
+        "max_drawdown_pct": 0.0218,
+        "sharpe_daily": 3.51,
+        "total_return_pct": 0.2146,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0863,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.06,
+        "total_return_pct": 0.0814,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0077,
+        "max_drawdown_pct": 0.0968,
+        "sharpe_daily": 0.31,
+        "total_return_pct": 0.0248,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    },
+    "mult_0_5": {
+      "late_strong": {
+        "expected_value_score": 0.7918,
+        "max_drawdown_pct": 0.0218,
+        "sharpe_daily": 3.53,
+        "total_return_pct": 0.2243,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0998,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.12,
+        "total_return_pct": 0.0891,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0088,
+        "max_drawdown_pct": 0.0935,
+        "sharpe_daily": 0.33,
+        "total_return_pct": 0.0268,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    },
+    "mult_0_75": {
+      "late_strong": {
+        "expected_value_score": 0.8163,
+        "max_drawdown_pct": 0.0237,
+        "sharpe_daily": 3.52,
+        "total_return_pct": 0.2319,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1128,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.17,
+        "total_return_pct": 0.0964,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0096,
+        "max_drawdown_pct": 0.0906,
+        "sharpe_daily": 0.34,
+        "total_return_pct": 0.0282,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    }
+  },
+  "before_metrics": {
+    "accepted_ab_stack": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 0.36,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    }
+  },
+  "change_summary": "Ran a fixed-snapshot runtime-only monkeypatch of `portfolio_engine.size_signals()` that left entries, exits, ranking order, and LLM scope unchanged, but applied an extra same-day risk multiplier only to `breakout_long` signals whose `trade_quality_score` was below the best same-day `trend_long` TQS. Screened multipliers `0.75x`, `0.5x`, `0.25x`, and `0.0x` across the accepted three-window A+B snapshot stack.",
+  "change_type": "allocation_rule",
+  "component": "experiment-only monkeypatch of `quant/portfolio_engine.py` (rolled back; no repo trading logic changed)",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "best_secondary_note": "0.75x was the least bad screened multiplier, but it still regressed expected_value_score in all three windows versus the accepted baseline.",
+    "best_secondary_variant": "0.75x",
+    "late_strong_expected_value_score_deltas": {
+      "0.0x": 0.0739,
+      "0.25x": -0.0938,
+      "0.5x": -0.0552,
+      "0.75x": -0.0307
+    },
+    "mid_weak_expected_value_score_deltas": {
+      "0.0x": -0.0457,
+      "0.25x": -0.0392,
+      "0.5x": -0.0257,
+      "0.75x": -0.0127
+    },
+    "note": "The aggressive `0.0x` version improved the latest strong window, but it clearly failed the multi-window gate by regressing both comparison eras. The milder multipliers also regressed the north-star metric across a majority of windows. Same-day trend-vs-breakout TQS competition is therefore not the missing allocation mechanism.",
+    "old_thin_expected_value_score_deltas": {
+      "0.0x": -0.0028,
+      "0.25x": -0.0032,
+      "0.5x": -0.0021,
+      "0.75x": -0.0013
+    }
+  },
+  "experiment_id": "exp-20260422-013",
+  "hypothesis": "If current breakout instability is mainly a same-day cross-strategy capital-allocation problem, then `breakout_long` candidates that are outscored by at least one same-day `trend_long` candidate should be de-risked rather than funded at full size. A same-day TQS-relative haircut could preserve the latest strong window while shifting heat toward the more persistent trend sleeve in weaker eras.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull with Apr-2026 stress",
+    "mid_weak": "ripping bull / high-beta leadership",
+    "old_thin": "mixed-to-weak tape"
+  },
+  "next_retry_requires": [
+    "Do not retry another breakout-vs-trend same-day TQS competition haircut without a genuinely new context source beyond relative pre-entry score ordering",
+    "Treat breakout weakness as more than a same-day heat-allocation problem; the missing edge is not simply 'trend deserved the slot more'",
+    "If breakout-health work continues, start from a richer context source than same-day score competition, such as a new event/state variable or a narrower repeatedly observed cohort"
+  ],
+  "notes": "No repository trading logic was changed for this experiment. The rule was evaluated via an experiment-only monkeypatch so the failure could be logged without leaving dead code behind.",
+  "parameters": {
+    "accepted_stack_context": [
+      "REGIME_AWARE_EXIT",
+      "zero-risk low-TQS non-commodity breakouts",
+      "commodity low-TQS exemption",
+      "zero-risk trend Industrials",
+      "0.25x moderate-gap trend Technology"
+    ],
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "selector": {
+      "context": "same-day signal set contains at least one trend_long candidate",
+      "relative_rule": "breakout trade_quality_score < max same-day trend_long trade_quality_score",
+      "target": "breakout_long"
+    },
+    "tested_multipliers": [
+      0.75,
+      0.5,
+      0.25,
+      0.0
+    ],
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability. A same-day relative-TQS haircut on breakout candidates did not improve the expected_value_score in a majority of windows; every mild version regressed all three windows, and the only primary-window winner (`0.0x`) clearly damaged the weak comparison eras.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "data/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv_snapshot_20241002_20250422.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-22T20:20:00-07:00"
+}

@@ -1,0 +1,150 @@
+{
+  "after_metrics": {
+    "primary_window": {
+      "c_total_pnl_usd": -792.2,
+      "c_trade_count": 12,
+      "c_win_rate": 0.3333,
+      "expected_value_score": 0.6443,
+      "max_drawdown_pct": 0.0312,
+      "sharpe_daily": 2.91,
+      "total_return_pct": 0.2214,
+      "trade_count": 31,
+      "win_rate": 0.5484
+    },
+    "window_1": {
+      "c_total_pnl_usd": 913.47,
+      "c_trade_count": 6,
+      "c_win_rate": 0.5,
+      "expected_value_score": 0.1574,
+      "max_drawdown_pct": 0.0464,
+      "sharpe_daily": 1.35,
+      "total_return_pct": 0.1166,
+      "trade_count": 32,
+      "win_rate": 0.4375
+    },
+    "window_2": {
+      "c_total_pnl_usd": 210.98,
+      "c_trade_count": 5,
+      "c_win_rate": 0.4,
+      "expected_value_score": 0.0091,
+      "max_drawdown_pct": 0.0938,
+      "sharpe_daily": 0.33,
+      "total_return_pct": 0.0275,
+      "trade_count": 34,
+      "win_rate": 0.2941
+    }
+  },
+  "before_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.8299,
+      "max_drawdown_pct": 0.026,
+      "sharpe_daily": 3.49,
+      "total_return_pct": 0.2378,
+      "trade_count": 22,
+      "win_rate": 0.6364
+    },
+    "window_1": {
+      "expected_value_score": 0.1255,
+      "max_drawdown_pct": 0.0511,
+      "sharpe_daily": 1.21,
+      "total_return_pct": 0.1037,
+      "trade_count": 29,
+      "win_rate": 0.3793
+    },
+    "window_2": {
+      "expected_value_score": 0.0257,
+      "max_drawdown_pct": 0.0917,
+      "sharpe_daily": 0.51,
+      "total_return_pct": 0.0504,
+      "trade_count": 29,
+      "win_rate": 0.3103
+    }
+  },
+  "change_summary": "Ran a runtime-only `signal_engine.generate_signals()` monkeypatch that kept the accepted A+B stack unchanged but enabled `earnings_event_long` only when a day's raw candidate list contained no `trend_long` or `breakout_long` signals. Compared the accepted A+B baseline versus this `A+B+C` standalone-day-only variant across the standard primary, bull, and weak non-overlapping windows. No repository strategy code changed.",
+  "change_type": "slot_interaction_rule",
+  "component": "quant/signal_engine.py (runtime-only monkeypatch, rolled back)",
+  "date_range": {
+    "end": "2026-04-20",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "note": "The standalone-day rule did create positive C contribution in the ripping-bull and weak windows, but it still failed the north-star test because the primary window regressed materially and the weak window also worsened. This means slot displacement is not the only reason C drags EV in the repaired-data regime.",
+    "primary_expected_value_score_delta": -0.1856,
+    "primary_max_drawdown_pct_delta": 0.0052,
+    "primary_sharpe_daily_delta": -0.58,
+    "primary_total_return_pct_delta": -0.0164,
+    "window_1_expected_value_score_delta": 0.0319,
+    "window_1_max_drawdown_pct_delta": -0.0047,
+    "window_1_sharpe_daily_delta": 0.14,
+    "window_1_total_return_pct_delta": 0.0129,
+    "window_2_expected_value_score_delta": -0.0166,
+    "window_2_max_drawdown_pct_delta": 0.0021,
+    "window_2_sharpe_daily_delta": -0.18,
+    "window_2_total_return_pct_delta": -0.0229
+  },
+  "experiment_id": "exp-20260421-025",
+  "hypothesis": "If repaired-data `earnings_event_long` still has edge but mainly destroys EV by displacing stronger A+B candidates on the same day, then a strict slot-interaction rule should recover that edge: allow C only on days with no same-day `trend_long` or `breakout_long` candidates, so C never competes for the marginal slot against A+B.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "window_1": "ripping bull / high-beta leadership",
+    "window_2": "older weak-to-mixed tape"
+  },
+  "next_retry_requires": [
+    "Do not retry the class of `C only when no same-day A/B candidates exist` or similar standalone-day gates without a genuinely richer marginal-value signal",
+    "If `C strategy revival` is revisited, the next mechanism must combine richer event grading with explicit marginal-slot evidence, not just isolate C from A/B competition",
+    "Keep `LLM soft ranking` as the highest-upside direction overall; repaired-data C remains a secondary branch until a stronger mechanism appears"
+  ],
+  "notes": "This retry was justified because repaired snapshots had already moved C out of the pure data-blocker bucket and prior C tests had not yet evaluated a clean standalone-day slot-interaction boundary. The negative result rules out another tempting low-complexity C revival template.",
+  "parameters": {
+    "ab_strategies": [
+      "trend_long",
+      "breakout_long"
+    ],
+    "abc_strategies": [
+      "trend_long",
+      "breakout_long",
+      "earnings_event_long"
+    ],
+    "c_slot_interaction": {
+      "new": "allow `earnings_event_long` only on days with zero same-day A/B candidates",
+      "old": "C disabled in accepted A+B baseline"
+    },
+    "evaluation_windows": [
+      [
+        "2025-10-23",
+        "2026-04-20"
+      ],
+      [
+        "2025-04-23",
+        "2025-10-22"
+      ],
+      [
+        "2024-10-02",
+        "2025-04-22"
+      ]
+    ],
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "measurement_note": "Used the accepted-stack baseline with `REGIME_AWARE_EXIT` active (`EV 0.8299 / 0.1255 / 0.0257`), not the lower plain-CLI observation-only baseline."
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability. A standalone-day-only `earnings_event_long` rule improved the ripping-bull comparison window, but it materially regressed the primary window and the older weak window on the north-star metric. The repaired-data C problem is therefore not solved by simply keeping C out of same-day A/B slot competition.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-21T21:10:00-07:00"
+}

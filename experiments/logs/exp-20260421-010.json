@@ -1,0 +1,132 @@
+{
+  "after_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.591,
+      "max_drawdown_pct": 0.0275,
+      "sharpe_daily": 2.73,
+      "total_return_pct": 0.2165,
+      "trade_count": 28,
+      "win_rate": 0.5357
+    },
+    "window_1": {
+      "expected_value_score": 0.0304,
+      "max_drawdown_pct": 0.0828,
+      "sharpe_daily": 0.61,
+      "total_return_pct": 0.0499,
+      "trade_count": 30,
+      "win_rate": 0.3333
+    },
+    "window_2": {
+      "expected_value_score": 0.003,
+      "max_drawdown_pct": 0.0965,
+      "sharpe_daily": 0.22,
+      "total_return_pct": 0.0137,
+      "trade_count": 30,
+      "win_rate": 0.3
+    }
+  },
+  "before_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.5329,
+      "max_drawdown_pct": 0.0447,
+      "sharpe_daily": 2.51,
+      "total_return_pct": 0.2123,
+      "trade_count": 28,
+      "win_rate": 0.5357
+    },
+    "window_1": {
+      "expected_value_score": 0.018,
+      "max_drawdown_pct": 0.0869,
+      "sharpe_daily": 0.48,
+      "total_return_pct": 0.0375,
+      "trade_count": 30,
+      "win_rate": 0.3333
+    },
+    "window_2": {
+      "expected_value_score": 0.003,
+      "max_drawdown_pct": 0.0965,
+      "sharpe_daily": 0.22,
+      "total_return_pct": 0.0137,
+      "trade_count": 30,
+      "win_rate": 0.3
+    }
+  },
+  "change_summary": "Promoted a runtime sizing experiment into code: `portfolio_engine.size_signals()` now keeps the caller's normal regime risk for most signals but applies a 0.25 risk multiplier when `trade_quality_score < 0.85`. Added sizing audit fields (`base_risk_pct`, `trade_quality_score`, `tqs_risk_multiplier_applied`) and unit tests for low/high-TQS cases. Re-ran the accepted A+B stack across three non-overlapping windows with the repo venv.",
+  "change_type": "allocation_rule",
+  "component": "quant/constants.py + quant/portfolio_engine.py",
+  "date_range": {
+    "end": "2026-04-20",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "note": "This is the first accepted allocation rule in the current A+B regime-aware-exit stack: it materially improves the primary window, also improves the ripping-bull comparison window, and leaves the weak window unchanged rather than sacrificing it.",
+    "primary_expected_value_score_delta": 0.0581,
+    "primary_max_drawdown_pct_delta": -0.0172,
+    "primary_sharpe_daily_delta": 0.22,
+    "primary_total_return_pct_delta": 0.0042,
+    "window_1_expected_value_score_delta": 0.0124,
+    "window_1_max_drawdown_pct_delta": -0.0041,
+    "window_1_sharpe_daily_delta": 0.13,
+    "window_1_total_return_pct_delta": 0.0124,
+    "window_2_expected_value_score_delta": 0.0,
+    "window_2_max_drawdown_pct_delta": 0.0,
+    "window_2_sharpe_daily_delta": 0.0,
+    "window_2_total_return_pct_delta": 0.0
+  },
+  "experiment_id": "exp-20260421-010",
+  "hypothesis": "If `confidence_score` is now saturated at 1.0 for the accepted A+B stack, the next unblocked allocation-alpha mechanism is to size off richer cross-sectional quality instead of binary entry eligibility. De-risking only lower-`trade_quality_score` signals may improve expected value without reducing trade count, because TQS still differentiates weaker breakout/trend setups even when they all clear the hard gates.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "window_1": "ripping bull / high-beta leadership",
+    "window_2": "older weak-to-mixed tape"
+  },
+  "next_retry_requires": [
+    "If allocation alpha is extended, start from `trade_quality_score` or another richer cross-sectional quality field, not from `confidence_score < 1.0`",
+    "Do not re-open global low-confidence sizing; confidence is now saturated on the accepted A+B stack",
+    "When revisiting allocation, prefer another context-conditioned marginal-value rule over global slot-count or naive strategy-priority dials"
+  ],
+  "notes": "The key new mechanism insight is that allocation alpha was not blocked; the earlier failure was the wrong quality proxy. `trade_quality_score` still carries usable marginal information after the current entry stack has already saturated raw confidence.",
+  "parameters": {
+    "LOW_TQS_RISK_MULTIPLIER": {
+      "new": 0.25,
+      "old": null
+    },
+    "LOW_TQS_RISK_THRESHOLD": {
+      "new": 0.85,
+      "old": null
+    },
+    "ab_strategies": [
+      "trend_long",
+      "breakout_long"
+    ],
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "low_tqs_definition": {
+      "new": "signals with `trade_quality_score < 0.85` use only 25% of the normal risk budget",
+      "old": "all passing A+B signals used the same regime risk budget"
+    }
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/constants.py",
+    "quant/portfolio_engine.py",
+    "quant/test_quant.py",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-21T08:35:00-07:00"
+}

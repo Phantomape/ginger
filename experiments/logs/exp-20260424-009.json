@@ -1,0 +1,171 @@
+{
+  "after_metrics": {
+    "accepted_ab_stack_after_rule": {
+      "late_strong": {
+        "eligible_trend_tech_nearhigh_signals": 4,
+        "expected_value_score": 0.9195,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.69,
+        "total_return_pct": 0.2492,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "eligible_trend_tech_nearhigh_signals": 7,
+        "expected_value_score": 0.1933,
+        "max_drawdown_pct": 0.0343,
+        "sharpe_daily": 1.63,
+        "total_return_pct": 0.1186,
+        "trade_count": 27,
+        "win_rate": 0.4815
+      },
+      "old_thin": {
+        "eligible_trend_tech_nearhigh_signals": 8,
+        "expected_value_score": 0.0158,
+        "max_drawdown_pct": 0.0828,
+        "sharpe_daily": 0.43,
+        "total_return_pct": 0.0367,
+        "trade_count": 25,
+        "win_rate": 0.32
+      }
+    },
+    "live_window_after_rule": {
+      "primary_window": {
+        "expected_value_score": 0.6419,
+        "max_drawdown_pct": 0.024,
+        "sharpe_daily": 3.42,
+        "total_return_pct": 0.1877,
+        "trade_count": 25,
+        "win_rate": 0.6
+      }
+    },
+    "runner_followup": {
+      "trend_tech_nearhigh_000": {
+        "late_strong_expected_value_score": 0.9387,
+        "mid_weak_expected_value_score": 0.2326,
+        "old_thin_expected_value_score": 0.0148
+      }
+    }
+  },
+  "before_metrics": {
+    "accepted_ab_stack_before_rule": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1711,
+        "max_drawdown_pct": 0.0468,
+        "sharpe_daily": 1.47,
+        "total_return_pct": 0.1164,
+        "trade_count": 27,
+        "win_rate": 0.4074
+      },
+      "old_thin": {
+        "expected_value_score": 0.0155,
+        "max_drawdown_pct": 0.0829,
+        "sharpe_daily": 0.42,
+        "total_return_pct": 0.0368,
+        "trade_count": 25,
+        "win_rate": 0.32
+      }
+    },
+    "live_window_before_rule": {
+      "primary_window": {
+        "expected_value_score": 0.5725,
+        "max_drawdown_pct": 0.0329,
+        "sharpe_daily": 3.17,
+        "total_return_pct": 0.1806,
+        "trade_count": 25,
+        "win_rate": 0.6
+      }
+    }
+  },
+  "change_summary": "Promoted a runtime-only sizing result into production: `portfolio_engine.size_signals()` now applies `TREND_TECH_NEAR_HIGH_RISK_MULTIPLIER = 0.25` only when `strategy == 'trend_long'`, `sector == 'Technology'`, and `conditions_met.pct_from_52w_high >= -0.03`. Added a targeted unit test and kept the validating runner artifact. No entry logic, exit logic, ranking order, sector cap, or LLM boundary changed.",
+  "change_type": "allocation_rule",
+  "component": "quant/constants.py + quant/portfolio_engine.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "accepted_stack_ev_deltas": {
+      "late_strong": 0.0725,
+      "mid_weak": 0.0222,
+      "old_thin": 0.0003
+    },
+    "accepted_stack_max_drawdown_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": -0.0125,
+      "old_thin": -0.0001
+    },
+    "accepted_stack_sharpe_daily_deltas": {
+      "late_strong": 0.18,
+      "mid_weak": 0.16,
+      "old_thin": 0.01
+    },
+    "live_primary_expected_value_score_delta": 0.0694,
+    "live_primary_max_drawdown_pct_delta": -0.0089,
+    "live_primary_sharpe_daily_delta": 0.25,
+    "live_primary_total_return_pct_delta": 0.0071,
+    "note": "This is not a retry of the rejected trend-ranking family. The changed causal variable is a residual cohort sizing rule inside the accepted A+B stack, not a new global ordering key. The 0.25x variant was chosen because 0x improved the two stronger windows more but regressed the oldest weak window, while 0.25x stayed positive across all three validation windows."
+  },
+  "experiment_id": "exp-20260424-009",
+  "hypothesis": "After the accepted A+B stack, the remaining `trend_long` Technology drag is better explained by a residual near-high entry-shape pocket than by another gap-band tweak or a restart of the rejected trend-ranking family. If `trend_long` Technology names entering within 3% of the 52-week high are the leak, cutting only that cohort to 25% risk should improve EV across the fixed late/mid/old windows while preserving deeper-pullback Technology winners.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted A+B stack dominant tape",
+    "mid_weak": "rotation-heavy bull with weaker trend follow-through",
+    "old_thin": "mixed-to-weak tape"
+  },
+  "next_retry_requires": [
+    "Do not reopen `0.25x` vs `0.0x` inside the same `trend_long | Technology | pct_from_52w_high >= -3%` pocket by default",
+    "Do not reinterpret this result as permission to restart global `trend_long` ranking by `pct_from_52w_high`",
+    "If trend residual allocation work continues, require another conditioning source beyond `Technology + near-high` rather than another nearby pullback-threshold sweep"
+  ],
+  "notes": "Single-causal-variable discipline held: only the sizing treatment of one explicit residual trend cohort changed. Entry logic, exit logic, ranking, sector cap, C strategy, and all blocked LLM branches stayed untouched.",
+  "parameters": {
+    "TREND_TECH_NEAR_HIGH_MAX_PULLBACK": {
+      "new": -0.03,
+      "old": null
+    },
+    "TREND_TECH_NEAR_HIGH_RISK_MULTIPLIER": {
+      "new": 0.25,
+      "old": 1.0
+    },
+    "affected_cohort": "`trend_long` + `sector == Technology` + `pct_from_52w_high >= -0.03`",
+    "baseline_rule": "accepted A+B stack after exp-20260424-008",
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "validation_runner": "quant/experiments/legacy/exp_20260424_009_runner.py"
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/constants.py",
+    "quant/portfolio_engine.py",
+    "quant/test_quant.py",
+    "quant/experiments/legacy/exp_20260424_009_runner.py",
+    "data/exp_20260424_009_results.json",
+    "data/backtest_results_20260424.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-24T16:20:00-07:00"
+}

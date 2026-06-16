@@ -1,0 +1,82 @@
+{
+  "after_metrics": {
+    "off_mode": {
+      "expected_value_score": 0.4875,
+      "max_drawdown_pct": 0.0459,
+      "sharpe": 3.0,
+      "sharpe_daily": 2.44,
+      "survival_rate": 0.98,
+      "total_return_pct": 0.1998,
+      "trade_count": 30,
+      "win_rate": 0.6
+    },
+    "on_mode_replay_news": {
+      "expected_value_score": 0.4875,
+      "max_drawdown_pct": 0.0459,
+      "news_coverage_fraction": 0.105,
+      "sharpe": 3.0,
+      "sharpe_daily": 2.44,
+      "signals_presented_on_covered_days": 6,
+      "signals_vetoed_by_news": 0,
+      "survival_rate": 0.98,
+      "total_return_pct": 0.1998,
+      "trade_count": 30,
+      "veto_rate": 0.0,
+      "win_rate": 0.6
+    }
+  },
+  "before_metrics": {
+    "expected_value_score": 0.4875,
+    "max_drawdown_pct": 0.0459,
+    "sharpe": 3.0,
+    "sharpe_daily": 2.44,
+    "survival_rate": 0.98,
+    "total_return_pct": 0.1998,
+    "trade_count": 30,
+    "win_rate": 0.6
+  },
+  "change_summary": "New quant/news_replay.py module with _T1_NEGATIVE_KEYWORDS classifier, get_news_for_date(), apply_news_gate(). BacktestEngine gained replay_news parameter and --replay-news CLI flag. news_attribution bucket added to result (parallel to llm_attribution). known_biases.news_veto_unreplayed.archive_replay_enabled now reflects replay_news state.",
+  "change_type": "parity_fix",
+  "component": "quant/news_replay.py + quant/backtester.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "note": "Off-mode: bit-identical to before_metrics (pure passthrough). On-mode: zero vetoes across 6 signals on 13 covered days 闂?news_veto bias is NEGLIGIBLE for this window. The optimistic bias from un-replayed news veto is smaller than feared: quant signals and T1-negative news are anti-correlated (bullish quant signal rarely coincides with bearish T1 news)."
+  },
+  "experiment_id": "exp-20260418-002",
+  "hypothesis": "Building news_replay.py (parallel to llm_replay.py) to apply T1-negative news veto in backtester --replay-news mode closes the 闂?.1 news-veto parity gap for covered dates. Off-mode metrics must be identical to baseline; on-mode measures the actual veto impact.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "BULL (slow-melt)"
+  },
+  "next_retry_requires": [],
+  "notes": "Key insight: 0 vetoes out of 6 signals on 13 covered days. This is expected 闂?if a ticker has T1-negative news (earnings miss, guidance cut), the quant signal engine would likely NOT generate a bullish trend/breakout signal for it on that day (stock would be down, trend broken). The two filters are anti-correlated. This means the 'news veto bias' label overstates the actual gap 闂?the bias exists in theory but may be near-zero in practice for pure quant signals. In 217 pytest tests pass. Establish true baseline EV score: 0.4875 (updated from 0.4954, which was stale from before market data refresh).",
+  "parameters": {
+    "BacktestEngine.replay_news": {
+      "new": "bool (default False)",
+      "old": "absent"
+    },
+    "known_biases.news_veto_unreplayed.archive_replay_enabled": {
+      "new": "self.replay_news (dynamic)",
+      "old": "False (hardcoded)"
+    },
+    "result.news_attribution": {
+      "new": "dict{replay_enabled,coverage_fraction,trading_days,archive_dates_covered,archive_dates_missing,signals_presented,signals_vetoed_by_news,signals_passed_by_news,veto_rate,notes}",
+      "old": "absent"
+    }
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/news_replay.py",
+    "quant/backtester.py",
+    "quant/test_quant.py"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-04-18T12:00:00-07:00"
+}

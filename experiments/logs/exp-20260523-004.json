@@ -1,0 +1,75 @@
+{
+  "after_metrics": {
+    "canonical_backtester_market_state_sentiment_attribution_present": true,
+    "daily_report_market_state_snapshot_present": true,
+    "production_market_state_snapshot_present": true,
+    "tests_passed": 8
+  },
+  "before_metrics": {
+    "canonical_backtester_market_state_sentiment_attribution_present": false,
+    "daily_report_market_state_snapshot_present": false,
+    "production_market_state_snapshot_present": false
+  },
+  "change_summary": "Wired read-only market-state/sentiment attribution into canonical backtest results and production daily artifacts/reports without changing entry, ranking, sizing, exits, heat, LLM/news, or orders.",
+  "change_type": "measurement_repair",
+  "changed_variable": "read_only_market_state_sentiment_analysis_visibility",
+  "component": "quant/market_state_analysis.py + quant/backtest_sentiment_attribution.py + quant/backtester.py + quant/run.py + quant/report_generator.py",
+  "date_range": "not_applicable_read_only_plumbing",
+  "decision": "accepted_measurement_repair",
+  "delta_metrics": {
+    "expected_value_score_delta": 0,
+    "orders_changed": false,
+    "trading_metric_delta": "not_applicable_read_only_diagnostic"
+  },
+  "experiment_id": "exp-20260523-004",
+  "hypothesis": "Existing market-state, sentiment, and regime attribution mechanisms are useful alpha-discovery inputs but were sidecar-only or production-invisible, so future state-conditioned allocation experiments were blocked by missing default attribution surfaces rather than by strategy logic.",
+  "mechanism_family": "market_state_sentiment_attribution",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260518-004"
+  ],
+  "new_evidence_type": "new_production_visible_field",
+  "next_retry_requires": [
+    "Use the new attribution blocks to identify one production-visible market-state variable before any state-conditioned policy experiment.",
+    "Do not promote regime/sentiment labels into sizing or filters without standard three-window Gate 1-4 evidence."
+  ],
+  "notes": "This records a measurement repair, not an alpha acceptance result. The blocker was that existing regime/sentiment attribution was not emitted by default in production and canonical backtest artifacts, making future alpha_search conclusions harder to audit.",
+  "parameters": {
+    "anti_js": "No JavaScript was used.",
+    "classifiers_used": [
+      "regime_engine.classify_market_regime",
+      "sentiment_surface.classify_sentiment_surface",
+      "backtest_sentiment_attribution.build_sentiment_report"
+    ],
+    "new_backtest_result_key": "market_state_sentiment_attribution",
+    "new_production_artifact_key": "market_state_snapshot",
+    "report_block": "MARKET STATE SNAPSHOT",
+    "strategy_behavior_changed": false
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "backtester_adapter_changed": true,
+    "live_orders_changed": false,
+    "parity_test_added": true,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": false,
+    "strategy_behavior_changed": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/market_state_analysis.py",
+    "quant/backtest_sentiment_attribution.py",
+    "quant/test_market_state_analysis.py",
+    "quant/test_backtest_sentiment_attribution.py",
+    "quant/backtester.py",
+    "quant/run.py",
+    "quant/report_generator.py",
+    "docs/production_backtest_parity.md",
+    "docs/experiment_log.jsonl"
+  ],
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-05-22T20:07:42-07:00",
+  "trial_family": "market_state_attribution_plumbing",
+  "trial_variant_id": "production_backtest_read_only_visibility"
+}

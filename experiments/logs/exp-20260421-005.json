@@ -1,0 +1,161 @@
+{
+  "after_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.3775,
+      "llm_coverage_days": 5,
+      "max_drawdown_pct": 0.0537,
+      "sharpe_daily": 2.44,
+      "signals_passed_by_llm": 1,
+      "signals_presented": 3,
+      "signals_vetoed_by_llm": 2,
+      "total_return_pct": 0.1547,
+      "trade_count": 28,
+      "veto_rate": 0.6667,
+      "win_rate": 0.5714
+    },
+    "window_1": {
+      "expected_value_score": 0.0037,
+      "llm_coverage_days": 5,
+      "max_drawdown_pct": 0.0018,
+      "sharpe_daily": -2.34,
+      "signals_passed_by_llm": 1,
+      "signals_presented": 3,
+      "signals_vetoed_by_llm": 2,
+      "total_return_pct": -0.0016,
+      "trade_count": 1,
+      "veto_rate": 0.6667,
+      "win_rate": 0.0
+    },
+    "window_2": {
+      "expected_value_score": 0.0932,
+      "llm_coverage_days": 0,
+      "max_drawdown_pct": 0.0716,
+      "sharpe_daily": 1.08,
+      "signals_passed_by_llm": 0,
+      "signals_presented": 0,
+      "signals_vetoed_by_llm": 0,
+      "total_return_pct": 0.0863,
+      "trade_count": 35,
+      "veto_rate": null,
+      "win_rate": 0.4286
+    }
+  },
+  "before_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.3572,
+      "llm_coverage_days": 0,
+      "max_drawdown_pct": 0.0537,
+      "sharpe_daily": 2.38,
+      "signals_presented": 0,
+      "signals_vetoed_by_llm": 0,
+      "total_return_pct": 0.1501,
+      "trade_count": 29,
+      "win_rate": 0.5517
+    },
+    "window_1": {
+      "expected_value_score": 0.0418,
+      "llm_coverage_days": 0,
+      "max_drawdown_pct": 0.0043,
+      "sharpe_daily": -7.34,
+      "signals_presented": 0,
+      "signals_vetoed_by_llm": 0,
+      "total_return_pct": -0.0057,
+      "trade_count": 2,
+      "win_rate": 0.0
+    },
+    "window_2": {
+      "expected_value_score": 0.0932,
+      "llm_coverage_days": 0,
+      "max_drawdown_pct": 0.0716,
+      "sharpe_daily": 1.08,
+      "signals_presented": 0,
+      "signals_vetoed_by_llm": 0,
+      "total_return_pct": 0.0863,
+      "trade_count": 35,
+      "win_rate": 0.4286
+    }
+  },
+  "change_summary": "Ran paired backtests with and without `--replay-llm` over the current primary window (`2025-10-23 -> 2026-04-20`) and over the only archive-covered micro window (`2026-04-10 -> 2026-04-20`). No strategy code changed. The primary window improved mechanically (`EV 0.3572 -> 0.3775`), but replay covered only 5 of 122 trading days and only 3 presented signals. The archive-covered micro window likewise contained only 3 signals total, 2 vetoes, and 1 executed trade. The prior comparison window (`2025-04-23 -> 2025-10-22`) had zero LLM coverage, so Gate 4 multi-window validation is impossible today.",
+  "change_type": "measurement_blocker_proof",
+  "component": "backtester runtime only (`--replay-llm`)",
+  "date_range": {
+    "end": "2026-04-20",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "coverage_fraction_primary_after": 0.041,
+    "note": "The apparent primary-window uplift is generated from only three covered candidate signals in one late-April cluster. Two vetoes removed one loser and one would-be unobserved candidate; there is no second covered comparison window to test stability. This is not enough evidence to accept `LLM soft ranking` as unlocked alpha.",
+    "presented_signals_total": 3,
+    "primary_expected_value_score_delta": 0.0203,
+    "primary_sharpe_daily_delta": 0.06,
+    "primary_trade_count_delta": -1,
+    "window_1_expected_value_score_delta": -0.0381
+  },
+  "experiment_id": "exp-20260421-005",
+  "hypothesis": "`LLM soft ranking` is now the highest-value remaining alpha direction, so the first question is whether current replay coverage is already large enough to treat the observed `--replay-llm` uplift as credible rather than as a tiny-sample artifact.",
+  "llm_metrics": {
+    "coverage_fraction": 0.041,
+    "llm_attribution_metric": "replay coverage days + signals presented/vetoed/passed + veto_rate",
+    "llm_change_scope": "measurement_only",
+    "signals_passed_by_llm": 1,
+    "signals_presented": 3,
+    "signals_vetoed_by_llm": 2,
+    "used_llm": true,
+    "veto_rate": 0.6667
+  },
+  "market_regime_summary": {
+    "primary": "current converged A+B stack with a late-April covered tail",
+    "window_1": "covered micro window only; too short for stable inference",
+    "window_2": "older comparison window with zero LLM archive coverage"
+  },
+  "next_retry_requires": [
+    "Accumulate materially more `llm_prompt_resp_YYYYMMDD.json` files before treating replay deltas as alpha evidence",
+    "Do not resume A/B micro-tuning on the theory that LLM ranking is already proven; it is still blocked by coverage",
+    "When LLM alpha is revisited, compare at least two non-overlapping windows with real replay coverage rather than one covered tail and one uncovered history"
+  ],
+  "notes": "This closes the ambiguity created by the tempting `EV 0.3572 -> 0.3775` printout. `LLM soft ranking` remains the best conceptual direction, but it is still a measurement-blocked direction, not an unlocked one.",
+  "parameters": {
+    "comparison_window_without_archive": {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    "covered_micro_window": {
+      "end": "2026-04-20",
+      "start": "2026-04-10"
+    },
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "llm_archive_files": [
+      "20260412",
+      "20260413",
+      "20260414",
+      "20260415",
+      "20260416",
+      "20260417",
+      "20260418"
+    ],
+    "primary_window": {
+      "end": "2026-04-20",
+      "start": "2025-10-23"
+    }
+  },
+  "rejection_reason": "Rejected as an alpha experiment because current LLM replay coverage is still too sparse to satisfy AGENTS.md Gate 4. The observed uplift is a tiny-sample effect from 5 covered trading days / 3 presented signals, and there is no non-overlapping covered window for stability validation.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "data/llm_prompt_resp_20260412.json",
+    "data/llm_prompt_resp_20260418.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2026-04-20",
+      "start": "2026-04-10"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-21T03:10:00-07:00"
+}

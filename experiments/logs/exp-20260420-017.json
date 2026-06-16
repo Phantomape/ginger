@@ -1,0 +1,110 @@
+{
+  "after_metrics": {
+    "primary_window": {
+      "by_strategy": {
+        "breakout_long": {
+          "avg_R": 1.621,
+          "profit_factor": 2.544,
+          "total_pnl_usd": 12005.67,
+          "trade_count": 17,
+          "win_rate": 0.5294
+        },
+        "trend_long": {
+          "avg_R": 0.896,
+          "profit_factor": 2.992,
+          "total_pnl_usd": 7494.48,
+          "trade_count": 10,
+          "win_rate": 0.5
+        }
+      },
+      "expected_value_score": 0.5226,
+      "max_drawdown_pct": 0.0323,
+      "sharpe_daily": 2.68,
+      "total_return_pct": 0.195,
+      "trade_count": 27,
+      "win_rate": 0.5185
+    }
+  },
+  "before_metrics": {
+    "primary_window": {
+      "by_strategy": {
+        "breakout_long": {
+          "avg_R": 2.058,
+          "profit_factor": 4.607,
+          "total_pnl_usd": 15025.05,
+          "trade_count": 15,
+          "win_rate": 0.6
+        },
+        "trend_long": {
+          "avg_R": 0.747,
+          "profit_factor": 2.433,
+          "total_pnl_usd": 7713.83,
+          "trade_count": 13,
+          "win_rate": 0.4615
+        }
+      },
+      "expected_value_score": 0.5981,
+      "max_drawdown_pct": 0.0398,
+      "sharpe_daily": 2.63,
+      "total_return_pct": 0.2274,
+      "trade_count": 28,
+      "win_rate": 0.5357
+    }
+  },
+  "change_summary": "Added an experiment-only backtester branch that preserved the existing ranking stack but resorted surviving candidate signals so `breakout_long` entries were considered before `trend_long` when filling the remaining slots. Screened it first on the accepted A+B primary window using the repo venv, then rolled the code back immediately after the screen because the primary window already failed Gate 4.",
+  "change_type": "allocation_layer",
+  "component": "quant/backtester.py",
+  "date_range": {
+    "end": "2026-04-20",
+    "start": "2025-10-22"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "note": "The tilt improved drawdown slightly and nudged Sharpe daily higher, but it reduced return enough to fail the primary acceptance screen immediately. The marginal slots given to breakout did not improve breakout quality: breakout trade count rose `15 -> 17` while breakout profit factor degraded `4.607 -> 2.544`, and three trend trades were displaced (`13 -> 10`).",
+    "primary_expected_value_score_delta": -0.0755,
+    "primary_max_drawdown_pct_delta": -0.0075,
+    "primary_sharpe_daily_delta": 0.05,
+    "primary_total_return_pct_delta": -0.0324,
+    "primary_trade_count_delta": -1,
+    "primary_win_rate_delta": -0.0172
+  },
+  "experiment_id": "exp-20260420-017",
+  "hypothesis": "If `breakout_long` has the stronger marginal alpha carrier, then a simple strategy-specific slot-allocation tilt should help: when same-day slots are scarce, prefer `breakout_long` candidates ahead of `trend_long` without changing signal generation, filters, exits, or position sizing.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "BULL (slow-melt) with Apr-2026 stress"
+  },
+  "next_retry_requires": [
+    "Do not retry simple `breakout_long`-first allocation without explicit same-day slot-collision evidence showing the displaced trend trades are systematically worse",
+    "If allocation alpha is revisited, use a richer marginal-value signal than average `by_strategy` performance alone",
+    "Higher-value directions remain `C strategy revival` as earnings snapshots accumulate and `LLM soft ranking` as replay coverage grows"
+  ],
+  "notes": "The backtester code was fully rolled back after measurement. This failure matters because it falsifies the intuitive but shallow idea that better average breakout attribution should automatically translate into breakout-first slot allocation.",
+  "parameters": {
+    "allocation_priority": {
+      "old": "existing rank order after enrich/size",
+      "trial": "stable sort with `breakout_long` before `trend_long`"
+    },
+    "fixed_context": {
+      "BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH": -0.2,
+      "BREAKOUT_RANK_BY_52W_HIGH": true,
+      "ENABLED_STRATEGIES": [
+        "trend_long",
+        "breakout_long"
+      ],
+      "MAX_POSITIONS": 5,
+      "REGIME_AWARE_EXIT": true
+    },
+    "interpreter": ".venv\\Scripts\\python.exe"
+  },
+  "rejection_reason": "Rejected at the primary-window screen before multi-window validation. A naive strategy-priority allocation rule adds complexity but lowers the north-star EV metric materially, so it is not worth carrying forward.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [],
+  "status": "rejected",
+  "timestamp": "2026-04-20T23:40:00-07:00"
+}

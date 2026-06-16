@@ -1,0 +1,116 @@
+{
+  "after_metrics": {
+    "primary_replay_llm": {
+      "candidate_days_covered": 4,
+      "candidate_days_total": 31,
+      "candidate_signals_covered": 4,
+      "candidate_signals_total": 44,
+      "coverage_fraction": 0.0569,
+      "expected_value_score": 0.8369,
+      "max_drawdown_pct": 0.026,
+      "missing_candidate_days": 27,
+      "prompt_ready_backlog_days": 1,
+      "sharpe_daily": 3.49,
+      "signals_presented": 4,
+      "signals_vetoed_by_llm": 4,
+      "total_return_pct": 0.2398,
+      "trade_count": 22,
+      "win_rate": 0.6364
+    }
+  },
+  "before_metrics": {
+    "primary_replay_llm": {
+      "candidate_days_covered": 3,
+      "candidate_days_total": 31,
+      "candidate_signals_covered": 3,
+      "candidate_signals_total": 44,
+      "coverage_fraction": 0.0488,
+      "expected_value_score": 0.8369,
+      "max_drawdown_pct": 0.026,
+      "missing_candidate_days": 28,
+      "prompt_ready_backlog_days": 2,
+      "sharpe_daily": 3.49,
+      "signals_presented": 3,
+      "signals_vetoed_by_llm": 3,
+      "total_return_pct": 0.2398,
+      "trade_count": 22,
+      "win_rate": 0.6364
+    }
+  },
+  "change_summary": "Audited the two prompt-ready backlog dates from `exp-20260422-006`. Found that `20260219` already had a real raw response in `data/llm_output_20260219.json`, while `20260312` still had only a prompt/report and no recoverable response. Imported the real `20260219` response through `quant/import_advice.py`, which rewrote `investment_advice_20260219.json` from the old fake prompt-save acknowledgment to a real wrapped response and created `llm_prompt_resp_20260219.json`. Re-ran the deterministic primary replay window to verify coverage improved without changing PnL metrics.",
+  "change_type": "measurement_repair",
+  "component": "data/llm_output_20260219.json -> data/investment_advice_20260219.json + data/llm_prompt_resp_20260219.json",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "candidate_day_coverage_fraction_delta": 0.0323,
+    "candidate_signal_coverage_fraction_delta": 0.0227,
+    "expected_value_score_delta": 0.0,
+    "max_drawdown_pct_delta": 0.0,
+    "missing_candidate_days_delta": -1,
+    "note": "This was a pure archive recovery step. The backtest stayed bit-identical on trading outcomes because the recovered day also contained `NO NEW TRADE`, but the LLM sample grew from 3 to 4 covered candidate days and from 3 to 4 covered candidate signals.",
+    "sharpe_daily_delta": 0.0,
+    "signals_presented_delta": 1,
+    "total_return_pct_delta": 0.0,
+    "trade_count_delta": 0,
+    "win_rate_delta": 0.0
+  },
+  "experiment_id": "exp-20260422-007",
+  "hypothesis": "The top alpha branch (`LLM soft ranking`) is still blocked by candidate-level replay depth, but at least one of the backlog dates may already have a real saved LLM response outside the canonical replay filename. If an existing raw response artifact can be imported into `llm_prompt_resp_YYYYMMDD.json` without inventing decisions, candidate coverage should increase while deterministic strategy metrics remain unchanged.",
+  "llm_metrics": {
+    "candidate_day_coverage_fraction": 0.129,
+    "candidate_signal_coverage_fraction": 0.0909,
+    "coverage_fraction": 0.0569,
+    "llm_attribution_metric": "candidate-day and candidate-signal coverage",
+    "llm_change_scope": "archive backfill only",
+    "signals_passed_by_llm": 0,
+    "signals_presented": 4,
+    "signals_vetoed_by_llm": 4,
+    "used_llm": true,
+    "veto_rate": 1.0
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "secondary": "ripping bull / high-beta leadership"
+  },
+  "next_retry_requires": [
+    "Inspect all future backlog dates for raw response artifacts (`llm_output_YYYYMMDD.json`) before treating them as hard missing-response gaps",
+    "Do not count `llm_prompt_YYYYMMDD.txt`, `report_YYYYMMDD.txt`, or fake prompt-save wrappers as replayable LLM decisions",
+    "`LLM soft ranking` is still blocked: 4/31 candidate days and 4/44 candidate signals remain too small for a credible ranking experiment, so more real candidate-day archives are still required"
+  ],
+  "notes": "`20260312` remains unrecoverable inside the repo because it has only `llm_prompt_20260312.txt` and `report_20260312.txt`, not a real saved model response. This narrows the immediate backlog from '2 prompt-ready days' to '1 prompt-only day plus 26 true archive gaps'.",
+  "parameters": {
+    "backtest_command": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2025-10-23 --end 2026-04-21 --regime-aware-exit --replay-llm --ohlcv-snapshot data\\ohlcv_snapshot_20251023_20260421.json",
+    "data_source": "data/ohlcv_snapshot_20251023_20260421.json",
+    "import_command": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe quant\\import_advice.py --date 20260219 --input data\\llm_output_20260219.json",
+    "primary_window": {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    "recovered_dates": [
+      "20260219"
+    ],
+    "still_unrecovered_prompt_only_dates": [
+      "20260312"
+    ]
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "data/llm_output_20260219.json",
+    "data/investment_advice_20260219.json",
+    "data/llm_prompt_resp_20260219.json",
+    "data/backtest_results_20260422.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-22T13:10:00-07:00"
+}

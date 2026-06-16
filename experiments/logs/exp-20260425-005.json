@@ -1,0 +1,223 @@
+{
+  "after_metrics": {
+    "ab_plus_macro": {
+      "late_strong": {
+        "expected_value_score": 0.8967,
+        "macro_added": 33,
+        "macro_profit_factor": 0.0,
+        "macro_total_pnl": -782.49,
+        "macro_trade_count": 3,
+        "max_drawdown_pct": 0.0238,
+        "sharpe_daily": 3.62,
+        "total_return_pct": 0.2477,
+        "trade_count": 26,
+        "win_rate": 0.5769
+      },
+      "mid_weak": {
+        "expected_value_score": 0.2011,
+        "macro_added": 19,
+        "macro_profit_factor": 0.0,
+        "macro_total_pnl": -2121.76,
+        "macro_trade_count": 4,
+        "max_drawdown_pct": 0.0345,
+        "sharpe_daily": 1.7,
+        "total_return_pct": 0.1183,
+        "trade_count": 30,
+        "win_rate": 0.3667
+      },
+      "old_thin": {
+        "expected_value_score": 0.0631,
+        "macro_added": 95,
+        "macro_profit_factor": 0.636,
+        "macro_total_pnl": 2337.73,
+        "macro_trade_count": 12,
+        "max_drawdown_pct": 0.0803,
+        "sharpe_daily": 0.82,
+        "total_return_pct": 0.0769,
+        "trade_count": 36,
+        "win_rate": 0.3611
+      }
+    },
+    "macro_only": {
+      "late_strong": {
+        "expected_value_score": 0.0177,
+        "macro_candidates": 33,
+        "macro_profit_factor": 0.0,
+        "macro_total_pnl": -637.84,
+        "macro_trade_count": 3,
+        "max_drawdown_pct": 0.0064,
+        "sharpe_daily": -2.76,
+        "total_return_pct": -0.0064,
+        "trade_count": 3,
+        "win_rate": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0176,
+        "macro_candidates": 19,
+        "macro_profit_factor": 0.0,
+        "macro_total_pnl": -2121.76,
+        "macro_trade_count": 4,
+        "max_drawdown_pct": 0.031,
+        "sharpe_daily": -0.83,
+        "total_return_pct": -0.0212,
+        "trade_count": 4,
+        "win_rate": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.018,
+        "macro_candidates": 96,
+        "macro_profit_factor": 0.581,
+        "macro_total_pnl": 1726.57,
+        "macro_trade_count": 13,
+        "max_drawdown_pct": 0.0115,
+        "sharpe_daily": 1.04,
+        "total_return_pct": 0.0173,
+        "trade_count": 13,
+        "win_rate": 0.3846
+      }
+    }
+  },
+  "before_metrics": {
+    "accepted_ab_baseline": {
+      "late_strong": {
+        "expected_value_score": 0.9534,
+        "max_drawdown_pct": 0.0238,
+        "sharpe_daily": 3.73,
+        "total_return_pct": 0.2556,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.286,
+        "max_drawdown_pct": 0.0232,
+        "sharpe_daily": 2.01,
+        "total_return_pct": 0.1423,
+        "trade_count": 26,
+        "win_rate": 0.4231
+      },
+      "old_thin": {
+        "expected_value_score": 0.0322,
+        "max_drawdown_pct": 0.0766,
+        "sharpe_daily": 0.6,
+        "total_return_pct": 0.0536,
+        "trade_count": 24,
+        "win_rate": 0.3333
+      }
+    }
+  },
+  "change_summary": "Added a runtime-only experiment runner for `macro_defensive_long`. The runner monkeypatches signal generation only during measurement and tests three variants: current accepted A+B baseline, macro-only, and A+B plus macro signals. No production trading code was promoted after measurement.",
+  "change_type": "new_strategy_alpha_research",
+  "component": "runtime-only `quant/experiments/legacy/exp_20260425_005_runner.py`, monkeypatching `signal_engine.generate_signals()` while keeping sizing, exits, accepted A+B residual rules, LLM gates, and portfolio constraints unchanged",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "ab_plus_macro_ev_deltas": {
+      "late_strong": -0.0567,
+      "mid_weak": -0.0849,
+      "old_thin": 0.0309
+    },
+    "ab_plus_macro_max_drawdown_pct_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0113,
+      "old_thin": 0.0037
+    },
+    "ab_plus_macro_sharpe_daily_deltas": {
+      "late_strong": -0.11,
+      "mid_weak": -0.31,
+      "old_thin": 0.22
+    },
+    "ab_plus_macro_total_return_pct_deltas": {
+      "late_strong": -0.0079,
+      "mid_weak": -0.024,
+      "old_thin": 0.0233
+    },
+    "note": "The experiment did test a new broad alpha class rather than another residual cohort. The macro sleeve is not vacuous: it generated 96 candidates and 12-13 executed macro trades in old_thin and improved A+B there. But the same static index-pressure activation loses money in both late_strong and mid_weak, so the edge is regime-conditional and too unstable to promote."
+  },
+  "experiment_id": "exp-20260425-005",
+  "hypothesis": "Instead of continuing to mine narrow residual A+B pockets, test a genuinely different alpha class: a defensive/macro continuation sleeve should add value when index pressure is negative and leadership rotates toward Commodities, Healthcare, or Energy. A valid sleeve should improve weak/macro windows without materially hurting the dominant trend window.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted A+B stack dominant tape",
+    "mid_weak": "rotation-heavy bull where simple defensive rotation did not persist",
+    "old_thin": "mixed-to-weak macro tape where defensive/macro continuation showed partial usefulness"
+  },
+  "next_retry_requires": [
+    "Do not promote or re-run the same static `index_pressure + defensive sector + above200 + positive RS` macro sleeve by default",
+    "If macro alpha returns, require a more distinctive macro-leadership state, such as commodity/defensive relative leadership plus weak A/B opportunity quality, not merely SPY/QQQ below their 200-day moving average",
+    "Consider gating macro exposure to periods where the normal A+B opportunity set is sparse or deteriorating, so macro does not compete with strong trend/breakout tapes",
+    "Do not treat this rejection as evidence that all macro strategies are invalid; it only rejects this first broad static defensive continuation form"
+  ],
+  "notes": "Single-causal-variable discipline held: only a new experiment-only signal sleeve was introduced for measurement. Production entry, exit, sizing rules, accepted residual cohort haircuts, LLM responsibilities, and C strategy remained unchanged.",
+  "parameters": {
+    "artifact_files": [
+      "quant/experiments/legacy/exp_20260425_005_runner.py",
+      "data/exp_20260425_005_results.json"
+    ],
+    "eligible_sectors": [
+      "Commodities",
+      "Healthcare",
+      "Energy"
+    ],
+    "entry_conditions": [
+      "sector in eligible_sectors",
+      "close > 200-day SMA",
+      "10-day momentum > 0",
+      "10-day stock return > 10-day SPY return",
+      "trend_score >= 0.55",
+      "days_to_earnings absent or > 3"
+    ],
+    "index_pressure": "SPY pct_from_200ma < 0 OR QQQ pct_from_200ma < 0 OR market_regime in {NEUTRAL, BEAR}",
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "risk_model": "standard ATR stop via ATR_STOP_MULT; no special production sizing rule",
+    "screened_variants": [
+      "baseline_ab",
+      "macro_only",
+      "ab_plus_macro"
+    ],
+    "strategy_name": "macro_defensive_long_presearch",
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability. A+B plus macro improves old_thin EV from 0.0322 to 0.0631, but regresses late_strong from 0.9534 to 0.8967 and mid_weak from 0.2860 to 0.2011; macro-only also has negative total return in late_strong and mid_weak. Simple defensive sector plus index-pressure continuation is not a stable standalone alpha.",
+  "related_files": [
+    "quant/experiments/legacy/exp_20260425_005_runner.py",
+    "data/exp_20260425_005_results.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-25T23:10:00-07:00"
+}

@@ -1,0 +1,157 @@
+{
+  "after_metrics": {
+    "strategy_attribution": {
+      "cross_window_takeaway": "breakout_long flips from dominant alpha carrier in the latest window to primary drag in the oldest tested window, while trend_long remains lower-powered but persistently positive across the same older window.",
+      "late_strong": {
+        "breakout_long": {
+          "profit_factor": 13.739,
+          "total_pnl_usd": 17203.49,
+          "trade_count": 12,
+          "win_rate": 0.8333
+        },
+        "trend_long": {
+          "profit_factor": 2.259,
+          "total_pnl_usd": 6929.42,
+          "trade_count": 11,
+          "win_rate": 0.4545
+        }
+      },
+      "mid_weak": {
+        "breakout_long": {
+          "profit_factor": 1.596,
+          "total_pnl_usd": 4339.02,
+          "trade_count": 12,
+          "win_rate": 0.4167
+        },
+        "trend_long": {
+          "profit_factor": 1.999,
+          "total_pnl_usd": 6026.12,
+          "trade_count": 17,
+          "win_rate": 0.3529
+        }
+      },
+      "old_thin": {
+        "breakout_long": {
+          "profit_factor": 0.273,
+          "total_pnl_usd": -3440.59,
+          "trade_count": 7,
+          "win_rate": 0.1429
+        },
+        "trend_long": {
+          "profit_factor": 1.498,
+          "total_pnl_usd": 6479.0,
+          "trade_count": 19,
+          "win_rate": 0.3684
+        }
+      }
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 0.847,
+      "max_drawdown_pct": 0.026,
+      "sharpe_daily": 3.51,
+      "total_return_pct": 0.2413,
+      "trade_count": 23,
+      "win_rate": 0.6522
+    },
+    "mid_weak": {
+      "expected_value_score": 0.1255,
+      "max_drawdown_pct": 0.0511,
+      "sharpe_daily": 1.21,
+      "total_return_pct": 0.1037,
+      "trade_count": 29,
+      "win_rate": 0.3793
+    },
+    "old_thin": {
+      "expected_value_score": 0.0109,
+      "max_drawdown_pct": 0.0903,
+      "sharpe_daily": 0.36,
+      "total_return_pct": 0.0304,
+      "trade_count": 26,
+      "win_rate": 0.3077
+    }
+  },
+  "change_summary": "Created deterministic OHLCV snapshots for `2025-04-23 -> 2025-10-22` and `2024-10-02 -> 2025-04-22`, then replayed the accepted `REGIME_AWARE_EXIT` A+B stack on those snapshots and compared them against the already-saved `2025-10-23 -> 2026-04-21` snapshot. No strategy logic, prompt, filter, or sizing rule changed. This was a pure fixed-data mechanism audit of cross-era alpha health.",
+  "change_type": "alpha_research",
+  "component": "docs/experiment_log.jsonl + docs/alpha-optimization-playbook.md + data/ohlcv_snapshot_20250423_20251022.json + data/ohlcv_snapshot_20241002_20250422.json",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "late_to_mid_expected_value_score_delta": -0.7215,
+    "late_to_old_expected_value_score_delta": -0.8361,
+    "late_to_old_max_drawdown_pct_delta": 0.0643,
+    "late_to_old_sharpe_daily_delta": -3.15,
+    "mid_to_old_expected_value_score_delta": -0.1146,
+    "note": "This was not a rule-change experiment, so there is no before/after delta inside one window. The useful result is cross-era structure: the accepted stack's recent strength does not generalize cleanly backward, and the instability is concentrated in breakout_long rather than trend_long."
+  },
+  "experiment_id": "exp-20260422-012",
+  "hypothesis": "The current accepted A+B stack may still look stronger than it really is if we judge it mostly on the latest strong window. If we replay the same stack on fixed OHLCV snapshots for three older, non-overlapping eras, we can determine whether the recent strength comes from a persistent alpha source or from a phase-sensitive sub-strategy.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull with Apr-2026 stress",
+    "mid_weak": "ripping bull / high-beta leadership but strategy lags broad beta materially",
+    "old_thin": "mixed-to-weak tape where breakout quality is sparse and fragile"
+  },
+  "next_retry_requires": [
+    "Do not treat breakout_long as an always-on peer of trend_long in future research; it now has deterministic evidence of phase-sensitive health",
+    "Prefer the next A+B alpha search to study breakout-health conditioning or dynamic breakout allocation, not another unconditional breakout micro-tweak",
+    "If breakout weakness is revisited, ask first which observable context predicts breakout failure before entry, rather than assuming one more static filter will fix every era"
+  ],
+  "notes": "Snapshot-backed replays confirmed that the recent accepted-stack strength is real but phase-dependent. The practical doctrine update is that `breakout_long` should now be treated as a regime-sensitive convex module; when it weakens, the right response is conditional participation or allocation shifts, not blind equal-weight persistence.",
+  "parameters": {
+    "accepted_stack_context": [
+      "REGIME_AWARE_EXIT",
+      "zero-risk low-TQS non-commodity breakouts",
+      "commodity low-TQS exemption",
+      "zero-risk trend Industrials",
+      "0.25x moderate-gap trend Technology"
+    ],
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "data/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv_snapshot_20241002_20250422.json",
+    "data/ohlcv_snapshot_20251023_20260421.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-22T20:45:00-07:00"
+}

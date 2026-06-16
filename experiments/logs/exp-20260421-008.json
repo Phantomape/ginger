@@ -1,0 +1,141 @@
+{
+  "after_metrics": {
+    "primary_window": {
+      "by_strategy": {
+        "earnings_event_long": {
+          "profit_factor": 0.913,
+          "total_pnl_usd": -246.51,
+          "trade_count": 8,
+          "win_rate": 0.5
+        }
+      },
+      "expected_value_score": 0.4763,
+      "sharpe_daily": 2.28,
+      "total_return_pct": 0.2089,
+      "trade_count": 36,
+      "win_rate": 0.5278
+    },
+    "window_1": {
+      "by_strategy": {
+        "earnings_event_long": null
+      },
+      "expected_value_score": 0.018,
+      "sharpe_daily": 0.48,
+      "total_return_pct": 0.0375,
+      "trade_count": 30,
+      "win_rate": 0.3333
+    },
+    "window_2": {
+      "by_strategy": {
+        "earnings_event_long": null
+      },
+      "expected_value_score": 0.003,
+      "sharpe_daily": 0.22,
+      "total_return_pct": 0.0137,
+      "trade_count": 30,
+      "win_rate": 0.3
+    }
+  },
+  "before_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.5329,
+      "sharpe_daily": 2.51,
+      "total_return_pct": 0.2123,
+      "trade_count": 28,
+      "win_rate": 0.5357
+    },
+    "window_1": {
+      "expected_value_score": 0.018,
+      "sharpe_daily": 0.48,
+      "total_return_pct": 0.0375,
+      "trade_count": 30,
+      "win_rate": 0.3333
+    },
+    "window_2": {
+      "expected_value_score": 0.003,
+      "sharpe_daily": 0.22,
+      "total_return_pct": 0.0137,
+      "trade_count": 30,
+      "win_rate": 0.3
+    }
+  },
+  "change_summary": "Ran a second runtime-only C experiment by monkeypatching `signal_engine.strategy_c_earnings()` so otherwise-valid C signals were kept only when `features['avg_historical_surprise_pct'] >= 4.0`. Compared `A+B` versus magnitude-gated `A+B+C` across the same three non-overlapping windows. No repository code was left changed; only the experiment record and playbook were updated.",
+  "change_type": "event_grading_rule",
+  "component": "quant/signal_engine.py (runtime-only patch, rolled back)",
+  "date_range": {
+    "end": "2026-04-20",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "note": "Magnitude-aware surprise gating improved the C cohort itself, but it still failed to beat the A+B baseline in the primary window and contributed nothing in the two comparison windows because all C trades disappeared there.",
+    "primary_expected_value_score_delta": -0.0566,
+    "primary_sharpe_daily_delta": -0.23,
+    "primary_total_return_pct_delta": -0.0034,
+    "window_1_expected_value_score_delta": 0.0,
+    "window_2_expected_value_score_delta": 0.0
+  },
+  "experiment_id": "exp-20260421-008",
+  "hypothesis": "If boolean surprise sign is too blunt for `earnings_event_long`, a magnitude-aware gate may work better: require `avg_historical_surprise_pct >= 4.0` so only stronger historical beaters can consume risk budget. If this captures genuine PEAD quality, gated `A+B+C` should beat `A+B` more stably than both the ungated stack and the sign-only gate.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "window_1": "ripping bull / high-beta leadership",
+    "window_2": "older weak-to-mixed tape"
+  },
+  "next_retry_requires": [
+    "Do not retry another single-field surprise-magnitude threshold as the sole C-revival mechanism",
+    "If C is revisited, the mechanism now needs either multi-field event scoring or explicit slot-interaction logic",
+    "Do not resume generic A/B micro-tuning while `LLM soft ranking` remains the highest-value conceptual direction and still blocked by replay coverage"
+  ],
+  "notes": "This matters because it falsifies the obvious 'use surprise magnitude instead of surprise sign' follow-up. The archive is no longer the excuse; the mechanism itself is too weak.",
+  "parameters": {
+    "ab_strategies": [
+      "trend_long",
+      "breakout_long"
+    ],
+    "abc_strategies": [
+      "trend_long",
+      "breakout_long",
+      "earnings_event_long"
+    ],
+    "evaluation_windows": [
+      [
+        "2025-10-23",
+        "2026-04-20"
+      ],
+      [
+        "2025-04-23",
+        "2025-10-22"
+      ],
+      [
+        "2024-10-02",
+        "2025-04-22"
+      ]
+    ],
+    "event_quality_gate": {
+      "new": "`avg_historical_surprise_pct >= 4.0` required for `earnings_event_long` to fire",
+      "old": "historical surprise magnitude only affects confidence indirectly via `positive_surprise_history`"
+    },
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe"
+  },
+  "rejection_reason": "Rejected on Gate 4. A one-dimensional surprise-magnitude gate is still too sparse and too weak: it leaves a slightly less-bad C cohort in the primary window, but adds no edge in the other two windows and remains inferior to A+B overall.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-21T06:10:00-07:00"
+}

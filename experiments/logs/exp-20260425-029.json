@@ -1,0 +1,110 @@
+{
+  "after_metrics": {
+    "least_bad_trail_3_0_2_0": {
+      "late_strong": {
+        "expected_value_score": 0.6049,
+        "max_drawdown_pct": 0.0572,
+        "sharpe_daily": 2.33,
+        "total_return_pct": 0.2596
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0916,
+        "max_drawdown_pct": 0.033,
+        "sharpe_daily": 1.32,
+        "total_return_pct": 0.0694
+      },
+      "old_thin": {
+        "expected_value_score": 0.0028,
+        "max_drawdown_pct": 0.0489,
+        "sharpe_daily": 0.22,
+        "total_return_pct": 0.0127
+      }
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.0402,
+      "max_drawdown_pct": 0.0238,
+      "sharpe_daily": 3.89,
+      "total_return_pct": 0.2674
+    },
+    "mid_weak": {
+      "expected_value_score": 0.3924,
+      "max_drawdown_pct": 0.0205,
+      "sharpe_daily": 2.59,
+      "total_return_pct": 0.1515
+    },
+    "old_thin": {
+      "expected_value_score": 0.0863,
+      "max_drawdown_pct": 0.0444,
+      "sharpe_daily": 0.95,
+      "total_return_pct": 0.0908
+    }
+  },
+  "change_summary": "Ran a runtime-only backtester config sweep for existing `TRAIL_TRIGGER_ATR_MULT` and `TRAIL_OFFSET_ATR_MULT` controls across the fixed late/mid/old snapshots. No production code was changed.",
+  "change_type": "alpha_search_exit_sweep",
+  "component": "BacktestEngine config only",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "decision_basis": "Every tested trailing-stop configuration regressed EV in every fixed window, usually by truncating target-driven winners and sometimes increasing drawdown.",
+    "least_bad_ev_deltas": {
+      "late_strong": -0.4353,
+      "mid_weak": -0.3008,
+      "old_thin": -0.0835
+    }
+  },
+  "experiment_id": "exp-20260425-029",
+  "hypothesis": "The accepted stack may still leak alpha through fixed targets; enabling ATR trailing stops could preserve winners while reducing drawdowns.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull with large target-driven wins",
+    "mid_weak": "rotation-heavy bull",
+    "old_thin": "mixed-to-weak tape"
+  },
+  "next_retry_requires": [
+    "Do not retry generic ATR trailing stops by only nudging trigger/offset values",
+    "Future exit work should stay selective, as in Technology trend target width, rather than replacing fixed targets globally"
+  ],
+  "notes": "This was alpha_search. It directly falsifies a global trailing-stop family in the current accepted stack.",
+  "parameters": {
+    "trail_offset_atr_mult": [
+      1.0,
+      1.5,
+      2.0,
+      2.5
+    ],
+    "trail_trigger_atr_mult": [
+      1.5,
+      2.0,
+      2.5,
+      3.0
+    ],
+    "windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ]
+  },
+  "rejection_reason": "Generic ATR trailing stops destroy the existing target alpha; this is a broad exit mutation, not the selective winner-truncation fix needed here.",
+  "related_files": [
+    "docs/experiment_log.jsonl"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-25T12:04:00-07:00"
+}

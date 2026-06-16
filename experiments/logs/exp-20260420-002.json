@@ -1,0 +1,122 @@
+{
+  "after_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.7531,
+      "max_drawdown_pct": 0.0408,
+      "sharpe_daily": 2.83,
+      "signals_generated": 48,
+      "signals_survived": 48,
+      "survival_rate": 1.0
+    },
+    "window_1": {
+      "expected_value_score": 0.0214,
+      "max_drawdown_pct": 0.0869,
+      "sharpe_daily": 0.5,
+      "signals_generated": 43,
+      "signals_survived": 38,
+      "survival_rate": 0.8837
+    },
+    "window_2": {
+      "expected_value_score": 0.0003,
+      "max_drawdown_pct": 0.0932,
+      "sharpe_daily": -0.02,
+      "signals_generated": 55,
+      "signals_survived": 53,
+      "survival_rate": 0.9636
+    }
+  },
+  "before_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.7531,
+      "max_drawdown_pct": 0.0408,
+      "sharpe_daily": 2.83,
+      "signals_generated": 48,
+      "signals_survived": 48,
+      "survival_rate": 1.0
+    },
+    "window_1": {
+      "expected_value_score": 0.0214,
+      "max_drawdown_pct": 0.0869,
+      "sharpe_daily": 0.5,
+      "signals_generated": 43,
+      "signals_survived": 38,
+      "survival_rate": 0.8837
+    },
+    "window_2": {
+      "expected_value_score": 0.003,
+      "max_drawdown_pct": 0.0965,
+      "sharpe_daily": 0.22,
+      "signals_generated": 61,
+      "signals_survived": 59,
+      "survival_rate": 0.9672
+    }
+  },
+  "change_summary": "Added an experiment-only flag (`TREND_RANK_BY_MOMENTUM_AND_52W_HIGH`) so `rank_signals_for_allocation()` could re-order only the `trend_long` subsequence by `momentum_10d_pct desc`, then `pct_from_52w_high desc`, then confidence. The flag was wired through backtester and production entry points for parity, evaluated across three non-overlapping windows, then rolled back after Gate 4 failure.",
+  "change_type": "ranking_rule",
+  "component": "quant/signal_engine.py + quant/backtester.py + quant/constants.py + quant/run.py + quant/run_quant.py + quant/run_pipeline.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "note": "The experiment had no effect in the primary window or the ripping-bull secondary window, which implies same-day trend slot collisions were either rare or already resolved by the existing post-dedup order. In the weaker 2024-10 to 2025-04 window it made things worse, suggesting the extra momentum preference mostly reweighted toward noisier late-move trend candidates rather than improving selection.",
+    "primary_expected_value_score_delta": 0.0,
+    "window_1_expected_value_score_delta": 0.0,
+    "window_2_expected_value_score_delta": -0.0027,
+    "window_2_max_drawdown_pct_delta": -0.0033,
+    "window_2_sharpe_daily_delta": -0.24
+  },
+  "experiment_id": "exp-20260420-002",
+  "hypothesis": "After breakout slot ranking improved EV, trend_long may still be leaving alpha on the table because same-day trend candidates are not explicitly ordered by trend strength. Re-ranking only the `trend_long` subsequence by `momentum_10d_pct` first and `pct_from_52w_high` second could improve slot selection without disturbing breakout ordering, exits, or strategy enablement.",
+  "llm_metrics": {
+    "note": "No LLM scope or prompt changes. This was a pure quant slot-ordering test.",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "BULL (slow-melt) with Apr-2026 stress",
+    "window_1": "ripping bull / high-beta leadership",
+    "window_2": "mixed to weaker tape with lower-quality trend follow-through"
+  },
+  "next_retry_requires": [
+    "Do not revisit trend_long ranking with the same key set (`momentum_10d_pct`, `pct_from_52w_high`) unless new evidence shows materially more same-day trend slot collisions",
+    "If trend allocation is revisited later, test a genuinely different trend-quality proxy such as risk-adjusted momentum or post-enrichment `trade_quality_score`, not another raw-momentum permutation",
+    "Prefer the next alpha search to move away from slot-ranking and toward a different mechanism class, since breakout ranking worked but trend ranking did not transfer"
+  ],
+  "notes": "Implementation was rolled back immediately after the failed experiment. This was still useful: it falsified the naive symmetry assumption that 'what worked for breakout ranking should also work for trend ranking'.",
+  "parameters": {
+    "TREND_RANK_BY_MOMENTUM_AND_52W_HIGH": {
+      "old": false,
+      "trial": true
+    },
+    "ranking_key": {
+      "after": [
+        "momentum_10d_pct desc within trend_long",
+        "pct_from_52w_high desc within trend_long",
+        "confidence_score desc within trend_long"
+      ],
+      "before": [
+        "global post-dedup confidence order"
+      ]
+    },
+    "ranking_scope": {
+      "unchanged": "trend_long subsequence only; breakout_long ranking left intact"
+    }
+  },
+  "rejection_reason": "Gate 4 failed. The north-star metric did not improve in any tested window, and one non-overlapping window regressed materially on both EV and sharpe_daily. A ranking rule that cannot improve the primary window and hurts another window is not worth promoting into the default stack.",
+  "related_files": [
+    "docs/experiment_log.jsonl"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-17",
+      "start": "2025-04-21"
+    },
+    {
+      "end": "2025-04-30",
+      "start": "2024-10-01"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-20T00:45:00-07:00"
+}

@@ -1,0 +1,155 @@
+{
+  "after_metrics": {
+    "best_commodities_mid_point": {
+      "late_strong": {
+        "expected_value_score": 1.4242,
+        "max_drawdown_pct": 0.0385,
+        "total_return_pct": 0.3391,
+        "touched_trade_count": 2
+      },
+      "mid_weak": {
+        "expected_value_score": 0.5002,
+        "max_drawdown_pct": 0.0247,
+        "total_return_pct": 0.2084,
+        "touched_trade_count": 1
+      },
+      "old_thin": {
+        "expected_value_score": 0.131,
+        "touched_trade_count": 0
+      },
+      "variant": "breakout_commodities_7"
+    },
+    "best_energy_point": {
+      "late_strong": {
+        "expected_value_score": 1.5346,
+        "max_drawdown_pct": 0.0281,
+        "total_return_pct": 0.3594,
+        "touched_trade_count": 4
+      },
+      "mid_weak": {
+        "expected_value_score": 0.4773,
+        "touched_trade_count": 0
+      },
+      "old_thin": {
+        "expected_value_score": 0.131,
+        "touched_trade_count": 0
+      },
+      "variant": "breakout_energy_5"
+    },
+    "combined_energy_commodities_6": {
+      "late_strong": {
+        "expected_value_score": 1.4849,
+        "max_drawdown_pct": 0.0385,
+        "total_return_pct": 0.3494
+      },
+      "mid_weak": {
+        "expected_value_score": 0.4778,
+        "total_return_pct": 0.2033
+      },
+      "old_thin": {
+        "expected_value_score": 0.131
+      }
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.5039,
+      "max_drawdown_pct": 0.0281,
+      "sharpe_daily": 4.24,
+      "total_return_pct": 0.3547,
+      "trade_count": 21
+    },
+    "mid_weak": {
+      "expected_value_score": 0.4773,
+      "max_drawdown_pct": 0.0247,
+      "sharpe_daily": 2.35,
+      "total_return_pct": 0.2031,
+      "trade_count": 21
+    },
+    "old_thin": {
+      "expected_value_score": 0.131,
+      "max_drawdown_pct": 0.0456,
+      "sharpe_daily": 1.15,
+      "total_return_pct": 0.1139,
+      "trade_count": 24
+    }
+  },
+  "change_summary": "Added a runtime-only monkeypatch runner that retargeted only `breakout_long` signals in Energy or Commodities to 5/6/7 ATR targets across the fixed late_strong, mid_weak, and old_thin snapshots. No production strategy code was changed or promoted.",
+  "change_type": "alpha_search_exit_rule_screen",
+  "component": "quant/experiments/legacy/exp_20260425_035_breakout_target_width_runner.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "best_commodities_ev_deltas": {
+      "late_strong": -0.0797,
+      "mid_weak": 0.0229,
+      "old_thin": 0.0
+    },
+    "best_energy_ev_deltas": {
+      "late_strong": 0.0307,
+      "mid_weak": 0.0,
+      "old_thin": 0.0
+    },
+    "decision_basis": "No variant improved a majority of non-overlapping windows. Energy 5 ATR was late-only with zero mid/old exposure; Commodities 7 ATR traded off mid improvement against late damage and higher late drawdown."
+  },
+  "experiment_id": "exp-20260425-035",
+  "hypothesis": "The post-target audit suggested breakout Energy and breakout Commodities winners may be target-clipped. Widening only those breakout sleeves should improve EV without changing entries, sizing, ranking, LLM, C strategy, or other exits.",
+  "llm_metrics": {
+    "blocker_relation": "LLM soft-ranking remains blocked by candidate-level replay coverage; this deterministic exit screen deliberately avoided LLM changes.",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull with Energy and Commodities breakout target exits",
+    "mid_weak": "rotation-heavy bull with one Commodities breakout target exit and no Energy exposure",
+    "old_thin": "mixed-to-weak tape with no qualifying Energy/Commodities breakout target-width exposure"
+  },
+  "next_retry_requires": [
+    "Do not retry breakout Energy target widening without a non-overlapping or forward qualifying sample",
+    "Do not retry breakout Commodities target widening by only nudging 5-7 ATR values; it already trades off late vs mid",
+    "Do not generalize post-target continuation into re-entry or hold-extension without a new discriminator"
+  ],
+  "notes": "The runner printed the full screen and wrote the JSON artifact before the shell timeout. This was alpha_search, not measurement repair, and changed one screened causal family in runtime only.",
+  "parameters": {
+    "screened_variants": [
+      "breakout_energy_5",
+      "breakout_energy_6",
+      "breakout_energy_7",
+      "breakout_commodities_5",
+      "breakout_commodities_6",
+      "breakout_commodities_7",
+      "breakout_energy_commodities_6"
+    ],
+    "unchanged": [
+      "entries",
+      "position sizing",
+      "allocation ranking",
+      "LLM responsibilities",
+      "earnings_event_long",
+      "Technology trend 6.0 ATR target",
+      "Commodity trend 7.0 ATR target",
+      "MAX_POSITION_PCT 0.25",
+      "all non-targeted exits"
+    ]
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability. The post-target continuation signal was real but too sleeve/window-specific to promote into breakout target-width logic.",
+  "related_files": [
+    "quant/experiments/legacy/exp_20260425_035_breakout_target_width_runner.py",
+    "data/exp_20260425_035_results.json",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-25T16:26:48-07:00"
+}

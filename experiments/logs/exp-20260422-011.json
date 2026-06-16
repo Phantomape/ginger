@@ -1,0 +1,122 @@
+{
+  "after_metrics": {
+    "primary_replay_llm": {
+      "candidate_days_covered": 4,
+      "candidate_days_total": 31,
+      "candidate_signals_covered": 4,
+      "candidate_signals_total": 44,
+      "expected_value_score": 0.8369,
+      "max_drawdown_pct": 0.026,
+      "production_aligned_days": 1,
+      "production_aligned_signals": 1,
+      "ranking_eligible_aligned_days": 1,
+      "ranking_eligible_aligned_signals": 1,
+      "ranking_eligible_candidate_day_fraction_of_total": 0.0323,
+      "ranking_eligible_candidate_signal_fraction_of_total": 0.0227,
+      "ranking_locked_days": 0,
+      "ranking_unknown_days": 3,
+      "sharpe_daily": 3.49,
+      "total_return_pct": 0.2398,
+      "trade_count": 22,
+      "win_rate": 0.6364
+    }
+  },
+  "before_metrics": {
+    "primary_replay_llm": {
+      "candidate_days_covered": 4,
+      "candidate_days_total": 31,
+      "candidate_signals_covered": 4,
+      "candidate_signals_total": 44,
+      "expected_value_score": 0.8369,
+      "max_drawdown_pct": 0.026,
+      "production_aligned_days": 1,
+      "production_aligned_signals": 1,
+      "sharpe_daily": 3.49,
+      "total_return_pct": 0.2398,
+      "trade_count": 22,
+      "win_rate": 0.6364
+    }
+  },
+  "change_summary": "Extended `quant/llm_advisor.py` so dated advice archives inherit prompt-time context from `llm_decision_log_YYYYMMDD.json`, including candidate tickers and whether Task A was locked. `quant/llm_backlog.py` now reads that context (or the decision-log sidecar when replay archives predate the new schema) and reports `ranking_eligible_aligned_days`, `ranking_locked_days`, and `ranking_unknown_days` in `context_alignment`. `quant/backtester.py` CLI now prints `ranking-eligible` coverage explicitly, and regression coverage was added in `quant/test_quant.py`.",
+  "change_type": "measurement_repair",
+  "component": "quant/llm_advisor.py + quant/llm_backlog.py + quant/backtester.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "max_drawdown_pct_delta": 0.0,
+    "note": "Trading metrics stayed bit-identical on the deterministic snapshot. The new information is measurement accuracy: only 1/31 candidate days and 1/44 candidate signals are not just production-aligned but also explicitly ranking-eligible by prompt-time program state. Future dated advice saves now auto-carry the context needed to grow this metric without depending on separate `quant_signals_YYYYMMDD.json` files.",
+    "sharpe_daily_delta": 0.0,
+    "total_return_pct_delta": 0.0,
+    "trade_count_delta": 0,
+    "win_rate_delta": 0.0
+  },
+  "experiment_id": "exp-20260422-011",
+  "hypothesis": "`LLM soft ranking` is still the top alpha branch, but even production-aligned covered days can overstate readiness if Task A was program-locked before the model could rank candidates. If replay archives persist prompt-time machine context (`signals_presented`, `new_trade_locked`, `account_state`) and backtest attribution reports `ranking_eligible` coverage separately, then we can stop counting dated replies from heat-locked days as soft-ranking progress.",
+  "llm_metrics": {
+    "candidate_day_coverage_fraction": 0.129,
+    "candidate_signal_coverage_fraction": 0.0909,
+    "coverage_fraction": 0.0569,
+    "llm_attribution_metric": "ranking-eligible production-aligned candidate coverage",
+    "llm_change_scope": "archive schema + attribution only",
+    "production_aligned_candidate_day_fraction": 0.0323,
+    "ranking_eligible_candidate_day_fraction": 0.0323,
+    "ranking_eligible_candidate_signal_fraction": 0.0227,
+    "signals_passed_by_llm": 0,
+    "signals_presented": 4,
+    "signals_vetoed_by_llm": 4,
+    "used_llm": true,
+    "veto_rate": 1.0
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress"
+  },
+  "next_retry_requires": [
+    "Do not launch `LLM soft ranking` until `ranking_eligible` coverage grows materially beyond the current 1/31 days and 1/44 signals",
+    "Treat dated replies from Task-A-locked days as non-progress for soft-ranking readiness",
+    "Prefer future archive accumulation through the live pipeline now that dated advice saves auto-carry prompt-time context; do not spend another cycle reclassifying old covered days unless new historical artifacts appear"
+  ],
+  "notes": "`20260312` remains a good doctrine example: a prompt can exist while Task A is effectively non-eligible because the portfolio heat lock already forced `NO NEW TRADE`. The repository should no longer treat 'dated reply exists' as equivalent to 'usable soft-ranking sample'.",
+  "parameters": {
+    "backtest_command": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2025-10-23 --end 2026-04-21 --regime-aware-exit --replay-llm --ohlcv-snapshot data\\ohlcv_snapshot_20251023_20260421.json --no-secondary",
+    "data_source": "data/ohlcv_snapshot_20251023_20260421.json",
+    "new_archive_fields": [
+      "archive_context.source",
+      "archive_context.signals_presented",
+      "archive_context.signals_presented_count",
+      "archive_context.ranking_eligible",
+      "archive_context.new_trade_locked",
+      "archive_context.account_state",
+      "archive_context.lock_reason"
+    ],
+    "new_llm_attribution_fields": [
+      "context_alignment.ranking_eligible_aligned_days",
+      "context_alignment.ranking_locked_days",
+      "context_alignment.ranking_unknown_days",
+      "context_alignment.ranking_eligible_candidate_day_fraction_of_total",
+      "context_alignment.ranking_eligible_candidate_signal_fraction_of_total"
+    ],
+    "primary_window": {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    "test_command": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe -m pytest quant\\test_quant.py -k \"save_advice or import_advice or context_alignment or archive_backlog or replay_llm\""
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/llm_advisor.py",
+    "quant/llm_backlog.py",
+    "quant/backtester.py",
+    "quant/test_quant.py",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "data/backtest_results_20260422.json",
+    "data/ohlcv_snapshot_20251023_20260421.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-04-22T17:10:00-07:00"
+}

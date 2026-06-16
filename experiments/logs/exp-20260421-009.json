@@ -1,0 +1,227 @@
+{
+  "after_metrics": {
+    "factor_0_25": {
+      "primary_window": {
+        "expected_value_score": 0.6197,
+        "max_drawdown_pct": 0.0279,
+        "sharpe_daily": 2.73,
+        "total_return_pct": 0.227,
+        "trade_count": 28,
+        "win_rate": 0.5357
+      },
+      "window_1": {
+        "expected_value_score": 0.0043,
+        "max_drawdown_pct": 0.0777,
+        "sharpe_daily": 0.28,
+        "total_return_pct": 0.0155,
+        "trade_count": 30,
+        "win_rate": 0.3333
+      },
+      "window_2": {
+        "expected_value_score": 0.0059,
+        "max_drawdown_pct": 0.0967,
+        "sharpe_daily": 0.28,
+        "total_return_pct": 0.0209,
+        "trade_count": 30,
+        "win_rate": 0.3
+      }
+    },
+    "factor_0_5": {
+      "primary_window": {
+        "expected_value_score": 0.5875,
+        "max_drawdown_pct": 0.0315,
+        "sharpe_daily": 2.65,
+        "total_return_pct": 0.2217,
+        "trade_count": 28,
+        "win_rate": 0.5357
+      },
+      "window_1": {
+        "expected_value_score": 0.0074,
+        "max_drawdown_pct": 0.0812,
+        "sharpe_daily": 0.34,
+        "total_return_pct": 0.0218,
+        "trade_count": 30,
+        "win_rate": 0.3333
+      },
+      "window_2": {
+        "expected_value_score": 0.0045,
+        "max_drawdown_pct": 0.0967,
+        "sharpe_daily": 0.25,
+        "total_return_pct": 0.018,
+        "trade_count": 30,
+        "win_rate": 0.3
+      }
+    },
+    "factor_0_75": {
+      "primary_window": {
+        "expected_value_score": 0.5522,
+        "max_drawdown_pct": 0.0399,
+        "sharpe_daily": 2.56,
+        "total_return_pct": 0.2157,
+        "trade_count": 28,
+        "win_rate": 0.5357
+      },
+      "window_1": {
+        "expected_value_score": 0.0127,
+        "max_drawdown_pct": 0.0849,
+        "sharpe_daily": 0.42,
+        "total_return_pct": 0.0303,
+        "trade_count": 30,
+        "win_rate": 0.3333
+      },
+      "window_2": {
+        "expected_value_score": 0.0036,
+        "max_drawdown_pct": 0.0964,
+        "sharpe_daily": 0.23,
+        "total_return_pct": 0.0155,
+        "trade_count": 30,
+        "win_rate": 0.3
+      }
+    }
+  },
+  "before_metrics": {
+    "confidence_bucket_attribution": {
+      "primary": {
+        "conf_1_0": {
+          "total_pnl_usd": 16853.47,
+          "trade_count": 24,
+          "win_rate": 0.625
+        },
+        "conf_sub1": {
+          "total_pnl_usd": -1839.11,
+          "trade_count": 5,
+          "win_rate": 0.2
+        }
+      },
+      "window_1": {
+        "conf_1_0": {
+          "total_pnl_usd": 5340.78,
+          "trade_count": 27,
+          "win_rate": 0.444
+        },
+        "conf_sub1": {
+          "total_pnl_usd": 3284.61,
+          "trade_count": 8,
+          "win_rate": 0.375
+        }
+      },
+      "window_2": {
+        "conf_1_0": {
+          "total_pnl_usd": 2201.12,
+          "trade_count": 29,
+          "win_rate": 0.31
+        },
+        "conf_sub1": {
+          "total_pnl_usd": -826.59,
+          "trade_count": 1,
+          "win_rate": 0.0
+        }
+      }
+    },
+    "primary_window": {
+      "expected_value_score": 0.5329,
+      "max_drawdown_pct": 0.0447,
+      "sharpe_daily": 2.51,
+      "total_return_pct": 0.2123,
+      "trade_count": 28,
+      "win_rate": 0.5357
+    },
+    "window_1": {
+      "expected_value_score": 0.018,
+      "max_drawdown_pct": 0.0869,
+      "sharpe_daily": 0.48,
+      "total_return_pct": 0.0375,
+      "trade_count": 30,
+      "win_rate": 0.3333
+    },
+    "window_2": {
+      "expected_value_score": 0.003,
+      "max_drawdown_pct": 0.0965,
+      "sharpe_daily": 0.22,
+      "total_return_pct": 0.0137,
+      "trade_count": 30,
+      "win_rate": 0.3
+    }
+  },
+  "change_summary": "Ran a runtime-only sizing sweep by monkeypatching `portfolio_engine.size_signals()` so only sub-1.0-confidence signals used a smaller risk budget while `confidence_score == 1.0` signals kept the normal regime risk. Swept low-confidence risk multipliers `[0.75, 0.5, 0.25]` against the current accepted A+B stack across three non-overlapping windows. No repository strategy code was left changed; only the experiment record and playbook were updated.",
+  "change_type": "allocation_rule",
+  "component": "quant/portfolio_engine.py (runtime-only monkeypatch, rolled back)",
+  "date_range": {
+    "end": "2026-04-20",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "factor_0_25": {
+      "note": "The static confidence haircut improved the slow-melt and older weak windows because sub-1.0 trades were poor there, but the same rule materially reduced the already-small ripping-bull edge where sub-1.0 trades were actually additive.",
+      "primary_expected_value_score_delta": 0.0868,
+      "window_1_expected_value_score_delta": -0.0137,
+      "window_1_sharpe_daily_delta": -0.2,
+      "window_1_total_return_pct_delta": -0.022,
+      "window_2_expected_value_score_delta": 0.0029
+    },
+    "factor_0_5": {
+      "primary_expected_value_score_delta": 0.0546,
+      "window_1_expected_value_score_delta": -0.0106,
+      "window_2_expected_value_score_delta": 0.0015
+    },
+    "factor_0_75": {
+      "primary_expected_value_score_delta": 0.0193,
+      "window_1_expected_value_score_delta": -0.0053,
+      "window_2_expected_value_score_delta": 0.0006
+    }
+  },
+  "experiment_id": "exp-20260421-009",
+  "hypothesis": "If `confidence_score < 1.0` identifies lower-quality A+B entries, shrinking only those positions should improve expected value without removing opportunity flow. This tests capital-allocation alpha rather than a new filter, entry key, or exit rule.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "window_1": "ripping bull / high-beta leadership",
+    "window_2": "older weak-to-mixed tape"
+  },
+  "next_retry_requires": [
+    "Do not retry another global low-confidence risk haircut without a market-state or strategy-specific condition",
+    "If allocation alpha is revisited, condition the marginal risk budget on regime or on a richer hold/entry-quality interaction rather than on `confidence_score` alone",
+    "Keep `LLM soft ranking` as the highest-value conceptual direction once replay coverage is sufficient; among unblocked A+B ideas, prefer context-conditioned allocation over more static sizing permutations"
+  ],
+  "notes": "This experiment matters because it tests a new alpha class that had not been falsified yet: sizing alpha rather than entry/exit/ranking. The result extends the existing playbook theme that static system-wide dials are usually too blunt for this repo.",
+  "parameters": {
+    "ab_strategies": [
+      "trend_long",
+      "breakout_long"
+    ],
+    "high_confidence_risk_multiplier": 1.0,
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "low_confidence_definition": {
+      "new": "signals with `confidence_score < 1.0` use a reduced risk budget",
+      "old": "all A+B signals use the same regime risk budget"
+    },
+    "sub1_confidence_risk_multipliers": {
+      "baseline": 1.0,
+      "swept": [
+        0.75,
+        0.5,
+        0.25
+      ]
+    }
+  },
+  "rejection_reason": "Rejected on stability grounds. This is another static allocation rule that helps some tapes and hurts others: low-confidence A+B trades are a drag in the primary and weak windows, but they still carry positive marginal value in the ripping-bull window. Future allocation work must be context-conditioned rather than a global confidence haircut.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-21T07:45:00-07:00"
+}

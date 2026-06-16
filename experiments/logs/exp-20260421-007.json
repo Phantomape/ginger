@@ -1,0 +1,152 @@
+{
+  "after_metrics": {
+    "primary_window": {
+      "by_strategy": {
+        "earnings_event_long": {
+          "profit_factor": 0.79,
+          "total_pnl_usd": -765.28,
+          "trade_count": 12,
+          "win_rate": 0.5
+        }
+      },
+      "expected_value_score": 0.4977,
+      "sharpe_daily": 2.26,
+      "total_return_pct": 0.2202,
+      "trade_count": 37,
+      "win_rate": 0.5676
+    },
+    "window_1": {
+      "by_strategy": {
+        "earnings_event_long": {
+          "profit_factor": 3.335,
+          "total_pnl_usd": 5578.46,
+          "trade_count": 7,
+          "win_rate": 0.5714
+        }
+      },
+      "expected_value_score": 0.1369,
+      "sharpe_daily": 1.25,
+      "total_return_pct": 0.1095,
+      "trade_count": 31,
+      "win_rate": 0.4194
+    },
+    "window_2": {
+      "by_strategy": {
+        "earnings_event_long": {
+          "profit_factor": 0.682,
+          "total_pnl_usd": -1096.88,
+          "trade_count": 8,
+          "win_rate": 0.25
+        }
+      },
+      "expected_value_score": 0.081,
+      "sharpe_daily": -0.84,
+      "total_return_pct": -0.0964,
+      "trade_count": 38,
+      "win_rate": 0.1842
+    }
+  },
+  "before_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.5329,
+      "sharpe_daily": 2.51,
+      "total_return_pct": 0.2123,
+      "trade_count": 28,
+      "win_rate": 0.5357
+    },
+    "window_1": {
+      "expected_value_score": 0.018,
+      "sharpe_daily": 0.48,
+      "total_return_pct": 0.0375,
+      "trade_count": 30,
+      "win_rate": 0.3333
+    },
+    "window_2": {
+      "expected_value_score": 0.003,
+      "sharpe_daily": 0.22,
+      "total_return_pct": 0.0137,
+      "trade_count": 30,
+      "win_rate": 0.3
+    }
+  },
+  "change_summary": "Ran a runtime-only experiment by monkeypatching `signal_engine.strategy_c_earnings()` so otherwise-valid C signals were kept only when `features['above_200ma']` was true. Compared `A+B` versus gated `A+B+C` across three non-overlapping windows using the repo venv. No repository code was left changed; only the experiment record and playbook were updated.",
+  "change_type": "event_grading_rule",
+  "component": "quant/signal_engine.py (runtime-only patch, rolled back)",
+  "date_range": {
+    "end": "2026-04-20",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "note": "The technical-context gate improved the ripping-bull window materially, but it still trailed the A+B baseline in the primary window and failed the weak window guardrails. This is regime-dependent, not stable edge.",
+    "primary_expected_value_score_delta": -0.0352,
+    "primary_sharpe_daily_delta": -0.25,
+    "primary_total_return_pct_delta": 0.0079,
+    "window_1_expected_value_score_delta": 0.1189,
+    "window_2_expected_value_score_delta": 0.078,
+    "window_2_guardrail_failure": "negative return (-9.64%) and negative sharpe_daily (-0.84) despite positive EV product"
+  },
+  "experiment_id": "exp-20260421-007",
+  "hypothesis": "Now that repaired historical earnings snapshots are available, the simplest technical-context event-grading mechanism for `earnings_event_long` is to require `above_200ma == True`. If the weakest C trades are the non-trending setups, this should let `A+B+C` beat the current `A+B` baseline more stably than the ungated C stack.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "window_1": "ripping bull / high-beta leadership",
+    "window_2": "older weak-to-mixed tape"
+  },
+  "next_retry_requires": [
+    "Do not retry another one-dimensional technical-context gate for C without evidence it helps both the primary and weak windows",
+    "If C is revisited, use multi-field event grading or slot-interaction logic rather than a single `above_200ma` selector",
+    "Keep `LLM soft ranking` classified as the highest-value conceptual direction, but still measurement-blocked until replay coverage expands"
+  ],
+  "notes": "This closes the simplest 'C just needs a stronger trend filter' hypothesis. The repaired archive made the test credible, and the answer is still no.",
+  "parameters": {
+    "ab_strategies": [
+      "trend_long",
+      "breakout_long"
+    ],
+    "abc_strategies": [
+      "trend_long",
+      "breakout_long",
+      "earnings_event_long"
+    ],
+    "evaluation_windows": [
+      [
+        "2025-10-23",
+        "2026-04-20"
+      ],
+      [
+        "2025-04-23",
+        "2025-10-22"
+      ],
+      [
+        "2024-10-02",
+        "2025-04-22"
+      ]
+    ],
+    "event_quality_gate": {
+      "new": "`above_200ma` required for `earnings_event_long` to fire",
+      "old": "`above_200ma` contributes only a +0.5 confidence weight"
+    },
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe"
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability. `above_200ma` as a hard C gate is directionally helpful only in strong tapes; it does not beat the A+B baseline in the primary window and still collapses in the older weak window.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-21T05:25:00-07:00"
+}

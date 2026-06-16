@@ -1,0 +1,129 @@
+{
+  "after_metrics": {
+    "aggregate": {
+      "expected_value_score": 21.1917,
+      "max_drawdown_pct": 0.2024,
+      "total_pnl": 470944.85,
+      "trade_count": 88
+    },
+    "config": {
+      "core_independent_scalar": 1.15
+    },
+    "variant": "core_independent_115",
+    "windows": {
+      "late_strong": {
+        "expected_value_score": 8.8289,
+        "max_drawdown_pct": 0.0808,
+        "sharpe_daily": 4.94,
+        "survival_rate": 0.8039,
+        "total_pnl": 178721.74,
+        "trade_count": 27,
+        "win_rate": 0.7407
+      },
+      "mid_weak": {
+        "expected_value_score": 10.5713,
+        "max_drawdown_pct": 0.0757,
+        "sharpe_daily": 5.07,
+        "survival_rate": 0.7925,
+        "total_pnl": 208506.42,
+        "trade_count": 32,
+        "win_rate": 0.6562
+      },
+      "old_thin": {
+        "expected_value_score": 1.7915,
+        "max_drawdown_pct": 0.2024,
+        "sharpe_daily": 2.14,
+        "survival_rate": 0.8667,
+        "total_pnl": 83716.69,
+        "trade_count": 29,
+        "win_rate": 0.4828
+      }
+    }
+  },
+  "backtest_protocol": "docs/backtesting.md standard three-window replay",
+  "before_metrics": {
+    "aggregate": {
+      "expected_value_score": 19.6758,
+      "max_drawdown_pct": 0.1803,
+      "total_pnl": 439820.3,
+      "trade_count": 88
+    },
+    "config": {
+      "core_independent_scalar": 1.0
+    },
+    "variant": "baseline_exp007",
+    "windows": {
+      "late_strong": {
+        "expected_value_score": 8.3761,
+        "max_drawdown_pct": 0.0815,
+        "sharpe_daily": 4.91,
+        "survival_rate": 0.8039,
+        "total_pnl": 170593.12,
+        "trade_count": 27,
+        "win_rate": 0.7407
+      },
+      "mid_weak": {
+        "expected_value_score": 9.652,
+        "max_drawdown_pct": 0.079,
+        "sharpe_daily": 5.04,
+        "survival_rate": 0.7925,
+        "total_pnl": 191507.54,
+        "trade_count": 32,
+        "win_rate": 0.6562
+      },
+      "old_thin": {
+        "expected_value_score": 1.6477,
+        "max_drawdown_pct": 0.1803,
+        "sharpe_daily": 2.12,
+        "survival_rate": 0.8667,
+        "total_pnl": 77719.64,
+        "trade_count": 29,
+        "win_rate": 0.4828
+      }
+    }
+  },
+  "change_type": "alpha_search",
+  "changed_variable": "event_core_independent_notional_scalar",
+  "date": "2026-05-22",
+  "date_range": "standard_windows_late_strong_mid_weak_old_thin",
+  "decision": "rejected_failed_gate4",
+  "expected_value_score_delta": 1.5159,
+  "experiment_id": "exp-20260522-008",
+  "hypothesis": "Event overlay rows that are independent of active core positions have higher replacement value than rows duplicating existing core exposure, so a small independent-context notional scalar may improve expected_value_score without adding noisy tickers.",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260521-019_event_attention_persistence_rejected_sparse_repeat_context",
+    "exp-20260521-020_event_same_day_core_overlap_signal_rejected_sparse_probe",
+    "exp-20260522-007_event_governance_503_haircut_accepted"
+  ],
+  "new_evidence_type": "new_core_backtest_overlap_context_after_exp007",
+  "next_evidence_needed": "If repeated forward evidence remains positive, add a shared production/backtest core-position context adapter before any notional promotion.",
+  "parameters": {
+    "selection": "event candidates with no active core trade on event entry date",
+    "variants": {
+      "baseline_exp007": {
+        "core_independent_scalar": 1.0
+      },
+      "core_independent_105": {
+        "core_independent_scalar": 1.05
+      },
+      "core_independent_110": {
+        "core_independent_scalar": 1.1
+      },
+      "core_independent_115": {
+        "core_independent_scalar": 1.15
+      }
+    }
+  },
+  "prior_trial_count": 1,
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "notes": "No strategy behavior was changed. Positive replay evidence requires a shared core-position context adapter before promotion.",
+    "parity_test_added": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "rejection_reason": "best candidate failed Gate 4 sample/risk/window checks",
+  "trial_family": "event_overlay_replacement_value_core_overlap_context"
+}

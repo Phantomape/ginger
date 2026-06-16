@@ -1,0 +1,206 @@
+{
+  "after_metrics": {
+    "screen_bonus_0.25": {
+      "primary_window": {
+        "expected_value_score": 0.7959,
+        "max_drawdown_pct": 0.0407,
+        "sharpe_daily": 2.89,
+        "total_return_pct": 0.2754,
+        "trade_count": 28,
+        "win_rate": 0.5714
+      }
+    },
+    "validated_bonus_0.5": {
+      "primary_window": {
+        "expected_value_score": 0.8255,
+        "max_drawdown_pct": 0.041,
+        "sharpe_daily": 2.92,
+        "total_return_pct": 0.2827,
+        "trade_count": 28,
+        "win_rate": 0.5714
+      },
+      "subwindow_1": {
+        "expected_value_score": 0.402,
+        "max_drawdown_pct": 0.0261,
+        "sharpe_daily": 3.52,
+        "total_return_pct": 0.1142,
+        "trade_count": 9,
+        "win_rate": 0.7778
+      },
+      "subwindow_2": {
+        "expected_value_score": 0.2584,
+        "max_drawdown_pct": 0.0267,
+        "sharpe_daily": 2.68,
+        "total_return_pct": 0.0964,
+        "trade_count": 15,
+        "win_rate": 0.6
+      },
+      "subwindow_3": {
+        "expected_value_score": 0.0633,
+        "max_drawdown_pct": 0.0097,
+        "sharpe_daily": 3.66,
+        "total_return_pct": 0.0173,
+        "trade_count": 4,
+        "win_rate": 0.5
+      },
+      "window_1": {
+        "expected_value_score": 0.0061,
+        "max_drawdown_pct": 0.0994,
+        "sharpe_daily": 0.3,
+        "total_return_pct": 0.0204,
+        "trade_count": 24,
+        "win_rate": 0.2917
+      },
+      "window_2": {
+        "expected_value_score": 0.0056,
+        "max_drawdown_pct": 0.0988,
+        "sharpe_daily": 0.27,
+        "total_return_pct": 0.0208,
+        "trade_count": 28,
+        "win_rate": 0.2857
+      }
+    }
+  },
+  "before_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.7531,
+      "max_drawdown_pct": 0.0408,
+      "sharpe_daily": 2.83,
+      "total_return_pct": 0.2661,
+      "trade_count": 28,
+      "win_rate": 0.5714
+    },
+    "subwindow_1": {
+      "expected_value_score": 0.3653,
+      "max_drawdown_pct": 0.0262,
+      "sharpe_daily": 3.44,
+      "total_return_pct": 0.1062,
+      "trade_count": 9,
+      "win_rate": 0.7778
+    },
+    "subwindow_2": {
+      "expected_value_score": 0.304,
+      "max_drawdown_pct": 0.0267,
+      "sharpe_daily": 2.89,
+      "total_return_pct": 0.1052,
+      "trade_count": 15,
+      "win_rate": 0.6
+    },
+    "subwindow_3": {
+      "expected_value_score": 0.0502,
+      "max_drawdown_pct": 0.0097,
+      "sharpe_daily": 3.28,
+      "total_return_pct": 0.0153,
+      "trade_count": 4,
+      "win_rate": 0.5
+    },
+    "window_1": {
+      "expected_value_score": 0.0213,
+      "max_drawdown_pct": 0.0869,
+      "sharpe_daily": 0.5,
+      "total_return_pct": 0.0426,
+      "trade_count": 27,
+      "win_rate": 0.3333
+    },
+    "window_2": {
+      "expected_value_score": 0.003,
+      "max_drawdown_pct": 0.0965,
+      "sharpe_daily": 0.22,
+      "total_return_pct": 0.0137,
+      "trade_count": 30,
+      "win_rate": 0.3
+    }
+  },
+  "change_summary": "Added an experiment-only backtester branch that widened targets only for `trend_long` signals with perfect entry confidence, then screened `+0.25`, `+0.5`, and `+1.0 ATR` against the accepted A+B stack (`REGIME_AWARE_EXIT=True`). The code was fully rolled back immediately after measurement. Primary-window screen improved at `+0.25` and `+0.5`, but multi-window validation rejected the mechanism.",
+  "change_type": "exit_rule",
+  "component": "quant/backtester.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "note": "The mechanism improved the accepted primary window but failed the majority-window stability check. The same selective widening that helped in the main sample materially regressed the large ripping-bull comparison window and the key continuation subwindow. This is not stable enough to justify promotion.",
+    "primary_expected_value_score_delta": 0.0724,
+    "primary_max_drawdown_pct_delta": 0.0002,
+    "primary_sharpe_daily_delta": 0.09,
+    "primary_total_return_pct_delta": 0.0166,
+    "subwindow_1_expected_value_score_delta": 0.0367,
+    "subwindow_2_expected_value_score_delta": -0.0456,
+    "subwindow_3_expected_value_score_delta": 0.0131,
+    "validated_bonus": 0.5,
+    "window_1_expected_value_score_delta": -0.0152,
+    "window_2_expected_value_score_delta": 0.0026
+  },
+  "experiment_id": "exp-20260420-014",
+  "hypothesis": "`trend_long` exit alpha may still exist, but not as a blanket wider target. If only the highest-quality trend entries (`confidence_score == 1.0`) receive a modest target bonus, the system may capture more continuation upside without repeating the rejected global target-widening idea.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "BULL (slow-melt) with Apr-2026 stress",
+    "subwindow_1": "late-2025 bull trend",
+    "subwindow_2": "early-2026 bull continuation",
+    "subwindow_3": "Feb-Apr 2026 stress",
+    "window_1": "ripping bull / high-beta leadership",
+    "window_2": "older mixed-to-weaker tape"
+  },
+  "next_retry_requires": [
+    "Do not retry static entry-quality-conditioned trend target widening without new evidence that entry-time signal quality predicts hold-time continuation better than the current exit stack",
+    "If trend exit alpha is revisited, prefer richer in-trade hold-quality context or semantic/event context rather than another target-width mutation keyed only off entry metadata",
+    "Practical priority still favors `LLM soft ranking` once replay coverage grows and `C strategy revival` once earnings snapshots accumulate"
+  ],
+  "notes": "The code path was fully rolled back after the experiment. This failure is important because it falsifies a more selective variant of the previously rejected 'give trend more room' idea, not just the blanket version.",
+  "parameters": {
+    "TREND_PERFECT_CONF_TARGET_BONUS": {
+      "default": 0.0,
+      "tested": [
+        0.25,
+        0.5,
+        1.0
+      ]
+    },
+    "fixed_context": {
+      "BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH": -0.2,
+      "BREAKOUT_RANK_BY_52W_HIGH": true,
+      "ENABLED_STRATEGIES": [
+        "trend_long",
+        "breakout_long"
+      ],
+      "REGIME_AWARE_EXIT": true
+    },
+    "selector": {
+      "confidence_score": "== 1.0 only",
+      "strategy": "trend_long"
+    }
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability. Conditioning the target bonus on perfect entry quality did not solve the fragility seen in the earlier blanket trend-widening experiment; the uplift remained sample-dependent rather than robust.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-17",
+      "start": "2025-04-21"
+    },
+    {
+      "end": "2025-04-30",
+      "start": "2024-10-01"
+    },
+    {
+      "end": "2025-12-19",
+      "start": "2025-10-20"
+    },
+    {
+      "end": "2026-02-17",
+      "start": "2025-12-20"
+    },
+    {
+      "end": "2026-04-17",
+      "start": "2026-02-18"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-20T21:20:00-07:00"
+}

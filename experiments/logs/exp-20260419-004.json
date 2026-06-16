@@ -1,0 +1,134 @@
+{
+  "after_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.5565,
+      "max_drawdown_pct": 0.048,
+      "sharpe": 2.66,
+      "sharpe_daily": 2.64,
+      "total_return_pct": 0.2108,
+      "trade_count": 29,
+      "win_rate": 0.5172
+    },
+    "trade_level_attribution": {
+      "bucket_counts": {
+        "balanced": 1,
+        "risk_on": 28
+      },
+      "bucket_pnl": {
+        "balanced": 1856.29,
+        "risk_on": 19226.92
+      }
+    },
+    "window_1": {
+      "expected_value_score": 0.365,
+      "max_drawdown_pct": 0.0262,
+      "sharpe_daily": 3.44,
+      "total_return_pct": 0.1061,
+      "trade_count": 9,
+      "win_rate": 0.7778
+    },
+    "window_2": {
+      "expected_value_score": 0.3043,
+      "max_drawdown_pct": 0.0267,
+      "sharpe_daily": 2.89,
+      "total_return_pct": 0.1053,
+      "trade_count": 15,
+      "win_rate": 0.6
+    },
+    "window_3": {
+      "expected_value_score": 0.0121,
+      "max_drawdown_pct": 0.012,
+      "sharpe_daily": 1.59,
+      "total_return_pct": 0.0076,
+      "trade_count": 5,
+      "win_rate": 0.4
+    }
+  },
+  "before_metrics": {
+    "expected_value_score": 0.4875,
+    "max_drawdown_pct": 0.0459,
+    "sharpe": 3.0,
+    "sharpe_daily": 2.44,
+    "survival_rate": 0.98,
+    "total_return_pct": 0.1998,
+    "trade_count": 30,
+    "win_rate": 0.6
+  },
+  "change_summary": "Added a documented regime-aware-exit design and implemented a backtester experiment that maps entry-day SPY/QQQ distance-from-200MA plus 10-day momentum into a smooth ATR target multiplier. The target width is bounded (3.0x to 4.5x ATR) and capped by regime (NEUTRAL <= 3.75x, BEAR <= 3.25x). Added audit fields to trades and a CLI flag `--regime-aware-exit` for reproducibility. Default behavior remains unchanged unless the flag/config is enabled.",
+  "change_type": "exit_rule",
+  "component": "docs/regime_aware_exit_design.md + quant/backtester.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "gate_4_assessment": "ACCEPTED",
+    "note": "North-star EV improved in all 3 non-overlapping windows and the full window. Primary-window EV rose 14.2%, Sharpe daily rose 0.20, and total return rose 1.1 pp. Drawdown increased modestly (4.59% -> 4.80%) but remained well inside constraints.",
+    "primary_expected_value_score_delta": 0.069,
+    "primary_max_drawdown_pct_delta": 0.0021,
+    "primary_sharpe_daily_delta": 0.2,
+    "primary_total_return_pct_delta": 0.011,
+    "primary_trade_count_delta": -1,
+    "window_1_ev_delta": 0.1615,
+    "window_1_sharpe_daily_delta": 1.13,
+    "window_2_ev_delta": 0.0972,
+    "window_2_sharpe_daily_delta": 0.19,
+    "window_3_ev_delta": 0.0028,
+    "window_3_sharpe_daily_delta": 0.16
+  },
+  "experiment_id": "exp-20260419-004",
+  "hypothesis": "A tradable regime-aware exit does not require predicting the 'true market regime'. If we use only entry-day observable index state (SPY/QQQ vs 200MA plus 10-day momentum) to smoothly widen or tighten the ATR target for A+B trades, the system may capture more upside in risk-on tapes without relying on hindsight labels.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "BULL (slow-melt) with Apr-2026 stress",
+    "window_1": "late-2025 bull trend",
+    "window_2": "early-2026 bull continuation",
+    "window_3": "Feb-Apr 2026 risk-off / stress"
+  },
+  "next_retry_requires": [
+    "Before promoting this to production defaults, compare the same regime-aware exit against at least one additional older non-overlapping window to make sure the benefit is not specific to the current sample mix",
+    "If promoting live, port the same entry-day target mapping into run.py / run_quant.py so production and backtest stay aligned",
+    "If the next experiment extends this, keep the causal variable clean: test in-trade regime updates separately from entry-day target mapping"
+  ],
+  "notes": "This experiment deliberately avoids hindsight regime labels. The exit template is frozen at entry using only same-day observable index inputs. Current code keeps the feature opt-in via `config={\"REGIME_AWARE_EXIT\": True}` or CLI `--regime-aware-exit`; the accepted result is the alpha direction, not yet a forced production default.",
+  "parameters": {
+    "REGIME_AWARE_EXIT": {
+      "new": true,
+      "old": false
+    },
+    "score_formula": {
+      "new": "avg(index pct_from_200ma) + 0.5 * avg(index 10d momentum)",
+      "old": null
+    },
+    "target_mapping": {
+      "new": "entry-day smooth target in [3.0, 4.5] ATR, capped by regime",
+      "old": "fixed 3.5 ATR target"
+    }
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "docs/regime_aware_exit_design.md",
+    "quant/backtester.py",
+    "quant/test_quant.py",
+    "data/backtest_results_20260419.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-12-19",
+      "start": "2025-10-20"
+    },
+    {
+      "end": "2026-02-17",
+      "start": "2025-12-20"
+    },
+    {
+      "end": "2026-04-17",
+      "start": "2026-02-18"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-19T17:15:00-07:00"
+}

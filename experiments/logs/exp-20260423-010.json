@@ -1,0 +1,216 @@
+{
+  "after_metrics": {
+    "1d": {
+      "late_strong": {
+        "expected_value_score": 0.7592,
+        "max_drawdown_pct": 0.0311,
+        "pre_exit_trades": 1,
+        "sharpe_daily": 3.34,
+        "total_return_pct": 0.2273,
+        "trade_count": 26,
+        "win_rate": 0.5769
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "pre_exit_trades": 0,
+        "sharpe_daily": 1.21,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "pre_exit_trades": 0,
+        "sharpe_daily": 0.36,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    },
+    "2d": {
+      "late_strong": {
+        "expected_value_score": 0.7681,
+        "max_drawdown_pct": 0.03,
+        "pre_exit_trades": 1,
+        "sharpe_daily": 3.36,
+        "total_return_pct": 0.2286,
+        "trade_count": 26,
+        "win_rate": 0.5769
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "pre_exit_trades": 0,
+        "sharpe_daily": 1.21,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "pre_exit_trades": 0,
+        "sharpe_daily": 0.36,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    },
+    "3d": {
+      "late_strong": {
+        "expected_value_score": 0.7857,
+        "max_drawdown_pct": 0.0277,
+        "pre_exit_trades": 1,
+        "sharpe_daily": 3.4,
+        "total_return_pct": 0.2311,
+        "trade_count": 26,
+        "win_rate": 0.5769
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1358,
+        "max_drawdown_pct": 0.0478,
+        "pre_exit_trades": 1,
+        "sharpe_daily": 1.25,
+        "total_return_pct": 0.1086,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "pre_exit_trades": 0,
+        "sharpe_daily": 0.36,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    }
+  },
+  "before_metrics": {
+    "accepted_ab_stack": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 0.36,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    }
+  },
+  "change_summary": "Ran a runtime-only backtester monkeypatch of the position exit loop that left entries, ranking, sizing, and the accepted A+B stack unchanged, but forced a same-day close exit only when an open `trend_long` or `breakout_long` position had `close <= entry_price` and the next earnings date was within `1/2/3` trading days. No repository trading logic was kept after measurement.",
+  "change_type": "exit_rule",
+  "component": "runtime-only monkeypatch of `quant/backtester.py` position exit loop (rolled back; no repo trading logic changed)",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "1d_ev_deltas": {
+      "late_strong": -0.0878,
+      "mid_weak": 0.0,
+      "old_thin": 0.0
+    },
+    "2d_ev_deltas": {
+      "late_strong": -0.0789,
+      "mid_weak": 0.0,
+      "old_thin": 0.0
+    },
+    "3d_ev_deltas": {
+      "late_strong": -0.0613,
+      "mid_weak": 0.0103,
+      "old_thin": 0.0
+    },
+    "note": "The narrower selector stopped being a blanket profit clip, but it still failed the promotion test. The best variant (`3d`) only touched two trades total: one primary-window loser (`GS breakout_long`) and one mid-window loser (`DIS breakout_long`). That produced a small mid-window improvement, but the dominant late-strong window still regressed materially and the old weak window stayed a strict null. The mechanism behaves like a sparse loser patch, not a stable repo-level edge."
+  },
+  "experiment_id": "exp-20260423-010",
+  "hypothesis": "If the rejected blanket pre-earnings exit is too blunt because it clips profitable continuation winners, then a narrower earnings-aware exit may still recover alpha: only de-risk A+B positions that are both close to the next earnings date and already underwater at the close. A valid selector must preserve the dominant late-strong window while improving at least one weaker window without regressing the third.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull with Apr-2026 stress",
+    "mid_weak": "ripping bull / high-beta leadership",
+    "old_thin": "mixed-to-weak tape"
+  },
+  "next_retry_requires": [
+    "Do not retry more nearby `close <= entry` or similar loser-only pre-earnings exit permutations by default",
+    "If earnings-aware A+B exits return, require a richer selector than current price weakness alone, or explicit production/backtest evidence that earnings-gap risk is being measured on the right ruler",
+    "Prefer a different unblocked alpha branch over more pre-earnings micro-patching"
+  ],
+  "notes": "This stayed a single-causal-variable runtime-only experiment: only the holding-period exit selector changed, and only for open A+B positions approaching earnings while currently underwater. Entries, sizing, ranking, and accepted cohort rules were left unchanged.",
+  "parameters": {
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "pre_earnings_loser_exit_days_sweep": [
+      1,
+      2,
+      3
+    ],
+    "selector": {
+      "rule": "exit at same-day close only when next earnings is within N trading days AND current close <= entry_price AND no stop/target already fired",
+      "strategies": [
+        "trend_long",
+        "breakout_long"
+      ]
+    },
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability. The family no longer clips profitable winners, but it still does not generalize: it improved at most one weaker window, remained null in another, and still regressed the dominant window. This means the missing A+B alpha is not solved by another narrow pre-earnings escape hatch keyed only off near-event weakness.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "data/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv_snapshot_20241002_20250422.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-23T23:55:00-07:00"
+}

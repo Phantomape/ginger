@@ -1,0 +1,116 @@
+{
+  "after_metrics": {
+    "macro_trade_cross_asset_audit": {
+      "late_strong": {
+        "gold_risk_off_proxy_true_trades": 0,
+        "interpretation": "GLD/SLV leadership would have blocked these losers",
+        "macro_profit_factor": 0.0,
+        "macro_total_pnl": -782.49,
+        "macro_trade_count": 3
+      },
+      "mid_weak": {
+        "gold_risk_off_proxy_true_trades": 3,
+        "interpretation": "Gold leadership did not prevent macro losses; cross-asset state needs rates/dollar/sector ETF context or timing/overextension filters",
+        "macro_profit_factor": 0.0,
+        "macro_total_pnl": -2121.76,
+        "macro_trade_count": 4
+      },
+      "old_thin": {
+        "gold_risk_off_proxy_true_trades": 11,
+        "interpretation": "The profitable old_thin macro trades all occurred under stock pressure plus gold/precious leadership",
+        "macro_profit_factor": 1.92,
+        "macro_total_pnl": 2586.32,
+        "macro_trade_count": 11
+      }
+    }
+  },
+  "before_metrics": {
+    "prior_macro_experiments": {
+      "exp_20260425_005": "static macro improved old_thin but hurt late/mid",
+      "exp_20260425_006": "stock-local defensive leadership gate failed",
+      "exp_20260425_007": "one-slot reduced-risk overlay failed"
+    }
+  },
+  "change_summary": "Added a read-only cross-asset audit script. It reruns the static macro defensive sleeve from exp-20260425-005 and annotates each executed macro trade with 20-day GLD, SLV, SPY, and QQQ returns plus derived states such as gold leadership and precious-metals risk-off. No production trading logic was changed or promoted.",
+  "change_type": "information_source_audit",
+  "component": "runtime-only `quant/experiments/legacy/exp_20260425_008_cross_asset_audit.py` using existing fixed snapshots",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "observed_only",
+  "delta_metrics": {
+    "note": "This was an information-source audit, not a strategy promotion test. GLD/SLV state has partial explanatory value but cannot distinguish mid_weak losers from old_thin winners by itself.",
+    "strategy_delta": null
+  },
+  "experiment_id": "exp-20260425-008",
+  "hypothesis": "If macro alpha requires a better information source, then available cross-asset proxies should at least explain some of the difference between profitable old_thin macro trades and losing late/mid macro trades. Start with already available GLD/SLV versus SPY/QQQ 20-day states before downloading new ETF histories.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "macro sleeve losers occurred when GLD/SLV lagged SPY/QQQ despite stock pressure",
+    "mid_weak": "macro sleeve losers occurred even when GLD led SPY/QQQ, showing gold leadership alone is insufficient",
+    "old_thin": "macro sleeve was profitable in a true stock-pressure plus gold/precious leadership state"
+  },
+  "next_retry_requires": [
+    "Do not promote a GLD-only or precious-metals-only macro gate yet; it would still admit the mid_weak losing macro trades",
+    "If continuing macro, first add or regenerate snapshots with TLT/IEF, UUP, XLE, XLU, XLP, and XLV to test rates, dollar, energy, and defensive-sector ETF context",
+    "A credible next macro experiment should require cross-asset state to distinguish old_thin from mid_weak, not merely block late_strong",
+    "If missing ETF history cannot be added, pause macro strategy promotion and treat current cross-asset audit as insufficient evidence"
+  ],
+  "notes": "This audit supports the decision to change information source, but also shows that the currently available GLD/SLV proxies are not enough by themselves. The next data task is alpha-enabling, not generic infrastructure: add the missing cross-asset ETF histories so macro state can be tested credibly.",
+  "parameters": {
+    "artifact_files": [
+      "quant/experiments/legacy/exp_20260425_008_cross_asset_audit.py",
+      "data/exp_20260425_008_cross_asset_audit.json"
+    ],
+    "available_proxies_used": [
+      "GLD",
+      "SLV",
+      "SPY",
+      "QQQ"
+    ],
+    "desired_but_missing_proxies": [
+      "IEF",
+      "TLT",
+      "USO",
+      "UUP",
+      "XLE",
+      "XLP",
+      "XLU",
+      "XLV"
+    ],
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "lookback_days": 20,
+    "states_audited": [
+      "gold_leads_spy",
+      "gold_leads_qqq",
+      "precious_leads_spy",
+      "precious_leads_qqq",
+      "stock_pressure_20d",
+      "gold_risk_off_proxy",
+      "precious_risk_off_proxy"
+    ],
+    "strategy_under_audit": "static macro_defensive_long from exp-20260425-005"
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/experiments/legacy/exp_20260425_008_cross_asset_audit.py",
+    "data/exp_20260425_008_cross_asset_audit.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "observed_only",
+  "timestamp": "2026-04-25T23:59:30-07:00"
+}

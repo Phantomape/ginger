@@ -1,0 +1,194 @@
+{
+  "after_metrics": {
+    "accepted_ab_stack_after_rule": {
+      "late_strong": {
+        "eligible_breakout_financials_dte814_signals": 1,
+        "expected_value_score": 0.9534,
+        "max_drawdown_pct": 0.0238,
+        "sharpe_daily": 3.73,
+        "total_return_pct": 0.2556,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "eligible_breakout_financials_dte814_signals": 1,
+        "expected_value_score": 0.2774,
+        "max_drawdown_pct": 0.0232,
+        "sharpe_daily": 1.97,
+        "total_return_pct": 0.1408,
+        "trade_count": 26,
+        "win_rate": 0.4231
+      },
+      "old_thin": {
+        "eligible_breakout_financials_dte814_signals": 0,
+        "expected_value_score": 0.0227,
+        "max_drawdown_pct": 0.0828,
+        "sharpe_daily": 0.51,
+        "total_return_pct": 0.0446,
+        "trade_count": 24,
+        "win_rate": 0.3333
+      }
+    },
+    "runner_followup": {
+      "breakout_fin_dte814_000": {
+        "late_strong_expected_value_score": 0.8617,
+        "live_primary_expected_value_score": 1.1689,
+        "live_secondary_expected_value_score": 0.3289,
+        "mid_weak_expected_value_score": 0.2882
+      }
+    },
+    "standard_backtester_after_rule": {
+      "expected_value_score": 0.8427,
+      "max_drawdown_pct": 0.0235,
+      "sharpe_daily": 3.88,
+      "total_return_pct": 0.2172,
+      "trade_count": 25,
+      "win_rate": 0.64
+    },
+    "standard_backtester_secondary_after_rule": {
+      "expected_value_score": 0.2318,
+      "max_drawdown_pct": 0.0455,
+      "sharpe_daily": 1.94,
+      "total_return_pct": 0.1195,
+      "trade_count": 30,
+      "win_rate": 0.5667
+    }
+  },
+  "before_metrics": {
+    "accepted_ab_stack_before_rule": {
+      "late_strong": {
+        "expected_value_score": 0.9195,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.69,
+        "total_return_pct": 0.2492,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.2405,
+        "max_drawdown_pct": 0.0231,
+        "sharpe_daily": 1.84,
+        "total_return_pct": 0.1307,
+        "trade_count": 26,
+        "win_rate": 0.4231
+      },
+      "old_thin": {
+        "expected_value_score": 0.0227,
+        "max_drawdown_pct": 0.0828,
+        "sharpe_daily": 0.51,
+        "total_return_pct": 0.0446,
+        "trade_count": 24,
+        "win_rate": 0.3333
+      }
+    },
+    "standard_backtester_primary": {
+      "expected_value_score": 0.8102,
+      "max_drawdown_pct": 0.0239,
+      "sharpe_daily": 3.84,
+      "total_return_pct": 0.211,
+      "trade_count": 25,
+      "win_rate": 0.64
+    },
+    "standard_backtester_secondary": {
+      "expected_value_score": 0.1998,
+      "max_drawdown_pct": 0.0451,
+      "sharpe_daily": 1.82,
+      "total_return_pct": 0.1098,
+      "trade_count": 30,
+      "win_rate": 0.5667
+    }
+  },
+  "change_summary": "Promoted a runtime-validated sizing rule into production: `portfolio_engine.size_signals()` now applies `BREAKOUT_FINANCIALS_DTE_RISK_MULTIPLIER = 0.25` only when `strategy == 'breakout_long'`, `sector == 'Financials'`, and `8 <= days_to_earnings <= 14`. Added a targeted unit test and kept the validating runner artifact. Entry logic, exit logic, ranking, sector cap, and blocked LLM/C branches stayed unchanged.",
+  "change_type": "allocation_rule",
+  "component": "quant/constants.py + quant/portfolio_engine.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-24",
+    "start": "2024-10-02"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "accepted_stack_ev_deltas": {
+      "late_strong": 0.0339,
+      "mid_weak": 0.0369,
+      "old_thin": 0.0
+    },
+    "accepted_stack_max_drawdown_deltas": {
+      "late_strong": -0.0022,
+      "mid_weak": 0.0001,
+      "old_thin": 0.0
+    },
+    "accepted_stack_sharpe_daily_deltas": {
+      "late_strong": 0.04,
+      "mid_weak": 0.13,
+      "old_thin": 0.0
+    },
+    "note": "The new conditioning source is event proximity, not another sector-only, gap-band, or near-high retry. The harsher 0.0x follow-up improved the weak windows more, but it damaged the dominant late-strong and live-primary tapes. The accepted 0.25x rule is the stable shape because it lifts the strong, weak, and live windows together while keeping old_thin a strict null.",
+    "standard_backtester_primary_expected_value_score_delta": 0.0325,
+    "standard_backtester_primary_max_drawdown_pct_delta": -0.0004,
+    "standard_backtester_primary_sharpe_daily_delta": 0.04,
+    "standard_backtester_primary_total_return_pct_delta": 0.0062,
+    "standard_backtester_secondary_expected_value_score_delta": 0.032,
+    "standard_backtester_secondary_max_drawdown_pct_delta": 0.0004,
+    "standard_backtester_secondary_sharpe_daily_delta": 0.12,
+    "standard_backtester_secondary_total_return_pct_delta": 0.0097
+  },
+  "experiment_id": "exp-20260425-003",
+  "hypothesis": "After the accepted A+B stack plus the recent residual breakout/trend rules, the remaining breakout Financials drag is not the whole sector. The repeated losers cluster in a new conditioning source: `breakout_long + Financials + 8 <= days_to_earnings <= 14`. De-risking only that event-proximity pocket to 25% risk should improve the weak windows without hurting the dominant strong/live tapes.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted A+B stack dominant tape",
+    "live_primary": "current primary backtester window",
+    "live_secondary": "recent weaker comparison window",
+    "mid_weak": "rotation-heavy bull with weaker breakout follow-through",
+    "old_thin": "mixed-to-weak tape"
+  },
+  "next_retry_requires": [
+    "Do not reopen `0.25x` vs `0.0x` inside the same `breakout_long | Financials | 8-14 DTE` pocket by default",
+    "Do not widen this back to a sector-only Financials breakout cut without new evidence",
+    "If breakout residual allocation work continues, require another genuinely new conditioning source beyond the current sector+entry-shape and event-proximity pockets"
+  ],
+  "notes": "Single-causal-variable discipline held: only the sizing treatment of one explicit breakout cohort changed. Entry logic, exit logic, ranking, sector cap, trend-Tech rules, C strategy, and all blocked LLM branches stayed untouched.",
+  "parameters": {
+    "BREAKOUT_FINANCIALS_DTE_MAX": {
+      "new": 14,
+      "old": null
+    },
+    "BREAKOUT_FINANCIALS_DTE_MIN": {
+      "new": 8,
+      "old": null
+    },
+    "BREAKOUT_FINANCIALS_DTE_RISK_MULTIPLIER": {
+      "new": 0.25,
+      "old": 1.0
+    },
+    "affected_cohort": "`breakout_long` + `sector == Financials` + `8 <= days_to_earnings <= 14`",
+    "baseline_rule": "accepted A+B stack after exp-20260425-002",
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "validation_runner": "quant/experiments/legacy/exp_20260425_003_runner.py"
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/constants.py",
+    "quant/portfolio_engine.py",
+    "quant/test_quant.py",
+    "quant/experiments/legacy/exp_20260425_003_runner.py",
+    "data/exp_20260425_003_results.json",
+    "data/backtest_results_20260424.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-25T20:30:00-07:00"
+}

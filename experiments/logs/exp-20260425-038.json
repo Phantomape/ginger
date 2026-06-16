@@ -1,0 +1,162 @@
+{
+  "after_metrics": {
+    "best_approx_screens": {
+      "late_strong": {
+        "example": "GS breakout_long Financials",
+        "pnl_delta_usd": 131.68,
+        "triggered_trades": 1,
+        "variant": "d5_stock_neg_rs_lag2_sector_neg"
+      },
+      "mid_weak": {
+        "pnl_delta_usd": 0.0,
+        "triggered_trades": 0,
+        "variant": "d5_stock_neg_rs_lag2_sector_neg"
+      },
+      "old_thin": {
+        "example": "LLY breakout_long Healthcare",
+        "pnl_delta_usd": 65.96,
+        "triggered_trades": 1,
+        "variant": "d5_stock_neg_rs_lag2_sector_neg"
+      }
+    },
+    "coverage_audit": {
+      "late_strong": {
+        "checkpoint_count": 22,
+        "sector_available_count": 22,
+        "weak_and_sector_negative_count": 4,
+        "weak_checkpoint_count": 4
+      },
+      "mid_weak": {
+        "checkpoint_count": 28,
+        "sector_available_count": 28,
+        "weak_and_sector_negative_count": 2,
+        "weak_checkpoint_count": 4
+      },
+      "old_thin": {
+        "checkpoint_count": 29,
+        "sector_available_count": 27,
+        "weak_and_sector_negative_count": 6,
+        "weak_checkpoint_count": 12
+      }
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.5039,
+      "max_drawdown_pct": 0.0281,
+      "sharpe_daily": 4.24,
+      "total_pnl": 35471.49,
+      "total_return_pct": 0.3547
+    },
+    "mid_weak": {
+      "expected_value_score": 0.4773,
+      "max_drawdown_pct": 0.0247,
+      "sharpe_daily": 2.35,
+      "total_pnl": 20307.9,
+      "total_return_pct": 0.2031
+    },
+    "old_thin": {
+      "expected_value_score": 0.131,
+      "max_drawdown_pct": 0.0456,
+      "sharpe_daily": 1.15,
+      "total_pnl": 11388.73,
+      "total_return_pct": 0.1139
+    }
+  },
+  "change_summary": "Added an audit/screen-only script that reruns the current accepted stack, computes day-5/day-10 weak-hold checkpoints, calculates same-sector peer median return from the fixed OHLCV snapshot, and estimates trade-level early-exit PnL for sector-confirmed weak-hold rules. No production strategy code was changed.",
+  "change_type": "alpha_search_sector_confirmed_hold_exit_audit",
+  "component": "quant/experiments/legacy/exp_20260425_038_sector_confirmed_weak_hold_audit.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "decision_basis": "Best effects were tiny and sparse: one late trade and one old trade, no mid triggers, and only trade-level approximation. This is not enough to justify production early-exit implementation."
+  },
+  "experiment_id": "exp-20260425-038",
+  "hypothesis": "Price-only weak-hold exits were rejected because weak starts can become delayed winners, and news-confirmed exits were blocked by sparse archives. A deterministic alternative is to require both position weakness and sector-level weakness; if the whole sleeve is deteriorating, early capital release may be less likely to kill idiosyncratic delayed winners.",
+  "llm_metrics": {
+    "blocker_relation": "LLM/news was intentionally bypassed after exp-20260425-037 showed news lifecycle coverage was insufficient. This deterministic sector proxy did not improve the weak-hold branch.",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull where one sector-confirmed weak breakout loser was trimmed in approximation",
+    "mid_weak": "rotation-heavy bull with weak+sector-negative checkpoints but no screened trade triggers",
+    "old_thin": "mixed-to-weak tape where one Healthcare breakout loser was trimmed in approximation"
+  },
+  "next_retry_requires": [
+    "Do not implement day-5/day-10 sector-confirmed weak-hold exits",
+    "Do not retry weak-hold decay by simply adding more deterministic confirmations to the same template",
+    "If lifecycle alpha returns, require a truly orthogonal adverse-information source or enough triggered samples for real backtester validation"
+  ],
+  "notes": "This was alpha_search, not measurement repair. It changed no production strategy code.",
+  "parameters": {
+    "checkpoints_trading_days": [
+      5,
+      10
+    ],
+    "parity_warning": "trade-level approximation only; does not replay freed-slot reinvestment or equity-curve Sharpe",
+    "screened_variants": {
+      "d10_loss_gt3_sector_neg": {
+        "day": 10,
+        "max_sector_median_return": 0.0,
+        "max_unrealized": -0.03
+      },
+      "d10_stock_neg_rs_lag2_sector_neg": {
+        "day": 10,
+        "max_sector_median_return": 0.0,
+        "max_stock_rs_vs_spy": -0.02,
+        "max_unrealized": 0.0
+      },
+      "d5_loss_gt3_sector_neg": {
+        "day": 5,
+        "max_sector_median_return": 0.0,
+        "max_unrealized": -0.03
+      },
+      "d5_stock_neg_rs_lag2_sector_lag2": {
+        "day": 5,
+        "max_sector_rs_vs_spy": -0.02,
+        "max_stock_rs_vs_spy": -0.02,
+        "max_unrealized": 0.0
+      },
+      "d5_stock_neg_rs_lag2_sector_neg": {
+        "day": 5,
+        "max_sector_median_return": 0.0,
+        "max_stock_rs_vs_spy": -0.02,
+        "max_unrealized": 0.0
+      }
+    },
+    "sector_proxy": "median return of same-sector mapped watchlist peers excluding the trade ticker",
+    "unchanged": [
+      "entries",
+      "normal stop/target exits",
+      "position sizing",
+      "allocation ranking",
+      "LLM responsibilities",
+      "earnings_event_long",
+      "Technology trend 6.0 ATR target",
+      "Commodity trend 7.0 ATR target",
+      "MAX_POSITION_PCT 0.25"
+    ]
+  },
+  "rejection_reason": "Rejected on mechanism quality and sample strength. Sector confirmation does not turn day-5/day-10 weak-hold decay into stable alpha; it only trims two small losers in approximation.",
+  "related_files": [
+    "quant/experiments/legacy/exp_20260425_038_sector_confirmed_weak_hold_audit.py",
+    "data/exp_20260425_038_sector_confirmed_weak_hold_audit.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-25T18:32:31-07:00"
+}

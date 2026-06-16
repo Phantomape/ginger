@@ -1,0 +1,145 @@
+{
+  "after_metrics": {
+    "primary_replay_llm": {
+      "candidate_day_coverage_fraction": 0.0882,
+      "candidate_days_covered": 3,
+      "candidate_days_total": 34,
+      "candidate_signal_coverage_fraction": 0.0784,
+      "candidate_signals_covered": 4,
+      "candidate_signals_total": 51,
+      "coverage_fraction": 0.0488,
+      "dates_covered": 6,
+      "expected_value_score": 0.8676,
+      "max_drawdown_pct": 0.026,
+      "sharpe_daily": 3.55,
+      "signals_generated": 51,
+      "signals_passed_by_llm": 1,
+      "signals_presented": 4,
+      "signals_survived": 51,
+      "signals_vetoed_by_llm": 3,
+      "survival_rate": 1.0,
+      "trading_days": 123,
+      "veto_rate": 0.75,
+      "win_rate": 0.6667
+    },
+    "secondary_replay_llm": {
+      "candidate_day_coverage_fraction": 0.0,
+      "candidate_signal_coverage_fraction": 0.0,
+      "coverage_fraction": 0.0
+    }
+  },
+  "before_metrics": {
+    "primary_replay_llm": {
+      "coverage_fraction": 0.0488,
+      "dates_covered": 6,
+      "expected_value_score": 0.8676,
+      "max_drawdown_pct": 0.026,
+      "sharpe_daily": 3.55,
+      "signals_generated": 51,
+      "signals_passed_by_llm": 1,
+      "signals_presented": 4,
+      "signals_survived": 51,
+      "signals_vetoed_by_llm": 3,
+      "survival_rate": 1.0,
+      "trading_days": 123,
+      "veto_rate": 0.75,
+      "win_rate": 0.6667
+    }
+  },
+  "change_summary": "Updated `quant/backtester.py` to add `candidate_days_covered`, `candidate_days_total`, `candidate_day_coverage_fraction`, `candidate_signals_covered`, `candidate_signals_total`, and `candidate_signal_coverage_fraction` to both `llm_attribution` and `known_biases.llm_gate_unreplayed`, and printed the new readiness metrics in CLI output. Added a targeted regression test for candidate-level coverage plus compatibility fixes for the existing LLM attribution tests. No strategy, sizing, ranking, exit, or prompt logic changed.",
+  "change_type": "measurement_repair",
+  "component": "quant/backtester.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "note": "Pure measurement change. Strategy metrics stayed bit-identical in the replayed primary window; the new information is that the practical blocker is only 3 covered candidate days and 4 covered candidate signals, not just 6 covered trading days.",
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.0,
+    "win_rate": 0.0
+  },
+  "experiment_id": "exp-20260421-027",
+  "hypothesis": "`LLM soft ranking` is still the highest-upside strategy branch, but the blocker should be measured on actual candidate exposure rather than raw calendar coverage. If backtester LLM attribution reports candidate-day and candidate-signal coverage alongside the existing day-coverage bucket, then future go/no-go decisions for LLM alpha experiments will stop being distorted by days where no candidate signals existed at all.",
+  "llm_metrics": {
+    "candidate_day_coverage_fraction": 0.0882,
+    "candidate_signal_coverage_fraction": 0.0784,
+    "coverage_fraction": 0.0488,
+    "llm_attribution_metric": "candidate_day_coverage_fraction + candidate_signal_coverage_fraction",
+    "llm_change_scope": "attribution/reporting only",
+    "signals_passed_by_llm": 1,
+    "signals_presented": 4,
+    "signals_vetoed_by_llm": 3,
+    "used_llm": true,
+    "veto_rate": 0.75
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "secondary": "ripping bull / high-beta leadership"
+  },
+  "next_retry_requires": [
+    "Do not launch `LLM soft ranking` until candidate-level coverage is materially larger than the current 3/34 days and 4/51 signals",
+    "Use candidate-level readiness metrics before calendar-day coverage when deciding whether the next LLM alpha test is credible",
+    "Keep A+B micro-tuning deprioritized; the blocker is still LLM sample depth, not an obvious remaining scalar rule"
+  ],
+  "notes": "Validation: `pytest` targeted LLM attribution suite passed (4 tests). Replay backtest re-run with `--replay-llm --regime-aware-exit` confirmed unchanged EV and surfaced the new blocker metrics in CLI output.",
+  "parameters": {
+    "accepted_stack_context": [
+      "REGIME_AWARE_EXIT",
+      "zero-risk low-TQS non-commodity breakouts",
+      "commodity low-TQS exemption",
+      "zero-risk trend Industrials",
+      "0.25x moderate-gap trend Technology"
+    ],
+    "llm_attribution_fields": {
+      "new": [
+        "coverage_fraction",
+        "candidate_day_coverage_fraction",
+        "candidate_signal_coverage_fraction",
+        "candidate_days_covered",
+        "candidate_days_total",
+        "candidate_signals_covered",
+        "candidate_signals_total",
+        "signals_presented",
+        "signals_vetoed_by_llm",
+        "signals_passed_by_llm",
+        "veto_rate",
+        "by_strategy"
+      ],
+      "old": [
+        "coverage_fraction",
+        "trading_days",
+        "dates_covered",
+        "dates_missing",
+        "signals_presented",
+        "signals_vetoed_by_llm",
+        "signals_passed_by_llm",
+        "veto_rate",
+        "by_strategy"
+      ]
+    },
+    "primary_window": {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    "test_command": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe -m pytest quant/test_quant.py -k \"llm_attribution or replay_llm\""
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/backtester.py",
+    "quant/test_quant.py",
+    "docs/alpha-optimization-playbook.md",
+    "docs/experiment_log.jsonl"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-21T23:15:00-07:00"
+}

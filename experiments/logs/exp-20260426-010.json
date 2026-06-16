@@ -1,0 +1,169 @@
+{
+  "after_metrics": {
+    "late_strong": {
+      "addons_executed": 5,
+      "addons_scheduled": 8,
+      "addons_skipped": 3,
+      "expected_value_score": 1.5205,
+      "max_drawdown_pct": 0.0281,
+      "sharpe_daily": 4.24,
+      "total_pnl": 35857.0,
+      "total_return_pct": 0.3586,
+      "trade_count": 21,
+      "win_rate": 0.7143
+    },
+    "mid_weak": {
+      "addons_executed": 5,
+      "addons_scheduled": 7,
+      "addons_skipped": 2,
+      "expected_value_score": 0.5001,
+      "max_drawdown_pct": 0.0248,
+      "sharpe_daily": 2.36,
+      "total_pnl": 21186.78,
+      "total_return_pct": 0.2119,
+      "trade_count": 21,
+      "win_rate": 0.4762
+    },
+    "old_thin": {
+      "addons_executed": 4,
+      "addons_scheduled": 6,
+      "addons_skipped": 2,
+      "expected_value_score": 0.1363,
+      "max_drawdown_pct": 0.0457,
+      "sharpe_daily": 1.17,
+      "total_pnl": 11648.23,
+      "total_return_pct": 0.1165,
+      "trade_count": 24,
+      "win_rate": 0.375
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.5039,
+      "max_drawdown_pct": 0.0281,
+      "sharpe_daily": 4.24,
+      "total_pnl": 35471.49,
+      "total_return_pct": 0.3547,
+      "trade_count": 21,
+      "win_rate": 0.7143
+    },
+    "mid_weak": {
+      "expected_value_score": 0.4773,
+      "max_drawdown_pct": 0.0247,
+      "sharpe_daily": 2.35,
+      "total_pnl": 20307.9,
+      "total_return_pct": 0.2031,
+      "trade_count": 21,
+      "win_rate": 0.4762
+    },
+    "old_thin": {
+      "expected_value_score": 0.131,
+      "max_drawdown_pct": 0.0456,
+      "sharpe_daily": 1.15,
+      "total_pnl": 11388.73,
+      "total_return_pct": 0.1139,
+      "trade_count": 24,
+      "win_rate": 0.375
+    }
+  },
+  "change_summary": "Added a default-off real backtester add-on replay and an experiment runner for the strict day-2 follow-through rule. The add-on fills at the next available open with entry slippage, is limited to 25% of original shares, and is capped by the existing single-position and portfolio-heat limits. No live run.py behavior was changed.",
+  "change_type": "alpha_search_entry_followthrough_addon_real_replay",
+  "component": "quant/backtester.py; quant/experiments/legacy/exp_20260426_010_entry_followthrough_addon_runner.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "accepted_candidate_not_production_promoted",
+  "delta_metrics": {
+    "late_strong": {
+      "max_drawdown_pct": 0.0,
+      "sharpe_daily": 0.0,
+      "total_pnl": 385.51,
+      "total_return_pct": 0.0039
+    },
+    "mid_weak": {
+      "max_drawdown_pct": 0.0001,
+      "sharpe_daily": 0.01,
+      "total_pnl": 878.88,
+      "total_return_pct": 0.0088
+    },
+    "old_thin": {
+      "max_drawdown_pct": 0.0001,
+      "sharpe_daily": 0.02,
+      "total_pnl": 259.5,
+      "total_return_pct": 0.0026
+    }
+  },
+  "expected_value_score_delta": {
+    "late_strong": 0.0166,
+    "mid_weak": 0.0228,
+    "old_thin": 0.0053
+  },
+  "experiment_id": "exp-20260426-010",
+  "hypothesis": "A position that is up at least 2% two trading days after entry and outperforming SPY deserves a small add-on; this should improve lifecycle alpha more reliably than rejected weak-hold early exits.",
+  "llm_metrics": {
+    "blocker_relation": "This is a deterministic non-LLM lifecycle alpha test; LLM responsibilities were intentionally unchanged.",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / AI-beta continuation",
+    "mid_weak": "rotation-heavy bull with crowding risk",
+    "old_thin": "mixed-to-weak macro tape"
+  },
+  "next_retry_requires": [
+    "Test whether the add-on rule is stronger when restricted to positions with actual cap room",
+    "Consider a 10-15% add-on tightness check for drawdown/EV tradeoff",
+    "Do not widen to ordinary positive follow-through until the strict day2 +2% RS-positive candidate clears stronger materiality evidence"
+  ],
+  "notes": "This was alpha_search. The result is directionally positive across all windows, but not enabled in production by default.",
+  "parameters": {
+    "ADDON_CHECKPOINT_DAYS": 2,
+    "ADDON_ENABLED": true,
+    "ADDON_FRACTION_OF_ORIGINAL_SHARES": 0.25,
+    "ADDON_MIN_RS_VS_SPY": 0.0,
+    "ADDON_MIN_UNREALIZED_PCT": 0.02,
+    "risk_constraints": [
+      "original-share fraction",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT"
+    ],
+    "unchanged": [
+      "entries",
+      "normal stop/target exits",
+      "signal ranking",
+      "LLM responsibilities",
+      "news replay",
+      "earnings_event_long",
+      "production run.py"
+    ]
+  },
+  "production_promotion": false,
+  "production_promotion_reason": "EV improved in all three fixed windows with no material regression, but effect size is modest and the large audit alpha was mostly clipped by real position caps. Keep default-off and require follow-up tightness or forward-validation before enabling add-ons by default.",
+  "rejection_reason": null,
+  "related_files": [
+    "quant/backtester.py",
+    "quant/experiments/legacy/exp_20260426_010_entry_followthrough_addon_runner.py",
+    "data/exp_20260426_010_entry_followthrough_addon_results.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2026-04-21",
+      "label": "late_strong",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "label": "mid_weak",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "label": "old_thin",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted_candidate",
+  "timestamp": "2026-04-25T23:58:00-07:00"
+}

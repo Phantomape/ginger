@@ -1,0 +1,218 @@
+{
+  "after_metrics": {
+    "loose": {
+      "ab_plus_leadership_persist": {
+        "late_strong": {
+          "expected_value_score": 0.9432,
+          "leadership_profit_factor": 1.643,
+          "leadership_total_pnl_usd": 7794.29,
+          "leadership_trade_count": 20,
+          "leadership_win_rate": 0.4,
+          "max_drawdown_pct": 0.0312,
+          "sharpe_daily": 3.23,
+          "total_return_pct": 0.292,
+          "trade_count": 36,
+          "win_rate": 0.5556
+        },
+        "mid_weak": {
+          "expected_value_score": 0.0546,
+          "leadership_profit_factor": 0.911,
+          "leadership_total_pnl_usd": 312.24,
+          "leadership_trade_count": 6,
+          "leadership_win_rate": 0.3333,
+          "max_drawdown_pct": 0.0333,
+          "sharpe_daily": 0.9,
+          "total_return_pct": 0.0607,
+          "trade_count": 28,
+          "win_rate": 0.3571
+        },
+        "old_thin": {
+          "expected_value_score": 0.0109,
+          "leadership_total_pnl_usd": 0.0,
+          "leadership_trade_count": 0,
+          "max_drawdown_pct": 0.0903,
+          "sharpe_daily": 0.36,
+          "total_return_pct": 0.0304,
+          "trade_count": 26,
+          "win_rate": 0.3077
+        }
+      }
+    },
+    "strict": {
+      "ab_plus_leadership_persist": {
+        "late_strong": {
+          "expected_value_score": 0.9831,
+          "leadership_profit_factor": 1.574,
+          "leadership_total_pnl_usd": 3805.87,
+          "leadership_trade_count": 14,
+          "leadership_win_rate": 0.4286,
+          "max_drawdown_pct": 0.0334,
+          "sharpe_daily": 3.49,
+          "total_return_pct": 0.2817,
+          "trade_count": 32,
+          "win_rate": 0.625
+        },
+        "mid_weak": {
+          "expected_value_score": 0.1097,
+          "leadership_profit_factor": 1.775,
+          "leadership_total_pnl_usd": 154.2,
+          "leadership_trade_count": 3,
+          "leadership_win_rate": 0.3333,
+          "max_drawdown_pct": 0.0435,
+          "sharpe_daily": 1.16,
+          "total_return_pct": 0.0946,
+          "trade_count": 30,
+          "win_rate": 0.3667
+        },
+        "old_thin": {
+          "expected_value_score": 0.0109,
+          "leadership_total_pnl_usd": 0.0,
+          "leadership_trade_count": 0,
+          "max_drawdown_pct": 0.0903,
+          "sharpe_daily": 0.36,
+          "total_return_pct": 0.0304,
+          "trade_count": 26,
+          "win_rate": 0.3077
+        }
+      }
+    }
+  },
+  "before_metrics": {
+    "accepted_ab_stack": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 0.36,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    }
+  },
+  "change_summary": "Ran a runtime-only monkeypatch of `feature_layer.compute_features()` and `signal_engine.generate_signals()` to append a new `leadership_persist_long` candidate only for tickers not already selected by the accepted A+B stack on that day. The sleeve required above-200MA structure, strong 10-day momentum, near-high but non-breakout shape, supportive volume, and a 5-day sector leadership-persistence edge over the market. Screened a strict and a loose deployment shape across the deterministic late / mid / old OHLCV snapshots, then kept no code after measurement.",
+  "change_type": "new_strategy",
+  "component": "runtime-only monkeypatch of `quant/feature_layer.py` + `quant/signal_engine.py` (rolled back; no repo trading logic changed)",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "loose_ev_deltas": {
+      "late_strong": 0.0962,
+      "mid_weak": -0.0709,
+      "old_thin": 0.0
+    },
+    "note": "The new sleeve is not sample-starved anymore in the primary window, but it still fails the cross-window test. The strict form added a real late-strong boost (`EV 0.8470 -> 0.9831`) while degrading the middle window, and the loose form degraded the middle window materially. Neither form created any old-window edge at all. This is not a data blocker: the deployment shape simply concentrates into one regime and does not survive the multi-window promotion gate.",
+    "strict_ev_deltas": {
+      "late_strong": 0.1361,
+      "mid_weak": -0.0158,
+      "old_thin": 0.0
+    }
+  },
+  "experiment_id": "exp-20260423-006",
+  "hypothesis": "If sector-relative leadership persistence is better used as a distinct continuation sleeve than as another breakout haircut, then a non-overlapping `leadership_persist_long` strategy should add incremental alpha on days when A+B do not already own the ticker. A valid sleeve should improve the accepted A+B stack across the deterministic late / mid / old snapshots or at least show standalone expectancy without simply recreating diluted continuation clutter.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull with Apr-2026 stress",
+    "mid_weak": "ripping bull / high-beta leadership",
+    "old_thin": "mixed-to-weak tape"
+  },
+  "next_retry_requires": [
+    "Do not keep sweeping nearby `leadership_persist_long` thresholds by default",
+    "If this family is revisited, require either a regime-conditioned deployment thesis with fresh forward evidence or a genuinely different context source such as event information",
+    "Prefer blocked high-upside branches (`LLM soft ranking`) or a new external alpha source over more OHLCV-only sector-persistence continuation variants"
+  ],
+  "notes": "This experiment deliberately avoided same-day slot replacement by only adding leadership candidates for tickers not already selected by A+B on that day. Even with that cleaner deployment, the sleeve remained regime-specific rather than stable.",
+  "parameters": {
+    "accepted_stack_context": [
+      "REGIME_AWARE_EXIT",
+      "zero-risk low-TQS non-commodity breakouts",
+      "commodity low-TQS exemption",
+      "zero-risk trend Industrials",
+      "0.25x moderate-gap trend Technology"
+    ],
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "loose": {
+      "momentum_10d_pct_min": 0.06,
+      "pct_from_52w_high_range": [
+        -0.12,
+        -0.01
+      ],
+      "sector_above200_breadth_5d_min": 0.5,
+      "sector_minus_market_posmom_5d_min_gap": 0.05,
+      "sector_posmom_breadth_5d_min": 0.55,
+      "volume_spike_ratio_min": 1.0
+    },
+    "strategy_name": "leadership_persist_long",
+    "strict": {
+      "momentum_10d_pct_min": 0.08,
+      "pct_from_52w_high_range": [
+        -0.1,
+        -0.01
+      ],
+      "sector_above200_breadth_5d_min": 0.55,
+      "sector_minus_market_posmom_5d_min_gap": 0.1,
+      "sector_posmom_breadth_5d_min": 0.6,
+      "volume_spike_ratio_min": 1.1
+    },
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "rejection_reason": "Rejected on multi-window stability. Sector-persistence leadership can harvest extra continuation in the current strong tape, but the edge does not generalize even to the adjacent middle window. That makes it a regime-specific add-on, not a stable repo-level alpha sleeve.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "data/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv_snapshot_20241002_20250422.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-23T17:45:00-07:00"
+}

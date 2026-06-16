@@ -1,0 +1,138 @@
+{
+  "after_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.4875,
+      "max_drawdown_pct": 0.0459,
+      "sharpe": 3.0,
+      "sharpe_daily": 2.44,
+      "survival_rate": 0.98,
+      "total_return_pct": 0.1998,
+      "trade_count": 30,
+      "win_rate": 0.6
+    },
+    "window_1": {
+      "expected_value_score": 0.2035,
+      "sharpe_daily": 2.31,
+      "trade_count": 10
+    },
+    "window_2": {
+      "expected_value_score": 0.2071,
+      "sharpe_daily": 2.7,
+      "trade_count": 16
+    },
+    "window_3": {
+      "expected_value_score": 0.0093,
+      "sharpe_daily": 1.43,
+      "trade_count": 5
+    }
+  },
+  "before_metrics": {
+    "by_strategy": {
+      "breakout_long": {
+        "profit_factor": 3.276,
+        "trade_count": 15
+      },
+      "earnings_event_long": {
+        "profit_factor": 0.328,
+        "trade_count": 12,
+        "win_rate": 0.3333
+      },
+      "trend_long": {
+        "profit_factor": 3.485,
+        "trade_count": 11
+      }
+    },
+    "expected_value_score": 0.2595,
+    "max_drawdown_pct": 0.0461,
+    "sharpe": 1.83,
+    "sharpe_daily": 1.78,
+    "survival_rate": 0.98,
+    "total_return_pct": 0.1458,
+    "trade_count": 38,
+    "win_rate": 0.5263
+  },
+  "change_summary": "Added a single-source ENABLED_STRATEGIES constant and wired it through backtester.py, run.py, run_quant.py, and run_pipeline.py. Default strategy set is now trend_long + breakout_long; earnings_event_long remains implemented but is disabled by default pending P-ERN recovery. Added focused tests for strategy gating and default config alignment.",
+  "change_type": "strategy_enablement",
+  "component": "quant/constants.py + quant/signal_engine.py + quant/backtester.py + quant/run.py + quant/run_quant.py + quant/run_pipeline.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "note": "EV improved in all 3 non-overlapping windows and the full window. Trade count fell because 12 low-quality C trades were removed, but win rate and Sharpe improved enough that the loss of count is acceptable under Gate 4.",
+    "primary_expected_value_score_delta": 0.228,
+    "primary_max_drawdown_pct_delta": -0.0002,
+    "primary_sharpe_daily_delta": 0.66,
+    "primary_total_return_pct_delta": 0.054,
+    "primary_trade_count_delta": -8,
+    "primary_win_rate_delta": 0.0737,
+    "window_1_ev_delta": 0.0913,
+    "window_1_sharpe_daily_delta": 0.6,
+    "window_2_ev_delta": 0.0194,
+    "window_2_sharpe_daily_delta": 0.19,
+    "window_3_ev_delta": 0.0072,
+    "window_3_sharpe_daily_delta": 2.59
+  },
+  "experiment_id": "exp-20260419-003",
+  "hypothesis": "Given exp-20260418-004 showed earnings_event_long at 33.3% win rate and PF=0.33 on partial data, the cleanest alpha-preserving move may be to disable C entirely until P-ERN data quality recovers. If C is the true drag, removing it should improve expected_value_score across multiple non-overlapping windows without changing any A/B entry or exit rules.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "BULL (slow-melt), BEAR in Apr 2026",
+    "window_1": "late-2025 bull trend",
+    "window_2": "early-2026 bull continuation",
+    "window_3": "Feb-Apr 2026 stress / regime deterioration"
+  },
+  "next_retry_requires": [
+    "Do not re-enable earnings_event_long by default until P-ERN provides enough snapshot coverage to test it with real eps_estimate / surprise-history inputs",
+    "When re-testing C, compare it as an explicit A/B/C toggle experiment across the same 3 windows",
+    "If new earnings data arrives, test whether C adds incremental EV without displacing stronger A/B opportunities"
+  ],
+  "notes": "This is a true single-variable alpha decision: no threshold tuning, no prompt change, no new filter. We are not deleting the earnings strategy; we are removing it from the default risk budget until its data quality is strong enough to justify inclusion.",
+  "parameters": {
+    "ENABLED_STRATEGIES": {
+      "new": [
+        "trend_long",
+        "breakout_long"
+      ],
+      "old": [
+        "trend_long",
+        "breakout_long",
+        "earnings_event_long"
+      ]
+    },
+    "earnings_event_long": {
+      "new": "implemented but disabled by default until data quality improves",
+      "old": "enabled by default"
+    }
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/constants.py",
+    "quant/signal_engine.py",
+    "quant/backtester.py",
+    "quant/run.py",
+    "quant/run_quant.py",
+    "quant/run_pipeline.py",
+    "quant/test_quant.py",
+    "data/backtest_results_20260419.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-12-19",
+      "start": "2025-10-20"
+    },
+    {
+      "end": "2026-02-17",
+      "start": "2025-12-20"
+    },
+    {
+      "end": "2026-04-17",
+      "start": "2026-02-18"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-19T11:25:00-07:00"
+}

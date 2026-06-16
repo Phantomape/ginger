@@ -1,0 +1,74 @@
+{
+  "after_metrics": {
+    "expected_value_score": 0.131,
+    "max_drawdown_pct": 0.0456,
+    "sharpe": 1.91,
+    "sharpe_daily": 1.15,
+    "survival_rate": 0.8929,
+    "total_pnl": 11388.73,
+    "total_return_pct": 0.1139,
+    "trade_count": 24,
+    "win_rate": 0.375
+  },
+  "before_metrics": {
+    "expected_value_score": 0.131,
+    "max_drawdown_pct": 0.0456,
+    "sharpe": 1.91,
+    "sharpe_daily": 1.15,
+    "survival_rate": 0.8929,
+    "total_pnl": 11388.73,
+    "total_return_pct": 0.1139,
+    "trade_count": 24,
+    "win_rate": 0.375
+  },
+  "change_summary": "Shadow-audited the normal strict day-2 25% follow-through add-on event stream with one extra trigger-quality condition: require positive ticker close-to-close return from entry day to checkpoint day. No shared production strategy code was changed.",
+  "change_type": "alpha_search_entry_followthrough_addon_trigger_quality",
+  "component": "quant/experiments/legacy/exp_20260426_013_entry_followthrough_ticker_return_runner.py, data/exp_20260426_013_entry_followthrough_ticker_return_results.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "observed_only",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0,
+    "win_rate": 0.0
+  },
+  "experiment_id": "exp-20260426-017",
+  "hypothesis": "For the strict day-2 follow-through add-on candidate, requiring the ticker's day-2 close-to-close return to be positive may remove noisy gap/market-lift cases and improve add-on materiality without changing entries, exits, ranking, LLM, or hard risk controls.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "next_retry_requires": [],
+  "notes": "Result: rejected as redundant trigger quality. Across late_strong, mid_weak, and old_thin, normal add-on EV delta sum stayed +0.0447 and PnL delta sum +1523.89; all 14 executed add-ons already passed positive ticker day2 return, retaining 100% of estimated add-on forward PnL. Do not spend a follow-up adding this condition to BacktestEngine.",
+  "parameters": {
+    "locked_variables": [
+      "day2 +2% RS-positive 25% add-on; only ticker day2 return confirmation varies"
+    ],
+    "single_causal_variable": "require_positive_day2_ticker_return_for_followthrough_addon"
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtest_results_20260425.json",
+    "data/backtest_results_20260425.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "observed_only",
+  "timestamp": "2026-04-26T08:11:16+00:00"
+}

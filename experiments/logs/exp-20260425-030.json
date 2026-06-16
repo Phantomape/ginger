@@ -1,0 +1,145 @@
+{
+  "after_metrics": {
+    "post_promotion_fixed_snapshots": {
+      "late_strong": {
+        "expected_value_score": 1.1108,
+        "max_drawdown_pct": 0.0238,
+        "sharpe_daily": 3.99,
+        "total_return_pct": 0.2784,
+        "trade_count": 21,
+        "win_rate": 0.7143
+      },
+      "mid_weak": {
+        "expected_value_score": 0.403,
+        "max_drawdown_pct": 0.0205,
+        "sharpe_daily": 2.62,
+        "total_return_pct": 0.1538,
+        "trade_count": 25,
+        "win_rate": 0.44
+      },
+      "old_thin": {
+        "expected_value_score": 0.1121,
+        "max_drawdown_pct": 0.0444,
+        "sharpe_daily": 1.12,
+        "total_return_pct": 0.1001,
+        "trade_count": 24,
+        "win_rate": 0.375
+      }
+    },
+    "test_results": {
+      "full_suite": "283 passed, 1 failed: pre-existing LLM attribution passthrough expectation candidate_signals_total 0 vs 2",
+      "targeted": "3 passed"
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.0402,
+      "max_drawdown_pct": 0.0238,
+      "sharpe_daily": 3.89,
+      "total_return_pct": 0.2674,
+      "trade_count": 21,
+      "win_rate": 0.7143
+    },
+    "mid_weak": {
+      "expected_value_score": 0.3924,
+      "max_drawdown_pct": 0.0205,
+      "sharpe_daily": 2.59,
+      "total_return_pct": 0.1515,
+      "trade_count": 25,
+      "win_rate": 0.44
+    },
+    "old_thin": {
+      "expected_value_score": 0.0863,
+      "max_drawdown_pct": 0.0444,
+      "sharpe_daily": 0.95,
+      "total_return_pct": 0.0908,
+      "trade_count": 24,
+      "win_rate": 0.375
+    }
+  },
+  "change_summary": "Promoted the deferred-positive Technology trend target-width rule into production risk enrichment. Added `TREND_TECH_TARGET_ATR_MULT = 6.0`, retargeted only `trend_long` signals whose enriched sector is `Technology`, preserved target-width attribution in backtester, and added a targeted unit test.",
+  "change_type": "alpha_search_exit_rule",
+  "component": "quant/constants.py + quant/risk_engine.py + quant/backtester.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "ev_deltas": {
+      "late_strong": 0.0706,
+      "mid_weak": 0.0106,
+      "old_thin": 0.0258
+    },
+    "gate4_basis": "Accepted because EV improved in all three fixed non-overlapping windows, primary Sharpe improved by 0.10, and drawdown/trade count/win rate did not deteriorate.",
+    "max_drawdown_pct_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": 0.0
+    },
+    "sharpe_daily_deltas": {
+      "late_strong": 0.1,
+      "mid_weak": 0.03,
+      "old_thin": 0.17
+    },
+    "total_return_pct_deltas": {
+      "late_strong": 0.011,
+      "mid_weak": 0.0023,
+      "old_thin": 0.0093
+    }
+  },
+  "experiment_id": "exp-20260425-030",
+  "hypothesis": "The strongest unblocked alpha is selective winner-truncation repair: `trend_long | Technology` winners are being cut too early by the shared target width. Promoting the 6.0 ATR target from `exp-20260425-027` through production code should improve EV across all fixed windows without changing entries, sizing, ranking, LLM, C strategy, or non-Technology exits.",
+  "llm_metrics": {
+    "blocker_relation": "LLM soft ranking remains blocked by candidate-level replay coverage, so this run used deterministic A+B exit alpha instead.",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull",
+    "mid_weak": "rotation-heavy bull / benchmark gap",
+    "old_thin": "mixed-to-weak tape"
+  },
+  "next_retry_requires": [
+    "Do not widen this into broad trend target widening; that family was already rejected",
+    "Do not sweep nearby Technology target widths unless forward data contradicts the 6.0 ATR result",
+    "Next alpha search should look for another selective winner-truncation or fresh loss cluster, not generic trailing stops"
+  ],
+  "notes": "This was alpha_search, not bug repair. It changes one independent causal variable: Technology trend target width.",
+  "parameters": {
+    "rule": {
+      "sector": "Technology",
+      "strategy": "trend_long",
+      "target_atr_mult": 6.0
+    },
+    "unchanged": [
+      "entries",
+      "position sizing",
+      "allocation ranking",
+      "LLM responsibilities",
+      "earnings_event_long",
+      "non-Technology exits",
+      "breakout exits"
+    ]
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/constants.py",
+    "quant/risk_engine.py",
+    "quant/backtester.py",
+    "quant/test_quant.py",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-25T12:04:00-07:00"
+}

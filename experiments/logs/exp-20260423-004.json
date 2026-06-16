@@ -1,0 +1,241 @@
+{
+  "after_metrics": {
+    "best_relative_variant": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 0.36,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    },
+    "best_variant_sec_nlb_strict_0": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0144,
+        "max_drawdown_pct": 0.0829,
+        "sharpe_daily": 0.41,
+        "total_return_pct": 0.0351,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    },
+    "best_variant_sec_nlb_strict_25": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0165,
+        "max_drawdown_pct": 0.08,
+        "sharpe_daily": 0.43,
+        "total_return_pct": 0.0383,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    }
+  },
+  "before_metrics": {
+    "accepted_ab_stack": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 0.36,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    }
+  },
+  "change_summary": "Ran a runtime-only monkeypatch of `risk_engine.enrich_signals()` and `portfolio_engine.size_signals()` so each signal carried per-day market and sector breadth fields (`sector_above200_breadth`, `sector_positive_momentum_breadth`, `sector_breakout_breadth`, plus market equivalents). Screened six breakout-only sizing variants across the deterministic late / mid / old OHLCV snapshots: two sector narrow-leadership shapes (`above200 high + sector momentum low + sector breakout scarce`) at `0.0x/0.25x`, and two market-vs-sector relative-momentum gap variants at `0.0x/0.25x`. No repository trading code was kept after measurement.",
+  "change_type": "allocation_rule",
+  "component": "runtime-only monkeypatch of `quant/risk_engine.py` + `quant/portfolio_engine.py` sizing path (rolled back; no repo trading logic changed)",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "best_variant_ev_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": 0.0056
+    },
+    "best_variant_relative_ev_change": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": 0.5138
+    },
+    "note": "This new participation proxy failed to unlock present-tense edge. Every screened sector-relative variant stayed a strict null in both the late-strong and mid-weak windows; only the oldest weak window improved modestly. The best variant (`sec_nlb_strict_25`) reduced old-window drawdown (`9.03% -> 8.00%`) and lifted EV (`0.0109 -> 0.0165`), but there was still no evidence that sector participation context improves the current dominant tape or even the intermediate weak-bull tape."
+  },
+  "experiment_id": "exp-20260423-004",
+  "hypothesis": "If the whole-universe participation-state branch was still too coarse, then a genuinely different proxy in the same breakout-health family should work better: de-risk `breakout_long` only when the stock's own sector shows narrow or weak participation before entry. A valid sector-relative context signal should improve at least the mid/old snapshots while finally creating some present-tense value in the late strong snapshot.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull with Apr-2026 stress",
+    "mid_weak": "ripping bull / high-beta leadership",
+    "old_thin": "mixed-to-weak tape"
+  },
+  "next_retry_requires": [
+    "Do not keep sweeping nearby sector breadth thresholds or 0x/0.25x deployment shapes by default",
+    "If breakout-health work is revisited again, require a richer context source than sector breadth alone, such as sector-relative leadership persistence over time, event context, or fresh forward data that creates a new primary-window test",
+    "Prefer another unblocked alpha branch over more participation-breadth-only breakout sizing variants unless new evidence appears"
+  ],
+  "notes": "This remained a single-causal-variable experiment: only the breakout sleeve's pre-entry risk budget changed, using sector-relative participation context instead of whole-universe participation context. Entries, exits, ranking, and the current accepted cohort rules stayed unchanged.",
+  "parameters": {
+    "accepted_stack_context": [
+      "REGIME_AWARE_EXIT",
+      "zero-risk low-TQS non-commodity breakouts",
+      "commodity low-TQS exemption",
+      "zero-risk trend Industrials",
+      "0.25x moderate-gap trend Technology"
+    ],
+    "breadth_fields": [
+      "market_above200_breadth",
+      "market_positive_momentum_breadth",
+      "market_breakout_breadth",
+      "sector_above200_breadth",
+      "sector_positive_momentum_breadth",
+      "sector_breakout_breadth"
+    ],
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "screened_variants": {
+      "sec_nlb_loose_0": {
+        "risk_multiplier": 0.0,
+        "sector_above200_min": 0.5,
+        "sector_breakout_max": 0.15,
+        "sector_posmom_max": 0.5
+      },
+      "sec_nlb_loose_25": {
+        "risk_multiplier": 0.25,
+        "sector_above200_min": 0.5,
+        "sector_breakout_max": 0.15,
+        "sector_posmom_max": 0.5
+      },
+      "sec_nlb_strict_0": {
+        "risk_multiplier": 0.0,
+        "sector_above200_min": 0.6,
+        "sector_breakout_max": 0.1,
+        "sector_posmom_max": 0.4
+      },
+      "sec_nlb_strict_25": {
+        "risk_multiplier": 0.25,
+        "sector_above200_min": 0.6,
+        "sector_breakout_max": 0.1,
+        "sector_posmom_max": 0.4
+      },
+      "sec_relative_0": {
+        "market_minus_sector_posmom_min_gap": 0.2,
+        "risk_multiplier": 0.0,
+        "sector_breakout_max": 0.1
+      },
+      "sec_relative_25": {
+        "market_minus_sector_posmom_min_gap": 0.2,
+        "risk_multiplier": 0.25,
+        "sector_breakout_max": 0.1
+      }
+    },
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "rejection_reason": "Rejected on Gate 4 promotion criteria. This was a genuinely different participation proxy than `exp-20260423-002/003`, but it still produced no primary-window improvement and no mid-window gain. Sector-relative breadth alone is therefore not enough to promote breakout-health sizing into repo logic.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "data/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv_snapshot_20241002_20250422.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-23T10:35:00-07:00"
+}

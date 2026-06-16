@@ -1,0 +1,155 @@
+{
+  "after_metrics": {
+    "multiplier_0_0": {
+      "late_strong": {
+        "expected_value_score": 1.0008,
+        "max_drawdown_pct": 0.0237,
+        "sharpe_daily": 3.83,
+        "total_return_pct": 0.2613,
+        "trade_count": 20
+      },
+      "mid_weak": {
+        "expected_value_score": 0.2483,
+        "max_drawdown_pct": 0.0296,
+        "sharpe_daily": 1.79,
+        "total_return_pct": 0.1387,
+        "trade_count": 27
+      },
+      "old_thin": {
+        "expected_value_score": 0.0014,
+        "max_drawdown_pct": 0.0725,
+        "sharpe_daily": 0.17,
+        "total_return_pct": 0.0082,
+        "trade_count": 26
+      }
+    },
+    "multiplier_0_25": {
+      "late_strong": {
+        "expected_value_score": 0.9963,
+        "max_drawdown_pct": 0.0237,
+        "sharpe_daily": 3.82,
+        "total_return_pct": 0.2608,
+        "trade_count": 22
+      },
+      "mid_weak": {
+        "expected_value_score": 0.2983,
+        "max_drawdown_pct": 0.0231,
+        "sharpe_daily": 2.06,
+        "total_return_pct": 0.1448,
+        "trade_count": 26
+      },
+      "old_thin": {
+        "expected_value_score": 0.032,
+        "max_drawdown_pct": 0.0533,
+        "sharpe_daily": 0.61,
+        "total_return_pct": 0.0525,
+        "trade_count": 25
+      }
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "eligible_signals": 4,
+      "expected_value_score": 0.9831,
+      "max_drawdown_pct": 0.0238,
+      "sharpe_daily": 3.79,
+      "total_return_pct": 0.2594,
+      "trade_count": 22
+    },
+    "mid_weak": {
+      "eligible_signals": 3,
+      "expected_value_score": 0.286,
+      "max_drawdown_pct": 0.0232,
+      "sharpe_daily": 2.01,
+      "total_return_pct": 0.1423,
+      "trade_count": 26
+    },
+    "old_thin": {
+      "eligible_signals": 8,
+      "expected_value_score": 0.0483,
+      "max_drawdown_pct": 0.056,
+      "sharpe_daily": 0.72,
+      "total_return_pct": 0.0671,
+      "trade_count": 25
+    }
+  },
+  "change_summary": "Runtime-only size_signals monkeypatch screened `trend_long | Technology | 59 <= days_to_earnings <= 69 | gap_vulnerability_pct >= 0.04` at 0.25x and 0.0x across the fixed late/mid/old snapshot trio. No production code was promoted.",
+  "change_type": "allocation_sizing_probe",
+  "component": "runtime-only monkeypatch; no repository code promoted",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "best_variant": "0.25x",
+    "best_variant_ev_deltas": {
+      "late_strong": 0.0132,
+      "mid_weak": 0.0123,
+      "old_thin": -0.0163
+    },
+    "rejection_basis": "Both tested multipliers failed multi-window stability. The pocket catches real losers, but also cuts old_thin Technology winners, so it is a disguised retry of saturated Technology gap logic."
+  },
+  "experiment_id": "exp-20260425-009-tech-dte-gap-probe",
+  "hypothesis": "After the accepted A+B residual stack, Technology trend losers may cluster in a cross-state pocket: 59-69 days to earnings plus gap_vulnerability_pct >= 4%. De-risking this pocket should remove repeat pre-event high-gap losers without reopening the already accepted standalone Technology gap rules.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull",
+    "mid_weak": "rotation-heavy bull",
+    "old_thin": "mixed-to-weak tape with Technology winners and losers"
+  },
+  "next_retry_requires": [
+    "Do not reopen 0.25x vs 0.0x for this exact Technology 59-69 DTE + gap>=4% sleeve",
+    "Require a new trade-specific hold-quality or event-quality field before revisiting this family"
+  ],
+  "notes": "This was an alpha_search probe, not measurement repair. It changed one causal variable at runtime and was fully rejected.",
+  "parameters": {
+    "rule": {
+      "days_to_earnings_max": 69,
+      "days_to_earnings_min": 59,
+      "gap_vulnerability_pct_min": 0.04,
+      "sector": "Technology",
+      "strategy": "trend_long"
+    },
+    "screened_variants": [
+      "baseline",
+      "0.25x",
+      "0.0x"
+    ],
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "rejection_reason": "Rejected on Gate 4: old_thin regressed materially and 0.0x also damaged mid_weak. Do not retry this same Technology DTE+gap pocket without a genuinely new discriminator that preserves old_thin winners.",
+  "related_files": [
+    "docs/experiment_log.jsonl"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-25T02:15:00-07:00"
+}

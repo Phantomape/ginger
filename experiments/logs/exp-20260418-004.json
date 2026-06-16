@@ -1,0 +1,77 @@
+{
+  "after_metrics": {
+    "by_strategy": {
+      "breakout_long": {
+        "n": 15,
+        "profit_factor": 3.276,
+        "win_rate": 0.6
+      },
+      "earnings_event_long": {
+        "n": 12,
+        "profit_factor": 0.328,
+        "win_rate": 0.3333
+      },
+      "trend_long": {
+        "n": 11,
+        "profit_factor": 3.485,
+        "win_rate": 0.6364
+      }
+    },
+    "expected_value_score": 0.2595,
+    "sharpe_daily": 1.78,
+    "trade_count": 38,
+    "win_rate": 0.5263
+  },
+  "before_metrics": {
+    "by_strategy": {
+      "breakout_long": 17,
+      "earnings_event_long": 0,
+      "trend_long": 13
+    },
+    "expected_value_score": 0.4875,
+    "sharpe_daily": 2.44,
+    "trade_count": 30,
+    "win_rate": 0.6
+  },
+  "change_summary": "Installed lxml==6.1.0 (missing dependency). Added known_biases.earnings_event_long_data_quality disclosure to backtester output. New finding: earnings_event_long fires 12 trades at 33% win rate (profit_factor=0.33) when positive_surprise_history=None. Also displaces A+B trades (MAX_POSITIONS cap): trend_long 13->11, breakout_long 17->15.",
+  "change_type": "parity_fix",
+  "component": "quant/backtester.py + system lxml dependency",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score_delta": -0.22799999999999998,
+    "note": "EV degraded 46.8%. Gate 4 fails on strategy metrics. Carve-out applies: this is a data gap fix, not strategy change. Key findings: (1) C strategy at 33% win rate with partial data is genuinely bad; (2) C displaces A+B slots (A went 13->11, B went 17->15); (3) Combined effect explains most of EV decline. P-ERN is now highest priority to determine if C strategy improves with full data."
+  },
+  "experiment_id": "exp-20260418-004",
+  "hypothesis": "lxml was not installed, causing yfinance get_earnings_dates() to silently fail for all tickers in the backtester. Installing lxml enables the earnings calendar and allows earnings_event_long to fire. This is the root cause of earnings_event_long showing 0 trades in prior backtests.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "BULL (slow-melt), BEAR in Apr 2026"
+  },
+  "next_retry_requires": [
+    "Accumulate daily earnings snapshots (P-ERN) for >=10 days to test if positive_surprise_history improves C strategy win rate above 50%",
+    "Re-evaluate earnings_event_long with full data before concluding strategy is viable"
+  ],
+  "notes": "A+B strategies alone: EV=0.4875 (excellent, 60% WR, PF>3). C strategy alone: EV contribution negative (33% WR, PF=0.33). New baseline including C: EV=0.2595. The displacement effect (C taking A+B slots) is a second-order negative. AGENTS.md baseline should be updated to EV=0.2595. 223/223 tests pass.",
+  "parameters": {
+    "known_biases.earnings_event_long_data_quality": {
+      "new": "dict{days_to_earnings_source, eps_estimate, positive_surprise_history, confidence_cap, note}",
+      "old": "absent"
+    },
+    "lxml": {
+      "new": "6.1.0 installed",
+      "old": "not installed (silent failure on get_earnings_dates())"
+    }
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/backtester.py"
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-18T17:44:45.610209"
+}

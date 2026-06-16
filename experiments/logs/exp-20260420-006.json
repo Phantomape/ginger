@@ -1,0 +1,123 @@
+{
+  "after_metrics": {
+    "2d_0.25R": {
+      "expected_value_score": 0.4115,
+      "max_drawdown_pct": 0.0443,
+      "sharpe_daily": 2.29,
+      "total_return_pct": 0.1797,
+      "trade_count": 29,
+      "trend_no_confirm_count": 3,
+      "win_rate": 0.4828
+    },
+    "2d_0.5R": {
+      "expected_value_score": 0.4115,
+      "max_drawdown_pct": 0.0443,
+      "sharpe_daily": 2.29,
+      "total_return_pct": 0.1797,
+      "trade_count": 29,
+      "trend_no_confirm_count": 3,
+      "win_rate": 0.4828
+    },
+    "3d_0.25R": {
+      "expected_value_score": 0.7531,
+      "max_drawdown_pct": 0.0408,
+      "sharpe_daily": 2.83,
+      "total_return_pct": 0.2661,
+      "trade_count": 28,
+      "trend_no_confirm_count": 0,
+      "win_rate": 0.5714
+    },
+    "3d_0.5R": {
+      "expected_value_score": 0.4555,
+      "max_drawdown_pct": 0.0443,
+      "sharpe_daily": 2.44,
+      "total_return_pct": 0.1867,
+      "trade_count": 28,
+      "trend_no_confirm_count": 2,
+      "win_rate": 0.5
+    },
+    "4d_0.25R": {
+      "expected_value_score": 0.7531,
+      "max_drawdown_pct": 0.0408,
+      "sharpe_daily": 2.83,
+      "total_return_pct": 0.2661,
+      "trade_count": 28,
+      "trend_no_confirm_count": 0,
+      "win_rate": 0.5714
+    },
+    "4d_0.5R": {
+      "expected_value_score": 0.4555,
+      "max_drawdown_pct": 0.0443,
+      "sharpe_daily": 2.44,
+      "total_return_pct": 0.1867,
+      "trade_count": 28,
+      "trend_no_confirm_count": 2,
+      "win_rate": 0.5
+    }
+  },
+  "before_metrics": {
+    "expected_value_score": 0.7531,
+    "max_drawdown_pct": 0.0408,
+    "sharpe_daily": 2.83,
+    "total_return_pct": 0.2661,
+    "trade_count": 28,
+    "win_rate": 0.5714
+  },
+  "change_summary": "Added an experiment-only backtester branch for `trend_no_confirm`, then screened six parameter pairs against the accepted A+B stack (`REGIME_AWARE_EXIT=True`) on the primary window. All code was rolled back immediately after the screen. No production pipeline, signal ranking, LLM logic, or sizing logic was changed.",
+  "change_type": "exit_rule",
+  "component": "quant/backtester.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "best_expected_value_score_delta": 0.0,
+    "note": "The mechanism failed the primary-window pre-screen. Loose settings (3d/0.25R, 4d/0.25R) never fired and therefore added zero edge; tighter settings fired 2-3 times but materially reduced EV, return, and win rate while slightly worsening drawdown. Because no tested pair improved even the primary window, the experiment was stopped before spending additional runtime on multi-window validation.",
+    "worst_expected_value_score_delta": -0.3416
+  },
+  "experiment_id": "exp-20260420-006",
+  "hypothesis": "Because recent `trend_long` losses cluster in the first 0-5 trading days, a fast confirmation-based exit may improve EV by cutting trend trades that fail to show early follow-through. The tested mechanism was intentionally different from the rejected trailing-stop and in-trade-regime ideas: after N trading days, exit only if the trade has not reached a minimum best-excursion in R and is still below entry.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "BULL (slow-melt) with Apr-2026 stress"
+  },
+  "next_retry_requires": [
+    "Do not revisit `trend_no_confirm` with the same 'best excursion by day N' framing unless new evidence shows missed early confirmation is a persistent causal failure mode",
+    "If trend exit alpha is revisited, prefer a different mechanism class such as hold-quality scoring or selectively using richer semantic/event context, not another fast confirmation stop",
+    "Given the current evidence, the highest-value remaining alpha directions are still LLM soft ranking (blocked by P-LLM coverage) and C strategy revival (blocked by P-ERN data quality)"
+  ],
+  "notes": "This was a deliberate single-variable alpha screen. The code path was rolled back immediately after the run, leaving the repository logic unchanged.",
+  "parameters": {
+    "TREND_CONFIRM_EXIT_DAYS": {
+      "default": 0,
+      "tested": [
+        2,
+        3,
+        4
+      ]
+    },
+    "TREND_CONFIRM_MIN_PROFIT_R": {
+      "default": 0.0,
+      "tested": [
+        0.25,
+        0.5
+      ]
+    },
+    "scope": {
+      "unchanged": "trend_long only"
+    },
+    "trigger": {
+      "trial": "after N trading days, if best excursion < min_profit_R * initial_R and close < entry, exit at close"
+    }
+  },
+  "rejection_reason": "The mechanism produced either strict null effect or clear primary-window regression, so it did not justify a full Gate 4 multi-window run. This suggests the observed early trend losses are not fixed by a naive early-confirmation exit; the same rule also cuts too many valid trend recoveries or late-strength winners.",
+  "related_files": [
+    "docs/experiment_log.jsonl"
+  ],
+  "secondary_windows": [],
+  "status": "rejected",
+  "timestamp": "2026-04-20T12:35:00-07:00"
+}

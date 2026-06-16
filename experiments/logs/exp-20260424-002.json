@@ -1,0 +1,213 @@
+{
+  "after_metrics": {
+    "stress_strict_breakout_0.0x": {
+      "late_strong": {
+        "breakout_signals_haircut": 0,
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "stress_days_hit_during_sizing": 0,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "breakout_signals_haircut": 0,
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "stress_days_hit_during_sizing": 0,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "breakout_signals_haircut": 0,
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 0.36,
+        "stress_days_hit_during_sizing": 0,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    },
+    "stress_strict_breakout_0.25x": {
+      "late_strong": {
+        "breakout_signals_haircut": 0,
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "stress_days_hit_during_sizing": 0,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "breakout_signals_haircut": 0,
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "stress_days_hit_during_sizing": 0,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "breakout_signals_haircut": 0,
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 0.36,
+        "stress_days_hit_during_sizing": 0,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    }
+  },
+  "before_metrics": {
+    "accepted_ab_stack": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 0.36,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    }
+  },
+  "change_summary": "Ran a runtime-only deterministic two-stage meta-allocation experiment across the same late / mid / old fixed OHLCV snapshots. The weak-tape detector from `exp-20260423-014` was held fixed, and only the stage-two action changed: on `stress_strict` days, breakout signals alone were de-risked to `0.25x` or `0.0x`. Entries, exits, ranking, trend sizing, and accepted A+B cohort rules all stayed unchanged. No repository trading logic was kept after measurement.",
+  "change_type": "allocation_rule",
+  "component": "runtime-only monkeypatch of `portfolio_engine.size_signals()` with a day-pointer hook for fixed-snapshot replay, applying breakout-only haircuts on cached strict-stress dates (rolled back; no repo trading logic changed)",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "note": "This branch failed for a different reason than exp-20260423-014. The detector was not too wide and the action was not obviously too weak; instead the strict weak-tape dates had zero overlap with actual breakout sizing events in all three replay windows. That makes the two-stage design vacuous for the current state/sleeve pairing.",
+    "stress_strict_breakout_0.0x_ev_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": 0.0
+    },
+    "stress_strict_breakout_0.25x_ev_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": 0.0
+    }
+  },
+  "experiment_id": "exp-20260424-002",
+  "hypothesis": "If `exp-20260423-014` proved that the strict weak-tape detector is clean but the action is too blunt, then the next sanctioned step is a two-stage design: keep `stress_strict = breadth_above_200 <= 0.55 AND spy_pct_from_ma <= -0.02` fixed, but apply the action only to the more convex `breakout_long` sleeve. A valid result should preserve the late-strong window while improving at least one weaker window.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull with brief Mar-2026 stress pocket",
+    "mid_weak": "bullish / rotation-heavy tape with early-window pressure cluster",
+    "old_thin": "mixed-to-weak tape culminating in Mar-Apr 2025 macro stress"
+  },
+  "next_retry_requires": [
+    "Do not retry nearby breakout multipliers on the same `stress_strict` detector by default",
+    "If this meta-allocation branch returns, require either a state measured on candidate days/candidate cohorts or a different sleeve target whose active days actually overlap this strict weak-tape regime",
+    "Treat this as a doctrine update: statistically clean day-level states are not enough; they must intersect the decision surface they are supposed to improve"
+  ],
+  "notes": "Single-causal-variable discipline held relative to exp-20260423-014: the weak-tape detector stayed fixed and only the stage-two action changed from gross-risk haircut to breakout-only haircut. The result is therefore informative about state/sleeve overlap, not about threshold width or another broad stress-definition mistake.",
+  "parameters": {
+    "artifact_files": [
+      "data/exp_20260424_002_results.json",
+      "data/exp_20260423_014_stress_audit.json"
+    ],
+    "deployment": {
+      "action_scope": "breakout signals on stress days only",
+      "breakout_risk_multipliers": [
+        0.25,
+        0.0
+      ],
+      "target_sleeve": "breakout_long"
+    },
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "state_definition": {
+      "breadth_above_200_max": 0.55,
+      "semantics": "AND",
+      "source": "reuse strict weak-tape audit from exp-20260423-014",
+      "spy_pct_from_ma_max": -0.02
+    },
+    "trigger_overlap_audit": {
+      "late_strong": {
+        "breakout_signals_haircut": 0,
+        "stress_days_available": 2,
+        "stress_days_hit_during_sizing": 0
+      },
+      "mid_weak": {
+        "breakout_signals_haircut": 0,
+        "stress_days_available": 8,
+        "stress_days_hit_during_sizing": 0
+      },
+      "old_thin": {
+        "breakout_signals_haircut": 0,
+        "stress_days_available": 17,
+        "stress_days_hit_during_sizing": 0
+      }
+    },
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "rejection_reason": "Rejected as vacuous on candidate-day overlap. The strict weak-tape detector never intersected an actual breakout sizing event in the tested windows, so both breakout-only variants were complete nulls by construction. This is a clean mechanism-level failure: the day-level state does not line up with the sleeve it was meant to control.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "data/exp_20260423_014_stress_audit.json",
+    "data/exp_20260424_002_results.json",
+    "data/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv_snapshot_20241002_20250422.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-24T01:10:00-07:00"
+}

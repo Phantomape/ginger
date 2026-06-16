@@ -1,0 +1,92 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 0.4954,
+    "max_drawdown_pct": 0.0459,
+    "sharpe": 3.04,
+    "sharpe_daily": 2.46,
+    "survival_rate": 0.9804,
+    "total_return_pct": 0.2014,
+    "trade_count": 30,
+    "win_rate": 0.6
+  },
+  "change_summary": "Planned allocation-layer change. Rejected in planning without executing; the motivation was single-window (Apr25-Oct25 secondary) and AGENTS.md 闂?.1 blocks strategy tweaks while LLM gate is un-replayed.",
+  "change_type": "allocation_layer",
+  "component": "quant/backtester.py (overlay state machine between exit-check and signal-entry, not executed)",
+  "date_range": {
+    "end": "2026-04-16",
+    "start": "2025-10-20"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "note": "Never executed 闂?rejected in planning per AGENTS.md 闂?.1."
+  },
+  "experiment_id": "exp-20260417-003",
+  "hypothesis": "A regime-gated passive SPY overlay (deploy idle cash into SPY when SPY 10-day momentum > threshold) captures market beta during ripping BULL windows without changing active signal decisions.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "BULL (slow-melt, +20% strategy vs +5% SPY)",
+    "secondary": "BULL (ripping, +10% strategy vs +30% SPY 闂?source of motivation)",
+    "tertiary": "flat"
+  },
+  "next_retry_requires": [
+    "LLM replay coverage >= 30 days so strategy-layer measurement is not confounded",
+    "At least one BEAR window in the acceptance gate (current 3 windows are all BULL variants)",
+    "Regime label (not just 10d momentum) to avoid deploying into dead-cat bounces",
+    "An intraday emergency-exit mechanism (10d momentum is lagging; sharp reversals eat drawdown)"
+  ],
+  "notes": "Rejected-before-execution record kept per AGENTS.md 闂?.2 so future agents do not rediscover and re-propose the same thing.",
+  "parameters": {
+    "CASH_BETA_DEPLOY_PCT": {
+      "candidates": [
+        0.5,
+        0.75
+      ],
+      "new": null,
+      "old": null
+    },
+    "CASH_BETA_HYSTERESIS": {
+      "candidates": [
+        0.5
+      ],
+      "new": null,
+      "old": null
+    },
+    "CASH_BETA_MOMENTUM_THRESHOLD": {
+      "candidates": [
+        0.015,
+        0.02,
+        0.025
+      ],
+      "new": null,
+      "old": null
+    }
+  },
+  "rejection_reason": "AGENTS.md 闂?.1 blocks strategy tweaks while LLM decisions are un-replayed and un-attributed (llm_gate_unreplayed=True in known_biases). AGENTS.md 闂?.1 flags single-window motivation as over-fitting. AGENTS.md 闂?.2 requires checking history before new iterations 闂?this was the first plan written against AGENTS.md and it failed those gates.",
+  "related_files": [
+    "C:/Users/Administrator/.claude/plans/claude3-md-ticklish-cerf.md (v3 draft)"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-17",
+      "start": "2025-04-21"
+    },
+    {
+      "end": "2025-04-30",
+      "start": "2024-10-01"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-17T15:05:00-07:00"
+}

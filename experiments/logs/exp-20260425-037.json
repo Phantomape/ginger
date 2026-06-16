@@ -1,0 +1,128 @@
+{
+  "after_metrics": {
+    "coverage_audit": {
+      "late_strong": {
+        "any_t1_checkpoint_count": 0,
+        "avg_lookaround_coverage_fraction": 0.1169,
+        "checkpoint_count": 22,
+        "t1_negative_checkpoint_count": 0,
+        "weak_and_t1_negative_checkpoint_count": 0,
+        "weak_checkpoint_count": 1
+      },
+      "mid_weak": {
+        "any_t1_checkpoint_count": 0,
+        "avg_lookaround_coverage_fraction": 0.0,
+        "checkpoint_count": 28,
+        "t1_negative_checkpoint_count": 0,
+        "weak_and_t1_negative_checkpoint_count": 0,
+        "weak_checkpoint_count": 1
+      },
+      "old_thin": {
+        "any_t1_checkpoint_count": 0,
+        "avg_lookaround_coverage_fraction": 0.0,
+        "checkpoint_count": 29,
+        "t1_negative_checkpoint_count": 0,
+        "weak_and_t1_negative_checkpoint_count": 0,
+        "weak_checkpoint_count": 3
+      }
+    },
+    "screened_variants": "All day-5/day-10 weak+T1-negative variants had zero triggered trades and zero PnL delta."
+  },
+  "before_metrics": {
+    "accepted_stack": {
+      "late_strong": {
+        "expected_value_score": 1.5039,
+        "max_drawdown_pct": 0.0281,
+        "sharpe_daily": 4.24,
+        "total_return_pct": 0.3547
+      },
+      "mid_weak": {
+        "expected_value_score": 0.4773,
+        "max_drawdown_pct": 0.0247,
+        "sharpe_daily": 2.35,
+        "total_return_pct": 0.2031
+      },
+      "old_thin": {
+        "expected_value_score": 0.131,
+        "max_drawdown_pct": 0.0456,
+        "sharpe_daily": 1.15,
+        "total_return_pct": 0.1139
+      }
+    }
+  },
+  "change_summary": "Added an audit-only script that reruns the current accepted stack, computes day-5/day-10 weak-hold checkpoints, and matches each checkpoint to same-ticker T1-negative news within +/- 3 calendar days using the existing clean_trade_news archive and news_replay classifier. No production strategy code was changed.",
+  "change_type": "alpha_search_news_confirmed_exit_audit",
+  "component": "quant/experiments/legacy/exp_20260425_037_news_confirmed_weak_hold_audit.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "blocked",
+  "delta_metrics": {
+    "decision_basis": "The experiment could not evaluate alpha because lifecycle news coverage was effectively absent at the relevant checkpoints: mid/old coverage 0%, late average lookaround coverage 11.69%, and zero T1-negative checkpoint matches."
+  },
+  "experiment_id": "exp-20260425-037",
+  "hypothesis": "Price-only weak-hold exits were rejected because weak starts can become large winners. A stronger lifecycle signal may require both early price weakness and fresh adverse information, specifically T1-negative news near the weak checkpoint.",
+  "llm_metrics": {
+    "blocker_relation": "This branch is news-dependent but not LLM-dependent. Existing deterministic T1-negative classifier had no usable lifecycle matches; LLM semantic judgment cannot be assessed without archived candidate/news context.",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull with limited late news archive coverage",
+    "mid_weak": "rotation-heavy bull with no checkpoint news archive coverage",
+    "old_thin": "mixed-to-weak tape with no checkpoint news archive coverage"
+  },
+  "next_retry_requires": [
+    "Collect or construct clean_trade_news coverage for held tickers across entry-to-exit lifecycle checkpoints",
+    "Do not rerun news-confirmed weak-hold exits on the same sparse archive",
+    "Until lifecycle news coverage exists, pivot alpha search to deterministic non-news sources"
+  ],
+  "notes": "This was alpha_search that surfaced a concrete measurement/data coverage blocker. It did not change production strategy code.",
+  "parameters": {
+    "checkpoints_trading_days": [
+      5,
+      10
+    ],
+    "news_confirmation": "ticker has T1-negative news in clean_trade_news_YYYYMMDD.json within +/- 3 calendar days",
+    "news_lookaround_calendar_days": 3,
+    "unchanged": [
+      "entries",
+      "normal stop/target exits",
+      "position sizing",
+      "allocation ranking",
+      "LLM responsibilities",
+      "earnings_event_long",
+      "Technology trend 6.0 ATR target",
+      "Commodity trend 7.0 ATR target",
+      "MAX_POSITION_PCT 0.25"
+    ],
+    "weak_rules": {
+      "loss_gt3": {
+        "max_unrealized": -0.03
+      },
+      "negative_and_rs_lag2": {
+        "max_rs_vs_spy": -0.02,
+        "max_unrealized": 0.0
+      }
+    }
+  },
+  "rejection_reason": "Not promoted because no variant triggered. Not treated as alpha rejection because the historical archive lacks coverage at held-position checkpoints.",
+  "related_files": [
+    "quant/experiments/legacy/exp_20260425_037_news_confirmed_weak_hold_audit.py",
+    "data/exp_20260425_037_news_confirmed_weak_hold_audit.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "blocked_by_data_coverage",
+  "timestamp": "2026-04-25T17:45:43-07:00"
+}

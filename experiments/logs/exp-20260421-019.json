@@ -1,0 +1,207 @@
+{
+  "after_metrics": {
+    "breakout_financials_zero": {
+      "primary_expected_value_score_delta": -0.1346,
+      "window_1_expected_value_score_delta": 0.024,
+      "window_2_expected_value_score_delta": -0.0069
+    },
+    "trend_healthcare_zero": {
+      "primary_expected_value_score_delta": 0.0264,
+      "window_1_expected_value_score_delta": 0.0,
+      "window_2_expected_value_score_delta": -0.0008
+    },
+    "trend_technology_zero": {
+      "primary_expected_value_score_delta": -0.0865,
+      "window_1_expected_value_score_delta": 0.0627,
+      "window_2_expected_value_score_delta": -0.0085
+    }
+  },
+  "before_metrics": {
+    "expected_value_score": 0.8299,
+    "max_drawdown_pct": 0.026,
+    "sharpe_daily": 3.49,
+    "survival_rate": 1.0,
+    "total_return_pct": 0.2378,
+    "trade_count": 22,
+    "win_rate": 0.6364
+  },
+  "change_summary": "Ran runtime-only sizing experiments that zeroed one strategy+sector bucket at a time via a monkeypatched `portfolio_engine.size_signals()` in the same repo state as the current accepted A+B stack. No repository strategy code changed. The sweep compared each candidate against the current baseline across the primary slow-melt window plus two non-overlapping comparison windows.",
+  "change_type": "allocation_rule_sweep",
+  "component": "portfolio_engine.size_signals() runtime-only monkeypatch, rolled back",
+  "date_range": {
+    "end": "2026-04-20",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "expected_value_score_delta": {
+    "breakout_financials_zero": {
+      "primary": -0.1346,
+      "window_1": 0.024,
+      "window_2": -0.0069
+    },
+    "trend_healthcare_zero": {
+      "primary": 0.0264,
+      "window_1": 0.0,
+      "window_2": -0.0008
+    },
+    "trend_technology_zero": {
+      "primary": -0.0865,
+      "window_1": 0.0627,
+      "window_2": -0.0085
+    }
+  },
+  "experiment_id": "exp-20260421-019",
+  "hypothesis": "After zeroing `trend_long` Industrials, the next unblocked A+B alpha may still be another coarse strategy+sector drag bucket. Testing a small sweep of obvious residual buckets (`trend_long` Technology, `trend_long` Healthcare, `breakout_long` Financials) should show whether there is still a stable sector-only allocation split left before turning back to measurement-blocked directions.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "window_1": "ripping bull / high-beta leadership",
+    "window_2": "older weak-to-mixed tape"
+  },
+  "next_retry_requires": [
+    "Do not keep sweeping coarse strategy+sector zero-risk buckets by default after `trend_long` Industrials",
+    "If allocation alpha is revisited, the next conditioning source must be richer than sector alone (for example semantic context, event context, or a sector+quality interaction)",
+    "Keep `LLM soft ranking` marked as the highest-value conceptual direction; with the easy A+B cohort splits exhausted, replay coverage is now the real blocker to the next high-upside experiment"
+  ],
+  "notes": "This failed sweep is important because it falsifies the tempting continuation pattern 'there should be one more obvious sector bucket to zero after Industrials.' In the current repo state, the accepted A+B stack appears close to saturation on coarse sector-only sizing splits.",
+  "parameters": {
+    "baseline_repo_state": {
+      "primary_window": {
+        "expected_value_score": 0.8299,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.49,
+        "survival_rate": 1.0,
+        "total_return_pct": 0.2378,
+        "trade_count": 22,
+        "win_rate": 0.6364
+      },
+      "window_1": {
+        "expected_value_score": 0.0841,
+        "max_drawdown_pct": 0.0887,
+        "sharpe_daily": 0.89,
+        "survival_rate": 0.902,
+        "total_return_pct": 0.0945,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "window_2": {
+        "expected_value_score": 0.0084,
+        "max_drawdown_pct": 0.0916,
+        "sharpe_daily": 0.32,
+        "survival_rate": 0.9833,
+        "total_return_pct": 0.0263,
+        "trade_count": 29,
+        "win_rate": 0.3103
+      }
+    },
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "tested_variants": {
+      "breakout_financials_zero": {
+        "after_metrics": {
+          "primary_window": {
+            "expected_value_score": 0.6953,
+            "max_drawdown_pct": 0.0285,
+            "sharpe_daily": 3.21,
+            "total_return_pct": 0.2166,
+            "trade_count": 24,
+            "win_rate": 0.5833
+          },
+          "window_1": {
+            "expected_value_score": 0.1081,
+            "max_drawdown_pct": 0.0827,
+            "sharpe_daily": 1.0,
+            "total_return_pct": 0.1081,
+            "trade_count": 28,
+            "win_rate": 0.3929
+          },
+          "window_2": {
+            "expected_value_score": 0.0015,
+            "max_drawdown_pct": 0.0953,
+            "sharpe_daily": 0.18,
+            "total_return_pct": 0.0084,
+            "trade_count": 28,
+            "win_rate": 0.2857
+          }
+        },
+        "rule": "`breakout_long` + sector == `Financials` -> 0 shares"
+      },
+      "trend_healthcare_zero": {
+        "after_metrics": {
+          "primary_window": {
+            "expected_value_score": 0.8563,
+            "max_drawdown_pct": 0.026,
+            "sharpe_daily": 3.54,
+            "total_return_pct": 0.2419,
+            "trade_count": 21,
+            "win_rate": 0.6667
+          },
+          "window_1": {
+            "expected_value_score": 0.0841,
+            "max_drawdown_pct": 0.0887,
+            "sharpe_daily": 0.89,
+            "total_return_pct": 0.0945,
+            "trade_count": 29,
+            "win_rate": 0.3793
+          },
+          "window_2": {
+            "expected_value_score": 0.0076,
+            "max_drawdown_pct": 0.0846,
+            "sharpe_daily": 0.31,
+            "total_return_pct": 0.0245,
+            "trade_count": 29,
+            "win_rate": 0.3103
+          }
+        },
+        "rule": "`trend_long` + sector == `Healthcare` -> 0 shares"
+      },
+      "trend_technology_zero": {
+        "after_metrics": {
+          "primary_window": {
+            "expected_value_score": 0.7434,
+            "max_drawdown_pct": 0.0262,
+            "sharpe_daily": 3.41,
+            "total_return_pct": 0.218,
+            "trade_count": 20,
+            "win_rate": 0.65
+          },
+          "window_1": {
+            "expected_value_score": 0.1468,
+            "max_drawdown_pct": 0.0425,
+            "sharpe_daily": 1.38,
+            "total_return_pct": 0.1064,
+            "trade_count": 23,
+            "win_rate": 0.4783
+          },
+          "window_2": {
+            "expected_value_score": -0.0001,
+            "max_drawdown_pct": 0.0905,
+            "sharpe_daily": 0.06,
+            "total_return_pct": -0.001,
+            "trade_count": 25,
+            "win_rate": 0.28
+          }
+        },
+        "rule": "`trend_long` + sector == `Technology` -> 0 shares"
+      }
+    }
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability. None of the residual coarse strategy+sector zero-risk variants improved a majority of non-overlapping windows. `trend_long` Technology helped only the ripping-bull tape while materially hurting the primary and weak windows; `trend_long` Healthcare was too narrow, producing a primary-only bump with a weak-window regression and no bull-window overlap; `breakout_long` Financials improved only the bull window while degrading the other two. The remaining A+B weakness is not another clean sector-only drag bucket.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-21T15:21:59-07:00"
+}

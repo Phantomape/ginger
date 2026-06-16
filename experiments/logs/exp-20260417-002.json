@@ -1,0 +1,141 @@
+{
+  "after_metrics": {
+    "by_window_pnl_sharpe": {
+      "trail_2.0_1.5": {
+        "Apr25-Oct25": {
+          "pnl": 1884,
+          "sharpe": 0.39
+        },
+        "Oct24-Apr25": {
+          "pnl": -3256,
+          "sharpe": -0.43
+        },
+        "Oct25-Apr26": {
+          "pnl": 7140,
+          "sharpe": 1.21
+        }
+      },
+      "trail_2.0_2.0": {
+        "Apr25-Oct25": {
+          "pnl": 2310,
+          "sharpe": 0.37
+        },
+        "Oct24-Apr25": {
+          "pnl": -1054,
+          "sharpe": -0.14
+        },
+        "Oct25-Apr26": {
+          "pnl": 13413,
+          "sharpe": 1.62
+        }
+      },
+      "trail_3.0_2.0": {
+        "Apr25-Oct25": {
+          "pnl": 6206,
+          "sharpe": 0.98
+        },
+        "Oct24-Apr25": {
+          "pnl": -2497,
+          "sharpe": -0.35
+        },
+        "Oct25-Apr26": {
+          "pnl": 22379,
+          "sharpe": 2.68
+        }
+      }
+    },
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "by_window_pnl_sharpe": {
+      "Apr25-Oct25": {
+        "pnl": 10056,
+        "sharpe": 1.39
+      },
+      "Oct24-Apr25": {
+        "pnl": 316,
+        "sharpe": 0.04
+      },
+      "Oct25-Apr26": {
+        "pnl": 20033,
+        "sharpe": 3.1
+      }
+    },
+    "expected_value_score": null,
+    "max_drawdown_pct": 0.0459,
+    "sharpe": 3.1,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl_usd": 20033,
+    "total_return_pct": null,
+    "trade_count": 29,
+    "win_rate": null
+  },
+  "change_summary": "Backtester Position class gained trailing-stop infrastructure (TRAIL_TRIGGER_ATR_MULT, TRAIL_OFFSET_ATR_MULT); kept off by default because 3 swept configs were strictly worse than baseline in every window.",
+  "change_type": "exit_rule",
+  "component": "quant/backtester.py (Position.__slots__ + exit-check loop)",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "note": "All 3 configs strictly worse than baseline in every window; see after_metrics.by_window_pnl_sharpe for cell-by-cell deltas."
+  },
+  "experiment_id": "exp-20260417-002",
+  "hypothesis": "Trailing stops (high_water - N*ATR after profit trigger) outperform the 3.5x ATR fixed target across BULL/NEUTRAL/BEAR windows.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "BULL (slow-melt)",
+    "secondary": "BULL (ripping, SPY +30%)",
+    "tertiary": "mixed / flat"
+  },
+  "next_retry_requires": [
+    "Different parameter space (e.g. percent-based trails instead of ATR multiples)",
+    "Evidence that 3.5x ATR fixed target is wrong for the current regime mix",
+    "New window data in BEAR-heavy regime where trails may behave differently"
+  ],
+  "notes": "Infrastructure left in codebase with default-off constants for future sweeps.",
+  "parameters": {
+    "TRAIL_OFFSET_ATR_MULT": {
+      "default": 0.0,
+      "tested": [
+        1.5,
+        2.0
+      ]
+    },
+    "TRAIL_TRIGGER_ATR_MULT": {
+      "default": 0.0,
+      "tested": [
+        2.0,
+        3.0
+      ]
+    }
+  },
+  "rejection_reason": "No config outperformed baseline in all 3 non-overlapping windows. trail 3.0/2.0 beat baseline on Oct25-Apr26 PnL but lost on Sharpe, and was strictly worse on Apr25-Oct25 and Oct24-Apr25 闂?violates AGENTS.md Gate 4 multi-window stability requirement.",
+  "related_files": [
+    "quant/backtester.py",
+    "commit 927f485"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-17",
+      "start": "2025-04-21"
+    },
+    {
+      "end": "2025-04-30",
+      "start": "2024-10-01"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-17T15:00:00-07:00"
+}

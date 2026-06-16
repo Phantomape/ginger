@@ -1,0 +1,205 @@
+{
+  "after_metrics": {
+    "fixed_snapshot_025": {
+      "late_strong": {
+        "expected_value_score": 1.0134,
+        "max_drawdown_pct": 0.0238,
+        "sharpe_daily": 3.84,
+        "total_return_pct": 0.2639,
+        "trade_count": 22
+      },
+      "mid_weak": {
+        "expected_value_score": 0.286,
+        "max_drawdown_pct": 0.0232,
+        "sharpe_daily": 2.01,
+        "total_return_pct": 0.1423,
+        "trade_count": 26
+      },
+      "old_thin": {
+        "expected_value_score": 0.0548,
+        "max_drawdown_pct": 0.0516,
+        "sharpe_daily": 0.76,
+        "total_return_pct": 0.0721,
+        "trade_count": 25
+      }
+    },
+    "fixed_snapshot_0x": {
+      "late_strong": {
+        "expected_value_score": 1.0356,
+        "max_drawdown_pct": 0.0238,
+        "sharpe_daily": 3.88,
+        "total_return_pct": 0.2669,
+        "trade_count": 21
+      },
+      "mid_weak": {
+        "expected_value_score": 0.286,
+        "max_drawdown_pct": 0.0232,
+        "sharpe_daily": 2.01,
+        "total_return_pct": 0.1423,
+        "trade_count": 26
+      },
+      "old_thin": {
+        "expected_value_score": 0.0567,
+        "max_drawdown_pct": 0.0502,
+        "sharpe_daily": 0.77,
+        "total_return_pct": 0.0736,
+        "trade_count": 24
+      }
+    },
+    "standard_live_download_after": {
+      "primary": {
+        "expected_value_score": 0.6432,
+        "max_drawdown_pct": 0.0234,
+        "sharpe_daily": 3.53,
+        "total_return_pct": 0.1822,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "secondary": {
+        "expected_value_score": 0.2052,
+        "max_drawdown_pct": 0.0455,
+        "sharpe_daily": 1.85,
+        "total_return_pct": 0.1109,
+        "trade_count": 30,
+        "win_rate": 0.5
+      }
+    },
+    "test_results": "targeted pytest passed: 1 selected; broader nearby sizing tests passed earlier: 3 selected"
+  },
+  "before_metrics": {
+    "fixed_snapshot_baseline": {
+      "late_strong": {
+        "eligible_signals": 1,
+        "expected_value_score": 0.9831,
+        "max_drawdown_pct": 0.0238,
+        "sharpe_daily": 3.79,
+        "total_return_pct": 0.2594,
+        "trade_count": 22
+      },
+      "mid_weak": {
+        "eligible_signals": 0,
+        "expected_value_score": 0.286,
+        "max_drawdown_pct": 0.0232,
+        "sharpe_daily": 2.01,
+        "total_return_pct": 0.1423,
+        "trade_count": 26
+      },
+      "old_thin": {
+        "eligible_signals": 2,
+        "expected_value_score": 0.0483,
+        "max_drawdown_pct": 0.056,
+        "sharpe_daily": 0.72,
+        "total_return_pct": 0.0671,
+        "trade_count": 25
+      }
+    },
+    "standard_live_download_before": {
+      "primary": {
+        "expected_value_score": 0.5953,
+        "max_drawdown_pct": 0.0234,
+        "sharpe_daily": 3.4,
+        "total_return_pct": 0.1751,
+        "trade_count": 24,
+        "win_rate": 0.625
+      },
+      "secondary": {
+        "expected_value_score": 0.2052,
+        "max_drawdown_pct": 0.0455,
+        "sharpe_daily": 1.85,
+        "total_return_pct": 0.1109,
+        "trade_count": 30,
+        "win_rate": 0.5
+      }
+    }
+  },
+  "change_summary": "Added `trend_long | Consumer Discretionary | 30 <= days_to_earnings <= 65 | pct_from_52w_high >= -1% -> 0x risk` as a sizing rule in `quant/constants.py` and `quant/portfolio_engine.py`, plus a targeted unit test and a reproducible runtime runner. Production entry, exit, ranking, LLM, C strategy, and existing residual cohort rules were left unchanged.",
+  "change_type": "allocation_sizing_rule",
+  "component": "quant/constants.py + quant/portfolio_engine.py + quant/test_quant.py + quant/experiments/legacy/exp_20260425_009_runner.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "fixed_snapshot_0x_ev_deltas": {
+      "late_strong": 0.0525,
+      "mid_weak": 0.0,
+      "old_thin": 0.0084
+    },
+    "fixed_snapshot_0x_max_drawdown_pct_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": -0.0058
+    },
+    "fixed_snapshot_0x_sharpe_daily_deltas": {
+      "late_strong": 0.09,
+      "mid_weak": 0.0,
+      "old_thin": 0.05
+    },
+    "gate4_basis": "Accepted because fixed snapshots improved EV in two non-overlapping windows and were unchanged in the third; standard live-download primary improved EV by 8.0%, sharpe_daily by 0.13, win rate by 2.7 pp, and secondary stayed unchanged.",
+    "standard_primary_ev_delta": 0.0479,
+    "standard_primary_sharpe_daily_delta": 0.13,
+    "standard_primary_trade_count_delta": -1,
+    "standard_secondary_ev_delta": 0.0
+  },
+  "experiment_id": "exp-20260425-011",
+  "hypothesis": "After the accepted A+B residual allocation stack, Consumer Discretionary trend trades entering within 1% of their 52-week high while still 30-65 days from earnings are a residual leak. This MCD-like pocket stopped out in late and old windows and had no mid exposure. Zeroing only this narrow sleeve should improve two windows without touching unrelated A+B alpha.",
+  "llm_metrics": {
+    "blocker_relation": "LLM soft ranking remains blocked by candidate-level replay coverage, so this run used a deterministic A+B allocation alpha instead of changing LLM responsibilities.",
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull with one qualifying Consumer Discretionary trend loser",
+    "mid_weak": "rotation-heavy bull with no qualifying exposure",
+    "old_thin": "mixed-to-weak tape with two qualifying Consumer Discretionary trend losers"
+  },
+  "next_retry_requires": [
+    "Do not widen this into broad Consumer Discretionary near-high or all sector+DTE scans",
+    "Do not retry the rejected Technology DTE+gap or Healthcare deep-breakout probes without new discriminators",
+    "Future residual allocation work needs a genuinely new conditioning source or a clearly audited repeated loss cluster beyond accepted near-high, gap, and event-proximity pockets"
+  ],
+  "notes": "Single-causal-variable discipline held: one new sizing multiplier was promoted. Main risk is missing rare Consumer Discretionary trend winners in this narrow near-high 30-65 DTE pocket; this risk is constrained by sector, strategy, entry shape, and DTE bounds.",
+  "parameters": {
+    "artifact_files": [
+      "quant/experiments/legacy/exp_20260425_009_runner.py",
+      "data/exp_20260425_009_results.json"
+    ],
+    "rule": {
+      "days_to_earnings_max": 65,
+      "days_to_earnings_min": 30,
+      "pct_from_52w_high_min": -0.01,
+      "risk_multiplier": 0.0,
+      "sector": "Consumer Discretionary",
+      "strategy": "trend_long"
+    },
+    "screened_variants": [
+      "baseline",
+      "trend_consumer_near_high_dte3065_025",
+      "trend_consumer_near_high_dte3065_000"
+    ],
+    "test_command": ".venv\\Scripts\\python.exe -m pytest quant\\test_quant.py -k \"consumer_trends_before_earnings\""
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/constants.py",
+    "quant/portfolio_engine.py",
+    "quant/test_quant.py",
+    "quant/experiments/legacy/exp_20260425_009_runner.py",
+    "data/exp_20260425_009_results.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-25T02:45:00-07:00"
+}

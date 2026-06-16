@@ -1,0 +1,235 @@
+{
+  "after_metrics": {
+    "threshold_2": {
+      "primary_window": {
+        "expected_value_score": 0.8299,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.49,
+        "signals_generated": 50,
+        "signals_survived": 50,
+        "survival_rate": 1.0,
+        "trade_count": 22,
+        "win_rate": 0.6364
+      },
+      "window_1": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "signals_generated": 51,
+        "signals_survived": 46,
+        "survival_rate": 0.902,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "window_2": {
+        "expected_value_score": 0.0257,
+        "max_drawdown_pct": 0.0917,
+        "sharpe_daily": 0.51,
+        "signals_generated": 60,
+        "signals_survived": 59,
+        "survival_rate": 0.9833,
+        "trade_count": 29,
+        "win_rate": 0.3103
+      }
+    },
+    "threshold_4": {
+      "primary_window": {
+        "expected_value_score": 0.8299,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.49,
+        "signals_generated": 50,
+        "signals_survived": 50,
+        "survival_rate": 1.0,
+        "trade_count": 22,
+        "win_rate": 0.6364
+      },
+      "window_1": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "signals_generated": 50,
+        "signals_survived": 46,
+        "survival_rate": 0.92,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "window_2": {
+        "expected_value_score": 0.0257,
+        "max_drawdown_pct": 0.0917,
+        "sharpe_daily": 0.51,
+        "signals_generated": 60,
+        "signals_survived": 59,
+        "survival_rate": 0.9833,
+        "trade_count": 29,
+        "win_rate": 0.3103
+      }
+    },
+    "threshold_5": {
+      "primary_window": {
+        "expected_value_score": 0.8299,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.49,
+        "signals_generated": 49,
+        "signals_survived": 49,
+        "survival_rate": 1.0,
+        "trade_count": 22,
+        "win_rate": 0.6364
+      },
+      "window_1": {
+        "expected_value_score": 0.1185,
+        "max_drawdown_pct": 0.0538,
+        "sharpe_daily": 1.18,
+        "signals_generated": 48,
+        "signals_survived": 44,
+        "survival_rate": 0.9167,
+        "trade_count": 28,
+        "win_rate": 0.3929
+      },
+      "window_2": {
+        "expected_value_score": 0.0257,
+        "max_drawdown_pct": 0.0917,
+        "sharpe_daily": 0.51,
+        "signals_generated": 60,
+        "signals_survived": 59,
+        "survival_rate": 0.9833,
+        "trade_count": 29,
+        "win_rate": 0.3103
+      }
+    }
+  },
+  "before_metrics": {
+    "threshold_3_baseline": {
+      "primary_window": {
+        "expected_value_score": 0.8299,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.49,
+        "signals_generated": 50,
+        "signals_survived": 50,
+        "survival_rate": 1.0,
+        "trade_count": 22,
+        "win_rate": 0.6364
+      },
+      "window_1": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "signals_generated": 51,
+        "signals_survived": 46,
+        "survival_rate": 0.902,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "window_2": {
+        "expected_value_score": 0.0257,
+        "max_drawdown_pct": 0.0917,
+        "sharpe_daily": 0.51,
+        "signals_generated": 60,
+        "signals_survived": 59,
+        "survival_rate": 0.9833,
+        "trade_count": 29,
+        "win_rate": 0.3103
+      }
+    }
+  },
+  "change_summary": "Ran a runtime-only `signal_engine.strategy_a_trend()` / `strategy_b_breakout()` monkeypatch that changed only the A+B entry-time `days_to_earnings` rejection threshold while leaving the accepted sizing stack, exits, ranking, and LLM boundary unchanged. Compared `<=2`, `<=3` (current), `<=4`, and `<=5` across the same three non-overlapping windows used by the recent A+B allocation experiments. No repository strategy code changed.",
+  "change_type": "entry_rule",
+  "component": "quant/signal_engine.py (runtime-only monkeypatch, rolled back)",
+  "date_range": {
+    "end": "2026-04-20",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "note": "Gate 4 failed. Relaxing the guard to `<=2` or tightening it to `<=4` produced a strict null on the north-star metric across all three windows; pushing to `<=5` removed one additional bull-window trade and made that window worse. The current DTE axis appears saturated rather than under-tuned.",
+    "threshold_2": {
+      "primary_expected_value_score_delta": 0.0,
+      "window_1_expected_value_score_delta": 0.0,
+      "window_2_expected_value_score_delta": 0.0
+    },
+    "threshold_4": {
+      "primary_expected_value_score_delta": 0.0,
+      "window_1_expected_value_score_delta": 0.0,
+      "window_2_expected_value_score_delta": 0.0
+    },
+    "threshold_5": {
+      "primary_expected_value_score_delta": 0.0,
+      "window_1_expected_value_score_delta": -0.007,
+      "window_1_max_drawdown_pct_delta": 0.0027,
+      "window_1_sharpe_daily_delta": -0.03,
+      "window_1_trade_count_delta": -1,
+      "window_2_expected_value_score_delta": 0.0
+    }
+  },
+  "experiment_id": "exp-20260421-023",
+  "hypothesis": "If the current A+B stack still leaks avoidable tail risk through pre-earnings entries, then the next credible single-variable test is the earnings-proximity threshold itself. Sweeping the shared `days_to_earnings` entry guard across `<=2`, `<=3`, `<=4`, and `<=5` trading days should show whether the accepted `<=3` rule is still under-protecting the book or whether the DTE axis is already saturated.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "window_1": "ripping bull / high-beta leadership",
+    "window_2": "older weak-to-mixed tape"
+  },
+  "next_retry_requires": [
+    "Do not reopen nearby A+B pre-earnings threshold permutations by default; the DTE axis has now been tested and found locally flat",
+    "If earnings-related alpha is revisited on A+B, it needs a richer event-context mechanism than another scalar entry block",
+    "Keep `LLM soft ranking` as the highest-upside direction overall, but still blocked until replay coverage is materially larger than the current 7 archived days"
+  ],
+  "notes": "This experiment intentionally changed one causal variable only. It also surfaced a measurement caveat worth tracking separately: `python quant/backtester.py` without `--regime-aware-exit` does not reproduce the accepted-stack baseline, so future strategy experiments should continue to state which exit-profile baseline they are comparing against.",
+  "parameters": {
+    "accepted_stack_context": [
+      "REGIME_AWARE_EXIT",
+      "low-TQS commodity exemption",
+      "zero-risk low-TQS non-commodity breakouts",
+      "zero-risk trend Industrials",
+      "0.25x moderate-gap trend Technology"
+    ],
+    "affected_strategies": [
+      "trend_long",
+      "breakout_long"
+    ],
+    "days_to_earnings_entry_block": {
+      "baseline": 3,
+      "tested": [
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "evaluation_windows": [
+      [
+        "2025-10-23",
+        "2026-04-20"
+      ],
+      [
+        "2025-04-23",
+        "2025-10-22"
+      ],
+      [
+        "2024-10-02",
+        "2025-04-22"
+      ]
+    ],
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "measurement_note": "The repo CLI without `--regime-aware-exit` prints a lower observation-only baseline (`EV 0.5783`), but this sweep was run against the accepted-stack baseline with regime-aware exit active (`EV 0.8299 / 0.1255 / 0.0257`)."
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability. There is no evidence that the accepted `days_to_earnings <= 3` entry guard is the remaining A+B leak: nearby thresholds (`2` and `4`) are strict nulls, and the tighter `5`-day variant degrades the ripping-bull comparison window. This is another saturation result, not a new source of alpha.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "quant/signal_engine.py"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-21T20:35:00-07:00"
+}

@@ -1,0 +1,192 @@
+{
+  "after_metrics": {
+    "accepted_ab_stack_after_rule": {
+      "late_strong": {
+        "eligible_breakout_comms_near_high_signals": 0,
+        "expected_value_score": 0.9195,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.69,
+        "total_return_pct": 0.2492,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "eligible_breakout_comms_near_high_signals": 1,
+        "expected_value_score": 0.2405,
+        "max_drawdown_pct": 0.0231,
+        "sharpe_daily": 1.84,
+        "total_return_pct": 0.1307,
+        "trade_count": 26,
+        "win_rate": 0.4231
+      },
+      "old_thin": {
+        "eligible_breakout_comms_near_high_signals": 2,
+        "expected_value_score": 0.0227,
+        "max_drawdown_pct": 0.0828,
+        "sharpe_daily": 0.51,
+        "total_return_pct": 0.0446,
+        "trade_count": 24,
+        "win_rate": 0.3333
+      }
+    },
+    "live_window_after_rule": {
+      "primary_window": {
+        "expected_value_score": 1.2383,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 4.14,
+        "total_return_pct": 0.2991,
+        "trade_count": 24,
+        "win_rate": 0.6667
+      },
+      "secondary_window": {
+        "expected_value_score": 0.2774,
+        "max_drawdown_pct": 0.0231,
+        "sharpe_daily": 1.97,
+        "total_return_pct": 0.1408,
+        "trade_count": 26,
+        "win_rate": 0.5
+      }
+    },
+    "runner_followup": {
+      "breakout_comms_nearhigh_000": {
+        "live_secondary_expected_value_score": 0.2877,
+        "live_secondary_max_drawdown_pct": 0.0303,
+        "live_secondary_sharpe_daily": 1.85,
+        "mid_weak_expected_value_score": 0.2512,
+        "mid_weak_max_drawdown_pct": 0.0303,
+        "mid_weak_sharpe_daily": 1.73,
+        "old_thin_expected_value_score": 0.0249,
+        "old_thin_max_drawdown_pct": 0.0826,
+        "old_thin_sharpe_daily": 0.53
+      }
+    }
+  },
+  "before_metrics": {
+    "accepted_ab_stack_before_rule": {
+      "late_strong": {
+        "expected_value_score": 0.9195,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.69,
+        "total_return_pct": 0.2492,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.2173,
+        "max_drawdown_pct": 0.028,
+        "sharpe_daily": 1.73,
+        "total_return_pct": 0.1256,
+        "trade_count": 26,
+        "win_rate": 0.4231
+      },
+      "old_thin": {
+        "expected_value_score": 0.0179,
+        "max_drawdown_pct": 0.0829,
+        "sharpe_daily": 0.46,
+        "total_return_pct": 0.039,
+        "trade_count": 24,
+        "win_rate": 0.3333
+      }
+    },
+    "live_window_before_rule": {
+      "primary_window": {
+        "expected_value_score": 1.2383,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 4.14,
+        "total_return_pct": 0.2991,
+        "trade_count": 24,
+        "win_rate": 0.6667
+      },
+      "secondary_window": {
+        "expected_value_score": 0.2524,
+        "max_drawdown_pct": 0.028,
+        "sharpe_daily": 1.86,
+        "total_return_pct": 0.1357,
+        "trade_count": 26,
+        "win_rate": 0.5
+      }
+    }
+  },
+  "change_summary": "Promoted a new runtime-validated sizing rule into production: `portfolio_engine.size_signals()` now applies `BREAKOUT_COMMS_NEAR_HIGH_RISK_MULTIPLIER = 0.25` only when `strategy == 'breakout_long'`, `sector == 'Communication Services'`, and `conditions_met.pct_from_52w_high >= -0.03`. Added a targeted unit test and kept the validating runner artifact. Entry logic, exit logic, ranking, sector cap, and blocked LLM/C branches stayed unchanged.",
+  "change_type": "allocation_rule",
+  "component": "quant/constants.py + quant/portfolio_engine.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-24",
+    "start": "2024-10-02"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "accepted_stack_ev_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0232,
+      "old_thin": 0.0048
+    },
+    "accepted_stack_max_drawdown_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": -0.0049,
+      "old_thin": -0.0001
+    },
+    "accepted_stack_sharpe_daily_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": 0.11,
+      "old_thin": 0.05
+    },
+    "live_secondary_expected_value_score_delta": 0.025,
+    "live_secondary_max_drawdown_pct_delta": -0.0049,
+    "live_secondary_sharpe_daily_delta": 0.11,
+    "note": "The harsher 0.0x follow-up improved EV more, but it degraded drawdown and failed to improve sharpe in the live secondary comparison. The accepted 0.25x rule preserves the strict-null late-strong tape while improving EV, sharpe_daily, and max drawdown together in the weaker windows. This is a new breakout conditioning source (sector + entry shape), not a reopen of the exhausted sector+gap family."
+  },
+  "experiment_id": "exp-20260425-002",
+  "hypothesis": "After the accepted A+B stack plus the recent trend-Tech residual rules, the remaining breakout drag is concentrated in `breakout_long + Communication Services + pct_from_52w_high >= -0.03`. De-risking only that near-high pocket should stay a strict null in the dominant late-strong tape while improving the weaker mid/old windows, without reopening the exhausted sector+gap breakout family.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted A+B stack dominant tape",
+    "live_secondary": "recent weaker comparison window with one qualifying Communication Services breakout",
+    "mid_weak": "rotation-heavy bull with weaker breakout follow-through",
+    "old_thin": "mixed-to-weak tape"
+  },
+  "next_retry_requires": [
+    "Do not reopen `0.25x` vs `0.0x` inside the same `breakout_long | Communication Services | pct_from_52w_high >= -3%` pocket by default",
+    "Do not reinterpret this as permission to restart broad breakout pullback ranking or another coarse Communication Services sector cut",
+    "If breakout residual allocation work continues, require another genuinely new conditioning source beyond the current sector+entry-shape pocket family"
+  ],
+  "notes": "Single-causal-variable discipline held: only the sizing treatment of one explicit residual breakout cohort changed. Entry logic, exit logic, ranking, sector cap, trend-Tech rules, C strategy, and all blocked LLM branches stayed untouched.",
+  "parameters": {
+    "BREAKOUT_COMMS_NEAR_HIGH_MAX_PULLBACK": {
+      "new": -0.03,
+      "old": null
+    },
+    "BREAKOUT_COMMS_NEAR_HIGH_RISK_MULTIPLIER": {
+      "new": 0.25,
+      "old": 1.0
+    },
+    "affected_cohort": "`breakout_long` + `sector == Communication Services` + `pct_from_52w_high >= -3%`",
+    "baseline_rule": "accepted A+B stack after exp-20260425-001",
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "validation_runner": "quant/experiments/legacy/exp_20260425_002_runner.py"
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/constants.py",
+    "quant/portfolio_engine.py",
+    "quant/test_quant.py",
+    "quant/experiments/legacy/exp_20260425_002_runner.py",
+    "data/exp_20260425_002_results.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-25T19:45:00-07:00"
+}

@@ -1,0 +1,83 @@
+{
+  "after_metrics": {
+    "expected_value_score": 0.4977,
+    "max_drawdown_pct": 0.0459,
+    "sharpe": 3.12,
+    "sharpe_daily": 2.46,
+    "survival_rate": 0.9804,
+    "total_return_pct": 0.2023,
+    "trade_count": 29,
+    "win_rate": 0.6207
+  },
+  "before_metrics": {
+    "expected_value_score": 0.4954,
+    "max_drawdown_pct": 0.0459,
+    "sharpe": 3.04,
+    "sharpe_daily": 2.46,
+    "survival_rate": 0.9804,
+    "total_return_pct": 0.2014,
+    "trade_count": 30,
+    "win_rate": 0.6
+  },
+  "change_summary": "New quant/llm_replay.py module; BacktestEngine gained --replay-llm flag; known_biases.llm_gate_unreplayed restructured from bool to dict{enabled,coverage_fraction,dates_covered,dates_missing_n}; result['llm_attribution'] added.",
+  "change_type": "parity_fix",
+  "component": "quant/llm_replay.py + quant/backtester.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0023,
+    "max_drawdown_pct": 0.0,
+    "sharpe": 0.08,
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.0,
+    "total_return_pct": 0.0009,
+    "trade_count": -1,
+    "win_rate": 0.0207
+  },
+  "experiment_id": "exp-20260417-004",
+  "hypothesis": "Wiring the backtester to replay LLM decisions from data/llm_prompt_resp_YYYYMMDD.json when present (default off) closes the 闂?.1 production-vs-backtest parity gap without degrading off-mode metrics, and produces the first 闂?.2-compliant LLM attribution bucket.",
+  "llm_metrics": {
+    "coverage_fraction": 0.0323,
+    "llm_attribution_metric": "llm_attribution bucket (coverage_fraction, signals_presented, signals_vetoed_by_llm, signals_passed_by_llm, veto_rate)",
+    "llm_change_scope": "infrastructure_not_boundary",
+    "note": "Sample too small (5 response files over 124 trading days) for real alpha attribution; logging the mechanism is the deliverable, not the alpha claim.",
+    "signals_passed_by_llm": 1,
+    "signals_presented": 3,
+    "signals_vetoed_by_llm": 2,
+    "used_llm": false,
+    "veto_rate": 0.6667
+  },
+  "market_regime_summary": {
+    "primary": "BULL (slow-melt)"
+  },
+  "next_retry_requires": [],
+  "notes": "Off-mode numerics identical to baseline (code path is pure passthrough when replay_llm=False). On-mode attribution is statistically immaterial at n=5 covered days 闂?value is the mechanism, not the current delta.",
+  "parameters": {
+    "known_biases.llm_gate_unreplayed": {
+      "new": "dict{enabled,coverage_fraction,dates_covered,dates_missing_n}",
+      "old": "bool(True)"
+    },
+    "replay_llm_cli_flag": {
+      "new": "--replay-llm (default off)",
+      "old": "absent"
+    },
+    "result.llm_attribution": {
+      "new": "dict{replay_enabled,coverage_fraction,trading_days,dates_covered,dates_missing,signals_presented,signals_vetoed_by_llm,signals_passed_by_llm,veto_rate,notes}",
+      "old": "absent"
+    }
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/llm_replay.py",
+    "quant/backtester.py",
+    "quant/test_quant.py",
+    "data/backtest_results_20260417_baseline.json",
+    "data/backtest_results_20260417_replay.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-04-17T15:10:00-07:00"
+}

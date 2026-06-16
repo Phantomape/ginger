@@ -1,0 +1,77 @@
+{
+  "after_metrics": {
+    "expected_value_score": 0.7531,
+    "max_drawdown_pct": 0.0408,
+    "sharpe_daily": 2.83,
+    "snapshot_audit": "future runs now emit structured coverage counts for eps/surprise availability",
+    "total_return_pct": 0.2661,
+    "trade_count": 28,
+    "verified_tests": [
+      "test_persist_earnings_snapshot_creates_structured_daily_file",
+      "test_persist_earnings_snapshot_is_idempotent",
+      "test_persist_earnings_snapshot_rewrites_invalid_existing_file"
+    ]
+  },
+  "before_metrics": {
+    "alpha_candidate_blocked": "C strategy revival / earnings_event_long",
+    "blocker": "daily pipeline claimed snapshot persistence in code, but `data/earnings_snapshot_*.json` coverage was still 0 files and there was no per-run proof of useful fields",
+    "earnings_snapshot_files_present": 0,
+    "expected_value_score": 0.7531,
+    "max_drawdown_pct": 0.0408,
+    "sharpe_daily": 2.83,
+    "total_return_pct": 0.2661,
+    "trade_count": 28
+  },
+  "change_summary": "Upgraded `persist_earnings_snapshot()` to write per-run coverage metadata (`tickers_persisted`, `tickers_with_eps_estimate`, `tickers_with_surprise_history`, etc.), log those counts at save time, and rewrite malformed existing same-day snapshot files instead of silently returning success. Added focused tests for coverage payloads, idempotence, and malformed-file rewrite behavior.",
+  "change_type": "parity_fix",
+  "component": "quant/earnings_snapshot.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "note": "No backtest rerun was required because no entry/exit/filter/sizing rule changed. Deliverable is blocker repair: P-ERN accumulation is now auditable instead of path-only / silent-success.",
+    "sharpe_daily": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260420-010",
+  "hypothesis": "The strongest unblocked alpha candidate is `C strategy revival`, but that experiment is not trustworthy while `earnings_snapshot_YYYYMMDD.json` coverage is still effectively unobservable. If snapshot persistence writes explicit coverage metadata and refuses to silently trust malformed same-day files, future daily runs can prove whether P-ERN is actually accumulating usable `eps_estimate` / surprise-history evidence.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "N/A - P-ERN blocker repair only"
+  },
+  "next_retry_requires": [
+    "Run the daily pipeline until at least several `earnings_snapshot_YYYYMMDD.json` files exist with non-zero `tickers_with_eps_estimate` and `tickers_with_surprise_history`",
+    "Only then resume `C strategy revival` / PEAD quality experiments instead of more A/B micro-tuning"
+  ],
+  "notes": "This run chose measurement_repair over strategy-layer alpha_search because the current highest-value non-LLM alpha candidate (`C strategy revival`) remains untrustworthy while snapshot persistence can still appear to succeed without any structured proof of usable earnings fields.",
+  "parameters": {
+    "existing_snapshot_policy": {
+      "new": "validate existing shape; rewrite malformed file before returning",
+      "old": "return immediately if file exists"
+    },
+    "snapshot_payload.coverage": {
+      "new": "dict with persisted/dte/eps/surprise counters",
+      "old": "absent"
+    },
+    "warning_surface": {
+      "new": "coverage-aware info log plus zero-eps / zero-surprise warnings",
+      "old": "path-only info log"
+    }
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/earnings_snapshot.py",
+    "quant/test_quant.py",
+    "docs/experiment_log.jsonl"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-04-20T17:05:14-07:00"
+}

@@ -1,0 +1,74 @@
+{
+  "after_metrics": {
+    "expected_value_score": 0.131,
+    "max_drawdown_pct": 0.0456,
+    "sharpe": 1.91,
+    "sharpe_daily": 1.15,
+    "survival_rate": 0.8929,
+    "total_pnl": 11388.73,
+    "total_return_pct": 0.1139,
+    "trade_count": 24,
+    "win_rate": 0.375
+  },
+  "before_metrics": {
+    "expected_value_score": 0.131,
+    "max_drawdown_pct": 0.0456,
+    "sharpe": 1.91,
+    "sharpe_daily": 1.15,
+    "survival_rate": 0.8929,
+    "total_pnl": 11388.73,
+    "total_return_pct": 0.1139,
+    "trade_count": 24,
+    "win_rate": 0.375
+  },
+  "change_summary": "Added an audit-only runner that replays the accepted A+B stack, isolates trend_late_rollover losers, and records late exit-failure subfamilies using in-trade path state plus winner collateral.",
+  "change_type": "failure_taxonomy",
+  "component": "quant/experiments/legacy/exp_20260426_006_trend_late_rollover_audit.py, data/exp_20260426_006_trend_late_rollover_audit.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "observed_only",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0,
+    "win_rate": 0.0
+  },
+  "experiment_id": "exp-20260426-006",
+  "hypothesis": "The accepted stack's trend_late_rollover losses cluster into reproducible late exit-failure subfamilies that can be counted without changing strategy logic.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "next_retry_requires": [],
+  "notes": "Artifact: data/exp_20260426_006_trend_late_rollover_audit.json. Cross-window result: 5 late-rollover losses for trend_long, 0 repeated fine-grain subfamilies, and all late-rollover exits occurred in risk_on buckets. The largest coarse concentration was in old_thin low-peak late losers: peak<5% accounted for $1701.04 (59.7%) and peak 5-15% plus giveback>=15% added $1114.79. However coarse buckets still carry meaningful winner collateral: Financials late trades include 3 winners worth $7104.92, Technology late trades include 3 winners worth $4700.75, and Communication Services includes a winner worth $2296.79. This means trend_late_rollover is currently a sparse tail-loss family, not a reusable zero-collateral rule template. LLM entry archive coverage stayed 0/5 and news archive was missing on 5/5 losses. One loss row (TRIP) carried sector=Unknown, which should be treated as a measurement-quality note for future attribution work, not a new strategy rule.",
+  "parameters": {
+    "locked_variables": [
+      "trend_late_rollover subfamily taxonomy for accepted-stack losers"
+    ],
+    "single_causal_variable": "trend_late_rollover subfamily taxonomy for accepted-stack losers"
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtest_results_20260425.json",
+    "data/backtest_results_20260425.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "observed_only",
+  "timestamp": "2026-04-26T03:18:49+00:00"
+}

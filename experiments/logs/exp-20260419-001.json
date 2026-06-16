@@ -1,0 +1,113 @@
+{
+  "after_metrics": {
+    "sweep_results": {
+      "ATR_TARGET_MULT=3.0": {
+        "pnl": 11948.95,
+        "sharpe": 1.54,
+        "trades": 41,
+        "window": "W1"
+      },
+      "ATR_TARGET_MULT=3.5": {
+        "pnl": 14577.44,
+        "sharpe": 1.83,
+        "trades": 38,
+        "window": "W1"
+      },
+      "ATR_TARGET_MULT=4.0": {
+        "pnl": 18783.96,
+        "sharpe": 2.17,
+        "trades": 39,
+        "window": "W1"
+      },
+      "ATR_TARGET_MULT=4.5": {
+        "pnl": 18117.74,
+        "sharpe": 2.13,
+        "trades": 35,
+        "window": "W1"
+      },
+      "ATR_TARGET_MULT=5.0": {
+        "pnl": 15407.14,
+        "sharpe": 1.93,
+        "trades": 32,
+        "window": "W1"
+      },
+      "W2_best_3.0": {
+        "pnl": 11717.75,
+        "sharpe": 1.68,
+        "trades": 34
+      },
+      "W3_best_4.0": {
+        "pnl": -1321.8,
+        "sharpe": -0.15,
+        "trades": 42
+      }
+    }
+  },
+  "before_metrics": {
+    "expected_value_score": 0.2595,
+    "max_drawdown_pct": 0.0461,
+    "sharpe": 1.83,
+    "sharpe_daily": 1.78,
+    "survival_rate": 0.975,
+    "trade_count": 38,
+    "win_rate": 0.5263
+  },
+  "change_summary": "Added atr_target_mult parameter to enrich_signal_with_risk() and enrich_signals() in risk_engine.py. Added ATR_TARGET_MULT to DEFAULT_CONFIG in backtester.py and wired it through. Swept ATR_TARGET_MULT=[3.0, 3.5, 4.0, 4.5, 5.0] across 3 non-overlapping 6-month windows (same entry/stop/C-strategy baseline). ATR_TARGET_MULT=4.0 best in primary window but degrades in secondary+tertiary.",
+  "change_type": "exit_rule",
+  "component": "quant/risk_engine.py + quant/backtester.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "gate_4_assessment": "REJECTED",
+    "note": "W1 (primary) ATR_TARGET_MULT=4.0 best: +28.8% PnL (+$4206 vs baseline 3.5), +18.6% Sharpe (2.17 vs 1.83). However: W2 best is 3.0 (+13.5% vs 3.5), W3 all unprofitable (4.0 least-bad). No single multiplier improves in >=2/3 windows per Gate 4."
+  },
+  "experiment_id": "exp-20260419-001",
+  "hypothesis": "ATR_TARGET_MULT=3.5 may be premature. All 18 target-hit trades were 100% wins (avg +7.76% each). If winners naturally run past 3.5x ATR, raising the multiplier captures more upside. If price barely reaches target, raising it converts winners to EOB/stops and loses money.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "BULL (slow-melt, Oct25-Apr26)",
+    "secondary": "BULL (ripping, Apr25-Oct25, SPY +27% vs +20% strategy)",
+    "tertiary": "flat/mixed, Oct24-Apr25, all negative"
+  },
+  "next_retry_requires": [
+    "Regime-aware exit (A6): test different target multipliers conditional on market_regime",
+    "Higher-quality BEAR-regime window data (W3 Oct24-Apr25 had structural losses across all multipliers)",
+    "Percent-based trails if returning to trailing stops (exp-002 ATR-multiple trails failed)"
+  ],
+  "notes": "Parametrization code remains in codebase; infrastructure is sound. Rejection is on alpha direction, not implementation quality. Exp-002 trailing-stop rejection also listed target-width concerns in next_retry_requires; this experiment confirms current target is not the alpha source.",
+  "parameters": {
+    "ATR_TARGET_MULT": {
+      "default": 3.5,
+      "values": [
+        3.0,
+        3.5,
+        4.0,
+        4.5,
+        5.0
+      ]
+    }
+  },
+  "rejection_reason": "AGENTS.md Gate 4 multi-window stability: ATR_TARGET_MULT=4.0 (best in W1) regresses W2 and leaves W3 unprofitable. No multiplier improves EV >10% in >=2/3 windows. Interpretation: 3.5x target is well-calibrated to primary BULL regime; exit alpha leak is NOT in target width. Likely source: regime-dependent exit (different target mult per BULL/NEUTRAL/BEAR).",
+  "related_files": [
+    "quant/risk_engine.py",
+    "quant/backtester.py",
+    "quant/test_quant.py"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-17",
+      "start": "2025-04-21"
+    },
+    {
+      "end": "2025-04-30",
+      "start": "2024-10-01"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-19T23:36:00-07:00"
+}

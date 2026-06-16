@@ -2269,22 +2269,35 @@ def experiment_id_exists_in_log(log_path, experiment_id):
 
 def append_log_entry(log_path, row, *, allow_duplicate=False,
                      timeout_seconds=DEFAULT_LOCK_TIMEOUT_SECONDS):
+    """Retired monolithic-log appender -> per-experiment shard writer.
+
+    The monolithic ``docs/experiment_log.jsonl`` is no longer a tracked,
+    ever-growing file. The per-experiment shard (``experiments/logs/<id>.json``)
+    is the source of truth; the monolithic log is a derived view that can be
+    rebuilt on demand (``scripts/compact_experiment_records.py``). Callers that
+    still pass the monolithic log path get their record persisted to the shard
+    instead, so the log stops growing. Idempotent: an existing shard (e.g. one the
+    runner already wrote) is left untouched. Returns the shard path.
+    """
     experiment_id = row.get("experiment_id")
     if not experiment_id:
         raise ValueError("log row must include experiment_id")
-    # Keep the monolithic log compact: strip diagnostic dumps that already live in
-    # the experiment artifact. This is the central forward fix -- the current
-    # automation funnels its log writes through here.
-    row = strip_oversized_fields(row)
-    path = Path(log_path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-
-    with file_lock(path, timeout_seconds=timeout_seconds):
-        if not allow_duplicate and experiment_id_exists_in_log(path, experiment_id):
-            raise ValueError(f"experiment_id already exists in log: {experiment_id}")
-        with path.open("a", encoding="utf-8") as f:
-            f.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
-    return path
+    log_path = Path(log_path)
+    workspace = (
+        log_path.parent.parent if log_path.parent.name == "docs" else log_path.parent
+    )
+    logs_dir = workspace / "experiments" / "logs"
+    shard = experiment_log_path(experiment_id, logs_dir)
+    if shard.exists():
+        return shard
+    try:
+        return save_experiment_log_entry(
+            row, logs_dir=logs_dir, timeout_seconds=timeout_seconds
+        )
+    except (FileExistsError, ValueError):
+        # Raced with the runner's own shard write; the shard exists, which is the
+        # goal of this call.
+        return shard
 
 
 def print_json(data):

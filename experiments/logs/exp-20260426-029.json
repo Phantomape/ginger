@@ -1,0 +1,72 @@
+{
+  "after_metrics": {
+    "expected_value_score": 2.258,
+    "max_drawdown_pct": 0.0454,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8553,
+    "total_pnl": 71583.26,
+    "total_return_pct": 0.7159,
+    "trade_count": 66,
+    "win_rate": 0.5152
+  },
+  "before_metrics": {
+    "expected_value_score": 2.1569,
+    "max_drawdown_pct": 0.0457,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8553,
+    "total_pnl": 68692.01,
+    "total_return_pct": 0.687,
+    "trade_count": 66,
+    "win_rate": 0.5152
+  },
+  "change_summary": "Real BacktestEngine replayed strict day-2 follow-through add-on-only 35% cap headroom across three fixed windows.",
+  "change_type": "capital_allocation",
+  "component": "quant/backtester.py, quant/test_quant.py, data/backtest_results_20260426_exp028_baseline.json, data/backtest_results_20260426_exp028_after.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": 0.1011,
+    "max_drawdown_pct": -0.0003,
+    "survival_rate": 0.0,
+    "total_pnl": 2891.25,
+    "total_return_pct": 0.0289,
+    "trade_count": 0,
+    "win_rate": 0.0
+  },
+  "experiment_id": "exp-20260426-029",
+  "hypothesis": "Strict day-2 follow-through add-ons may retain the shadow-tested cap-headroom edge when replayed in the real BacktestEngine path with an add-on-only 35% cap, without changing initial entries, exits, ranking, LLM, or global position caps.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "next_retry_requires": [],
+  "notes": "Real replay improved EV in all three windows versus normal 25% add-on (aggregate EV 2.1569 -> 2.2580, PnL +.25), but failed AGENTS Gate 4 materiality: EV +4.69% and PnL +4.21% are below the 10% / 5% thresholds. Treat as rejected-for-materiality; do not promote production add-on cap headroom without forward evidence or a stronger trigger.",
+  "parameters": {
+    "locked_variables": [
+      "day2 +2% RS-positive 25% add-on; only add-on-only 35pct cap real replay varies"
+    ],
+    "single_causal_variable": "strict day2 follow-through add-on-only 35pct cap in real BacktestEngine replay"
+  },
+  "rejection_reason": "No AGENTS.md Gate 4 acceptance condition was met.",
+  "related_files": [
+    "data/backtest_results_20260426_exp028_baseline.json",
+    "data/backtest_results_20260426_exp028_after.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-26T15:08:38+00:00"
+}

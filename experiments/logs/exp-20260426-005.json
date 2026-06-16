@@ -1,0 +1,82 @@
+{
+  "after_metrics": {
+    "expected_value_score": 0.0529,
+    "max_drawdown_pct": 0.0719,
+    "sharpe": 1.13,
+    "sharpe_daily": 0.79,
+    "survival_rate": 0.9322,
+    "total_pnl": 6704.66,
+    "total_return_pct": 0.067,
+    "trade_count": 21,
+    "win_rate": 0.381
+  },
+  "before_metrics": {
+    "expected_value_score": 0.131,
+    "max_drawdown_pct": 0.0456,
+    "sharpe": 1.91,
+    "sharpe_daily": 1.15,
+    "survival_rate": 0.8929,
+    "total_pnl": 11388.73,
+    "total_return_pct": 0.1139,
+    "trade_count": 24,
+    "win_rate": 0.375
+  },
+  "change_summary": "Added a shadow-mode runner that zeroes only the already-reduced-risk trend_long Technology sleeve inside the real backtester sizing path and replays the three fixed snapshot windows without editing shared production strategy code.",
+  "change_type": "alpha_research",
+  "component": "quant/experiments/legacy/exp_20260426_005_tech_reduced_risk_trend_runner.py, data/exp_20260426_005_results.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": -0.0781,
+    "max_drawdown_pct": 0.0263,
+    "sharpe": -0.78,
+    "sharpe_daily": -0.36,
+    "survival_rate": 0.0393,
+    "total_pnl": -4684.07,
+    "total_return_pct": -0.0469,
+    "trade_count": -3,
+    "win_rate": 0.006
+  },
+  "experiment_id": "exp-20260426-005",
+  "hypothesis": "The audited reduced-risk trend_long Technology sleeve is avoidable drag; zeroing only that sleeve in shadow mode may improve EV across fixed windows more stably than the rejected broad trend de-risking families.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull",
+    "mid_weak": "rotation-heavy bull",
+    "old_thin": "older weak-to-mixed tape"
+  },
+  "next_retry_requires": [
+    "Do not retry a blanket zero-risk cut for the whole reduced-risk trend_long Technology sleeve.",
+    "If this family is revisited, split winners from losers with a narrower Technology discriminator than 'already reduced-risk'.",
+    "Require new evidence that isolates the old_thin NOW-like winner before promoting any Technology reduced-risk trend cut."
+  ],
+  "notes": "Rejected. Shadow zeroing improved late_strong EV 1.5039->1.5201 and mid_weak EV 0.4773->0.4957, but old_thin regressed materially 0.1310->0.0529 because the targeted sleeve still carried positive net PnL there (+$131.32, including a NOW winner). This is not a clean no-collateral drag family.",
+  "parameters": {
+    "locked_variables": [
+      "trend_long Technology reduced_risk zero-risk sleeve"
+    ],
+    "single_causal_variable": "trend_long Technology reduced_risk zero-risk sleeve"
+  },
+  "rejection_reason": "Shadow-mode replay failed the multi-window stability requirement: two windows improved slightly, but old_thin lost 59.6% of EV and gave back $4,684.07. The audited family is too broad because it still contains meaningful winners.",
+  "related_files": [
+    "data/backtest_results_20260425.json",
+    "data/exp_20260426_005_results.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-26T03:10:40+00:00"
+}

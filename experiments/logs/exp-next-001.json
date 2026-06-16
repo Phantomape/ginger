@@ -1,0 +1,80 @@
+{
+  "after_metrics": {
+    "apr_13_17_window_replay_llm": {
+      "by_strategy": {
+        "breakout_long": {
+          "passed": 1,
+          "presented": 2,
+          "veto_rate": 0.5,
+          "vetoed": 1
+        },
+        "earnings_event_long": {
+          "passed": 1,
+          "presented": 6,
+          "veto_rate": 0.8333,
+          "vetoed": 5
+        },
+        "trend_long": {
+          "passed": 0,
+          "presented": 1,
+          "veto_rate": 1.0,
+          "vetoed": 1
+        }
+      },
+      "coverage": "5/5 days (100%)",
+      "passed": 2,
+      "signals_presented": 9,
+      "trades_with_llm": 2,
+      "veto_rate": 0.7778,
+      "vetoed": 7,
+      "win_rate_with_llm": 1.0
+    }
+  },
+  "before_metrics": {
+    "expected_value_score": 0.2595,
+    "llm_replay_coverage": "0% before --replay-llm attribution repair",
+    "sharpe_daily": 1.78,
+    "trade_count": 38,
+    "win_rate": 0.5263
+  },
+  "change_summary": "Added per-strategy LLM attribution fields such as presented, vetoed, passed, and veto_rate. Original legacy prose was encoding-corrupted and has been summarized for parseability.",
+  "change_type": "measurement_enhancement",
+  "component": "quant/backtester.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2026-04-13"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "note": "Measurement attribution repair only; no production strategy change was encoded in this row."
+  },
+  "experiment_id": "exp-next-001",
+  "hypothesis": "Add per-strategy LLM replay attribution so LLM veto/pass behavior can be audited by strategy without changing trading behavior.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "BEAR / April 2026 short replay window"
+  },
+  "next_retry_requires": [
+    "Continue accumulating replayable LLM prompt/response archive coverage.",
+    "Use per-strategy attribution before changing LLM responsibilities or strategy rules."
+  ],
+  "notes": "Repaired on 2026-05-03 to restore full-file JSONL validation; corrupted prose was summarized, numeric attribution from the damaged row was preserved.",
+  "parameters": {
+    "legacy_line_repaired": true,
+    "llm_attribution.by_strategy": {
+      "new": "dict per strategy: {presented, vetoed, passed, veto_rate}",
+      "old": "absent"
+    },
+    "repair_reason": "Original line contained mojibake and unterminated JSON strings."
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/backtester.py",
+    "quant/test_quant.py",
+    "docs/experiment_log.jsonl"
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-18T22:19:00.736517"
+}

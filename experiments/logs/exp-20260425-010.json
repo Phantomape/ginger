@@ -1,0 +1,187 @@
+{
+  "after_metrics": {
+    "cross_asset_gate": {
+      "late_strong": {
+        "cross_asset_state_days": 19,
+        "expected_value_score": 1.0402,
+        "macro_added": 0,
+        "macro_trade_count": 0,
+        "max_drawdown_pct": 0.0238,
+        "sharpe_daily": 3.89,
+        "total_return_pct": 0.2674,
+        "trade_count": 21,
+        "win_rate": 0.7143
+      },
+      "mid_weak": {
+        "cross_asset_state_days": 3,
+        "expected_value_score": 0.2847,
+        "macro_added": 3,
+        "macro_total_pnl": -1930.22,
+        "macro_trade_count": 2,
+        "max_drawdown_pct": 0.035,
+        "sharpe_daily": 2.2,
+        "total_return_pct": 0.1294,
+        "trade_count": 27,
+        "win_rate": 0.4074
+      },
+      "old_thin": {
+        "cross_asset_state_days": 28,
+        "expected_value_score": 0.1173,
+        "macro_added": 42,
+        "macro_total_pnl": 1578.18,
+        "macro_trade_count": 8,
+        "max_drawdown_pct": 0.0444,
+        "sharpe_daily": 1.1,
+        "total_return_pct": 0.1066,
+        "trade_count": 32,
+        "win_rate": 0.375
+      }
+    },
+    "static_macro_reference": {
+      "late_strong": {
+        "expected_value_score": 0.9805,
+        "macro_total_pnl": -782.49,
+        "macro_trade_count": 3,
+        "max_drawdown_pct": 0.0238,
+        "sharpe_daily": 3.78,
+        "total_return_pct": 0.2594,
+        "trade_count": 24,
+        "win_rate": 0.625
+      },
+      "mid_weak": {
+        "expected_value_score": 0.2767,
+        "macro_total_pnl": -2121.76,
+        "macro_trade_count": 4,
+        "max_drawdown_pct": 0.0345,
+        "sharpe_daily": 2.17,
+        "total_return_pct": 0.1275,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.1377,
+        "macro_total_pnl": 2586.32,
+        "macro_trade_count": 11,
+        "max_drawdown_pct": 0.0444,
+        "sharpe_daily": 1.18,
+        "total_return_pct": 0.1167,
+        "trade_count": 35,
+        "win_rate": 0.4
+      }
+    }
+  },
+  "before_metrics": {
+    "baseline_ab": {
+      "late_strong": {
+        "expected_value_score": 1.0402,
+        "max_drawdown_pct": 0.0238,
+        "sharpe_daily": 3.89,
+        "total_return_pct": 0.2674,
+        "trade_count": 21,
+        "win_rate": 0.7143
+      },
+      "mid_weak": {
+        "expected_value_score": 0.3924,
+        "max_drawdown_pct": 0.0205,
+        "sharpe_daily": 2.59,
+        "total_return_pct": 0.1515,
+        "trade_count": 25,
+        "win_rate": 0.44
+      },
+      "old_thin": {
+        "expected_value_score": 0.0863,
+        "max_drawdown_pct": 0.0444,
+        "sharpe_daily": 0.95,
+        "total_return_pct": 0.0908,
+        "trade_count": 24,
+        "win_rate": 0.375
+      }
+    }
+  },
+  "change_summary": "Added a runtime-only cross-asset-gated macro runner. ETF proxies are included as sensors only; A+B signals are generated from the original base universe. Macro entry is unchanged from exp-20260425-005; only activation changes to `gold_risk_off_proxy AND NOT rates_positive`. No production code was promoted.",
+  "change_type": "cross_asset_macro_gate",
+  "component": "runtime-only `quant/experiments/legacy/exp_20260425_010_cross_asset_gate_runner.py`, monkeypatching `signal_engine.generate_signals()` only during measurement",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "cross_asset_gate_vs_baseline_ev": {
+      "late_strong": 0.0,
+      "mid_weak": -0.1077,
+      "old_thin": 0.031
+    },
+    "cross_asset_gate_vs_static_macro_ev": {
+      "late_strong": 0.0597,
+      "mid_weak": 0.008,
+      "old_thin": -0.0204
+    },
+    "note": "The cross-asset gate is a mechanism improvement over static macro, but it still fails Gate 4 against the A+B baseline because mid_weak remains materially worse. It blocks late_strong completely and preserves part of old_thin, but it still admits two damaging mid_weak trades."
+  },
+  "experiment_id": "exp-20260425-010",
+  "hypothesis": "The full cross-asset proxy set may allow a macro gate that blocks late/mid macro losers while preserving old_thin macro winners. Test the strongest audit-derived state: GLD 20d return leads SPY and QQQ while SPY/QQQ are under pressure, and the TLT/IEF rates basket is not positive.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "gate blocks all macro trades and preserves A+B baseline",
+    "mid_weak": "gate reduces but does not eliminate damaging macro exposure",
+    "old_thin": "gate preserves part of the macro benefit but less than static macro"
+  },
+  "next_retry_requires": [
+    "Do not promote this gate as-is",
+    "Do not keep sweeping tiny rates thresholds around avg(TLT,IEF) <= 0 without first identifying the two remaining mid_weak false positives",
+    "If macro continues, analyze the admitted mid_weak trades versus the retained old_thin trades for a new information source or execution/timing distinction",
+    "A credible next step is a trade-level false-positive audit, not another broad macro gate"
+  ],
+  "notes": "Single causal variable held: macro entry stayed unchanged; only the activation information source changed. Production strategy code was not changed.",
+  "parameters": {
+    "artifact_files": [
+      "quant/experiments/legacy/exp_20260425_010_cross_asset_gate_runner.py",
+      "data/exp_20260425_010_results.json"
+    ],
+    "date_inference_fix": "initial run failed to trigger old_thin because feature close was rounded to 2 decimals; final run supports 2- and 4-decimal SPY close matching",
+    "entry_recipe": "same as exp-20260425-005 static macro_defensive_long",
+    "gate_definition": "GLD_20d > SPY_20d AND GLD_20d > QQQ_20d AND min(SPY_20d, QQQ_20d) < 0 AND avg(TLT_20d, IEF_20d) <= 0",
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "screened_variants": [
+      "baseline_ab",
+      "static_macro_reference",
+      "cross_asset_gate"
+    ],
+    "sensor_tickers": [
+      "GLD",
+      "SLV",
+      "SPY",
+      "QQQ",
+      "TLT",
+      "IEF",
+      "UUP",
+      "USO",
+      "XLE",
+      "XLU",
+      "XLP",
+      "XLV"
+    ]
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability. The gate improves the static macro failure mode but does not make macro robust versus the A+B baseline: mid_weak EV regresses from 0.3924 to 0.2847, exceeding the allowed damage.",
+  "related_files": [
+    "quant/experiments/legacy/exp_20260425_010_cross_asset_gate_runner.py",
+    "data/exp_20260425_010_results.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-25T23:59:55-07:00"
+}

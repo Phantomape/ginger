@@ -1,0 +1,177 @@
+{
+  "after_metrics": {
+    "ab_plus_pullback": {
+      "late_strong": {
+        "expected_value_score": 0.6654,
+        "max_drawdown_pct": 0.0347,
+        "pullback_profit_factor": 1.046,
+        "pullback_trade_count": 23,
+        "sharpe_daily": 2.59,
+        "total_return_pct": 0.2569
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0666,
+        "max_drawdown_pct": 0.0524,
+        "pullback_profit_factor": 1.668,
+        "pullback_trade_count": 17,
+        "sharpe_daily": 0.98,
+        "total_return_pct": 0.068
+      },
+      "old_thin": {
+        "expected_value_score": 0.0321,
+        "max_drawdown_pct": 0.0923,
+        "pullback_profit_factor": 1.167,
+        "pullback_trade_count": 15,
+        "sharpe_daily": 0.61,
+        "total_return_pct": 0.0527
+      }
+    },
+    "pullback_only": {
+      "late_strong": {
+        "expected_value_score": 0.0875,
+        "max_drawdown_pct": 0.0592,
+        "profit_factor": 1.426,
+        "sharpe_daily": 1.1,
+        "total_return_pct": 0.0795,
+        "trade_count": 32,
+        "win_rate": 0.375
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0186,
+        "max_drawdown_pct": 0.075,
+        "profit_factor": 0.996,
+        "sharpe_daily": -0.72,
+        "total_return_pct": -0.0259,
+        "trade_count": 36,
+        "win_rate": 0.3333
+      },
+      "old_thin": {
+        "expected_value_score": 0.0319,
+        "max_drawdown_pct": 0.0769,
+        "profit_factor": 0.917,
+        "sharpe_daily": -0.71,
+        "total_return_pct": -0.0449,
+        "trade_count": 29,
+        "win_rate": 0.1724
+      }
+    }
+  },
+  "before_metrics": {
+    "ab_baseline": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "total_return_pct": 0.2413
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "total_return_pct": 0.1037
+      },
+      "old_thin": {
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 0.36,
+        "total_return_pct": 0.0304
+      }
+    }
+  },
+  "change_summary": "Implemented an experiment-only `pullback_long` signal in `quant/signal_engine.py` using only existing OHLCV-derived features: above 200MA, trend_score >= 0.60, momentum_10d >= 3%, not a fresh 20d breakout, close 2-8% below the prior 20d high, at least 5% above the prior 20d low, and volume_spike_ratio > 1.2. Ran deterministic paired tests on the late / mid / old snapshots both as `A+B+pullback` and as `pullback_only`, then rolled the code back after rejection.",
+  "change_type": "new_strategy",
+  "component": "quant/signal_engine.py (experiment-only, rolled back)",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "ab_plus_pullback": {
+      "late_expected_value_score_delta": -0.1816,
+      "mid_expected_value_score_delta": -0.0589,
+      "old_expected_value_score_delta": 0.0212
+    },
+    "note": "The new strategy did not behave like an independent alpha sleeve. Added to A+B, it materially regressed the late and mid windows while helping only the old thin window. Standalone results were also weak: one decent recent window with low power, then two negative-return windows with poor Sharpe and win rates. This is not a stable cross-window alpha gain.",
+    "pullback_only": {
+      "late_expected_value_score": 0.0875,
+      "mid_expected_value_score": 0.0186,
+      "old_expected_value_score": 0.0319
+    }
+  },
+  "experiment_id": "exp-20260422-015",
+  "hypothesis": "A new D-strategy may be needed instead of continuing to micro-tune breakout. The simplest first candidate is `pullback_long`: buy strong uptrends that remain above the 200MA, still have positive momentum, and sit modestly below the prior 20-day high instead of printing a fresh breakout. If this is a real independent alpha carrier, it should improve the accepted A+B stack or at least show clean standalone expectancy on the deterministic snapshots.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "recent strong window where breakout dominates",
+    "mid_weak": "earlier bull window where accepted stack lags broad beta",
+    "old_thin": "older mixed-to-weak window where breakout is the drag sleeve"
+  },
+  "next_retry_requires": [
+    "Do not retry the same broad OHLCV-only pullback recipe with nearby percentage tweaks by default",
+    "If pullback continuation is revisited, require a richer trigger for 'pullback has ended and trend has re-asserted' rather than just being modestly below the 20d high",
+    "Prefer the next D-strategy search to use a more distinctive mechanism class than a near-high dip template unless new evidence suggests a cleaner pullback trigger exists"
+  ],
+  "notes": "The temporary `pullback_long` code was fully rolled back after measurement. The valuable result is mechanism-level: this first simple pullback family is not yet a credible standalone D strategy in the current repo state.",
+  "parameters": {
+    "fixed_context": [
+      "REGIME_AWARE_EXIT",
+      "accepted A+B sizing stack"
+    ],
+    "hard_conditions": [
+      "above_200ma",
+      "trend_score >= 0.60",
+      "momentum_10d_pct >= 0.03",
+      "breakout_20d == False",
+      "-0.08 <= (close-high_20d)/high_20d <= -0.02",
+      "(close-low_20d)/low_20d >= 0.05",
+      "volume_spike_ratio > 1.2"
+    ],
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "soft_conditions": [
+      "rs_strong",
+      "near_52w_high",
+      "trend_score >= 0.80"
+    ],
+    "strategy_name": "pullback_long",
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "rejection_reason": "Rejected on multi-window stability and weak standalone quality. The first pullback definition is too broad and too static: it adds many low-quality continuation candidates, creates slot competition, and fails to show robust standalone expectancy. Nearby threshold tuning would likely be more parameter churn than genuine new mechanism discovery.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-23T00:05:00-07:00"
+}

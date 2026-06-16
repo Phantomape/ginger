@@ -1,0 +1,178 @@
+{
+  "after_metrics": {
+    "fixed_snapshot_025": {
+      "late_strong": {
+        "expected_value_score": 1.0402,
+        "max_drawdown_pct": 0.0238,
+        "sharpe_daily": 3.89,
+        "total_return_pct": 0.2674,
+        "trade_count": 21
+      },
+      "mid_weak": {
+        "expected_value_score": 0.3924,
+        "max_drawdown_pct": 0.0205,
+        "sharpe_daily": 2.59,
+        "total_return_pct": 0.1515,
+        "trade_count": 25
+      },
+      "old_thin": {
+        "expected_value_score": 0.0863,
+        "max_drawdown_pct": 0.0444,
+        "sharpe_daily": 0.95,
+        "total_return_pct": 0.0908,
+        "trade_count": 24
+      }
+    },
+    "post_promotion_reproduction": {
+      "late_strong": {
+        "expected_value_score": 1.0402,
+        "max_drawdown_pct": 0.0238,
+        "sharpe_daily": 3.89,
+        "total_return_pct": 0.2674,
+        "trade_count": 21,
+        "win_rate": 0.7143
+      },
+      "mid_weak": {
+        "expected_value_score": 0.3924,
+        "max_drawdown_pct": 0.0205,
+        "sharpe_daily": 2.59,
+        "total_return_pct": 0.1515,
+        "trade_count": 25,
+        "win_rate": 0.44
+      },
+      "old_thin": {
+        "expected_value_score": 0.0863,
+        "max_drawdown_pct": 0.0444,
+        "sharpe_daily": 0.95,
+        "total_return_pct": 0.0908,
+        "trade_count": 24,
+        "win_rate": 0.375
+      }
+    },
+    "test_results": "targeted pytest passed: 3 selected"
+  },
+  "before_metrics": {
+    "fixed_snapshot_baseline": {
+      "late_strong": {
+        "eligible_signals": 0,
+        "expected_value_score": 1.0402,
+        "max_drawdown_pct": 0.0238,
+        "sharpe_daily": 3.89,
+        "total_return_pct": 0.2674,
+        "trade_count": 21
+      },
+      "mid_weak": {
+        "eligible_signals": 1,
+        "expected_value_score": 0.3555,
+        "max_drawdown_pct": 0.0205,
+        "sharpe_daily": 2.44,
+        "total_return_pct": 0.1457,
+        "trade_count": 25
+      },
+      "old_thin": {
+        "eligible_signals": 1,
+        "expected_value_score": 0.0716,
+        "max_drawdown_pct": 0.0479,
+        "sharpe_daily": 0.87,
+        "total_return_pct": 0.0823,
+        "trade_count": 24
+      }
+    }
+  },
+  "change_summary": "Promoted a runtime-only sizing result into production: Healthcare breakout signals 20-65 trading days before earnings now keep 25% of the current risk budget. Added a targeted unit test and saved the runtime screen plus post-promotion fixed-window reproduction. No entry, exit, ranking, LLM, C strategy, or slot-allocation logic changed.",
+  "change_type": "allocation_rule",
+  "component": "quant/constants.py + quant/portfolio_engine.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "fixed_snapshot_025_ev_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0369,
+      "old_thin": 0.0147
+    },
+    "fixed_snapshot_025_max_drawdown_pct_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": -0.0035
+    },
+    "fixed_snapshot_025_sharpe_daily_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": 0.15,
+      "old_thin": 0.08
+    },
+    "gate4_basis": "Accepted because the 0.25x point improved EV and Sharpe in two validation windows, was strict-null in the dominant late window, and reduced old_thin drawdown. The adjacent 20-70 variant was rejected because it harmed late_strong, so the rule stays narrow."
+  },
+  "experiment_id": "exp-20260425-021",
+  "hypothesis": "After the accepted A+B residual allocation stack, remaining Healthcare breakout leakage may be event-distance related rather than another repeat of the rejected deep-pullback screen. De-risking `breakout_long | Healthcare | 20 <= days_to_earnings <= 65` at partial size should improve EV in validation windows without touching entries, exits, LLM, C strategy, or existing accepted sizing rules.",
+  "llm_metrics": {
+    "blocker_relation": "LLM soft ranking remains blocked by candidate-level replay coverage, so this run used deterministic A+B residual allocation instead of changing LLM responsibilities.",
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull with zero qualifying 20-65 DTE Healthcare breakout exposure; 20-70 would include a 67-DTE LLY winner",
+    "mid_weak": "rotation-heavy bull with one qualifying Healthcare breakout candidate",
+    "old_thin": "mixed-to-weak tape with one qualifying Healthcare breakout candidate"
+  },
+  "next_retry_requires": [
+    "Do not widen this into all Healthcare breakouts or 20-70 DTE Healthcare breakouts",
+    "Do not retry Healthcare deep-pullback pct_from_52w_high screens without a genuinely new discriminator",
+    "Future Healthcare residual work needs a fresh audited cluster outside this accepted DTE sleeve"
+  ],
+  "notes": "This was alpha_search, not bug repair. It changes one independent causal variable: a narrow Healthcare breakout event-distance risk multiplier. Main risk is under-sizing rare Healthcare breakout winners close to the 65-DTE boundary; the failed 20-70 screen is why the rule was not widened.",
+  "parameters": {
+    "evaluation_windows": [
+      [
+        "2025-10-23",
+        "2026-04-21"
+      ],
+      [
+        "2025-04-23",
+        "2025-10-22"
+      ],
+      [
+        "2024-10-02",
+        "2025-04-22"
+      ]
+    ],
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "rejected_adjacent_variants": {
+      "20_65_0x": "improved less than 0.25x",
+      "20_70_0_25": "damaged late_strong EV by cutting the 67-DTE LLY winner",
+      "50_65_0_25": "positive only where exposed but lacked mid-window exposure"
+    },
+    "rule": {
+      "days_to_earnings_max": 65,
+      "days_to_earnings_min": 20,
+      "risk_multiplier": 0.25,
+      "sector": "Healthcare",
+      "strategy": "breakout_long"
+    }
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/constants.py",
+    "quant/portfolio_engine.py",
+    "quant/test_quant.py",
+    "quant/experiments/legacy/exp_20260425_021_runner.py",
+    "data/exp_20260425_021_results.json",
+    "data/exp_20260425_021_post_promotion.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-25T16:36:00-07:00"
+}

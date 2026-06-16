@@ -1,0 +1,199 @@
+{
+  "after_metrics": {
+    "ab_plus_pullback_reclaim": {
+      "late_strong": {
+        "expected_value_score": 0.7646,
+        "max_drawdown_pct": 0.0285,
+        "pullback_profit_factor": 0.329,
+        "pullback_total_pnl_usd": -1440.76,
+        "pullback_trade_count": 9,
+        "pullback_win_rate": 0.1111,
+        "sharpe_daily": 3.17,
+        "total_return_pct": 0.2412,
+        "trade_count": 30,
+        "win_rate": 0.5333
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1232,
+        "max_drawdown_pct": 0.0537,
+        "pullback_profit_factor": 0.353,
+        "pullback_total_pnl_usd": 50.11,
+        "pullback_trade_count": 6,
+        "pullback_win_rate": 0.1667,
+        "sharpe_daily": 1.21,
+        "total_return_pct": 0.1018,
+        "trade_count": 31,
+        "win_rate": 0.3548
+      },
+      "old_thin": {
+        "expected_value_score": -0.0002,
+        "max_drawdown_pct": 0.0925,
+        "pullback_profit_factor": 0.992,
+        "pullback_total_pnl_usd": 1003.67,
+        "pullback_trade_count": 9,
+        "pullback_win_rate": 0.3333,
+        "sharpe_daily": 0.05,
+        "total_return_pct": -0.0043,
+        "trade_count": 36,
+        "win_rate": 0.25
+      }
+    },
+    "pullback_reclaim_only": {
+      "late_strong": {
+        "expected_value_score": 0.0005,
+        "max_drawdown_pct": 0.0096,
+        "profit_factor": 0.859,
+        "sharpe_daily": -0.2,
+        "total_return_pct": -0.0023,
+        "trade_count": 11,
+        "win_rate": 0.2727
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0204,
+        "max_drawdown_pct": 0.0132,
+        "profit_factor": 1.081,
+        "sharpe_daily": 1.07,
+        "total_return_pct": 0.0191,
+        "trade_count": 12,
+        "win_rate": 0.3333
+      },
+      "old_thin": {
+        "expected_value_score": 0.0046,
+        "max_drawdown_pct": 0.0223,
+        "profit_factor": 0.712,
+        "sharpe_daily": -0.47,
+        "total_return_pct": -0.0098,
+        "trade_count": 20,
+        "win_rate": 0.25
+      }
+    }
+  },
+  "before_metrics": {
+    "accepted_ab_stack": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 0.36,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    }
+  },
+  "change_summary": "Ran a runtime-only monkeypatch of `feature_layer.compute_features()` and `signal_engine.generate_signals()` to add a new `pullback_reclaim_long` sleeve. The added fields were `prev5_high_reclaim`, `recent_pullback_pct`, and `above_50ma`; the entry rule required: above 200MA, above 50MA, recent pullback between 3% and 12%, close reclaiming the prior 5-day high, 10d momentum > 2%, volume_spike_ratio > 1.2, pct_from_52w_high >= -0.15, and NOT a fresh 20-day breakout. Tested both `A+B+pullback_reclaim_long` and `pullback_reclaim_long` standalone across the fixed late / mid / old OHLCV snapshots. No repository trading logic was kept after measurement.",
+  "change_type": "new_strategy",
+  "component": "runtime-only monkeypatch of `quant/feature_layer.py` + `quant/signal_engine.py` (rolled back; no repo trading logic changed)",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "ab_plus_pullback_reclaim": {
+      "late_expected_value_score_delta": -0.0824,
+      "mid_expected_value_score_delta": -0.0023,
+      "old_expected_value_score_delta": -0.0111
+    },
+    "note": "The richer trigger still failed the majority-window gate. Added to A+B, it materially damaged the late strong and old thin windows while only producing a near-null move in the middle window. Standalone quality also stayed weak: only the middle window showed mildly positive standalone expectancy, while the other two windows were negative with poor win rate and weak profit factor."
+  },
+  "experiment_id": "exp-20260423-001",
+  "hypothesis": "If the simple near-high pullback template failed because it lacked a true 'trend re-assertion' trigger, then a stricter OHLCV-only continuation sleeve should work better: require a recent 3-12% pullback from the 20-day high, a same-day reclaim of the prior 5-day high, above-50MA/200MA structure, positive 10-day momentum, supportive volume (>1.2x), and no fresh 20-day breakout. That richer trigger should add a distinct D-sleeve without repeating the broad near-high dip clutter rejected in `exp-20260422-015`.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull with Apr-2026 stress",
+    "mid_weak": "ripping bull / high-beta leadership",
+    "old_thin": "mixed-to-weak tape"
+  },
+  "next_retry_requires": [
+    "Do not reopen pullback continuation with another nearby OHLCV-only reclaim/rebound trigger by default",
+    "If pullback continuation is revisited, require a genuinely different context source than pure price/volume structure alone, such as event information, richer regime state, or an execution shape that does not compete with A+B in the same way",
+    "Prefer higher-upside blocked branches (`LLM soft ranking`) or a truly new external alpha source over further micro-variants of pullback continuation"
+  ],
+  "notes": "This was a clean one-variable alpha search done entirely in runtime monkeypatches so the negative result could be preserved without leaving dead code in the repo. It specifically tested the mechanism-level idea suggested by the previous rejection: make pullback continuation wait for an explicit re-assertion signal instead of a broad near-high dip. That mechanism also failed.",
+  "parameters": {
+    "accepted_stack_context": [
+      "REGIME_AWARE_EXIT",
+      "zero-risk low-TQS non-commodity breakouts",
+      "commodity low-TQS exemption",
+      "zero-risk trend Industrials",
+      "0.25x moderate-gap trend Technology"
+    ],
+    "confidence": {
+      "base": 0.89,
+      "high_volume": 0.91
+    },
+    "entry_rule": {
+      "above_200ma": true,
+      "above_50ma": true,
+      "breakout_20d": false,
+      "momentum_10d_pct_min": 0.02,
+      "pct_from_52w_high_min": -0.15,
+      "prev5_high_reclaim": true,
+      "recent_pullback_pct_range": [
+        0.03,
+        0.12
+      ],
+      "volume_spike_ratio_min": 1.2
+    },
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "strategy_name": "pullback_reclaim_long",
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "rejection_reason": "Rejected on multi-window stability and weak standalone quality. Even after upgrading the trigger from a broad near-high dip template to a more explicit 'pullback ended and trend re-asserted' rule, the sleeve still behaved like noisy continuation clutter rather than a distinct high-EV carrier. The added selector did not solve the core problem from `exp-20260422-015`: it still consumed slots and capital without stable cross-window expectancy.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "data/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv_snapshot_20241002_20250422.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-23T00:35:00-07:00"
+}

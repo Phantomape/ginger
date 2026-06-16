@@ -1,0 +1,219 @@
+{
+  "after_metrics": {
+    "gated_covered_w1": {
+      "c_total_pnl_usd": 47.0,
+      "c_trade_count": 2,
+      "expected_value_score": 0.1757,
+      "max_drawdown_pct": 0.0221,
+      "sharpe_daily": 3.66,
+      "total_return_pct": 0.048,
+      "trade_count": 8,
+      "win_rate": 0.5
+    },
+    "gated_covered_w2": {
+      "c_total_pnl_usd": -140.65,
+      "c_trade_count": 3,
+      "expected_value_score": 0.2011,
+      "max_drawdown_pct": 0.0249,
+      "sharpe_daily": 2.65,
+      "total_return_pct": 0.0759,
+      "trade_count": 15,
+      "win_rate": 0.4667
+    },
+    "gated_covered_w3": {
+      "c_total_pnl_usd": 354.95,
+      "c_trade_count": 2,
+      "expected_value_score": 0.1367,
+      "max_drawdown_pct": 0.0035,
+      "sharpe_daily": 5.49,
+      "total_return_pct": 0.0249,
+      "trade_count": 5,
+      "win_rate": 0.8
+    },
+    "gated_primary": {
+      "c_total_pnl_usd": -38.35,
+      "c_trade_count": 5,
+      "c_win_rate": 0.6,
+      "expected_value_score": 0.7019,
+      "max_drawdown_pct": 0.0312,
+      "sharpe_daily": 3.23,
+      "total_return_pct": 0.2173,
+      "trade_count": 26,
+      "win_rate": 0.6154
+    },
+    "gated_window_1": {
+      "c_trade_count": 0,
+      "expected_value_score": 0.1255,
+      "max_drawdown_pct": 0.0511,
+      "sharpe_daily": 1.21,
+      "total_return_pct": 0.1037,
+      "trade_count": 29,
+      "win_rate": 0.3793
+    },
+    "gated_window_2": {
+      "c_trade_count": 0,
+      "expected_value_score": 0.0257,
+      "max_drawdown_pct": 0.0917,
+      "sharpe_daily": 0.51,
+      "total_return_pct": 0.0504,
+      "trade_count": 29,
+      "win_rate": 0.3103
+    }
+  },
+  "before_metrics": {
+    "ab_covered_w1": {
+      "expected_value_score": 0.1734,
+      "max_drawdown_pct": 0.0218,
+      "sharpe_daily": 3.65,
+      "total_return_pct": 0.0475,
+      "trade_count": 6,
+      "win_rate": 0.5
+    },
+    "ab_covered_w2": {
+      "expected_value_score": 0.2954,
+      "max_drawdown_pct": 0.0242,
+      "sharpe_daily": 3.11,
+      "total_return_pct": 0.095,
+      "trade_count": 13,
+      "win_rate": 0.5385
+    },
+    "ab_covered_w3": {
+      "expected_value_score": 0.1014,
+      "max_drawdown_pct": 0.004,
+      "sharpe_daily": 4.74,
+      "total_return_pct": 0.0214,
+      "trade_count": 3,
+      "win_rate": 0.6667
+    },
+    "ab_primary": {
+      "expected_value_score": 0.8299,
+      "max_drawdown_pct": 0.026,
+      "sharpe_daily": 3.49,
+      "total_return_pct": 0.2378,
+      "trade_count": 22,
+      "win_rate": 0.6364
+    },
+    "ab_window_1": {
+      "expected_value_score": 0.1255,
+      "max_drawdown_pct": 0.0511,
+      "sharpe_daily": 1.21,
+      "total_return_pct": 0.1037,
+      "trade_count": 29,
+      "win_rate": 0.3793
+    },
+    "ab_window_2": {
+      "expected_value_score": 0.0257,
+      "max_drawdown_pct": 0.0917,
+      "sharpe_daily": 0.51,
+      "total_return_pct": 0.0504,
+      "trade_count": 29,
+      "win_rate": 0.3103
+    },
+    "ungated_c_primary": {
+      "total_pnl_usd": -941.79,
+      "trade_count": 14,
+      "win_rate": 0.3571
+    },
+    "ungated_c_window_1": {
+      "total_pnl_usd": 1389.35,
+      "trade_count": 7,
+      "win_rate": 0.5714
+    },
+    "ungated_c_window_2": {
+      "total_pnl_usd": -558.67,
+      "trade_count": 8,
+      "win_rate": 0.25
+    }
+  },
+  "change_summary": "Ran a runtime-only `signal_engine.strategy_c_earnings()` monkeypatch that turned Strategy C into a snapshot-aware composite gate: require non-null snapshot fields plus `avg_historical_surprise_pct >= 4.0`, `atr/close <= 0.035`, `pct_from_52w_high >= -0.08`, and `trend_score >= 0.6`; otherwise suppress the C signal entirely. Compared `A+B` vs ungated `A+B+C` vs gated `A+B+C` across the standard three windows and also across three non-overlapping snapshot-covered subwindows (`2025-10-23 -> 2025-12-12`, `2025-12-15 -> 2026-02-12`, `2026-02-13 -> 2026-04-20`). No repository strategy code changed.",
+  "change_type": "event_grading_rule",
+  "component": "quant/signal_engine.py (runtime-only monkeypatch, rolled back)",
+  "date_range": {
+    "end": "2026-04-20",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "covered_w1_expected_value_score_delta_vs_ab": 0.0023,
+    "covered_w2_expected_value_score_delta_vs_ab": -0.0943,
+    "covered_w3_expected_value_score_delta_vs_ab": 0.0353,
+    "note": "The composite gate materially improved Strategy C itself versus ungated C in the primary window (`C pnl -941.79 -> -38.35`) and made the late repaired-snapshot subwindow positive, but it still failed the north-star acceptance test because the full primary window remained clearly inferior to A+B and the middle repaired-snapshot subwindow regressed materially (`EV 0.2954 -> 0.2011`).",
+    "primary_expected_value_score_delta_vs_ab": -0.128,
+    "primary_sharpe_daily_delta_vs_ab": -0.26,
+    "primary_total_return_pct_delta_vs_ab": -0.0205,
+    "window_1_expected_value_score_delta_vs_ab": 0.0,
+    "window_2_expected_value_score_delta_vs_ab": 0.0
+  },
+  "experiment_id": "exp-20260421-022",
+  "hypothesis": "Now that P-ERN has accumulated 129 daily `earnings_snapshot_YYYYMMDD.json` files, the next credible `C strategy revival` test is a snapshot-aware composite event-quality gate rather than another one-dimensional surprise or technical filter. If `earnings_event_long` fires only when repaired snapshot context shows both real historical quality (`avg_historical_surprise_pct >= 4`) and controlled technical shape (`atr_pct <= 3.5%`, `pct_from_52w_high >= -8%`, `trend_score >= 0.6`), then `A+B+C` should beat the current `A+B` stack at least in the snapshot-covered regime and ideally no longer drag the primary window.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "covered_w1": "early repaired-snapshot tape",
+    "covered_w2": "mid repaired-snapshot tape",
+    "covered_w3": "late repaired-snapshot tape",
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "window_1": "ripping bull / high-beta leadership",
+    "window_2": "older weak-to-mixed tape (pre-snapshot era for C fields)"
+  },
+  "next_retry_requires": [
+    "Do not retry another low-complexity C event gate built only from historical surprise sign/magnitude plus a couple of technical-shape fields",
+    "If `C strategy revival` is revisited, the next mechanism must incorporate richer event grading or explicit slot-interaction logic rather than another scalar/composite cutoff",
+    "Treat P-ERN as no longer purely data-blocked: repaired snapshots now make C experiments credible, so future rejections should be interpreted as mechanism failures unless the archive coverage changes again",
+    "Keep `LLM soft ranking` as the highest-upside strategic direction overall, but still blocked until replay coverage extends materially beyond 2026-04-18"
+  ],
+  "notes": "This run changes the diagnosis of P-ERN. The blocker that remains for Strategy C is no longer 'missing snapshot archive'; it is 'no accepted event-grading mechanism yet'.",
+  "parameters": {
+    "ab_strategies": [
+      "trend_long",
+      "breakout_long"
+    ],
+    "abc_strategies": [
+      "trend_long",
+      "breakout_long",
+      "earnings_event_long"
+    ],
+    "event_quality_gate": {
+      "new": "require snapshot present AND avg_historical_surprise_pct >= 4.0 AND atr_pct <= 0.035 AND pct_from_52w_high >= -0.08 AND trend_score >= 0.6",
+      "old": "ungated repaired-data `earnings_event_long` once Strategy C is enabled"
+    },
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "snapshot_date_range": [
+      "2025-10-23",
+      "2026-04-21"
+    ],
+    "snapshot_files": 129
+  },
+  "rejection_reason": "Rejected on Gate 4. This is a real repaired-data alpha experiment, not a measurement blocker, and the answer is still no: a low-complexity composite event-quality gate can reduce the worst C drag, but it does not beat the current A+B baseline in the primary window and it is not stable across the three non-overlapping snapshot-covered subwindows.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "data/earnings_snapshot_20251023.json",
+    "data/earnings_snapshot_20260421.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-12-12",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2026-02-12",
+      "start": "2025-12-15"
+    },
+    {
+      "end": "2026-04-20",
+      "start": "2026-02-13"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-21T19:15:00-07:00"
+}

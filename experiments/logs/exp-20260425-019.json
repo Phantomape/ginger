@@ -1,0 +1,165 @@
+{
+  "after_metrics": {
+    "multiplier_0_0": {
+      "late_strong": {
+        "expected_value_score": 1.1603,
+        "max_drawdown_pct": 0.0233,
+        "sharpe_daily": 4.09,
+        "total_return_pct": 0.2837,
+        "trade_count": 19
+      },
+      "mid_weak": {
+        "expected_value_score": 0.3555,
+        "max_drawdown_pct": 0.0205,
+        "sharpe_daily": 2.44,
+        "total_return_pct": 0.1457,
+        "trade_count": 25
+      },
+      "old_thin": {
+        "expected_value_score": 0.0716,
+        "max_drawdown_pct": 0.0479,
+        "sharpe_daily": 0.87,
+        "total_return_pct": 0.0823,
+        "trade_count": 24
+      }
+    },
+    "multiplier_0_25": {
+      "late_strong": {
+        "expected_value_score": 1.1184,
+        "max_drawdown_pct": 0.0234,
+        "sharpe_daily": 4.02,
+        "total_return_pct": 0.2782,
+        "trade_count": 21
+      },
+      "mid_weak": {
+        "expected_value_score": 0.3555,
+        "max_drawdown_pct": 0.0205,
+        "sharpe_daily": 2.44,
+        "total_return_pct": 0.1457,
+        "trade_count": 25
+      },
+      "old_thin": {
+        "expected_value_score": 0.0716,
+        "max_drawdown_pct": 0.0479,
+        "sharpe_daily": 0.87,
+        "total_return_pct": 0.0823,
+        "trade_count": 24
+      }
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "eligible_signals": 2,
+      "expected_value_score": 1.0402,
+      "max_drawdown_pct": 0.0238,
+      "sharpe_daily": 3.89,
+      "total_return_pct": 0.2674,
+      "trade_count": 21
+    },
+    "mid_weak": {
+      "eligible_signals": 0,
+      "expected_value_score": 0.3555,
+      "max_drawdown_pct": 0.0205,
+      "sharpe_daily": 2.44,
+      "total_return_pct": 0.1457,
+      "trade_count": 25
+    },
+    "old_thin": {
+      "eligible_signals": 0,
+      "expected_value_score": 0.0716,
+      "max_drawdown_pct": 0.0479,
+      "sharpe_daily": 0.87,
+      "total_return_pct": 0.0823,
+      "trade_count": 24
+    }
+  },
+  "change_summary": "Runtime-only size_signals monkeypatch screened the narrow Energy 15-25 DTE near-high pocket at 0.25x and 0.0x across the fixed late/mid/old snapshot trio. No production code was changed or promoted.",
+  "change_type": "allocation_sizing_probe",
+  "component": "runtime-only monkeypatch; no repository code promoted",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "gate4_basis": "The 0x point clears single-window Gate 4 in late_strong but has no exposure in the two validation windows, so it fails multi-window stability requirements for production promotion.",
+    "multiplier_0_0_ev_deltas": {
+      "late_strong": 0.1201,
+      "mid_weak": 0.0,
+      "old_thin": 0.0
+    },
+    "multiplier_0_25_ev_deltas": {
+      "late_strong": 0.0782,
+      "mid_weak": 0.0,
+      "old_thin": 0.0
+    }
+  },
+  "experiment_id": "exp-20260425-019",
+  "hypothesis": "The broad Energy near-high failure may be caused by mixing a same-day CVX/XOM loss pair with later Energy winners. A narrower event-proximity rule, `strategy in {trend_long, breakout_long} | sector == Energy | 15 <= days_to_earnings <= 25 | conditions_met.pct_from_52w_high >= -0.02`, may isolate the repeat loss pocket without cutting later Energy winners.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull with two qualifying Energy near-high 19-DTE signals: CVX trend and XOM breakout",
+    "mid_weak": "rotation-heavy bull with zero qualifying exposure",
+    "old_thin": "mixed-to-weak tape with zero qualifying exposure"
+  },
+  "next_retry_requires": [
+    "Do not promote Energy 15-25 DTE near-high until another non-overlapping window or forward sample produces qualifying exposure with similar negative marginal value",
+    "If Energy is revisited, require a fresh audited cluster or an independent economic discriminator beyond the same CVX/XOM 19-DTE pair",
+    "Do not widen this into broad Energy near-high; exp-20260425-018 already rejected that form"
+  ],
+  "notes": "This was alpha_search. The narrow pocket is a watchlist candidate, not an accepted rule.",
+  "parameters": {
+    "rule": {
+      "conditions_met.pct_from_52w_high_min": -0.02,
+      "days_to_earnings_max": 25,
+      "days_to_earnings_min": 15,
+      "sector": "Energy",
+      "strategies": [
+        "trend_long",
+        "breakout_long"
+      ]
+    },
+    "screened_variants": [
+      "baseline",
+      "0.25x",
+      "0.0x"
+    ],
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "rejection_reason": "Rejected/deferred on multi-window evidence. The result is promising but entirely single-window; promoting it would codify a two-trade same-day Energy loss cluster without independent validation.",
+  "related_files": [
+    "data/exp_20260425_019_results.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-25T15:35:00-07:00"
+}

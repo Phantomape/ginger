@@ -1,0 +1,213 @@
+{
+  "after_metrics": {
+    "stress_strict_trend_0.25x": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "stress_days_hit_during_sizing": 0,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "trend_signals_haircut": 0,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "stress_days_hit_during_sizing": 0,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "trend_signals_haircut": 0,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 0.36,
+        "stress_days_hit_during_sizing": 0,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "trend_signals_haircut": 0,
+        "win_rate": 0.3077
+      }
+    },
+    "stress_strict_trend_0.5x": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "stress_days_hit_during_sizing": 0,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "trend_signals_haircut": 0,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "stress_days_hit_during_sizing": 0,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "trend_signals_haircut": 0,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 0.36,
+        "stress_days_hit_during_sizing": 0,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "trend_signals_haircut": 0,
+        "win_rate": 0.3077
+      }
+    }
+  },
+  "before_metrics": {
+    "accepted_ab_stack": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 0.36,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    }
+  },
+  "change_summary": "Ran a runtime-only deterministic two-stage meta-allocation experiment across the same late / mid / old fixed OHLCV snapshots. The strict weak-tape detector was held fixed, and only the stage-two action changed: on `stress_strict` days, `trend_long` signals alone were de-risked to `0.5x` or `0.25x`. Entries, exits, ranking, breakout sizing, and accepted A+B cohort rules all stayed unchanged. No repository trading logic was kept after measurement.",
+  "change_type": "allocation_rule",
+  "component": "runtime-only monkeypatch of `portfolio_engine.size_signals()` with a day-pointer hook for fixed-snapshot replay, applying trend-only haircuts on cached strict-stress dates (rolled back; no repo trading logic changed)",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "note": "This removes the last obvious sleeve-target ambiguity for the current strict weak-tape detector. The result is again vacuous by construction: the detector never intersected an actual trend sizing event in any replay window, so changing the action strength could not matter.",
+    "stress_strict_trend_0.25x_ev_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": 0.0
+    },
+    "stress_strict_trend_0.5x_ev_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": 0.0
+    }
+  },
+  "experiment_id": "exp-20260424-003",
+  "hypothesis": "If the strict weak-tape detector from exp-20260423-014 has zero useful overlap with `breakout_long`, perhaps the correct sleeve target is `trend_long`: keep `stress_strict = breadth_above_200 <= 0.55 AND spy_pct_from_ma <= -0.02` fixed, but de-risk trend signals only on those days. A valid result should show non-zero candidate overlap and improve at least one weaker window without harming the strong window.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull with brief Mar-2026 stress pocket",
+    "mid_weak": "bullish / rotation-heavy tape with early-window pressure cluster",
+    "old_thin": "mixed-to-weak tape culminating in Mar-Apr 2025 macro stress"
+  },
+  "next_retry_requires": [
+    "Do not keep swapping sleeve targets on the same strict day-level detector by default",
+    "If meta-allocation work continues, move to candidate-day or candidate-cohort states rather than broad market-day states detached from signal formation",
+    "Treat this as a mechanism-level doctrine update: a clean macro-style detector still has no alpha value if it never intersects the A+B decision surface"
+  ],
+  "notes": "Single-causal-variable discipline held relative to exp-20260424-002: the strict weak-tape detector stayed fixed and only the sleeve target of the stage-two action changed from breakout to trend. The result therefore cleanly falsifies the remaining sleeve-target ambiguity for this detector family.",
+  "parameters": {
+    "artifact_files": [
+      "data/exp_20260423_014_stress_audit.json",
+      "data/exp_20260424_003_results.json"
+    ],
+    "deployment": {
+      "action_scope": "trend signals on stress days only",
+      "target_sleeve": "trend_long",
+      "trend_risk_multipliers": [
+        0.5,
+        0.25
+      ]
+    },
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "state_definition": {
+      "breadth_above_200_max": 0.55,
+      "semantics": "AND",
+      "source": "reuse strict weak-tape audit from exp-20260423-014",
+      "spy_pct_from_ma_max": -0.02
+    },
+    "trigger_overlap_audit": {
+      "late_strong": {
+        "stress_days_available": 2,
+        "stress_days_hit_during_sizing": 0,
+        "trend_signals_haircut": 0
+      },
+      "mid_weak": {
+        "stress_days_available": 8,
+        "stress_days_hit_during_sizing": 0,
+        "trend_signals_haircut": 0
+      },
+      "old_thin": {
+        "stress_days_available": 17,
+        "stress_days_hit_during_sizing": 0,
+        "trend_signals_haircut": 0
+      }
+    },
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "rejection_reason": "Rejected as vacuous on candidate-day overlap. The strict weak-tape detector has zero useful overlap not only with breakout sizing but also with trend sizing in the tested windows. That makes the whole family of broad market-day weak-tape states ineffective as an allocation key for the current A+B stack.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "data/exp_20260423_014_stress_audit.json",
+    "data/exp_20260424_003_results.json",
+    "data/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv_snapshot_20241002_20250422.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-24T01:32:00-07:00"
+}

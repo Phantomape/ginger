@@ -1,0 +1,235 @@
+{
+  "after_metrics": {
+    "best_variant_spersist_loose_0": {
+      "late_strong": {
+        "expected_value_score": 0.85,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.53,
+        "total_return_pct": 0.2408,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.157,
+        "max_drawdown_pct": 0.042,
+        "sharpe_daily": 1.34,
+        "total_return_pct": 0.1172,
+        "trade_count": 28,
+        "win_rate": 0.3929
+      },
+      "old_thin": {
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 0.36,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    },
+    "best_variant_spersist_strict_0": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.157,
+        "max_drawdown_pct": 0.042,
+        "sharpe_daily": 1.34,
+        "total_return_pct": 0.1172,
+        "trade_count": 28,
+        "win_rate": 0.3929
+      },
+      "old_thin": {
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 0.36,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    },
+    "best_variant_spersist_strict_25": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1479,
+        "max_drawdown_pct": 0.0442,
+        "sharpe_daily": 1.3,
+        "total_return_pct": 0.1138,
+        "trade_count": 30,
+        "win_rate": 0.3667
+      },
+      "old_thin": {
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 0.36,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    }
+  },
+  "before_metrics": {
+    "accepted_ab_stack": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 0.36,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    }
+  },
+  "change_summary": "Ran a runtime-only monkeypatch of `feature_layer.compute_features()` to attach 5-day rolling sector and market participation fields (`sector_above200_breadth_5d`, `sector_posmom_breadth_5d`, `sector_breakout_breadth_5d`, `market_posmom_breadth_5d`) derived from the deterministic OHLCV snapshots. Passed those fields through `risk_engine.enrich_signals()` and screened breakout-only sizing variants in `portfolio_engine.size_signals()` using a sector-persistence trigger instead of the rejected same-day breadth state. No repository trading logic was kept after measurement.",
+  "change_type": "allocation_rule",
+  "component": "runtime-only monkeypatch of `quant/feature_layer.py` + `quant/risk_engine.py` + `quant/portfolio_engine.py` sizing path (rolled back; no repo trading logic changed)",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "best_variant_ev_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0315,
+      "old_thin": 0.0
+    },
+    "note": "The new proxy changed the shape of the branch but not the promotion outcome. The strict 0x variant materially improved the middle window (`EV 0.1255 -> 0.1570`, `maxDD 5.11% -> 4.20%`) and the loose 0x form was a near-identical middle-window winner, but the oldest weak window stayed a strict null and the late-strong window remained a strict null or only de minimis noise (`EV 0.8470 -> 0.8500`). This still fails the required primary-window plus majority-window stability bar."
+  },
+  "experiment_id": "exp-20260423-005",
+  "hypothesis": "If the missing breakout-health signal is not same-day sector breadth but sector-relative leadership persistence over time, then a breakout-only haircut keyed off 5-day sector participation should preserve the late-strong window while improving the weaker windows. A valid proxy should outperform the accepted A+B stack without relying on another same-day breadth snapshot.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull with Apr-2026 stress",
+    "mid_weak": "ripping bull / high-beta leadership",
+    "old_thin": "mixed-to-weak tape"
+  },
+  "next_retry_requires": [
+    "Do not keep sweeping nearby breakout-only persistence haircuts by default",
+    "If sector-relative persistence is revisited, change the deployment shape entirely instead of another haircut permutation",
+    "Prefer a different alpha branch unless fresh forward data creates a primary-window test for this state"
+  ],
+  "notes": "This remained a single-causal-variable experiment: only breakout risk budget changed, and only when the new 5-day sector persistence trigger fired. Entries, exits, ranking, and the accepted cohort rules stayed unchanged.",
+  "parameters": {
+    "accepted_stack_context": [
+      "REGIME_AWARE_EXIT",
+      "zero-risk low-TQS non-commodity breakouts",
+      "commodity low-TQS exemption",
+      "zero-risk trend Industrials",
+      "0.25x moderate-gap trend Technology"
+    ],
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "persistence_fields": [
+      "sector_above200_breadth_5d",
+      "sector_posmom_breadth_5d",
+      "sector_breakout_breadth_5d",
+      "market_posmom_breadth_5d"
+    ],
+    "screened_variants": {
+      "spersist_loose_0": {
+        "market_minus_sector_posmom_min_gap": 0.12,
+        "risk_multiplier": 0.0,
+        "sector_above200_min": 0.5,
+        "sector_breakout_max": 0.12,
+        "sector_posmom_max": 0.5
+      },
+      "spersist_loose_25": {
+        "market_minus_sector_posmom_min_gap": 0.12,
+        "risk_multiplier": 0.25,
+        "sector_above200_min": 0.5,
+        "sector_breakout_max": 0.12,
+        "sector_posmom_max": 0.5
+      },
+      "spersist_relaxed_25": {
+        "market_minus_sector_posmom_min_gap": 0.1,
+        "risk_multiplier": 0.25,
+        "sector_above200_min": 0.45,
+        "sector_breakout_max": 0.15,
+        "sector_posmom_max": 0.55
+      },
+      "spersist_strict_0": {
+        "market_minus_sector_posmom_min_gap": 0.15,
+        "risk_multiplier": 0.0,
+        "sector_above200_min": 0.55,
+        "sector_breakout_max": 0.1,
+        "sector_posmom_max": 0.45
+      },
+      "spersist_strict_25": {
+        "market_minus_sector_posmom_min_gap": 0.15,
+        "risk_multiplier": 0.25,
+        "sector_above200_min": 0.55,
+        "sector_breakout_max": 0.1,
+        "sector_posmom_max": 0.45
+      }
+    },
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "rejection_reason": "Rejected on Gate 4 stability. Sector-relative persistence is richer than same-day breadth, but in this deployment it remains a one-window rescue rather than a promotable repo rule. The mechanism appears to describe one particular weak-bull failure mode, not a stable current-stack edge.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "data/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv_snapshot_20241002_20250422.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-23T17:05:00-07:00"
+}

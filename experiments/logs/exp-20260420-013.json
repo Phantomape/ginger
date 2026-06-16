@@ -1,0 +1,81 @@
+{
+  "after_metrics": {
+    "blocker_proof": {
+      "earnings_snapshot_files_present": 0,
+      "llm_replay_files_present": 6,
+      "llm_replay_latest_date": "20260417",
+      "pipeline_error": "ModuleNotFoundError: No module named 'yfinance'",
+      "targeted_tests": [
+        "pytest quant/test_quant.py -k \"save_advice or persist_earnings_snapshot\" -> 6 passed"
+      ]
+    },
+    "expected_value_score": 0.7531,
+    "failure_class": "missing runtime dependency",
+    "max_drawdown_pct": 0.0408,
+    "pipeline_status": "failed before news/quant/LLM stages",
+    "sharpe_daily": 2.83,
+    "survival_rate": 1.0,
+    "total_return_pct": 0.2661,
+    "trade_count": 28
+  },
+  "before_metrics": {
+    "alpha_candidate_1": "LLM soft ranking (blocked by P-LLM coverage)",
+    "alpha_candidate_2": "C strategy revival (blocked by P-ERN data quality)",
+    "expected_value_score": 0.7531,
+    "max_drawdown_pct": 0.0408,
+    "sharpe_daily": 2.83,
+    "survival_rate": 1.0,
+    "total_return_pct": 0.2661,
+    "trade_count": 28
+  },
+  "change_summary": "Re-read AGENTS.md, the alpha playbook, the 2026-04-19 daily report, the latest backtest baseline, and recent experiment history; then reproduced the current blocker directly by running `python quant/run_pipeline.py`. The pipeline still fails immediately with `ModuleNotFoundError: No module named 'yfinance'`, while local coverage remains frozen at 6 replay files (latest `20260417`) and 0 earnings snapshots. No strategy logic or thresholds were changed.",
+  "change_type": "execution_blocker",
+  "component": "environment + quant/run_pipeline.py entry path",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "note": "No backtest rerun or strategy tweak was justified. The deliverable of this run is blocker proof: the strongest remaining alpha directions are still not trustworthy to test because the daily accumulation pipeline is dead at import time.",
+    "sharpe_daily": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260420-013",
+  "hypothesis": "If the post-20260420 parity fixes are genuinely unblocking the highest-value alpha paths, `python quant/run_pipeline.py` should now execute far enough to start accumulating fresh `earnings_snapshot_YYYYMMDD.json` and eventually new `llm_prompt_resp_YYYYMMDD.json` files. If it still cannot run, then any further `C strategy revival` or `LLM soft ranking` discussion remains non-credible and this blocker should take precedence over more A/B micro-tuning.",
+  "llm_metrics": {
+    "blocker_relation": "`LLM soft ranking` remains blocked because replay coverage cannot grow while the pipeline cannot import its market-data dependency",
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "N/A - blocker proof against current accepted A+B baseline"
+  },
+  "next_retry_requires": [
+    "Install or otherwise provide `yfinance` in the execution environment used by `python quant/run_pipeline.py`",
+    "Re-run the pipeline and confirm new `earnings_snapshot_YYYYMMDD.json` files appear before resuming `C strategy revival`",
+    "If automatic LLM advice is enabled in that environment, confirm `llm_prompt_resp_YYYYMMDD.json` dates move past `20260417` before resuming `LLM soft ranking`",
+    "Until those two accumulators move, do not spend another round on A/B ranking or trend-exit permutations already falsified in recent experiments"
+  ],
+  "notes": "This run intentionally did not propose another unblocked A/B alpha tweak because recent history already falsified the remaining low-complexity variants, while the two highest-value alpha directions are still structurally blocked by a non-running daily pipeline.",
+  "parameters": {
+    "actual_failure": "ModuleNotFoundError: No module named 'yfinance'",
+    "command": "python quant/run_pipeline.py",
+    "earnings_snapshot_files_present": 0,
+    "expected_blocker_clear_signal": "pipeline runs and starts emitting fresh earnings_snapshot / llm replay files",
+    "llm_replay_files_present": 6,
+    "llm_replay_latest_date": "20260417"
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "docs/daily_alpha_optimization_20260419.md"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-04-20T20:10:00-07:00"
+}

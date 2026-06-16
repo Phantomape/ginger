@@ -1,0 +1,156 @@
+{
+  "after_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.8563,
+      "max_drawdown_pct": 0.026,
+      "sharpe_daily": 3.54,
+      "total_return_pct": 0.2419,
+      "trade_count": 21,
+      "win_rate": 0.6667
+    },
+    "window_1": {
+      "expected_value_score": 0.0841,
+      "max_drawdown_pct": 0.0887,
+      "sharpe_daily": 0.89,
+      "total_return_pct": 0.0945,
+      "trade_count": 29,
+      "win_rate": 0.3793
+    },
+    "window_2": {
+      "expected_value_score": 0.0076,
+      "max_drawdown_pct": 0.0846,
+      "sharpe_daily": 0.31,
+      "total_return_pct": 0.0245,
+      "trade_count": 29,
+      "win_rate": 0.3103
+    }
+  },
+  "before_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.8299,
+      "max_drawdown_pct": 0.026,
+      "sharpe_daily": 3.49,
+      "total_return_pct": 0.2378,
+      "trade_count": 22,
+      "win_rate": 0.6364
+    },
+    "window_1": {
+      "expected_value_score": 0.0841,
+      "max_drawdown_pct": 0.0887,
+      "sharpe_daily": 0.89,
+      "total_return_pct": 0.0945,
+      "trade_count": 29,
+      "win_rate": 0.3793
+    },
+    "window_2": {
+      "expected_value_score": 0.0084,
+      "max_drawdown_pct": 0.0916,
+      "sharpe_daily": 0.32,
+      "total_return_pct": 0.0263,
+      "trade_count": 29,
+      "win_rate": 0.3103
+    }
+  },
+  "change_summary": "Ran a runtime-only sizing experiment that set `trend_long` Healthcare signals to zero risk via a monkeypatched `portfolio_engine.size_signals()` while keeping the accepted A+B stack unchanged. No repository code changed. The test used the current accepted stack after `exp-20260421-020`, plus an entry audit that confirmed the cohort now appears only in the primary and weak windows.",
+  "change_type": "allocation_rule",
+  "component": "portfolio_engine.size_signals() runtime-only monkeypatch, rolled back",
+  "date_range": {
+    "end": "2026-04-20",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "note": "The rule produced a tempting primary-window bump, but the weak window still regressed on the north-star metric even after the accepted moderate-gap tech haircut had already reshaped the trend book. This is not a stable majority-window improvement.",
+    "primary_expected_value_score_delta": 0.0264,
+    "primary_sharpe_daily_delta": 0.05,
+    "primary_total_return_pct_delta": 0.0041,
+    "primary_trade_count_delta": -1,
+    "window_1_expected_value_score_delta": 0.0,
+    "window_1_sharpe_daily_delta": 0.0,
+    "window_1_total_return_pct_delta": 0.0,
+    "window_2_expected_value_score_delta": -0.0008,
+    "window_2_max_drawdown_pct_delta": -0.007,
+    "window_2_sharpe_daily_delta": -0.01,
+    "window_2_total_return_pct_delta": -0.0018
+  },
+  "experiment_id": "exp-20260421-021",
+  "hypothesis": "After the accepted `trend_long` Technology moderate-gap haircut, the current repo state might have exposed one new coarse drag bucket: `trend_long` Healthcare. If the remaining Healthcare trend cohort is now a true repeated loser rather than a sector-only overfit bucket, zeroing only that cohort should improve the primary and weak windows while leaving the bull window unchanged because no Healthcare trend trades fire there.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "window_1": "ripping bull / high-beta leadership",
+    "window_2": "older weak-to-mixed tape"
+  },
+  "next_retry_requires": [
+    "Do not reopen coarse sector-only trend suppressions again without a genuinely new conditioning variable inside the Healthcare cohort",
+    "If trend allocation alpha is revisited, start from a richer intersection such as sector plus risk-shape or semantic/event context rather than another zero-risk sector bucket",
+    "Keep `LLM soft ranking` as the highest-upside blocked direction; the current unblocked A+B branch is still near saturation"
+  ],
+  "notes": "This retry was justified only because the accepted repo state had changed after `exp-20260421-020`, creating a new current-state audit where Healthcare trend trades were again all losers. The re-test still failed, which strengthens the mechanism conclusion that 'one more coarse sector bucket' remains the wrong continuation template even after the latest accepted stack changes.",
+  "parameters": {
+    "TREND_HEALTHCARE_RISK_MULTIPLIER": {
+      "new": 0.0,
+      "old": 1.0
+    },
+    "affected_cohort": "`trend_long` + sector == `Healthcare`",
+    "baseline_repo_state": {
+      "primary_window": {
+        "expected_value_score": 0.8299,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.49,
+        "survival_rate": 1.0,
+        "total_return_pct": 0.2378,
+        "trade_count": 22,
+        "win_rate": 0.6364
+      },
+      "window_1": {
+        "expected_value_score": 0.0841,
+        "max_drawdown_pct": 0.0887,
+        "sharpe_daily": 0.89,
+        "survival_rate": 0.902,
+        "total_return_pct": 0.0945,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "window_2": {
+        "expected_value_score": 0.0084,
+        "max_drawdown_pct": 0.0916,
+        "sharpe_daily": 0.32,
+        "survival_rate": 0.9833,
+        "total_return_pct": 0.0263,
+        "trade_count": 29,
+        "win_rate": 0.3103
+      }
+    },
+    "current_repo_state_audit": {
+      "primary_window_losers": [
+        "NVO 2026-01-20"
+      ],
+      "window_1_losers": [],
+      "window_2_losers": [
+        "ISRG 2024-10-21",
+        "ISRG 2025-01-16"
+      ]
+    },
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe"
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability. `trend_long` Healthcare still behaves like a too-small sector-only bucket rather than a stable edge source: the primary window improved, the bull window stayed null because no cohort existed, and the weak window regressed on expected value despite lower drawdown. The residual drag remains context-dependent, so this retry does not overturn the playbook's earlier warning against reopening coarse strategy+sector suppressions by default.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-21T17:28:55-07:00"
+}

@@ -1,0 +1,83 @@
+{
+  "after_metrics": {
+    "expected_value_score": 0.4498,
+    "max_drawdown_pct": 0.0452,
+    "probe": {
+      "as_of": "2026-02-20",
+      "avg_historical_surprise_pct": 5.21,
+      "days_to_earnings": 5,
+      "eps_estimate": 1.54,
+      "ticker": "NVDA"
+    },
+    "sharpe_daily": 2.24,
+    "snapshot_days_loaded": 129,
+    "test_results": "7 targeted tests passed",
+    "trade_count": 38,
+    "win_rate": 0.5263
+  },
+  "before_metrics": {
+    "c_enabled_summary": "A+B+C with only 20260420 and 20260421 snapshots present",
+    "expected_value_score": 0.4498,
+    "max_drawdown_pct": 0.0452,
+    "sharpe_daily": 2.24,
+    "snapshot_days_loaded": 2,
+    "trade_count": 38,
+    "win_rate": 0.5263
+  },
+  "change_summary": "Added historical `as_of` support to `quant/data_layer.py`, including future-safe extraction of the next earnings row and past-only surprise history. Added `quant/backfill_earnings_snapshots.py` to prefetch each ticker's earnings timeline once and persist `earnings_snapshot_YYYYMMDD.json` across a requested trading-day range. Validated with 7 targeted tests, then backfilled the full primary window (`2025-10-23 -> 2026-04-20`), producing 129 archived snapshot days available to the backtester.",
+  "change_type": "parity_fix",
+  "component": "quant/data_layer.py + quant/backfill_earnings_snapshots.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-20",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "note": "This was a measurement/parity repair. The deliverable is full historical P-ERN coverage plus proof that archived earnings fields now flow into historical feature construction without future leakage.",
+    "sharpe_daily": 0.0,
+    "snapshot_days_loaded_delta": 127,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260421-003",
+  "hypothesis": "If `C strategy revival` is still the best blocked alpha direction, the first credible next step is not another C threshold tweak but a full historical P-ERN archive. Extending `data_layer.get_earnings_data()` with an `as_of` view and adding a backfill path should make `eps_estimate` and historical surprise replayable across the whole primary window without leaking future reports.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "measurement repair only; no strategy rule changed"
+  },
+  "next_retry_requires": [
+    "Use the repaired archive to re-test `earnings_event_long` against the same A+B baseline before making any new C-specific rule change",
+    "Do not assume data repair alone revives C; the follow-up still needs Gate 4 multi-window evidence"
+  ],
+  "notes": "The key success condition was archive availability, not an immediate alpha gain. This run converts P-ERN from a two-day snapshot trickle into a usable historical replay archive.",
+  "parameters": {
+    "backfill_command": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe quant\\backfill_earnings_snapshots.py --start 2025-10-23 --end 2026-04-20",
+    "get_earnings_data": {
+      "new": "supports historical as_of with no future surprise leakage",
+      "old": "current-day only, no historical as_of view"
+    },
+    "targeted_tests": [
+      "test_earnings_snapshot_loader_empty_dir",
+      "test_earnings_snapshot_loader_reads_file",
+      "test_earnings_dict_for_uses_snapshot",
+      "test_earnings_dict_for_no_snapshot_returns_none",
+      "test_get_earnings_data_as_of_uses_only_past_surprises",
+      "test_get_earnings_data_as_of_uses_next_known_upcoming_row",
+      "test_backfill_earnings_snapshots_writes_trading_day_files"
+    ]
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/data_layer.py",
+    "quant/backfill_earnings_snapshots.py",
+    "quant/test_quant.py",
+    "data/earnings_snapshot_20251023.json",
+    "data/earnings_snapshot_20260420.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-04-21T02:15:00-07:00"
+}

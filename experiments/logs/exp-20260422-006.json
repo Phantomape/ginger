@@ -1,0 +1,119 @@
+{
+  "after_metrics": {
+    "primary_replay_llm": {
+      "archive_backlog_clean_trade_news_days": 3,
+      "archive_backlog_investment_advice_days": 1,
+      "archive_backlog_missing_candidate_days": 28,
+      "archive_backlog_missing_candidate_signals": 41,
+      "archive_backlog_prompt_missing_days": 26,
+      "archive_backlog_prompt_ready_dates": [
+        "20260219",
+        "20260312"
+      ],
+      "archive_backlog_prompt_ready_days": 2,
+      "candidate_days_covered": 3,
+      "candidate_days_total": 31,
+      "candidate_signals_covered": 3,
+      "candidate_signals_total": 44,
+      "expected_value_score": 0.8369,
+      "max_drawdown_pct": 0.026,
+      "sharpe_daily": 3.49,
+      "signals_survived": 44,
+      "total_return_pct": 0.2398,
+      "trade_count": 22,
+      "win_rate": 0.6364
+    }
+  },
+  "before_metrics": {
+    "primary_replay_llm": {
+      "candidate_days_covered": 3,
+      "candidate_days_total": 31,
+      "candidate_signals_covered": 3,
+      "candidate_signals_total": 44,
+      "expected_value_score": 0.8369,
+      "max_drawdown_pct": 0.026,
+      "sharpe_daily": 3.49,
+      "signals_survived": 44,
+      "total_return_pct": 0.2398,
+      "trade_count": 22,
+      "win_rate": 0.6364
+    }
+  },
+  "change_summary": "Added `quant/llm_backlog.py` and extended `quant/backtester.py` so `llm_attribution` now includes `archive_backlog` with per-date queue entries and summary counts for missing candidate days. The backlog ranks higher-candidate dates first and flags whether a missing day is already prompt-ready for manual import. CLI now prints `prompt-ready backlog` alongside candidate coverage. Added regression coverage in `quant/test_quant.py`. Re-ran the deterministic primary replay window to confirm strategy metrics stayed unchanged while the blocker became more actionable.",
+  "change_type": "measurement_repair",
+  "component": "quant/llm_backlog.py + quant/backtester.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "max_drawdown_pct_delta": 0.0,
+    "note": "Pure blocker-operationalization upgrade. Deterministic replay metrics stayed bit-identical; the new information is that only 2 of the 28 missing candidate days are immediately recoverable from existing prompts (`20260219`, `20260312`), while the other 26 dates are true prompt/archive gaps.",
+    "sharpe_daily_delta": 0.0,
+    "survival_rate_delta": 0.0,
+    "total_return_pct_delta": 0.0,
+    "trade_count_delta": 0,
+    "win_rate_delta": 0.0
+  },
+  "experiment_id": "exp-20260422-006",
+  "hypothesis": "`LLM soft ranking` remains the highest-upside alpha branch, but the current replay blocker is still too blunt: 'missing candidate dates' does not tell us which dates can be backfilled immediately from existing prompts versus which dates are true archive holes. If backtester surfaces an actionable archive backlog that intersects missing candidate dates with saved prompts / advice / decision logs, then the next coverage push can target the highest-value recoverable days first.",
+  "llm_metrics": {
+    "candidate_day_coverage_fraction": 0.0968,
+    "candidate_signal_coverage_fraction": 0.0682,
+    "coverage_fraction": 0.0488,
+    "llm_attribution_metric": "archive_backlog.prompt_ready_days plus per-date prompt availability",
+    "llm_change_scope": "attribution/reporting only",
+    "signals_passed_by_llm": 0,
+    "signals_presented": 3,
+    "signals_vetoed_by_llm": 3,
+    "used_llm": true,
+    "veto_rate": 1.0
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "secondary": "ripping bull / high-beta leadership"
+  },
+  "next_retry_requires": [
+    "Backfill the prompt-ready candidate dates first: `20260219` and `20260312`",
+    "Do not treat the remaining 26 missing candidate days as a generic 'small sample' problem; they are explicit production archive gaps",
+    "Keep `LLM soft ranking` as the top strategy branch, but require a materially larger candidate-level archive set before testing ranking logic"
+  ],
+  "notes": "Validation: `pytest quant/test_quant.py -k \"llm_attribution or replay_llm\"` passed (5 tests). The fixed-snapshot replay now prints `prompt-ready backlog: 2/28 days`, which converts the LLM blocker from a generic missing-date list into a prioritized recovery queue.",
+  "parameters": {
+    "cli_context": [
+      "--regime-aware-exit",
+      "--replay-llm",
+      "--ohlcv-snapshot data/ohlcv_snapshot_20251023_20260421.json"
+    ],
+    "data_source": "data/ohlcv_snapshot_20251023_20260421.json",
+    "new_llm_attribution_fields": [
+      "archive_backlog.missing_candidate_days",
+      "archive_backlog.prompt_ready_days",
+      "archive_backlog.queue"
+    ],
+    "primary_window": {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    "priority_rule": "sort missing candidate days by candidate_signal_count desc, then favor dates with an existing saved prompt",
+    "test_command": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe -m pytest quant/test_quant.py -k \"llm_attribution or replay_llm\""
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/llm_backlog.py",
+    "quant/backtester.py",
+    "quant/test_quant.py",
+    "docs/experiment_log.jsonl",
+    "data/backtest_results_20260422.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-22T12:10:00-07:00"
+}

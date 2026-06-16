@@ -1,0 +1,175 @@
+{
+  "after_metrics": {
+    "alternate_candidate": {
+      "late_strong": {
+        "addon_pnl_usd": 2204.7,
+        "triggered_trades": 6
+      },
+      "mid_weak": {
+        "addon_pnl_usd": 1252.72,
+        "triggered_trades": 5
+      },
+      "old_thin": {
+        "addon_pnl_usd": 958.11,
+        "triggered_trades": 6
+      },
+      "variant": "d3_gt2_rs_pos"
+    },
+    "best_by_window": {
+      "late_strong": {
+        "addon_pnl_usd": 4712.99,
+        "triggered_trades": 11,
+        "variant": "d3_pos_rs_pos"
+      },
+      "mid_weak": {
+        "addon_pnl_usd": 2952.86,
+        "triggered_trades": 10,
+        "variant": "d2_pos_rs_pos"
+      },
+      "old_thin": {
+        "addon_pnl_usd": 1635.52,
+        "triggered_trades": 7,
+        "variant": "d1_pos_rs_pos"
+      }
+    },
+    "recommended_stricter_candidate": {
+      "late_strong": {
+        "addon_pnl_usd": 2452.8,
+        "triggered_trades": 8
+      },
+      "mid_weak": {
+        "addon_pnl_usd": 1696.06,
+        "triggered_trades": 6
+      },
+      "old_thin": {
+        "addon_pnl_usd": 1033.01,
+        "triggered_trades": 6
+      },
+      "variant": "d2_gt2_rs_pos"
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "auditable_trade_count": 17,
+      "expected_value_score": 1.5039,
+      "max_drawdown_pct": 0.0281,
+      "sharpe_daily": 4.24,
+      "total_pnl": 35471.49,
+      "total_return_pct": 0.3547,
+      "trade_count": 21
+    },
+    "mid_weak": {
+      "auditable_trade_count": 19,
+      "expected_value_score": 0.4773,
+      "max_drawdown_pct": 0.0247,
+      "sharpe_daily": 2.35,
+      "total_pnl": 20307.9,
+      "total_return_pct": 0.2031,
+      "trade_count": 21
+    },
+    "old_thin": {
+      "auditable_trade_count": 20,
+      "expected_value_score": 0.131,
+      "max_drawdown_pct": 0.0456,
+      "sharpe_daily": 1.15,
+      "total_pnl": 11388.73,
+      "total_return_pct": 0.1139,
+      "trade_count": 24
+    }
+  },
+  "change_summary": "Added an audit/screen-only script that reruns the current accepted stack on the three fixed OHLCV snapshots, computes day-1/day-2/day-3 entry follow-through, groups final outcomes by follow-through bucket, and estimates a 25% add-on at the next open after qualifying checkpoints. No production strategy code was changed.",
+  "change_type": "alpha_search_entry_followthrough_addon_audit",
+  "component": "quant/experiments/legacy/exp_20260426_009_entry_followthrough_audit.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "deferred",
+  "delta_metrics": {
+    "decision_basis": "Deferred positive: approximate add-on PnL is positive in all fixed windows, and the stricter day-2 +2% with positive RS candidate avoids the weaker old-thin ordinary-positive-follow-through bucket. However, trade-level approximation is not enough for promotion because it ignores portfolio heat, cash, cap, add-on stop handling, and equity-curve Sharpe."
+  },
+  "experiment_id": "exp-20260426-009",
+  "hypothesis": "Early entry follow-through may identify positions that deserve more capital. Recent accepted improvements came from letting proven winners earn more, while weak-hold exits failed; therefore adding small incremental exposure after strong early confirmation may be a better lifecycle alpha than selling early weakness.",
+  "llm_metrics": {
+    "blocker_relation": "LLM soft-ranking remains blocked by candidate-level replay coverage; this deterministic lifecycle add-on audit deliberately avoided LLM changes.",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull where entry follow-through strongly identified target winners",
+    "mid_weak": "rotation-heavy bull where stricter follow-through still produced positive add-on approximation",
+    "old_thin": "mixed-to-weak tape where broad positive follow-through was noisy but +2% follow-through remained positive"
+  },
+  "next_retry_requires": [
+    "Implement a real backtester add-on/pyramiding replay for day2 unrealized >= +2% and RS vs SPY > 0",
+    "Respect portfolio heat, cash, per-position cap, and stop/target lifecycle for incremental shares",
+    "Do not promote broad positive follow-through add-ons before the stricter candidate is production-path tested",
+    "If real replay fails, record whether failure comes from cash/cap constraints or from add-on signal quality"
+  ],
+  "notes": "This was alpha_search, not measurement repair. It changed no production strategy code and produced the next actionable candidate mechanism.",
+  "parameters": {
+    "add_fraction_of_original_shares": 0.25,
+    "checkpoints_trading_days": [
+      1,
+      2,
+      3
+    ],
+    "parity_warning": "trade-level approximation only; does not model portfolio heat, cash usage, per-position cap, add-on stop handling, or equity-curve Sharpe",
+    "screened_addon_rules": {
+      "d1_pos_rs_pos": {
+        "day": 1,
+        "min_rs_vs_spy": 0.0,
+        "min_unrealized": 0.0
+      },
+      "d2_gt2_rs_pos": {
+        "day": 2,
+        "min_rs_vs_spy": 0.0,
+        "min_unrealized": 0.02
+      },
+      "d2_pos_rs_pos": {
+        "day": 2,
+        "min_rs_vs_spy": 0.0,
+        "min_unrealized": 0.0
+      },
+      "d3_gt2_rs_pos": {
+        "day": 3,
+        "min_rs_vs_spy": 0.0,
+        "min_unrealized": 0.02
+      },
+      "d3_pos_rs_pos": {
+        "day": 3,
+        "min_rs_vs_spy": 0.0,
+        "min_unrealized": 0.0
+      }
+    },
+    "unchanged": [
+      "entries",
+      "normal stop/target exits",
+      "position sizing",
+      "allocation ranking",
+      "LLM responsibilities",
+      "earnings_event_long",
+      "Technology trend 6.0 ATR target",
+      "Commodity trend 7.0 ATR target",
+      "MAX_POSITION_PCT 0.25"
+    ]
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/experiments/legacy/exp_20260426_009_entry_followthrough_audit.py",
+    "data/exp_20260426_009_entry_followthrough_audit.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "deferred_positive",
+  "timestamp": "2026-04-25T22:47:54-07:00"
+}

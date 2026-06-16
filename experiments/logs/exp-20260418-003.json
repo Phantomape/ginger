@@ -1,0 +1,62 @@
+{
+  "after_metrics": {
+    "expected_value_score": 0.4875,
+    "llm_replay_workflow": "import_advice now auto-creates replay file",
+    "max_drawdown_pct": 0.0459,
+    "sharpe": 3.0,
+    "sharpe_daily": 2.44,
+    "survival_rate": 0.98,
+    "test_count": 223,
+    "total_return_pct": 0.1998,
+    "trade_count": 30,
+    "win_rate": 0.6
+  },
+  "before_metrics": {
+    "expected_value_score": 0.4875,
+    "llm_replay_coverage_days": 6,
+    "llm_replay_trading_days_coverage": 5,
+    "max_drawdown_pct": 0.0459,
+    "sharpe": 3.0,
+    "sharpe_daily": 2.44,
+    "survival_rate": 0.98,
+    "total_return_pct": 0.1998,
+    "trade_count": 30,
+    "win_rate": 0.6
+  },
+  "change_summary": "import_advice.import_advice() now also writes llm_prompt_resp_YYYYMMDD.json alongside investment_advice_YYYYMMDD.json. Guard added: skips if file already exists (preserves manual files) or if response is a fake save-prompt acknowledgment. llm_replay.py docstring corrected. 3 new tests added.",
+  "change_type": "parity_fix",
+  "component": "quant/import_advice.py + quant/llm_replay.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "note": "No change to backtest metrics 闂?this is pure infrastructure plumbing. Each future import_advice run will now automatically contribute 1 day to the 30-day P-LLM coverage target without requiring a separate manual step. Key finding during investigation: Feb 14-20 investment_advice files were fake (save-prompt acknowledgments, not real LLM responses) 闂?backfilling them as replay files would have incorrectly vetoed all signals on those dates. Guard prevents this class of error."
+  },
+  "experiment_id": "exp-20260418-003",
+  "hypothesis": "import_advice.py currently saves only investment_advice_YYYYMMDD.json (for forward_tester) but NOT llm_prompt_resp_YYYYMMDD.json (needed by backtester --replay-llm). The user must manually create the replay files. Fixing import_advice to also write the replay file will close this workflow gap and make each LLM import automatically contribute to the 30-day replay coverage target (P-LLM).",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "BULL (slow-melt)"
+  },
+  "next_retry_requires": [],
+  "notes": "Also fixed: llm_replay.py docstring previously claimed files were written by import_advice.py (false until this change). 223/223 tests pass. P-LLM progress: 5 trading days covered (Apr 13-17), 25 more needed for 30-day threshold.",
+  "parameters": {
+    "import_advice.import_advice": {
+      "new": "also writes llm_prompt_resp_YYYYMMDD.json when real LLM response detected",
+      "old": "writes only investment_advice_YYYYMMDD.json"
+    }
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/import_advice.py",
+    "quant/llm_replay.py",
+    "quant/test_quant.py"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-04-18T17:06:48.697311"
+}

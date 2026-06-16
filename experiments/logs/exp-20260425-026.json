@@ -1,0 +1,95 @@
+{
+  "after_metrics": {
+    "best_late_variant": {
+      "late_strong": {
+        "expected_value_score": 1.1253,
+        "sharpe_daily": 3.89,
+        "total_return_pct": 0.2893
+      },
+      "variant": "overlay100_mom025"
+    },
+    "best_old_variant": {
+      "old_thin": {
+        "expected_value_score": 0.1029,
+        "sharpe_daily": 1.03,
+        "total_return_pct": 0.0999
+      },
+      "variant": "overlay100_mom025"
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.0402,
+      "sharpe_daily": 3.89,
+      "total_return_pct": 0.2674
+    },
+    "mid_weak": {
+      "expected_value_score": 0.3924,
+      "sharpe_daily": 2.59,
+      "total_return_pct": 0.1515
+    },
+    "old_thin": {
+      "expected_value_score": 0.0863,
+      "sharpe_daily": 0.95,
+      "total_return_pct": 0.0908
+    }
+  },
+  "change_summary": "Added research-only `quant/experiments/legacy/exp_20260425_026_runner.py`; it estimates idle capital from baseline active-position count and applies QQQ close-to-close overlay returns under risk-on conditions. No production code promoted because this is not a parity backtest.",
+  "change_type": "alpha_search_overlay_screen",
+  "component": "research-only passive QQQ idle-cash overlay",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "mechanism_update": "Current accepted stack mid_weak gross_slot_day_fraction is about 0.80, so the benchmark gap is not mainly idle cash.",
+    "mid_weak_result": "All overlay variants regressed mid_weak; least-bad was overlay025_mom015 EV 0.3924 -> 0.3785."
+  },
+  "experiment_id": "exp-20260425-026",
+  "hypothesis": "If QQQ failed only because stock-style ATR exits are wrong for beta exposure, a passive idle-cash overlay on QQQ should improve mid_weak without changing stock trades.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull",
+    "mid_weak": "rotation-heavy bull / target benchmark gap",
+    "old_thin": "mixed-to-weak tape"
+  },
+  "next_retry_requires": [
+    "Do not continue QQQ overlay threshold/risk sweeps without a new timing signal",
+    "Refocus secondary underperformance on winner truncation / exit quality rather than idle-cash beta starvation"
+  ],
+  "notes": "Research-only screen; not eligible for production promotion without a real overlay ledger.",
+  "parameters": {
+    "idle_cash_proxy": "max(0, 1 - active_position_count*0.20)",
+    "mom10_min": [
+      0.015,
+      0.025
+    ],
+    "overlay_fraction": [
+      0.25,
+      0.5,
+      1.0
+    ],
+    "parity_warning": "no production overlay ledger or fill model"
+  },
+  "rejection_reason": "The passive beta overlay helped some non-target windows but damaged every mid_weak variant, so it does not solve the secondary benchmark gap.",
+  "related_files": [
+    "quant/experiments/legacy/exp_20260425_026_runner.py",
+    "data/exp_20260425_026_results.json",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-25T11:50:00-07:00"
+}

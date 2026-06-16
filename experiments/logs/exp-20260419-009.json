@@ -1,0 +1,125 @@
+{
+  "after_metrics": {
+    "BREAKOUT_RISK_MULT=0.5": {
+      "primary_window": {
+        "expected_value_score": 0.5805,
+        "max_drawdown_pct": 0.0262,
+        "sharpe_daily": 2.92,
+        "total_return_pct": 0.1988,
+        "trade_count": 28
+      },
+      "window_1": {
+        "expected_value_score": 0.316,
+        "sharpe_daily": 3.5,
+        "total_return_pct": 0.0903
+      },
+      "window_2": {
+        "expected_value_score": 0.2196,
+        "sharpe_daily": 2.96,
+        "total_return_pct": 0.0742
+      },
+      "window_3": {
+        "expected_value_score": 0.0282,
+        "sharpe_daily": 2.71,
+        "total_return_pct": 0.0104
+      }
+    },
+    "BREAKOUT_RISK_MULT=0.75": {
+      "primary_window": {
+        "expected_value_score": 0.6932,
+        "max_drawdown_pct": 0.0361,
+        "sharpe_daily": 2.88,
+        "total_return_pct": 0.2407,
+        "trade_count": 28
+      },
+      "window_1": {
+        "expected_value_score": 0.3561,
+        "sharpe_daily": 3.54,
+        "total_return_pct": 0.1006
+      },
+      "window_2": {
+        "expected_value_score": 0.2617,
+        "sharpe_daily": 2.86,
+        "total_return_pct": 0.0915
+      },
+      "window_3": {
+        "expected_value_score": 0.0392,
+        "sharpe_daily": 3.06,
+        "total_return_pct": 0.0128
+      }
+    }
+  },
+  "before_metrics": {
+    "expected_value_score": 0.7531,
+    "max_drawdown_pct": 0.0408,
+    "sharpe_daily": 2.83,
+    "total_return_pct": 0.2661,
+    "trade_count": 28
+  },
+  "change_summary": "Added a backtester-only experiment path that allowed a configurable `BREAKOUT_RISK_MULT` during signal sizing, then compared `1.0`, `0.75`, and `0.5` across the current accepted A+B baseline (regime-aware exit + breakout quality gate + breakout slot ranking). The code was rolled back immediately after Gate 4 failure.",
+  "change_type": "capital_allocation",
+  "component": "quant/backtester.py + quant/portfolio_engine.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "0.5_primary_expected_value_score_delta": -0.1726,
+    "0.5_primary_max_drawdown_pct_delta": -0.0146,
+    "0.75_primary_expected_value_score_delta": -0.0599,
+    "0.75_primary_max_drawdown_pct_delta": -0.0047,
+    "note": "Both lower-risk variants reduced drawdown modestly, but they also reduced expected_value_score in the primary window and all three non-overlapping windows. The breakout selection improvements already removed enough bad breakout exposure that further blunt risk cuts mostly shrink good breakout profits."
+  },
+  "experiment_id": "exp-20260419-009",
+  "hypothesis": "Even after breakout-quality filtering and slot-ranking improvements, breakout_long may still be structurally more fragile than trend_long. Reducing breakout_long risk budget to 0.75x or 0.5x of the base per-trade risk could improve expected_value_score by lowering the cost of breakout variance without changing signal selection.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "BULL (slow-melt) with Apr-2026 stress",
+    "window_1": "late-2025 bull trend",
+    "window_2": "early-2026 bull continuation",
+    "window_3": "Feb-Apr 2026 stress"
+  },
+  "next_retry_requires": [
+    "Do not revisit broad breakout risk haircut without new evidence that breakout variance has worsened again in forward data",
+    "Prefer the next experiment to improve breakout selection or breakout-specific exit handling, not to bluntly reduce all breakout sizing",
+    "If returning to capital allocation later, test something more selective than a global breakout haircut (for example, only lower size on lower-ranked breakouts)"
+  ],
+  "notes": "Implementation was rolled back after the failed experiment. This rejection is about alpha direction, not about code quality.",
+  "parameters": {
+    "BREAKOUT_RISK_MULT": {
+      "baseline": 1.0,
+      "tested": [
+        0.75,
+        0.5
+      ]
+    },
+    "fixed_context": {
+      "BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH": -0.2,
+      "BREAKOUT_RANK_BY_52W_HIGH": true,
+      "REGIME_AWARE_EXIT": true
+    }
+  },
+  "rejection_reason": "Gate 4 failed. Lower breakout risk improved some secondary defensive metrics, but the north-star metric deteriorated in every tested window. This means the current problem is no longer 'breakout gets too much capital' in aggregate; after the accepted quality/ranking changes, the remaining breakout exposure is valuable enough that cutting size is net harmful.",
+  "related_files": [
+    "docs/experiment_log.jsonl"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-12-19",
+      "start": "2025-10-20"
+    },
+    {
+      "end": "2026-02-17",
+      "start": "2025-12-20"
+    },
+    {
+      "end": "2026-04-17",
+      "start": "2026-02-18"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-19T23:45:00-07:00"
+}

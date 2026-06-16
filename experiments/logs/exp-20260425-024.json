@@ -1,0 +1,170 @@
+{
+  "after_metrics": {
+    "multiplier_0_0": {
+      "late_strong": {
+        "expected_value_score": 1.0402,
+        "max_drawdown_pct": 0.0238,
+        "sharpe_daily": 3.89,
+        "total_return_pct": 0.2674,
+        "trade_count": 21
+      },
+      "mid_weak": {
+        "expected_value_score": 0.3924,
+        "max_drawdown_pct": 0.0205,
+        "sharpe_daily": 2.59,
+        "total_return_pct": 0.1515,
+        "trade_count": 25
+      },
+      "old_thin": {
+        "expected_value_score": 0.081,
+        "max_drawdown_pct": 0.0442,
+        "sharpe_daily": 0.92,
+        "total_return_pct": 0.088,
+        "trade_count": 24
+      }
+    },
+    "multiplier_0_25": {
+      "late_strong": {
+        "expected_value_score": 1.0402,
+        "max_drawdown_pct": 0.0238,
+        "sharpe_daily": 3.89,
+        "total_return_pct": 0.2674,
+        "trade_count": 21
+      },
+      "mid_weak": {
+        "expected_value_score": 0.3924,
+        "max_drawdown_pct": 0.0205,
+        "sharpe_daily": 2.59,
+        "total_return_pct": 0.1515,
+        "trade_count": 25
+      },
+      "old_thin": {
+        "expected_value_score": 0.0956,
+        "max_drawdown_pct": 0.0442,
+        "sharpe_daily": 1.0,
+        "total_return_pct": 0.0956,
+        "trade_count": 24
+      }
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "eligible_signals": 0,
+      "expected_value_score": 1.0402,
+      "max_drawdown_pct": 0.0238,
+      "sharpe_daily": 3.89,
+      "total_return_pct": 0.2674,
+      "trade_count": 21
+    },
+    "mid_weak": {
+      "eligible_signals": 0,
+      "expected_value_score": 0.3924,
+      "max_drawdown_pct": 0.0205,
+      "sharpe_daily": 2.59,
+      "total_return_pct": 0.1515,
+      "trade_count": 25
+    },
+    "old_thin": {
+      "eligible_signals": 1,
+      "expected_value_score": 0.0863,
+      "max_drawdown_pct": 0.0444,
+      "sharpe_daily": 0.95,
+      "total_return_pct": 0.0908,
+      "trade_count": 24
+    }
+  },
+  "change_summary": "Added a runtime-only runner that first writes a fresh fixed-window trade audit, then screens `trend_long | Healthcare | 60-75 DTE | near-high` at 0.25x and 0x risk across late_strong, mid_weak, and old_thin snapshots. No production strategy code was changed or promoted.",
+  "change_type": "allocation_sizing_probe",
+  "component": "quant/experiments/legacy/exp_20260425_024_runner.py (runtime-only monkeypatch; no production sizing rule promoted)",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "multiplier_0_0_ev_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": -0.0053
+    },
+    "multiplier_0_25_ev_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": 0.0093
+    },
+    "rejection_basis": "The best point improved only old_thin and had zero qualifying exposure in late_strong and mid_weak. The harsher 0x variant damaged old_thin. This is one-window evidence, not a stable production alpha."
+  },
+  "experiment_id": "exp-20260425-024",
+  "hypothesis": "After the accepted A+B residual allocation stack, the remaining old-thin Healthcare trend loser may be a replayable late-DTE near-high exhaustion pocket. De-risking only `trend_long | Healthcare | 60 <= days_to_earnings <= 75 | pct_from_52w_high >= -1%` should improve EV without touching entries, exits, LLM, C strategy, or existing accepted sizing rules.",
+  "llm_metrics": {
+    "blocker_relation": "LLM soft ranking remains blocked by candidate-level replay coverage, so this deterministic residual allocation probe deliberately avoided LLM responsibilities.",
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull with zero qualifying Healthcare late-DTE near-high trend exposure",
+    "mid_weak": "rotation-heavy bull with zero qualifying exposure",
+    "old_thin": "mixed-to-weak tape with one qualifying Healthcare trend exposure"
+  },
+  "next_retry_requires": [
+    "Do not retry Healthcare trend late-DTE near-high de-risking without at least one additional non-overlapping or forward qualifying sample",
+    "Do not widen this into broad Healthcare trend or broad Healthcare DTE sizing; the accepted Healthcare work remains the trend 6-12 DTE and breakout 20-65 DTE sleeves only",
+    "Future residual allocation work needs a genuinely new conditioning source or a fresh audited cluster with exposure in at least two windows"
+  ],
+  "notes": "This was alpha_search, not bug repair. The runner command timed out after the files were written, but the structured JSON artifacts were complete and parsed successfully. No production code was changed.",
+  "parameters": {
+    "artifact_files": [
+      "quant/experiments/legacy/exp_20260425_024_runner.py",
+      "data/exp_20260425_024_results.json",
+      "data/exp_20260425_024_trade_audit.json"
+    ],
+    "rule": {
+      "days_to_earnings_max": 75,
+      "days_to_earnings_min": 60,
+      "pct_from_52w_high_min": -0.01,
+      "sector": "Healthcare",
+      "strategy": "trend_long"
+    },
+    "screened_variants": [
+      "baseline",
+      "0.25x",
+      "0.0x"
+    ],
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window evidence. A single old-thin Healthcare trend loser is not enough to justify another production sizing rule.",
+  "related_files": [
+    "quant/experiments/legacy/exp_20260425_024_runner.py",
+    "data/exp_20260425_024_results.json",
+    "data/exp_20260425_024_trade_audit.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-25T10:38:08-07:00"
+}

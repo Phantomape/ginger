@@ -1,0 +1,75 @@
+{
+  "after_metrics": {
+    "blocker_proof": {
+      "earnings_snapshot_files_present": 0,
+      "llm_replay_files_present": 6,
+      "llm_replay_latest_date": "20260417",
+      "python_import_yfinance": "failed"
+    },
+    "expected_value_score": 0.4641,
+    "max_drawdown_pct": 0.0587,
+    "sharpe_daily": 2.38,
+    "trade_count": 31,
+    "win_rate": 0.5806
+  },
+  "before_metrics": {
+    "expected_value_score": 0.4641,
+    "llm_replay_coverage_fraction": 0.0,
+    "max_drawdown_pct": 0.0587,
+    "news_replay_coverage_fraction": 0.1048,
+    "sharpe_daily": 2.38,
+    "trade_count": 31,
+    "win_rate": 0.5806
+  },
+  "change_summary": "Re-read AGENTS.md, `docs/alpha-optimization-playbook.md`, `docs/daily_alpha_optimization_20260419.md`, and the experiment log, then reproduced the blocker in the current environment without touching strategy logic. Direct shell checks showed `ModuleNotFoundError: No module named 'yfinance'`, `data/earnings_snapshot_*.json` count stayed at 0, and `data/llm_prompt_resp_*.json` coverage remained frozen at 6 files with latest date `20260417`. No strategy thresholds, filters, exits, or rankings were changed.",
+  "change_type": "execution_blocker",
+  "component": "runtime environment + alpha prioritization",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "note": "No backtest rerun or strategy-layer experiment was justified because the runtime blocker that prevents new P-ERN / P-LLM accumulation is still active. This run's deliverable is blocker confirmation plus updated alpha priority: do not resume A/B micro-tuning while the top two alpha paths remain data-blocked.",
+    "sharpe_daily": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260420-015",
+  "hypothesis": "The highest-value alpha directions are still `C strategy revival` first and `LLM soft ranking` second, but neither is currently credible to test unless the daily pipeline resumes accumulating new earnings snapshots and LLM replay files. If the runtime environment still cannot import `yfinance`, then this blocker remains the real reason alpha_search cannot proceed.",
+  "llm_metrics": {
+    "blocker_relation": "`LLM soft ranking` remains non-credible while replay coverage is frozen at 0%.",
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "N/A - blocker proof against current A+B baseline only"
+  },
+  "next_retry_requires": [
+    "Provide `yfinance` in the Python environment used by repo commands",
+    "Run `python quant/run.py` or `python quant/run_pipeline.py` until fresh `earnings_snapshot_YYYYMMDD.json` files appear",
+    "Resume `C strategy revival` before any new A/B micro-tuning once snapshot coverage exists",
+    "Resume `LLM soft ranking` only after `llm_prompt_resp_YYYYMMDD.json` dates move past 2026-04-17"
+  ],
+  "notes": "This run intentionally did not start another unblocked A/B tweak because recent experiments already falsified the remaining low-complexity trend-exit and ranking variants, while the highest-value alpha directions are still blocked by the same missing runtime dependency.",
+  "parameters": {
+    "alpha_candidate_1": "C strategy revival",
+    "alpha_candidate_2": "LLM soft ranking",
+    "blocker_check_1": "python - << import yfinance",
+    "blocker_result_1": "ModuleNotFoundError: No module named 'yfinance'",
+    "earnings_snapshot_files_present": 0,
+    "llm_replay_files_present": 6,
+    "llm_replay_latest_date": "20260417"
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "docs/daily_alpha_optimization_20260419.md",
+    "data/backtest_results_20260420.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-04-20T22:04:50-07:00"
+}

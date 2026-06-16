@@ -1,0 +1,228 @@
+{
+  "after_metrics": {
+    "trend_hi_tqs_0925_x1_25": {
+      "primary_window": {
+        "expected_value_score": 0.5692,
+        "max_drawdown_pct": 0.0289,
+        "sharpe_daily": 2.67,
+        "total_return_pct": 0.2132,
+        "trade_count": 28,
+        "win_rate": 0.5357
+      },
+      "window_1": {
+        "expected_value_score": 0.0354,
+        "max_drawdown_pct": 0.0931,
+        "sharpe_daily": 0.62,
+        "total_return_pct": 0.0571,
+        "trade_count": 30,
+        "win_rate": 0.3333
+      },
+      "window_2": {
+        "expected_value_score": 0.0014,
+        "max_drawdown_pct": 0.104,
+        "sharpe_daily": 0.18,
+        "total_return_pct": 0.0078,
+        "trade_count": 30,
+        "win_rate": 0.3
+      }
+    },
+    "trend_hi_tqs_0925_x1_5": {
+      "primary_window": {
+        "expected_value_score": 0.5589,
+        "max_drawdown_pct": 0.0296,
+        "sharpe_daily": 2.64,
+        "total_return_pct": 0.2117,
+        "trade_count": 28,
+        "win_rate": 0.5357
+      },
+      "window_1": {
+        "expected_value_score": 0.0537,
+        "max_drawdown_pct": 0.0935,
+        "sharpe_daily": 0.73,
+        "total_return_pct": 0.0736,
+        "trade_count": 30,
+        "win_rate": 0.3333
+      },
+      "window_2": {
+        "expected_value_score": 0.0018,
+        "max_drawdown_pct": 0.1115,
+        "sharpe_daily": 0.19,
+        "total_return_pct": 0.0095,
+        "trade_count": 30,
+        "win_rate": 0.3
+      }
+    },
+    "trend_hi_tqs_095_x1_25": {
+      "primary_window": {
+        "expected_value_score": 0.5692,
+        "max_drawdown_pct": 0.0289,
+        "sharpe_daily": 2.67,
+        "total_return_pct": 0.2132,
+        "trade_count": 28,
+        "win_rate": 0.5357
+      },
+      "window_1": {
+        "expected_value_score": 0.0354,
+        "max_drawdown_pct": 0.0931,
+        "sharpe_daily": 0.62,
+        "total_return_pct": 0.0571,
+        "trade_count": 30,
+        "win_rate": 0.3333
+      },
+      "window_2": {
+        "expected_value_score": 0.0015,
+        "max_drawdown_pct": 0.1037,
+        "sharpe_daily": 0.18,
+        "total_return_pct": 0.0081,
+        "trade_count": 30,
+        "win_rate": 0.3
+      }
+    },
+    "trend_hi_tqs_095_x1_5": {
+      "primary_window": {
+        "expected_value_score": 0.5589,
+        "max_drawdown_pct": 0.0296,
+        "sharpe_daily": 2.64,
+        "total_return_pct": 0.2117,
+        "trade_count": 28,
+        "win_rate": 0.5357
+      },
+      "window_1": {
+        "expected_value_score": 0.0537,
+        "max_drawdown_pct": 0.0935,
+        "sharpe_daily": 0.73,
+        "total_return_pct": 0.0736,
+        "trade_count": 30,
+        "win_rate": 0.3333
+      },
+      "window_2": {
+        "expected_value_score": 0.0018,
+        "max_drawdown_pct": 0.1114,
+        "sharpe_daily": 0.19,
+        "total_return_pct": 0.0097,
+        "trade_count": 30,
+        "win_rate": 0.3
+      }
+    }
+  },
+  "before_metrics": {
+    "accepted_all_days_rule": {
+      "primary_window": {
+        "expected_value_score": 0.591,
+        "max_drawdown_pct": 0.0275,
+        "sharpe_daily": 2.73,
+        "total_return_pct": 0.2165,
+        "trade_count": 28,
+        "win_rate": 0.5357
+      },
+      "window_1": {
+        "expected_value_score": 0.0304,
+        "max_drawdown_pct": 0.0828,
+        "sharpe_daily": 0.61,
+        "total_return_pct": 0.0499,
+        "trade_count": 30,
+        "win_rate": 0.3333
+      },
+      "window_2": {
+        "expected_value_score": 0.003,
+        "max_drawdown_pct": 0.0965,
+        "sharpe_daily": 0.22,
+        "total_return_pct": 0.0137,
+        "trade_count": 30,
+        "win_rate": 0.3
+      }
+    }
+  },
+  "change_summary": "Ran runtime-only sizing experiments by monkeypatching `portfolio_engine.size_signals()` after the accepted TQS pass, then applying a bonus risk multiplier only to `trend_long` signals whose `trade_quality_score` cleared a high threshold. Screened thresholds `0.925` and `0.95` with `1.25x` and `1.5x` multipliers across the same three non-overlapping A+B windows. No repository code was changed; only the experiment log and playbook were updated.",
+  "change_type": "allocation_rule",
+  "component": "quant/portfolio_engine.py (runtime-only monkeypatch, rolled back)",
+  "date_range": {
+    "end": "2026-04-20",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "best_screen": "trend_hi_tqs_0925_x1_25",
+    "best_screen_primary_expected_value_score_delta": -0.0218,
+    "best_screen_window_1_expected_value_score_delta": 0.005,
+    "best_screen_window_2_expected_value_score_delta": -0.0016,
+    "note": "Every tested high-TQS trend bonus improved only the ripping-bull comparison window while degrading the primary window and worsening weak-window drawdown/return. Larger bonuses amplified the same pattern instead of fixing it."
+  },
+  "experiment_id": "exp-20260421-014",
+  "hypothesis": "If the accepted low-TQS haircut already cleans up weaker breakout exposure, the remaining unblocked allocation leak may be the opposite tail: concentrate more risk into the very best `trend_long` entries. A modest high-TQS bonus for `trend_long` might improve expected value by pushing more heat toward the strongest continuation setups without changing entries or exits.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "window_1": "ripping bull / high-beta leadership",
+    "window_2": "older weak-to-mixed tape"
+  },
+  "next_retry_requires": [
+    "Do not retry another static high-TQS `trend_long` entry bonus without a genuinely new context source",
+    "Do not treat the lower average trend attribution as fixable by simply sizing the best trend entries larger",
+    "If future trend work resumes, it needs richer hold-quality or semantic context rather than another pre-entry sizing bonus"
+  ],
+  "notes": "This closes another tempting allocation branch. The current accepted stack does not appear to have an easy unblocked 'trend concentration' alpha leak left in pure entry sizing.",
+  "parameters": {
+    "ab_strategies": [
+      "trend_long",
+      "breakout_long"
+    ],
+    "baseline_rule": "accepted `trade_quality_score < 0.85 -> 0.25x risk` stack",
+    "evaluation_windows": [
+      [
+        "2025-10-23",
+        "2026-04-20"
+      ],
+      [
+        "2025-04-23",
+        "2025-10-22"
+      ],
+      [
+        "2024-10-02",
+        "2025-04-22"
+      ]
+    ],
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "tested_variants": {
+      "trend_hi_tqs_0925_x1_25": {
+        "risk_multiplier": 1.25,
+        "strategy": "trend_long",
+        "trade_quality_score_gte": 0.925
+      },
+      "trend_hi_tqs_0925_x1_5": {
+        "risk_multiplier": 1.5,
+        "strategy": "trend_long",
+        "trade_quality_score_gte": 0.925
+      },
+      "trend_hi_tqs_095_x1_25": {
+        "risk_multiplier": 1.25,
+        "strategy": "trend_long",
+        "trade_quality_score_gte": 0.95
+      },
+      "trend_hi_tqs_095_x1_5": {
+        "risk_multiplier": 1.5,
+        "strategy": "trend_long",
+        "trade_quality_score_gte": 0.95
+      }
+    }
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability. Concentrating more risk into already-strong `trend_long` entries raises bull-window convexity but is not a stable cross-window source of alpha for the current stack.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-21T10:20:00-07:00"
+}

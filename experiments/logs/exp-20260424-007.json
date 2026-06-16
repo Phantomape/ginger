@@ -1,0 +1,195 @@
+{
+  "after_metrics": {
+    "bk_industrials_000": {
+      "late_strong": {
+        "adjusted_breakout_industrials_signals": 2,
+        "expected_value_score": 0.6729,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.18,
+        "total_return_pct": 0.2116,
+        "trade_count": 22,
+        "win_rate": 0.6364
+      },
+      "mid_weak": {
+        "adjusted_breakout_industrials_signals": 3,
+        "expected_value_score": 0.1711,
+        "max_drawdown_pct": 0.0468,
+        "sharpe_daily": 1.47,
+        "total_return_pct": 0.1164,
+        "trade_count": 27,
+        "win_rate": 0.3704
+      },
+      "old_thin": {
+        "adjusted_breakout_industrials_signals": 1,
+        "expected_value_score": 0.0155,
+        "max_drawdown_pct": 0.0829,
+        "sharpe_daily": 0.42,
+        "total_return_pct": 0.0368,
+        "trade_count": 25,
+        "win_rate": 0.32
+      }
+    },
+    "bk_industrials_025": {
+      "late_strong": {
+        "adjusted_breakout_industrials_signals": 1,
+        "expected_value_score": 0.7155,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.27,
+        "total_return_pct": 0.2188,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "adjusted_breakout_industrials_signals": 3,
+        "expected_value_score": 0.1304,
+        "max_drawdown_pct": 0.0468,
+        "sharpe_daily": 1.25,
+        "total_return_pct": 0.1043,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "adjusted_breakout_industrials_signals": 1,
+        "expected_value_score": 0.014,
+        "max_drawdown_pct": 0.0849,
+        "sharpe_daily": 0.4,
+        "total_return_pct": 0.035,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    }
+  },
+  "before_metrics": {
+    "accepted_ab_stack": {
+      "late_strong": {
+        "eligible_breakout_industrials_signals": 1,
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "eligible_breakout_industrials_signals": 3,
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "eligible_breakout_industrials_signals": 1,
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 0.36,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    }
+  },
+  "change_summary": "Added a runtime-only deterministic cohort runner that left entries, exits, ranking, and all accepted A+B sizing rules unchanged except for one sleeve-specific overlay: when `strategy == breakout_long` and `sector == Industrials`, apply a `0.25x` or `0.0x` risk multiplier. The experiment ran on the fixed late / mid / old OHLCV snapshots and was kept entirely out of repository trading logic after measurement.",
+  "change_type": "allocation_rule",
+  "component": "runtime-only monkeypatch of `portfolio_engine.size_signals()` in `quant/experiments/legacy/exp_20260424_007_runner.py`, applying a breakout-Industrials-only sizing multiplier during fixed-snapshot replay",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "bk_industrials_000_ev_deltas": {
+      "late_strong": -0.1741,
+      "mid_weak": 0.0456,
+      "old_thin": 0.0046
+    },
+    "bk_industrials_025_ev_deltas": {
+      "late_strong": -0.1315,
+      "mid_weak": 0.0049,
+      "old_thin": 0.0031
+    },
+    "note": "This residual cohort really does help the weaker windows, so the audit was not hallucinating. But the deployment is still too blunt: the single late-strong Industrial breakout is valuable enough that cutting the whole pocket destroys far more present-tense EV than the weak-window repair earns back."
+  },
+  "experiment_id": "exp-20260424-007",
+  "hypothesis": "If the accepted A+B cohort stack has already removed the obvious low-quality leaks, the next residual allocation edge might be a narrow strategy+sector pocket rather than another day-state router. Current deterministic residual-cohort audit showed `breakout_long | Industrials` as the only remaining pocket with at least 4 trades across the fixed late / mid / old windows and losses in 2 of the 3 windows. De-risking only that cohort should improve the weaker windows without sacrificing too much of the dominant late-strong tape.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / breakout-friendly tape",
+    "mid_weak": "rotation-heavy bull with weaker breakout follow-through",
+    "old_thin": "mixed-to-weak tape"
+  },
+  "next_retry_requires": [
+    "Do not reopen nearby `breakout_long | Industrials` multiplier sweeps by default",
+    "Treat this as evidence that residual post-stack leaks are not recoverable by another coarse strategy+sector cut alone, even when the residual-cohort audit looks tempting",
+    "If allocation alpha continues, require a richer conditioning source than sector alone inside the remaining breakout pockets"
+  ],
+  "notes": "This retry is not a simple rerun of the older 'one more sector bucket' family. The qualifying evidence changed: the current accepted stack is materially later than the 2026-04-21 cohort-split experiments, and the new residual audit singled out breakout Industrials as the only sector-only pocket that still looked structurally suspicious across the fixed snapshots. The result still fails, which tightens the doctrine further.",
+  "parameters": {
+    "artifact_files": [
+      "quant/experiments/legacy/exp_20260424_007_runner.py",
+      "data/exp_20260424_007_results.json"
+    ],
+    "deployment": {
+      "action_scope": "breakout Industrials only",
+      "screened_variants": {
+        "bk_industrials_000": {
+          "breakout_industrials_multiplier": 0.0
+        },
+        "bk_industrials_025": {
+          "breakout_industrials_multiplier": 0.25
+        }
+      }
+    },
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "state_definition": {
+      "motivation": "post-stack deterministic residual-cohort audit",
+      "name": "breakout_industrials_residual_cohort",
+      "rule": "strategy == breakout_long AND sector == Industrials"
+    },
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability. Even with new post-stack evidence, another coarse strategy+sector haircut still behaves like weak-window damage control paid for by late-strong convexity. The branch is informative but not promotable.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "quant/experiments/legacy/exp_20260424_007_runner.py",
+    "data/exp_20260424_007_results.json",
+    "data/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv_snapshot_20241002_20250422.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-24T15:24:00-07:00"
+}

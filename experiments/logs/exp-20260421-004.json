@@ -1,0 +1,143 @@
+{
+  "after_metrics": {
+    "primary_window": {
+      "by_strategy": {
+        "earnings_event_long": {
+          "profit_factor": 0.532,
+          "total_pnl_usd": -2697.19,
+          "trade_count": 13,
+          "win_rate": 0.3846
+        }
+      },
+      "expected_value_score": 0.4498,
+      "max_drawdown_pct": 0.0452,
+      "sharpe_daily": 2.24,
+      "total_return_pct": 0.2008,
+      "trade_count": 38,
+      "win_rate": 0.5263
+    },
+    "window_1": {
+      "by_strategy": {
+        "earnings_event_long": {
+          "profit_factor": 3.335,
+          "total_pnl_usd": 5578.46,
+          "trade_count": 7,
+          "win_rate": 0.5714
+        }
+      },
+      "expected_value_score": 0.1417,
+      "max_drawdown_pct": 0.0516,
+      "sharpe_daily": 1.27,
+      "total_return_pct": 0.1116,
+      "trade_count": 30,
+      "win_rate": 0.4
+    },
+    "window_2": {
+      "by_strategy": {
+        "earnings_event_long": {
+          "profit_factor": 0.758,
+          "total_pnl_usd": -1189.26,
+          "trade_count": 9,
+          "win_rate": 0.3333
+        }
+      },
+      "expected_value_score": 0.0802,
+      "max_drawdown_pct": 0.1151,
+      "sharpe_daily": -0.83,
+      "total_return_pct": -0.0966,
+      "trade_count": 39,
+      "win_rate": 0.2051
+    }
+  },
+  "before_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.5329,
+      "max_drawdown_pct": 0.0447,
+      "sharpe_daily": 2.51,
+      "total_return_pct": 0.2123,
+      "trade_count": 28,
+      "win_rate": 0.5357
+    },
+    "window_1": {
+      "expected_value_score": 0.0193,
+      "max_drawdown_pct": 0.0869,
+      "sharpe_daily": 0.49,
+      "total_return_pct": 0.0394,
+      "trade_count": 29,
+      "win_rate": 0.3103
+    },
+    "window_2": {
+      "expected_value_score": 0.003,
+      "max_drawdown_pct": 0.0965,
+      "sharpe_daily": 0.22,
+      "total_return_pct": 0.0137,
+      "trade_count": 30,
+      "win_rate": 0.3
+    }
+  },
+  "change_summary": "Ran paired backtests with the repo venv and the repaired snapshot archive for `A+B` versus `A+B+C` on three windows: `2025-10-23 -> 2026-04-20`, `2025-04-22 -> 2025-10-21`, and `2024-10-01 -> 2025-04-30`. No strategy code changed between runs; only the enabled strategy set differed. The result was regime-dependent and failed the majority-window stability test, so C was not re-enabled by default.",
+  "change_type": "strategy_enablement",
+  "component": "backtester config override only (`ENABLED_STRATEGIES`)",
+  "date_range": {
+    "end": "2026-04-20",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "note": "C helped only in the ripping-bull window. It hurt the primary window and failed the weak-window guardrails materially. This does not satisfy AGENTS.md Gate 4 majority-window stability.",
+    "primary_expected_value_score_delta": -0.0831,
+    "primary_sharpe_daily_delta": -0.27,
+    "primary_total_return_pct_delta": -0.0115,
+    "window_1_expected_value_score_delta": 0.1224,
+    "window_2_expected_value_score_delta": 0.0772,
+    "window_2_guardrail_failure": "A+B+C produced both negative return (-9.66%) and negative sharpe_daily (-0.83) despite a mathematically positive EV product"
+  },
+  "experiment_id": "exp-20260421-004",
+  "hypothesis": "Once full historical P-ERN snapshots exist, re-enabling `earnings_event_long` should improve the joint system more reliably than it did under the partial-data regime. The test compared the repaired `A+B+C` stack against the current `A+B` baseline across three non-overlapping windows using the same repaired archive and no other rule changes.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "window_1": "ripping bull / high-beta leadership",
+    "window_2": "older weak-to-mixed tape"
+  },
+  "next_retry_requires": [
+    "Do not retry `C strategy revival` on the thesis 'more earnings snapshots alone will fix it'",
+    "If C is revisited, propose a genuinely new mechanism such as event grading or a stricter slot-allocation interaction, then re-test against the repaired archive",
+    "Shift the default alpha priority toward `LLM soft ranking` once replay coverage materially increases"
+  ],
+  "notes": "This failure matters because it closes the old ambiguity. P-ERN was a real measurement blocker, but it was not the sole root cause of C's instability.",
+  "parameters": {
+    "ab_strategies": [
+      "trend_long",
+      "breakout_long"
+    ],
+    "abc_strategies": [
+      "trend_long",
+      "breakout_long",
+      "earnings_event_long"
+    ],
+    "archive_state": "129 earnings snapshot days loaded",
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe"
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability. Full historical snapshots were necessary to evaluate C credibly, but data repair alone did not make `earnings_event_long` a stable system-level alpha source.",
+  "related_files": [
+    "docs/alpha-optimization-playbook.md",
+    "docs/experiment_log.jsonl",
+    "quant/backfill_earnings_snapshots.py",
+    "data/earnings_snapshot_20251023.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-21",
+      "start": "2025-04-22"
+    },
+    {
+      "end": "2025-04-30",
+      "start": "2024-10-01"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-21T02:24:00-07:00"
+}

@@ -1,0 +1,185 @@
+{
+  "after_metrics": {
+    "screen_trigger_1.0": {
+      "primary_window": {
+        "expected_value_score": 0.0779,
+        "max_drawdown_pct": 0.037,
+        "sharpe_daily": 1.63,
+        "total_return_pct": 0.0478,
+        "trade_count": 9,
+        "win_rate": 0.5556
+      },
+      "window_1": {
+        "expected_value_score": 0.1626,
+        "max_drawdown_pct": 0.0427,
+        "sharpe_daily": 1.76,
+        "total_return_pct": 0.0924,
+        "trade_count": 19,
+        "win_rate": 0.4211
+      },
+      "window_2": {
+        "expected_value_score": 0.0004,
+        "max_drawdown_pct": 0.0743,
+        "sharpe_daily": 0.11,
+        "total_return_pct": 0.0034,
+        "trade_count": 18,
+        "win_rate": 0.2222
+      }
+    },
+    "screen_trigger_1.5": {
+      "primary_window": {
+        "expected_value_score": 0.0779,
+        "max_drawdown_pct": 0.037,
+        "sharpe_daily": 1.63,
+        "total_return_pct": 0.0478,
+        "trade_count": 9,
+        "win_rate": 0.5556
+      },
+      "window_1": {
+        "expected_value_score": 0.1626,
+        "max_drawdown_pct": 0.0427,
+        "sharpe_daily": 1.76,
+        "total_return_pct": 0.0924,
+        "trade_count": 19,
+        "win_rate": 0.4211
+      },
+      "window_2": {
+        "expected_value_score": -0.0001,
+        "max_drawdown_pct": 0.0832,
+        "sharpe_daily": 0.01,
+        "total_return_pct": -0.0063,
+        "trade_count": 18,
+        "win_rate": 0.2222
+      }
+    },
+    "validated_trigger_0.5": {
+      "primary_window": {
+        "expected_value_score": 0.0779,
+        "max_drawdown_pct": 0.037,
+        "sharpe_daily": 1.63,
+        "total_return_pct": 0.0478,
+        "trade_count": 9,
+        "win_rate": 0.5556
+      },
+      "window_1": {
+        "expected_value_score": 0.1795,
+        "max_drawdown_pct": 0.0427,
+        "sharpe_daily": 1.85,
+        "total_return_pct": 0.097,
+        "trade_count": 19,
+        "win_rate": 0.4211
+      },
+      "window_2": {
+        "expected_value_score": 0.0029,
+        "max_drawdown_pct": 0.0651,
+        "sharpe_daily": 0.22,
+        "total_return_pct": 0.0133,
+        "trade_count": 18,
+        "win_rate": 0.2222
+      }
+    }
+  },
+  "before_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.0779,
+      "max_drawdown_pct": 0.037,
+      "sharpe_daily": 1.63,
+      "total_return_pct": 0.0478,
+      "trade_count": 9,
+      "win_rate": 0.5556
+    },
+    "window_1": {
+      "expected_value_score": 0.1626,
+      "max_drawdown_pct": 0.0427,
+      "sharpe_daily": 1.76,
+      "total_return_pct": 0.0924,
+      "trade_count": 19,
+      "win_rate": 0.4211
+    },
+    "window_2": {
+      "expected_value_score": 0.0036,
+      "max_drawdown_pct": 0.0739,
+      "sharpe_daily": 0.24,
+      "total_return_pct": 0.015,
+      "trade_count": 18,
+      "win_rate": 0.2778
+    }
+  },
+  "change_summary": "Added an experiment-only backtester branch that, after same-day exit checks, evaluated open `trend_long` positions on the close and raised the next-session stop to breakeven when a profitable trade's hold quality degraded. Screened trigger values `0.5`, `1.0`, and `1.5 ATR` using the repo venv against the same-data A+B stack with `REGIME_AWARE_EXIT=True`, then rolled the code back immediately after measurement.",
+  "change_type": "exit_rule",
+  "component": "quant/backtester.py",
+  "date_range": {
+    "end": "2026-04-20",
+    "start": "2025-10-22"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "note": "The best screen (`0.5 ATR`) improved the ripping-bull comparison window but was a strict null in the primary window and regressed the older weak window on EV and win rate. Higher triggers were worse. This fails the majority-window stability requirement.",
+    "primary_expected_value_score_delta": 0.0,
+    "validated_trigger": 0.5,
+    "window_1_expected_value_score_delta": 0.0169,
+    "window_1_relative_ev_delta_pct": 0.1039,
+    "window_2_expected_value_score_delta": -0.0007,
+    "window_2_max_consecutive_losses_delta": 2,
+    "window_2_relative_ev_delta_pct": -0.1944,
+    "window_2_win_rate_delta": -0.0556
+  },
+  "experiment_id": "exp-20260421-001",
+  "hypothesis": "A genuinely different `trend_long` exit idea may exist in trade-specific hold quality: once a trend position is already profitable, if the current close shows weak hold quality (`trend_score <= 0.4` and `momentum_10d_pct <= 0`), raising the next-session stop to breakeven might preserve EV better than another target-width permutation.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "recent window under current universe snapshot; paired same-data comparison only",
+    "window_1": "ripping bull / high-beta leadership",
+    "window_2": "older mixed-to-weak tape"
+  },
+  "next_retry_requires": [
+    "Do not retry another simple breakeven-lock variant keyed only off `trend_score` collapse and negative 10-day momentum",
+    "If trend exit alpha is revisited, use richer hold-quality context than a single weak-close snapshot (for example multi-day deterioration or event/semantic context)",
+    "Practical priority still tilts back toward `LLM soft ranking` once replay coverage is materially larger and `C strategy revival` once earnings snapshots accumulate"
+  ],
+  "notes": "The code path was fully rolled back after the experiment. This failure is important because it tests the first trade-specific hold-quality exit idea after the earlier regime-only and entry-conditioned trend-exit failures.",
+  "parameters": {
+    "TREND_HOLD_WEAKNESS_PROFIT_TRIGGER_ATR": {
+      "baseline": 0.0,
+      "tested": [
+        0.5,
+        1.0,
+        1.5
+      ]
+    },
+    "fixed_context": {
+      "BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH": -0.2,
+      "BREAKOUT_RANK_BY_52W_HIGH": true,
+      "ENABLED_STRATEGIES": [
+        "trend_long",
+        "breakout_long"
+      ],
+      "REGIME_AWARE_EXIT": true,
+      "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe"
+    },
+    "selector": {
+      "hold_quality": "trend_score <= 0.4 and momentum_10d_pct <= 0",
+      "stop_action": "raise next-session stop to breakeven",
+      "strategy": "trend_long"
+    }
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability. Trade-specific in-trade hold-quality information is directionally more plausible than regime-only or entry-conditioned rules, but this particular weak-close -> breakeven-lock implementation is still too blunt to count as stable alpha.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-21",
+      "start": "2025-04-22"
+    },
+    {
+      "end": "2025-04-30",
+      "start": "2024-10-01"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-21T00:35:00-07:00"
+}

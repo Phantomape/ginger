@@ -1,0 +1,133 @@
+{
+  "after_metrics": {
+    "primary_window": {
+      "by_strategy": {
+        "earnings_event_long": {
+          "profit_factor": 0.42,
+          "total_pnl_usd": -3332.35,
+          "trade_count": 12,
+          "win_rate": 0.3333
+        }
+      },
+      "expected_value_score": 0.3977,
+      "max_drawdown_pct": 0.0452,
+      "sharpe_daily": 2.12,
+      "total_return_pct": 0.1876,
+      "trade_count": 38,
+      "win_rate": 0.5
+    },
+    "window_1": {
+      "by_strategy": {
+        "earnings_event_long": null
+      },
+      "expected_value_score": 0.0193,
+      "max_drawdown_pct": 0.0869,
+      "sharpe_daily": 0.49,
+      "total_return_pct": 0.0394,
+      "trade_count": 29,
+      "win_rate": 0.3103
+    },
+    "window_2": {
+      "by_strategy": {
+        "earnings_event_long": null
+      },
+      "expected_value_score": 0.003,
+      "max_drawdown_pct": 0.0965,
+      "sharpe_daily": 0.22,
+      "total_return_pct": 0.0137,
+      "trade_count": 30,
+      "win_rate": 0.3
+    }
+  },
+  "before_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.5329,
+      "max_drawdown_pct": 0.0447,
+      "sharpe_daily": 2.51,
+      "total_return_pct": 0.2123,
+      "trade_count": 28,
+      "win_rate": 0.5357
+    },
+    "window_1": {
+      "expected_value_score": 0.0193,
+      "max_drawdown_pct": 0.0869,
+      "sharpe_daily": 0.49,
+      "total_return_pct": 0.0394,
+      "trade_count": 29,
+      "win_rate": 0.3103
+    },
+    "window_2": {
+      "expected_value_score": 0.003,
+      "max_drawdown_pct": 0.0965,
+      "sharpe_daily": 0.22,
+      "total_return_pct": 0.0137,
+      "trade_count": 30,
+      "win_rate": 0.3
+    }
+  },
+  "change_summary": "Temporarily changed `strategy_c_earnings()` so only setups with `positive_surprise_history is True` could fire, then ran paired backtests with the repo venv for `A+B` versus `A+B+C` across the same three windows used in `exp-20260421-004`. After measurement, the strategy code was fully rolled back and only the experiment record was retained.",
+  "change_type": "event_grading_rule",
+  "component": "quant/signal_engine.py (temporary, rolled back)",
+  "date_range": {
+    "end": "2026-04-20",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "note": "The positive-surprise hard gate simply removed C from the two comparison windows while leaving a still-bad C cohort in the primary window. That is worse than both the A+B baseline and the previously tested ungated A+B+C stack.",
+    "primary_expected_value_score_delta": -0.1352,
+    "primary_sharpe_daily_delta": -0.39,
+    "primary_total_return_pct_delta": -0.0247,
+    "window_1_expected_value_score_delta": 0.0,
+    "window_2_expected_value_score_delta": 0.0
+  },
+  "experiment_id": "exp-20260421-006",
+  "hypothesis": "If `earnings_event_long` now has full historical snapshots, the simplest new event-grading mechanism is to promote `positive_surprise_history` from a soft confidence bonus to a hard entry-quality gate. That should remove repeat miss-prone earnings candidates and let `A+B+C` outperform the current `A+B` baseline more stably than the ungated C stack.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "window_1": "ripping bull / high-beta leadership",
+    "window_2": "older weak-to-mixed tape"
+  },
+  "next_retry_requires": [
+    "Do not retry another sign-only `positive_surprise_history` selector as the sole C-revival mechanism",
+    "If C is revisited, use richer event grading than a boolean surprise sign, for example surprise magnitude / estimate context / slot interaction, and re-test against the repaired archive",
+    "Keep `LLM soft ranking` classified as measurement-blocked until replay coverage spans multiple non-overlapping windows"
+  ],
+  "notes": "This experiment is important because it falsifies the simplest 'quality gate' variant before more complex C-specific work is attempted.",
+  "parameters": {
+    "ab_strategies": [
+      "trend_long",
+      "breakout_long"
+    ],
+    "abc_strategies": [
+      "trend_long",
+      "breakout_long",
+      "earnings_event_long"
+    ],
+    "event_quality_gate": {
+      "new": "positive_surprise_history must be True for `earnings_event_long` to fire",
+      "old": "positive_surprise_history is a soft +1.0 confidence term when available"
+    },
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe"
+  },
+  "rejection_reason": "Rejected on Gate 4 immediately. A sign-only historical surprise gate is too blunt: it does not recover stable PEAD edge, and in the primary window it still admits a loss-making C subset while contributing nothing in the other two windows.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-21",
+      "start": "2025-04-22"
+    },
+    {
+      "end": "2025-04-30",
+      "start": "2024-10-01"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-21T04:05:00-07:00"
+}

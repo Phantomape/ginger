@@ -1,0 +1,94 @@
+{
+  "after_metrics": {
+    "snapshot_replay_run": {
+      "expected_value_score": 0.847,
+      "max_drawdown_pct": 0.026,
+      "sharpe_daily": 3.51,
+      "signals_generated": 51,
+      "signals_survived": 44,
+      "survival_rate": 0.8627,
+      "total_return_pct": 0.2413,
+      "trade_count": 23,
+      "win_rate": 0.6522
+    }
+  },
+  "before_metrics": {
+    "live_download_run": {
+      "expected_value_score": 0.847,
+      "max_drawdown_pct": 0.026,
+      "sharpe_daily": 3.51,
+      "signals_generated": 51,
+      "signals_survived": 44,
+      "survival_rate": 0.8627,
+      "total_return_pct": 0.2413,
+      "trade_count": 23,
+      "win_rate": 0.6522
+    }
+  },
+  "change_summary": "Added OHLCV snapshot save/load support to `quant/backtester.py` via `--save-ohlcv-snapshot` and `--ohlcv-snapshot`, plus audit surfacing in `known_biases.ohlcv_source`. Added targeted tests proving snapshot round-trip fidelity and that a snapshot-backed run bypasses live `yf.download(...)`. Validated on the primary window by saving `data/ohlcv_snapshot_20251023_20260421.json` from a live run and then replaying the same window from that snapshot; the replay matched exactly on north-star and trade outputs.",
+  "change_type": "measurement_repair",
+  "component": "quant/backtester.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "note": "This is a pure measurement repair. The key result is exact replay equivalence on the fixed OHLCV snapshot, which removes vendor-download drift from the next alpha experiment on this window.",
+    "sharpe_daily": 0.0,
+    "signals_generated": 0,
+    "signals_survived": 0,
+    "survival_rate": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0,
+    "win_rate": 0.0
+  },
+  "experiment_id": "exp-20260422-001",
+  "hypothesis": "The next credible unblocked alpha retry after `exp-20260421-029` needs deterministic price inputs. If `quant/backtester.py` can save a dated OHLCV snapshot and later replay the same window from that snapshot, then small alpha deltas can be judged on fixed data instead of yfinance rate-limit drift.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress"
+  },
+  "next_retry_requires": [
+    "If `breakout fast-confirm exit` is revisited, run it on the saved OHLCV snapshot rather than a fresh live download",
+    "Do not treat OHLCV determinism as a replacement for the separate `LLM soft ranking` coverage blocker; LLM candidate coverage is still the top strategic blocker",
+    "If a future experiment still drifts on a fixed OHLCV snapshot, inspect the earnings-calendar path next rather than reopening yfinance-price suspicion"
+  ],
+  "notes": "The first live save run and the snapshot replay matched exactly on the primary window despite the earlier `exp-20260421-029` sign flip under live downloads. This upgrades deterministic OHLCV snapshots from a suggestion to the new default requirement for small-delta A+B alpha work on replayed windows.",
+  "parameters": {
+    "cli_flags": {
+      "new": [
+        "--ohlcv-snapshot PATH",
+        "--save-ohlcv-snapshot PATH"
+      ],
+      "old": [
+        "--start",
+        "--end",
+        "--replay-llm",
+        "--replay-news",
+        "--regime-aware-exit"
+      ]
+    },
+    "motivation": "unblock reproducible follow-up work for `breakout fast-confirm exit` and any other small-delta alpha experiment that was previously confounded by live-download ticker drift",
+    "primary_window": {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    "snapshot_file": "data/ohlcv_snapshot_20251023_20260421.json",
+    "test_command": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe -m pytest quant/test_quant.py -k \"ohlcv_snapshot or yfinance_bootstrap or backtester_smoke_runs\""
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/backtester.py",
+    "quant/test_quant.py",
+    "data/ohlcv_snapshot_20251023_20260421.json",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-04-22T00:09:00-07:00"
+}

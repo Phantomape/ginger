@@ -1,0 +1,133 @@
+{
+  "after_metrics": {
+    "target_exit_audit": {
+      "late_strong": {
+        "post_10d_avg": 0.020309,
+        "post_10d_win_rate": 0.6154,
+        "target_exit_count": 13
+      },
+      "mid_weak": {
+        "post_10d_avg": -0.009661,
+        "post_10d_win_rate": 0.5556,
+        "target_exit_count": 10
+      },
+      "notable_pockets": {
+        "breakout_long_commodities_rs_strong": {
+          "count": 3,
+          "post_10d_avg": 0.080932,
+          "post_20d_avg": 0.095089
+        },
+        "breakout_long_energy_rs_strong": {
+          "count": 3,
+          "post_10d_avg": 0.037682,
+          "post_20d_avg": 0.090837
+        },
+        "trend_long_financials_rs_strong": {
+          "count": 4,
+          "post_10d_avg": -0.080685,
+          "post_20d_avg": -0.067828
+        }
+      },
+      "old_thin": {
+        "post_10d_avg": 0.001648,
+        "post_10d_win_rate": 0.5556,
+        "target_exit_count": 9
+      }
+    }
+  },
+  "before_metrics": {
+    "accepted_stack": {
+      "late_strong": {
+        "expected_value_score": 1.5039,
+        "max_drawdown_pct": 0.0281,
+        "sharpe_daily": 4.24,
+        "total_return_pct": 0.3547,
+        "trade_count": 21
+      },
+      "mid_weak": {
+        "expected_value_score": 0.4773,
+        "max_drawdown_pct": 0.0247,
+        "sharpe_daily": 2.35,
+        "total_return_pct": 0.2031,
+        "trade_count": 21
+      },
+      "old_thin": {
+        "expected_value_score": 0.131,
+        "max_drawdown_pct": 0.0456,
+        "sharpe_daily": 1.15,
+        "total_return_pct": 0.1139,
+        "trade_count": 24
+      }
+    }
+  },
+  "change_summary": "Added an audit-only script that reruns the current accepted stack on the three fixed OHLCV snapshots and measures 5/10/20 trading-day returns after every `exit_reason == target`, grouped by strategy, sector, and 20-day relative strength versus SPY/QQQ. No production strategy code was changed.",
+  "change_type": "alpha_search_exit_audit",
+  "component": "quant/experiments/legacy/exp_20260425_034_post_target_audit.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "observed_only",
+  "delta_metrics": {
+    "decision_basis": "The audit found pockets of continuation, but all-target continuation was not stable across windows. This creates a follow-up screen for breakout Energy/Commodities target width but does not justify a production rule by itself."
+  },
+  "experiment_id": "exp-20260425-034",
+  "hypothesis": "After accepted Technology/Commodity trend target-width repairs and the 25% single-position cap, target winners may still contain continuation alpha after exit. If target exits keep rising across fixed windows, a future re-entry or hold-extension rule may be worth testing.",
+  "llm_metrics": {
+    "blocker_relation": "LLM soft-ranking remains blocked by candidate-level replay coverage; this deterministic audit does not change LLM responsibilities.",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull where target exits continued on average",
+    "mid_weak": "rotation-heavy bull where target exits did not continue on average",
+    "old_thin": "mixed-to-weak tape where target exits were nearly flat after exit"
+  },
+  "next_retry_requires": [
+    "Do not promote generic post-target re-entry or hold-extension from this audit",
+    "If continuation is revisited, require a sleeve-specific rule with multi-window exposure and EV validation",
+    "Use breakout Energy/Commodities target-width only as a narrow follow-up screen, not as a generic continuation doctrine"
+  ],
+  "notes": "This was alpha_search through mechanism audit, not bug repair. It changed no production logic.",
+  "parameters": {
+    "grouping": [
+      "strategy",
+      "sector",
+      "rs_bucket"
+    ],
+    "horizons_trading_days": [
+      5,
+      10,
+      20
+    ],
+    "rows_included": "closed trades with exit_reason == target",
+    "unchanged": [
+      "entries",
+      "exit rules",
+      "position sizing",
+      "allocation ranking",
+      "LLM responsibilities",
+      "earnings_event_long",
+      "Technology trend 6.0 ATR target",
+      "Commodity trend 7.0 ATR target",
+      "MAX_POSITION_PCT 0.25"
+    ]
+  },
+  "rejection_reason": "Audit-only result; no production rule was tested or promoted. Broad post-target continuation is explicitly not supported because mid_weak post-target average return was negative.",
+  "related_files": [
+    "quant/experiments/legacy/exp_20260425_034_post_target_audit.py",
+    "data/exp_20260425_034_post_target_audit.json",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "observed_only",
+  "timestamp": "2026-04-25T16:26:48-07:00"
+}

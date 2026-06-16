@@ -1,0 +1,166 @@
+{
+  "after_metrics": {
+    "multiplier_0_0": {
+      "late_strong": {
+        "expected_value_score": 0.9715,
+        "max_drawdown_pct": 0.0239,
+        "sharpe_daily": 4.76,
+        "total_return_pct": 0.2041,
+        "trade_count": 17
+      },
+      "mid_weak": {
+        "expected_value_score": 0.3169,
+        "max_drawdown_pct": 0.0216,
+        "sharpe_daily": 2.36,
+        "total_return_pct": 0.1343,
+        "trade_count": 23
+      },
+      "old_thin": {
+        "expected_value_score": 0.0966,
+        "max_drawdown_pct": 0.0444,
+        "sharpe_daily": 1.0,
+        "total_return_pct": 0.0966,
+        "trade_count": 23
+      }
+    },
+    "multiplier_0_25": {
+      "late_strong": {
+        "expected_value_score": 0.8764,
+        "max_drawdown_pct": 0.024,
+        "sharpe_daily": 3.89,
+        "total_return_pct": 0.2253,
+        "trade_count": 21
+      },
+      "mid_weak": {
+        "expected_value_score": 0.3737,
+        "max_drawdown_pct": 0.0161,
+        "sharpe_daily": 2.76,
+        "total_return_pct": 0.1354,
+        "trade_count": 25
+      },
+      "old_thin": {
+        "expected_value_score": 0.0942,
+        "max_drawdown_pct": 0.0444,
+        "sharpe_daily": 0.99,
+        "total_return_pct": 0.0952,
+        "trade_count": 24
+      }
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "eligible_signals": 9,
+      "expected_value_score": 1.0402,
+      "max_drawdown_pct": 0.0238,
+      "sharpe_daily": 3.89,
+      "total_return_pct": 0.2674,
+      "trade_count": 21
+    },
+    "mid_weak": {
+      "eligible_signals": 6,
+      "expected_value_score": 0.3924,
+      "max_drawdown_pct": 0.0205,
+      "sharpe_daily": 2.59,
+      "total_return_pct": 0.1515,
+      "trade_count": 25
+    },
+    "old_thin": {
+      "eligible_signals": 2,
+      "expected_value_score": 0.0863,
+      "max_drawdown_pct": 0.0444,
+      "sharpe_daily": 0.95,
+      "total_return_pct": 0.0908,
+      "trade_count": 24
+    }
+  },
+  "change_summary": "Ran a runtime-only sizing probe for `trend_long | Commodities` at 0.25x and 0x risk across the fixed late_strong, mid_weak, and old_thin snapshot windows. Added a reproducible combined runner for this rejected probe and the following Financials probe. No production strategy code was changed or promoted.",
+  "change_type": "allocation_sizing_probe",
+  "component": "quant/experiments/legacy/exp_20260425_022_023_runner.py (runtime-only monkeypatch; no production sizing rule promoted)",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "multiplier_0_0_ev_deltas": {
+      "late_strong": -0.0687,
+      "mid_weak": -0.0755,
+      "old_thin": 0.0103
+    },
+    "multiplier_0_25_ev_deltas": {
+      "late_strong": -0.1638,
+      "mid_weak": -0.0187,
+      "old_thin": 0.0079
+    },
+    "rejection_basis": "Both de-risking variants improved only old_thin while cutting late_strong and mid_weak EV/return. The apparent residual loss cluster was not stable enough to justify a broad commodity trend haircut."
+  },
+  "experiment_id": "exp-20260425-022",
+  "hypothesis": "After the accepted A+B residual allocation stack, repeated SLV/IAU stop-outs may indicate that `trend_long | Commodities` is a distinct residual allocation leak, separate from the accepted low-TQS commodity breakout exemption.",
+  "llm_metrics": {
+    "blocker_relation": "LLM soft ranking remains blocked by candidate-level replay coverage, so this deterministic residual allocation probe deliberately avoided LLM responsibilities.",
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull where commodity trend exposure contained large winners despite one SLV stop",
+    "mid_weak": "rotation-heavy bull where commodity trend still had positive net contribution despite SLV/IAU losses",
+    "old_thin": "mixed-to-weak tape where one SLV trend loss made the broad cut look attractive"
+  },
+  "next_retry_requires": [
+    "Do not retry broad trend_long Commodities de-risking without a new discriminator that preserves late/mid winners",
+    "Do not confuse this with the accepted low-TQS commodity breakout exemption; this failed probe was trend-only",
+    "If commodity residual work returns, require cross-asset or trade-specific context rather than a broad strategy+sector haircut"
+  ],
+  "notes": "This was alpha_search, not bug repair. It changes one tested causal variable in runtime only: a broad commodity trend risk multiplier.",
+  "parameters": {
+    "artifact_files": [
+      "quant/experiments/legacy/exp_20260425_022_023_runner.py",
+      "data/exp_20260425_022_results.json"
+    ],
+    "rule": {
+      "sector": "Commodities",
+      "strategy": "trend_long"
+    },
+    "screened_variants": [
+      "baseline",
+      "0.25x",
+      "0.0x"
+    ],
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability. Broad commodity trend de-risking damages the stronger windows and gives back useful commodity trend convexity.",
+  "related_files": [
+    "quant/experiments/legacy/exp_20260425_022_023_runner.py",
+    "data/exp_20260425_022_results.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-25T17:55:00-07:00"
+}

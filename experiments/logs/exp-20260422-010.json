@@ -1,0 +1,123 @@
+{
+  "after_metrics": {
+    "primary_replay_llm": {
+      "aligned_dates": [
+        "20260414"
+      ],
+      "candidate_day_coverage_fraction": 0.129,
+      "candidate_days_covered": 4,
+      "candidate_days_total": 31,
+      "candidate_signal_coverage_fraction": 0.0909,
+      "candidate_signals_covered": 4,
+      "candidate_signals_total": 44,
+      "expected_value_score": 0.8369,
+      "max_drawdown_pct": 0.026,
+      "production_aligned_candidate_day_fraction_of_covered": 0.25,
+      "production_aligned_candidate_day_fraction_of_total": 0.0323,
+      "production_aligned_candidate_signal_fraction_of_total": 0.0227,
+      "production_aligned_days": 1,
+      "production_aligned_signals": 1,
+      "production_quant_empty_days": 2,
+      "production_quant_mismatch_days": 0,
+      "production_quant_missing_days": 1,
+      "sharpe_daily": 3.49,
+      "total_return_pct": 0.2398,
+      "trade_count": 22,
+      "win_rate": 0.6364
+    }
+  },
+  "before_metrics": {
+    "primary_replay_llm": {
+      "candidate_day_coverage_fraction": 0.129,
+      "candidate_days_covered": 4,
+      "candidate_days_total": 31,
+      "candidate_signal_coverage_fraction": 0.0909,
+      "candidate_signals_covered": 4,
+      "candidate_signals_total": 44,
+      "expected_value_score": 0.8369,
+      "max_drawdown_pct": 0.026,
+      "sharpe_daily": 3.49,
+      "total_return_pct": 0.2398,
+      "trade_count": 22,
+      "win_rate": 0.6364
+    }
+  },
+  "change_summary": "Extended LLM replay attribution with production-context alignment. `quant/backtester.py` now records backtest candidate tickers per covered date and `quant/llm_backlog.py` compares them against saved production `quant_signals_YYYYMMDD.json`, classifying covered days as `aligned`, `production_quant_empty`, `production_quant_missing`, or `production_quant_mismatch`. CLI now prints production-aligned coverage alongside raw candidate coverage, and regression coverage was added in `quant/test_quant.py`.",
+  "change_type": "measurement_repair",
+  "component": "quant/llm_backlog.py + quant/backtester.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "max_drawdown_pct_delta": 0.0,
+    "note": "Pure blocker-accuracy upgrade. Trading metrics stayed bit-identical on the deterministic snapshot, but the usable LLM sample shrank materially: raw candidate coverage still reads 4/31 days and 4/44 signals, while production-aligned coverage is only 1/31 days and 1/44 signals. Two of the four covered days (`20260416`, `20260421`) had saved production `quant_signals=[]`, and one covered day (`20260219`) had no saved production quant-signals file at all.",
+    "sharpe_daily_delta": 0.0,
+    "total_return_pct_delta": 0.0,
+    "trade_count_delta": 0,
+    "win_rate_delta": 0.0
+  },
+  "experiment_id": "exp-20260422-010",
+  "hypothesis": "`LLM soft ranking` remains the highest-upside alpha branch, but current replay readiness is still overstated because 'covered candidate day' only means a dated LLM response exists. If covered days are split by whether saved production `quant_signals_YYYYMMDD.json` actually overlaps the backtest pre-LLM candidate set, then the real blocker becomes measurable and we avoid launching ranking experiments on context-mismatched samples.",
+  "llm_metrics": {
+    "candidate_day_coverage_fraction": 0.129,
+    "candidate_signal_coverage_fraction": 0.0909,
+    "coverage_fraction": 0.0569,
+    "llm_attribution_metric": "production-context-aligned candidate coverage",
+    "llm_change_scope": "attribution/reporting only",
+    "production_aligned_candidate_day_fraction": 0.0323,
+    "production_aligned_candidate_signal_fraction": 0.0227,
+    "signals_passed_by_llm": 0,
+    "signals_presented": 4,
+    "signals_vetoed_by_llm": 4,
+    "used_llm": true,
+    "veto_rate": 1.0
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "secondary": "ripping bull / high-beta leadership"
+  },
+  "next_retry_requires": [
+    "Do not start `LLM soft ranking` while only 1/31 candidate days and 1/44 candidate signals are production-context aligned",
+    "Prioritize accumulating or reconstructing aligned prompt/response archives on dates where production `quant_signals` actually contains candidates, instead of counting every dated response file as equal progress",
+    "Treat `production_quant_empty` covered days as evidence of context mismatch, not evidence of usable LLM veto sample growth"
+  ],
+  "notes": "Covered-day alignment audit on the deterministic primary window: `20260414` was the only aligned date (backtest candidate `CRDO`, production quant candidates `AMZN/GE/UNH/CRDO`); `20260416` and `20260421` had LLM replies but production quant files were empty; `20260219` had a replay file but no saved production quant-signals file. This means the LLM blocker is stricter than the previous 4/31 headline implied.",
+  "parameters": {
+    "backtest_command": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2025-10-23 --end 2026-04-21 --regime-aware-exit --replay-llm --ohlcv-snapshot data\\ohlcv_snapshot_20251023_20260421.json",
+    "data_source": "data/ohlcv_snapshot_20251023_20260421.json",
+    "new_llm_attribution_fields": [
+      "candidate_tickers_by_date",
+      "context_alignment.aligned_days",
+      "context_alignment.production_quant_empty_days",
+      "context_alignment.production_quant_missing_days",
+      "context_alignment.production_aligned_candidate_day_fraction_of_total",
+      "context_alignment.production_aligned_candidate_signal_fraction_of_total"
+    ],
+    "primary_window": {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    "test_command": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe -m pytest quant\\test_quant.py -k \"llm_attribution or replay_llm or archive_backlog\""
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/llm_backlog.py",
+    "quant/backtester.py",
+    "quant/test_quant.py",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "data/backtest_results_20260422.json",
+    "data/ohlcv_snapshot_20251023_20260421.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-22T16:15:00-07:00"
+}

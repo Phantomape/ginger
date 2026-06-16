@@ -1,0 +1,268 @@
+{
+  "after_metrics": {
+    "stress_breakout_0.25x": {
+      "late_strong": {
+        "expected_value_score": 0.7804,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.38,
+        "total_return_pct": 0.2309,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 0.36,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    },
+    "stress_breakout_0x": {
+      "late_strong": {
+        "expected_value_score": 0.7579,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.33,
+        "total_return_pct": 0.2276,
+        "trade_count": 22,
+        "win_rate": 0.6364
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 0.36,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    },
+    "stress_gross_0.25x": {
+      "late_strong": {
+        "expected_value_score": 0.7135,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.52,
+        "total_return_pct": 0.2027,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1287,
+        "max_drawdown_pct": 0.0497,
+        "sharpe_daily": 1.22,
+        "total_return_pct": 0.1055,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0059,
+        "max_drawdown_pct": 0.0794,
+        "sharpe_daily": 0.29,
+        "total_return_pct": 0.0205,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    },
+    "stress_gross_0.5x": {
+      "late_strong": {
+        "expected_value_score": 0.7777,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.5,
+        "total_return_pct": 0.2222,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1281,
+        "max_drawdown_pct": 0.0502,
+        "sharpe_daily": 1.22,
+        "total_return_pct": 0.105,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0073,
+        "max_drawdown_pct": 0.0844,
+        "sharpe_daily": 0.31,
+        "total_return_pct": 0.0237,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    }
+  },
+  "before_metrics": {
+    "accepted_ab_stack": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 0.36,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    }
+  },
+  "change_summary": "Ran a runtime-only monkeypatch of `signal_engine.generate_signals()` and `portfolio_engine.size_signals()` against the deterministic late / mid / old OHLCV snapshots. Each candidate day received a broad stress flag computed from replayable whole-universe and index-state proxies already available in the repo: `breadth_above_200 <= 0.55`, `breadth_positive_mom <= 0.40`, `spy_pct_from_ma <= -3%`, `qqq_pct_from_ma <= -4%`, or a large `QQQ-SPY` momentum gap combined with weak short-horizon breadth. Screened two deployment shapes: gross risk haircut (`0.5x`, `0.25x`) and breakout-only haircut (`0.25x`, `0.0x`). No repository trading logic was kept after measurement.",
+  "change_type": "allocation_rule",
+  "component": "runtime-only monkeypatch of `quant/signal_engine.py` + `quant/portfolio_engine.py` sizing path (rolled back; no repo trading logic changed)",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "note": "The branch failed because the broad stress-state overfired in the dominant recent tape. The gross-risk variants slightly helped only the middle window while still damaging both the late strong and old weak windows. The breakout-only variants simply cut useful convexity in the late strong window while behaving as nulls elsewhere. The trigger audit makes the failure mechanism explicit: this first stress-state definition marked roughly half of the late-strong window as stressed, so it is too broad to serve as the first live risk-state gate.",
+    "stress_breakout_0.25x_ev_deltas": {
+      "late_strong": -0.0666,
+      "mid_weak": 0.0,
+      "old_thin": 0.0
+    },
+    "stress_breakout_0x_ev_deltas": {
+      "late_strong": -0.0891,
+      "mid_weak": 0.0,
+      "old_thin": 0.0
+    },
+    "stress_gross_0.25x_ev_deltas": {
+      "late_strong": -0.1335,
+      "mid_weak": 0.0032,
+      "old_thin": -0.005
+    },
+    "stress_gross_0.5x_ev_deltas": {
+      "late_strong": -0.0693,
+      "mid_weak": 0.0026,
+      "old_thin": -0.0036
+    }
+  },
+  "experiment_id": "exp-20260423-013",
+  "hypothesis": "If the new meta-layer should start with a narrow `risk-state` branch, then a broad stress-state defined from replayable structure + pressure proxies should improve the accepted deterministic A+B stack by reducing risk when the tape is clearly stressed. A valid first pass should preserve or improve the dominant late-strong window while helping at least one weaker window.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "recent strong tape with breakout sleeve dominance",
+    "mid_weak": "earlier weak-bull / rotational tape",
+    "old_thin": "older mixed-to-weak tape"
+  },
+  "next_retry_requires": [
+    "Do not retry the same OR-combined broad stress-state with nearby multipliers by default",
+    "If the risk-state branch continues, the next state definition must be materially narrower or hierarchical: for example require simultaneous breadth weakness + negative index pressure, not any single stress symptom",
+    "Keep `risk-state` and `healthy-tape sleeve routing` separate; this experiment only falsified the first broad stress template, not the whole meta-layer direction"
+  ],
+  "notes": "This stayed a single-causal-variable runtime-only experiment: only the sizing response changed when the broad stress-state fired. Entries, exits, ranking, and accepted cohort rules remained unchanged. The valuable result is structural: the first risk-state gate should be narrower and more hierarchical than this broad OR-combination.",
+  "parameters": {
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "screened_variants": {
+      "stress_breakout_0.25x": {
+        "deployment": "breakout-only haircut",
+        "risk_multiplier": 0.25
+      },
+      "stress_breakout_0x": {
+        "deployment": "breakout-only haircut",
+        "risk_multiplier": 0.0
+      },
+      "stress_gross_0.25x": {
+        "deployment": "all strategies gross-risk haircut",
+        "risk_multiplier": 0.25
+      },
+      "stress_gross_0.5x": {
+        "deployment": "all strategies gross-risk haircut",
+        "risk_multiplier": 0.5
+      }
+    },
+    "state_definition": {
+      "breadth_above_200_max": 0.55,
+      "breadth_positive_mom_max": 0.4,
+      "leadership_gap_trigger": "abs(qqq_10d_return - spy_10d_return) >= 0.06 and breadth_positive_mom <= 0.45",
+      "qqq_pct_from_ma_max": -0.04,
+      "spy_pct_from_ma_max": -0.03
+    },
+    "trigger_audit": {
+      "late_strong": {
+        "stress_days": 65,
+        "stress_fraction": 0.5039,
+        "trading_days": 129
+      },
+      "mid_weak": {
+        "stress_days": 11,
+        "stress_fraction": 0.084,
+        "trading_days": 131
+      },
+      "old_thin": {
+        "stress_days": 59,
+        "stress_fraction": 0.4069,
+        "trading_days": 145
+      }
+    },
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability and bad trigger specificity. The broad stress-state definition confuses volatile-but-healthy breakout conditions with genuine weak-tape stress, so it overfires in the dominant recent window and destroys too much good convexity.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "data/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv_snapshot_20241002_20250422.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-23T14:20:00-07:00"
+}

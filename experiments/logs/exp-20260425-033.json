@@ -1,0 +1,172 @@
+{
+  "after_metrics": {
+    "post_promotion_fixed_snapshots": {
+      "late_strong": {
+        "expected_value_score": 1.5039,
+        "max_drawdown_pct": 0.0281,
+        "sharpe_daily": 4.24,
+        "total_return_pct": 0.3547,
+        "trade_count": 21,
+        "win_rate": 0.7143
+      },
+      "mid_weak": {
+        "expected_value_score": 0.4773,
+        "max_drawdown_pct": 0.0247,
+        "sharpe_daily": 2.35,
+        "total_return_pct": 0.2031,
+        "trade_count": 21,
+        "win_rate": 0.4762
+      },
+      "old_thin": {
+        "expected_value_score": 0.131,
+        "max_drawdown_pct": 0.0456,
+        "sharpe_daily": 1.15,
+        "total_return_pct": 0.1139,
+        "trade_count": 24,
+        "win_rate": 0.375
+      }
+    },
+    "rejected_or_deferred_variants": {
+      "cap_15": "damaged EV in all three windows",
+      "cap_30": "improved late/mid more than 25% but was weaker than 25% in old_thin",
+      "cap_35": "same pattern as 30%; best late/mid but lower old_thin EV than 25%"
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.3382,
+      "max_drawdown_pct": 0.0237,
+      "sharpe_daily": 4.3,
+      "total_return_pct": 0.3112,
+      "trade_count": 21,
+      "win_rate": 0.7143
+    },
+    "mid_weak": {
+      "expected_value_score": 0.4182,
+      "max_drawdown_pct": 0.0205,
+      "sharpe_daily": 2.38,
+      "total_return_pct": 0.1757,
+      "trade_count": 21,
+      "win_rate": 0.4762
+    },
+    "old_thin": {
+      "expected_value_score": 0.1121,
+      "max_drawdown_pct": 0.0444,
+      "sharpe_daily": 1.12,
+      "total_return_pct": 0.1001,
+      "trade_count": 24,
+      "win_rate": 0.375
+    }
+  },
+  "change_summary": "Added an experiment-only single-position cap sweep runner, tested 15%/20%/25%/30%/35% on the three fixed OHLCV snapshots, then promoted `MAX_POSITION_PCT = 0.25` after 25% improved EV in every window with unchanged trade count and win rate. Updated the code-enforced cap test and documented the mechanism in the playbook.",
+  "change_type": "alpha_search_capital_allocation",
+  "component": "quant/constants.py + quant/test_quant.py + quant/experiments/legacy/exp_20260425_033_runner.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "ev_deltas": {
+      "late_strong": 0.1657,
+      "mid_weak": 0.0591,
+      "old_thin": 0.0189
+    },
+    "gate4_basis": "Accepted because EV improved by more than 10% in all three fixed non-overlapping windows, total return improved in all three windows, trade count and win rate were unchanged, and drawdown increases stayed well below the 1 percentage point Gate 4 cap.",
+    "max_drawdown_pct_deltas": {
+      "late_strong": 0.0044,
+      "mid_weak": 0.0042,
+      "old_thin": 0.0012
+    },
+    "sharpe_daily_deltas": {
+      "late_strong": -0.06,
+      "mid_weak": -0.03,
+      "old_thin": 0.03
+    },
+    "total_return_pct_deltas": {
+      "late_strong": 0.0435,
+      "mid_weak": 0.0274,
+      "old_thin": 0.0138
+    },
+    "trade_count_deltas": {
+      "late_strong": 0,
+      "mid_weak": 0,
+      "old_thin": 0
+    },
+    "win_rate_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": 0.0
+    }
+  },
+  "experiment_id": "exp-20260425-033",
+  "hypothesis": "After Technology and Commodity trend target-width repairs, the next unblocked alpha may be capital allocation rather than another exit-width permutation. If the accepted A+B stack is under-allocating to tight-stop winners because the 20% single-position cap binds before the risk budget is deployed, raising only `MAX_POSITION_PCT` to a conservative 25% should improve EV across fixed windows without changing entries, exits, ranking, LLM, C strategy, or existing cohort sizing rules.",
+  "llm_metrics": {
+    "blocker_relation": "LLM soft-ranking remains blocked by candidate-level replay coverage; this run deliberately used deterministic capital-allocation alpha instead of LLM ranking.",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull with accepted Tech/Commodity target stack",
+    "mid_weak": "rotation-heavy bull where gross slot usage was high but tight-stop winners were capped",
+    "old_thin": "mixed-to-weak tape used to avoid turning cap increases into single-regime leverage"
+  },
+  "next_retry_requires": [
+    "Do not keep sweeping 30-35% cap variants by default; 25% is the conservative accepted point because old_thin weakened above it",
+    "Do not reinterpret this as permission to retry global MAX_POSITIONS; slot-count changes were previously unstable",
+    "Future allocation work should start from another binding-constraint audit or fresh residual cluster, not another broad leverage dial"
+  ],
+  "notes": "This was alpha_search. It changed one independent causal variable: the code-enforced single-position cap. It did not treat LLM as the problem; LLM ranking was bypassed only because replay coverage remains insufficient.",
+  "parameters": {
+    "rule": {
+      "MAX_POSITION_PCT": {
+        "new": 0.25,
+        "old": 0.2
+      }
+    },
+    "sweep_values": [
+      0.15,
+      0.2,
+      0.25,
+      0.3,
+      0.35
+    ],
+    "unchanged": [
+      "entries",
+      "exit rules",
+      "allocation ranking",
+      "LLM responsibilities",
+      "earnings_event_long",
+      "Technology trend 6.0 ATR target",
+      "Commodity trend 7.0 ATR target",
+      "existing cohort sizing multipliers",
+      "MAX_POSITIONS"
+    ]
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/constants.py",
+    "quant/test_quant.py",
+    "quant/experiments/legacy/exp_20260425_033_runner.py",
+    "data/exp_20260425_033_results.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-25T15:13:00-07:00",
+  "verification": [
+    ".venv\\\\Scripts\\\\python.exe -m pytest quant\\\\test_quant.py -q => 285 passed",
+    ".venv\\\\Scripts\\\\python.exe quant\\\\backtester.py --start 2025-10-23 --end 2026-04-21 --regime-aware-exit --ohlcv-snapshot data\\\\ohlcv_snapshot_20251023_20260421.json --no-secondary => EV 1.5039, Sharpe daily 4.24, maxDD 2.81%, trades 21",
+    ".venv\\\\Scripts\\\\python.exe quant\\\\backtester.py --start 2025-04-23 --end 2025-10-22 --regime-aware-exit --ohlcv-snapshot data\\\\ohlcv_snapshot_20250423_20251022.json --no-secondary => EV 0.4773, Sharpe daily 2.35, maxDD 2.47%, trades 21",
+    ".venv\\\\Scripts\\\\python.exe quant\\\\backtester.py --start 2024-10-02 --end 2025-04-22 --regime-aware-exit --ohlcv-snapshot data\\\\ohlcv_snapshot_20241002_20250422.json --no-secondary => EV 0.1310, Sharpe daily 1.15, maxDD 4.56%, trades 24"
+  ]
+}

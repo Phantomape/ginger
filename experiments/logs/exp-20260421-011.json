@@ -1,0 +1,235 @@
+{
+  "after_metrics": {
+    "threshold_0_80": {
+      "primary_window": {
+        "expected_value_score": 0.5353,
+        "max_drawdown_pct": 0.035,
+        "sharpe_daily": 2.6,
+        "total_return_pct": 0.2059,
+        "trade_count": 28,
+        "win_rate": 0.5357
+      },
+      "window_1": {
+        "expected_value_score": 0.0223,
+        "max_drawdown_pct": 0.0828,
+        "sharpe_daily": 0.52,
+        "total_return_pct": 0.0429,
+        "trade_count": 30,
+        "win_rate": 0.3333
+      },
+      "window_2": {
+        "expected_value_score": 0.003,
+        "max_drawdown_pct": 0.0965,
+        "sharpe_daily": 0.22,
+        "total_return_pct": 0.0137,
+        "trade_count": 30,
+        "win_rate": 0.3
+      }
+    },
+    "threshold_0_825": {
+      "primary_window": {
+        "expected_value_score": 0.5353,
+        "max_drawdown_pct": 0.035,
+        "sharpe_daily": 2.6,
+        "total_return_pct": 0.2059,
+        "trade_count": 28,
+        "win_rate": 0.5357
+      },
+      "window_1": {
+        "expected_value_score": 0.028,
+        "max_drawdown_pct": 0.0828,
+        "sharpe_daily": 0.59,
+        "total_return_pct": 0.0474,
+        "trade_count": 30,
+        "win_rate": 0.3333
+      },
+      "window_2": {
+        "expected_value_score": 0.003,
+        "max_drawdown_pct": 0.0965,
+        "sharpe_daily": 0.22,
+        "total_return_pct": 0.0137,
+        "trade_count": 30,
+        "win_rate": 0.3
+      }
+    },
+    "threshold_0_875": {
+      "primary_window": {
+        "expected_value_score": 0.501,
+        "max_drawdown_pct": 0.0275,
+        "sharpe_daily": 2.72,
+        "total_return_pct": 0.1842,
+        "trade_count": 28,
+        "win_rate": 0.5357
+      },
+      "window_1": {
+        "expected_value_score": 0.0369,
+        "max_drawdown_pct": 0.0718,
+        "sharpe_daily": 0.68,
+        "total_return_pct": 0.0543,
+        "trade_count": 30,
+        "win_rate": 0.3333
+      },
+      "window_2": {
+        "expected_value_score": 0.0008,
+        "max_drawdown_pct": 0.0965,
+        "sharpe_daily": 0.15,
+        "total_return_pct": 0.0052,
+        "trade_count": 30,
+        "win_rate": 0.3
+      }
+    },
+    "threshold_0_90": {
+      "primary_window": {
+        "expected_value_score": 0.4068,
+        "max_drawdown_pct": 0.0275,
+        "sharpe_daily": 2.53,
+        "total_return_pct": 0.1608,
+        "trade_count": 28,
+        "win_rate": 0.5357
+      },
+      "window_1": {
+        "expected_value_score": 0.0405,
+        "max_drawdown_pct": 0.0663,
+        "sharpe_daily": 0.71,
+        "total_return_pct": 0.0571,
+        "trade_count": 30,
+        "win_rate": 0.3333
+      },
+      "window_2": {
+        "expected_value_score": 0.0008,
+        "max_drawdown_pct": 0.0962,
+        "sharpe_daily": 0.15,
+        "total_return_pct": 0.0052,
+        "trade_count": 30,
+        "win_rate": 0.3
+      }
+    }
+  },
+  "before_metrics": {
+    "threshold_0_85": {
+      "primary_window": {
+        "expected_value_score": 0.591,
+        "max_drawdown_pct": 0.0275,
+        "sharpe_daily": 2.73,
+        "total_return_pct": 0.2165,
+        "trade_count": 28,
+        "win_rate": 0.5357
+      },
+      "window_1": {
+        "expected_value_score": 0.0304,
+        "max_drawdown_pct": 0.0828,
+        "sharpe_daily": 0.61,
+        "total_return_pct": 0.0499,
+        "trade_count": 30,
+        "win_rate": 0.3333
+      },
+      "window_2": {
+        "expected_value_score": 0.003,
+        "max_drawdown_pct": 0.0965,
+        "sharpe_daily": 0.22,
+        "total_return_pct": 0.0137,
+        "trade_count": 30,
+        "win_rate": 0.3
+      }
+    }
+  },
+  "change_summary": "Ran a runtime-only threshold sweep by monkeypatching `portfolio_engine.LOW_TQS_RISK_THRESHOLD` across `[0.80, 0.825, 0.85, 0.875, 0.90]` while keeping `LOW_TQS_RISK_MULTIPLIER = 0.25` fixed. Re-ran the accepted A+B stack across the same three non-overlapping windows and also audited which entered trades actually received the TQS haircut. No repository strategy code was changed; only the experiment record and playbook were updated.",
+  "change_type": "allocation_rule",
+  "component": "quant/portfolio_engine.py (runtime-only constant override, rolled back)",
+  "date_range": {
+    "end": "2026-04-20",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "low_tqs_trade_audit": {
+      "primary": {
+        "all_breakout_long": true,
+        "low_tqs_entries": 6
+      },
+      "window_1": {
+        "all_breakout_long": true,
+        "low_tqs_entries": 3
+      },
+      "window_2": {
+        "all_breakout_long": false,
+        "low_tqs_entries": 2,
+        "mix": "1 breakout_long + 1 trend_long"
+      }
+    },
+    "note": "`0.85` remained the best balanced setting. Looser thresholds gave back primary-window edge without helping the weak window, while tighter thresholds improved only the ripping-bull comparison window by de-risking too many otherwise-valuable breakout trades and materially reducing primary-window return.",
+    "threshold_0_80": {
+      "primary_expected_value_score_delta": -0.0557,
+      "window_1_expected_value_score_delta": -0.0081,
+      "window_2_expected_value_score_delta": 0.0
+    },
+    "threshold_0_825": {
+      "primary_expected_value_score_delta": -0.0557,
+      "window_1_expected_value_score_delta": -0.0024,
+      "window_2_expected_value_score_delta": 0.0
+    },
+    "threshold_0_875": {
+      "primary_expected_value_score_delta": -0.09,
+      "window_1_expected_value_score_delta": 0.0065,
+      "window_2_expected_value_score_delta": -0.0022
+    },
+    "threshold_0_90": {
+      "primary_expected_value_score_delta": -0.1842,
+      "window_1_expected_value_score_delta": 0.0101,
+      "window_2_expected_value_score_delta": -0.0022
+    }
+  },
+  "experiment_id": "exp-20260421-011",
+  "hypothesis": "If the accepted TQS-conditioned sizing rule is real allocation alpha, a tighter or looser `LOW_TQS_RISK_THRESHOLD` may improve expected value further without changing the 0.25 risk multiplier or any entry/exit logic. The tested idea was to keep the same mechanism and sweep only the threshold.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "window_1": "ripping bull / high-beta leadership",
+    "window_2": "older weak-to-mixed tape"
+  },
+  "next_retry_requires": [
+    "Do not keep permuting `LOW_TQS_RISK_THRESHOLD` around the current `0.85` without a new conditioning variable",
+    "If allocation alpha is revisited, use richer context than another scalar threshold sweep, for example regime-conditioned or continuous marginal-value sizing",
+    "Treat the current TQS haircut as primarily a breakout-quality allocation rule; future work should explain why a new condition would change the low-TQS breakout cohort rather than just reclassify the same trades"
+  ],
+  "notes": "The audit also clarifies the accepted rule's mechanism: in the current accepted stack, almost every de-risked trade is a `breakout_long`, not a `trend_long`, so simple strategy-scoping is not a new alpha direction by itself.",
+  "parameters": {
+    "LOW_TQS_RISK_MULTIPLIER": {
+      "fixed": 0.25
+    },
+    "LOW_TQS_RISK_THRESHOLD": {
+      "baseline": 0.85,
+      "swept": [
+        0.8,
+        0.825,
+        0.85,
+        0.875,
+        0.9
+      ]
+    },
+    "ab_strategies": [
+      "trend_long",
+      "breakout_long"
+    ],
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe"
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability. No swept threshold beat the current `0.85` setting on the north-star metric across a majority of windows, so there is no justification to replace the accepted rule.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-21T10:45:00-07:00"
+}

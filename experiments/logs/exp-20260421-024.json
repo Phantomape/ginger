@@ -1,0 +1,144 @@
+{
+  "after_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.8299,
+      "max_drawdown_pct": 0.026,
+      "sharpe_daily": 3.49,
+      "total_return_pct": 0.2378,
+      "trade_count": 22,
+      "win_rate": 0.6364
+    },
+    "window_1": {
+      "expected_value_score": 0.0861,
+      "max_drawdown_pct": 0.0509,
+      "sharpe_daily": 1.06,
+      "total_return_pct": 0.0812,
+      "trade_count": 26,
+      "win_rate": 0.4231
+    },
+    "window_2": {
+      "expected_value_score": 0.013,
+      "max_drawdown_pct": 0.0917,
+      "sharpe_daily": 0.38,
+      "total_return_pct": 0.0341,
+      "trade_count": 29,
+      "win_rate": 0.3103
+    }
+  },
+  "before_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.8299,
+      "max_drawdown_pct": 0.026,
+      "sharpe_daily": 3.49,
+      "total_return_pct": 0.2378,
+      "trade_count": 22,
+      "win_rate": 0.6364
+    },
+    "window_1": {
+      "expected_value_score": 0.1255,
+      "max_drawdown_pct": 0.0511,
+      "sharpe_daily": 1.21,
+      "total_return_pct": 0.1037,
+      "trade_count": 29,
+      "win_rate": 0.3793
+    },
+    "window_2": {
+      "expected_value_score": 0.0257,
+      "max_drawdown_pct": 0.0917,
+      "sharpe_daily": 0.51,
+      "total_return_pct": 0.0504,
+      "trade_count": 29,
+      "win_rate": 0.3103
+    }
+  },
+  "change_summary": "Ran a runtime-only `portfolio_engine.size_signals()` monkeypatch that kept the accepted A+B stack intact, but changed only one causal variable inside the already-accepted cohort rule: `trend_long` + `Technology` + `0.04 <= gap_vulnerability_pct < 0.06` moved from `0.25x` risk to `0.0x` risk. Compared the current accepted stack versus the zero-risk variant across the standard primary, bull, and weak non-overlapping windows. No repository strategy code changed.",
+  "change_type": "allocation_rule",
+  "component": "quant/portfolio_engine.py (runtime-only monkeypatch, rolled back)",
+  "date_range": {
+    "end": "2026-04-20",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "note": "Even though the executed moderate-gap tech trend cohort itself looked uniformly bad, zeroing it entirely made the system worse in both non-primary windows. The accepted 0.25x rule is not leaving an obvious easy leak; the freed capital/slot path appears worse than the retained partial exposure.",
+    "primary_expected_value_score_delta": 0.0,
+    "primary_sharpe_daily_delta": 0.0,
+    "primary_total_return_pct_delta": 0.0,
+    "window_1_expected_value_score_delta": -0.0394,
+    "window_1_max_drawdown_pct_delta": -0.0002,
+    "window_1_sharpe_daily_delta": -0.15,
+    "window_1_total_return_pct_delta": -0.0225,
+    "window_1_trade_count_delta": -3,
+    "window_2_expected_value_score_delta": -0.0127,
+    "window_2_sharpe_daily_delta": -0.13,
+    "window_2_total_return_pct_delta": -0.0163,
+    "window_2_trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260421-024",
+  "hypothesis": "If the accepted `trend_long` Technology moderate-gap haircut (`4%-6% gap_vulnerability_pct -> 0.25x risk`) still leaves an avoidable residual leak, then tightening that exact same cohort to zero risk should improve the bull and weak windows while leaving the primary window unchanged because the current primary tape has no surviving qualifying trades.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "window_1": "ripping bull / high-beta leadership",
+    "window_2": "older weak-to-mixed tape"
+  },
+  "next_retry_requires": [
+    "Do not reopen the same `trend_long` Technology moderate-gap cohort by simply tightening its multiplier again without a genuinely new interaction hypothesis",
+    "Treat current loser-only executed-cohort audits with caution when changing sizing, because removing a bad-looking cohort can still worsen replacement trade flow or slot usage",
+    "Keep `LLM soft ranking` as the highest-upside strategic direction once replay coverage is materially larger; the unblocked A+B allocation branch is increasingly saturated"
+  ],
+  "notes": "This was intentionally a single-variable continuation of the accepted `exp-20260421-020` rule rather than a new scalar sweep. The negative result strengthens the conclusion that current residual A+B leaks are no longer recoverable by simply turning existing cohort multipliers further toward zero.",
+  "parameters": {
+    "TREND_TECH_GAP_RULE": {
+      "cohort": "strategy == trend_long AND sector == Technology AND 0.04 <= gap_vulnerability_pct < 0.06",
+      "new": 0.0,
+      "old": 0.25
+    },
+    "accepted_baseline_context": [
+      "REGIME_AWARE_EXIT",
+      "low-TQS commodity exemption",
+      "zero-risk low-TQS non-commodity breakouts",
+      "zero-risk trend Industrials",
+      "0.25x moderate-gap trend Technology"
+    ],
+    "current_state_cohort_audit": {
+      "cohort_summary": "all executed cohort trades were losers after the accepted 0.25x haircut, concentrated in the bull and weak windows",
+      "sample_count": 9
+    },
+    "evaluation_windows": [
+      [
+        "2025-10-23",
+        "2026-04-20"
+      ],
+      [
+        "2025-04-23",
+        "2025-10-22"
+      ],
+      [
+        "2024-10-02",
+        "2025-04-22"
+      ]
+    ],
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe"
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability. Tightening the accepted moderate-gap technology trend haircut from `0.25x` to `0.0x` was a clean same-cohort retry, but it materially regressed both the ripping-bull and weak windows while leaving the primary window unchanged. This means the accepted `0.25x` setting is closer to a local optimum than the loser-only cohort audit suggested.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "quant/portfolio_engine.py"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-21T20:15:00-07:00"
+}

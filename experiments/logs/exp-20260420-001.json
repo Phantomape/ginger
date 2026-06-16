@@ -1,0 +1,104 @@
+{
+  "after_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.7531,
+      "max_drawdown_pct": 0.0408,
+      "sharpe_daily": 2.83,
+      "total_return_pct": 0.2661,
+      "trade_count": 28
+    },
+    "window_1": {
+      "expected_value_score": 0.365,
+      "sharpe_daily": 3.44,
+      "trade_count": 9
+    },
+    "window_2": {
+      "expected_value_score": 0.3043,
+      "sharpe_daily": 2.89,
+      "trade_count": 15
+    },
+    "window_3": {
+      "expected_value_score": 0.0502,
+      "sharpe_daily": 3.28,
+      "trade_count": 4
+    }
+  },
+  "before_metrics": {
+    "expected_value_score": 0.7531,
+    "max_drawdown_pct": 0.0408,
+    "sharpe_daily": 2.83,
+    "total_return_pct": 0.2661,
+    "trade_count": 28
+  },
+  "change_summary": "Added a backtester-only experiment flag that let `rank_signals_for_allocation()` use `above_200ma` as a tie-breaker after `pct_from_52w_high`, then compared the current accepted baseline against the tie-break-enabled variant across the primary window and 3 non-overlapping windows. The implementation was fully rolled back after producing a null result.",
+  "change_type": "ranking_rule",
+  "component": "quant/signal_engine.py + quant/backtester.py + quant/constants.py + quant/run.py + quant/run_quant.py + quant/run_pipeline.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "note": "The tie-breaker produced zero change in every tested window. In this sample, `above_200ma` did not add incremental allocation information beyond the already-accepted `pct_from_52w_high` breakout ranking and quality filter.",
+    "sharpe_daily_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260420-001",
+  "hypothesis": "Within the accepted breakout slot-ranking framework, `above_200ma` might add incremental information as a secondary ordering signal. If two breakout candidates are otherwise similar, preferring `above_200ma=True` could improve opportunity selection without changing the global ranking structure.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "BULL (slow-melt) with Apr-2026 stress",
+    "window_1": "late-2025 bull trend",
+    "window_2": "early-2026 bull continuation",
+    "window_3": "Feb-Apr 2026 stress"
+  },
+  "next_retry_requires": [
+    "Do not revisit `above_200ma` as a pure breakout tie-breaker without new evidence that it changes actual slot collisions",
+    "Prefer the next ranking experiment to test a genuinely different signal such as `trade_quality_score` or a more selective breakout-specific exit path",
+    "Keep future breakout allocation experiments single-variable and backtester-only first, since the current ranking stack is already fairly optimized"
+  ],
+  "notes": "Implementation was rolled back immediately after the null result. This failed experiment was still valuable because it showed the next increment must come from a non-redundant breakout feature, not from repackaging an already-embedded trend-quality concept.",
+  "parameters": {
+    "BREAKOUT_RANK_TIEBREAK_ABOVE_200MA": {
+      "new": true,
+      "old": false
+    },
+    "ranking_key": {
+      "after": [
+        "pct_from_52w_high desc",
+        "above_200ma desc",
+        "confidence_score desc"
+      ],
+      "before": [
+        "pct_from_52w_high desc",
+        "confidence_score desc"
+      ]
+    },
+    "ranking_scope": {
+      "unchanged": "breakout_long subsequence only"
+    }
+  },
+  "rejection_reason": "Rejected for null effect. The experiment added no measurable value once the current breakout filter/ranking stack was already in place. That means `above_200ma` is either redundant with the existing breakout quality logic in this sample or too weak to affect scarce-slot ordering.",
+  "related_files": [
+    "docs/experiment_log.jsonl"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-12-19",
+      "start": "2025-10-20"
+    },
+    {
+      "end": "2026-02-17",
+      "start": "2025-12-20"
+    },
+    {
+      "end": "2026-04-17",
+      "start": "2026-02-18"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-20T00:20:00-07:00"
+}

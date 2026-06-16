@@ -1,0 +1,93 @@
+{
+  "after_metrics": {
+    "backtest_metrics_retested": false,
+    "code_path_change_only": true,
+    "expected_effect": "future real `run.py` executions can accumulate replay coverage without manual file handling"
+  },
+  "before_metrics": {
+    "accepted_stack_primary": {
+      "expected_value_score": 0.8299,
+      "max_drawdown_pct": 0.026,
+      "sharpe_daily": 3.49,
+      "total_return_pct": 0.2378,
+      "trade_count": 22,
+      "win_rate": 0.6364
+    },
+    "llm_replay_primary": {
+      "coverage_days": 5,
+      "coverage_fraction": 0.041,
+      "expected_value_score": 0.8619,
+      "max_drawdown_pct": 0.026,
+      "sharpe_daily": 3.55,
+      "total_return_pct": 0.2428,
+      "trade_count": 21,
+      "win_rate": 0.6667
+    }
+  },
+  "change_summary": "Verified the accepted A+B stack baseline (`EV 0.8299 / 0.1255 / 0.0257`) and re-ran the primary window with `--replay-llm`, confirming only 5 covered trading days out of 122 (4.1% coverage, 3 presented signals, 2 vetoes). Updated `quant/run.py` so the main daily pipeline now mirrors `run_pipeline.py`: when `OPENAI_API_KEY` is available it calls the API, saves `investment_advice_YYYYMMDD.json`, and lets `llm_advisor.save_advice()` write `llm_prompt_resp_YYYYMMDD.json` for backtester replay. With no key present, behavior stays prompt-only.",
+  "change_type": "measurement_repair",
+  "component": "quant/run.py",
+  "date_range": {
+    "end": "2026-04-20",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "note": "This is a blocker-repair iteration, not a new alpha rule. The key measured outcome is the blocker proof itself: `LLM soft ranking` is still statistically under-covered at 5/122 trading days, so further strategy-layer LLM experiments would still be underpowered until more dated runs accumulate."
+  },
+  "experiment_id": "exp-20260421-026",
+  "hypothesis": "`LLM soft ranking` remains the highest-upside strategic branch, but the experiment is still not credible when the main daily entrypoint (`run.py`) only saves prompts. If `run.py` auto-persists dated advice when `OPENAI_API_KEY` is present, then every real production run can compound replay coverage via `llm_prompt_resp_YYYYMMDD.json`, which directly unblocks future LLM attribution and ranking experiments.",
+  "llm_metrics": {
+    "coverage_fraction": 0.041,
+    "llm_attribution_metric": "coverage_days and veto_rate under --replay-llm",
+    "llm_change_scope": "archive persistence only",
+    "signals_passed_by_llm": 1,
+    "signals_presented": 3,
+    "signals_vetoed_by_llm": 2,
+    "used_llm": true,
+    "veto_rate": 0.6667
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress"
+  },
+  "next_retry_requires": [
+    "Do not reopen A+B micro-tuning by default; current evidence still points to `LLM soft ranking` as the next highest-upside direction",
+    "Allow replay coverage to compound beyond the current 5 covered trading days before running the next LLM ranking alpha experiment",
+    "When coverage is materially larger, measure ranking value with explicit pass-vs-veto or rank-bucket attribution rather than a single-window headline delta"
+  ],
+  "notes": "Targeted pytest validation passed (`pytest quant/test_quant.py -k \"save_advice or import_advice or replay_log\"`: 8 passed). End-to-end API execution was not exercised in sandbox because no OPENAI_API_KEY was provided.",
+  "parameters": {
+    "accepted_stack_context": [
+      "REGIME_AWARE_EXIT",
+      "zero-risk low-TQS non-commodity breakouts",
+      "commodity low-TQS exemption",
+      "zero-risk trend Industrials",
+      "0.25x moderate-gap trend Technology"
+    ],
+    "llm_replay_coverage_before_fix": {
+      "coverage_fraction": 0.041,
+      "covered_days": 5,
+      "signals_passed": 1,
+      "signals_presented": 3,
+      "signals_vetoed": 2,
+      "trading_days": 122
+    },
+    "primary_window": {
+      "end": "2026-04-20",
+      "start": "2025-10-23"
+    },
+    "run_py_llm_persistence": {
+      "new": "save prompt only when OPENAI_API_KEY is absent; otherwise save dated advice and replay log",
+      "old": "always save_prompt_only=True; no dated advice file from main daily pipeline"
+    }
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/run.py",
+    "quant/llm_advisor.py",
+    "docs/experiment_log.jsonl"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-04-21T22:12:00-07:00"
+}

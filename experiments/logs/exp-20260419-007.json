@@ -1,0 +1,151 @@
+{
+  "after_metrics": {
+    "primary_window": {
+      "breakout_profit_factor": 3.477,
+      "breakout_trade_count": 13,
+      "breakout_win_rate": 0.5385,
+      "expected_value_score": 0.6047,
+      "max_drawdown_pct": 0.048,
+      "sharpe_daily": 2.75,
+      "total_return_pct": 0.2199,
+      "trade_count": 28
+    },
+    "sweep_summary": {
+      "-0.05": {
+        "primary_ev": 0.6765,
+        "window_3_ev": 0.005
+      },
+      "-0.10": {
+        "primary_ev": 0.6047,
+        "window_3_ev": 0.0502
+      },
+      "-0.15": {
+        "primary_ev": 0.6047,
+        "window_3_ev": 0.0502
+      },
+      "-0.20": {
+        "primary_ev": 0.6047,
+        "window_3_ev": 0.0502
+      },
+      "-0.30": {
+        "primary_ev": 0.5565,
+        "window_3_ev": 0.0121
+      }
+    },
+    "window_1": {
+      "expected_value_score": 0.365,
+      "sharpe_daily": 3.44,
+      "trade_count": 9
+    },
+    "window_2": {
+      "expected_value_score": 0.3043,
+      "sharpe_daily": 2.89,
+      "trade_count": 15
+    },
+    "window_3": {
+      "breakout_profit_factor": 4.375,
+      "breakout_trade_count": 2,
+      "breakout_win_rate": 0.5,
+      "expected_value_score": 0.0502,
+      "max_drawdown_pct": 0.0097,
+      "sharpe_daily": 3.28,
+      "total_return_pct": 0.0153,
+      "trade_count": 4
+    }
+  },
+  "before_metrics": {
+    "breakout_profit_factor": 2.603,
+    "breakout_trade_count": 15,
+    "breakout_win_rate": 0.4667,
+    "expected_value_score": 0.5565,
+    "max_drawdown_pct": 0.048,
+    "sharpe_daily": 2.64,
+    "total_return_pct": 0.2108,
+    "trade_count": 29
+  },
+  "change_summary": "Added a single configurable breakout-only hard gate (`BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH`) to `signal_engine.generate_signals()` / `strategy_b_breakout()`, exposed it through the backtester for sweep experiments, then promoted the accepted threshold into shared constants and all production entry points. The accepted threshold is -0.20, meaning breakout_long now rejects setups more than 20% below the 52-week high.",
+  "change_type": "strategy_quality_filter",
+  "component": "quant/signal_engine.py + quant/backtester.py + quant/constants.py + quant/run.py + quant/run_quant.py + quant/run_pipeline.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "note": "The accepted threshold did not improve every window, but it did not regress window_1 or window_2 and materially improved the stress window while lifting the primary-window north-star metric. The tighter -0.05 gate overfit the sample: higher primary EV, but window_3 collapsed, so it was explicitly rejected.",
+    "primary_breakout_profit_factor_delta": 0.874,
+    "primary_breakout_trade_count_delta": -2,
+    "primary_breakout_win_rate_delta": 0.0718,
+    "primary_expected_value_score_delta": 0.0482,
+    "primary_expected_value_score_delta_pct": 0.0866,
+    "primary_sharpe_daily_delta": 0.11,
+    "primary_total_return_pct_delta": 0.0091,
+    "primary_trade_count_delta": -1,
+    "window_1_ev_delta": 0.0,
+    "window_2_ev_delta": 0.0,
+    "window_3_ev_delta": 0.0381,
+    "window_3_sharpe_daily_delta": 1.69
+  },
+  "experiment_id": "exp-20260419-007",
+  "hypothesis": "The remaining breakout fragility is not a broad-market pressure problem but a breakout-quality problem. Deep-recovery breakouts far below the 52-week high have weaker follow-through than true continuation breakouts. Adding a breakout-only hard gate that requires `pct_from_52w_high >= threshold` may improve expected_value_score without tightening unrelated strategies or altering exits.",
+  "llm_metrics": {
+    "note": "This experiment addresses a quantified breakout follow-through weakness. It does not reduce LLM scope and does not claim that LLM/news veto is unnecessary.",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "BULL (slow-melt) with Apr-2026 stress",
+    "window_1": "late-2025 bull trend",
+    "window_2": "early-2026 bull continuation",
+    "window_3": "Feb-Apr 2026 stress / weak breakout follow-through"
+  },
+  "next_retry_requires": [
+    "Do not tighten the gate beyond -0.20 without new multi-window evidence; -0.05 looked better in-sample but degraded the stress window materially",
+    "If revisiting breakout quality, test one strategy-specific proxy at a time (for example, above_200ma hard gate or TQS floor), not multiple breakout filters together",
+    "When enough LLM/news archive accumulates, check whether the veto layer independently flags the same deep-recovery breakout dates before adding more hard-coded filters"
+  ],
+  "notes": "Trade-level audit before the sweep showed the most suspicious losing breakouts were deep-recovery setups such as NFLX (pct_from_52w_high=-0.2824, above_200ma=False) and NVO (pct_from_52w_high=-0.3172). A paired same-data rerun was used for the final before/after metrics because vendor data refresh can cause absolute backtest levels to drift across separate downloads; the decision is based on within-batch deltas, not on raw point estimates from different fetch batches.",
+  "parameters": {
+    "BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH": {
+      "new": -0.2,
+      "old": null,
+      "sweep": [
+        -0.3,
+        -0.2,
+        -0.15,
+        -0.1,
+        -0.05
+      ]
+    },
+    "scope": {
+      "new": "breakout_long requires pct_from_52w_high >= -0.20",
+      "old": "no breakout-specific hard gate on 52-week pullback depth"
+    }
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/signal_engine.py",
+    "quant/backtester.py",
+    "quant/constants.py",
+    "quant/run.py",
+    "quant/run_quant.py",
+    "quant/run_pipeline.py",
+    "quant/test_quant.py",
+    "docs/experiment_log.jsonl"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-12-19",
+      "start": "2025-10-20"
+    },
+    {
+      "end": "2026-02-17",
+      "start": "2025-12-20"
+    },
+    {
+      "end": "2026-04-17",
+      "start": "2026-02-18"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-19T22:05:00-07:00"
+}

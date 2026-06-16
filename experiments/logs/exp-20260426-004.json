@@ -1,0 +1,74 @@
+{
+  "after_metrics": {
+    "expected_value_score": 0.131,
+    "max_drawdown_pct": 0.0456,
+    "sharpe": 1.91,
+    "sharpe_daily": 1.15,
+    "survival_rate": 0.8929,
+    "total_pnl": 11388.73,
+    "total_return_pct": 0.1139,
+    "trade_count": 24,
+    "win_rate": 0.375
+  },
+  "before_metrics": {
+    "expected_value_score": 0.131,
+    "max_drawdown_pct": 0.0456,
+    "sharpe": 1.91,
+    "sharpe_daily": 1.15,
+    "survival_rate": 0.8929,
+    "total_pnl": 11388.73,
+    "total_return_pct": 0.1139,
+    "trade_count": 24,
+    "win_rate": 0.375
+  },
+  "change_summary": "Added an audit-only runner that replays the accepted A+B stack on the three fixed snapshots, isolates trend_instant_failure losers, and measures repeated entry-context subfamilies plus winner collateral if a future fix zeroes a context.",
+  "change_type": "failure_taxonomy",
+  "component": "quant/experiments/legacy/exp_20260426_003_trend_instant_failure_audit.py, data/exp_20260426_003_trend_instant_failure_audit.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "observed_only",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0,
+    "win_rate": 0.0
+  },
+  "experiment_id": "exp-20260426-004",
+  "hypothesis": "The accepted stack's dominant repeated loser family is trend_instant_failure, and its internal subfamilies can be measured reproducibly without changing strategy logic.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "next_retry_requires": [],
+  "notes": "Artifact: data/exp_20260426_003_trend_instant_failure_audit.json. Exact context keys did not repeat across windows, but broader axes did: Technology + reduced_risk + 6.00ATR accounted for 4 of 7 instant-failure losses across all three windows, while plain full-risk contexts accounted for 84.6% of gross instant-failure loss. The cleanest no-collateral contexts were Energy | full_risk | plain | 4.50ATR, Financials | full_risk | plain | 4.02ATR, and three reduced-risk Technology contexts with zero same-context winners. Commodities | full_risk | plain | 7.00ATR is not a safe filter candidate because it would also kill 6 winners worth $17712.43. LLM entry-archive coverage remained 0/7 and news coverage was missing on 7/7 instant failures, so semantic explanation is still a measurement gap, not a rejected mechanism.",
+  "parameters": {
+    "locked_variables": [
+      "trend_instant_failure subfamily taxonomy for accepted-stack losers"
+    ],
+    "single_causal_variable": "trend_instant_failure subfamily taxonomy for accepted-stack losers"
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtest_results_20260425.json",
+    "data/backtest_results_20260425.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "observed_only",
+  "timestamp": "2026-04-26T02:09:40+00:00"
+}

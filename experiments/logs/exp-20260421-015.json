@@ -1,0 +1,248 @@
+{
+  "after_metrics": {
+    "gate_le_3_5": {
+      "primary_window": {
+        "expected_value_score": 0.5329,
+        "max_drawdown_pct": 0.0447,
+        "sharpe_daily": 2.51,
+        "total_return_pct": 0.2123,
+        "trade_count": 28,
+        "win_rate": 0.5357
+      },
+      "window_1": {
+        "expected_value_score": 0.018,
+        "max_drawdown_pct": 0.0869,
+        "sharpe_daily": 0.48,
+        "total_return_pct": 0.0375,
+        "trade_count": 30,
+        "win_rate": 0.3333
+      },
+      "window_2": {
+        "expected_value_score": 0.003,
+        "max_drawdown_pct": 0.0965,
+        "sharpe_daily": 0.22,
+        "total_return_pct": 0.0137,
+        "trade_count": 30,
+        "win_rate": 0.3
+      }
+    },
+    "gate_le_3_75": {
+      "primary_window": {
+        "expected_value_score": 0.5329,
+        "max_drawdown_pct": 0.0447,
+        "sharpe_daily": 2.51,
+        "total_return_pct": 0.2123,
+        "trade_count": 28,
+        "win_rate": 0.5357
+      },
+      "window_1": {
+        "expected_value_score": 0.018,
+        "max_drawdown_pct": 0.0869,
+        "sharpe_daily": 0.48,
+        "total_return_pct": 0.0375,
+        "trade_count": 30,
+        "win_rate": 0.3333
+      },
+      "window_2": {
+        "expected_value_score": 0.003,
+        "max_drawdown_pct": 0.0965,
+        "sharpe_daily": 0.22,
+        "total_return_pct": 0.0137,
+        "trade_count": 30,
+        "win_rate": 0.3
+      }
+    },
+    "risk_on_075": {
+      "primary_window": {
+        "expected_value_score": 0.5508,
+        "max_drawdown_pct": 0.0407,
+        "sharpe_daily": 2.55,
+        "total_return_pct": 0.216,
+        "trade_count": 28,
+        "win_rate": 0.5357
+      },
+      "window_1": {
+        "expected_value_score": 0.0182,
+        "max_drawdown_pct": 0.0869,
+        "sharpe_daily": 0.48,
+        "total_return_pct": 0.0379,
+        "trade_count": 30,
+        "win_rate": 0.3333
+      },
+      "window_2": {
+        "expected_value_score": 0.003,
+        "max_drawdown_pct": 0.0965,
+        "sharpe_daily": 0.22,
+        "total_return_pct": 0.0137,
+        "trade_count": 30,
+        "win_rate": 0.3
+      }
+    },
+    "risk_on_half": {
+      "primary_window": {
+        "expected_value_score": 0.5806,
+        "max_drawdown_pct": 0.0338,
+        "sharpe_daily": 2.65,
+        "total_return_pct": 0.2191,
+        "trade_count": 28,
+        "win_rate": 0.5357
+      },
+      "window_1": {
+        "expected_value_score": 0.0227,
+        "max_drawdown_pct": 0.0852,
+        "sharpe_daily": 0.53,
+        "total_return_pct": 0.0428,
+        "trade_count": 30,
+        "win_rate": 0.3333
+      },
+      "window_2": {
+        "expected_value_score": 0.003,
+        "max_drawdown_pct": 0.0965,
+        "sharpe_daily": 0.22,
+        "total_return_pct": 0.0137,
+        "trade_count": 30,
+        "win_rate": 0.3
+      }
+    }
+  },
+  "before_metrics": {
+    "accepted_all_days_rule": {
+      "primary_window": {
+        "expected_value_score": 0.591,
+        "max_drawdown_pct": 0.0275,
+        "sharpe_daily": 2.73,
+        "total_return_pct": 0.2165,
+        "trade_count": 28,
+        "win_rate": 0.5357
+      },
+      "window_1": {
+        "expected_value_score": 0.0304,
+        "max_drawdown_pct": 0.0828,
+        "sharpe_daily": 0.61,
+        "total_return_pct": 0.0499,
+        "trade_count": 30,
+        "win_rate": 0.3333
+      },
+      "window_2": {
+        "expected_value_score": 0.003,
+        "max_drawdown_pct": 0.0965,
+        "sharpe_daily": 0.22,
+        "total_return_pct": 0.0137,
+        "trade_count": 30,
+        "win_rate": 0.3
+      }
+    }
+  },
+  "change_summary": "Ran runtime-only allocation experiments by monkeypatching `portfolio_engine.size_signals()` and inferring each signal's entry-day regime strength from the implied ATR target multiple already embedded in `target_price`. Screened two binary gates (`apply haircut only when implied target_mult <= 3.5` and `<= 3.75`) and two relaxed risk-on variants (`0.5x` and `0.75x` risk instead of `0.25x` when implied target_mult > 3.75`) across the same three non-overlapping A+B windows. No repository strategy code was changed; only the experiment log and playbook were updated.",
+  "change_type": "allocation_rule",
+  "component": "quant/portfolio_engine.py (runtime-only monkeypatch, rolled back)",
+  "date_range": {
+    "end": "2026-04-20",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "expected_value_score_delta": {
+    "gate_le_3_5": {
+      "primary": -0.0581,
+      "window_1": -0.0124,
+      "window_2": 0.0
+    },
+    "gate_le_3_75": {
+      "primary": -0.0581,
+      "window_1": -0.0124,
+      "window_2": 0.0
+    },
+    "note": "Every regime-proxy variant failed Gate 4. The binary gates simply disabled the accepted haircut everywhere, reverting to the pre-TQS baseline, while partial relaxation in risk-on still gave back EV in both the primary and ripping-bull windows.",
+    "risk_on_075": {
+      "primary": -0.0402,
+      "window_1": -0.0122,
+      "window_2": 0.0
+    },
+    "risk_on_half": {
+      "primary": -0.0104,
+      "window_1": -0.0077,
+      "window_2": 0.0
+    }
+  },
+  "experiment_id": "exp-20260421-015",
+  "hypothesis": "If the accepted `trade_quality_score < 0.85 -> 0.25x risk` rule is real but regime-sensitive, the next credible allocation experiment is to keep the same TQS signal and relax the haircut only in clearly risk-on entry contexts, using the already-shared `regime_exit` target width as the context proxy. This should preserve slow/weak-window protection while restoring some ripping-bull convexity.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "window_1": "ripping bull / high-beta leadership",
+    "window_2": "older weak-to-mixed tape"
+  },
+  "next_retry_requires": [
+    "Do not retry another TQS-sizing follow-up that uses current `regime_exit` target width as the conditioning variable",
+    "If allocation alpha is revisited, bring a genuinely new context source that actually overlaps the low-TQS cohort (for example semantic or trade-specific context), not another repackaging of the same market-level regime map",
+    "Treat the current regime-aware exit profile as useful for exits, but currently too saturated to drive the next sizing-alpha branch"
+  ],
+  "notes": "This falsifies a tempting continuation of the 'make TQS sizing regime-aware' idea without touching production code. The accepted low-TQS edge currently lives almost entirely inside already-risk-on entry contexts, so the shared regime map is not the missing discriminator.",
+  "parameters": {
+    "LOW_TQS_RISK_THRESHOLD": {
+      "fixed": 0.85
+    },
+    "ab_strategies": [
+      "trend_long",
+      "breakout_long"
+    ],
+    "accepted_low_tqs_multiplier": {
+      "fixed": 0.25
+    },
+    "audit": {
+      "implied_target_mult_max": 4.5088,
+      "implied_target_mult_min": 4.479,
+      "low_tqs_seen_across_windows": 11
+    },
+    "baseline_rule": "accepted `trade_quality_score < 0.85 -> 0.25x risk` stack",
+    "context_proxy": "implied target_mult = (target_price - entry_price) / ((entry_price - stop_price) / 1.5)",
+    "evaluation_windows": [
+      [
+        "2025-10-23",
+        "2026-04-20"
+      ],
+      [
+        "2025-04-23",
+        "2025-10-22"
+      ],
+      [
+        "2024-10-02",
+        "2025-04-22"
+      ]
+    ],
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "tested_variants": {
+      "gate_le_3_5": {
+        "low_tqs_rule": "apply `0.25x` only when implied target_mult <= 3.5"
+      },
+      "gate_le_3_75": {
+        "low_tqs_rule": "apply `0.25x` only when implied target_mult <= 3.75"
+      },
+      "risk_on_075": {
+        "low_tqs_rule": "apply `0.75x` when implied target_mult > 3.75, else `0.25x`"
+      },
+      "risk_on_half": {
+        "low_tqs_rule": "apply `0.5x` when implied target_mult > 3.75, else `0.25x`"
+      }
+    }
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability. The current `regime_exit` proxy does not separate the low-TQS cohort: all 11 low-TQS entries across the tested windows already sat in the `risk_on` target-width band (`implied_target_mult` 4.479-4.5088), so regime-conditioned relaxation via this proxy only weakens the accepted haircut without adding a new source of edge.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-21T11:16:53-07:00"
+}

@@ -1,0 +1,198 @@
+{
+  "after_metrics": {
+    "accepted_ab_stack_after_rule": {
+      "late_strong": {
+        "eligible_trend_tech_gap23_signals": 1,
+        "expected_value_score": 0.9195,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.69,
+        "total_return_pct": 0.2492,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "eligible_trend_tech_gap23_signals": 2,
+        "expected_value_score": 0.2173,
+        "max_drawdown_pct": 0.028,
+        "sharpe_daily": 1.73,
+        "total_return_pct": 0.1256,
+        "trade_count": 26,
+        "win_rate": 0.4231
+      },
+      "old_thin": {
+        "eligible_trend_tech_gap23_signals": 0,
+        "expected_value_score": 0.0179,
+        "max_drawdown_pct": 0.0829,
+        "sharpe_daily": 0.46,
+        "total_return_pct": 0.039,
+        "trade_count": 24,
+        "win_rate": 0.3333
+      }
+    },
+    "live_window_after_rule": {
+      "primary_window": {
+        "expected_value_score": 0.8102,
+        "max_drawdown_pct": 0.0239,
+        "sharpe_daily": 3.84,
+        "total_return_pct": 0.211,
+        "trade_count": 25,
+        "win_rate": 0.64
+      },
+      "secondary_window": {
+        "expected_value_score": 0.1734,
+        "max_drawdown_pct": 0.0451,
+        "sharpe_daily": 1.65,
+        "total_return_pct": 0.1051,
+        "trade_count": 30,
+        "win_rate": 0.5667
+      }
+    },
+    "runner_followup": {
+      "trend_tech_gap23_000": {
+        "mid_weak_expected_value_score": 0.2173,
+        "old_thin_expected_value_score": 0.0179
+      },
+      "trend_tech_gap23_025": {
+        "mid_weak_expected_value_score": 0.2094,
+        "old_thin_expected_value_score": 0.0173
+      }
+    }
+  },
+  "before_metrics": {
+    "accepted_ab_stack_before_rule": {
+      "late_strong": {
+        "expected_value_score": 0.9195,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.69,
+        "total_return_pct": 0.2492,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1933,
+        "max_drawdown_pct": 0.0343,
+        "sharpe_daily": 1.63,
+        "total_return_pct": 0.1186,
+        "trade_count": 27,
+        "win_rate": 0.4074
+      },
+      "old_thin": {
+        "expected_value_score": 0.0158,
+        "max_drawdown_pct": 0.0828,
+        "sharpe_daily": 0.43,
+        "total_return_pct": 0.0367,
+        "trade_count": 25,
+        "win_rate": 0.32
+      }
+    },
+    "live_window_before_rule": {
+      "primary_window": {
+        "expected_value_score": 0.8102,
+        "max_drawdown_pct": 0.0239,
+        "sharpe_daily": 3.84,
+        "total_return_pct": 0.211,
+        "trade_count": 25,
+        "win_rate": 0.64
+      },
+      "secondary_window": {
+        "expected_value_score": 0.1734,
+        "max_drawdown_pct": 0.0451,
+        "sharpe_daily": 1.65,
+        "total_return_pct": 0.1051,
+        "trade_count": 30,
+        "win_rate": 0.5667
+      }
+    }
+  },
+  "change_summary": "Promoted a new runtime-validated sizing rule into production: `portfolio_engine.size_signals()` now applies `TREND_TECH_TIGHT_GAP_RISK_MULTIPLIER = 0.0` only when `strategy == 'trend_long'`, `sector == 'Technology'`, and `gap_vulnerability_pct` sits in the 2%-3% band. Added a targeted unit test and kept the validating runner artifact. No entry, exit, ranking, sector-cap, or LLM boundary changed.",
+  "change_type": "allocation_rule",
+  "component": "quant/constants.py + quant/portfolio_engine.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "accepted_stack_ev_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": 0.024,
+      "old_thin": 0.0021
+    },
+    "accepted_stack_max_drawdown_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": -0.0063,
+      "old_thin": 0.0001
+    },
+    "accepted_stack_sharpe_daily_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": 0.1,
+      "old_thin": 0.03
+    },
+    "accepted_stack_trade_count_deltas": {
+      "late_strong": 0,
+      "mid_weak": -1,
+      "old_thin": -1
+    },
+    "live_primary_expected_value_score_delta": 0.0,
+    "live_primary_sharpe_daily_delta": 0.0,
+    "live_primary_total_return_pct_delta": 0.0,
+    "note": "This is not a retry of the accepted 4%-6% gap or near-high trend-Tech rules. The changed causal variable is one new residual cohort sizing rule inside the accepted A+B stack. The 0.0x variant was chosen because it kept the dominant late-strong tape a strict null while outperforming the softer 0.25x variant in both weaker validation windows. The current live primary window stayed unchanged because no qualifying present-tense trade passed through sizing during that replay."
+  },
+  "experiment_id": "exp-20260425-001",
+  "hypothesis": "After the accepted A+B stack plus the existing residual trend-Tech rules, the remaining trend drag is concentrated in the tighter stop-gap pocket `trend_long + Technology + 0.02 <= gap_vulnerability_pct < 0.03`. Zeroing only that cohort should stay a strict null in the dominant late-strong tape while improving the weaker mid/old windows.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted A+B stack dominant tape",
+    "mid_weak": "rotation-heavy bull with weaker trend follow-through",
+    "old_thin": "mixed-to-weak tape"
+  },
+  "next_retry_requires": [
+    "Do not reopen `0.25x` vs `0.0x` inside the same `trend_long | Technology | 2%-3% gap` pocket by default",
+    "Do not reinterpret this as permission to resume broad `Technology + gap` band sweeping",
+    "If trend residual allocation work continues, require a genuinely new conditioning source beyond the current near-high + gap pocket family"
+  ],
+  "notes": "Single-causal-variable discipline held: only the sizing treatment of one explicit residual trend cohort changed. Entry logic, exit logic, ranking, sector cap, C strategy, and all blocked LLM branches stayed untouched.",
+  "parameters": {
+    "TREND_TECH_TIGHT_GAP_RISK_MULTIPLIER": {
+      "new": 0.0,
+      "old": 1.0
+    },
+    "TREND_TECH_TIGHT_GAP_VULN_MAX": {
+      "new": 0.03,
+      "old": null
+    },
+    "TREND_TECH_TIGHT_GAP_VULN_MIN": {
+      "new": 0.02,
+      "old": null
+    },
+    "affected_cohort": "`trend_long` + `sector == Technology` + `0.02 <= gap_vulnerability_pct < 0.03`",
+    "baseline_rule": "accepted A+B stack after exp-20260424-009",
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "validation_runner": "quant/experiments/legacy/exp_20260425_001_runner.py"
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/constants.py",
+    "quant/portfolio_engine.py",
+    "quant/test_quant.py",
+    "quant/experiments/legacy/exp_20260425_001_runner.py",
+    "data/exp_20260425_001_results.json",
+    "data/backtest_results_20260424.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-25T11:25:00-07:00"
+}

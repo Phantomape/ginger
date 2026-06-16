@@ -1,0 +1,95 @@
+{
+  "after_metrics": {
+    "earnings_snapshot_today": {
+      "tickers_with_days_to_earnings": 28,
+      "tickers_with_eps_estimate": 27,
+      "tickers_with_surprise_history": 27
+    },
+    "expected_value_score": 0.3572,
+    "max_drawdown_pct": 0.0537,
+    "sharpe_daily": 2.38,
+    "survival_rate": 0.9804,
+    "test_results": "4 targeted tests passed",
+    "trade_count": 29,
+    "win_rate": 0.5517
+  },
+  "before_metrics": {
+    "alpha_candidate_1": "C strategy revival",
+    "alpha_candidate_2": "LLM soft ranking",
+    "blocker_proof": [
+      "run_pipeline.py exited at Step 1 with zero news due to refused RSS connections",
+      "run_quant.py could run but initially wrote an all-null 20260421 earnings snapshot because production entrypoints lacked the backtester's yfinance runtime bootstrap"
+    ],
+    "earnings_snapshot_today": {
+      "tickers_with_days_to_earnings": 0,
+      "tickers_with_eps_estimate": 0,
+      "tickers_with_surprise_history": 0
+    },
+    "expected_value_score": 0.3572,
+    "max_drawdown_pct": 0.0537,
+    "sharpe_daily": 2.38,
+    "survival_rate": 0.9804,
+    "trade_count": 29,
+    "win_rate": 0.5517
+  },
+  "change_summary": "Added a shared `quant/yfinance_bootstrap.py` and applied it to `data_layer`, `regime`, and `backtester` so all entrypoints strip the broken localhost proxy and use the same writable yfinance cache directory. Verified with 4 targeted tests, deleted the bad all-null `earnings_snapshot_20260421.json` created before the fix, then reran `python quant/run_quant.py`. The rerun produced a materially useful snapshot (`tickers_with_days_to_earnings=28`, `tickers_with_eps_estimate=27`, `tickers_with_surprise_history=27`) instead of the prior zero-coverage file.",
+  "change_type": "parity_fix",
+  "component": "quant/yfinance_bootstrap.py + quant/data_layer.py + quant/regime.py + quant/backtester.py",
+  "date_range": {
+    "end": "2026-04-20",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "earnings_snapshot_days_to_earnings_delta": 28,
+    "earnings_snapshot_eps_estimate_delta": 27,
+    "earnings_snapshot_surprise_history_delta": 27,
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "note": "No strategy metrics changed because this was a measurement/parity repair. The positive result is that P-ERN resumed producing today-level usable replay data, which is the prerequisite for any credible `C strategy revival` experiment.",
+    "sharpe_daily": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260421-002",
+  "hypothesis": "The highest-value unblocked work is no longer another A/B tweak. `C strategy revival` remains the best alpha direction, but only if daily P-ERN snapshots can resume accumulating. The concrete blocker to fix is runtime parity: backtester already normalizes yfinance proxy/cache settings, while `data_layer` and `regime` did not, causing `run_quant.py` to emit an all-null earnings snapshot despite the repo venv being otherwise usable.",
+  "llm_metrics": {
+    "blocker_relation": "`LLM soft ranking` is still blocked by low replay coverage (7 files through 2026-04-18), but this run unblocked the higher-priority `C strategy revival` path by restarting daily earnings snapshot accumulation.",
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "A+B baseline remains converged; this run targeted the P-ERN execution blocker rather than a strategy-layer hypothesis"
+  },
+  "next_retry_requires": [
+    "Accumulate several more daily earnings snapshots before re-enabling or retesting `earnings_event_long`",
+    "Do not resume new A/B micro-tuning while the newly-unblocked P-ERN path is still the highest-value alpha direction",
+    "Treat `LLM soft ranking` as second priority until `llm_prompt_resp_YYYYMMDD.json` coverage advances beyond 2026-04-18"
+  ],
+  "notes": "The run_quant rerun remained slow and many OHLCV downloads still failed with per-ticker `TypeError(\"'NoneType' object is not subscriptable\")`, so production quant trading is not fully healthy. But for the alpha roadmap, the important change is that earnings snapshots are no longer all-null, so P-ERN accumulation is moving again.",
+  "parameters": {
+    "rerun_command": ".venv\\Scripts\\python.exe quant/run_quant.py",
+    "shared_runtime_bootstrap": {
+      "new": "shared helper imported by backtester, data_layer, regime",
+      "old": "backtester-only proxy/cache normalization"
+    },
+    "verification_tests": [
+      "test_backtester_strips_broken_local_proxy_env",
+      "test_yfinance_bootstrap_strips_proxy_and_sets_writable_cache",
+      "test_data_layer_import_applies_yfinance_bootstrap",
+      "test_regime_import_applies_yfinance_bootstrap"
+    ]
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/yfinance_bootstrap.py",
+    "quant/data_layer.py",
+    "quant/regime.py",
+    "quant/backtester.py",
+    "quant/test_quant.py",
+    "data/earnings_snapshot_20260421.json",
+    "data/backtest_results_20260421.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-04-21T01:39:48-07:00"
+}

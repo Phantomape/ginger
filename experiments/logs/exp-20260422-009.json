@@ -1,0 +1,134 @@
+{
+  "after_metrics": {
+    "trend_early_damage_exit": {
+      "primary_window": {
+        "expected_value_score": 0.7063,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.24,
+        "total_return_pct": 0.218,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "window_1": {
+        "expected_value_score": 0.0568,
+        "max_drawdown_pct": 0.065,
+        "sharpe_daily": 0.84,
+        "total_return_pct": 0.0676,
+        "trade_count": 33,
+        "win_rate": 0.2727
+      },
+      "window_2": {
+        "expected_value_score": 0.0071,
+        "max_drawdown_pct": 0.0935,
+        "sharpe_daily": 0.3,
+        "total_return_pct": 0.0237,
+        "trade_count": 33,
+        "win_rate": 0.2727
+      }
+    }
+  },
+  "before_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.847,
+      "max_drawdown_pct": 0.026,
+      "sharpe_daily": 3.51,
+      "total_return_pct": 0.2413,
+      "trade_count": 23,
+      "win_rate": 0.6522
+    },
+    "window_1": {
+      "expected_value_score": 0.1255,
+      "max_drawdown_pct": 0.0511,
+      "sharpe_daily": 1.21,
+      "total_return_pct": 0.1037,
+      "trade_count": 29,
+      "win_rate": 0.3793
+    },
+    "window_2": {
+      "expected_value_score": 0.0109,
+      "max_drawdown_pct": 0.0903,
+      "sharpe_daily": 0.36,
+      "total_return_pct": 0.0304,
+      "trade_count": 26,
+      "win_rate": 0.3077
+    }
+  },
+  "change_summary": "Created an isolated experiment copy of the backtester and added one new trade-specific exit branch for `trend_long` only: track day-1..3 adverse excursion versus the original stop distance, and when the trade has already taken `>=0.75R` early damage without reclaiming entry by the day-3 close, force a next-open discretionary exit (`trend_early_damage_exit`). No entry filters, ranking, sizing, LLM logic, or accepted repo code were changed.",
+  "change_type": "exit_rule",
+  "component": "experiment-only `quant/backtester_exp_20260422.py` (rolled back; no repo strategy code changed)",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "note": "Despite strong trade-level separation in the pre-screen, the portfolio-level rule failed across all three deterministic windows. The primary window lost a large slow-burn winner (`GOOG`) to the new early exit, while older windows added replacement-flow trades after early exits and still did not improve north-star EV.",
+    "primary_expected_value_score_delta": -0.1407,
+    "primary_sharpe_daily_delta": -0.27,
+    "window_1_expected_value_score_delta": -0.0687,
+    "window_1_sharpe_daily_delta": -0.37,
+    "window_1_trade_count_delta": 4,
+    "window_2_expected_value_score_delta": -0.0038,
+    "window_2_sharpe_daily_delta": -0.06,
+    "window_2_trade_count_delta": 7
+  },
+  "experiment_id": "exp-20260422-009",
+  "hypothesis": "A genuinely different `trend_long` exit may exist in early adverse-excursion damage rather than target-width or weak-close heuristics: if a fresh trend trade suffers `>=0.75R` intraday drawdown within its first 3 trading days and still closes at or below entry, schedule an exit at the next session open before the full stop is hit.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "window_1": "ripping bull / high-beta leadership",
+    "window_2": "older mixed-to-weak tape"
+  },
+  "next_retry_requires": [
+    "Do not retry another early-damage `trend_long` exit built only from first-3-day price path and original `R` distance",
+    "Treat `trade-level separation -> portfolio alpha` as a falsified shortcut for trend exits unless the next idea explains slot-allocation and slow-burn winner effects",
+    "If `trend_long` exit alpha is revisited again, it needs richer hold-quality context than pure OHLCV early-path damage (for example semantic/event context or another source that can distinguish slow winners from structurally broken trades)"
+  ],
+  "notes": "This experiment intentionally changed only one causal variable: a `trend_long` next-open exit after severe early adverse excursion. The code lived only in an isolated experiment copy and will not be kept.",
+  "parameters": {
+    "data_sources": [
+      "data/ohlcv_snapshot_20251023_20260421.json",
+      "data/ohlcv_snapshot_20250423_20251022.json",
+      "data/ohlcv_snapshot_20241002_20250422.json"
+    ],
+    "fixed_context": {
+      "BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH": -0.2,
+      "BREAKOUT_RANK_BY_52W_HIGH": true,
+      "ENABLED_STRATEGIES": [
+        "trend_long",
+        "breakout_long"
+      ],
+      "MAX_POSITIONS": 5,
+      "REGIME_AWARE_EXIT": true
+    },
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "selector": {
+      "action": "exit next session open",
+      "signal": "first_3_trading_days_intraday_drawdown >= 0.75R AND same-day close <= entry",
+      "strategy": "trend_long"
+    }
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability. The rule regressed `expected_value_score` in the primary, bull, and weak windows, with materially worse Sharpe in every window. Trade-level loser markers did not translate into portfolio-level edge once slow winners and replacement-flow effects were included.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "data/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv_snapshot_20241002_20250422.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-22T15:14:33-07:00"
+}

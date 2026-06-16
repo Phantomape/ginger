@@ -1,0 +1,113 @@
+{
+  "after_metrics": {
+    "representative_metrics": {
+      "expected_value_score": 0.7531,
+      "max_drawdown_pct": 0.0408,
+      "sharpe_daily": 2.83,
+      "total_return_pct": 0.2661,
+      "trade_count": 28,
+      "win_rate": 0.5714
+    },
+    "screen_results": {
+      "0.5_atr_trigger": {
+        "0.5_offset": 0.7531,
+        "1.0_offset": 0.7531,
+        "1.5_offset": 0.7531
+      },
+      "1.0_atr_trigger": {
+        "0.5_offset": 0.7531,
+        "1.0_offset": 0.7531,
+        "1.5_offset": 0.7531
+      },
+      "1.5_atr_trigger": {
+        "0.5_offset": 0.7531,
+        "1.0_offset": 0.7531,
+        "1.5_offset": 0.7531
+      }
+    }
+  },
+  "before_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.7531,
+      "max_drawdown_pct": 0.0408,
+      "sharpe_daily": 2.83,
+      "total_return_pct": 0.2661,
+      "trade_count": 28,
+      "win_rate": 0.5714
+    }
+  },
+  "change_summary": "Added an experiment-only backtester branch that, for open `trend_long` positions only, activated a high-water profit lock when the trade had already earned at least N ATR and the current market regime turned BEAR. Screened a 3x3 grid on the accepted A+B stack (`REGIME_AWARE_EXIT=True`) in the primary window, then rolled the code back immediately after the screen because every tested pair was a strict null.",
+  "change_type": "exit_rule",
+  "component": "quant/backtester.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "best_expected_value_score_delta": 0.0,
+    "best_max_drawdown_pct_delta": 0.0,
+    "best_sharpe_daily_delta": 0.0,
+    "best_total_return_pct_delta": 0.0,
+    "note": "All 9 tested parameter pairs were strict nulls in the primary window. Because the mechanism produced zero measurable change in EV, Sharpe daily, return, drawdown, trade count, and win rate, it did not justify a full multi-window Gate 4 run."
+  },
+  "experiment_id": "exp-20260420-012",
+  "hypothesis": "A selective `trend_long` bear-profit-lock may unlock exit alpha without repeating the rejected blanket target-widening or entry-day-regime-refresh ideas. The tested mechanism was intentionally narrower: only for already-profitable trend trades, and only after the market regime deteriorates to BEAR, replace the fixed target with a high-water ATR profit lock.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "BULL (slow-melt) with Apr-2026 stress"
+  },
+  "next_retry_requires": [
+    "Do not revisit trend exit alpha through another market-regime-only post-entry profit-lock without new evidence that open trend trades actually experience repeated BEAR-state giveback after building profit",
+    "If trend exit alpha is revisited, prefer trade-specific hold-quality context or richer semantic/event context rather than another index-state-triggered target/stop mutation",
+    "Current highest-value directions remain `LLM soft ranking` once replay coverage grows and `C strategy revival` once earnings snapshots begin accumulating"
+  ],
+  "notes": "Experiment code was fully rolled back after measurement. Baseline was re-run after rollback and remained `EV 0.7531 / sharpe_daily 2.83 / trades 28 / max_drawdown 4.08%`.",
+  "parameters": {
+    "TREND_BEAR_PROFIT_LOCK": {
+      "old": false,
+      "trial": true
+    },
+    "TREND_BEAR_PROFIT_OFFSET_ATR": {
+      "default": 1.0,
+      "tested": [
+        0.5,
+        1.0,
+        1.5
+      ]
+    },
+    "TREND_BEAR_PROFIT_TRIGGER_ATR": {
+      "default": 1.0,
+      "tested": [
+        0.5,
+        1.0,
+        1.5
+      ]
+    },
+    "fixed_context": {
+      "BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH": -0.2,
+      "BREAKOUT_RANK_BY_52W_HIGH": true,
+      "ENABLED_STRATEGIES": [
+        "trend_long",
+        "breakout_long"
+      ],
+      "REGIME_AWARE_EXIT": true
+    },
+    "scope": {
+      "unchanged": "trend_long only"
+    },
+    "trigger": {
+      "trial": "current market_regime startswith BEAR and profit_in_atr >= trigger; then target is removed and stop trails high_water - offset * ATR"
+    }
+  },
+  "rejection_reason": "Primary-window pre-screen was a strict null across the full tested grid. Even a selective, BEAR-only profit-lock conditioned on existing trend profits did not alter any realized exits in the accepted A+B baseline, so the mechanism adds complexity without measurable edge.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [],
+  "status": "rejected",
+  "timestamp": "2026-04-20T19:20:00-07:00"
+}

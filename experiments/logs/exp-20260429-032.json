@@ -1,0 +1,172 @@
+{
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 0.2055,
+      "max_drawdown_pct": 0.082,
+      "sharpe_daily": 1.06,
+      "survival_rate": 0.8462,
+      "total_pnl": 19392.8,
+      "total_return_pct": 0.1939,
+      "trade_count": 10,
+      "win_rate": 1.0
+    },
+    "mid_weak": {
+      "expected_value_score": 0.1473,
+      "max_drawdown_pct": 0.121,
+      "sharpe_daily": 0.54,
+      "survival_rate": 0.6957,
+      "total_pnl": 27267.98,
+      "total_return_pct": 0.2727,
+      "trade_count": 12,
+      "win_rate": 0.8333
+    },
+    "old_thin": {
+      "expected_value_score": 0.0179,
+      "max_drawdown_pct": 0.1276,
+      "sharpe_daily": 0.42,
+      "survival_rate": 1.0,
+      "total_pnl": 4267.54,
+      "total_return_pct": 0.0427,
+      "trade_count": 15,
+      "win_rate": 0.4
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.2134,
+      "max_drawdown_pct": 0.0401,
+      "sharpe_daily": 4.22,
+      "survival_rate": 0.8431,
+      "total_pnl": 52449.97,
+      "total_return_pct": 0.5245,
+      "trade_count": 19,
+      "win_rate": 0.7895
+    },
+    "mid_weak": {
+      "expected_value_score": 0.9672,
+      "max_drawdown_pct": 0.0616,
+      "sharpe_daily": 2.53,
+      "survival_rate": 0.7925,
+      "total_pnl": 38232.59,
+      "total_return_pct": 0.3823,
+      "trade_count": 21,
+      "win_rate": 0.5238
+    },
+    "old_thin": {
+      "expected_value_score": 0.2113,
+      "max_drawdown_pct": 0.0591,
+      "sharpe_daily": 1.26,
+      "survival_rate": 0.9167,
+      "total_pnl": 16772.15,
+      "total_return_pct": 0.1677,
+      "trade_count": 22,
+      "win_rate": 0.4091
+    }
+  },
+  "change_summary": "Temporarily reinterpreted the legacy ATR target in backtester replay as a next-open `SIGNAL_TARGET` 33% trim instead of a same-level full exit, then rolled the code back after the fixed three-window replay failed badly.",
+  "change_type": "parity_fix",
+  "component": "quant/backtester.py, quant/test_production_parity.py (temporary patch reverted after rejection)",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "aggregate": {
+      "expected_value_score_delta_sum": -3.0212,
+      "signal_target_partial_events": 15,
+      "total_pnl_delta_sum": -56526.39,
+      "windows_ev_improved": 0,
+      "windows_pnl_improved": 0
+    },
+    "gate4_basis": "Rejected: EV and PnL regressed in all three fixed windows, so the replay-only parity variant failed Gate 4 decisively.",
+    "late_strong": {
+      "expected_value_score": -2.0079,
+      "max_drawdown_pct": 0.0419,
+      "sharpe_daily": -3.16,
+      "survival_rate": 0.0031,
+      "total_pnl": -33057.17,
+      "total_return_pct": -0.3306,
+      "trade_count": -9,
+      "win_rate": 0.2105
+    },
+    "mid_weak": {
+      "expected_value_score": -0.8199,
+      "max_drawdown_pct": 0.0594,
+      "sharpe_daily": -1.99,
+      "survival_rate": -0.0968,
+      "total_pnl": -10964.61,
+      "total_return_pct": -0.1096,
+      "trade_count": -9,
+      "win_rate": 0.3095
+    },
+    "old_thin": {
+      "expected_value_score": -0.1934,
+      "max_drawdown_pct": 0.0685,
+      "sharpe_daily": -0.84,
+      "survival_rate": 0.0833,
+      "total_pnl": -12504.61,
+      "total_return_pct": -0.125,
+      "trade_count": -7,
+      "win_rate": -0.0091
+    }
+  },
+  "experiment_id": "exp-20260429-032",
+  "hypothesis": "Replaying SIGNAL_TARGET as a next-open 33% partial reduce might close the production/backtest exit gap and improve fixed-window EV or PnL.",
+  "lane": "measurement_repair",
+  "llm_metrics": {
+    "blocker_relation": "This was a deterministic parity experiment, not an LLM experiment.",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull",
+    "old_thin": "mixed-to-weak older tape"
+  },
+  "next_retry_requires": [
+    "Do not retry nearby bare SIGNAL_TARGET partial-reduce variants without a complete downstream lifecycle design.",
+    "A valid retry needs a shared post-trim policy and evidence that the full lifecycle helps as one causal variable.",
+    "Keep future work explicit about replay-only semantics versus promotable shared production policy."
+  ],
+  "notes": "This closes an anti-repeat gap: simple `SIGNAL_TARGET -> trim -> let the rest ride` is now formally falsified on the fixed three-window harness.",
+  "parameters": {
+    "baseline": {
+      "REPLAY_PARTIAL_REDUCES": true,
+      "SIGNAL_TARGET_PARTIAL_REPLAY_ENABLED": false,
+      "TRAILING_PARTIAL_REDUCE_ENABLED": false
+    },
+    "single_causal_variable": "reinterpret legacy ATR target as replay-only SIGNAL_TARGET partial-reduce semantics",
+    "tested": {
+      "REPLAY_PARTIAL_REDUCES": true,
+      "SIGNAL_TARGET_PARTIAL_REPLAY_ENABLED": true,
+      "TRAILING_PARTIAL_REDUCE_ENABLED": false
+    }
+  },
+  "production_impact": {
+    "backtester_adapter_changed": true,
+    "parity_test_added": true,
+    "replay_only": true,
+    "rolled_back_after_rejection": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "temporary_backtester_patch_tested": true
+  },
+  "rejection_reason": "A bare SIGNAL_TARGET trim plus no downstream lifecycle rule truncates profitable target exits and leaves too much remainder to later stop/end-of-backtest behavior.",
+  "related_files": [
+    "data/experiments/exp-20260429-032/signal_target_partial_replay.json",
+    "docs/alpha-optimization-playbook.md",
+    "docs/experiment_log.jsonl"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-29T11:19:16.9950082-07:00"
+}

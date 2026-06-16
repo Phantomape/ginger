@@ -1,0 +1,79 @@
+{
+  "after_metrics": {
+    "expected_value_score": 0.2595,
+    "max_drawdown_pct": 0.0461,
+    "note": "Backtester rerun on the baseline window remained effectively unchanged. Max drawdown drifted from 4.59% to 4.61%, within normal market data refresh noise.",
+    "sharpe_daily": 1.78,
+    "survival_rate": 0.975,
+    "trade_count": 38,
+    "win_rate": 0.5263
+  },
+  "before_metrics": {
+    "expected_value_score": 0.2595,
+    "max_drawdown_pct": 0.0459,
+    "sharpe_daily": 1.78,
+    "survival_rate": 0.975,
+    "trade_count": 38,
+    "win_rate": 0.5263
+  },
+  "change_summary": "Added quant/earnings_snapshot.py as a single helper for structured daily earnings snapshot persistence, then wired it into quant/run.py, quant/run_quant.py, and quant/run_pipeline.py immediately after earnings data fetch. Added 2 tests covering schema filtering and idempotent same-day writes.",
+  "change_type": "data_gap_fix",
+  "component": "quant/earnings_snapshot.py + quant/run.py + quant/run_quant.py + quant/run_pipeline.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "note": "Gate 4 alpha thresholds are intentionally not the acceptance criterion here because this is a measurement/data-gap repair. The deliverable is future snapshot coverage, not immediate metric uplift on already-missing historical days.",
+    "sharpe_daily_delta": 0.0,
+    "survival_rate_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260418-005",
+  "hypothesis": "The repository already has earnings snapshot replay support in the backtester, but only quant/run.py persisted daily snapshots. Wiring the same structured snapshot write into every production entry point that fetches earnings data closes the P-ERN data accumulation gap without changing strategy logic.",
+  "llm_metrics": {
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "BULL (slow-melt), BEAR in Apr 2026"
+  },
+  "next_retry_requires": [
+    "Allow the production pipelines to run for multiple days so earnings snapshots accumulate in data/earnings_snapshot_YYYYMMDD.json",
+    "After snapshot coverage improves, re-evaluate earnings_event_long quality and slot displacement with historical replay"
+  ],
+  "notes": "This iteration changed one causal variable only: daily earnings snapshot persistence coverage. It does not widen LLM scope, add filters, or retune thresholds. Verification: targeted pytest run passed (7 tests), and the baseline-window backtester rerun reproduced EV=0.2595.",
+  "parameters": {
+    "snapshot_fields": {
+      "new": [
+        "days_to_earnings",
+        "eps_estimate",
+        "eps_actual_last",
+        "avg_historical_surprise_pct",
+        "historical_surprise_pct"
+      ],
+      "old": "implicit ad hoc subset"
+    },
+    "snapshot_writer": {
+      "new": "shared persist_earnings_snapshot() helper used by all 3 entry points",
+      "old": "inline in run.py only"
+    },
+    "write_behavior": {
+      "new": "all entry points skip existing same-day file via shared helper",
+      "old": "run.py skips existing file"
+    }
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/earnings_snapshot.py",
+    "quant/run.py",
+    "quant/run_quant.py",
+    "quant/run_pipeline.py",
+    "quant/test_quant.py",
+    "data/backtest_results_20260418.json"
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-18T18:10:00-07:00"
+}

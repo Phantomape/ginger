@@ -1,0 +1,126 @@
+{
+  "after_metrics": {
+    "primary_window": {
+      "breakout_profit_factor": 4.506,
+      "breakout_trade_count": 14,
+      "breakout_win_rate": 0.5714,
+      "expected_value_score": 0.7531,
+      "max_drawdown_pct": 0.0408,
+      "sharpe_daily": 2.83,
+      "total_return_pct": 0.2661,
+      "trade_count": 28
+    },
+    "window_1": {
+      "expected_value_score": 0.365,
+      "sharpe_daily": 3.44,
+      "trade_count": 9
+    },
+    "window_2": {
+      "expected_value_score": 0.3043,
+      "sharpe_daily": 2.89,
+      "trade_count": 15
+    },
+    "window_3": {
+      "expected_value_score": 0.0502,
+      "sharpe_daily": 3.28,
+      "trade_count": 4
+    }
+  },
+  "before_metrics": {
+    "breakout_profit_factor": 3.477,
+    "breakout_trade_count": 13,
+    "breakout_win_rate": 0.5385,
+    "expected_value_score": 0.6047,
+    "max_drawdown_pct": 0.048,
+    "sharpe_daily": 2.75,
+    "total_return_pct": 0.2199,
+    "trade_count": 28
+  },
+  "change_summary": "Added a shared `rank_signals_for_allocation()` helper that preserves the exact relative order of non-breakout signals and only re-orders the `breakout_long` subsequence by `pct_from_52w_high` (closer to 52-week high first, then confidence). Wired the helper into backtester.py, run.py, run_quant.py, and run_pipeline.py behind a config flag, validated the experiment, then promoted `BREAKOUT_RANK_BY_52W_HIGH=True` to constants as the new default.",
+  "change_type": "ranking_rule",
+  "component": "quant/signal_engine.py + quant/backtester.py + quant/constants.py + quant/run.py + quant/run_quant.py + quant/run_pipeline.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "note": "This ranking rule improved the primary north-star metric materially while leaving the two secondary bull windows and the stress window unchanged in the tested sample. That is exactly the desired shape for a slot-allocation change: better opportunity selection, no broad instability.",
+    "primary_breakout_profit_factor_delta": 1.029,
+    "primary_breakout_trade_count_delta": 1,
+    "primary_breakout_win_rate_delta": 0.0329,
+    "primary_expected_value_score_delta": 0.1484,
+    "primary_expected_value_score_delta_pct": 0.2454,
+    "primary_max_drawdown_pct_delta": -0.0072,
+    "primary_sharpe_daily_delta": 0.08,
+    "primary_total_return_pct_delta": 0.0462,
+    "primary_trade_count_delta": 0,
+    "window_1_ev_delta": 0.0,
+    "window_2_ev_delta": 0.0,
+    "window_3_ev_delta": 0.0
+  },
+  "experiment_id": "exp-20260419-008",
+  "hypothesis": "After filtering deep-recovery breakouts, remaining slot competition may still be leaving money on the table because breakout candidates with equal confidence are not ordered by breakout quality. Re-ranking only the `breakout_long` subsequence by `pct_from_52w_high` should improve slot selection without changing trend ordering, exits, or strategy enablement.",
+  "llm_metrics": {
+    "note": "No LLM scope change. This is a pure slot-allocation refinement inside the quant layer.",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "BULL (slow-melt) with Apr-2026 stress",
+    "window_1": "late-2025 bull trend",
+    "window_2": "early-2026 bull continuation",
+    "window_3": "Feb-Apr 2026 stress"
+  },
+  "next_retry_requires": [
+    "If extending allocation logic, keep the next experiment equally narrow: one additional breakout ranking key or one capital-allocation weight change, not both together",
+    "Do not revisit broad cross-strategy demotions like exp-20260419-002; this experiment worked precisely because it preserved non-breakout ordering",
+    "After more forward data accumulates, check whether the same slot-ranking advantage persists in live candidate sets before layering on breakout-specific risk weighting"
+  ],
+  "notes": "The experiment was intentionally designed to avoid the failure mode from exp-20260419-002. Instead of demoting an entire strategy relative to all other signals, it only improved ordering inside the breakout bucket. This keeps causality clean and minimizes unintended displacement of trend_long signals.",
+  "parameters": {
+    "BREAKOUT_RANK_BY_52W_HIGH": {
+      "new": true,
+      "old": false
+    },
+    "ranking_key": {
+      "new": [
+        "pct_from_52w_high desc within breakout_long",
+        "confidence_score desc within breakout_long"
+      ],
+      "old": [
+        "confidence_score"
+      ]
+    },
+    "ranking_scope": {
+      "new": "only breakout_long subsequence re-ranked by pct_from_52w_high, non-breakouts unchanged",
+      "old": "global confidence order only"
+    }
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/signal_engine.py",
+    "quant/backtester.py",
+    "quant/constants.py",
+    "quant/run.py",
+    "quant/run_quant.py",
+    "quant/run_pipeline.py",
+    "quant/test_quant.py",
+    "docs/experiment_log.jsonl"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-12-19",
+      "start": "2025-10-20"
+    },
+    {
+      "end": "2026-02-17",
+      "start": "2025-12-20"
+    },
+    {
+      "end": "2026-04-17",
+      "start": "2026-02-18"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-19T23:05:00-07:00"
+}

@@ -1,0 +1,202 @@
+{
+  "after_metrics": {
+    "fixed_snapshot_025": {
+      "late_strong": {
+        "expected_value_score": 1.0356,
+        "max_drawdown_pct": 0.0238,
+        "sharpe_daily": 3.88,
+        "total_return_pct": 0.2669,
+        "trade_count": 21
+      },
+      "mid_weak": {
+        "expected_value_score": 0.3201,
+        "max_drawdown_pct": 0.0242,
+        "sharpe_daily": 2.17,
+        "total_return_pct": 0.1475,
+        "trade_count": 26
+      },
+      "old_thin": {
+        "expected_value_score": 0.0645,
+        "max_drawdown_pct": 0.0501,
+        "sharpe_daily": 0.82,
+        "total_return_pct": 0.0786,
+        "trade_count": 24
+      }
+    },
+    "fixed_snapshot_0x": {
+      "late_strong": {
+        "expected_value_score": 1.0356,
+        "max_drawdown_pct": 0.0238,
+        "sharpe_daily": 3.88,
+        "total_return_pct": 0.2669,
+        "trade_count": 21
+      },
+      "mid_weak": {
+        "expected_value_score": 0.3387,
+        "max_drawdown_pct": 0.0206,
+        "sharpe_daily": 2.38,
+        "total_return_pct": 0.1423,
+        "trade_count": 25
+      },
+      "old_thin": {
+        "expected_value_score": 0.0659,
+        "max_drawdown_pct": 0.0502,
+        "sharpe_daily": 0.83,
+        "total_return_pct": 0.0794,
+        "trade_count": 24
+      }
+    },
+    "standard_live_download_after": {
+      "primary": {
+        "expected_value_score": 1.3593,
+        "max_drawdown_pct": 0.0238,
+        "sharpe_daily": 4.28,
+        "total_return_pct": 0.3176,
+        "trade_count": 22,
+        "win_rate": 0.7273
+      },
+      "secondary": {
+        "expected_value_score": 0.3387,
+        "max_drawdown_pct": 0.0206,
+        "sharpe_daily": 2.38,
+        "total_return_pct": 0.1423,
+        "trade_count": 25,
+        "win_rate": 0.44
+      }
+    },
+    "test_results": "targeted pytest passed: 3 selected"
+  },
+  "before_metrics": {
+    "fixed_snapshot_baseline": {
+      "late_strong": {
+        "eligible_signals": 0,
+        "expected_value_score": 1.0356,
+        "max_drawdown_pct": 0.0238,
+        "sharpe_daily": 3.88,
+        "total_return_pct": 0.2669,
+        "trade_count": 21
+      },
+      "mid_weak": {
+        "eligible_signals": 3,
+        "expected_value_score": 0.286,
+        "max_drawdown_pct": 0.0232,
+        "sharpe_daily": 2.01,
+        "total_return_pct": 0.1423,
+        "trade_count": 26
+      },
+      "old_thin": {
+        "eligible_signals": 1,
+        "expected_value_score": 0.0567,
+        "max_drawdown_pct": 0.0502,
+        "sharpe_daily": 0.77,
+        "total_return_pct": 0.0736,
+        "trade_count": 24
+      }
+    },
+    "standard_live_download_before": {
+      "primary": {
+        "expected_value_score": 1.3593,
+        "max_drawdown_pct": 0.0238,
+        "sharpe_daily": 4.28,
+        "total_return_pct": 0.3176,
+        "trade_count": 22
+      },
+      "secondary_reference_before_promotion": {
+        "expected_value_score": 0.286,
+        "max_drawdown_pct": 0.0232,
+        "sharpe_daily": 2.01,
+        "total_return_pct": 0.1423,
+        "trade_count": 26
+      }
+    }
+  },
+  "change_summary": "Added a narrow sizing rule for `breakout_long | Technology | 26-40 DTE -> 0x risk` in constants and portfolio sizing, plus a targeted unit test and a reproducible runtime runner. Entry logic, exit logic, ranking, LLM, C strategy, and existing residual cohort rules were left unchanged.",
+  "change_type": "allocation_sizing_rule",
+  "component": "quant/constants.py + quant/portfolio_engine.py + quant/test_quant.py + quant/experiments/legacy/exp_20260425_014_runner.py",
+  "date_range": {
+    "end": "2026-04-24",
+    "start": "2024-10-02"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "fixed_snapshot_0x_ev_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0527,
+      "old_thin": 0.0092
+    },
+    "fixed_snapshot_0x_max_drawdown_pct_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": -0.0026,
+      "old_thin": 0.0
+    },
+    "fixed_snapshot_0x_sharpe_daily_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": 0.37,
+      "old_thin": 0.06
+    },
+    "gate4_basis": "Accepted because the production 0x point improved EV and Sharpe in two non-overlapping windows, was strict null in the dominant late-strong window, reduced mid-window drawdown, and standard live-download sanity reproduced the unchanged primary plus improved secondary shape.",
+    "standard_primary_ev_delta": 0.0,
+    "standard_secondary_ev_delta": 0.0527
+  },
+  "experiment_id": "exp-20260425-014",
+  "hypothesis": "After the accepted A+B residual allocation stack, Technology breakouts 26-40 trading days before earnings are a residual event-proximity leak. Zeroing only `breakout_long | Technology | 26 <= days_to_earnings <= 40` should improve the mid/old weak windows while leaving the dominant late-strong tape untouched.",
+  "llm_metrics": {
+    "blocker_relation": "LLM soft ranking remains blocked by candidate-level replay coverage, so this run used deterministic A+B residual allocation rather than changing LLM responsibilities.",
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull with zero qualifying Technology breakout 26-40 DTE exposure",
+    "mid_weak": "rotation-heavy bull with three qualifying Technology breakout signals",
+    "old_thin": "mixed-to-weak tape with one qualifying Technology breakout signal"
+  },
+  "next_retry_requires": [
+    "Do not widen this into all Technology breakouts or all Technology DTE sleeves",
+    "Do not retry the rejected Technology trend 59-69 DTE + gap family from this result",
+    "Future residual allocation work needs a fresh audited loss cluster or a genuinely new conditioning source beyond accepted sector, gap, near-high, and event-proximity pockets"
+  ],
+  "notes": "Single-causal-variable discipline held: one new sizing multiplier was promoted. Main risk is missing rare Technology breakout winners in the 26-40 DTE pocket; this risk is constrained by strategy, sector, and DTE bounds and was absent in the dominant late-strong validation tape.",
+  "parameters": {
+    "artifact_files": [
+      "quant/experiments/legacy/exp_20260425_014_runner.py",
+      "data/exp_20260425_014_results.json",
+      "data/exp_20260425_014_residual_audit.json"
+    ],
+    "rule": {
+      "days_to_earnings_max": 40,
+      "days_to_earnings_min": 26,
+      "risk_multiplier": 0.0,
+      "sector": "Technology",
+      "strategy": "breakout_long"
+    },
+    "screened_variants": [
+      "baseline",
+      "breakout_tech_dte2640_025",
+      "breakout_tech_dte2640_000"
+    ],
+    "test_command": ".venv\\Scripts\\python.exe -m pytest quant\\test_quant.py -k \"breakout_technology_dte_26_40 or financials_near_earnings or consumer_trends_before_earnings\""
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/constants.py",
+    "quant/portfolio_engine.py",
+    "quant/test_quant.py",
+    "quant/experiments/legacy/exp_20260425_014_runner.py",
+    "data/exp_20260425_014_results.json",
+    "data/exp_20260425_014_residual_audit.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-25T04:14:10-07:00"
+}

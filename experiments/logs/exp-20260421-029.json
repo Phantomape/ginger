@@ -1,0 +1,181 @@
+{
+  "after_metrics": {
+    "rerun_validation": {
+      "data_instability": {
+        "impact": "same config produced different missing-data sets and different primary verdicts",
+        "rerun_rate_limit_examples": [
+          "COIN"
+        ],
+        "screen_run_rate_limit_examples": [
+          "NFLX",
+          "JPM"
+        ]
+      },
+      "primary_window": {
+        "breakout_no_confirm_count": 2,
+        "expected_value_score": 0.7241,
+        "max_drawdown_pct": 0.0307,
+        "sharpe_daily": 3.44,
+        "total_return_pct": 0.2105,
+        "trade_count": 26,
+        "win_rate": 0.5385
+      },
+      "window_1": {
+        "breakout_no_confirm_count": 3,
+        "expected_value_score": 0.1798,
+        "max_drawdown_pct": 0.0454,
+        "sharpe_daily": 1.32,
+        "total_return_pct": 0.1362,
+        "trade_count": 33,
+        "win_rate": 0.3939
+      },
+      "window_2": {
+        "breakout_no_confirm_count": 1,
+        "expected_value_score": 0.0208,
+        "max_drawdown_pct": 0.0907,
+        "sharpe_daily": 0.47,
+        "total_return_pct": 0.0442,
+        "trade_count": 27,
+        "win_rate": 0.3333
+      }
+    },
+    "screen_run": {
+      "primary_window": {
+        "breakout_no_confirm_count": 2,
+        "expected_value_score": 0.8321,
+        "max_drawdown_pct": 0.0307,
+        "sharpe_daily": 3.76,
+        "total_return_pct": 0.2213,
+        "trade_count": 26,
+        "win_rate": 0.5385
+      },
+      "window_1": {
+        "breakout_no_confirm_count": 3,
+        "expected_value_score": 0.1798,
+        "max_drawdown_pct": 0.0454,
+        "sharpe_daily": 1.32,
+        "total_return_pct": 0.1362,
+        "trade_count": 33,
+        "win_rate": 0.3939
+      },
+      "window_2": {
+        "breakout_no_confirm_count": 1,
+        "expected_value_score": 0.0163,
+        "max_drawdown_pct": 0.0868,
+        "sharpe_daily": 0.43,
+        "total_return_pct": 0.038,
+        "trade_count": 29,
+        "win_rate": 0.3103
+      }
+    }
+  },
+  "before_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.8299,
+      "max_drawdown_pct": 0.026,
+      "sharpe_daily": 3.49,
+      "total_return_pct": 0.2378,
+      "trade_count": 22,
+      "win_rate": 0.6364
+    },
+    "window_1": {
+      "expected_value_score": 0.1255,
+      "max_drawdown_pct": 0.0511,
+      "sharpe_daily": 1.21,
+      "total_return_pct": 0.1037,
+      "trade_count": 29,
+      "win_rate": 0.3793
+    },
+    "window_2": {
+      "expected_value_score": 0.0144,
+      "max_drawdown_pct": 0.087,
+      "sharpe_daily": 0.41,
+      "total_return_pct": 0.0352,
+      "trade_count": 29,
+      "win_rate": 0.3103
+    }
+  },
+  "change_summary": "Added an experiment-only backtester exit path for `breakout_no_confirm`, screened six `(days, min_profit_R)` pairs on the accepted A+B stack, then took the only non-null candidate (`2 days`, `0.5R`) into the standard primary / bull / weak 3-window validation. A first pass looked mildly positive, but an immediate rerun on the same configuration produced a materially different primary result after yfinance rate-limited different tickers across runs. The experiment code was rolled back immediately instead of being promoted.",
+  "change_type": "exit_rule",
+  "component": "quant/backtester.py (experiment-only, rolled back)",
+  "date_range": {
+    "end": "2026-04-20",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "note": "The mechanism is directionally plausible, but the measured effect is not credible enough to accept because the sign of the primary-window result flipped across immediate reruns under different yfinance rate-limit failures. That makes this experiment a measurement-instability rejection, not a clean alpha acceptance or clean alpha falsification.",
+    "rerun_validation": {
+      "primary_expected_value_score_delta": -0.1058,
+      "window_1_expected_value_score_delta": 0.0543,
+      "window_2_expected_value_score_delta": 0.0064
+    },
+    "screen_run": {
+      "primary_expected_value_score_delta": 0.0022,
+      "window_1_expected_value_score_delta": 0.0543,
+      "window_2_expected_value_score_delta": 0.0019
+    }
+  },
+  "experiment_id": "exp-20260421-029",
+  "hypothesis": "The remaining unblocked `breakout_long` leak may live in early follow-through failure rather than another ranking or allocation tweak. If a breakout trade has been open for 2 trading days, has failed to achieve even `0.5R` best excursion, and is already back below entry on the close, then forcing an early close may improve north-star EV by cutting weak breakouts before they consume more downside.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "window_1": "ripping bull / high-beta leadership",
+    "window_2": "older weak-to-mixed tape"
+  },
+  "next_retry_requires": [
+    "Do not promote `breakout fast-confirm exit` from this evidence alone",
+    "If breakout follow-through exit is revisited, first run it against a stable cached OHLCV snapshot or another pinned local data source so reruns are deterministic",
+    "Treat small EV uplifts under vendor-rate-limited downloads as non-actionable even when the mechanism itself sounds plausible"
+  ],
+  "notes": "This experiment still added useful mechanism information: breakout early follow-through remains a plausible direction, but the current repository data path is too unstable to accept a small exit-alpha edge whose sign flips across immediate reruns.",
+  "parameters": {
+    "BREAKOUT_CONFIRM_EXIT_DAYS": {
+      "screened": [
+        2,
+        3,
+        4
+      ],
+      "validated": 2
+    },
+    "BREAKOUT_CONFIRM_MIN_PROFIT_R": {
+      "screened": [
+        0.25,
+        0.5
+      ],
+      "validated": 0.5
+    },
+    "accepted_stack_context": [
+      "REGIME_AWARE_EXIT",
+      "zero-risk low-TQS non-commodity breakouts",
+      "commodity low-TQS exemption",
+      "zero-risk trend Industrials",
+      "0.25x moderate-gap trend Technology"
+    ],
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "trigger": {
+      "rule": "after N trading days, if best_excursion_R < min_profit_R and close < entry, exit at close",
+      "strategy": "breakout_long"
+    }
+  },
+  "rejection_reason": "Rejected because the alpha verdict is not reproducible on the current data path. Immediate reruns of the same `breakout_no_confirm` configuration produced contradictory primary-window outcomes once different tickers failed to download, so Gate 4 cannot be trusted here.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-21T23:59:00-07:00"
+}

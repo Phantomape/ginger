@@ -1,0 +1,117 @@
+{
+  "after_metrics": {
+    "primary_replay_llm": {
+      "archive_hole_days": 0,
+      "candidate_days_covered": 4,
+      "candidate_days_total": 31,
+      "candidate_signals_covered": 4,
+      "candidate_signals_total": 44,
+      "context_only_days": 26,
+      "earnings_snapshot_days": 27,
+      "expected_value_score": 0.8369,
+      "max_drawdown_pct": 0.026,
+      "missing_candidate_days": 27,
+      "prompt_ready_days": 1,
+      "quant_signals_days": 1,
+      "raw_response_recoverable_days": 0,
+      "sharpe_daily": 3.49,
+      "total_return_pct": 0.2398,
+      "trade_count": 22,
+      "trend_signals_days": 1,
+      "win_rate": 0.6364
+    }
+  },
+  "before_metrics": {
+    "primary_replay_llm": {
+      "candidate_days_covered": 4,
+      "candidate_days_total": 31,
+      "candidate_signals_covered": 4,
+      "candidate_signals_total": 44,
+      "expected_value_score": 0.8369,
+      "max_drawdown_pct": 0.026,
+      "missing_candidate_days": 27,
+      "prompt_ready_days": 1,
+      "sharpe_daily": 3.49,
+      "total_return_pct": 0.2398,
+      "trade_count": 22,
+      "win_rate": 0.6364
+    }
+  },
+  "change_summary": "Extended `quant/llm_backlog.py` to classify each missing candidate day by recovery tier and surface additional artifact coverage (`llm_output`, `quant_signals`, `trend_signals`, `earnings_snapshot`). Updated CLI output in `quant/backtester.py` to print `raw-response backlog`, and added regression coverage in `quant/test_quant.py`. Re-ran the deterministic primary replay window on the fixed OHLCV snapshot to confirm strategy metrics remained unchanged while the blocker became more concrete.",
+  "change_type": "measurement_repair",
+  "component": "quant/llm_backlog.py + quant/backtester.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "max_drawdown_pct_delta": 0.0,
+    "note": "Pure blocker-precision upgrade. Deterministic strategy metrics stayed bit-identical; the new information is that there are no remaining raw-response recoveries in the primary backlog, only one prompt-only day (`20260312`) and 26 context-only days that retained some daily artifacts but not a replayable LLM decision.",
+    "sharpe_daily_delta": 0.0,
+    "total_return_pct_delta": 0.0,
+    "trade_count_delta": 0,
+    "win_rate_delta": 0.0
+  },
+  "experiment_id": "exp-20260422-008",
+  "hypothesis": "`LLM soft ranking` is still the top alpha branch, but the current backlog view still overstates near-term recoverability by lumping prompt-only days together with days that only retained partial context. If backlog reporting distinguishes `raw_response_recoverable`, `prompt_only`, and `context_only`, then the next unblock step becomes operationally precise: recover real saved replies first, then stop pretending context-only days are import-ready.",
+  "llm_metrics": {
+    "candidate_day_coverage_fraction": 0.129,
+    "candidate_signal_coverage_fraction": 0.0909,
+    "coverage_fraction": 0.0569,
+    "llm_attribution_metric": "archive_backlog recovery tiers",
+    "llm_change_scope": "attribution/reporting only",
+    "signals_passed_by_llm": 0,
+    "signals_presented": 4,
+    "signals_vetoed_by_llm": 4,
+    "used_llm": true,
+    "veto_rate": 1.0
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "secondary": "ripping bull / high-beta leadership"
+  },
+  "next_retry_requires": [
+    "Do not spend another cycle searching the current primary backlog for hidden raw responses; this pass found zero remaining recoverable `llm_output_YYYYMMDD.json` files",
+    "Treat `20260312` as the only prompt-only replay gap inside the primary window; all other missing candidate days now require regenerated prompts or fresh forward accumulation",
+    "Keep `LLM soft ranking` as the top alpha branch, but do not launch a ranking experiment until candidate-level replay depth grows materially beyond the current 4/31 days and 4/44 signals"
+  ],
+  "notes": "The most valuable missing candidate dates (`20260121`, `20260129`, `20260105`) are not prompt-ready. In the current repo state they survive only as partial daily context, dominated by `earnings_snapshot_YYYYMMDD.json`, which is enough to prove the archive gap but not enough to reconstruct a faithful LLM reply.",
+  "parameters": {
+    "backtest_command": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2025-10-23 --end 2026-04-21 --regime-aware-exit --replay-llm --ohlcv-snapshot data\\ohlcv_snapshot_20251023_20260421.json",
+    "data_source": "data/ohlcv_snapshot_20251023_20260421.json",
+    "new_archive_backlog_fields": [
+      "raw_response_recoverable_days",
+      "context_only_days",
+      "archive_hole_days",
+      "quant_signals_days",
+      "trend_signals_days",
+      "earnings_snapshot_days",
+      "queue[].recovery_tier",
+      "queue[].raw_response_exists"
+    ],
+    "primary_window": {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    "test_command": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe -m pytest quant/test_quant.py -k \"archive_backlog or replay_llm\""
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/llm_backlog.py",
+    "quant/backtester.py",
+    "quant/test_quant.py",
+    "docs/experiment_log.jsonl",
+    "data/backtest_results_20260422.json",
+    "data/ohlcv_snapshot_20251023_20260421.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-22T14:07:13-07:00"
+}

@@ -1,0 +1,94 @@
+{
+  "after_metrics": {
+    "expected_value_score": 0.7531,
+    "max_drawdown_pct": 0.0408,
+    "next_observable": "future pipeline runs can now emit `earnings_snapshot_YYYYMMDD.json` and continue toward fresh replay coverage",
+    "run_pipeline_ast": "passes",
+    "sharpe_daily": 2.83,
+    "total_return_pct": 0.2661,
+    "trade_count": 28,
+    "verified_tests": [
+      "test_save_advice_writes_replay_file_for_dated_investment_advice",
+      "test_persist_earnings_snapshot_creates_structured_daily_file"
+    ]
+  },
+  "before_metrics": {
+    "alpha_candidate_blocked": "C strategy revival first, LLM soft ranking second",
+    "blocker": "`quant/run_pipeline.py` could not parse, so the daily process that should persist earnings snapshots and advance the signal/LLM workflow was not trustworthy to run",
+    "earnings_snapshot_files_present": 0,
+    "expected_value_score": 0.7531,
+    "llm_replay_files_present": 6,
+    "llm_replay_latest_date": "20260417",
+    "max_drawdown_pct": 0.0408,
+    "sharpe_daily": 2.83,
+    "total_return_pct": 0.2661,
+    "trade_count": 28
+  },
+  "change_summary": "Re-read AGENTS/playbook/daily report and recent experiment log, then proved the blocker concretely: `data/llm_prompt_resp_*.json` still stopped at `20260417`, `data/earnings_snapshot_*.json` count remained 0, and `quant/run_pipeline.py` contained an indentation error that raised `SyntaxError: expected 'except' or 'finally' block` at the breakout-ranking branch. Fixed the indentation so the quant-signal block stays inside the inner `try:` and the pipeline can execute again.",
+  "change_type": "parity_fix",
+  "component": "quant/run_pipeline.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "note": "No backtest rerun was required because no signal-generation threshold, filter, exit, sizing, or LLM decision boundary changed. This is a pure execution-blocker repair that restores the previously accepted parity work so it can actually accumulate data.",
+    "sharpe_daily": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260420-011",
+  "hypothesis": "The current highest-value alpha path is still `C strategy revival`, but that path remains blocked if the daily pipeline cannot even complete the quant-signal stage. Fixing a real syntax/runtime blocker in `run_pipeline.py` is required before the previously added P-ERN and P-LLM persistence hooks can accumulate any new evidence.",
+  "llm_metrics": {
+    "blocker_proof": {
+      "earnings_snapshot_files_present": 0,
+      "llm_prompt_resp_files_present": 6,
+      "llm_replay_latest_date": "20260417",
+      "run_pipeline_syntax_error": "expected 'except' or 'finally' block"
+    },
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "N/A - execution blocker repair only"
+  },
+  "next_retry_requires": [
+    "Run the daily pipeline and confirm new `earnings_snapshot_YYYYMMDD.json` files begin appearing",
+    "If OPENAI-backed automatic advice is available, verify fresh `llm_prompt_resp_YYYYMMDD.json` files move past `20260417`",
+    "Once either blocker shows real accumulation, resume `C strategy revival` before any new A/B micro-tuning"
+  ],
+  "notes": "This run intentionally did not start another strategy-layer alpha experiment because the obvious unblocked A/B directions were already falsified on 2026-04-20, while the strongest remaining alpha paths still depended on a pipeline that was not executable.",
+  "parameters": {
+    "pipeline_blocker": {
+      "new": "pipeline parses and quant-signal stage remains inside inner try block",
+      "old": "syntax error at `if BREAKOUT_RANK_BY_52W_HIGH:` preventing pipeline execution"
+    },
+    "strategy_logic": {
+      "new": "unchanged",
+      "old": "unchanged"
+    },
+    "verification": {
+      "ast_parse": [
+        "quant/run_pipeline.py",
+        "quant/run.py",
+        "quant/llm_advisor.py",
+        "quant/earnings_snapshot.py"
+      ],
+      "pytest": [
+        "test_save_advice_writes_replay_file_for_dated_investment_advice",
+        "test_persist_earnings_snapshot_creates_structured_daily_file"
+      ]
+    }
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/run_pipeline.py",
+    "docs/experiment_log.jsonl"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-04-20T20:25:00-07:00"
+}

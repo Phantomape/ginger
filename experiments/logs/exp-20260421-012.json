@@ -1,0 +1,214 @@
+{
+  "after_metrics": {
+    "collision_only_breakout_gt1": {
+      "primary_window": {
+        "expected_value_score": 0.5058,
+        "max_drawdown_pct": 0.0469,
+        "sharpe_daily": 2.51,
+        "total_return_pct": 0.2015,
+        "trade_count": 28,
+        "win_rate": 0.5357
+      },
+      "window_1": {
+        "expected_value_score": 0.018,
+        "max_drawdown_pct": 0.0869,
+        "sharpe_daily": 0.48,
+        "total_return_pct": 0.0375,
+        "trade_count": 30,
+        "win_rate": 0.3333
+      },
+      "window_2": {
+        "expected_value_score": 0.003,
+        "max_drawdown_pct": 0.0965,
+        "sharpe_daily": 0.22,
+        "total_return_pct": 0.0137,
+        "trade_count": 30,
+        "win_rate": 0.3
+      }
+    },
+    "collision_only_gt1": {
+      "primary_window": {
+        "expected_value_score": 0.5058,
+        "max_drawdown_pct": 0.0469,
+        "sharpe_daily": 2.51,
+        "total_return_pct": 0.2015,
+        "trade_count": 28,
+        "win_rate": 0.5357
+      },
+      "window_1": {
+        "expected_value_score": 0.018,
+        "max_drawdown_pct": 0.0869,
+        "sharpe_daily": 0.48,
+        "total_return_pct": 0.0375,
+        "trade_count": 30,
+        "win_rate": 0.3333
+      },
+      "window_2": {
+        "expected_value_score": 0.003,
+        "max_drawdown_pct": 0.0965,
+        "sharpe_daily": 0.22,
+        "total_return_pct": 0.0137,
+        "trade_count": 30,
+        "win_rate": 0.3
+      }
+    },
+    "collision_only_gt2": {
+      "primary_window": {
+        "expected_value_score": 0.5329,
+        "max_drawdown_pct": 0.0447,
+        "sharpe_daily": 2.51,
+        "total_return_pct": 0.2123,
+        "trade_count": 28,
+        "win_rate": 0.5357
+      },
+      "window_1": {
+        "expected_value_score": 0.018,
+        "max_drawdown_pct": 0.0869,
+        "sharpe_daily": 0.48,
+        "total_return_pct": 0.0375,
+        "trade_count": 30,
+        "win_rate": 0.3333
+      },
+      "window_2": {
+        "expected_value_score": 0.003,
+        "max_drawdown_pct": 0.0965,
+        "sharpe_daily": 0.22,
+        "total_return_pct": 0.0137,
+        "trade_count": 30,
+        "win_rate": 0.3
+      }
+    }
+  },
+  "before_metrics": {
+    "accepted_all_days_rule": {
+      "primary_window": {
+        "expected_value_score": 0.591,
+        "max_drawdown_pct": 0.0275,
+        "sharpe_daily": 2.73,
+        "total_return_pct": 0.2165,
+        "trade_count": 28,
+        "win_rate": 0.5357
+      },
+      "window_1": {
+        "expected_value_score": 0.0304,
+        "max_drawdown_pct": 0.0828,
+        "sharpe_daily": 0.61,
+        "total_return_pct": 0.0499,
+        "trade_count": 30,
+        "win_rate": 0.3333
+      },
+      "window_2": {
+        "expected_value_score": 0.003,
+        "max_drawdown_pct": 0.0965,
+        "sharpe_daily": 0.22,
+        "total_return_pct": 0.0137,
+        "trade_count": 30,
+        "win_rate": 0.3
+      }
+    }
+  },
+  "change_summary": "Ran runtime-only allocation experiments by monkeypatching `portfolio_engine.size_signals()` to condition the accepted low-TQS haircut on same-day candidate count. Compared the current accepted all-days rule against `candidate_count > 1`, `candidate_count > 2`, and breakout-only collision variants across the three standard non-overlapping windows. No repository strategy code was changed; only the experiment log and playbook were updated.",
+  "change_type": "allocation_rule",
+  "component": "quant/portfolio_engine.py (runtime-only monkeypatch, rolled back)",
+  "date_range": {
+    "end": "2026-04-20",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "collision_only_breakout_gt1": {
+      "primary_expected_value_score_delta": -0.0852,
+      "primary_max_drawdown_pct_delta": 0.0194,
+      "primary_sharpe_daily_delta": -0.22,
+      "primary_total_return_pct_delta": -0.015,
+      "window_1_expected_value_score_delta": -0.0124,
+      "window_1_sharpe_daily_delta": -0.13
+    },
+    "collision_only_gt1": {
+      "primary_expected_value_score_delta": -0.0852,
+      "primary_max_drawdown_pct_delta": 0.0194,
+      "primary_sharpe_daily_delta": -0.22,
+      "primary_total_return_pct_delta": -0.015,
+      "window_1_expected_value_score_delta": -0.0124,
+      "window_1_sharpe_daily_delta": -0.13
+    },
+    "collision_only_gt2": {
+      "primary_expected_value_score_delta": -0.0581,
+      "primary_max_drawdown_pct_delta": 0.0172,
+      "primary_sharpe_daily_delta": -0.22,
+      "primary_total_return_pct_delta": -0.0042,
+      "window_1_expected_value_score_delta": -0.0124,
+      "window_1_sharpe_daily_delta": -0.13
+    },
+    "note": "Every collision-conditioned variant gave back the accepted rule's primary-window edge and collapsed the ripping-bull improvement back to the pre-TQS baseline. The weak window stayed a strict null, so there is no compensating stability gain."
+  },
+  "experiment_id": "exp-20260421-012",
+  "hypothesis": "If the accepted `trade_quality_score < 0.85 -> 0.25x risk` rule is really slot-allocation alpha, it should work better when activated only on same-day candidate-collision sessions instead of all days. Restricting the haircut to collision days should preserve lone-signal convexity while still improving marginal capital allocation when signals compete.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "slow-melt bull with Apr-2026 stress",
+    "window_1": "ripping bull / high-beta leadership",
+    "window_2": "older weak-to-mixed tape"
+  },
+  "next_retry_requires": [
+    "Do not retry another 'only on collision days' variant of the accepted TQS haircut without new evidence that lone low-TQS trades have positive marginal value",
+    "Do not reinterpret the accepted TQS sizing edge as merely slot-collision triage; the rule still adds value on non-collision days",
+    "If allocation alpha is revisited, use a genuinely new conditioning variable or a richer marginal-value signal rather than narrowing the existing TQS rule's activation scope"
+  ],
+  "notes": "This matters because it falsifies a tempting follow-up generated by the slot-allocation narrative. The accepted low-TQS haircut is not only helping on collision days; restricting it to explicit same-day competition removes too much real edge.",
+  "parameters": {
+    "LOW_TQS_RISK_MULTIPLIER": {
+      "fixed": 0.25
+    },
+    "LOW_TQS_RISK_THRESHOLD": {
+      "fixed": 0.85
+    },
+    "ab_strategies": [
+      "trend_long",
+      "breakout_long"
+    ],
+    "baseline_rule": {
+      "new": "accepted reference for comparison",
+      "old": "all low-TQS A+B signals (`trade_quality_score < 0.85`) use `0.25x` risk on every day"
+    },
+    "evaluation_windows": [
+      [
+        "2025-10-23",
+        "2026-04-20"
+      ],
+      [
+        "2025-04-23",
+        "2025-10-22"
+      ],
+      [
+        "2024-10-02",
+        "2025-04-22"
+      ]
+    ],
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "tested_variants": {
+      "collision_only_breakout_gt1": "apply `0.25x` only to low-TQS `breakout_long` when candidate_count > 1",
+      "collision_only_gt1": "apply `0.25x` only when same-day candidate_count > 1",
+      "collision_only_gt2": "apply `0.25x` only when same-day candidate_count > 2"
+    }
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability. Conditioning the haircut on same-day candidate collisions materially degraded the accepted all-days TQS sizing rule in the primary and ripping-bull windows while producing no benefit in the weak window.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-21T17:35:00-07:00"
+}

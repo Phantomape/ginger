@@ -1,0 +1,238 @@
+{
+  "after_metrics": {
+    "screen": {
+      "bonus_0.25": {
+        "primary_window": {
+          "expected_value_score": 0.7962,
+          "max_drawdown_pct": 0.0407,
+          "sharpe_daily": 2.89,
+          "total_return_pct": 0.2755,
+          "trade_count": 28,
+          "win_rate": 0.5714
+        }
+      },
+      "bonus_0.5": {
+        "primary_window": {
+          "expected_value_score": 0.8255,
+          "max_drawdown_pct": 0.041,
+          "sharpe_daily": 2.92,
+          "total_return_pct": 0.2827,
+          "trade_count": 28,
+          "win_rate": 0.5714
+        }
+      },
+      "bonus_1.0": {
+        "primary_window": {
+          "expected_value_score": 0.6785,
+          "max_drawdown_pct": 0.0409,
+          "sharpe_daily": 2.5,
+          "total_return_pct": 0.2714,
+          "trade_count": 28,
+          "win_rate": 0.5357
+        }
+      },
+      "bonus_1.5": {
+        "primary_window": {
+          "expected_value_score": 0.7232,
+          "max_drawdown_pct": 0.0324,
+          "sharpe_daily": 2.47,
+          "total_return_pct": 0.2928,
+          "trade_count": 28,
+          "win_rate": 0.5357
+        }
+      }
+    },
+    "validated_bonus_0.5": {
+      "primary_window": {
+        "expected_value_score": 0.8255,
+        "max_drawdown_pct": 0.041,
+        "sharpe_daily": 2.92,
+        "total_return_pct": 0.2827,
+        "trade_count": 28,
+        "win_rate": 0.5714
+      },
+      "subwindow_1": {
+        "expected_value_score": 0.402,
+        "max_drawdown_pct": 0.0261,
+        "sharpe_daily": 3.52,
+        "total_return_pct": 0.1142,
+        "trade_count": 9,
+        "win_rate": 0.7778
+      },
+      "subwindow_2": {
+        "expected_value_score": 0.2584,
+        "max_drawdown_pct": 0.0267,
+        "sharpe_daily": 2.68,
+        "total_return_pct": 0.0964,
+        "trade_count": 15,
+        "win_rate": 0.6
+      },
+      "subwindow_3": {
+        "expected_value_score": 0.0631,
+        "max_drawdown_pct": 0.0097,
+        "sharpe_daily": 3.65,
+        "total_return_pct": 0.0173,
+        "trade_count": 4,
+        "win_rate": 0.5
+      },
+      "window_1": {
+        "expected_value_score": 0.0078,
+        "max_drawdown_pct": 0.0993,
+        "sharpe_daily": 0.33,
+        "total_return_pct": 0.0235,
+        "trade_count": 24,
+        "win_rate": 0.2917
+      },
+      "window_2": {
+        "expected_value_score": 0.0056,
+        "max_drawdown_pct": 0.0988,
+        "sharpe_daily": 0.27,
+        "total_return_pct": 0.0208,
+        "trade_count": 28,
+        "win_rate": 0.2857
+      }
+    }
+  },
+  "before_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.7531,
+      "max_drawdown_pct": 0.0408,
+      "sharpe_daily": 2.83,
+      "total_return_pct": 0.2661,
+      "trade_count": 28,
+      "win_rate": 0.5714
+    },
+    "subwindow_1": {
+      "expected_value_score": 0.365,
+      "max_drawdown_pct": 0.0262,
+      "sharpe_daily": 3.44,
+      "total_return_pct": 0.1061,
+      "trade_count": 9,
+      "win_rate": 0.7778
+    },
+    "subwindow_2": {
+      "expected_value_score": 0.3043,
+      "max_drawdown_pct": 0.0267,
+      "sharpe_daily": 2.89,
+      "total_return_pct": 0.1053,
+      "trade_count": 15,
+      "win_rate": 0.6
+    },
+    "subwindow_3": {
+      "expected_value_score": 0.0502,
+      "max_drawdown_pct": 0.0097,
+      "sharpe_daily": 3.28,
+      "total_return_pct": 0.0153,
+      "trade_count": 4,
+      "win_rate": 0.5
+    },
+    "window_1": {
+      "expected_value_score": 0.0214,
+      "max_drawdown_pct": 0.0869,
+      "sharpe_daily": 0.5,
+      "total_return_pct": 0.0427,
+      "trade_count": 27,
+      "win_rate": 0.3333
+    },
+    "window_2": {
+      "expected_value_score": 0.003,
+      "max_drawdown_pct": 0.0965,
+      "sharpe_daily": 0.22,
+      "total_return_pct": 0.0137,
+      "trade_count": 30,
+      "win_rate": 0.3
+    }
+  },
+  "change_summary": "Added an experiment-only backtester knob to widen only `trend_long` target multipliers after the accepted `REGIME_AWARE_EXIT` profile was applied, then ran paired same-data comparisons against the accepted A+B stack. Primary-window pre-screen favored small bonuses (`+0.25`, `+0.5` ATR), but the code was rolled back after multi-window validation showed regime-fragile results.",
+  "change_type": "exit_rule",
+  "component": "quant/backtester.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "note": "The idea improves the accepted primary window, but the effect is not stable: one large comparison window (`2025-04-21 -> 2025-10-17`) and one key subwindow (`2025-12-20 -> 2026-02-17`) both regress materially, while the positive windows are smaller or near-zero. This is not a robust 'trend target should just be wider' conclusion; it is regime-fragile target stretching.",
+    "primary_expected_value_score_delta": 0.0724,
+    "primary_max_drawdown_pct_delta": 0.0002,
+    "primary_sharpe_daily_delta": 0.09,
+    "primary_total_return_pct_delta": 0.0166,
+    "subwindow_1_expected_value_score_delta": 0.037,
+    "subwindow_2_expected_value_score_delta": -0.0459,
+    "subwindow_3_expected_value_score_delta": 0.0129,
+    "validated_bonus": 0.5,
+    "window_1_expected_value_score_delta": -0.0136,
+    "window_2_expected_value_score_delta": 0.0026
+  },
+  "experiment_id": "exp-20260420-008",
+  "hypothesis": "`trend_long` may still be leaving money on the table because it shares the same entry-day regime-aware ATR target width with breakout trades. A small trend-only target widening could improve EV without touching entry selection, filters, ranking, sizing, or LLM logic.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "BULL (slow-melt) with Apr-2026 stress",
+    "subwindow_1": "late-2025 bull trend",
+    "subwindow_2": "early-2026 bull continuation",
+    "subwindow_3": "Feb-Apr 2026 stress",
+    "window_1": "ripping bull / high-beta leadership",
+    "window_2": "older mixed-to-weaker tape"
+  },
+  "next_retry_requires": [
+    "Do not revisit `trend_long` target widening as a blanket multiplier bonus without a selector that explains when wider targets help and when they hurt",
+    "If trend exit alpha is revisited, prefer a conditional hold-quality mechanism or richer context signal rather than another global target-width permutation",
+    "Current highest-value alpha directions remain `LLM soft ranking` (blocked by P-LLM coverage) and `C strategy revival` (blocked by P-ERN data quality)"
+  ],
+  "notes": "Experiment code was fully rolled back after measurement; repository trading logic remains unchanged. The accepted stack at the end of the run is still the same A+B baseline with `REGIME_AWARE_EXIT=True` and accepted breakout ranking.",
+  "parameters": {
+    "TREND_TARGET_MULT_BONUS": {
+      "default": 0.0,
+      "tested": [
+        0.25,
+        0.5,
+        1.0,
+        1.5
+      ]
+    },
+    "fixed_context": {
+      "BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH": -0.2,
+      "BREAKOUT_RANK_BY_52W_HIGH": true,
+      "ENABLED_STRATEGIES": [
+        "trend_long",
+        "breakout_long"
+      ],
+      "REGIME_AWARE_EXIT": true
+    },
+    "scope": {
+      "unchanged": "trend_long only"
+    }
+  },
+  "rejection_reason": "Rejected on multi-window stability despite passing the primary-window screen. A blanket trend-only target widening improved one main sample but regressed a meaningful continuation window and did not deliver a clean majority of economically meaningful gains. Keeping a global wider-target rule would add complexity around a regime-fragile effect and risks repeating the same 'single-window exit tuning' failure mode.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-17",
+      "start": "2025-04-21"
+    },
+    {
+      "end": "2025-04-30",
+      "start": "2024-10-01"
+    },
+    {
+      "end": "2025-12-19",
+      "start": "2025-10-20"
+    },
+    {
+      "end": "2026-02-17",
+      "start": "2025-12-20"
+    },
+    {
+      "end": "2026-04-17",
+      "start": "2026-02-18"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-20T18:45:00-07:00"
+}

@@ -1,0 +1,177 @@
+{
+  "after_metrics": {
+    "max_positions_3": {
+      "primary_window": {
+        "expected_value_score": 0.3408,
+        "max_drawdown_pct": 0.0333,
+        "sharpe_daily": 2.38,
+        "survival_rate": 0.975,
+        "total_return_pct": 0.1432,
+        "trade_count": 20,
+        "win_rate": 0.6
+      },
+      "window_1": {
+        "expected_value_score": 0.0337,
+        "max_drawdown_pct": 0.0545,
+        "sharpe_daily": 0.73,
+        "survival_rate": 0.8378,
+        "total_return_pct": 0.0462,
+        "trade_count": 21,
+        "win_rate": 0.4286
+      },
+      "window_2": {
+        "expected_value_score": 0.013,
+        "max_drawdown_pct": 0.0747,
+        "sharpe_daily": -0.42,
+        "survival_rate": 0.9492,
+        "total_return_pct": -0.0309,
+        "trade_count": 29,
+        "win_rate": 0.2759
+      }
+    },
+    "max_positions_8": {
+      "primary_window": {
+        "expected_value_score": 0.313,
+        "max_drawdown_pct": 0.0495,
+        "sharpe_daily": 2.43,
+        "survival_rate": 0.9815,
+        "total_return_pct": 0.1288,
+        "trade_count": 33,
+        "win_rate": 0.5152
+      },
+      "window_1": {
+        "expected_value_score": 0.1229,
+        "max_drawdown_pct": 0.0879,
+        "sharpe_daily": 1.33,
+        "survival_rate": 0.8714,
+        "total_return_pct": 0.0924,
+        "trade_count": 46,
+        "win_rate": 0.413
+      },
+      "window_2": {
+        "expected_value_score": 0.0013,
+        "max_drawdown_pct": 0.1128,
+        "sharpe_daily": -0.06,
+        "survival_rate": 0.9634,
+        "total_return_pct": -0.0215,
+        "trade_count": 50,
+        "win_rate": 0.3
+      }
+    }
+  },
+  "before_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.3731,
+      "max_drawdown_pct": 0.0585,
+      "max_positions": 5,
+      "sharpe_daily": 2.26,
+      "survival_rate": 0.9811,
+      "total_return_pct": 0.1651,
+      "trade_count": 31,
+      "win_rate": 0.5484
+    },
+    "window_1": {
+      "expected_value_score": 0.1017,
+      "max_drawdown_pct": 0.0716,
+      "max_positions": 5,
+      "sharpe_daily": 1.12,
+      "survival_rate": 0.8793,
+      "total_return_pct": 0.0908,
+      "trade_count": 34,
+      "win_rate": 0.4412
+    },
+    "window_2": {
+      "expected_value_score": 0.0019,
+      "max_drawdown_pct": 0.0979,
+      "max_positions": 5,
+      "sharpe_daily": 0.19,
+      "survival_rate": 0.9577,
+      "total_return_pct": 0.01,
+      "trade_count": 37,
+      "win_rate": 0.3243
+    }
+  },
+  "change_summary": "Validated the current baseline with the repo venv (the automation shell was using `D:\\Anaconda\\python.exe`, while `.venv\\Scripts\\python.exe` is the interpreter with the required dependencies), then ran three `MAX_POSITIONS` sweeps without changing any other rule. The result was regime-dependent and failed multi-window stability: 5 remained best in the primary window, 8 was best only in the ripping-bull comparison window, and 3 was less bad only in the older weak window.",
+  "change_type": "allocation_layer",
+  "component": "quant/constants.py via backtester config override only (no code change promoted)",
+  "date_range": {
+    "end": "2026-04-20",
+    "start": "2025-10-22"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "max_positions_3": {
+      "primary_expected_value_score_delta": -0.0323,
+      "primary_max_drawdown_pct_delta": -0.0252,
+      "primary_trade_count_delta": -11,
+      "window_1_expected_value_score_delta": -0.068,
+      "window_2_expected_value_score_delta": 0.0111
+    },
+    "max_positions_8": {
+      "primary_expected_value_score_delta": -0.0601,
+      "primary_trade_count_delta": 2,
+      "window_1_expected_value_score_delta": 0.0212,
+      "window_1_max_drawdown_pct_delta": 0.0163,
+      "window_2_expected_value_score_delta": -0.0006,
+      "window_2_max_drawdown_pct_delta": 0.0149
+    },
+    "note": "No tested static global slot count improved expected_value_score in a stable majority across the three windows. The concentration variant (`3`) reduced drawdown but gave up too much return/trade volume in the two more recent windows; the dilution variant (`8`) helped only in the ripping-bull window while increasing drawdown and loss streak exposure elsewhere."
+  },
+  "experiment_id": "exp-20260420-016",
+  "hypothesis": "If scarce-slot competition is the next unblocked A+B alpha carrier, a static global `MAX_POSITIONS` change should improve expected value more robustly than another entry/exit micro-tweak. The tested idea was simple capital-allocation concentration/dilution: compare `MAX_POSITIONS` = 3, 5, and 8 across three non-overlapping windows.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "BULL (slow-melt) with Apr-2026 stress",
+    "secondary": "ripping bull / high-beta leadership",
+    "tertiary": "older mixed-to-weak tape"
+  },
+  "next_retry_requires": [
+    "Do not retry another global `MAX_POSITIONS` permutation without new evidence that slot pressure is concentrated in a specific regime or strategy bucket",
+    "If allocation alpha is revisited, prefer conditional or strategy-specific slot allocation rather than another whole-system slot-count dial",
+    "Higher-value directions still remain `C strategy revival` once earnings snapshots accumulate and `LLM soft ranking` once replay coverage grows"
+  ],
+  "notes": "This run finally resolved the earlier environment confusion: the repo venv can run the backtester, while the automation default interpreter cannot import `yfinance`. That was blocker proof, not the alpha result. The alpha result here is strictly the rejected `MAX_POSITIONS` sweep.",
+  "parameters": {
+    "MAX_POSITIONS": {
+      "baseline": 5,
+      "tested": [
+        3,
+        5,
+        8
+      ]
+    },
+    "fixed_context": {
+      "BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH": -0.2,
+      "BREAKOUT_RANK_BY_52W_HIGH": true,
+      "ENABLED_STRATEGIES": [
+        "trend_long",
+        "breakout_long"
+      ],
+      "REGIME_AWARE_EXIT": true
+    },
+    "interpreter": {
+      "automation_default": "D:\\Anaconda\\python.exe",
+      "validated_backtests": ".venv\\Scripts\\python.exe"
+    }
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability. Static global slot-count changes are too regime-dependent to count as robust capital-allocation alpha for the current A+B stack.",
+  "related_files": [
+    "data/backtest_results_20260420.json",
+    "docs/alpha-optimization-playbook.md",
+    "docs/experiment_log.jsonl"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-21",
+      "start": "2025-04-22"
+    },
+    {
+      "end": "2025-04-30",
+      "start": "2024-10-01"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-20T23:05:00-07:00"
+}

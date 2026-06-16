@@ -1,0 +1,87 @@
+{
+  "after_metrics": {
+    "expected_value_score": 0.7531,
+    "llm_replay_workflow": "automatic LLM saves now create replay twins by default",
+    "max_drawdown_pct": 0.0408,
+    "sharpe_daily": 2.83,
+    "total_return_pct": 0.2661,
+    "trade_count": 28,
+    "verified_tests": [
+      "test_save_advice_writes_replay_file_for_dated_investment_advice",
+      "test_save_advice_does_not_overwrite_existing_replay_file",
+      "test_save_advice_skips_replay_for_non_response_payload",
+      "test_import_advice_writes_replay_file",
+      "test_import_advice_replay_file_not_overwritten",
+      "test_import_advice_skips_replay_for_fake_response"
+    ]
+  },
+  "before_metrics": {
+    "expected_value_score": 0.7531,
+    "llm_blocker": "automatic pipeline did not mirror dated advice files into replay files",
+    "llm_replay_files_present": 6,
+    "llm_replay_latest_date": "20260417",
+    "max_drawdown_pct": 0.0408,
+    "sharpe_daily": 2.83,
+    "total_return_pct": 0.2661,
+    "trade_count": 28
+  },
+  "change_summary": "Added automatic replay-log mirroring to `llm_advisor.save_advice()`: when saving a real dated `investment_advice_YYYYMMDD.json`, it now also writes `llm_prompt_resp_YYYYMMDD.json` unless that replay file already exists. Added targeted tests for auto-mirroring, non-overwrite behavior, and fake-response skip behavior. No strategy logic or backtester decision path changed.",
+  "change_type": "parity_fix",
+  "component": "quant/llm_advisor.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "note": "No full backtest rerun was required because no signal-generation, filtering, sizing, or exit logic changed. The deliverable is parity repair: future automatic LLM runs now accumulate replay coverage instead of silently leaving P-LLM at 0%.",
+    "sharpe_daily": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260420-009",
+  "hypothesis": "The highest-value remaining alpha direction is `LLM soft ranking`, but it is blocked because the automatic LLM pipeline writes `investment_advice_YYYYMMDD.json` without also creating `llm_prompt_resp_YYYYMMDD.json`. Centralizing replay-log mirroring inside `llm_advisor.save_advice()` should unblock future P-LLM coverage accumulation without changing any trading rule, filter, sizing, or backtest metric.",
+  "llm_metrics": {
+    "blocker_proof": {
+      "earnings_snapshots_present": 0,
+      "investment_advice_auto_mirror_missing": "run_pipeline.py and automatic save path wrote dated advice but not replay twins",
+      "llm_prompt_resp_files_present": 6
+    },
+    "llm_attribution_metric": "future llm_attribution.coverage_fraction is no longer blocked by missing replay twins on auto-saved advice days",
+    "llm_change_scope": "workflow parity only",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "N/A - production parity repair only"
+  },
+  "next_retry_requires": [
+    "Let the daily pipeline accumulate new `llm_prompt_resp_YYYYMMDD.json` files",
+    "Once replay coverage reaches a meaningful sample, resume `LLM soft ranking` alpha experiments instead of more trend/breakout micro-tuning"
+  ],
+  "notes": "This run explicitly chose measurement_repair over strategy-layer alpha_search because the strongest remaining alpha direction (`LLM soft ranking`) is not currently trustworthy to evaluate while automatic pipeline runs fail to persist replay twins.",
+  "parameters": {
+    "fake_response_policy": {
+      "new": "skip replay if parsed payload has no new_trade key",
+      "old": "N/A"
+    },
+    "overwrite_policy": {
+      "new": "preserve existing llm_prompt_resp_YYYYMMDD.json",
+      "old": "N/A"
+    },
+    "save_advice_auto_replay": {
+      "new": "also writes llm_prompt_resp_YYYYMMDD.json for real dated advice saves",
+      "old": "writes only investment_advice_YYYYMMDD.json"
+    }
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/llm_advisor.py",
+    "quant/test_quant.py",
+    "docs/experiment_log.jsonl"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-04-20T22:10:00-07:00"
+}

@@ -1,0 +1,160 @@
+{
+  "after_metrics": {
+    "target_6_0": {
+      "late_strong": {
+        "expected_value_score": 1.1108,
+        "max_drawdown_pct": 0.0238,
+        "sharpe_daily": 3.99,
+        "total_return_pct": 0.2784
+      },
+      "mid_weak": {
+        "expected_value_score": 0.403,
+        "max_drawdown_pct": 0.0205,
+        "sharpe_daily": 2.62,
+        "total_return_pct": 0.1538
+      },
+      "old_thin": {
+        "expected_value_score": 0.1121,
+        "max_drawdown_pct": 0.0444,
+        "sharpe_daily": 1.12,
+        "total_return_pct": 0.1001
+      }
+    },
+    "target_7_0": {
+      "late_strong": {
+        "expected_value_score": 1.048,
+        "max_drawdown_pct": 0.0209,
+        "sharpe_daily": 3.94,
+        "total_return_pct": 0.266
+      },
+      "mid_weak": {
+        "expected_value_score": 0.4189,
+        "max_drawdown_pct": 0.0205,
+        "sharpe_daily": 2.67,
+        "total_return_pct": 0.1569
+      },
+      "old_thin": {
+        "expected_value_score": 0.1272,
+        "max_drawdown_pct": 0.0443,
+        "sharpe_daily": 1.18,
+        "total_return_pct": 0.1078
+      }
+    },
+    "target_8_0": {
+      "late_strong": {
+        "expected_value_score": 1.0887,
+        "max_drawdown_pct": 0.0209,
+        "sharpe_daily": 4.01,
+        "total_return_pct": 0.2715
+      },
+      "mid_weak": {
+        "expected_value_score": 0.3926,
+        "max_drawdown_pct": 0.0205,
+        "sharpe_daily": 2.59,
+        "total_return_pct": 0.1516
+      },
+      "old_thin": {
+        "expected_value_score": 0.1435,
+        "max_drawdown_pct": 0.0444,
+        "sharpe_daily": 1.25,
+        "total_return_pct": 0.1148
+      }
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.0402,
+      "max_drawdown_pct": 0.0238,
+      "sharpe_daily": 3.89,
+      "total_return_pct": 0.2674
+    },
+    "mid_weak": {
+      "expected_value_score": 0.3924,
+      "max_drawdown_pct": 0.0205,
+      "sharpe_daily": 2.59,
+      "total_return_pct": 0.1515
+    },
+    "old_thin": {
+      "expected_value_score": 0.0863,
+      "max_drawdown_pct": 0.0444,
+      "sharpe_daily": 0.95,
+      "total_return_pct": 0.0908
+    }
+  },
+  "change_summary": "Added runtime-only `quant/experiments/legacy/exp_20260425_027_runner.py`; monkeypatched risk enrichment to widen targets only for Technology trend_long signals. Screened 4.5/5.0/6.0/7.0/8.0 ATR targets across fixed late/mid/old snapshots. No production code promoted in this run.",
+  "change_type": "alpha_search_exit_rule",
+  "component": "runtime-only Technology trend target width",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "deferred",
+  "delta_metrics": {
+    "decision_basis": "6.0 ATR is the cleanest across all windows; 7.0 is stronger for mid/old but slightly reduces late_strong return; 8.0 loses the mid_weak benefit. The family is promising but was not promoted because this run only used runtime monkeypatching and the primary-window uplift is just below the strict hard-promotion threshold.",
+    "target_6_0_ev_deltas": {
+      "late_strong": 0.0706,
+      "mid_weak": 0.0106,
+      "old_thin": 0.0258
+    },
+    "target_7_0_ev_deltas": {
+      "late_strong": 0.0078,
+      "mid_weak": 0.0265,
+      "old_thin": 0.0409
+    }
+  },
+  "experiment_id": "exp-20260425-027",
+  "hypothesis": "Secondary-window QQQ underperformance is partly caused by cutting Technology trend winners too early. Widening only `trend_long | Technology` targets should improve mid_weak while avoiding the previously rejected broad trend target-widening failure.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull",
+    "mid_weak": "rotation-heavy bull / target benchmark gap",
+    "old_thin": "mixed-to-weak tape"
+  },
+  "next_retry_requires": [
+    "Implement the 6.0 ATR Technology trend target as a real single-causal-variable patch",
+    "Rerun fixed snapshots and live sanity using production code path",
+    "Do not widen into broad trend target widening; keep the scope Technology trend only"
+  ],
+  "notes": "This is the strongest new mechanism found in this run. It reframes secondary underperformance as selective winner truncation rather than idle-cash beta starvation.",
+  "parameters": {
+    "rule_scope": {
+      "sector": "Technology",
+      "strategy": "trend_long"
+    },
+    "target_mult_tested": [
+      4.5,
+      5.0,
+      6.0,
+      7.0,
+      8.0
+    ],
+    "unchanged": [
+      "entries",
+      "sizing",
+      "ranking",
+      "LLM",
+      "C strategy",
+      "non-Technology exits"
+    ]
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/experiments/legacy/exp_20260425_027_runner.py",
+    "data/exp_20260425_027_results.json",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "deferred_positive",
+  "timestamp": "2026-04-25T12:05:00-07:00"
+}

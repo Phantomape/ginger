@@ -1,0 +1,150 @@
+{
+  "after_metrics": {
+    "addon_10pct": {
+      "ev_improved_windows": 3,
+      "expected_value_score_delta_sum": 0.0284,
+      "material_regression_windows": 0,
+      "max_drawdown_worsening": 0.0001,
+      "total_pnl_delta_sum": 828.04
+    },
+    "addon_15pct": {
+      "ev_improved_windows": 3,
+      "expected_value_score_delta_sum": 0.036,
+      "material_regression_windows": 0,
+      "max_drawdown_worsening": 0.0002,
+      "total_pnl_delta_sum": 1092.7
+    },
+    "addon_25pct": {
+      "ev_improved_windows": 3,
+      "expected_value_score_delta_sum": 0.0447,
+      "material_regression_windows": 0,
+      "max_drawdown_worsening": 0.0001,
+      "total_pnl_delta_sum": 1523.89
+    }
+  },
+  "before_metrics": {
+    "baseline_by_window": {
+      "late_strong": {
+        "expected_value_score": 1.5039,
+        "max_drawdown_pct": 0.0281,
+        "sharpe_daily": 4.24,
+        "total_pnl": 35471.49
+      },
+      "mid_weak": {
+        "expected_value_score": 0.4773,
+        "max_drawdown_pct": 0.0247,
+        "sharpe_daily": 2.35,
+        "total_pnl": 20307.9
+      },
+      "old_thin": {
+        "expected_value_score": 0.131,
+        "max_drawdown_pct": 0.0456,
+        "sharpe_daily": 1.15,
+        "total_pnl": 11388.73
+      }
+    }
+  },
+  "best_variant": "addon_25pct",
+  "change_summary": "Added a fraction-sweep runner that keeps the day2 +2% RS-positive trigger fixed and varies only ADDON_FRACTION_OF_ORIGINAL_SHARES across 10%, 15%, and 25%. No production run.py behavior was changed.",
+  "change_type": "alpha_search_entry_followthrough_addon_fraction_sweep",
+  "component": "quant/experiments/legacy/exp_20260426_011_entry_followthrough_addon_fraction_sweep.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "accepted_candidate_not_production_promoted",
+  "delta_metrics": {
+    "late_strong": {
+      "addon_10pct_ev_delta": 0.0133,
+      "addon_15pct_ev_delta": 0.0193,
+      "addon_25pct_ev_delta": 0.0166
+    },
+    "mid_weak": {
+      "addon_10pct_ev_delta": 0.0119,
+      "addon_15pct_ev_delta": 0.012,
+      "addon_25pct_ev_delta": 0.0228
+    },
+    "old_thin": {
+      "addon_10pct_ev_delta": 0.0032,
+      "addon_15pct_ev_delta": 0.0047,
+      "addon_25pct_ev_delta": 0.0053
+    }
+  },
+  "expected_value_score_delta": {
+    "addon_10pct_sum": 0.0284,
+    "addon_15pct_sum": 0.036,
+    "addon_25pct_sum": 0.0447
+  },
+  "experiment_id": "exp-20260426-011",
+  "hypothesis": "The strict day-2 follow-through add-on may have a better risk/reward tradeoff at 10-15% than the prior 25% add-on; if smaller add-ons keep EV while reducing drawdown, they may be better production candidates.",
+  "llm_metrics": {
+    "blocker_relation": "This is deterministic lifecycle sizing research; LLM responsibilities were intentionally unchanged.",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / AI-beta continuation",
+    "mid_weak": "rotation-heavy bull with crowding risk",
+    "old_thin": "mixed-to-weak macro tape"
+  },
+  "next_retry_requires": [
+    "Do not retry smaller 10-15% add-on fractions absent new drawdown evidence",
+    "Next distinct test should examine cap-room semantics or trigger quality rather than smaller size",
+    "Do not widen to ordinary positive follow-through"
+  ],
+  "notes": "This was alpha_search. It varied one causal variable: add-on fraction.",
+  "parameters": {
+    "fixed_trigger": {
+      "ADDON_CHECKPOINT_DAYS": 2,
+      "ADDON_ENABLED": true,
+      "ADDON_MIN_RS_VS_SPY": 0.0,
+      "ADDON_MIN_UNREALIZED_PCT": 0.02
+    },
+    "risk_constraints": [
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT"
+    ],
+    "swept_parameter": "ADDON_FRACTION_OF_ORIGINAL_SHARES",
+    "unchanged": [
+      "entries",
+      "normal stop/target exits",
+      "signal ranking",
+      "LLM responsibilities",
+      "news replay",
+      "earnings_event_long",
+      "production run.py"
+    ],
+    "values": [
+      0.1,
+      0.15,
+      0.25
+    ]
+  },
+  "production_promotion": false,
+  "production_promotion_reason": "All tested fractions improved all windows, but 25% produced the highest aggregate EV/PnL and smaller fractions did not materially reduce drawdown. Keep 25% as research candidate but do not enable default add-ons until stronger materiality or forward evidence appears.",
+  "rejection_reason": null,
+  "related_files": [
+    "quant/experiments/legacy/exp_20260426_011_entry_followthrough_addon_fraction_sweep.py",
+    "data/exp_20260426_011_entry_followthrough_addon_fraction_sweep.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2026-04-21",
+      "label": "late_strong",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "label": "mid_weak",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "label": "old_thin",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted_candidate",
+  "timestamp": "2026-04-26T00:12:00-07:00"
+}

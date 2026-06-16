@@ -1,0 +1,128 @@
+{
+  "after_metrics": {
+    "affected_trades": [
+      {
+        "entry_date": "2025-12-15",
+        "exit_date": "2025-12-16",
+        "pnl_pct_net": -0.00915,
+        "ticker": "IAU"
+      },
+      {
+        "entry_date": "2025-12-15",
+        "exit_date": "2025-12-16",
+        "pnl_pct_net": -0.009199,
+        "ticker": "GLD"
+      },
+      {
+        "entry_date": "2026-01-06",
+        "exit_date": "2026-01-07",
+        "pnl_pct_net": -0.013326,
+        "ticker": "GS"
+      },
+      {
+        "entry_date": "2026-01-07",
+        "exit_date": "2026-01-08",
+        "pnl_pct_net": -0.044648,
+        "ticker": "MU"
+      },
+      {
+        "entry_date": "2026-01-22",
+        "exit_date": "2026-01-23",
+        "pnl_pct_net": -0.023101,
+        "ticker": "IWM"
+      },
+      {
+        "entry_date": "2026-04-17",
+        "exit_date": "2026-04-20",
+        "pnl_pct_net": -0.026007,
+        "ticker": "AMD"
+      }
+    ],
+    "breakout_no_confirm_count": 6,
+    "primary_window": {
+      "expected_value_score": 0.4767,
+      "max_drawdown_pct": 0.0332,
+      "sharpe_daily": 3.23,
+      "signals_survived": 47,
+      "survival_rate": 0.8704,
+      "total_return_pct": 0.1476,
+      "trade_count": 26,
+      "win_rate": 0.4231
+    }
+  },
+  "before_metrics": {
+    "primary_window": {
+      "expected_value_score": 0.847,
+      "max_drawdown_pct": 0.026,
+      "sharpe_daily": 3.51,
+      "signals_survived": 44,
+      "survival_rate": 0.8627,
+      "total_return_pct": 0.2413,
+      "trade_count": 23,
+      "win_rate": 0.6522
+    }
+  },
+  "change_summary": "Temporarily added an experiment-only `breakout_no_confirm` exit path inside `quant/backtester.py`, plus a focused regression test, then ran a same-snapshot A/B comparison on `data/ohlcv_snapshot_20251023_20260421.json`. The code was rolled back immediately after measurement because the deterministic primary-window result was decisively negative.",
+  "change_type": "exit_rule",
+  "component": "quant/backtester.py (experiment-only, rolled back) + quant/test_quant.py (rolled back)",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score_delta": -0.3703,
+    "max_drawdown_pct_delta": 0.0072,
+    "note": "Gate 4 fails immediately on the deterministic primary window: EV fell 43.7%, return fell 9.37 pp, win rate collapsed 22.9 pp, and drawdown worsened. Because the experiment was strongly negative on fixed data, there was no justification to spend additional time on multi-window validation.",
+    "sharpe_daily_delta": -0.28,
+    "total_return_pct_delta": -0.0937,
+    "trade_count_delta": 3,
+    "win_rate_delta": -0.2291
+  },
+  "experiment_id": "exp-20260422-002",
+  "hypothesis": "Now that OHLCV replay is deterministic, the previously measurement-blocked `breakout fast-confirm exit` branch can be judged cleanly. If weak breakouts that fail to reach even `0.5R` within two post-entry checks and close back below entry are true low-quality continuation setups, forcing an early close should improve north-star EV on the fixed primary snapshot.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "note": "Deterministic fixed-OHLCV replay; no vendor price drift in this verdict.",
+    "primary": "slow-melt bull with Apr-2026 stress"
+  },
+  "next_retry_requires": [
+    "Do not retry the same `2 days + 0.5R + close<entry` fast-confirm exit on the current accepted A+B stack",
+    "If breakout exit alpha is revisited, it must use a genuinely different post-entry context source than early under-confirmation alone",
+    "Keep `LLM soft ranking` as the highest-upside direction once coverage becomes credible; this deterministic rejection removes `breakout fast-confirm exit` from the short list of unblocked A+B retries"
+  ],
+  "notes": "This is a valuable negative result: exp-20260421-029 was not merely unlucky measurement noise. Once the price path was fixed, the mechanism itself proved harmful on the current accepted stack, so future breakout-exit work should not restart from this no-confirm branch.",
+  "parameters": {
+    "BREAKOUT_CONFIRM_EXIT_DAYS": {
+      "baseline": 0,
+      "tested": 2
+    },
+    "BREAKOUT_CONFIRM_MIN_PROFIT_R": {
+      "baseline": 0.0,
+      "tested": 0.5
+    },
+    "accepted_stack_context": [
+      "REGIME_AWARE_EXIT",
+      "zero-risk low-TQS non-commodity breakouts",
+      "commodity low-TQS exemption",
+      "zero-risk trend Industrials",
+      "0.25x moderate-gap trend Technology"
+    ],
+    "data_source": "data/ohlcv_snapshot_20251023_20260421.json",
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "trigger": {
+      "rule": "after 2 post-entry checks, if best excursion < 0.5R and close < entry, exit at close",
+      "strategy": "breakout_long"
+    }
+  },
+  "rejection_reason": "Deterministic fixed-snapshot replay falsified the mechanism. The early-close rule cut too many valid breakout continuations before confirmation, turning a previously measurement-blocked idea into a cleanly negative result.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "data/ohlcv_snapshot_20251023_20260421.json"
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-22T04:06:00-07:00"
+}

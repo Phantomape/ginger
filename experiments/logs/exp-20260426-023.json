@@ -1,0 +1,65 @@
+{
+  "after_metrics": {
+    "expected_value_score": 1.4901,
+    "max_drawdown_pct": 0.0281,
+    "sharpe": 5.97,
+    "sharpe_daily": 4.22,
+    "survival_rate": 0.8431,
+    "total_pnl": 35307.77,
+    "total_return_pct": 0.3531,
+    "trade_count": 20,
+    "win_rate": 0.7
+  },
+  "before_metrics": {
+    "expected_value_score": 1.4901,
+    "max_drawdown_pct": 0.0281,
+    "sharpe": 5.97,
+    "sharpe_daily": 4.22,
+    "survival_rate": 0.8431,
+    "total_pnl": 35307.77,
+    "total_return_pct": 0.3531,
+    "trade_count": 20,
+    "win_rate": 0.7
+  },
+  "change_summary": "Added an effective LLM attribution subset that counts only production-aligned, ranking-eligible replay samples so soft-ranking readiness is not inferred from covered-but-empty days.",
+  "change_type": "logging_fix",
+  "component": "quant/backtester.py, quant/test_quant.py, data/backtest_results_20260426_pre_exp023.json, data/backtest_results_20260426.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "observed_only",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0,
+    "win_rate": 0.0
+  },
+  "experiment_id": "exp-20260426-023",
+  "hypothesis": "LLM soft ranking remains blocked by misleading replay attribution; reporting an effective production-aligned ranking-eligible subset should make veto metrics auditably trustworthy without changing strategy behavior.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "next_retry_requires": [],
+  "notes": "Validated with .venv python: targeted pytest for effective_attribution/context_alignment passed, and the fixed snapshot replay window kept EV 1.4901, Sharpe daily 4.22, trades 20. New effective sample shows 1 usable day / 1 usable signal with effective veto_rate 1.0, while headline veto metrics remain for backward compatibility.",
+  "parameters": {
+    "locked_variables": [
+      "LLM effective attribution subset for production-aligned ranking-eligible replay samples"
+    ],
+    "single_causal_variable": "LLM effective attribution subset for production-aligned ranking-eligible replay samples"
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtest_results_20260426_pre_exp023.json",
+    "data/backtest_results_20260426.json"
+  ],
+  "secondary_windows": [],
+  "status": "observed_only",
+  "timestamp": "2026-04-26T11:05:37+00:00"
+}

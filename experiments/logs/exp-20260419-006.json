@@ -1,0 +1,91 @@
+{
+  "after_metrics": {
+    "pressure_breakout_filtered_signals": 0,
+    "primary_window": {
+      "expected_value_score": 0.5565,
+      "max_drawdown_pct": 0.048,
+      "sharpe_daily": 2.64,
+      "total_return_pct": 0.2108,
+      "trade_count": 29
+    },
+    "window_1": {
+      "expected_value_score": 0.365,
+      "sharpe_daily": 3.44
+    },
+    "window_2": {
+      "expected_value_score": 0.3043,
+      "sharpe_daily": 2.89
+    },
+    "window_3": {
+      "expected_value_score": 0.0121,
+      "sharpe_daily": 1.59,
+      "trade_count": 5
+    }
+  },
+  "before_metrics": {
+    "expected_value_score": 0.5565,
+    "max_drawdown_pct": 0.048,
+    "sharpe_daily": 2.64,
+    "total_return_pct": 0.2108,
+    "trade_count": 29
+  },
+  "change_summary": "Added a backtester-only experiment that disabled `breakout_long` when the day-level environment looked hostile (`BEAR` regime or defensive entry-day exit profile), then compared it against the current A+B + regime-aware-exit baseline across 3 non-overlapping windows and the full window. The implementation was fully rolled back after the result proved null.",
+  "change_type": "strategy_regime_filter",
+  "component": "quant/backtester.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "note": "The experiment produced zero change in every tested window because the pressure filter never fired on any breakout signals. It did not degrade the system, but it also did not test the intended causal mechanism.",
+    "sharpe_daily_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260419-006",
+  "hypothesis": "If the third-window weakness is mainly a pressure-environment problem, disabling `breakout_long` on pressure days should improve expected_value_score while preserving the rest of the A+B system.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "BULL (slow-melt) with Apr-2026 stress",
+    "window_3_focus": "Feb-Apr 2026 stress"
+  },
+  "next_retry_requires": [
+    "Do not retry broad `BEAR/defensive -> disable breakout` gating without a more strategy-specific regime proxy",
+    "Next candidate should target breakout follow-through directly (for example, a strategy-regime or quality proxy), not broad macro regime labels",
+    "Evaluate whether the LLM/news veto archive would have filtered the failed breakout dates before adding new hard-coded macro gates"
+  ],
+  "notes": "Implementation was rolled back immediately after the null result, per AGENTS.md Gate 4. This failed attempt was still valuable because it falsified the 'broad pressure regime' explanation for the third-window breakout weakness.",
+  "parameters": {
+    "pressure_definition": {
+      "market_regime": "BEAR",
+      "or_exit_profile_bucket": "defensive"
+    },
+    "pressure_disable_breakout": {
+      "new": true,
+      "old": false
+    }
+  },
+  "rejection_reason": "Rejected for null effect / wrong proxy. The broad market pressure proxy did not overlap with the actual failed breakout entries. In the third window, all three breakout trades entered on dates that the system still labeled `BULL` (NFLX 2026-03-02, AMZN 2026-04-10, AMD 2026-04-17). This means the true failure mode is not 'breakouts only fail in obvious BEAR/defensive tapes'; it is more likely a strategy-specific regime problem (follow-through quality) that broad index regime does not capture.",
+  "related_files": [
+    "docs/experiment_log.jsonl"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-12-19",
+      "start": "2025-10-20"
+    },
+    {
+      "end": "2026-02-17",
+      "start": "2025-12-20"
+    },
+    {
+      "end": "2026-04-17",
+      "start": "2026-02-18"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-19T19:35:00-07:00"
+}

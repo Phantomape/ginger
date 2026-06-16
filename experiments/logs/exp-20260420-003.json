@@ -1,0 +1,99 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 0.4641,
+    "max_drawdown_pct": 0.0587,
+    "sharpe_daily": 2.38,
+    "source": "data/backtest_results_20260420.json",
+    "survival_rate": 0.9808,
+    "total_return_pct": 0.195,
+    "trade_count": 31,
+    "win_rate": 0.5806
+  },
+  "change_summary": "Prototyped an in-trade regime-update path for fixed ATR targets, then rolled it back after failing to obtain trustworthy before/after backtests in this environment. Kept only a minimal backtester measurement fix that redirects yfinance cache into a writable temp directory so the true blocker is surfaced cleanly.",
+  "change_type": "exit_rule",
+  "component": "quant/regime_exit.py + quant/backtester.py + quant/test_quant.py",
+  "date_range": {
+    "end": "2026-04-17",
+    "start": "2025-10-20"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "note": "No trustworthy delta. First blocker was yfinance sqlite cache failure (`unable to open database file` / `disk I/O error`). After redirecting cache to a writable temp directory, the environment still could not fetch OHLCV because requests were being routed to `127.0.0.1:9` and failed with curl connection errors. Under AGENTS Gate 4, this means the alpha experiment is unmeasurable and must not be retained."
+  },
+  "experiment_id": "exp-20260420-003",
+  "hypothesis": "If the entry-day regime-aware exit already helps, a slow in-trade regime refresh might further improve expected_value_score by retargeting open winners using only prior-day observable SPY/QQQ state, without changing entries, sizing, or LLM behavior.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "actual": "experiment blocked before trustworthy multi-window evaluation could run",
+    "primary": "intended same multi-window protocol as exp-20260419-004"
+  },
+  "next_retry_requires": [
+    "Restore reliable OHLCV access for backtester.py, either by fixing the proxy/network path or by introducing a local historical price cache inside the repository",
+    "Re-run the experiment on the same 3 non-overlapping windows with paired before/after metrics in one trusted data environment",
+    "Only reintroduce the in-trade regime-update code after Gate 4 evidence exists"
+  ],
+  "notes": "This failure is still useful. It proves the next blocking measurement problem is not LLM and not strategy logic; it is historical price availability inside the current execution environment. The strategy code path for in-trade target updates was fully rolled back. Only the temp-cache redirection remains because it reduces one local yfinance failure mode and exposes the true network blocker faster.",
+  "parameters": {
+    "attempted_strategy_change": {
+      "IN_TRADE_REGIME_UPDATE": {
+        "old": false,
+        "trial": true
+      },
+      "inputs": {
+        "allowed": [
+          "previous-day spy_pct_from_ma",
+          "previous-day qqq_pct_from_ma",
+          "previous-day spy_10d_return",
+          "previous-day qqq_10d_return"
+        ],
+        "forbidden": [
+          "same-day index move",
+          "future regime labels"
+        ]
+      },
+      "update_trigger": {
+        "min_hold_days": 2,
+        "profit_in_atr": ">=1.0"
+      }
+    },
+    "retained_measurement_fix": {
+      "yfinance_cache_location": {
+        "new": "system temp/ginger_yfinance_cache",
+        "old": "default appdirs cache"
+      }
+    }
+  },
+  "rejection_reason": "Blocked by measurement infrastructure, not by strategy evidence. The environment could not supply trustworthy OHLCV for the paired backtests, so the in-trade exit change was rolled back instead of being guessed into the codebase.",
+  "related_files": [
+    "quant/backtester.py",
+    "data/backtest_results_20260420.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-12-19",
+      "start": "2025-10-20"
+    },
+    {
+      "end": "2026-02-17",
+      "start": "2025-12-20"
+    },
+    {
+      "end": "2026-04-17",
+      "start": "2026-02-18"
+    }
+  ],
+  "status": "rolled_back",
+  "timestamp": "2026-04-20T10:55:00-07:00"
+}

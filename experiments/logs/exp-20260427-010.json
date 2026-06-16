@@ -1,0 +1,133 @@
+{
+  "after_metrics": {
+    "aggregate": {
+      "improving_executed_addons": 10,
+      "improving_vs_base_ev_delta_sum": 0.053,
+      "improving_vs_base_pnl_delta_sum": 1515.78,
+      "improving_vs_normal_ev_delta_sum": 0.0083,
+      "improving_vs_normal_pnl_delta_sum": -8.11,
+      "normal_executed_addons": 14,
+      "windows_improved_vs_base": 3,
+      "windows_improved_vs_normal": 2,
+      "windows_regressed_vs_normal": 1
+    },
+    "late_strong": {
+      "executed_addons": 4,
+      "expected_value_score": 1.5315,
+      "max_drawdown_pct": 0.0281,
+      "sharpe_daily": 4.26,
+      "total_pnl": 35950.69,
+      "total_return_pct": 0.3595
+    },
+    "mid_weak": {
+      "executed_addons": 3,
+      "expected_value_score": 0.4973,
+      "total_pnl": 21069.16
+    },
+    "old_thin": {
+      "executed_addons": 3,
+      "expected_value_score": 0.1364,
+      "total_pnl": 11664.05
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.5039,
+      "max_drawdown_pct": 0.0281,
+      "sharpe_daily": 4.24,
+      "total_pnl": 35471.49,
+      "total_return_pct": 0.3547,
+      "trade_count": 21,
+      "win_rate": 0.7143
+    },
+    "mid_weak": {
+      "expected_value_score": 0.4773,
+      "max_drawdown_pct": 0.0247,
+      "sharpe_daily": 2.35,
+      "total_pnl": 20307.9,
+      "total_return_pct": 0.2031,
+      "trade_count": 26,
+      "win_rate": 0.5385
+    },
+    "old_thin": {
+      "expected_value_score": 0.131,
+      "max_drawdown_pct": 0.0456,
+      "sharpe_daily": 1.15,
+      "total_pnl": 11388.73,
+      "total_return_pct": 0.1139,
+      "trade_count": 24,
+      "win_rate": 0.375
+    }
+  },
+  "change_summary": "Added a default-off BacktestEngine hook and real replay runner for ADDON_REQUIRE_IMPROVING_FOLLOWTHROUGH; the trigger improved versus no-add-on in all three fixed windows but failed to beat the ordinary strict 25% add-on candidate stably.",
+  "change_type": "capital_allocation",
+  "component": "quant/backtester.py, quant/experiments/legacy/exp_20260427_009_entry_followthrough_improving_real_replay.py, data/exp_20260427_010_entry_followthrough_improving_real_replay.json, docs/experiment_log.jsonl, docs/alpha-optimization-playbook.md",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "gate4_vs_no_addon": "directionally positive in 3/3 windows but below material production-promotion bar",
+    "versus_normal_25pct_addon": "late_strong improved, mid_weak regressed, old_thin was nearly flat; aggregate PnL -$8.11 vs normal add-on"
+  },
+  "experiment_id": "exp-20260427-010",
+  "hypothesis": "Strict day-2 follow-through add-ons may improve if scheduled only when day-2 unrealized return and RS vs SPY both improve versus day 1.",
+  "llm_metrics": {
+    "blocker_relation": "LLM soft ranking remains blocked by candidate-level replay coverage, so this deterministic lifecycle alpha branch was tested instead.",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull with weaker follow-through",
+    "old_thin": "mixed-to-weak older tape"
+  },
+  "next_retry_requires": [
+    "Do not retry day1-to-day2 improving unrealized/RS as the next add-on quality filter.",
+    "The ordinary strict day2 >= +2% and RS > 0 add-on remains the cleaner research candidate, still default-off because materiality is modest.",
+    "Future add-on work needs a different evidence type or forward sample, not another nearby day1/day2 improvement nudge."
+  ],
+  "notes": "This was alpha_search, not measurement repair. One causal variable changed; production defaults remain unchanged.",
+  "parameters": {
+    "base_config": {
+      "REGIME_AWARE_EXIT": true
+    },
+    "improving_addon_config": {
+      "ADDON_CHECKPOINT_DAYS": 2,
+      "ADDON_ENABLED": true,
+      "ADDON_FRACTION_OF_ORIGINAL_SHARES": 0.25,
+      "ADDON_MIN_RS_VS_SPY": 0.0,
+      "ADDON_MIN_UNREALIZED_PCT": 0.02,
+      "ADDON_REQUIRE_CHECKPOINT_CAP_ROOM": false,
+      "ADDON_REQUIRE_IMPROVING_FOLLOWTHROUGH": true
+    },
+    "normal_addon_config": {
+      "ADDON_CHECKPOINT_DAYS": 2,
+      "ADDON_ENABLED": true,
+      "ADDON_FRACTION_OF_ORIGINAL_SHARES": 0.25,
+      "ADDON_MIN_RS_VS_SPY": 0.0,
+      "ADDON_MIN_UNREALIZED_PCT": 0.02,
+      "ADDON_REQUIRE_CHECKPOINT_CAP_ROOM": false,
+      "ADDON_REQUIRE_IMPROVING_FOLLOWTHROUGH": false
+    },
+    "single_causal_variable": "ADDON_REQUIRE_IMPROVING_FOLLOWTHROUGH default-off trigger-quality hook"
+  },
+  "rejection_reason": "Rejected as a trigger-quality variant: it did not stably improve over the simpler strict 25% day-2 add-on and slightly reduced aggregate PnL versus that candidate. Do not promote this improvement filter or keep tuning nearby day1/day2 improvement variants.",
+  "related_files": [
+    "quant/backtester.py",
+    "quant/experiments/legacy/exp_20260427_009_entry_followthrough_improving_real_replay.py",
+    "data/exp_20260427_010_entry_followthrough_improving_real_replay.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-27T01:03:59+00:00"
+}

@@ -1,0 +1,227 @@
+{
+  "after_metrics": {
+    "stress_strict_gross_0.25x": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "stress_days_hit_during_sizing": 2,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "stress_days_hit_during_sizing": 8,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0135,
+        "max_drawdown_pct": 0.0867,
+        "sharpe_daily": 0.39,
+        "stress_days_hit_during_sizing": 17,
+        "total_return_pct": 0.0345,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    },
+    "stress_strict_gross_0.5x": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "stress_days_hit_during_sizing": 2,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "stress_days_hit_during_sizing": 8,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0126,
+        "max_drawdown_pct": 0.0879,
+        "sharpe_daily": 0.38,
+        "stress_days_hit_during_sizing": 17,
+        "total_return_pct": 0.0331,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    }
+  },
+  "before_metrics": {
+    "accepted_ab_stack": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "signals_generated": 51,
+        "signals_survived": 44,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "signals_generated": 51,
+        "signals_survived": 44,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 0.36,
+        "signals_generated": 51,
+        "signals_survived": 45,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    }
+  },
+  "change_summary": "Ran a runtime-only deterministic stress-state experiment using the three fixed OHLCV snapshots. First audited the trigger counts per window, then monkey-patched sizing so that only on `stress_strict` days the portfolio risk budget was multiplied by `0.5x` or `0.25x`. Entries, exits, ranking, strategy mix, and all accepted A+B cohort rules stayed unchanged. No repository trading logic was kept after measurement.",
+  "change_type": "allocation_rule",
+  "component": "runtime-only monkeypatch of `BacktestEngine._earnings_dict_for` + `portfolio_engine.size_signals()` to apply a same-day gross-risk haircut keyed off a cached strict stress-date map (rolled back; no repo trading logic changed)",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "note": "The AND semantics successfully fixed the over-fire failure mode from exp-20260423-013, but the deployment still failed Gate 4. Both strict variants stayed a complete null in the late and middle windows, and only the oldest weak window improved modestly. This means the remaining blocker is no longer state-definition width; it is that a single-stage gross-risk haircut is too blunt to convert weak-tape detection into stable multi-window alpha.",
+    "stress_strict_gross_0.25x_ev_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": 0.0026
+    },
+    "stress_strict_gross_0.25x_relative_ev_change": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": 0.2385
+    },
+    "stress_strict_gross_0.5x_ev_deltas": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": 0.0017
+    },
+    "stress_strict_gross_0.5x_relative_ev_change": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": 0.156
+    }
+  },
+  "experiment_id": "exp-20260423-014",
+  "hypothesis": "If the rejected broad OR-based stress template failed because its semantics were too loose, then a much narrower conjunctive risk-state should recover the useful part of the meta-layer idea: define `stress_strict` only when `breadth_above_200 <= 0.55` AND `spy_pct_from_ma <= -0.02`, and then apply a modest gross-risk haircut on those days. A valid rule should stay near-silent in the late-strong window while improving the weaker windows.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull with brief Mar-2026 stress pocket",
+    "mid_weak": "bullish / rotation-heavy tape with early-window pressure cluster",
+    "old_thin": "mixed-to-weak tape culminating in Mar-Apr 2025 macro stress"
+  },
+  "next_retry_requires": [
+    "Do not retry nearby `0.5x/0.25x/0.0x` gross-risk sweeps on the same `breadth_above_200 + spy_pct_from_ma` strict state by default",
+    "If this weak-tape branch returns, require either an explicit two-stage design where strict stress detection drives a sleeve-specific action, or a genuinely richer state that adds another independent context source such as volatility or flow",
+    "Treat this result as a doctrine update: risk-state detection and risk-state action are separate questions; fixing the trigger semantics alone is not enough"
+  ],
+  "notes": "Single-causal-variable discipline held relative to exp-20260423-013: the action family remained a same-day gross-risk haircut, while the only intended change was the state-definition semantics (broad OR -> strict AND). The audit showed late-window trigger scarcity exactly as intended, so this is a clean rejection of the action shape, not another over-triggering false negative.",
+  "parameters": {
+    "artifact_files": [
+      "data/exp_20260423_014_stress_audit.json",
+      "data/exp_20260423_014_results.json"
+    ],
+    "deployment": {
+      "action_scope": "all signals on stress days only",
+      "gross_risk_multipliers": [
+        0.5,
+        0.25
+      ]
+    },
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "state_definition": {
+      "breadth_above_200_max": 0.55,
+      "semantics": "AND",
+      "spy_pct_from_ma_max": -0.02
+    },
+    "trigger_audit": {
+      "late_strong": {
+        "breadth_weak_days": 40,
+        "sim_days": 123,
+        "spy_weak_days": 2,
+        "stress_strict_days": 2,
+        "stress_strict_fraction": 0.0163
+      },
+      "mid_weak": {
+        "breadth_weak_days": 11,
+        "sim_days": 127,
+        "spy_weak_days": 8,
+        "stress_strict_days": 8,
+        "stress_strict_fraction": 0.063
+      },
+      "old_thin": {
+        "breadth_weak_days": 29,
+        "sim_days": 138,
+        "spy_weak_days": 17,
+        "stress_strict_days": 17,
+        "stress_strict_fraction": 0.1232
+      }
+    },
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "rejection_reason": "Rejected on Gate 4 multi-window stability. The strict conjunctive stress detector is cleaner than the rejected OR form, but it still does not produce majority-window improvement. The family now looks measurement-clean but action-weak: same-day gross-risk haircuts on strict weak-tape days are too blunt and too sparse to justify repo-level promotion.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "data/exp_20260423_014_stress_audit.json",
+    "data/exp_20260423_014_results.json",
+    "data/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv_snapshot_20241002_20250422.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-24T00:25:00-07:00"
+}

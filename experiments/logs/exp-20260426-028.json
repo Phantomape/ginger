@@ -1,0 +1,65 @@
+{
+  "after_metrics": {
+    "expected_value_score": 1.4901,
+    "max_drawdown_pct": 0.0281,
+    "sharpe": 5.97,
+    "sharpe_daily": 4.22,
+    "survival_rate": 0.8431,
+    "total_pnl": 35307.77,
+    "total_return_pct": 0.3531,
+    "trade_count": 20,
+    "win_rate": 0.7
+  },
+  "before_metrics": {
+    "expected_value_score": 1.4901,
+    "max_drawdown_pct": 0.0281,
+    "sharpe": 5.97,
+    "sharpe_daily": 4.22,
+    "survival_rate": 0.8431,
+    "total_pnl": 35307.77,
+    "total_return_pct": 0.3531,
+    "trade_count": 20,
+    "win_rate": 0.7
+  },
+  "change_summary": "Fixed LLM replay missing-date bookkeeping so trading-day and candidate-day gaps expose the actual missing date lists instead of misclassifying covered dates.",
+  "change_type": "logging_fix",
+  "component": "quant/backtester.py, quant/test_quant.py, data/backtest_results_20260426.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "observed_only",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0,
+    "win_rate": 0.0
+  },
+  "experiment_id": "exp-20260426-028",
+  "hypothesis": "LLM soft ranking remains blocked by opaque missing replay dates; surfacing the exact missing candidate-day list should make backlog recovery actionable without changing strategy behavior.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "next_retry_requires": [],
+  "notes": "Trading metrics stayed identical on the fixed snapshot replay window 2025-10-23..2026-04-21. Measurement correction only: llm_attribution.dates_missing is now 112 (not 8), candidate_dates_missing is now 26 concrete dates (not empty), and the same corrected counts flow into known_biases.llm_gate_unreplayed.",
+  "parameters": {
+    "locked_variables": [
+      "LLM missing candidate-day date list fidelity"
+    ],
+    "single_causal_variable": "LLM missing candidate-day date list fidelity"
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtest_results_20260426_pre_exp023.json",
+    "data/backtest_results_20260426.json"
+  ],
+  "secondary_windows": [],
+  "status": "observed_only",
+  "timestamp": "2026-04-26T14:06:22+00:00"
+}

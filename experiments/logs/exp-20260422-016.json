@@ -1,0 +1,262 @@
+{
+  "after_metrics": {
+    "loose": {
+      "ab_plus_leadership": {
+        "late_strong": {
+          "expected_value_score": 0.6981,
+          "leadership_total_pnl_usd": 4733.63,
+          "leadership_trade_count": 29,
+          "max_drawdown_pct": 0.0358,
+          "sharpe_daily": 2.78,
+          "total_return_pct": 0.2511,
+          "trade_count": 43,
+          "win_rate": 0.5814
+        },
+        "mid_weak": {
+          "expected_value_score": 0.0453,
+          "leadership_total_pnl_usd": 3099.6,
+          "leadership_trade_count": 24,
+          "max_drawdown_pct": 0.0588,
+          "sharpe_daily": 0.69,
+          "total_return_pct": 0.0656,
+          "trade_count": 40,
+          "win_rate": 0.375
+        },
+        "old_thin": {
+          "expected_value_score": 0.0011,
+          "leadership_total_pnl_usd": -1729.62,
+          "leadership_trade_count": 24,
+          "max_drawdown_pct": 0.1032,
+          "sharpe_daily": 0.08,
+          "total_return_pct": 0.0131,
+          "trade_count": 41,
+          "win_rate": 0.2927
+        }
+      },
+      "leadership_only": {
+        "late_strong": {
+          "expected_value_score": 0.0836,
+          "max_drawdown_pct": 0.0803,
+          "sharpe_daily": 1.3,
+          "total_return_pct": 0.0643,
+          "trade_count": 39,
+          "win_rate": 0.4359
+        },
+        "mid_weak": {
+          "expected_value_score": 0.1071,
+          "max_drawdown_pct": 0.0639,
+          "sharpe_daily": 1.44,
+          "total_return_pct": 0.0744,
+          "trade_count": 36,
+          "win_rate": 0.4444
+        },
+        "old_thin": {
+          "expected_value_score": 0.0925,
+          "max_drawdown_pct": 0.1118,
+          "sharpe_daily": -1.72,
+          "total_return_pct": -0.0538,
+          "trade_count": 43,
+          "win_rate": 0.2326
+        }
+      }
+    },
+    "strict": {
+      "ab_plus_leadership": {
+        "late_strong": {
+          "expected_value_score": 0.8337,
+          "leadership_total_pnl_usd": 549.76,
+          "leadership_trade_count": 1,
+          "max_drawdown_pct": 0.0251,
+          "sharpe_daily": 3.5,
+          "total_return_pct": 0.2382,
+          "trade_count": 26,
+          "win_rate": 0.6154
+        },
+        "mid_weak": {
+          "expected_value_score": 0.1255,
+          "leadership_total_pnl_usd": 0.0,
+          "leadership_trade_count": 0,
+          "max_drawdown_pct": 0.0511,
+          "sharpe_daily": 1.21,
+          "total_return_pct": 0.1037,
+          "trade_count": 29,
+          "win_rate": 0.3793
+        },
+        "old_thin": {
+          "expected_value_score": 0.0192,
+          "leadership_total_pnl_usd": 1194.94,
+          "leadership_trade_count": 3,
+          "max_drawdown_pct": 0.0941,
+          "sharpe_daily": 0.46,
+          "total_return_pct": 0.0418,
+          "trade_count": 31,
+          "win_rate": 0.3548
+        }
+      },
+      "leadership_only": {
+        "late_strong": {
+          "expected_value_score": 0.004,
+          "max_drawdown_pct": 0.0183,
+          "sharpe_daily": -0.71,
+          "total_return_pct": -0.0056,
+          "trade_count": 2,
+          "win_rate": 0.5
+        },
+        "mid_weak": {
+          "expected_value_score": 0.0019,
+          "max_drawdown_pct": 0.0237,
+          "sharpe_daily": 0.29,
+          "total_return_pct": 0.0065,
+          "trade_count": 7,
+          "win_rate": 0.4286
+        },
+        "old_thin": {
+          "expected_value_score": 0.0007,
+          "max_drawdown_pct": 0.0311,
+          "sharpe_daily": 0.31,
+          "total_return_pct": 0.0022,
+          "trade_count": 5,
+          "win_rate": 0.6
+        }
+      }
+    }
+  },
+  "before_metrics": {
+    "accepted_ab_stack": {
+      "late_strong": {
+        "expected_value_score": 0.847,
+        "max_drawdown_pct": 0.026,
+        "sharpe_daily": 3.51,
+        "total_return_pct": 0.2413,
+        "trade_count": 23,
+        "win_rate": 0.6522
+      },
+      "mid_weak": {
+        "expected_value_score": 0.1255,
+        "max_drawdown_pct": 0.0511,
+        "sharpe_daily": 1.21,
+        "total_return_pct": 0.1037,
+        "trade_count": 29,
+        "win_rate": 0.3793
+      },
+      "old_thin": {
+        "expected_value_score": 0.0109,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 0.36,
+        "total_return_pct": 0.0304,
+        "trade_count": 26,
+        "win_rate": 0.3077
+      }
+    }
+  },
+  "change_summary": "Ran a runtime-only monkeypatch of `signal_engine.generate_signals()` that appended an experiment-only `leadership_long` candidate without changing any repo trading code. The new sleeve targeted leader continuation below the breakout trigger: above 200MA, strong trend score, strong price-vs-200MA separation, close near the prior 20-day high but not yet a fresh breakout, relative-strength excess over SPY, near the 52-week high, and a minimum volume-spike ratio. Screened both a strict and a loose deployment shape across the deterministic late / mid / old snapshots, then rejected the family and kept no code.",
+  "change_type": "new_strategy",
+  "component": "runtime-only monkeypatch of `quant/signal_engine.py` signal generation (rolled back; no repo trading logic changed)",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "loose_ab_plus_leadership_ev_deltas": {
+      "late_strong": -0.1489,
+      "mid_weak": -0.0802,
+      "old_thin": -0.0098
+    },
+    "note": "The strict form was too sparse to matter: only 1 / 0 / 3 incremental leadership trades across the three windows, with standalone EV effectively zero despite modest old-window help. The loose form created enough sample, but it behaved like diluted trend replacement flow: it materially damaged the accepted A+B stack in every window, and standalone returns flipped sharply negative in the oldest window. This family fails both the independent-alpha test and the A+B-improvement test.",
+    "strict_ab_plus_leadership_ev_deltas": {
+      "late_strong": -0.0133,
+      "mid_weak": 0.0,
+      "old_thin": 0.0083
+    }
+  },
+  "experiment_id": "exp-20260422-016",
+  "hypothesis": "If the repo needs a new non-LLM D-sleeve rather than more breakout micro-tuning, then a `relative-strength leadership` strategy should be able to harvest independent alpha from stocks that remain above the 200MA, sit close to their highs, and materially outperform SPY even before a fresh breakout bar appears. A real leadership sleeve should either improve the accepted A+B stack across the deterministic late / mid / old snapshots or at least show standalone expectancy with enough trade count to matter.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "recent strong window where accepted A+B is strongest",
+    "mid_weak": "earlier bull / high-beta leadership window where accepted A+B is thinner",
+    "old_thin": "older mixed-to-weak tape where breakout loses stability"
+  },
+  "next_retry_requires": [
+    "Do not retry the same below-breakout near-high leadership recipe with nearby thresholds by default",
+    "If relative-strength leadership is revisited, it needs a richer activation context than stock-local OHLCV shape alone, such as market-leadership regime context, explicit sector-relative leadership persistence, or a cleaner event-linked trigger",
+    "Prefer strategy families with a clearer independent entry edge over more near-high continuation templates unless new evidence shows leadership can be activated without becoming either too sparse or too dilutive"
+  ],
+  "notes": "No repository trading logic was changed for this experiment. The result is mechanism-level: this first pure OHLCV-only relative-strength leadership family bifurcates into either sample-starved strictness or sample-rich but alpha-dilutive looseness.",
+  "parameters": {
+    "accepted_stack_context": [
+      "REGIME_AWARE_EXIT",
+      "zero-risk low-TQS non-commodity breakouts",
+      "commodity low-TQS exemption",
+      "zero-risk trend Industrials",
+      "0.25x moderate-gap trend Technology"
+    ],
+    "interpreter": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+    "screened_variants": {
+      "loose": {
+        "breakout_20d_must_be_false": true,
+        "min_price_vs_200ma_pct": 0.05,
+        "min_stock_momentum_10d_pct": 0.04,
+        "min_trend_score": 0.6,
+        "min_volume_spike_ratio": 1.0,
+        "near_52w_high_threshold": -0.08,
+        "rs_excess_vs_spy_10d_pct": 0.02,
+        "within_20d_high_threshold": 0.05
+      },
+      "strict": {
+        "breakout_20d_must_be_false": true,
+        "min_price_vs_200ma_pct": 0.08,
+        "min_stock_momentum_10d_pct": 0.06,
+        "min_trend_score": 0.8,
+        "min_volume_spike_ratio": 1.5,
+        "near_52w_high_threshold": -0.05,
+        "rs_excess_vs_spy_10d_pct": 0.03,
+        "within_20d_high_threshold": 0.02
+      }
+    },
+    "strategy_name": "leadership_long",
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "rejection_reason": "Rejected on multi-window stability and mechanism quality. A strict relative-strength-leader sleeve below the breakout trigger is too sparse to become a meaningful alpha sleeve, while a looser version simply reintroduces low-quality continuation clutter and degrades the accepted A+B stack. This does not yet behave like a robust independent D strategy.",
+  "related_files": [
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "data/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv_snapshot_20241002_20250422.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-04-22T23:40:00-07:00"
+}

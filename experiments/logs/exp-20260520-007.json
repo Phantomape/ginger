@@ -1,0 +1,131 @@
+{
+  "after_metrics": {
+    "aggregate_expected_value_score": 6.4219,
+    "aggregate_total_pnl": 189700.14,
+    "late_strong": {
+      "expected_value_score": 5.0197,
+      "survival_rate": 0.8214,
+      "total_pnl": 121253.23,
+      "trade_count": 21
+    },
+    "mid_weak": {
+      "expected_value_score": 1.3502,
+      "survival_rate": 0.807,
+      "total_pnl": 59480.53,
+      "trade_count": 23
+    },
+    "old_thin": {
+      "expected_value_score": 0.052,
+      "survival_rate": 0.8333,
+      "total_pnl": 8966.38,
+      "trade_count": 26
+    }
+  },
+  "before_metrics": {
+    "aggregate_expected_value_score": 7.8941,
+    "aggregate_total_pnl": 234850.99,
+    "late_strong": {
+      "expected_value_score": 5.1628,
+      "survival_rate": 0.8039,
+      "total_pnl": 117072.92,
+      "trade_count": 18
+    },
+    "mid_weak": {
+      "expected_value_score": 2.1402,
+      "survival_rate": 0.7925,
+      "total_pnl": 78110.11,
+      "trade_count": 21
+    },
+    "old_thin": {
+      "expected_value_score": 0.5911,
+      "survival_rate": 0.8667,
+      "total_pnl": 39667.96,
+      "trade_count": 22
+    }
+  },
+  "change_summary": "Temporarily added six broad-market paper winners to quant/filter.py _BASE_WATCHLIST and ran the three canonical fixed windows using OHLCV snapshots augmented only with those six tickers from the broad-market warehouse. The watchlist change was rolled back after Gate 4 failed.",
+  "change_type": "candidate_pool",
+  "component": "quant/filter.py",
+  "date_range": {
+    "late_strong": {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    "mid_weak": {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    "old_thin": {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  },
+  "decision": "rejected_rolled_back",
+  "delta_metrics": {
+    "aggregate_expected_value_score": -1.4722,
+    "aggregate_total_pnl": -45150.85,
+    "late_strong": {
+      "expected_value_score": -0.1431,
+      "new_ticker_pnl": 10017.58,
+      "new_ticker_trade_count": 3,
+      "total_pnl": 4180.31
+    },
+    "mid_weak": {
+      "expected_value_score": -0.79,
+      "new_ticker_pnl": 815.27,
+      "new_ticker_trade_count": 4,
+      "total_pnl": -18629.58
+    },
+    "old_thin": {
+      "expected_value_score": -0.5391,
+      "new_ticker_pnl": -9403.25,
+      "new_ticker_trade_count": 3,
+      "total_pnl": -30701.58
+    }
+  },
+  "experiment_id": "exp-20260520-007",
+  "hypothesis": "Promoting CIEN, MYRG, AGX, SPHR, AAP, and CACI from broad-market paper evidence directly into the shared core watchlist may capture expanded ticker-pool alpha faster than enabling the full broad-market sleeve.",
+  "next_retry_requires": [
+    "Forward closed outcomes for the individual promoted tickers under core-like rules",
+    "A narrower one-ticker or sector-aware promotion test rather than a six-name batch",
+    "Replacement-value evidence versus existing core slots"
+  ],
+  "parameters": {
+    "added_tickers": [
+      "CIEN",
+      "MYRG",
+      "AGX",
+      "SPHR",
+      "AAP",
+      "CACI"
+    ],
+    "locked_variables": [
+      "core signal rules",
+      "core ranking",
+      "core sizing",
+      "core exits",
+      "portfolio heat",
+      "LLM/news replay settings"
+    ],
+    "ohlcv_source": "data/experiments/exp-20260519-030/warehouse_main.sqlite",
+    "variant_snapshot_manifest": "data/experiments/exp-20260520-007/core_promotion_ohlcv_snapshot_build.json"
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "replay_only": false,
+    "rolled_back": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": true
+  },
+  "rejection_reason": "Gate 4 failed: aggregate EV and PnL regressed materially, mid_weak and old_thin worsened, and direct core promotion converted broad-market discovery into lower-quality core trades. Keep the broad-market sleeve paper/default-off and prefer narrower ticker-specific or sleeve-gated activation evidence.",
+  "related_files": [
+    "data/experiments/exp-20260520-007/core_promotion_summary.json",
+    "data/experiments/exp-20260520-007/late_strong_backtest_results.json",
+    "data/experiments/exp-20260520-007/mid_weak_backtest_results.json",
+    "data/experiments/exp-20260520-007/old_thin_backtest_results.json",
+    "quant/filter.py"
+  ],
+  "status": "rejected",
+  "timestamp": "2026-05-20T06:35:00Z"
+}
