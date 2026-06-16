@@ -1,0 +1,189 @@
+{
+  "acceptance_rule": "docs/backtesting.md Gate 1-4; must improve aggregate EV/PnL with no majority EV/PnL regression, pass sample/concentration/drawdown; positive replay remains observed-only until shared default-off historical+daily helper/parity is implemented.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260615_024_form4_ceo_cfo_low_liability.py",
+    "data/experiments/exp-20260615-024/**",
+    "experiments/logs/exp-20260615-024.json",
+    "experiments/tickets/exp-20260615-024.json",
+    "experiments/cards/exp-20260615-024.md",
+    "experiments/artifacts/exp-20260615-024_form4_ceo_cfo_low_liability.md"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260615-024.md",
+  "causal_components": [
+    "PIT Form4 usable_trade_date",
+    "CEO/CFO/President role filter",
+    "non-10b5-1 open-market purchase",
+    "Companyfacts liabilities/assets<=0.35 known before event",
+    "next-open 10d event sleeve",
+    "three-window Gate 1-4"
+  ],
+  "change_type": "candidate_pool_private_replay_scout",
+  "changed_variable": "CEO/CFO/President Form4 purchases require filed-date-safe low-liability Companyfacts confirmation",
+  "claimed_at": "2026-06-15T19:10:10+00:00",
+  "completed_at": "2026-06-15T19:15:49+00:00",
+  "created_at": "2026-06-15T19:09:30+00:00",
+  "decision": "rejected_no_alpha",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260615-024",
+  "experiment_uid": "expuid-3736575bdc914b0e",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260615-024",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-15T19:09:30+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "form4_ceo_cfo_low_liability"
+  },
+  "hypothesis": "candidate_pool/entry: PIT SEC Form 4 CEO/CFO/President non-plan open-market purchases, when paired with already-known SEC Companyfacts low-liability confirmation, may isolate informed insider demand with better replacement value than broad clustered or owner-conviction Form 4 buys.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "core universe",
+    "core ranking",
+    "core sizing",
+    "core exits",
+    "LLM/news replay",
+    "event notional",
+    "event hold days",
+    "event capacity",
+    "accepted low-liability threshold"
+  ],
+  "mechanism_family": "form4_role_fundamental_confirmation_event_sleeve",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [
+    "run.py",
+    "quant/backtester.py",
+    "quant/fundamental_growth_rs_paper_sleeve.py",
+    "docs/backtesting.md",
+    "live/default orders"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260614-018",
+    "exp-20260614-019",
+    "exp-20260605-001",
+    "exp-20260604-022",
+    "exp-20260503-053"
+  ],
+  "new_evidence_type": "orthogonal role-quality plus accepted low-liability fundamental confirmation on broad Form4 archive",
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "confidence_reason": "Broad clustered Form4 and owner-conviction failed, but their reflections explicitly allowed CEO/CFO non-plan buys paired with fundamental confirmation; low-liability is an existing accepted PIT-safe field, so this tests a distinct role+fundamental bundle rather than another threshold sweep.",
+    "expected_ev_delta": 0.12,
+    "expected_pnl_delta": 2000.0,
+    "main_failure_modes": [
+      "sample_too_small",
+      "CEO_CFO_buys_still_weak_standalone",
+      "low_liability_overlaps_frozen_companyfacts",
+      "window_regression",
+      "positive_pnl_concentration"
+    ],
+    "recorded_at": "2026-06-15T19:08:56+00:00",
+    "success_probability": 0.16
+  },
+  "prior_trial_count": 7,
+  "result": {
+    "after_aggregate": "data/experiments/exp-20260615-024/form4_ceo_cfo_low_liability_after_aggregate.json",
+    "aggregate_delta_vs_core": {
+      "after_ev_sum": 7.7053,
+      "after_pnl_sum": 233489.59,
+      "after_trade_count": 76,
+      "aggregate_ev_delta": -0.1888,
+      "aggregate_ev_delta_pct": -0.023917,
+      "aggregate_pnl_delta": -1361.4,
+      "aggregate_pnl_delta_pct": -0.005797,
+      "before_ev_sum": 7.8941,
+      "before_pnl_sum": 234850.99,
+      "before_trade_count": 61,
+      "event_trade_count": 15,
+      "max_drawdown_drift": 0.0017,
+      "windows_ev_improved": 0,
+      "windows_ev_regressed": 3,
+      "windows_pnl_improved": 0,
+      "windows_pnl_regressed": 3
+    },
+    "aggregate_delta_vs_role_only": {
+      "after_ev_sum": 7.7053,
+      "after_pnl_sum": 233489.59,
+      "after_trade_count": 76,
+      "aggregate_ev_delta": -0.0135,
+      "aggregate_ev_delta_pct": -0.001749,
+      "aggregate_pnl_delta": -306.25,
+      "aggregate_pnl_delta_pct": -0.00131,
+      "before_ev_sum": 7.7188,
+      "before_pnl_sum": 233795.84,
+      "before_trade_count": 94,
+      "event_trade_count": 15,
+      "max_drawdown_drift": 0.003,
+      "windows_ev_improved": 2,
+      "windows_ev_regressed": 1,
+      "windows_pnl_improved": 2,
+      "windows_pnl_regressed": 1
+    },
+    "artifact": "data/experiments/exp-20260615-024/form4_ceo_cfo_low_liability.json",
+    "before_aggregate": "data/experiments/exp-20260615-024/form4_ceo_cfo_low_liability_before_aggregate.json",
+    "candidate_snapshot": "data/experiments/exp-20260615-024/form4_ceo_cfo_low_liability_candidates.jsonl",
+    "decision": "rejected_no_alpha",
+    "gate4": {
+      "drawdown_guard_passed": true,
+      "failed_reasons": [
+        "does_not_improve_core_cleanly",
+        "does_not_improve_role_only_comparator",
+        "not_material_vs_core"
+      ],
+      "improves_core_cleanly": false,
+      "improves_role_only_comparator": false,
+      "material_vs_core": false,
+      "max_drawdown_drift_guard": "<= 0.005",
+      "passed_replay_lead": false,
+      "positive_pnl_by_ticker": {
+        "CR": 551.9,
+        "EPAM": 230.19,
+        "GME": 891.67,
+        "HL": 418.61,
+        "MSTR": 304.8,
+        "ROIV": 617.17
+      },
+      "positive_pnl_hhi": 0.198288,
+      "positive_pnl_hhi_guard": "<= 0.35",
+      "sample_guard_passed": true,
+      "selected_event_trades": 15,
+      "single_ticker_positive_share": 0.295809,
+      "single_ticker_positive_share_guard": "<= 0.50",
+      "target_trade_count_min": 8,
+      "target_window_count_min": 2,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ]
+    },
+    "log": "experiments/logs/exp-20260615-024.json",
+    "next_action": "Do not retry nearby Form 4 role/fundamental confirmation without a new non-threshold evidence source or forward closed paper outcomes.",
+    "post_run_reflection": {
+      "forbidden_near_neighbor_retry": "Do not retune CEO/CFO/President title parsing, liabilities/assets threshold, purchase value floor, hold days, notional, capacity, or sort order on this archive.",
+      "new_evidence_required": "A valid retry needs forward closed paper outcomes or a genuinely new evidence source such as buy-size relative to executive compensation/holdings from a shared daily surface.",
+      "why_result_happened": "The role/fundamental bundle was not enough to overcome the broad Form 4 failure pattern. Either executive open-market buys remain mostly reactive, or low liabilities/assets overlaps already accepted Companyfacts quality without adding enough event timing value."
+    },
+    "report": "experiments/artifacts/exp-20260615-024_form4_ceo_cfo_low_liability.md",
+    "role_only_aggregate": "data/experiments/exp-20260615-024/form4_ceo_cfo_low_liability_role_only_aggregate.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260615-024.json",
+  "single_causal_variable": "form4_ceo_cfo_low_liability_confirmation_candidate_source_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260615-024.json",
+  "trial_family": "form4_ceo_cfo_low_liability_candidate_pool",
+  "trial_variant_id": "form4_ceo_cfo_low_liability_top1_10d_v1"
+}

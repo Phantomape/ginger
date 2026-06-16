@@ -1,0 +1,404 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "primary_total_pnl": 41896.65,
+    "primary_trade_count": 331
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "primary_total_pnl": 40397.21,
+    "primary_trade_count": 331
+  },
+  "calibration": {
+    "actual_decision": "rejected_soft_chop_down_tilt_not_promotable",
+    "actual_pnl_delta": 1499.44,
+    "actual_success": 0,
+    "brier_score": 0.0324,
+    "expected_pnl_delta": 1200.0,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "forward_rows_too_thin",
+      "mid_weak_no_chop_coverage",
+      "window_regression",
+      "replay_only_not_promotable"
+    ],
+    "predicted_success_probability": 0.18,
+    "realized_failure_mode": "forward_choppy_replacement_rows_too_thin,replay_only_no_shared_daily_regime_artifact"
+  },
+  "change_type": "risk_allocation_replay_lead",
+  "changed_variable": "fixed_choppy_range_soft_down_tilt_default_off_replay_v1",
+  "decision": "rejected_soft_chop_down_tilt_not_promotable",
+  "delta_metrics": {
+    "primary_choppy_trade_count": 44,
+    "primary_total_pnl": 1499.44
+  },
+  "experiment_id": "exp-20260615-021",
+  "forward_readiness": {
+    "choppy_rows_with_replacement_value_vs_spy": 0,
+    "forward_rows_total": 31,
+    "min_forward_choppy_rows": 20,
+    "ready_for_acceptance": false,
+    "regime_counts": {
+      "risk_on_trend": 31
+    },
+    "replacement_value_vs_spy_by_regime": {
+      "risk_on_trend": {
+        "count": 29,
+        "mean_pnl": 466.71,
+        "total_pnl": 13534.54,
+        "win_rate": 0.7586
+      }
+    },
+    "sleeve_counts": {
+      "FUNDAMENTAL_GROWTH_RS_PAPER": 2,
+      "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER": 17,
+      "SEC_GOVERNANCE_EVENT_SLEEVE_PAPER": 1,
+      "SEC_LEADERSHIP_CHANGE_EVENT_SLEEVE_PAPER": 1,
+      "SEC_NEGATIVE_REACTION_EVENT_SLEEVE_PAPER": 2,
+      "STATE_SURFACE_SATELLITE_PAPER": 3,
+      "VOLATILITY_CONTRACTION_QQQ_CONFIRMED_PAPER": 2,
+      "VOLUME_BREADTH_BREAKOUT_PAPER": 3
+    },
+    "tagged_rows": 31,
+    "warehouse_source": "data/warehouse/warehouse_main.sqlite"
+  },
+  "gate4": {
+    "decision": "rejected_soft_chop_down_tilt_not_promotable",
+    "failed_reasons": [
+      "forward_choppy_replacement_rows_too_thin",
+      "replay_only_no_shared_daily_regime_artifact"
+    ],
+    "forward_choppy_replacement_rows": 0,
+    "note": "This runner does not recompute canonical core EV because it is a read-only notional overlay on default-off paper rows. It can only create a lead; acceptance requires a shared daily regime artifact, parity test, and full Gate 1-4 replay.",
+    "passed": false,
+    "primary_aggregate_pnl_delta": 1499.44,
+    "primary_artifact": "data/experiments/exp-20260611-005/exp_20260611_005_lagged_consensus_shared_allocator_source.json",
+    "primary_choppy_trade_count": 44,
+    "primary_windows_improved": 3,
+    "primary_windows_regressed": 0
+  },
+  "hypothesis": "Risk allocation alpha: a fixed soft 0.5x notional down-tilt for default-off paper trades whose entry date is classified as choppy_range by the frozen exp-20260615-019 PIT regime model may cut directionless-chop losses while preserving risk_on and risk_off winners.",
+  "lane": "alpha_search",
+  "mechanism_family": "tail_state_classifier_for_momentum_candidate_pools",
+  "next_retry_requires": [
+    "shared_daily_pit_regime_artifact",
+    ">=20 closed forward choppy_range rows with replacement_value_vs_spy_usd",
+    "full Gate 1-4 replay through shared policy if the forward evidence matures"
+  ],
+  "parameters": {
+    "choppy_weight": 0.5,
+    "min_forward_choppy_rows": 20,
+    "min_historical_choppy_rows": 20,
+    "non_chop_weight": 1.0,
+    "regime_rule_source": "data/experiments/exp-20260615-019/exp_20260615_019_pit_regime_state_attribution.json"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not sweep choppy weights, regime constants, risk_off/bull thresholds, hard on/off gates, per-window labels, top-N, hold days, or allocator rank on the frozen windows.",
+    "new_evidence_required": "Retry only after a shared daily regime artifact has accumulated enough closed forward replacement-value rows in choppy_range, or after a materially different PIT chop discriminator is available.",
+    "why_result_happened": "The chop signal remains a plausible loss attribution axis, but the fixed soft tilt is not promotable because the accepted allocator does not deliver the required three-window replay improvement and current closed forward rows still do not provide enough choppy_range replacement-value evidence."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "risk allocation / capital allocation: fixed choppy_range soft down-tilt for default-off paper rows, aligned with the tail-state classifier queue.",
+    "2_history_check": {
+      "exp-20260613-005": "Accepted a narrow state-conditioned sleeve tilt, capped at paper-pending-forward.",
+      "exp-20260614-010": "Rejected a hard accepted-allocator market-breadth tail filter after all three windows regressed.",
+      "exp-20260615-019": "Built the PIT regime diagnostic and found choppy_range losses, but forward rows were too thin."
+    },
+    "3_single_policy_bundle": "0.5x multiplier on choppy_range rows, 1.0x on all other rows, using frozen exp019 regime constants; all implementation is read-only measurement needed to test this one bundle.",
+    "4_acceptance_standard": "Primary accepted allocator replay must improve all three fixed windows with no regression and adequate choppy sample; forward closed rows must include at least 20 choppy_range replacement-value rows before promotion can be considered.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant/experiments/exp_20260615_021_pit_regime_soft_chop_down_tilt.py"
+  },
+  "prediction": {
+    "confidence_reason": "exp019 found choppy_range losses in FGRS and deferred-revenue attribution, but forward rows had no choppy coverage and exp20260614-010 rejected a harder breadth tail filter, so this is a low-probability replay-lead test.",
+    "expected_ev_delta": 0.05,
+    "expected_pnl_delta": 1200.0,
+    "main_failure_modes": [
+      "forward_rows_too_thin",
+      "mid_weak_no_chop_coverage",
+      "window_regression",
+      "replay_only_not_promotable"
+    ],
+    "success_probability": 0.18
+  },
+  "primary_result": {
+    "after_total_pnl": 41896.65,
+    "artifact": "data/experiments/exp-20260611-005/exp_20260611_005_lagged_consensus_shared_allocator_source.json",
+    "base_total_pnl": 40397.21,
+    "by_regime_base_pnl": {
+      "choppy_range": {
+        "count": 44,
+        "mean_pnl": -68.16,
+        "total_pnl": -2998.89,
+        "win_rate": 0.4318
+      },
+      "risk_off_stress": {
+        "count": 51,
+        "mean_pnl": 110.94,
+        "total_pnl": 5657.85,
+        "win_rate": 0.6471
+      },
+      "risk_on_trend": {
+        "count": 236,
+        "mean_pnl": 159.91,
+        "total_pnl": 37738.25,
+        "win_rate": 0.5763
+      }
+    },
+    "by_window": {
+      "late_strong": {
+        "after_pnl": 10755.11,
+        "base_pnl": 9431.68,
+        "choppy_base_pnl": -2646.87,
+        "choppy_trade_count": 24,
+        "delta_pnl": 1323.43,
+        "regime_counts": {
+          "choppy_range": 24,
+          "risk_off_stress": 19,
+          "risk_on_trend": 63
+        },
+        "trade_count": 106,
+        "unknown_regime_trade_count": 0
+      },
+      "mid_weak": {
+        "after_pnl": 11157.42,
+        "base_pnl": 11133.95,
+        "choppy_base_pnl": -46.94,
+        "choppy_trade_count": 1,
+        "delta_pnl": 23.47,
+        "regime_counts": {
+          "choppy_range": 1,
+          "risk_off_stress": 10,
+          "risk_on_trend": 102
+        },
+        "trade_count": 113,
+        "unknown_regime_trade_count": 0
+      },
+      "old_thin": {
+        "after_pnl": 19984.12,
+        "base_pnl": 19831.58,
+        "choppy_base_pnl": -305.08,
+        "choppy_trade_count": 19,
+        "delta_pnl": 152.54,
+        "regime_counts": {
+          "choppy_range": 19,
+          "risk_off_stress": 22,
+          "risk_on_trend": 71
+        },
+        "trade_count": 112,
+        "unknown_regime_trade_count": 0
+      }
+    },
+    "choppy_trade_count": 44,
+    "delta_total_pnl": 1499.44,
+    "historical_replay_passed": true,
+    "name": "accepted_helper_source_priority_allocator_exp20260611005",
+    "primary_acceptance_set": true,
+    "source_counts_top10": {
+      "compression": 2,
+      "industry_laggard_repair": 193,
+      "lagged_cross_source_consensus": 42,
+      "revision_surprise_low_extension": 3,
+      "rolling_peer_shock": 37,
+      "turn_of_month": 54
+    },
+    "trade_count": 331,
+    "unknown_regime_trade_count": 0,
+    "windows_improved": 3,
+    "windows_regressed": 0
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "parity_note": "No production path changed. A retry/promotion would require a shared daily PIT regime artifact, adapter parity test, and enough closed forward replacement-value rows tagged as choppy_range.",
+    "parity_test_added": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_llm": false
+  },
+  "related_files": [
+    "quant/experiments/exp_20260615_021_pit_regime_soft_chop_down_tilt.py",
+    "data/experiments/exp-20260615-021/exp_20260615_021_pit_regime_soft_chop_down_tilt.json",
+    "experiments/logs/exp-20260615-021.json",
+    "experiments/tickets/exp-20260615-021.json",
+    "experiments/cards/exp-20260615-021.md",
+    "experiments/manifests/exp-20260615-021.json"
+  ],
+  "rule_version": "pit_regime_soft_chop_down_tilt_v1",
+  "secondary_diagnostics": {
+    "accepted_fundamental_growth_rs_low_liability_support": {
+      "after_total_pnl": 130853.66,
+      "artifact": "data/experiments/exp-20260528-017/fundamental_growth_rs_low_liability_support.json",
+      "base_total_pnl": 127144.15,
+      "by_regime_base_pnl": {
+        "choppy_range": {
+          "count": 37,
+          "mean_pnl": -200.51,
+          "total_pnl": -7419.03,
+          "win_rate": 0.2703
+        },
+        "risk_off_stress": {
+          "count": 47,
+          "mean_pnl": 408.78,
+          "total_pnl": 19212.62,
+          "win_rate": 0.6383
+        },
+        "risk_on_trend": {
+          "count": 252,
+          "mean_pnl": 457.74,
+          "total_pnl": 115350.56,
+          "win_rate": 0.6429
+        }
+      },
+      "by_window": {
+        "late_strong": {
+          "after_pnl": 26535.02,
+          "base_pnl": 25684.45,
+          "choppy_base_pnl": -1701.13,
+          "choppy_trade_count": 20,
+          "delta_pnl": 850.57,
+          "regime_counts": {
+            "choppy_range": 20,
+            "risk_off_stress": 15,
+            "risk_on_trend": 64
+          },
+          "trade_count": 99,
+          "unknown_regime_trade_count": 0
+        },
+        "mid_weak": {
+          "after_pnl": 55845.7,
+          "base_pnl": 55909.19,
+          "choppy_base_pnl": 126.97,
+          "choppy_trade_count": 1,
+          "delta_pnl": -63.49,
+          "regime_counts": {
+            "choppy_range": 1,
+            "risk_off_stress": 13,
+            "risk_on_trend": 102
+          },
+          "trade_count": 116,
+          "unknown_regime_trade_count": 0
+        },
+        "old_thin": {
+          "after_pnl": 48472.94,
+          "base_pnl": 45550.51,
+          "choppy_base_pnl": -5844.87,
+          "choppy_trade_count": 16,
+          "delta_pnl": 2922.44,
+          "regime_counts": {
+            "choppy_range": 16,
+            "risk_off_stress": 19,
+            "risk_on_trend": 86
+          },
+          "trade_count": 121,
+          "unknown_regime_trade_count": 0
+        }
+      },
+      "choppy_trade_count": 37,
+      "delta_total_pnl": 3709.52,
+      "historical_replay_passed": false,
+      "name": "accepted_fundamental_growth_rs_low_liability_support_diagnostic",
+      "primary_acceptance_set": false,
+      "source_counts_top10": {
+        "fundamental_growth_rs_candidate_pool": 336
+      },
+      "trade_count": 336,
+      "unknown_regime_trade_count": 0,
+      "windows_improved": 2,
+      "windows_regressed": 1
+    },
+    "rejected_deferred_revenue_candidate_pool": {
+      "after_total_pnl": 13393.67,
+      "artifact": "data/experiments/exp-20260615-017/exp_20260615_017_deferred_revenue_demand_acceleration.json",
+      "base_total_pnl": 12317.53,
+      "by_regime_base_pnl": {
+        "choppy_range": {
+          "count": 12,
+          "mean_pnl": -179.36,
+          "total_pnl": -2152.28,
+          "win_rate": 0.1667
+        },
+        "risk_off_stress": {
+          "count": 23,
+          "mean_pnl": 167.43,
+          "total_pnl": 3850.93,
+          "win_rate": 0.7391
+        },
+        "risk_on_trend": {
+          "count": 115,
+          "mean_pnl": 92.34,
+          "total_pnl": 10618.88,
+          "win_rate": 0.5652
+        }
+      },
+      "by_window": {
+        "late_strong": {
+          "after_pnl": 1037.3,
+          "base_pnl": 256.66,
+          "choppy_base_pnl": -1561.27,
+          "choppy_trade_count": 5,
+          "delta_pnl": 780.63,
+          "regime_counts": {
+            "choppy_range": 5,
+            "risk_off_stress": 7,
+            "risk_on_trend": 28
+          },
+          "trade_count": 40,
+          "unknown_regime_trade_count": 0
+        },
+        "mid_weak": {
+          "after_pnl": 8196.28,
+          "base_pnl": 8196.28,
+          "choppy_base_pnl": 0.0,
+          "choppy_trade_count": 0,
+          "delta_pnl": 0.0,
+          "regime_counts": {
+            "risk_off_stress": 6,
+            "risk_on_trend": 55
+          },
+          "trade_count": 61,
+          "unknown_regime_trade_count": 0
+        },
+        "old_thin": {
+          "after_pnl": 4160.09,
+          "base_pnl": 3864.59,
+          "choppy_base_pnl": -591.01,
+          "choppy_trade_count": 7,
+          "delta_pnl": 295.51,
+          "regime_counts": {
+            "choppy_range": 7,
+            "risk_off_stress": 10,
+            "risk_on_trend": 32
+          },
+          "trade_count": 49,
+          "unknown_regime_trade_count": 0
+        }
+      },
+      "choppy_trade_count": 12,
+      "delta_total_pnl": 1076.14,
+      "historical_replay_passed": false,
+      "name": "rejected_deferred_revenue_candidate_pool_diagnostic_only",
+      "primary_acceptance_set": false,
+      "source_counts_top10": {
+        "DEFERRED_REVENUE_DEMAND_ACCELERATION_PAPER": 150
+      },
+      "trade_count": 150,
+      "unknown_regime_trade_count": 0,
+      "windows_improved": 2,
+      "windows_regressed": 0
+    }
+  },
+  "status": "rejected",
+  "timestamp": "2026-06-15T18:02:59Z",
+  "trial_family": "pit_regime_soft_chop_down_tilt",
+  "trial_variant_id": "choppy_range_weight_0p50_nonchop_1p00_v1"
+}
