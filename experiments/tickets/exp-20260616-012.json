@@ -1,0 +1,189 @@
+{
+  "experiment_id": "exp-20260616-012",
+  "experiment_uid": "expuid-6e9cd0d55abb4592",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260616-012",
+    "slug": "form4_post_sale_retention_absorption",
+    "reserved_at": "2026-06-16T10:11:44+00:00",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "alpha-search",
+  "hypothesis": "candidate_pool: large PIT-safe Form 4 insider sales are less bearish when the seller retains at least 90% of inferred pre-sale ownership, because the disclosure is more likely routine liquidity or diversification than true exit pressure. Same-day liquid SPY-relative leadership then tests whether demand absorbed the visible insider supply before next-open paper entry.",
+  "change_type": "default_off_paper_candidate_pool_replay_scout",
+  "mechanism_family": "production_visible_free_sec_form4_ohlcv_candidate_pool",
+  "trial_family": "form4_post_sale_retention_absorption_candidate_pool",
+  "trial_variant_id": "form4_post_sale_retention_absorption_top1_next_open_10d_v1",
+  "single_causal_variable": "form4_post_sale_retention_absorption_candidate_source_v1",
+  "changed_variable": "form4_post_sale_retention_absorption_candidate_source_v1",
+  "causal_components": [
+    "PIT Form4 sale retention field",
+    "historical replay scout",
+    "standard three-window Gate4",
+    "production parity boundary",
+    "closeout record"
+  ],
+  "prior_trial_count": 4,
+  "nearby_prior_experiments": [
+    "exp-20260611-026",
+    "exp-20260612-023",
+    "exp-20260613-013",
+    "exp-20260615-024"
+  ],
+  "multiple_testing_risk_bucket": "high",
+  "new_evidence_type": "form4_post_sale_ownership_retention_plus_ohlcv_leadership",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260616_012_form4_post_sale_retention_absorption.py",
+    "data/experiments/exp-20260616-012/exp_20260616_012_form4_post_sale_retention_absorption.json",
+    "experiments/cards/exp-20260616-012.md",
+    "experiments/manifests/exp-20260616-012.json",
+    "experiments/tickets/exp-20260616-012.json",
+    "experiments/logs/exp-20260616-012.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "form4_post_sale_retention_absorption_candidate_source_v1"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.16,
+    "expected_ev_delta": 0.25,
+    "expected_pnl_delta": 3500.0,
+    "main_failure_modes": [
+      "thin_sample",
+      "retention_field_noisy_or_missing",
+      "routine_sales_still_overhang",
+      "window_regression",
+      "accepted_distribution_comparator_not_beaten"
+    ],
+    "confidence_reason": "The base Form 4 sale absorption scout was rejected and froze threshold/role/10b5-1 retunes, but its closeout explicitly named post-sale ownership-retention as the new PIT evidence required for a valid retry. The local Form 4 archive exposes shares and shares_owned_following_transaction, so this tests materially different supply-overhang quality evidence.",
+    "recorded_at": "2026-06-16T10:11:34+00:00"
+  },
+  "created_at": "2026-06-16T10:11:44+00:00",
+  "claimed_at": "2026-06-16T10:11:58+00:00",
+  "completed_at": "2026-06-16T10:17:12+00:00",
+  "result": {
+    "decision": "rejected_form4_post_sale_retention_absorption_candidate_pool",
+    "accepted": false,
+    "artifact": "data/experiments/exp-20260616-012/exp_20260616_012_form4_post_sale_retention_absorption.json",
+    "log": "experiments/logs/exp-20260616-012.json",
+    "card": "experiments/cards/exp-20260616-012.md",
+    "aggregate_expected_value_delta": -0.1399,
+    "aggregate_strategy_total_pnl_delta": -1651.8,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_form4_post_sale_retention_absorption_candidate_pool",
+      "failed_reasons": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "target_concentration_failed",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "aggregate_ev_delta": -0.1399,
+      "aggregate_pnl_delta": -1651.8,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 2,
+      "windows_pnl_improved": 1,
+      "windows_pnl_regressed": 2,
+      "target_trade_count": 22,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0026,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": false,
+        "max_single_positive_pnl_share": 0.56863,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.407825,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "accepted_compression_comparator": {
+        "experiment_id": "exp-20260608-013",
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "expected_value_score_delta_sum": 0.1608,
+        "total_pnl_delta_sum": 2248.98,
+        "target_trade_count": 44
+      },
+      "accepted_distribution_comparator": {
+        "experiment_id": "exp-20260611-007",
+        "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+        "expected_value_score_delta_sum": 0.5286,
+        "total_pnl_delta_sum": 10432.91,
+        "target_trade_count": 113
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.16,
+      "actual_gate4_passed": false,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "target_concentration_failed",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "brier_score": 0.0256
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "replay_only_no_live_adapter",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_sec_form4": true,
+      "uses_free_ohlcv": true,
+      "parity_note": "This experiment changes no production code. A positive result would remain only a replay lead. Promotion would require one shared default-off adapter that loads the same PIT Form 4 transaction rows, computes the same post-sale retention ratio from shares and shares_owned_following_transaction, applies the same >=90% retention gate, non-derivative sale definition, minimum sale value, signal-date OHLCV leadership envelope, same-ticker core overlap exclusion, top-1 next-open paper entry, 10-trading-day exit, costs, cooldown, comparator, and concentration guards in both historical replay and daily production before any report queue, paper ledger, candidate priority, sizing, watchlist, or order surface could change."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The Form 4 post-sale retention source did not clear Gate 4. The retention field narrowed the sale source to routine trimming, but retained ownership did not create a distinct forward edge after leadership, execution, cost, concentration, and comparator checks.",
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping retention thresholds, sale-value thresholds, owner roles, 10b5-1 flags, top-N, notional, hold days, or cooldown on these windows.",
+      "new_evidence_required": "A retry needs materially new PIT evidence beyond retained ownership, such as daily forward replacement value for sale clusters, parsed Form 144 float/sale-plan context, or a shared default-off daily Form 4 sale-retention adapter with closed forward observations. Pure threshold, role, 10b5-1, or liquidity retunes stay frozen."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260616-012.json",
+  "card_file": "experiments/cards/exp-20260616-012.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260616-012.json",
+  "decision": "rejected_form4_post_sale_retention_absorption_candidate_pool",
+  "summary": "The Form 4 post-sale retention absorption source was rejected; retained ownership did not establish a distinct free SEC Form 4/OHLCV candidate-pool edge under the standard three-window protocol.",
+  "artifact": "data/experiments/exp-20260616-012/exp_20260616_012_form4_post_sale_retention_absorption.json",
+  "log": "experiments/logs/exp-20260616-012.json",
+  "aggregate_expected_value_delta": -0.1399,
+  "aggregate_strategy_total_pnl_delta": -1651.8,
+  "updated_at": "2026-06-16T10:17:12+00:00"
+}
