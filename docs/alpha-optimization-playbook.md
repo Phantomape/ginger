@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-06-15.
+Last refreshed: 2026-06-16.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -271,6 +271,48 @@ or distribution comparators. Treat this as evidence that the cash-conversion
 family is exhausted on frozen windows unless new forward replacement rows or a
 materially different PIT evidence surface appears.
 
+The June 16 readout adds one useful Companyfacts quality source and rejects the
+obvious allocator overreach. SBC burden improvement (`exp-20260616-015`) passed
+as a shared default-off paper adapter: raw filed-date Companyfacts showed
+falling stock-based-compensation burden versus revenue, with positive revenue /
+gross-profit context and liquid SPY-relative leadership, producing aggregate EV
+`+0.9438`, PnL `+$15,748.19`, 108 trades, three improved windows, and passing
+drawdown/concentration guards. The mechanism is dilution-quality improvement,
+not another generic profitability or asset-growth filter. But forcing the same
+source into the accepted-helper source-priority allocator at rank 2
+(`exp-20260616-016`) failed: aggregate EV stayed positive but lagged the
+accepted allocator, regressed `late_strong`, and worsened drawdown too much.
+The first proposed sharper discriminator also failed: per-share SBC net of
+buybacks with share-count discipline (`exp-20260616-017`) improved aggregate
+EV/PnL but regressed `mid_weak`, failed concentration, and did not beat the
+accepted SBC or distribution comparators. Keep SBC burden as its own
+default-off forward-maturation source; do not tune rank, thresholds, per-share
+or buyback tags, notional, hold, or cooldown on frozen windows. Valid new
+evidence now needs closed forward replacement-value rows, option-exercise /
+vesting context, or grant-value normalization, not another SBC ratio variant.
+
+A later June 16 scout adds one more "directionally real but window-fragile"
+balance-sheet field and one decisive data-coverage boundary. Inventory-to-revenue
+leanness (`exp-20260616-018`) tested the Thomas-Zhang inventory anomaly as a free
+SEC Companyfacts candidate source: production names whose annual InventoryNet /
+revenue ratio is falling YoY (lean inventory vs sales = demand sell-through) with
+non-declining revenue and liquid SPY-relative confirmation. InventoryNet is a
+balance-sheet INSTANT fact the accepted fundamental index never loads, matched to
+the trailing FY revenue ending the same date. It was REJECTED: aggregate EV
+`+0.9345`, PnL `+$11,706.74`, 151 trades, and it actually beat both the accepted
+compression and distribution comparators on aggregate, but `old_thin` regressed
+on EV (`-0.119`) and PnL (`-$4,698`) while `mid_weak`/`late_strong` were strongly
+positive, and drawdown drift was `+0.99pp` (>0.5pp cap). This is the same
+"high aggregate EV with old_thin window regression and drawdown drift is a
+rejected clue, not a retained strategy" pattern seen in accruals
+(`exp-20260614-020`), asset growth, and operating leverage: the demand-side
+inventory field is real in 2025 but does not survive the 2024-10→2025-04 window
+after costs. Separately, a coverage probe confirmed the FINRA short-interest
+archive only spans 2025-12-24 onward (0 rows in `old_thin`/`mid_weak`, 423 in
+`late_strong`), so FINRA/short-interest candidate-pool sources structurally
+cannot clear a three-window Gate 4 and belong in the forward-maturation bucket,
+not the frozen-window scout bucket.
+
 ## Detail Sources
 
 Generated mechanism memory lives in `docs/lessons/*.md`; exact facts live in
@@ -306,6 +348,8 @@ evidence on accepted paper adapters:
 - distribution-day absorption leadership shared default-off adapter;
 - SEC financial-report T+1 drift with RS20-leader default-off notional support
   from `exp-20260614-004`;
+- SBC burden-improvement dilution-quality shared default-off adapter from
+  `exp-20260616-015`;
 - VBB / VCP / Space observe-only buckets where nonzero forward rows exist.
 
 Minimum forward package:
@@ -627,6 +671,25 @@ production-visible field:
   June 15 evidence says these fields can be directionally useful but fail
   accepted-window, drawdown, concentration, or comparator gates without a new
   PIT discriminator;
+- SBC burden-improvement threshold, tag-list, revenue/gross-profit floor,
+  per-share/share-count/buyback tag, fact-age, RS/close/volume/volatility,
+  top-N, notional, hold, cooldown, or allocator-rank retunes on frozen windows:
+  `exp-20260616-015` accepted the fixed source as a standalone shared
+  default-off adapter, while `exp-20260616-016` rejected rank-2 allocator
+  insertion and `exp-20260616-017` rejected per-share buyback-adjusted
+  refinement. Retry only with closed forward replacement-value rows,
+  option-exercise / vesting context, or grant-value normalization;
+- inventory-to-revenue leanness (annual InventoryNet / revenue ratio falling
+  YoY, the Thomas-Zhang inventory anomaly) candidate-pool retries that sweep the
+  inventory tag list, inventory/revenue threshold, revenue-growth floor, annual
+  fact freshness, RS/close/volume guards, top-N, hold, cooldown, or notional on
+  the frozen windows: `exp-20260616-018` was directionally positive (aggregate
+  EV `+0.9345`, PnL `+$11,706.74`, 151 trades, beat accepted compression and
+  distribution comparators) but REJECTED on `old_thin` EV/PnL regression and
+  `+0.99pp` drawdown drift. A valid retry needs a sharper PIT inventory
+  discriminator (quarterly inventory turnover, finished-goods vs raw-materials
+  decomposition, days-inventory-outstanding trajectory) or closed forward
+  replacement-value rows, not another threshold sweep of the rejected bundle;
 - accruals / cash-conversion quality (annual NetIncome vs OperatingCashFlow)
   candidate-pool retries that sweep cash-conversion ratio, accruals/assets
   threshold, fact freshness, RS/close/volume guards, top-N, hold, cooldown,

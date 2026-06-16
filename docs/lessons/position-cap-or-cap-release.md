@@ -6,11 +6,11 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `216`
-- Accepted / rejected: `39` / `174`
-- Accept rate: `18.06%`
-- Sum EV delta: `+18.0112`
-- Sum PnL delta: `$294,832.75`
+- Experiments: `243`
+- Accepted / rejected: `50` / `190`
+- Accept rate: `20.58%`
+- Sum EV delta: `+16.4984`
+- Sum PnL delta: `$310,110.69`
 - Latest: `exp-20260614-004` `accepted_default_off_sec_financial_report_rs20_leader_notional_1.15x` with EV `+0.1582` and PnL `$3,235.38`.
 
 ## Retained Or Positive Evidence
@@ -30,14 +30,14 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260520-011` `rejected_sec_neutral_earnings_moderate_reaction_notional`: EV `+0.2085`, PnL `$-2,047.17`, family `position_cap_or_cap_release`, trial `position_cap_or_cap_release`.
-  Lesson: No neutral/mixed earnings-release moderate-reaction scalar cleared the three-window, tail-aware paper-sleeve gate.
 - `exp-20260520-012` `rejected_sec_neutral_earnings_release_notional`: EV `+0.4134`, PnL `$13,509.69`, family `position_cap_or_cap_release`, trial `position_cap_or_cap_release`.
   Lesson: No neutral/mixed earnings-release scalar cleared the three-window, tail-aware paper-sleeve gate.
 - `exp-20260520-013` `rejected_sec_mixed_message_earnings_notional`: EV `+0.5498`, PnL `$5,375.21`, family `position_cap_or_cap_release`, trial `position_cap_or_cap_release`.
   Lesson: No mixed-message earnings-release scalar cleared the three-window, tail-aware paper-sleeve gate.
 - `exp-20260520-015` `rejected_sec_clean_positive_earnings_notional`: EV `+0.2180`, PnL `$3,024.43`, family `position_cap_or_cap_release`, trial `position_cap_or_cap_release`.
   Lesson: No clean-positive earnings-release scalar cleared the three-window, tail-aware paper-sleeve gate.
+- `exp-20260520-021` `rejected_rolled_back`: EV `+0.0000`, PnL `$0.00`, family `position_cap_or_cap_release`, trial `position_cap_or_cap_release`.
+  Lesson: The apparent CIEN-only alpha was a sector-taxonomy artifact. Properly classified CIEN did not improve canonical core results, so the watchlist and sector-map changes were rolled back.
 - `exp-20260524-017` `rejected_event_narrow_cap_weight_haircut`: EV `+0.1646`, PnL `$2,238.78`, family `position_cap_or_cap_release`, trial `position_cap_or_cap_release`.
   Lesson: exp-20260524-017
 - `exp-20260527-024` `rejected_broad_market_cost_liquidity_haircut`: EV `+0.0000`, PnL `$0.00`, family `position_cap_or_cap_release`, trial `position_cap_or_cap_release`.
@@ -51,6 +51,10 @@ records before making strategy changes.
 
 - `position_cap_or_cap_release` / `capital_allocation`: risk `high`, guidance `freeze_nearby_retries_until_new_forward_or_field_evidence`, recent `exp-20260430-007, exp-20260430-018, exp-20260430-019, exp-20260430-020, exp-20260506-028`.
   Latest failure: `exp-20260506-028` The effect was weakly positive but below Gate 4 thresholds and did not justify adding a new IWM-vs-SPY market-structure sizing rule.
+- `position_cap_or_cap_release` / `allocation_rule`: risk `high`, guidance `freeze_nearby_retries_until_new_forward_or_field_evidence`, recent `exp-20260424-009, exp-20260425-001, exp-20260425-002, exp-20260425-003, exp-20260425-004`.
+  Latest failure: `exp-20260422-013` Rejected on Gate 4 multi-window stability. A same-day relative-TQS haircut on breakout candidates did not improve the expected_value_score in a majority of windows; every mild version regressed all three windows, and...
+- `position_cap_or_cap_release` / `allocation_layer`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260417-003, exp-20260420-016`.
+  Latest failure: `exp-20260420-016` Rejected on Gate 4 multi-window stability. Static global slot-count changes are too regime-dependent to count as robust capital-allocation alpha for the current A+B stack.
 - `position_cap_or_cap_release` / `capital_allocation_followthrough_addon_cap`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260502-022, exp-20260505-017`.
   Latest failure: `exp-20260505-017` Financials leader first-add-on cap did not clear the three-window Gate 4 materiality and stability standard.
 - `position_cap_or_cap_release` / `core_confirmed_quality_risk_multiplier`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260513-018, exp-20260515-028`.
@@ -61,14 +65,10 @@ records before making strategy changes.
   Latest failure: `exp-20260524-017` 
 - `position_cap_or_cap_release` / `addon_min_checkpoint_close_location`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260502-012`.
   Latest failure: `exp-20260502-012` No tested close-location threshold passed multi-window Gate 4; code changes were rolled back.
-- `position_cap_or_cap_release` / `addon_require_improving_followthrough`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260515-014`.
-  Latest failure: `exp-20260515-014` The improving-followthrough add-on gate did not clear Gate 4: it rejected one mid_weak add-on and reduced EV/PnL, while the other windows were unchanged.
-- `position_cap_or_cap_release` / `alpha_search_candidate_quality_ordering`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260428-029`.
-  Latest failure: `exp-20260428-029` Existing quality/confidence scores did not improve scarce-slot allocation robustly.
 
 ## Recent Raw Records
 
-- `exp-20260520-015` source `experiments/logs/exp-20260520-015.json`.
+- `exp-20260520-021` source `experiments/logs/exp-20260520-021.json`.
 - `exp-20260524-017` source `experiments/logs/exp-20260524-017.json`.
 - `exp-20260527-024` source `experiments/logs/exp-20260527-024.json`.
 - `exp-20260527-901` source `experiments/logs/exp-20260527-901.json`.

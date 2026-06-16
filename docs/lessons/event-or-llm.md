@@ -6,9 +6,9 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `41`
-- Accepted / rejected: `13` / `23`
-- Accept rate: `31.71%`
+- Experiments: `43`
+- Accepted / rejected: `13` / `25`
+- Accept rate: `30.23%`
 - Sum EV delta: `+0.4766`
 - Sum PnL delta: `$-91,047.37`
 - Latest: `exp-20260602-003` `accepted_explicit_post_earnings_continuation_policy` with EV `+0.0000` and PnL `$0.00`.
@@ -53,6 +53,8 @@ records before making strategy changes.
   Latest failure: `exp-20260530-019` thin_diverse_sample; avg_pnl_lift_below_threshold; avg_return_lift_below_threshold; window_lift_count_below_threshold
 - `pre_entry_catalyst_freshness_attribution` / `high_confidence_pre_entry_catalyst_freshness_bucket_v1`: risk `low`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260530-018`.
   Latest failure: `exp-20260530-018` Rejected: fresh high-confidence catalyst timing did not clear avg_pnl_lift, avg_return_lift.
+- `event_or_llm` / `allocation_sizing_probe`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260425-010-healthcare-deep-breakout-probe, exp-20260425-019`.
+  Latest failure: `exp-20260425-019` Rejected/deferred on multi-window evidence. The result is promising but entirely single-window; promoting it would codify a two-trade same-day Energy loss cluster without independent validation.
 - `event_or_llm` / `post_earnings_continuation_confirmed_v1`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260602-003`.
 - `event_or_llm` / `space_dual_catalyst_source_diversity_trend_scalar`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260516-012, exp-20260516-014`.
 - `event_or_llm` / `broad_market_leadership_candidate_pool_profile`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260519-034`.
@@ -61,8 +63,6 @@ records before making strategy changes.
   Latest failure: `exp-20260505-009` Candidate-pool expansion failed the multi-window materiality/stability gate.
 - `event_or_llm` / `companyfacts_context_bucket_layered_on_frozen_sec_negative_reaction_events`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260504-014`.
   Latest failure: `exp-20260504-014` ['Do not promote or tune this Companyfacts overlay from latest-prior context.', 'Retry only if same-accession or same-day earnings XBRL snapshots become PIT-safe at the event date.', 'A valid retry must compare replac...
-- `event_or_llm` / `core_expansion_candidate_universe_membership`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260519-011`.
-  Latest failure: `exp-20260519-011` No tested history-covered governed non-core candidate-pool variant cleared the three-window replacement-value gate. True all-market expansion remains blocked by missing broad PIT OHLCV history.
 
 ## Recent Raw Records
 

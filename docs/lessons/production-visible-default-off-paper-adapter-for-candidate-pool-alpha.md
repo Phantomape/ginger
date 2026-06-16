@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `110`
-- Accepted / rejected: `12` / `91`
-- Accept rate: `10.91%`
-- Sum EV delta: `+64.1138`
-- Sum PnL delta: `$1,277,939.23`
-- Latest: `exp-20260614-009` `rejected_sec_financial_report_allocator_source_extension` with EV `+0.0000` and PnL `$0.00`.
+- Experiments: `112`
+- Accepted / rejected: `12` / `93`
+- Accept rate: `10.71%`
+- Sum EV delta: `+64.8670`
+- Sum PnL delta: `$1,301,612.57`
+- Latest: `exp-20260616-016` `rejected_sbc_burden_rank2_allocator_source_extension` with EV `+0.7532` and PnL `$23,673.34`.
 
 ## Retained Or Positive Evidence
 
@@ -30,10 +30,6 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260612-022` `rejected_allocator_envelope_as_declared`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `allocator_activation_envelope`.
-  Lesson: The declared envelope failed its gate; see failed_reasons. Do not loosen the kill switch or grow the bucket just to pass; redesign needs either fewer overlapping holds or a deliberate bucket-size decision with its own...
-- `exp-20260613-004` `rejected_source_maturity_allocator`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_allocator_source_arbitration`.
-  Lesson: Recent source-family performance was either too thin or too noisy to arbitrate same-day source conflicts better than the accepted fixed priority. The oracle gap from exp-20260613-003 is not explained by this simple tr...
 - `exp-20260613-006` `rejected_source_score_percentile_allocator`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_allocator_source_arbitration`.
   Lesson: Raw source-score percentiles were not enough to arbitrate same-day source conflicts better than the accepted fixed priority. The oracle gap from exp-20260613-003 is likely coming from information not captured by each...
 - `exp-20260613-009` `rejected_candidate_microstructure_allocator`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_allocator_source_arbitration`.
@@ -44,8 +40,12 @@ records before making strategy changes.
   Lesson: Same-ticker source confirmation either arrived too sparsely or mostly duplicated the accepted lagged-consensus signal. It did not explain the oracle source-choice gap better than the accepted fixed priority. Do not re...
 - `exp-20260613-033` `rejected_correlation_crowding_allocator`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `allocator_correlation_crowding`.
   Lesson: The correlation-crowding proxy did not improve fixed source priority robustly enough across the canonical windows. This suggests same-day source-choice errors are not primarily a simple crowded-beta issue, or the usef...
+- `exp-20260614-003` `rejected_no_forward_activation_ready`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `forward_paper_replacement_maturity`.
+  Lesson: The accepted default-off paper sleeve surface is still dominated by immature forward samples. The only sleeve with a near-usable closed count is low_deployment_etf, but its 17 positive rows were recorded while core de...
 - `exp-20260614-009` `rejected_sec_financial_report_allocator_source_extension`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
   Lesson: The standalone SEC financial-report sleeve can remain useful, but its event rows did not add robust incremental replacement value after lagged consensus and the accepted allocator stack. The likely failure mode is ove...
+- `exp-20260616-016` `rejected_sbc_burden_rank2_allocator_source_extension`: EV `+0.7532`, PnL `$23,673.34`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
+  Lesson: The SBC burden source did not add enough incremental allocator replacement value after lagged consensus. It either overlapped existing accepted source dates or displaced better lower-rank allocator rows, especially ve...
 
 ## Retry Discipline
 
@@ -67,9 +67,9 @@ records before making strategy changes.
 
 ## Recent Raw Records
 
-- `exp-20260613-006` source `experiments/logs/exp-20260613-006.json`.
-- `exp-20260613-009` source `experiments/logs/exp-20260613-009.json`.
 - `exp-20260613-012` source `experiments/logs/exp-20260613-012.json`.
 - `exp-20260613-015` source `experiments/logs/exp-20260613-015.json`.
 - `exp-20260613-033` source `experiments/logs/exp-20260613-033.json`.
+- `exp-20260614-003` source `experiments/logs/exp-20260614-003.json`.
 - `exp-20260614-009` source `experiments/logs/exp-20260614-009.json`.
+- `exp-20260616-016` source `experiments/logs/exp-20260616-016.json`.

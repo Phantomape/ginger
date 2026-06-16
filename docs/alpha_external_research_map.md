@@ -275,6 +275,39 @@ Controls:
 
 Source: <https://arxiv.org/abs/2605.19337>
 
+### Real-Market Agent Benchmarks Need Comparator Discipline
+
+Recent real-market LLM-agent benchmarks are useful mainly as measurement
+templates. StockBench evaluates multi-month daily buy/sell/hold agents with
+prices, fundamentals, and news, and reports that most models still struggle
+against buy-and-hold. Agent Market Arena adds live multi-market evaluation and
+shows agent architecture and risk style can matter more than model backbone.
+For Ginger, this reinforces deterministic policy ownership: agent outputs are
+evidence rows unless they beat a named displaced candidate after costs.
+
+Implementable fields:
+
+- `agent_benchmark_protocol_id`
+- `agent_daily_observation_set_hash`
+- `agent_action_schema_version`
+- `agent_risk_style_bucket`
+- `agent_buy_hold_delta_bucket`
+- `agent_displaced_candidate_id`
+- `agent_replacement_value_after_cost`
+- `agent_action_turnover_bucket`
+
+Controls:
+
+- evaluate against SPY/QQQ, cash, and the exact accepted helper displaced;
+- log invalid actions, abstentions, turnover, drawdown, and cost sensitivity;
+- separate model backbone, prompt/scaffold, and agent architecture effects;
+- keep agent decisions default-off until Gate 1-4 and parity evidence exist.
+
+Sources:
+
+- <https://arxiv.org/abs/2510.02209>
+- <https://arxiv.org/abs/2510.11695>
+
 ### Memory-Controlled LLM Trading Evaluation
 
 KTD-Fin, published in late May 2026, is a useful benchmark design pattern for
@@ -645,6 +678,38 @@ Controls:
 
 Source: <https://arxiv.org/abs/2606.08285>
 
+### Nonlinear Market Impact And Turnover Discipline
+
+Recent RL trading-environment work shows that replacing fixed-cost assumptions
+with Almgren-Chriss / square-root style market impact can change absolute
+performance, algorithm ranking, turnover, and out-of-sample Sharpe. Ginger's
+paper adapters currently use small default-off notionals, but any live-eligible
+activation envelope should treat liquidity, participation, and nonlinear cost
+as first-class fields rather than a post-hoc haircut.
+
+Implementable fields:
+
+- `market_impact_model_version`
+- `participation_rate_bucket`
+- `square_root_impact_cost_bps`
+- `permanent_impact_decay_bucket`
+- `turnover_constraint_bucket`
+- `cost_model_sensitivity_bucket`
+- `capacity_adjusted_replacement_value`
+- `live_activation_notional_capacity_bucket`
+
+Controls:
+
+- estimate one-way spread/slippage and nonlinear impact at the proposed live
+  notional, not only the $4k paper notional;
+- report replacement value net of costs at base, stressed, and capped
+  participation assumptions;
+- reject activation when profit comes mostly from high-turnover behavior that
+  disappears under realistic impact;
+- keep execution-envelope tests separate from new alpha searches.
+
+Source: <https://arxiv.org/abs/2603.29086>
+
 ### LLM-Guided State And Reward Interfaces
 
 GIFT uses an LLM to design state-enhancement and reward-shaping interfaces for
@@ -945,6 +1010,99 @@ Controls:
   candidate pools, ranks, or risk.
 
 Source: <https://arxiv.org/abs/2603.07316>
+
+### SEC Multi-Document Reasoning Error Taxonomy
+
+Fin-RATE benchmarks SEC filing workflows across single-disclosure reasoning,
+cross-entity comparison, and longitudinal firm tracking, and reports material
+accuracy drops when models move beyond one document. The actionable lesson is
+to classify SEC semantic failures before using them as alpha fields: retrieval
+miss, period mismatch, entity mismatch, comparison hallucination, and reasoning
+failure are different defects with different fixes.
+
+Implementable fields:
+
+- `sec_reasoning_task_type`
+- `sec_retrieval_failure_bucket`
+- `sec_entity_match_confidence`
+- `sec_period_alignment_confidence`
+- `sec_cross_entity_comparison_id`
+- `sec_longitudinal_tracking_version`
+- `sec_comparison_hallucination_flag`
+- `sec_reasoning_failure_bucket`
+
+Controls:
+
+- store accession, period, entity, and comparison peer ids for every semantic
+  field;
+- fail closed when the retrieved document set does not cover the requested
+  entity-period pair;
+- evaluate cross-entity and longitudinal labels separately from single-filing
+  labels;
+- compare any SEC semantic candidate against accepted SEC RS20 and non-text
+  comparators after costs.
+
+Source: <https://arxiv.org/abs/2602.07294>
+
+### Financial Statement Verification Calibration
+
+FinVerBench separates financial statement verification from answer generation:
+models must detect cross-statement inconsistencies under controlled numeric
+perturbations. Its calibration result is directly relevant to Companyfacts and
+SEC text work: a model can be over-sensitive to clean statements or fragile to
+rounding/rendering choices. Deterministic recomputation remains mandatory.
+
+Implementable fields:
+
+- `statement_verification_protocol_id`
+- `cross_statement_constraint_id`
+- `numeric_perturbation_magnitude_bucket`
+- `observable_field_coverage_bucket`
+- `llm_false_positive_clean_statement_rate`
+- `rounding_rendering_sensitivity_bucket`
+- `deterministic_constraint_check_passed`
+- `verification_calibration_bucket`
+
+Controls:
+
+- let deterministic parsers own arithmetic, period matching, and constraints;
+- use LLMs only to explain or classify verified inconsistencies;
+- preserve clean-instance false positive rates before turning any
+  inconsistency label into an alpha field;
+- distinguish missing/hidden fields from true inconsistencies.
+
+Source: <https://arxiv.org/abs/2605.29586>
+
+### Enforcement-Grounded Misleading Narrative Signals
+
+AuditFraudBench adds a useful SEC semantic target: misleading narratives can be
+plausible and internally consistent while obscuring true performance drivers.
+The local translation is not direct fraud trading; it is a high-risk context
+field around source-of-profit attribution, narrative distortion, and
+restatement/AAER-grounded mechanism labels.
+
+Implementable fields:
+
+- `fraud_narrative_schema_version`
+- `profit_source_attribution_bucket`
+- `management_explanation_mismatch_flag`
+- `misleading_narrative_risk_bucket`
+- `fraud_pattern_category`
+- `aaer_mechanism_source_id`
+- `restatement_pair_id`
+- `disclosure_omission_context_bucket`
+
+Controls:
+
+- use enforcement/restatement data only with correct filing-time boundaries:
+  ex-post AAER labels are training/benchmark labels, not live features;
+- separate contemporaneous disclosure-risk scoring from future enforcement
+  knowledge;
+- start as risk/explanation attribution, not entry alpha;
+- require archived evidence spans and deterministic numeric checks before any
+  paper candidate use.
+
+Source: <https://arxiv.org/abs/2606.08345>
 
 ### Structured Event Representation For Text Alpha
 
