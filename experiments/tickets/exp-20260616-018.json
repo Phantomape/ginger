@@ -9,14 +9,14 @@
     "reserved_at": "2026-06-16T16:18:15+00:00",
     "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
   },
-  "status": "claimed",
+  "status": "rejected",
   "lane": "alpha_search",
   "owner": "alpha-search-automation",
-  "hypothesis": "candidate_pool: PIT free SEC Companyfacts annual inventory-to-revenue burden falling year over year (lean inventory relative to sales = strong demand sell-through, the Thomas-Zhang inventory anomaly), with positive revenue growth and liquid SPY-relative leadership, may identify demand-confirmed candidates before a 10-trading-day continuation leg.",
+  "hypothesis": "candidate_pool: raw SEC Companyfacts annual inventory-to-revenue ratio falling year over year (lean inventory relative to sales = strong demand sell-through, the Thomas-Zhang inventory anomaly), with non-declining revenue and liquid SPY-relative leadership, may identify demand-confirmed candidates before a 10-trading-day continuation leg.",
   "change_type": "default_off_paper_candidate_pool_replay_scout",
   "mechanism_family": "production_visible_free_sec_companyfacts_inventory_quality_candidate_pool",
   "trial_family": "inventory_to_revenue_leanness_candidate_pool",
-  "trial_variant_id": "exp-20260616-018",
+  "trial_variant_id": "inventory_to_revenue_leanness_top1_next_open_10d_v1",
   "single_causal_variable": "inventory_to_revenue_leanness_demand_sellthrough_candidate_source_v1",
   "changed_variable": "inventory_to_revenue_leanness_demand_sellthrough_candidate_source_v1",
   "causal_components": [
@@ -36,7 +36,7 @@
     "exp-20260615-016"
   ],
   "multiple_testing_risk_bucket": "moderate",
-  "new_evidence_type": "not_declared",
+  "new_evidence_type": "raw_sec_companyfacts_inventory_to_revenue_leanness_pit_field",
   "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
   "allowed_write_scope": [
     "quant/experiments/exp_20260616_018_inventory_to_revenue_leanness.py",
@@ -56,8 +56,8 @@
   "acceptance_rule": "Use AGENTS.md Gate 4.",
   "prediction": {
     "success_probability": 0.15,
-    "expected_ev_delta": null,
-    "expected_pnl_delta": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
     "main_failure_modes": [
       "field_coverage_too_thin",
       "window_ev_regression",
@@ -65,14 +65,134 @@
       "drawdown_drift",
       "sector_concentration"
     ],
-    "confidence_reason": "Inventory contraction relative to sales is a distinct demand-side balance-sheet quality field (Thomas-Zhang inventory anomaly) not loaded by the accepted fundamental_growth_rs CompanyfactsFundamentalIndex and distinct from working-capital stability (exp-20260528-019, a stability support scalar), broad asset growth (exp-20260615-002), and asset-turnover efficiency (exp-20260613-031). Risk is high because raw Companyfacts quality fields have been saturated and often relabel momentum, failing accepted compression/distribution comparators or drawdown/window guards.",
+    "confidence_reason": "Inventory contraction relative to sales (Thomas-Zhang inventory anomaly) is a distinct demand-side balance-sheet quality field not loaded by the accepted fundamental_growth_rs CompanyfactsFundamentalIndex and distinct from working-capital stability, broad asset growth, and asset-turnover efficiency. Risk is high because raw Companyfacts quality fields have been saturated, the inventory universe is concentrated in hardware/industrial names, and price confirmation often relabels momentum, so the accepted compression/distribution comparators or drawdown/window guards may not be beaten.",
     "recorded_at": "2026-06-16T16:18:03+00:00"
   },
   "created_at": "2026-06-16T16:18:15+00:00",
   "claimed_at": "2026-06-16T16:18:25+00:00",
-  "completed_at": null,
-  "result": null,
+  "completed_at": "2026-06-16T16:27:00+00:00",
+  "result": {
+    "decision": "rejected_inventory_to_revenue_leanness_candidate_pool",
+    "accepted": false,
+    "numeric_gate4_passed": false,
+    "artifact": "data/experiments/exp-20260616-018/exp_20260616_018_inventory_to_revenue_leanness.json",
+    "log": "experiments/logs/exp-20260616-018.json",
+    "aggregate_expected_value_delta": 0.9345,
+    "aggregate_strategy_total_pnl_delta": 11706.74,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_inventory_to_revenue_leanness_candidate_pool",
+      "failed_reasons": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "drawdown_drift_too_high"
+      ],
+      "aggregate_ev_delta": 0.9345,
+      "aggregate_pnl_delta": 11706.74,
+      "windows_ev_improved": 2,
+      "windows_ev_regressed": 1,
+      "windows_pnl_improved": 2,
+      "windows_pnl_regressed": 1,
+      "target_trade_count": 151,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0099,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.305241,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.215413,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "accepted_compression_comparator": {
+        "experiment_id": "exp-20260608-013",
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "aggregate_expected_value_delta": 0.1608,
+        "aggregate_pnl_delta": 2248.98
+      },
+      "accepted_distribution_comparator": {
+        "experiment_id": "exp-20260611-007",
+        "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+        "aggregate_expected_value_delta": 0.5286,
+        "aggregate_pnl_delta": 10432.91
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.15,
+      "actual_gate4_passed": false,
+      "actual_success": 0,
+      "failure_modes_observed": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "drawdown_drift_too_high"
+      ],
+      "brier_score": 0.0225,
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": 0.9345,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": 11706.74
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "private_replay_scout_no_shared_adapter",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "default_off_paper_only": true,
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_sec_companyfacts": true,
+      "uses_free_ohlcv": true,
+      "live_realism_evaluated": true,
+      "live_ready": false,
+      "execution_envelope": {
+        "trade_enabled": false,
+        "target_notional_per_paper_trade": 4000.0,
+        "daily_entry_slots": 1,
+        "same_ticker_cooldown_days": 10,
+        "hold_days": 10,
+        "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+        "order_semantics": "observe-only next-session-open paper entry; no broker order",
+        "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+        "kill_switch": "trade_enabled remains false; no production adapter changes",
+        "failure_handling": "missing raw SEC annual InventoryNet instant fact, missing matching FY revenue, missing prior comparison period, stale facts, missing CIK mapping, missing OHLCV, missing next open, or missing 10d exit rejects the paper candidate"
+      },
+      "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper computes the same raw SEC InventoryNet instant mapping, filed-date PIT inventory/revenue leanness gate, liquid SPY-relative confirmation, cooldown, next-open paper entry, 10-day exit, costs, and concentration controls in both historical replay and daily production.",
+      "uses_raw_companyfacts_cache": true
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The inventory-to-revenue leanness source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, drawdown_drift_too_high). Do not promote or tune this fixed inventory-quality bundle on the same frozen windows.",
+      "outcome_summary": "Aggregate EV delta +0.9345; aggregate PnL delta $+11,706.74; max drawdown drift +0.0099; 151 paper trades.",
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping the inventory tag list, inventory/revenue threshold, revenue-growth floor, annual fact freshness, RS/close/volume/vol guards, top-N, hold days, cooldown, or notional on these frozen windows.",
+      "new_evidence_required": "A retry needs materially different PIT inventory-quality evidence such as quarterly inventory turnover where reported, finished-goods vs raw-materials decomposition, days-inventory-outstanding trajectory, or closed forward replacement-value rows. Do not sweep the inventory tag list, inventory/revenue threshold, revenue-growth floor, annual fact freshness, price guards, top-N, hold, cooldown, or notional on these frozen windows."
+    }
+  },
   "ticket_file": "experiments/tickets/exp-20260616-018.json",
   "card_file": "experiments/cards/exp-20260616-018.md",
-  "revision_manifest_file": "experiments/manifests/exp-20260616-018.json"
+  "revision_manifest_file": "experiments/manifests/exp-20260616-018.json",
+  "decision": "rejected_inventory_to_revenue_leanness_candidate_pool",
+  "summary": "The inventory-to-revenue leanness source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, drawdown_drift_too_high). Do not promote or tune this fixed inventory-quality bundle on the same frozen windows.",
+  "artifact": "data/experiments/exp-20260616-018/exp_20260616_018_inventory_to_revenue_leanness.json",
+  "log": "experiments/logs/exp-20260616-018.json",
+  "aggregate_expected_value_delta": 0.9345,
+  "aggregate_strategy_total_pnl_delta": 11706.74,
+  "updated_at": "2026-06-16T16:27:00+00:00"
 }
