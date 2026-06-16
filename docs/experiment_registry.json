@@ -43944,8 +43944,234 @@
       "trial_family": "accepted_default_off_helper_source_priority_allocation",
       "trial_variant_id": "sbc_burden_improvement_rank2_shared_allocator_source_v1",
       "updated_at": "2026-06-16T15:32:05+00:00"
+    },
+    {
+      "experiment_id": "exp-20260616-017",
+      "experiment_uid": "expuid-f94a8f4cb3534f75",
+      "hub_identity": {
+        "scheme": "hf_hub_local_v1",
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260616-017",
+        "slug": "sbc_per_share_buyback_adjusted",
+        "reserved_at": "2026-06-16T16:04:48+00:00",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+      },
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search-automation",
+      "hypothesis": "candidate_pool: accepted SBC/revenue improvement may be stronger when the raw annual SBC cost per diluted share is also falling after buyback offset and share count is disciplined. This should separate real shareholder dilution-cost improvement from revenue-growth optics.",
+      "change_type": "default_off_paper_candidate_pool_replay_scout",
+      "mechanism_family": "production_visible_free_sec_companyfacts_dilution_quality_candidate_pool",
+      "trial_family": "sbc_per_share_buyback_adjusted_candidate_pool",
+      "trial_variant_id": "sbc_per_share_buyback_adjusted_top1_next_open_10d_v1",
+      "single_causal_variable": "sbc_per_share_buyback_adjusted_dilution_quality_candidate_source_v1",
+      "changed_variable": "sbc_per_share_buyback_adjusted_dilution_quality_candidate_source_v1",
+      "causal_components": [
+        "raw SEC Companyfacts per-share SBC field",
+        "buyback/share-count discipline",
+        "fixed liquid OHLCV confirmation",
+        "historical replay",
+        "default-off paper verdict"
+      ],
+      "prior_trial_count": 0,
+      "nearby_prior_experiments": [
+        "exp-20260616-014",
+        "exp-20260616-015",
+        "exp-20260616-016",
+        "exp-20260614-029",
+        "exp-20260616-009"
+      ],
+      "multiple_testing_risk_bucket": "moderate",
+      "new_evidence_type": "raw_sec_companyfacts_sbc_per_share_buyback_adjusted_pit_field",
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260616_017_sbc_per_share_buyback_adjusted.py",
+        "data/experiments/exp-20260616-017/exp_20260616_017_sbc_per_share_buyback_adjusted.json",
+        "experiments/cards/exp-20260616-017.md",
+        "experiments/manifests/exp-20260616-017.json",
+        "experiments/tickets/exp-20260616-017.json",
+        "experiments/logs/exp-20260616-017.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "must_not_touch": [],
+      "locked_variables": [
+        "sbc_per_share_buyback_adjusted_dilution_quality_candidate_source_v1"
+      ],
+      "evaluation_windows": [],
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "prediction": {
+        "success_probability": 0.22,
+        "expected_ev_delta": null,
+        "expected_pnl_delta": null,
+        "main_failure_modes": [
+          "field_alignment_noise",
+          "window_regression",
+          "accepted_sbc_comparator_not_beaten",
+          "drawdown_drift",
+          "concentration_failed"
+        ],
+        "confidence_reason": "The accepted SBC burden helper was the strongest fresh Companyfacts result, and its closeout named per-share SBC burden net of buybacks as the next materially different evidence. Risk is high because Companyfacts quality fields often relabel momentum and may not beat accepted SBC/compression/distribution comparators.",
+        "recorded_at": "2026-06-16T16:04:38+00:00"
+      },
+      "created_at": "2026-06-16T16:04:48+00:00",
+      "claimed_at": "2026-06-16T16:04:57+00:00",
+      "completed_at": "2026-06-16T16:16:10+00:00",
+      "result": {
+        "decision": "rejected_sbc_per_share_buyback_adjusted_candidate_pool",
+        "accepted": false,
+        "numeric_gate4_passed": false,
+        "artifact": "data/experiments/exp-20260616-017/exp_20260616_017_sbc_per_share_buyback_adjusted.json",
+        "log": "experiments/logs/exp-20260616-017.json",
+        "aggregate_expected_value_delta": 0.1765,
+        "aggregate_strategy_total_pnl_delta": 4142.17,
+        "gate4": {
+          "passed": false,
+          "decision": "rejected_sbc_per_share_buyback_adjusted_candidate_pool",
+          "failed_reasons": [
+            "window_ev_regression",
+            "window_pnl_regression",
+            "target_concentration_failed",
+            "accepted_distribution_ev_not_beaten",
+            "accepted_distribution_pnl_not_beaten",
+            "accepted_sbc_ev_not_beaten",
+            "accepted_sbc_pnl_not_beaten"
+          ],
+          "aggregate_ev_delta": 0.1765,
+          "aggregate_pnl_delta": 4142.17,
+          "windows_ev_improved": 2,
+          "windows_ev_regressed": 1,
+          "windows_pnl_improved": 2,
+          "windows_pnl_regressed": 1,
+          "target_trade_count": 29,
+          "target_trade_count_min": 20,
+          "target_windows": [
+            "late_strong",
+            "mid_weak",
+            "old_thin"
+          ],
+          "target_window_count_min": 3,
+          "max_drawdown_worse": 0.0045,
+          "max_drawdown_worse_guardrail": 0.005,
+          "minimum_core_survival_rate": 0.7925,
+          "survival_guard_passed": true,
+          "target_concentration": {
+            "passed": false,
+            "max_single_positive_pnl_share": 0.574439,
+            "max_single_positive_pnl_share_guardrail": 0.5,
+            "positive_pnl_hhi": 0.511082,
+            "positive_pnl_hhi_guardrail": 0.35
+          },
+          "accepted_compression_comparator": {
+            "experiment_id": "exp-20260608-013",
+            "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+            "aggregate_expected_value_delta": 0.1608,
+            "aggregate_pnl_delta": 2248.98
+          },
+          "accepted_distribution_comparator": {
+            "experiment_id": "exp-20260611-007",
+            "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+            "aggregate_expected_value_delta": 0.5286,
+            "aggregate_pnl_delta": 10432.91
+          },
+          "accepted_sbc_comparator": {
+            "experiment_id": "exp-20260616-015",
+            "decision": "accepted_paper_pending_forward_sbc_burden_improvement_shared_adapter",
+            "aggregate_expected_value_delta": 0.9438,
+            "aggregate_pnl_delta": 15748.19,
+            "target_trade_count": 108,
+            "window_deltas": {
+              "late_strong": {
+                "ev": 0.4738,
+                "pnl": 6269.93
+              },
+              "mid_weak": {
+                "ev": 0.4375,
+                "pnl": 8388.43
+              },
+              "old_thin": {
+                "ev": 0.0325,
+                "pnl": 1089.83
+              }
+            }
+          }
+        },
+        "calibration": {
+          "predicted_success_probability": 0.22,
+          "actual_gate4_passed": false,
+          "actual_success": 0,
+          "failure_modes_observed": [
+            "window_ev_regression",
+            "window_pnl_regression",
+            "target_concentration_failed",
+            "accepted_distribution_ev_not_beaten",
+            "accepted_distribution_pnl_not_beaten",
+            "accepted_sbc_ev_not_beaten",
+            "accepted_sbc_pnl_not_beaten"
+          ],
+          "brier_score": 0.0484,
+          "expected_ev_delta": null,
+          "actual_ev_delta": 0.1765,
+          "expected_pnl_delta": null,
+          "actual_pnl_delta": 4142.17
+        },
+        "production_impact": {
+          "trade_enabled": false,
+          "alters_orders": false,
+          "adapter_status": "private_replay_scout_no_shared_adapter",
+          "shared_policy_changed": false,
+          "backtester_adapter_changed": false,
+          "run_adapter_changed": false,
+          "replay_only": true,
+          "default_off_paper_only": true,
+          "daily_snapshot_exposed": false,
+          "parity_test_added": false,
+          "production_signal_path_changed": false,
+          "production_orders_changed": false,
+          "production_watchlist_changed": false,
+          "alters_signal_generation": false,
+          "alters_candidate_ranking": false,
+          "alters_sizing": false,
+          "alters_exits": false,
+          "uses_llm": false,
+          "uses_free_sec_companyfacts": true,
+          "uses_free_ohlcv": true,
+          "live_realism_evaluated": true,
+          "live_ready": false,
+          "execution_envelope": {
+            "trade_enabled": false,
+            "target_notional_per_paper_trade": 4000.0,
+            "daily_entry_slots": 1,
+            "same_ticker_cooldown_days": 10,
+            "hold_days": 10,
+            "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+            "order_semantics": "observe-only next-session-open paper entry; no broker order",
+            "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+            "kill_switch": "trade_enabled remains false; no production adapter changes",
+            "failure_handling": "missing raw SEC annual SBC, revenue, gross-profit, diluted-share, or buyback facts, missing prior comparison period, stale facts, missing CIK mapping, missing OHLCV, missing next open, or missing 10d exit rejects the paper candidate"
+          },
+          "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper computes the same raw SEC tag mapping, filed-date PIT SBC/revenue gate, net SBC per-share buyback adjustment, share-count discipline, liquid SPY-relative confirmation, cooldown, next-open paper entry, 10-day exit, costs, and concentration controls in both historical replay and daily production.",
+          "uses_raw_companyfacts_cache": true
+        },
+        "post_run_reflection": {
+          "why_result_happened": "The SBC per-share buyback-adjusted source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, target_concentration_failed, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten, accepted_sbc_ev_not_beaten, accepted_sbc_pnl_not_beaten). Do not promote or tune this fixed dilution-quality bundle on the same frozen windows.",
+          "outcome_summary": "Aggregate EV delta +0.1765; aggregate PnL delta $+4,142.17; max drawdown drift +0.0045; 29 paper trades.",
+          "forbidden_near_neighbor_retry": "Do not retry by sweeping SBC/share/buyback tag lists, per-share or share-count thresholds, annual fact freshness, RS/close/volume/vol guards, top-N, hold days, cooldown, notional, or allocator rank on these frozen windows.",
+          "new_evidence_required": "A retry needs materially different PIT dilution-quality evidence such as grant-value normalization, option-exercise vesting context, or closed forward replacement-value rows. Do not sweep SBC tags, share tags, buyback tags, per-share thresholds, annual fact freshness, price guards, top-N, hold, cooldown, notional, or allocator rank on these frozen windows."
+        }
+      },
+      "ticket_file": "experiments/tickets/exp-20260616-017.json",
+      "card_file": "experiments/cards/exp-20260616-017.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260616-017.json",
+      "decision": "rejected_sbc_per_share_buyback_adjusted_candidate_pool",
+      "summary": "The SBC per-share buyback-adjusted source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, target_concentration_failed, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten, accepted_sbc_ev_not_beaten, accepted_sbc_pnl_not_beaten). Do not promote or tune this fixed dilution-quality bundle on the same frozen windows.",
+      "artifact": "data/experiments/exp-20260616-017/exp_20260616_017_sbc_per_share_buyback_adjusted.json",
+      "log": "experiments/logs/exp-20260616-017.json",
+      "aggregate_expected_value_delta": 0.1765,
+      "aggregate_strategy_total_pnl_delta": 4142.17,
+      "updated_at": "2026-06-16T16:16:10+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-16T15:32:05+00:00"
+  "updated_at": "2026-06-16T16:16:10+00:00"
 }
