@@ -905,6 +905,20 @@ production-visible field:
   and beat that comparator in all canonical windows;
 - Space price-action, ETF relative, defense-budget, low-thrust absorption, or
   theme-segment retunes on frozen windows;
+- SEC filing-timeliness early-disclosure (latest annual 10-K filed abnormally
+  early vs the company's own trailing filed-lag norm) candidate-pool retries on
+  the CORE universe, or sweeping earliness-days / current-lag cap /
+  prior-filing-count / event-age / liquidity floors there: `exp-20260617-019`
+  scouted this as an event-driven, liquidity-only (no momentum gate) source but
+  the scout harness is core-universe-scoped (~47 names, 36 with history), so it
+  produced only 18 paper trades and was REJECTED (aggregate EV `-0.0297`, PnL
+  `-$1,263`, old_thin regressed, sample < 20). The signal is NOT refuted at
+  breadth: ~1,713 abnormally-early-filing events exist across the ~1,137 liquid
+  names with >=3 prior 10-Ks (~202 old_thin, ~29 mid_weak, ~248 late_strong).
+  The only sanctioned next step is the SAME fixed gate over the BROAD liquid
+  universe (candidate_universe=broad_market, as the accepted SBC/compression/
+  distribution sleeves use), then the canonical three windows and accepted
+  comparators; do not re-run or threshold-sweep on the core universe;
 - missing archive/text availability as an alpha field.
 
 ## Update Discipline

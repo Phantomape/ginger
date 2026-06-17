@@ -8,8 +8,8 @@ facts before changing strategy behavior.
 ## Source Snapshot
 
 - Strategy records counted: `1366`
-- Raw records loaded by meta report: `1970`
-- History fingerprint: `a5a9769b1c4b78df`
+- Raw records loaded by meta report: `1931`
+- History fingerprint: `8f8051e726bfb2c2`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
