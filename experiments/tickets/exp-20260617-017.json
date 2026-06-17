@@ -1,0 +1,188 @@
+{
+  "experiment_id": "exp-20260617-017",
+  "created_at": "2026-06-17T15:12:19+00:00",
+  "owner": "alpha-search-automation",
+  "hypothesis": "candidate_pool alpha: when a PIT industry cohort is in a short-term pullback but still has positive 20-day trend, a liquid stock with same-day resilient return, high close location, and strong relative 5/20-day behavior versus that group may capture idiosyncratic demand before a 10-trading-day continuation leg.",
+  "change_type": "default_off_paper_candidate_pool_replay_scout",
+  "mechanism_family": "production_visible_free_ohlcv_relation_candidate_pool",
+  "trial_family": "industry_downshock_resilience_leader_candidate_pool",
+  "trial_variant_id": "industry_downshock_resilience_leader_top1_next_open_10d_v1",
+  "single_causal_variable": "industry_downshock_resilience_leader_candidate_source_v1",
+  "changed_variable": "industry_downshock_resilience_leader_candidate_source_v1",
+  "prior_trial_count": 4,
+  "nearby_prior_experiments": [
+    "exp-20260608-008",
+    "exp-20260607-008",
+    "exp-20260616-011",
+    "exp-20260611-007"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "free_ohlcv_intra_industry_downshock_resilience_relation_field",
+  "decision": "rejected_industry_downshock_resilience_leader_candidate_pool",
+  "summary": "Industry down-shock resilience did not clear Gate 4 after next-open execution and accepted relation comparators. The likely cause is that local group weakness still created falling-knife risk, while the individual resilience gates mostly relabeled generic relative strength instead of a distinct displacement edge.",
+  "artifact": "data/experiments/exp-20260617-017/exp_20260617_017_industry_downshock_resilience_leader.json",
+  "log": "experiments/logs/exp-20260617-017.json",
+  "ticket_file": "experiments/tickets/exp-20260617-017.json",
+  "card_file": "experiments/cards/exp-20260617-017.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260617-017.json",
+  "aggregate_expected_value_delta": -0.1043,
+  "aggregate_strategy_total_pnl_delta": -1982.7,
+  "lane": "alpha_search",
+  "status": "rejected",
+  "prediction": {
+    "success_probability": 0.16,
+    "expected_ev_delta": 0.18,
+    "expected_pnl_delta": 2800.0,
+    "main_failure_modes": [
+      "industry_pullback_is_falling_knife",
+      "generic_relative_strength_relabel",
+      "old_thin_regression",
+      "drawdown_drift",
+      "accepted_relation_comparator_not_beaten"
+    ],
+    "confidence_reason": "Accepted relation alphas worked when the relation itself provided displacement value, especially industry-stable core flow and industry-relative laggard repair. Recent breadth-expansion and raw Companyfacts burden fields failed. This tests a distinct free OHLCV relation: individual resilience inside an industry pullback, with no new ticker noise and no production behavior change.",
+    "recorded_at": "2026-06-17T15:12:00+00:00"
+  },
+  "result": {
+    "decision": "rejected_industry_downshock_resilience_leader_candidate_pool",
+    "accepted": false,
+    "numeric_gate4_passed": false,
+    "artifact": "data/experiments/exp-20260617-017/exp_20260617_017_industry_downshock_resilience_leader.json",
+    "log": "experiments/logs/exp-20260617-017.json",
+    "card": "experiments/cards/exp-20260617-017.md",
+    "aggregate_expected_value_delta": -0.1043,
+    "aggregate_strategy_total_pnl_delta": -1982.7,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_industry_downshock_resilience_leader_candidate_pool",
+      "failed_reasons": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "drawdown_drift_too_high",
+        "accepted_industry_stable_core_flow_not_beaten",
+        "accepted_industry_relative_laggard_repair_not_beaten",
+        "accepted_distribution_day_absorption_not_beaten"
+      ],
+      "accepted_comparator_checks": {
+        "accepted_industry_stable_core_flow": {
+          "note": "accepted shared industry-stable core-flow adapter",
+          "required_ev_delta": 0.1459,
+          "required_pnl_delta": 3731.54,
+          "observed_ev_delta": -0.1043,
+          "observed_pnl_delta": -1982.7,
+          "passed": false
+        },
+        "accepted_industry_relative_laggard_repair": {
+          "note": "accepted shared industry-relative laggard-repair adapter",
+          "required_ev_delta": 0.2763,
+          "required_pnl_delta": 6208.99,
+          "observed_ev_delta": -0.1043,
+          "observed_pnl_delta": -1982.7,
+          "passed": false
+        },
+        "accepted_distribution_day_absorption": {
+          "note": "accepted shared distribution-day absorption adapter",
+          "required_ev_delta": 0.5286,
+          "required_pnl_delta": 10432.91,
+          "observed_ev_delta": -0.1043,
+          "observed_pnl_delta": -1982.7,
+          "passed": false
+        }
+      },
+      "aggregate_ev_delta": -0.1043,
+      "aggregate_pnl_delta": -1982.7,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 2,
+      "windows_pnl_improved": 1,
+      "windows_pnl_regressed": 2,
+      "target_trade_count": 202,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0229,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.06369,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.024422,
+        "positive_pnl_hhi_guardrail": 0.35
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.16,
+      "actual_gate4_passed": false,
+      "actual_success": 0,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "drawdown_drift_too_high",
+        "accepted_industry_stable_core_flow_not_beaten",
+        "accepted_industry_relative_laggard_repair_not_beaten",
+        "accepted_distribution_day_absorption_not_beaten"
+      ],
+      "brier_score": 0.0256,
+      "expected_ev_delta": 0.18,
+      "actual_ev_delta": -0.1043,
+      "expected_pnl_delta": 2800.0,
+      "actual_pnl_delta": -1982.7,
+      "realized_failure_mode": "industry_downshock_resilience_not_incremental"
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "private_replay_scout_no_shared_adapter",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "default_off_paper_only": true,
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_ohlcv_only": true,
+      "live_realism_evaluated": true,
+      "live_ready": false,
+      "execution_envelope": {
+        "trade_enabled": false,
+        "target_notional_per_paper_trade": 4000.0,
+        "daily_entry_slots": 1,
+        "same_ticker_cooldown_days": 10,
+        "hold_days": 10,
+        "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+        "order_semantics": "observe-only next-session-open paper entry; no broker order",
+        "portfolio_displacement": "none unless a later shared helper passes",
+        "kill_switch": "trade_enabled remains false; no production adapter changes",
+        "failure_handling": "missing OHLCV, sector map, next open, or 10d exit rejects the paper candidate"
+      },
+      "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper computes the same industry pullback context, same-day resilience gates, cooldown, next-open paper entry, 10-trading-day exit, costs, and concentration controls in both historical replay and daily production observation."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "Industry down-shock resilience did not clear Gate 4 after next-open execution and accepted relation comparators. The likely cause is that local group weakness still created falling-knife risk, while the individual resilience gates mostly relabeled generic relative strength instead of a distinct displacement edge.",
+      "outcome_summary": "Aggregate EV delta -0.1043; aggregate PnL delta $-1,982.70; max drawdown drift +0.0229; 202 paper trades.",
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping industry pullback thresholds, group ret5/ret20 cutoffs, leader relative-strength thresholds, close-location, volume, volatility, top-N, hold days, cooldown, or notional on these frozen windows.",
+      "new_evidence_required": "A valid retry needs materially new PIT flow/ownership/borrow/options evidence, closed forward replacement-value rows, or a shared daily relation helper showing industry down-shock resilience beats accepted relation comparators after costs."
+    }
+  },
+  "updated_at": "2026-06-17T15:12:19+00:00",
+  "completed_at": "2026-06-17T15:12:19+00:00"
+}
