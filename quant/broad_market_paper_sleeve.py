@@ -1577,6 +1577,162 @@ def _money(value: Any) -> float:
     return round(parsed or 0.0, 2)
 
 
+def prep_and_build_broad_market_paper_sleeve_snapshot(
+    *,
+    as_of: str,
+    ohlcv_dict: dict[str, Any],
+    spy_ohlcv: Any = None,
+    cached_ohlcv_fn: Any = None,
+    universe_governance_state: dict[str, Any] | None = None,
+    universe_state_artifact_path: str | None = None,
+    core_universe: list[str] | set[str] | None = None,
+    pilot_universe: list[str] | set[str] | None = None,
+    open_prices: dict[str, Any] | None = None,
+    current_prices: dict[str, Any] | None = None,
+    logger: Any = None,
+    refresh_disabled: bool = False,
+    feed_disabled: bool = False,
+) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+    """Warehouse refresh + universe feed + OHLCV load + build snapshot.
+
+    Returns ``(snapshot, candidate_universe, ohlcv)`` so the caller can
+    share *candidate_universe* and *ohlcv* with downstream sleeves that
+    depend on broad-market context.
+    """
+    import logging
+
+    log = logger or logging.getLogger(__name__)
+
+    if not refresh_disabled:
+        try:
+            from ohlcv_warehouse_refresh import refresh_warehouse_ohlcv
+
+            summary = refresh_warehouse_ohlcv(as_of=as_of, logger=log)
+            log.info(
+                "Broad-universe warehouse refresh: status=%s universe=%d stale=%d "
+                "fetched=%d inserted=%d (%.1fs)",
+                summary.get("status"),
+                summary.get("universe_size", 0),
+                summary.get("stale_count", 0),
+                summary.get("fetched_ticker_count", 0),
+                summary.get("inserted", 0),
+                summary.get("duration_seconds", 0.0),
+            )
+        except Exception as exc:
+            log.warning("Broad-universe warehouse refresh failed: %s", exc)
+
+    if not feed_disabled:
+        try:
+            from broad_market_universe_feed import generate_broad_market_paper_universe
+
+            summary = generate_broad_market_paper_universe(as_of=as_of)
+            log.info(
+                "Broad-market paper universe feed generated: tickers=%d excluded=%s",
+                len(summary.get("tickers") or []),
+                summary.get("excluded_counts"),
+            )
+        except Exception as exc:
+            log.warning(
+                "Broad-market paper universe feed generation failed: %s", exc
+            )
+
+    candidate_universe = load_broad_market_candidate_universe()
+    if (
+        candidate_universe.get("status") == "missing"
+        and universe_governance_state is not None
+    ):
+        source_state = dict(universe_governance_state)
+        if universe_state_artifact_path:
+            source_state.setdefault("artifact_path", universe_state_artifact_path)
+        candidate_universe = build_broad_market_candidate_universe_from_universe_state(
+            source_state,
+        )
+    if candidate_universe.get("status") != "missing":
+        log.info(
+            "Broad-market paper universe feed: status=%s tickers=%d",
+            candidate_universe.get("status"),
+            len(candidate_universe.get("tickers") or []),
+        )
+
+    ohlcv: dict[str, Any] = {}
+    tickers = set(candidate_universe.get("tickers") or [])
+    if tickers:
+        wanted = sorted(tickers | {"SPY"})
+        for ticker in wanted:
+            if ticker in ohlcv_dict:
+                ohlcv[ticker] = ohlcv_dict[ticker]
+            elif ticker == "SPY" and spy_ohlcv is not None:
+                ohlcv[ticker] = spy_ohlcv
+        missing = [t for t in wanted if t not in ohlcv]
+        if missing:
+            try:
+                from ohlcv_warehouse import (
+                    DEFAULT_WAREHOUSE_PATH,
+                    load_warehouse_ohlcv_frames,
+                )
+                import pandas as pd
+
+                if DEFAULT_WAREHOUSE_PATH.exists():
+                    wh_end = pd.Timestamp(as_of)
+                    wh_start = wh_end - pd.Timedelta(days=400)
+                    wh_frames = load_warehouse_ohlcv_frames(
+                        DEFAULT_WAREHOUSE_PATH,
+                        missing,
+                        start=wh_start,
+                        end=wh_end,
+                    )
+                    wh_loaded = 0
+                    for ticker, frame in wh_frames.items():
+                        if frame is not None and not frame.empty:
+                            ohlcv[ticker] = frame
+                            wh_loaded += 1
+                    missing = [t for t in missing if t not in ohlcv]
+                    log.info(
+                        "Broad-market paper OHLCV: %d from session cache, %d from "
+                        "warehouse, %d unresolved",
+                        len(ohlcv) - wh_loaded,
+                        wh_loaded,
+                        len(missing),
+                    )
+            except ImportError:
+                pass
+        if missing and len(missing) <= 30 and cached_ohlcv_fn:
+            for ticker in missing:
+                try:
+                    ohlcv[ticker] = cached_ohlcv_fn(ticker)
+                except Exception as exc:
+                    log.warning(
+                        "Broad-market paper OHLCV unavailable for %s: %s",
+                        ticker,
+                        exc,
+                    )
+        elif missing:
+            log.warning(
+                "Broad-market paper OHLCV missing for %d universe tickers "
+                "(no warehouse rows; skipping per-ticker vendor fetches)",
+                len(missing),
+            )
+
+    tradeable_universe = (
+        set(core_universe or [])
+        | set(pilot_universe or [])
+        | set(
+            (universe_governance_state or {}).get("governance_tradeable_universe")
+            or []
+        )
+    )
+
+    snapshot = build_broad_market_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker=ohlcv,
+        current_tradeable_universe=tradeable_universe,
+        candidate_universe=candidate_universe,
+        open_prices=open_prices,
+        current_prices=current_prices,
+    )
+    return snapshot, candidate_universe, ohlcv
+
+
 def _production_impact() -> dict[str, Any]:
     return {
         "shared_policy_changed": True,

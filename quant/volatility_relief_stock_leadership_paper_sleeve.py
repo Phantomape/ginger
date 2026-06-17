@@ -715,6 +715,33 @@ def _append_skip_once(state: dict[str, Any], row: dict[str, Any]) -> None:
         state["skipped_days"].append(row)
 
 
+def prep_and_build_volatility_relief_stock_leadership_snapshot(
+    *,
+    as_of: str,
+    broad_market_ohlcv: dict,
+    broad_market_candidate_universe: dict,
+    spy_ohlcv=None,
+    ohlcv_dict=None,
+    cached_ohlcv_fn=None,
+    core_entries=None,
+):
+    if not broad_market_candidate_universe.get("tickers"):
+        return empty_volatility_relief_stock_leadership_snapshot(
+            as_of, "broad_market_candidate_universe_unavailable")
+    ohlcv = dict(broad_market_ohlcv)
+    if "SPY" not in ohlcv and spy_ohlcv is not None:
+        ohlcv["SPY"] = spy_ohlcv
+    if "QQQ" not in ohlcv:
+        ohlcv["QQQ"] = (ohlcv_dict or {}).get("QQQ") or (cached_ohlcv_fn("QQQ") if cached_ohlcv_fn else None)
+    if "VIXY" not in ohlcv:
+        ohlcv["VIXY"] = (ohlcv_dict or {}).get("VIXY") or (cached_ohlcv_fn("VIXY") if cached_ohlcv_fn else None)
+    return build_volatility_relief_stock_leadership_snapshot(
+        as_of=as_of, ohlcv_by_ticker=ohlcv,
+        candidate_universe=broad_market_candidate_universe,
+        core_entries=core_entries,
+    )
+
+
 def _production_impact() -> dict[str, Any]:
     return {
         "shared_policy_changed": True,

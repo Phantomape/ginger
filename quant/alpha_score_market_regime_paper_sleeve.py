@@ -1233,6 +1233,43 @@ def _ranking_surface_summary(
     }
 
 
+def prep_and_build_alpha_score_market_regime_paper_sleeve_snapshot(
+    *,
+    as_of: str,
+    ohlcv_dict: dict,
+    spy_ohlcv=None,
+    cached_ohlcv_fn=None,
+    features_by_ticker=None,
+    source_consensus_snapshots=None,
+    open_prices=None,
+    current_prices=None,
+) -> tuple:
+    """OHLCV + universe prep, then build. Returns (snapshot, ohlcv, universe)."""
+    ohlcv = dict(ohlcv_dict)
+    if spy_ohlcv is not None:
+        ohlcv["SPY"] = spy_ohlcv
+    if cached_ohlcv_fn and ("IWM" not in ohlcv or ohlcv.get("IWM") is None):
+        ohlcv["IWM"] = cached_ohlcv_fn("IWM")
+    candidate_universe = {
+        "status": "daily_data_universe",
+        "tickers": sorted(
+            t
+            for t, f in ohlcv.items()
+            if f is not None and str(t).upper() not in {"SPY", "IWM"}
+        ),
+    }
+    snapshot = build_alpha_score_market_regime_paper_sleeve_snapshot(
+        as_of=as_of,
+        features_by_ticker=features_by_ticker,
+        ohlcv_by_ticker=ohlcv,
+        candidate_universe=candidate_universe,
+        source_consensus_snapshots=source_consensus_snapshots,
+        open_prices=open_prices,
+        current_prices=current_prices,
+    )
+    return snapshot, ohlcv, candidate_universe
+
+
 def _production_impact() -> dict[str, Any]:
     return {
         "shared_policy_changed": True,

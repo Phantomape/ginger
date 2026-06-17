@@ -1262,6 +1262,36 @@ def _safe(value: Any) -> Any:
     return value
 
 
+def prep_and_build_industry_stable_core_flow_snapshot(
+    *,
+    as_of: str,
+    broad_market_ohlcv: dict,
+    broad_market_candidate_universe: dict,
+    spy_ohlcv=None,
+    ohlcv_dict=None,
+    qqq_ohlcv=None,
+    cached_ohlcv_fn=None,
+    core_entries=None,
+):
+    if not broad_market_candidate_universe.get("tickers"):
+        return empty_industry_stable_core_flow_snapshot(
+            as_of, "broad_market_candidate_universe_unavailable")
+    ohlcv = dict(broad_market_ohlcv)
+    if "SPY" not in ohlcv and spy_ohlcv is not None:
+        ohlcv["SPY"] = spy_ohlcv
+    if "QQQ" not in ohlcv:
+        if ohlcv_dict and "QQQ" in ohlcv_dict:
+            ohlcv["QQQ"] = ohlcv_dict["QQQ"]
+        elif qqq_ohlcv is not None:
+            ohlcv["QQQ"] = qqq_ohlcv
+        elif cached_ohlcv_fn:
+            ohlcv["QQQ"] = cached_ohlcv_fn("QQQ")
+    return build_industry_stable_core_flow_snapshot(
+        as_of=as_of, ohlcv_by_ticker=ohlcv, core_entries=core_entries,
+        candidate_universe=broad_market_candidate_universe,
+    )
+
+
 def _production_impact() -> dict[str, Any]:
     return {
         "shared_policy_changed": True,

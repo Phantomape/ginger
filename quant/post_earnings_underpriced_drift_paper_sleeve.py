@@ -1510,6 +1510,41 @@ def _config(config: dict[str, Any] | None) -> dict[str, Any]:
     return cfg
 
 
+def prep_and_build_post_earnings_underpriced_drift_paper_sleeve_snapshot(
+    *,
+    as_of: str,
+    ohlcv_dict: dict,
+    spy_ohlcv=None,
+    signals=None,
+    open_prices=None,
+    current_prices=None,
+):
+    ohlcv = dict(ohlcv_dict)
+    if spy_ohlcv is not None:
+        ohlcv["SPY"] = spy_ohlcv
+    candidate_universe = {
+        "status": "daily_data_universe",
+        "tickers": sorted(
+            t for t, f in ohlcv.items()
+            if f is not None and str(t).upper() != "SPY"
+        ),
+    }
+    core_entry_tickers_by_date = {
+        as_of: sorted(
+            {
+                str(s.get("ticker") or "").upper()
+                for s in (signals or [])
+                if str(s.get("ticker") or "").strip()
+            }
+        )
+    }
+    return build_post_earnings_underpriced_drift_paper_sleeve_snapshot(
+        as_of=as_of, ohlcv_by_ticker=ohlcv, candidate_universe=candidate_universe,
+        open_prices=open_prices, current_prices=current_prices,
+        config={"core_entry_tickers_by_date": core_entry_tickers_by_date},
+    )
+
+
 def _production_impact() -> dict[str, Any]:
     return {
         "shared_policy_changed": True,

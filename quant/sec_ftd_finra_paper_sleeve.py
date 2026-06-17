@@ -1186,6 +1186,32 @@ def _config(config: dict[str, Any] | None) -> dict[str, Any]:
     return cfg
 
 
+def prep_and_build_sec_ftd_finra_paper_sleeve_snapshot(
+    *,
+    as_of: str,
+    ohlcv_dict: dict,
+    spy_ohlcv=None,
+    same_day_core_tickers=None,
+    open_prices=None,
+    current_prices=None,
+):
+    ohlcv = dict(ohlcv_dict)
+    if spy_ohlcv is not None:
+        ohlcv["SPY"] = spy_ohlcv
+    candidate_universe = {
+        "status": "daily_data_universe",
+        "tickers": sorted(
+            t for t, f in ohlcv.items()
+            if f is not None and str(t).upper() != "SPY"
+        ),
+    }
+    return build_sec_ftd_finra_paper_sleeve_snapshot(
+        as_of=as_of, ohlcv_by_ticker=ohlcv, candidate_universe=candidate_universe,
+        same_day_core_tickers=same_day_core_tickers,
+        open_prices=open_prices, current_prices=current_prices,
+    )
+
+
 def _production_impact() -> dict[str, Any]:
     return {
         "shared_policy_changed": True,

@@ -1527,6 +1527,40 @@ def _config(config: dict[str, Any] | None) -> dict[str, Any]:
     return cfg
 
 
+def prep_and_build_finra_iwm_paper_sleeve_snapshot(
+    *,
+    as_of: str,
+    ohlcv_dict: dict,
+    spy_ohlcv=None,
+    cached_ohlcv_fn=None,
+    broad_ingest_universe=None,
+    open_prices=None,
+    current_prices=None,
+):
+    ohlcv = dict(ohlcv_dict)
+    if spy_ohlcv is not None:
+        ohlcv["SPY"] = spy_ohlcv
+    if cached_ohlcv_fn and ("IWM" not in ohlcv or ohlcv.get("IWM") is None):
+        ohlcv["IWM"] = cached_ohlcv_fn("IWM")
+    candidate_universe = {
+        "status": "daily_data_universe",
+        "tickers": sorted(
+            {
+                t for t, f in ohlcv.items()
+                if f is not None and str(t).upper() not in {"SPY", "IWM"}
+            }
+            | {
+                t for t in (broad_ingest_universe or [])
+                if str(t).upper() not in {"SPY", "IWM"}
+            }
+        ),
+    }
+    return build_finra_iwm_paper_sleeve_snapshot(
+        as_of=as_of, ohlcv_by_ticker=ohlcv, candidate_universe=candidate_universe,
+        open_prices=open_prices, current_prices=current_prices,
+    )
+
+
 def _production_impact() -> dict[str, Any]:
     return {
         "shared_policy_changed": True,

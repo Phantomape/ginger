@@ -1122,6 +1122,26 @@ def _forward_paper_gate(state: dict[str, Any], config: dict[str, Any]) -> dict[s
     }
 
 
+def prep_and_build_industry_relative_laggard_repair_paper_sleeve_snapshot(
+    *,
+    as_of: str,
+    broad_market_ohlcv: dict,
+    broad_market_candidate_universe: dict,
+    spy_ohlcv=None,
+    core_entries=None,
+):
+    if not broad_market_candidate_universe.get("tickers"):
+        return empty_industry_relative_laggard_repair_paper_sleeve_snapshot(
+            as_of, "broad_market_candidate_universe_unavailable")
+    ohlcv = dict(broad_market_ohlcv)
+    if "SPY" not in ohlcv and spy_ohlcv is not None:
+        ohlcv["SPY"] = spy_ohlcv
+    return build_industry_relative_laggard_repair_paper_sleeve_snapshot(
+        as_of=as_of, ohlcv_by_ticker=ohlcv, core_entries=core_entries,
+        candidate_universe=broad_market_candidate_universe,
+    )
+
+
 def _production_impact() -> dict[str, Any]:
     return {
         "shared_policy_changed": True,

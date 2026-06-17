@@ -1130,6 +1130,21 @@ def _repo_rel(path: Path) -> str:
         return str(path)
 
 
+def prep_and_build_revision_surprise_low_extension_snapshot(
+    *,
+    as_of: str,
+    broad_market_ohlcv: dict,
+    spy_ohlcv=None,
+    core_entries=None,
+):
+    ohlcv = dict(broad_market_ohlcv)
+    if "SPY" not in ohlcv and spy_ohlcv is not None:
+        ohlcv["SPY"] = spy_ohlcv
+    return build_revision_surprise_low_extension_snapshot(
+        as_of=as_of, ohlcv_by_ticker=ohlcv, core_entries=core_entries,
+    )
+
+
 def _production_impact() -> dict[str, Any]:
     return {
         "shared_policy_changed": True,

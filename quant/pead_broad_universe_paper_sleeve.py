@@ -935,6 +935,101 @@ def _config(config: dict[str, Any] | None) -> dict[str, Any]:
     return cfg
 
 
+def prep_and_build_pead_broad_universe_paper_sleeve_snapshot(
+    *,
+    as_of: str,
+    ohlcv_dict: dict[str, Any],
+    spy_ohlcv: Any = None,
+    cached_ohlcv_fn: Any = None,
+    universe_governance_state: dict[str, Any] | None = None,
+    open_prices: dict[str, Any] | None = None,
+    current_prices: dict[str, Any] | None = None,
+    logger: Any = None,
+) -> dict[str, Any]:
+    """OHLCV loading (governance + warehouse + vendor) + build snapshot."""
+    import logging
+
+    log = logger or logging.getLogger(__name__)
+
+    ohlcv = dict(ohlcv_dict)
+    if spy_ohlcv is not None:
+        ohlcv["SPY"] = spy_ohlcv
+
+    extra_tickers = (
+        set((universe_governance_state or {}).get("governance_observation_universe") or [])
+        | set((universe_governance_state or {}).get("segments", {}).get("research") or [])
+        | set((universe_governance_state or {}).get("segments", {}).get("specialist") or [])
+    )
+    for ticker in sorted(extra_tickers):
+        if ticker not in ohlcv or ohlcv[ticker] is None:
+            try:
+                if cached_ohlcv_fn:
+                    ohlcv[ticker] = cached_ohlcv_fn(ticker)
+            except Exception as exc:
+                log.debug(
+                    "PEAD broad paper: OHLCV unavailable for %s: %s", ticker, exc,
+                )
+
+    try:
+        from pead_broad_universe_tickers import get_pead_broad_universe_tickers
+        from ohlcv_warehouse import DEFAULT_WAREHOUSE_PATH, load_warehouse_ohlcv_frames
+        import pandas as pd
+
+        broad_500 = get_pead_broad_universe_tickers()
+        warehouse_needed = [
+            t for t in broad_500 if t not in ohlcv or ohlcv.get(t) is None
+        ]
+        if warehouse_needed and DEFAULT_WAREHOUSE_PATH.exists():
+            wh_end = pd.Timestamp(as_of)
+            wh_start = wh_end - pd.Timedelta(days=200)
+            wh_frames = load_warehouse_ohlcv_frames(
+                DEFAULT_WAREHOUSE_PATH,
+                warehouse_needed,
+                start=wh_start,
+                end=wh_end,
+            )
+            wh_loaded = 0
+            for ticker, frame in wh_frames.items():
+                if frame is not None and not frame.empty:
+                    ohlcv[ticker] = frame
+                    wh_loaded += 1
+            log.info(
+                "PEAD broad paper (exp-20260607-003): warehouse loaded %d/%d broad "
+                "tickers (total universe now %d)",
+                wh_loaded,
+                len(warehouse_needed),
+                len(ohlcv),
+            )
+        elif not DEFAULT_WAREHOUSE_PATH.exists():
+            log.warning(
+                "PEAD broad paper (exp-20260607-003): warehouse not found at %s; "
+                "falling back to ~80-ticker governance universe.",
+                DEFAULT_WAREHOUSE_PATH,
+            )
+    except Exception as exc:
+        log.warning(
+            "PEAD broad paper (exp-20260607-003): warehouse load failed: %s; "
+            "falling back to governance universe only.",
+            exc,
+        )
+
+    candidate_universe = {
+        "status": "broad_data_universe",
+        "tickers": sorted(
+            ticker
+            for ticker, frame in ohlcv.items()
+            if frame is not None and str(ticker).upper() != "SPY"
+        ),
+    }
+    return build_pead_broad_universe_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker=ohlcv,
+        candidate_universe=candidate_universe,
+        open_prices=open_prices,
+        current_prices=current_prices,
+    )
+
+
 def _production_impact() -> dict[str, Any]:
     return {
         "shared_policy_changed": False,

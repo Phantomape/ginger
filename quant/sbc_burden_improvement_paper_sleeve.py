@@ -1494,6 +1494,28 @@ def _config(overrides: dict[str, Any] | None = None) -> dict[str, Any]:
     return cfg
 
 
+def prep_and_build_sbc_burden_improvement_paper_sleeve_snapshot(
+    *,
+    as_of: str,
+    broad_market_ohlcv: dict,
+    broad_market_candidate_universe: dict,
+    spy_ohlcv=None,
+    open_prices=None,
+    current_prices=None,
+):
+    if not broad_market_candidate_universe.get("tickers"):
+        return empty_sbc_burden_improvement_paper_sleeve_snapshot(
+            as_of, "broad_market_candidate_universe_unavailable")
+    ohlcv = dict(broad_market_ohlcv)
+    if "SPY" not in ohlcv and spy_ohlcv is not None:
+        ohlcv["SPY"] = spy_ohlcv
+    return build_sbc_burden_improvement_paper_sleeve_snapshot(
+        as_of=as_of, ohlcv_by_ticker=ohlcv,
+        candidate_universe=broad_market_candidate_universe,
+        open_prices=open_prices, current_prices=current_prices,
+    )
+
+
 def _production_impact() -> dict[str, Any]:
     return {
         "shared_policy_changed": True,

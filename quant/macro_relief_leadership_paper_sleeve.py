@@ -1147,6 +1147,29 @@ def _round(value: Any, digits: int = 4) -> Any:
     return round(number, digits) if number is not None else None
 
 
+def prep_and_build_macro_relief_leadership_snapshot(
+    *,
+    as_of: str,
+    broad_market_ohlcv: dict,
+    broad_market_candidate_universe: dict,
+    spy_ohlcv=None,
+    ohlcv_dict=None,
+    cached_ohlcv_fn=None,
+):
+    if not broad_market_candidate_universe.get("tickers"):
+        return empty_macro_relief_leadership_snapshot(
+            as_of, "broad_market_candidate_universe_unavailable")
+    ohlcv = dict(broad_market_ohlcv)
+    if "SPY" not in ohlcv and spy_ohlcv is not None:
+        ohlcv["SPY"] = spy_ohlcv
+    if "QQQ" not in ohlcv:
+        ohlcv["QQQ"] = (ohlcv_dict or {}).get("QQQ") or (cached_ohlcv_fn("QQQ") if cached_ohlcv_fn else None)
+    return build_macro_relief_leadership_snapshot(
+        as_of=as_of, ohlcv_by_ticker=ohlcv,
+        candidate_universe=broad_market_candidate_universe,
+    )
+
+
 def _production_impact() -> dict[str, Any]:
     return {
         "shared_policy_changed": True,
