@@ -1,0 +1,253 @@
+{
+  "experiment_id": "exp-20260616-027",
+  "experiment_uid": "expuid-d024d0b2c0504ec7",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260616-027",
+    "slug": "nonrepeat_structured_event_tuple_readiness",
+    "reserved_at": "2026-06-16T22:09:39+00:00",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "alpha-search-automation",
+  "hypothesis": "candidate_pool / LLM event scoring: a replayable structured event tuple surface (actor/object/relation/magnitude/provenance) could be the next non-repeat free-data alpha, but only if the fields exist point-in-time across all three canonical windows.",
+  "change_type": "alpha_search_preflight_blocker",
+  "mechanism_family": "structured_event_candidate_pool_readiness",
+  "trial_family": "nonrepeat_alpha_candidate_readiness",
+  "trial_variant_id": "structured_event_tuple_surface_v1",
+  "single_causal_variable": "nonrepeat_structured_event_tuple_alpha_readiness_v1",
+  "changed_variable": "nonrepeat_structured_event_tuple_alpha_readiness_v1",
+  "causal_components": [
+    "history_scan",
+    "data_surface_scan",
+    "anti_repeat_gate",
+    "Gate1_4_readiness_check"
+  ],
+  "prior_trial_count": 9,
+  "nearby_prior_experiments": [
+    "exp-20260614-005",
+    "exp-20260614-012",
+    "exp-20260615-014",
+    "exp-20260615-015",
+    "exp-20260615-027",
+    "exp-20260616-002",
+    "exp-20260616-006",
+    "exp-20260616-008",
+    "exp-20260615-026",
+    "exp-20260616-003",
+    "exp-20260616-024",
+    "exp-20260616-026"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "latest_history_plus_data_surface_preflight",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260616_027_nonrepeat_structured_event_tuple_readiness.py",
+    "data/experiments/exp-20260616-027/exp_20260616_027_nonrepeat_structured_event_tuple_readiness.json",
+    "experiments/logs/exp-20260616-027.json",
+    "experiments/cards/exp-20260616-027.md",
+    "experiments/tickets/exp-20260616-027.json",
+    "experiments/manifests/exp-20260616-027.json",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/backtester.py",
+    "quant/*_paper_sleeve.py",
+    "docs/experiment_log.jsonl"
+  ],
+  "locked_variables": [
+    "production_order_path",
+    "live_ranking",
+    "sizing",
+    "exits",
+    "accepted_helper_priorities"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Do not run a strategy replay unless a materially new PIT structured event tuple surface with three-window candidate coverage exists; otherwise close as blocked with no production change.",
+  "prediction": {
+    "success_probability": 0.12,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "no_structured_event_tuple_surface",
+      "duplicate_frozen_near_neighbor",
+      "insufficient_three_window_candidate_coverage",
+      "production_parity_not_available"
+    ],
+    "confidence_reason": "Recent history shows every broad free-data lane is either accepted/frozen, rejected on window/drawdown/comparator gates, or data-limited. Structured event tuples are the most plausible non-repeat field, but current event snapshots may only contain generic 8-K rows without magnitude/object schema.",
+    "recorded_at": "2026-06-16T22:09:29+00:00"
+  },
+  "created_at": "2026-06-16T22:09:39+00:00",
+  "claimed_at": "2026-06-16T22:10:00+00:00",
+  "completed_at": "2026-06-16T22:15:34+00:00",
+  "result": {
+    "decision": "blocked_no_trustworthy_nonrepeat_structured_event_tuple_surface",
+    "accepted": false,
+    "accepted_alpha": false,
+    "numeric_gate4_passed": false,
+    "artifact": "data/experiments/exp-20260616-027/exp_20260616_027_nonrepeat_structured_event_tuple_readiness.json",
+    "log": "experiments/logs/exp-20260616-027.json",
+    "card": "experiments/cards/exp-20260616-027.md",
+    "gate4": {
+      "applicable": false,
+      "passed": false,
+      "decision": "blocked_no_trustworthy_nonrepeat_structured_event_tuple_surface",
+      "reason": "The preflight surface has zero complete structured event tuple rows across the canonical windows, so a before/after strategy replay would either duplicate frozen text/news/SEC alphas or invent a backtest-only parser not available in production.",
+      "failed_reasons": [
+        "no_complete_structured_event_tuple_rows_in_all_three_windows",
+        "structured_tuple_sample_below_20_total_rows",
+        "zero_complete_structured_event_tuple_rows",
+        "current_event_rows_have_ticker_timestamp_and_generic_type_but_no_actor_object_relation_magnitude_tuple",
+        "news_archives_have_titles_tickers_timestamps_but_no_replayable_schema_bound_event_labels",
+        "positive_strategy_run_would_require_new_shared_default_off_helper_and_daily_snapshot_not_present"
+      ],
+      "strategy_replay_blocked_before_gate4": true
+    },
+    "readiness": {
+      "accepted_for_strategy_replay": false,
+      "decision": "blocked_no_trustworthy_nonrepeat_structured_event_tuple_surface",
+      "blocked_reasons": [
+        "no_complete_structured_event_tuple_rows_in_all_three_windows",
+        "structured_tuple_sample_below_20_total_rows",
+        "zero_complete_structured_event_tuple_rows",
+        "current_event_rows_have_ticker_timestamp_and_generic_type_but_no_actor_object_relation_magnitude_tuple",
+        "news_archives_have_titles_tickers_timestamps_but_no_replayable_schema_bound_event_labels",
+        "positive_strategy_run_would_require_new_shared_default_off_helper_and_daily_snapshot_not_present"
+      ],
+      "total_rows_by_window": {
+        "late_strong": 3606,
+        "mid_weak": 2661,
+        "old_thin": 2784
+      },
+      "total_complete_structured_tuple_rows_by_window": {
+        "late_strong": 0,
+        "mid_weak": 0,
+        "old_thin": 0
+      },
+      "source_window_summary": {
+        "event_snapshots": {
+          "late_strong": {
+            "rows": 216,
+            "complete_structured_tuple_rows": 0,
+            "ticker_count": 35,
+            "files": 129
+          },
+          "mid_weak": {
+            "rows": 196,
+            "complete_structured_tuple_rows": 0,
+            "ticker_count": 35,
+            "files": 131
+          },
+          "old_thin": {
+            "rows": 174,
+            "complete_structured_tuple_rows": 0,
+            "ticker_count": 33,
+            "files": 145
+          }
+        },
+        "news_archives": {
+          "late_strong": {
+            "rows": 624,
+            "complete_structured_tuple_rows": 0,
+            "ticker_count": 47,
+            "files": 44
+          },
+          "mid_weak": {
+            "rows": 0,
+            "complete_structured_tuple_rows": 0,
+            "ticker_count": 0,
+            "files": 0
+          },
+          "old_thin": {
+            "rows": 0,
+            "complete_structured_tuple_rows": 0,
+            "ticker_count": 0,
+            "files": 0
+          }
+        },
+        "sec_filing_text": {
+          "late_strong": {
+            "rows": 2766,
+            "complete_structured_tuple_rows": 0,
+            "ticker_count": 48,
+            "files": 129
+          },
+          "mid_weak": {
+            "rows": 2465,
+            "complete_structured_tuple_rows": 0,
+            "ticker_count": 48,
+            "files": 131
+          },
+          "old_thin": {
+            "rows": 2610,
+            "complete_structured_tuple_rows": 0,
+            "ticker_count": 48,
+            "files": 146
+          }
+        }
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.12,
+      "actual_success": 0,
+      "actual_gate4_passed": false,
+      "brier_score": 0.0144,
+      "failure_modes_observed": [
+        "no_complete_structured_event_tuple_rows_in_all_three_windows",
+        "structured_tuple_sample_below_20_total_rows",
+        "zero_complete_structured_event_tuple_rows",
+        "current_event_rows_have_ticker_timestamp_and_generic_type_but_no_actor_object_relation_magnitude_tuple",
+        "news_archives_have_titles_tickers_timestamps_but_no_replayable_schema_bound_event_labels",
+        "positive_strategy_run_would_require_new_shared_default_off_helper_and_daily_snapshot_not_present"
+      ],
+      "predicted_failure_mode_hit": true
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "production_signal_path_changed": false,
+      "ranking_changed": false,
+      "sizing_changed": false,
+      "exits_changed": false,
+      "orders_changed": false,
+      "replay_only": false,
+      "strategy_replay_run": false,
+      "default_off_paper_only": false,
+      "live_ready": false,
+      "uses_llm": false,
+      "parity_note": "No alpha helper was promoted because the required structured event tuple surface is absent. Avoids backtest/production inconsistency by not creating a replay-only trading rule."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The strongest non-repeat idea is structured text/event alpha, but the repository currently stores event rows as generic filing or headline records. They have provenance and sometimes tickers, but not actor/object/relation/magnitude tuples. Running a strategy backtest now would either duplicate frozen SEC/news experiments or create a backtest-only semantic rule with no production parity.",
+      "outcome_summary": "Structured tuple complete rows by window: {'late_strong': 0, 'mid_weak': 0, 'old_thin': 0}. No strategy replay or production change was made.",
+      "forbidden_near_neighbor_retry": "Do not retry raw positive headlines, generic 8-K items, SEC KPI phrase filters, DTE/revision threshold sweeps, FINRA borrow pressure, options overlays, 13F/Form144 direct entries, or OHLCV relation retunes on these frozen windows without a new PIT field.",
+      "new_evidence_required": "A valid alpha retry needs a daily and historical structured-event helper that writes actor/object/relation/magnitude/provenance rows before decision time, covers all three canonical windows, and can be called by both backtest and production default-off snapshots."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260616-027.json",
+  "card_file": "experiments/cards/exp-20260616-027.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260616-027.json",
+  "decision": "blocked_no_trustworthy_nonrepeat_structured_event_tuple_surface",
+  "summary": "The strongest non-repeat idea is structured text/event alpha, but the repository currently stores event rows as generic filing or headline records. They have provenance and sometimes tickers, but not actor/object/relation/magnitude tuples. Running a strategy backtest now would either duplicate frozen SEC/news experiments or create a backtest-only semantic rule with no production parity.",
+  "artifact": "data/experiments/exp-20260616-027/exp_20260616_027_nonrepeat_structured_event_tuple_readiness.json",
+  "log": "experiments/logs/exp-20260616-027.json",
+  "updated_at": "2026-06-16T22:15:34+00:00"
+}
