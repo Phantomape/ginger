@@ -1,5 +1,7 @@
 ﻿# Alpha External Research Map
 
+Last refreshed: 2026-06-17.
+
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
 
@@ -158,6 +160,35 @@ Controls:
 
 Source: <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6597694>
 
+### Hedge-Fund LLM Forecasting Pitfall Checklist
+
+An April 2026 hedge-fund-oriented review of LLM stock forecasting is useful as
+a checklist, not as an alpha source. Its practical warnings map directly to
+Ginger's repeated local failures: sentiment fragility, horizon mismatch,
+leakage, weak metrics, illiquidity premia, and limited predictability can make
+LLM results look better in papers than in a production-costed system.
+
+Implementable fields:
+
+- `llm_forecast_use_case_bucket`
+- `llm_dataset_horizon_protocol_id`
+- `llm_leakage_control_status`
+- `llm_illiquidity_premium_bucket`
+- `llm_metric_to_trade_gap_bucket`
+- `llm_sentiment_fragility_bucket`
+- `llm_costed_replacement_value_bucket`
+- `llm_predictability_limit_reason`
+
+Controls:
+
+- declare the forecast horizon before scoring any text or agent output;
+- compare the LLM feature against the displaced accepted helper after costs,
+  not only against prediction accuracy or directional hit rate;
+- report liquidity, universe, and timestamp controls before claiming alpha;
+- keep the LLM as a field builder unless a shared helper passes Gate 1-4.
+
+Source: <https://arxiv.org/abs/2605.05211>
+
 ### Human-Directed LLM Beats Autonomous LLM
 
 New 2026 live-signal evidence argues for structured human direction and
@@ -184,6 +215,35 @@ Controls:
   shared policy gate.
 
 Source: <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6705178>
+
+### AI Agent Behavioral Bias Audit
+
+Experimental-market evidence shows autonomous LLM traders can display classic
+behavioral biases such as disposition effects and recency-weighted extrapolation;
+agent disagreement and prompt interventions can change market-bubble dynamics.
+For Ginger, this is a risk-audit surface for agent or LLM outputs, not a reason
+to let agents place trades.
+
+Implementable fields:
+
+- `agent_disposition_effect_score`
+- `agent_recency_extrapolation_score`
+- `agent_excess_demand_bucket`
+- `agent_disagreement_volume_bucket`
+- `agent_reasoning_mechanism_bucket`
+- `prompt_intervention_bias_delta`
+- `agent_bubble_amplification_risk_bucket`
+- `agent_behavioral_bias_audit_version`
+
+Controls:
+
+- score agent outputs for recency chasing, loss reluctance, and disagreement
+  before using them as evidence rows;
+- preserve prompts and reasoning text so bias scores are replayable;
+- treat prompt changes as policy changes that require fixed pre/post evaluation;
+- never let agent consensus override deterministic risk, sizing, or exit logic.
+
+Source: <https://arxiv.org/abs/2604.18373>
 
 ### Agentic Financial RAG Self-Verification
 
@@ -827,6 +887,38 @@ Sources:
 - <https://arxiv.org/abs/2507.07296>
 - <https://arxiv.org/abs/2511.18578>
 - <https://arxiv.org/abs/2505.11163>
+
+### Related-Series Foundation Model Discipline
+
+A May 2026 Chronos-2 finance study found multivariate inputs helped within
+related panels such as Magnificent-7 equities or Treasury rates, while mixing
+unrelated equity and rate series reduced forecast accuracy. For Ginger, the
+implementable lesson is panel selection and noisy-context auditing, not a
+zero-shot forecasting shortcut.
+
+Implementable fields:
+
+- `tsfm_related_series_panel_id`
+- `tsfm_panel_membership_asof`
+- `tsfm_cross_series_context_quality_bucket`
+- `tsfm_noisy_context_penalty_bucket`
+- `tsfm_rolling_eval_protocol_id`
+- `tsfm_horizon_window_grid_id`
+- `tsfm_series_level_error_dispersion_bucket`
+- `tsfm_related_panel_embedding_hash`
+
+Controls:
+
+- define the related-series panel before evaluation and store membership as of
+  each decision date;
+- compare multivariate, univariate, and simple baseline forecasts under the
+  same rolling protocol;
+- reject mixed-context panels when unrelated series reduce accuracy or add beta
+  exposure without replacement value;
+- use the embedding first for state/risk attribution until after-cost
+  candidate displacement is proven.
+
+Source: <https://arxiv.org/abs/2605.21504>
 
 ### Limit-Order-Book And Microstructure Reality Check
 

@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-06-16.
+Last refreshed: 2026-06-17.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -319,6 +319,27 @@ REJECTED because `old_thin` regressed (EV `-0.0741`, PnL `-$2,733.18`) and
 drawdown drift reached `+1.09pp`. This confirms that the recent Companyfacts
 asset-productivity / reinvestment fields still mostly capture the 2025 liquid
 momentum regime, not a robust cross-window candidate-pool edge.
+
+The full June 17 batch generalizes that lesson beyond CapEx/D&A. Working-capital
+and balance-sheet relief fields often looked attractive in aggregate, but kept
+failing the same hard guards: accounts-payable DPO extension (`exp-20260617-001`)
+failed drawdown despite EV `+1.2688`; D&A burden relief
+(`exp-20260617-005`), fixed-asset turnover (`exp-20260617-006`),
+impairment relief (`exp-20260617-008`), AOCI relief (`exp-20260617-016`), and
+industry down-shock resilience (`exp-20260617-017`) all regressed one or more
+windows or failed drawdown/comparator gates. Sparse "interesting accounting"
+surfaces were worse: sector-normalized reinvestment productivity, deferred-tax
+allowance release, warranty reserve relief, pension relief, SEC contract
+economics, and SBC grant-value backlog relief were too thin, too concentrated,
+or weaker than accepted comparators. Treat this as a freeze on raw Companyfacts
+relief/overhang fields and generic industry-resilience OHLCV labels on the
+frozen windows. A valid retry now needs materially new PIT decomposition
+(segment/customer capacity, OCI component, borrow/options, contract economics
+with numeric spans), or closed forward replacement-value rows. The options-chain
+idea (`exp-20260617-004`) is not rejected on economics; it is blocked because
+local options coverage starts after the fixed windows and lacks vendor-as-of /
+open-interest lag controls, so it belongs in forward observation before any
+Gate-4 alpha claim.
 
 FINRA short-interest coverage was then repaired (`exp-20260616-020`,
 measurement_repair). The archive had only spanned 2025-12-24 onward (0 rows in
@@ -824,6 +845,20 @@ production-visible field:
   evidence such as industry-normalized replacement-cycle productivity,
   segment/customer capacity disclosures, or closed forward replacement-value
   rows, not another raw CapEx/D&A threshold sweep;
+- broad raw Companyfacts relief/overhang candidate pools based on
+  accounts-payable DPO extension, D&A burden relief, fixed-asset turnover,
+  impairment relief, AOCI relief, deferred-tax allowance release, warranty
+  reserve relief, pension/postretirement obligation relief, or adjacent tag /
+  threshold / fact-age / RS / top-N / hold / cooldown / notional sweeps on the
+  frozen windows. The June 17 batch showed repeated aggregate-positive but
+  window-fragile, drawdown-worse, sparse, or concentrated behavior. A valid
+  retry needs materially different PIT decomposition, such as segment/customer
+  capacity, OCI component attribution, contractual numeric spans, borrow/options
+  context, or closed forward replacement-value rows;
+- options-chain skew / open-interest candidate-pool claims before fixed-window
+  historical coverage or a forward-only observation ledger has vendor-as-of,
+  publication-lag, stale-chain, and fill-cost controls. `exp-20260617-004`
+  blocks this as a measurement surface, not as a rejected alpha;
 - post-earnings high-liquidity, sector-residual, core-overlap, DTE, latest
   surprise, average surprise, pre-event RS, score, rank, or scalar retunes;
 - SEC item-code / phrase / same-day absorption retries without richer semantic
@@ -847,6 +882,12 @@ production-visible field:
 - correlation-breakdown idiosyncratic leader and earnings-catalyst peer
   underreaction variants unless the new relation field beats accepted
   rolling-correlation / industry relation comparators after costs;
+- industry pullback / down-shock resilience leader variants that only sweep
+  group ret5/ret20, same-day resilience, close-location, volume, volatility,
+  top-N, hold, cooldown, or notional. `exp-20260617-017` showed this mostly
+  relabels relative strength inside a falling local group and fails accepted
+  industry-stable / industry-relative / distribution comparators. Retry only
+  with a new PIT flow, ownership, borrow/options, or relation-provenance field;
 - Form 4 owner-count or liquidity-intensity retries without forward
   replacement value;
 - broad clustered Form 4 open-market purchase candidate pools as standalone

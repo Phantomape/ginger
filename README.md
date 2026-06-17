@@ -126,6 +126,32 @@ broad universe 的 **OHLCV warehouse** 刷新由独立的 `refresh_warehouse_ohl
 $env:RUN_BROAD_ACCUMULATION = "0"; .\.venv\Scripts\python.exe quant\run.py
 ```
 
+## 盘中风险复查（advisory）
+
+`quant\run_intraday.py` 是**手动触发的盘中风险复查**，一般在美西 10:00 左右跑一次。它用**盘中价格**重新评估现有持仓的 exit 规则、市场 regime 和组合热度，只产出 advisory 报告，**不**生成任何被 `run.py`、`backtester.py` 或实验消费的文件，也不会写 `operator_inputs\`。
+
+```powershell
+.\.venv\Scripts\python.exe -B quant\run_intraday.py
+```
+
+参数：
+
+| 参数 | 作用 |
+| --- | --- |
+| `--no-news` | 跳过盘中 RSS 新闻抓取和过滤。 |
+| `--offline` | 不做任何行情网络请求（所有报价回退到上一个 EOD 收盘价），隐含 `--no-news`，用于 smoke test。 |
+
+输出在 `data\daily\intraday\` 下，文件名带 `YYYYMMDD_HHMMET` 时间标签，便于一天多次运行并排比较：
+
+| 文件 | 说明 |
+| --- | --- |
+| `data\daily\intraday\reports\intraday_report_*.txt` | 人类可读盘中复查报告。 |
+| `data\daily\intraday\llm\intraday_llm_prompt_*.txt` | 盘中 LLM 提示词。 |
+| `data\daily\intraday\snapshots\intraday_review_*.json` | 完整盘中快照（regime、持仓复查、热度、pending actions）。 |
+| `data\daily\intraday\news\intraday_*_news_*.json` | 盘中新闻（未加 `--no-news` 时）。 |
+
+终端会打印一行 `SUMMARY: breached=… approaching=… regime=… heat=…`，并对 stale/缺失报价给出告警 —— 操作前请手动核对相关价格。
+
 ## 标准回测
 
 标准回测仍然用 `quant\backtester.py`。按 `docs/backtesting.md`，当前固定看三个非重叠窗口：
