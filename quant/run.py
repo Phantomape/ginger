@@ -3180,7 +3180,10 @@ def main():
                 broad_market_paper_sleeve.get("realized_pnl_to_date", 0.0),
             )
     except Exception as e:
-        log.warning(f"Broad-market paper sleeve unavailable: {e}")
+        # exc_info so an intermittent failure (e.g. a transient warehouse SQLite
+        # lock under concurrent writers) is diagnosable from the log, not just a
+        # bare message.
+        log.warning("Broad-market paper sleeve unavailable: %s: %s", type(e).__name__, e, exc_info=True)
         broad_market_paper_sleeve = empty_broad_market_paper_sleeve_snapshot(
             today_iso,
             "broad_market_paper_sleeve_build_failed",
@@ -3628,45 +3631,26 @@ def main():
             )
         )
 
-    try:
-        accepted_helper_source_priority_allocator_paper_sleeve = (
-            build_accepted_helper_source_priority_allocator_snapshot(
-                as_of=today_iso,
-                source_snapshots={
-                    "lagged_cross_source_consensus": free_data_cross_source_consensus_paper_sleeve,
-                    "volatility_relief": volatility_relief_stock_leadership_paper_sleeve,
-                    "rolling_peer_shock": rolling_corr_peer_shock_paper_sleeve,
-                    "turn_of_month": turn_of_month_liquid_leadership_paper_sleeve,
-                    "industry_laggard_repair": industry_relative_laggard_repair_paper_sleeve,
-                    "revision_surprise_low_extension": revision_surprise_low_extension_paper_sleeve,
-                    "compression": narrow_range_compression_breakout_paper_sleeve,
-                    "industry_stable_core_flow": industry_stable_core_flow_paper_sleeve,
-                },
-                ohlcv_by_ticker=broad_market_ohlcv,
-            )
-        )
-        if (
-            accepted_helper_source_priority_allocator_paper_sleeve.get("candidate_count", 0) > 0
-            or accepted_helper_source_priority_allocator_paper_sleeve.get("pending_count", 0) > 0
-            or accepted_helper_source_priority_allocator_paper_sleeve.get("open_position_count", 0) > 0
-            or accepted_helper_source_priority_allocator_paper_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "Accepted-helper source-priority allocator paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
-                accepted_helper_source_priority_allocator_paper_sleeve.get("candidate_count", 0),
-                accepted_helper_source_priority_allocator_paper_sleeve.get("pending_count", 0),
-                accepted_helper_source_priority_allocator_paper_sleeve.get("open_position_count", 0),
-                accepted_helper_source_priority_allocator_paper_sleeve.get("closed_count_today", 0),
-                accepted_helper_source_priority_allocator_paper_sleeve.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"Accepted-helper source-priority allocator paper sleeve unavailable: {e}")
-        accepted_helper_source_priority_allocator_paper_sleeve = (
-            empty_accepted_helper_source_priority_allocator_snapshot(
-                today_iso,
-                "accepted_helper_source_priority_allocator_paper_sleeve_build_failed",
-            )
-        )
+    accepted_helper_source_priority_allocator_paper_sleeve = _sleeve(
+        lambda: build_accepted_helper_source_priority_allocator_snapshot(
+            as_of=today_iso,
+            source_snapshots={
+                "lagged_cross_source_consensus": free_data_cross_source_consensus_paper_sleeve,
+                "volatility_relief": volatility_relief_stock_leadership_paper_sleeve,
+                "rolling_peer_shock": rolling_corr_peer_shock_paper_sleeve,
+                "turn_of_month": turn_of_month_liquid_leadership_paper_sleeve,
+                "industry_laggard_repair": industry_relative_laggard_repair_paper_sleeve,
+                "revision_surprise_low_extension": revision_surprise_low_extension_paper_sleeve,
+                "compression": narrow_range_compression_breakout_paper_sleeve,
+                "industry_stable_core_flow": industry_stable_core_flow_paper_sleeve,
+            },
+            ohlcv_by_ticker=broad_market_ohlcv,
+        ),
+        empty_accepted_helper_source_priority_allocator_snapshot,
+        "Accepted-helper source-priority allocator",
+        "accepted_helper_source_priority_allocator_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
 
     try:
         crypto_sleeve = build_crypto_sleeve_advice(load_crypto_config())

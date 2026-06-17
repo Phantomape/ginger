@@ -113,9 +113,17 @@ def _normalise_frame_row(
     return day_text, open_, high, low, close, volume or 0.0
 
 
+# Concurrent agent runs + the broad-universe refresh writer all hit the same
+# warehouse_main.sqlite. With the default 5s lock timeout a read that collides
+# with a writer raises "database is locked" instantly, which aborted the whole
+# broad-market sleeve block intermittently. A generous busy timeout makes a
+# blocked connection wait out the (short) writer transaction instead of failing.
+_WAREHOUSE_BUSY_TIMEOUT_S = 60.0
+
+
 def _connect(path: Path, *, journal_mode_off: bool = False) -> sqlite3.Connection:
     path.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(path)
+    conn = sqlite3.connect(path, timeout=_WAREHOUSE_BUSY_TIMEOUT_S)
     if journal_mode_off:
         conn.execute("PRAGMA journal_mode=OFF")
         conn.execute("PRAGMA synchronous=OFF")
@@ -984,7 +992,7 @@ def load_warehouse_ohlcv_frames(
     """
     params = [*ticker_list, start_text, end_text]
     by_ticker: dict[str, list[dict[str, Any]]] = {ticker: [] for ticker in ticker_list}
-    with sqlite3.connect(db) as conn:
+    with sqlite3.connect(db, timeout=_WAREHOUSE_BUSY_TIMEOUT_S) as conn:
         for ticker, day, open_, high, low, close, volume in conn.execute(sql, params):
             by_ticker[str(ticker)].append(
                 {
@@ -1036,7 +1044,7 @@ def load_warehouse_snapshot_ohlcv_frames(
     """
     params = [source, *ticker_list, start_text, end_text]
     by_ticker: dict[str, list[dict[str, Any]]] = {ticker: [] for ticker in ticker_list}
-    with sqlite3.connect(db) as conn:
+    with sqlite3.connect(db, timeout=_WAREHOUSE_BUSY_TIMEOUT_S) as conn:
         for ticker, day, open_, high, low, close, volume in conn.execute(sql, params):
             by_ticker[str(ticker)].append(
                 {
