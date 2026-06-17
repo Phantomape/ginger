@@ -1,0 +1,195 @@
+{
+  "experiment_id": "exp-20260617-007",
+  "experiment_uid": "expuid-97a07742660b4d5d",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260617-007",
+    "slug": "capex_depreciation_reinvestment_cycle",
+    "reserved_at": "2026-06-17T05:04:45+00:00",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "alpha-search-automation",
+  "hypothesis": "candidate_pool: raw SEC Companyfacts annual CapEx-to-D&A replacement-cycle acceleration (CapEx/D&A rising into a productive range, revenue not contracting, and CapEx growth not wildly outpacing revenue) paired with liquid SPY-relative leadership may identify reinvestment-cycle winners with 10-day continuation beyond generic momentum.",
+  "change_type": "default_off_paper_candidate_pool_replay_scout",
+  "mechanism_family": "production_visible_free_sec_companyfacts_reinvestment_cycle_candidate_pool",
+  "trial_family": "capex_depreciation_reinvestment_cycle_candidate_pool",
+  "trial_variant_id": "capex_depreciation_reinvestment_cycle_top1_next_open_10d_v1",
+  "single_causal_variable": "raw_sec_companyfacts_capex_depreciation_reinvestment_cycle_candidate_source_v1",
+  "changed_variable": "raw_sec_companyfacts_capex_depreciation_reinvestment_cycle_candidate_source_v1",
+  "causal_components": [
+    "raw SEC Companyfacts PIT field",
+    "historical three-window replay",
+    "execution envelope",
+    "production parity boundary",
+    "closeout artifact"
+  ],
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260529-003",
+    "exp-20260616-003",
+    "exp-20260617-005",
+    "exp-20260617-006"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "raw_sec_companyfacts_capex_to_depreciation_reinvestment_cycle_pit_field",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260617_007_capex_depreciation_reinvestment_cycle.py",
+    "data/experiments/exp-20260617-007/exp_20260617_007_capex_depreciation_reinvestment_cycle.json",
+    "experiments/cards/exp-20260617-007.md",
+    "experiments/manifests/exp-20260617-007.json",
+    "experiments/tickets/exp-20260617-007.json",
+    "experiments/logs/exp-20260617-007.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "raw_sec_companyfacts_capex_depreciation_reinvestment_cycle_candidate_source_v1"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.16,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "companyfacts_quality_family_saturated",
+      "window_regression",
+      "drawdown_drift",
+      "capex_field_semantics_noisy",
+      "accepted_distribution_comparator_not_beaten"
+    ],
+    "confidence_reason": "The D&A and fixed-asset turnover scouts were positive in aggregate but failed old_thin/drawdown; both explicitly named capex-to-D&A replacement-cycle context as materially different PIT evidence. The risk is high because recent raw Companyfacts quality sources often relabel liquid momentum and fail at least one canonical window.",
+    "recorded_at": "2026-06-17T05:04:32+00:00"
+  },
+  "created_at": "2026-06-17T05:04:45+00:00",
+  "claimed_at": "2026-06-17T05:04:54+00:00",
+  "completed_at": "2026-06-17T05:12:53+00:00",
+  "result": {
+    "decision": "rejected_capex_depreciation_reinvestment_cycle_candidate_pool",
+    "accepted": false,
+    "numeric_gate4_passed": false,
+    "artifact": "data/experiments/exp-20260617-007/exp_20260617_007_capex_depreciation_reinvestment_cycle.json",
+    "log": "experiments/logs/exp-20260617-007.json",
+    "aggregate_expected_value_delta": 0.7777,
+    "aggregate_strategy_total_pnl_delta": 11550.79,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_capex_depreciation_reinvestment_cycle_candidate_pool",
+      "failed_reasons": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "drawdown_drift_too_high"
+      ],
+      "aggregate_ev_delta": 0.7777,
+      "aggregate_pnl_delta": 11550.79,
+      "windows_ev_improved": 2,
+      "windows_ev_regressed": 1,
+      "windows_pnl_improved": 2,
+      "windows_pnl_regressed": 1,
+      "target_trade_count": 161,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0109,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.36499,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.266621,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "accepted_compression_comparator": {
+        "experiment_id": "exp-20260608-013",
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "aggregate_expected_value_delta": 0.1608,
+        "aggregate_pnl_delta": 2248.98
+      },
+      "accepted_distribution_comparator": {
+        "experiment_id": "exp-20260611-007",
+        "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+        "aggregate_expected_value_delta": 0.5286,
+        "aggregate_pnl_delta": 10432.91
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.16,
+      "actual_gate4_passed": false,
+      "actual_success": 0,
+      "failure_modes_observed": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "drawdown_drift_too_high"
+      ],
+      "brier_score": 0.0256,
+      "expected_ev_delta": null,
+      "actual_ev_delta": 0.7777,
+      "expected_pnl_delta": null,
+      "actual_pnl_delta": 11550.79
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "private_replay_scout_no_shared_adapter",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "default_off_paper_only": true,
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_sec_companyfacts": true,
+      "uses_free_ohlcv": true,
+      "live_realism_evaluated": true,
+      "live_ready": false,
+      "execution_envelope": {
+        "trade_enabled": false,
+        "target_notional_per_paper_trade": 4000.0,
+        "daily_entry_slots": 1,
+        "same_ticker_cooldown_days": 10,
+        "hold_days": 10,
+        "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+        "order_semantics": "observe-only next-session-open paper entry; no broker order",
+        "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+        "kill_switch": "trade_enabled remains false; no production adapter changes",
+        "failure_handling": "missing raw SEC annual CapEx/D&A/revenue pair, missing prior annual comparison pair, stale facts, missing CIK mapping, excluded sector, missing OHLCV, missing next open, or missing 10d exit rejects the paper candidate"
+      },
+      "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper computes the same raw SEC tag mapping, filed-date PIT annual CapEx/D&A reinvestment-cycle gate, liquid SPY-relative confirmation, cooldown, next-open paper entry, 10-day exit, costs, and concentration controls in both historical replay and daily production."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The raw SEC CapEx/D&A reinvestment-cycle source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, drawdown_drift_too_high). It is not retained or promoted.",
+      "outcome_summary": "Aggregate EV delta +0.7777; aggregate PnL delta $+11,550.79; max drawdown drift +0.0109; 161 paper trades.",
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping CapEx/D&A tag lists, replacement-cycle ratio thresholds, revenue floor, sector exclusions, annual fact freshness, RS/close/volume/vol guards, top-N, hold days, cooldown, or notional on these frozen windows.",
+      "new_evidence_required": "A retry needs materially different PIT reinvestment evidence, such as industry-normalized replacement-cycle productivity, segment/customer capacity disclosures, or closed forward replacement-value rows. Do not sweep CapEx/D&A tags, CapEx/D&A thresholds, revenue floor, sector exclusions, freshness, RS/close/volume/vol guards, top-N, hold, cooldown, or notional on these frozen windows."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260617-007.json",
+  "card_file": "experiments/cards/exp-20260617-007.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260617-007.json",
+  "decision": "rejected_capex_depreciation_reinvestment_cycle_candidate_pool",
+  "summary": "The raw SEC CapEx/D&A reinvestment-cycle source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, drawdown_drift_too_high). It is not retained or promoted.",
+  "artifact": "data/experiments/exp-20260617-007/exp_20260617_007_capex_depreciation_reinvestment_cycle.json",
+  "log": "experiments/logs/exp-20260617-007.json",
+  "aggregate_expected_value_delta": 0.7777,
+  "aggregate_strategy_total_pnl_delta": 11550.79,
+  "updated_at": "2026-06-17T05:12:53+00:00"
+}

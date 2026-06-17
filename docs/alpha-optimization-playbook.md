@@ -309,6 +309,17 @@ rejected clue, not a retained strategy" pattern seen in accruals
 inventory field is real in 2025 but does not survive the 2024-10→2025-04 window
 after costs.
 
+The early June 17 replacement-cycle follow-up closed the obvious CapEx/D&A
+escape hatch from the D&A and fixed-asset-turnover failures. `exp-20260617-007`
+tested annual raw SEC CapEx-to-depreciation reinvestment-cycle acceleration
+with non-contracting revenue and liquid SPY-relative confirmation. It was
+directionally positive in aggregate (EV `+0.7777`, PnL `+$11,550.79`, 161
+trades) and beat compression/distribution aggregate comparators, but was
+REJECTED because `old_thin` regressed (EV `-0.0741`, PnL `-$2,733.18`) and
+drawdown drift reached `+1.09pp`. This confirms that the recent Companyfacts
+asset-productivity / reinvestment fields still mostly capture the 2025 liquid
+momentum regime, not a robust cross-window candidate-pool edge.
+
 FINRA short-interest coverage was then repaired (`exp-20260616-020`,
 measurement_repair). The archive had only spanned 2025-12-24 onward (0 rows in
 `old_thin`/`mid_weak`), but a probe showed the FINRA CDN still hosts the older
@@ -803,6 +814,16 @@ production-visible field:
   Companyfacts daily surface, a cleaner cross-industry concept taxonomy, or
   closed forward replacement-value rows, not another threshold sweep of the
   rejected fixed bundle;
+- raw Companyfacts CapEx-to-depreciation / reinvestment-cycle candidate-pool
+  retries that sweep CapEx/D&A tags, replacement-cycle ratio thresholds,
+  revenue floor, sector exclusions, fact freshness, RS/close/volume guards,
+  top-N, hold, cooldown, or notional on the frozen windows: exp-20260617-007
+  was directionally positive in aggregate (EV `+0.7777`, PnL `+$11,550.79`,
+  161 trades) but rejected on `old_thin` EV/PnL regression and `+1.09pp`
+  drawdown drift. A valid retry needs materially different PIT reinvestment
+  evidence such as industry-normalized replacement-cycle productivity,
+  segment/customer capacity disclosures, or closed forward replacement-value
+  rows, not another raw CapEx/D&A threshold sweep;
 - post-earnings high-liquidity, sector-residual, core-overlap, DTE, latest
   surprise, average surprise, pre-event RS, score, rank, or scalar retunes;
 - SEC item-code / phrase / same-day absorption retries without richer semantic
