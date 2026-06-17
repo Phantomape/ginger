@@ -50418,7 +50418,7 @@
       },
       "created_at": "2026-06-17T16:20:04+00:00",
       "claimed_at": "2026-06-17T16:20:11+00:00",
-      "completed_at": "2026-06-17T16:32:04+00:00",
+      "completed_at": "2026-06-17T16:35:39+00:00",
       "result": {
         "decision": "rejected_filing_timeliness_early_disclosure_candidate_pool",
         "accepted": false,
@@ -50540,24 +50540,24 @@
           "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper computes the same PIT annual 10-K filed-lag history, abnormally-early-vs-own-norm gate, light liquidity gate, cooldown, next-open paper entry, 10-day exit, costs, and concentration controls in both historical replay and daily production."
         },
         "post_run_reflection": {
-          "why_result_happened": "The SEC filing-timeliness early-disclosure event source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, target_sample_too_small, drawdown_drift_too_high, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). It is not retained or promoted.",
+          "why_result_happened": "The SEC filing-timeliness early-disclosure event source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, target_sample_too_small, drawdown_drift_too_high, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). DECISIVE CAVEAT: this scout harness is CORE-universe-scoped (~47 names; only 36 had filing history), so an event-driven source that fires roughly once per company per year produced only ~18 paper trades and old_thin was dominated by one or two losing core-name trades. The broad-universe edge is the part that matters and was NOT tested here: across the ~1,137 liquid-universe names with >=3 prior 10-Ks there are ~1,713 abnormally-early-filing events all-time (~202 old_thin, ~29 mid_weak, ~248 late_strong by filed date). On the thin core universe the signal is negative/under-powered; it is neither confirmed nor refuted at breadth. It is not retained or promoted.",
           "outcome_summary": "Aggregate EV delta -0.0297; aggregate PnL delta $-1,263.37; max drawdown drift +0.0077; 18 paper trades.",
-          "forbidden_near_neighbor_retry": "Do not retry by sweeping earliness-days, current-lag cap, prior-filing-count, event-age, price/ADV liquidity floors, FY duration, top-N, hold days, cooldown, or notional on these frozen windows.",
-          "new_evidence_required": "If positive, the next asset must be a shared default-off helper that computes the same PIT 10-K filed-lag history, abnormally-early-vs-own-norm gate, light liquidity gate, next-open paper entry, 10-day exit, costs, and concentration controls in both historical replay and daily production, plus a parity test. If negative, a valid retry needs a materially different disclosure-timing field (e.g. quarterly 10-Q timeliness, accelerated-filer-status change, NT 10-K late-filing notices) or closed forward replacement-value rows, not a sweep of the earliness/lag/liquidity thresholds on these frozen windows."
+          "forbidden_near_neighbor_retry": "Do not retry by sweeping earliness-days, current-lag cap, prior-filing-count, event-age, price/ADV liquidity floors, FY duration, top-N, hold days, cooldown, or notional on the CORE universe. The only sanctioned next step is the same fixed gate over the BROAD liquid universe (candidate_universe=broad_market), since this run never tested breadth.",
+          "new_evidence_required": "The binding limitation is harness scope, not (yet) signal quality: this scout replays candidates only over the core ~47-name universe, which starves an event-driven source. The genuinely informative next test is the SAME fixed filing-timeliness gate run over the BROAD liquid universe via a candidate_universe=broad_market path (as the accepted SBC/compression/distribution shared sleeves do), where ~1,713 early-filing events exist, then judged on the canonical three windows and the accepted comparators. Only after a broad-universe replay should earliness/lag thresholds be considered, and any promotion still needs a shared helper + parity. Do NOT conclude filing-timeliness is dead from this thin core-universe run, and do NOT sweep thresholds on the core universe; if broad-universe replay is also negative, a valid retry needs a materially different disclosure-timing field (quarterly 10-Q timeliness, accelerated-filer-status change, NT 10-K late-filing notices) or closed forward replacement-value rows."
         }
       },
       "ticket_file": "experiments/tickets/exp-20260617-019.json",
       "card_file": "experiments/cards/exp-20260617-019.md",
       "revision_manifest_file": "experiments/manifests/exp-20260617-019.json",
       "decision": "rejected_filing_timeliness_early_disclosure_candidate_pool",
-      "summary": "The SEC filing-timeliness early-disclosure event source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, target_sample_too_small, drawdown_drift_too_high, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). It is not retained or promoted.",
+      "summary": "The SEC filing-timeliness early-disclosure event source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, target_sample_too_small, drawdown_drift_too_high, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). DECISIVE CAVEAT: this scout harness is CORE-universe-scoped (~47 names; only 36 had filing history), so an event-driven source that fires roughly once per company per year produced only ~18 paper trades and old_thin was dominated by one or two losing core-name trades. The broad-universe edge is the part that matters and was NOT tested here: across the ~1,137 liquid-universe names with >=3 prior 10-Ks there are ~1,713 abnormally-early-filing events all-time (~202 old_thin, ~29 mid_weak, ~248 late_strong by filed date). On the thin core universe the signal is negative/under-powered; it is neither confirmed nor refuted at breadth. It is not retained or promoted.",
       "artifact": "data/experiments/exp-20260617-019/exp_20260617_019_filing_timeliness_early_disclosure_scout.json",
       "log": "experiments/logs/exp-20260617-019.json",
       "aggregate_expected_value_delta": -0.0297,
       "aggregate_strategy_total_pnl_delta": -1263.37,
-      "updated_at": "2026-06-17T16:32:04+00:00"
+      "updated_at": "2026-06-17T16:35:39+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-17T16:32:04+00:00"
+  "updated_at": "2026-06-17T16:35:39+00:00"
 }
