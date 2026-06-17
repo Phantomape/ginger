@@ -50556,8 +50556,411 @@
       "aggregate_expected_value_delta": -0.0297,
       "aggregate_strategy_total_pnl_delta": -1263.37,
       "updated_at": "2026-06-17T16:35:39+00:00"
+    },
+    {
+      "experiment_id": "exp-20260617-020",
+      "experiment_uid": "expuid-a921b8f61cc744e5",
+      "hub_identity": {
+        "scheme": "hf_hub_local_v1",
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260617-020",
+        "slug": "filing_timeliness_broad_early_disclosure",
+        "reserved_at": "2026-06-17T17:03:45+00:00",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+      },
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search-automation",
+      "hypothesis": "candidate_pool: broad liquid-universe companies whose latest annual 10-K is filed abnormally early versus their own trailing filing-lag norm may drift up over the next 10 trading days, because prompt disclosure proxies clean books / management confidence and the market underreacts to the timeliness signal. Tested with the same fixed gate as exp-20260617-019, only changing the candidate universe scope from core to broad liquid.",
+      "change_type": "default_off_paper_candidate_pool_replay_scout",
+      "mechanism_family": "production_visible_free_sec_companyfacts_filing_timeliness_candidate_pool",
+      "trial_family": "free_sec_companyfacts_filing_timeliness_broad_candidate_pool",
+      "trial_variant_id": "broad_annual_10k_early_filing_vs_own_norm_top1_next_open_10d_v1",
+      "single_causal_variable": "sec_filing_timeliness_broad_early_disclosure_candidate_source_v1",
+      "changed_variable": "sec_filing_timeliness_broad_early_disclosure_candidate_source_v1",
+      "causal_components": [
+        "historical replay",
+        "broad liquid universe fixed gate",
+        "execution envelope",
+        "Gate 1-4 verdict"
+      ],
+      "prior_trial_count": 0,
+      "nearby_prior_experiments": [
+        "exp-20260617-019",
+        "exp-20260528-016",
+        "exp-20260616-015",
+        "exp-20260617-007"
+      ],
+      "multiple_testing_risk_bucket": "moderate",
+      "new_evidence_type": "sec_annual_10k_filing_timeliness_vs_own_norm_pit_event",
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260617_020_filing_timeliness_broad_early_disclosure.py",
+        "data/experiments/exp-20260617-020/exp_20260617_020_filing_timeliness_broad_early_disclosure.json",
+        "experiments/cards/exp-20260617-020.md",
+        "experiments/manifests/exp-20260617-020.json",
+        "experiments/tickets/exp-20260617-020.json",
+        "experiments/logs/exp-20260617-020.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "must_not_touch": [],
+      "locked_variables": [
+        "sec_filing_timeliness_broad_early_disclosure_candidate_source_v1"
+      ],
+      "evaluation_windows": [],
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "prediction": {
+        "success_probability": 0.24,
+        "expected_ev_delta": null,
+        "expected_pnl_delta": null,
+        "main_failure_modes": [
+          "broad_universe_adds_noise",
+          "old_thin_window_regression",
+          "drawdown_drift",
+          "accepted_distribution_comparator_not_beaten"
+        ],
+        "confidence_reason": "The prior core-universe filing timeliness scout failed but explicitly identified underpowered scope as the blocker: about 1713 broad liquid early-filing events exist versus 18 core trades. The field is PIT-safe, free SEC Companyfacts filed-date timing, distinct from filing recency and recent overhang ratios, but broad event breadth may add noise and still fail old_thin/drawdown/comparator guards.",
+        "recorded_at": "2026-06-17T17:03:34+00:00"
+      },
+      "created_at": "2026-06-17T17:03:45+00:00",
+      "claimed_at": "2026-06-17T17:03:53+00:00",
+      "completed_at": "2026-06-17T17:12:11+00:00",
+      "result": {
+        "decision": "rejected_broad_filing_timeliness_early_disclosure_candidate_pool",
+        "accepted": false,
+        "numeric_gate4_passed": false,
+        "artifact": "data/experiments/exp-20260617-020/exp_20260617_020_filing_timeliness_broad_early_disclosure.json",
+        "log": "experiments/logs/exp-20260617-020.json",
+        "aggregate_expected_value_delta": 0.0193,
+        "aggregate_strategy_total_pnl_delta": -3690.46,
+        "gate4": {
+          "passed": false,
+          "decision": "rejected_broad_filing_timeliness_early_disclosure_candidate_pool",
+          "failed_reasons": [
+            "aggregate_pnl_not_positive",
+            "window_ev_regression",
+            "window_pnl_regression",
+            "drawdown_drift_too_high",
+            "accepted_compression_ev_not_beaten",
+            "accepted_compression_pnl_not_beaten",
+            "accepted_distribution_ev_not_beaten",
+            "accepted_distribution_pnl_not_beaten"
+          ],
+          "aggregate_ev_delta": 0.0193,
+          "aggregate_pnl_delta": -3690.46,
+          "windows_ev_improved": 2,
+          "windows_ev_regressed": 1,
+          "windows_pnl_improved": 2,
+          "windows_pnl_regressed": 1,
+          "target_trade_count": 107,
+          "target_trade_count_min": 20,
+          "target_windows": [
+            "late_strong",
+            "mid_weak",
+            "old_thin"
+          ],
+          "target_window_count_min": 3,
+          "max_drawdown_worse": 0.028,
+          "max_drawdown_worse_guardrail": 0.005,
+          "minimum_core_survival_rate": 0.7925,
+          "survival_guard_passed": true,
+          "target_concentration": {
+            "passed": true,
+            "max_single_positive_pnl_share": 0.071567,
+            "max_single_positive_pnl_share_guardrail": 0.5,
+            "positive_pnl_hhi": 0.039337,
+            "positive_pnl_hhi_guardrail": 0.35
+          },
+          "accepted_compression_comparator": {
+            "experiment_id": "exp-20260608-013",
+            "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+            "aggregate_expected_value_delta": 0.1608,
+            "aggregate_pnl_delta": 2248.98
+          },
+          "accepted_distribution_comparator": {
+            "experiment_id": "exp-20260611-007",
+            "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+            "aggregate_expected_value_delta": 0.5286,
+            "aggregate_pnl_delta": 10432.91
+          }
+        },
+        "calibration": {
+          "predicted_success_probability": 0.24,
+          "actual_gate4_passed": false,
+          "actual_success": 0,
+          "failure_modes_observed": [
+            "aggregate_pnl_not_positive",
+            "window_ev_regression",
+            "window_pnl_regression",
+            "drawdown_drift_too_high",
+            "accepted_compression_ev_not_beaten",
+            "accepted_compression_pnl_not_beaten",
+            "accepted_distribution_ev_not_beaten",
+            "accepted_distribution_pnl_not_beaten"
+          ],
+          "brier_score": 0.0576,
+          "expected_ev_delta": null,
+          "actual_ev_delta": 0.0193,
+          "expected_pnl_delta": null,
+          "actual_pnl_delta": -3690.46
+        },
+        "production_impact": {
+          "trade_enabled": false,
+          "alters_orders": false,
+          "adapter_status": "private_replay_scout_no_shared_adapter",
+          "shared_policy_changed": false,
+          "backtester_adapter_changed": false,
+          "run_adapter_changed": false,
+          "replay_only": true,
+          "default_off_paper_only": true,
+          "daily_snapshot_exposed": false,
+          "parity_test_added": false,
+          "production_signal_path_changed": false,
+          "production_orders_changed": false,
+          "production_watchlist_changed": false,
+          "alters_signal_generation": false,
+          "alters_candidate_ranking": false,
+          "alters_sizing": false,
+          "alters_exits": false,
+          "uses_llm": false,
+          "uses_free_sec_companyfacts": true,
+          "uses_free_ohlcv": true,
+          "live_realism_evaluated": true,
+          "live_ready": false,
+          "execution_envelope": {
+            "trade_enabled": false,
+            "target_notional_per_paper_trade": 4000.0,
+            "daily_entry_slots": 1,
+            "same_ticker_cooldown_days": 10,
+            "hold_days": 10,
+            "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV (no momentum gate)",
+            "order_semantics": "observe-only next-session-open paper entry; no broker order",
+            "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+            "kill_switch": "trade_enabled remains false; no production adapter changes",
+            "failure_handling": "missing raw SEC annual 10-K filing history, fewer than 3 prior annual filings, missing CIK mapping, missing OHLCV, missing next open, or missing 10d exit rejects the paper candidate"
+          },
+          "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper computes the same PIT annual 10-K filed-lag history, abnormally-early-vs-own-norm gate, light liquidity gate, cooldown, next-open paper entry, 10-day exit, costs, and concentration controls in both historical replay and daily production."
+        },
+        "post_run_reflection": {
+          "why_result_happened": "The broad liquid-universe SEC filing-timeliness early-disclosure source did not clear Gate 4 (failed: aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, drawdown_drift_too_high, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). This directly tests the breadth caveat from exp-20260617-019: the same fixed early-10-K-vs-own-history gate is now replayed over the broad liquid SEC/warehouse universe instead of the core snapshot. The result is not retained or promoted.",
+          "outcome_summary": "Aggregate EV delta +0.0193; aggregate PnL delta $-3,690.46; max drawdown drift +0.0280; 107 paper trades.",
+          "forbidden_near_neighbor_retry": "Do not retry by sweeping earliness-days, current-lag cap, prior-filing-count, event-age, price/ADV liquidity floors, FY duration, top-N, hold days, cooldown, notional, or candidate-universe scope for this fixed annual 10-K early-filing bundle.",
+          "new_evidence_required": "The broad-universe scope caveat has now been tested. If this fixed bundle fails, do not retry by sweeping earliness-days, current-lag cap, prior-filing-count, event-age, price/ADV liquidity floors, FY duration, top-N, hold days, cooldown, notional, or broad/core scope. A valid retry needs a materially different disclosure-timing field (quarterly 10-Q timeliness, accelerated-filer-status change, NT 10-K late-filing notices, segment/customer disclosure timing) or closed forward replacement-value rows."
+        }
+      },
+      "ticket_file": "experiments/tickets/exp-20260617-020.json",
+      "card_file": "experiments/cards/exp-20260617-020.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260617-020.json",
+      "decision": "rejected_broad_filing_timeliness_early_disclosure_candidate_pool",
+      "summary": "The broad liquid-universe SEC filing-timeliness early-disclosure source did not clear Gate 4 (failed: aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, drawdown_drift_too_high, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). This directly tests the breadth caveat from exp-20260617-019: the same fixed early-10-K-vs-own-history gate is now replayed over the broad liquid SEC/warehouse universe instead of the core snapshot. The result is not retained or promoted.",
+      "artifact": "data/experiments/exp-20260617-020/exp_20260617_020_filing_timeliness_broad_early_disclosure.json",
+      "log": "experiments/logs/exp-20260617-020.json",
+      "aggregate_expected_value_delta": 0.0193,
+      "aggregate_strategy_total_pnl_delta": -3690.46,
+      "updated_at": "2026-06-17T17:12:11+00:00"
+    },
+    {
+      "experiment_id": "exp-20260617-021",
+      "experiment_uid": "expuid-a1a62833df4f4a87",
+      "hub_identity": {
+        "scheme": "hf_hub_local_v1",
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260617-021",
+        "slug": "intraindustry_liquidity_leader_lead_lag_scout",
+        "reserved_at": "2026-06-17T17:15:06+00:00",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+      },
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search-automation",
+      "hypothesis": "candidate_pool relation: within an industry, when the top liquidity leaders ran up recently versus SPY but a smaller same-industry member has not yet moved, the laggard drifts up over the next 10 trading days via information diffusion. Broad liquid universe, next-open entry, no same-day-repair confirmation.",
+      "change_type": "default_off_paper_candidate_pool_replay_scout",
+      "mechanism_family": "production_visible_free_ohlcv_intraindustry_lead_lag_relation_candidate_pool",
+      "trial_family": "free_ohlcv_intraindustry_liquidity_leader_lead_lag_candidate_pool",
+      "trial_variant_id": "intraindustry_liquidity_leader_lead_lag_top1_next_open_10d_v1",
+      "single_causal_variable": "intraindustry_liquidity_leader_lead_lag_candidate_source_v1",
+      "changed_variable": "intraindustry_liquidity_leader_lead_lag_candidate_source_v1",
+      "causal_components": [
+        "broad universe candidate snapshot",
+        "industry leader basket",
+        "diffusion-gap laggard selection",
+        "core baseline overlay",
+        "three-window measurement",
+        "accepted relation comparator"
+      ],
+      "prior_trial_count": 0,
+      "nearby_prior_experiments": [
+        "exp-20260607-007",
+        "exp-20260608-008"
+      ],
+      "multiple_testing_risk_bucket": "moderate",
+      "new_evidence_type": "free_ohlcv_intraindustry_liquidity_leader_lead_lag_relation",
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260617_021_intraindustry_liquidity_leader_lead_lag_scout.py",
+        "data/experiments/exp-20260617-021/exp_20260617_021_intraindustry_liquidity_leader_lead_lag_scout.json",
+        "experiments/cards/exp-20260617-021.md",
+        "experiments/manifests/exp-20260617-021.json",
+        "experiments/tickets/exp-20260617-021.json",
+        "experiments/logs/exp-20260617-021.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "must_not_touch": [],
+      "locked_variables": [
+        "intra-industry liquidity-leader-to-laggard lead-lag (leader basket strong + candidate has not yet moved) as a standalone broad-universe next-open 10-day candidate-pool source"
+      ],
+      "evaluation_windows": [],
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "prediction": {
+        "success_probability": 0.16,
+        "expected_ev_delta": null,
+        "expected_pnl_delta": null,
+        "main_failure_modes": [
+          "overlaps_accepted_industry_relative_laggard_repair",
+          "catches_falling_knives_without_repair",
+          "old_thin_window_regression",
+          "concentration_failed",
+          "fails_accepted_relation_comparator"
+        ],
+        "confidence_reason": "Intra-industry information diffusion / size lead-lag (Hou 2007; Lo-MacKinlay) is a documented relation distinct from contemporaneous rolling-correlation peer shock and from the accepted industry-relative laggard repair, which requires whole-industry strength AND same-day repair. This source keys on a liquidity-leader subset basket and a candidate that has not yet moved, a cold diffusion-lag bet. Main disconfirmer: entering without same-day confirmation risks falling knives, may regress old_thin chop, concentrate in hot industries, and must beat the accepted industry-relation comparator after costs.",
+        "recorded_at": "2026-06-17T17:15:06Z"
+      },
+      "created_at": "2026-06-17T17:15:06+00:00",
+      "claimed_at": "2026-06-17T17:15:12+00:00",
+      "completed_at": "2026-06-17T17:22:50+00:00",
+      "result": {
+        "decision": "rejected_intraindustry_liquidity_leader_lead_lag_candidate_pool",
+        "accepted": false,
+        "numeric_gate4_passed": false,
+        "artifact": "data/experiments/exp-20260617-021/exp_20260617_021_intraindustry_liquidity_leader_lead_lag_scout.json",
+        "log": "experiments/logs/exp-20260617-021.json",
+        "aggregate_expected_value_delta": 0.1661,
+        "aggregate_strategy_total_pnl_delta": 5102.64,
+        "gate4": {
+          "passed": false,
+          "decision": "rejected_intraindustry_liquidity_leader_lead_lag_candidate_pool",
+          "failed_reasons": [
+            "window_ev_regression",
+            "window_pnl_regression",
+            "fewer_than_two_ev_improved_windows",
+            "drawdown_drift_too_high",
+            "accepted_distribution_ev_not_beaten",
+            "accepted_distribution_pnl_not_beaten"
+          ],
+          "aggregate_ev_delta": 0.1661,
+          "aggregate_pnl_delta": 5102.64,
+          "windows_ev_improved": 1,
+          "windows_ev_regressed": 2,
+          "windows_pnl_improved": 1,
+          "windows_pnl_regressed": 2,
+          "target_trade_count": 383,
+          "target_trade_count_min": 20,
+          "target_windows": [
+            "late_strong",
+            "mid_weak",
+            "old_thin"
+          ],
+          "target_window_count_min": 3,
+          "max_drawdown_worse": 0.0259,
+          "max_drawdown_worse_guardrail": 0.005,
+          "minimum_core_survival_rate": 0.7925,
+          "survival_guard_passed": true,
+          "target_concentration": {
+            "passed": true,
+            "max_single_positive_pnl_share": 0.052012,
+            "max_single_positive_pnl_share_guardrail": 0.5,
+            "positive_pnl_hhi": 0.016664,
+            "positive_pnl_hhi_guardrail": 0.35
+          },
+          "accepted_compression_comparator": {
+            "experiment_id": "exp-20260608-013",
+            "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+            "aggregate_expected_value_delta": 0.1608,
+            "aggregate_pnl_delta": 2248.98
+          },
+          "accepted_distribution_comparator": {
+            "experiment_id": "exp-20260611-007",
+            "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+            "aggregate_expected_value_delta": 0.5286,
+            "aggregate_pnl_delta": 10432.91
+          }
+        },
+        "calibration": {
+          "predicted_success_probability": 0.16,
+          "actual_gate4_passed": false,
+          "actual_success": 0,
+          "failure_modes_observed": [
+            "window_ev_regression",
+            "window_pnl_regression",
+            "fewer_than_two_ev_improved_windows",
+            "drawdown_drift_too_high",
+            "accepted_distribution_ev_not_beaten",
+            "accepted_distribution_pnl_not_beaten"
+          ],
+          "brier_score": 0.0256,
+          "expected_ev_delta": null,
+          "actual_ev_delta": 0.1661,
+          "expected_pnl_delta": null,
+          "actual_pnl_delta": 5102.64
+        },
+        "production_impact": {
+          "trade_enabled": false,
+          "alters_orders": false,
+          "adapter_status": "private_replay_scout_no_shared_adapter",
+          "shared_policy_changed": false,
+          "backtester_adapter_changed": false,
+          "run_adapter_changed": false,
+          "replay_only": true,
+          "default_off_paper_only": true,
+          "daily_snapshot_exposed": false,
+          "parity_test_added": false,
+          "production_signal_path_changed": false,
+          "production_orders_changed": false,
+          "production_watchlist_changed": false,
+          "alters_signal_generation": false,
+          "alters_candidate_ranking": false,
+          "alters_sizing": false,
+          "alters_exits": false,
+          "uses_llm": false,
+          "uses_free_sec_companyfacts": false,
+          "uses_free_ohlcv": true,
+          "live_realism_evaluated": true,
+          "live_ready": false,
+          "execution_envelope": {
+            "trade_enabled": false,
+            "target_notional_per_paper_trade": 4000.0,
+            "daily_entry_slots": 1,
+            "same_ticker_cooldown_days": 10,
+            "hold_days": 10,
+            "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+            "order_semantics": "observe-only next-session-open paper entry; no broker order",
+            "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+            "kill_switch": "trade_enabled remains false; no production adapter changes",
+            "failure_handling": "industry with fewer than 6 liquid members, missing leader basket, missing OHLCV, missing next open, or missing 10d exit rejects the paper candidate"
+          },
+          "parity_note": "This experiment changes no production code; the core baseline stays the canonical core replay and only the default-off paper candidate snapshot is the broad liquid universe. A positive result is only a replay lead until a shared default-off helper computes the same PIT per-industry liquidity-leader basket, diffusion-gap laggard gate, next-open paper entry, 10-day exit, costs, cooldown, and concentration controls in both historical replay and daily production."
+        },
+        "post_run_reflection": {
+          "why_result_happened": "The intra-industry liquidity-leader lead-lag source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, drawdown_drift_too_high, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten), but the failure is STATE-DEPENDENT, not flat noise. With full broad-universe breadth (1,026 eligible names, 383 paper trades, excellent concentration: positive HHI ~0.017, max single-ticker share ~5%), the aggregate EV/PnL is POSITIVE (EV +0.1661, PnL $+5,102.64) and the diffusion bet pays strongly in the transitional/weak window (mid_weak dPnL $+7,058, dEV +0.3468) while REGRESSING in both the strong-trend window (late_strong dPnL $-823) and the chop window (old_thin dPnL $-1,132). Economic reading: in a strong trend leaders keep leading and laggards keep lagging (no catch-up), and in chop the leader move reverses (false signal); only in a transitional regime does information actually diffuse from liquid leaders to not-yet-moved peers. Drawdown drift (+0.0259) also exceeds the 0.5pp cap. As a STATIC always-on source it is rejected; the signal is a regime-conditioned lead.",
+          "outcome_summary": "Aggregate EV delta +0.1661; aggregate PnL delta $+5,102.64; max drawdown drift +0.0259; 383 paper trades.",
+          "forbidden_near_neighbor_retry": "Do not retry by sweeping leader-top-K, min-leader-excess, diffusion-gap, candidate-excess cap, candidate-ret floor, lookback, industry-member minimum, price/ADV floors, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs a materially different relation construction (lead/lag direction stability, transfer entropy, customer/supplier linkage) or closed forward replacement-value rows.",
+          "new_evidence_required": "This is a STATE-DEPENDENT lead-lag (pays in transitional/weak markets, fails in strong trend and chop) with clean broad-universe breadth and concentration. The natural next step is NOT a threshold sweep but a regime-CONDITIONED deployment: tag each candidate's entry-day regime with the shared PIT regime module (quant/regime_chop_state.py) and measure whether restricting / down-tilting the source by regime turns the positive aggregate into a non-regressing source, validated on forward / live-pilot rows tagged with entry-time regime (never by re-slicing these frozen windows, per the regime-router line). A static always-on version is rejected; do not sweep leader-K / gap / lookback / liquidity / hold / cooldown / notional on these windows. A different valid retry is a materially different relation construction (PIT lead/lag direction stability, transfer-entropy edges, or customer/supplier linkage)."
+        }
+      },
+      "ticket_file": "experiments/tickets/exp-20260617-021.json",
+      "card_file": "experiments/cards/exp-20260617-021.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260617-021.json",
+      "decision": "rejected_intraindustry_liquidity_leader_lead_lag_candidate_pool",
+      "summary": "The intra-industry liquidity-leader lead-lag source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, drawdown_drift_too_high, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten), but the failure is STATE-DEPENDENT, not flat noise. With full broad-universe breadth (1,026 eligible names, 383 paper trades, excellent concentration: positive HHI ~0.017, max single-ticker share ~5%), the aggregate EV/PnL is POSITIVE (EV +0.1661, PnL $+5,102.64) and the diffusion bet pays strongly in the transitional/weak window (mid_weak dPnL $+7,058, dEV +0.3468) while REGRESSING in both the strong-trend window (late_strong dPnL $-823) and the chop window (old_thin dPnL $-1,132). Economic reading: in a strong trend leaders keep leading and laggards keep lagging (no catch-up), and in chop the leader move reverses (false signal); only in a transitional regime does information actually diffuse from liquid leaders to not-yet-moved peers. Drawdown drift (+0.0259) also exceeds the 0.5pp cap. As a STATIC always-on source it is rejected; the signal is a regime-conditioned lead.",
+      "artifact": "data/experiments/exp-20260617-021/exp_20260617_021_intraindustry_liquidity_leader_lead_lag_scout.json",
+      "log": "experiments/logs/exp-20260617-021.json",
+      "aggregate_expected_value_delta": 0.1661,
+      "aggregate_strategy_total_pnl_delta": 5102.64,
+      "updated_at": "2026-06-17T17:22:50+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-17T16:35:39+00:00"
+  "updated_at": "2026-06-17T17:22:50+00:00"
 }

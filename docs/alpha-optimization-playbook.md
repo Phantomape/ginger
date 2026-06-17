@@ -906,19 +906,39 @@ production-visible field:
 - Space price-action, ETF relative, defense-budget, low-thrust absorption, or
   theme-segment retunes on frozen windows;
 - SEC filing-timeliness early-disclosure (latest annual 10-K filed abnormally
-  early vs the company's own trailing filed-lag norm) candidate-pool retries on
-  the CORE universe, or sweeping earliness-days / current-lag cap /
-  prior-filing-count / event-age / liquidity floors there: `exp-20260617-019`
-  scouted this as an event-driven, liquidity-only (no momentum gate) source but
-  the scout harness is core-universe-scoped (~47 names, 36 with history), so it
-  produced only 18 paper trades and was REJECTED (aggregate EV `-0.0297`, PnL
-  `-$1,263`, old_thin regressed, sample < 20). The signal is NOT refuted at
-  breadth: ~1,713 abnormally-early-filing events exist across the ~1,137 liquid
-  names with >=3 prior 10-Ks (~202 old_thin, ~29 mid_weak, ~248 late_strong).
-  The only sanctioned next step is the SAME fixed gate over the BROAD liquid
-  universe (candidate_universe=broad_market, as the accepted SBC/compression/
-  distribution sleeves use), then the canonical three windows and accepted
-  comparators; do not re-run or threshold-sweep on the core universe;
+  early vs the company's own trailing filed-lag norm) candidate-pool retries
+  that sweep earliness-days, current-lag cap, prior-filing-count, event-age,
+  liquidity floors, FY duration, top-N, hold, cooldown, notional, or
+  core/broad universe scope. `exp-20260617-019` first rejected the underpowered
+  CORE-universe scout (18 trades, old_thin regression), and `exp-20260617-020`
+  then tested the sanctioned same fixed gate over the BROAD liquid universe.
+  The broad run expanded coverage to 1,137 eligible history tickers and 107
+  paper trades, but was still REJECTED: aggregate EV `+0.0193` with PnL
+  `-$3,690`, old_thin EV/PnL regression, and drawdown drift `+2.80pp`, while
+  failing both accepted compression and distribution comparators. The breadth
+  caveat is now closed; a valid retry needs a materially different
+  disclosure-timing field such as quarterly 10-Q timeliness,
+  accelerated-filer-status change, NT 10-K late-filing notices, segment/customer
+  disclosure timing, or closed forward replacement-value rows;
+- intra-industry liquidity-leader lead-lag (top-3 by 20d dollar volume per
+  industry run up vs SPY over 10d; a same-industry member that has NOT yet
+  moved drifts to catch up) as a STATIC always-on candidate pool, and sweeping
+  its leader-K / min-leader-excess / diffusion-gap / candidate-excess cap /
+  lookback / industry-member minimum / liquidity / hold / cooldown / notional
+  on the frozen windows: `exp-20260617-021` tested it on the broad liquid
+  universe (1,026 eligible, 383 trades, excellent concentration HHI ~0.017) and
+  it was REJECTED but STATE-DEPENDENT, not noise: aggregate EV `+0.1661`, PnL
+  `+$5,103`, driven entirely by the transitional `mid_weak` window (dPnL
+  `+$7,058`, dEV `+0.347`) while BOTH `late_strong` (`-$823`) and `old_thin`
+  (`-$1,132`) regressed, with drawdown drift `+2.59pp`. Reading: in a strong
+  trend leaders keep leading (no catch-up) and in chop the leader move reverses;
+  the diffusion bet only pays in a transitional regime. This is mechanically
+  distinct from the accepted industry-relative laggard repair (whole-industry
+  strength + same-day repair) and is a clean lead for the regime-router line.
+  The only sanctioned next step is a regime-CONDITIONED deployment tagged with
+  the shared PIT `quant/regime_chop_state.py` module and validated on forward /
+  live-pilot rows tagged with entry-time regime, never by re-slicing these
+  frozen windows; do not retry as a static source or sweep its thresholds;
 - missing archive/text availability as an alpha field.
 
 ## Update Discipline
