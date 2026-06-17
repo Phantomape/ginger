@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1365`
-- Raw records loaded by meta report: `1968`
-- History fingerprint: `c371df697f23562b`
+- Strategy records counted: `1366`
+- Raw records loaded by meta report: `1970`
+- History fingerprint: `a5a9769b1c4b78df`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -63,8 +63,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260617-007` `rejected_capex_depreciation_reinvestment_cycle_candidate_pool`: EV `+0.7777`, PnL `$11,550.79`, family `production_visible_free_sec_companyfacts_reinvestment_cycle_candidate_pool`, trial `capex_depreciation_reinvestment_cycle_candidate_pool`.
-  Lesson: The raw SEC CapEx/D&A reinvestment-cycle source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, drawdown_drift_too_high). It is not retained or promoted. Do not retry by sweeping CapEx/D&A t...
 - `exp-20260617-008` `rejected_impairment_overhang_relief_candidate_pool`: EV `+0.0731`, PnL `$618.02`, family `production_visible_free_sec_companyfacts_impairment_overhang_candidate_pool`, trial `impairment_overhang_relief_candidate_pool`.
   Lesson: The raw SEC impairment-overhang relief source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, drawdown_drift_too_high, target_concentration_failed, accepted_compression_ev_not_beaten, accept...
 - `exp-20260617-009` `rejected_sector_normalized_reinvestment_productivity_candidate_pool`: EV `+0.2647`, PnL `$3,809.50`, family `production_visible_free_sec_companyfacts_reinvestment_cycle_candidate_pool`, trial `sector_normalized_reinvestment_productivity_candidate_pool`.
@@ -87,6 +85,8 @@ facts before changing strategy behavior.
   Lesson: Industry down-shock resilience did not clear Gate 4 after next-open execution and accepted relation comparators. The likely cause is that local group weakness still created falling-knife risk, while the individual res...
 - `exp-20260617-018` `rejected_accrued_liability_burden_relief_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `production_visible_free_sec_companyfacts_operating_liability_candidate_pool`, trial `accrued_liability_burden_relief_candidate_pool`.
   Lesson: The accrued liability burden relief source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too_s...
+- `exp-20260617-019` `rejected_filing_timeliness_early_disclosure_candidate_pool`: EV `-0.0297`, PnL `$-1,263.37`, family `production_visible_free_sec_companyfacts_filing_timeliness_candidate_pool`, trial `free_sec_companyfacts_filing_timeliness_candidate_pool`.
+  Lesson: The SEC filing-timeliness early-disclosure event source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, target_sample_too_small, drawdo...
 
 ## Highest-Signal Historical Records
 

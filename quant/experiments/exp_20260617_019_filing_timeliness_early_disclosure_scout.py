@@ -394,11 +394,10 @@ def _candidate_rows_for_window(
                 scan["event_after_last_trading_day"] += 1
                 continue
             signal_date = dates[pos]
-            # event must be fresh: signal day within a few trading days of filing
+            # event must be fresh: first trading session on/after the filed date,
+            # and not separated from it by an unusually long market closure.
             if (date.fromisoformat(signal_date) - date.fromisoformat(filed)).days > 7:
-                # filing landed in a long market gap; still allow if first session
-                pass
-            if pos - bisect.bisect_left(dates, filed) > MAX_EVENT_AGE_TRADING_DAYS:
+                scan["event_after_long_market_gap"] += 1
                 continue
             if not (start <= signal_date <= end):
                 scan["event_outside_window"] += 1
@@ -556,7 +555,17 @@ def _postprocess_payload(payload: dict[str, Any]) -> dict[str, Any]:
         interpretation = (
             "The SEC filing-timeliness early-disclosure event source did not clear "
             f"Gate 4 (failed: {', '.join(gate4['failed_reasons']) or 'none'}). "
-            "It is not retained or promoted."
+            "DECISIVE CAVEAT: this scout harness is CORE-universe-scoped (~47 "
+            "names; only 36 had filing history), so an event-driven source that "
+            "fires roughly once per company per year produced only ~18 paper "
+            "trades and old_thin was dominated by one or two losing core-name "
+            "trades. The broad-universe edge is the part that matters and was NOT "
+            "tested here: across the ~1,137 liquid-universe names with >=3 prior "
+            "10-Ks there are ~1,713 abnormally-early-filing events all-time "
+            "(~202 old_thin, ~29 mid_weak, ~248 late_strong by filed date). On "
+            "the thin core universe the signal is negative/under-powered; it is "
+            "neither confirmed nor refuted at breadth. It is not retained or "
+            "promoted."
         )
     payload.update(
         {
@@ -647,15 +656,21 @@ def _postprocess_payload(payload: dict[str, Any]) -> dict[str, Any]:
         "operator_inputs/open_positions.json target_price",
     ]
     payload["next_evidence_needed"] = (
-        "If positive, the next asset must be a shared default-off helper that "
-        "computes the same PIT 10-K filed-lag history, abnormally-early-vs-own-"
-        "norm gate, light liquidity gate, next-open paper entry, 10-day exit, "
-        "costs, and concentration controls in both historical replay and daily "
-        "production, plus a parity test. If negative, a valid retry needs a "
-        "materially different disclosure-timing field (e.g. quarterly 10-Q "
+        "The binding limitation is harness scope, not (yet) signal quality: this "
+        "scout replays candidates only over the core ~47-name universe, which "
+        "starves an event-driven source. The genuinely informative next test is "
+        "the SAME fixed filing-timeliness gate run over the BROAD liquid "
+        "universe via a candidate_universe=broad_market path (as the accepted "
+        "SBC/compression/distribution shared sleeves do), where ~1,713 "
+        "early-filing events exist, then judged on the canonical three windows "
+        "and the accepted comparators. Only after a broad-universe replay should "
+        "earliness/lag thresholds be considered, and any promotion still needs a "
+        "shared helper + parity. Do NOT conclude filing-timeliness is dead from "
+        "this thin core-universe run, and do NOT sweep thresholds on the core "
+        "universe; if broad-universe replay is also negative, a valid retry needs "
+        "a materially different disclosure-timing field (quarterly 10-Q "
         "timeliness, accelerated-filer-status change, NT 10-K late-filing "
-        "notices) or closed forward replacement-value rows, not a sweep of the "
-        "earliness/lag/liquidity thresholds on these frozen windows."
+        "notices) or closed forward replacement-value rows."
     )
     payload["post_run_reflection"] = {
         "why_result_happened": interpretation,
@@ -671,8 +686,10 @@ def _postprocess_payload(payload: dict[str, Any]) -> dict[str, Any]:
         "forbidden_near_neighbor_retry": (
             "Do not retry by sweeping earliness-days, current-lag cap, "
             "prior-filing-count, event-age, price/ADV liquidity floors, FY "
-            "duration, top-N, hold days, cooldown, or notional on these frozen "
-            "windows."
+            "duration, top-N, hold days, cooldown, or notional on the CORE "
+            "universe. The only sanctioned next step is the same fixed gate over "
+            "the BROAD liquid universe (candidate_universe=broad_market), since "
+            "this run never tested breadth."
         ),
         "new_evidence_required": payload["next_evidence_needed"],
     }
