@@ -2394,7 +2394,7 @@ def main():
         ],
     )
 
-    try:
+    def _build_ai_optical():
         ai_optical_source_state = dict(universe_governance_state or {})
         if ai_optical_source_state:
             ai_optical_source_state.setdefault(
@@ -2516,7 +2516,7 @@ def main():
             except Exception:
                 pass
 
-        ai_optical_paper_sleeve = build_ai_optical_paper_sleeve_snapshot(
+        return build_ai_optical_paper_sleeve_snapshot(
             as_of=today_iso,
             candidate_signals=ai_optical_candidate_signals,
             ohlcv_by_ticker=ai_optical_ohlcv,
@@ -2524,26 +2524,14 @@ def main():
             open_prices=ai_optical_open_prices,
             current_prices=ai_optical_current_prices,
         )
-        if (
-            ai_optical_paper_sleeve.get("candidate_count", 0) > 0
-            or ai_optical_paper_sleeve.get("pending_count", 0) > 0
-            or ai_optical_paper_sleeve.get("open_position_count", 0) > 0
-            or ai_optical_paper_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "AI optical paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
-                ai_optical_paper_sleeve.get("candidate_count", 0),
-                ai_optical_paper_sleeve.get("pending_count", 0),
-                ai_optical_paper_sleeve.get("open_position_count", 0),
-                ai_optical_paper_sleeve.get("closed_count_today", 0),
-                ai_optical_paper_sleeve.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"AI optical paper sleeve unavailable: {e}")
-        ai_optical_paper_sleeve = empty_ai_optical_paper_sleeve_snapshot(
-            today_iso,
-            "ai_optical_paper_sleeve_build_failed",
-        )
+
+    ai_optical_paper_sleeve = _sleeve(
+        _build_ai_optical,
+        empty_ai_optical_paper_sleeve_snapshot,
+        "AI optical",
+        "ai_optical_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
 
     def _build_volatility_contraction_sleeve():
         ohlcv = dict(ohlcv_dict)
@@ -2638,15 +2626,9 @@ def main():
         log_metrics=_STD_SLEEVE_METRICS,
     )
 
-    # exp-20260604-021: PEAD broad-universe paper sleeve
-    # exp-20260607-003: Expanded from ~80-90 tickers to ~500 S&P 500 adjacent tickers
-    # via warehouse OHLCV batch load and broad earnings snapshot expansion.
-    # Trigger: EPS surprise >= 5%, gap-cancel > 5%, price >= $5, avg vol >= $10M.
-    # No MA50/RS/pre-event filters. Paper-only forward observation.
-    try:
+    def _build_pead_broad_universe():
         pead_broad_ohlcv = dict(ohlcv_dict)
         pead_broad_ohlcv["SPY"] = spy_ohlcv
-        # Expand to governance observation tickers (existing logic)
         pead_broad_extra_tickers = set(
             (universe_governance_state or {}).get("governance_observation_universe") or []
         ) | set(
@@ -2664,9 +2646,6 @@ def main():
                         _pead_ticker,
                         _pead_ohlcv_err,
                     )
-        # exp-20260607-003: Load ~500 broad-universe tickers from warehouse.
-        # This is a fast batch SQLite read; it does NOT call yfinance.
-        # Only tickers not already in pead_broad_ohlcv are fetched.
         try:
             from pead_broad_universe_tickers import get_pead_broad_universe_tickers
             from ohlcv_warehouse import load_warehouse_ohlcv_frames
@@ -2676,8 +2655,6 @@ def main():
                 if t not in pead_broad_ohlcv or pead_broad_ohlcv.get(t) is None
             ]
             if _pead_warehouse_needed and DEFAULT_WAREHOUSE_PATH.exists():
-                # Load last ~200 calendar days (~130 trading days) — enough for
-                # 20d avg dollar volume, 10d hold, and event detection history.
                 _pead_wh_end = pd.Timestamp(today_iso)
                 _pead_wh_start = _pead_wh_end - pd.Timedelta(days=200)
                 _pead_wh_frames = load_warehouse_ohlcv_frames(
@@ -2718,96 +2695,61 @@ def main():
                 if frame is not None and str(ticker).upper() != "SPY"
             ),
         }
-        pead_broad_universe_paper_sleeve = build_pead_broad_universe_paper_sleeve_snapshot(
+        return build_pead_broad_universe_paper_sleeve_snapshot(
             as_of=today_iso,
             ohlcv_by_ticker=pead_broad_ohlcv,
             candidate_universe=pead_broad_candidate_universe,
             open_prices=current_open_prices,
             current_prices=current_prices,
         )
-        if (
-            pead_broad_universe_paper_sleeve.get("candidate_count", 0) > 0
-            or pead_broad_universe_paper_sleeve.get("pending_count", 0) > 0
-            or pead_broad_universe_paper_sleeve.get("open_position_count", 0) > 0
-            or pead_broad_universe_paper_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "PEAD broad-universe paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s universe=%d",
-                pead_broad_universe_paper_sleeve.get("candidate_count", 0),
-                pead_broad_universe_paper_sleeve.get("pending_count", 0),
-                pead_broad_universe_paper_sleeve.get("open_position_count", 0),
-                pead_broad_universe_paper_sleeve.get("closed_count_today", 0),
-                pead_broad_universe_paper_sleeve.get("realized_pnl_to_date", 0.0),
-                (pead_broad_universe_paper_sleeve.get("candidate_universe") or {}).get(
-                    "ticker_count", 0
-                ),
-            )
-    except Exception as e:
-        log.warning(f"PEAD broad-universe paper sleeve unavailable: {e}")
-        pead_broad_universe_paper_sleeve = empty_pead_broad_universe_paper_sleeve_snapshot(
-            today_iso,
-            "pead_broad_universe_paper_sleeve_build_failed",
-        )
 
-    try:
-        fundamental_growth_ohlcv = dict(ohlcv_dict)
-        fundamental_growth_ohlcv["SPY"] = spy_ohlcv
-        fundamental_growth_candidate_universe = {
+    pead_broad_universe_paper_sleeve = _sleeve(
+        _build_pead_broad_universe,
+        empty_pead_broad_universe_paper_sleeve_snapshot,
+        "PEAD broad-universe",
+        "pead_broad_universe_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
+
+    def _build_fundamental_growth_rs():
+        ohlcv = dict(ohlcv_dict)
+        ohlcv["SPY"] = spy_ohlcv
+        candidate_universe = {
             "status": "daily_data_universe",
             "tickers": sorted(
                 ticker
-                for ticker, frame in fundamental_growth_ohlcv.items()
+                for ticker, frame in ohlcv.items()
                 if frame is not None and str(ticker).upper() != "SPY"
             ),
         }
-        fundamental_growth_rs_paper_sleeve = (
-            build_fundamental_growth_rs_paper_sleeve_snapshot(
-                as_of=today_iso,
-                ohlcv_by_ticker=fundamental_growth_ohlcv,
-                candidate_universe=fundamental_growth_candidate_universe,
-                current_core_tickers=_core_slot_ticker_set(open_positions),
-                open_prices=current_open_prices,
-                current_prices=current_prices,
-            )
-        )
-        if (
-            fundamental_growth_rs_paper_sleeve.get("candidate_count", 0) > 0
-            or fundamental_growth_rs_paper_sleeve.get("pending_count", 0) > 0
-            or fundamental_growth_rs_paper_sleeve.get("open_position_count", 0) > 0
-            or fundamental_growth_rs_paper_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "Fundamental growth + RS paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
-                fundamental_growth_rs_paper_sleeve.get("candidate_count", 0),
-                fundamental_growth_rs_paper_sleeve.get("pending_count", 0),
-                fundamental_growth_rs_paper_sleeve.get("open_position_count", 0),
-                fundamental_growth_rs_paper_sleeve.get("closed_count_today", 0),
-                fundamental_growth_rs_paper_sleeve.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"Fundamental growth + RS paper sleeve unavailable: {e}")
-        fundamental_growth_rs_paper_sleeve = (
-            empty_fundamental_growth_rs_paper_sleeve_snapshot(
-                today_iso,
-                "fundamental_growth_rs_paper_sleeve_build_failed",
-            )
+        return build_fundamental_growth_rs_paper_sleeve_snapshot(
+            as_of=today_iso,
+            ohlcv_by_ticker=ohlcv,
+            candidate_universe=candidate_universe,
+            current_core_tickers=_core_slot_ticker_set(open_positions),
+            open_prices=current_open_prices,
+            current_prices=current_prices,
         )
 
-    try:
-        finra_iwm_ohlcv = dict(ohlcv_dict)
-        finra_iwm_ohlcv["SPY"] = spy_ohlcv
-        if "IWM" not in finra_iwm_ohlcv or finra_iwm_ohlcv.get("IWM") is None:
-            finra_iwm_ohlcv["IWM"] = _cached_ohlcv("IWM")
-        # exp-20260613-023: FINRA publishes short interest for ALL exchange-listed
-        # securities (free, bi-weekly), so widen the candidate filter to the broad
-        # universe instead of only the names with daily OHLCV loaded. Cadence stays
-        # bi-weekly (regulatory); coverage is no longer capped at the watchlist.
-        finra_iwm_candidate_universe = {
+    fundamental_growth_rs_paper_sleeve = _sleeve(
+        _build_fundamental_growth_rs,
+        empty_fundamental_growth_rs_paper_sleeve_snapshot,
+        "Fundamental growth + RS",
+        "fundamental_growth_rs_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
+
+    def _build_finra_iwm():
+        ohlcv = dict(ohlcv_dict)
+        ohlcv["SPY"] = spy_ohlcv
+        if "IWM" not in ohlcv or ohlcv.get("IWM") is None:
+            ohlcv["IWM"] = _cached_ohlcv("IWM")
+        candidate_universe = {
             "status": "daily_data_universe",
             "tickers": sorted(
                 {
                     ticker
-                    for ticker, frame in finra_iwm_ohlcv.items()
+                    for ticker, frame in ohlcv.items()
                     if frame is not None and str(ticker).upper() not in {"SPY", "IWM"}
                 }
                 | {
@@ -2817,42 +2759,30 @@ def main():
                 }
             ),
         }
-        finra_iwm_paper_sleeve = build_finra_iwm_paper_sleeve_snapshot(
+        return build_finra_iwm_paper_sleeve_snapshot(
             as_of=today_iso,
-            ohlcv_by_ticker=finra_iwm_ohlcv,
-            candidate_universe=finra_iwm_candidate_universe,
+            ohlcv_by_ticker=ohlcv,
+            candidate_universe=candidate_universe,
             open_prices=current_open_prices,
             current_prices=current_prices,
         )
-        if (
-            finra_iwm_paper_sleeve.get("candidate_count", 0) > 0
-            or finra_iwm_paper_sleeve.get("pending_count", 0) > 0
-            or finra_iwm_paper_sleeve.get("open_position_count", 0) > 0
-            or finra_iwm_paper_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "FINRA IWM paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
-                finra_iwm_paper_sleeve.get("candidate_count", 0),
-                finra_iwm_paper_sleeve.get("pending_count", 0),
-                finra_iwm_paper_sleeve.get("open_position_count", 0),
-                finra_iwm_paper_sleeve.get("closed_count_today", 0),
-                finra_iwm_paper_sleeve.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"FINRA IWM paper sleeve unavailable: {e}")
-        finra_iwm_paper_sleeve = empty_finra_iwm_paper_sleeve_snapshot(
-            today_iso,
-            "finra_iwm_paper_sleeve_build_failed",
-        )
 
-    try:
-        sec_ftd_finra_ohlcv = dict(ohlcv_dict)
-        sec_ftd_finra_ohlcv["SPY"] = spy_ohlcv
-        sec_ftd_finra_candidate_universe = {
+    finra_iwm_paper_sleeve = _sleeve(
+        _build_finra_iwm,
+        empty_finra_iwm_paper_sleeve_snapshot,
+        "FINRA IWM",
+        "finra_iwm_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
+
+    def _build_sec_ftd_finra():
+        ohlcv = dict(ohlcv_dict)
+        ohlcv["SPY"] = spy_ohlcv
+        candidate_universe = {
             "status": "daily_data_universe",
             "tickers": sorted(
                 ticker
-                for ticker, frame in sec_ftd_finra_ohlcv.items()
+                for ticker, frame in ohlcv.items()
                 if frame is not None and str(ticker).upper() != "SPY"
             ),
         }
@@ -2861,36 +2791,28 @@ def main():
             for signal in signals
             if signal.get("ticker")
         }
-        sec_ftd_finra_paper_sleeve = build_sec_ftd_finra_paper_sleeve_snapshot(
+        return build_sec_ftd_finra_paper_sleeve_snapshot(
             as_of=today_iso,
-            ohlcv_by_ticker=sec_ftd_finra_ohlcv,
-            candidate_universe=sec_ftd_finra_candidate_universe,
+            ohlcv_by_ticker=ohlcv,
+            candidate_universe=candidate_universe,
             same_day_core_tickers=same_day_core_tickers,
             open_prices=current_open_prices,
             current_prices=current_prices,
         )
-        if (
-            sec_ftd_finra_paper_sleeve.get("candidate_count", 0) > 0
-            or sec_ftd_finra_paper_sleeve.get("pending_count", 0) > 0
-            or sec_ftd_finra_paper_sleeve.get("open_position_count", 0) > 0
-            or sec_ftd_finra_paper_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "SEC FTD + FINRA paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
-                sec_ftd_finra_paper_sleeve.get("candidate_count", 0),
-                sec_ftd_finra_paper_sleeve.get("pending_count", 0),
-                sec_ftd_finra_paper_sleeve.get("open_position_count", 0),
-                sec_ftd_finra_paper_sleeve.get("closed_count_today", 0),
-                sec_ftd_finra_paper_sleeve.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"SEC FTD + FINRA paper sleeve unavailable: {e}")
-        sec_ftd_finra_paper_sleeve = empty_sec_ftd_finra_paper_sleeve_snapshot(
-            today_iso,
-            "sec_ftd_finra_paper_sleeve_build_failed",
-        )
 
-    try:
+    sec_ftd_finra_paper_sleeve = _sleeve(
+        _build_sec_ftd_finra,
+        empty_sec_ftd_finra_paper_sleeve_snapshot,
+        "SEC FTD + FINRA",
+        "sec_ftd_finra_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
+
+    alpha_score_market_regime_ohlcv = {}
+    alpha_score_market_regime_candidate_universe = {"status": "not_built", "tickers": []}
+
+    def _build_alpha_score_market_regime():
+        nonlocal alpha_score_market_regime_ohlcv, alpha_score_market_regime_candidate_universe
         alpha_score_market_regime_ohlcv = dict(ohlcv_dict)
         alpha_score_market_regime_ohlcv["SPY"] = spy_ohlcv
         if (
@@ -2906,130 +2828,75 @@ def main():
                 if frame is not None and str(ticker).upper() not in {"SPY", "IWM"}
             ),
         }
-        alpha_score_market_regime_paper_sleeve = (
-            build_alpha_score_market_regime_paper_sleeve_snapshot(
-                as_of=today_iso,
-                features_by_ticker=features_dict,
-                ohlcv_by_ticker=alpha_score_market_regime_ohlcv,
-                candidate_universe=alpha_score_market_regime_candidate_universe,
-                source_consensus_snapshots=[
-                    volume_breadth_breakout_paper_sleeve,
-                    finra_iwm_paper_sleeve,
-                ],
-                open_prices=current_open_prices,
-                current_prices=current_prices,
-            )
-        )
-        if (
-            alpha_score_market_regime_paper_sleeve.get("candidate_count", 0) > 0
-            or alpha_score_market_regime_paper_sleeve.get("pending_count", 0) > 0
-            or alpha_score_market_regime_paper_sleeve.get("open_position_count", 0) > 0
-            or alpha_score_market_regime_paper_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "Alpha-score market-regime paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
-                alpha_score_market_regime_paper_sleeve.get("candidate_count", 0),
-                alpha_score_market_regime_paper_sleeve.get("pending_count", 0),
-                alpha_score_market_regime_paper_sleeve.get("open_position_count", 0),
-                alpha_score_market_regime_paper_sleeve.get("closed_count_today", 0),
-                alpha_score_market_regime_paper_sleeve.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"Alpha-score market-regime paper sleeve unavailable: {e}")
-        alpha_score_market_regime_paper_sleeve = (
-            empty_alpha_score_market_regime_paper_sleeve_snapshot(
-                today_iso,
-                "alpha_score_market_regime_paper_sleeve_build_failed",
-            )
+        return build_alpha_score_market_regime_paper_sleeve_snapshot(
+            as_of=today_iso,
+            features_by_ticker=features_dict,
+            ohlcv_by_ticker=alpha_score_market_regime_ohlcv,
+            candidate_universe=alpha_score_market_regime_candidate_universe,
+            source_consensus_snapshots=[
+                volume_breadth_breakout_paper_sleeve,
+                finra_iwm_paper_sleeve,
+            ],
+            open_prices=current_open_prices,
+            current_prices=current_prices,
         )
 
-    try:
-        accepted_source_consensus_paper_sleeve = (
-            build_accepted_source_consensus_paper_sleeve_snapshot(
-                as_of=today_iso,
-                features_by_ticker=features_dict,
-                ohlcv_by_ticker=alpha_score_market_regime_ohlcv,
-                candidate_universe=alpha_score_market_regime_candidate_universe,
-                source_consensus_snapshots=[
-                    volume_breadth_breakout_paper_sleeve,
-                    finra_iwm_paper_sleeve,
-                ],
-                open_prices=current_open_prices,
-                current_prices=current_prices,
-            )
-        )
-        if (
-            accepted_source_consensus_paper_sleeve.get("candidate_count", 0) > 0
-            or accepted_source_consensus_paper_sleeve.get("pending_count", 0) > 0
-            or accepted_source_consensus_paper_sleeve.get("open_position_count", 0) > 0
-            or accepted_source_consensus_paper_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "Accepted-source consensus paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
-                accepted_source_consensus_paper_sleeve.get("candidate_count", 0),
-                accepted_source_consensus_paper_sleeve.get("pending_count", 0),
-                accepted_source_consensus_paper_sleeve.get("open_position_count", 0),
-                accepted_source_consensus_paper_sleeve.get("closed_count_today", 0),
-                accepted_source_consensus_paper_sleeve.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"Accepted-source consensus paper sleeve unavailable: {e}")
-        accepted_source_consensus_paper_sleeve = (
-            empty_accepted_source_consensus_paper_sleeve_snapshot(
-                today_iso,
-                "accepted_source_consensus_paper_sleeve_build_failed",
-            )
-        )
+    alpha_score_market_regime_paper_sleeve = _sleeve(
+        _build_alpha_score_market_regime,
+        empty_alpha_score_market_regime_paper_sleeve_snapshot,
+        "Alpha-score market-regime",
+        "alpha_score_market_regime_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
 
-    try:
-        free_data_cross_source_consensus_paper_sleeve = (
-            build_free_data_cross_source_consensus_paper_sleeve_snapshot(
-                as_of=today_iso,
-                ohlcv_by_ticker=alpha_score_market_regime_ohlcv,
-                source_snapshots=[
-                    fundamental_growth_rs_paper_sleeve,
-                    volume_breadth_breakout_paper_sleeve,
-                    finra_iwm_paper_sleeve,
-                    finra_borrow_pressure_source_snapshot_from_finra_iwm_snapshot(
-                        finra_iwm_paper_sleeve
-                    ),
-                    alpha_score_market_regime_paper_sleeve,
-                ],
-                open_prices=current_open_prices,
-                current_prices=current_prices,
-                core_active_position_count=strategy_active_positions,
-                max_core_positions=MAX_POSITIONS,
-            )
-        )
-        if (
-            free_data_cross_source_consensus_paper_sleeve.get("candidate_count", 0) > 0
-            or free_data_cross_source_consensus_paper_sleeve.get("pending_count", 0) > 0
-            or free_data_cross_source_consensus_paper_sleeve.get("open_position_count", 0) > 0
-            or free_data_cross_source_consensus_paper_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "Free-data cross-source consensus paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
-                free_data_cross_source_consensus_paper_sleeve.get("candidate_count", 0),
-                free_data_cross_source_consensus_paper_sleeve.get("pending_count", 0),
-                free_data_cross_source_consensus_paper_sleeve.get("open_position_count", 0),
-                free_data_cross_source_consensus_paper_sleeve.get("closed_count_today", 0),
-                free_data_cross_source_consensus_paper_sleeve.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"Free-data cross-source consensus paper sleeve unavailable: {e}")
-        free_data_cross_source_consensus_paper_sleeve = (
-            empty_free_data_cross_source_consensus_paper_sleeve_snapshot(
-                today_iso,
-                "free_data_cross_source_consensus_paper_sleeve_build_failed",
-            )
-        )
+    accepted_source_consensus_paper_sleeve = _sleeve(
+        lambda: build_accepted_source_consensus_paper_sleeve_snapshot(
+            as_of=today_iso,
+            features_by_ticker=features_dict,
+            ohlcv_by_ticker=alpha_score_market_regime_ohlcv,
+            candidate_universe=alpha_score_market_regime_candidate_universe,
+            source_consensus_snapshots=[
+                volume_breadth_breakout_paper_sleeve,
+                finra_iwm_paper_sleeve,
+            ],
+            open_prices=current_open_prices,
+            current_prices=current_prices,
+        ),
+        empty_accepted_source_consensus_paper_sleeve_snapshot,
+        "Accepted-source consensus",
+        "accepted_source_consensus_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
+
+    free_data_cross_source_consensus_paper_sleeve = _sleeve(
+        lambda: build_free_data_cross_source_consensus_paper_sleeve_snapshot(
+            as_of=today_iso,
+            ohlcv_by_ticker=alpha_score_market_regime_ohlcv,
+            source_snapshots=[
+                fundamental_growth_rs_paper_sleeve,
+                volume_breadth_breakout_paper_sleeve,
+                finra_iwm_paper_sleeve,
+                finra_borrow_pressure_source_snapshot_from_finra_iwm_snapshot(
+                    finra_iwm_paper_sleeve
+                ),
+                alpha_score_market_regime_paper_sleeve,
+            ],
+            open_prices=current_open_prices,
+            current_prices=current_prices,
+            core_active_position_count=strategy_active_positions,
+            max_core_positions=MAX_POSITIONS,
+        ),
+        empty_free_data_cross_source_consensus_paper_sleeve_snapshot,
+        "Free-data cross-source consensus",
+        "free_data_cross_source_consensus_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
 
     broad_market_candidate_universe = {"status": "not_built", "tickers": []}
     broad_market_ohlcv = {}
-    try:
-        # exp-20260612-002: daily broad-market data plane. Keep the warehouse
-        # fresh for the broad universe, then regenerate the authoritative
-        # universe feed so sleeves stop starving on the governance fallback.
+
+    def _build_broad_market():
+        nonlocal broad_market_candidate_universe, broad_market_ohlcv
         if not _env_flag("BROAD_UNIVERSE_REFRESH_DISABLED"):
             try:
                 from ohlcv_warehouse_refresh import refresh_warehouse_ohlcv
@@ -3105,8 +2972,6 @@ def main():
                 ticker for ticker in broad_market_wanted if ticker not in broad_market_ohlcv
             ]
             if broad_market_missing and DEFAULT_WAREHOUSE_PATH.exists():
-                # exp-20260612-002: batch SQLite read for the broad universe
-                # instead of one vendor call per ticker.
                 from ohlcv_warehouse import load_warehouse_ohlcv_frames
 
                 _bm_wh_end = pd.Timestamp(today_iso)
@@ -3135,8 +3000,6 @@ def main():
                     len(broad_market_missing),
                 )
             if broad_market_missing and len(broad_market_missing) <= 30:
-                # Small feeds (e.g. the governance observation fallback) keep
-                # the original per-ticker cached fetch path.
                 for ticker in broad_market_missing:
                     try:
                         broad_market_ohlcv[ticker] = _cached_ohlcv(ticker)
@@ -3157,7 +3020,7 @@ def main():
             | set(pilot_universe)
             | set((universe_governance_state or {}).get("governance_tradeable_universe") or [])
         )
-        broad_market_paper_sleeve = build_broad_market_paper_sleeve_snapshot(
+        return build_broad_market_paper_sleeve_snapshot(
             as_of=today_iso,
             ohlcv_by_ticker=broad_market_ohlcv,
             current_tradeable_universe=broad_market_tradeable_universe,
@@ -3165,471 +3028,245 @@ def main():
             open_prices=current_open_prices,
             current_prices=current_prices,
         )
-        if (
-            broad_market_paper_sleeve.get("candidate_count", 0) > 0
-            or broad_market_paper_sleeve.get("pending_count", 0) > 0
-            or broad_market_paper_sleeve.get("open_position_count", 0) > 0
-            or broad_market_paper_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "Broad-market paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
-                broad_market_paper_sleeve.get("candidate_count", 0),
-                broad_market_paper_sleeve.get("pending_count", 0),
-                broad_market_paper_sleeve.get("open_position_count", 0),
-                broad_market_paper_sleeve.get("closed_count_today", 0),
-                broad_market_paper_sleeve.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        # exc_info so an intermittent failure (e.g. a transient warehouse SQLite
-        # lock under concurrent writers) is diagnosable from the log, not just a
-        # bare message.
-        log.warning("Broad-market paper sleeve unavailable: %s: %s", type(e).__name__, e, exc_info=True)
-        broad_market_paper_sleeve = empty_broad_market_paper_sleeve_snapshot(
-            today_iso,
-            "broad_market_paper_sleeve_build_failed",
-        )
 
-    try:
+    broad_market_paper_sleeve = _sleeve(
+        _build_broad_market,
+        empty_broad_market_paper_sleeve_snapshot,
+        "Broad-market",
+        "broad_market_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
+
+    def _build_macro_relief():
         if not broad_market_candidate_universe.get("tickers"):
-            macro_relief_leadership_paper_sleeve = empty_macro_relief_leadership_snapshot(
-                today_iso,
-                "broad_market_candidate_universe_unavailable",
-            )
-        else:
-            macro_relief_ohlcv = dict(broad_market_ohlcv)
-            if "SPY" not in macro_relief_ohlcv and spy_ohlcv is not None:
-                macro_relief_ohlcv["SPY"] = spy_ohlcv
-            if "QQQ" not in macro_relief_ohlcv:
-                if "QQQ" in ohlcv_dict:
-                    macro_relief_ohlcv["QQQ"] = ohlcv_dict["QQQ"]
-                else:
-                    macro_relief_ohlcv["QQQ"] = _cached_ohlcv("QQQ")
-            macro_relief_leadership_paper_sleeve = build_macro_relief_leadership_snapshot(
-                as_of=today_iso,
-                ohlcv_by_ticker=macro_relief_ohlcv,
-                candidate_universe=broad_market_candidate_universe,
-            )
-        if (
-            macro_relief_leadership_paper_sleeve.get("candidate_count", 0) > 0
-            or macro_relief_leadership_paper_sleeve.get("pending_count", 0) > 0
-            or macro_relief_leadership_paper_sleeve.get("open_position_count", 0) > 0
-            or macro_relief_leadership_paper_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "Macro-relief leadership paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
-                macro_relief_leadership_paper_sleeve.get("candidate_count", 0),
-                macro_relief_leadership_paper_sleeve.get("pending_count", 0),
-                macro_relief_leadership_paper_sleeve.get("open_position_count", 0),
-                macro_relief_leadership_paper_sleeve.get("closed_count_today", 0),
-                macro_relief_leadership_paper_sleeve.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"Macro-relief leadership paper sleeve unavailable: {e}")
-        macro_relief_leadership_paper_sleeve = empty_macro_relief_leadership_snapshot(
-            today_iso,
-            "macro_relief_leadership_paper_sleeve_build_failed",
+            return empty_macro_relief_leadership_snapshot(
+                today_iso, "broad_market_candidate_universe_unavailable")
+        ohlcv = dict(broad_market_ohlcv)
+        if "SPY" not in ohlcv and spy_ohlcv is not None:
+            ohlcv["SPY"] = spy_ohlcv
+        if "QQQ" not in ohlcv:
+            ohlcv["QQQ"] = ohlcv_dict.get("QQQ") or _cached_ohlcv("QQQ")
+        return build_macro_relief_leadership_snapshot(
+            as_of=today_iso,
+            ohlcv_by_ticker=ohlcv,
+            candidate_universe=broad_market_candidate_universe,
         )
 
-    try:
+    macro_relief_leadership_paper_sleeve = _sleeve(
+        _build_macro_relief,
+        empty_macro_relief_leadership_snapshot,
+        "Macro-relief leadership",
+        "macro_relief_leadership_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
+
+    def _build_volatility_relief():
         if not broad_market_candidate_universe.get("tickers"):
-            volatility_relief_stock_leadership_paper_sleeve = (
-                empty_volatility_relief_stock_leadership_snapshot(
-                    today_iso,
-                    "broad_market_candidate_universe_unavailable",
-                )
-            )
-        else:
-            volatility_relief_ohlcv = dict(broad_market_ohlcv)
-            if "SPY" not in volatility_relief_ohlcv and spy_ohlcv is not None:
-                volatility_relief_ohlcv["SPY"] = spy_ohlcv
-            if "QQQ" not in volatility_relief_ohlcv:
-                if "QQQ" in ohlcv_dict:
-                    volatility_relief_ohlcv["QQQ"] = ohlcv_dict["QQQ"]
-                else:
-                    volatility_relief_ohlcv["QQQ"] = _cached_ohlcv("QQQ")
-            if "VIXY" not in volatility_relief_ohlcv:
-                if "VIXY" in ohlcv_dict:
-                    volatility_relief_ohlcv["VIXY"] = ohlcv_dict["VIXY"]
-                else:
-                    volatility_relief_ohlcv["VIXY"] = _cached_ohlcv("VIXY")
-            volatility_relief_stock_leadership_paper_sleeve = (
-                build_volatility_relief_stock_leadership_snapshot(
-                    as_of=today_iso,
-                    ohlcv_by_ticker=volatility_relief_ohlcv,
-                    candidate_universe=broad_market_candidate_universe,
-                    core_entries=signals,
-                )
-            )
-        if (
-            volatility_relief_stock_leadership_paper_sleeve.get("candidate_count", 0) > 0
-            or volatility_relief_stock_leadership_paper_sleeve.get("pending_count", 0) > 0
-            or volatility_relief_stock_leadership_paper_sleeve.get("open_position_count", 0) > 0
-            or volatility_relief_stock_leadership_paper_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "Volatility-relief leadership paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
-                volatility_relief_stock_leadership_paper_sleeve.get("candidate_count", 0),
-                volatility_relief_stock_leadership_paper_sleeve.get("pending_count", 0),
-                volatility_relief_stock_leadership_paper_sleeve.get("open_position_count", 0),
-                volatility_relief_stock_leadership_paper_sleeve.get("closed_count_today", 0),
-                volatility_relief_stock_leadership_paper_sleeve.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"Volatility-relief leadership paper sleeve unavailable: {e}")
-        volatility_relief_stock_leadership_paper_sleeve = (
-            empty_volatility_relief_stock_leadership_snapshot(
-                today_iso,
-                "volatility_relief_stock_leadership_paper_sleeve_build_failed",
-            )
+            return empty_volatility_relief_stock_leadership_snapshot(
+                today_iso, "broad_market_candidate_universe_unavailable")
+        ohlcv = dict(broad_market_ohlcv)
+        if "SPY" not in ohlcv and spy_ohlcv is not None:
+            ohlcv["SPY"] = spy_ohlcv
+        if "QQQ" not in ohlcv:
+            ohlcv["QQQ"] = ohlcv_dict.get("QQQ") or _cached_ohlcv("QQQ")
+        if "VIXY" not in ohlcv:
+            ohlcv["VIXY"] = ohlcv_dict.get("VIXY") or _cached_ohlcv("VIXY")
+        return build_volatility_relief_stock_leadership_snapshot(
+            as_of=today_iso,
+            ohlcv_by_ticker=ohlcv,
+            candidate_universe=broad_market_candidate_universe,
+            core_entries=signals,
         )
 
-    try:
+    volatility_relief_stock_leadership_paper_sleeve = _sleeve(
+        _build_volatility_relief,
+        empty_volatility_relief_stock_leadership_snapshot,
+        "Volatility-relief leadership",
+        "volatility_relief_stock_leadership_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
+
+    def _build_rolling_corr_peer_shock():
         if not broad_market_candidate_universe.get("tickers"):
-            rolling_corr_peer_shock_paper_sleeve = (
-                empty_rolling_corr_peer_shock_paper_sleeve_snapshot(
-                    today_iso,
-                    "broad_market_candidate_universe_unavailable",
-                )
-            )
-        else:
-            rolling_corr_ohlcv = dict(broad_market_ohlcv)
-            if "SPY" not in rolling_corr_ohlcv and spy_ohlcv is not None:
-                rolling_corr_ohlcv["SPY"] = spy_ohlcv
-            rolling_corr_peer_shock_paper_sleeve = (
-                build_rolling_corr_peer_shock_paper_sleeve_snapshot(
-                    as_of=today_iso,
-                    ohlcv_by_ticker=rolling_corr_ohlcv,
-                    core_entries=signals,
-                    candidate_universe=broad_market_candidate_universe,
-                )
-            )
-        if (
-            rolling_corr_peer_shock_paper_sleeve.get("candidate_count", 0) > 0
-            or rolling_corr_peer_shock_paper_sleeve.get("pending_count", 0) > 0
-            or rolling_corr_peer_shock_paper_sleeve.get("open_position_count", 0) > 0
-            or rolling_corr_peer_shock_paper_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "Rolling-corr peer-shock paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
-                rolling_corr_peer_shock_paper_sleeve.get("candidate_count", 0),
-                rolling_corr_peer_shock_paper_sleeve.get("pending_count", 0),
-                rolling_corr_peer_shock_paper_sleeve.get("open_position_count", 0),
-                rolling_corr_peer_shock_paper_sleeve.get("closed_count_today", 0),
-                rolling_corr_peer_shock_paper_sleeve.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"Rolling-corr peer-shock paper sleeve unavailable: {e}")
-        rolling_corr_peer_shock_paper_sleeve = (
-            empty_rolling_corr_peer_shock_paper_sleeve_snapshot(
-                today_iso,
-                "rolling_corr_peer_shock_paper_sleeve_build_failed",
-            )
+            return empty_rolling_corr_peer_shock_paper_sleeve_snapshot(
+                today_iso, "broad_market_candidate_universe_unavailable")
+        ohlcv = dict(broad_market_ohlcv)
+        if "SPY" not in ohlcv and spy_ohlcv is not None:
+            ohlcv["SPY"] = spy_ohlcv
+        return build_rolling_corr_peer_shock_paper_sleeve_snapshot(
+            as_of=today_iso,
+            ohlcv_by_ticker=ohlcv,
+            core_entries=signals,
+            candidate_universe=broad_market_candidate_universe,
         )
 
-    try:
+    rolling_corr_peer_shock_paper_sleeve = _sleeve(
+        _build_rolling_corr_peer_shock,
+        empty_rolling_corr_peer_shock_paper_sleeve_snapshot,
+        "Rolling-corr peer-shock",
+        "rolling_corr_peer_shock_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
+
+    def _build_industry_laggard_repair():
         if not broad_market_candidate_universe.get("tickers"):
-            industry_relative_laggard_repair_paper_sleeve = (
-                empty_industry_relative_laggard_repair_paper_sleeve_snapshot(
-                    today_iso,
-                    "broad_market_candidate_universe_unavailable",
-                )
-            )
-        else:
-            industry_repair_ohlcv = dict(broad_market_ohlcv)
-            if "SPY" not in industry_repair_ohlcv and spy_ohlcv is not None:
-                industry_repair_ohlcv["SPY"] = spy_ohlcv
-            industry_relative_laggard_repair_paper_sleeve = (
-                build_industry_relative_laggard_repair_paper_sleeve_snapshot(
-                    as_of=today_iso,
-                    ohlcv_by_ticker=industry_repair_ohlcv,
-                    core_entries=signals,
-                    candidate_universe=broad_market_candidate_universe,
-                )
-            )
-        if (
-            industry_relative_laggard_repair_paper_sleeve.get("candidate_count", 0) > 0
-            or industry_relative_laggard_repair_paper_sleeve.get("pending_count", 0) > 0
-            or industry_relative_laggard_repair_paper_sleeve.get("open_position_count", 0) > 0
-            or industry_relative_laggard_repair_paper_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "Industry-relative laggard repair paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
-                industry_relative_laggard_repair_paper_sleeve.get("candidate_count", 0),
-                industry_relative_laggard_repair_paper_sleeve.get("pending_count", 0),
-                industry_relative_laggard_repair_paper_sleeve.get("open_position_count", 0),
-                industry_relative_laggard_repair_paper_sleeve.get("closed_count_today", 0),
-                industry_relative_laggard_repair_paper_sleeve.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"Industry-relative laggard repair paper sleeve unavailable: {e}")
-        industry_relative_laggard_repair_paper_sleeve = (
-            empty_industry_relative_laggard_repair_paper_sleeve_snapshot(
-                today_iso,
-                "industry_relative_laggard_repair_paper_sleeve_build_failed",
-            )
+            return empty_industry_relative_laggard_repair_paper_sleeve_snapshot(
+                today_iso, "broad_market_candidate_universe_unavailable")
+        ohlcv = dict(broad_market_ohlcv)
+        if "SPY" not in ohlcv and spy_ohlcv is not None:
+            ohlcv["SPY"] = spy_ohlcv
+        return build_industry_relative_laggard_repair_paper_sleeve_snapshot(
+            as_of=today_iso,
+            ohlcv_by_ticker=ohlcv,
+            core_entries=signals,
+            candidate_universe=broad_market_candidate_universe,
         )
 
-    try:
+    industry_relative_laggard_repair_paper_sleeve = _sleeve(
+        _build_industry_laggard_repair,
+        empty_industry_relative_laggard_repair_paper_sleeve_snapshot,
+        "Industry-relative laggard repair",
+        "industry_relative_laggard_repair_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
+
+    def _build_industry_stable_core_flow():
         if not broad_market_candidate_universe.get("tickers"):
-            industry_stable_core_flow_paper_sleeve = (
-                empty_industry_stable_core_flow_snapshot(
-                    today_iso,
-                    "broad_market_candidate_universe_unavailable",
-                )
-            )
-        else:
-            industry_stable_core_flow_ohlcv = dict(broad_market_ohlcv)
-            if "SPY" not in industry_stable_core_flow_ohlcv and spy_ohlcv is not None:
-                industry_stable_core_flow_ohlcv["SPY"] = spy_ohlcv
-            if "QQQ" not in industry_stable_core_flow_ohlcv:
-                if "QQQ" in ohlcv_dict:
-                    industry_stable_core_flow_ohlcv["QQQ"] = ohlcv_dict["QQQ"]
-                elif qqq_ohlcv is not None:
-                    industry_stable_core_flow_ohlcv["QQQ"] = qqq_ohlcv
-                else:
-                    industry_stable_core_flow_ohlcv["QQQ"] = _cached_ohlcv("QQQ")
-            industry_stable_core_flow_paper_sleeve = (
-                build_industry_stable_core_flow_snapshot(
-                    as_of=today_iso,
-                    ohlcv_by_ticker=industry_stable_core_flow_ohlcv,
-                    core_entries=signals,
-                    candidate_universe=broad_market_candidate_universe,
-                )
-            )
-        if (
-            industry_stable_core_flow_paper_sleeve.get("candidate_count", 0) > 0
-            or industry_stable_core_flow_paper_sleeve.get("pending_count", 0) > 0
-            or industry_stable_core_flow_paper_sleeve.get("open_position_count", 0) > 0
-            or industry_stable_core_flow_paper_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "Industry stable core-flow paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
-                industry_stable_core_flow_paper_sleeve.get("candidate_count", 0),
-                industry_stable_core_flow_paper_sleeve.get("pending_count", 0),
-                industry_stable_core_flow_paper_sleeve.get("open_position_count", 0),
-                industry_stable_core_flow_paper_sleeve.get("closed_count_today", 0),
-                industry_stable_core_flow_paper_sleeve.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"Industry stable core-flow paper sleeve unavailable: {e}")
-        industry_stable_core_flow_paper_sleeve = (
-            empty_industry_stable_core_flow_snapshot(
-                today_iso,
-                "industry_stable_core_flow_paper_sleeve_build_failed",
-            )
+            return empty_industry_stable_core_flow_snapshot(
+                today_iso, "broad_market_candidate_universe_unavailable")
+        ohlcv = dict(broad_market_ohlcv)
+        if "SPY" not in ohlcv and spy_ohlcv is not None:
+            ohlcv["SPY"] = spy_ohlcv
+        if "QQQ" not in ohlcv:
+            if "QQQ" in ohlcv_dict:
+                ohlcv["QQQ"] = ohlcv_dict["QQQ"]
+            elif qqq_ohlcv is not None:
+                ohlcv["QQQ"] = qqq_ohlcv
+            else:
+                ohlcv["QQQ"] = _cached_ohlcv("QQQ")
+        return build_industry_stable_core_flow_snapshot(
+            as_of=today_iso,
+            ohlcv_by_ticker=ohlcv,
+            core_entries=signals,
+            candidate_universe=broad_market_candidate_universe,
         )
 
-    try:
+    industry_stable_core_flow_paper_sleeve = _sleeve(
+        _build_industry_stable_core_flow,
+        empty_industry_stable_core_flow_snapshot,
+        "Industry stable core-flow",
+        "industry_stable_core_flow_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
+
+    def _build_turn_of_month():
         if not broad_market_candidate_universe.get("tickers"):
-            turn_of_month_liquid_leadership_paper_sleeve = (
-                empty_turn_of_month_liquid_leadership_snapshot(
-                    today_iso,
-                    "broad_market_candidate_universe_unavailable",
-                )
-            )
-        else:
-            turn_of_month_ohlcv = dict(broad_market_ohlcv)
-            if "SPY" not in turn_of_month_ohlcv and spy_ohlcv is not None:
-                turn_of_month_ohlcv["SPY"] = spy_ohlcv
-            turn_of_month_liquid_leadership_paper_sleeve = (
-                build_turn_of_month_liquid_leadership_snapshot(
-                    as_of=today_iso,
-                    ohlcv_by_ticker=turn_of_month_ohlcv,
-                    candidate_universe=broad_market_candidate_universe,
-                    core_entries=signals,
-                )
-            )
-        if (
-            turn_of_month_liquid_leadership_paper_sleeve.get("candidate_count", 0) > 0
-            or turn_of_month_liquid_leadership_paper_sleeve.get("pending_count", 0) > 0
-            or turn_of_month_liquid_leadership_paper_sleeve.get("open_position_count", 0) > 0
-            or turn_of_month_liquid_leadership_paper_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "Turn-of-month liquid leadership paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
-                turn_of_month_liquid_leadership_paper_sleeve.get("candidate_count", 0),
-                turn_of_month_liquid_leadership_paper_sleeve.get("pending_count", 0),
-                turn_of_month_liquid_leadership_paper_sleeve.get("open_position_count", 0),
-                turn_of_month_liquid_leadership_paper_sleeve.get("closed_count_today", 0),
-                turn_of_month_liquid_leadership_paper_sleeve.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"Turn-of-month liquid leadership paper sleeve unavailable: {e}")
-        turn_of_month_liquid_leadership_paper_sleeve = (
-            empty_turn_of_month_liquid_leadership_snapshot(
-                today_iso,
-                "turn_of_month_liquid_leadership_paper_sleeve_build_failed",
-            )
+            return empty_turn_of_month_liquid_leadership_snapshot(
+                today_iso, "broad_market_candidate_universe_unavailable")
+        ohlcv = dict(broad_market_ohlcv)
+        if "SPY" not in ohlcv and spy_ohlcv is not None:
+            ohlcv["SPY"] = spy_ohlcv
+        return build_turn_of_month_liquid_leadership_snapshot(
+            as_of=today_iso,
+            ohlcv_by_ticker=ohlcv,
+            candidate_universe=broad_market_candidate_universe,
+            core_entries=signals,
         )
 
-    try:
+    turn_of_month_liquid_leadership_paper_sleeve = _sleeve(
+        _build_turn_of_month,
+        empty_turn_of_month_liquid_leadership_snapshot,
+        "Turn-of-month liquid leadership",
+        "turn_of_month_liquid_leadership_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
+
+    def _build_narrow_range_compression():
         if not broad_market_candidate_universe.get("tickers"):
-            narrow_range_compression_breakout_paper_sleeve = (
-                empty_narrow_range_compression_breakout_snapshot(
-                    today_iso,
-                    "broad_market_candidate_universe_unavailable",
-                )
-            )
-        else:
-            compression_ohlcv = dict(broad_market_ohlcv)
-            if "SPY" not in compression_ohlcv and spy_ohlcv is not None:
-                compression_ohlcv["SPY"] = spy_ohlcv
-            narrow_range_compression_breakout_paper_sleeve = (
-                build_narrow_range_compression_breakout_snapshot(
-                    as_of=today_iso,
-                    ohlcv_by_ticker=compression_ohlcv,
-                    candidate_universe=broad_market_candidate_universe,
-                    core_entries=signals,
-                )
-            )
-        if (
-            narrow_range_compression_breakout_paper_sleeve.get("candidate_count", 0) > 0
-            or narrow_range_compression_breakout_paper_sleeve.get("pending_count", 0) > 0
-            or narrow_range_compression_breakout_paper_sleeve.get("open_position_count", 0) > 0
-            or narrow_range_compression_breakout_paper_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "Narrow-range compression breakout paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
-                narrow_range_compression_breakout_paper_sleeve.get("candidate_count", 0),
-                narrow_range_compression_breakout_paper_sleeve.get("pending_count", 0),
-                narrow_range_compression_breakout_paper_sleeve.get("open_position_count", 0),
-                narrow_range_compression_breakout_paper_sleeve.get("closed_count_today", 0),
-                narrow_range_compression_breakout_paper_sleeve.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"Narrow-range compression breakout paper sleeve unavailable: {e}")
-        narrow_range_compression_breakout_paper_sleeve = (
-            empty_narrow_range_compression_breakout_snapshot(
-                today_iso,
-                "narrow_range_compression_breakout_paper_sleeve_build_failed",
-            )
+            return empty_narrow_range_compression_breakout_snapshot(
+                today_iso, "broad_market_candidate_universe_unavailable")
+        ohlcv = dict(broad_market_ohlcv)
+        if "SPY" not in ohlcv and spy_ohlcv is not None:
+            ohlcv["SPY"] = spy_ohlcv
+        return build_narrow_range_compression_breakout_snapshot(
+            as_of=today_iso,
+            ohlcv_by_ticker=ohlcv,
+            candidate_universe=broad_market_candidate_universe,
+            core_entries=signals,
         )
 
-    try:
+    narrow_range_compression_breakout_paper_sleeve = _sleeve(
+        _build_narrow_range_compression,
+        empty_narrow_range_compression_breakout_snapshot,
+        "Narrow-range compression breakout",
+        "narrow_range_compression_breakout_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
+
+    def _build_distribution_absorption():
         if not broad_market_candidate_universe.get("tickers"):
-            distribution_day_absorption_leadership_paper_sleeve = (
-                empty_distribution_day_absorption_leadership_snapshot(
-                    today_iso,
-                    "broad_market_candidate_universe_unavailable",
-                )
-            )
-        else:
-            distribution_absorption_ohlcv = dict(broad_market_ohlcv)
-            if "SPY" not in distribution_absorption_ohlcv and spy_ohlcv is not None:
-                distribution_absorption_ohlcv["SPY"] = spy_ohlcv
-            if "QQQ" not in distribution_absorption_ohlcv:
-                if "QQQ" in ohlcv_dict:
-                    distribution_absorption_ohlcv["QQQ"] = ohlcv_dict["QQQ"]
-                else:
-                    distribution_absorption_ohlcv["QQQ"] = _cached_ohlcv("QQQ")
-            distribution_day_absorption_leadership_paper_sleeve = (
-                build_distribution_day_absorption_leadership_snapshot(
-                    as_of=today_iso,
-                    ohlcv_by_ticker=distribution_absorption_ohlcv,
-                    candidate_universe=broad_market_candidate_universe,
-                    core_entries=signals,
-                )
-            )
-        if (
-            distribution_day_absorption_leadership_paper_sleeve.get("candidate_count", 0) > 0
-            or distribution_day_absorption_leadership_paper_sleeve.get("pending_count", 0) > 0
-            or distribution_day_absorption_leadership_paper_sleeve.get("open_position_count", 0) > 0
-            or distribution_day_absorption_leadership_paper_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "Distribution-day absorption leadership paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
-                distribution_day_absorption_leadership_paper_sleeve.get("candidate_count", 0),
-                distribution_day_absorption_leadership_paper_sleeve.get("pending_count", 0),
-                distribution_day_absorption_leadership_paper_sleeve.get("open_position_count", 0),
-                distribution_day_absorption_leadership_paper_sleeve.get("closed_count_today", 0),
-                distribution_day_absorption_leadership_paper_sleeve.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"Distribution-day absorption leadership paper sleeve unavailable: {e}")
-        distribution_day_absorption_leadership_paper_sleeve = (
-            empty_distribution_day_absorption_leadership_snapshot(
-                today_iso,
-                "distribution_day_absorption_leadership_paper_sleeve_build_failed",
-            )
+            return empty_distribution_day_absorption_leadership_snapshot(
+                today_iso, "broad_market_candidate_universe_unavailable")
+        ohlcv = dict(broad_market_ohlcv)
+        if "SPY" not in ohlcv and spy_ohlcv is not None:
+            ohlcv["SPY"] = spy_ohlcv
+        if "QQQ" not in ohlcv:
+            ohlcv["QQQ"] = ohlcv_dict.get("QQQ") or _cached_ohlcv("QQQ")
+        return build_distribution_day_absorption_leadership_snapshot(
+            as_of=today_iso,
+            ohlcv_by_ticker=ohlcv,
+            candidate_universe=broad_market_candidate_universe,
+            core_entries=signals,
         )
 
-    try:
+    distribution_day_absorption_leadership_paper_sleeve = _sleeve(
+        _build_distribution_absorption,
+        empty_distribution_day_absorption_leadership_snapshot,
+        "Distribution-day absorption leadership",
+        "distribution_day_absorption_leadership_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
+
+    def _build_sbc_burden():
         if not broad_market_candidate_universe.get("tickers"):
-            sbc_burden_improvement_paper_sleeve = (
-                empty_sbc_burden_improvement_paper_sleeve_snapshot(
-                    today_iso,
-                    "broad_market_candidate_universe_unavailable",
-                )
-            )
-        else:
-            sbc_burden_ohlcv = dict(broad_market_ohlcv)
-            if "SPY" not in sbc_burden_ohlcv and spy_ohlcv is not None:
-                sbc_burden_ohlcv["SPY"] = spy_ohlcv
-            sbc_burden_improvement_paper_sleeve = (
-                build_sbc_burden_improvement_paper_sleeve_snapshot(
-                    as_of=today_iso,
-                    ohlcv_by_ticker=sbc_burden_ohlcv,
-                    candidate_universe=broad_market_candidate_universe,
-                    open_prices=current_open_prices,
-                    current_prices=current_prices,
-                )
-            )
-        if (
-            sbc_burden_improvement_paper_sleeve.get("candidate_count", 0) > 0
-            or sbc_burden_improvement_paper_sleeve.get("pending_count", 0) > 0
-            or sbc_burden_improvement_paper_sleeve.get("open_position_count", 0) > 0
-            or sbc_burden_improvement_paper_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "SBC burden improvement paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
-                sbc_burden_improvement_paper_sleeve.get("candidate_count", 0),
-                sbc_burden_improvement_paper_sleeve.get("pending_count", 0),
-                sbc_burden_improvement_paper_sleeve.get("open_position_count", 0),
-                sbc_burden_improvement_paper_sleeve.get("closed_count_today", 0),
-                sbc_burden_improvement_paper_sleeve.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"SBC burden improvement paper sleeve unavailable: {e}")
-        sbc_burden_improvement_paper_sleeve = (
-            empty_sbc_burden_improvement_paper_sleeve_snapshot(
-                today_iso,
-                "sbc_burden_improvement_paper_sleeve_build_failed",
-            )
+            return empty_sbc_burden_improvement_paper_sleeve_snapshot(
+                today_iso, "broad_market_candidate_universe_unavailable")
+        ohlcv = dict(broad_market_ohlcv)
+        if "SPY" not in ohlcv and spy_ohlcv is not None:
+            ohlcv["SPY"] = spy_ohlcv
+        return build_sbc_burden_improvement_paper_sleeve_snapshot(
+            as_of=today_iso,
+            ohlcv_by_ticker=ohlcv,
+            candidate_universe=broad_market_candidate_universe,
+            open_prices=current_open_prices,
+            current_prices=current_prices,
         )
 
-    try:
-        revision_ohlcv = dict(broad_market_ohlcv)
-        if "SPY" not in revision_ohlcv and spy_ohlcv is not None:
-            revision_ohlcv["SPY"] = spy_ohlcv
-        revision_surprise_low_extension_paper_sleeve = (
-            build_revision_surprise_low_extension_snapshot(
-                as_of=today_iso,
-                ohlcv_by_ticker=revision_ohlcv,
-                core_entries=signals,
-            )
+    sbc_burden_improvement_paper_sleeve = _sleeve(
+        _build_sbc_burden,
+        empty_sbc_burden_improvement_paper_sleeve_snapshot,
+        "SBC burden improvement",
+        "sbc_burden_improvement_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
+
+    def _build_revision_surprise():
+        ohlcv = dict(broad_market_ohlcv)
+        if "SPY" not in ohlcv and spy_ohlcv is not None:
+            ohlcv["SPY"] = spy_ohlcv
+        return build_revision_surprise_low_extension_snapshot(
+            as_of=today_iso,
+            ohlcv_by_ticker=ohlcv,
+            core_entries=signals,
         )
-        if (
-            revision_surprise_low_extension_paper_sleeve.get("candidate_count", 0) > 0
-            or revision_surprise_low_extension_paper_sleeve.get("pending_count", 0) > 0
-            or revision_surprise_low_extension_paper_sleeve.get("open_position_count", 0) > 0
-            or revision_surprise_low_extension_paper_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "Revision surprise low-extension paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
-                revision_surprise_low_extension_paper_sleeve.get("candidate_count", 0),
-                revision_surprise_low_extension_paper_sleeve.get("pending_count", 0),
-                revision_surprise_low_extension_paper_sleeve.get("open_position_count", 0),
-                revision_surprise_low_extension_paper_sleeve.get("closed_count_today", 0),
-                revision_surprise_low_extension_paper_sleeve.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"Revision surprise low-extension paper sleeve unavailable: {e}")
-        revision_surprise_low_extension_paper_sleeve = (
-            empty_revision_surprise_low_extension_snapshot(
-                today_iso,
-                "revision_surprise_low_extension_paper_sleeve_build_failed",
-            )
-        )
+
+    revision_surprise_low_extension_paper_sleeve = _sleeve(
+        _build_revision_surprise,
+        empty_revision_surprise_low_extension_snapshot,
+        "Revision surprise low-extension",
+        "revision_surprise_low_extension_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
 
     accepted_helper_source_priority_allocator_paper_sleeve = _sleeve(
         lambda: build_accepted_helper_source_priority_allocator_snapshot(
