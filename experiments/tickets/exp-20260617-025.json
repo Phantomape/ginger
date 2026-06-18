@@ -1,0 +1,205 @@
+{
+  "experiment_id": "exp-20260617-025",
+  "experiment_uid": "expuid-10b2b9eb617449b6",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260617-025",
+    "slug": "nt_late_filing_absorption_scout",
+    "reserved_at": "2026-06-17T20:04:43+00:00",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "alpha-search-automation",
+  "hypothesis": "candidate_pool: PIT SEC NT 10-K/NT 10-Q late-filing notices are normally negative, but when same-day price action absorbs the filing-delay shock versus SPY, the delayed-disclosure overhang may be priced in and create a 10-trading-day continuation/rebound candidate.",
+  "change_type": "default_off_paper_candidate_pool_replay_scout",
+  "mechanism_family": "production_visible_free_sec_submissions_filing_delay_candidate_pool",
+  "trial_family": "free_sec_submissions_nt_late_filing_absorption_candidate_pool",
+  "trial_variant_id": "nt_late_filing_absorption_top1_next_open_10d_v1",
+  "single_causal_variable": "sec_nt_late_filing_notice_absorption_candidate_source_v1",
+  "changed_variable": "sec_nt_late_filing_notice_absorption_candidate_source_v1",
+  "causal_components": [
+    "sec_submissions_nt_forms",
+    "price_absorption_gate",
+    "broad_liquid_universe",
+    "next_open_paper_entry",
+    "10d_hold",
+    "costs",
+    "gate4_record"
+  ],
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260617-020",
+    "exp-20260617-022",
+    "exp-20260617-023",
+    "exp-20260617-024"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "sec_submissions_nt_10k_10q_forms_with_price_absorption",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260617_025_nt_late_filing_absorption_scout.py",
+    "data/experiments/exp-20260617-025/exp_20260617_025_nt_late_filing_absorption_scout.json",
+    "experiments/cards/exp-20260617-025.md",
+    "experiments/manifests/exp-20260617-025.json",
+    "experiments/tickets/exp-20260617-025.json",
+    "experiments/logs/exp-20260617-025.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "sec_nt_late_filing_notice_absorption_candidate_source_v1"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.14,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "late_filing_notices_are_true_accounting_delay_risk",
+      "thin_sample",
+      "old_thin_window_regression",
+      "accepted_distribution_comparator_not_beaten"
+    ],
+    "confidence_reason": "This is the materially different disclosure-timing field explicitly allowed after the rejected 10-K/10-Q early-filing tests: SEC NT late-filing notices from EDGAR submissions are free, PIT, and production-visible. The edge is contrarian absorption, but late filings can be genuine accounting/control risk, so expected success is low.",
+    "recorded_at": "2026-06-17T20:04:31+00:00"
+  },
+  "created_at": "2026-06-17T20:04:43+00:00",
+  "claimed_at": "2026-06-17T20:04:50+00:00",
+  "completed_at": "2026-06-17T20:10:13+00:00",
+  "result": {
+    "decision": "rejected_sec_nt_late_filing_absorption_candidate_pool",
+    "accepted": false,
+    "numeric_gate4_passed": false,
+    "artifact": "data/experiments/exp-20260617-025/exp_20260617_025_nt_late_filing_absorption_scout.json",
+    "log": "experiments/logs/exp-20260617-025.json",
+    "aggregate_expected_value_delta": 0.0003,
+    "aggregate_strategy_total_pnl_delta": 19.92,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_sec_nt_late_filing_absorption_candidate_pool",
+      "failed_reasons": [
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "target_concentration_failed",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "aggregate_ev_delta": 0.0003,
+      "aggregate_pnl_delta": 19.92,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 1,
+      "windows_pnl_regressed": 0,
+      "target_trade_count": 1,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": false,
+        "max_single_positive_pnl_share": 1.0,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 1.0,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "accepted_compression_comparator": {
+        "experiment_id": "exp-20260608-013",
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "aggregate_expected_value_delta": 0.1608,
+        "aggregate_pnl_delta": 2248.98
+      },
+      "accepted_distribution_comparator": {
+        "experiment_id": "exp-20260611-007",
+        "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+        "aggregate_expected_value_delta": 0.5286,
+        "aggregate_pnl_delta": 10432.91
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.14,
+      "actual_gate4_passed": false,
+      "actual_success": 0,
+      "failure_modes_observed": [
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "target_concentration_failed",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "brier_score": 0.0196,
+      "expected_ev_delta": null,
+      "actual_ev_delta": 0.0003,
+      "expected_pnl_delta": null,
+      "actual_pnl_delta": 19.92
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "private_replay_scout_no_shared_adapter",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "default_off_paper_only": true,
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_sec_companyfacts": false,
+      "uses_free_ohlcv": true,
+      "live_realism_evaluated": true,
+      "live_ready": false,
+      "execution_envelope": {
+        "trade_enabled": false,
+        "target_notional_per_paper_trade": 4000.0,
+        "daily_entry_slots": 1,
+        "same_ticker_cooldown_days": 10,
+        "hold_days": 10,
+        "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+        "order_semantics": "observe-only next-session-open paper entry; no broker order",
+        "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+        "kill_switch": "trade_enabled remains false; no production adapter changes",
+        "failure_handling": "missing SEC submissions cache, missing CIK mapping, missing NT late-filing notice rows, missing OHLCV, missing next open, or missing 10d exit rejects the paper candidate"
+      },
+      "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper computes the same PIT SEC NT 10-K/NT 10-Q notice events, acceptance-time signal date, price-absorption gate, cooldown, next-open paper entry, 10-day exit, costs, and concentration controls in both historical replay and daily production.",
+      "uses_free_sec_submissions": true
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The SEC NT late-filing notice absorption source did not clear Gate 4 (failed: fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too_small, target_concentration_failed, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). The fixed bundle tested NT 10-K/NT 10-Q late-filing notice forms plus signal-day SPY-relative price absorption. The result is not retained or promoted.",
+      "outcome_summary": "Aggregate EV delta +0.0003; aggregate PnL delta $+19.92; max drawdown drift +0.0000; 1 paper trades.",
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping NT form lists, signal excess, close-location, volume, volatility, ret20, price/ADV, event-age, top-N, hold days, cooldown, or notional on these frozen windows.",
+      "new_evidence_required": "If this fixed NT late-filing absorption bundle fails, do not retry by sweeping NT form lists, signal excess, close-location, volume, volatility, ret20, price/ADV, event-age, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs materially richer PIT delay economics such as explicit issuer reason, auditor/control language, late-period financial restatement linkage, or closed forward replacement-value observations."
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260617-025.json",
+  "card_file": "experiments/cards/exp-20260617-025.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260617-025.json",
+  "decision": "rejected_sec_nt_late_filing_absorption_candidate_pool",
+  "summary": "The SEC NT late-filing notice absorption source did not clear Gate 4 (failed: fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too_small, target_concentration_failed, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). The fixed bundle tested NT 10-K/NT 10-Q late-filing notice forms plus signal-day SPY-relative price absorption. The result is not retained or promoted.",
+  "artifact": "data/experiments/exp-20260617-025/exp_20260617_025_nt_late_filing_absorption_scout.json",
+  "log": "experiments/logs/exp-20260617-025.json",
+  "aggregate_expected_value_delta": 0.0003,
+  "aggregate_strategy_total_pnl_delta": 19.92,
+  "updated_at": "2026-06-17T20:10:13+00:00"
+}

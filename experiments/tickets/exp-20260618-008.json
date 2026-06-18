@@ -1,0 +1,221 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260618_008_equity_curve_adaptive_sizing.py",
+    "data/experiments/exp-20260618-008/exp_20260618_008_equity_curve_adaptive_sizing.json",
+    "experiments/cards/exp-20260618-008.md",
+    "experiments/manifests/exp-20260618-008.json",
+    "experiments/tickets/exp-20260618-008.json",
+    "experiments/logs/exp-20260618-008.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260618-008.md",
+  "causal_components": [
+    "backtester equity-curve HWM tracking",
+    "notional scale factor on new entries",
+    "three-window Gate 4"
+  ],
+  "change_type": "pilot_or_sleeve",
+  "changed_variable": "portfolio_equity_drawdown_notional_scale: when equity drawdown exceeds threshold, apply sub-1.0 notional multiplier to new entries",
+  "claimed_at": "2026-06-18T06:25:26+00:00",
+  "completed_at": "2026-06-18T06:33:26+00:00",
+  "created_at": "2026-06-18T06:25:17+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260618-008",
+  "experiment_uid": "expuid-9641efe07b5645af",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260618-008",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-18T06:25:17+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "equity_curve_adaptive_sizing"
+  },
+  "hypothesis": "Portfolio equity-curve adaptive sizing (anti-Martingale): when trailing equity is in drawdown >5% below its 20-day high-water mark, scale new entry notional to 0.7x. This is a portfolio-level risk allocation overlay that reduces exposure during adverse equity-curve regimes without changing entry/exit signals.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "portfolio_equity_drawdown_notional_scale: when equity drawdown exceeds threshold, apply sub-1.0 notional multiplier to new entries"
+  ],
+  "mechanism_family": "pilot_or_sleeve",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260524-002"
+  ],
+  "new_evidence_type": "not_declared",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "family_key": "event_market_state_context_quality",
+        "score": 0.6075,
+        "status": "has_accepted"
+      },
+      {
+        "family_key": "state_surface_concentration_context",
+        "score": 0.6071,
+        "status": "frozen_rejected"
+      },
+      {
+        "family_key": "event_market_state_crowding_context",
+        "score": 0.6,
+        "status": "frozen_rejected"
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "regime_state",
+      "field_tags": [
+        "7x",
+        "a",
+        "adaptive",
+        "adverse",
+        "allocation",
+        "anti",
+        "apply",
+        "below",
+        "changing",
+        "curve",
+        "drawdown",
+        "during",
+        "entries",
+        "entry",
+        "equity",
+        "exceeds",
+        "exit",
+        "exposure",
+        "high",
+        "in",
+        "is",
+        "its",
+        "level",
+        "mark",
+        "martingale",
+        "multiplier",
+        "new",
+        "notional",
+        "overlay",
+        "portfolio",
+        "reduces",
+        "regimes",
+        "risk",
+        "scale",
+        "signals",
+        "sizing",
+        "sub",
+        "that",
+        "this",
+        "threshold",
+        "to",
+        "trailing",
+        "water",
+        "when",
+        "without"
+      ],
+      "gate_shape": "notional_scalar"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "full_universe_alpha_score_candidate_pool_safe_risk_budget",
+        "reopen_condition": "A shared production/replay default-off adapter for the alpha_score market-regime source, parity tests, and forward replacement-value rows. No live/default orders before that adapter exists.",
+        "score": 0.6151,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "shared_pit_regime_chop_state_helper",
+        "reopen_condition": "Forward / live-pilot rows tagged with entry-time regime_chop and exposure_scalar. Do not tune the regime constants or exposure floor on the frozen windows.",
+        "score": 0.6078,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "regime_state",
+        "family_key": "event_market_state_context_quality",
+        "reopen_condition": null,
+        "score": 0.6075,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "pit_efficiency_ratio_chop_axis_diagnostic",
+        "reopen_condition": "If Spearman(ER, PnL) is clearly positive and low-ER mean PnL is negative in the windows with chop samples, promote ER to a shared daily regime artifact and apply the continuous exposure scalar as a portfolio-level soft tilt, validated on forward rows / live-pilot scorecard. Do not tune ER window or exposure floor on frozen windows.",
+        "score": 0.6075,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "alpha_score_market_regime_external_macro_context",
+        "reopen_condition": "If revisiting macro context, first add shared production/backtest VIX ingestion and only then test forward replacement rows. Do not retune VIX thresholds on this frozen sample.",
+        "score": 0.6071,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "portfolio-level trailing equity high-water mark sizing is a new mechanism distinct from per-signal risk multipliers and static notional scalars",
+    "override": true,
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "claude-opus-session",
+  "prediction": {
+    "confidence_reason": "The system max drawdown is 11.19% in mid_weak with 52% win rate suggesting clustered losses. Anti-Martingale sizing is theoretically sound (Kelly criterion implies sizing proportional to edge). No prior experiment has tested portfolio-level equity-curve-responsive sizing; nearest neighbor exp-20260524-002 was per-signal heat haircut, a different mechanism. Main risk: only 18-22 trades per window means sizing changes affect very few entries, and 5% DD threshold may trigger too late or not at all in the shallow-drawdown windows.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "too_few_trades_for_statistical_significance",
+      "late_strong_window_rarely_triggers",
+      "v_shaped_recovery_missed",
+      "single_window_improvement_only"
+    ],
+    "recorded_at": "2026-06-18T06:25:04+00:00",
+    "success_probability": 0.2
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "after_result_file": "data/experiments/exp-20260618-008/exp_20260618_008_equity_curve_adaptive_sizing.json",
+    "delta_metrics": {},
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.2,
+      "brier_score": 0.04,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": null,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": null,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "too_few_trades_for_statistical_significance",
+        "late_strong_window_rarely_triggers",
+        "v_shaped_recovery_missed",
+        "single_window_improvement_only"
+      ],
+      "realized_failure_mode": null,
+      "predicted_failure_mode_hit": null,
+      "surprise_note": null
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260618-008.json",
+  "single_causal_variable": "portfolio_equity_drawdown_notional_scale: when equity drawdown exceeds threshold, apply sub-1.0 notional multiplier to new entries",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260618-008.json",
+  "trial_family": "pilot_or_sleeve",
+  "trial_variant_id": "exp-20260618-008"
+}

@@ -1,0 +1,219 @@
+{
+  "acceptance_rule": "Proceed to shared-paper-first only if PIT offering primary-document text or parsed financing amount/use-of-proceeds fields cover all three canonical windows; otherwise block without strategy changes.",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "data/experiments",
+    "experiments/logs",
+    "experiments/cards",
+    "experiments/manifests",
+    "experiments/tickets",
+    "docs/experiment_log.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260618-013.md",
+  "causal_components": [
+    "history_scan",
+    "field_availability_audit",
+    "standard_gate_baseline",
+    "no_strategy_change_without_financing_text"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "sec_offering_financing_economics_data_edge_readiness_v1",
+  "claimed_at": "2026-06-18T14:10:18+00:00",
+  "completed_at": "2026-06-18T14:14:37+00:00",
+  "created_at": "2026-06-18T14:09:54+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260618-013",
+  "experiment_uid": "expuid-08c2e70564784a29",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260618-013",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-18T14:09:54+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_offering_financing_economics_readiness"
+  },
+  "hypothesis": "candidate_pool: SEC offering/prospectus events might become positive only when parsed financing amount and use-of-proceeds show manageable dilution absorbed by price; first verify PIT primary-document text coverage before any strategy change.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "baseline_core_policy",
+    "entry_exit_rules",
+    "notional",
+    "ranking",
+    "trade_enabled"
+  ],
+  "mechanism_family": "production_visible_sec_offering_financing_economics_candidate_pool",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "quant/run.py",
+    "live_orders",
+    "default_trade_enabled"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260617-023",
+    "exp-20260618-012"
+  ],
+  "new_evidence_type": "sec_offering_primary_text_financing_amount_use_of_proceeds_coverage",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "family_key": "broad_companyfacts_peer_confirmed_filing_drift_candidate_pool",
+        "score": 0.6,
+        "status": "has_accepted"
+      },
+      {
+        "family_key": "companyfacts_gross_margin_quality_candidate_pool",
+        "score": 0.6,
+        "status": "has_accepted"
+      },
+      {
+        "family_key": "deferred_revenue_demand_acceleration_candidate_pool",
+        "score": 0.6,
+        "status": "frozen_rejected"
+      },
+      {
+        "family_key": "fundamental_growth_rs_default_off_candidate_pool",
+        "score": 0.6,
+        "status": "frozen_rejected"
+      },
+      {
+        "family_key": "sbc_burden_improvement_shared_default_off_adapter",
+        "score": 0.6,
+        "status": "has_accepted"
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "companyfacts_ratio",
+      "field_tags": [
+        "absorbed",
+        "amount",
+        "any",
+        "become",
+        "before",
+        "by",
+        "change",
+        "coverage",
+        "data",
+        "dilution",
+        "document",
+        "economics",
+        "edge",
+        "events",
+        "financing",
+        "first",
+        "manageable",
+        "might",
+        "of",
+        "offering",
+        "only",
+        "parsed",
+        "pit",
+        "positive",
+        "price",
+        "primary",
+        "proceeds",
+        "prospectus",
+        "readiness",
+        "show",
+        "strategy",
+        "text",
+        "use",
+        "verify",
+        "when"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "broad_companyfacts_peer_price_absorption_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.6105,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "broad_companyfacts_eps_dilution_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.6103,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "broad_companyfacts_eps_dilution_freshness_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.61,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "companyfacts_earnings_yield_rs_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.61,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "companyfacts_fcf_yield_rs_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.61,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New field-availability audit for parsed SEC offering amount/use-of-proceeds primary documents keyed by accession; not a Companyfacts dilution ratio and not an offering form/threshold retune.",
+    "override": true,
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "confidence_reason": "Raw SEC offering price absorption failed all windows in exp-20260617-023; its closeout named financing amount/use-of-proceeds as the valid new evidence axis, but local daily SEC text likely excludes offering forms. This checks that field surface before any strategy replay.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "offering_primary_documents_not_cached",
+      "raw_offering_family_frozen",
+      "no_market_cap_denominator"
+    ],
+    "recorded_at": "2026-06-18T14:09:42+00:00",
+    "success_probability": 0.12
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "artifact": "data/experiments/exp-20260618-013/exp_20260618_013_sec_offering_financing_economics_readiness.json",
+    "decision": "blocked_missing_sec_offering_primary_text",
+    "log": "experiments/logs/exp-20260618-013.json",
+    "status": "blocked"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260618-013.json",
+  "single_causal_variable": "sec_offering_financing_economics_data_edge_readiness_v1",
+  "status": "blocked",
+  "ticket_file": "experiments/tickets/exp-20260618-013.json",
+  "trial_family": "sec_offering_financing_economics_data_edge_readiness",
+  "trial_variant_id": "sec_offering_financing_economics_data_edge_readiness_v1"
+}

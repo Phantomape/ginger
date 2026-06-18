@@ -19,7 +19,7 @@ Observed-only alpha search. No entries, exits, ranking, sizing, LLM/news, or ord
   "candidates_with_eps_estimate_delta_7d": 5,
   "closed_forward_outcomes": {
     "10d": 30,
-    "20d": 21,
+    "20d": 22,
     "5d": 30
   },
   "expectation_join_status_counts": {

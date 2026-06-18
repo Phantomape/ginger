@@ -1,0 +1,773 @@
+{
+  "anti_js": "No JavaScript was used.",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "calibration": {
+    "predicted_failure_modes": [
+      "all_candidate_surfaces_frozen_or_missing_pit_fields",
+      "near_neighbor_retries_not_trustworthy",
+      "no_shared_daily_helper_for_positive_replay"
+    ],
+    "predicted_success_probability": 0.08,
+    "realized_failure_mode": "all_candidate_surfaces_frozen_or_missing_pit_fields",
+    "surprise": "The local metadata contains promising form references, especially 13G/13D, but not the parsed PIT fields needed to make the alpha trustworthy on the three standard windows."
+  },
+  "causal_components": [
+    "history_scan",
+    "field_availability_audit",
+    "standard_gate_baseline",
+    "no_strategy_change_without_gate4_ready_pit_field"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_files": [
+    "quant/experiments/exp_20260618_012_post_20260618_nonrepeat_data_edge_readiness.py",
+    "data/experiments/exp-20260618-012/exp_20260618_012_post_20260618_nonrepeat_data_edge_readiness.json",
+    "data/experiments/exp-20260618-012/before_baseline.json",
+    "data/experiments/exp-20260618-012/after_no_strategy_change.json",
+    "experiments/logs/exp-20260618-012.json",
+    "experiments/cards/exp-20260618-012.md",
+    "experiments/manifests/exp-20260618-012.json",
+    "experiments/tickets/exp-20260618-012.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "changed_variable": "post_20260618_nonrepeat_data_edge_readiness_v2",
+  "created_at": "2026-06-18T12:04:01+00:00",
+  "data_coverage_audit": {
+    "finra_short_interest": {
+      "blocking_read": "FINRA short-interest rows exist, but recent FINRA/borrow-pressure attempts failed. A new edge needs PIT borrow-fee or rebate history, which is not present.",
+      "exists": true,
+      "max_date": "2026-05-29",
+      "min_date": "2024-08-15",
+      "path": "data/non_ohlcv/finra_short_interest/rows.json",
+      "rows": 46390,
+      "sample_keys": [
+        "average_daily_volume",
+        "days_to_cover",
+        "issue_name",
+        "issuer_exchange_code",
+        "market_class_code",
+        "pit_safe",
+        "previous_short_interest",
+        "publication_date",
+        "publication_date_method",
+        "settlement_date",
+        "short_interest",
+        "short_interest_change",
+        "short_interest_change_pct",
+        "source_url",
+        "ticker",
+        "usable_trade_date"
+      ],
+      "unique_tickers": 1440
+    },
+    "forward_replacement_value": {
+      "blocking_read": "Forward replacement rows are useful monitoring evidence, but they are not a broad historical candidate-pool surface and cannot turn a private forward lead into an accepted Gate-4 alpha.",
+      "exists": true,
+      "path": "data/paper_sleeves/forward_replacement_value.jsonl",
+      "rows": 31,
+      "sleeve_key_counts": {
+        "fundamental_growth_rs": 2,
+        "low_deployment_etf": 17,
+        "sec_governance": 1,
+        "sec_leadership": 1,
+        "sec_negative": 2,
+        "state_surface": 3,
+        "volatility_contraction": 2,
+        "volume_breadth_breakout": 3
+      },
+      "unique_tickers": 14
+    },
+    "options_chain": {
+      "blocking_read": "Options snapshots are forward collection rows, not full old_thin, mid_weak, and late_strong historical chains with closed outcomes.",
+      "files": 33,
+      "latest_snapshot_rows": 430,
+      "latest_snapshot_sample_keys": [
+        "ask",
+        "ask_size",
+        "bid",
+        "bid_size",
+        "call_put",
+        "collection_mode",
+        "date",
+        "delta",
+        "expiration",
+        "expiry",
+        "gamma",
+        "implied_vol",
+        "last",
+        "mark",
+        "mid",
+        "open_interest",
+        "option_liquidity_pass",
+        "option_liquidity_score",
+        "pit_caveat",
+        "pit_safe",
+        "pit_safe_flag",
+        "quote_date",
+        "retrieved_at",
+        "rho",
+        "source",
+        "source_url_base",
+        "strike",
+        "theta",
+        "ticker",
+        "usable_trade_date",
+        "vega",
+        "vendor_asof",
+        "vendor_asof_available",
+        "volume"
+      ],
+      "latest_snapshot_unique_tickers": 1,
+      "max_snapshot_date": "2026-06-17",
+      "min_snapshot_date": "2026-05-05",
+      "path_glob": "data/non_ohlcv/options_onclickmedia_chain_*.jsonl"
+    },
+    "sec13f_kova": {
+      "blocking_read": "The Kova 13F surface is a daily snapshot/status surface, not a three-window PIT manager-holder delta table beyond already tested 13F sponsorship and crowding families.",
+      "files": 24,
+      "latest_reason_counts": {
+        "no_sec13f_zip_or_year_quarter_supplied": 1248
+      },
+      "latest_rows": 1248,
+      "latest_sample_keys": [
+        "alters_orders",
+        "asof_date",
+        "provider",
+        "reason",
+        "schema_version",
+        "status",
+        "surface",
+        "ticker"
+      ],
+      "latest_status_counts": {
+        "skipped": 1248
+      },
+      "latest_unique_tickers": 1248,
+      "max_snapshot_date": "2026-06-17",
+      "min_snapshot_date": "2026-04-21",
+      "path_glob": "data/kova/institutional/sec13f_ownership_*.jsonl"
+    },
+    "sec_filing_events": {
+      "aggregate_exists": true,
+      "aggregate_max_filing_date": "2026-04-21",
+      "aggregate_min_filing_date": "2024-10-02",
+      "aggregate_path": "data/non_ohlcv/sec_filing_events_20241002_20260421.jsonl",
+      "aggregate_rows": 1286,
+      "aggregate_top_forms": {
+        "10-K": 88,
+        "10-K/A": 5,
+        "10-Q": 199,
+        "10-Q/A": 5,
+        "8-K": 969,
+        "8-K/A": 20
+      },
+      "blocking_read": "The events feed covers the fixed windows, but the recent SEC-item absorption sequence already rejected the obvious item-code shapes; a new run needs materially richer structured event fields.",
+      "files": 459,
+      "max_snapshot_date": "2026-06-17",
+      "min_snapshot_date": "2024-10-02",
+      "path_glob": "data/non_ohlcv/sec_filing_events_*.jsonl",
+      "sample_keys": [
+        "acceptance_datetime_raw",
+        "accepted_at",
+        "accession_number",
+        "act",
+        "archive_url",
+        "cik",
+        "eight_k_item_codes",
+        "filing_date",
+        "film_number",
+        "form_base",
+        "form_type",
+        "index_url",
+        "is_amendment",
+        "is_inline_xbrl",
+        "is_xbrl",
+        "items_raw",
+        "pit_caveat",
+        "pit_safe_flag",
+        "pit_source",
+        "primary_document",
+        "report_date",
+        "size",
+        "source_chunk_name",
+        "ticker",
+        "usable_trade_date"
+      ]
+    },
+    "sec_filing_text": {
+      "blocking_read": "The fixed-window aggregate SEC text file is 8-K oriented. It does not provide a canonical 10-K/10-Q text or cover-page surface for a new periodic-report alpha without a new PIT extraction.",
+      "exists": true,
+      "form_counts": {
+        "8-K": 306
+      },
+      "max_date": "2026-04-21",
+      "min_date": "2024-10-02",
+      "path": "data/non_ohlcv/sec_filing_text_20241002_20260421.jsonl",
+      "rows": 306,
+      "sample_keys": [
+        "accepted_at",
+        "accession_number",
+        "cik",
+        "combined_text",
+        "documents",
+        "documents_fetched",
+        "eight_k_item_codes",
+        "errors",
+        "filing_date",
+        "form_base",
+        "form_type",
+        "index_url",
+        "pit_caveat",
+        "pit_source",
+        "primary_document",
+        "status",
+        "text_char_count",
+        "text_word_count",
+        "ticker",
+        "usable_trade_date"
+      ]
+    },
+    "sec_primary_document_cache": {
+      "blocking_read": "Local submissions metadata contains 13G/13D form references, but no reusable accession-level primary-document cache was found by the standard 13D/13G filename patterns. A holder/stake alpha would need a new PIT parser or ingested table.",
+      "exists": true,
+      "filename_pattern_counts": {
+        "*13d*": 0,
+        "*13g*": 0,
+        "*SC13*": 0,
+        "*sc13*": 0
+      },
+      "path": "data/cache/sec",
+      "samples": {
+        "*13d*": [],
+        "*13g*": [],
+        "*SC13*": [],
+        "*sc13*": []
+      }
+    },
+    "sec_submissions": {
+      "blocking_read": "Submissions JSON proves 13G/13D and periodic forms exist in local metadata, but top-level filer category is current metadata and the cache does not itself provide parsed PIT holder/stake or cover-page status fields.",
+      "exists": true,
+      "max_recent_tracked_date": "2026-06-17",
+      "min_recent_tracked_date": "1994-04-01",
+      "path": "data/cache/sec/submissions",
+      "recent_tracked_form_counts": {
+        "10-K": 10724,
+        "10-K/A": 625,
+        "10-Q": 31778,
+        "10-Q/A": 303,
+        "4": 570397,
+        "424B5": 6644,
+        "8-K": 130498,
+        "DEFA14A": 13360,
+        "NT 10-K": 155,
+        "NT 10-Q": 210,
+        "S-8": 4880,
+        "SC 13D": 984,
+        "SC 13D/A": 5175,
+        "SC 13G": 10536,
+        "SC 13G/A": 37295
+      },
+      "submission_files": 1235,
+      "top_level_categories": {
+        "": 25,
+        "<br>Emerging growth company": 8,
+        "Accelerated filer": 4,
+        "Large Accelerated": 2,
+        "Large accelerated filer": 1189,
+        "Non-accelerated filer": 6,
+        "Non-accelerated filer<br>Smaller reporting company": 1
+      }
+    }
+  },
+  "decision": "blocked_no_gate4_ready_nonrepeat_alpha_surface",
+  "delta_metrics": {
+    "aggregate_expected_value_score": 0.0,
+    "aggregate_total_pnl": 0.0,
+    "max_window_drawdown_pct": 0.0,
+    "min_survival_rate": 0.0,
+    "total_trade_count": 0
+  },
+  "experiment_id": "exp-20260618-012",
+  "gate1_baseline": {
+    "aggregate": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "max_window_drawdown_pct": 0.1119,
+      "min_survival_rate": 0.7925,
+      "total_trade_count": 61
+    },
+    "source": "docs/backtesting.md current standard three-window baseline",
+    "status": "passed",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23",
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "win_rate": 0.8333
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23",
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "win_rate": 0.5238
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 0.89,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02",
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "win_rate": 0.6818
+      }
+    }
+  },
+  "gate2_field_availability": {
+    "blocking_summary": "All high-potential free-data surfaces found in the post-run history scan are either frozen/recently rejected or lack PIT fields needed for a production-visible shared helper.",
+    "candidate_surfaces": [
+      {
+        "alpha_hypothesis": "Initial passive or activist stake disclosures can mark informed sponsorship in under-owned relative-strength leaders.",
+        "gate2_required_fields": [
+          "issuer ticker",
+          "filing date",
+          "accession number",
+          "holder identity",
+          "stake percent",
+          "initial/add/reduce classification",
+          "PIT source seen by production"
+        ],
+        "new_evidence_needed": "Parse or ingest accession-level 13G/13D holder, stake percent, action type, issuer ticker, and filing date across all standard windows.",
+        "related_history": [
+          "exp-20260612-015",
+          "exp-20260612-016"
+        ],
+        "status": "blocked_missing_parsed_pit_primary_document_surface",
+        "surface": "parsed_13g_13d_holder_stake_quality",
+        "why_not_executable_now": "Submissions metadata confirms 13G/13D forms exist, but the repo does not expose a parsed holder/stake/action table. Raw event retries are already frozen."
+      },
+      {
+        "alpha_hypothesis": "Accelerated-filer upgrades, emerging-growth exits, or smaller reporting-company transitions could identify liquidity and disclosure-quality inflections.",
+        "gate2_required_fields": [
+          "filing date",
+          "accession number",
+          "cover-page filer status",
+          "issuer ticker",
+          "PIT daily availability"
+        ],
+        "new_evidence_needed": "Historical 10-K/10-Q cover-page filer status parsed by accession and joined to the same production snapshot date.",
+        "related_history": [
+          "exp-20260618-007"
+        ],
+        "status": "blocked_current_metadata_would_leak",
+        "surface": "pit_cover_page_filer_status_transition",
+        "why_not_executable_now": "Local submissions category is current top-level metadata, not a historical cover-page status keyed by accession/date."
+      },
+      {
+        "alpha_hypothesis": "Specific disclosure events may drift after negative or complex filings when price initially absorbs the news.",
+        "gate2_required_fields": [
+          "PIT filing date",
+          "issuer ticker",
+          "form/item code",
+          "event text",
+          "daily production snapshot parity"
+        ],
+        "new_evidence_needed": "A new structured event tuple or LLM-labeled event field with clear input logs and replay boundaries.",
+        "related_history": [
+          "exp-20260618-001",
+          "exp-20260618-002",
+          "exp-20260618-003",
+          "exp-20260618-004",
+          "exp-20260618-005",
+          "exp-20260618-009"
+        ],
+        "status": "blocked_recent_item_text_family_rejections",
+        "surface": "new_sec_item_or_text_absorption",
+        "why_not_executable_now": "The recent SEC 8-K item/text sequence failed. Moving to another item code or regex gate is a frozen near-neighbor without richer semantic provenance."
+      },
+      {
+        "alpha_hypothesis": "Skew and open-interest pressure can identify informed demand ahead of equity continuation.",
+        "gate2_required_fields": [
+          "quote date",
+          "ticker",
+          "expiration",
+          "strike",
+          "call/put",
+          "bid/ask/mid",
+          "open interest",
+          "closed equity outcome"
+        ],
+        "new_evidence_needed": "Full-window historical options chain snapshots with shared daily snapshot semantics and closed outcomes.",
+        "related_history": [
+          "exp-20260617-004",
+          "exp-20260613-025"
+        ],
+        "status": "blocked_forward_only_no_three_window_history",
+        "surface": "options_skew_open_interest_candidate_pool",
+        "why_not_executable_now": "Options files are recent forward snapshots and do not cover the canonical old_thin/mid_weak/late_strong windows."
+      },
+      {
+        "alpha_hypothesis": "Borrow-fee relief or short covering can add a supply-demand edge around crowded relative-strength winners.",
+        "gate2_required_fields": [
+          "settlement date",
+          "publication date",
+          "ticker",
+          "short interest",
+          "borrow fee or rebate",
+          "PIT usable trade date"
+        ],
+        "new_evidence_needed": "Free or stored PIT borrow-fee/rebate history joined to FINRA short interest across the standard windows.",
+        "related_history": [
+          "exp-20260616-020",
+          "exp-20260616-024",
+          "exp-20260616-026",
+          "exp-20260616-028"
+        ],
+        "status": "blocked_missing_borrow_fee_and_recent_finra_rejections",
+        "surface": "borrow_fee_or_crowding_relief",
+        "why_not_executable_now": "FINRA rows are present, but recent FINRA shapes failed and the needed borrow-fee/rebate field is absent."
+      },
+      {
+        "alpha_hypothesis": "A still-unused fundamentals ratio might improve candidate selection after advertising efficiency failed.",
+        "gate2_required_fields": [
+          "filed-date Companyfacts value",
+          "prior period value",
+          "ticker",
+          "entry date",
+          "target price"
+        ],
+        "new_evidence_needed": "A genuinely new fundamentals source or structured field not covered by prior Companyfacts ratio families.",
+        "related_history": [
+          "exp-20260618-010",
+          "exp-20260617-012",
+          "exp-20260617-026",
+          "exp-20260617-001",
+          "exp-20260616-003"
+        ],
+        "status": "blocked_near_neighbor_frozen_companyfacts_family",
+        "surface": "next_companyfacts_ratio_after_advertising",
+        "why_not_executable_now": "Companyfacts ratio/tag families have many recent failures and accepted helpers. Another tag or threshold sweep would not be a new evidence axis."
+      },
+      {
+        "alpha_hypothesis": "Scarce float could improve upside capture for leaders in squeeze-prone regimes.",
+        "gate2_required_fields": [
+          "PIT public float",
+          "ticker",
+          "liquidity",
+          "entry date",
+          "target price"
+        ],
+        "new_evidence_needed": "A broader PIT float/history source or a separate supply-demand field that fixes old_thin coverage.",
+        "related_history": [
+          "exp-20260617-026"
+        ],
+        "status": "blocked_recent_concentration_rejection",
+        "surface": "public_float_supply_scarcity_retest",
+        "why_not_executable_now": "The recent public-float scout failed coverage and concentration standards. Retuning float thresholds repeats the same family."
+      },
+      {
+        "alpha_hypothesis": "Peer leadership or laggard catch-up could expand the candidate pool using only free OHLCV.",
+        "gate2_required_fields": [
+          "entry date",
+          "target price",
+          "peer universe",
+          "lead-lag direction",
+          "PIT membership"
+        ],
+        "new_evidence_needed": "External PIT peer relationship evidence or an event trigger that explains the lead-lag direction.",
+        "related_history": [
+          "exp-20260618-006",
+          "exp-20260617-021"
+        ],
+        "status": "blocked_recent_direction_instability",
+        "surface": "static_ohlcv_or_intraindustry_lead_lag_direction",
+        "why_not_executable_now": "The latest lead-lag experiment improved aggregate EV but failed window robustness. Static retunes would fit the same windows."
+      }
+    ],
+    "minimum_position_fields": {
+      "entry_date": "unchanged in existing baseline strategy",
+      "target_price": "unchanged in existing baseline strategy"
+    },
+    "status": "blocked_for_new_alpha"
+  },
+  "gate3_survival": {
+    "floor_check": "No new filter was added. Baseline survival remains above the 5% floor in every standard window.",
+    "min_survival_rate": 0.7925,
+    "status": "unchanged_no_new_filter",
+    "survival_by_window": {
+      "late_strong": {
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      "mid_weak": {
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      "old_thin": {
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    }
+  },
+  "gate4": {
+    "after": {
+      "aggregate": {
+        "aggregate_expected_value_score": 7.8941,
+        "aggregate_total_pnl": 234850.99,
+        "max_window_drawdown_pct": 0.1119,
+        "min_survival_rate": 0.7925,
+        "total_trade_count": 61
+      },
+      "windows": {
+        "late_strong": {
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "max_drawdown_pct": 0.0665,
+          "sharpe_daily": 4.41,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "start": "2025-10-23",
+          "survival_rate": 0.8039,
+          "total_pnl": 117072.92,
+          "trade_count": 18,
+          "win_rate": 0.8333
+        },
+        "mid_weak": {
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "max_drawdown_pct": 0.1119,
+          "sharpe_daily": 2.74,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "start": "2025-04-23",
+          "survival_rate": 0.7925,
+          "total_pnl": 78110.11,
+          "trade_count": 21,
+          "win_rate": 0.5238
+        },
+        "old_thin": {
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "max_drawdown_pct": 0.1001,
+          "sharpe_daily": 0.89,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "start": "2024-10-02",
+          "survival_rate": 0.8667,
+          "total_pnl": 39667.96,
+          "trade_count": 22,
+          "win_rate": 0.6818
+        }
+      }
+    },
+    "before": {
+      "aggregate": {
+        "aggregate_expected_value_score": 7.8941,
+        "aggregate_total_pnl": 234850.99,
+        "max_window_drawdown_pct": 0.1119,
+        "min_survival_rate": 0.7925,
+        "total_trade_count": 61
+      },
+      "windows": {
+        "late_strong": {
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "max_drawdown_pct": 0.0665,
+          "sharpe_daily": 4.41,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "start": "2025-10-23",
+          "survival_rate": 0.8039,
+          "total_pnl": 117072.92,
+          "trade_count": 18,
+          "win_rate": 0.8333
+        },
+        "mid_weak": {
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "max_drawdown_pct": 0.1119,
+          "sharpe_daily": 2.74,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "start": "2025-04-23",
+          "survival_rate": 0.7925,
+          "total_pnl": 78110.11,
+          "trade_count": 21,
+          "win_rate": 0.5238
+        },
+        "old_thin": {
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "max_drawdown_pct": 0.1001,
+          "sharpe_daily": 0.89,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "start": "2024-10-02",
+          "survival_rate": 0.8667,
+          "total_pnl": 39667.96,
+          "trade_count": 22,
+          "win_rate": 0.6818
+        }
+      }
+    },
+    "decision": "blocked",
+    "delta": {
+      "aggregate_expected_value_score": 0.0,
+      "aggregate_total_pnl": 0.0,
+      "max_window_drawdown_pct": 0.0,
+      "min_survival_rate": 0.0,
+      "total_trade_count": 0
+    },
+    "failed_reasons": [
+      "No non-frozen PIT data-edge surface passed Gate 2 readiness.",
+      "Another Companyfacts ratio/tag threshold would violate novelty discipline.",
+      "SEC item/text retries are recent negative or frozen families.",
+      "Forward-only options and 13F rows cannot satisfy historical Gate 4.",
+      "Current-only filer category metadata would create backtest/production mismatch."
+    ],
+    "status": "not_run_strategy_unchanged"
+  },
+  "history_summary": [
+    {
+      "decision": "blocked_no_gate4_ready_nonrepeat_alpha_surface",
+      "experiment_id": "exp-20260618-011",
+      "status": "blocked",
+      "summary": "The free-data lanes with plausible edge have been worked hard. The remaining attractive ideas require new PIT structured data rather than another rule threshold: parsed ownership events, historical filer-status cover pages, full-window options chains, borrow-fee history, or structured customer/supplier economics."
+    },
+    {
+      "decision": "rejected_advertising_efficiency_improvement_candidate_pool",
+      "experiment_id": "exp-20260618-010",
+      "status": "rejected",
+      "summary": "The advertising efficiency improvement source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, drawdown_drift_too_high, target_concentration_failed, accepted_compression_ev_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). The fixed bundle tested explicit raw SEC advertising / selling-marketing intensity improvement plus liquid SPY-relative confirmation. It is not retained or promoted."
+    },
+    {
+      "decision": "blocked_missing_pit_historical_sec_filer_status_surface",
+      "experiment_id": "exp-20260618-007",
+      "status": "blocked",
+      "summary": "The alpha idea is stronger than another SEC item-code retry, but the repository does not currently have the needed PIT historical 10-K/10-Q cover-page filer-status field. The SEC text snapshots are locally 8-K-oriented, while submissions metadata has 10-K/10-Q pointers but only a current top-level category. Treating that current category as historical would leak future state and break production/backtest consistency."
+    },
+    {
+      "decision": "rejected_intraindustry_lead_lag_direction_stability_candidate_pool",
+      "experiment_id": "exp-20260618-006",
+      "status": "rejected",
+      "summary": "The PIT intra-industry lead-lag direction-stability source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, drawdown_drift_too_high). The relation gate was intended to keep only tickers where prior completed leader events predicted positive 10-day excess return, but the fixed bundle still produced aggregate EV +1.2216, PnL $+17,008.11, and max drawdown drift +0.0363. By window: late_strong dEV +0.7748/dPnL $+11,449.91; mid_weak dEV +0.5964/dPnL $+10,740.65; old_thin dEV -0.1496/dPnL $-5,182.45. Economic reading: free-OHLCV lead-lag history is too noisy as a standalone always-on source; ticker-specific direction stability does not reliably distinguish diffusion from leader reversal or persistent laggard weakness across regimes."
+    },
+    {
+      "decision": "blocked_no_gate4_ready_nonrepeat_alpha_surface_after_sec_item_failures",
+      "experiment_id": "exp-20260618-005",
+      "status": "blocked",
+      "summary": "The current strongest alpha lead is not absent; it is DPO extension, but it already failed the hard drawdown guard. The only credible non-repeat rescue checked here, PIT crowding/provenance context, is not available across the fixed windows: 13F is latest-only, FINRA/FTD requires a new borrow-cost/availability feed, options are forward-only, and SEC item/text plus raw Companyfacts relief neighbors are frozen or recently rejected. Launching another replay today would be a near-neighbor retune or a production/backtest mismatch."
+    },
+    {
+      "decision": "rejected_sec_nt_late_filing_absorption_candidate_pool",
+      "experiment_id": "exp-20260617-025",
+      "status": "rejected",
+      "summary": "The SEC NT late-filing notice absorption source did not clear Gate 4 (failed: fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too_small, target_concentration_failed, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). The fixed bundle tested NT 10-K/NT 10-Q late-filing notice forms plus signal-day SPY-relative price absorption. The result is not retained or promoted."
+    },
+    {
+      "decision": "rejected_sbc_grant_value_backlog_relief_candidate_pool",
+      "experiment_id": "exp-20260617-012",
+      "status": "rejected",
+      "summary": "The SBC grant-value backlog relief source had positive aggregate EV/PnL, but did not clear Gate 4 because the effect was narrow and unstable: old_thin regressed -0.0278 EV and $-1,091.19, while positive PnL was dominated by too few names (max single positive share 84.87%, HHI 0.7432). It also failed the accepted distribution and accepted SBC comparators, so the unrecognized backlog decline is more likely capturing sparse seasonal vesting decay in already-strong growth names than a robust incremental dilution-quality edge. Do not promote or tune this fixed grant-value normalization bundle on the same frozen windows."
+    },
+    {
+      "decision": "rejected_sec_13d_activist_stake_candidate_pool",
+      "experiment_id": "exp-20260612-015",
+      "status": "rejected",
+      "summary": "The fixed 13D activist-stake bundle failed Gate 4. The most likely reasons are a thin declared-universe sample (large activist targets are rarer and better covered), the filing pop being priced before next-open paper entry, or window instability that the accepted comparator does not have."
+    },
+    {
+      "decision": "rejected_sec_13g_passive_stake_candidate_pool",
+      "experiment_id": "exp-20260612-016",
+      "status": "rejected",
+      "summary": "The fixed 13G passive-stake bundle failed Gate 4. The most likely reasons are that 13G filings are annual/batch and often stale by the filing date, issuer-level first-in-archive events lose holder-level information, and the liquid momentum/core-overlap envelope admits mostly already-priced large-cap ownership confirmations rather than fresh edge."
+    }
+  ],
+  "hypothesis": "After the 20260617/18 rejected SEC, Companyfacts, ownership, options, and lead-lag runs, the only trustworthy next alpha is a non-repeat PIT data edge; if local fields lack that edge, no strategy change should be launched.",
+  "lane": "alpha_search",
+  "mechanism_family": "nonrepeat_candidate_pool_data_edge_readiness",
+  "nearby_prior_experiments": [
+    "exp-20260618-011",
+    "exp-20260618-010",
+    "exp-20260618-007",
+    "exp-20260618-006",
+    "exp-20260618-005",
+    "exp-20260617-025",
+    "exp-20260617-012",
+    "exp-20260612-015",
+    "exp-20260612-016"
+  ],
+  "post_run_reflection": {
+    "best_next_alpha_direction": "Build or ingest a parsed PIT 13G/13D holder-stake/action table across the canonical windows, then implement it shared-paper-first with daily default-off snapshot parity and run Gate 1-4. Secondary directions are accession-level 10-K/10-Q cover-page filer status and full-window historical options chains.",
+    "do_not_retry_near_neighbors": [
+      "Companyfacts advertising/public-float/R&D/sharecount threshold sweeps",
+      "raw 8-K item-code or SEC text regex absorption scouts",
+      "raw 13G/13D/Form4 event gates without parsed holder/stake context",
+      "current SEC submissions filer-category historical backtests",
+      "forward-only options/13F rows as accepted historical alpha",
+      "static OHLCV peer lead-lag retunes without new event evidence"
+    ],
+    "negative_reflection": "No strategy replay was run because forcing one would repeat a frozen family or depend on current-only/forward-only data. That would make any positive backtest untrustworthy and risk a backtest/production inconsistency.",
+    "next_evidence_needed": [
+      "Parsed PIT 13G/13D holder/stake/action table",
+      "Historical 10-K/10-Q cover-page filer status keyed by accession",
+      "Full-window historical options chain snapshots with closed outcomes",
+      "PIT borrow-fee/rebate history joined to FINRA short interest",
+      "Structured customer/supplier contract economics extracted from filings"
+    ],
+    "why_result_happened": "The strongest current alpha direction is still candidate-pool expansion through a new free data edge, but the repo lacks a Gate-4-ready non-repeat PIT surface today. The attractive next alpha is parsed 13G/13D holder-stake quality, not another Companyfacts, SEC item-code, Form4, or static lead-lag retune."
+  },
+  "prediction": {
+    "confidence_reason": "Recent logs show executable Companyfacts, SEC, ownership, options, and OHLCV relation ideas are rejected, frozen, or forward-only; this verifies exact local data availability before any strategy change.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "all_candidate_surfaces_frozen_or_missing_pit_fields",
+      "near_neighbor_retries_not_trustworthy",
+      "no_shared_daily_helper_for_positive_replay"
+    ],
+    "success_probability": 0.08
+  },
+  "production_impact": {
+    "backtest_production_parity": "No strategy or production helper was changed. This blocker prevents introducing a backtester-only alpha on current-only or forward-only data.",
+    "daily_snapshot_changed": false,
+    "live_orders_changed": false,
+    "live_realistic_execution_envelope": "Not applicable because no executable alpha entered measurement. Any future candidate must record notional/capital cap, liquidity, slippage, concentration, sector exposure, kill switch, order semantics, and failure handling before it can be called live-ready.",
+    "runner_changed": false,
+    "shared_helper_changed": false,
+    "trade_enabled_changed": false
+  },
+  "reproduction": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260618_012_post_20260618_nonrepeat_data_edge_readiness.py",
+  "single_causal_variable": "post_20260618_nonrepeat_data_edge_readiness_v2",
+  "status": "blocked",
+  "trial_family": "post_20260618_alpha_direction",
+  "trial_variant_id": "post_20260618_nonrepeat_data_edge_readiness_v2"
+}

@@ -1,0 +1,109 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 0,
+    "brier_score": 0.04,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "too_few_trades_for_statistical_significance",
+      "late_strong_window_rarely_triggers",
+      "v_shaped_recovery_missed",
+      "single_window_improvement_only"
+    ],
+    "predicted_success_probability": 0.2,
+    "realized_failure_mode": "v_shaped_recovery_missed + too_few_trades_for_statistical_significance",
+    "surprise_level": "very_low",
+    "surprise_note": "Predicted 20% success, rejected as expected. All 3 predicted failure modes materialized: shallow drawdowns meant late_strong barely triggered, V-shaped recoveries meant scaled-down entries missed bounces, and all 3 windows regressed uniformly (no single-window-only improvement)."
+  },
+  "causal_components": [
+    "backtester equity-curve HWM tracking",
+    "notional scale factor on new entries",
+    "three-window Gate 4"
+  ],
+  "change_summary": "Equity-curve adaptive sizing (anti-Martingale): rejected, all 3 windows regressed EV and PnL",
+  "change_type": "pilot_or_sleeve",
+  "changed_variable": "portfolio_equity_drawdown_notional_scale: when equity drawdown exceeds threshold, apply sub-1.0 notional multiplier to new entries",
+  "component": "quant/experiments/exp_20260618_008_equity_curve_adaptive_sizing.py, data/experiments/exp-20260618-008/exp_20260618_008_equity_curve_adaptive_sizing.json, experiments/cards/exp-20260618-008.md, experiments/manifests/exp-20260618-008.json, experiments/tickets/exp-20260618-008.json, experiments/logs/exp-20260618-008.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "rejected",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260618-008",
+  "hypothesis": "Portfolio equity-curve adaptive sizing (anti-Martingale): when trailing equity is in drawdown >5% below its 20-day high-water mark, scale new entry notional to 0.7x. This is a portfolio-level risk allocation overlay that reduces exposure during adverse equity-curve regimes without changing entry/exit signals.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "pilot_or_sleeve",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260524-002"
+  ],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "",
+  "parameters": {
+    "locked_variables": [
+      "portfolio_equity_drawdown_notional_scale: when equity drawdown exceeds threshold, apply sub-1.0 notional multiplier to new entries"
+    ],
+    "single_causal_variable": "portfolio_equity_drawdown_notional_scale: when equity drawdown exceeds threshold, apply sub-1.0 notional multiplier to new entries"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry portfolio-level equity-curve adaptive sizing with different thresholds or scale factors. The system drawdowns are too shallow (6-11%) and trade count too low (18-22) for any static threshold/scale combo to produce meaningful improvement. Variance from sizing a handful of affected entries dominates any edge.",
+    "new_evidence_required": "A fundamentally different portfolio-level risk mechanism (e.g. regime-based position count cap, not notional scaling) or a much higher-frequency trade universe where sizing changes affect hundreds of entries, not single digits.",
+    "realized_failure_mode": "v_shaped_recovery_missed + too_few_trades_for_statistical_significance: drawdowns are shallow and brief so the 5% threshold rarely triggers, and when it does the scaled-down entries miss the recovery bounce. All 3 windows regressed uniformly, confirming this is a structural mismatch, not parameter sensitivity.",
+    "why_result_happened": "The system drawdowns peak at 6-11% and recover quickly (V-shaped). At 5% DD threshold, the adaptive sizing fires during the recovery phase and reduces notional on entries that historically capture the bounce-back. With only 18-22 trades per window, even a few affected entries materially drag PnL. The Sharpe improvement in late_strong (+0.20) reflects reduced variance from smaller positions, but the PnL cost ($5.8K) is not offset. The strategy edge comes from concentrated conviction entries; reducing them during drawdown fights the core design."
+  },
+  "prediction": {
+    "confidence_reason": "The system max drawdown is 11.19% in mid_weak with 52% win rate suggesting clustered losses. Anti-Martingale sizing is theoretically sound (Kelly criterion implies sizing proportional to edge). No prior experiment has tested portfolio-level equity-curve-responsive sizing; nearest neighbor exp-20260524-002 was per-signal heat haircut, a different mechanism. Main risk: only 18-22 trades per window means sizing changes affect very few entries, and 5% DD threshold may trigger too late or not at all in the shallow-drawdown windows.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "too_few_trades_for_statistical_significance",
+      "late_strong_window_rarely_triggers",
+      "v_shaped_recovery_missed",
+      "single_window_improvement_only"
+    ],
+    "recorded_at": "2026-06-18T06:25:04+00:00",
+    "success_probability": 0.2
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "No AGENTS.md Gate 4 acceptance condition was met.",
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/experiments/exp-20260618-008/exp_20260618_008_equity_curve_adaptive_sizing.json"
+  ],
+  "secondary_windows": [],
+  "status": "rejected",
+  "timestamp": "2026-06-18T06:33:26+00:00",
+  "trial_family": "pilot_or_sleeve",
+  "trial_variant_id": "exp-20260618-008"
+}

@@ -1,0 +1,726 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_compression_comparator": {
+    "aggregate_expected_value_delta": 0.1608,
+    "aggregate_pnl_delta": 2248.98,
+    "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+    "experiment_id": "exp-20260608-013"
+  },
+  "accepted_distribution_comparator": {
+    "aggregate_expected_value_delta": 0.5286,
+    "aggregate_pnl_delta": 10432.91,
+    "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+    "experiment_id": "exp-20260611-007"
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 5.1628,
+      "max_consecutive_losses": 2,
+      "max_drawdown_pct": 0.0665,
+      "sharpe_daily": 4.41,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "strategy_total_return_pct": 1.1707,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5146,
+      "total_pnl": 117072.92,
+      "trade_count": 18,
+      "win_rate": 0.8333,
+      "worst_trade_pct": -0.0397
+    },
+    "mid_weak": {
+      "expected_value_score": 2.1402,
+      "max_consecutive_losses": 6,
+      "max_drawdown_pct": 0.1119,
+      "sharpe_daily": 2.74,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "strategy_total_return_pct": 0.7811,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.5493,
+      "total_pnl": 78110.11,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "worst_trade_pct": -0.0897
+    },
+    "old_thin": {
+      "expected_value_score": 0.5914,
+      "max_consecutive_losses": 4,
+      "max_drawdown_pct": 0.1001,
+      "sharpe_daily": 1.49,
+      "signals_generated": 60,
+      "signals_survived": 52,
+      "strategy_total_return_pct": 0.3969,
+      "survival_rate": 0.8667,
+      "tail_loss_share": 0.5193,
+      "total_pnl": 39687.88,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "worst_trade_pct": -0.0635
+    }
+  },
+  "anti_js": "No JavaScript was used.",
+  "backtest_protocol": {
+    "REGIME_AWARE_EXIT": true,
+    "candidate_ohlcv_source": "data/warehouse/warehouse_main.sqlite",
+    "companyfacts_source": "data/non_ohlcv/sec_companyfacts_selected_*.jsonl",
+    "execution_model": "SEC NT late-filing events are read from EDGAR submissions cache recent filings for forms NT 10-K, NT 10-Q, NT 10-K/A, and NT 10-Q/A. The signal date is the filing date unless the SEC acceptance timestamp is after 16:00, in which case it is the next trading day. Candidates must show signal-day price absorption before next-open paper entry: non-negative daily return, return minus SPY >= 0.5%, close location >= 0.56, volume ratio >= 0.75, realized vol <= 12%, ret20 excess vs SPY >= -5%, price >= $10, and ADV20 >= $50M. Paper entry is the next available open with entry slippage; exit is the close 10 trading days after the signal with target-side sell slippage and ROUND_TRIP_COST_PCT.",
+    "replay_llm": false,
+    "replay_news": false,
+    "source": "docs/backtesting.md canonical three-window core replay plus replay-only broad warehouse default-off paper overlay",
+    "submissions_source": "data/cache/sec/submissions",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 5.1628,
+      "max_consecutive_losses": 2,
+      "max_drawdown_pct": 0.0665,
+      "sharpe_daily": 4.41,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "strategy_total_return_pct": 1.1707,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5146,
+      "total_pnl": 117072.92,
+      "trade_count": 18,
+      "win_rate": 0.8333,
+      "worst_trade_pct": -0.0397
+    },
+    "mid_weak": {
+      "expected_value_score": 2.1402,
+      "max_consecutive_losses": 6,
+      "max_drawdown_pct": 0.1119,
+      "sharpe_daily": 2.74,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "strategy_total_return_pct": 0.7811,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.5493,
+      "total_pnl": 78110.11,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "worst_trade_pct": -0.0897
+    },
+    "old_thin": {
+      "expected_value_score": 0.5911,
+      "max_consecutive_losses": 4,
+      "max_drawdown_pct": 0.1001,
+      "sharpe_daily": 1.49,
+      "signals_generated": 60,
+      "signals_survived": 52,
+      "strategy_total_return_pct": 0.3967,
+      "survival_rate": 0.8667,
+      "tail_loss_share": 0.5193,
+      "total_pnl": 39667.96,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "worst_trade_pct": -0.0635
+    }
+  },
+  "calibration": {
+    "actual_ev_delta": 0.0003,
+    "actual_gate4_passed": false,
+    "actual_pnl_delta": 19.92,
+    "actual_success": 0,
+    "brier_score": 0.0196,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "failure_modes_observed": [
+      "fewer_than_two_ev_improved_windows",
+      "target_sample_too_small",
+      "target_window_coverage_too_small",
+      "target_concentration_failed",
+      "accepted_compression_ev_not_beaten",
+      "accepted_compression_pnl_not_beaten",
+      "accepted_distribution_ev_not_beaten",
+      "accepted_distribution_pnl_not_beaten"
+    ],
+    "predicted_success_probability": 0.14
+  },
+  "change_type": "default_off_paper_candidate_pool_replay_scout",
+  "changed_variable": "sec_nt_late_filing_notice_absorption_candidate_source_v1",
+  "context_scan_by_window": {
+    "late_strong": {
+      "candidate_signal_days": 0,
+      "candidate_tickers": 0,
+      "deduped_candidate_rows": 0,
+      "eligible_event_tickers": 138,
+      "eligible_quality_tickers": 138,
+      "event_outside_window": 364,
+      "failed_absorption_or_liquidity_gate": 2,
+      "form_NT 10-K": 1,
+      "form_NT 10-Q": 1,
+      "max_event_age_trading_days": 3,
+      "max_realized_vol_20d": 0.12,
+      "min_avg_dollar_volume_20d": 50000000.0,
+      "min_close_location": 0.56,
+      "min_price": 10.0,
+      "min_ret20_excess_spy": -0.05,
+      "min_signal_excess_spy": 0.005,
+      "min_signal_return": 0.0,
+      "min_volume_ratio_20d": 0.75,
+      "nt_forms": [
+        "NT 10-K",
+        "NT 10-K/A",
+        "NT 10-Q",
+        "NT 10-Q/A"
+      ],
+      "rule_version": "sec_nt_late_filing_notice_absorption_candidate_source_v1"
+    },
+    "mid_weak": {
+      "candidate_signal_days": 0,
+      "candidate_tickers": 0,
+      "deduped_candidate_rows": 0,
+      "eligible_event_tickers": 138,
+      "eligible_quality_tickers": 138,
+      "event_after_last_or_stale": 4,
+      "event_outside_window": 360,
+      "failed_absorption_or_liquidity_gate": 2,
+      "form_NT 10-Q": 2,
+      "max_event_age_trading_days": 3,
+      "max_realized_vol_20d": 0.12,
+      "min_avg_dollar_volume_20d": 50000000.0,
+      "min_close_location": 0.56,
+      "min_price": 10.0,
+      "min_ret20_excess_spy": -0.05,
+      "min_signal_excess_spy": 0.005,
+      "min_signal_return": 0.0,
+      "min_volume_ratio_20d": 0.75,
+      "nt_forms": [
+        "NT 10-K",
+        "NT 10-K/A",
+        "NT 10-Q",
+        "NT 10-Q/A"
+      ],
+      "rule_version": "sec_nt_late_filing_notice_absorption_candidate_source_v1"
+    },
+    "old_thin": {
+      "candidate_signal_days": 1,
+      "candidate_tickers": 1,
+      "deduped_candidate_rows": 1,
+      "eligible_event_tickers": 138,
+      "eligible_quality_tickers": 138,
+      "event_after_last_or_stale": 5,
+      "event_outside_window": 347,
+      "failed_absorption_or_liquidity_gate": 13,
+      "form_NT 10-K": 9,
+      "form_NT 10-Q": 5,
+      "max_event_age_trading_days": 3,
+      "max_realized_vol_20d": 0.12,
+      "min_avg_dollar_volume_20d": 50000000.0,
+      "min_close_location": 0.56,
+      "min_price": 10.0,
+      "min_ret20_excess_spy": -0.05,
+      "min_signal_excess_spy": 0.005,
+      "min_signal_return": 0.0,
+      "min_volume_ratio_20d": 0.75,
+      "nt_forms": [
+        "NT 10-K",
+        "NT 10-K/A",
+        "NT 10-Q",
+        "NT 10-Q/A"
+      ],
+      "qualified_candidate_rows": 1,
+      "rule_version": "sec_nt_late_filing_notice_absorption_candidate_source_v1"
+    }
+  },
+  "decision": "rejected_sec_nt_late_filing_absorption_candidate_pool",
+  "delta_metrics": {
+    "aggregate": {
+      "after_expected_value_score_sum": 7.8944,
+      "after_total_pnl_sum": 234870.91,
+      "baseline_expected_value_score_sum": 7.8941,
+      "baseline_total_pnl_sum": 234850.99,
+      "expected_value_score_delta_pct": 3.8e-05,
+      "expected_value_score_delta_sum": 0.0003,
+      "max_drawdown_delta_max": 0.0,
+      "target_trade_count_sum": 1,
+      "total_pnl_delta_pct": 8.5e-05,
+      "total_pnl_delta_sum": 19.92,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 1,
+      "windows_pnl_regressed": 0
+    },
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.0003,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.0002,
+        "survival_rate": 0.0,
+        "total_pnl": 19.92,
+        "trade_count": 0,
+        "win_rate": 0.0
+      }
+    }
+  },
+  "expected_value_score_delta": 0.0003,
+  "experiment_id": "exp-20260617-025",
+  "filtered_candidates_sample_by_window": {
+    "late_strong": [],
+    "mid_weak": [],
+    "old_thin": []
+  },
+  "gate1": {
+    "baseline_artifact": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_metrics": {
+      "late_strong": {
+        "expected_value_score": 5.1628,
+        "max_consecutive_losses": 2,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "strategy_total_return_pct": 1.1707,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.5146,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "win_rate": 0.8333,
+        "worst_trade_pct": -0.0397
+      },
+      "mid_weak": {
+        "expected_value_score": 2.1402,
+        "max_consecutive_losses": 6,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "strategy_total_return_pct": 0.7811,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.5493,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "win_rate": 0.5238,
+        "worst_trade_pct": -0.0897
+      },
+      "old_thin": {
+        "expected_value_score": 0.5911,
+        "max_consecutive_losses": 4,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "strategy_total_return_pct": 0.3967,
+        "survival_rate": 0.8667,
+        "tail_loss_share": 0.5193,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "win_rate": 0.4091,
+        "worst_trade_pct": -0.0635
+      }
+    },
+    "passed": true
+  },
+  "gate2": {
+    "open_positions": {
+      "missing_entry_date_tickers": [],
+      "missing_target_price_tickers": [],
+      "passed": true,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 12
+    },
+    "passed": true,
+    "runtime_fields": [
+      "SEC submissions recent.form (NT 10-K/NT 10-Q)",
+      "SEC submissions recent.filingDate",
+      "SEC submissions recent.acceptanceDateTime",
+      "SEC submissions recent.accessionNumber",
+      "warehouse ticker_universe CIK mapping",
+      "warehouse OHLCV Date/Open/High/Low/Close/Volume",
+      "SPY OHLCV for price absorption",
+      "operator_inputs/open_positions.json entry_date",
+      "operator_inputs/open_positions.json target_price"
+    ]
+  },
+  "gate3": {
+    "candidate_pool_changed": false,
+    "minimum_core_survival_rate": 0.7925,
+    "new_core_filter_added": false,
+    "note": "No new core filter or entry rule was added. The candidate source is additive default-off paper, so core signals generated/survived are unchanged from baseline.",
+    "passed": true,
+    "survival_rate_by_window": {
+      "late_strong": 0.8039,
+      "mid_weak": 0.7925,
+      "old_thin": 0.8667
+    }
+  },
+  "gate4": {
+    "accepted_compression_comparator": {
+      "aggregate_expected_value_delta": 0.1608,
+      "aggregate_pnl_delta": 2248.98,
+      "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+      "experiment_id": "exp-20260608-013"
+    },
+    "accepted_distribution_comparator": {
+      "aggregate_expected_value_delta": 0.5286,
+      "aggregate_pnl_delta": 10432.91,
+      "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+      "experiment_id": "exp-20260611-007"
+    },
+    "aggregate_ev_delta": 0.0003,
+    "aggregate_pnl_delta": 19.92,
+    "decision": "rejected_sec_nt_late_filing_absorption_candidate_pool",
+    "failed_reasons": [
+      "fewer_than_two_ev_improved_windows",
+      "target_sample_too_small",
+      "target_window_coverage_too_small",
+      "target_concentration_failed",
+      "accepted_compression_ev_not_beaten",
+      "accepted_compression_pnl_not_beaten",
+      "accepted_distribution_ev_not_beaten",
+      "accepted_distribution_pnl_not_beaten"
+    ],
+    "max_drawdown_worse": 0.0,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": false,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 1.0,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": false,
+      "positive_pnl_hhi": 1.0,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 1,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "old_thin"
+    ],
+    "windows_ev_improved": 1,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 1,
+    "windows_pnl_regressed": 0
+  },
+  "hypothesis": "candidate_pool: PIT SEC NT 10-K/NT 10-Q late-filing notices are normally negative, but when same-day price action absorbs the filing-delay shock versus SPY, the delayed-disclosure overhang may be priced in and create a 10-trading-day continuation/rebound candidate.",
+  "interpretation": "The SEC NT late-filing notice absorption source did not clear Gate 4 (failed: fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too_small, target_concentration_failed, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). The fixed bundle tested NT 10-K/NT 10-Q late-filing notice forms plus signal-day SPY-relative price absorption. The result is not retained or promoted.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "mechanism_family": "production_visible_free_sec_submissions_filing_delay_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260617-020",
+    "exp-20260617-022",
+    "exp-20260617-023",
+    "exp-20260617-024"
+  ],
+  "new_evidence_type": "sec_submissions_nt_10k_10q_forms_with_price_absorption",
+  "next_evidence_needed": "If this fixed NT late-filing absorption bundle fails, do not retry by sweeping NT form lists, signal excess, close-location, volume, volatility, ret20, price/ADV, event-age, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs materially richer PIT delay economics such as explicit issuer reason, auditor/control language, late-period financial restatement linkage, or closed forward replacement-value observations.",
+  "numeric_gate4_passed": false,
+  "parameters": {
+    "candidate_universe": "broad_liquid_warehouse_all_windows_full_liquid",
+    "hold_days": 10,
+    "max_event_age_trading_days": 3,
+    "max_paper_trades_per_day": 1,
+    "max_realized_vol_20d": 0.12,
+    "min_avg_dollar_volume_20d": 50000000.0,
+    "min_close_location": 0.56,
+    "min_price": 10.0,
+    "min_ret20_excess_spy": -0.05,
+    "min_signal_excess_spy": 0.005,
+    "min_signal_return": 0.0,
+    "min_volume_ratio_20d": 0.75,
+    "nt_forms": [
+      "NT 10-K",
+      "NT 10-K/A",
+      "NT 10-Q",
+      "NT 10-Q/A"
+    ],
+    "paper_notional_usd": 4000.0,
+    "same_ticker_cooldown_days": 10,
+    "single_causal_variable": "sec_nt_late_filing_notice_absorption_candidate_source_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry by sweeping NT form lists, signal excess, close-location, volume, volatility, ret20, price/ADV, event-age, top-N, hold days, cooldown, or notional on these frozen windows.",
+    "new_evidence_required": "If this fixed NT late-filing absorption bundle fails, do not retry by sweeping NT form lists, signal excess, close-location, volume, volatility, ret20, price/ADV, event-age, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs materially richer PIT delay economics such as explicit issuer reason, auditor/control language, late-period financial restatement linkage, or closed forward replacement-value observations.",
+    "outcome_summary": "Aggregate EV delta +0.0003; aggregate PnL delta $+19.92; max drawdown drift +0.0000; 1 paper trades.",
+    "why_result_happened": "The SEC NT late-filing notice absorption source did not clear Gate 4 (failed: fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too_small, target_concentration_failed, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). The fixed bundle tested NT 10-K/NT 10-Q late-filing notice forms plus signal-day SPY-relative price absorption. The result is not retained or promoted."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "candidate_pool: PIT SEC NT 10-K/NT 10-Q late-filing notices are normally negative, but when same-day price action absorbs the filing-delay shock versus SPY, the delayed-disclosure overhang may be priced in and create a 10-trading-day continuation/rebound candidate.",
+    "2_history_check": {
+      "exp-20260617-020": "Rejected broad annual 10-K early-filing timeliness. This run tests late notice forms, not early filed-lag promptness.",
+      "exp-20260617-022": "Rejected broad quarterly 10-Q early-filing timeliness. Its closeout explicitly named NT 10-K/10-Q late-filing notices as materially different disclosure-timing evidence.",
+      "exp-20260617-023": "Rejected SEC offering price absorption. This run uses filing-delay notice forms, not financing/prospectus forms.",
+      "exp-20260617-024": "Rejected S-8 employee-equity absorption. This run is not an employee-equity or dilution-capacity event."
+    },
+    "3_single_decision_hypothesis": "sec_nt_late_filing_notice_absorption_candidate_source_v1",
+    "4_acceptance_standard": "Use docs/backtesting.md canonical three windows. Aggregate EV/PnL must be positive, no window EV/PnL regression, at least two EV-improved windows, at least 20 paper trades across all 3 windows, survival >=5%, drawdown drift <=0.5pp, concentration pass, and accepted compression/distribution candidate-pool comparators must be beaten. Replay-only positives are leads until shared daily/backtest parity exists.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260617_025_nt_late_filing_absorption_scout.py"
+  },
+  "prediction": {
+    "confidence_reason": "This is the materially different disclosure-timing field explicitly allowed after the rejected 10-K/10-Q early-filing tests: SEC NT late-filing notices from EDGAR submissions are free, PIT, and production-visible. The edge is contrarian absorption, but late filings can be genuine accounting/control risk, so expected success is low.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "late_filing_notices_are_true_accounting_delay_risk",
+      "thin_sample",
+      "old_thin_window_regression",
+      "accepted_distribution_comparator_not_beaten"
+    ],
+    "recorded_at": "2026-06-17T20:04:31+00:00",
+    "success_probability": 0.14
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "adapter_status": "private_replay_scout_no_shared_adapter",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "default_off_paper_only": true,
+    "execution_envelope": {
+      "daily_entry_slots": 1,
+      "failure_handling": "missing SEC submissions cache, missing CIK mapping, missing NT late-filing notice rows, missing OHLCV, missing next open, or missing 10d exit rejects the paper candidate",
+      "hold_days": 10,
+      "kill_switch": "trade_enabled remains false; no production adapter changes",
+      "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+      "order_semantics": "observe-only next-session-open paper entry; no broker order",
+      "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+      "same_ticker_cooldown_days": 10,
+      "target_notional_per_paper_trade": 4000.0,
+      "trade_enabled": false
+    },
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper computes the same PIT SEC NT 10-K/NT 10-Q notice events, acceptance-time signal date, price-absorption gate, cooldown, next-open paper entry, 10-day exit, costs, and concentration controls in both historical replay and daily production.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_free_ohlcv": true,
+    "uses_free_sec_companyfacts": false,
+    "uses_free_sec_submissions": true,
+    "uses_llm": false
+  },
+  "quality_index_summary_by_window": {
+    "late_strong": {
+      "candidate_universe_scope": "broad_liquid_warehouse_all_windows_full_liquid",
+      "field_source": "sec_submissions_nt_10k_10q_forms_not_companyfacts",
+      "form_NT 10-K": 155,
+      "form_NT 10-K/A": 1,
+      "form_NT 10-Q": 210,
+      "missing_submissions_cache_file": 207,
+      "nt_event_count": 366,
+      "nt_forms": [
+        "NT 10-K",
+        "NT 10-K/A",
+        "NT 10-Q",
+        "NT 10-Q/A"
+      ],
+      "selected_companyfacts_rows_ignored": 0,
+      "submissions_cache": "data/cache/sec/submissions",
+      "tickers_with_nt_events": 138,
+      "warehouse_source": "data/warehouse/warehouse_main.sqlite",
+      "warehouse_tickers_with_cik": 1446
+    },
+    "mid_weak": {
+      "candidate_universe_scope": "broad_liquid_warehouse_all_windows_full_liquid",
+      "field_source": "sec_submissions_nt_10k_10q_forms_not_companyfacts",
+      "form_NT 10-K": 155,
+      "form_NT 10-K/A": 1,
+      "form_NT 10-Q": 210,
+      "missing_submissions_cache_file": 207,
+      "nt_event_count": 366,
+      "nt_forms": [
+        "NT 10-K",
+        "NT 10-K/A",
+        "NT 10-Q",
+        "NT 10-Q/A"
+      ],
+      "selected_companyfacts_rows_ignored": 0,
+      "submissions_cache": "data/cache/sec/submissions",
+      "tickers_with_nt_events": 138,
+      "warehouse_source": "data/warehouse/warehouse_main.sqlite",
+      "warehouse_tickers_with_cik": 1446
+    },
+    "old_thin": {
+      "candidate_universe_scope": "broad_liquid_warehouse_all_windows_full_liquid",
+      "field_source": "sec_submissions_nt_10k_10q_forms_not_companyfacts",
+      "form_NT 10-K": 155,
+      "form_NT 10-K/A": 1,
+      "form_NT 10-Q": 210,
+      "missing_submissions_cache_file": 207,
+      "nt_event_count": 366,
+      "nt_forms": [
+        "NT 10-K",
+        "NT 10-K/A",
+        "NT 10-Q",
+        "NT 10-Q/A"
+      ],
+      "selected_companyfacts_rows_ignored": 0,
+      "submissions_cache": "data/cache/sec/submissions",
+      "tickers_with_nt_events": 138,
+      "warehouse_source": "data/warehouse/warehouse_main.sqlite",
+      "warehouse_tickers_with_cik": 1446
+    }
+  },
+  "raw_candidate_counts": {
+    "late_strong": 0,
+    "mid_weak": 0,
+    "old_thin": 1
+  },
+  "rejection_reason": "fewer_than_two_ev_improved_windows; target_sample_too_small; target_window_coverage_too_small; target_concentration_failed; accepted_compression_ev_not_beaten; accepted_compression_pnl_not_beaten; accepted_distribution_ev_not_beaten; accepted_distribution_pnl_not_beaten",
+  "related_files": [
+    "quant/experiments/exp_20260617_025_nt_late_filing_absorption_scout.py",
+    "data/experiments/exp-20260617-025/exp_20260617_025_nt_late_filing_absorption_scout.json",
+    "experiments/logs/exp-20260617-025.json",
+    "experiments/tickets/exp-20260617-025.json",
+    "experiments/cards/exp-20260617-025.md",
+    "experiments/manifests/exp-20260617-025.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "status": "rejected",
+  "target_trade_summary": {
+    "by_ticker_count": {
+      "RGEN": 1
+    },
+    "by_ticker_pnl": {
+      "RGEN": 19.92
+    },
+    "by_window_pnl": {
+      "late_strong": 0,
+      "mid_weak": 0,
+      "old_thin": 19.92
+    },
+    "max_single_positive_pnl_share": 1.0,
+    "positive_by_ticker_pnl": {
+      "RGEN": 19.92
+    },
+    "positive_pnl_hhi": 1.0,
+    "total_pnl": 19.92,
+    "total_trade_count": 1,
+    "windows_with_target_trades": [
+      "old_thin"
+    ]
+  },
+  "target_trades_by_window": {
+    "late_strong": [],
+    "mid_weak": [],
+    "old_thin": [
+      {
+        "candidate_avg_dollar_volume_20d": 86326770.74,
+        "candidate_close": 150.47,
+        "candidate_close_location": 0.628737,
+        "candidate_realized_vol_20d": 0.026958,
+        "candidate_ret20": 0.089021,
+        "candidate_ret20_excess_spy": 0.06345,
+        "candidate_ret60": 0.001398,
+        "candidate_score": 0.623541,
+        "candidate_signal_excess_spy": 0.012167,
+        "candidate_signal_return": 0.012652,
+        "candidate_volume_ratio_20d": 1.815983,
+        "date": "2024-11-13",
+        "entry_date": "2024-11-14",
+        "entry_price": 148.6543,
+        "entry_raw_open": 148.58,
+        "exit_date": "2024-11-27",
+        "exit_price": 149.915,
+        "exit_raw_close": 149.99,
+        "hold_days": 10,
+        "industry": "Medical Instruments & Supplies",
+        "known_at": "sec_nt_form_and_signal_close_before_next_open_paper_entry",
+        "nt_acceptance_datetime": "2024-11-12T21:22:50.000Z",
+        "nt_accepted_after_close": true,
+        "nt_accession_number": "0001193125-24-255987",
+        "nt_filing_date": "2024-11-12",
+        "nt_form": "NT 10-Q",
+        "nt_form_weight": 1.0,
+        "nt_primary_document": "d850958dnt10q.htm",
+        "paper_notional_usd": 4000.0,
+        "pnl": 19.92,
+        "pnl_pct_net": 0.004981,
+        "rule_version": "sec_nt_late_filing_notice_absorption_candidate_source_v1",
+        "sector": "Healthcare",
+        "signal_date": "2024-11-13",
+        "source": "SEC_NT_LATE_FILING_ABSORPTION_PAPER",
+        "source_rule_version": "sec_nt_late_filing_notice_absorption_candidate_source_v1",
+        "ticker": "RGEN",
+        "trade_enabled": false,
+        "uses_free_ohlcv": true,
+        "uses_free_sec_companyfacts": false,
+        "uses_free_sec_submissions": true,
+        "uses_llm": false
+      }
+    ]
+  },
+  "timestamp": "2026-06-17T20:10:13Z",
+  "total_pnl_delta": 19.92,
+  "trial_family": "free_sec_submissions_nt_late_filing_absorption_candidate_pool",
+  "trial_variant_id": "nt_late_filing_absorption_top1_next_open_10d_v1",
+  "warehouse_coverage_by_window": {
+    "late_strong": {
+      "loaded_ticker_count": 140,
+      "sector_known_ticker_count": 138,
+      "source": "data/warehouse/warehouse_main.sqlite"
+    },
+    "mid_weak": {
+      "loaded_ticker_count": 140,
+      "sector_known_ticker_count": 138,
+      "source": "data/warehouse/warehouse_main.sqlite"
+    },
+    "old_thin": {
+      "loaded_ticker_count": 140,
+      "sector_known_ticker_count": 138,
+      "source": "data/warehouse/warehouse_main.sqlite"
+    }
+  }
+}
