@@ -44,9 +44,19 @@ def _novelty_check(args):
     except Exception:
         return None
 
-    enforce = bool(args.enforce_novelty) or os.environ.get(
-        "GINGER_NOVELTY_GATE", ""
-    ).strip().lower() in {"1", "block", "true", "yes"}
+    # Blocking is the default for alpha lanes. Precedence: explicit per-call
+    # flags win, then the env switch, else block by default.
+    gate_env = os.environ.get("GINGER_NOVELTY_GATE", "").strip().lower()
+    if args.no_enforce_novelty:
+        enforce = False
+    elif args.enforce_novelty:
+        enforce = True
+    elif gate_env in {"off", "0", "warn", "false", "no"}:
+        enforce = False
+    elif gate_env in {"1", "block", "true", "yes"}:
+        enforce = True
+    else:
+        enforce = True
     alpha_lane = args.lane in ALPHA_LANES
     nearest = result.get("nearest") or []
 
@@ -227,9 +237,17 @@ def main(description=__doc__):
         "--enforce-novelty",
         action="store_true",
         help=(
-            "Block reservation of an alpha-lane near-neighbor unless "
-            "--novelty-override with --new-evidence-axis is given. Also enabled "
-            "by env GINGER_NOVELTY_GATE in {1,block,true}. Default is warn-only."
+            "Force the blocking novelty gate for this reservation (redundant: "
+            "blocking is now the default for alpha lanes)."
+        ),
+    )
+    parser.add_argument(
+        "--no-enforce-novelty",
+        action="store_true",
+        help=(
+            "Force warn-only for this reservation, overriding the block-by-"
+            "default. Also: env GINGER_NOVELTY_GATE in {off,0,warn} disables "
+            "blocking globally; {1,block,true} forces it on."
         ),
     )
     args = parser.parse_args()

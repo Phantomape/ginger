@@ -82,17 +82,24 @@ runner filenames.
 
 ### Novelty Check (near-neighbor guard)
 
-`experiment.py new` runs an advisory near-neighbor check against
+`experiment.py new` runs a near-neighbor check against
 `docs/frozen_families.jsonl` (regenerate with
-`scripts/build_frozen_families.py`). It prints the inferred decision-fingerprint
-and the nearest frozen/explored families to stderr; stdout stays clean ticket
-JSON. It is **warn-only by default** — read the warning before proceeding. If it
-flags a frozen/already-explored family, only continue with a genuinely new
-evidence axis (a new data source, a field no prior family used, a new gate
-shape, or forward replacement rows). To make it blocking for alpha lanes, pass
-`--enforce-novelty` (or set `GINGER_NOVELTY_GATE=block`); then a near-neighbor is
-refused unless you pass `--novelty-override --new-evidence-axis "<what is new>"`,
-which is recorded on the ticket. Check ad hoc with
+`scripts/build_frozen_families.py`). It infers the proposed decision-fingerprint
+and prints the nearest frozen/explored families to stderr; stdout stays clean
+ticket JSON.
+
+It is **blocking by default for alpha lanes** (`alpha_search`,
+`alpha_discovery`, `universe_scout`): if the proposal is a near-neighbor of a
+frozen/explored family, the reservation is refused (before any ID is allocated)
+unless you pass `--novelty-override --new-evidence-axis "<what is genuinely
+new>"` — a new data source, a field no prior family used, a new gate shape, or
+forward replacement rows. The override is recorded on the ticket. Other lanes
+(e.g. `measurement_repair`) are never blocked.
+
+Escape hatches: `--no-enforce-novelty` makes a single reservation warn-only;
+`GINGER_NOVELTY_GATE=off` (or `warn`/`0`) disables blocking globally,
+`=block`/`1` forces it. The check fails safe — if the tooling/registry is
+missing it silently skips. Check ad hoc with
 `scripts/check_experiment_novelty.py --describe "..." --trial-family ...`.
 
 ## Claim
