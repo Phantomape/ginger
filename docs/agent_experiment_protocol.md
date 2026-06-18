@@ -80,6 +80,21 @@ Reservation writes the ticket, card, and manifest. Explicit IDs must not collide
 with registry, JSONL, tickets, logs, cards, manifests, artifacts, data paths, or
 runner filenames.
 
+### Novelty Check (near-neighbor guard)
+
+`experiment.py new` runs an advisory near-neighbor check against
+`docs/frozen_families.jsonl` (regenerate with
+`scripts/build_frozen_families.py`). It prints the inferred decision-fingerprint
+and the nearest frozen/explored families to stderr; stdout stays clean ticket
+JSON. It is **warn-only by default** — read the warning before proceeding. If it
+flags a frozen/already-explored family, only continue with a genuinely new
+evidence axis (a new data source, a field no prior family used, a new gate
+shape, or forward replacement rows). To make it blocking for alpha lanes, pass
+`--enforce-novelty` (or set `GINGER_NOVELTY_GATE=block`); then a near-neighbor is
+refused unless you pass `--novelty-override --new-evidence-axis "<what is new>"`,
+which is recorded on the ticket. Check ad hoc with
+`scripts/check_experiment_novelty.py --describe "..." --trial-family ...`.
+
 ## Claim
 
 Preferred command:
