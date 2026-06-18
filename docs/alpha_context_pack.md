@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1388`
-- Raw records loaded by meta report: `2019`
-- History fingerprint: `cd43f913f27f935c`
+- Strategy records counted: `1389`
+- Raw records loaded by meta report: `2021`
+- History fingerprint: `c7eb6cd5c0714164`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -63,8 +63,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260618-003` `rejected_sec_8k_item102_contract_termination_absorption_candidate_pool`: EV `+0.1190`, PnL `$1,642.79`, family `production_visible_free_sec_submissions_contract_termination_candidate_pool`, trial `free_sec_submissions_8k_contract_termination_absorption_candidate_pool`.
-  Lesson: The SEC 8-K Item 1.02 contract-termination absorption source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted...
 - `exp-20260618-004` `rejected_sec_item_507_vote_result_absorption_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `production_visible_sec_text_governance_vote_result_candidate_pool`, trial `sec_item_507_vote_result_absorption_candidate_pool`.
   Lesson: The SEC Item 5.07 vote-result absorption source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_...
 - `exp-20260618-006` `rejected_intraindustry_lead_lag_direction_stability_candidate_pool`: EV `+1.2216`, PnL `$17,008.11`, family `production_visible_free_ohlcv_relation_alpha`, trial `free_ohlcv_intraindustry_lead_lag_direction_stability_candidate_pool`.
@@ -87,6 +85,8 @@ facts before changing strategy behavior.
   Lesson: The structured SEC corporate-action absorption basket did not clear Gate 4 (failed: accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). The fixed bundle combined business-combination/tender for...
 - `exp-20260618-017` `rejected_parsed_13d_stake_increase_absorption_candidate_pool`: EV `+0.0210`, PnL `$405.94`, family `production_visible_sec_ownership_holder_stake_candidate_pool`, trial `parsed_13d_amend_stake_increase_absorption_candidate_pool`.
   Lesson: The parsed 13D/A stake-increase absorption source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, target_sample_too_small, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_be...
+- `exp-20260618-018` `blocked_missing_parsed_13g_amendment_stake_direction_surface`: EV `+0.0000`, PnL `$0.00`, family `production_visible_sec_ownership_holder_stake_candidate_pool`, trial `parsed_13g_amend_stake_increase_absorption_candidate_pool`.
+  Lesson: The proposed 13G/A stake-direction edge could not enter replay because Gate 2 failed: submissions enumerate 13G/A amendments, but parsed XML rows are missing for amendments, so prior-versus-current holder stake direct...
 
 ## Highest-Signal Historical Records
 

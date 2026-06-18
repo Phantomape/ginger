@@ -1,0 +1,584 @@
+{
+  "acceptance_rule": "Gate 4 requires positive aggregate EV/PnL, no EV/PnL window regression, >=20 paper trades across all three windows, survival >=5%, drawdown drift <=0.5pp, concentration pass, and beating accepted compression/distribution comparators; replay-only positives are not accepted alpha until shared helper parity exists.",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260618_018_parsed_13g_stake_increase_absorption.py",
+    "data/experiments/exp-20260618-018/exp_20260618_018_parsed_13g_stake_increase_absorption.json",
+    "experiments/cards/exp-20260618-018.md",
+    "experiments/manifests/exp-20260618-018.json",
+    "experiments/tickets/exp-20260618-018.json",
+    "experiments/logs/exp-20260618-018.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "artifact": "data/experiments/exp-20260618-018/exp_20260618_018_parsed_13g_stake_increase_absorption.json",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "calibration": {
+    "actual_ev_delta": 0.0,
+    "actual_gate4_passed": false,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 0,
+    "brier_score": 0.0169,
+    "expected_ev_delta": 0.2,
+    "expected_pnl_delta": 3000.0,
+    "failure_modes_observed": [
+      "parsed_13g_amendment_rows_missing",
+      "cannot_compute_sequential_13g_stake_change_direction",
+      "metadata_only_13g_amendment_replay_frozen",
+      "shared_historical_daily_parser_parity_missing_for_13g_a_direction"
+    ],
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "thin_sample",
+      "old_thin_coverage_gap",
+      "stale_13g_amendment_noise",
+      "priced_before_next_open",
+      "accepted_comparator_not_beaten"
+    ],
+    "predicted_success_probability": 0.13,
+    "realized_failure_mode": "parsed_13g_amendment_xml_not_cached_or_parsed",
+    "surprise_note": "The exact amendment direction surface was not present: 13G/A metadata exists, but local parsed XML rows are initial 13G only."
+  },
+  "card_file": "experiments/cards/exp-20260618-018.md",
+  "causal_components": [
+    "parsed_13g_amend_stake_direction",
+    "historical_replay_scout",
+    "standard_three_window_gate",
+    "execution_envelope",
+    "closeout_record"
+  ],
+  "change_type": "default_off_paper_candidate_pool_replay_scout",
+  "changed_variable": "parsed_13g_amend_stake_increase_absorption_candidate_pool_v1",
+  "claimed_at": "2026-06-18T17:55:53+00:00",
+  "completed_at": "2026-06-18T18:00:26Z",
+  "created_at": "2026-06-18T17:55:44+00:00",
+  "decision": "blocked_missing_parsed_13g_amendment_stake_direction_surface",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260618-018",
+  "experiment_uid": "expuid-16555d888ffd4364",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260618-018",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-18T17:55:44+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "parsed_13g_stake_increase_absorption"
+  },
+  "hypothesis": "candidate_pool: parsed Schedule 13G/A amendments where a non-Big3 reporting holder's beneficial ownership percent increases versus its prior PIT parsed 13G row may identify fresh institutional accumulation distinct from stale initial passive filings; same-day liquid SPY-relative absorption tests whether demand accepted the disclosure before next-open paper entry.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "parsed_13g_amend_stake_increase_absorption_candidate_pool_v1"
+  ],
+  "log": "experiments/logs/exp-20260618-018.json",
+  "mechanism_family": "production_visible_sec_ownership_holder_stake_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260612-016",
+    "exp-20260618-014",
+    "exp-20260618-016",
+    "exp-20260618-017"
+  ],
+  "new_evidence_type": "parsed_sequential_13g_amend_stake_change_direction",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "sec13f_ownership",
+      "field_tags": [
+        "13g",
+        "a",
+        "absorption",
+        "accepted",
+        "accumulation",
+        "amend",
+        "amendments",
+        "before",
+        "beneficial",
+        "big3",
+        "demand",
+        "disclosure",
+        "distinct",
+        "entry",
+        "filings",
+        "fresh",
+        "from",
+        "holder",
+        "identify",
+        "increase",
+        "increases",
+        "initial",
+        "institutional",
+        "its",
+        "liquid",
+        "may",
+        "non",
+        "ownership",
+        "parsed",
+        "passive",
+        "percent",
+        "pit",
+        "prior",
+        "relative",
+        "reporting",
+        "row",
+        "s",
+        "same",
+        "schedule",
+        "spy",
+        "stake",
+        "stale",
+        "tests",
+        "versus",
+        "where",
+        "whether"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_new_holder_initiation_candidate_pool",
+        "reopen_condition": "Need manager identity/quality, sector-normalized new-holder surprise, independent options/borrow evidence, or forward replacement-value rows from a shared helper.",
+        "score": 0.616,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_sponsorship_acceleration_candidate_pool",
+        "reopen_condition": "A retry needs manager identity/quality, true new-position signals, sector-relative sponsorship surprise, or shared daily default-off forward rows.",
+        "score": 0.608,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_crowding_context_candidate_pool",
+        "reopen_condition": "Raw PIT 13F candidate rows, manager identity/quality, sector-relative crowding surprise, or daily default-off forward observations.",
+        "score": 0.6075,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec_after_hours_5_07_governance_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.6073,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "companyfacts_shareholder_yield_fcf_combo",
+        "reopen_condition": "Only retry with a genuinely broader free-data candidate pool or forward closed rows, not by loosening the same thresholds on these windows.",
+        "score": 0.6,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Parsed sequential 13G/A amendment stake-change direction versus prior same issuer-holder 13G row, excluding Big-3 passive index complexes; exp-20260618-017 tested only 13D/A direction and exp-20260618-016 did not replay 13G/A direction.",
+    "override": true,
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-search-automation",
+  "post_run_reflection": {
+    "best_next_alpha_direction": "If 13G/A XML backfill is practical, rerun the same fixed direction surface after cache completion. Otherwise shift to 13D Item-4 purpose text or another genuinely new structured PIT data edge, not another raw SEC metadata rule.",
+    "forbidden_near_neighbor_retry": "Do not retry 13G/A by sweeping form lists, Big-3 exclusions, classPercent levels, event age, signal excess, close-location, volume, volatility, ret20, price/ADV, top-N, hold, cooldown, or notional until parsed 13G/A amendment XML rows exist.",
+    "negative_reflection": "This does not reject the economic idea. It rejects running it today with incomplete PIT data. A metadata-only amendment gate would mix passive batch updates, reporting cleanup, and stale ownership changes, recreating the raw 13G failure mode.",
+    "new_evidence_required": "Backfill/cache structured primary_doc.xml for 13G/A amendments across all canonical windows and parse holder identity plus classPercent, then test the exact sequential non-Big3 stake-increase rule through a shared historical/daily helper.",
+    "why_result_happened": "The proposed 13G/A stake-direction edge could not enter replay because Gate 2 failed: submissions enumerate 13G/A amendments, but parsed XML rows are missing for amendments, so prior-versus-current holder stake direction cannot be computed without falling back to frozen metadata-only 13G events."
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260618-016 explicitly left 13G/A stake-change direction as a valid new evidence axis after static 13G subsets were not clean; exp-20260618-017 only tested 13D/A stake increases. The main risk is that 13G amendments are still passive batch updates or old_thin coverage remains weak.",
+    "expected_ev_delta": 0.2,
+    "expected_pnl_delta": 3000.0,
+    "main_failure_modes": [
+      "thin_sample",
+      "old_thin_coverage_gap",
+      "stale_13g_amendment_noise",
+      "priced_before_next_open",
+      "accepted_comparator_not_beaten"
+    ],
+    "recorded_at": "2026-06-18T17:55:32+00:00",
+    "success_probability": 0.13
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "parity_note": "No strategy or production helper changed. A future replay must first backfill/cache parsed 13G/A XML and then use the same parser in historical replay and daily default-off snapshot.",
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_free_sec_submissions": true,
+    "uses_llm": false,
+    "uses_parsed_sec_13d13g": true
+  },
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "artifact": "data/experiments/exp-20260618-018/exp_20260618_018_parsed_13g_stake_increase_absorption.json",
+    "decision": "blocked_missing_parsed_13g_amendment_stake_direction_surface",
+    "gate2": {
+      "blocking_summary": "The SEC submissions cache has 13G/A amendment events, but the local structured XML cache only contains initial 13G documents. Without parsed amendment rows, the predeclared stake-increase direction cannot be computed point-in-time. A metadata-only replay would repeat the frozen raw 13G family and violate parity.",
+      "minimum_position_fields": {
+        "entry_date": "unchanged in existing baseline strategy",
+        "target_price": "unchanged in existing baseline strategy"
+      },
+      "required_fields": [
+        "parsed 13G/A accession number",
+        "parsed 13G/A filing date",
+        "parsed reporting-person names",
+        "parsed max_class_percent",
+        "prior same issuer-holder parsed 13G max_class_percent",
+        "Big-3 passive holder flag",
+        "warehouse OHLCV for any later replay",
+        "operator_inputs/open_positions.json entry_date",
+        "operator_inputs/open_positions.json target_price"
+      ],
+      "status": "blocked",
+      "surface": {
+        "13g_amendment_events": 9190,
+        "all_13g_events_including_amendments": 12114,
+        "blocking_summary": "The SEC submissions cache has 13G/A amendment events, but the local structured XML cache only contains initial 13G documents. Without parsed amendment rows, the predeclared stake-increase direction cannot be computed point-in-time. A metadata-only replay would repeat the frozen raw 13G family and violate parity.",
+        "coverage_by_window": {
+          "late_strong": {
+            "13g_amendment_events": 3341,
+            "amendment_parse_fraction": 0.0,
+            "parsed_13g_amendment_rows": 0,
+            "parsed_13g_initial_rows": 890,
+            "parsed_13g_rows_total": 890,
+            "total_13g_events": 4231
+          },
+          "mid_weak": {
+            "13g_amendment_events": 2807,
+            "amendment_parse_fraction": 0.0,
+            "parsed_13g_amendment_rows": 0,
+            "parsed_13g_initial_rows": 994,
+            "parsed_13g_rows_total": 994,
+            "total_13g_events": 3801
+          },
+          "old_thin": {
+            "13g_amendment_events": 3042,
+            "amendment_parse_fraction": 0.0,
+            "parsed_13g_amendment_rows": 0,
+            "parsed_13g_initial_rows": 493,
+            "parsed_13g_rows_total": 493,
+            "total_13g_events": 4082
+          }
+        },
+        "direction_counter": {},
+        "fetch_status": {
+          "cached": 2377,
+          "not_fetched": 9737
+        },
+        "initial_13g_events": 2924,
+        "missing_amendment_examples": [
+          {
+            "accepted_at": "2026-03-26T19:05:51.000Z",
+            "accession_number": "0000102909-26-000500",
+            "filing_date": "2026-03-26",
+            "form": "SCHEDULE 13G/A",
+            "issuer_cik": "0000001800",
+            "primary_document": "xslSCHEDULE_13G_X02/primary_doc.xml",
+            "structured_xml": true,
+            "ticker": "ABT",
+            "window": "late_strong"
+          },
+          {
+            "accepted_at": "2025-12-03T16:02:29.000Z",
+            "accession_number": "0000102909-25-000355",
+            "filing_date": "2025-12-03",
+            "form": "SCHEDULE 13G/A",
+            "issuer_cik": "0000001800",
+            "primary_document": "xslSCHEDULE_13G_X01/primary_doc.xml",
+            "structured_xml": true,
+            "ticker": "ABT",
+            "window": "late_strong"
+          },
+          {
+            "accepted_at": "2026-03-26T19:12:53.000Z",
+            "accession_number": "0000102909-26-000540",
+            "filing_date": "2026-03-26",
+            "form": "SCHEDULE 13G/A",
+            "issuer_cik": "0000002488",
+            "primary_document": "xslSCHEDULE_13G_X02/primary_doc.xml",
+            "structured_xml": true,
+            "ticker": "AMD",
+            "window": "late_strong"
+          },
+          {
+            "accepted_at": "2025-09-30T20:05:18.000Z",
+            "accession_number": "0001104659-25-095018",
+            "filing_date": "2025-09-30",
+            "form": "SCHEDULE 13G/A",
+            "issuer_cik": "0000002809",
+            "primary_document": "xslSCHEDULE_13G_X01/primary_doc.xml",
+            "structured_xml": true,
+            "ticker": "AEM",
+            "window": "mid_weak"
+          },
+          {
+            "accepted_at": "2025-04-17T20:54:57.000Z",
+            "accession_number": "0001576419-25-000848",
+            "filing_date": "2025-04-17",
+            "form": "SCHEDULE 13G/A",
+            "issuer_cik": "0000002809",
+            "primary_document": "xslSCHEDULE_13G_X01/primary_doc.xml",
+            "structured_xml": true,
+            "ticker": "AEM",
+            "window": "old_thin"
+          },
+          {
+            "accepted_at": "2025-03-20T20:39:22.000Z",
+            "accession_number": "0001104659-25-026197",
+            "filing_date": "2025-03-20",
+            "form": "SCHEDULE 13G/A",
+            "issuer_cik": "0000002809",
+            "primary_document": "xslSCHEDULE_13G_X01/primary_doc.xml",
+            "structured_xml": true,
+            "ticker": "AEM",
+            "window": "old_thin"
+          },
+          {
+            "accepted_at": "2026-03-26T19:24:15.000Z",
+            "accession_number": "0000102909-26-000555",
+            "filing_date": "2026-03-26",
+            "form": "SCHEDULE 13G/A",
+            "issuer_cik": "0000002969",
+            "primary_document": "xslSCHEDULE_13G_X02/primary_doc.xml",
+            "structured_xml": true,
+            "ticker": "APD",
+            "window": "late_strong"
+          },
+          {
+            "accepted_at": "2026-01-07T19:59:07.000Z",
+            "accession_number": "0000102909-26-000007",
+            "filing_date": "2026-01-07",
+            "form": "SCHEDULE 13G/A",
+            "issuer_cik": "0000002969",
+            "primary_document": "xslSCHEDULE_13G_X01/primary_doc.xml",
+            "structured_xml": true,
+            "ticker": "APD",
+            "window": "late_strong"
+          },
+          {
+            "accepted_at": "2025-08-13T15:39:05.000Z",
+            "accession_number": "0001422848-25-000178",
+            "filing_date": "2025-08-13",
+            "form": "SCHEDULE 13G/A",
+            "issuer_cik": "0000002969",
+            "primary_document": "xslSCHEDULE_13G_X01/primary_doc.xml",
+            "structured_xml": true,
+            "ticker": "APD",
+            "window": "mid_weak"
+          },
+          {
+            "accepted_at": "2025-04-17T13:35:32.000Z",
+            "accession_number": "0001576419-25-000683",
+            "filing_date": "2025-04-17",
+            "form": "SCHEDULE 13G/A",
+            "issuer_cik": "0000002969",
+            "primary_document": "xslSCHEDULE_13G_X01/primary_doc.xml",
+            "structured_xml": true,
+            "ticker": "APD",
+            "window": "old_thin"
+          },
+          {
+            "accepted_at": "2024-10-24T20:44:13.000Z",
+            "accession_number": "0002012383-24-002305",
+            "filing_date": "2024-10-24",
+            "form": "SC 13G/A",
+            "issuer_cik": "0000002969",
+            "primary_document": "us0091581068_102424.txt",
+            "structured_xml": false,
+            "ticker": "APD",
+            "window": "old_thin"
+          },
+          {
+            "accepted_at": "2026-03-27T14:32:14.000Z",
+            "accession_number": "0000102909-26-001754",
+            "filing_date": "2026-03-27",
+            "form": "SCHEDULE 13G/A",
+            "issuer_cik": "0000003453",
+            "primary_document": "xslSCHEDULE_13G_X02/primary_doc.xml",
+            "structured_xml": true,
+            "ticker": "MATX",
+            "window": "late_strong"
+          }
+        ],
+        "parsed_13g_amendment_rows": 0,
+        "parsed_13g_rows_total": 2377,
+        "parsed_positive_non_big3_stake_increase_rows": 0,
+        "positive_direction_sample": [],
+        "rows_json": "data/non_ohlcv/sec_13d13g_holdings/rows.json",
+        "status": "blocked_missing_parsed_13g_amendment_rows",
+        "xml_cache_dir": "data/cache/sec/ownership_13d13g"
+      }
+    },
+    "gate4": {
+      "after": {
+        "aggregate": {
+          "aggregate_expected_value_score": 7.8941,
+          "aggregate_total_pnl": 234850.99,
+          "max_window_drawdown_pct": 0.1119,
+          "min_survival_rate": 0.7925,
+          "total_trade_count": 61
+        },
+        "source": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "status": "passed",
+        "windows": {
+          "late_strong": {
+            "end": "2026-04-21",
+            "expected_value_score": 5.1628,
+            "max_drawdown_pct": 0.0665,
+            "sharpe_daily": 4.41,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+            "start": "2025-10-23",
+            "survival_rate": 0.8039,
+            "total_pnl": 117072.92,
+            "trade_count": 18,
+            "win_rate": 0.8333
+          },
+          "mid_weak": {
+            "end": "2025-10-22",
+            "expected_value_score": 2.1402,
+            "max_drawdown_pct": 0.1119,
+            "sharpe_daily": 2.74,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+            "start": "2025-04-23",
+            "survival_rate": 0.7925,
+            "total_pnl": 78110.11,
+            "trade_count": 21,
+            "win_rate": 0.5238
+          },
+          "old_thin": {
+            "end": "2025-04-22",
+            "expected_value_score": 0.5911,
+            "max_drawdown_pct": 0.1001,
+            "sharpe_daily": 1.49,
+            "signals_generated": 60,
+            "signals_survived": 52,
+            "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+            "start": "2024-10-02",
+            "survival_rate": 0.8667,
+            "total_pnl": 39667.96,
+            "trade_count": 22,
+            "win_rate": 0.4091
+          }
+        }
+      },
+      "before": {
+        "aggregate": {
+          "aggregate_expected_value_score": 7.8941,
+          "aggregate_total_pnl": 234850.99,
+          "max_window_drawdown_pct": 0.1119,
+          "min_survival_rate": 0.7925,
+          "total_trade_count": 61
+        },
+        "source": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "status": "passed",
+        "windows": {
+          "late_strong": {
+            "end": "2026-04-21",
+            "expected_value_score": 5.1628,
+            "max_drawdown_pct": 0.0665,
+            "sharpe_daily": 4.41,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+            "start": "2025-10-23",
+            "survival_rate": 0.8039,
+            "total_pnl": 117072.92,
+            "trade_count": 18,
+            "win_rate": 0.8333
+          },
+          "mid_weak": {
+            "end": "2025-10-22",
+            "expected_value_score": 2.1402,
+            "max_drawdown_pct": 0.1119,
+            "sharpe_daily": 2.74,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+            "start": "2025-04-23",
+            "survival_rate": 0.7925,
+            "total_pnl": 78110.11,
+            "trade_count": 21,
+            "win_rate": 0.5238
+          },
+          "old_thin": {
+            "end": "2025-04-22",
+            "expected_value_score": 0.5911,
+            "max_drawdown_pct": 0.1001,
+            "sharpe_daily": 1.49,
+            "signals_generated": 60,
+            "signals_survived": 52,
+            "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+            "start": "2024-10-02",
+            "survival_rate": 0.8667,
+            "total_pnl": 39667.96,
+            "trade_count": 22,
+            "win_rate": 0.4091
+          }
+        }
+      },
+      "decision": "blocked",
+      "delta": {
+        "aggregate_expected_value_score": 0.0,
+        "aggregate_total_pnl": 0.0,
+        "max_window_drawdown_pct": 0.0,
+        "min_survival_rate": 0.0,
+        "total_trade_count": 0
+      },
+      "failed_reasons": [
+        "parsed_13g_amendment_rows_missing",
+        "cannot_compute_sequential_13g_stake_change_direction",
+        "metadata_only_13g_amendment_replay_frozen",
+        "shared_historical_daily_parser_parity_missing_for_13g_a_direction"
+      ],
+      "status": "not_run_strategy_unchanged"
+    },
+    "log": "experiments/logs/exp-20260618-018.json",
+    "runner": "quant/experiments/exp_20260618_018_parsed_13g_stake_increase_absorption.py",
+    "summary": "The proposed 13G/A stake-direction edge could not enter replay because Gate 2 failed: submissions enumerate 13G/A amendments, but parsed XML rows are missing for amendments, so prior-versus-current holder stake direction cannot be computed without falling back to frozen metadata-only 13G events."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260618-018.json",
+  "single_causal_variable": "parsed_13g_amend_stake_increase_absorption_candidate_pool_v1",
+  "status": "blocked",
+  "summary": "The proposed 13G/A stake-direction edge could not enter replay because Gate 2 failed: submissions enumerate 13G/A amendments, but parsed XML rows are missing for amendments, so prior-versus-current holder stake direction cannot be computed without falling back to frozen metadata-only 13G events.",
+  "ticket_file": "experiments/tickets/exp-20260618-018.json",
+  "trial_family": "parsed_13g_amend_stake_increase_absorption_candidate_pool",
+  "trial_variant_id": "parsed_13g_stake_increase_absorption_top1_next_open_10d_v1",
+  "updated_at": "2026-06-18T18:00:33+00:00"
+}
