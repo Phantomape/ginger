@@ -1,0 +1,361 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_comparators": {
+    "accepted_allocator": {
+      "aggregate_ev_delta": 2.1849,
+      "aggregate_pnl_delta": 40397.21,
+      "experiment_id": "exp-20260611-005",
+      "window_deltas": {
+        "late_strong": {
+          "ev": 0.9092,
+          "pnl": 9431.68
+        },
+        "mid_weak": {
+          "ev": 0.6352,
+          "pnl": 11133.95
+        },
+        "old_thin": {
+          "ev": 0.6405,
+          "pnl": 19831.58
+        }
+      }
+    },
+    "accepted_sbc_burden_standalone": {
+      "aggregate_ev_delta": 0.9438,
+      "aggregate_pnl_delta": 15748.19,
+      "experiment_id": "exp-20260616-015",
+      "target_trade_count": 108,
+      "window_deltas": {
+        "late_strong": {
+          "ev": 0.4738,
+          "pnl": 6269.93
+        },
+        "mid_weak": {
+          "ev": 0.4375,
+          "pnl": 8388.43
+        },
+        "old_thin": {
+          "ev": 0.0325,
+          "pnl": 1089.83
+        }
+      }
+    }
+  },
+  "aggregate_expected_value_delta": 2.1267,
+  "aggregate_expected_value_delta_pct": 0.269404,
+  "aggregate_strategy_total_pnl_delta": 41141.15,
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260618-021/exp_20260618_021_sbc_burden_gap_fill_allocator.json",
+  "backtest_protocol": {
+    "REGIME_AWARE_EXIT": true,
+    "candidate_ohlcv_source": "data/warehouse/warehouse_main.sqlite",
+    "execution_model": "Replay-only runner first computes the unchanged accepted-helper allocator selections for each canonical window, then adds accepted SBC burden-improvement source rows only on signal dates where that baseline allocator selected no row. It then uses the existing allocator selector, next-open entry, 10-trading-day exit, paper notional, cooldown, costs, and overlay metrics. No shared helper or production path is retained.",
+    "replay_llm": false,
+    "replay_news": false,
+    "source": "docs/backtesting.md canonical three-window core replay plus shared accepted-helper source-priority allocator overlay",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "baseline_result_file": "docs/backtesting.md current canonical baseline and same-run before_metrics inside this artifact",
+  "calibration": {
+    "actual_gate4_passed": false,
+    "actual_retained_as_alpha": false,
+    "brier_score": 0.0324,
+    "failure_modes_observed": [
+      "accepted_allocator_ev_comparator_not_beaten",
+      "accepted_allocator_window_comparator_regression"
+    ],
+    "predicted_success_probability": 0.18
+  },
+  "changed_variable": "sbc_burden_improvement_no_displacement_gap_fill_allocator_source_v1",
+  "decision": "rejected_sbc_burden_no_displacement_gap_allocator",
+  "expected_value_score_delta": 2.1267,
+  "experiment_id": "exp-20260618-021",
+  "full_stack": {
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "complete": false,
+      "kill_switch_drawdown_pct": null,
+      "max_capital_pct": 0.32,
+      "max_concurrent": 8,
+      "max_displacement": 1,
+      "min_dollar_volume": null,
+      "missing": [
+        "min_dollar_volume",
+        "kill_switch_drawdown_pct",
+        "sleeve_drawdown_stop_pct"
+      ],
+      "notes": "Top-1/day accepted-helper allocator, fixed $4,000 paper notional, 8 max active default-off paper positions, 10-trading-day hold, and 12-trading-day same-ticker cooldown. Lagged consensus inherits the accepted source helper's underlying liquidity/data gates. It is not live-ready until forward rows, replacement value, and allocator kill switch parity mature.",
+      "order_semantics": "next_open_paper_only",
+      "sleeve_drawdown_stop_pct": null,
+      "slippage_bps": 5.0
+    },
+    "live_readiness": {
+      "blockers": [
+        "forward_rows_immature:0/30",
+        "forward_pnl_not_positive",
+        "replacement_value_not_passed",
+        "execution_envelope_incomplete",
+        "kill_switch_parity_not_passed"
+      ],
+      "closed_forward_trades": 0,
+      "envelope_missing": [
+        "min_dollar_volume",
+        "kill_switch_drawdown_pct",
+        "sleeve_drawdown_stop_pct"
+      ],
+      "forward_pnl": null,
+      "kill_switch_parity_passed": false,
+      "min_closed_forward_trades": 30,
+      "ready": false,
+      "replacement_value_passed": false
+    },
+    "verdict": {
+      "gate4_passed": false,
+      "live_ready": false,
+      "next_step": "Do not retry SBC allocator admission without forward replacement rows or new per-share dilution evidence.",
+      "verdict": "reject"
+    }
+  },
+  "full_stack_verdict": "reject",
+  "gate4": {
+    "accepted_allocator_comparator": {
+      "aggregate_ev_delta": 2.1849,
+      "aggregate_pnl_delta": 40397.21,
+      "experiment_id": "exp-20260611-005",
+      "window_deltas": {
+        "late_strong": {
+          "ev": 0.9092,
+          "pnl": 9431.68
+        },
+        "mid_weak": {
+          "ev": 0.6352,
+          "pnl": 11133.95
+        },
+        "old_thin": {
+          "ev": 0.6405,
+          "pnl": 19831.58
+        }
+      }
+    },
+    "accepted_sbc_burden_comparator": {
+      "aggregate_ev_delta": 0.9438,
+      "aggregate_pnl_delta": 15748.19,
+      "experiment_id": "exp-20260616-015",
+      "target_trade_count": 108,
+      "window_deltas": {
+        "late_strong": {
+          "ev": 0.4738,
+          "pnl": 6269.93
+        },
+        "mid_weak": {
+          "ev": 0.4375,
+          "pnl": 8388.43
+        },
+        "old_thin": {
+          "ev": 0.0325,
+          "pnl": 1089.83
+        }
+      }
+    },
+    "aggregate_ev_delta": 2.1267,
+    "aggregate_pnl_delta": 41141.15,
+    "comparator_regressions": [
+      "late_strong_ev",
+      "late_strong_pnl",
+      "old_thin_ev",
+      "old_thin_pnl"
+    ],
+    "daily_snapshot_source": "not_retained_replay_only_gap_variant",
+    "decision": "rejected_sbc_burden_no_displacement_gap_allocator",
+    "failed_reasons": [
+      "accepted_allocator_ev_comparator_not_beaten",
+      "accepted_allocator_window_comparator_regression"
+    ],
+    "max_drawdown_worse": -0.0008,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": false,
+    "shared_adapter_module": "runner_local_no_displacement_gap_replay",
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.193271,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": true,
+      "positive_pnl_hhi": 0.055375,
+      "positive_pnl_hhi_guardrail": 0.35,
+      "top5_positive_share": 0.40187
+    },
+    "target_trade_count": 382,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_ev_improved": 3,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 3,
+    "windows_pnl_regressed": 0
+  },
+  "hypothesis": "candidate_pool/allocation: the already accepted SBC burden-improvement free SEC quality helper may have incremental paper value when used only on empty accepted-allocator dates, because it adds no displacement risk to lagged consensus or other accepted sources.",
+  "lane": "alpha_search",
+  "log": "experiments/logs/exp-20260618-021.json",
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry SBC allocator variants by changing source rank, SBC thresholds, fact age, top-N, hold, cooldown, notional, or by using another frozen-window empty-date routing variant.",
+    "new_evidence_required": "Retry only with closed forward replacement-value rows, per-share SBC burden net of buybacks, grant-value normalization, or another new PIT dilution-quality field.",
+    "why_result_happened": "Removing displacement was not sufficient. The remaining SBC candidates on empty allocator dates were too low quality, too thin, or failed the accepted allocator comparator, which means the standalone SBC edge mostly overlaps stronger existing allocator dates."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "candidate_pool/allocation: the already accepted SBC burden-improvement free SEC quality helper may have incremental paper value when used only on empty accepted-allocator dates, because it adds no displacement risk to lagged consensus or other accepted sources.",
+    "2_history_check": {
+      "exp-20260611-005": "Current binding accepted allocator comparator: aggregate EV +2.1849 and PnL +$40,397.21 across all three windows.",
+      "exp-20260616-015": "Accepted shared SBC burden-improvement adapter: aggregate EV +0.9438, PnL +$15,748.19, 108 trades, all windows positive.",
+      "exp-20260616-016": "Rejected rank-2 allocator insertion. It selected 270 SBC rows and was aggregate-positive, but failed late_strong and accepted allocator comparator because it could displace stronger rows.",
+      "novelty_gate": "Near-neighbor warning was overridden only for the new gate shape: SBC can appear on dates with no existing accepted allocator selection; no rank, threshold, top-N, hold, cooldown, or notional retune is allowed."
+    },
+    "3_single_decision_hypothesis": "One fixed policy bundle: accepted SBC burden-improvement rows are eligible only when the unchanged accepted-helper allocator selects no paper row on that signal date. Existing allocator source priority, SBC thresholds, top-1/day, paper notional, hold, costs, cooldown, core behavior, LLM/news, and live/default orders stay fixed.",
+    "4_acceptance_standard": "Use docs/backtesting.md three canonical windows. Accept only if aggregate EV/PnL improve, no EV/PnL window regresses, sample/survival/drawdown/concentration guards pass, and exp-20260611-005 accepted allocator plus exp-20260616-015 SBC standalone comparators are beaten. Replay-only positives are not production-retained without shared daily parity.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260618_021_sbc_burden_gap_fill_allocator.py"
+  },
+  "prediction": {
+    "confidence_reason": "Exp-20260616-015 proved the raw SEC SBC burden helper has standalone three-window edge with EV 0.9438 and PnL 15748 across 108 trades. Exp-20260616-016 then admitted 270 SBC rows inside the allocator and failed because rank-two insertion replaced stronger accepted rows, including late-window regression. Empty-date admission directly removes that observed displacement channel, yet success remains unlikely because idle-date SBC rows may be lower quality and fewer.",
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 3000.0,
+    "main_failure_modes": [
+      "idle_dates_lower_quality",
+      "redundant_with_existing_allocator",
+      "old_thin_regression",
+      "accepted_allocator_comparator_not_beaten",
+      "target_sample_too_small"
+    ],
+    "recorded_at": "2026-06-18T20:11:41+00:00",
+    "success_probability": 0.18
+  },
+  "production_accepted": false,
+  "production_impact": {
+    "adapter_status": "runner_local_no_displacement_gap_replay",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "default_off_paper_only": true,
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "complete": false,
+      "kill_switch_drawdown_pct": null,
+      "max_capital_pct": 0.32,
+      "max_concurrent": 8,
+      "max_displacement": 1,
+      "min_dollar_volume": null,
+      "missing": [
+        "min_dollar_volume",
+        "kill_switch_drawdown_pct",
+        "sleeve_drawdown_stop_pct"
+      ],
+      "notes": "Top-1/day accepted-helper allocator, fixed $4,000 paper notional, 8 max active default-off paper positions, 10-trading-day hold, and 12-trading-day same-ticker cooldown. Lagged consensus inherits the accepted source helper's underlying liquidity/data gates. It is not live-ready until forward rows, replacement value, and allocator kill switch parity mature.",
+      "order_semantics": "next_open_paper_only",
+      "sleeve_drawdown_stop_pct": null,
+      "slippage_bps": 5.0
+    },
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "parity_note": "Replay-only no-displacement test. The runner keeps the existing accepted-helper allocator source priority unchanged, computes the allocator's selected dates first, and admits SBC burden-improvement rows only on dates with no existing accepted allocator selection. No shared helper, daily snapshot, report queue, watchlist, order path, ranking, sizing, or exit behavior is retained.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "shared_policy_tested_and_rolled_back": false,
+    "trade_enabled": false,
+    "uses_free_non_ohlcv": true,
+    "uses_free_ohlcv_only": false,
+    "uses_llm": false
+  },
+  "status": "rejected",
+  "timestamp": "2026-06-18T20:19:14Z",
+  "total_pnl_delta": 41141.15,
+  "trial_family": "accepted_default_off_helper_gap_fill_allocation",
+  "trial_variant_id": "sbc_burden_improvement_no_displacement_gap_fill_allocator_source_v1",
+  "windows": [
+    {
+      "expected_value_after": 5.8434,
+      "expected_value_before": 5.1628,
+      "expected_value_delta": 0.6806,
+      "label": "late_strong",
+      "sbc_blocked_by_existing_selected_date_count": 0,
+      "sbc_burden_improvement_selected_count": 10,
+      "sbc_gap_eligible_source_trade_count": 12,
+      "selected_source_counts": {
+        "industry_laggard_repair": 74,
+        "lagged_cross_source_consensus": 10,
+        "rolling_peer_shock": 12,
+        "sbc_burden_improvement": 10,
+        "turn_of_month": 15
+      },
+      "strategy_total_pnl_delta": 7788.81,
+      "target_trade_count": 121
+    },
+    {
+      "expected_value_after": 3.0176,
+      "expected_value_before": 2.1402,
+      "expected_value_delta": 0.8774,
+      "label": "mid_weak",
+      "sbc_blocked_by_existing_selected_date_count": 0,
+      "sbc_burden_improvement_selected_count": 14,
+      "sbc_gap_eligible_source_trade_count": 14,
+      "selected_source_counts": {
+        "compression": 2,
+        "industry_laggard_repair": 59,
+        "lagged_cross_source_consensus": 16,
+        "revision_surprise_low_extension": 3,
+        "rolling_peer_shock": 16,
+        "sbc_burden_improvement": 14,
+        "turn_of_month": 17
+      },
+      "strategy_total_pnl_delta": 14740.08,
+      "target_trade_count": 127
+    },
+    {
+      "expected_value_after": 1.1598,
+      "expected_value_before": 0.5911,
+      "expected_value_delta": 0.5687,
+      "label": "old_thin",
+      "sbc_blocked_by_existing_selected_date_count": 0,
+      "sbc_burden_improvement_selected_count": 22,
+      "sbc_gap_eligible_source_trade_count": 24,
+      "selected_source_counts": {
+        "industry_laggard_repair": 66,
+        "lagged_cross_source_consensus": 16,
+        "rolling_peer_shock": 9,
+        "sbc_burden_improvement": 22,
+        "turn_of_month": 21
+      },
+      "strategy_total_pnl_delta": 18612.26,
+      "target_trade_count": 134
+    }
+  ]
+}
