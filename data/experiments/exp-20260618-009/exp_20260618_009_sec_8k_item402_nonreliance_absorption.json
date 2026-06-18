@@ -1,0 +1,768 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_compression_comparator": {
+    "aggregate_expected_value_delta": 0.1608,
+    "aggregate_pnl_delta": 2248.98,
+    "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+    "experiment_id": "exp-20260608-013"
+  },
+  "accepted_distribution_comparator": {
+    "aggregate_expected_value_delta": 0.5286,
+    "aggregate_pnl_delta": 10432.91,
+    "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+    "experiment_id": "exp-20260611-007"
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 5.0904,
+      "max_consecutive_losses": 2,
+      "max_drawdown_pct": 0.0665,
+      "sharpe_daily": 4.38,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "strategy_total_return_pct": 1.1622,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5146,
+      "total_pnl": 116218.27,
+      "trade_count": 18,
+      "win_rate": 0.8333,
+      "worst_trade_pct": -0.0397
+    },
+    "mid_weak": {
+      "expected_value_score": 2.1538,
+      "max_consecutive_losses": 6,
+      "max_drawdown_pct": 0.1116,
+      "sharpe_daily": 2.75,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "strategy_total_return_pct": 0.7832,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.5493,
+      "total_pnl": 78324.27,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "worst_trade_pct": -0.0897
+    },
+    "old_thin": {
+      "expected_value_score": 0.5911,
+      "max_consecutive_losses": 4,
+      "max_drawdown_pct": 0.1001,
+      "sharpe_daily": 1.49,
+      "signals_generated": 60,
+      "signals_survived": 52,
+      "strategy_total_return_pct": 0.3967,
+      "survival_rate": 0.8667,
+      "tail_loss_share": 0.5193,
+      "total_pnl": 39667.96,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "worst_trade_pct": -0.0635
+    }
+  },
+  "anti_js": "No JavaScript was used.",
+  "backtest_protocol": {
+    "REGIME_AWARE_EXIT": true,
+    "candidate_ohlcv_source": "data/warehouse/warehouse_main.sqlite",
+    "companyfacts_source": "data/non_ohlcv/sec_companyfacts_selected_*.jsonl",
+    "execution_model": "SEC non-reliance/restatement events are read from EDGAR submissions cache recent 8-K filings where recent.items contains Item 4.02. The signal date is the filing date unless the SEC acceptance timestamp is after 16:00, in which case it is the next trading day. Candidates must show signal-day price absorption before next-open paper entry: non-negative daily return, return minus SPY >= 0.5%, close location >= 0.56, volume ratio >= 0.75, realized vol <= 12%, ret20 excess vs SPY >= -5%, price >= $10, and ADV20 >= $50M. Paper entry is the next available open with entry slippage; exit is the close 10 trading days after the signal with target-side sell slippage and ROUND_TRIP_COST_PCT.",
+    "replay_llm": false,
+    "replay_news": false,
+    "source": "docs/backtesting.md canonical three-window core replay plus replay-only broad warehouse default-off paper overlay",
+    "submissions_source": "data/cache/sec/submissions",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 5.1628,
+      "max_consecutive_losses": 2,
+      "max_drawdown_pct": 0.0665,
+      "sharpe_daily": 4.41,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "strategy_total_return_pct": 1.1707,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5146,
+      "total_pnl": 117072.92,
+      "trade_count": 18,
+      "win_rate": 0.8333,
+      "worst_trade_pct": -0.0397
+    },
+    "mid_weak": {
+      "expected_value_score": 2.1402,
+      "max_consecutive_losses": 6,
+      "max_drawdown_pct": 0.1119,
+      "sharpe_daily": 2.74,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "strategy_total_return_pct": 0.7811,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.5493,
+      "total_pnl": 78110.11,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "worst_trade_pct": -0.0897
+    },
+    "old_thin": {
+      "expected_value_score": 0.5911,
+      "max_consecutive_losses": 4,
+      "max_drawdown_pct": 0.1001,
+      "sharpe_daily": 1.49,
+      "signals_generated": 60,
+      "signals_survived": 52,
+      "strategy_total_return_pct": 0.3967,
+      "survival_rate": 0.8667,
+      "tail_loss_share": 0.5193,
+      "total_pnl": 39667.96,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "worst_trade_pct": -0.0635
+    }
+  },
+  "calibration": {
+    "actual_ev_delta": -0.0588,
+    "actual_gate4_passed": false,
+    "actual_pnl_delta": -640.49,
+    "actual_success": 0,
+    "brier_score": 0.0144,
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 2500.0,
+    "failure_modes_observed": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "target_sample_too_small",
+      "target_window_coverage_too_small",
+      "target_concentration_failed",
+      "accepted_compression_ev_not_beaten",
+      "accepted_compression_pnl_not_beaten",
+      "accepted_distribution_ev_not_beaten",
+      "accepted_distribution_pnl_not_beaten"
+    ],
+    "predicted_success_probability": 0.12
+  },
+  "change_type": "default_off_paper_candidate_pool_replay_scout",
+  "changed_variable": "sec_8k_item_402_nonreliance_absorption_candidate_source_v1",
+  "context_scan_by_window": {
+    "late_strong": {
+      "candidate_signal_days": 1,
+      "candidate_tickers": 1,
+      "deduped_candidate_rows": 1,
+      "eligible_event_tickers": 89,
+      "eligible_quality_tickers": 89,
+      "event_forms": [
+        "8-K"
+      ],
+      "event_outside_window": 111,
+      "failed_absorption_or_liquidity_gate": 2,
+      "form_8-K_item_4.02": 3,
+      "item_code": "4.02",
+      "max_event_age_trading_days": 3,
+      "max_realized_vol_20d": 0.12,
+      "min_avg_dollar_volume_20d": 50000000.0,
+      "min_close_location": 0.56,
+      "min_price": 10.0,
+      "min_ret20_excess_spy": -0.05,
+      "min_signal_excess_spy": 0.005,
+      "min_signal_return": 0.0,
+      "min_volume_ratio_20d": 0.75,
+      "qualified_candidate_rows": 1,
+      "rule_version": "sec_8k_item_402_nonreliance_absorption_candidate_source_v1"
+    },
+    "mid_weak": {
+      "candidate_signal_days": 1,
+      "candidate_tickers": 1,
+      "deduped_candidate_rows": 1,
+      "eligible_event_tickers": 89,
+      "eligible_quality_tickers": 89,
+      "event_after_last_or_stale": 3,
+      "event_forms": [
+        "8-K"
+      ],
+      "event_outside_window": 110,
+      "form_8-K_item_4.02": 1,
+      "item_code": "4.02",
+      "max_event_age_trading_days": 3,
+      "max_realized_vol_20d": 0.12,
+      "min_avg_dollar_volume_20d": 50000000.0,
+      "min_close_location": 0.56,
+      "min_price": 10.0,
+      "min_ret20_excess_spy": -0.05,
+      "min_signal_excess_spy": 0.005,
+      "min_signal_return": 0.0,
+      "min_volume_ratio_20d": 0.75,
+      "qualified_candidate_rows": 1,
+      "rule_version": "sec_8k_item_402_nonreliance_absorption_candidate_source_v1"
+    },
+    "old_thin": {
+      "candidate_signal_days": 0,
+      "candidate_tickers": 0,
+      "deduped_candidate_rows": 0,
+      "eligible_event_tickers": 89,
+      "eligible_quality_tickers": 89,
+      "event_after_last_or_stale": 3,
+      "event_forms": [
+        "8-K"
+      ],
+      "event_outside_window": 109,
+      "failed_absorption_or_liquidity_gate": 2,
+      "form_8-K_item_4.02": 2,
+      "item_code": "4.02",
+      "max_event_age_trading_days": 3,
+      "max_realized_vol_20d": 0.12,
+      "min_avg_dollar_volume_20d": 50000000.0,
+      "min_close_location": 0.56,
+      "min_price": 10.0,
+      "min_ret20_excess_spy": -0.05,
+      "min_signal_excess_spy": 0.005,
+      "min_signal_return": 0.0,
+      "min_volume_ratio_20d": 0.75,
+      "rule_version": "sec_8k_item_402_nonreliance_absorption_candidate_source_v1"
+    }
+  },
+  "decision": "rejected_sec_8k_item402_nonreliance_absorption_candidate_pool",
+  "delta_metrics": {
+    "aggregate": {
+      "after_expected_value_score_sum": 7.8353,
+      "after_total_pnl_sum": 234210.5,
+      "baseline_expected_value_score_sum": 7.8941,
+      "baseline_total_pnl_sum": 234850.99,
+      "expected_value_score_delta_pct": -0.007449,
+      "expected_value_score_delta_sum": -0.0588,
+      "max_drawdown_delta_max": 0.0,
+      "target_trade_count_sum": 2,
+      "total_pnl_delta_pct": -0.002727,
+      "total_pnl_delta_sum": -640.49,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 1,
+      "windows_pnl_improved": 1,
+      "windows_pnl_regressed": 1
+    },
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": -0.0724,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": -0.03,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": -0.0085,
+        "survival_rate": 0.0,
+        "total_pnl": -854.65,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0136,
+        "max_drawdown_pct": -0.0003,
+        "sharpe_daily": 0.01,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.0021,
+        "survival_rate": 0.0,
+        "total_pnl": 214.16,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "win_rate": 0.0
+      }
+    }
+  },
+  "expected_value_score_delta": -0.0588,
+  "experiment_id": "exp-20260618-009",
+  "filtered_candidates_sample_by_window": {
+    "late_strong": [],
+    "mid_weak": [],
+    "old_thin": []
+  },
+  "gate1": {
+    "baseline_artifact": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_metrics": {
+      "late_strong": {
+        "expected_value_score": 5.1628,
+        "max_consecutive_losses": 2,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "strategy_total_return_pct": 1.1707,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.5146,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "win_rate": 0.8333,
+        "worst_trade_pct": -0.0397
+      },
+      "mid_weak": {
+        "expected_value_score": 2.1402,
+        "max_consecutive_losses": 6,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "strategy_total_return_pct": 0.7811,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.5493,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "win_rate": 0.5238,
+        "worst_trade_pct": -0.0897
+      },
+      "old_thin": {
+        "expected_value_score": 0.5911,
+        "max_consecutive_losses": 4,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "strategy_total_return_pct": 0.3967,
+        "survival_rate": 0.8667,
+        "tail_loss_share": 0.5193,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "win_rate": 0.4091,
+        "worst_trade_pct": -0.0635
+      }
+    },
+    "passed": true
+  },
+  "gate2": {
+    "open_positions": {
+      "missing_entry_date_tickers": [],
+      "missing_target_price_tickers": [],
+      "passed": true,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 12
+    },
+    "passed": true,
+    "runtime_fields": [
+      "SEC submissions recent.form (8-K)",
+      "SEC submissions recent.items containing 4.02",
+      "SEC submissions recent.filingDate",
+      "SEC submissions recent.acceptanceDateTime",
+      "SEC submissions recent.accessionNumber",
+      "warehouse ticker_universe CIK mapping",
+      "warehouse OHLCV Date/Open/High/Low/Close/Volume",
+      "SPY OHLCV for price absorption",
+      "operator_inputs/open_positions.json entry_date",
+      "operator_inputs/open_positions.json target_price"
+    ]
+  },
+  "gate3": {
+    "candidate_pool_changed": false,
+    "minimum_core_survival_rate": 0.7925,
+    "new_core_filter_added": false,
+    "note": "No new core filter or entry rule was added. The candidate source is additive default-off paper, so core signals generated/survived are unchanged from baseline.",
+    "passed": true,
+    "survival_rate_by_window": {
+      "late_strong": 0.8039,
+      "mid_weak": 0.7925,
+      "old_thin": 0.8667
+    }
+  },
+  "gate4": {
+    "accepted_compression_comparator": {
+      "aggregate_expected_value_delta": 0.1608,
+      "aggregate_pnl_delta": 2248.98,
+      "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+      "experiment_id": "exp-20260608-013"
+    },
+    "accepted_distribution_comparator": {
+      "aggregate_expected_value_delta": 0.5286,
+      "aggregate_pnl_delta": 10432.91,
+      "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+      "experiment_id": "exp-20260611-007"
+    },
+    "aggregate_ev_delta": -0.0588,
+    "aggregate_pnl_delta": -640.49,
+    "decision": "rejected_sec_8k_item402_nonreliance_absorption_candidate_pool",
+    "failed_reasons": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "target_sample_too_small",
+      "target_window_coverage_too_small",
+      "target_concentration_failed",
+      "accepted_compression_ev_not_beaten",
+      "accepted_compression_pnl_not_beaten",
+      "accepted_distribution_ev_not_beaten",
+      "accepted_distribution_pnl_not_beaten"
+    ],
+    "max_drawdown_worse": 0.0,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": false,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 1.0,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": false,
+      "positive_pnl_hhi": 1.0,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 2,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak"
+    ],
+    "windows_ev_improved": 1,
+    "windows_ev_regressed": 1,
+    "windows_pnl_improved": 1,
+    "windows_pnl_regressed": 1
+  },
+  "hypothesis": "candidate_pool: PIT SEC 8-K Item 4.02 non-reliance/restatement events are normally negative, but when signal-day price action absorbs the announcement versus SPY, the accounting-credibility shock absorption information may create a next-open 10-trading-day default-off paper candidate.",
+  "interpretation": "The SEC 8-K Item 4.02 non-reliance absorption source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too_small, target_concentration_failed, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). The fixed bundle tested structured Item 4.02 non-reliance/restatement 8-K events plus signal-day SPY-relative price absorption. The result is not retained or promoted.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "mechanism_family": "production_visible_free_sec_submissions_restatement_nonreliance_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260529-014",
+    "exp-20260612-025",
+    "exp-20260617-023",
+    "exp-20260617-025",
+    "exp-20260618-001"
+  ],
+  "new_evidence_type": "sec_submissions_8k_item402_nonreliance_with_price_absorption",
+  "next_evidence_needed": "If this fixed Item 4.02 nonreliance absorption bundle fails, do not retry by sweeping 8-K/A inclusion, signal excess, close-location, volume, volatility, ret20, price/ADV, event-age, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs materially richer PIT nonreliance semantics such as restatement scope, non-reliance period, auditor involvement, control weakness language, correction magnitude, or closed forward replacement-value rows.",
+  "numeric_gate4_passed": false,
+  "parameters": {
+    "candidate_universe": "broad_liquid_warehouse_all_windows_full_liquid",
+    "event_forms": [
+      "8-K"
+    ],
+    "hold_days": 10,
+    "item_code": "4.02",
+    "max_event_age_trading_days": 3,
+    "max_paper_trades_per_day": 1,
+    "max_realized_vol_20d": 0.12,
+    "min_avg_dollar_volume_20d": 50000000.0,
+    "min_close_location": 0.56,
+    "min_price": 10.0,
+    "min_ret20_excess_spy": -0.05,
+    "min_signal_excess_spy": 0.005,
+    "min_signal_return": 0.0,
+    "min_volume_ratio_20d": 0.75,
+    "paper_notional_usd": 4000.0,
+    "same_ticker_cooldown_days": 10,
+    "single_causal_variable": "sec_8k_item_402_nonreliance_absorption_candidate_source_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry by sweeping 8-K/A inclusion, signal excess, close-location, volume, volatility, ret20, price/ADV, event-age, top-N, hold days, cooldown, or notional on these frozen windows.",
+    "new_evidence_required": "If this fixed Item 4.02 nonreliance absorption bundle fails, do not retry by sweeping 8-K/A inclusion, signal excess, close-location, volume, volatility, ret20, price/ADV, event-age, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs materially richer PIT nonreliance semantics such as restatement scope, non-reliance period, auditor involvement, control weakness language, correction magnitude, or closed forward replacement-value rows.",
+    "outcome_summary": "Aggregate EV delta -0.0588; aggregate PnL delta $-640.49; max drawdown drift +0.0000; 2 paper trades.",
+    "why_result_happened": "The SEC 8-K Item 4.02 non-reliance absorption source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too_small, target_concentration_failed, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). The fixed bundle tested structured Item 4.02 non-reliance/restatement 8-K events plus signal-day SPY-relative price absorption. The result is not retained or promoted."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "candidate_pool: PIT SEC 8-K Item 4.02 non-reliance/restatement events are normally negative, but when signal-day price action absorbs the announcement versus SPY, the accounting-credibility shock absorption information may create a next-open 10-trading-day default-off paper candidate.",
+    "2_history_check": {
+      "exp-20260529-014": "Rejected 10-K liquidity relative-strength candidate pool left restatement/disclosure-quality as future evidence. This run uses PIT 8-K Item 4.02 event timing rather than annual 10-K liquidity.",
+      "exp-20260610-013": "Rejected generic 8-K business-update leadership labels. This run uses one structured item-code field with explicit nonreliance accounting-credibility shock economics, not broad 8-K item-code or phrase labels.",
+      "exp-20260612-025": "Rejected auditor-change absorption and required richer restatement linkage for that family. This run observes the structured non-reliance/restatement item itself.",
+      "exp-20260617-023": "Rejected SEC offering/prospectus price absorption. This run does not retry financing/prospectus forms or their thresholds.",
+      "exp-20260617-025": "Rejected NT late-filing notice absorption. This run uses accounting-risk 8-K non-reliance/restatement items, not disclosure-delay notices.",
+      "exp-20260617-027": "Rejected non-management proxy-pressure absorption. This run uses issuer 8-K non-reliance/restatement provenance, not proxy solicitation or governance-pressure forms."
+    },
+    "3_single_decision_hypothesis": "sec_8k_item_402_nonreliance_absorption_candidate_source_v1",
+    "4_acceptance_standard": "Use docs/backtesting.md canonical three windows. Aggregate EV/PnL must be positive, no window EV/PnL regression, at least two EV-improved windows, at least 20 paper trades across all 3 windows, survival >=5%, drawdown drift <=0.5pp, concentration pass, and accepted compression/distribution candidate-pool comparators must be beaten. Replay-only positives are leads until shared daily/backtest parity exists.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260618_009_sec_8k_item402_nonreliance_absorption.py"
+  },
+  "prediction": {
+    "confidence_reason": "8-K Item 4.02 is a free PIT SEC submissions field with clearer economics than broad 8-K labels and enough cache coverage, but recent SEC event absorption scouts failed and non-reliance/restatement announcements may reflect real distress rather than forced-seller exhaustion.",
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "nonreliance_is_true_distress",
+      "thin_sample",
+      "old_thin_regression",
+      "accepted_distribution_comparator_not_beaten",
+      "drawdown_drift"
+    ],
+    "recorded_at": "2026-06-18T07:07:13+00:00",
+    "success_probability": 0.12
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "adapter_status": "private_replay_scout_no_shared_adapter",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "default_off_paper_only": true,
+    "execution_envelope": {
+      "daily_entry_slots": 1,
+      "failure_handling": "missing SEC submissions cache, missing CIK mapping, missing 8-K Item 4.02 event rows, missing OHLCV, missing next open, or missing 10d exit rejects the paper candidate",
+      "hold_days": 10,
+      "kill_switch": "trade_enabled remains false; no production adapter changes",
+      "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+      "order_semantics": "observe-only next-session-open paper entry; no broker order",
+      "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+      "same_ticker_cooldown_days": 10,
+      "target_notional_per_paper_trade": 4000.0,
+      "trade_enabled": false
+    },
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper computes the same PIT SEC 8-K Item 4.02 events, acceptance-time signal date, price-absorption gate, cooldown, next-open paper entry, 10-day exit, costs, and concentration controls in both historical replay and daily production.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_free_ohlcv": true,
+    "uses_free_sec_companyfacts": false,
+    "uses_free_sec_submissions": true,
+    "uses_llm": false
+  },
+  "quality_index_summary_by_window": {
+    "late_strong": {
+      "candidate_universe_scope": "broad_liquid_warehouse_all_windows_full_liquid",
+      "event_forms": [
+        "8-K"
+      ],
+      "field_source": "sec_submissions_8k_item402_not_companyfacts",
+      "form_8-K_item_4.02": 114,
+      "item402_event_count": 114,
+      "item_code": "4.02",
+      "missing_submissions_cache_file": 207,
+      "selected_companyfacts_rows_ignored": 0,
+      "submissions_cache": "data/cache/sec/submissions",
+      "tickers_with_item402_events": 89,
+      "warehouse_source": "data/warehouse/warehouse_main.sqlite",
+      "warehouse_tickers_with_cik": 1446
+    },
+    "mid_weak": {
+      "candidate_universe_scope": "broad_liquid_warehouse_all_windows_full_liquid",
+      "event_forms": [
+        "8-K"
+      ],
+      "field_source": "sec_submissions_8k_item402_not_companyfacts",
+      "form_8-K_item_4.02": 114,
+      "item402_event_count": 114,
+      "item_code": "4.02",
+      "missing_submissions_cache_file": 207,
+      "selected_companyfacts_rows_ignored": 0,
+      "submissions_cache": "data/cache/sec/submissions",
+      "tickers_with_item402_events": 89,
+      "warehouse_source": "data/warehouse/warehouse_main.sqlite",
+      "warehouse_tickers_with_cik": 1446
+    },
+    "old_thin": {
+      "candidate_universe_scope": "broad_liquid_warehouse_all_windows_full_liquid",
+      "event_forms": [
+        "8-K"
+      ],
+      "field_source": "sec_submissions_8k_item402_not_companyfacts",
+      "form_8-K_item_4.02": 114,
+      "item402_event_count": 114,
+      "item_code": "4.02",
+      "missing_submissions_cache_file": 207,
+      "selected_companyfacts_rows_ignored": 0,
+      "submissions_cache": "data/cache/sec/submissions",
+      "tickers_with_item402_events": 89,
+      "warehouse_source": "data/warehouse/warehouse_main.sqlite",
+      "warehouse_tickers_with_cik": 1446
+    }
+  },
+  "raw_candidate_counts": {
+    "late_strong": 1,
+    "mid_weak": 1,
+    "old_thin": 0
+  },
+  "rejection_reason": "aggregate_ev_not_positive; aggregate_pnl_not_positive; window_ev_regression; window_pnl_regression; fewer_than_two_ev_improved_windows; target_sample_too_small; target_window_coverage_too_small; target_concentration_failed; accepted_compression_ev_not_beaten; accepted_compression_pnl_not_beaten; accepted_distribution_ev_not_beaten; accepted_distribution_pnl_not_beaten",
+  "related_files": [
+    "quant/experiments/exp_20260618_009_sec_8k_item402_nonreliance_absorption.py",
+    "data/experiments/exp-20260618-009/exp_20260618_009_sec_8k_item402_nonreliance_absorption.json",
+    "experiments/logs/exp-20260618-009.json",
+    "experiments/tickets/exp-20260618-009.json",
+    "experiments/cards/exp-20260618-009.md",
+    "experiments/manifests/exp-20260618-009.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "status": "rejected",
+  "target_trade_summary": {
+    "by_ticker_count": {
+      "AXON": 1,
+      "SEZL": 1
+    },
+    "by_ticker_pnl": {
+      "AXON": 214.16,
+      "SEZL": -854.65
+    },
+    "by_window_pnl": {
+      "late_strong": -854.65,
+      "mid_weak": 214.16,
+      "old_thin": 0
+    },
+    "max_single_positive_pnl_share": 1.0,
+    "positive_by_ticker_pnl": {
+      "AXON": 214.16
+    },
+    "positive_pnl_hhi": 1.0,
+    "total_pnl": -640.49,
+    "total_trade_count": 2,
+    "windows_with_target_trades": [
+      "late_strong",
+      "mid_weak"
+    ]
+  },
+  "target_trades_by_window": {
+    "late_strong": [
+      {
+        "candidate_avg_dollar_volume_20d": 63788652.8,
+        "candidate_close": 84.7,
+        "candidate_close_location": 0.806262,
+        "candidate_realized_vol_20d": 0.094594,
+        "candidate_ret20": 0.22187,
+        "candidate_ret20_excess_spy": 0.23067,
+        "candidate_ret60": 0.37166,
+        "candidate_score": 1.297603,
+        "candidate_signal_excess_spy": 0.358157,
+        "candidate_signal_return": 0.352603,
+        "candidate_volume_ratio_20d": 5.941489,
+        "date": "2026-02-26",
+        "entry_date": "2026-02-27",
+        "entry_price": 82.6213,
+        "entry_raw_open": 82.58,
+        "exit_date": "2026-03-12",
+        "exit_price": 65.2574,
+        "exit_raw_close": 65.29,
+        "hold_days": 10,
+        "industry": "Credit Services",
+        "item402_acceptance_datetime": "2026-02-25T16:03:17.000Z",
+        "item402_accepted_after_close": true,
+        "item402_accession_number": "0001662991-26-000014",
+        "item402_event_weight": 1.0,
+        "item402_filing_date": "2026-02-25",
+        "item402_form": "8-K",
+        "item402_items": "2.02,4.02,9.01",
+        "item402_primary_document": "sezl-20260219.htm",
+        "known_at": "sec_8k_item402_and_signal_close_before_next_open_paper_entry",
+        "paper_notional_usd": 4000.0,
+        "pnl": -854.65,
+        "pnl_pct_net": -0.213663,
+        "rule_version": "sec_8k_item_402_nonreliance_absorption_candidate_source_v1",
+        "sector": "Financial Services",
+        "signal_date": "2026-02-26",
+        "source": "SEC_8K_ITEM402_NONRELIANCE_ABSORPTION_PAPER",
+        "source_rule_version": "sec_8k_item_402_nonreliance_absorption_candidate_source_v1",
+        "ticker": "SEZL",
+        "trade_enabled": false,
+        "uses_free_ohlcv": true,
+        "uses_free_sec_companyfacts": false,
+        "uses_free_sec_submissions": true,
+        "uses_llm": false
+      }
+    ],
+    "mid_weak": [
+      {
+        "candidate_avg_dollar_volume_20d": 347898144.65,
+        "candidate_close": 686.83,
+        "candidate_close_location": 0.786806,
+        "candidate_realized_vol_20d": 0.035584,
+        "candidate_ret20": 0.226833,
+        "candidate_ret20_excess_spy": 0.196866,
+        "candidate_ret60": 0.026253,
+        "candidate_score": 0.982114,
+        "candidate_signal_excess_spy": 0.134287,
+        "candidate_signal_return": 0.141255,
+        "candidate_volume_ratio_20d": 3.089106,
+        "date": "2025-05-08",
+        "entry_date": "2025-05-09",
+        "entry_price": 684.352,
+        "entry_raw_open": 684.01,
+        "exit_date": "2025-05-22",
+        "exit_price": 723.3881,
+        "exit_raw_close": 723.75,
+        "hold_days": 10,
+        "industry": "Aerospace & Defense",
+        "item402_acceptance_datetime": "2025-05-07T20:36:26.000Z",
+        "item402_accepted_after_close": true,
+        "item402_accession_number": "0001069183-25-000074",
+        "item402_event_weight": 1.0,
+        "item402_filing_date": "2025-05-07",
+        "item402_form": "8-K",
+        "item402_items": "2.02,4.02,9.01",
+        "item402_primary_document": "axon-20250501.htm",
+        "known_at": "sec_8k_item402_and_signal_close_before_next_open_paper_entry",
+        "paper_notional_usd": 4000.0,
+        "pnl": 214.16,
+        "pnl_pct_net": 0.053541,
+        "rule_version": "sec_8k_item_402_nonreliance_absorption_candidate_source_v1",
+        "sector": "Industrials",
+        "signal_date": "2025-05-08",
+        "source": "SEC_8K_ITEM402_NONRELIANCE_ABSORPTION_PAPER",
+        "source_rule_version": "sec_8k_item_402_nonreliance_absorption_candidate_source_v1",
+        "ticker": "AXON",
+        "trade_enabled": false,
+        "uses_free_ohlcv": true,
+        "uses_free_sec_companyfacts": false,
+        "uses_free_sec_submissions": true,
+        "uses_llm": false
+      }
+    ],
+    "old_thin": []
+  },
+  "timestamp": "2026-06-18T07:10:36Z",
+  "total_pnl_delta": -640.49,
+  "trial_family": "free_sec_submissions_8k_nonreliance_absorption_candidate_pool",
+  "trial_variant_id": "sec_8k_item402_nonreliance_absorption_top1_next_open_10d_v1",
+  "warehouse_coverage_by_window": {
+    "late_strong": {
+      "loaded_ticker_count": 91,
+      "sector_known_ticker_count": 89,
+      "source": "data/warehouse/warehouse_main.sqlite"
+    },
+    "mid_weak": {
+      "loaded_ticker_count": 91,
+      "sector_known_ticker_count": 89,
+      "source": "data/warehouse/warehouse_main.sqlite"
+    },
+    "old_thin": {
+      "loaded_ticker_count": 91,
+      "sector_known_ticker_count": 89,
+      "source": "data/warehouse/warehouse_main.sqlite"
+    }
+  }
+}
