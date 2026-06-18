@@ -68,6 +68,7 @@ data/backtests/backtest_results_*.json
 - 当前 alpha 短记忆：`docs/alpha_context_pack.md`
 - 当前状态短入口：`docs/current_state_snapshot.md`
 - alpha 当前方向、frozen zones、anti-repeat：`docs/alpha-optimization-playbook.md`
+- 自动防重复 / novelty gate（近邻检查、frozen family、override 口径）：`docs/agent_experiment_protocol.md` §Novelty Check
 - 机制级短记忆：`docs/lessons/*.md`（按需深读，生成文件）
 - 外部研究映射：`docs/alpha_external_research_map.md`（按需深读，不能替代回测）
 - production/backtest parity 核心合同：`docs/production_backtest_parity.md`
@@ -80,6 +81,8 @@ data/backtests/backtest_results_*.json
 - `scripts/claim_experiment.py`：底层 claim 工具，`experiment.py claim` 会调用它；
 - `scripts/list_experiments.py`：查看 proposed / claimed / running；
 - `scripts/judge_experiment.py`：before/after artifact 判定和日志草稿；
+- `scripts/check_experiment_novelty.py`：自由文本假设的近邻 / 防重复检查；`experiment.py new` 已自动调用，alpha 通道默认阻断；
+- `scripts/build_frozen_families.py`：从历史实验重建 `docs/frozen_families.jsonl`（novelty gate 的数据源，需定期刷新）；
 - `quant/meta_research_engine.py`：研究历史、冻结方向和优先队列。
 
 ---
@@ -89,7 +92,7 @@ data/backtests/backtest_results_*.json
 策略逻辑改动前必须能回答：
 
 1. 本轮赚钱假设是什么？属于 entry、exit、ranking、capital allocation、risk allocation、LLM event scoring 还是 candidate pool？是否符合 playbook 当前高价值方向？
-2. 过去是否做过相同或近似实验？上次参数、窗口、失败原因是什么？
+2. 过去是否做过相同或近似实验？上次参数、窗口、失败原因是什么？用 `experiment.py new` 自带的 novelty gate 回答（近邻检查 `docs/frozen_families.jsonl`，详见 `docs/agent_experiment_protocol.md` §Novelty Check）；被拦截说明撞了 frozen / 已探索 family，必须用 `--novelty-override --new-evidence-axis "<到底什么是真新的>"` 声明全新证据轴（新数据源 / 无前例字段 / 新 gate shape / forward 替换行），否则换假设。禁止用 `--no-enforce-novelty` 或 `GINGER_NOVELTY_GATE=off` 绕过来回避这个问题。
 3. 本次只检验哪一个可归因决策假设 / policy bundle？哪些只是为评估它所需的实现、parity、daily snapshot、ledger、live-realistic execution envelope 或测试？
 4. 成功 / 失败验收标准是什么？是否符合 `docs/backtesting.md`？
 5. 如果失败，下一位代理能否仅靠仓库记录复现实验？
