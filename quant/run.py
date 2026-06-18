@@ -706,6 +706,203 @@ def _build_daily_non_ohlcv_snapshot(
         }
 
 
+def _build_space_catalyst_observation_step(
+    *,
+    today_iso,
+    space_catalyst_shadow,
+    features_dict,
+    core_signals,
+    entry_execution_plan,
+    portfolio_heat,
+    portfolio_value,
+    trade_risk_pct,
+    market_context,
+    market_regime,
+    spy_pct_from_ma,
+    qqq_pct_from_ma,
+    exit_profile,
+    atr_target_mult,
+    open_positions,
+    cached_ohlcv_fn,
+    cached_earnings_fn,
+):
+    """STEP 6 — space-catalyst observation slot (default-off, read-only observer).
+
+    Runs the core signal chain over the space-catalyst observation universe and
+    persists an observation slot. Like the AI-optical observer, the core run's
+    risk_engine.last_dropped_signals is saved/restored around the observer-local
+    enrichment so the enrichment audit is unaffected.
+    """
+    from feature_layer import compute_features
+    from portfolio_engine import size_signals
+    from production_parity import filter_entry_signal_candidates
+    from risk_engine import enrich_signals, last_dropped_signals
+    from signal_engine import generate_signals, rank_signals_for_allocation
+    from space_catalyst_sleeve import (
+        build_space_catalyst_observation_slot,
+        empty_space_catalyst_observation_slot,
+        persist_space_catalyst_observation_slot,
+        space_catalyst_forward_replacement_positive_profiles,
+        space_catalyst_observation_feature_tickers,
+        space_catalyst_observation_tickers,
+    )
+
+    try:
+        space_official_observation_tickers = set(
+            space_catalyst_observation_tickers(space_catalyst_shadow)
+        )
+        space_observation_tickers = space_catalyst_observation_feature_tickers(
+            space_catalyst_shadow
+        )
+        space_observation_features = {}
+        for ticker in space_observation_tickers:
+            if features_dict.get(ticker):
+                space_observation_features[ticker] = features_dict[ticker]
+                continue
+            try:
+                ticker_ohlcv = cached_ohlcv_fn(ticker)
+                ticker_earnings = cached_earnings_fn(ticker)
+                ticker_features = compute_features(ticker, ticker_ohlcv, ticker_earnings)
+                if ticker_features:
+                    space_observation_features[ticker] = ticker_features
+            except Exception as ticker_error:
+                log.warning(
+                    "Space catalyst observation data unavailable for %s: %s",
+                    ticker,
+                    ticker_error,
+                )
+
+        space_observation_signals = []
+        space_observation_raw_count = 0
+        space_observation_enriched_count = 0
+        space_observation_filter_audit = {}
+        space_signal_features = {
+            ticker: features
+            for ticker, features in space_observation_features.items()
+            if ticker in space_official_observation_tickers
+        }
+        if space_signal_features:
+            space_observation_feature_context = {
+                **features_dict,
+                **space_observation_features,
+            }
+            space_observation_signals = generate_signals(
+                space_signal_features,
+                market_context=market_context,
+                enabled_strategies=ENABLED_STRATEGIES,
+                breakout_max_pullback_from_52w_high=BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH,
+            )
+            space_observation_raw_count = len(space_observation_signals)
+            if BREAKOUT_RANK_BY_52W_HIGH:
+                space_observation_signals = rank_signals_for_allocation(
+                    space_observation_signals
+                )
+            _pre_space_dropped_signals = list(last_dropped_signals)
+            space_observation_signals = enrich_signals(
+                space_observation_signals,
+                space_observation_feature_context,
+                atr_target_mult=atr_target_mult,
+            )
+            space_observation_enriched_count = len(space_observation_signals)
+            last_dropped_signals.clear()
+            last_dropped_signals.extend(_pre_space_dropped_signals)
+            if REGIME_AWARE_EXIT:
+                for s in space_observation_signals:
+                    s["target_mult_used"] = exit_profile["target_mult"]
+                    s["regime_exit_bucket"] = exit_profile["bucket"]
+                    s["regime_exit_score"] = exit_profile["score"]
+            space_observation_signals, space_observation_filter_audit = (
+                filter_entry_signal_candidates(
+                    space_observation_signals,
+                    open_positions=open_positions,
+                    market_regime=market_regime.get("regime", "").upper(),
+                    spy_pct_from_ma=spy_pct_from_ma,
+                    qqq_pct_from_ma=qqq_pct_from_ma,
+                )
+            )
+            if portfolio_value and (
+                not portfolio_heat
+                or portfolio_heat.get("can_add_new_positions", True)
+            ):
+                space_observation_signals = size_signals(
+                    space_observation_signals,
+                    portfolio_value,
+                    risk_pct=trade_risk_pct,
+                )
+
+        space_catalyst_observation_slot = persist_space_catalyst_observation_slot(
+            build_space_catalyst_observation_slot(
+                as_of=today_iso,
+                candidate_signals=space_observation_signals,
+                features_by_ticker={**features_dict, **space_observation_features},
+                space_catalyst_shadow=space_catalyst_shadow,
+                core_signals=core_signals,
+                entry_execution_plan=entry_execution_plan,
+                portfolio_heat=portfolio_heat,
+                entry_filter_audit=space_observation_filter_audit,
+                raw_signal_count=space_observation_raw_count,
+                enriched_signal_count=space_observation_enriched_count,
+                space_forward_replacement_profiles=(
+                    space_catalyst_forward_replacement_positive_profiles(
+                        included_tickers=space_official_observation_tickers
+                    )
+                ),
+            )
+        )
+        if space_catalyst_observation_slot.get("candidate_count", 0) > 0:
+            persistence = space_catalyst_observation_slot.get("persistence") or {}
+            log.info(
+                "Space catalyst observation slot: candidates=%d selected=%d appended=%d",
+                space_catalyst_observation_slot.get("candidate_count", 0),
+                space_catalyst_observation_slot.get("selected_count", 0),
+                persistence.get("appended_count", 0),
+            )
+        return space_catalyst_observation_slot
+    except Exception as e:
+        log.warning(f"Space catalyst observation slot unavailable: {e}")
+        return empty_space_catalyst_observation_slot(
+            today_iso,
+            "space_catalyst_observation_slot_build_failed",
+        )
+
+
+def _build_platform_rs20_watch_step(
+    *, today_iso, entry_execution_plan, ohlcv_dict, spy_ohlcv, features_dict, earnings_dict
+):
+    """STEP 6 — platform RS20 no-gap forward watch (default-off observer)."""
+    from platform_rs20_watch import (
+        build_platform_rs20_forward_watch,
+        empty_platform_rs20_forward_watch,
+        persist_platform_rs20_forward_watch,
+    )
+
+    try:
+        platform_rs20_watch = persist_platform_rs20_forward_watch(
+            build_platform_rs20_forward_watch(
+                as_of=today_iso,
+                entry_execution_plan=entry_execution_plan,
+                ohlcv_by_ticker={**ohlcv_dict, "SPY": spy_ohlcv},
+                features_by_ticker=features_dict,
+                earnings_by_ticker=earnings_dict,
+            )
+        )
+        if platform_rs20_watch.get("candidate_count", 0) > 0:
+            persistence = platform_rs20_watch.get("persistence") or {}
+            log.info(
+                "Platform RS20 no-gap watch: candidates=%d appended=%d ledger_rows=%d",
+                platform_rs20_watch.get("candidate_count", 0),
+                persistence.get("appended_count", 0),
+                persistence.get("ledger_row_count", 0),
+            )
+        return platform_rs20_watch
+    except Exception as e:
+        log.warning(f"Platform RS20 no-gap watch unavailable: {e}")
+        return empty_platform_rs20_forward_watch(
+            today_iso,
+            "platform_rs20_watch_build_failed",
+        )
+
+
 def _step5_position_context(
     *,
     open_positions,
@@ -1076,17 +1273,12 @@ def main():
     )
     from space_catalyst_sleeve import (
         build_space_catalyst_event_ledger_snapshot,
-        build_space_catalyst_observation_slot,
         build_space_catalyst_shadow_snapshot,
         empty_space_catalyst_event_ledger,
         empty_space_catalyst_observation_slot,
         empty_space_catalyst_shadow_snapshot,
-        persist_space_catalyst_observation_slot,
         persist_space_catalyst_event_ledger,
         space_catalyst_event_tickers,
-        space_catalyst_forward_replacement_positive_profiles,
-        space_catalyst_observation_feature_tickers,
-        space_catalyst_observation_tickers,
     )
     from pilot_sleeve       import (
         AI_INFRA_AGGRESSIVE_SLEEVE_NAME,
@@ -1098,11 +1290,6 @@ def main():
         pilot_governance_metadata,
         pilot_records_as_of,
         select_pilot_entry_candidates,
-    )
-    from platform_rs20_watch import (
-        build_platform_rs20_forward_watch,
-        empty_platform_rs20_forward_watch,
-        persist_platform_rs20_forward_watch,
     )
     from sec_10k_forward_watch import (
         build_sec_10k_forward_watch,
@@ -1926,147 +2113,34 @@ def main():
             entry_candidate_review["operator_review_count"],
         )
 
-    try:
-        space_official_observation_tickers = set(
-            space_catalyst_observation_tickers(space_catalyst_shadow)
-        )
-        space_observation_tickers = space_catalyst_observation_feature_tickers(
-            space_catalyst_shadow
-        )
-        space_observation_features = {}
-        for ticker in space_observation_tickers:
-            if features_dict.get(ticker):
-                space_observation_features[ticker] = features_dict[ticker]
-                continue
-            try:
-                ticker_ohlcv = _cached_ohlcv(ticker)
-                ticker_earnings = _cached_earnings(ticker)
-                ticker_features = compute_features(ticker, ticker_ohlcv, ticker_earnings)
-                if ticker_features:
-                    space_observation_features[ticker] = ticker_features
-            except Exception as ticker_error:
-                log.warning(
-                    "Space catalyst observation data unavailable for %s: %s",
-                    ticker,
-                    ticker_error,
-                )
+    space_catalyst_observation_slot = _build_space_catalyst_observation_step(
+        today_iso=today_iso,
+        space_catalyst_shadow=space_catalyst_shadow,
+        features_dict=features_dict,
+        core_signals=signals,
+        entry_execution_plan=entry_execution_plan,
+        portfolio_heat=portfolio_heat,
+        portfolio_value=portfolio_value,
+        trade_risk_pct=_trade_risk_pct,
+        market_context=market_context,
+        market_regime=market_regime,
+        spy_pct_from_ma=spy_pct_from_ma,
+        qqq_pct_from_ma=qqq_pct_from_ma,
+        exit_profile=exit_profile,
+        atr_target_mult=atr_target_mult,
+        open_positions=open_positions,
+        cached_ohlcv_fn=_cached_ohlcv,
+        cached_earnings_fn=_cached_earnings,
+    )
 
-        space_observation_signals = []
-        space_observation_raw_count = 0
-        space_observation_enriched_count = 0
-        space_observation_filter_audit = {}
-        space_signal_features = {
-            ticker: features
-            for ticker, features in space_observation_features.items()
-            if ticker in space_official_observation_tickers
-        }
-        if space_signal_features:
-            space_observation_feature_context = {
-                **features_dict,
-                **space_observation_features,
-            }
-            space_observation_signals = generate_signals(
-                space_signal_features,
-                market_context=market_context,
-                enabled_strategies=ENABLED_STRATEGIES,
-                breakout_max_pullback_from_52w_high=BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH,
-            )
-            space_observation_raw_count = len(space_observation_signals)
-            if BREAKOUT_RANK_BY_52W_HIGH:
-                space_observation_signals = rank_signals_for_allocation(
-                    space_observation_signals
-                )
-            _pre_space_dropped_signals = list(last_dropped_signals)
-            space_observation_signals = enrich_signals(
-                space_observation_signals,
-                space_observation_feature_context,
-                atr_target_mult=atr_target_mult,
-            )
-            space_observation_enriched_count = len(space_observation_signals)
-            last_dropped_signals.clear()
-            last_dropped_signals.extend(_pre_space_dropped_signals)
-            if REGIME_AWARE_EXIT:
-                for s in space_observation_signals:
-                    s["target_mult_used"] = exit_profile["target_mult"]
-                    s["regime_exit_bucket"] = exit_profile["bucket"]
-                    s["regime_exit_score"] = exit_profile["score"]
-            space_observation_signals, space_observation_filter_audit = (
-                filter_entry_signal_candidates(
-                    space_observation_signals,
-                    open_positions=open_positions,
-                    market_regime=market_regime.get("regime", "").upper(),
-                    spy_pct_from_ma=spy_pct_from_ma,
-                    qqq_pct_from_ma=qqq_pct_from_ma,
-                )
-            )
-            if portfolio_value and (
-                not portfolio_heat
-                or portfolio_heat.get("can_add_new_positions", True)
-            ):
-                space_observation_signals = size_signals(
-                    space_observation_signals,
-                    portfolio_value,
-                    risk_pct=_trade_risk_pct,
-                )
-
-        space_catalyst_observation_slot = persist_space_catalyst_observation_slot(
-            build_space_catalyst_observation_slot(
-                as_of=today_iso,
-                candidate_signals=space_observation_signals,
-                features_by_ticker={**features_dict, **space_observation_features},
-                space_catalyst_shadow=space_catalyst_shadow,
-                core_signals=signals,
-                entry_execution_plan=entry_execution_plan,
-                portfolio_heat=portfolio_heat,
-                entry_filter_audit=space_observation_filter_audit,
-                raw_signal_count=space_observation_raw_count,
-                enriched_signal_count=space_observation_enriched_count,
-                space_forward_replacement_profiles=(
-                    space_catalyst_forward_replacement_positive_profiles(
-                        included_tickers=space_official_observation_tickers
-                    )
-                ),
-            )
-        )
-        if space_catalyst_observation_slot.get("candidate_count", 0) > 0:
-            persistence = space_catalyst_observation_slot.get("persistence") or {}
-            log.info(
-                "Space catalyst observation slot: candidates=%d selected=%d appended=%d",
-                space_catalyst_observation_slot.get("candidate_count", 0),
-                space_catalyst_observation_slot.get("selected_count", 0),
-                persistence.get("appended_count", 0),
-            )
-    except Exception as e:
-        log.warning(f"Space catalyst observation slot unavailable: {e}")
-        space_catalyst_observation_slot = empty_space_catalyst_observation_slot(
-            today_iso,
-            "space_catalyst_observation_slot_build_failed",
-        )
-
-    try:
-        platform_rs20_watch = persist_platform_rs20_forward_watch(
-            build_platform_rs20_forward_watch(
-                as_of=today_iso,
-                entry_execution_plan=entry_execution_plan,
-                ohlcv_by_ticker={**ohlcv_dict, "SPY": spy_ohlcv},
-                features_by_ticker=features_dict,
-                earnings_by_ticker=earnings_dict,
-            )
-        )
-        if platform_rs20_watch.get("candidate_count", 0) > 0:
-            persistence = platform_rs20_watch.get("persistence") or {}
-            log.info(
-                "Platform RS20 no-gap watch: candidates=%d appended=%d ledger_rows=%d",
-                platform_rs20_watch.get("candidate_count", 0),
-                persistence.get("appended_count", 0),
-                persistence.get("ledger_row_count", 0),
-            )
-    except Exception as e:
-        log.warning(f"Platform RS20 no-gap watch unavailable: {e}")
-        platform_rs20_watch = empty_platform_rs20_forward_watch(
-            today_iso,
-            "platform_rs20_watch_build_failed",
-        )
+    platform_rs20_watch = _build_platform_rs20_watch_step(
+        today_iso=today_iso,
+        entry_execution_plan=entry_execution_plan,
+        ohlcv_dict=ohlcv_dict,
+        spy_ohlcv=spy_ohlcv,
+        features_dict=features_dict,
+        earnings_dict=earnings_dict,
+    )
 
     addon_ohlcv_dict = dict(ohlcv_dict)
     addon_ohlcv_dict["SPY"] = spy_ohlcv
