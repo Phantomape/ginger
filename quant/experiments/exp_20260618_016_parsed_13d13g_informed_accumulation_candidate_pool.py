@@ -543,6 +543,23 @@ def build_reflection(payload: dict[str, Any]) -> dict[str, Any]:
             "stake-percent threshold sweeps on the same frozen windows without a "
             "window-robust positive forward-excess subset",
         ],
+        "forbidden_near_neighbor_retry": (
+            "Do not re-run a frozen-window candidate-pool replay of the "
+            "non-Big3 fresh-13G or outside-activist-13D subset by sweeping "
+            "stake-percent, holder-type, top-N, hold, cooldown, or notional: the "
+            "forward-10d SPY-excess is modest (~0.5-1.3% median) and old_thin is "
+            "both right-tail-negative and only 51% covered (pre-2025 structured-XML "
+            "gap), so any old_thin replay window is untrustworthy and would "
+            "reproduce the known regression failure. Do not re-test raw "
+            "metadata-only 13D/13G event gates (exp-015/016)."
+        ),
+        "new_evidence_required": (
+            "13G/A amendment ingestion for stake-change DIRECTION (new adds vs "
+            "trims), 13D Item-4 purpose-text classification (active accumulation vs "
+            "passive intent), extending pre-2025 structured-XML coverage to repair "
+            "the old_thin gap, and closed forward replacement-value rows under a "
+            "live-realistic envelope before any shared-paper-first sleeve."
+        ),
         "next_evidence_needed": [
             "If a clean subset emerged: a shared-paper-first candidate-pool sleeve "
             "(historical replay + daily default-off snapshot) on that exact subset",

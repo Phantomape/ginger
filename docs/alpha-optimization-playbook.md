@@ -427,11 +427,35 @@ ratios, raw SEC item codes, current-only filer metadata, metadata-only
 ownership events, and static relation labels are mostly exhausted on frozen
 windows.
 
+June 18 readout (`exp-20260618-016`): the parsed Schedule 13D/13G surface is now
+BUILT, not just a request. `quant/sec_13d13g_ingest.py` ingests EDGAR structured
+`primary_doc.xml` (schemas `schedule13D`/`schedule13G`) into a PIT
+holder/stake/intent table (`data/non_ohlcv/sec_13d13g_holdings/rows.json`, 3,318
+parsed rows: 13D init+amend + 13G init across the three windows), joined to the
+broad ~8,500-name warehouse for next-open-after-filing-date forward returns. A
+read-only forward-10d SPY-excess diagnostic shows the parsed *holder identity*
+field is the decisive axis that metadata-only exp-015/016 could not see: Big-3
+(Vanguard/BlackRock/State Street) 13G crossings drift NEGATIVE (mean −2.41%, win
+31%, n=671) while non-Big3 13G initial crossings are modestly POSITIVE (mean
++0.52%, median +0.18%, win 52.3%, n=1,682), strongest in the 7.5–10% new-stake
+bucket (mean +1.36%, median +0.51%, win 56.5%, n=313). So exp-016's rejection of
+13G was index-fund noise, not absence of signal. BUT this is a LEAD, not a
+Gate-4 alpha: the edge is small (~0.5–1.3% median), `fresh_concentrated_13g`
+mean is right-tail-negative in `old_thin` (−0.45%) and `old_thin` structured-XML
+coverage is only 51% (pre-2025 mandate gap), and outside-activist 13D on the
+broad large-cap universe shows negative medians (often priced by next-open or
+issuer-control insiders). Decision: `observed_only`; the durable product is the
+reusable parsed surface + parser tests. Do NOT run a frozen-window
+candidate-pool replay of this until 13G/A stake-change direction, 13D Item-4
+purpose text, and old_thin coverage are added and forward rows exist.
+
 Highest-priority build surfaces:
 
-- parsed Schedule 13G/13D primary documents: holder/filer identity, active vs
-  passive intent, beneficial ownership percent, share count, amendment/action
-  direction, and group/derivative context;
+- parsed Schedule 13G/13D primary documents (BUILT, exp-20260618-016 —
+  holder/filer identity, beneficial ownership `classPercent`, reporting-person
+  type, share count via `quant/sec_13d13g_ingest.py`); remaining gaps are
+  amendment/action *direction* (13G/A adds vs trims), 13D Item-4 purpose-text
+  intent classification, and pre-2025 `old_thin` structured-XML coverage;
 - offering/prospectus primary text: proceeds, offering amount normalized by
   market cap and dollar volume, security type, ATM/shelf/takedown status, use
   of proceeds, and dilution terms;
@@ -931,6 +955,17 @@ production-visible field:
   recovery entries in a low-trade-count strategy. A valid portfolio-risk retry
   needs a fundamentally different mechanism, such as regime-conditioned position
   count/capacity constraints with forward evidence;
+- parsed Schedule 13D/13G holder-stake candidate-pool retries that sweep
+  stake-percent (`classPercent`), holder-type, Big-3 vs non-Big3, init vs
+  amendment, top-N, hold, cooldown, or notional on the frozen windows:
+  `exp-20260618-016` built the parsed surface and found the non-Big3 fresh-13G
+  drift is real but small (~0.5-1.3% median forward-10d SPY-excess) and
+  right-tail-negative in `old_thin` (where structured-XML coverage is only 51%),
+  while outside-activist 13D shows negative medians on the broad large-cap
+  universe. A valid retry needs 13G/A stake-change DIRECTION, 13D Item-4
+  purpose-text intent classification, repaired pre-2025 `old_thin` coverage, or
+  closed forward replacement-value rows — not a threshold sweep of the parsed
+  fields. Keep 13D/13G as ownership/crowding context until then;
 - missing archive/text availability as an alpha field.
 
 ## Update Discipline
