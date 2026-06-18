@@ -6,13 +6,18 @@ import sqlite3
 import sys
 from pathlib import Path
 
+import pandas as pd
+
 
 sys.path.insert(0, os.path.dirname(__file__))
 
 from backtester import BacktestEngine  # noqa: E402
 from ohlcv_warehouse import (  # noqa: E402
+    hot_path_for,
+    hot_status,
     load_warehouse_snapshot_ohlcv_frames,
     load_warehouse_ohlcv_frames,
+    merge_hot_into_cold,
     seed_warehouse_snapshot_versions,
     seed_warehouse_from_snapshots,
     upsert_ohlcv_frames,
@@ -310,3 +315,95 @@ def test_backtester_resolves_absolute_legacy_snapshot_path():
     engine = BacktestEngine([], start="2025-01-02", end="2025-01-02")
 
     assert Path(engine._resolve_snapshot_path(str(legacy))) == expected
+
+
+def _seed_cold(db_path: Path) -> None:
+    _write_snapshot(db_path.with_suffix(".snap.json"))
+    seed_warehouse_from_snapshots(db_path, [db_path.with_suffix(".snap.json")])
+
+
+def test_hot_path_for_is_sibling_of_cold(tmp_path):
+    cold = tmp_path / "warehouse_main.sqlite"
+    assert hot_path_for(cold) == tmp_path / "warehouse_main_hot.sqlite"
+
+
+def test_load_overlays_hot_tier_with_hot_winning(tmp_path):
+    cold = tmp_path / "warehouse_main.sqlite"
+    _seed_cold(cold)  # AAA 01-02 (10.5), 01-03 (11.0)
+
+    # Hot tier: a corrected 01-03 close + a brand-new 01-06 bar.
+    hot_frame = load_warehouse_ohlcv_frames(cold, ["AAA"], "2025-01-01", "2025-01-10")[
+        "AAA"
+    ].copy()
+    hot_frame.loc["2025-01-03", "Close"] = 99.0
+    hot_frame.loc["2025-01-06"] = {
+        "Open": 12.0,
+        "High": 13.0,
+        "Low": 11.5,
+        "Close": 12.5,
+        "Volume": 1200,
+    }
+    upsert_ohlcv_frames(hot_path_for(cold), {"AAA": hot_frame}, source="hot")
+
+    # Readers pass the cold path; the hot tier overlays transparently, winning
+    # on the (AAA, 2025-01-03) conflict and adding the new 2025-01-06 bar.
+    frames = load_warehouse_ohlcv_frames(cold, ["AAA"], "2025-01-01", "2025-01-10")
+    closes = frames["AAA"]["Close"].to_dict()
+    assert float(closes[pd.Timestamp("2025-01-02")]) == 10.5
+    assert float(closes[pd.Timestamp("2025-01-03")]) == 99.0
+    assert float(closes[pd.Timestamp("2025-01-06")]) == 12.5
+
+
+def test_load_without_hot_sibling_is_unchanged(tmp_path):
+    cold = tmp_path / "warehouse_main.sqlite"
+    _seed_cold(cold)
+    assert not hot_path_for(cold).exists()
+    frames = load_warehouse_ohlcv_frames(cold, ["AAA"], "2025-01-01", "2025-01-10")
+    assert float(frames["AAA"].loc["2025-01-03", "Close"]) == 11.0
+
+
+def test_merge_hot_folds_new_rows_and_resets_hot(tmp_path):
+    cold = tmp_path / "warehouse_main.sqlite"
+    _seed_cold(cold)  # AAA 01-02, 01-03
+
+    hot_frame = load_warehouse_ohlcv_frames(cold, ["AAA"], "2025-01-01", "2025-01-10")[
+        "AAA"
+    ].copy()
+    hot_frame.loc["2025-01-03", "Close"] = 99.0  # overlap (corrected)
+    hot_frame.loc["2025-01-06"] = {
+        "Open": 12.0,
+        "High": 13.0,
+        "Low": 11.5,
+        "Close": 12.5,
+        "Volume": 1200,
+    }
+    upsert_ohlcv_frames(hot_path_for(cold), {"AAA": hot_frame}, source="hot")
+
+    summary = merge_hot_into_cold(cold)
+
+    # Only the genuinely new 01-06 bar inserts; the two overlapping deterministic
+    # cold rows (01-02, 01-03) are preserved (INSERT OR IGNORE), matching
+    # update_existing=False.
+    assert summary["status"] == "merged"
+    assert summary["inserted"] == 1
+    assert summary["skipped_existing"] == 2
+    with sqlite3.connect(cold) as con:
+        kept = con.execute(
+            "SELECT close FROM ohlcv WHERE ticker = 'AAA' AND date = '2025-01-03'"
+        ).fetchone()[0]
+        added = con.execute(
+            "SELECT close FROM ohlcv WHERE ticker = 'AAA' AND date = '2025-01-06'"
+        ).fetchone()[0]
+    assert kept == 11.0
+    assert added == 12.5
+
+    # Hot is emptied so the committed blob shrinks back for the next window.
+    assert hot_status(cold)["row_count"] == 0
+
+
+def test_merge_hot_no_hot_is_noop(tmp_path):
+    cold = tmp_path / "warehouse_main.sqlite"
+    _seed_cold(cold)
+    summary = merge_hot_into_cold(cold)
+    assert summary["status"] == "no_hot"
+    assert summary["inserted"] == 0

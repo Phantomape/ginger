@@ -15,7 +15,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import sqlite3
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -28,6 +27,8 @@ try:
     from ohlcv_warehouse import (
         DEFAULT_REFERENCE_TICKERS,
         DEFAULT_WAREHOUSE_PATH,
+        connect_overlay_reader,
+        hot_path_for,
         upsert_ohlcv_frames,
     )
     from pead_broad_universe_tickers import get_pead_broad_universe_tickers
@@ -36,6 +37,8 @@ except ImportError:  # pragma: no cover - package-style imports for tests
     from quant.ohlcv_warehouse import (
         DEFAULT_REFERENCE_TICKERS,
         DEFAULT_WAREHOUSE_PATH,
+        connect_overlay_reader,
+        hot_path_for,
         upsert_ohlcv_frames,
     )
     from quant.pead_broad_universe_tickers import get_pead_broad_universe_tickers
@@ -88,9 +91,11 @@ def warehouse_last_dates(
 ) -> dict[str, str]:
     """Return ``{ticker: max(date)}`` for the warehouse, optionally restricted."""
     db = Path(db_path)
-    if not db.exists():
+    # Overlay-aware: the hot tier carries the most recent days, so planning must
+    # see them or the refresh would re-fetch days already accumulated in hot.
+    if not db.exists() and not hot_path_for(db).exists():
         return {}
-    conn = sqlite3.connect(db)
+    conn = connect_overlay_reader(db)
     try:
         wanted = (
             {str(t).upper().strip() for t in tickers if str(t).strip()}
@@ -99,7 +104,7 @@ def warehouse_last_dates(
         )
         out: dict[str, str] = {}
         for ticker, last in conn.execute(
-            "SELECT ticker, MAX(date) FROM ohlcv GROUP BY ticker"
+            "SELECT ticker, MAX(date) FROM ohlcv_overlay GROUP BY ticker"
         ):
             key = str(ticker).upper()
             if wanted is not None and key not in wanted:
@@ -230,7 +235,7 @@ def refresh_warehouse_ohlcv(
                 )
                 continue
             upsert = upsert_ohlcv_frames(
-                db_path,
+                hot_path_for(db_path),
                 frames,
                 source=REFRESH_SOURCE_LABEL,
                 provider="yfinance",

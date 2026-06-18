@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -28,11 +27,19 @@ import pandas as pd
 try:
     import broad_market_sector_map
     from broad_market_paper_sleeve import DEFAULT_UNIVERSE_PATH
-    from ohlcv_warehouse import DEFAULT_WAREHOUSE_PATH
+    from ohlcv_warehouse import (
+        DEFAULT_WAREHOUSE_PATH,
+        connect_overlay_reader,
+        hot_path_for,
+    )
 except ImportError:  # pragma: no cover - package-style imports for tests
     from quant import broad_market_sector_map
     from quant.broad_market_paper_sleeve import DEFAULT_UNIVERSE_PATH
-    from quant.ohlcv_warehouse import DEFAULT_WAREHOUSE_PATH
+    from quant.ohlcv_warehouse import (
+        DEFAULT_WAREHOUSE_PATH,
+        connect_overlay_reader,
+        hot_path_for,
+    )
 
 
 FEED_RULE_VERSION = "warehouse_sector_cache_feed_v1"
@@ -77,15 +84,17 @@ def _warehouse_coverage(
     as_of: pd.Timestamp,
 ) -> dict[str, dict[str, Any]]:
     db = Path(db_path)
-    if not db.exists() or not tickers:
+    if (not db.exists() and not hot_path_for(db).exists()) or not tickers:
         return {}
     start_text = str((as_of - pd.Timedelta(days=COVERAGE_LOOKBACK_DAYS)).date())
     end_text = str(as_of.date())
-    conn = sqlite3.connect(db)
+    # Overlay-aware: freshness (MAX(date)) must include the hot tier, else every
+    # name reads as stale once daily bars land in hot instead of cold.
+    conn = connect_overlay_reader(db)
     try:
         placeholders = ",".join("?" for _ in tickers)
         sql = (
-            "SELECT ticker, MAX(date), COUNT(*) FROM ohlcv "
+            "SELECT ticker, MAX(date), COUNT(*) FROM ohlcv_overlay "
             f"WHERE ticker IN ({placeholders}) AND date >= ? AND date <= ? "
             "GROUP BY ticker"
         )

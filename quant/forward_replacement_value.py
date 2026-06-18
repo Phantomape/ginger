@@ -23,7 +23,6 @@ Comparator convention (fixed, recorded on every enriched row):
 from __future__ import annotations
 
 import json
-import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -32,12 +31,20 @@ try:
     from constants import ROUND_TRIP_COST_PCT
     from data_paths import DATA_ROOT, atomic_write_json
     from fill_model import SLIPPAGE_BPS_ENTRY, SLIPPAGE_BPS_TARGET, apply_slippage
-    from ohlcv_warehouse import DEFAULT_WAREHOUSE_PATH
+    from ohlcv_warehouse import (
+        DEFAULT_WAREHOUSE_PATH,
+        connect_overlay_reader,
+        hot_path_for,
+    )
 except ImportError:  # pragma: no cover - package-style import fallback
     from quant.constants import ROUND_TRIP_COST_PCT
     from quant.data_paths import DATA_ROOT, atomic_write_json
     from quant.fill_model import SLIPPAGE_BPS_ENTRY, SLIPPAGE_BPS_TARGET, apply_slippage
-    from quant.ohlcv_warehouse import DEFAULT_WAREHOUSE_PATH
+    from quant.ohlcv_warehouse import (
+        DEFAULT_WAREHOUSE_PATH,
+        connect_overlay_reader,
+        hot_path_for,
+    )
 
 
 RULE_VERSION = "forward_replacement_value_v1"
@@ -77,14 +84,18 @@ def load_comparator_bars(warehouse_path=None, tickers=COMPARATOR_TICKERS):
     """Load daily open/close bars for comparator ETFs from the OHLCV warehouse."""
     path = Path(warehouse_path) if warehouse_path else Path(DEFAULT_WAREHOUSE_PATH)
     bars = {ticker: {} for ticker in tickers}
-    if not path.exists():
+    if not path.exists() and not hot_path_for(path).exists():
         return bars
-    con = sqlite3.connect(str(path))
+    # Overlay-aware: comparator ETFs are refreshed daily into the hot tier, so
+    # recent open/close bars live there rather than in the cold base.
+    con = connect_overlay_reader(path)
     try:
         cur = con.cursor()
         marks = ",".join("?" for _ in tickers)
         cur.execute(
-            "SELECT ticker, date, open, close FROM ohlcv WHERE ticker IN (" + marks + ")",
+            "SELECT ticker, date, open, close FROM ohlcv_overlay WHERE ticker IN ("
+            + marks
+            + ")",
             list(tickers),
         )
         for ticker, date, open_px, close_px in cur.fetchall():

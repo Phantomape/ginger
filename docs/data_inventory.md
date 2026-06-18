@@ -77,6 +77,25 @@ home, and strategy code should read through canonical paths or
 - Daily accumulation is not a full 10k-ticker vendor refresh. It guarantees
   that production-touched tickers keep accruing in the warehouse. Full raw
   `ticker_universe` refreshes should remain a separate batch/backfill job.
+- Hot/cold split (git-LFS churn fix): the cold warehouse
+  `data/warehouse/warehouse_main.sqlite` is LFS-tracked, so upserting into it
+  every run re-uploaded the whole ~700MB blob as a fresh LFS object daily. Daily
+  and broad-refresh writes now land in a small sibling hot DB
+  `data/warehouse/warehouse_main_hot.sqlite` (auto-LFS via the
+  `data/warehouse/*.sqlite` glob, but tiny and growing slowly). Reads overlay
+  hot on cold transparently — `load_warehouse_ohlcv_frames`,
+  `connect_overlay_reader` (the `ohlcv_overlay` view), `warehouse_last_dates`,
+  the universe-feed coverage scan, and `forward_replacement_value` comparator
+  bars all see cold+hot, with hot winning on `(ticker, date)` conflicts. Callers
+  keep passing the cold path; `quant/ohlcv_warehouse.py::hot_path_for` derives
+  the sibling. Historical experiment replays read cold only — correct, since
+  their fixed windows end before the hot boundary.
+- Fold the hot tier back into cold once a window (~half a year) has accumulated:
+  `.\.venv\Scripts\python.exe -B quant\ohlcv_warehouse.py merge-hot`
+  (`INSERT OR IGNORE`, so cold's deterministic rows are never rewritten; then
+  the hot DB is emptied and VACUUMed back to ~empty). Inspect pending hot rows
+  with `... ohlcv_warehouse.py hot-status`. After a merge, commit the updated
+  cold blob (one large LFS object per window) and the shrunk hot DB.
 - Backtests can load the broad table with `--ohlcv-warehouse`, or a fixed
   snapshot version with both `--ohlcv-warehouse` and
   `--ohlcv-warehouse-snapshot-source`. A fixed-window before/after comparison

@@ -23,6 +23,24 @@ DEFAULT_WAREHOUSE_PATH = (
     if _CANONICAL_WAREHOUSE_PATH.exists() or not LEGACY_WAREHOUSE_PATH.exists()
     else LEGACY_WAREHOUSE_PATH
 )
+
+
+def hot_path_for(cold_path: str | Path = DEFAULT_WAREHOUSE_PATH) -> Path:
+    """Sibling hot-tier DB for a given cold warehouse path.
+
+    Hot/cold split (LFS churn fix): the multi-hundred-MB cold warehouse is
+    git-LFS tracked, so every daily run that upserts into it re-uploads the
+    whole blob as a fresh LFS object. We instead route daily/refresh writes to
+    a small sibling ``*_hot.sqlite`` that grows slowly, overlay it on the cold
+    base at read time, and fold it back into cold with ``merge-hot`` once a
+    window (~half a year) has accumulated. The cold blob then stays byte-stable
+    between merges and stops churning LFS.
+    """
+    p = Path(cold_path)
+    return p.with_name(f"{p.stem}_hot{p.suffix}")
+
+
+DEFAULT_HOT_WAREHOUSE_PATH = hot_path_for(DEFAULT_WAREHOUSE_PATH)
 DEFAULT_REFERENCE_TICKERS = {
     "SPY",
     "QQQ",
@@ -181,6 +199,61 @@ def _connect(path: Path, *, journal_mode_off: bool = False) -> sqlite3.Connectio
         """
     )
     conn.commit()
+    return conn
+
+
+# Columns of the ``ohlcv`` table, in storage order. The overlay view emits the
+# same shape so readers can swap ``FROM ohlcv`` -> ``FROM ohlcv_overlay`` with
+# no other change.
+_OHLCV_COLUMNS = "ticker, date, open, high, low, close, volume, source, updated_at"
+
+
+def connect_overlay_reader(
+    cold_path: str | Path = DEFAULT_WAREHOUSE_PATH,
+) -> sqlite3.Connection:
+    """Open a read connection over the cold warehouse with the hot tier overlaid.
+
+    Exposes a temp view ``ohlcv_overlay`` with the same columns as ``ohlcv``.
+    Hot rows win on ``(ticker, date)`` conflicts (the hot tier carries the most
+    recent / corrected bars). When no hot sibling exists the view is a plain
+    pass-through over ``ohlcv``, so behaviour is identical to the pre-split
+    warehouse. Callers query ``ohlcv_overlay`` and close the connection as usual;
+    the attach + temp view are connection-scoped.
+    """
+    cold = Path(cold_path)
+    conn = sqlite3.connect(cold, timeout=_WAREHOUSE_BUSY_TIMEOUT_S)
+    hot = hot_path_for(cold)
+    attached = False
+    if hot.exists():
+        try:
+            conn.execute("ATTACH DATABASE ? AS hot", (str(hot),))
+            # Confirm the hot DB actually carries the ohlcv table before relying
+            # on it; a partially-initialised file falls back to cold-only.
+            conn.execute("SELECT 1 FROM hot.ohlcv LIMIT 1")
+            attached = True
+        except sqlite3.Error:
+            try:
+                conn.execute("DETACH DATABASE hot")
+            except sqlite3.Error:
+                pass
+            attached = False
+    if attached:
+        conn.execute(
+            f"""
+            CREATE TEMP VIEW ohlcv_overlay AS
+            SELECT {_OHLCV_COLUMNS} FROM hot.ohlcv
+            UNION ALL
+            SELECT {_OHLCV_COLUMNS} FROM main.ohlcv AS c
+            WHERE NOT EXISTS (
+                SELECT 1 FROM hot.ohlcv AS h
+                WHERE h.ticker = c.ticker AND h.date = c.date
+            )
+            """
+        )
+    else:
+        conn.execute(
+            f"CREATE TEMP VIEW ohlcv_overlay AS SELECT {_OHLCV_COLUMNS} FROM ohlcv"
+        )
     return conn
 
 
@@ -984,7 +1057,7 @@ def load_warehouse_ohlcv_frames(
     placeholders = ",".join("?" for _ in ticker_list)
     sql = f"""
         SELECT ticker, date, open, high, low, close, volume
-        FROM ohlcv
+        FROM ohlcv_overlay
         WHERE ticker IN ({placeholders})
           AND date >= ?
           AND date <= ?
@@ -992,7 +1065,8 @@ def load_warehouse_ohlcv_frames(
     """
     params = [*ticker_list, start_text, end_text]
     by_ticker: dict[str, list[dict[str, Any]]] = {ticker: [] for ticker in ticker_list}
-    with sqlite3.connect(db, timeout=_WAREHOUSE_BUSY_TIMEOUT_S) as conn:
+    conn = connect_overlay_reader(db)
+    try:
         for ticker, day, open_, high, low, close, volume in conn.execute(sql, params):
             by_ticker[str(ticker)].append(
                 {
@@ -1004,6 +1078,8 @@ def load_warehouse_ohlcv_frames(
                     "Volume": float(volume),
                 }
             )
+    finally:
+        conn.close()
 
     frames: dict[str, pd.DataFrame] = {}
     for ticker, rows in by_ticker.items():
@@ -1069,6 +1145,146 @@ def load_warehouse_snapshot_ohlcv_frames(
     return frames
 
 
+def hot_status(
+    cold_path: str | Path = DEFAULT_WAREHOUSE_PATH,
+    hot_path: str | Path | None = None,
+) -> dict[str, Any]:
+    """Summarise the hot tier: row/ticker counts and date span pending merge."""
+    cold = Path(cold_path)
+    hot = Path(hot_path) if hot_path else hot_path_for(cold)
+    out: dict[str, Any] = {
+        "cold_path": str(cold),
+        "hot_path": str(hot),
+        "hot_exists": hot.exists(),
+    }
+    if not hot.exists():
+        out["status"] = "no_hot"
+        return out
+    conn = sqlite3.connect(hot, timeout=_WAREHOUSE_BUSY_TIMEOUT_S)
+    try:
+        rows, tickers, first_date, last_date = conn.execute(
+            "SELECT COUNT(*), COUNT(DISTINCT ticker), MIN(date), MAX(date) FROM ohlcv"
+        ).fetchone()
+    except sqlite3.Error as exc:
+        out["status"] = "unreadable"
+        out["error"] = str(exc)
+        return out
+    finally:
+        conn.close()
+    out["status"] = "ok"
+    out["row_count"] = int(rows or 0)
+    out["ticker_count"] = int(tickers or 0)
+    out["first_date"] = str(first_date)[:10] if first_date else None
+    out["last_date"] = str(last_date)[:10] if last_date else None
+    out["hot_size_bytes"] = hot.stat().st_size
+    return out
+
+
+def merge_hot_into_cold(
+    cold_path: str | Path = DEFAULT_WAREHOUSE_PATH,
+    hot_path: str | Path | None = None,
+    *,
+    reset_hot: bool = True,
+    vacuum: bool = True,
+    fetched_at: str | None = None,
+) -> dict[str, Any]:
+    """Fold accumulated hot-tier rows into the cold warehouse.
+
+    Run this once a window (~half a year) has accumulated in the hot DB. Hot
+    rows carry dates after the cold base's max, so ``INSERT OR IGNORE`` inserts
+    the new bars and never rewrites cold's deterministic research rows (matching
+    the warehouse-wide ``update_existing=False`` contract). ``fetch_status`` for
+    merged tickers is recomputed from the merged cold table. With ``reset_hot``
+    the hot DB is then emptied and VACUUMed so the committed blob shrinks back to
+    ~empty for the next window.
+    """
+    cold = Path(cold_path)
+    hot = Path(hot_path) if hot_path else hot_path_for(cold)
+    now = fetched_at or _utc_now()
+    summary: dict[str, Any] = {
+        "cold_path": str(cold),
+        "hot_path": str(hot),
+        "fetched_at": now,
+        "reset_hot": reset_hot,
+        "vacuum": vacuum,
+    }
+    if not hot.exists():
+        summary["status"] = "no_hot"
+        summary["inserted"] = 0
+        return summary
+
+    conn = _connect(cold)
+    try:
+        conn.execute("ATTACH DATABASE ? AS hot", (str(hot),))
+        cold_before = conn.execute("SELECT COUNT(*) FROM main.ohlcv").fetchone()[0]
+        hot_rows = conn.execute("SELECT COUNT(*) FROM hot.ohlcv").fetchone()[0]
+        merged_tickers = conn.execute(
+            "SELECT COUNT(DISTINCT ticker) FROM hot.ohlcv"
+        ).fetchone()[0]
+        conn.execute(
+            f"""
+            INSERT OR IGNORE INTO main.ohlcv ({_OHLCV_COLUMNS})
+            SELECT {_OHLCV_COLUMNS} FROM hot.ohlcv
+            """
+        )
+        # Recompute fetch_status for merged tickers from the merged cold rows so
+        # row_count / first_date / last_date reflect the full cold history, not
+        # the hot-only slice.
+        conn.execute(
+            """
+            INSERT INTO main.fetch_status (
+                ticker, status, row_count, first_date, last_date,
+                error, provider, fetched_at
+            )
+            SELECT o.ticker, 'ok', COUNT(*), MIN(o.date), MAX(o.date),
+                   NULL, 'warehouse_merge', ?
+            FROM main.ohlcv o
+            WHERE o.ticker IN (SELECT DISTINCT ticker FROM hot.ohlcv)
+            GROUP BY o.ticker
+            ON CONFLICT(ticker) DO UPDATE SET
+                status = excluded.status,
+                row_count = excluded.row_count,
+                first_date = excluded.first_date,
+                last_date = excluded.last_date,
+                error = excluded.error,
+                provider = excluded.provider,
+                fetched_at = excluded.fetched_at
+            """,
+            (now,),
+        )
+        conn.commit()
+        cold_after = conn.execute("SELECT COUNT(*) FROM main.ohlcv").fetchone()[0]
+        if reset_hot:
+            conn.execute("DELETE FROM hot.ohlcv")
+            conn.execute("DELETE FROM hot.fetch_status")
+            conn.commit()
+        conn.execute("DETACH DATABASE hot")
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+    inserted = int(cold_after - cold_before)
+    summary["status"] = "merged"
+    summary["hot_row_count"] = int(hot_rows or 0)
+    summary["merged_ticker_count"] = int(merged_tickers or 0)
+    summary["inserted"] = inserted
+    summary["skipped_existing"] = int((hot_rows or 0) - inserted)
+    summary["cold_row_count"] = int(cold_after)
+
+    if reset_hot and vacuum and hot.exists():
+        # VACUUM cannot run inside a transaction or with an attached DB, so do it
+        # on a fresh standalone connection after the merge has detached hot.
+        hc = sqlite3.connect(hot, timeout=_WAREHOUSE_BUSY_TIMEOUT_S)
+        try:
+            hc.execute("VACUUM")
+        finally:
+            hc.close()
+        summary["hot_size_bytes_after"] = hot.stat().st_size
+    return summary
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="OHLCV warehouse helpers.")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -1096,6 +1312,24 @@ def main() -> int:
     rebuild.add_argument("--snapshot", action="append", default=None)
     rebuild.add_argument("--force", action="store_true")
     rebuild.add_argument("--batch-size", type=int, default=20000)
+    merge = sub.add_parser(
+        "merge-hot",
+        help="Fold the accumulated hot tier back into the cold warehouse.",
+    )
+    merge.add_argument("--db-path", default=str(DEFAULT_WAREHOUSE_PATH))
+    merge.add_argument("--hot-path", default=None, help="Defaults to <db>_hot.sqlite.")
+    merge.add_argument(
+        "--keep-hot",
+        action="store_true",
+        help="Do not empty/VACUUM the hot DB after merging.",
+    )
+    merge.add_argument("--no-vacuum", action="store_true")
+    hot_stat = sub.add_parser(
+        "hot-status",
+        help="Show hot-tier row/ticker counts and date span pending merge.",
+    )
+    hot_stat.add_argument("--db-path", default=str(DEFAULT_WAREHOUSE_PATH))
+    hot_stat.add_argument("--hot-path", default=None)
     args = parser.parse_args()
 
     if args.command == "seed-snapshots":
@@ -1126,6 +1360,19 @@ def main() -> int:
             overwrite=args.force,
             batch_size=args.batch_size,
         )
+        print(json.dumps(summary, indent=2, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.command == "merge-hot":
+        summary = merge_hot_into_cold(
+            args.db_path,
+            args.hot_path,
+            reset_hot=not args.keep_hot,
+            vacuum=not args.no_vacuum,
+        )
+        print(json.dumps(summary, indent=2, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.command == "hot-status":
+        summary = hot_status(args.db_path, args.hot_path)
         print(json.dumps(summary, indent=2, ensure_ascii=False, sort_keys=True))
         return 0
     raise AssertionError(args.command)

@@ -1131,7 +1131,12 @@ def main():
 
     # Imports are inside main() so the module can be imported without side-effects
     from data_layer         import get_universe, get_ohlcv, get_ohlcv_many, get_earnings_data
-    from ohlcv_warehouse    import DEFAULT_WAREHOUSE_PATH, upsert_ohlcv_frames
+    from ohlcv_warehouse    import (
+        DEFAULT_WAREHOUSE_PATH,
+        connect_overlay_reader,
+        hot_path_for,
+        upsert_ohlcv_frames,
+    )
     from feature_layer      import compute_features
     from signal_engine      import generate_signals, rank_signals_for_allocation
     from risk_engine        import enrich_signals
@@ -1412,6 +1417,12 @@ def main():
         "OHLCV_WAREHOUSE_PATH",
         str(DEFAULT_WAREHOUSE_PATH),
     )
+    # Hot/cold split: daily accumulation writes to the small sibling hot DB so
+    # the LFS-tracked cold warehouse stops re-uploading its whole blob every run.
+    # Reads still pass the cold path; connect_overlay_reader / load_warehouse_*
+    # transparently overlay the hot tier. Fold hot back in with
+    # `python quant/ohlcv_warehouse.py merge-hot` once a window has accumulated.
+    ohlcv_warehouse_write_path = str(hot_path_for(ohlcv_warehouse_path))
     llm_prompt_priority = _env_flag("LLM_PROMPT_PRIORITY", True)
     # Heavy data-accumulation phase. In priority mode the pre-prompt path stays
     # narrow so the operator's prompt is out fast; once the prompt is written the
@@ -1483,16 +1494,17 @@ def main():
     # are always included first.
     options_ingest_tickers = list(data_universe)
     try:
-        import sqlite3 as _sqlite3
         from datetime import timedelta as _timedelta
 
         _cut = (datetime.now() - _timedelta(days=30)).strftime("%Y-%m-%d")
-        _wh = _sqlite3.connect(ohlcv_warehouse_path)
+        # Recent-window liquidity: the last 30 days now live in the hot tier, so
+        # read through the overlay or the rank would come back empty post-split.
+        _wh = connect_overlay_reader(ohlcv_warehouse_path)
         try:
             _ranked = [
                 str(row[0]).upper()
                 for row in _wh.execute(
-                    "SELECT ticker, AVG(close * volume) AS dv FROM ohlcv "
+                    "SELECT ticker, AVG(close * volume) AS dv FROM ohlcv_overlay "
                     "WHERE date >= ? GROUP BY ticker ORDER BY dv DESC",
                     (_cut,),
                 )
@@ -1556,7 +1568,7 @@ def main():
             return
         try:
             summary = upsert_ohlcv_frames(
-                ohlcv_warehouse_path,
+                ohlcv_warehouse_write_path,
                 frames_by_ticker,
                 source=f"run.py:{phase}",
                 provider="yfinance",
