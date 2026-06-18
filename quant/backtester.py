@@ -147,7 +147,7 @@ from production_parity import (
     suggested_reduce_pct_for_rules,
     position_was_spy_relative_leader,
 )
-from position_manager import compute_exit_levels, evaluate_exit_signals
+from position_manager import compute_atr, compute_exit_levels, evaluate_exit_signals
 from yfinance_bootstrap import configure_yfinance_runtime
 from earnings_assets import is_non_earnings_asset
 from pilot_sleeve import (
@@ -184,6 +184,9 @@ DEFAULT_CONFIG = {
     "TRAIL_TRIGGER_ATR_MULT": 0,     # activate trail when profit >= N × ATR (0=off)
     "TRAIL_OFFSET_ATR_MULT":  0,     # trailing stop = high_water - N × ATR
     "REPLAY_PARTIAL_REDUCES": True,  # replay production position-action policy
+    # Production ATR-stop parity probe (default-off; baseline stays bit-exact).
+    "ATR_STOP_DAILY_RECOMPUTE": False,   # recompute entry-ATR_STOP_MULT×ATR_today daily
+    "ATR_STOP_TRIGGER_ON_CLOSE": False,  # fire on close<=stop (prod) vs low<=stop (canonical)
     "PRODUCTION_TRAILING_STOP_PCT": TRAILING_STOP_PCT,
     "TRAILING_PARTIAL_REDUCE_ENABLED": TRAILING_PARTIAL_REDUCE_ENABLED,
     "POST_ADDON_WEAKNESS_REDUCE_ENABLED": False,
@@ -2894,11 +2897,32 @@ class BacktestEngine:
                         # Remove fixed target — let the trail run
                         pos.target_price = None
 
+                # ── Production ATR-stop parity probe (default-off; baseline
+                # stays bit-exact) ──────────────────────────────────────────
+                # Two divergences from production's daily ATR stop, each
+                # isolatable by flag:
+                #   ATR_STOP_DAILY_RECOMPUTE: production recomputes
+                #     entry - ATR_STOP_MULT × ATR_today every day; the canonical
+                #     backtest freezes the stop at entry. Off → frozen.
+                #   ATR_STOP_TRIGGER_ON_CLOSE: production's EOD rule fires on
+                #     close <= stop; the canonical backtest fires on intraday
+                #     low <= stop. Off → low. On a close-trigger fire day the
+                #     intraday low already reached the stop, so the gap-aware
+                #     fill below stays realistic.
+                eff_stop = pos.stop_price
+                if (self.config.get("ATR_STOP_DAILY_RECOMPUTE", False)
+                        and not pos.trailing_active and pos.entry_price):
+                    atr_today = compute_atr(df.loc[:today])
+                    if atr_today:
+                        eff_stop = round(pos.entry_price - ATR_STOP_MULT * atr_today, 2)
+                stop_probe = (close if self.config.get("ATR_STOP_TRIGGER_ON_CLOSE", False)
+                              else low)
+
                 # Stop hit (gap-fill or intraday) — sell slippage on top.
-                if pos.stop_price and low <= pos.stop_price:
-                    exit_raw_price = opn if opn < pos.stop_price else pos.stop_price
+                if eff_stop and stop_probe <= eff_stop:
+                    exit_raw_price = opn if opn < eff_stop else eff_stop
                     exit_price     = apply_stop_fill(
-                        opn, pos.stop_price,
+                        opn, eff_stop,
                         adv_dollar=pos.adv_dollar, notional=exit_raw_price * pos.shares)
                     exit_reason    = "trailing_stop" if pos.trailing_active else "stop"
                 # Target hit — gap-up uses Open (bonus), intraday uses target; slippage on top.
@@ -3354,6 +3378,7 @@ class BacktestEngine:
                     continue
 
                 shares = sizing["shares_to_buy"]
+
                 stop   = sig.get("stop_price")
                 target = sig.get("target_price")
 
@@ -4809,6 +4834,16 @@ def main():
                               "acceptance evidence."))
     parser.add_argument("--oracle-candidate-horizon-days", type=int, default=20,
                         help="Trading-day horizon for candidate-forward oracle diagnostics.")
+    parser.add_argument("--atr-stop-daily-recompute",
+                        action=argparse.BooleanOptionalAction, default=False,
+                        help=("Parity probe: recompute the ATR stop as "
+                              "entry-ATR_STOP_MULT×ATR_today every day (production "
+                              "semantics) instead of freezing it at entry. Default: off."))
+    parser.add_argument("--atr-stop-trigger-on-close",
+                        action=argparse.BooleanOptionalAction, default=False,
+                        help=("Parity probe: fire the ATR stop on close<=stop "
+                              "(production EOD semantics) instead of intraday "
+                              "low<=stop. Default: off."))
     args = parser.parse_args()
 
     # Default: last 6 months
@@ -4828,6 +4863,8 @@ def main():
     cfg = {
         "REGIME_AWARE_EXIT": args.regime_aware_exit,
         "REPLAY_PARTIAL_REDUCES": args.replay_partial_reduces,
+        "ATR_STOP_DAILY_RECOMPUTE": args.atr_stop_daily_recompute,
+        "ATR_STOP_TRIGGER_ON_CLOSE": args.atr_stop_trigger_on_close,
     }
     engine = BacktestEngine(universe, start=args.start, end=args.end,
                             config=cfg,
