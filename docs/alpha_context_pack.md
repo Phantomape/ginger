@@ -8,7 +8,7 @@ facts before changing strategy behavior.
 ## Source Snapshot
 
 - Strategy records counted: `1387`
-- Raw records loaded by meta report: `2015`
+- Raw records loaded by meta report: `2017`
 - History fingerprint: `6982f4c848402e0c`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.

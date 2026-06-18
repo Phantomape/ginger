@@ -164,10 +164,37 @@ def build_surface() -> tuple[list[dict[str, Any]], dict[str, Any]]:
             "enumerated": len(win_events),
             "parsed": len(win_rows),
             "parse_fraction": round(len(win_rows) / len(win_events), 4) if win_events else 0.0,
-            "by_family": dict(Counter((r["family"], "amend" if r["is_amendment"] else "init") for r in win_rows).most_common()),
+            "by_family": dict(
+                Counter(
+                    f"{r['family']}_{'amend' if r['is_amendment'] else 'init'}"
+                    for r in win_rows
+                ).most_common()
+            ),
         }
     coverage["total_enumerated"] = len(events)
     coverage["total_parsed"] = len(rows)
+
+    # Persist the canonical combined parsed surface (13D init+amend + 13G init)
+    # so the reusable data product matches the diagnostic exactly.
+    ingest.OUT_DIR.mkdir(parents=True, exist_ok=True)
+    ingest.OUT_ROWS.write_text(
+        json.dumps(
+            {
+                "generated_at": utc_now(),
+                "experiment_id": EXPERIMENT_ID,
+                "windows": WINDOWS,
+                "families": "13D(init+amend)+13G(init)",
+                "total_events_enumerated": len(events),
+                "parsed_row_count": len(rows),
+                "fetch_status": built["fetch_status"],
+                "rows": rows,
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
     return rows, coverage
 
 
