@@ -866,6 +866,46 @@ def _build_space_catalyst_observation_step(
         )
 
 
+def _build_sec_10k_watch_step(
+    *, today_iso, sec_filing_events_path, ohlcv_dict, universe, pilot_universe,
+    core_signals, entry_execution_plan,
+):
+    """STEP 6 — SEC 10-K liquidity forward watch (default-off observer)."""
+    from sec_10k_forward_watch import (
+        build_sec_10k_forward_watch,
+        empty_sec_10k_forward_watch,
+        persist_sec_10k_forward_watch,
+    )
+
+    try:
+        sec_10k_forward_watch = persist_sec_10k_forward_watch(
+            build_sec_10k_forward_watch(
+                as_of=today_iso,
+                source_path=sec_filing_events_path,
+                ohlcv_by_ticker=ohlcv_dict,
+                current_universe=set(universe) | set(pilot_universe),
+                core_signals=core_signals,
+                entry_execution_plan=entry_execution_plan,
+            )
+        )
+        if sec_10k_forward_watch.get("ten_k_event_count", 0) > 0:
+            persistence = sec_10k_forward_watch.get("persistence") or {}
+            log.info(
+                "SEC 10-K liquidity watch: 10-K=%d candidates=%d appended=%d ledger_rows=%d",
+                sec_10k_forward_watch.get("ten_k_event_count", 0),
+                sec_10k_forward_watch.get("candidate_count", 0),
+                persistence.get("appended_count", 0),
+                persistence.get("ledger_row_count", 0),
+            )
+        return sec_10k_forward_watch
+    except Exception as e:
+        log.warning(f"SEC 10-K liquidity watch unavailable: {e}")
+        return empty_sec_10k_forward_watch(
+            today_iso,
+            "sec_10k_forward_watch_build_failed",
+        )
+
+
 def _build_platform_rs20_watch_step(
     *, today_iso, entry_execution_plan, ohlcv_dict, spy_ohlcv, features_dict, earnings_dict
 ):
@@ -1290,11 +1330,6 @@ def main():
         pilot_governance_metadata,
         pilot_records_as_of,
         select_pilot_entry_candidates,
-    )
-    from sec_10k_forward_watch import (
-        build_sec_10k_forward_watch,
-        empty_sec_10k_forward_watch,
-        persist_sec_10k_forward_watch,
     )
 
     _refresh_open_positions_from_moomoo()
@@ -2306,32 +2341,15 @@ def main():
 
     non_ohlcv_paths = non_ohlcv_snapshot.get("paths") or {}
 
-    try:
-        sec_10k_forward_watch = persist_sec_10k_forward_watch(
-            build_sec_10k_forward_watch(
-                as_of=today_iso,
-                source_path=non_ohlcv_paths.get("sec_filing_events"),
-                ohlcv_by_ticker=ohlcv_dict,
-                current_universe=set(universe) | set(pilot_universe),
-                core_signals=signals,
-                entry_execution_plan=entry_execution_plan,
-            )
-        )
-        if sec_10k_forward_watch.get("ten_k_event_count", 0) > 0:
-            persistence = sec_10k_forward_watch.get("persistence") or {}
-            log.info(
-                "SEC 10-K liquidity watch: 10-K=%d candidates=%d appended=%d ledger_rows=%d",
-                sec_10k_forward_watch.get("ten_k_event_count", 0),
-                sec_10k_forward_watch.get("candidate_count", 0),
-                persistence.get("appended_count", 0),
-                persistence.get("ledger_row_count", 0),
-            )
-    except Exception as e:
-        log.warning(f"SEC 10-K liquidity watch unavailable: {e}")
-        sec_10k_forward_watch = empty_sec_10k_forward_watch(
-            today_iso,
-            "sec_10k_forward_watch_build_failed",
-        )
+    sec_10k_forward_watch = _build_sec_10k_watch_step(
+        today_iso=today_iso,
+        sec_filing_events_path=non_ohlcv_paths.get("sec_filing_events"),
+        ohlcv_dict=ohlcv_dict,
+        universe=universe,
+        pilot_universe=pilot_universe,
+        core_signals=signals,
+        entry_execution_plan=entry_execution_plan,
+    )
 
     form4_event_queue = _sleeve(
         lambda: build_forward_queue_from_transactions(
