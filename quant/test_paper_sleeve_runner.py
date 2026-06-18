@@ -48,6 +48,31 @@ def test_run_sleeve_no_log_when_inactive():
     assert log.infos == []
 
 
+def test_run_sleeve_noun_queue_wording_in_active_and_failure_logs():
+    log = _CapLogger()
+    snap = {"candidate_count": 4}
+    out = run_sleeve(
+        lambda: snap, _empty, logger=log, today_iso="2026-06-16",
+        log_label="Form 4 forward event", fail_reason="form4_event_queue_build_failed",
+        log_metrics=[("candidates", "candidate_count")],
+        activity_keys=("candidate_count",), noun="queue",
+    )
+    assert out is snap
+    assert log.infos == ["Form 4 forward event queue: candidates=4"]
+
+    log = _CapLogger()
+
+    def boom():
+        raise RuntimeError("kaboom")
+
+    run_sleeve(
+        boom, _empty, logger=log, today_iso="2026-06-16",
+        log_label="Form 4 forward event", fail_reason="form4_event_queue_build_failed",
+        noun="queue",
+    )
+    assert "Form 4 forward event queue unavailable: kaboom" in log.warnings[0]
+
+
 def test_run_sleeve_falls_back_to_empty_on_exception():
     log = _CapLogger()
 

@@ -40,32 +40,38 @@ def run_sleeve(
     fail_reason: str,
     log_metrics: Sequence[tuple[str, str]] = (),
     activity_keys: Sequence[str] = DEFAULT_ACTIVITY_KEYS,
+    noun: str = "sleeve",
 ):
-    """Run one paper sleeve with the standard boilerplate.
+    """Run one paper sleeve (or its upstream queue) with the standard boilerplate.
 
     Parameters
     ----------
     build:
-        Zero-arg callable returning the sleeve snapshot dict. It captures the
+        Zero-arg callable returning the snapshot dict. It captures the
         sleeve's specific inputs/prep at the call site.
     empty_fn:
         Empty-snapshot factory, invoked as ``empty_fn(today_iso, fail_reason)``
         when ``build`` raises.
     log_metrics:
-        ``(label, snapshot_key)`` pairs logged (in order) when the sleeve is
-        active. Empty -> just log that the sleeve was active.
+        ``(label, snapshot_key)`` pairs logged (in order) when the snapshot is
+        active. Empty -> just log that it was active.
     activity_keys:
-        Snapshot keys whose presence (>0) marks the sleeve as active.
+        Snapshot keys whose presence (>0) marks the snapshot as active.
+    noun:
+        The word used in the log lines (``"sleeve"`` for sleeves, ``"queue"``
+        for the upstream forward-event queues). ``log_label`` should not already
+        contain it, e.g. ``log_label="Form 4 forward event"`` + ``noun="queue"``
+        -> ``"Form 4 forward event queue unavailable: ..."``.
     """
     try:
         snap = build()
         if isinstance(snap, dict) and any((snap.get(k) or 0) for k in activity_keys):
             if log_metrics:
-                fmt = "%s sleeve: " + " ".join(f"{label}=%s" for label, _ in log_metrics)
+                fmt = f"%s {noun}: " + " ".join(f"{label}=%s" for label, _ in log_metrics)
                 logger.info(fmt, log_label, *(snap.get(key) for _, key in log_metrics))
             else:
-                logger.info("%s sleeve active", log_label)
+                logger.info(f"%s {noun} active", log_label)
         return snap
     except Exception as exc:  # noqa: BLE001 - mirror run.py's broad guard
-        logger.warning("%s sleeve unavailable: %s", log_label, exc)
+        logger.warning(f"%s {noun} unavailable: %s", log_label, exc)
         return empty_fn(today_iso, fail_reason)

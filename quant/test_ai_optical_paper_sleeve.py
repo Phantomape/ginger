@@ -111,6 +111,92 @@ def test_universe_state_feed_selects_governed_optical_without_noise():
     assert feed["excluded_count"] == 4
 
 
+def test_prep_runs_signal_chain_and_preserves_core_dropped_signals(monkeypatch):
+    """prep_and_build runs the core signal chain over the sleeve's own universe,
+    but must restore risk_engine.last_dropped_signals so the core run's
+    enrichment audit (logged separately by run.py) is left untouched."""
+    import pandas as pd
+
+    # Resolve the same module objects the prep imports internally (mirror its
+    # bare-first / quant-fallback order) so monkeypatching hits what it calls.
+    try:
+        import ai_optical_paper_sleeve as aos
+        import signal_engine
+        import risk_engine
+        import production_parity
+    except ImportError:  # pragma: no cover - package-style imports in tests
+        from quant import ai_optical_paper_sleeve as aos
+        from quant import signal_engine, risk_engine, production_parity
+
+    sentinel = [{"ticker": "CORE", "reason": "core_enrichment_drop"}]
+    risk_engine.last_dropped_signals.clear()
+    risk_engine.last_dropped_signals.extend(sentinel)
+
+    captured: dict = {}
+
+    def fake_generate_signals(features, **kwargs):
+        captured["generated_for"] = sorted(features)
+        return [_signal("AAOI")]
+
+    def fake_enrich(signals, context, **kwargs):
+        # real enrich_signals clobbers last_dropped_signals in place
+        risk_engine.last_dropped_signals.clear()
+        risk_engine.last_dropped_signals.append({"ticker": "AAOI", "reason": "sleeve_drop"})
+        return signals
+
+    def fake_filter(signals, **kwargs):
+        return signals, {}
+
+    def fake_build(**kwargs):
+        captured["candidate_signals"] = kwargs.get("candidate_signals")
+        return {"sleeve": "ai_optical", "candidate_count": len(kwargs.get("candidate_signals") or [])}
+
+    monkeypatch.setattr(signal_engine, "generate_signals", fake_generate_signals)
+    monkeypatch.setattr(risk_engine, "enrich_signals", fake_enrich)
+    monkeypatch.setattr(production_parity, "filter_entry_signal_candidates", fake_filter)
+    monkeypatch.setattr(aos, "build_ai_optical_paper_sleeve_snapshot", fake_build)
+
+    frame = pd.DataFrame(
+        {"Open": [9.9, 10.1], "High": [10.2, 10.4], "Low": [9.8, 10.0],
+         "Close": [10.0, 10.3], "Volume": [1_000_000, 1_100_000]}
+    )
+    universe_state = {
+        "as_of": "2026-05-22",
+        "observation_universe": ["AAOI"],
+        "records": {
+            "AAOI": {
+                "ticker": "AAOI", "status": "research",
+                "theme": "ai_optical_connectivity", "theme_segment": "optical_connectivity",
+                "history_class": "full_history", "liquidity_tier": "ok",
+            }
+        },
+    }
+
+    try:
+        snapshot = aos.prep_and_build_ai_optical_paper_sleeve_snapshot(
+            as_of="2026-05-22",
+            universe_governance_state=universe_state,
+            universe_state_artifact_path="data/daily/universe/universe_state_20260522.json",
+            core_universe={"CORE"},
+            ohlcv_dict={"AAOI": frame, "IWM": frame, "SPY": frame},
+            features_by_ticker={"AAOI": {"close": 10.3, "atr": 0.5}},
+            enabled_strategies=["trend_long"],
+            atr_target_mult=2.0,
+            open_positions={},
+            current_prices={},
+            open_prices={},
+        )
+
+        # signal chain ran over the sleeve universe and fed the builder
+        assert captured["generated_for"] == ["AAOI"]
+        assert captured["candidate_signals"] == [_signal("AAOI")]
+        assert snapshot["candidate_count"] == 1
+        # core run's dropped-signal accounting was restored after sleeve enrichment
+        assert risk_engine.last_dropped_signals == sentinel
+    finally:
+        risk_engine.last_dropped_signals.clear()
+
+
 def test_snapshot_adds_candidate_only_when_iwm_leads_spy():
     spy_rows = _rows(100.0, 0.05)
     iwm_rows = _rows(100.0, 0.25)

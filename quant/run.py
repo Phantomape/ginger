@@ -20,6 +20,7 @@ Usage:
     python quant/run.py
 """
 
+import functools
 import json
 import logging
 import os
@@ -344,6 +345,170 @@ def _generate_llm_prompt(trade_items, open_positions, trend_signals_dict):
     return False
 
 
+# ── Post-prompt accumulation steps ────────────────────────────────────────────
+# These run after the operator prompt is written (deferred when
+# LLM_PROMPT_PRIORITY is on, else inline). They are pure data accumulation over
+# the broad universe and never feed core signals/ranking/sizing/exits.
+
+def _refresh_reference_caches_step(universe):
+    """Refresh the sector + SEC-ticker reference caches over the broad universe."""
+    try:
+        from reference_cache_refresh import refresh_reference_caches
+        ref_cache = refresh_reference_caches(universe=universe)
+        sector = ref_cache.get("sector_cache", {})
+        tickers = ref_cache.get("sec_company_tickers", {})
+        if sector.get("refreshed_count") or tickers.get("refreshed"):
+            log.info(
+                "Reference caches: sector refreshed=%s, sec_tickers refreshed=%s",
+                sector.get("refreshed_count", 0),
+                tickers.get("refreshed", False),
+            )
+    except Exception as e:
+        log.warning(f"Reference cache refresh skipped: {e}")
+
+
+def _broad_earnings_merge_step(universe):
+    """Fetch broad-universe earnings into the shared earnings snapshot."""
+    try:
+        from fetch_broad_earnings_snapshot import fetch_broad_universe_earnings
+
+        summary = fetch_broad_universe_earnings(
+            as_of=datetime.now(),
+            tickers=universe,
+            batch_size=EARNINGS_BROAD_BATCH_SIZE,
+            batch_sleep_secs=EARNINGS_BROAD_BATCH_SLEEP_SECS,
+        )
+        log.info(
+            "Broad earnings merge: status=%s fetched=%s eps=%s failed=%s",
+            summary.get("status"),
+            summary.get("tickers_fetched"),
+            summary.get("tickers_with_eps_estimate"),
+            summary.get("tickers_failed"),
+        )
+    except Exception as e:
+        log.warning(f"Broad earnings merge unavailable: {e}")
+
+
+def _kova_sidecar_step(
+    *,
+    universe,
+    today_iso,
+    ohlcv_dict,
+    spy_ohlcv,
+    ohlcv_warehouse_enabled,
+    ohlcv_warehouse_path,
+    non_ohlcv_snapshot,
+):
+    """Persist the Kova data sidecar (fundamentals / rs_proxy / intraday / 13F).
+
+    Mutates ``non_ohlcv_snapshot["kova_data_sidecar"]`` in place (faithful to the
+    prior inline closure). Post-prompt accumulation only.
+    """
+    try:
+        from kova_data_sidecar import persist_kova_data_snapshot
+
+        # exp-20260614-022: rs_proxy is derived from this in-memory OHLCV, so
+        # seeding it only from the core ohlcv_dict (~57 names) capped rs_proxy at
+        # ~57 while every other stream went broad after exp-20260613-023. Seed
+        # from broad warehouse frames (returns-only need) for the broad ingest
+        # universe, then overlay the fresh in-memory core OHLCV + SPY on top so
+        # core names keep today's data. Degrades to the core dict on any failure.
+        kova_ohlcv_dict: dict = {}
+        try:
+            if ohlcv_warehouse_enabled and universe:
+                from datetime import timedelta as _td
+                from ohlcv_warehouse import load_warehouse_ohlcv_frames
+                rs_start = (datetime.now().date() - _td(days=320)).isoformat()
+                wh_frames = load_warehouse_ohlcv_frames(
+                    ohlcv_warehouse_path,
+                    tickers=set(universe) | {"SPY"},
+                    start=rs_start,
+                    end=today_iso,
+                )
+                # Convert to the list-of-dicts shape rs_proxy expects. The
+                # warehouse frame index is an unnamed DatetimeIndex, so passing
+                # frames straight through normalize_ohlcv_mapping drops every row
+                # (reset_index yields an "index" column, not "Date").
+                for tk, fr in wh_frames.items():
+                    kova_ohlcv_dict[tk] = [
+                        {
+                            "Date": str(idx.date()),
+                            "Open": float(r["Open"]),
+                            "High": float(r["High"]),
+                            "Low": float(r["Low"]),
+                            "Close": float(r["Close"]),
+                            "Volume": float(r["Volume"]),
+                        }
+                        for idx, r in fr.iterrows()
+                    ]
+                log.info(
+                    "rs_proxy broad OHLCV seed: %d tickers from warehouse",
+                    len(kova_ohlcv_dict),
+                )
+        except Exception as rs_e:
+            log.warning(
+                "rs_proxy broad warehouse seed failed, using core OHLCV: %s", rs_e
+            )
+            kova_ohlcv_dict = {}
+        for t, rows in ohlcv_dict.items():
+            kova_ohlcv_dict[t] = rows  # fresh in-memory core overrides warehouse
+        if spy_ohlcv is not None:
+            kova_ohlcv_dict["SPY"] = spy_ohlcv
+        kova_intervals = tuple(
+            item.strip()
+            for item in os.environ.get("KOVA_INTRADAY_INTERVALS", "15min,60min").replace(";", ",").split(",")
+            if item.strip()
+        )
+        kova_data_snapshot = persist_kova_data_snapshot(
+            asof_date=today_iso,
+            tickers=universe,
+            data_dir="data/kova",
+            non_ohlcv_dir="data/non_ohlcv",
+            ohlcv_data=kova_ohlcv_dict,
+            alpha_vantage_api_key=os.environ.get("ALPHA_VANTAGE_API_KEY"),
+            refresh_intraday=_env_flag("KOVA_REFRESH_INTRADAY", False),
+            intervals=kova_intervals,
+            month=os.environ.get("KOVA_INTRADAY_MONTH") or None,
+            # exp-20260613-023: refresh companyfacts on every run (was env-gated
+            # off, which froze the cache at 2026-06-04) and pass a finite
+            # stale_days so already-cached CIK files are re-fetched on a throttle
+            # instead of being treated as permanently fresh (stale_days=None).
+            refresh_companyfacts=_env_flag("KOVA_REFRESH_COMPANYFACTS", True),
+            companyfacts_stale_days=KOVA_COMPANYFACTS_STALE_DAYS,
+            companyfacts_max_ciks=KOVA_COMPANYFACTS_MAX_CIKS,
+            companyfacts_lookback_days=KOVA_COMPANYFACTS_LOOKBACK_DAYS,
+            sec13f_zip=os.environ.get("KOVA_SEC13F_ZIP") or None,
+            sec13f_year=_env_int("KOVA_SEC13F_YEAR"),
+            sec13f_quarter=_env_int("KOVA_SEC13F_QUARTER"),
+            cusip_map=os.environ.get("KOVA_CUSIP_MAP") or None,
+            refresh_sec13f=_env_flag("KOVA_REFRESH_SEC13F", False),
+            sleep_seconds=KOVA_DATA_SLEEP_SECONDS,
+        )
+        non_ohlcv_snapshot["kova_data_sidecar"] = kova_data_snapshot
+        log.info(
+            "Kova data sidecar: status=%s fundamentals=%s rs=%s intraday=%s institutional=%s",
+            kova_data_snapshot.get("status"),
+            (kova_data_snapshot.get("fundamental_growth") or {}).get("rows_written"),
+            (kova_data_snapshot.get("rs_proxy") or {}).get("rows_written"),
+            (kova_data_snapshot.get("intraday_ohlcv") or {}).get("rows_written"),
+            (kova_data_snapshot.get("institutional_ownership") or {}).get("rows_written"),
+        )
+    except Exception as e:
+        log.warning(f"Kova data sidecar unavailable: {e}")
+        non_ohlcv_snapshot["kova_data_sidecar"] = {
+            "status": "failed",
+            "asof_date": today_iso,
+            "error": str(e),
+            "production_impact": {
+                "alters_signal_generation": False,
+                "alters_candidate_ranking": False,
+                "alters_sizing": False,
+                "alters_exits": False,
+                "alters_orders": False,
+            },
+        }
+
+
 def main():
     today = datetime.now().strftime("%Y%m%d")
     today_iso = datetime.now().date().isoformat()
@@ -351,9 +516,10 @@ def main():
     from paper_sleeve_runner import run_sleeve as _run_sleeve
 
     def _sleeve(build, empty_fn, log_label, fail_reason, *, log_metrics=(),
-                activity_keys=None):
+                activity_keys=None, noun="sleeve"):
         # Thin local wrapper capturing log + today_iso; collapses each sleeve's
-        # try/activity-log/except-fallback boilerplate into one call.
+        # (or upstream queue's) try/activity-log/except-fallback boilerplate into
+        # one call. noun="queue" for the forward-event queues.
         kwargs = {} if activity_keys is None else {"activity_keys": activity_keys}
         return _run_sleeve(
             build,
@@ -363,6 +529,7 @@ def main():
             log_label=log_label,
             fail_reason=fail_reason,
             log_metrics=log_metrics,
+            noun=noun,
             **kwargs,
         )
 
@@ -385,6 +552,9 @@ def main():
         ("closed_today", "closed_count_today"),
         ("pnl", "realized_pnl_to_date"),
     )
+    # Upstream forward-event queues: gate/log on candidate_count only, noun "queue".
+    _QUEUE_METRICS = (("candidates", "candidate_count"),)
+    _QUEUE_ACTIVITY = ("candidate_count",)
 
     # ── Step 1: Config ────────────────────────────────────────────────────────
     _print_section("STEP 1 — Loading config")
@@ -534,9 +704,8 @@ def main():
         empty_accepted_helper_source_priority_allocator_snapshot,
     )
     from ai_optical_paper_sleeve import (
-        build_ai_optical_candidate_universe_from_universe_state,
-        build_ai_optical_paper_sleeve_snapshot,
         empty_ai_optical_paper_sleeve_snapshot,
+        prep_and_build_ai_optical_paper_sleeve_snapshot,
     )
     from volatility_contraction_paper_sleeve import (
         empty_volatility_contraction_paper_sleeve_snapshot,
@@ -986,25 +1155,13 @@ def main():
     # and nothing on the prompt path reads its output (broad sleeves + universe
     # feed consume it after the Step 6A checkpoint; enrich_signals uses the static
     # risk_engine.SECTOR_MAP, not this cache), so defer it in priority mode.
-    def _run_reference_cache_refresh():
-        try:
-            from reference_cache_refresh import refresh_reference_caches
-            _ref_cache = refresh_reference_caches(universe=post_prompt_accumulation_universe)
-            _sector = _ref_cache.get("sector_cache", {})
-            _tickers = _ref_cache.get("sec_company_tickers", {})
-            if _sector.get("refreshed_count") or _tickers.get("refreshed"):
-                log.info(
-                    "Reference caches: sector refreshed=%s, sec_tickers refreshed=%s",
-                    _sector.get("refreshed_count", 0),
-                    _tickers.get("refreshed", False),
-                )
-        except Exception as e:
-            log.warning(f"Reference cache refresh skipped: {e}")
-
+    _reference_cache_job = functools.partial(
+        _refresh_reference_caches_step, post_prompt_accumulation_universe
+    )
     if llm_prompt_priority:
-        _deferred_after_prompt.append(("reference_cache_refresh", _run_reference_cache_refresh))
+        _deferred_after_prompt.append(("reference_cache_refresh", _reference_cache_job))
     else:
-        _run_reference_cache_refresh()
+        _reference_cache_job()
 
     # ── Step 2: Market Regime ─────────────────────────────────────────────────
     _print_section("STEP 2 — Market regime")
@@ -1062,30 +1219,13 @@ def main():
     # The operator prompt never reads this merge (core earnings are persisted
     # above and signals use the in-memory core earnings), so in priority mode it
     # is deferred until after the Step 6A prompt checkpoint.
-    def _run_broad_earnings_merge():
-        try:
-            from fetch_broad_earnings_snapshot import fetch_broad_universe_earnings
-
-            broad_earnings_summary = fetch_broad_universe_earnings(
-                as_of=datetime.now(),
-                tickers=post_prompt_accumulation_universe,
-                batch_size=EARNINGS_BROAD_BATCH_SIZE,
-                batch_sleep_secs=EARNINGS_BROAD_BATCH_SLEEP_SECS,
-            )
-            log.info(
-                "Broad earnings merge: status=%s fetched=%s eps=%s failed=%s",
-                broad_earnings_summary.get("status"),
-                broad_earnings_summary.get("tickers_fetched"),
-                broad_earnings_summary.get("tickers_with_eps_estimate"),
-                broad_earnings_summary.get("tickers_failed"),
-            )
-        except Exception as e:
-            log.warning(f"Broad earnings merge unavailable: {e}")
-
+    _broad_earnings_job = functools.partial(
+        _broad_earnings_merge_step, post_prompt_accumulation_universe
+    )
     if llm_prompt_priority:
-        _deferred_after_prompt.append(("broad_earnings_merge", _run_broad_earnings_merge))
+        _deferred_after_prompt.append(("broad_earnings_merge", _broad_earnings_job))
     else:
-        _run_broad_earnings_merge()
+        _broad_earnings_job()
     try:
         estimate_revision_summary = persist_estimate_revision_ledger(
             as_of=today_iso,
@@ -1203,113 +1343,20 @@ def main():
     # persist at 1957+) all run after the Step 6A checkpoint. So in priority mode
     # it is deferred until the prompt is out. non_ohlcv_snapshot is the same dict
     # the deferred job mutates, drained before its first reader.
-    def _run_kova_sidecar():
-        try:
-            # exp-20260614-022: rs_proxy is derived from this in-memory OHLCV, so
-            # seeding it only from the core ohlcv_dict (~57 names) capped rs_proxy at
-            # ~57 while every other stream went broad after exp-20260613-023. Seed
-            # from broad warehouse frames (returns-only need) for the broad ingest
-            # universe, then overlay the fresh in-memory core OHLCV + SPY on top so
-            # core names keep today's data. Degrades to the core dict on any failure.
-            kova_ohlcv_dict: dict[str, Any] = {}
-            try:
-                if ohlcv_warehouse_enabled and post_prompt_accumulation_universe:
-                    from datetime import timedelta as _td
-                    from ohlcv_warehouse import load_warehouse_ohlcv_frames
-                    _rs_start = (datetime.now().date() - _td(days=320)).isoformat()
-                    _wh_frames = load_warehouse_ohlcv_frames(
-                        ohlcv_warehouse_path,
-                        tickers=set(post_prompt_accumulation_universe) | {"SPY"},
-                        start=_rs_start,
-                        end=today_iso,
-                    )
-                    # Convert to the list-of-dicts shape rs_proxy expects. The
-                    # warehouse frame index is an unnamed DatetimeIndex, so passing
-                    # frames straight through normalize_ohlcv_mapping drops every row
-                    # (reset_index yields an "index" column, not "Date").
-                    for _tk, _fr in _wh_frames.items():
-                        kova_ohlcv_dict[_tk] = [
-                            {
-                                "Date": str(_idx.date()),
-                                "Open": float(_r["Open"]),
-                                "High": float(_r["High"]),
-                                "Low": float(_r["Low"]),
-                                "Close": float(_r["Close"]),
-                                "Volume": float(_r["Volume"]),
-                            }
-                            for _idx, _r in _fr.iterrows()
-                        ]
-                    log.info(
-                        "rs_proxy broad OHLCV seed: %d tickers from warehouse",
-                        len(kova_ohlcv_dict),
-                    )
-            except Exception as _rs_e:
-                log.warning(
-                    "rs_proxy broad warehouse seed failed, using core OHLCV: %s", _rs_e
-                )
-                kova_ohlcv_dict = {}
-            for _t, _rows in ohlcv_dict.items():
-                kova_ohlcv_dict[_t] = _rows  # fresh in-memory core overrides warehouse
-            if spy_ohlcv is not None:
-                kova_ohlcv_dict["SPY"] = spy_ohlcv
-            kova_intervals = tuple(
-                item.strip()
-                for item in os.environ.get("KOVA_INTRADAY_INTERVALS", "15min,60min").replace(";", ",").split(",")
-                if item.strip()
-            )
-            kova_data_snapshot = persist_kova_data_snapshot(
-                asof_date=today_iso,
-                tickers=post_prompt_accumulation_universe,
-                data_dir="data/kova",
-                non_ohlcv_dir="data/non_ohlcv",
-                ohlcv_data=kova_ohlcv_dict,
-                alpha_vantage_api_key=os.environ.get("ALPHA_VANTAGE_API_KEY"),
-                refresh_intraday=_env_flag("KOVA_REFRESH_INTRADAY", False),
-                intervals=kova_intervals,
-                month=os.environ.get("KOVA_INTRADAY_MONTH") or None,
-                # exp-20260613-023: refresh companyfacts on every run (was env-gated
-                # off, which froze the cache at 2026-06-04) and pass a finite
-                # stale_days so already-cached CIK files are re-fetched on a throttle
-                # instead of being treated as permanently fresh (stale_days=None).
-                refresh_companyfacts=_env_flag("KOVA_REFRESH_COMPANYFACTS", True),
-                companyfacts_stale_days=KOVA_COMPANYFACTS_STALE_DAYS,
-                companyfacts_max_ciks=KOVA_COMPANYFACTS_MAX_CIKS,
-                companyfacts_lookback_days=KOVA_COMPANYFACTS_LOOKBACK_DAYS,
-                sec13f_zip=os.environ.get("KOVA_SEC13F_ZIP") or None,
-                sec13f_year=_env_int("KOVA_SEC13F_YEAR"),
-                sec13f_quarter=_env_int("KOVA_SEC13F_QUARTER"),
-                cusip_map=os.environ.get("KOVA_CUSIP_MAP") or None,
-                refresh_sec13f=_env_flag("KOVA_REFRESH_SEC13F", False),
-                sleep_seconds=KOVA_DATA_SLEEP_SECONDS,
-            )
-            non_ohlcv_snapshot["kova_data_sidecar"] = kova_data_snapshot
-            log.info(
-                "Kova data sidecar: status=%s fundamentals=%s rs=%s intraday=%s institutional=%s",
-                kova_data_snapshot.get("status"),
-                (kova_data_snapshot.get("fundamental_growth") or {}).get("rows_written"),
-                (kova_data_snapshot.get("rs_proxy") or {}).get("rows_written"),
-                (kova_data_snapshot.get("intraday_ohlcv") or {}).get("rows_written"),
-                (kova_data_snapshot.get("institutional_ownership") or {}).get("rows_written"),
-            )
-        except Exception as e:
-            log.warning(f"Kova data sidecar unavailable: {e}")
-            non_ohlcv_snapshot["kova_data_sidecar"] = {
-                "status": "failed",
-                "asof_date": today_iso,
-                "error": str(e),
-                "production_impact": {
-                    "alters_signal_generation": False,
-                    "alters_candidate_ranking": False,
-                    "alters_sizing": False,
-                    "alters_exits": False,
-                    "alters_orders": False,
-                },
-            }
-
+    _kova_job = functools.partial(
+        _kova_sidecar_step,
+        universe=post_prompt_accumulation_universe,
+        today_iso=today_iso,
+        ohlcv_dict=ohlcv_dict,
+        spy_ohlcv=spy_ohlcv,
+        ohlcv_warehouse_enabled=ohlcv_warehouse_enabled,
+        ohlcv_warehouse_path=ohlcv_warehouse_path,
+        non_ohlcv_snapshot=non_ohlcv_snapshot,
+    )
     if llm_prompt_priority:
-        _deferred_after_prompt.append(("kova_sidecar", _run_kova_sidecar))
+        _deferred_after_prompt.append(("kova_sidecar", _kova_job))
     else:
-        _run_kova_sidecar()
+        _kova_job()
 
     non_ohlcv_snapshot["estimate_revision_ledger"] = estimate_revision_summary
     features_dict = {}
@@ -2121,73 +2168,49 @@ def main():
             "sec_10k_forward_watch_build_failed",
         )
 
-    try:
-        form4_event_queue = build_forward_queue_from_transactions(
+    form4_event_queue = _sleeve(
+        lambda: build_forward_queue_from_transactions(
             data_dir="data/non_ohlcv",
             as_of=today_iso,
             core_signals=signals,
             source_path=non_ohlcv_paths.get("form4_transactions"),
-        )
-        if form4_event_queue.get("candidate_count", 0) > 0:
-            log.info(
-                "Form 4 forward event queue candidates: %d",
-                form4_event_queue["candidate_count"],
-            )
-    except Exception as e:
-        log.warning(f"Form 4 forward event queue unavailable: {e}")
-        form4_event_queue = empty_form4_event_queue(
-            today_iso,
-            "form4_event_queue_build_failed",
-        )
+        ),
+        empty_form4_event_queue,
+        "Form 4 forward event",
+        "form4_event_queue_build_failed",
+        log_metrics=_QUEUE_METRICS, activity_keys=_QUEUE_ACTIVITY, noun="queue",
+    )
 
-    try:
-        form4_event_sleeve = build_form4_event_sleeve_snapshot(
+    form4_event_sleeve = _sleeve(
+        lambda: build_form4_event_sleeve_snapshot(
             form4_event_queue=form4_event_queue,
             as_of=today_iso,
             open_prices=current_open_prices,
             current_prices=current_prices,
             open_price_dates=current_open_price_dates,
             current_price_dates=current_price_dates,
-        )
-        if (
-            form4_event_sleeve.get("new_pending_count", 0) > 0
-            or form4_event_sleeve.get("open_position_count", 0) > 0
-            or form4_event_sleeve.get("closed_count_today", 0) > 0
-        ):
-            log.info(
-                "Form 4 paper event sleeve: pending=%d open=%d closed_today=%d pnl=$%s",
-                form4_event_sleeve.get("pending_count", 0),
-                form4_event_sleeve.get("open_position_count", 0),
-                form4_event_sleeve.get("closed_count_today", 0),
-                form4_event_sleeve.get("realized_pnl_to_date", 0.0),
-            )
-    except Exception as e:
-        log.warning(f"Form 4 paper event sleeve unavailable: {e}")
-        form4_event_sleeve = empty_form4_event_sleeve_snapshot(
-            today_iso,
-            "form4_event_sleeve_build_failed",
-        )
+        ),
+        empty_form4_event_sleeve_snapshot,
+        "Form 4 paper event",
+        "form4_event_sleeve_build_failed",
+        log_metrics=_EVENT_SLEEVE_METRICS,
+        activity_keys=_EVENT_SLEEVE_ACTIVITY,
+    )
 
-    try:
-        sec_event_queue = build_forward_queue_from_sec_filing_text(
+    sec_event_queue = _sleeve(
+        lambda: build_forward_queue_from_sec_filing_text(
             data_dir="data/non_ohlcv",
             as_of=today_iso,
             ohlcv_by_ticker=ohlcv_dict,
             spy_ohlcv=spy_ohlcv,
             core_signals=signals,
             source_path=non_ohlcv_paths.get("sec_filing_text"),
-        )
-        if sec_event_queue.get("candidate_count", 0) > 0:
-            log.info(
-                "SEC negative-reaction forward event queue candidates: %d",
-                sec_event_queue["candidate_count"],
-            )
-    except Exception as e:
-        log.warning(f"SEC negative-reaction forward event queue unavailable: {e}")
-        sec_event_queue = empty_sec_event_queue(
-            today_iso,
-            "sec_event_queue_build_failed",
-        )
+        ),
+        empty_sec_event_queue,
+        "SEC negative-reaction forward event",
+        "sec_event_queue_build_failed",
+        log_metrics=_QUEUE_METRICS, activity_keys=_QUEUE_ACTIVITY, noun="queue",
+    )
 
     sec_negative_event_sleeve = _sleeve(
         lambda: build_sec_negative_event_sleeve_snapshot(
@@ -2205,26 +2228,20 @@ def main():
         activity_keys=_EVENT_SLEEVE_ACTIVITY,
     )
 
-    try:
-        sec_governance_event_queue = build_forward_governance_queue_from_sec_filing_text(
+    sec_governance_event_queue = _sleeve(
+        lambda: build_forward_governance_queue_from_sec_filing_text(
             data_dir="data/non_ohlcv",
             as_of=today_iso,
             ohlcv_by_ticker=ohlcv_dict,
             spy_ohlcv=spy_ohlcv,
             core_signals=signals,
             source_path=non_ohlcv_paths.get("sec_filing_text"),
-        )
-        if sec_governance_event_queue.get("candidate_count", 0) > 0:
-            log.info(
-                "SEC governance/procedural forward event queue candidates: %d",
-                sec_governance_event_queue["candidate_count"],
-            )
-    except Exception as e:
-        log.warning(f"SEC governance/procedural forward event queue unavailable: {e}")
-        sec_governance_event_queue = empty_sec_governance_queue(
-            today_iso,
-            "sec_governance_event_queue_build_failed",
-        )
+        ),
+        empty_sec_governance_queue,
+        "SEC governance/procedural forward event",
+        "sec_governance_event_queue_build_failed",
+        log_metrics=_QUEUE_METRICS, activity_keys=_QUEUE_ACTIVITY, noun="queue",
+    )
 
     sec_governance_event_sleeve = _sleeve(
         lambda: build_sec_event_sleeve_snapshot(
@@ -2242,26 +2259,20 @@ def main():
         activity_keys=_EVENT_SLEEVE_ACTIVITY,
     )
 
-    try:
-        sec_leadership_event_queue = build_forward_leadership_queue_from_sec_filing_text(
+    sec_leadership_event_queue = _sleeve(
+        lambda: build_forward_leadership_queue_from_sec_filing_text(
             data_dir="data/non_ohlcv",
             as_of=today_iso,
             ohlcv_by_ticker=ohlcv_dict,
             spy_ohlcv=spy_ohlcv,
             core_signals=signals,
             source_path=non_ohlcv_paths.get("sec_filing_text"),
-        )
-        if sec_leadership_event_queue.get("candidate_count", 0) > 0:
-            log.info(
-                "SEC leadership-change forward event queue candidates: %d",
-                sec_leadership_event_queue["candidate_count"],
-            )
-    except Exception as e:
-        log.warning(f"SEC leadership-change forward event queue unavailable: {e}")
-        sec_leadership_event_queue = empty_sec_leadership_queue(
-            today_iso,
-            "sec_leadership_event_queue_build_failed",
-        )
+        ),
+        empty_sec_leadership_queue,
+        "SEC leadership-change forward event",
+        "sec_leadership_event_queue_build_failed",
+        log_metrics=_QUEUE_METRICS, activity_keys=_QUEUE_ACTIVITY, noun="queue",
+    )
 
     sec_leadership_event_sleeve = _sleeve(
         lambda: build_sec_leadership_event_sleeve_snapshot(
@@ -2279,29 +2290,21 @@ def main():
         activity_keys=_EVENT_SLEEVE_ACTIVITY,
     )
 
-    try:
-        sec_financial_report_t1_queue = (
-            build_forward_financial_report_t1_queue_from_sec_filing_events(
-                data_dir="data/non_ohlcv",
-                as_of=today_iso,
-                ohlcv_by_ticker=ohlcv_dict,
-                spy_ohlcv=spy_ohlcv,
-                core_signals=signals,
-                source_path=non_ohlcv_paths.get("sec_filing_events"),
-                text_source_path=non_ohlcv_paths.get("sec_filing_text"),
-            )
-        )
-        if sec_financial_report_t1_queue.get("candidate_count", 0) > 0:
-            log.info(
-                "SEC financial-report T+1 drift queue candidates: %d",
-                sec_financial_report_t1_queue["candidate_count"],
-            )
-    except Exception as e:
-        log.warning(f"SEC financial-report T+1 drift queue unavailable: {e}")
-        sec_financial_report_t1_queue = empty_sec_financial_report_t1_queue(
-            today_iso,
-            "sec_financial_report_t1_queue_build_failed",
-        )
+    sec_financial_report_t1_queue = _sleeve(
+        lambda: build_forward_financial_report_t1_queue_from_sec_filing_events(
+            data_dir="data/non_ohlcv",
+            as_of=today_iso,
+            ohlcv_by_ticker=ohlcv_dict,
+            spy_ohlcv=spy_ohlcv,
+            core_signals=signals,
+            source_path=non_ohlcv_paths.get("sec_filing_events"),
+            text_source_path=non_ohlcv_paths.get("sec_filing_text"),
+        ),
+        empty_sec_financial_report_t1_queue,
+        "SEC financial-report T+1 drift",
+        "sec_financial_report_t1_queue_build_failed",
+        log_metrics=_QUEUE_METRICS, activity_keys=_QUEUE_ACTIVITY, noun="queue",
+    )
 
     sec_financial_report_event_sleeve = _sleeve(
         lambda: build_sec_financial_report_event_sleeve_snapshot(
@@ -2394,139 +2397,35 @@ def main():
         ],
     )
 
-    def _build_ai_optical():
-        ai_optical_source_state = dict(universe_governance_state or {})
-        if ai_optical_source_state:
-            ai_optical_source_state.setdefault(
-                "artifact_path",
-                str(daily_artifact_path("universe_state", today)),
-            )
-        ai_optical_candidate_universe = (
-            build_ai_optical_candidate_universe_from_universe_state(
-                ai_optical_source_state,
-                current_core_universe=universe,
-            )
-        )
-        ai_optical_tickers = set(ai_optical_candidate_universe.get("tickers") or [])
-        if ai_optical_tickers:
-            log.info(
-                "AI optical paper universe feed: status=%s tickers=%d",
-                ai_optical_candidate_universe.get("status"),
-                len(ai_optical_tickers),
-            )
-        ai_optical_ohlcv = {}
-        for ticker in sorted(ai_optical_tickers | {"IWM", "SPY"}):
-            if ticker in ohlcv_dict:
-                ai_optical_ohlcv[ticker] = ohlcv_dict[ticker]
-                continue
-            if ticker == "SPY" and spy_ohlcv is not None:
-                ai_optical_ohlcv[ticker] = spy_ohlcv
-                continue
-            try:
-                ai_optical_ohlcv[ticker] = _cached_ohlcv(ticker)
-            except Exception as ticker_error:
-                log.warning(
-                    "AI optical paper OHLCV unavailable for %s: %s",
-                    ticker,
-                    ticker_error,
-                )
-
-        ai_optical_features = {}
-        for ticker in sorted(ai_optical_tickers):
-            if features_dict.get(ticker):
-                ai_optical_features[ticker] = features_dict[ticker]
-                continue
-            try:
-                ticker_ohlcv = ai_optical_ohlcv.get(ticker)
-                if ticker_ohlcv is None:
-                    ticker_ohlcv = _cached_ohlcv(ticker)
-                ticker_earnings = earnings_dict.get(ticker)
-                if ticker_earnings is None:
-                    ticker_earnings = _cached_earnings(ticker)
-                ticker_features = compute_features(ticker, ticker_ohlcv, ticker_earnings)
-                if ticker_features:
-                    ai_optical_features[ticker] = ticker_features
-            except Exception as ticker_error:
-                log.warning(
-                    "AI optical paper features unavailable for %s: %s",
-                    ticker,
-                    ticker_error,
-                )
-
-        ai_optical_candidate_signals = []
-        ai_optical_signal_features = {
-            ticker: features
-            for ticker, features in ai_optical_features.items()
-            if ticker in ai_optical_tickers
-        }
-        if ai_optical_signal_features:
-            ai_optical_feature_context = {
-                **features_dict,
-                **ai_optical_features,
-            }
-            ai_optical_candidate_signals = generate_signals(
-                ai_optical_signal_features,
-                market_context=market_context,
-                enabled_strategies=ENABLED_STRATEGIES,
-                breakout_max_pullback_from_52w_high=BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH,
-            )
-            if BREAKOUT_RANK_BY_52W_HIGH:
-                ai_optical_candidate_signals = rank_signals_for_allocation(
-                    ai_optical_candidate_signals
-                )
-            _pre_ai_optical_dropped_signals = list(last_dropped_signals)
-            ai_optical_candidate_signals = enrich_signals(
-                ai_optical_candidate_signals,
-                ai_optical_feature_context,
-                atr_target_mult=atr_target_mult,
-            )
-            last_dropped_signals.clear()
-            last_dropped_signals.extend(_pre_ai_optical_dropped_signals)
-            if REGIME_AWARE_EXIT:
-                for s in ai_optical_candidate_signals:
-                    s["target_mult_used"] = exit_profile["target_mult"]
-                    s["regime_exit_bucket"] = exit_profile["bucket"]
-                    s["regime_exit_score"] = exit_profile["score"]
-            ai_optical_candidate_signals, _ai_optical_entry_filter_audit = (
-                filter_entry_signal_candidates(
-                    ai_optical_candidate_signals,
-                    open_positions=open_positions,
-                    market_regime=market_regime.get("regime", "").upper(),
-                    spy_pct_from_ma=spy_pct_from_ma,
-                    qqq_pct_from_ma=qqq_pct_from_ma,
-                )
-            )
-
-        ai_optical_current_prices = dict(current_prices)
-        ai_optical_open_prices = dict(current_open_prices)
-        for ticker, ohlcv in ai_optical_ohlcv.items():
-            if ohlcv is None or getattr(ohlcv, "empty", False):
-                continue
-            try:
-                if ticker not in ai_optical_current_prices:
-                    raw_close = ohlcv["Close"].iloc[-1]
-                    ai_optical_current_prices[ticker] = float(
-                        raw_close.item() if hasattr(raw_close, "item") else raw_close
-                    )
-                if ticker not in ai_optical_open_prices:
-                    raw_open = ohlcv["Open"].iloc[-1]
-                    ai_optical_open_prices[ticker] = float(
-                        raw_open.item() if hasattr(raw_open, "item") else raw_open
-                    )
-            except Exception:
-                pass
-
-        return build_ai_optical_paper_sleeve_snapshot(
-            as_of=today_iso,
-            candidate_signals=ai_optical_candidate_signals,
-            ohlcv_by_ticker=ai_optical_ohlcv,
-            candidate_universe=ai_optical_candidate_universe,
-            open_prices=ai_optical_open_prices,
-            current_prices=ai_optical_current_prices,
-        )
-
     ai_optical_paper_sleeve = _sleeve(
-        _build_ai_optical,
+        lambda: prep_and_build_ai_optical_paper_sleeve_snapshot(
+            as_of=today_iso,
+            universe_governance_state=universe_governance_state,
+            universe_state_artifact_path=str(
+                daily_artifact_path("universe_state", today)
+            ),
+            core_universe=universe,
+            ohlcv_dict=ohlcv_dict,
+            spy_ohlcv=spy_ohlcv,
+            cached_ohlcv_fn=_cached_ohlcv,
+            cached_earnings_fn=_cached_earnings,
+            features_by_ticker=features_dict,
+            earnings_by_ticker=earnings_dict,
+            market_context=market_context,
+            enabled_strategies=ENABLED_STRATEGIES,
+            breakout_max_pullback_from_52w_high=BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH,
+            breakout_rank_by_52w_high=BREAKOUT_RANK_BY_52W_HIGH,
+            atr_target_mult=atr_target_mult,
+            regime_aware_exit=REGIME_AWARE_EXIT,
+            exit_profile=exit_profile,
+            market_regime=market_regime,
+            spy_pct_from_ma=spy_pct_from_ma,
+            qqq_pct_from_ma=qqq_pct_from_ma,
+            open_positions=open_positions,
+            open_prices=current_open_prices,
+            current_prices=current_prices,
+            logger=log,
+        ),
         empty_ai_optical_paper_sleeve_snapshot,
         "AI optical",
         "ai_optical_paper_sleeve_build_failed",

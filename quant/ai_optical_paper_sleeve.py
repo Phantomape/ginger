@@ -1252,6 +1252,183 @@ def _money(value: Any) -> float:
     return round(parsed or 0.0, 2)
 
 
+def prep_and_build_ai_optical_paper_sleeve_snapshot(
+    *,
+    as_of: str,
+    universe_governance_state: dict[str, Any] | None = None,
+    universe_state_artifact_path: str | None = None,
+    core_universe: list[str] | set[str] | None = None,
+    ohlcv_dict: dict[str, Any] | None = None,
+    spy_ohlcv: Any = None,
+    cached_ohlcv_fn: Any = None,
+    cached_earnings_fn: Any = None,
+    features_by_ticker: dict[str, Any] | None = None,
+    earnings_by_ticker: dict[str, Any] | None = None,
+    market_context: Any = None,
+    enabled_strategies: Any = None,
+    breakout_max_pullback_from_52w_high: Any = None,
+    breakout_rank_by_52w_high: bool = False,
+    atr_target_mult: Any = None,
+    regime_aware_exit: bool = False,
+    exit_profile: dict[str, Any] | None = None,
+    market_regime: dict[str, Any] | None = None,
+    spy_pct_from_ma: Any = None,
+    qqq_pct_from_ma: Any = None,
+    open_positions: dict[str, Any] | None = None,
+    open_prices: dict[str, Any] | None = None,
+    current_prices: dict[str, Any] | None = None,
+    logger: Any = None,
+) -> dict[str, Any]:
+    """Build the AI-optical candidate universe, run the core signal chain over
+    it, then build the paper-sleeve snapshot.
+
+    Mirrors the prep that previously lived inline in ``run.py``'s Step 6: it
+    only assembles inputs for the unchanged
+    :func:`build_ai_optical_paper_sleeve_snapshot`. It never emits live orders
+    and never touches the core signal/ranking/sizing/exit path -- the core
+    run's ``last_dropped_signals`` is saved and restored around the
+    sleeve-local enrichment so the enrichment audit is unaffected.
+    """
+    import logging
+
+    try:
+        from signal_engine import generate_signals, rank_signals_for_allocation
+        from risk_engine import enrich_signals, last_dropped_signals
+        from production_parity import filter_entry_signal_candidates
+        from feature_layer import compute_features
+    except ImportError:  # pragma: no cover - package-style imports in tests
+        from quant.signal_engine import generate_signals, rank_signals_for_allocation
+        from quant.risk_engine import enrich_signals, last_dropped_signals
+        from quant.production_parity import filter_entry_signal_candidates
+        from quant.feature_layer import compute_features
+
+    log = logger or logging.getLogger(__name__)
+    ohlcv_dict = ohlcv_dict or {}
+    features_by_ticker = features_by_ticker or {}
+    earnings_by_ticker = earnings_by_ticker or {}
+
+    source_state = dict(universe_governance_state or {})
+    if source_state and universe_state_artifact_path:
+        source_state.setdefault("artifact_path", universe_state_artifact_path)
+    candidate_universe = build_ai_optical_candidate_universe_from_universe_state(
+        source_state,
+        current_core_universe=core_universe,
+    )
+    tickers = set(candidate_universe.get("tickers") or [])
+    if tickers:
+        log.info(
+            "AI optical paper universe feed: status=%s tickers=%d",
+            candidate_universe.get("status"),
+            len(tickers),
+        )
+
+    ohlcv: dict[str, Any] = {}
+    for ticker in sorted(tickers | {"IWM", "SPY"}):
+        if ticker in ohlcv_dict:
+            ohlcv[ticker] = ohlcv_dict[ticker]
+            continue
+        if ticker == "SPY" and spy_ohlcv is not None:
+            ohlcv[ticker] = spy_ohlcv
+            continue
+        if cached_ohlcv_fn is None:
+            continue
+        try:
+            ohlcv[ticker] = cached_ohlcv_fn(ticker)
+        except Exception as ticker_error:
+            log.warning(
+                "AI optical paper OHLCV unavailable for %s: %s", ticker, ticker_error
+            )
+
+    sleeve_features: dict[str, Any] = {}
+    for ticker in sorted(tickers):
+        if features_by_ticker.get(ticker):
+            sleeve_features[ticker] = features_by_ticker[ticker]
+            continue
+        try:
+            ticker_ohlcv = ohlcv.get(ticker)
+            if ticker_ohlcv is None and cached_ohlcv_fn is not None:
+                ticker_ohlcv = cached_ohlcv_fn(ticker)
+            ticker_earnings = earnings_by_ticker.get(ticker)
+            if ticker_earnings is None and cached_earnings_fn is not None:
+                ticker_earnings = cached_earnings_fn(ticker)
+            ticker_features = compute_features(ticker, ticker_ohlcv, ticker_earnings)
+            if ticker_features:
+                sleeve_features[ticker] = ticker_features
+        except Exception as ticker_error:
+            log.warning(
+                "AI optical paper features unavailable for %s: %s",
+                ticker,
+                ticker_error,
+            )
+
+    candidate_signals: list[dict[str, Any]] = []
+    signal_features = {
+        ticker: features
+        for ticker, features in sleeve_features.items()
+        if ticker in tickers
+    }
+    if signal_features:
+        feature_context = {**features_by_ticker, **sleeve_features}
+        candidate_signals = generate_signals(
+            signal_features,
+            market_context=market_context,
+            enabled_strategies=enabled_strategies,
+            breakout_max_pullback_from_52w_high=breakout_max_pullback_from_52w_high,
+        )
+        if breakout_rank_by_52w_high:
+            candidate_signals = rank_signals_for_allocation(candidate_signals)
+        # enrich_signals mutates risk_engine.last_dropped_signals in place; save
+        # and restore so the core run's enrichment audit is untouched.
+        _pre_dropped_signals = list(last_dropped_signals)
+        candidate_signals = enrich_signals(
+            candidate_signals,
+            feature_context,
+            atr_target_mult=atr_target_mult,
+        )
+        last_dropped_signals.clear()
+        last_dropped_signals.extend(_pre_dropped_signals)
+        if regime_aware_exit and exit_profile:
+            for s in candidate_signals:
+                s["target_mult_used"] = exit_profile["target_mult"]
+                s["regime_exit_bucket"] = exit_profile["bucket"]
+                s["regime_exit_score"] = exit_profile["score"]
+        candidate_signals, _entry_filter_audit = filter_entry_signal_candidates(
+            candidate_signals,
+            open_positions=open_positions,
+            market_regime=(market_regime or {}).get("regime", "").upper(),
+            spy_pct_from_ma=spy_pct_from_ma,
+            qqq_pct_from_ma=qqq_pct_from_ma,
+        )
+
+    sleeve_current_prices = dict(current_prices or {})
+    sleeve_open_prices = dict(open_prices or {})
+    for ticker, frame in ohlcv.items():
+        if frame is None or getattr(frame, "empty", False):
+            continue
+        try:
+            if ticker not in sleeve_current_prices:
+                raw_close = frame["Close"].iloc[-1]
+                sleeve_current_prices[ticker] = float(
+                    raw_close.item() if hasattr(raw_close, "item") else raw_close
+                )
+            if ticker not in sleeve_open_prices:
+                raw_open = frame["Open"].iloc[-1]
+                sleeve_open_prices[ticker] = float(
+                    raw_open.item() if hasattr(raw_open, "item") else raw_open
+                )
+        except Exception:
+            pass
+
+    return build_ai_optical_paper_sleeve_snapshot(
+        as_of=as_of,
+        candidate_signals=candidate_signals,
+        ohlcv_by_ticker=ohlcv,
+        candidate_universe=candidate_universe,
+        open_prices=sleeve_open_prices,
+        current_prices=sleeve_current_prices,
+    )
+
+
 def _production_impact() -> dict[str, Any]:
     return {
         "shared_policy_changed": True,
