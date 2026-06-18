@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-06-17.
+Last refreshed: 2026-06-18.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -1261,3 +1261,102 @@ Sources:
 
 - <https://arxiv.org/abs/2209.08825>
 - <https://www.sec.gov/divisions/investment/13ffaq>
+
+### 13D / 13G Beneficial Ownership Needs Structured Primary Text
+
+The SEC's beneficial-ownership modernization shortened Schedule 13D timing,
+accelerated Schedule 13G deadlines, clarified derivative-security disclosure,
+and made Schedule 13D/G structured machine-readable filing mandatory from
+December 18, 2024. This directly maps to Ginger's June 18 blocker: raw
+submissions metadata has many 13D/13G accessions, but no local primary-text or
+holder/stake/action table. The research/production opportunity is not another
+form-code event replay; it is a PIT parser for ownership intent and action.
+
+Implementable fields:
+
+- `sec13dg_accession`
+- `sec13dg_accepted_at`
+- `sec13dg_form_type`
+- `sec13dg_holder_identity_hash`
+- `sec13dg_holder_entity_type`
+- `sec13dg_beneficial_ownership_pct`
+- `sec13dg_share_count`
+- `sec13dg_active_passive_intent_bucket`
+- `sec13dg_action_direction_bucket`
+- `sec13dg_derivative_context_bucket`
+- `sec13dg_structured_data_version`
+
+Controls:
+
+- use accepted timestamp and primary-document text as the decision-time bound;
+- fail closed when holder identity, ownership percent, or action direction is
+  missing;
+- separate active 13D control intent from passive/institutional 13G reporting;
+- compare against accepted relation/allocator/SEC comparators after costs;
+- expose the same parser in historical replay and daily default-off snapshots.
+
+Sources:
+
+- <https://www.sec.gov/newsroom/press-releases/2023-219>
+- <https://www.sec.gov/files/rules/final/2023/33-11253.pdf>
+
+### 10-K Narrative Distress As Risk Context
+
+Recent bankruptcy-prediction work finds that distress-specific 10-K narrative
+language can add interpretable warning power beyond accounting variables. The
+Ginger-compatible use is a risk/context field around liquidity, funding,
+refinancing, restructuring, and business-fragility language. It should not be
+used as a raw short/long entry label without archived filing text, period
+alignment, and replacement-value evidence.
+
+Implementable fields:
+
+- `pb_stress_score_version`
+- `liquidity_funding_stress_bucket`
+- `debt_refinancing_stress_bucket`
+- `covenant_pressure_bucket`
+- `restructuring_legal_distress_bucket`
+- `business_fragility_language_bucket`
+- `distress_language_source_accession`
+- `distress_context_replacement_value_bucket`
+
+Controls:
+
+- score only filings accepted before the candidate decision;
+- separate bankruptcy/risk monitoring from entry alpha;
+- require deterministic section extraction and evidence spans;
+- compare distress-context filters against accepted SEC/event comparators after
+  costs before any paper-sleeve use.
+
+Source: <https://arxiv.org/abs/2606.05623>
+
+### Intangible Investment And Advertising Efficiency Discipline
+
+Recent asset-pricing work supports the idea that intangible investment matters
+more in the modern market, especially for intangible-intensive firms. Ginger's
+June 18 advertising-efficiency experiment shows the practical trap: raw
+selling/marketing or advertising ratios can be directionally interesting but
+still fail window, drawdown, concentration, and accepted-comparator gates. The
+usable path is a richer PIT unit-economics surface, not another expense/revenue
+threshold.
+
+Implementable fields:
+
+- `intangible_intensity_bucket`
+- `advertising_intensity_bucket`
+- `sales_marketing_efficiency_bucket`
+- `customer_acquisition_efficiency_source`
+- `gross_margin_supported_growth_bucket`
+- `segment_sales_productivity_bucket`
+- `unit_economics_evidence_bucket`
+- `intangible_investment_replacement_value_bucket`
+
+Controls:
+
+- normalize by industry and business model before comparing candidates;
+- distinguish R&D, advertising, and broader selling/marketing spend;
+- require positive revenue/gross-margin context plus PIT filing freshness;
+- demand accepted-comparator improvement after costs before treating the field
+  as candidate-pool alpha.
+
+Source: <https://arxiv.org/abs/2505.16336>

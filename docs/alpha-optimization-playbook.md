@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-06-17.
+Last refreshed: 2026-06-18.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -322,112 +322,42 @@ momentum regime, not a robust cross-window candidate-pool edge.
 
 The full June 17 batch generalizes that lesson beyond CapEx/D&A. Working-capital
 and balance-sheet relief fields often looked attractive in aggregate, but kept
-failing the same hard guards: accounts-payable DPO extension (`exp-20260617-001`)
-failed drawdown despite EV `+1.2688`; D&A burden relief
-(`exp-20260617-005`), fixed-asset turnover (`exp-20260617-006`),
-impairment relief (`exp-20260617-008`), AOCI relief (`exp-20260617-016`), and
-industry down-shock resilience (`exp-20260617-017`) all regressed one or more
-windows or failed drawdown/comparator gates. Sparse "interesting accounting"
-surfaces were worse: sector-normalized reinvestment productivity, deferred-tax
-allowance release, warranty reserve relief, pension relief, SEC contract
-economics, and SBC grant-value backlog relief were too thin, too concentrated,
-or weaker than accepted comparators. Treat this as a freeze on raw Companyfacts
-relief/overhang fields and generic industry-resilience OHLCV labels on the
-frozen windows. A valid retry now needs materially new PIT decomposition
-(segment/customer capacity, OCI component, borrow/options, contract economics
-with numeric spans), or closed forward replacement-value rows. The options-chain
-idea (`exp-20260617-004`) is not rejected on economics; it is blocked because
-local options coverage starts after the fixed windows and lacks vendor-as-of /
-open-interest lag controls, so it belongs in forward observation before any
-Gate-4 alpha claim.
+failing hard guards: DPO extension, D&A burden relief, fixed-asset turnover,
+impairment relief, AOCI relief, and industry down-shock resilience all regressed
+one or more windows or failed drawdown/comparator gates. Sparse accounting and
+SEC text surfaces were worse. Treat raw Companyfacts relief/overhang fields and
+generic industry-resilience OHLCV labels as frozen on the standard windows.
+Valid retries need materially new PIT decomposition, such as segment/customer
+capacity, OCI components, borrow/options, numeric contract economics, or closed
+forward replacement-value rows. Options-chain alpha is blocked by historical
+coverage and vendor-as-of/open-interest lag controls, so it belongs in forward
+observation before any Gate-4 claim.
 
-FINRA short-interest coverage was then repaired (`exp-20260616-020`,
-measurement_repair). The archive had only spanned 2025-12-24 onward (0 rows in
-`old_thin`/`mid_weak`), but a probe showed the FINRA CDN still hosts the older
-biweekly `shrt*.csv` files back to at least 2023, so the prior "blocked" backfill
-was an environment proxy failure, not missing data. A broad-universe backfill
-added 45,749 rows: the archive now spans settlement `2024-08-15 → 2026-05-29`
-across ~1,440 tickers, with all three canonical windows at 100% settlement
-coverage (`old_thin` 13/13, `mid_weak` 12/12, `late_strong` 12/12). FINRA
-short-interest is therefore **no longer structurally blocked** from a three-window
-Gate 4 — it is now a usable PIT candidate-source surface (short-interest level,
-`days_to_cover`, biweekly `short_interest_change_pct`, covering relief) for a
-future shared-paper-first test, subject to the usual publication-lag PIT rule
-(`usable_trade_date` = FINRA publication date, ~10 business days after
-settlement). The same repair registered FINRA in the central coverage manifest
-as a daily `record_type=data_source_coverage` row (forward refresh already
-accumulates via the daily sleeve path) and fixed a latent shadowing bug where
-data-source rows could falsely advance `latest_complete_trade_date`.
+FINRA short interest is now a data source, not an alpha queue. `exp-20260616-020`
+repaired the archive to full three-window settlement coverage, but the core and
+broad replays (`exp-20260616-024`, `exp-20260616-026`) rejected share-count
+borrow-pressure: signs flip by universe/window, drawdown worsens, and broad PnL
+is effectively zero after costs. The accepted FINRA/IWM paper helper was
+retired in `exp-20260616-028` while leaving the archive and `sec_ftd_finra`
+context intact. Do not rerun FINRA directional or squeeze tests from share
+counts; a valid reopen needs PIT borrow fee / utilization / loan availability,
+or closed forward replacement-value rows from a genuinely new source.
 
-The immediate out-of-sample test came back negative. `exp-20260616-024`
-re-evaluated the *accepted* FINRA borrow-pressure policy (`days_to_cover >= 3.0`
-AND `short_interest_change_pct > 0`, from `exp-20260603-006`) on the now-complete
-three-window archive, holding the fixed policy constant. It was REJECTED: 107
-trades (healthy sample at last), drawdown drift only `+0.44pp`, but aggregate EV
-`+0.1168` / PnL `+$3,772` with `late_strong` REGRESSING (EV `-0.015`, PnL
-`-$347`); gains concentrate in `old_thin` (`+$3,932`), `mid_weak` ~flat (`+$188`).
-It fails both accepted compression and distribution comparators.
-
-Provenance caveat (corrected): the original `exp-20260603-006` accept was NOT
-"late_strong only". Its own snapshot (`data/experiments/exp-20260603-006/
-finra_short_interest_rows.json`, 1,686 rows / 42 tickers / 2024-08-26→2026-04-24)
-covered all three windows and passed cleanly: all 3 windows positive, EV `+0.2585`,
-PnL `+$5,688`, 22 trades, concentration/drawdown OK — a legitimate 3-window accept
-at $4k paper notional (small absolute PnL is normal at that notional). The shared
-archive was later truncated to 2025-12+ (forward-only staleness refresh), which is
-why the live paper sleeve now produces ~0 candidates and 0 closed rows. Two
-things differ between exp-006 and exp-024: (a) exp-024 used the BROAD backfilled
-archive (1,440 tickers) and a LOOSER spec (borrow-pressure + price confirmation
-only, dropping the IWM-confirmation / cost-liquidity gates that exp-006 layered),
-giving 99 vs 13 late_strong candidates; (b) the larger/looser sample flips
-late_strong slightly negative. So exp-024 is evidence that the borrow-pressure
-signal is fragile/spec-dependent, not a clean refutation of the exact exp-006
-stack. Net: FINRA borrow-pressure remains unproven across windows and the
-accepted FINRA/IWM default-off helper should be treated as forward-maturation,
-not validated alpha.
-
-The broad-universe test then settled it: `exp-20260616-024` (core ~47) and
-`exp-20260616-026` (broad ~1,440) bracket the question and BOTH reject. Broad is
-strictly worse: aggregate EV `+0.0393`, PnL `+$109.77` across 327 trades (≈
-$0.34/trade, i.e. zero edge after costs), drawdown drift `+0.88pp` (over cap),
-and the per-window sign FLIPS versus the core run — broad has `late_strong`
-`+$2,382` but `old_thin` `-$2,320` and `mid_weak` EV negative, whereas core had
-`old_thin` positive and `late_strong` negative. A signal whose sign flips by
-universe and window is noise, not a durable edge. Conclusion: FINRA
-short-interest borrow-pressure (high days_to_cover + rising short interest) is
-NOT standalone candidate-pool alpha; the original `exp-20260603-006` `+$5,688`
-accept was a 22-trade small-sample artifact that does not generalize. Use FINRA
-short interest as crowding / overhang / risk context only. Do not retune
-days_to_cover / short-change / freshness / RS / universe / top-N / hold /
-cooldown / notional on the frozen windows; a valid retry needs a materially
-different PIT borrow-cost / hard-to-borrow / loan-availability field or closed
-forward replacement-value rows. The accepted FINRA/IWM default-off paper helper
-was RETIRED in `exp-20260616-028` (reversible): `DEFAULT_CONFIG["paper_enabled"]
-= False` plus an early short-circuit in `build_finra_iwm_paper_sleeve_snapshot`,
-so the daily run no longer spends broad-universe FINRA compute on a disproven
-source. The FINRA archive, `refresh_finra_short_interest_archive`, and
-`sec_ftd_finra` are untouched; set `paper_enabled=True` to re-activate. Diagnostic
-detail (exp-024/026 loss attribution): the P&L is a near-symmetric wash — 177
-winners `+$39.9k` vs 150 losers `−$39.7k` — and a stop/TP grid only "helped" by
-overfitting the frozen windows (old_thin stayed negative in every config), so
-high days-to-cover is a two-sided dispersion signal, not a directional edge.
-
-FINRA line CLOSED (do not reopen without a new paid data source). A directional
-cross-sectional diagnostic (41,910 PIT obs: forward-10d return bucketed by
-days_to_cover and by short_interest_change_pct across the broad universe) found
-NO robust edge: short-interest-change is flat noise; the only hint is the
-lowest-days_to_cover quintile (+0.77% vs ~+0.45% baseline), but it is
-non-monotonic and the low-vs-high spread FLIPS sign in old_thin (−0.45pp) versus
-mid_weak/late_strong (+1.0/+0.4pp). This matches the literature: the robust,
-correctly-signed short-interest anomaly lives in the securities-lending FEE /
-UTILIZATION (Cohen-Diether-Malloy 2007; Engelberg-Reed-Ringgenberg 2018), not in
-FINRA share counts, and that field requires a paid feed (Ortex / S3 / IHS
-Markit). Owner decision 2026-06-16: the paid borrow-fee feed is NOT cost-justified
-for this line; FINRA short interest stays crowding/risk context only. Do not
-re-run share-based FINRA directional or squeeze candidate-pool tests; a valid
-reopen needs a real PIT cost-to-borrow / utilization feed (or a free broker
-borrow-fee field for forward-only observation), not another share-count
-normalization or threshold sweep.
+The June 18 batch closes another set of near-neighbor escape hatches. SEC item
+and form-event absorption sources (Item 2.05 restructuring, business
+combination/tender, Item 1.02 termination, Item 5.07 vote results, Item 4.02
+nonreliance, offerings, S-8 employee equity, NT late filing, non-management
+proxy pressure) did not beat accepted comparators, were too sparse, or regressed
+windows. Annual and quarterly filing-timeliness broad runs also failed, closing
+the universe-width caveat. Advertising-efficiency Companyfacts was directionally
+interesting but failed window/drawdown/concentration/comparator gates. Static
+intra-industry lead-lag, even with direction-stability history, stayed
+window-fragile and drawdown-worse; equity-curve adaptive sizing cut into
+V-shaped recoveries. The useful next work is not another threshold sweep. It is
+building PIT structured data edges: 13G/13D primary documents with
+holder/stake/action parsing, offering economics text, historical 10-K/10-Q
+filer-status cover-page fields, full-window options chains, borrow-fee history,
+and customer/supplier/payment-term disclosures.
 
 ## Detail Sources
 
@@ -450,8 +380,8 @@ evidence on accepted paper adapters:
 
 - low-deployment ETF cash substitute;
 - lagged independent free-data consensus;
-- SEC FTD + FINRA confirmation;
-- FINRA/IWM borrow-pressure;
+- SEC FTD confirmation and FINRA short-interest context, but not FINRA/IWM
+  directional borrow-pressure unless a new borrow-fee/utilization source exists;
 - post-earnings underpriced drift;
 - Fundamental Growth RS;
 - macro relief, volatility relief, rolling-correlation peer shock,
@@ -489,7 +419,42 @@ only 3 relevant rows; and the analyst-revision ledger has 1246 rows but zero
 candidate matches. Forward work should build missing match surfaces and collect
 more closed replacement-value rows before any activation or retune experiment.
 
-### 2. Tail-State Classifier For Momentum And Broad Candidate Pools
+### 2. PIT Structured Data Edges
+
+The default alpha queue after the June 17-18 failures is data-edge construction,
+not another replay. The repository has enough evidence that raw Companyfacts
+ratios, raw SEC item codes, current-only filer metadata, metadata-only
+ownership events, and static relation labels are mostly exhausted on frozen
+windows.
+
+Highest-priority build surfaces:
+
+- parsed Schedule 13G/13D primary documents: holder/filer identity, active vs
+  passive intent, beneficial ownership percent, share count, amendment/action
+  direction, and group/derivative context;
+- offering/prospectus primary text: proceeds, offering amount normalized by
+  market cap and dollar volume, security type, ATM/shelf/takedown status, use
+  of proceeds, and dilution terms;
+- historical 10-K/10-Q cover-page filer status keyed by accession and accepted
+  timestamp, not current submissions category;
+- options chains with vendor as-of, stale-chain, open-interest lag, spread, and
+  fill-cost controls across the standard windows or a forward-only observation
+  ledger with closed outcomes;
+- PIT borrow fee / utilization / availability, not FINRA share counts;
+- structured customer/supplier/payment-term or unit-economics fields that
+  explain DPO, advertising efficiency, or contract-economics mechanisms.
+
+Minimum acceptance path:
+
+- first pass Gate 2 field availability and PIT timestamp audit;
+- implement a shared historical/daily parser or default-off helper before any
+  accepted alpha claim;
+- compare against accepted SEC/event, relation, and allocator comparators after
+  costs;
+- record parser failures, missing primary text, and coverage gaps as first-class
+  fields.
+
+### 3. Tail-State Classifier For Momentum And Broad Candidate Pools
 
 Broad recent-winner, gap-and-hold, post-thrust inside-day, accumulation-base,
 and market-pullback reclaim tests suggest a real but crowded continuation
@@ -593,7 +558,7 @@ Acceptance path:
 - then default-off paper only if tail-state separation beats the low-deployment
   ETF and accepted compression/relation comparators after costs and drawdown.
 
-### 3. Relation-Aware Event / Peer Fields
+### 4. Relation-Aware Event / Peer Fields
 
 Local same-ticker SEC recurrence and same-sector peer transfer have failed.
 Future event graph work must improve the relation, not the event count.
@@ -641,7 +606,7 @@ Acceptance path:
 - if the relation is production-visible and PIT-safe, use shared-paper-first
   instead of a private replay scout.
 
-### 4. Expectation Revision With Real PIT Trajectory
+### 5. Expectation Revision With Real PIT Trajectory
 
 Analyst/estimate revision remains promising but proxy-grade. Current frozen
 snapshot evidence is not enough.
@@ -670,7 +635,7 @@ empty. The next useful step is not replaying revision thresholds; it is joining
 revision breadth/dispersion/velocity onto historical candidates with as-of
 timestamps and source freshness so replacement value can be measured.
 
-### 5. LLM As Bounded Semantic Infrastructure
+### 6. LLM As Bounded Semantic Infrastructure
 
 LLM remains useful for event understanding, not direct trading authority.
 
@@ -848,13 +813,14 @@ production-visible field:
 - broad raw Companyfacts relief/overhang candidate pools based on
   accounts-payable DPO extension, D&A burden relief, fixed-asset turnover,
   impairment relief, AOCI relief, deferred-tax allowance release, warranty
-  reserve relief, pension/postretirement obligation relief, or adjacent tag /
+  reserve relief, pension/postretirement obligation relief, advertising /
+  selling-marketing efficiency, public float scarcity, or adjacent tag /
   threshold / fact-age / RS / top-N / hold / cooldown / notional sweeps on the
-  frozen windows. The June 17 batch showed repeated aggregate-positive but
+  frozen windows. The June 17-18 batches showed repeated aggregate-positive but
   window-fragile, drawdown-worse, sparse, or concentrated behavior. A valid
   retry needs materially different PIT decomposition, such as segment/customer
-  capacity, OCI component attribution, contractual numeric spans, borrow/options
-  context, or closed forward replacement-value rows;
+  capacity, unit economics, OCI component attribution, contractual numeric
+  spans, borrow/options context, or closed forward replacement-value rows;
 - options-chain skew / open-interest candidate-pool claims before fixed-window
   historical coverage or a forward-only observation ledger has vendor-as-of,
   publication-lag, stale-chain, and fill-cost controls. `exp-20260617-004`
@@ -916,10 +882,30 @@ production-visible field:
   paper trades, but was still REJECTED: aggregate EV `+0.0193` with PnL
   `-$3,690`, old_thin EV/PnL regression, and drawdown drift `+2.80pp`, while
   failing both accepted compression and distribution comparators. The breadth
-  caveat is now closed; a valid retry needs a materially different
-  disclosure-timing field such as quarterly 10-Q timeliness,
-  accelerated-filer-status change, NT 10-K late-filing notices, segment/customer
-  disclosure timing, or closed forward replacement-value rows;
+  caveat is now closed. `exp-20260617-022` then tested the materially different
+  quarterly 10-Q same-fiscal-quarter timeliness field over the BROAD liquid
+  universe (1,197 eligible history tickers, 161 paper trades) and was also
+  REJECTED: aggregate EV `+0.4060` and PnL `+$5,534.90`, but old_thin EV/PnL
+  regressed, drawdown drift was `+0.52pp` versus the `0.50pp` cap, and the
+  accepted distribution comparator was not beaten. Do not retry annual 10-K or
+  quarterly 10-Q timeliness by sweeping earliness, current-lag, prior-filing,
+  event-age, liquidity, duration, top-N, hold, cooldown, notional, or universe
+  scope. A valid retry needs a materially different disclosure-timing field such
+  as accelerated-filer-status change, NT 10-K/10-Q late-filing notices,
+  segment/customer disclosure timing, or closed forward replacement-value rows;
+- raw SEC form/item absorption sources, including 8-K Item 2.05 restructuring,
+  Item 1.02 contract termination, Item 4.02 nonreliance, Item 5.07 vote
+  results, business-combination/tender forms, offerings, S-8 employee-equity
+  registrations, NT late-filing notices, and non-management proxy pressure, when
+  the retry only sweeps form lists, 8-K/A inclusion, signal excess,
+  close-location, volume, volatility, ret20, price/ADV, event age, top-N, hold,
+  cooldown, or notional. The June 17-18 runs showed raw event metadata is too
+  sparse, stale, or comparator-weak. A valid retry needs primary-document text,
+  structured event economics, holder/stake/action context, or relation
+  provenance that can be shared by historical replay and daily snapshots;
+- raw Schedule 13G/13D metadata gates, 13G-vs-13D form thresholds,
+  amendment-only or initiation-only ownership replays, and liquidity/top-N/hold
+  retunes without primary-document text and parsed holder/stake/action rows;
 - intra-industry liquidity-leader lead-lag (top-3 by 20d dollar volume per
   industry run up vs SPY over 10d; a same-industry member that has NOT yet
   moved drifts to catch up) as a STATIC always-on candidate pool, and sweeping
@@ -939,6 +925,12 @@ production-visible field:
   the shared PIT `quant/regime_chop_state.py` module and validated on forward /
   live-pilot rows tagged with entry-time regime, never by re-slicing these
   frozen windows; do not retry as a static source or sweep its thresholds;
+- portfolio-level equity-curve adaptive sizing based on fixed drawdown
+  threshold and sub-1.0 notional multiplier. `exp-20260618-008` showed the
+  system's 6-11% drawdowns tend to recover quickly; static drawdown cuts reduce
+  recovery entries in a low-trade-count strategy. A valid portfolio-risk retry
+  needs a fundamentally different mechanism, such as regime-conditioned position
+  count/capacity constraints with forward evidence;
 - missing archive/text availability as an alpha field.
 
 ## Update Discipline

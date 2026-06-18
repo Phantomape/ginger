@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1366`
-- Raw records loaded by meta report: `1931`
-- History fingerprint: `8f8051e726bfb2c2`
+- Strategy records counted: `1387`
+- Raw records loaded by meta report: `2015`
+- History fingerprint: `6982f4c848402e0c`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -63,30 +63,30 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260617-008` `rejected_impairment_overhang_relief_candidate_pool`: EV `+0.0731`, PnL `$618.02`, family `production_visible_free_sec_companyfacts_impairment_overhang_candidate_pool`, trial `impairment_overhang_relief_candidate_pool`.
-  Lesson: The raw SEC impairment-overhang relief source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, drawdown_drift_too_high, target_concentration_failed, accepted_compression_ev_not_beaten, accept...
-- `exp-20260617-009` `rejected_sector_normalized_reinvestment_productivity_candidate_pool`: EV `+0.2647`, PnL `$3,809.50`, family `production_visible_free_sec_companyfacts_reinvestment_cycle_candidate_pool`, trial `sector_normalized_reinvestment_productivity_candidate_pool`.
-  Lesson: The sector-normalized reinvestment productivity source did not clear Gate 4 (failed: fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too_small, target_concentration_failed, accepted...
-- `exp-20260617-010` `blocked_no_gate4_ready_nonrepeat_alpha_surface_after_reinvestment_failures`: EV `+0.0000`, PnL `$0.00`, family `nonrepeat_alpha_direction_blocker`, trial `post_reinvestment_nonrepeat_alpha_surface_readiness`.
-  Lesson: The next credible alpha lanes require PIT fields that are not available across the canonical windows, while executable near-neighbor strategies are already rejected, accepted/frozen, or forward-only. A new replay toda...
-- `exp-20260617-011` `rejected_sec_text_contract_economics_candidate_pool`: EV `-0.0391`, PnL `$-691.21`, family `production_visible_sec_text_structured_contract_economics_candidate_pool`, trial `sec_text_structured_contract_economics_candidate_pool`.
-  Lesson: The SEC text contract-economics source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, target_sampl...
-- `exp-20260617-012` `rejected_sbc_grant_value_backlog_relief_candidate_pool`: EV `+0.2356`, PnL `$3,405.92`, family `production_visible_free_sec_companyfacts_grant_value_dilution_candidate_pool`, trial `sbc_grant_value_backlog_relief_candidate_pool`.
-  Lesson: The SBC grant-value backlog relief source had positive aggregate EV/PnL, but did not clear Gate 4 because the effect was narrow and unstable: old_thin regressed -0.0278 EV and $-1,091.19, while positive PnL was domina...
-- `exp-20260617-013` `rejected_deferred_tax_valuation_allowance_release_candidate_pool`: EV `+0.2047`, PnL `$3,325.17`, family `production_visible_free_sec_companyfacts_tax_asset_quality_candidate_pool`, trial `deferred_tax_valuation_allowance_release_candidate_pool`.
-  Lesson: The deferred-tax valuation allowance release source did not clear Gate 4 (failed: target_sample_too_small, target_window_coverage_too_small, target_concentration_failed, accepted_distribution_ev_not_beaten, accepted_d...
-- `exp-20260617-014` `rejected_product_warranty_reserve_relief_candidate_pool`: EV `+0.3893`, PnL `$4,847.04`, family `production_visible_free_sec_companyfacts_product_quality_candidate_pool`, trial `product_warranty_reserve_relief_candidate_pool`.
-  Lesson: The product warranty reserve relief source did not clear Gate 4 (failed: target_sample_too_small, target_window_coverage_too_small, target_concentration_failed, accepted_distribution_ev_not_beaten, accepted_distributi...
-- `exp-20260617-015` `rejected_pension_obligation_relief_candidate_pool`: EV `-0.0144`, PnL `$-439.78`, family `production_visible_free_sec_companyfacts_pension_liability_candidate_pool`, trial `pension_obligation_relief_candidate_pool`.
-  Lesson: The pension/postretirement funded-status relief source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windo...
-- `exp-20260617-016` `rejected_aoci_overhang_relief_candidate_pool`: EV `+0.2328`, PnL `$3,117.90`, family `production_visible_free_sec_companyfacts_balance_sheet_overhang_candidate_pool`, trial `aoci_overhang_relief_candidate_pool`.
-  Lesson: The AOCI overhang relief source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, drawdown_drift_too_high, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). The signa...
-- `exp-20260617-017` `rejected_industry_downshock_resilience_leader_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `production_visible_free_ohlcv_relation_candidate_pool`, trial `industry_downshock_resilience_leader_candidate_pool`.
-  Lesson: Industry down-shock resilience did not clear Gate 4 after next-open execution and accepted relation comparators. The likely cause is that local group weakness still created falling-knife risk, while the individual res...
-- `exp-20260617-018` `rejected_accrued_liability_burden_relief_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `production_visible_free_sec_companyfacts_operating_liability_candidate_pool`, trial `accrued_liability_burden_relief_candidate_pool`.
-  Lesson: The accrued liability burden relief source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too_s...
-- `exp-20260617-019` `rejected_filing_timeliness_early_disclosure_candidate_pool`: EV `-0.0297`, PnL `$-1,263.37`, family `production_visible_free_sec_companyfacts_filing_timeliness_candidate_pool`, trial `free_sec_companyfacts_filing_timeliness_candidate_pool`.
-  Lesson: The SEC filing-timeliness early-disclosure event source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, target_sample_too_small, drawdo...
+- `exp-20260618-002` `rejected_sec_business_combination_absorption_candidate_pool`: EV `+0.0734`, PnL `$1,568.03`, family `production_visible_free_sec_submissions_business_combination_candidate_pool`, trial `free_sec_submissions_business_combination_absorption_candidate_pool`.
+  Lesson: The SEC business-combination/tender absorption source did not clear Gate 4 (failed: accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_p...
+- `exp-20260618-003` `rejected_sec_8k_item102_contract_termination_absorption_candidate_pool`: EV `+0.1190`, PnL `$1,642.79`, family `production_visible_free_sec_submissions_contract_termination_candidate_pool`, trial `free_sec_submissions_8k_contract_termination_absorption_candidate_pool`.
+  Lesson: The SEC 8-K Item 1.02 contract-termination absorption source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted...
+- `exp-20260618-004` `rejected_sec_item_507_vote_result_absorption_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `production_visible_sec_text_governance_vote_result_candidate_pool`, trial `sec_item_507_vote_result_absorption_candidate_pool`.
+  Lesson: The SEC Item 5.07 vote-result absorption source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_...
+- `exp-20260618-006` `rejected_intraindustry_lead_lag_direction_stability_candidate_pool`: EV `+1.2216`, PnL `$17,008.11`, family `production_visible_free_ohlcv_relation_alpha`, trial `free_ohlcv_intraindustry_lead_lag_direction_stability_candidate_pool`.
+  Lesson: The PIT intra-industry lead-lag direction-stability source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, drawdown_drift_too_high). The relation gate was intended to keep only tickers where...
+- `exp-20260618-007` `blocked_missing_pit_historical_sec_filer_status_surface`: EV `+0.0000`, PnL `$0.00`, family `sec_filer_status_candidate_pool`, trial `post_leadlag_nonrepeat_surface_readiness`.
+  Lesson: The alpha idea is stronger than another SEC item-code retry, but the repository does not currently have the needed PIT historical 10-K/10-Q cover-page filer-status field. The SEC text snapshots are locally 8-K-oriente...
+- `exp-20260618-008` `rejected`: EV `+0.0000`, PnL `$0.00`, family `pilot_or_sleeve`, trial `pilot_or_sleeve`.
+  Lesson: The system drawdowns peak at 6-11% and recover quickly (V-shaped). At 5% DD threshold, the adaptive sizing fires during the recovery phase and reduces notional on entries that historically capture the bounce-back. Wit...
+- `exp-20260618-009` `rejected_sec_8k_item402_nonreliance_absorption_candidate_pool`: EV `-0.0588`, PnL `$-640.49`, family `production_visible_free_sec_submissions_restatement_nonreliance_candidate_pool`, trial `free_sec_submissions_8k_nonreliance_absorption_candidate_pool`.
+  Lesson: The SEC 8-K Item 4.02 non-reliance absorption source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows...
+- `exp-20260618-010` `rejected_advertising_efficiency_improvement_candidate_pool`: EV `+0.0266`, PnL `$2,867.45`, family `production_visible_free_sec_companyfacts_customer_acquisition_efficiency_candidate_pool`, trial `raw_sec_companyfacts_advertising_efficiency_candidate_pool`.
+  Lesson: The advertising efficiency improvement source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, drawdown_drift_too_high, target_concentration_failed, accepted_compression_ev_not_beaten, accept...
+- `exp-20260618-011` `blocked_no_gate4_ready_nonrepeat_alpha_surface`: EV `+0.0000`, PnL `$0.00`, family `nonrepeat_candidate_pool_data_edge_readiness`, trial `post_companyfacts_advertising_alpha_direction`.
+  Lesson: The free-data lanes with plausible edge have been worked hard. The remaining attractive ideas require new PIT structured data rather than another rule threshold: parsed ownership events, historical filer-status cover...
+- `exp-20260618-012` `blocked_no_gate4_ready_nonrepeat_alpha_surface`: EV `+0.0000`, PnL `$0.00`, family `nonrepeat_candidate_pool_data_edge_readiness`, trial `post_20260618_alpha_direction`.
+  Lesson: The strongest current alpha direction is still candidate-pool expansion through a new free data edge, but the repo lacks a Gate-4-ready non-repeat PIT surface today. The attractive next alpha is parsed 13G/13D holder-...
+- `exp-20260618-014` `blocked_missing_13g13d_primary_text_holder_stake_table`: EV `+0.0000`, PnL `$0.00`, family `unknown`, trial `unknown`.
+  Lesson: The repo has ample Schedule 13G/13D metadata in SEC submissions, including primary-document names, but the local filing-text caches do not hold those documents and no parsed holder/stake/action table is present.
+- `exp-20260618-015` `rejected_structured_sec_corporate_action_absorption_basket`: EV `+0.1664`, PnL `$3,311.62`, family `production_visible_free_sec_submissions_corporate_action_candidate_pool`, trial `free_sec_submissions_structured_corporate_action_absorption_basket`.
+  Lesson: The structured SEC corporate-action absorption basket did not clear Gate 4 (failed: accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). The fixed bundle combined business-combination/tender for...
 
 ## Highest-Signal Historical Records
 
@@ -118,9 +118,9 @@ facts before changing strategy behavior.
 - [`slot_or_ranking`](lessons/slot-or-ranking.md)
 - [`event_or_llm`](lessons/event-or-llm.md)
 - [`filter_or_gate`](lessons/filter-or-gate.md)
+- [`production_visible_free_ohlcv_relation_alpha`](lessons/production-visible-free-ohlcv-relation-alpha.md)
 - [`default_off_paper_adapter`](lessons/default-off-paper-adapter.md)
 - [`ticker_specific`](lessons/ticker-specific.md)
-- [`production_visible_free_ohlcv_relation_alpha`](lessons/production-visible-free-ohlcv-relation-alpha.md)
 
 ## Line Budget
 

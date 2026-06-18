@@ -6,9 +6,9 @@ complete state database.
 
 ## Source Snapshot
 
-- Strategy records counted: `1366`
+- Strategy records counted: `1387`
 - Accepted strategy records: `225`
-- History fingerprint: `8f8051e726bfb2c2`
+- History fingerprint: `6982f4c848402e0c`
 - Generated from committed experiment logs when using `--git-ref HEAD`.
 
 ## Exact State Sources
@@ -34,6 +34,8 @@ complete state database.
 
 ## Recent Accepted Strategy Records
 
+- `exp-20260608-008` `accepted_industry_stable_core_flow_shared_default_off_adapter`: EV `+0.1459`, PnL `$3,731.54`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_stable_core_flow_shared_default_off_adapter`.
+  Lesson: Core-flow confirmation removed enough pure industry beta to keep the fixed stable-leader source within Gate 4 bounds, and the shared helper reproduced the private replay lead without changing live orders or core ranki...
 - `exp-20260608-013` `accepted_narrow_range_compression_breakout_shared_default_off_adapter`: EV `+0.1608`, PnL `$2,248.98`, family `production_visible_free_ohlcv_candidate_pool`, trial `narrow_range_compression_breakout_shared_default_off_adapter`.
   Lesson: The shared helper reproduced the private replay lead because it kept the exact compression, range-expansion, volume, high-close, SPY-relative trend, next-open entry, 10-day exit, cost, top-1, cooldown, and same-ticker...
 - `exp-20260609-011` `accepted_shared_default_off_revision_surprise_low_extension_adapter`: EV `+0.0000`, PnL `$0.00`, family `analyst_revision_expectation_trajectory`, trial `analyst_revision_surprise_low_extension_candidate_pool`.
@@ -56,11 +58,11 @@ complete state database.
   Lesson: First accepted in the regime-router line. All guards clean: agg EV +0.0804 (+1.0%), PnL +$1,873, three windows improved zero regressed, in-cell AND incremental single-ticker share both 20.9% (TOST, well under 50% cap...
 - `exp-20260614-004` `accepted_default_off_sec_financial_report_rs20_leader_notional_1.15x`: EV `+0.1582`, PnL `$3,235.38`, family `position_cap_or_cap_release`, trial `position_cap_or_cap_release`.
   Lesson: The RS20 leader bucket appears to capture durable pre-entry institutional absorption inside the already accepted SEC financial-report T+1 drift queue. The support bucket had 24 closed trades across the three fixed win...
-- `exp-20260616-015` `accepted_paper_pending_forward_sbc_burden_improvement_shared_adapter`: EV `+0.9438`, PnL `$15,748.19`, family `production_visible_free_sec_companyfacts_dilution_quality_candidate_pool`, trial `sbc_burden_improvement_shared_default_off_adapter`.
-  Lesson: The shared helper reproduced the private replay lead because it kept the exact filed-date raw Companyfacts SBC/revenue/gross-profit gates, SPY-relative price confirmation, top-1/day selection, 10-day cooldown, next-op...
 
 ## Recent Production-Visible Or Default-Off Accepted Records
 
+- `exp-20260609-011` `accepted_shared_default_off_revision_surprise_low_extension_adapter`: EV `+0.0000`, PnL `$0.00`, family `analyst_revision_expectation_trajectory`, trial `analyst_revision_surprise_low_extension_candidate_pool`.
+  Lesson: The result reproduced the exp-20260608-011 positive lead because the shared helper preserved the exact same economic bundle: improving EPS estimates, positive surprise history, liquid breakout confirmation, and a sele...
 - `exp-20260609-027` `accepted_turn_of_month_liquid_leadership_shared_default_off_adapter`: EV `+0.2774`, PnL `$5,287.69`, family `production_visible_free_calendar_ohlcv_candidate_pool`, trial `turn_of_month_liquid_leadership_shared_default_off_adapter`.
   Lesson: The shared helper reproduced the private replay lead because it kept the exact calendar window, liquid sector-known universe, SPY-relative leadership, close/volume/volatility guards, same-ticker selected-core overlap...
 - `exp-20260610-005` `accepted_shared_default_off_accepted_helper_source_priority_allocator`: EV `+0.8971`, PnL `$14,502.52`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
@@ -79,8 +81,6 @@ complete state database.
   Lesson: First accepted in the regime-router line. All guards clean: agg EV +0.0804 (+1.0%), PnL +$1,873, three windows improved zero regressed, in-cell AND incremental single-ticker share both 20.9% (TOST, well under 50% cap...
 - `exp-20260614-004` `accepted_default_off_sec_financial_report_rs20_leader_notional_1.15x`: EV `+0.1582`, PnL `$3,235.38`, family `position_cap_or_cap_release`, trial `position_cap_or_cap_release`.
   Lesson: The RS20 leader bucket appears to capture durable pre-entry institutional absorption inside the already accepted SEC financial-report T+1 drift queue. The support bucket had 24 closed trades across the three fixed win...
-- `exp-20260616-015` `accepted_paper_pending_forward_sbc_burden_improvement_shared_adapter`: EV `+0.9438`, PnL `$15,748.19`, family `production_visible_free_sec_companyfacts_dilution_quality_candidate_pool`, trial `sbc_burden_improvement_shared_default_off_adapter`.
-  Lesson: The shared helper reproduced the private replay lead because it kept the exact filed-date raw Companyfacts SBC/revenue/gross-profit gates, SPY-relative price confirmation, top-1/day selection, 10-day cooldown, next-op...
 
 ## Current Research Queue Pointers
 

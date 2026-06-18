@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `85`
-- Accepted / rejected: `29` / `55`
-- Accept rate: `34.12%`
+- Experiments: `86`
+- Accepted / rejected: `29` / `56`
+- Accept rate: `33.72%`
 - Sum EV delta: `+41.3484`
 - Sum PnL delta: `$548,673.66`
-- Latest: `exp-20260605-012` `rejected_space_same_theme_activation_readiness` with EV `+0.0000` and PnL `$0.00`.
+- Latest: `exp-20260618-008` `rejected` with EV `+0.0000` and PnL `$0.00`.
 
 ## Retained Or Positive Evidence
 
@@ -30,8 +30,6 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260519-014` `rejected_ai_infra_pilot_segment_shadow`: EV `+2.4550`, PnL `$45,500.82`, family `pilot_or_sleeve`, trial `pilot_or_sleeve`.
-  Lesson: No current AI infra pilot segment bundle cleared the three-window candidate-pool shadow gate. Aggregate EV was positive in several variants, but every broad enough variant either regressed a window, worsened max drawd...
 - `exp-20260519-016` `rejected_state_surface_top3_sector_diversity_notional`: EV `+0.0000`, PnL `$0.00`, family `pilot_or_sleeve`, trial `pilot_or_sleeve`.
   Lesson: Failed Gate 4 under the canonical three-window state-surface paper protocol.
 - `exp-20260519-017` `rejected_state_surface_top3_sector_diversity_notional`: EV `+0.0000`, PnL `$0.00`, family `pilot_or_sleeve`, trial `pilot_or_sleeve`.
@@ -46,6 +44,8 @@ records before making strategy changes.
   Lesson: Liquidity-quality notional support did not clear the strict three-window broad-market materiality gate.
 - `exp-20260605-012` `rejected_space_same_theme_activation_readiness`: EV `+0.0000`, PnL `$0.00`, family `pilot_or_sleeve`, trial `space_forward_same_theme_activation_readiness`.
   Lesson: no_official_cohort_passed_same_theme_replacement_gate
+- `exp-20260618-008` `rejected`: EV `+0.0000`, PnL `$0.00`, family `pilot_or_sleeve`, trial `pilot_or_sleeve`.
+  Lesson: The system drawdowns peak at 6-11% and recover quickly (V-shaped). At 5% DD threshold, the adaptive sizing fires during the recovery phase and reduces notional on entries that historically capture the bounce-back. Wit...
 
 ## Retry Discipline
 
@@ -53,6 +53,8 @@ records before making strategy changes.
   Latest failure: `exp-20260605-012` no_official_cohort_passed_same_theme_replacement_gate
 - `pilot_or_sleeve` / `allocation_sizing_probe`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260425-023, exp-20260502-018`.
   Latest failure: `exp-20260502-018` Gate 4 failed. The best daily-range haircut did not improve EV in a majority of the three fixed windows and/or failed the required magnitude thresholds.
+- `pilot_or_sleeve` / `portfolio_equity_drawdown_notional_scale:_when_equity_drawdown_exceeds_threshold,_apply_sub_1.0_notional_multiplier_to_new_entries`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260618-008`.
+  Latest failure: `exp-20260618-008` No AGENTS.md Gate 4 acceptance condition was met.
 - `pilot_or_sleeve` / `space_data_vendor_breakout_risk_scalar`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260511-019, exp-20260511-031`.
 - `pilot_or_sleeve` / `space_fast_5d_satcom_trend_only_pool_membership`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260515-015, exp-20260515-029`.
   Latest failure: `exp-20260515-029` Gate 4 failed: current-stack fast-5d satcom trend-only candidate membership did not improve the fixed three-window protocol without regression.
@@ -62,14 +64,12 @@ records before making strategy changes.
   Latest failure: `exp-20260511-026` No IRDM/VSAT/SATS risk scalar cleared the pre-registered three-window gate versus the accepted exp-20260511-021 Space forward stack.
 - `pilot_or_sleeve` / `space_vsat_forward_candidate_risk_scalar`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260514-014, exp-20260514-015`.
   Latest failure: `exp-20260514-015` No tested VSAT-only forward-candidate scalar improved aggregate EV/PnL across the three windows without a window-level EV regression, drawdown or survival violation, or zero-adjustment/zero-trade result.
-- `pilot_or_sleeve` / `top3_sector_diversity_rank_notional_profile`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260519-016, exp-20260519-017`.
-  Latest failure: `exp-20260519-017` Failed Gate 4 under the canonical three-window state-surface paper protocol.
 
 ## Recent Raw Records
 
-- `exp-20260520-002` source `experiments/logs/exp-20260520-002.json`.
 - `exp-20260520-003` source `experiments/logs/exp-20260520-003.json`.
 - `exp-20260520-004` source `experiments/logs/exp-20260520-004.json`.
 - `exp-20260522-010` source `experiments/logs/exp-20260522-010.json`.
 - `exp-20260524-030` source `experiments/logs/exp-20260524-030.json`.
 - `exp-20260605-012` source `experiments/logs/exp-20260605-012.json`.
+- `exp-20260618-008` source `experiments/logs/exp-20260618-008.json`.
