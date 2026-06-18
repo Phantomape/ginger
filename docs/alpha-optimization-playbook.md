@@ -359,6 +359,13 @@ holder/stake/action parsing, offering economics text, historical 10-K/10-Q
 filer-status cover-page fields, full-window options chains, borrow-fee history,
 and customer/supplier/payment-term disclosures.
 
+The follow-up `exp-20260618-019` closed the simple 13D Item-4 phrase-classifier
+escape hatch. A fixed active strategic/governance Item-4 text gate plus
+same-day SPY-relative absorption produced only 6 paper trades and failed Gate 4:
+aggregate EV `-0.0145`, PnL `-$368`, `mid_weak` and `old_thin` regressed, and
+positive contribution concentrated in WEX. Treat deterministic Item-4 phrase
+matching as ownership context, not an executable candidate-pool signal.
+
 ## Detail Sources
 
 Generated mechanism memory lives in `docs/lessons/*.md`; exact facts live in
@@ -962,10 +969,15 @@ production-visible field:
   drift is real but small (~0.5-1.3% median forward-10d SPY-excess) and
   right-tail-negative in `old_thin` (where structured-XML coverage is only 51%),
   while outside-activist 13D shows negative medians on the broad large-cap
-  universe. A valid retry needs 13G/A stake-change DIRECTION, 13D Item-4
-  purpose-text intent classification, repaired pre-2025 `old_thin` coverage, or
-  closed forward replacement-value rows — not a threshold sweep of the parsed
-  fields. Keep 13D/13G as ownership/crowding context until then;
+  universe. `exp-20260618-019` then rejected a fixed 13D Item-4 active
+  strategic/governance phrase classifier plus price absorption: aggregate EV
+  `-0.0145`, PnL `-$368`, only 6 trades, `mid_weak`/`old_thin` regression, and
+  target concentration failure. A valid retry needs 13G/A stake-change
+  DIRECTION, campaign/board-seat outcomes or other materially richer Item-4
+  provenance, repaired pre-2025 `old_thin` coverage, or closed forward
+  replacement-value rows — not a threshold, phrase-list, holder-type, event-age,
+  top-N, hold, cooldown, or notional sweep of the parsed fields. Keep 13D/13G
+  as ownership/crowding context until then;
 - missing archive/text availability as an alpha field.
 
 ## Update Discipline
