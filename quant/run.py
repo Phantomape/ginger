@@ -574,6 +574,142 @@ def _resolve_live_portfolio_value(open_positions, features_dict, portfolio_value
     return portfolio_value
 
 
+def _step5_position_context(
+    *,
+    open_positions,
+    features_dict,
+    ohlcv_dict,
+    universe,
+    pilot_universe,
+    data_universe,
+    market_regime,
+    ohlcv_warehouse_summary,
+    today,
+    today_iso,
+):
+    """STEP 5 — per-ticker exit/position context + trend_signals_dict assembly.
+
+    Builds the LLM-facing trend_signals view (with prev_close and
+    high_since_entry corrections), persists trend_signals_<date>.json
+    (quant_signals is attached later after Step 6 enrichment), and writes the
+    read-only exit-lifecycle shadow log. Returns trend_signals_dict.
+    """
+    from trend_signals import compute_position_context, save_trend_signals
+
+    _print_section("STEP 5 — Position context")
+    held_positions_by_ticker = positions_by_ticker(open_positions, positive_only=True)
+
+    # Build trend_signals dict with key names that llm_advisor.build_prompt() expects:
+    #   breakout_20d → breakout,  breakdown_20d → breakdown,
+    #   high_20d     → 20d_high,  low_20d       → 20d_low
+    trend_signals_signals = {}
+    for ticker, f in features_dict.items():
+        if f is None:
+            continue
+        sig = {
+            "close":            f["close"],
+            "daily_high":       f.get("daily_high"),
+            "20d_high":         f["high_20d"],
+            "20d_low":          f["low_20d"],
+            "breakout":         f["breakout_20d"],
+            "breakdown":        f["breakdown_20d"],
+            "atr":              f.get("atr"),
+            # Bonus keys for LLM context (not required by build_prompt, but useful)
+            "above_200ma":      f.get("above_200ma"),
+            "momentum_10d_pct": f.get("momentum_10d_pct"),
+            "volume_spike":     f.get("volume_spike"),
+            "trend_score":      f.get("trend_score"),
+            "days_to_earnings": f.get("days_to_earnings"),
+        }
+        # Compute prev_close for daily_return_pct (post-earnings gap detection).
+        # Required by LLM rules: "daily_return_pct > +8% → REDUCE 50%", "< -5% → EXIT".
+        # Without this the LLM cannot distinguish a single-day gap from cumulative PnL.
+        ohlcv = ohlcv_dict.get(ticker)
+        prev_close = None
+        if ohlcv is not None and len(ohlcv) >= 2:
+            try:
+                prev_val   = ohlcv['Close'].iloc[-2]
+                prev_close = float(prev_val.item() if hasattr(prev_val, 'item') else prev_val)
+            except Exception:
+                pass
+
+        # Compute high_since_entry for accurate trailing stop high-water mark.
+        # Bug: without this, trailing stop uses 20d high, missing peaks from >20 days ago.
+        # Example: stock peaked at $150 (35d ago), high_20d=$142 → trailing=$130.64 (wrong);
+        # high_since_entry=$150 → trailing=$138.00 (correct, would have triggered).
+        high_since_entry = None
+        if open_positions and ohlcv is not None:
+            pos = held_positions_by_ticker.get(str(ticker).upper())
+            entry_date_str = pos.get('entry_date') if pos else None
+            if entry_date_str:
+                try:
+                    entry_dt    = pd.Timestamp(entry_date_str)
+                    data_since  = ohlcv[ohlcv.index >= entry_dt]
+                    if not data_since.empty:
+                        raw_high         = data_since['High'].max()
+                        high_since_entry = float(
+                            raw_high.item() if hasattr(raw_high, 'item') else raw_high
+                        )
+                except Exception:
+                    pass
+
+        # Add exit-level position context for held tickers
+        pos_ctx = compute_position_context(
+            ticker, f["close"], open_positions,
+            atr=f.get("atr"),
+            high_20d=f.get("high_20d"),
+            high_since_entry=high_since_entry,
+            prev_close=prev_close,
+            daily_high=f.get("daily_high"),
+        )
+        if pos_ctx:
+            sig["position"] = pos_ctx
+            log.info(f"{ticker}: position context added "
+                     f"(urgency={pos_ctx['exit_signals']['high_urgency']})")
+
+        trend_signals_signals[ticker] = sig
+
+    trend_signals_dict = {
+        "generated_at": datetime.now().isoformat(),
+        "asof_date":    datetime.now().strftime("%Y-%m-%d"),
+        "universe":     universe,
+        "pilot_universe": pilot_universe,
+        "data_universe": data_universe,
+        "market_regime": market_regime,
+        "ohlcv_warehouse": ohlcv_warehouse_summary,
+        "signals":      trend_signals_signals,
+    }
+
+    # Save trend signals JSON (backward-compatible output)
+    # quant_signals will be attached after Step 6 enrichment
+    trend_output = str(daily_artifact_path("trend_signals", today))
+    save_trend_signals(trend_signals_dict, trend_output)
+
+    # Exit lifecycle shadow log (read-only attribution, exp-20260531-020)
+    try:
+        from exit_lifecycle_shadow_log import (
+            build_exit_lifecycle_snapshot,
+            persist_exit_lifecycle_snapshot,
+        )
+        _exit_snapshot = build_exit_lifecycle_snapshot(
+            as_of=today_iso,
+            trend_signals_signals=trend_signals_signals,
+            open_positions=open_positions,
+        )
+        _exit_log_path = persist_exit_lifecycle_snapshot(_exit_snapshot)
+        if _exit_snapshot.get("advisory_event_count", 0) > 0:
+            log.info(
+                "Exit lifecycle shadow log: %d positions, %d advisory events -> %s",
+                _exit_snapshot.get("position_count", 0),
+                _exit_snapshot.get("advisory_event_count", 0),
+                _exit_log_path,
+            )
+    except Exception as _exit_exc:
+        log.warning("Exit lifecycle shadow log unavailable: %s", _exit_exc)
+
+    return trend_signals_dict
+
+
 def main():
     today = datetime.now().strftime("%Y%m%d")
     today_iso = datetime.now().date().isoformat()
@@ -628,7 +764,6 @@ def main():
     from data_layer         import get_universe, get_ohlcv, get_ohlcv_many, get_earnings_data
     from ohlcv_warehouse    import DEFAULT_WAREHOUSE_PATH, upsert_ohlcv_frames
     from feature_layer      import compute_features
-    from trend_signals      import compute_position_context, save_trend_signals
     from signal_engine      import generate_signals, rank_signals_for_allocation
     from risk_engine        import enrich_signals
     from price_asof_guard   import latest_ohlcv_dates
@@ -1422,116 +1557,18 @@ def main():
     )
 
     # ── Step 5: Position context (exit signals for held tickers) ─────────────
-    _print_section("STEP 5 — Position context")
-    held_positions_by_ticker = positions_by_ticker(open_positions, positive_only=True)
-
-    # Build trend_signals dict with key names that llm_advisor.build_prompt() expects:
-    #   breakout_20d → breakout,  breakdown_20d → breakdown,
-    #   high_20d     → 20d_high,  low_20d       → 20d_low
-    trend_signals_signals = {}
-    for ticker, f in features_dict.items():
-        if f is None:
-            continue
-        sig = {
-            "close":            f["close"],
-            "daily_high":       f.get("daily_high"),
-            "20d_high":         f["high_20d"],
-            "20d_low":          f["low_20d"],
-            "breakout":         f["breakout_20d"],
-            "breakdown":        f["breakdown_20d"],
-            "atr":              f.get("atr"),
-            # Bonus keys for LLM context (not required by build_prompt, but useful)
-            "above_200ma":      f.get("above_200ma"),
-            "momentum_10d_pct": f.get("momentum_10d_pct"),
-            "volume_spike":     f.get("volume_spike"),
-            "trend_score":      f.get("trend_score"),
-            "days_to_earnings": f.get("days_to_earnings"),
-        }
-        # Compute prev_close for daily_return_pct (post-earnings gap detection).
-        # Required by LLM rules: "daily_return_pct > +8% → REDUCE 50%", "< -5% → EXIT".
-        # Without this the LLM cannot distinguish a single-day gap from cumulative PnL.
-        ohlcv = ohlcv_dict.get(ticker)
-        prev_close = None
-        if ohlcv is not None and len(ohlcv) >= 2:
-            try:
-                prev_val   = ohlcv['Close'].iloc[-2]
-                prev_close = float(prev_val.item() if hasattr(prev_val, 'item') else prev_val)
-            except Exception:
-                pass
-
-        # Compute high_since_entry for accurate trailing stop high-water mark.
-        # Bug: without this, trailing stop uses 20d high, missing peaks from >20 days ago.
-        # Example: stock peaked at $150 (35d ago), high_20d=$142 → trailing=$130.64 (wrong);
-        # high_since_entry=$150 → trailing=$138.00 (correct, would have triggered).
-        high_since_entry = None
-        if open_positions and ohlcv is not None:
-            pos = held_positions_by_ticker.get(str(ticker).upper())
-            entry_date_str = pos.get('entry_date') if pos else None
-            if entry_date_str:
-                try:
-                    entry_dt    = pd.Timestamp(entry_date_str)
-                    data_since  = ohlcv[ohlcv.index >= entry_dt]
-                    if not data_since.empty:
-                        raw_high         = data_since['High'].max()
-                        high_since_entry = float(
-                            raw_high.item() if hasattr(raw_high, 'item') else raw_high
-                        )
-                except Exception:
-                    pass
-
-        # Add exit-level position context for held tickers
-        pos_ctx = compute_position_context(
-            ticker, f["close"], open_positions,
-            atr=f.get("atr"),
-            high_20d=f.get("high_20d"),
-            high_since_entry=high_since_entry,
-            prev_close=prev_close,
-            daily_high=f.get("daily_high"),
-        )
-        if pos_ctx:
-            sig["position"] = pos_ctx
-            log.info(f"{ticker}: position context added "
-                     f"(urgency={pos_ctx['exit_signals']['high_urgency']})")
-
-        trend_signals_signals[ticker] = sig
-
-    trend_signals_dict = {
-        "generated_at": datetime.now().isoformat(),
-        "asof_date":    datetime.now().strftime("%Y-%m-%d"),
-        "universe":     universe,
-        "pilot_universe": pilot_universe,
-        "data_universe": data_universe,
-        "market_regime": market_regime,
-        "ohlcv_warehouse": ohlcv_warehouse_summary,
-        "signals":      trend_signals_signals,
-    }
-
-    # Save trend signals JSON (backward-compatible output)
-    # quant_signals will be attached after Step 6 enrichment
-    trend_output = str(daily_artifact_path("trend_signals", today))
-    save_trend_signals(trend_signals_dict, trend_output)
-
-    # Exit lifecycle shadow log (read-only attribution, exp-20260531-020)
-    try:
-        from exit_lifecycle_shadow_log import (
-            build_exit_lifecycle_snapshot,
-            persist_exit_lifecycle_snapshot,
-        )
-        _exit_snapshot = build_exit_lifecycle_snapshot(
-            as_of=today_iso,
-            trend_signals_signals=trend_signals_signals,
-            open_positions=open_positions,
-        )
-        _exit_log_path = persist_exit_lifecycle_snapshot(_exit_snapshot)
-        if _exit_snapshot.get("advisory_event_count", 0) > 0:
-            log.info(
-                "Exit lifecycle shadow log: %d positions, %d advisory events -> %s",
-                _exit_snapshot.get("position_count", 0),
-                _exit_snapshot.get("advisory_event_count", 0),
-                _exit_log_path,
-            )
-    except Exception as _exit_exc:
-        log.warning("Exit lifecycle shadow log unavailable: %s", _exit_exc)
+    trend_signals_dict = _step5_position_context(
+        open_positions=open_positions,
+        features_dict=features_dict,
+        ohlcv_dict=ohlcv_dict,
+        universe=universe,
+        pilot_universe=pilot_universe,
+        data_universe=data_universe,
+        market_regime=market_regime,
+        ohlcv_warehouse_summary=ohlcv_warehouse_summary,
+        today=today,
+        today_iso=today_iso,
+    )
 
     # ── Step 6: Quant signals ─────────────────────────────────────────────────
     _print_section("STEP 6 — Quant signals")
