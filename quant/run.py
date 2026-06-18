@@ -574,6 +574,138 @@ def _resolve_live_portfolio_value(open_positions, features_dict, portfolio_value
     return portfolio_value
 
 
+def _persist_estimate_revision_ledger_step(today_iso):
+    """STEP 3 — persist the forward estimate-revision ledger (failure-tolerant)."""
+    try:
+        summary = persist_estimate_revision_ledger(
+            as_of=today_iso,
+            data_dir="data",
+            output_dir="data/non_ohlcv",
+            # Current-day quant_signals are written later in the pipeline.
+            # Keep run.py's daily artifact free of stale same-day matches.
+            match_daily_signals=False,
+        )
+        log.info(
+            "Estimate revision ledger: rows=%s usable=%s up=%s down=%s",
+            summary.get("row_count"),
+            summary.get("estimate_revision_usable_rows"),
+            summary.get("up_revision_rows"),
+            summary.get("down_revision_rows"),
+        )
+        return summary
+    except Exception as e:
+        log.warning(f"Estimate revision ledger unavailable: {e}")
+        return {
+            "status": "failed",
+            "as_of_date": today_iso,
+            "error": str(e),
+            "production_impact": {
+                "shared_policy_changed": False,
+                "backtester_adapter_changed": False,
+                "run_adapter_changed": True,
+                "replay_only": False,
+                "alters_signal_generation": False,
+                "alters_candidate_ranking": False,
+                "alters_sizing": False,
+                "alters_orders": False,
+                "scope": "default_off_forward_estimate_revision_data_ledger_failed",
+            },
+        }
+
+
+def _build_daily_non_ohlcv_snapshot(
+    *,
+    today,
+    today_iso,
+    data_universe,
+    options_ingest_tickers,
+    option_underlying_prices,
+    non_ohlcv_catchup_summary,
+):
+    """STEP 3 — daily non-OHLCV coverage (options / SEC / form4) snapshot.
+
+    Returns the snapshot dict (with a coverage_manifest). On failure returns a
+    status="failed" stub carrying the expected artifact paths so downstream
+    readers stay shape-stable.
+    """
+    from backfill_non_ohlcv import ensure_non_ohlcv_coverage
+    from daily_non_ohlcv_snapshot import persist_daily_non_ohlcv_snapshots
+
+    try:
+        non_ohlcv_daily_summary = ensure_non_ohlcv_coverage(
+            start=today_iso,
+            end=today_iso,
+            profile="daily",
+            only_missing=False,
+            universe=data_universe,
+            refresh_earnings=False,
+            refresh_options=True,
+            options_tickers=options_ingest_tickers,
+            option_underlying_prices=option_underlying_prices,
+            options_max_expirations=2,
+            options_max_strikes_per_side=12,
+            options_max_tickers=OPTIONS_MAX_TICKERS,
+            logger_obj=log,
+        )
+        non_ohlcv_snapshot = (
+            non_ohlcv_daily_summary.get("daily_snapshots", {}).get(today_iso)
+            or persist_daily_non_ohlcv_snapshots(
+                as_of=today_iso,
+                logger=log,
+                refresh_sec_submissions=False,
+                refresh_form4_submissions=False,
+            )
+        )
+        non_ohlcv_snapshot["coverage_manifest"] = {
+            "daily_summary": {
+                key: non_ohlcv_daily_summary.get(key)
+                for key in (
+                    "profile",
+                    "days_total",
+                    "days_generated",
+                    "days_recorded_existing",
+                    "days_failed",
+                    "errors",
+                )
+            },
+            "catchup_summary": {
+                key: non_ohlcv_catchup_summary.get(key)
+                for key in (
+                    "status",
+                    "days_total",
+                    "days_generated",
+                    "days_recorded_existing",
+                    "days_failed",
+                    "errors",
+                    "latest_complete_trade_date_before",
+                )
+            },
+        }
+        return non_ohlcv_snapshot
+    except Exception as e:
+        log.warning(f"Daily non-OHLCV snapshot unavailable: {e}")
+        return {
+            "status": "failed",
+            "asof_date": today_iso,
+            "error": str(e),
+            "paths": {
+                "form4_transactions": f"data/non_ohlcv/form4_transactions_{today}.jsonl",
+                "sec_filing_events": f"data/non_ohlcv/sec_filing_events_{today}.jsonl",
+                "sec_filing_text": f"data/non_ohlcv/sec_filing_text_{today}.jsonl",
+            },
+            "production_impact": {
+                "alters_signal_generation": False,
+                "alters_candidate_ranking": False,
+                "alters_sizing": False,
+                "alters_orders": False,
+            },
+            "coverage_manifest": {
+                "catchup_summary": non_ohlcv_catchup_summary,
+                "daily_error": str(e),
+            },
+        }
+
+
 def _step5_position_context(
     *,
     open_positions,
@@ -787,12 +919,7 @@ def main():
     )
     from market_context import build_readonly_market_state_context
     from market_state_analysis import build_market_state_snapshot
-    from daily_non_ohlcv_snapshot import persist_daily_non_ohlcv_snapshots
-    from kova_data_sidecar import persist_kova_data_snapshot
-    from backfill_non_ohlcv import (
-        catch_up_missing_non_ohlcv,
-        ensure_non_ohlcv_coverage,
-    )
+    from backfill_non_ohlcv import catch_up_missing_non_ohlcv
     from crypto_sleeve      import (
         build_crypto_sleeve_advice,
         empty_crypto_sleeve_advice,
@@ -1418,113 +1545,16 @@ def main():
         _deferred_after_prompt.append(("broad_earnings_merge", _broad_earnings_job))
     else:
         _broad_earnings_job()
-    try:
-        estimate_revision_summary = persist_estimate_revision_ledger(
-            as_of=today_iso,
-            data_dir="data",
-            output_dir="data/non_ohlcv",
-            # Current-day quant_signals are written later in the pipeline.
-            # Keep run.py's daily artifact free of stale same-day matches.
-            match_daily_signals=False,
-        )
-        log.info(
-            "Estimate revision ledger: rows=%s usable=%s up=%s down=%s",
-            estimate_revision_summary.get("row_count"),
-            estimate_revision_summary.get("estimate_revision_usable_rows"),
-            estimate_revision_summary.get("up_revision_rows"),
-            estimate_revision_summary.get("down_revision_rows"),
-        )
-    except Exception as e:
-        log.warning(f"Estimate revision ledger unavailable: {e}")
-        estimate_revision_summary = {
-            "status": "failed",
-            "as_of_date": today_iso,
-            "error": str(e),
-            "production_impact": {
-                "shared_policy_changed": False,
-                "backtester_adapter_changed": False,
-                "run_adapter_changed": True,
-                "replay_only": False,
-                "alters_signal_generation": False,
-                "alters_candidate_ranking": False,
-                "alters_sizing": False,
-                "alters_orders": False,
-                "scope": "default_off_forward_estimate_revision_data_ledger_failed",
-            },
-        }
+    estimate_revision_summary = _persist_estimate_revision_ledger_step(today_iso)
 
-    try:
-        non_ohlcv_daily_summary = ensure_non_ohlcv_coverage(
-            start=today_iso,
-            end=today_iso,
-            profile="daily",
-            only_missing=False,
-            universe=data_universe,
-            refresh_earnings=False,
-            refresh_options=True,
-            options_tickers=options_ingest_tickers,
-            option_underlying_prices=option_underlying_prices,
-            options_max_expirations=2,
-            options_max_strikes_per_side=12,
-            options_max_tickers=OPTIONS_MAX_TICKERS,
-            logger_obj=log,
-        )
-        non_ohlcv_snapshot = (
-            non_ohlcv_daily_summary.get("daily_snapshots", {}).get(today_iso)
-            or persist_daily_non_ohlcv_snapshots(
-                as_of=today_iso,
-                logger=log,
-                refresh_sec_submissions=False,
-                refresh_form4_submissions=False,
-            )
-        )
-        non_ohlcv_snapshot["coverage_manifest"] = {
-            "daily_summary": {
-                key: non_ohlcv_daily_summary.get(key)
-                for key in (
-                    "profile",
-                    "days_total",
-                    "days_generated",
-                    "days_recorded_existing",
-                    "days_failed",
-                    "errors",
-                )
-            },
-            "catchup_summary": {
-                key: non_ohlcv_catchup_summary.get(key)
-                for key in (
-                    "status",
-                    "days_total",
-                    "days_generated",
-                    "days_recorded_existing",
-                    "days_failed",
-                    "errors",
-                    "latest_complete_trade_date_before",
-                )
-            },
-        }
-    except Exception as e:
-        log.warning(f"Daily non-OHLCV snapshot unavailable: {e}")
-        non_ohlcv_snapshot = {
-            "status": "failed",
-            "asof_date": today_iso,
-            "error": str(e),
-            "paths": {
-                "form4_transactions": f"data/non_ohlcv/form4_transactions_{today}.jsonl",
-                "sec_filing_events": f"data/non_ohlcv/sec_filing_events_{today}.jsonl",
-                "sec_filing_text": f"data/non_ohlcv/sec_filing_text_{today}.jsonl",
-            },
-            "production_impact": {
-                "alters_signal_generation": False,
-                "alters_candidate_ranking": False,
-                "alters_sizing": False,
-                "alters_orders": False,
-            },
-            "coverage_manifest": {
-                "catchup_summary": non_ohlcv_catchup_summary,
-                "daily_error": str(e),
-            },
-        }
+    non_ohlcv_snapshot = _build_daily_non_ohlcv_snapshot(
+        today=today,
+        today_iso=today_iso,
+        data_universe=data_universe,
+        options_ingest_tickers=options_ingest_tickers,
+        option_underlying_prices=option_underlying_prices,
+        non_ohlcv_catchup_summary=non_ohlcv_catchup_summary,
+    )
 
     # ── Step 4: Feature Layer ─────────────────────────────────────────────────
     _print_section("STEP 4 — Feature layer")
