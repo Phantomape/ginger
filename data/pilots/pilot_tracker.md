@@ -1,4 +1,4 @@
-# Pilot tracker - as of 2026-06-17T03:35:32+00:00
+# Pilot tracker - as of 2026-06-18T03:26:17+00:00
 
 Per-position book: $10,000. Read-only; manual execution.
 Graduate/kill rule (pre-committed): >= 20 closed AND sum rv_vs_SPY > 0 AND book DD < 15%.
@@ -28,8 +28,8 @@ Manual stop overlay: cut a held position at -15% from entry (does not change the
 - _no position / no signal today_
 
 ### Fundamental growth + RS  (`fundamental_growth_rs`, max_concurrent=None)
-- **BUY (next open)** DDOG (signal None); time exit after ? trading days held; rank=None score=None
-- hold AMD: day 6/10 (4 left); entry 503.70, last 507.29 (+0.7%)
-- hold CRDO: day 2/10 (8 left); entry 270.13, last 239.18 (-11.5%)
-- hold MU: day 0/10 (10 left); entry 1099.93, last 1020.76 (-7.2%)
+- hold AMD: day 7/10 (3 left); entry 503.70, last 512.48 (+1.7%)
+- hold CRDO: day 3/10 (7 left); entry 270.13, last 249.33 (-7.7%)
+- hold MU: day 1/10 (9 left); entry 1099.93, last 1043.19 (-5.2%)
+- hold DDOG: day 0/10 (10 left); entry 230.19, last 226.63 (-1.6%)
 
