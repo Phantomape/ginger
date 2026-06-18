@@ -509,6 +509,71 @@ def _kova_sidecar_step(
         }
 
 
+def _step2_market_regime():
+    """STEP 2 — compute the SPY/QQQ market regime (UNKNOWN on any failure)."""
+    _print_section("STEP 2 — Market regime")
+    try:
+        from regime import compute_market_regime
+        market_regime = compute_market_regime()
+        log.info(f"Regime: {market_regime['regime']}")
+        return market_regime
+    except Exception as e:
+        log.warning(f"Regime unavailable: {e}")
+        return {"regime": "UNKNOWN", "note": str(e), "indices": {}}
+
+
+def _compute_feature_layer(data_universe, ohlcv_dict, earnings_dict):
+    """STEP 4 — compute technical/event features for every data-universe ticker."""
+    from feature_layer import compute_features
+
+    features_dict = {}
+    for ticker in data_universe:
+        features_dict[ticker] = compute_features(
+            ticker, ohlcv_dict[ticker], earnings_dict[ticker]
+        )
+    ok = sum(1 for f in features_dict.values() if f)
+    log.info(f"Features ready: {ok}/{len(data_universe)} tickers")
+    return features_dict
+
+
+def _resolve_live_portfolio_value(open_positions, features_dict, portfolio_value, stored_pv):
+    """STEP 4 — derive live portfolio value from positions + current prices.
+
+    If cash_usd is omitted, cash is derived from portfolio_value_usd - live
+    equity, avoiding daily manual cash maintenance while keeping sizing
+    accurate. Returns the (possibly updated) portfolio value; falls back to the
+    stored value when there are no positions.
+    """
+    from portfolio_accounting import resolve_portfolio_accounting
+
+    if has_account_positions(open_positions, positive_only=True):
+        current_px = {
+            t: f["close"] for t, f in features_dict.items()
+            if f and f.get("close") is not None
+        }
+        accounting = resolve_portfolio_accounting(
+            open_positions,
+            current_px,
+            stored_portfolio_value=stored_pv,
+            logger=log,
+        )
+        if accounting.get("portfolio_value_usd"):
+            portfolio_value = accounting["portfolio_value_usd"]
+            log.info(
+                "Portfolio value: $%s (%s; equity=$%s cash=$%s)",
+                f"{portfolio_value:,.0f}",
+                accounting["cash_source"],
+                f"{accounting['equity_market_value_usd']:,.0f}",
+                (
+                    f"{accounting['cash_usd']:,.0f}"
+                    if accounting.get("cash_usd") is not None else "n/a"
+                ),
+            )
+    elif portfolio_value:
+        log.info(f"Portfolio value: ${portfolio_value:,.0f} (stored, no positions)")
+    return portfolio_value
+
+
 def main():
     today = datetime.now().strftime("%Y%m%d")
     today_iso = datetime.now().date().isoformat()
@@ -599,7 +664,6 @@ def main():
         load_crypto_config,
     )
     from universe_adapter   import save_universe_state_report, universe_segments_as_of
-    from portfolio_accounting import resolve_portfolio_accounting
     from candidate_competition_logger import summarize_pilot_competition
     from form4_event_queue import (
         build_forward_queue_from_transactions,
@@ -1164,14 +1228,7 @@ def main():
         _reference_cache_job()
 
     # ── Step 2: Market Regime ─────────────────────────────────────────────────
-    _print_section("STEP 2 — Market regime")
-    try:
-        from regime import compute_market_regime
-        market_regime = compute_market_regime()
-        log.info(f"Regime: {market_regime['regime']}")
-    except Exception as e:
-        log.warning(f"Regime unavailable: {e}")
-        market_regime = {"regime": "UNKNOWN", "note": str(e), "indices": {}}
+    market_regime = _step2_market_regime()
 
     # ── Step 3: OHLCV + Earnings (batched OHLCV + cached fallbacks) ─────────
     _print_section("STEP 3 — OHLCV + earnings data")
@@ -1359,43 +1416,10 @@ def main():
         _kova_job()
 
     non_ohlcv_snapshot["estimate_revision_ledger"] = estimate_revision_summary
-    features_dict = {}
-    for ticker in data_universe:
-        features_dict[ticker] = compute_features(
-            ticker, ohlcv_dict[ticker], earnings_dict[ticker]
-        )
-    ok = sum(1 for f in features_dict.values() if f)
-    log.info(f"Features ready: {ok}/{len(data_universe)} tickers")
-
-    # ── Live portfolio value ─────────────────────────────────────────────────
-    # If cash_usd is omitted, derive it from portfolio_value_usd - live equity.
-    # This avoids daily manual cash maintenance while keeping sizing accurate.
-    if has_account_positions(open_positions, positive_only=True):
-        _current_px = {
-            t: f["close"] for t, f in features_dict.items()
-            if f and f.get("close") is not None
-        }
-        _accounting = resolve_portfolio_accounting(
-            open_positions,
-            _current_px,
-            stored_portfolio_value=_stored_pv,
-            logger=log,
-        )
-        if _accounting.get("portfolio_value_usd"):
-            portfolio_value = _accounting["portfolio_value_usd"]
-            log.info(
-                "Portfolio value: $%s (%s; equity=$%s cash=$%s)",
-                f"{portfolio_value:,.0f}",
-                _accounting["cash_source"],
-                f"{_accounting['equity_market_value_usd']:,.0f}",
-                (
-                    f"{_accounting['cash_usd']:,.0f}"
-                    if _accounting.get("cash_usd") is not None else "n/a"
-                ),
-            )
-    else:
-        if portfolio_value:
-            log.info(f"Portfolio value: ${portfolio_value:,.0f} (stored, no positions)")
+    features_dict = _compute_feature_layer(data_universe, ohlcv_dict, earnings_dict)
+    portfolio_value = _resolve_live_portfolio_value(
+        open_positions, features_dict, portfolio_value, _stored_pv
+    )
 
     # ── Step 5: Position context (exit signals for held tickers) ─────────────
     _print_section("STEP 5 — Position context")
