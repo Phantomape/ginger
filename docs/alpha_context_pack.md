@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1387`
-- Raw records loaded by meta report: `2017`
-- History fingerprint: `6982f4c848402e0c`
+- Strategy records counted: `1388`
+- Raw records loaded by meta report: `2019`
+- History fingerprint: `cd43f913f27f935c`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -63,8 +63,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260618-002` `rejected_sec_business_combination_absorption_candidate_pool`: EV `+0.0734`, PnL `$1,568.03`, family `production_visible_free_sec_submissions_business_combination_candidate_pool`, trial `free_sec_submissions_business_combination_absorption_candidate_pool`.
-  Lesson: The SEC business-combination/tender absorption source did not clear Gate 4 (failed: accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_p...
 - `exp-20260618-003` `rejected_sec_8k_item102_contract_termination_absorption_candidate_pool`: EV `+0.1190`, PnL `$1,642.79`, family `production_visible_free_sec_submissions_contract_termination_candidate_pool`, trial `free_sec_submissions_8k_contract_termination_absorption_candidate_pool`.
   Lesson: The SEC 8-K Item 1.02 contract-termination absorption source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted...
 - `exp-20260618-004` `rejected_sec_item_507_vote_result_absorption_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `production_visible_sec_text_governance_vote_result_candidate_pool`, trial `sec_item_507_vote_result_absorption_candidate_pool`.
@@ -87,6 +85,8 @@ facts before changing strategy behavior.
   Lesson: The repo has ample Schedule 13G/13D metadata in SEC submissions, including primary-document names, but the local filing-text caches do not hold those documents and no parsed holder/stake/action table is present.
 - `exp-20260618-015` `rejected_structured_sec_corporate_action_absorption_basket`: EV `+0.1664`, PnL `$3,311.62`, family `production_visible_free_sec_submissions_corporate_action_candidate_pool`, trial `free_sec_submissions_structured_corporate_action_absorption_basket`.
   Lesson: The structured SEC corporate-action absorption basket did not clear Gate 4 (failed: accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). The fixed bundle combined business-combination/tender for...
+- `exp-20260618-017` `rejected_parsed_13d_stake_increase_absorption_candidate_pool`: EV `+0.0210`, PnL `$405.94`, family `production_visible_sec_ownership_holder_stake_candidate_pool`, trial `parsed_13d_amend_stake_increase_absorption_candidate_pool`.
+  Lesson: The parsed 13D/A stake-increase absorption source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, target_sample_too_small, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_be...
 
 ## Highest-Signal Historical Records
 
