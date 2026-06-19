@@ -346,6 +346,74 @@ def parse_schedule_xml(raw_xml: str) -> dict[str, Any] | None:
     }
 
 
+def parse_13ga_direction_fields(raw_xml: str) -> dict[str, Any] | None:
+    """Parse the 13G/A amendment fields needed for stake-change DIRECTION.
+
+    The cover-page ``coverPageHeaderReportingPersonDetails`` block on a 13G/A is
+    frequently empty of a percent; the authoritative current beneficial-ownership
+    percent lives per-reporting-person in ``<item4><classPercent>`` /
+    ``<amountBeneficiallyOwned>``. ``<previousAccessionNumber>`` gives a clean PIT
+    pointer to the immediately prior filing (initial 13G or earlier 13G/A) so a
+    later replay can chain to the prior stake without future data. The item5
+    ``classOwnership5PercentOrLess`` = ``Y`` flag is the cleanest 100%-captured
+    directional fact: the holder has fallen below the 5% reporting threshold
+    (a major trim / exit).
+
+    Returns ``None`` only when the document is not a structured edgarSubmission.
+    Fields may be ``None`` individually when the schema omits them.
+    """
+    try:
+        root = ET.fromstring(raw_xml)
+    except ET.ParseError:
+        return None
+    if _localname(root.tag) != "edgarSubmission":
+        return None
+
+    previous_accession = None
+    below_5pct = None
+    for el in root.iter():
+        name = _localname(el.tag)
+        txt = (el.text or "").strip()
+        if name == "previousAccessionNumber" and txt and previous_accession is None:
+            previous_accession = txt
+        if name == "classOwnership5PercentOrLess" and txt:
+            below_5pct = txt.strip().upper() == "Y"
+
+    # Per-reporting-person current percent from item4 blocks. A single 13G/A may
+    # carry several item4 blocks (one per reporting person); the max is the
+    # filer-group beneficial-ownership level comparable to ``max_class_percent``.
+    item4_percents: list[float] = []
+    item4_shares: list[float] = []
+    for el in root.iter():
+        if _localname(el.tag) != "item4":
+            continue
+        cp = None
+        amt = None
+        for c in el.iter():
+            cn = _localname(c.tag)
+            ct = (c.text or "").strip()
+            if not ct:
+                continue
+            if cn == "classPercent" and cp is None:
+                cp = _to_float(ct)
+            elif cn == "amountBeneficiallyOwned" and amt is None:
+                amt = _to_float(ct)
+        if cp is not None:
+            item4_percents.append(cp)
+        if amt is not None:
+            item4_shares.append(amt)
+
+    current_max_percent = max(item4_percents) if item4_percents else None
+    current_max_shares = max(item4_shares) if item4_shares else None
+    return {
+        "previous_accession": previous_accession,
+        "below_5pct": below_5pct,
+        "item4_current_max_percent": current_max_percent,
+        "item4_current_max_shares": current_max_shares,
+        "item4_person_count": len(item4_percents),
+    }
+
+
 def _holder_flags(persons: list[dict[str, Any]]) -> dict[str, Any]:
     names = " | ".join((p.get("reporting_person_name") or "").lower() for p in persons)
     is_big3 = any(tok in names for tok in BIG3_TOKENS)

@@ -1,0 +1,90 @@
+{
+  "calibration": {
+    "observed_outcome": "observed_only",
+    "predicted_failure_modes": [
+      "thin_numeric_percent_coverage",
+      "small_window_fragile_edge",
+      "passive_holder_noise",
+      "old_thin_coverage_gap"
+    ],
+    "predicted_success_probability": 0.2,
+    "surprise_note": "Predicted failure modes all occurred: numeric item4 percent resolved for only ~36% of rows (1,724/2,700 direction-unknown), the non-Big3 increase edge was small (0.159% median h10) and window-fragile (mid_weak negative, old_thin n=7), consistent with passive-holder noise and the old_thin structured-XML coverage gap. No positive surprise; the exit-below-5% negative-drift context was the only clean signal and is not long-only tradeable."
+  },
+  "change_type": "candidate_pool_full_stack",
+  "changed_files": [
+    "quant/sec_13d13g_ingest.py",
+    "quant/experiments/exp_20260619_014_parsed_13ga_stake_direction_drift.py",
+    "quant/test_sec_13d13g_ingest.py",
+    "data/experiments/exp-20260619-014/exp_20260619_014_parsed_13ga_stake_direction_drift.json",
+    "data/experiments/exp-20260619-014/parsed_13ga_direction_rows.json"
+  ],
+  "diagnostic_only": true,
+  "experiment_id": "exp-20260619-014",
+  "forward_coverage": {
+    "rows_missing_bars": 0,
+    "rows_missing_forward": 0,
+    "rows_with_forward": 2700,
+    "spy_available": true
+  },
+  "hypothesis": "Parsed 13G/A amendment stake-change DIRECTION (item4 classPercent vs prior via previousAccessionNumber, plus classOwnership5PercentOrLess exit flag) separates informed passive accumulation from distribution; non-Big3 increases should drift positive, exits weak.",
+  "lane": "alpha_search",
+  "nearby_prior_experiments": [
+    "exp-20260618-016",
+    "exp-20260618-018"
+  ],
+  "owner": "alpha-search-automation",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not re-sweep 13G/A stake-percent thresholds, holder-type, Big3 vs non-Big3, top-N, hold, cooldown, or notional on the frozen windows; the parsed 13D/13G holder-stake anti-repeat rule already freezes this. Do not retry the non-Big3 increase bucket as a candidate pool.",
+    "new_evidence_required": "A valid retry needs repaired pre-2025 old_thin structured-XML coverage, fuller item4 numeric percent parsing for BNY-style multi-filer blocks (1,724 rows stayed direction-unknown here), 13D Item-4 campaign/board-seat outcome provenance, or closed forward replacement-value rows from a shared default-off helper.",
+    "why_result_happened": "The 13G/A stake-direction surface was built and PIT-replayable, but the long-side bucket (non-Big3 stake INCREASE, n=169) drifted only 0.159% median / 0.222% mean forward-10d SPY-excess with a 0.503 win rate, below the exp-016 initial-crossing baseline (+0.5 to +1.3% median). It was also window-fragile: late_strong 0.263% but mid_weak -1.183% and old_thin 6.766% on a noise-level sample, so the apparent edge concentrates in the easy momentum window. Passive 13G holders adding to an already-large stake carry little informed-timing signal, exactly the predicted passive_holder_noise / small_window_fragile_edge failure mode. The cleanest fact was the opposite direction: non-Big3 drop-below-5% exits (n=676) preceded -0.31% median underperformance, real distribution context that a long-only book cannot trade directly."
+  },
+  "production_impact": "None. Read-only diagnostic + reusable parsed 13G/A direction surface at data/experiments/exp-20260619-014/parsed_13ga_direction_rows.json. trade_enabled=False; no live orders, ranking, sizing, or exits touched.",
+  "recorded_at": "2026-06-19T16:44:35+00:00",
+  "reproduce": ".venv/Scripts/python.exe -B quant/experiments/exp_20260619_014_parsed_13ga_stake_direction_drift.py --no-fetch",
+  "status": "observed_only",
+  "surface_coverage": {
+    "amendments_in_universe": 7468,
+    "by_window_built": {
+      "late_strong": 900,
+      "mid_weak": 900,
+      "old_thin": 900
+    },
+    "by_window_selected": {
+      "late_strong": 900,
+      "mid_weak": 900,
+      "old_thin": 900
+    },
+    "fetch_status": {
+      "parsed_ok": 2700
+    },
+    "max_per_window": 900,
+    "request_budget": 7000,
+    "requests_used": 0,
+    "rows_built": 2700,
+    "selected_for_processing": 2700,
+    "universe_size": 8515
+  },
+  "verdict": {
+    "all_windows_have_min_n": false,
+    "all_windows_positive": false,
+    "exp016_baseline_median_pct_reference": "+0.5 to +1.3",
+    "increase_non_big3_h10": {
+      "mean_pct": 0.222,
+      "median_pct": 0.159,
+      "n": 169,
+      "win_rate": 0.503
+    },
+    "increase_non_big3_window_medians": {
+      "late_strong": 0.263,
+      "mid_weak": -1.183,
+      "old_thin": 6.766
+    },
+    "increase_non_big3_window_n": {
+      "late_strong": 105,
+      "mid_weak": 57,
+      "old_thin": 7
+    },
+    "rationale": "13G/A stake-direction surface BUILT (closes exp-018 blocker), but the non-Big3 increase bucket does not clear the exp-016 baseline / all-window-positive bar; keep as ownership-direction context.",
+    "verdict": "observed_only"
+  }
+}

@@ -108,3 +108,76 @@ def test_family_and_amendment_detection():
 def test_next_business_day_skips_weekend():
     # 2025-03-21 is a Friday -> next business day is Monday 2025-03-24.
     assert ingest._next_business_day("2025-03-21") == "2025-03-24"
+
+
+# 13G/A amendment carrying the authoritative current stake in item4 plus the
+# previousAccessionNumber chain and the drop-below-5% exit flag (exp-014).
+XML_13GA_EXIT = """<?xml version="1.0" encoding="UTF-8"?>
+<edgarSubmission xmlns="http://www.sec.gov/edgar/schedule13g">
+  <headerData>
+    <submissionType>SCHEDULE 13G/A</submissionType>
+    <previousAccessionNumber>0000861177-23-000002</previousAccessionNumber>
+  </headerData>
+  <formData>
+    <coverPageHeader>
+      <amendmentNo>2</amendmentNo>
+      <issuerInfo><issuerName>SLM Corp</issuerName></issuerInfo>
+    </coverPageHeader>
+    <coverPageHeaderReportingPersonDetails>
+      <reportingPersonName>The Vanguard Group</reportingPersonName>
+      <typeOfReportingPerson>IA</typeOfReportingPerson>
+    </coverPageHeaderReportingPersonDetails>
+    <items>
+      <item4>
+        <amountBeneficiallyOwned>0</amountBeneficiallyOwned>
+        <classPercent>0</classPercent>
+      </item4>
+      <item5><classOwnership5PercentOrLess>Y</classOwnership5PercentOrLess></item5>
+    </items>
+  </formData>
+</edgarSubmission>"""
+
+# 13G/A amendment where the holder INCREASED to a numeric item4 percent and is
+# still above 5%.
+XML_13GA_INCREASE = """<?xml version="1.0" encoding="UTF-8"?>
+<edgarSubmission xmlns="http://www.sec.gov/edgar/schedule13g">
+  <headerData>
+    <submissionType>SCHEDULE 13G/A</submissionType>
+    <previousAccessionNumber>0001111111-24-000010</previousAccessionNumber>
+  </headerData>
+  <formData>
+    <coverPageHeaderReportingPersonDetails>
+      <reportingPersonName>Boutique Partners LP</reportingPersonName>
+      <typeOfReportingPerson>IA</typeOfReportingPerson>
+    </coverPageHeaderReportingPersonDetails>
+    <items>
+      <item4>
+        <amountBeneficiallyOwned>9000000</amountBeneficiallyOwned>
+        <classPercent>9.3</classPercent>
+      </item4>
+      <item5><classOwnership5PercentOrLess>N</classOwnership5PercentOrLess></item5>
+    </items>
+  </formData>
+</edgarSubmission>"""
+
+
+def test_direction_fields_exit_below5():
+    d = ingest.parse_13ga_direction_fields(XML_13GA_EXIT)
+    assert d is not None
+    assert d["previous_accession"] == "0000861177-23-000002"
+    assert d["below_5pct"] is True
+    assert d["item4_current_max_percent"] == 0.0
+    assert d["item4_current_max_shares"] == 0.0
+    assert d["item4_person_count"] == 1
+
+
+def test_direction_fields_increase_above5():
+    d = ingest.parse_13ga_direction_fields(XML_13GA_INCREASE)
+    assert d is not None
+    assert d["previous_accession"] == "0001111111-24-000010"
+    assert d["below_5pct"] is False
+    assert d["item4_current_max_percent"] == 9.3
+
+
+def test_direction_fields_reject_non_structured():
+    assert ingest.parse_13ga_direction_fields("<html>nope</html>") is None
