@@ -1,0 +1,262 @@
+{
+  "acceptance_rule": "Proceed to Gate 4 only if PIT-safe options rows exist for all three canonical windows with usable_trade_date <= window end and no vendor/as-of leakage; otherwise leave baseline unchanged and record blocker.",
+  "allowed_write_scope": [
+    "data/experiments",
+    "experiments/logs",
+    "experiments/tickets",
+    "experiments/cards",
+    "experiments/manifests",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260618-023.md",
+  "causal_components": [],
+  "change_type": "alpha_data_edge_readiness_blocker",
+  "changed_variable": "onclickmedia_options_skew_leadership_confirmation_gate4_readiness_v1",
+  "claimed_at": "2026-06-18T22:10:15+00:00",
+  "completed_at": "2026-06-18T22:18:00+00:00",
+  "created_at": "2026-06-18T22:09:51+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260618-023",
+  "experiment_uid": "expuid-89c06e19b2734dee",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260618-023",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-18T22:09:51+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "onclickmedia_options_skew_leadership_confirmation_gate4_readiness_v1"
+  },
+  "hypothesis": "candidate_pool: PIT-safe OnclickMedia options put-call and implied-volatility skew relief could confirm liquid SPY-relative leadership candidates and improve 10-day replacement value, but it is executable only if the options surface covers all three canonical windows without vendor-asof leakage.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "no_strategy_policy_change",
+    "canonical_windows",
+    "options_forward_collection_only"
+  ],
+  "mechanism_family": "production_visible_free_options_ohlcv_candidate_pool",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [
+    "live_orders",
+    "trade_enabled",
+    "core_ranking",
+    "core_sizing",
+    "core_exits",
+    "run_default_orders"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260615-027",
+    "exp-20260515-099",
+    "exp-20260505-021"
+  ],
+  "new_evidence_type": "post_20260615_forward_options_surface_coverage_audit",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "all",
+        "asof",
+        "but",
+        "call",
+        "candidates",
+        "canonical",
+        "confirm",
+        "confirmation",
+        "could",
+        "covers",
+        "executable",
+        "gate4",
+        "if",
+        "implied",
+        "improve",
+        "is",
+        "it",
+        "leadership",
+        "leakage",
+        "liquid",
+        "onclickmedia",
+        "only",
+        "options",
+        "pit",
+        "put",
+        "readiness",
+        "relative",
+        "replacement",
+        "safe",
+        "skew",
+        "spy",
+        "surface",
+        "three",
+        "value",
+        "vendor",
+        "volatility",
+        "windows",
+        "without"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "options_chain_skew_candidate_pool_readiness",
+        "reopen_condition": "Either backfill PIT-safe historical options chains covering all three standard windows with vendor/as-of controls, or collect at least 20-30 closed forward replacement-value rows from the existing options snapshot surface before any alpha claim.",
+        "score": 0.1808,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "broad_full_liquid_reversal_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.1786,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "broad_full_liquid_5d_winner_continuation_candidate_pool",
+        "reopen_condition": "A retry needs a materially new PIT state field, such as real-time breadth/changepoint persistence or cost-adjusted replacement rows; do not simply retune pressure thresholds, hold days, cooldown, or paper notional on this frozen sample.",
+        "score": 0.1779,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "volatility_relief_stock_leadership_candidate_pool",
+        "reopen_condition": "A retry requires materially new PIT volatility evidence, such as actual VIX term structure, options/realized-vol compression, or closed forward replacement-value rows from a shared default-off adapter.",
+        "score": 0.1773,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "volatility_stress_resilient_leadership_candidate_pool",
+        "reopen_condition": "A retry requires materially new PIT volatility evidence, such as VIX term structure, options flow, realized-vol risk-transfer fields, or closed forward replacement-value rows from a shared default-off adapter.",
+        "score": 0.1761,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "confidence_reason": "Options skew is a plausible orthogonal free-data confirmation source, and novelty did not block it. Prior readiness was blocked; this run checks whether post-20260615 forward collection changed Gate-4 readiness before any strategy logic is written.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "canonical_window_options_coverage_missing",
+      "forward_rows_not_closed",
+      "no_shared_daily_parity",
+      "no_gate4_ready_policy_bundle"
+    ],
+    "recorded_at": "2026-06-18T22:09:39+00:00",
+    "success_probability": 0.1
+  },
+  "prior_trial_count": 1,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "decision": "blocked_options_skew_gate4_readiness_missing_canonical_window_surface",
+    "artifact": "data/experiments/exp-20260618-023/options_skew_gate4_readiness.json",
+    "before_result_file": "data/experiments/exp-20260618-023/before_baseline.json",
+    "after_result_file": "data/experiments/exp-20260618-023/after_no_strategy_change.json",
+    "log": "experiments/logs/exp-20260618-023.json",
+    "gate4": {
+      "applicable": false,
+      "passed": false,
+      "reason": "No options-skew policy bundle entered replay because Gate 2 failed for all canonical windows.",
+      "aggregate_before": {
+        "expected_value_score": 7.8941,
+        "total_pnl": 234850.99,
+        "trade_count": 61,
+        "min_survival_rate": 0.7925,
+        "max_drawdown_pct": 0.1119
+      },
+      "aggregate_after": {
+        "expected_value_score": 7.8941,
+        "total_pnl": 234850.99,
+        "trade_count": 61,
+        "min_survival_rate": 0.7925,
+        "max_drawdown_pct": 0.1119
+      },
+      "aggregate_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "survival_rate": 0.0,
+        "max_drawdown_pct": 0.0
+      },
+      "by_window": {
+        "late_strong": {
+          "before_expected_value_score": 5.1628,
+          "after_expected_value_score": 5.1628,
+          "delta_expected_value_score": 0.0,
+          "before_total_pnl": 117072.92,
+          "after_total_pnl": 117072.92,
+          "delta_total_pnl": 0.0
+        },
+        "mid_weak": {
+          "before_expected_value_score": 2.1402,
+          "after_expected_value_score": 2.1402,
+          "delta_expected_value_score": 0.0,
+          "before_total_pnl": 78110.11,
+          "after_total_pnl": 78110.11,
+          "delta_total_pnl": 0.0
+        },
+        "old_thin": {
+          "before_expected_value_score": 0.5911,
+          "after_expected_value_score": 0.5911,
+          "delta_expected_value_score": 0.0,
+          "before_total_pnl": 39667.96,
+          "after_total_pnl": 39667.96,
+          "delta_total_pnl": 0.0
+        }
+      }
+    },
+    "blocker": {
+      "file_count": 32,
+      "total_pit_safe_rows": 171301,
+      "min_usable_trade_date": "2026-05-06",
+      "latest_canonical_window_end": "2026-04-21",
+      "canonical_window_pit_safe_rows": 0
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "production_orders_changed": false,
+      "production_signal_path_changed": false,
+      "production_watchlist_changed": false,
+      "shared_policy_changed": false
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260618-023.json",
+  "single_causal_variable": "onclickmedia_options_skew_leadership_confirmation_gate4_readiness_v1",
+  "status": "blocked",
+  "ticket_file": "experiments/tickets/exp-20260618-023.json",
+  "trial_family": "options_skew_leadership_confirmation_candidate_pool",
+  "trial_variant_id": "options_skew_leadership_gate4_readiness_post_20260615_v1"
+}

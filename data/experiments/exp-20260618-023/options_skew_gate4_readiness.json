@@ -1,0 +1,152 @@
+{
+  "experiment_id": "exp-20260618-023",
+  "status": "blocked",
+  "decision": "blocked_options_skew_gate4_readiness_missing_canonical_window_surface",
+  "lane": "alpha_search",
+  "hypothesis": "candidate_pool: PIT-safe OnclickMedia options put-call and implied-volatility skew relief could confirm liquid SPY-relative leadership candidates and improve 10-day replacement value, but it is executable only if the options surface covers all three canonical windows without vendor-asof leakage.",
+  "single_causal_variable": "onclickmedia_options_skew_leadership_confirmation_gate4_readiness_v1",
+  "backtest_protocol": {
+    "source": "docs/backtesting.md canonical three-window protocol",
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "windows": {
+      "late_strong": {
+        "start": "2025-10-23",
+        "end": "2026-04-21"
+      },
+      "mid_weak": {
+        "start": "2025-04-23",
+        "end": "2025-10-22"
+      },
+      "old_thin": {
+        "start": "2024-10-02",
+        "end": "2025-04-22"
+      }
+    }
+  },
+  "gate1_baseline": {
+    "aggregate_expected_value_score": 7.8941,
+    "aggregate_total_pnl": 234850.99,
+    "max_window_drawdown_pct": 0.1119,
+    "min_survival_rate": 0.7925,
+    "total_trade_count": 61
+  },
+  "gate2_field_availability": {
+    "status": "failed",
+    "required_fields": [
+      "ticker",
+      "quote_date",
+      "usable_trade_date",
+      "call_put",
+      "strike",
+      "expiration",
+      "implied_vol",
+      "volume",
+      "open_interest",
+      "bid",
+      "ask",
+      "mid",
+      "pit_safe"
+    ],
+    "coverage_summary": {
+      "file_count": 32,
+      "first_quote_date": "2026-05-05",
+      "last_quote_date": "2026-06-17",
+      "total_rows": 171301,
+      "total_pit_safe_rows": 171301,
+      "min_usable_trade_date": "2026-05-06",
+      "max_usable_trade_date": "2026-06-18",
+      "collection_mode": "forward_daily",
+      "canonical_window_rows": 0,
+      "canonical_window_pit_safe_rows": 0
+    },
+    "window_coverage": {
+      "late_strong": {
+        "window_end": "2026-04-21",
+        "pit_safe_option_rows_usable_on_or_before_window_end": 0,
+        "blocked": true
+      },
+      "mid_weak": {
+        "window_end": "2025-10-22",
+        "pit_safe_option_rows_usable_on_or_before_window_end": 0,
+        "blocked": true
+      },
+      "old_thin": {
+        "window_end": "2025-04-22",
+        "pit_safe_option_rows_usable_on_or_before_window_end": 0,
+        "blocked": true
+      }
+    },
+    "why_blocked": "The earliest PIT-safe options usable_trade_date in local OnclickMedia files is 2026-05-06, while the latest canonical window ends on 2026-04-21. A three-window before/after replay would require leaking future options data or using non-PIT historical backfill assumptions."
+  },
+  "gate3_survival": {
+    "status": "unchanged_no_new_filter",
+    "min_survival_rate": 0.7925
+  },
+  "gate4": {
+    "applicable": false,
+    "passed": false,
+    "decision": "blocked",
+    "reason": "No options-skew policy bundle entered replay because Gate 2 failed for all canonical windows.",
+    "before": "data/experiments/exp-20260618-023/before_baseline.json",
+    "after": "data/experiments/exp-20260618-023/after_no_strategy_change.json",
+    "aggregate_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "max_drawdown_pct": 0.0
+    }
+  },
+  "candidate_reviews": [
+    {
+      "candidate": "companyfacts_book_equity_to_assets_improvement",
+      "decision": "not_run_novelty_gate_blocked",
+      "evidence": "scripts/check_experiment_novelty.py and experiment.py new both found this was a near-neighbor of explored Companyfacts balance-sheet ratio families including inventory discipline, low asset growth, and accrued liability burden relief.",
+      "why_not_override": "Equity/assets improvement largely re-expresses liabilities/assets and asset-growth balance-sheet ratios already explored; no genuinely new PIT field was present."
+    },
+    {
+      "candidate": "accepted_sbc_or_distribution_allocator_empty_date_gap_fill",
+      "decision": "not_run_recent_negative_near_neighbor",
+      "evidence": "exp-20260618-021 rejected SBC no-displacement gap fill and exp-20260618-022 rejected distribution no-displacement gap fill against the accepted allocator comparator.",
+      "why_not_retry": "Their reflections forbid source rank, threshold, top-N, hold, cooldown, notional, and another frozen-window empty-date routing variant without forward replacement rows or a new PIT field."
+    },
+    {
+      "candidate": "parsed_13d13g_ownership",
+      "decision": "not_run_recent_negative_or_data_blocked",
+      "evidence": "exp-20260618-016 found no clean tradable 13D/13G subset; exp-20260618-019 rejected Item-4 active intent; exp-20260618-018 blocked 13G/A stake direction because amendment XML rows are missing.",
+      "why_not_retry": "A valid retry needs 13G/A XML stake-change direction, direct activist outcome provenance, repaired old_thin coverage, or closed forward replacement rows."
+    }
+  ],
+  "production_impact": {
+    "trade_enabled": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "parity_note": "No strategy code changed. A future positive options alpha must be implemented shared-paper-first so historical replay and daily snapshots compute the same put/call, implied-volatility, liquidity, PIT usability, leadership, next-open entry, 10-day exit, cost, cooldown, and concentration semantics before any production surface changes.",
+    "uses_llm": false,
+    "uses_free_options": true,
+    "uses_free_ohlcv": false
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The strongest non-repeat free-data alpha direction after the recent Companyfacts, ownership, and allocator failures is options-derived confirmation, but local options history begins after the canonical backtest windows. Running Gate 4 today would create a production/backtest mismatch or future-data leak.",
+    "negative_reflection": "This does not reject the economic idea. It rejects claiming alpha without PIT-safe historical options coverage or enough closed forward replacement rows.",
+    "forbidden_near_neighbor_retry": "Do not run an options-skew, put/call, IV, OI, or volume confirmation replay on the canonical windows until PIT-safe options rows cover those dates, and do not substitute non-PIT historical backfills or same-day OI assumptions.",
+    "new_evidence_required": "Either backfill PIT-safe historical options chains covering 2024-10-02 through 2026-04-21 with vendor/as-of controls, or collect at least 20-30 closed forward default-off options-confirmation rows with replacement value before any alpha claim."
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py new ... exp-20260618-023",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py claim exp-20260618-023 --owner alpha-search-automation --force",
+    "Get-ChildItem data\\non_ohlcv -Filter 'options_onclickmedia_chain_*.jsonl'",
+    "Get-Content data\\backtests\\backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "anti_js": "No JavaScript was used.",
+  "timestamp": "2026-06-18T22:18:00Z"
+}

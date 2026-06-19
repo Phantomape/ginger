@@ -1,0 +1,181 @@
+{
+  "experiment_id": "exp-20260618-023",
+  "status": "blocked",
+  "accepted": false,
+  "accepted_alpha": false,
+  "decision": "blocked_options_skew_gate4_readiness_missing_canonical_window_surface",
+  "lane": "alpha_search",
+  "hypothesis": "candidate_pool: PIT-safe OnclickMedia options put-call and implied-volatility skew relief could confirm liquid SPY-relative leadership candidates and improve 10-day replacement value, but it is executable only if the options surface covers all three canonical windows without vendor-asof leakage.",
+  "changed_variable": "onclickmedia_options_skew_leadership_confirmation_gate4_readiness_v1",
+  "single_causal_variable": "onclickmedia_options_skew_leadership_confirmation_gate4_readiness_v1",
+  "mechanism_family": "production_visible_free_options_ohlcv_candidate_pool",
+  "trial_family": "options_skew_leadership_confirmation_candidate_pool",
+  "trial_variant_id": "options_skew_leadership_gate4_readiness_post_20260615_v1",
+  "artifact": "data/experiments/exp-20260618-023/options_skew_gate4_readiness.json",
+  "before_result_file": "data/experiments/exp-20260618-023/before_baseline.json",
+  "after_result_file": "data/experiments/exp-20260618-023/after_no_strategy_change.json",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "anti_js": "No JavaScript was used.",
+  "backtest_protocol": {
+    "source": "docs/backtesting.md canonical three-window protocol",
+    "windows": {
+      "late_strong": {
+        "start": "2025-10-23",
+        "end": "2026-04-21"
+      },
+      "mid_weak": {
+        "start": "2025-04-23",
+        "end": "2025-10-22"
+      },
+      "old_thin": {
+        "start": "2024-10-02",
+        "end": "2025-04-22"
+      }
+    },
+    "execution_model": "No options-skew policy entered replay because the local OnclickMedia options surface has zero PIT-safe rows usable inside any canonical window."
+  },
+  "gate1_baseline": {
+    "aggregate_expected_value_score": 7.8941,
+    "aggregate_total_pnl": 234850.99,
+    "max_window_drawdown_pct": 0.1119,
+    "min_survival_rate": 0.7925,
+    "total_trade_count": 61
+  },
+  "gate2_field_availability": {
+    "status": "failed",
+    "coverage_summary": {
+      "file_count": 32,
+      "first_quote_date": "2026-05-05",
+      "last_quote_date": "2026-06-17",
+      "total_rows": 171301,
+      "total_pit_safe_rows": 171301,
+      "min_usable_trade_date": "2026-05-06",
+      "max_usable_trade_date": "2026-06-18",
+      "canonical_window_rows": 0,
+      "canonical_window_pit_safe_rows": 0
+    },
+    "failed_reasons": [
+      "canonical_window_options_coverage_missing",
+      "no_pit_safe_options_rows_before_2026_04_21",
+      "cannot_compute_three_window_options_skew_without_future_leakage"
+    ]
+  },
+  "gate3_survival": {
+    "status": "unchanged_no_new_filter",
+    "min_survival_rate": 0.7925
+  },
+  "gate4": {
+    "applicable": false,
+    "passed": false,
+    "decision": "blocked",
+    "reason": "No options-skew policy bundle entered replay because Gate 2 failed for all canonical windows.",
+    "aggregate_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "max_drawdown_pct": 0.0
+    },
+    "by_window": {
+      "late_strong": {
+        "before_expected_value_score": 5.1628,
+        "after_expected_value_score": 5.1628,
+        "delta_expected_value_score": 0.0,
+        "before_total_pnl": 117072.92,
+        "after_total_pnl": 117072.92,
+        "delta_total_pnl": 0.0
+      },
+      "mid_weak": {
+        "before_expected_value_score": 2.1402,
+        "after_expected_value_score": 2.1402,
+        "delta_expected_value_score": 0.0,
+        "before_total_pnl": 78110.11,
+        "after_total_pnl": 78110.11,
+        "delta_total_pnl": 0.0
+      },
+      "old_thin": {
+        "before_expected_value_score": 0.5911,
+        "after_expected_value_score": 0.5911,
+        "delta_expected_value_score": 0.0,
+        "before_total_pnl": 39667.96,
+        "after_total_pnl": 39667.96,
+        "delta_total_pnl": 0.0
+      }
+    }
+  },
+  "candidate_reviews": [
+    {
+      "candidate": "companyfacts_book_equity_to_assets_improvement",
+      "decision": "not_run_novelty_gate_blocked"
+    },
+    {
+      "candidate": "accepted_sbc_or_distribution_allocator_empty_date_gap_fill",
+      "decision": "not_run_recent_negative_near_neighbor"
+    },
+    {
+      "candidate": "parsed_13d13g_ownership",
+      "decision": "not_run_recent_negative_or_data_blocked"
+    }
+  ],
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Options put/call and implied-volatility skew relief may add orthogonal confirmation to liquid SPY-relative leadership candidates.",
+    "2_history_check": {
+      "exp-20260615-027": "Prior direction triage identified options as attractive but blocked without full-window PIT-safe history.",
+      "exp-20260515-099": "Earlier options-readiness work showed structured options rows but not a three-window policy bundle.",
+      "novelty_gate": "No strong blocking near-neighbor; nearest options readiness row requires PIT-safe historical chains or 20-30 closed forward rows."
+    },
+    "3_single_decision_hypothesis": "Gate 2 readiness for options-skew leadership confirmation; no trading policy is changed unless PIT coverage is sufficient.",
+    "4_acceptance_standard": "Proceed to Gate 4 only if PIT-safe options rows cover all three docs/backtesting.md windows. Otherwise block and leave strategy unchanged.",
+    "5_reproducibility": "See data/experiments/exp-20260618-023/options_skew_gate4_readiness.json reproduction_commands."
+  },
+  "prediction": {
+    "success_probability": 0.1,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "canonical_window_options_coverage_missing",
+      "forward_rows_not_closed",
+      "no_shared_daily_parity",
+      "no_gate4_ready_policy_bundle"
+    ],
+    "confidence_reason": "Options skew is plausible and orthogonal, but prior readiness was blocked; the run only checks whether post-20260615 forward collection changed Gate-4 readiness."
+  },
+  "calibration": {
+    "actual_gate4_passed": false,
+    "actual_success": 0,
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "predicted_success_probability": 0.1,
+    "failure_modes_observed": [
+      "canonical_window_options_coverage_missing",
+      "no_gate4_ready_policy_bundle"
+    ],
+    "brier_score": 0.01
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "parity_note": "No strategy code changed. A future options alpha must be shared-paper-first with identical historical and daily PIT options semantics before any production surface changes.",
+    "uses_llm": false,
+    "uses_free_options": true
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The strongest remaining non-repeat free-data alpha direction is options-derived confirmation, but local options history begins after the canonical backtest windows.",
+    "negative_reflection": "This does not reject options skew as an alpha idea. It rejects a three-window alpha claim today because running it would require future-data leakage or non-PIT backfill assumptions.",
+    "forbidden_near_neighbor_retry": "Do not run options-skew, put/call, IV, OI, or volume confirmation on canonical windows until PIT-safe options rows cover those dates.",
+    "new_evidence_required": "Backfill PIT-safe historical options chains through 2024-10-02 to 2026-04-21 with vendor/as-of controls, or collect 20-30 closed forward default-off rows with replacement value."
+  },
+  "timestamp": "2026-06-18T22:18:00Z"
+}
