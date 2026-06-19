@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-06-18.
+Last refreshed: 2026-06-19.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -366,6 +366,41 @@ aggregate EV `-0.0145`, PnL `-$368`, `mid_weak` and `old_thin` regressed, and
 positive contribution concentrated in WEX. Treat deterministic Item-4 phrase
 matching as ownership context, not an executable candidate-pool signal.
 
+The June 19 batch did not add an accepted alpha; it narrowed what still counts
+as new evidence. Earnings-date revision has zero reliable PIT event rows, so it
+is a surface-readiness blocker, not a replay. Interest-burden and
+industry-normalized reinvestment-productivity retries were correctly blocked by
+novelty because they did not add a new financing or capacity field. The
+replayed candidates then confirmed the same pattern across raw Companyfacts,
+FINRA/public-float, ownership, Form 4, and SEC text: customer concentration,
+inventory component mix, debt-maturity cliff relief, public-float-normalized
+short pressure, parsed 13D/A stake decrease, Form 4 conversion-without-disposal,
+reportable-segment count reduction, and issuer 8-K governance-resolution text
+all failed Gate 4 through thin samples, window regression, drawdown drift,
+concentration, or accepted-comparator weakness. The durable rule is now:
+Companyfacts and SEC metadata retries need richer structured provenance
+(customer identity/contract terms, segment mix, refinancing/covenants, borrow
+cost/availability, conversion purpose, board-seat/standstill economics) or
+closed forward replacement-value rows. Do not spend another run sweeping raw
+tag lists, phrase lists, top-N, hold, cooldown, liquidity, or notional on these
+frozen windows.
+
+The later June 19 batch closed the last open 13G/13D sub-gap. `exp-20260619-014`
+BUILT the parsed Schedule 13G/A amendment stake-change DIRECTION surface that
+`exp-20260618-018` was BLOCKED on: `quant/sec_13d13g_ingest.py` now parses the
+authoritative item4 `classPercent` current level, the `previousAccessionNumber`
+PIT prior-stake chain, and the `classOwnership5PercentOrLess` drop-below-5% exit
+flag, over 2,700 13G/A amendments on the broad warehouse universe. The read-only
+forward diagnostic is decisive: the long-side bucket (non-Big3 stake INCREASE,
+n=169) drifts only +0.16% median / +0.22% mean forward-10d SPY-excess at a 50.3%
+win rate — below the exp-016 initial-crossing baseline (+0.5 to +1.3%) — and is
+window-fragile (late_strong +0.26%, mid_weak -1.18%, old_thin +6.77% on n=7
+noise). The only clean, well-sampled signal is the opposite direction: non-Big3
+drop-below-5% exits (n=676) precede -0.31% median underperformance, real
+ownership-distribution context that a long-only book cannot trade directly.
+Verdict `observed_only`; the durable product is the reusable direction surface
+plus parser tests. The 13G/A direction axis is now CLOSED on the frozen windows.
+
 ## Detail Sources
 
 Generated mechanism memory lives in `docs/lessons/*.md`; exact facts live in
@@ -460,9 +495,12 @@ Highest-priority build surfaces:
 
 - parsed Schedule 13G/13D primary documents (BUILT, exp-20260618-016 —
   holder/filer identity, beneficial ownership `classPercent`, reporting-person
-  type, share count via `quant/sec_13d13g_ingest.py`); remaining gaps are
-  amendment/action *direction* (13G/A adds vs trims), 13D Item-4 purpose-text
-  intent classification, and pre-2025 `old_thin` structured-XML coverage;
+  type, share count via `quant/sec_13d13g_ingest.py`). 13G/A amendment
+  *direction* is now ALSO BUILT (exp-20260619-014 — item4 `classPercent` +
+  `previousAccessionNumber` chain + `classOwnership5PercentOrLess` exit flag),
+  and the increase edge was found weak/window-fragile (observed_only, axis
+  closed on frozen windows). Remaining gaps are 13D Item-4 purpose-text intent
+  classification, and pre-2025 `old_thin` structured-XML coverage;
 - offering/prospectus primary text: proceeds, offering amount normalized by
   market cap and dollar volume, security type, ATM/shelf/takedown status, use
   of proceeds, and dilution terms;
@@ -473,7 +511,12 @@ Highest-priority build surfaces:
   ledger with closed outcomes;
 - PIT borrow fee / utilization / availability, not FINRA share counts;
 - structured customer/supplier/payment-term or unit-economics fields that
-  explain DPO, advertising efficiency, or contract-economics mechanisms.
+  explain DPO, advertising efficiency, contract-economics mechanisms, or
+  customer-concentration quality;
+- segment-level revenue/profit/divestiture/spin-off provenance, not raw
+  `NumberOfReportableSegments` direction;
+- debt maturity, covenant, refinancing, and credit-quality event terms from
+  primary text, not raw maturity-bucket relief.
 
 Minimum acceptance path:
 
@@ -937,6 +980,21 @@ production-visible field:
 - raw Schedule 13G/13D metadata gates, 13G-vs-13D form thresholds,
   amendment-only or initiation-only ownership replays, and liquidity/top-N/hold
   retunes without primary-document text and parsed holder/stake/action rows;
+- raw customer-concentration, inventory-component, debt-maturity,
+  reportable-segment-count, and adjacent Companyfacts candidate pools that only
+  sweep tag lists, thresholds, fact freshness, revenue/growth floors,
+  RS/close/volume/volatility guards, top-N, hold, cooldown, or notional. The
+  June 19 runs showed these fields are either too sparse, window-fragile,
+  drawdown-worse, concentrated, or accepted-comparator weak. A valid retry needs
+  parsed customer identity and contract economics, segment revenue/profit mix,
+  refinancing/covenant terms, finished-goods/raw-material context with demand
+  provenance, or closed forward replacement-value rows;
+- FINRA/public-float short-pressure candidate pools based on settlement
+  short-interest shares, public float, days-to-cover, liquidity, top-N, hold,
+  cooldown, or notional. `exp-20260619-007` confirms that float-normalizing the
+  FINRA signal does not repair the window/drawdown/comparator problem. Reopen
+  only with PIT borrow fee, utilization, loan availability, options/put-skew
+  context, or closed forward replacement-value rows;
 - intra-industry liquidity-leader lead-lag (top-3 by 20d dollar volume per
   industry run up vs SPY over 10d; a same-industry member that has NOT yet
   moved drifts to catch up) as a STATIC always-on candidate pool, and sweeping
@@ -978,6 +1036,25 @@ production-visible field:
   replacement-value rows — not a threshold, phrase-list, holder-type, event-age,
   top-N, hold, cooldown, or notional sweep of the parsed fields. Keep 13D/13G
   as ownership/crowding context until then;
+- Form 4 conversion-without-disposal and issuer 8-K governance-resolution text
+  candidate pools when the retry only changes transaction-code filters, phrase
+  lists, item codes, RS/close/volume/volatility guards, top-N, hold, cooldown,
+  or notional. A valid retry needs conversion purpose/lockup/selling-plan
+  context, counterparty identity, ownership threshold, board-seat count,
+  standstill duration, evidence spans, or closed forward replacement-value rows;
+- parsed Schedule 13G/A amendment stake-change DIRECTION candidate pools that
+  sweep the increase/decrease/exit cut, stake-percent delta, holder-type, Big3
+  vs non-Big3, top-N, hold, cooldown, or notional on the frozen windows:
+  `exp-20260619-014` BUILT the 13G/A direction surface (item4 classPercent +
+  previousAccessionNumber chain + classOwnership5PercentOrLess exit flag) and
+  found the non-Big3 INCREASE bucket weak (+0.16% median forward-10d SPY-excess,
+  n=169) and window-fragile (mid_weak -1.18%), below the exp-016 baseline, while
+  drop-below-5% exits are negative-drift ownership context not tradeable
+  long-only. A valid retry needs repaired pre-2025 old_thin structured-XML
+  coverage, fuller item4 numeric percent parsing for BNY-style multi-filer
+  blocks (1,724/2,700 rows stayed direction-unknown), 13D Item-4
+  campaign/board-seat outcome provenance, or closed forward replacement-value
+  rows;
 - missing archive/text availability as an alpha field.
 
 ## Update Discipline
