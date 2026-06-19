@@ -64570,8 +64570,338 @@
       },
       "lean_quality_passed": true,
       "updated_at": "2026-06-19T12:13:07+00:00"
+    },
+    {
+      "acceptance_rule": "Gate 4 aggregate EV and PnL must improve versus the 20260619 accepted core baseline across the three standard windows without survival/trade-count collapse; private scout positives are leads only unless promoted to shared default-off helper with daily parity.",
+      "allowed_write_scope": [
+        "quant/experiments",
+        "experiments",
+        "data/experiments",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_20260619.json",
+      "card_file": "experiments/cards/exp-20260619-013.md",
+      "causal_components": [
+        "issuer_8k_full_text",
+        "governance_settlement_or_cooperation_or_standstill_terms",
+        "board_or_proxy_outcome_context",
+        "price_confirmation",
+        "top1_per_day"
+      ],
+      "change_type": "candidate_pool_private_scout",
+      "changed_variable": "issuer_8k_governance_resolution_text_candidate_source_v1",
+      "claimed_at": "2026-06-19T15:08:45+00:00",
+      "completed_at": "2026-06-19T15:16:47+00:00",
+      "created_at": "2026-06-19T15:08:30+00:00",
+      "evaluation_windows": [
+        {
+          "end": "2026-04-21",
+          "start": "2025-10-23"
+        },
+        {
+          "end": "2025-10-22",
+          "start": "2025-04-23"
+        },
+        {
+          "end": "2025-04-22",
+          "start": "2024-10-02"
+        }
+      ],
+      "experiment_id": "exp-20260619-013",
+      "experiment_uid": "expuid-5cade3ae2bef4bf3",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260619-013",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-19T15:08:30+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "issuer_8k_governance_resolution_text"
+      },
+      "hypothesis": "candidate_pool: issuer-filed 8-K text that contains governance settlement/cooperation/standstill terms plus board/proxy/shareholder outcome context may identify activist uncertainty resolution. Requiring same-day liquid SPY-relative leadership tests whether the market is starting to absorb the resolution before next-open paper entry.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "standard_windows",
+        "next_open_execution",
+        "10d_hold",
+        "price_confirmation",
+        "top1_per_day",
+        "production_default_off"
+      ],
+      "mechanism_family": "sec_text_governance_resolution_candidate_pool",
+      "multiple_testing_risk_bucket": "high",
+      "must_not_touch": [
+        "production runners",
+        "live order generation",
+        "accepted helpers"
+      ],
+      "nearby_prior_experiments": [
+        "exp-20260617-027",
+        "exp-20260618-019",
+        "exp-20260612-015"
+      ],
+      "new_evidence_type": "issuer_8k_governance_settlement_cooperation_outcome_text_tuple",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "sec_text_event",
+          "field_tags": [
+            "8k",
+            "a",
+            "activist",
+            "add",
+            "after",
+            "agreement",
+            "announced",
+            "because",
+            "been",
+            "board",
+            "by",
+            "can",
+            "change",
+            "confirmation",
+            "cooperation",
+            "do",
+            "edge",
+            "filed",
+            "full",
+            "governance",
+            "has",
+            "in",
+            "issuer",
+            "k",
+            "live",
+            "merely",
+            "metadata",
+            "not",
+            "or",
+            "outcome",
+            "ownership",
+            "price",
+            "private",
+            "proxy",
+            "ranking",
+            "rather",
+            "resolution",
+            "resolved",
+            "settlement",
+            "sizing",
+            "small",
+            "standstill",
+            "text",
+            "than",
+            "tuples",
+            "uncertainty"
+          ],
+          "gate_shape": "allocator_source"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec_text_event",
+            "family_key": "sec_text_price_alignment_issuer_continuation_candidate_pool",
+            "reopen_condition": null,
+            "score": 0.475,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec_text_event",
+            "family_key": "sec_after_hours_5_02_leadership_candidate_pool",
+            "reopen_condition": null,
+            "score": 0.4654,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec_text_event",
+            "family_key": "sec_after_hours_operational_8k_candidate_pool",
+            "reopen_condition": null,
+            "score": 0.4654,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec_text_event",
+            "family_key": "sec_text_peer_theme_propagation_candidate_pool",
+            "reopen_condition": null,
+            "score": 0.4654,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec_text_event",
+            "family_key": "event_disclosure_complexity_quality",
+            "reopen_condition": null,
+            "score": 0.4651,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": "issuer-filed 8-K full-text governance settlement/cooperation/standstill outcome tuple from daily PIT sec_filing_text, distinct from 13D Item 4 ownership text and raw proxy solicitation form metadata",
+        "override": true,
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-search-automation",
+      "prediction": {
+        "success_probability": 0.18,
+        "expected_ev_delta": 0.3,
+        "expected_pnl_delta": 5000.0,
+        "main_failure_modes": [
+          "sparse_events",
+          "generic_litigation_settlement_false_positives",
+          "near_neighbor_activist_proxy_family",
+          "window_concentration"
+        ],
+        "confidence_reason": "Daily PIT SEC filing text has rare issuer 8-K settlement/cooperation/standstill rows. The new evidence axis is an issuer-filed governance outcome tuple, not raw 13D intent or raw proxy form metadata. Sample size and false-positive risk remain high.",
+        "recorded_at": "2026-06-19T15:08:18+00:00"
+      },
+      "prior_trial_count": 3,
+      "result": {
+        "decision": "rejected_issuer_8k_governance_resolution_text_candidate_pool",
+        "accepted": false,
+        "numeric_gate4_passed": false,
+        "artifact": "data/experiments/exp-20260619-013/exp_20260619_013_issuer_8k_governance_resolution_text.json",
+        "log": "experiments/logs/exp-20260619-013.json",
+        "aggregate_expected_value_delta": 0.0,
+        "aggregate_strategy_total_pnl_delta": 0.0,
+        "gate4": {
+          "passed": false,
+          "decision": "rejected_issuer_8k_governance_resolution_text_candidate_pool",
+          "failed_reasons": [
+            "aggregate_ev_not_positive",
+            "aggregate_pnl_not_positive",
+            "fewer_than_two_ev_improved_windows",
+            "target_sample_too_small",
+            "target_window_coverage_too_small",
+            "target_concentration_failed",
+            "accepted_compression_ev_not_beaten",
+            "accepted_compression_pnl_not_beaten",
+            "accepted_distribution_ev_not_beaten",
+            "accepted_distribution_pnl_not_beaten"
+          ],
+          "aggregate_ev_delta": 0.0,
+          "aggregate_pnl_delta": 0.0,
+          "windows_ev_improved": 0,
+          "windows_ev_regressed": 0,
+          "windows_pnl_improved": 0,
+          "windows_pnl_regressed": 0,
+          "target_trade_count": 0,
+          "target_trade_count_min": 20,
+          "target_windows": [],
+          "target_window_count_min": 3,
+          "max_drawdown_worse": 0.0,
+          "max_drawdown_worse_guardrail": 0.005,
+          "minimum_core_survival_rate": 0.7925,
+          "survival_guard_passed": true,
+          "target_concentration": {
+            "passed": false,
+            "max_single_positive_pnl_share": null,
+            "max_single_positive_pnl_share_guardrail": 0.5,
+            "positive_pnl_hhi": null,
+            "positive_pnl_hhi_guardrail": 0.35
+          },
+          "accepted_compression_comparator": {
+            "experiment_id": "exp-20260608-013",
+            "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+            "aggregate_expected_value_delta": 0.1608,
+            "aggregate_pnl_delta": 2248.98
+          },
+          "accepted_distribution_comparator": {
+            "experiment_id": "exp-20260611-007",
+            "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+            "aggregate_expected_value_delta": 0.5286,
+            "aggregate_pnl_delta": 10432.91
+          }
+        },
+        "calibration": {
+          "predicted_success_probability": 0.18,
+          "actual_gate4_passed": false,
+          "actual_success": 0,
+          "failure_modes_observed": [
+            "aggregate_ev_not_positive",
+            "aggregate_pnl_not_positive",
+            "fewer_than_two_ev_improved_windows",
+            "target_sample_too_small",
+            "target_window_coverage_too_small",
+            "target_concentration_failed",
+            "accepted_compression_ev_not_beaten",
+            "accepted_compression_pnl_not_beaten",
+            "accepted_distribution_ev_not_beaten",
+            "accepted_distribution_pnl_not_beaten"
+          ],
+          "brier_score": 0.0324,
+          "expected_ev_delta": 0.3,
+          "actual_ev_delta": 0.0,
+          "expected_pnl_delta": 5000.0,
+          "actual_pnl_delta": 0.0
+        },
+        "production_impact": {
+          "trade_enabled": false,
+          "alters_orders": false,
+          "adapter_status": "private_replay_scout_no_shared_adapter",
+          "shared_policy_changed": false,
+          "backtester_adapter_changed": false,
+          "run_adapter_changed": false,
+          "replay_only": true,
+          "default_off_paper_only": true,
+          "daily_snapshot_exposed": false,
+          "parity_test_added": false,
+          "production_signal_path_changed": false,
+          "production_orders_changed": false,
+          "production_watchlist_changed": false,
+          "alters_signal_generation": false,
+          "alters_candidate_ranking": false,
+          "alters_sizing": false,
+          "alters_exits": false,
+          "uses_llm": false,
+          "uses_free_sec_companyfacts": false,
+          "uses_free_ohlcv": true,
+          "live_realism_evaluated": true,
+          "live_ready": false,
+          "execution_envelope": {
+            "trade_enabled": false,
+            "target_notional_per_paper_trade": 4000.0,
+            "daily_entry_slots": 1,
+            "same_ticker_cooldown_days": 10,
+            "hold_days": 10,
+            "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+            "order_semantics": "observe-only next-session-open paper entry; no broker order",
+            "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+            "kill_switch": "trade_enabled remains false; no production adapter changes",
+            "failure_handling": "missing SEC filing text, missing issuer 8-K form, missing settlement/cooperation/standstill term, missing governance holder or board/proxy outcome context, excluded litigation/financing/M&A text, missing OHLCV, missing next open, or missing 10d exit rejects the paper candidate"
+          },
+          "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper parses the same SEC filing text fields, exclusion rules, outcome tuple extraction, same-day OHLCV confirmation, cooldown, next-open paper entry, 10-day exit, costs, and concentration controls in both historical replay and daily production.",
+          "uses_free_sec_filing_text": true
+        },
+        "post_run_reflection": {
+          "why_result_happened": "Issuer 8-K governance resolution text did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too_small, target_concentration_failed, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). It is not retained or promoted.",
+          "outcome_summary": "Aggregate EV delta +0.0000; aggregate PnL delta $+0.00; max drawdown drift +0.0000; 0 paper trades.",
+          "forbidden_near_neighbor_retry": "Do not retry by sweeping SEC governance settlement phrase lists, item codes, RS/close/volume/vol guards, top-N, hold days, cooldown, or notional on these frozen windows.",
+          "new_evidence_required": "A retry needs materially richer evidence, such as parsed counterparty/holder identity, board-seat count, ownership threshold, explicit standstill duration, evidence spans, or closed forward replacement rows. Do not sweep phrase lists, item codes, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows."
+        }
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260619-013.json",
+      "single_causal_variable": "issuer_8k_governance_resolution_text_candidate_source_v1",
+      "status": "rejected",
+      "ticket_file": "experiments/tickets/exp-20260619-013.json",
+      "trial_family": "issuer_8k_governance_resolution_text_candidate_pool",
+      "trial_variant_id": "issuer_8k_settlement_outcome_v1",
+      "decision": "rejected_issuer_8k_governance_resolution_text_candidate_pool",
+      "summary": "Issuer 8-K governance resolution text did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too_small, target_concentration_failed, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). It is not retained or promoted.",
+      "artifact": "data/experiments/exp-20260619-013/exp_20260619_013_issuer_8k_governance_resolution_text.json",
+      "log": "experiments/logs/exp-20260619-013.json",
+      "aggregate_expected_value_delta": 0.0,
+      "aggregate_strategy_total_pnl_delta": 0.0,
+      "updated_at": "2026-06-19T15:16:47+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-19T12:13:07+00:00"
+  "updated_at": "2026-06-19T15:16:47+00:00"
 }
