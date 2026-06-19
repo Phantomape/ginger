@@ -62060,8 +62060,318 @@
       },
       "lean_quality_passed": true,
       "updated_at": "2026-06-19T04:11:05+00:00"
+    },
+    {
+      "acceptance_rule": "Gate 1-4 per docs/backtesting.md; aggregate EV and PnL positive, no material window regression, survival >=5%, target trades >=20 across three windows, concentration acceptable, and accepted compression/distribution comparators not worse.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260619_007_finra_float_normalized_short_pressure.py",
+        "data/experiments/exp-20260619-007/exp_20260619_007_finra_float_normalized_short_pressure.json",
+        "experiments/cards/exp-20260619-007.md",
+        "experiments/manifests/exp-20260619-007.json",
+        "experiments/tickets/exp-20260619-007.json",
+        "experiments/logs/exp-20260619-007.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260619-007.md",
+      "causal_components": [
+        "private replay scout",
+        "PIT FINRA publication-date join",
+        "SEC EntityPublicFloat normalization",
+        "next-open paper entry",
+        "three-window Gate 1-4"
+      ],
+      "change_type": "default_off_paper_candidate_pool_replay_scout",
+      "changed_variable": "finra_public_float_normalized_short_pressure_candidate_source_v1",
+      "claimed_at": "2026-06-19T08:23:01+00:00",
+      "completed_at": "2026-06-19T08:31:04+00:00",
+      "created_at": "2026-06-19T08:22:53+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260619-007",
+      "experiment_uid": "expuid-5eb79630db624881",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260619-007",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-19T08:22:53+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "finra_float_normalized_short_pressure"
+      },
+      "hypothesis": "candidate_pool: PIT FINRA short_interest divided by SEC EntityPublicFloat-implied float shares, with positive short-interest change and liquid SPY-relative price confirmation, may identify crowded but demand-confirmed equities better than raw days-to-cover.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "finra_public_float_normalized_short_pressure_candidate_source_v1"
+      ],
+      "mechanism_family": "production_visible_free_finra_sec_float_candidate_pool",
+      "multiple_testing_risk_bucket": "moderate",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260613-029",
+        "exp-20260616-024",
+        "exp-20260616-026",
+        "exp-20260617-026"
+      ],
+      "new_evidence_type": "free_finra_short_interest_sec_public_float_normalization",
+      "novelty": {
+        "blocking_matches": [
+          {
+            "family_key": "finra_borrow_pressure_candidate_pool",
+            "score": 0.6588,
+            "status": "has_accepted"
+          },
+          {
+            "family_key": "sec_ftd_finra_confirmed_candidate_pool",
+            "score": 0.6485,
+            "status": "has_accepted"
+          },
+          {
+            "family_key": "finra_iwm_same_ticker_cooldown_candidate_pool",
+            "score": 0.6121,
+            "status": "has_accepted"
+          }
+        ],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "finra_short_interest",
+          "field_tags": [
+            "but",
+            "by",
+            "combined",
+            "confirmation",
+            "confirmed",
+            "cover",
+            "crowded",
+            "demand",
+            "equities",
+            "finra",
+            "float",
+            "interest",
+            "liquid",
+            "may",
+            "miss",
+            "normalized",
+            "pit",
+            "pressure",
+            "public",
+            "raw",
+            "relative",
+            "rising",
+            "rules",
+            "scarcity",
+            "short",
+            "strength",
+            "surface",
+            "that",
+            "to"
+          ],
+          "gate_shape": "candidate_pool_top1_10d"
+        },
+        "nearest": [
+          {
+            "accept_rate": 1.0,
+            "data_source": "finra_short_interest",
+            "family_key": "finra_borrow_pressure_candidate_pool",
+            "reopen_condition": "If accepted, build a shared default-off adapter plus parity tests. If rejected, move away from FINRA threshold/support variants unless new borrow-cost, loan-availability, or forward replacement evidence arrives.",
+            "score": 0.6588,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "finra_short_interest",
+            "family_key": "finra_short_pressure_iwm_confirmed_candidate_pool",
+            "reopen_condition": "Forward replacement-value rows or a materially stronger short-pressure field such as borrow fee, borrow availability, or float-normalized short interest.",
+            "score": 0.6533,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "finra_short_interest",
+            "family_key": "finra_borrow_pressure_broad_universe",
+            "reopen_condition": "If positive, promote a shared-paper-first BROAD FINRA helper with historical replay + daily snapshot + parity test, and collect closed forward replacement-value rows. If negative, FINRA short interest is not standalone entry alpha even broadly; use it as crowding/risk context and require a materially different PIT borrow-cost / availability field before any retry. Do not threshold-sweep the frozen",
+            "score": 0.6516,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "finra_short_interest",
+            "family_key": "sec_ftd_finra_confirmed_candidate_pool",
+            "reopen_condition": null,
+            "score": 0.6485,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "finra_short_interest",
+            "family_key": "finra_borrow_pressure_three_window_validation",
+            "reopen_condition": "If positive, the next evidence is closed forward replacement-value rows from the shared FINRA/IWM default-off ledger tagged with entry-time borrow-pressure. If negative, a valid retry needs a materially different PIT borrow-cost / hard-to-borrow / loan-availability field, not a days_to_cover, short-change, freshness, RS, top-N, hold, cooldown, or notional retune on these frozen windows.",
+            "score": 0.6432,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": "New cross-source field: FINRA reported short_interest divided by SEC EntityPublicFloat-implied float shares at the public-float fact date, not raw FINRA days-to-cover, raw short-interest change, or standalone public-float scarcity/contraction.",
+        "override": true,
+        "warn": true,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-search-automation",
+      "prediction": {
+        "success_probability": 0.18,
+        "expected_ev_delta": 0.2,
+        "expected_pnl_delta": 2500.0,
+        "main_failure_modes": [
+          "thin_float_coverage",
+          "old_window_regression",
+          "sector_concentration",
+          "accepted_distribution_not_beaten"
+        ],
+        "confidence_reason": "Prior FINRA borrow-pressure and public-float scarcity tests were not enough separately, but exp-20260613-029 explicitly named float-normalized short interest as the missing evidence axis. The disconfirmer is that annual public-float facts may be too stale and price-linked to add independent replacement value.",
+        "recorded_at": "2026-06-19T08:22:41+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "decision": "rejected_finra_float_normalized_short_pressure_candidate_pool",
+        "accepted": false,
+        "numeric_gate4_passed": false,
+        "artifact": "data/experiments/exp-20260619-007/exp_20260619_007_finra_float_normalized_short_pressure.json",
+        "log": "experiments/logs/exp-20260619-007.json",
+        "aggregate_expected_value_delta": 0.2503,
+        "aggregate_strategy_total_pnl_delta": 2092.64,
+        "gate4": {
+          "passed": false,
+          "decision": "rejected_finra_float_normalized_short_pressure_candidate_pool",
+          "failed_reasons": [
+            "window_ev_regression",
+            "window_pnl_regression",
+            "fewer_than_two_ev_improved_windows",
+            "drawdown_drift_too_high",
+            "accepted_compression_pnl_not_beaten",
+            "accepted_distribution_ev_not_beaten",
+            "accepted_distribution_pnl_not_beaten"
+          ],
+          "aggregate_ev_delta": 0.2503,
+          "aggregate_pnl_delta": 2092.64,
+          "windows_ev_improved": 1,
+          "windows_ev_regressed": 2,
+          "windows_pnl_improved": 2,
+          "windows_pnl_regressed": 1,
+          "target_trade_count": 271,
+          "target_trade_count_min": 20,
+          "target_windows": [
+            "late_strong",
+            "mid_weak",
+            "old_thin"
+          ],
+          "target_window_count_min": 3,
+          "max_drawdown_worse": 0.0305,
+          "max_drawdown_worse_guardrail": 0.005,
+          "minimum_core_survival_rate": 0.7925,
+          "survival_guard_passed": true,
+          "target_concentration": {
+            "passed": true,
+            "max_single_positive_pnl_share": 0.055764,
+            "max_single_positive_pnl_share_guardrail": 0.5,
+            "positive_pnl_hhi": 0.026054,
+            "positive_pnl_hhi_guardrail": 0.35
+          },
+          "accepted_compression_comparator": {
+            "experiment_id": "exp-20260608-013",
+            "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+            "aggregate_expected_value_delta": 0.1608,
+            "aggregate_pnl_delta": 2248.98
+          },
+          "accepted_distribution_comparator": {
+            "experiment_id": "exp-20260611-007",
+            "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+            "aggregate_expected_value_delta": 0.5286,
+            "aggregate_pnl_delta": 10432.91
+          }
+        },
+        "calibration": {
+          "predicted_success_probability": 0.18,
+          "actual_gate4_passed": false,
+          "actual_success": 0,
+          "failure_modes_observed": [
+            "window_ev_regression",
+            "window_pnl_regression",
+            "fewer_than_two_ev_improved_windows",
+            "drawdown_drift_too_high",
+            "accepted_compression_pnl_not_beaten",
+            "accepted_distribution_ev_not_beaten",
+            "accepted_distribution_pnl_not_beaten"
+          ],
+          "brier_score": 0.0324,
+          "expected_ev_delta": 0.2,
+          "actual_ev_delta": 0.2503,
+          "expected_pnl_delta": 2500.0,
+          "actual_pnl_delta": 2092.64
+        },
+        "production_impact": {
+          "trade_enabled": false,
+          "alters_orders": false,
+          "adapter_status": "private_replay_scout_no_shared_adapter",
+          "shared_policy_changed": false,
+          "backtester_adapter_changed": false,
+          "run_adapter_changed": false,
+          "replay_only": true,
+          "default_off_paper_only": true,
+          "daily_snapshot_exposed": false,
+          "parity_test_added": false,
+          "production_signal_path_changed": false,
+          "production_orders_changed": false,
+          "production_watchlist_changed": false,
+          "alters_signal_generation": false,
+          "alters_candidate_ranking": false,
+          "alters_sizing": false,
+          "alters_exits": false,
+          "uses_llm": false,
+          "uses_free_sec_companyfacts": true,
+          "uses_free_ohlcv": true,
+          "live_realism_evaluated": true,
+          "live_ready": false,
+          "execution_envelope": {
+            "trade_enabled": false,
+            "target_notional_per_paper_trade": 4000.0,
+            "daily_entry_slots": 1,
+            "same_ticker_cooldown_days": 10,
+            "hold_days": 10,
+            "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+            "order_semantics": "observe-only next-session-open paper entry; no broker order",
+            "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+            "kill_switch": "trade_enabled remains false; no production adapter changes",
+            "failure_handling": "missing FINRA row published on/before signal date, stale FINRA print, missing raw SEC EntityPublicFloat or shares-outstanding facts, stale public-float fact, missing public-float-date OHLCV, non-positive short-interest change, short-interest/public-float below the fixed 6% gate, missing signal OHLCV, missing next open, or missing 10d exit rejects the paper candidate"
+          },
+          "parity_note": "Replay-only private scout. No shared helper, production watchlist, live/default order path, ranking, sizing, or exits change. A positive result would require shared-paper-first historical replay, daily default-off snapshot, and parity tests before promotion.",
+          "uses_free_finra_short_interest": true,
+          "uses_raw_companyfacts_cache": true
+        },
+        "post_run_reflection": {
+          "why_result_happened": "FINRA short interest normalized by SEC public float did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, drawdown_drift_too_high, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). The crowding denominator was not enough to create robust replacement value beyond the accepted compression/distribution candidate-pool comparators. Do not retry by sweeping the 6% short-interest/public-float gate, FINRA freshness, public-float freshness, top-N, hold, cooldown, or notional on these windows.",
+          "outcome_summary": "Aggregate EV delta +0.2503; aggregate PnL delta $+2,092.64; max drawdown drift +0.0305; 271 paper trades.",
+          "forbidden_near_neighbor_retry": "Do not retry by sweeping short-interest/public-float threshold, short-interest-change, FINRA freshness, public-float freshness, RS/close/volume guards, top-N, hold days, cooldown, or notional on these frozen windows.",
+          "new_evidence_required": "If positive, build a shared-paper-first FINRA/public-float helper with historical replay, daily default-off snapshot, parity tests, and closed forward replacement-value rows before promotion. If negative, a valid retry needs materially different PIT borrow-cost, loan-availability, float-change, or forward replacement evidence rather than threshold retunes."
+        }
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260619-007.json",
+      "single_causal_variable": "finra_public_float_normalized_short_pressure_candidate_source_v1",
+      "status": "rejected",
+      "ticket_file": "experiments/tickets/exp-20260619-007.json",
+      "trial_family": "finra_public_float_normalized_short_pressure_candidate_pool",
+      "trial_variant_id": "finra_si_float_pct6_rising_liquid_leadership_top1_next_open_10d_v1",
+      "decision": "rejected_finra_float_normalized_short_pressure_candidate_pool",
+      "summary": "FINRA short interest normalized by SEC public float did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, drawdown_drift_too_high, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). The crowding denominator was not enough to create robust replacement value beyond the accepted compression/distribution candidate-pool comparators. Do not retry by sweeping the 6% short-interest/public-float gate, FINRA freshness, public-float freshness, top-N, hold, cooldown, or notional on these windows.",
+      "artifact": "data/experiments/exp-20260619-007/exp_20260619_007_finra_float_normalized_short_pressure.json",
+      "log": "experiments/logs/exp-20260619-007.json",
+      "aggregate_expected_value_delta": 0.2503,
+      "aggregate_strategy_total_pnl_delta": 2092.64,
+      "updated_at": "2026-06-19T08:31:04+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-19T04:11:05+00:00"
+  "updated_at": "2026-06-19T08:31:04+00:00"
 }
