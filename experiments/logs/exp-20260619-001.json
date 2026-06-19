@@ -1,0 +1,516 @@
+{
+  "anti_js": "No JavaScript was used.",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "calibration": {
+    "predicted_failure_modes": [
+      "zero_nonroll_date_revision_events",
+      "near_neighbor_pre_earnings_timing",
+      "missing_pit_revision_field"
+    ],
+    "predicted_success_probability": 0.18,
+    "realized_failure_mode": "zero_reliable_date_revision_events",
+    "surprise": "Moderate. The source is daily and PIT, but days_to_earnings is business-day-consistent and exposes no pre-event revision anomalies; explicit next-earnings-date fields are absent."
+  },
+  "causal_components": [
+    "history_scan",
+    "novelty_gate",
+    "gate2_surface_readiness",
+    "baseline_identity_check"
+  ],
+  "change_type": "alpha_surface_readiness",
+  "changed_files": [
+    "quant/experiments/exp_20260619_001_earnings_date_revision_readiness.py",
+    "data/experiments/exp-20260619-001/exp_20260619_001_earnings_date_revision_readiness.json",
+    "data/experiments/exp-20260619-001/before_baseline.json",
+    "data/experiments/exp-20260619-001/after_no_strategy_change.json",
+    "data/experiments/exp-20260619-001/README.md",
+    "experiments/logs/exp-20260619-001.json",
+    "experiments/cards/exp-20260619-001.md",
+    "experiments/manifests/exp-20260619-001.json",
+    "experiments/tickets/exp-20260619-001.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "earnings_snapshot_date_revision_candidate_surface_readiness_v1",
+  "claim_note": "Initial non-force claim was blocked by legacy broad-scope active tickets with no locked-variable conflict; force claim was used and actual writes were restricted to this experiment's own files.",
+  "created_at": "2026-06-19T00:19:25+00:00",
+  "decision": "blocked_zero_reliable_earnings_date_revision_events",
+  "delta_metrics": {
+    "aggregate_expected_value_score": 0.0,
+    "aggregate_total_pnl": 0.0,
+    "max_window_drawdown_pct": 0.0,
+    "min_survival_rate": 0.0,
+    "total_trade_count": 0
+  },
+  "experiment_id": "exp-20260619-001",
+  "gate1_baseline": {
+    "baseline_aggregate": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "max_window_drawdown_pct": 0.1119,
+      "min_survival_rate": 0.7925,
+      "total_trade_count": 61,
+      "window_count": 3
+    },
+    "canonical_windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    ],
+    "source": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "status": "passed",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23",
+        "strategy_total_return_pct": 117.07,
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "win_rate": 0.8333
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23",
+        "strategy_total_return_pct": 78.11,
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "win_rate": 0.5238
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02",
+        "strategy_total_return_pct": 39.67,
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "win_rate": 0.4091
+      }
+    }
+  },
+  "gate2_field_availability": {
+    "earnings_snapshot_surface": {
+      "event_date_derivation": "Use explicit next/report date fields if present. Current local snapshots do not expose one, so days_to_earnings is checked only for deviations from its expected business-day countdown; it is not converted into a calendar event date.",
+      "non_roll_definition": "A reliable revision is either a pre-event explicit date change or a days_to_earnings value that differs from previous_days minus the business-day gap between snapshots. Countdown crossing zero is treated as normal quarterly rollover.",
+      "snapshot_date_range": {
+        "first": "2024-10-02",
+        "last": "2026-06-17"
+      },
+      "snapshot_dir": "data/daily/snapshots/earnings",
+      "snapshot_file_count": 459,
+      "windows": {
+        "late_strong": {
+          "abnormal_countdown_examples": [],
+          "abnormal_countdown_revision_events": 0,
+          "business_day_rollover_events": 76,
+          "countdown_pulled_forward_events": 0,
+          "countdown_pushed_later_events": 0,
+          "countdown_source_counts": {
+            "days_to_earnings": 4892,
+            "missing_days_to_earnings": 784
+          },
+          "explicit_event_date_changes": 0,
+          "explicit_field_source_counts": {
+            "missing_explicit_event_date": 5676
+          },
+          "explicit_natural_rollover_changes": 0,
+          "explicit_non_roll_examples": [],
+          "explicit_non_roll_revision_events": 0,
+          "reliable_revision_events": 0,
+          "snapshot_count": 129,
+          "snapshot_pairs": 129,
+          "ticker_pairs_seen": 5676,
+          "ticker_pairs_with_days_to_earnings": 4892,
+          "ticker_pairs_with_explicit_event_date": 0,
+          "unique_reliable_revision_ticker_count": 0,
+          "unique_reliable_revision_tickers": []
+        },
+        "mid_weak": {
+          "abnormal_countdown_examples": [],
+          "abnormal_countdown_revision_events": 0,
+          "business_day_rollover_events": 75,
+          "countdown_pulled_forward_events": 0,
+          "countdown_pushed_later_events": 0,
+          "countdown_source_counts": {
+            "days_to_earnings": 4978,
+            "missing_days_to_earnings": 917
+          },
+          "explicit_event_date_changes": 0,
+          "explicit_field_source_counts": {
+            "missing_explicit_event_date": 5895
+          },
+          "explicit_natural_rollover_changes": 0,
+          "explicit_non_roll_examples": [],
+          "explicit_non_roll_revision_events": 0,
+          "reliable_revision_events": 0,
+          "snapshot_count": 131,
+          "snapshot_pairs": 131,
+          "ticker_pairs_seen": 5895,
+          "ticker_pairs_with_days_to_earnings": 4978,
+          "ticker_pairs_with_explicit_event_date": 0,
+          "unique_reliable_revision_ticker_count": 0,
+          "unique_reliable_revision_tickers": []
+        },
+        "old_thin": {
+          "abnormal_countdown_examples": [],
+          "abnormal_countdown_revision_events": 0,
+          "business_day_rollover_events": 85,
+          "countdown_pulled_forward_events": 0,
+          "countdown_pushed_later_events": 0,
+          "countdown_source_counts": {
+            "days_to_earnings": 5472,
+            "missing_days_to_earnings": 1008
+          },
+          "explicit_event_date_changes": 0,
+          "explicit_field_source_counts": {
+            "missing_explicit_event_date": 6480
+          },
+          "explicit_natural_rollover_changes": 0,
+          "explicit_non_roll_examples": [],
+          "explicit_non_roll_revision_events": 0,
+          "reliable_revision_events": 0,
+          "snapshot_count": 145,
+          "snapshot_pairs": 144,
+          "ticker_pairs_seen": 6480,
+          "ticker_pairs_with_days_to_earnings": 5472,
+          "ticker_pairs_with_explicit_event_date": 0,
+          "unique_reliable_revision_ticker_count": 0,
+          "unique_reliable_revision_tickers": []
+        }
+      }
+    },
+    "minimum_runtime_field_result": "The canonical baseline strategy rows retain entry_date and target_price, but the proposed new earnings-date revision surface has zero reliable revision events to feed an after policy.",
+    "minimum_runtime_fields_checked": [
+      "entry_date",
+      "target_price"
+    ],
+    "status": "blocked",
+    "surface_gate": {
+      "blocking_item": "The earnings snapshots contain no reliable expected-date revision events in the canonical windows: no explicit event-date fields are present, and days_to_earnings follows the expected business-day countdown except for normal earnings-cycle rollovers.",
+      "reliable_revision_events_by_window": {
+        "late_strong": 0,
+        "mid_weak": 0,
+        "old_thin": 0
+      },
+      "requirement": "At least one reliable expected-date revision event in each canonical window before testing any strategy policy. Reliable means an explicit event-date field changes before the old event date, or days_to_earnings deviates from the expected business-day countdown.",
+      "status": "blocked"
+    }
+  },
+  "gate3_survival": {
+    "baseline_min_survival_rate": 0.7925,
+    "guardrail": "survival_rate must not fall below 0.05",
+    "interpretation": "No filter or candidate helper was tested because Gate 2 surface readiness failed.",
+    "status": "not_applicable_no_new_filter"
+  },
+  "gate4": {
+    "acceptance_result": "blocked",
+    "after": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23",
+        "strategy_total_return_pct": 117.07,
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "win_rate": 0.8333
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23",
+        "strategy_total_return_pct": 78.11,
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "win_rate": 0.5238
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02",
+        "strategy_total_return_pct": 39.67,
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "win_rate": 0.4091
+      }
+    },
+    "aggregate_after": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "max_window_drawdown_pct": 0.1119,
+      "min_survival_rate": 0.7925,
+      "total_trade_count": 61,
+      "window_count": 3
+    },
+    "aggregate_before": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "max_window_drawdown_pct": 0.1119,
+      "min_survival_rate": 0.7925,
+      "total_trade_count": 61,
+      "window_count": 3
+    },
+    "aggregate_delta": {
+      "aggregate_expected_value_score": 0.0,
+      "aggregate_total_pnl": 0.0,
+      "max_window_drawdown_pct": 0.0,
+      "min_survival_rate": 0.0,
+      "total_trade_count": 0
+    },
+    "before": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23",
+        "strategy_total_return_pct": 117.07,
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "win_rate": 0.8333
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23",
+        "strategy_total_return_pct": 78.11,
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "win_rate": 0.5238
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02",
+        "strategy_total_return_pct": 39.67,
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "win_rate": 0.4091
+      }
+    },
+    "reason": "The only defensible after result is identity to baseline because the free earnings snapshot date-revision surface produced no reliable revision events in the canonical windows.",
+    "status": "blocked_no_after_policy",
+    "window_deltas": {
+      "late_strong": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0.0,
+        "win_rate": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0.0,
+        "win_rate": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0.0,
+        "win_rate": 0.0
+      }
+    }
+  },
+  "hypothesis": "candidate_pool/data_edge: PIT daily earnings snapshots may expose non-roll next-earnings-date revision events (date pulled earlier or pushed later) that expand the candidate pool with a free production-visible timing edge; proceed only if all three canonical windows have non-roll revision samples.",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "mechanism_family": "earnings_calendar_revision_candidate_pool",
+  "novelty_check": {
+    "blocking_matches": [
+      {
+        "family_key": "pead_continuation_three_round",
+        "score": 0.619,
+        "status": "frozen_rejected"
+      },
+      {
+        "family_key": "analyst_revision_surprise_low_extension_candidate_pool",
+        "score": 0.6095,
+        "status": "has_accepted"
+      }
+    ],
+    "interpretation": "The novelty override is limited to a data-readiness check: snapshot-to-snapshot non-roll event-date changes are distinct from EPS/analyst revision velocity, static DTE, or pre-earnings surprise thresholds. The readiness gate failed after correcting for business-day countdown behavior, so no strategy replay or promotion is claimed.",
+    "new_evidence_axis": "snapshot-to-snapshot next_earnings_date changes after excluding natural post-event rollover; not EPS/analyst revision velocity, pre-earnings DTE, or static earnings timing thresholds",
+    "override_recorded": true,
+    "reservation_nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "form144_revision_data_readiness",
+        "reopen_condition": "Required new evidence is PIT parsed Form 144 planned-sale shares or value, holder role, relationship-to-issuer, public float and sale_pct_float, or historical/forward analyst-count, revenue-estimate, dispersion, vendor_asof, and fiscal-period coverage with closed candidate outcomes.",
+        "score": 0.639,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "earnings_snapshot_pre_earnings_surprise_revision_rs_candidate_pool",
+        "reopen_condition": "If revisited, use closed forward replacement-value rows or a richer production-visible expectation field such as current surprise, guidance, or estimate dispersion; do not threshold-mine this frozen sample.",
+        "score": 0.6308,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "analyst_revision_velocity_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.6293,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "earnings_snapshot_imminent_surprise_rs_candidate_pool",
+        "reopen_condition": "If revisited, use closed forward replacement-value rows or a materially richer free-data field such as reliable current-quarter guidance, surprise dispersion, or a now-usable PIT revision ledger.",
+        "score": 0.6205,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "pead_continuation_three_round",
+        "reopen_condition": "Keep candidate-hit lag as read-only until it has enough positive revision conversions and earnings-date context.",
+        "score": 0.619,
+        "status": "frozen_rejected",
+        "trials": 3
+      }
+    ],
+    "reservation_warning": true
+  },
+  "post_run_reflection": {
+    "anti_repeat_rule": "Do not retry this by sweeping days_to_earnings, static pre-earnings windows, surprise history, top-N, hold days, or cooldown. A valid retry needs a genuinely richer field such as vendor as-of estimate-date revisions, guidance/calendar-change reasons, estimate dispersion, or closed forward replacement rows.",
+    "best_next_alpha_direction": "Shift away from earnings-calendar snapshot timing unless a new free PIT field appears. Stronger candidate-pool data-edge work is still SEC prospectus/listing/float/lockup ingestion, parsed 13D/13G amendment stake-direction with holder intent, or analyst revision breadth/dispersion joined as-of.",
+    "why_negative_or_blocked": "The daily earnings snapshot data exposes a stable days_to_earnings countdown rather than explicit expected event dates. After comparing each ticker to the business-day countdown expected from the prior snapshot, all canonical windows have zero abnormal revisions. The surface therefore has no tradable pre-event calendar-change signal."
+  },
+  "pre_run_answers": {
+    "alpha_hypothesis": "candidate_pool/data_edge: PIT daily earnings snapshots may expose non-roll next-earnings-date revision events (date pulled earlier or pushed later) that expand the candidate pool with a free production-visible timing edge; proceed only if all three canonical windows have non-roll revision samples.",
+    "category": "candidate_pool/data_edge",
+    "historical_near_neighbors": [
+      {
+        "decision": "blocked",
+        "experiment_id": "exp-20260618-024",
+        "relevance": "Latest non-repeat surface scan concluded that the next alpha needs a new PIT surface before another strategy replay is trustworthy."
+      },
+      {
+        "decision": "blocked",
+        "experiment_id": "exp-20260618-023",
+        "relevance": "Options skew was a high-potential timing surface but lacked canonical-window PIT coverage."
+      },
+      {
+        "decision": "rejected",
+        "experiment_id": "exp-20260610-025",
+        "relevance": "Analyst revision acceleration residual leadership regressed all three windows; this run tests calendar-date changes, not EPS revision velocity."
+      },
+      {
+        "decision": "frozen/rejected family",
+        "experiment_id": "earnings_snapshot_pre_earnings_surprise_revision_rs_candidate_pool",
+        "relevance": "Novelty gate flagged static earnings snapshot timing/surprise families; the declared new axis is non-roll expected-date changes."
+      }
+    ],
+    "reproducibility": "Run this file to regenerate the surface-readiness artifact, baseline identity before/after artifacts, log, card, manifest, JSONL row, and registry result.",
+    "single_policy_bundle_under_test": "Readiness of earnings snapshot next-event-date revision events; no entry, exit, ranking, sizing, risk, LLM, or live policy is changed.",
+    "success_criteria": "Reliable expected-date revision events must exist in late_strong, mid_weak, and old_thin before a shared default-off candidate helper is worth implementing."
+  },
+  "prediction": {
+    "confidence_reason": "The data source is free and already daily/PIT, but prior earnings timing tests were sparse and this run first checks whether date-revision events actually exist before touching strategy policy.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "zero_nonroll_date_revision_events",
+      "near_neighbor_pre_earnings_timing",
+      "missing_pit_revision_field"
+    ],
+    "recorded_at": "2026-06-19T00:11:24+00:00",
+    "success_probability": 0.18
+  },
+  "production_impact": {
+    "backtest_code_changed": false,
+    "live_orders_changed": false,
+    "live_realistic_execution_envelope": "Not evaluated because no tradable alpha was accepted. A future positive candidate-pool alpha must record notional cap, liquidity, slippage, concentration, kill switch, and order semantics in the after measurement.",
+    "parity_assessment": "No production/backtest inconsistency can be introduced because no trading policy or shared helper changed. If this surface had passed readiness, promotion would require a shared default-off helper and daily snapshot parity before acceptance.",
+    "production_code_changed": false,
+    "shared_helper_added": false,
+    "trade_enabled_changed": false
+  },
+  "reproduction": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260619_001_earnings_date_revision_readiness.py",
+  "single_causal_variable": "earnings_snapshot_date_revision_candidate_surface_readiness_v1",
+  "status": "blocked",
+  "trial_family": "earnings_snapshot_date_revision_readiness",
+  "trial_variant_id": "v1"
+}
