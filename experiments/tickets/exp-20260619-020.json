@@ -1,0 +1,857 @@
+{
+  "acceptance_rule": "Blocked unless a genuinely new, production-visible PIT alpha surface with coverage in all three canonical windows is available.",
+  "allowed_write_scope": [
+    "experiments/logs",
+    "experiments/tickets",
+    "experiments/manifests",
+    "experiments/cards",
+    "data/experiments",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260619-020.md",
+  "causal_components": [
+    "history_near_neighbor_audit",
+    "local_free_data_inventory_scan",
+    "gate2_readiness_verdict",
+    "production_parity_risk_verdict"
+  ],
+  "change_type": "alpha_surface_readiness_blocker",
+  "changed_variable": "post_20260619_nonrepeat_free_pit_candidate_pool_readiness_v2",
+  "claimed_at": "2026-06-19T22:11:02+00:00",
+  "completed_at": "2026-06-19T22:15:07+00:00",
+  "created_at": "2026-06-19T22:10:38+00:00",
+  "evaluation_windows": [
+    {
+      "label": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json"
+    },
+    {
+      "label": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json"
+    },
+    {
+      "label": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json"
+    }
+  ],
+  "experiment_id": "exp-20260619-020",
+  "experiment_uid": "expuid-1fcf8dab427a41dd",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260619-020",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-19T22:10:38+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "post_20260619_nonrepeat_surface_readiness_v2"
+  },
+  "hypothesis": "candidate_pool/data_edge readiness: after reviewing recent logs and local free PIT data inventory, alpha execution should proceed only if a materially new candidate-pool surface has canonical three-window coverage, novelty clearance, and a shared historical/daily parity path. Otherwise forcing a replay would be untrustworthy.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "no strategy code changes; no production orders/ranking/sizing/exits changed; no JavaScript"
+  ],
+  "mechanism_family": "production_visible_free_pit_candidate_pool_surface_selection",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "run.py",
+    "quant/shared production helpers",
+    "live/default order/ranking/sizing paths"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260614-020",
+    "exp-20260614-024",
+    "exp-20260616-015",
+    "exp-20260617-020",
+    "exp-20260617-022",
+    "exp-20260617-023",
+    "exp-20260617-024",
+    "exp-20260618-013",
+    "exp-20260618-016",
+    "exp-20260619-007",
+    "exp-20260619-015",
+    "exp-20260619-019"
+  ],
+  "new_evidence_type": "fresh_post_20260619_cross_surface_readiness_audit",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "inventory_dio_turnover_improvement_candidate_pool",
+        "score": 0.61,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "quarterly_inventory_dio_turnover_improvement_candidate_pool",
+        "score": 0.6098,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "companyfacts_inventory_discipline_candidate_pool",
+        "score": 0.6095,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "inventory_to_revenue_leanness_candidate_pool",
+        "score": 0.6093,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "free_cash_flow_capex_coverage_quality_candidate_pool",
+        "score": 0.6091,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "companyfacts_ratio",
+      "field_tags": [
+        "a",
+        "after",
+        "alpha",
+        "be",
+        "canonical",
+        "clearance",
+        "coverage",
+        "daily",
+        "data",
+        "edge",
+        "execution",
+        "forcing",
+        "has",
+        "historical",
+        "if",
+        "inventory",
+        "local",
+        "logs",
+        "materially",
+        "new",
+        "nonrepeat",
+        "novelty",
+        "only",
+        "otherwise",
+        "parity",
+        "path",
+        "pit",
+        "post",
+        "proceed",
+        "readiness",
+        "recent",
+        "reviewing",
+        "should",
+        "surface",
+        "three",
+        "untrustworthy",
+        "window",
+        "would"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "inventory_dio_turnover_improvement_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT inventory-quality evidence such as quarterly inventory turnover where reported, finished-goods vs raw-materials decomposition, or closed forward replacement-value rows. Do not sweep the inventory/COGS tag list, DIO threshold, COGS-growth floor, annual fact freshness, price guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.61,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "quarterly_inventory_dio_turnover_improvement_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT inventory-quality evidence such as finished-goods vs raw-materials decomposition, quarterly inventory turnover with richer segment detail, or closed forward replacement-value rows. Do not sweep the inventory/COGS tag list, quarterly DIO threshold, COGS-growth floor, fact freshness, price guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.6098,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "companyfacts_inventory_discipline_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.6095,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "inventory_to_revenue_leanness_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT inventory-quality evidence such as quarterly inventory turnover where reported, finished-goods vs raw-materials decomposition, days-inventory-outstanding trajectory, or closed forward replacement-value rows. Do not sweep the inventory tag list, inventory/revenue threshold, revenue-growth floor, annual fact freshness, price guards, top-N, hold, cooldown, or no",
+        "score": 0.6093,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "free_cash_flow_capex_coverage_quality_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT capex/cash-flow evidence or closed forward replacement rows. Do not sweep FCF/assets, OCF/capex, capex/assets, fact freshness, RS/close/volume/vol guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.6091,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "not a strategy family retry: a fresh cross-surface Gate2/novelty/parity readiness audit after exp-20260619-019, explicitly testing whether any non-repeat free PIT candidate-pool surface is runnable before writing strategy code",
+    "override": true,
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "success_probability": 0.05,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "all_free_surfaces_frozen_or_missing_pit_coverage",
+      "near_neighbor_novelty_block",
+      "production_parity_untrusted"
+    ],
+    "confidence_reason": "Recent 20260617-20260619 logs exhausted raw SEC event, Companyfacts, FINRA, ownership, and OHLCV relation retries; current scans show S-8/offering/cap-status/options/borrow fields are missing or not canonical-window PIT-ready.",
+    "recorded_at": "2026-06-19T22:10:26+00:00"
+  },
+  "prior_trial_count": 12,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "decision": "blocked_no_gate4_ready_nonrepeat_alpha_surface_after_exp019",
+    "artifact": "data/experiments/exp-20260619-020/exp_20260619_020_post_20260619_nonrepeat_surface_readiness_v2.json",
+    "before": "data/experiments/exp-20260619-020/before_baseline.json",
+    "after": "data/experiments/exp-20260619-020/after_no_strategy_change.json",
+    "log": "experiments/logs/exp-20260619-020.json",
+    "runner": "quant/experiments/exp_20260619_020_post_20260619_nonrepeat_surface_readiness_v2.py",
+    "delta_metrics": {
+      "aggregate_expected_value_score": 0.0,
+      "aggregate_total_pnl": 0.0,
+      "total_trade_count": 0.0,
+      "min_survival_rate": 0.0,
+      "max_window_drawdown_pct": 0.0
+    },
+    "gate4": {
+      "status": "blocked_no_after_policy",
+      "before": {
+        "late_strong": {
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "strategy_total_return_pct": 117.07,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        "mid_weak": {
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "strategy_total_return_pct": 78.11,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        "old_thin": {
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "strategy_total_return_pct": 39.67,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      },
+      "after": {
+        "late_strong": {
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "strategy_total_return_pct": 117.07,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        "mid_weak": {
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "strategy_total_return_pct": 78.11,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        "old_thin": {
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "strategy_total_return_pct": 39.67,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      },
+      "window_deltas": {
+        "late_strong": {
+          "expected_value_score": 0.0,
+          "total_pnl": 0.0,
+          "max_drawdown_pct": 0.0,
+          "trade_count": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": 0.0,
+          "total_pnl": 0.0,
+          "max_drawdown_pct": 0.0,
+          "trade_count": 0.0
+        },
+        "old_thin": {
+          "expected_value_score": 0.0,
+          "total_pnl": 0.0,
+          "max_drawdown_pct": 0.0,
+          "trade_count": 0.0
+        }
+      },
+      "aggregate_before": {
+        "aggregate_expected_value_score": 7.8941,
+        "aggregate_total_pnl": 234850.99,
+        "total_trade_count": 61.0,
+        "min_survival_rate": 0.7925,
+        "max_window_drawdown_pct": 0.1119
+      },
+      "aggregate_after": {
+        "aggregate_expected_value_score": 7.8941,
+        "aggregate_total_pnl": 234850.99,
+        "total_trade_count": 61.0,
+        "min_survival_rate": 0.7925,
+        "max_window_drawdown_pct": 0.1119
+      },
+      "aggregate_delta": {
+        "aggregate_expected_value_score": 0.0,
+        "aggregate_total_pnl": 0.0,
+        "total_trade_count": 0.0,
+        "min_survival_rate": 0.0,
+        "max_window_drawdown_pct": 0.0
+      },
+      "acceptance_result": "blocked",
+      "reason": "No after policy was run. The after metrics intentionally equal the canonical baseline; this is a blocker record, not an alpha claim."
+    },
+    "calibration": {
+      "predicted_success_probability": 0.05,
+      "predicted_failure_modes": [
+        "all_free_surfaces_frozen_or_missing_pit_coverage",
+        "near_neighbor_novelty_block",
+        "production_parity_untrusted"
+      ],
+      "realized_failure_mode": "all_free_surfaces_frozen_or_missing_pit_coverage",
+      "surprise": "Low surprise: S-8/offering economics lack text, 8-K features lack material tuples, options are not canonical-window ready, and recent Companyfacts/ownership/FINRA/OHLCV relation lanes are frozen or rejected."
+    },
+    "summary": "The current high-potential free-data directions are blocked by missing PIT fields or frozen-family evidence. Running a strategy replay now would mostly retune known losers."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260619-020.json",
+  "single_causal_variable": "post_20260619_nonrepeat_free_pit_candidate_pool_readiness_v2",
+  "status": "blocked",
+  "ticket_file": "experiments/tickets/exp-20260619-020.json",
+  "trial_family": "post_20260619_nonrepeat_surface_readiness",
+  "trial_variant_id": "post_20260619_nonrepeat_surface_readiness_v2",
+  "decision": "blocked_no_gate4_ready_nonrepeat_alpha_surface_after_exp019",
+  "summary": "The current high-potential free-data directions are blocked by missing PIT fields or frozen-family evidence. Running a strategy replay now would mostly retune known losers.",
+  "artifact": "data/experiments/exp-20260619-020/exp_20260619_020_post_20260619_nonrepeat_surface_readiness_v2.json",
+  "before": "data/experiments/exp-20260619-020/before_baseline.json",
+  "after": "data/experiments/exp-20260619-020/after_no_strategy_change.json",
+  "log": "experiments/logs/exp-20260619-020.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "post_run_reflection": {
+    "why_blocked": "The current high-potential free-data directions are blocked by missing PIT fields or frozen-family evidence. Running a strategy replay now would mostly retune known losers.",
+    "negative_result_reflection": "Recent negative results failed because old_thin regressed, drawdown/concentration worsened, accepted comparators were not beaten, or the candidate sample was zero/thin. The blocker prevents repeating those shapes.",
+    "best_next_alpha_direction": "Build/import a new PIT surface first: SEC offering/S-8 primary-document economics, historical cover-page filer status, parsed customer/segment contract economics, PIT borrow/options as-of rows, or analyst breadth/dispersion joined to historical candidate rows.",
+    "forbidden_near_neighbor_retry": "Do not retry cash-conversion, working-capital, SEC form/item, S-8/offering metadata, FINRA/FTD, 13D/G stake thresholds, Form4 code filters, or OHLCV lead-lag thresholds without the named new data axis."
+  },
+  "production_impact": {
+    "production_code_changed": false,
+    "backtest_code_changed": false,
+    "shared_helper_added": false,
+    "live_orders_changed": false,
+    "trade_enabled_changed": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_changed": false,
+    "parity_assessment": "No production/backtest inconsistency can be introduced because no trading policy or helper changed. Any future positive alpha must be implemented as a shared default-off helper before acceptance.",
+    "live_realistic_execution_envelope": "not_applicable_no_tradable_alpha"
+  },
+  "gate1_baseline": {
+    "status": "passed",
+    "source": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "canonical_windows": [
+      {
+        "label": "late_strong",
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json"
+      },
+      {
+        "label": "mid_weak",
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json"
+      },
+      {
+        "label": "old_thin",
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json"
+      }
+    ],
+    "baseline_aggregate": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "total_trade_count": 61.0,
+      "min_survival_rate": 0.7925,
+      "max_window_drawdown_pct": 0.1119
+    },
+    "windows": {
+      "late_strong": {
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "expected_value_score": 5.1628,
+        "sharpe_daily": 4.41,
+        "strategy_total_return_pct": 117.07,
+        "total_pnl": 117072.92,
+        "max_drawdown_pct": 0.0665,
+        "win_rate": 0.8333,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      "mid_weak": {
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "expected_value_score": 2.1402,
+        "sharpe_daily": 2.74,
+        "strategy_total_return_pct": 78.11,
+        "total_pnl": 78110.11,
+        "max_drawdown_pct": 0.1119,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      "old_thin": {
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "expected_value_score": 0.5911,
+        "sharpe_daily": 1.49,
+        "strategy_total_return_pct": 39.67,
+        "total_pnl": 39667.96,
+        "max_drawdown_pct": 0.1001,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    }
+  },
+  "gate2_field_availability": {
+    "status": "blocked",
+    "minimum_runtime_fields_checked": [
+      "entry_date",
+      "target_price"
+    ],
+    "minimum_runtime_field_result": "Existing canonical rows expose the minimum runtime fields, but no new non-repeat surface exposes the additional PIT fields needed for a trustworthy after policy.",
+    "local_inventory": {
+      "sec_filing_text": {
+        "files": 406,
+        "rows": 7841,
+        "forms_top": [
+          [
+            "8-K",
+            7841
+          ]
+        ],
+        "s8_rows": 0,
+        "offering_like_rows": 0,
+        "same_accession_fact_rows": 0,
+        "non_missing_feature_values": {}
+      },
+      "sec_filing_events": {
+        "files": 406,
+        "rows": 11058,
+        "forms_top": [
+          [
+            "8-K",
+            8524
+          ],
+          [
+            "10-Q",
+            1742
+          ],
+          [
+            "10-K",
+            792
+          ]
+        ],
+        "s8_rows": 0,
+        "offering_like_rows": 0,
+        "same_accession_fact_rows": 0,
+        "non_missing_feature_values": {}
+      },
+      "sec_filing_features": {
+        "files": 405,
+        "rows": 7535,
+        "forms_top": [
+          [
+            "8-K",
+            7378
+          ],
+          [
+            "8-K/A",
+            157
+          ]
+        ],
+        "s8_rows": 0,
+        "offering_like_rows": 0,
+        "same_accession_fact_rows": 25,
+        "non_missing_feature_values": {
+          "gross_margin_delta": 9,
+          "inventory_growth": 18,
+          "receivables_growth": 18,
+          "fcf_to_net_income_gap": 18
+        }
+      },
+      "options_onclickmedia": {
+        "chain_file_count": 33,
+        "min_date": "20260505",
+        "max_date": "20260618",
+        "canonical_window_chain_file_count": 0,
+        "canonical_window_dates": [],
+        "verdict": "blocked_missing_mid_old_canonical_coverage"
+      },
+      "estimate_revision_latest": {
+        "path": "data/non_ohlcv/estimate_revision_ledger_summary_20260618.json",
+        "date_key": "20260618",
+        "summary": {
+          "schema_version": 2,
+          "row_count": 60,
+          "tickers_with_eps_estimate": 53,
+          "rows_with_next_earnings_date": 52,
+          "rows_with_prior_same_event": 51,
+          "estimate_revision_usable_rows": 51,
+          "up_revision_rows": 0,
+          "down_revision_rows": 0,
+          "pit_safe_rate": 0.85,
+          "matched_feature_rows": 0,
+          "matched_candidate_rows": 0,
+          "matched_selected_signal_rows": 0,
+          "estimate_revision_usable_and_matched_candidate_rows": 0,
+          "up_revision_matched_candidate_rows": 0,
+          "down_revision_matched_candidate_rows": 0,
+          "candidate_match_rate": 0.0,
+          "matched_candidate_tickers": [],
+          "matched_selected_signal_tickers": [],
+          "generated_at": "2026-06-19T03:04:07+00:00",
+          "as_of_date": "2026-06-18",
+          "data_dir": "data",
+          "signal_data_dir": "data",
+          "daily_signal_match_record_count": 0,
+          "daily_signal_match_sources": [],
+          "ledger_path": "data/non_ohlcv/estimate_revision_ledger_20260618.jsonl",
+          "summary_path": "data/non_ohlcv/estimate_revision_ledger_summary_20260618.json",
+          "production_impact": {
+            "shared_policy_changed": false,
+            "backtester_adapter_changed": false,
+            "run_adapter_changed": true,
+            "replay_only": false,
+            "alters_signal_generation": false,
+            "alters_candidate_ranking": false,
+            "alters_sizing": false,
+            "alters_orders": false,
+            "scope": "default_off_forward_estimate_revision_data_ledger"
+          }
+        }
+      },
+      "moomoo_capital_flow": {
+        "manifest": {
+          "cumulative_rows_total": 43,
+          "endpoint": "get_capital_distribution",
+          "error_count": 0,
+          "errors_sample": {},
+          "last_collected_as_of": "2026-06-19",
+          "last_collected_at_utc": "2026-06-19T17:26:30+00:00",
+          "pit_boundary": "current_snapshot_only; forward-only; never backfillable; observe-only; not wired to run.py or any decision",
+          "rows_appended_this_run": 43,
+          "rows_path": "data/non_ohlcv/moomoo_capital_flow/rows.jsonl",
+          "rows_skipped_duplicate": 0,
+          "schema": "observe_only_forward_accumulation_v1",
+          "skipped_tickers": [
+            "GLD",
+            "IAU",
+            "IWM",
+            "QQQ",
+            "SLV",
+            "SPY"
+          ],
+          "source": "moomoo_openapi_capital_distribution",
+          "trade_enabled": false,
+          "universe_size": 43
+        },
+        "row_file_exists": true
+      },
+      "finra_short_interest_rows_exists": true,
+      "sec_13d13g_rows_exists": true,
+      "sec_ftd_rows_exists": true
+    },
+    "candidate_surfaces": [
+      {
+        "surface": "S-8 registered-share economics",
+        "gate2_verdict": "blocked_missing_primary_text",
+        "evidence": "sec_filing_text standard-window S-8 rows=0; raw S-8 form absorption already rejected in exp-20260617-024.",
+        "needed_new_axis": "S-8 primary text with registered share amount normalized by float or market cap."
+      },
+      {
+        "surface": "offering/prospectus financing economics",
+        "gate2_verdict": "blocked_missing_primary_text",
+        "evidence": "sec_filing_text offering-like rows=0; exp-20260618-013 already blocked proceeds/dilution parsing.",
+        "needed_new_axis": "PIT primary-document offering amount, use of proceeds, security type, and dilution terms."
+      },
+      {
+        "surface": "SEC filing features plus same-accession facts",
+        "gate2_verdict": "blocked_no_material_feature_tuple",
+        "evidence": "feature rows=7535, same_accession_fact_rows=25, non_missing={'gross_margin_delta': 9, 'inventory_growth': 18, 'receivables_growth': 18, 'fcf_to_net_income_gap': 18}.",
+        "needed_new_axis": "Same-accession structured facts or PIT consensus/guidance fields joined to 8-K items."
+      },
+      {
+        "surface": "options skew / open interest",
+        "gate2_verdict": "blocked_missing_mid_old_canonical_coverage",
+        "evidence": "OnclickMedia chain files span 20260505 to 20260618; canonical-window chain file count=0.",
+        "needed_new_axis": "Historical PIT option chain rows with vendor as-of, OI lag, spread, stale-chain, and fill-cost controls."
+      },
+      {
+        "surface": "analyst revision breadth / dispersion",
+        "gate2_verdict": "blocked_missing_candidate_join",
+        "evidence": "Latest revision summary exists but recent exp-20260619-001/011 showed unreliable or zero candidate joins; latest summary keys=['as_of_date', 'candidate_match_rate', 'daily_signal_match_record_count', 'daily_signal_match_sources', 'data_dir', 'down_revision_matched_candidate_rows', 'down_revision_rows', 'estimate_revision_usable_and_matched_candidate_rows', 'estimate_revision_usable_rows', 'generated_at', 'ledger_path', 'matched_candidate_rows'].",
+        "needed_new_axis": "As-of revision breadth/dispersion rows joined to historical candidates across all three windows."
+      },
+      {
+        "surface": "FINRA / FTD short pressure",
+        "gate2_verdict": "blocked_missing_borrow_cost_axis",
+        "evidence": "Historical FINRA/FTD rows exist, but exp-20260619-007 and prior FINRA/FTD attempts failed window/drawdown/comparator gates.",
+        "needed_new_axis": "PIT borrow fee, utilization, loan availability, or options put-skew context."
+      },
+      {
+        "surface": "Companyfacts cash-flow / working-capital / burden ratios",
+        "gate2_verdict": "blocked_frozen_family",
+        "evidence": "Cash conversion, inventory, DPO/DSO/DIO/CCC, debt, segment, customer, advertising, and relief/overhang fields were rejected or accepted-then-frozen in the 20260614-20260619 logs.",
+        "needed_new_axis": "PIT decomposition such as customer identity, contract economics, segment profit mix, or closed forward rows."
+      },
+      {
+        "surface": "OHLCV relation / lead-lag",
+        "gate2_verdict": "blocked_replay_family_closed",
+        "evidence": "Accepted relation helpers exist, but static and regime-conditioned intraindustry lead-lag variants were rejected; retunes need forward rows.",
+        "needed_new_axis": "Forward replacement-value rows or a non-price relation provenance field."
+      }
+    ],
+    "blocking_item": "Every reviewed free surface is either frozen by recent three-window evidence or lacks canonical-window PIT fields and production/backtest parity inputs."
+  },
+  "gate3_survival": {
+    "status": "not_applicable_no_new_filter",
+    "baseline_min_survival_rate": 0.7925,
+    "guardrail": "survival_rate must stay >= 0.05",
+    "interpretation": "No new filter was tested because Gate 2 blocked all candidate surfaces before strategy replay."
+  },
+  "gate4": {
+    "status": "blocked_no_after_policy",
+    "before": {
+      "late_strong": {
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "expected_value_score": 5.1628,
+        "sharpe_daily": 4.41,
+        "strategy_total_return_pct": 117.07,
+        "total_pnl": 117072.92,
+        "max_drawdown_pct": 0.0665,
+        "win_rate": 0.8333,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      "mid_weak": {
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "expected_value_score": 2.1402,
+        "sharpe_daily": 2.74,
+        "strategy_total_return_pct": 78.11,
+        "total_pnl": 78110.11,
+        "max_drawdown_pct": 0.1119,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      "old_thin": {
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "expected_value_score": 0.5911,
+        "sharpe_daily": 1.49,
+        "strategy_total_return_pct": 39.67,
+        "total_pnl": 39667.96,
+        "max_drawdown_pct": 0.1001,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    },
+    "after": {
+      "late_strong": {
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "expected_value_score": 5.1628,
+        "sharpe_daily": 4.41,
+        "strategy_total_return_pct": 117.07,
+        "total_pnl": 117072.92,
+        "max_drawdown_pct": 0.0665,
+        "win_rate": 0.8333,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      "mid_weak": {
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "expected_value_score": 2.1402,
+        "sharpe_daily": 2.74,
+        "strategy_total_return_pct": 78.11,
+        "total_pnl": 78110.11,
+        "max_drawdown_pct": 0.1119,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      "old_thin": {
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "expected_value_score": 0.5911,
+        "sharpe_daily": 1.49,
+        "strategy_total_return_pct": 39.67,
+        "total_pnl": 39667.96,
+        "max_drawdown_pct": 0.1001,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    },
+    "window_deltas": {
+      "late_strong": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "max_drawdown_pct": 0.0,
+        "trade_count": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "max_drawdown_pct": 0.0,
+        "trade_count": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "max_drawdown_pct": 0.0,
+        "trade_count": 0.0
+      }
+    },
+    "aggregate_before": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "total_trade_count": 61.0,
+      "min_survival_rate": 0.7925,
+      "max_window_drawdown_pct": 0.1119
+    },
+    "aggregate_after": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "total_trade_count": 61.0,
+      "min_survival_rate": 0.7925,
+      "max_window_drawdown_pct": 0.1119
+    },
+    "aggregate_delta": {
+      "aggregate_expected_value_score": 0.0,
+      "aggregate_total_pnl": 0.0,
+      "total_trade_count": 0.0,
+      "min_survival_rate": 0.0,
+      "max_window_drawdown_pct": 0.0
+    },
+    "acceptance_result": "blocked",
+    "reason": "No after policy was run. The after metrics intentionally equal the canonical baseline; this is a blocker record, not an alpha claim."
+  },
+  "lean_quality_passed": true,
+  "updated_at": "2026-06-19T22:15:07+00:00"
+}
