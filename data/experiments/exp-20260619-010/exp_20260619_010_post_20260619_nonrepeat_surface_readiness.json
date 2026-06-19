@@ -1,0 +1,490 @@
+{
+  "anti_js": "No JavaScript was used.",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "calibration": {
+    "predicted_failure_modes": [
+      "no_gate4_ready_policy_bundle",
+      "near_neighbor_retry_risk",
+      "missing_pit_surface"
+    ],
+    "predicted_success_probability": 0.08,
+    "realized_failure_mode": "no_gate4_ready_nonrepeat_alpha_surface",
+    "surprise": "Low surprise. The log scan found plausible alpha themes, but each either repeated a rejected family or lacked canonical PIT coverage and candidate overlap."
+  },
+  "causal_components": [
+    "history_scan",
+    "novelty_gate",
+    "gate2_surface_readiness",
+    "baseline_identity_check"
+  ],
+  "change_type": "alpha_direction_selection",
+  "changed_files": [
+    "quant/experiments/exp_20260619_010_post_20260619_nonrepeat_surface_readiness.py",
+    "data/experiments/exp-20260619-010/exp_20260619_010_post_20260619_nonrepeat_surface_readiness.json",
+    "data/experiments/exp-20260619-010/before_baseline.json",
+    "data/experiments/exp-20260619-010/after_no_strategy_change.json",
+    "data/experiments/exp-20260619-010/README.md",
+    "experiments/logs/exp-20260619-010.json",
+    "experiments/cards/exp-20260619-010.md",
+    "experiments/manifests/exp-20260619-010.json",
+    "experiments/tickets/exp-20260619-010.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "post_20260619_nonrepeat_pit_surface_readiness_v1",
+  "created_at": "2026-06-19T11:11:16+00:00",
+  "decision": "blocked_no_gate4_ready_nonrepeat_alpha_surface",
+  "delta_metrics": {
+    "aggregate_expected_value_score": 0.0,
+    "aggregate_total_pnl": 0.0,
+    "max_window_drawdown_pct": 0.0,
+    "min_survival_rate": 0.0,
+    "total_trade_count": 0
+  },
+  "experiment_id": "exp-20260619-010",
+  "gate1_baseline": {
+    "baseline_aggregate": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "max_window_drawdown_pct": 0.1119,
+      "min_survival_rate": 0.7925,
+      "total_trade_count": 61,
+      "window_count": 3
+    },
+    "canonical_windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    ],
+    "source": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "status": "passed",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23",
+        "strategy_total_return_pct": 117.07,
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "win_rate": 0.8333
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23",
+        "strategy_total_return_pct": 78.11,
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "win_rate": 0.5238
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02",
+        "strategy_total_return_pct": 39.67,
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "win_rate": 0.4091
+      }
+    }
+  },
+  "gate2_field_availability": {
+    "blocking_item": "No non-repeat PIT surface currently has all of: production visibility, as-of timestamps, three-window coverage, material candidate overlap, and a new evidence axis versus frozen families.",
+    "candidate_surfaces": [
+      {
+        "evidence": "2026-06-18 revision summary has 60 rows, 51 usable rows, and zero matched candidate rows; prior revision acceleration attempts were already rejected.",
+        "needed_new_axis": "Historical as-of revision breadth, dispersion, and velocity joined to candidate rows across all three canonical windows.",
+        "surface": "analyst_revision_breadth_dispersion",
+        "verdict": "blocked_missing_candidate_join"
+      },
+      {
+        "evidence": "2026-06-18 OnclickMedia options summary has 5,880 rows but only one forward daily date; exp-20260618-023 already blocked Gate 4 for missing canonical-window history.",
+        "needed_new_axis": "A PIT options chain covering late_strong, mid_weak, and old_thin or 20-30 closed forward replacement rows from the same adapter.",
+        "surface": "options_skew_open_interest",
+        "verdict": "blocked_forward_only_surface"
+      },
+      {
+        "evidence": "No historical cover-page filer-status, prospectus listing, lockup, or free-float surface is available with as-of dates; exp-20260618-007 and exp-20260616-006 already recorded this gap.",
+        "needed_new_axis": "Free SEC prospectus and cover-page ingestion with PIT first-trade, lockup expiry, public float, and filer-status fields.",
+        "surface": "sec_filer_status_listing_lockup_float",
+        "verdict": "blocked_missing_pit_surface"
+      },
+      {
+        "evidence": "Parsed 13D stake increase/decrease and 13G increase variants are blocked or rejected; raw holder/stake thresholds lack old_thin coverage and amendment-direction provenance.",
+        "needed_new_axis": "13D/A or 13G/A stake-change direction rows with holder identity, amendment delta, campaign intent, and board-outcome provenance.",
+        "surface": "parsed_13d_13g_stake_direction",
+        "verdict": "blocked_incomplete_provenance"
+      },
+      {
+        "evidence": "SEC text contract-economics attempts failed on target sample and regex fragility; raw form/item action baskets are frozen.",
+        "needed_new_axis": "Primary-document tuples for counterparty, value, duration, renewal, and exclusivity, shared with daily default-off replay.",
+        "surface": "structured_contract_economics",
+        "verdict": "blocked_requires_text_tuple"
+      },
+      {
+        "evidence": "Inventory mix, debt maturity, customer concentration, advertising, interest burden, reinvestment productivity, and related ratio families are rejected, blocked, or near-neighbor invalid.",
+        "needed_new_axis": "A materially different PIT decomposition or forward replacement rows, not another threshold, sector-normalization, or top-N retune.",
+        "surface": "raw_companyfacts_decomposition",
+        "verdict": "blocked_frozen_ratio_family"
+      },
+      {
+        "evidence": "Option exercise retention, sale absorption, tax withholding, and conversion no-disposal variants have failed or produced no target sample.",
+        "needed_new_axis": "Richer ownership context such as pre-plan status, beneficial ownership delta, role changes, or forward replacement-value rows.",
+        "surface": "form4_ownership_action",
+        "verdict": "blocked_needs_richer_context"
+      },
+      {
+        "evidence": "SBC and distribution gap-fill allocator variants had positive-looking deltas but failed accepted comparator and distribution quality checks.",
+        "needed_new_axis": "Closed forward allocator displacement rows, not another historical rank, top-N, cooldown, or no-displacement knob.",
+        "surface": "allocator_gap_fill_or_rank_knob",
+        "verdict": "blocked_frozen_allocator_retune"
+      }
+    ],
+    "minimum_runtime_field_result": "Existing canonical strategy rows use these fields, but no new non-repeat alpha surface is available for a trustworthy after policy.",
+    "minimum_runtime_fields_checked": [
+      "entry_date",
+      "target_price"
+    ],
+    "status": "blocked"
+  },
+  "gate3_survival": {
+    "baseline_min_survival_rate": 0.7925,
+    "guardrail": "survival_rate must not fall below 0.05",
+    "interpretation": "No additional filter was tested. Forcing one from a frozen or missing surface would make survival statistics meaningless.",
+    "status": "not_applicable_no_new_filter"
+  },
+  "gate4": {
+    "acceptance_result": "blocked",
+    "after": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23",
+        "strategy_total_return_pct": 117.07,
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "win_rate": 0.8333
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23",
+        "strategy_total_return_pct": 78.11,
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "win_rate": 0.5238
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02",
+        "strategy_total_return_pct": 39.67,
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "win_rate": 0.4091
+      }
+    },
+    "aggregate_after": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "max_window_drawdown_pct": 0.1119,
+      "min_survival_rate": 0.7925,
+      "total_trade_count": 61,
+      "window_count": 3
+    },
+    "aggregate_before": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "max_window_drawdown_pct": 0.1119,
+      "min_survival_rate": 0.7925,
+      "total_trade_count": 61,
+      "window_count": 3
+    },
+    "aggregate_delta": {
+      "aggregate_expected_value_score": 0.0,
+      "aggregate_total_pnl": 0.0,
+      "max_window_drawdown_pct": 0.0,
+      "min_survival_rate": 0.0,
+      "total_trade_count": 0
+    },
+    "before": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23",
+        "strategy_total_return_pct": 117.07,
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "win_rate": 0.8333
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23",
+        "strategy_total_return_pct": 78.11,
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "win_rate": 0.5238
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02",
+        "strategy_total_return_pct": 39.67,
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "win_rate": 0.4091
+      }
+    },
+    "reason": "The only defensible after result is identity to baseline; no positive alpha, strategy change, or live-ready promotion is claimed.",
+    "status": "blocked_no_after_policy",
+    "window_deltas": {
+      "late_strong": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0.0,
+        "win_rate": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0.0,
+        "win_rate": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0.0,
+        "win_rate": 0.0
+      }
+    }
+  },
+  "hypothesis": "candidate_pool/data_edge: after the latest 20260619 failed or blocked ownership, Form4, FINRA, Companyfacts, options, and revision lanes, the next alpha should only proceed if a non-repeat PIT surface with canonical-window coverage exists; otherwise a frozen-window replay would be a near-neighbor and untrustworthy.",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "mechanism_family": "alpha_surface_readiness",
+  "novelty_check": {
+    "interpretation": "The warning confirms this is not a FINRA/Form4 alpha retune. It is recorded as a blocker after reviewing the latest experiment history across several failed families.",
+    "new_evidence_axis": "Post-exp-20260619-003/004/005/007/008/009 evidence scan across multiple failed or blocked alpha families; the decision is whether any non-repeat PIT surface is Gate4-ready, not a retry of FINRA, Form4, SEC ownership, or Companyfacts thresholds.",
+    "override_recorded": true,
+    "reservation_nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "sec_ftd_finra_ownership_pressure_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.6267,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "form4_finra_borrow_pressure_cross_source_overlap",
+        "reopen_condition": "If rejected, do not retry nearby Form4/FINRA overlap unless forward replacement rows or a materially richer borrow-cost or loan-availability field appears. If accepted, implement only through shared default-off parity-covered adapters.",
+        "score": 0.619,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "finra_short_interest",
+        "family_key": "sec_ftd_finra_confirmed_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.6182,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_borrow_pressure_three_window_validation",
+        "reopen_condition": "If positive, the next evidence is closed forward replacement-value rows from the shared FINRA/IWM default-off ledger tagged with entry-time borrow-pressure. If negative, a valid retry needs a materially different PIT borrow-cost / hard-to-borrow / loan-availability field, not a days_to_cover, short-change, freshness, RS, top-N, hold, cooldown, or notional retune on these frozen windows.",
+        "score": 0.6167,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_short_pressure_breakout_candidate_pool",
+        "reopen_condition": "Forward replacement-value rows or a materially stronger free/cheap short-pressure field, such as borrow fee, borrow availability, or float-normalized short interest.",
+        "score": 0.6098,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "reservation_warning": true
+  },
+  "post_run_reflection": {
+    "anti_repeat_rule": "Do not retry revision velocity, raw SEC item/form baskets, raw Companyfacts quality thresholds, FINRA/Form4 ownership pressure, allocator gap-fill knobs, or options skew until the named new data axis exists.",
+    "best_next_alpha_direction": "Build or import a free PIT candidate-pool surface first: SEC prospectus/listing/float/lockup/filer-status fields, 13D/13G amendment stake-direction with holder intent provenance, analyst revision breadth/dispersion joined as-of to historical candidates, or historical options chain data.",
+    "negative_result_reflection": "Recent positive-looking experiments failed because gains were single-window, old_thin regressed, drawdown/concentration worsened, accepted comparators were not beaten, or target sample was zero.",
+    "why_forcing_a_replay_would_be_bad": "A replay using these families would mainly search thresholds inside known losers or accepted families, increasing overfit risk and creating pressure to diverge backtest-only logic from production-visible helpers.",
+    "why_no_alpha_change": "The highest-potential current lanes are not Gate-4-ready. Revision data has no candidate join, options are forward-only, listing/float/filer-status fields are missing, 13D/13G needs direction provenance, Companyfacts ratio variants are frozen, and Form4 ownership-action variants lack target sample or richer context."
+  },
+  "pre_run_answers": {
+    "alpha_hypothesis": "candidate_pool/data_edge: after the latest 20260619 failed or blocked ownership, Form4, FINRA, Companyfacts, options, and revision lanes, the next alpha should only proceed if a non-repeat PIT surface with canonical-window coverage exists; otherwise a frozen-window replay would be a near-neighbor and untrustworthy.",
+    "category": "candidate_pool/data_edge",
+    "historical_near_neighbors": [
+      {
+        "decision": "blocked",
+        "experiment_id": "exp-20260618-024",
+        "family": "post-20260618 non-repeat surface readiness",
+        "relevance": "Established the same decision framework before the 20260619 ownership, Companyfacts, FINRA, and Form4 attempts were run."
+      },
+      {
+        "decision": "blocked",
+        "experiment_id": "exp-20260619-001",
+        "family": "earnings date revision readiness",
+        "relevance": "Revision ledger had usable rows but zero reliable earnings-date revision events matched to candidate rows."
+      },
+      {
+        "decision": "rejected",
+        "experiment_id": "exp-20260619-003",
+        "family": "customer concentration anchor demand",
+        "relevance": "Target sample was zero, confirming that raw Companyfacts customer concentration fields are not yet a viable candidate-pool edge."
+      },
+      {
+        "decision": "rejected",
+        "experiment_id": "exp-20260619-004",
+        "family": "inventory component mix sellthrough",
+        "relevance": "Positive aggregate delta did not survive old_thin, drawdown, concentration, and accepted-comparator checks."
+      },
+      {
+        "decision": "rejected",
+        "experiment_id": "exp-20260619-005",
+        "family": "debt maturity cliff relief",
+        "relevance": "Small positive aggregate delta was not robust enough; old_thin and comparator checks failed."
+      },
+      {
+        "decision": "blocked",
+        "experiment_id": "exp-20260619-006",
+        "family": "industry reinvestment productivity",
+        "relevance": "Novelty gate found a direct sector-normalized reinvestment productivity near-neighbor, so a replay would be invalid."
+      },
+      {
+        "decision": "rejected",
+        "experiment_id": "exp-20260619-007",
+        "family": "FINRA float-normalized short pressure",
+        "relevance": "Only one window improved, late/old regressed, drawdown drifted, and accepted comparator failed."
+      },
+      {
+        "decision": "rejected",
+        "experiment_id": "exp-20260619-008",
+        "family": "parsed 13D stake decrease absorption",
+        "relevance": "Positive aggregate delta was not robust; old_thin regressed and accepted comparator failed."
+      },
+      {
+        "decision": "rejected",
+        "experiment_id": "exp-20260619-009",
+        "family": "Form4 conversion no-disposal absorption",
+        "relevance": "Zero target trades; richer Form4 context is needed before another ownership-action alpha attempt."
+      }
+    ],
+    "reproducibility": "This runner writes the blocker artifact, before/after identity files, log, card, manifest, JSONL row, and ticket/registry status through persist_self_registered_result.",
+    "single_policy_bundle_under_test": "Post-20260619 non-repeat PIT surface readiness; no entry, exit, ranking, sizing, or risk policy is changed.",
+    "success_criteria": "Proceed only if a production-visible PIT surface has late_strong, mid_weak, and old_thin coverage and is not a frozen near-neighbor."
+  },
+  "prediction": {
+    "confidence_reason": "Recent accepted alpha came from shared production-visible helpers, while current candidate families are frozen or missing canonical-window PIT rows; this reserves a blocker if no new surface exists rather than retuning rejected families.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "no_gate4_ready_policy_bundle",
+      "near_neighbor_retry_risk",
+      "missing_pit_surface"
+    ],
+    "recorded_at": "2026-06-19T11:07:12+00:00",
+    "success_probability": 0.08
+  },
+  "production_impact": {
+    "backtest_code_changed": false,
+    "live_orders_changed": false,
+    "live_realistic_execution_envelope": "Not evaluated because no tradable alpha was accepted. Future candidate-pool work should record notional cap, liquidity, slippage, concentration, kill switch, and order semantics in the after measurement.",
+    "parity_assessment": "No production/backtest inconsistency can be introduced because no trading policy or helper changed. A future positive alpha must be implemented as a shared default-off helper before acceptance.",
+    "production_code_changed": false,
+    "shared_helper_added": false,
+    "trade_enabled_changed": false
+  },
+  "reproduction": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260619_010_post_20260619_nonrepeat_surface_readiness.py",
+  "single_causal_variable": "post_20260619_nonrepeat_pit_surface_readiness_v1",
+  "status": "blocked",
+  "trial_family": "post_20260619_nonrepeat_surface_readiness",
+  "trial_variant_id": "v1"
+}
