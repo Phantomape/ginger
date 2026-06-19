@@ -1,0 +1,346 @@
+{
+  "acceptance_rule": "Gate 4 three-window aggregate EV/PnL positive, no unacceptable drawdown/survival/concentration degradation, at least 20 paper trades, all target windows represented, and accepted compression/distribution comparators beaten; positive replay-only result is only a lead until shared default-off historical/daily helper proves parity.",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "data/experiments",
+    "experiments/logs",
+    "experiments/cards",
+    "experiments/manifests",
+    "experiments/tickets",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260619-003.md",
+  "causal_components": [
+    "customer_concentration_pit_mapping",
+    "annual_revenue_context",
+    "liquid_spy_relative_confirmation",
+    "next_open_10d_paper_execution"
+  ],
+  "change_type": "default_off_paper_candidate_pool_replay_scout",
+  "changed_variable": "raw_sec_companyfacts_customer_concentration_anchor_demand_candidate_source_v1",
+  "claimed_at": "2026-06-19T01:12:58+00:00",
+  "completed_at": "2026-06-19T01:20:33+00:00",
+  "created_at": "2026-06-19T01:12:49+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260619-003",
+  "experiment_uid": "expuid-7c3cb5e7ccd54f8b",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260619-003",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-19T01:12:49+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "raw_sec_companyfacts_customer_concentration_anchor_demand_candidate_source_v1"
+  },
+  "hypothesis": "candidate_pool: raw SEC Companyfacts customer concentration numeric disclosures, where a material but not all-or-nothing concentration percentage is present and revenue is non-contracting while price confirms liquid SPY-relative demand, may identify issuers with a real anchor-customer demand pull rather than generic momentum.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "live_ordering",
+    "production_sizing",
+    "core_entry_exit",
+    "shared_helpers"
+  ],
+  "mechanism_family": "production_visible_free_sec_companyfacts_customer_concentration_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/backtester.py",
+    "quant/*paper_sleeve.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260616-021",
+    "exp-20260616-023",
+    "exp-20260615-013",
+    "exp-20260615-017",
+    "exp-20260618-024",
+    "exp-20260619-003_novelty_override"
+  ],
+  "new_evidence_type": "raw_sec_companyfacts_concentration_risk_percentage_customer_anchor_demand",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "family_key": "deferred_revenue_demand_acceleration_candidate_pool",
+        "score": 0.6324,
+        "status": "frozen_rejected"
+      },
+      {
+        "family_key": "companyfacts_gross_margin_quality_candidate_pool",
+        "score": 0.6114,
+        "status": "has_accepted"
+      },
+      {
+        "family_key": "broad_companyfacts_peer_confirmed_filing_drift_candidate_pool",
+        "score": 0.6111,
+        "status": "has_accepted"
+      },
+      {
+        "family_key": "ttm_cash_conversion_acceleration_candidate_pool",
+        "score": 0.6111,
+        "status": "frozen_rejected"
+      },
+      {
+        "family_key": "fundamental_growth_rs_default_off_candidate_pool",
+        "score": 0.6,
+        "status": "frozen_rejected"
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "companyfacts_ratio",
+      "field_tags": [
+        "a",
+        "anchor",
+        "companyfacts",
+        "concentration",
+        "confirms",
+        "contracting",
+        "customer",
+        "demand",
+        "disclosures",
+        "generic",
+        "identify",
+        "is",
+        "issuers",
+        "liquid",
+        "material",
+        "may",
+        "momentum",
+        "non",
+        "numeric",
+        "percentage",
+        "present",
+        "price",
+        "pull",
+        "rather",
+        "raw",
+        "real",
+        "relative",
+        "revenue",
+        "spy",
+        "than",
+        "where",
+        "while"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "deferred_revenue_demand_acceleration_candidate_pool",
+        "reopen_condition": "A valid follow-up needs a selected PIT Companyfacts daily demand surface, structured contract-economics text linked to the same ticker/date, or closed forward replacement-value rows.",
+        "score": 0.6324,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "aoci_overhang_relief_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT AOCI decomposition such as available-for-sale securities, FX translation, pension OCI component, or rate-duration exposure joined to the same issuers, or closed forward replacement-value rows. Do not sweep AOCI tag lists, burden thresholds, fact freshness, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.6235,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "broad_companyfacts_peer_price_absorption_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.6235,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "fixed_asset_turnover_improvement_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT asset-productivity evidence, such as capex-to-D&A replacement-cycle context, industry-normalized fixed-asset turnover, supplier/customer capacity disclosures, or closed forward replacement-value rows. Do not sweep net-PP&E tags, turnover thresholds, revenue floor, sector exclusions, freshness, RS/close/volume/vol guards, top-N, hold, cooldown, or notional on ",
+        "score": 0.6235,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "impairment_overhang_relief_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT overhang evidence, such as impairment footnote semantics, disposal/segment context, closed forward replacement-value rows, or a shared daily helper that proves the same filed-date field is observable. Do not sweep impairment tags, burden thresholds, revenue floor, sector exclusions, freshness, RS/close/volume/vol guards, top-N, hold, cooldown, or notional on ",
+        "score": 0.6235,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "raw SEC Companyfacts ConcentrationRiskPercentage1 numeric customer/anchor concentration context, not RPO/backlog growth, contract liability, DSO threshold, allowance threshold, or generic SEC text.",
+    "override": true,
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "success_probability": 0.11,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "customer_concentration_semantics_noisy",
+      "coverage_too_sparse",
+      "window_regression",
+      "target_concentration_failed",
+      "accepted_comparator_not_beaten"
+    ],
+    "confidence_reason": "Customer concentration percentages are a free SEC/XBRL PIT numeric surface explicitly named as a possible sharper context after DSO and working-capital failures, but coverage is likely sparse and the tag can mix customer, credit, and supplier concentration semantics.",
+    "recorded_at": "2026-06-19T01:12:35+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected_customer_concentration_anchor_demand_candidate_pool",
+    "accepted": false,
+    "numeric_gate4_passed": false,
+    "artifact": "data/experiments/exp-20260619-003/exp_20260619_003_customer_concentration_anchor_demand.json",
+    "log": "experiments/logs/exp-20260619-003.json",
+    "aggregate_expected_value_delta": 0.0,
+    "aggregate_strategy_total_pnl_delta": 0.0,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_customer_concentration_anchor_demand_candidate_pool",
+      "failed_reasons": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "target_concentration_failed",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "aggregate_ev_delta": 0.0,
+      "aggregate_pnl_delta": 0.0,
+      "windows_ev_improved": 0,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 0,
+      "windows_pnl_regressed": 0,
+      "target_trade_count": 0,
+      "target_trade_count_min": 20,
+      "target_windows": [],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": false,
+        "max_single_positive_pnl_share": null,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": null,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "accepted_compression_comparator": {
+        "experiment_id": "exp-20260608-013",
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "aggregate_expected_value_delta": 0.1608,
+        "aggregate_pnl_delta": 2248.98
+      },
+      "accepted_distribution_comparator": {
+        "experiment_id": "exp-20260611-007",
+        "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+        "aggregate_expected_value_delta": 0.5286,
+        "aggregate_pnl_delta": 10432.91
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.11,
+      "actual_gate4_passed": false,
+      "actual_success": 0,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "target_concentration_failed",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "brier_score": 0.0121,
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": 0.0,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": 0.0
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "private_replay_scout_no_shared_adapter",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "default_off_paper_only": true,
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_sec_companyfacts": true,
+      "uses_free_ohlcv": true,
+      "live_realism_evaluated": true,
+      "live_ready": false,
+      "execution_envelope": {
+        "trade_enabled": false,
+        "target_notional_per_paper_trade": 4000.0,
+        "daily_entry_slots": 1,
+        "same_ticker_cooldown_days": 10,
+        "hold_days": 10,
+        "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+        "order_semantics": "observe-only next-session-open paper entry; no broker order",
+        "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+        "kill_switch": "trade_enabled remains false; no production adapter changes",
+        "failure_handling": "missing raw SEC customer concentration percentage, missing annual revenue comparison pair, stale facts, malformed concentration value, missing CIK mapping, missing OHLCV, missing next open, or missing 10d exit rejects the paper candidate"
+      },
+      "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper computes the same raw SEC ConcentrationRiskPercentage1 filed-date PIT mapping, annual revenue context, liquid SPY-relative confirmation, cooldown, next-open paper entry, 10-day exit, costs, and concentration controls in both historical replay and daily production.",
+      "uses_raw_companyfacts_cache": true
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The customer concentration anchor-demand source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too_small, target_concentration_failed, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). It is not retained or promoted.",
+      "outcome_summary": "Aggregate EV delta +0.0000; aggregate PnL delta $+0.00; max drawdown drift +0.0000; 0 paper trades.",
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping customer concentration thresholds, period gap, revenue-growth floor, annual fact freshness, RS/close/volume/vol guards, top-N, hold days, cooldown, or notional on these frozen windows.",
+      "new_evidence_required": "A retry needs materially richer PIT concentration evidence such as parsed footnote customer identity, contract duration/funding certainty, supplier/customer relationship graph context, or closed forward replacement-value rows. Do not sweep concentration thresholds, fact freshness, revenue floor, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260619-003.json",
+  "single_causal_variable": "raw_sec_companyfacts_customer_concentration_anchor_demand_candidate_source_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260619-003.json",
+  "trial_family": "customer_concentration_anchor_demand_candidate_pool",
+  "trial_variant_id": "customer_concentration_anchor_demand_top1_next_open_10d_v1",
+  "decision": "rejected_customer_concentration_anchor_demand_candidate_pool",
+  "summary": "The customer concentration anchor-demand source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too_small, target_concentration_failed, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). It is not retained or promoted.",
+  "artifact": "data/experiments/exp-20260619-003/exp_20260619_003_customer_concentration_anchor_demand.json",
+  "log": "experiments/logs/exp-20260619-003.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "updated_at": "2026-06-19T01:20:33+00:00"
+}

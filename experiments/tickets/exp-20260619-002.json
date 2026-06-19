@@ -1,0 +1,583 @@
+{
+  "acceptance_rule": "Gate 4 three-window aggregate EV/PnL positive, no unacceptable drawdown/survival/concentration degradation, and accepted compression/distribution comparators beaten; positive replay-only result is only a lead until a shared default-off historical/daily helper proves parity.",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "data/experiments",
+    "experiments/logs",
+    "experiments/cards",
+    "experiments/manifests",
+    "experiments/tickets",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260619-002.md",
+  "causal_components": [
+    "raw_interest_expense_pit_mapping",
+    "annual_revenue_operating_income_context",
+    "liquid_spy_relative_confirmation",
+    "next_open_10d_paper_execution"
+  ],
+  "change_type": "alpha_search_near_neighbor_blocker",
+  "changed_variable": "raw_sec_companyfacts_interest_expense_burden_relief_candidate_source_v1",
+  "claimed_at": "2026-06-19T01:21:09+00:00",
+  "completed_at": "2026-06-19T01:23:10+00:00",
+  "created_at": "2026-06-19T01:08:56+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260619-002",
+  "experiment_uid": "expuid-959ec599166c4d7b",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260619-002",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-19T01:08:56+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "raw_sec_companyfacts_interest_expense_burden_relief_candidate_source_v1"
+  },
+  "hypothesis": "candidate_pool: raw SEC Companyfacts annual interest-expense burden relief, where interest expense/revenue falls versus the prior filed annual period while revenue and operating income remain healthy and price already confirms liquid SPY-relative demand, may identify debt-cost relief and operating-leverage candidates before a 10-day continuation leg.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "live_ordering",
+    "production_sizing",
+    "core_entry_exit",
+    "shared_helpers"
+  ],
+  "mechanism_family": "production_visible_free_sec_companyfacts_interest_burden_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/backtester.py",
+    "quant/*paper_sleeve.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260616-004",
+    "exp-20260616-029"
+  ],
+  "new_evidence_type": "invalid_near_neighbor_interest_burden",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "family_key": "deferred_revenue_demand_acceleration_candidate_pool",
+        "score": 0.63,
+        "status": "frozen_rejected"
+      },
+      {
+        "family_key": "companyfacts_gross_margin_quality_candidate_pool",
+        "score": 0.6105,
+        "status": "has_accepted"
+      },
+      {
+        "family_key": "broad_companyfacts_peer_confirmed_filing_drift_candidate_pool",
+        "score": 0.6103,
+        "status": "has_accepted"
+      },
+      {
+        "family_key": "sbc_burden_improvement_shared_default_off_adapter",
+        "score": 0.6103,
+        "status": "has_accepted"
+      },
+      {
+        "family_key": "ttm_cash_conversion_acceleration_candidate_pool",
+        "score": 0.6103,
+        "status": "frozen_rejected"
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "companyfacts_ratio",
+      "field_tags": [
+        "a",
+        "already",
+        "annual",
+        "before",
+        "burden",
+        "candidates",
+        "companyfacts",
+        "confirms",
+        "continuation",
+        "cost",
+        "debt",
+        "demand",
+        "expense",
+        "falls",
+        "filed",
+        "healthy",
+        "identify",
+        "income",
+        "interest",
+        "leg",
+        "leverage",
+        "liquid",
+        "may",
+        "operating",
+        "period",
+        "price",
+        "prior",
+        "raw",
+        "relative",
+        "remain",
+        "revenue",
+        "spy",
+        "versus",
+        "where",
+        "while"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "principal_debt_burden_relief_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT debt evidence, such as maturity cliff relief, covenant-risk reduction, parsed refinancing terms, or closed forward replacement-value rows. Do not sweep debt tags, debt/revenue thresholds, revenue-growth floor, annual fact freshness, price guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.6444,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "raw_sec_companyfacts_interest_burden_relief_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT financing data such as borrow cost, debt maturity/refinancing terms, or analyst/revenue revisions confirming the relief. Do not sweep interest-burden thresholds, tag sets, revenue floor, annual fact freshness, RS/close/volume/vol guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.6432,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "operating_leverage_acceleration_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT operating-leverage evidence or closed forward replacement rows. Do not sweep revenue-growth, operating-income-growth, margin-expansion, fact freshness, RS/close/volume/vol guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.6333,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "raw_sec_companyfacts_tax_burden_relief_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT tax evidence such as durable cash-tax normalization, tax-credit provenance, or post-filing analyst estimate revisions confirming after-tax earnings power. Do not sweep tax-burden thresholds, pretax/revenue growth floors, annual fact freshness, tag lists, RS/close/volume/vol guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.6333,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "accrued_liability_burden_relief_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT evidence such as accrued-liability decomposition linked to named cost programs, litigation/restructuring resolution text, or closed forward replacement-value rows. Do not sweep accrued-liability tags, burden thresholds, fact freshness, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.6324,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "raw SEC Companyfacts annual interest expense burden relief/debt-cost field, excluding banks and using filed-date PIT revenue and operating-income context; not trailing D&A, forward amortization, lease burden, or generic liability threshold.",
+    "override": true,
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "success_probability": 0.12,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "companyfacts_relief_family_saturated",
+      "interest_expense_semantics_noisy",
+      "bank_financial_statement_noise",
+      "window_regression",
+      "accepted_comparator_not_beaten"
+    ],
+    "confidence_reason": "Raw Companyfacts interest-expense burden is a free PIT disclosure with broad canonical-window coverage and is not present in the selected Kova fields; recent Companyfacts relief families are saturated, so confidence is low.",
+    "recorded_at": "2026-06-19T01:08:42+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "decision": "blocked_interest_burden_near_neighbor_invalid_novelty_axis",
+    "artifact": "data/experiments/exp-20260619-002/exp_20260619_002_interest_burden_near_neighbor_blocker.json",
+    "before": "data/experiments/exp-20260619-002/before_baseline.json",
+    "after": "data/experiments/exp-20260619-002/after_no_strategy_change.json",
+    "log": "experiments/logs/exp-20260619-002.json",
+    "runner": "quant/experiments/exp_20260619_002_interest_burden_near_neighbor_blocker.py",
+    "delta_metrics": {
+      "aggregate_expected_value_score": 0.0,
+      "aggregate_total_pnl": 0.0
+    },
+    "gate4": {
+      "status": "blocked_no_after_policy",
+      "before": {
+        "late_strong": {
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        "mid_weak": {
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        "old_thin": {
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      },
+      "after": {
+        "late_strong": {
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        "mid_weak": {
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        "old_thin": {
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      },
+      "window_deltas": {
+        "late_strong": {
+          "expected_value_score": 0.0,
+          "total_pnl": 0.0,
+          "max_drawdown_pct": 0.0,
+          "trade_count": 0.0,
+          "survival_rate": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": 0.0,
+          "total_pnl": 0.0,
+          "max_drawdown_pct": 0.0,
+          "trade_count": 0.0,
+          "survival_rate": 0.0
+        },
+        "old_thin": {
+          "expected_value_score": 0.0,
+          "total_pnl": 0.0,
+          "max_drawdown_pct": 0.0,
+          "trade_count": 0.0,
+          "survival_rate": 0.0
+        }
+      },
+      "aggregate_before": {
+        "aggregate_expected_value_score": 7.8941,
+        "aggregate_total_pnl": 234850.99,
+        "total_trade_count": 61,
+        "min_survival_rate": 0.7925,
+        "max_window_drawdown_pct": 0.1119
+      },
+      "aggregate_after": {
+        "aggregate_expected_value_score": 7.8941,
+        "aggregate_total_pnl": 234850.99,
+        "total_trade_count": 61,
+        "min_survival_rate": 0.7925,
+        "max_window_drawdown_pct": 0.1119
+      },
+      "aggregate_delta": {
+        "aggregate_expected_value_score": 0.0,
+        "aggregate_total_pnl": 0.0,
+        "total_trade_count": 0,
+        "min_survival_rate": 0.0,
+        "max_window_drawdown_pct": 0.0
+      },
+      "acceptance_result": "blocked",
+      "reason": "No strategy replay was run because it would be a forbidden near-neighbor of exp-20260616-004."
+    },
+    "summary": "The interest-burden idea had already been tested and rejected: late/mid windows were positive, old_thin had zero target trades, concentration failed, and it did not beat the accepted distribution comparator."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260619-002.json",
+  "single_causal_variable": "raw_sec_companyfacts_interest_expense_burden_relief_candidate_source_v1",
+  "status": "blocked",
+  "ticket_file": "experiments/tickets/exp-20260619-002.json",
+  "trial_family": "interest_expense_burden_relief_candidate_pool",
+  "trial_variant_id": "interest_expense_burden_relief_top1_next_open_10d_v1",
+  "decision": "blocked_interest_burden_near_neighbor_invalid_novelty_axis",
+  "summary": "The interest-burden idea had already been tested and rejected: late/mid windows were positive, old_thin had zero target trades, concentration failed, and it did not beat the accepted distribution comparator.",
+  "artifact": "data/experiments/exp-20260619-002/exp_20260619_002_interest_burden_near_neighbor_blocker.json",
+  "before": "data/experiments/exp-20260619-002/before_baseline.json",
+  "after": "data/experiments/exp-20260619-002/after_no_strategy_change.json",
+  "log": "experiments/logs/exp-20260619-002.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "post_run_reflection": {
+    "why_blocked": "The interest-burden idea had already been tested and rejected: late/mid windows were positive, old_thin had zero target trades, concentration failed, and it did not beat the accepted distribution comparator.",
+    "forbidden_near_neighbor_retry": "Do not retry by sweeping interest-burden thresholds, interest growth spread, revenue floor, annual fact freshness, tag lists, RS/close/volume/vol guards, top-N, hold days, cooldown, or notional on these frozen windows.",
+    "new_evidence_required": "Materially different PIT financing data such as borrow cost, debt maturity/refinancing terms, or analyst/revenue revisions confirming the relief."
+  },
+  "production_impact": {
+    "production_code_changed": false,
+    "backtest_code_changed": false,
+    "live_orders_changed": false,
+    "shared_helper_added": false,
+    "parity_assessment": "No production/backtest inconsistency was introduced because no policy or helper changed."
+  },
+  "gate1_baseline": {
+    "status": "passed",
+    "source": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "windows": {
+      "late_strong": {
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "expected_value_score": 5.1628,
+        "total_pnl": 117072.92,
+        "max_drawdown_pct": 0.0665,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      "mid_weak": {
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "expected_value_score": 2.1402,
+        "total_pnl": 78110.11,
+        "max_drawdown_pct": 0.1119,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      "old_thin": {
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "expected_value_score": 0.5911,
+        "total_pnl": 39667.96,
+        "max_drawdown_pct": 0.1001,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    },
+    "aggregate": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "total_trade_count": 61,
+      "min_survival_rate": 0.7925,
+      "max_window_drawdown_pct": 0.1119
+    }
+  },
+  "gate2_field_availability": {
+    "status": "blocked_by_prior_evidence_not_field_absence",
+    "minimum_runtime_fields_checked": [
+      "entry_date",
+      "target_price"
+    ],
+    "blocking_item": "The required new evidence axis is absent; the available field is the same rejected interest-burden family.",
+    "prior_interest_result": {
+      "experiment_id": "exp-20260616-004",
+      "decision": "rejected_raw_sec_interest_burden_relief_candidate_pool",
+      "aggregate_ev_delta": 0.4305,
+      "aggregate_pnl_delta": 6763.08,
+      "target_trade_count": 45,
+      "target_windows": [
+        "late_strong",
+        "mid_weak"
+      ],
+      "failed_reasons": [
+        "target_window_coverage_too_small",
+        "target_concentration_failed",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "old_thin_target_trades": 0,
+      "forbidden_retry": "Do not retry by sweeping interest-burden thresholds, interest growth spread, revenue floor, annual fact freshness, tag lists, RS/close/volume/vol guards, top-N, hold days, cooldown, or notional on these frozen windows.",
+      "new_evidence_required": "Materially different PIT financing data such as borrow cost, debt maturity/refinancing terms, or analyst/revenue revisions confirming the relief."
+    }
+  },
+  "gate3_survival": {
+    "status": "not_applicable_no_new_filter",
+    "baseline_min_survival_rate": 0.7925,
+    "guardrail": "survival_rate must not fall below 0.05"
+  },
+  "gate4": {
+    "status": "blocked_no_after_policy",
+    "before": {
+      "late_strong": {
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "expected_value_score": 5.1628,
+        "total_pnl": 117072.92,
+        "max_drawdown_pct": 0.0665,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      "mid_weak": {
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "expected_value_score": 2.1402,
+        "total_pnl": 78110.11,
+        "max_drawdown_pct": 0.1119,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      "old_thin": {
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "expected_value_score": 0.5911,
+        "total_pnl": 39667.96,
+        "max_drawdown_pct": 0.1001,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    },
+    "after": {
+      "late_strong": {
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "expected_value_score": 5.1628,
+        "total_pnl": 117072.92,
+        "max_drawdown_pct": 0.0665,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      "mid_weak": {
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "expected_value_score": 2.1402,
+        "total_pnl": 78110.11,
+        "max_drawdown_pct": 0.1119,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      "old_thin": {
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "expected_value_score": 0.5911,
+        "total_pnl": 39667.96,
+        "max_drawdown_pct": 0.1001,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    },
+    "window_deltas": {
+      "late_strong": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "max_drawdown_pct": 0.0,
+        "trade_count": 0.0,
+        "survival_rate": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "max_drawdown_pct": 0.0,
+        "trade_count": 0.0,
+        "survival_rate": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "max_drawdown_pct": 0.0,
+        "trade_count": 0.0,
+        "survival_rate": 0.0
+      }
+    },
+    "aggregate_before": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "total_trade_count": 61,
+      "min_survival_rate": 0.7925,
+      "max_window_drawdown_pct": 0.1119
+    },
+    "aggregate_after": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "total_trade_count": 61,
+      "min_survival_rate": 0.7925,
+      "max_window_drawdown_pct": 0.1119
+    },
+    "aggregate_delta": {
+      "aggregate_expected_value_score": 0.0,
+      "aggregate_total_pnl": 0.0,
+      "total_trade_count": 0,
+      "min_survival_rate": 0.0,
+      "max_window_drawdown_pct": 0.0
+    },
+    "acceptance_result": "blocked",
+    "reason": "No strategy replay was run because it would be a forbidden near-neighbor of exp-20260616-004."
+  },
+  "lean_quality_passed": true,
+  "updated_at": "2026-06-19T01:23:10+00:00"
+}
