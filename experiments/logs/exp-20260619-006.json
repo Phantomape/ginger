@@ -1,0 +1,494 @@
+{
+  "anti_js": "No JavaScript was used.",
+  "calibration": {
+    "predicted_success_probability": 0.14,
+    "realized_failure_mode": "invalid_near_neighbor_novelty_axis",
+    "surprise": "Moderate. The ticket used exp-20260617-007's proposed reopen axis, but the later exp-20260617-009 had already consumed and rejected that peer-normalized productivity shape."
+  },
+  "change_type": "alpha_search_near_neighbor_blocker",
+  "changed_files": [
+    "quant/experiments/exp_20260619_006_industry_reinvestment_productivity.py",
+    "data/experiments/exp-20260619-006/exp_20260619_006_industry_reinvestment_productivity.json",
+    "data/experiments/exp-20260619-006/before_baseline.json",
+    "data/experiments/exp-20260619-006/after_no_strategy_change.json",
+    "data/experiments/exp-20260619-006/README.md",
+    "experiments/logs/exp-20260619-006.json",
+    "experiments/cards/exp-20260619-006.md",
+    "experiments/manifests/exp-20260619-006.json",
+    "experiments/tickets/exp-20260619-006.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "raw_sec_companyfacts_industry_normalized_reinvestment_productivity_candidate_source_v1",
+  "created_at": "2026-06-19T04:11:05Z",
+  "decision": "blocked_industry_reinvestment_productivity_near_neighbor_invalid_novelty_axis",
+  "delta_metrics": {
+    "aggregate_expected_value_score": 0.0,
+    "aggregate_total_pnl": 0.0
+  },
+  "experiment_id": "exp-20260619-006",
+  "gate1_baseline": {
+    "aggregate": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "max_window_drawdown_pct": 0.1119,
+      "min_survival_rate": 0.7925,
+      "total_trade_count": 61
+    },
+    "source": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "status": "passed",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23",
+        "strategy_total_return_pct": 117.07,
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "win_rate": 0.8333
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23",
+        "strategy_total_return_pct": 78.11,
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "win_rate": 0.5238
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02",
+        "strategy_total_return_pct": 39.67,
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "win_rate": 0.4091
+      }
+    }
+  },
+  "gate2_field_availability": {
+    "blocking_item": "The available Companyfacts CapEx/D&A/revenue fields are the same reinvestment-productivity surface family. The new required fields, segment/customer capacity disclosures or closed forward replacement-value rows, are absent.",
+    "direct_prior": {
+      "aggregate_ev_delta": 0.2647,
+      "aggregate_pnl_delta": 3809.5,
+      "changed_variable": "raw_sec_companyfacts_sector_normalized_reinvestment_productivity_candidate_source_v1",
+      "decision": "rejected_sector_normalized_reinvestment_productivity_candidate_pool",
+      "experiment_id": "exp-20260617-009",
+      "failed_reasons": [
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "target_concentration_failed",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "forbidden_retry": "Do not retry by sweeping peer-count, percentile, productivity formula, raw CapEx/D&A threshold values, tag lists, sector exclusions, annual fact freshness, RS/close/volume/vol guards, top-N, hold days, cooldown, or notional on these frozen windows.",
+      "new_evidence_required": "A retry needs materially different PIT reinvestment evidence such as segment/customer capacity disclosures or closed forward replacement-value rows.",
+      "target_trade_count": 8,
+      "target_windows": [
+        "late_strong"
+      ],
+      "windows": {
+        "late_strong": {
+          "expected_value_delta": 0.2647,
+          "strategy_total_pnl_delta": 3809.5,
+          "target_trade_count": 8
+        },
+        "mid_weak": {
+          "expected_value_delta": 0.0,
+          "strategy_total_pnl_delta": 0.0,
+          "target_trade_count": 0
+        },
+        "old_thin": {
+          "expected_value_delta": 0.0,
+          "strategy_total_pnl_delta": 0.0,
+          "target_trade_count": 0
+        }
+      }
+    },
+    "minimum_runtime_fields_checked": [
+      "entry_date",
+      "target_price"
+    ],
+    "status": "blocked_by_prior_evidence_not_field_absence"
+  },
+  "gate3_survival": {
+    "baseline_min_survival_rate": 0.7925,
+    "guardrail": "survival_rate must not fall below 0.05",
+    "prior_target_trade_count": 8,
+    "prior_target_windows": [
+      "late_strong"
+    ],
+    "status": "not_applicable_no_new_filter"
+  },
+  "gate4": {
+    "acceptance_result": "blocked",
+    "after": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23",
+        "strategy_total_return_pct": 117.07,
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "win_rate": 0.8333
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23",
+        "strategy_total_return_pct": 78.11,
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "win_rate": 0.5238
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02",
+        "strategy_total_return_pct": 39.67,
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "win_rate": 0.4091
+      }
+    },
+    "aggregate_after": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "max_window_drawdown_pct": 0.1119,
+      "min_survival_rate": 0.7925,
+      "total_trade_count": 61
+    },
+    "aggregate_before": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "max_window_drawdown_pct": 0.1119,
+      "min_survival_rate": 0.7925,
+      "total_trade_count": 61
+    },
+    "aggregate_delta": {
+      "aggregate_expected_value_score": 0.0,
+      "aggregate_total_pnl": 0.0,
+      "max_window_drawdown_pct": 0.0,
+      "min_survival_rate": 0.0,
+      "total_trade_count": 0
+    },
+    "before": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23",
+        "strategy_total_return_pct": 117.07,
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "win_rate": 0.8333
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23",
+        "strategy_total_return_pct": 78.11,
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "win_rate": 0.5238
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02",
+        "strategy_total_return_pct": 39.67,
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "win_rate": 0.4091
+      }
+    },
+    "direct_prior_three_window_result": {
+      "late_strong": {
+        "expected_value_delta": 0.2647,
+        "strategy_total_pnl_delta": 3809.5,
+        "target_trade_count": 8
+      },
+      "mid_weak": {
+        "expected_value_delta": 0.0,
+        "strategy_total_pnl_delta": 0.0,
+        "target_trade_count": 0
+      },
+      "old_thin": {
+        "expected_value_delta": 0.0,
+        "strategy_total_pnl_delta": 0.0,
+        "target_trade_count": 0
+      }
+    },
+    "reason": "No replay was run because the direct prior was positive only in late_strong, had 8 trades, zero mid_weak/old_thin target coverage, failed concentration, and did not beat the accepted distribution comparator.",
+    "status": "blocked_no_after_policy",
+    "window_deltas": {
+      "late_strong": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0.0
+      }
+    }
+  },
+  "hypothesis": "Candidate-pool scout: industry-normalized CapEx/D&A reinvestment productivity may separate productive replacement cycles from noisy raw CapEx expansion by requiring same-industry revenue-per-reinvestment leadership before next-open 10-day default-off paper entry.",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "mechanism_family": "production_visible_free_sec_companyfacts_reinvestment_cycle_candidate_pool",
+  "nearby_prior_experiments": [
+    "exp-20260617-007",
+    "exp-20260617-009",
+    "exp-20260617-010"
+  ],
+  "novelty_check": {
+    "override_axis": "Industry-normalized revenue-per-reinvestment productivity cross-section using same-industry PIT Companyfacts peers; not a CapEx/D&A threshold, sector exclusion, hold, top-N, cooldown, or notional sweep.",
+    "override_recorded": true,
+    "post_reservation_conclusion": "The override is not sufficient because exp-20260617-009 already tested peer-normalized reinvestment productivity and froze peer-count/productivity-formula retunes.",
+    "reservation_nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "sector_normalized_reinvestment_productivity_candidate_pool",
+        "reopen_condition": "If rejected, a retry needs materially different PIT reinvestment evidence such as segment/customer capacity disclosures or closed forward replacement-value rows. Do not sweep peer-count, percentile, productivity formula, raw CapEx/D&A thresholds, sector exclusions, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.6769,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "capex_depreciation_reinvestment_cycle_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT reinvestment evidence, such as industry-normalized replacement-cycle productivity, segment/customer capacity disclosures, or closed forward replacement-value rows. Do not sweep CapEx/D&A tags, CapEx/D&A thresholds, revenue floor, sector exclusions, freshness, RS/close/volume/vol guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.6593,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "raw_sec_companyfacts_interest_burden_relief_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT financing data such as borrow cost, debt maturity/refinancing terms, or analyst/revenue revisions confirming the relief. Do not sweep interest-burden thresholds, tag sets, revenue floor, annual fact freshness, RS/close/volume/vol guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.6429,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "raw_sec_companyfacts_rd_intensity_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT innovation evidence, such as same-period R&D efficiency tied to forward revenue revisions or product-launch/contract evidence. Do not sweep R&D intensity, growth, freshness, revenue floor, RS/close/volume/vol guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.6414,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "aoci_overhang_relief_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT AOCI decomposition such as available-for-sale securities, FX translation, pension OCI component, or rate-duration exposure joined to the same issuers, or closed forward replacement-value rows. Do not sweep AOCI tag lists, burden thresholds, fact freshness, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.6296,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "reservation_warning": true
+  },
+  "post_run_reflection": {
+    "best_next_alpha_direction": "Use a genuinely new free PIT candidate-pool surface: segment/customer capacity disclosures, structured contract economics, 13D/13G amendment stake-direction provenance, listing/lockup/float fields, or historical analyst breadth/dispersion rows.",
+    "forbidden_near_neighbor_retry": "Do not retry by sweeping peer-count, percentile, productivity formula, raw CapEx/D&A threshold values, tag lists, sector exclusions, annual fact freshness, RS/close/volume/vol guards, top-N, hold days, cooldown, or notional on these frozen windows.",
+    "negative_reflection": "This did not proceed because the proposed improvement was not new. Retrying inside the same peer/productivity formula space would optimize a sparse late_strong-only artifact.",
+    "new_evidence_required": "A retry needs materially different PIT reinvestment evidence such as segment/customer capacity disclosures or closed forward replacement-value rows.",
+    "why_blocked": "The reserved idea is a near-neighbor of exp-20260617-009. That prior had aggregate EV +0.2647 and PnL +$3,809.50, but only 8 target trades in late_strong, zero target trades in mid_weak and old_thin, failed target concentration, and did not beat the accepted distribution comparator."
+  },
+  "pre_run_answers": {
+    "alpha_hypothesis": "Candidate-pool scout: industry-normalized CapEx/D&A reinvestment productivity may separate productive replacement cycles from noisy raw CapEx expansion by requiring same-industry revenue-per-reinvestment leadership before next-open 10-day default-off paper entry.",
+    "category": "candidate_pool",
+    "historical_check": {
+      "conclusion": "Industry-normalized productivity is not a fresh axis after exp-20260617-009; it is a peer-normalized reinvestment productivity retry without segment/customer capacity or closed forward replacement-value rows.",
+      "direct_prior": {
+        "aggregate_ev_delta": 0.2647,
+        "aggregate_pnl_delta": 3809.5,
+        "changed_variable": "raw_sec_companyfacts_sector_normalized_reinvestment_productivity_candidate_source_v1",
+        "decision": "rejected_sector_normalized_reinvestment_productivity_candidate_pool",
+        "experiment_id": "exp-20260617-009",
+        "failed_reasons": [
+          "fewer_than_two_ev_improved_windows",
+          "target_sample_too_small",
+          "target_window_coverage_too_small",
+          "target_concentration_failed",
+          "accepted_distribution_ev_not_beaten",
+          "accepted_distribution_pnl_not_beaten"
+        ],
+        "forbidden_retry": "Do not retry by sweeping peer-count, percentile, productivity formula, raw CapEx/D&A threshold values, tag lists, sector exclusions, annual fact freshness, RS/close/volume/vol guards, top-N, hold days, cooldown, or notional on these frozen windows.",
+        "new_evidence_required": "A retry needs materially different PIT reinvestment evidence such as segment/customer capacity disclosures or closed forward replacement-value rows.",
+        "target_trade_count": 8,
+        "target_windows": [
+          "late_strong"
+        ],
+        "windows": {
+          "late_strong": {
+            "expected_value_delta": 0.2647,
+            "strategy_total_pnl_delta": 3809.5,
+            "target_trade_count": 8
+          },
+          "mid_weak": {
+            "expected_value_delta": 0.0,
+            "strategy_total_pnl_delta": 0.0,
+            "target_trade_count": 0
+          },
+          "old_thin": {
+            "expected_value_delta": 0.0,
+            "strategy_total_pnl_delta": 0.0,
+            "target_trade_count": 0
+          }
+        }
+      },
+      "reservation_nearest": [
+        {
+          "accept_rate": 0.0,
+          "data_source": "companyfacts_ratio",
+          "family_key": "sector_normalized_reinvestment_productivity_candidate_pool",
+          "reopen_condition": "If rejected, a retry needs materially different PIT reinvestment evidence such as segment/customer capacity disclosures or closed forward replacement-value rows. Do not sweep peer-count, percentile, productivity formula, raw CapEx/D&A thresholds, sector exclusions, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows.",
+          "score": 0.6769,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "companyfacts_ratio",
+          "family_key": "capex_depreciation_reinvestment_cycle_candidate_pool",
+          "reopen_condition": "A retry needs materially different PIT reinvestment evidence, such as industry-normalized replacement-cycle productivity, segment/customer capacity disclosures, or closed forward replacement-value rows. Do not sweep CapEx/D&A tags, CapEx/D&A thresholds, revenue floor, sector exclusions, freshness, RS/close/volume/vol guards, top-N, hold, cooldown, or notional on these frozen windows.",
+          "score": 0.6593,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "companyfacts_ratio",
+          "family_key": "raw_sec_companyfacts_interest_burden_relief_candidate_pool",
+          "reopen_condition": "A retry needs materially different PIT financing data such as borrow cost, debt maturity/refinancing terms, or analyst/revenue revisions confirming the relief. Do not sweep interest-burden thresholds, tag sets, revenue floor, annual fact freshness, RS/close/volume/vol guards, top-N, hold, cooldown, or notional on these frozen windows.",
+          "score": 0.6429,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "companyfacts_ratio",
+          "family_key": "raw_sec_companyfacts_rd_intensity_candidate_pool",
+          "reopen_condition": "A retry needs materially different PIT innovation evidence, such as same-period R&D efficiency tied to forward revenue revisions or product-launch/contract evidence. Do not sweep R&D intensity, growth, freshness, revenue floor, RS/close/volume/vol guards, top-N, hold, cooldown, or notional on these frozen windows.",
+          "score": 0.6414,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "companyfacts_ratio",
+          "family_key": "aoci_overhang_relief_candidate_pool",
+          "reopen_condition": "A retry needs materially different PIT AOCI decomposition such as available-for-sale securities, FX translation, pension OCI component, or rate-duration exposure joined to the same issuers, or closed forward replacement-value rows. Do not sweep AOCI tag lists, burden thresholds, fact freshness, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows.",
+          "score": 0.6296,
+          "status": "single_attempt",
+          "trials": 1
+        }
+      ]
+    },
+    "reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260619_006_industry_reinvestment_productivity.py",
+    "single_policy_bundle_under_test": "No strategy policy is tested. The ticket is closed as an invalid near-neighbor after history review.",
+    "success_criteria": "A valid run would need three-window Gate 4 coverage and a materially new PIT reinvestment surface; this ticket has neither versus the direct prior."
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260617-007 was directionally positive but failed old_thin and drawdown, and its closeout explicitly required industry-normalized replacement-cycle productivity as materially different PIT reinvestment evidence; the main risk is that this still relabels liquid momentum and fails the accepted distribution comparator.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "near_neighbor_companyfacts_reinvestment_family",
+      "old_thin_regression",
+      "drawdown_drift",
+      "accepted_distribution_not_beaten",
+      "industry_peer_sample_too_thin"
+    ],
+    "recorded_at": "2026-06-19T04:06:32+00:00",
+    "success_probability": 0.14
+  },
+  "production_impact": {
+    "backtest_code_changed": false,
+    "live_orders_changed": false,
+    "parity_assessment": "No production/backtest inconsistency was introduced because no policy or helper changed. A future positive reinvestment alpha would need a shared default-off helper before any promotion claim.",
+    "production_code_changed": false,
+    "shared_helper_added": false,
+    "trade_enabled_changed": false
+  },
+  "reproduction": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260619_006_industry_reinvestment_productivity.py",
+  "single_causal_variable": "raw_sec_companyfacts_industry_normalized_reinvestment_productivity_candidate_source_v1",
+  "status": "blocked",
+  "trial_family": "industry_normalized_reinvestment_productivity_candidate_pool",
+  "trial_variant_id": "industry_normalized_reinvestment_productivity_top1_next_open_10d_v1"
+}
