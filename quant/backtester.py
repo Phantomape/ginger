@@ -187,6 +187,7 @@ DEFAULT_CONFIG = {
     # Production ATR-stop parity probe (default-off; baseline stays bit-exact).
     "ATR_STOP_DAILY_RECOMPUTE": False,   # recompute entry-ATR_STOP_MULT×ATR_today daily
     "ATR_STOP_TRIGGER_ON_CLOSE": False,  # fire on close<=stop (prod) vs low<=stop (canonical)
+    "ATR_STOP_EXIT_NEXT_OPEN": False,    # T-close decision -> T+1 market-on-open fill (prod EOD)
     "PRODUCTION_TRAILING_STOP_PCT": TRAILING_STOP_PCT,
     "TRAILING_PARTIAL_REDUCE_ENABLED": TRAILING_PARTIAL_REDUCE_ENABLED,
     "POST_ADDON_WEAKNESS_REDUCE_ENABLED": False,
@@ -2878,6 +2879,7 @@ class BacktestEngine:
                 exit_price    = None      # slippage-adjusted fill
                 exit_raw_price = None     # theoretical trigger level (pre-slippage)
                 exit_reason   = None
+                exit_fill_date = today    # overridden by ATR_STOP_EXIT_NEXT_OPEN
 
                 _record_exit_advisory_shadow(pos, today, df, close)
 
@@ -2920,10 +2922,27 @@ class BacktestEngine:
 
                 # Stop hit (gap-fill or intraday) — sell slippage on top.
                 if eff_stop and stop_probe <= eff_stop:
-                    exit_raw_price = opn if opn < eff_stop else eff_stop
-                    exit_price     = apply_stop_fill(
-                        opn, eff_stop,
-                        adv_dollar=pos.adv_dollar, notional=exit_raw_price * pos.shares)
+                    nd_exit = (_next_trade_date_for_ticker(pos.ticker, today)
+                               if self.config.get("ATR_STOP_EXIT_NEXT_OPEN", False)
+                               else None)
+                    if nd_exit is not None and nd_exit in df.index:
+                        # Faithful EOD production: the stop is *decided* on T's
+                        # close and executed as a market-on-open order the next
+                        # session (T+1). The canonical resting-stop model instead
+                        # fills intraday on T. Fill at next open with slippage.
+                        nd_open = float(df.loc[nd_exit]["Open"].item()
+                                        if hasattr(df.loc[nd_exit]["Open"], "item")
+                                        else df.loc[nd_exit]["Open"])
+                        exit_raw_price = nd_open
+                        exit_price     = apply_stop_fill(
+                            nd_open, nd_open,
+                            adv_dollar=pos.adv_dollar, notional=nd_open * pos.shares)
+                        exit_fill_date = nd_exit
+                    else:
+                        exit_raw_price = opn if opn < eff_stop else eff_stop
+                        exit_price     = apply_stop_fill(
+                            opn, eff_stop,
+                            adv_dollar=pos.adv_dollar, notional=exit_raw_price * pos.shares)
                     exit_reason    = "trailing_stop" if pos.trailing_active else "stop"
                 # Target hit — gap-up uses Open (bonus), intraday uses target; slippage on top.
                 elif pos.target_price and high >= pos.target_price:
@@ -2978,7 +2997,7 @@ class BacktestEngine:
                         "exit_advisory_rules_seen": sorted(pos.exit_advisory_rules_seen),
                         "exit_advisory_first_seen": dict(pos.exit_advisory_first_seen),
                         "entry_date":  str(pos.entry_date.date()) if hasattr(pos.entry_date, "date") else str(pos.entry_date),
-                        "exit_date":   str(today.date()) if hasattr(today, "date") else str(today),
+                        "exit_date":   str(exit_fill_date.date()) if hasattr(exit_fill_date, "date") else str(exit_fill_date),
                     }
                     if getattr(pos, "sleeve", "core") != "core":
                         trade_record["sleeve"] = pos.sleeve
@@ -4844,6 +4863,12 @@ def main():
                         help=("Parity probe: fire the ATR stop on close<=stop "
                               "(production EOD semantics) instead of intraday "
                               "low<=stop. Default: off."))
+    parser.add_argument("--atr-stop-exit-next-open",
+                        action=argparse.BooleanOptionalAction, default=False,
+                        help=("Parity probe: execute the ATR stop as a T+1 "
+                              "market-on-open fill (faithful EOD production "
+                              "decision-then-next-session lag) instead of a "
+                              "same-day resting-stop fill. Default: off."))
     args = parser.parse_args()
 
     # Default: last 6 months
@@ -4865,6 +4890,7 @@ def main():
         "REPLAY_PARTIAL_REDUCES": args.replay_partial_reduces,
         "ATR_STOP_DAILY_RECOMPUTE": args.atr_stop_daily_recompute,
         "ATR_STOP_TRIGGER_ON_CLOSE": args.atr_stop_trigger_on_close,
+        "ATR_STOP_EXIT_NEXT_OPEN": args.atr_stop_exit_next_open,
     }
     engine = BacktestEngine(universe, start=args.start, end=args.end,
                             config=cfg,

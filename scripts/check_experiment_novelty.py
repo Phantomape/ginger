@@ -30,6 +30,26 @@ FROZEN_PATH = REPO_ROOT / "docs" / "frozen_families.jsonl"
 _FROZEN_STATUSES = {"frozen", "frozen_rejected"}
 
 
+def _is_prior_signal(fam: dict[str, Any]) -> bool:
+    """True if a near-neighbor of this family is an anti-repeat signal.
+
+    Not just frozen/already-accepted families: a family that was tried at least
+    once and NEVER accepted (accept_rate == 0) is itself prior evidence that the
+    idea did not work. 618/752 families are status `single_attempt` (one rejected
+    try), and the old gate ignored them entirely — so re-running a tried-once-and-
+    failed family passed silently. We now treat those as blocking too; the
+    new-evidence-axis override is the intended escape hatch.
+    """
+    status = fam.get("status")
+    if status in (_FROZEN_STATUSES | {"has_accepted"}):
+        return True
+    try:
+        accept_rate = float(fam.get("accept_rate") or 0.0)
+    except (TypeError, ValueError):
+        accept_rate = 0.0
+    return (fam.get("trials") or 0) >= 1 and accept_rate == 0.0
+
+
 def _load_families() -> list[dict[str, Any]]:
     if not FROZEN_PATH.exists():
         return []
@@ -53,11 +73,12 @@ def check(fingerprint: dict[str, Any], *, top_n: int = 5) -> dict[str, Any]:
         scored.append((score, fam))
     scored.sort(key=lambda x: -x[0])
     nearest = scored[:top_n]
-    # Warn if a frozen/rejected (or already-accepted) family is too close.
+    # Warn if a too-close family is frozen, already-accepted, or a prior failed
+    # attempt (tried >=1x, never accepted). See _is_prior_signal.
     blocking = [
         (s, f)
         for s, f in scored
-        if s >= fp.WARN_THRESHOLD and f.get("status") in (_FROZEN_STATUSES | {"has_accepted"})
+        if s >= fp.WARN_THRESHOLD and _is_prior_signal(f)
     ]
     warn = bool(blocking)
     return {
@@ -77,7 +98,13 @@ def check(fingerprint: dict[str, Any], *, top_n: int = 5) -> dict[str, Any]:
             for s, f in nearest
         ],
         "blocking_matches": [
-            {"score": s, "family_key": f.get("family_key"), "status": f.get("status")}
+            {
+                "score": s,
+                "family_key": f.get("family_key"),
+                "status": f.get("status"),
+                "trials": f.get("trials"),
+                "accept_rate": f.get("accept_rate"),
+            }
             for s, f in blocking[:top_n]
         ],
     }
@@ -113,11 +140,11 @@ def main() -> int:
     print(f"  gate_shape  : {fingerprint['gate_shape']}")
     print(f"  field_tags  : {', '.join(fingerprint['field_tags'][:18])}")
     print()
-    verdict = "WARN  near-neighbor of a frozen / already-explored family" if result["warn"] else "ok    no strong near-neighbor"
+    verdict = "WARN  near-neighbor of a frozen / explored / prior-failed family" if result["warn"] else "ok    no strong near-neighbor"
     print(f"Verdict: {verdict}  (threshold {result['warn_threshold']})")
     print("\nNearest known families:")
     for n in result["nearest"]:
-        flag = "  <-- frozen/explored" if n["status"] in (_FROZEN_STATUSES | {"has_accepted"}) and n["score"] >= fp.WARN_THRESHOLD else ""
+        flag = "  <-- explored/prior-failed" if _is_prior_signal(n) and n["score"] >= fp.WARN_THRESHOLD else ""
         print(f"  {n['score']:.3f}  [{n['status']}]  {n['family_key']}  (trials={n['trials']}, accept={n['accept_rate']}){flag}")
     if result["warn"]:
         worst = result["nearest"][0]

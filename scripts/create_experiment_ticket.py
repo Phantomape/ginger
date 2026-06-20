@@ -68,7 +68,7 @@ def _novelty_check(args):
     )
     if result.get("warn"):
         print(
-            f"[novelty] WARN near-neighbor of a frozen/explored family"
+            f"[novelty] WARN near-neighbor of a frozen/explored/prior-failed family"
             f" (threshold {result['warn_threshold']}):",
             file=sys.stderr,
         )
@@ -96,7 +96,8 @@ def _novelty_check(args):
         if not (args.novelty_override and (args.new_evidence_axis or "").strip()):
             raise SystemExit(
                 "novelty gate blocked this reservation: it is a near-neighbor of a "
-                "frozen/explored family. Re-run with --novelty-override and "
+                "frozen/explored or prior-failed (tried >=1x, never accepted) "
+                "family. Re-run with --novelty-override and "
                 '--new-evidence-axis "<what is genuinely new>" if justified, or '
                 "pick a different decision hypothesis. See docs/frozen_families.jsonl."
             )
