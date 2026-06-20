@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1425`
-- Raw records loaded by meta report: `2108`
-- History fingerprint: `8f75ecd0b1b13faa`
+- Strategy records counted: `1428`
+- Raw records loaded by meta report: `2114`
+- History fingerprint: `a4d2c45cff7e10aa`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -63,12 +63,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260620-004` `rejected_sbc_form4_equity_comp_context`: EV `+0.7370`, PnL `$11,490.93`, family `sec_companyfacts_form4_compensation_context`, trial `sbc_burden_improvement_form4_context`.
-  Lesson: The fixed Form 4 context scalars failed to beat the accepted SBC helper. The likely reason is that recent grants/exercises and same-accession disposals mostly describe routine compensation plumbing, not incremental de...
-- `exp-20260620-005` `rejected_supplier_financing_debt_relief_intersection_candidate_pool`: EV `+2.6254`, PnL `$41,980.96`, family `production_visible_free_sec_companyfacts_cross_statement_candidate_pool`, trial `supplier_financing_debt_relief_intersection_candidate_pool`.
-  Lesson: Rejected. The supplier-financing plus debt-relief intersection did not clear Gate 4 (failed: drawdown_drift_too_high). The overlap did not convert two directionally positive standalone Companyfacts fields into a robus...
-- `exp-20260620-006` `rejected_sec_refinancing_covenant_relief_text_candidate_pool`: EV `-0.1642`, PnL `$-1,718.49`, family `production_visible_free_sec_text_refinancing_covenant_relief_candidate_pool`, trial `sec_refinancing_covenant_relief_text_candidate_pool`.
-  Lesson: SEC refinancing/covenant relief text did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, accepted_compr...
 - `exp-20260620-007` `positive_replay_lead_not_promoted_supplier_financing_debt_relief_risk_scaled_notional`: EV `+1.7519`, PnL `$30,888.69`, family `production_visible_free_sec_companyfacts_risk_allocation`, trial `supplier_financing_debt_relief_risk_allocation`.
   Lesson: The fixed supplier-financing plus debt-relief source cleared the numeric three-window replay screen after PIT volatility/liquidity notional scaling, but remains only a default-off replay lead because no shared daily/b...
 - `exp-20260620-008` `rejected_supplier_financing_debt_relief_shared_risk_scaled_default_off_adapter`: EV `+0.6801`, PnL `$12,355.48`, family `production_visible_free_sec_companyfacts_shared_default_off_adapter`, trial `supplier_financing_debt_relief_shared_risk_scaled_adapter`.
@@ -87,6 +81,12 @@ facts before changing strategy behavior.
   Lesson: The SEC contract-value-to-market-cap materiality source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, target_sample_too_small, target...
 - `exp-20260620-016` `rejected_form4_multiyear_equity_retention_candidate_pool`: EV `+0.0124`, PnL `$729.85`, family `production_visible_form4_footnote_retention_candidate_pool`, trial `form4_multiyear_equity_retention_candidate_pool`.
   Lesson: The Form 4 multi-year equity-retention source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, target_sample_too_small, accepted_compression_ev_not_beaten,...
+- `exp-20260620-017` `blocked_duplicate_frozen_inventory_turnover_prior`: EV `+0.0000`, PnL `$0.00`, family `production_visible_free_sec_companyfacts_inventory_quality_candidate_pool`, trial `quarterly_inventory_turnover_acceleration_candidate_pool`.
+  Lesson: Do not retry inventory/COGS tag lists, quarterly turnover or DIO thresholds, COGS-growth floors, fact freshness, price/RS/volume/volatility guards, top-N, hold, cooldown, or notional on the same frozen windows. A retr...
+- `exp-20260620-018` `rejected_sec_offering_primary_text_economics_candidate_pool`: EV `-0.0174`, PnL `$-560.20`, family `production_visible_sec_offering_primary_text_economics_candidate_pool`, trial `sec_offering_primary_text_economics_candidate_pool`.
+  Lesson: The SEC offering primary-text economics source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, targ...
+- `exp-20260620-019` `rejected_dividend_per_share_increase_candidate_pool`: EV `+0.1296`, PnL `$-80.39`, family `production_visible_free_sec_companyfacts_capital_return_candidate_pool`, trial `raw_sec_companyfacts_dividend_per_share_increase_candidate_pool`.
+  Lesson: The raw SEC dividend-per-share increase source did not clear Gate 4 (failed: aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, drawdown_drift_too_high, target_concentration_failed, accepted_comp...
 
 ## Highest-Signal Historical Records
 

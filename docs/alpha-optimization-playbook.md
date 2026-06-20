@@ -434,6 +434,23 @@ InventoryNet/CostOfRevenue DIO-turnover family. Inventory/COGS retunes remain
 closed until finished-goods/raw-materials decomposition, richer segment detail,
 or closed forward replacement-value rows exist.
 
+Two later replay scouts tightened the SEC-source boundary rather than opening
+new work. `exp-20260620-018` used the new accession-level SEC primary-text rows
+to parse offering amount, security type, use-of-proceeds, and market-cap
+materiality, but still failed aggregate/window/sample/concentration gates and
+accepted comparators. A retry needs materially richer financing provenance:
+actual takedown versus shelf capacity, float-normalized dilution, lockup or
+hedging terms, underwriter quality, closed deal outcome, or forward
+replacement-value rows. `exp-20260620-019` tested raw SEC annual
+`CommonStockDividendsPerShareDeclared` increases with revenue context and
+SPY-relative leadership; it was also rejected, with drawdown and comparator
+failures. Do not sweep offering regexes, amount/market-cap thresholds,
+security/use weights, dividend-growth thresholds, revenue floors, fact
+freshness, top-N, hold, cooldown, or notional on these frozen windows. A valid
+capital-return retry needs dividend-initiation evidence, payout sustainability
+tied to free cash flow, special-dividend exclusion from declaration text, or
+closed forward rows.
+
 ## Detail Sources
 
 Generated mechanism memory lives in `docs/lessons/*.md`; exact facts live in
