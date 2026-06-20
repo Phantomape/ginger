@@ -52,6 +52,13 @@ DEFAULT_REFERENCE_TICKERS = {
     "XLP",
     "XLV",
     "SNXX",
+    # MSCI USA single-factor ETFs — reference/context only (never traded), used
+    # for return-based factor attribution of the core stack (exp-20260620-021).
+    "MTUM",
+    "QUAL",
+    "VLUE",
+    "USMV",
+    "SIZE",
 }
 DEFAULT_SNAPSHOT_RELS = [
     "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
