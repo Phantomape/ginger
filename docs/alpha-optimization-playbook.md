@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-06-19.
+Last refreshed: 2026-06-20.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -400,6 +400,39 @@ drop-below-5% exits (n=676) precede -0.31% median underperformance, real
 ownership-distribution context that a long-only book cannot trade directly.
 Verdict `observed_only`; the durable product is the reusable direction surface
 plus parser tests. The 13G/A direction axis is now CLOSED on the frozen windows.
+
+The June 20 batch produced one retained default-off source and closed several
+nearby distractions. Theme and defensive relation sources are still weak unless
+the relation itself creates displacement value: uranium/nuclear leadership
+(`exp-20260620-001`) was aggregate-positive but failed window and concentration
+gates, its core-flow confirmation variant (`exp-20260620-002`) became too thin,
+and defensive-sector relative strength (`exp-20260620-003`) was outright
+negative. SEC text and Form 4 variants also stayed too generic:
+refinancing/covenant text, issuer contract-value-to-market-cap materiality, and
+multi-year equity-retention footnotes failed on aggregate, windows, sample, or
+accepted comparators. Routine compensation plumbing did not improve the
+accepted SBC helper.
+
+The useful exception was supplier-financing plus debt-relief. The raw
+intersection (`exp-20260620-005`) was high-upside but drawdown-fragile; a
+private risk-scaled replay lead (`exp-20260620-007`) was not enough; the first
+shared adapter attempt (`exp-20260620-008`) failed to reproduce the lead; the
+fixed `4k` risk-scaled shared default-off adapter (`exp-20260620-009`) was
+accepted with aggregate EV `+0.6801`, PnL `+$12,355.48`, no live/default
+orders, and the supplier/debt relief execution envelope preserved as
+observe-only. Do not promote it live from frozen-window evidence. The next
+evidence should be closed forward replacement value under the accepted `4k`
+envelope, or a genuinely new provenance field: payment-term disclosure,
+supplier/customer contract identity, covenant/refinancing terms, or parsed
+counterparty economics. Do not retry by sweeping DPO/debt thresholds, risk
+scalars, adapter notional, allocator rank, theme baskets, Form 4 compensation
+code lists, SEC phrase lists, top-N, hold, or cooldown on the frozen windows.
+The later quarterly inventory-turnover acceleration proposal
+(`exp-20260620-017`) was correctly blocked before strategy logic because it
+collapsed into the already rejected `exp-20260616-022` quarterly
+InventoryNet/CostOfRevenue DIO-turnover family. Inventory/COGS retunes remain
+closed until finished-goods/raw-materials decomposition, richer segment detail,
+or closed forward replacement-value rows exist.
 
 ## Detail Sources
 
@@ -995,6 +1028,13 @@ production-visible field:
   FINRA signal does not repair the window/drawdown/comparator problem. Reopen
   only with PIT borrow fee, utilization, loan availability, options/put-skew
   context, or closed forward replacement-value rows;
+- uranium/nuclear theme relation leadership, same-day core-flow confirmation,
+  and defensive-sector ETF breadth/stock-leadership candidate pools that only
+  sweep fixed theme baskets, anchor ETF lists, breadth thresholds, core-flow
+  overlap, liquidity, volatility, top-N, hold, cooldown, or notional. The
+  June 20 runs showed theme beta and defensive rotation do not become
+  deployable relation alpha without a new PIT relation-provenance field or
+  closed forward replacement value;
 - intra-industry liquidity-leader lead-lag (top-3 by 20d dollar volume per
   industry run up vs SPY over 10d; a same-industry member that has NOT yet
   moved drifts to catch up) as a STATIC always-on candidate pool, and sweeping
@@ -1042,6 +1082,21 @@ production-visible field:
   or notional. A valid retry needs conversion purpose/lockup/selling-plan
   context, counterparty identity, ownership threshold, board-seat count,
   standstill duration, evidence spans, or closed forward replacement-value rows;
+- SBC burden-improvement plus Form 4 compensation-context allocation retries
+  that sweep the lookback, A/M/S/F code lists, 10b5-1 handling, owner roles,
+  notional scalars, top-N, hold, or cooldown. `exp-20260620-004` failed versus
+  the accepted SBC helper and suggests routine grants/exercises are mostly
+  compensation plumbing unless paired with materially richer grant-value,
+  vesting, retention, or executive-ownership context;
+- supplier-financing / accounts-payable DPO plus debt-relief Companyfacts
+  intersections that sweep DPO extension, debt/revenue relief, COGS/revenue
+  floors, fact freshness, RS/close/volume/volatility guards, top-N, hold,
+  cooldown, risk scalar, allocator rank, or notional. `exp-20260620-009`
+  accepted only the fixed shared `4k` risk-scaled default-off adapter after the
+  raw high-deployment intersection and first shared attempt failed. A valid
+  next step needs closed forward replacement-value rows under that unchanged
+  envelope, or materially new supplier/payment-term, covenant/refinancing,
+  customer/supplier contract, or counterparty-economics provenance;
 - parsed Schedule 13G/A amendment stake-change DIRECTION candidate pools that
   sweep the increase/decrease/exit cut, stake-percent delta, holder-type, Big3
   vs non-Big3, top-N, hold, cooldown, or notional on the frozen windows:

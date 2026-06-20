@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-06-18.
+Last refreshed: 2026-06-20.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -51,6 +51,37 @@ Implementable fields:
 
 Source: <https://link.springer.com/article/10.1007/s41060-026-01066-0>
 
+### Stratified LLM Strategy Alignment
+
+Strat-LLM's May 2026 live-forward study is useful because it separates the LLM
+scaffold from the market state. Its reported Free, Guided, and Strict modes
+behave differently across trend and drawdown regimes; Strict mode is a risk
+anchor for standard models, while reasoning-heavy models may need less rigid
+control in uptrends. Ginger should not copy the agent. The implementable
+lesson is to log the scaffold mode, regime, source set, and action constraints
+before measuring whether LLM context improves an existing deterministic helper.
+
+Implementable fields:
+
+- `llm_strategy_alignment_mode`
+- `llm_scaffold_regime_bucket`
+- `llm_strict_mode_risk_anchor_flag`
+- `llm_guided_mode_momentum_context_bucket`
+- `llm_high_win_rate_trap_bucket`
+- `llm_alignment_tax_bucket`
+- `llm_mode_replacement_value_bucket`
+- `llm_source_set_live_forward_hash`
+
+Controls:
+
+- predeclare whether the LLM is in Free, Guided, or Strict mode for a run;
+- keep execution, sizing, exits, and hard constraints in deterministic code;
+- compare each scaffold mode against the same displaced helper after costs;
+- treat high win rate with weak total return as a failure mode, not success;
+- evaluate mode x regime interactions before changing prompt or risk budgets.
+
+Source: <https://arxiv.org/abs/2605.06024>
+
 ### Index-To-Equity Transfer Learning
 
 Recent transformer work shows that pre-training on market-index behavior can
@@ -67,6 +98,40 @@ Implementable fields:
 - `model_signal_after_cost_validity_bucket`
 
 Source: <https://arxiv.org/abs/2605.23962>
+
+### Continuous Style Allocation Beats Discrete Regime Rules
+
+A May 2026 growth-versus-defensive allocation paper is most useful as a risk
+allocation design pattern. It treats the relative trade as style exposure,
+uses factor attribution before claiming alpha, replaces hard regime switches
+with a smooth score, maps the score to bounded active tilts, and validates
+against transaction costs plus static style benchmarks. Ginger's translation:
+regime routers should prefer continuous, bounded, auditable exposure scores
+over another if/then state label or scalar sweep.
+
+Implementable fields:
+
+- `style_allocation_score_version`
+- `growth_defensive_style_exposure_bucket`
+- `rate_relief_component_score`
+- `spy_drawdown_relief_component_score`
+- `vix_stress_relief_component_score`
+- `growth_crowding_penalty_score`
+- `bounded_active_tilt_pct`
+- `style_timing_factor_attribution_bucket`
+- `style_timing_static_benchmark_delta`
+
+Controls:
+
+- decompose any style router into market, value, momentum, and residual
+  exposure before calling it alpha;
+- map continuous scores to bounded tilts and smooth realized weights;
+- compare against SPY/QQQ, static high-growth, static balanced, and
+  volatility-matched benchmarks after turnover costs;
+- do not retune discrete regime cells unless the continuous score adds
+  forward replacement value under a fixed envelope.
+
+Source: <https://arxiv.org/abs/2605.20636>
 
 ### Graphs, Correlations, And Market Structure
 
@@ -112,6 +177,36 @@ Implementable fields:
 - `hard_to_borrow_availability_bucket`
 
 Source: <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6422358>
+
+### Cost-Aware Forecast-To-Trade Conversion
+
+A May 2026 walk-forward trading study on BTC is not equity evidence, but its
+engineering lesson is directly portable: weak forecasts become tradable only
+when the decision rule is cost-aware. A magnitude threshold tied to transaction
+cost reduced turnover and restored profitability in selected configurations,
+where naive sign-based conversion failed after costs. For Ginger, this maps to
+activation-envelope design and candidate displacement gates, not to another
+predictive model.
+
+Implementable fields:
+
+- `forecast_magnitude_after_cost_bucket`
+- `cost_aware_trade_filter_version`
+- `expected_edge_to_cost_ratio`
+- `turnover_suppression_reason`
+- `forecast_to_trade_conversion_bucket`
+- `cost_threshold_abstain_flag`
+- `walk_forward_protocol_id`
+
+Controls:
+
+- require every forecast-like field to state the minimum edge needed to beat
+  spread, slippage, borrow/fees, and the accepted displaced helper;
+- report abstentions as evidence, not missing trades;
+- evaluate walk-forward or forward rows before changing live sizing or slots;
+- keep the conversion rule fixed before measuring after-cost replacement value.
+
+Source: <https://arxiv.org/abs/2606.00060>
 
 ### Agentic Nowcasting
 
@@ -188,6 +283,43 @@ Controls:
 - keep the LLM as a field builder unless a shared helper passes Gate 1-4.
 
 Source: <https://arxiv.org/abs/2605.05211>
+
+### LLM As Conditional Feature For Existing Factors
+
+Recent LLM systematic-investing papers are most useful when they condition an
+existing factor or candidate source rather than asking the model to invent
+orders. One study finds LLM-scored firm news can improve concentrated
+cross-sectional momentum portfolios after costs; another shows quantitative
+factors and LLM newsflow representations can be fused, but fusion architecture
+and modality-specific training matter. Ginger should translate this into
+schema-bound text fields attached to accepted helpers and measured by
+replacement value.
+
+Implementable fields:
+
+- `llm_news_conditioning_model_id`
+- `llm_news_supports_existing_factor_bucket`
+- `factor_news_fusion_method`
+- `single_modality_vs_fusion_delta_bucket`
+- `llm_news_high_conviction_flag`
+- `llm_news_factor_disagreement_bucket`
+- `llm_conditioned_replacement_value_bucket`
+
+Controls:
+
+- predeclare whether the LLM conditions momentum, fundamentals, allocator
+  source choice, or risk, rather than allowing broad discretionary scoring;
+- preserve the exact news set, prompt/schema, model id, and factor state seen
+  at decision time;
+- compare conditioned rows against the unconditioned accepted helper after
+  costs and concentration controls;
+- treat low-coverage or model-disagreement cases as abstentions until forward
+  evidence matures.
+
+Sources:
+
+- <https://arxiv.org/abs/2510.26228>
+- <https://arxiv.org/abs/2510.15691>
 
 ### Human-Directed LLM Beats Autonomous LLM
 
@@ -334,6 +466,34 @@ Controls:
   controls, or replayable source artifacts.
 
 Source: <https://arxiv.org/abs/2605.19337>
+
+### Live Prediction-Market LLM Benchmark Discipline
+
+PolyBench is not an equity-alpha paper, but its benchmark design is useful for
+Ginger: timestamp-locked market state, synchronized news, order-book execution,
+confidence-weighted returns, APY, and Sharpe expose the gap between confident
+LLM forecasts and actually tradable outcomes. The local translation is a
+stricter evidence ledger for any LLM or agentic market view, not autonomous
+trading.
+
+Implementable fields:
+
+- `live_market_state_snapshot_hash`
+- `llm_forecast_timestamp_lock_id`
+- `llm_confidence_weighted_return_bucket`
+- `agent_order_book_execution_model`
+- `agent_invalid_or_abstain_action_count`
+- `agent_confidence_to_pnl_calibration_bucket`
+- `agent_market_design_sensitivity_bucket`
+
+Controls:
+
+- freeze the market/news snapshot before the model sees it;
+- report confidence calibration against realized PnL, not only direction;
+- simulate execution against the available book/spread when a market has one;
+- compare against cash, passive benchmarks, and the exact displaced helper.
+
+Source: <https://arxiv.org/abs/2604.14199>
 
 ### Real-Market Agent Benchmarks Need Comparator Discipline
 
@@ -1165,6 +1325,37 @@ Controls:
 
 Source: <https://arxiv.org/abs/2605.29586>
 
+### Layout-Faithful EDGAR Filing Data
+
+The June 2026 Stanford EDGAR Filings Dataset reconstructs SEC filings into
+layout-faithful, token-efficient MultiMarkdown and adds EDGAR-Forecast /
+EDGAR-OCR benchmarks. For Ginger, this points to a concrete data-engineering
+surface: store accession-bounded filing text with layout/table provenance so
+LLM labels, deterministic parsers, and numeric joins can be replayed from the
+same source artifact.
+
+Implementable fields:
+
+- `edgar_layout_source_version`
+- `filing_multimarkdown_hash`
+- `filing_table_layout_confidence_bucket`
+- `filing_section_span_id`
+- `filing_numeric_table_source_hash`
+- `edgar_forecast_protocol_id`
+- `edgar_ocr_risk_bucket`
+- `filing_source_artifact_overlap_bucket`
+
+Controls:
+
+- key every filing artifact by accession, accepted timestamp, form, and source
+  parser version;
+- preserve table and section spans before any LLM classification or numeric
+  extraction;
+- use post-cutoff / PIT protocols for filing-grounded forecasts;
+- treat layout/OCR uncertainty as a fail-closed field for candidate pools.
+
+Source: <https://arxiv.org/abs/2606.18192>
+
 ### Enforcement-Grounded Misleading Narrative Signals
 
 AuditFraudBench adds a useful SEC semantic target: misleading narratives can be
@@ -1228,6 +1419,43 @@ Controls:
   material.
 
 Source: <https://arxiv.org/abs/2512.19484>
+
+### Options Surface As Risk And Execution Context
+
+Recent options research still maps better to risk/execution context than to
+daily equity alpha. A 2025 SPXW put-writing study emphasizes regime-aware
+position sizing and drawdown control, while 2026 volatility-surface work
+reinforces that skew/term-structure fitting is model- and market-specific. For
+Ginger, options rows should first become timestamped risk, crowding, and
+execution-envelope fields. They should not be accepted as fixed-window equity
+alpha until historical chain coverage, stale-chain controls, and fill costs are
+replayable.
+
+Implementable fields:
+
+- `options_surface_snapshot_asof`
+- `iv_skew_model_version`
+- `iv_term_structure_bucket`
+- `option_liquidity_cost_bucket`
+- `vol_regime_sizing_bucket`
+- `options_chain_stale_flag`
+- `option_signal_costed_replacement_value`
+- `options_tail_risk_context_bucket`
+
+Controls:
+
+- store quote timestamp, expiration, strike/moneyness, bid/ask/mid, open
+  interest, and stale-chain status before any signal use;
+- start with risk sizing, tail context, and execution-envelope diagnostics;
+- require fixed-window or forward ledger coverage with publication/fill-cost
+  controls before candidate-pool use;
+- compare options-assisted rows against accepted non-options comparators after
+  costs and drawdown.
+
+Sources:
+
+- <https://arxiv.org/abs/2508.16598>
+- <https://arxiv.org/abs/2603.27501>
 
 ### 13F Is Delayed Ownership And Crowding Context
 

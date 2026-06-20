@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `112`
-- Accepted / rejected: `12` / `93`
-- Accept rate: `10.71%`
-- Sum EV delta: `+64.8670`
-- Sum PnL delta: `$1,301,612.57`
-- Latest: `exp-20260616-016` `rejected_sbc_burden_rank2_allocator_source_extension` with EV `+0.7532` and PnL `$23,673.34`.
+- Experiments: `115`
+- Accepted / rejected: `12` / `96`
+- Accept rate: `10.43%`
+- Sum EV delta: `+71.7916`
+- Sum PnL delta: `$1,426,627.62`
+- Latest: `exp-20260620-011` `rejected_supplier_financing_rank3_allocator_source` with EV `+2.4918` and PnL `$41,503.66`.
 
 ## Retained Or Positive Evidence
 
@@ -30,12 +30,6 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260613-006` `rejected_source_score_percentile_allocator`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_allocator_source_arbitration`.
-  Lesson: Raw source-score percentiles were not enough to arbitrate same-day source conflicts better than the accepted fixed priority. The oracle gap from exp-20260613-003 is likely coming from information not captured by each...
-- `exp-20260613-009` `rejected_candidate_microstructure_allocator`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_allocator_source_arbitration`.
-  Lesson: The microstructure quality proxy did not improve fixed source priority robustly enough across the canonical windows. This suggests the exp-20260613-003 oracle gap is not explained by a simple mid-trend/high-close/volu...
-- `exp-20260613-012` `rejected_alpha_score_allocator_source_extension`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
-  Lesson: The broad alpha_score source did not add distinct replacement value after lagged consensus and relation helpers under the allocator's 10-day envelope. Its standalone 20-day edge likely does not survive displacement by...
 - `exp-20260613-015` `rejected_source_confirmation_allocator`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_allocator_source_arbitration`.
   Lesson: Same-ticker source confirmation either arrived too sparsely or mostly duplicated the accepted lagged-consensus signal. It did not explain the oracle source-choice gap better than the accepted fixed priority. Do not re...
 - `exp-20260613-033` `rejected_correlation_crowding_allocator`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `allocator_correlation_crowding`.
@@ -46,6 +40,12 @@ records before making strategy changes.
   Lesson: The standalone SEC financial-report sleeve can remain useful, but its event rows did not add robust incremental replacement value after lagged consensus and the accepted allocator stack. The likely failure mode is ove...
 - `exp-20260616-016` `rejected_sbc_burden_rank2_allocator_source_extension`: EV `+0.7532`, PnL `$23,673.34`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
   Lesson: The SBC burden source did not add enough incremental allocator replacement value after lagged consensus. It either overlapped existing accepted source dates or displaced better lower-rank allocator rows, especially ve...
+- `exp-20260618-021` `rejected_sbc_burden_no_displacement_gap_allocator`: EV `+2.1267`, PnL `$41,141.15`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_gap_fill_allocation`.
+  Lesson: Removing displacement was not sufficient. The remaining SBC candidates on empty allocator dates were too low quality, too thin, or failed the accepted allocator comparator, which means the standalone SBC edge mostly o...
+- `exp-20260618-022` `rejected_distribution_no_displacement_gap_allocator`: EV `+2.3061`, PnL `$42,370.24`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_gap_fill_allocation`.
+  Lesson: Removing displacement was not sufficient. Empty allocator dates did not supply distribution rows with enough incremental quality to beat the accepted allocator comparator after costs, cooldown, and concentration check...
+- `exp-20260620-011` `rejected_supplier_financing_rank3_allocator_source`: EV `+2.4918`, PnL `$41,503.66`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
+  Lesson: The supplier financing and deleveraging rows did not add enough incremental replacement value after lagged consensus and volatility relief. The source likely overlaps broad momentum/quality rows or displaces better lo...
 
 ## Retry Discipline
 
@@ -67,9 +67,9 @@ records before making strategy changes.
 
 ## Recent Raw Records
 
-- `exp-20260613-012` source `experiments/logs/exp-20260613-012.json`.
-- `exp-20260613-015` source `experiments/logs/exp-20260613-015.json`.
-- `exp-20260613-033` source `experiments/logs/exp-20260613-033.json`.
 - `exp-20260614-003` source `experiments/logs/exp-20260614-003.json`.
 - `exp-20260614-009` source `experiments/logs/exp-20260614-009.json`.
 - `exp-20260616-016` source `experiments/logs/exp-20260616-016.json`.
+- `exp-20260618-021` source `experiments/logs/exp-20260618-021.json`.
+- `exp-20260618-022` source `experiments/logs/exp-20260618-022.json`.
+- `exp-20260620-011` source `experiments/logs/exp-20260620-011.json`.

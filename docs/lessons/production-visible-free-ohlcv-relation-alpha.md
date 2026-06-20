@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `33`
-- Accepted / rejected: `3` / `27`
-- Accept rate: `9.09%`
-- Sum EV delta: `+5.3863`
-- Sum PnL delta: `$79,898.08`
-- Latest: `exp-20260618-006` `rejected_intraindustry_lead_lag_direction_stability_candidate_pool` with EV `+1.2216` and PnL `$17,008.11`.
+- Experiments: `34`
+- Accepted / rejected: `3` / `28`
+- Accept rate: `8.82%`
+- Sum EV delta: `+5.5794`
+- Sum PnL delta: `$84,153.78`
+- Latest: `exp-20260620-014` `rejected_supplier_source_peer_relative_leadership_candidate_pool` with EV `+0.1931` and PnL `$4,255.70`.
 
 ## Retained Or Positive Evidence
 
@@ -24,8 +24,6 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260608-028` `rejected_negative_peer_shock_resilience_candidate_pool`: EV `+0.2689`, PnL `$4,013.82`, family `production_visible_free_ohlcv_relation_alpha`, trial `negative_peer_shock_resilient_substitute_candidate_pool`.
-  Lesson: A negative peer shock may be interpreted as contagion across correlated stocks rather than as rotation into substitutes. If the source is positive versus core but fails the accepted peer comparator, the edge is not st...
 - `exp-20260609-010` `rejected_volatility_relief_industry_laggard_repair_candidate_pool`: EV `+0.1516`, PnL `$3,094.78`, family `production_visible_free_ohlcv_relation_alpha`, trial `volatility_relief_industry_laggard_repair_candidate_pool`.
   Lesson: The fixed vol-relief plus industry-laggard relation failed Gate 4 or did not beat the accepted vol-relief comparator. The likely reason is sample thinning or generic relief beta: once next-open execution, core-overlap...
 - `exp-20260609-018` `rejected_industry_pullback_reclaim_candidate_pool`: EV `-0.0568`, PnL `$-2,726.00`, family `production_visible_free_ohlcv_relation_alpha`, trial `industry_pullback_reclaim_candidate_pool`.
@@ -40,6 +38,8 @@ records before making strategy changes.
   Lesson: The proposed failed-breakdown/reclaim alpha was not run because exp-20260601-012 already tested the same undercut/reclaim absorption mechanism and failed Gate 4: aggregate EV -0.4741, PnL -$5,869.16, two regressed win...
 - `exp-20260618-006` `rejected_intraindustry_lead_lag_direction_stability_candidate_pool`: EV `+1.2216`, PnL `$17,008.11`, family `production_visible_free_ohlcv_relation_alpha`, trial `free_ohlcv_intraindustry_lead_lag_direction_stability_candidate_pool`.
   Lesson: The PIT intra-industry lead-lag direction-stability source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, drawdown_drift_too_high). The relation gate was intended to keep only tickers where...
+- `exp-20260620-014` `rejected_supplier_source_peer_relative_leadership_candidate_pool`: EV `+0.1931`, PnL `$4,255.70`, family `production_visible_free_ohlcv_relation_alpha`, trial `supplier_source_peer_relative_leadership_candidate_pool`.
+  Lesson: Rejected. The accepted supplier source did not transfer reliable edge to different same-industry peers after next-open execution, costs, cooldown, and comparator checks (failed: target_sample_too_small, target_concent...
 
 ## Retry Discipline
 
@@ -61,9 +61,9 @@ records before making strategy changes.
 
 ## Recent Raw Records
 
-- `exp-20260609-018` source `experiments/logs/exp-20260609-018.json`.
 - `exp-20260609-019` source `experiments/logs/exp-20260609-019.json`.
 - `exp-20260610-003` source `experiments/logs/exp-20260610-003.json`.
 - `exp-20260610-022` source `experiments/logs/exp-20260610-022.json`.
 - `exp-20260615-005` source `experiments/logs/exp-20260615-005.json`.
 - `exp-20260618-006` source `experiments/logs/exp-20260618-006.json`.
+- `exp-20260620-014` source `experiments/logs/exp-20260620-014.json`.
