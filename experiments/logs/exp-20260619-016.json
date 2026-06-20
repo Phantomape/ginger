@@ -1,0 +1,154 @@
+{
+  "after_metrics": {
+    "counterfactual_allocator_pnl_delta_after_veto": 39916.0,
+    "counterfactual_veto_delta_pnl": -481.21,
+    "overlap_trade_count": 6
+  },
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260619-016/exp_20260619_016_parsed_13ga_exit_overhang_allocator_overlap.json",
+  "before_metrics": {
+    "accepted_allocator_aggregate_ev_delta": 2.1849,
+    "accepted_allocator_aggregate_pnl_delta": 40397.21,
+    "accepted_allocator_trade_count": 331
+  },
+  "calibration": {
+    "actual_gate4_passed": false,
+    "actual_success": 0,
+    "brier_score": 0.04,
+    "failure_modes_observed": [
+      "target_overlap_trade_count_too_small",
+      "target_window_coverage_too_small",
+      "counterfactual_veto_pnl_not_positive",
+      "window_veto_pnl_not_consistently_positive",
+      "no_full_gate4_ev_replay_or_shared_helper"
+    ],
+    "predicted_failure_modes": [
+      "overlap_too_thin",
+      "window_fragile_veto",
+      "accepted_allocator_not_improved",
+      "ownership_context_not_actionable"
+    ],
+    "predicted_success_probability": 0.2,
+    "surprise_note": "The main predicted failure mode occurred: overlap was too thin. The direction was worse than expected because the veto cohort had positive net PnL, so removing it would hurt rather than help."
+  },
+  "change_summary": "The parsed 13G/A exit-below-5% overhang context does not justify a future accepted-allocator veto: overlap is only 6/331 trades and removing those trades would reduce accepted allocator PnL by $481.21.",
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "parsed_13ga_exit_below5_overhang_veto_for_accepted_allocator_rows_v1",
+  "decision": "rejected_parsed_13ga_exit_overhang_allocator_veto_overlap",
+  "delta_metrics": {
+    "aggregate_expected_value_delta": 0.0,
+    "aggregate_strategy_total_pnl_delta": -481.21,
+    "vetoed_trade_pnl_sum": 481.21
+  },
+  "experiment_id": "exp-20260619-016",
+  "gate4": {
+    "accepted_allocator_aggregate_ev_delta": 2.1849,
+    "accepted_allocator_aggregate_pnl_delta": 40397.21,
+    "accepted_allocator_reference_experiment": "exp-20260611-005",
+    "counterfactual_allocator_pnl_delta_after_veto": 39916.0,
+    "counterfactual_veto_delta_pnl": -481.21,
+    "decision": "rejected_parsed_13ga_exit_overhang_allocator_veto_overlap",
+    "expected_value_delta_after_veto": null,
+    "expected_value_note": "This read-only overlap test does not reconstruct the allocator daily equity curve, so EV/Sharpe acceptance is unavailable and the result cannot pass Gate 4.",
+    "failed_reasons": [
+      "target_overlap_trade_count_too_small",
+      "target_window_coverage_too_small",
+      "counterfactual_veto_pnl_not_positive",
+      "window_veto_pnl_not_consistently_positive",
+      "no_full_gate4_ev_replay_or_shared_helper"
+    ],
+    "overlap_trade_count": 6,
+    "overlap_trade_count_min": 20,
+    "passed": false,
+    "target_window_count_min": 3,
+    "vetoed_trade_pnl_sum": 481.21,
+    "windows_with_overlap": [
+      "mid_weak",
+      "old_thin"
+    ]
+  },
+  "hypothesis": "Recent parsed non-Big3 Schedule 13G/A exit-below-5% events may identify ownership distribution overhang; accepted default-off allocator paper entries that overlap this context should underperform enough that a future shared veto could improve replacement value.",
+  "implementation_mode": "observed_only_attribution",
+  "lane": "alpha_search",
+  "log": "experiments/logs/exp-20260619-016.json",
+  "mechanism_family": "production_visible_sec_ownership_overhang_context",
+  "nearby_prior_experiments": [
+    "exp-20260619-014",
+    "exp-20260611-005",
+    "exp-20260618-016"
+  ],
+  "new_evidence_type": "parsed_13ga_exit_below5_negative_overlap_context",
+  "next_retry_requires": [
+    "closed forward allocator replacement rows tagged with parsed ownership exits",
+    "richer holder or activist outcome provenance",
+    "materially changed structured-XML coverage or overlap"
+  ],
+  "owner": "alpha-search-automation",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry by sweeping 13G/A exit age, Big3/non-Big3 holder filters, stake-percent exits, allocator source ranks, top-N, hold days, cooldown, or paper notional on these frozen windows.",
+    "new_evidence_required": "A valid retry needs closed forward accepted-allocator replacement rows tagged with parsed ownership exits, richer holder/activist outcome provenance, or repaired structured-XML coverage that materially changes overlap.",
+    "why_result_happened": "The ownership-exit context rarely intersects the accepted allocator, and the few overlapping trades are not the expected weak cohort. The largest overlap was old_thin AFRM, a strong winner; the veto would remove more winner PnL than loser PnL."
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260619-014 built a new PIT parsed 13G/A direction surface and found the only clean signal was negative non-Big3 drop-below-5% drift, while accepted allocator rows are the current high-priority default-off surface. Main risk is sparse overlap or a weak negative signal after accepted allocator selection.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "overlap_too_thin",
+      "window_fragile_veto",
+      "accepted_allocator_not_improved",
+      "ownership_context_not_actionable"
+    ],
+    "recorded_at": "2026-06-19T17:58:29+00:00",
+    "success_probability": 0.2
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "default_off_paper_only": true,
+    "execution_envelope": {
+      "failure_handling": "missing parsed 13G/A direction row, missing SPY trading calendar, future filing date, or event outside the fixed 10-trading-session lookback produces no veto tag",
+      "kill_switch": "not applicable because no helper or orders were promoted",
+      "order_semantics": "no broker order; read-only veto overlap audit",
+      "overhang_lookback_trading_days": 10,
+      "portfolio_displacement": "accepted allocator paper rows only; no production displacement",
+      "target_notional_per_paper_trade": 4000.0,
+      "trade_enabled": false
+    },
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "parity_note": "No production code was changed. A positive result would still require a shared helper that exposes the parsed 13G/A exit-overhang tag in both historical replay and daily default-off snapshots.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_free_ohlcv": false,
+    "uses_free_sec_ownership_text": true,
+    "uses_llm": false
+  },
+  "rejection_reason": "target_overlap_trade_count_too_small; target_window_coverage_too_small; counterfactual_veto_pnl_not_positive; window_veto_pnl_not_consistently_positive; no_full_gate4_ev_replay_or_shared_helper",
+  "related_files": [
+    "quant/experiments/exp_20260619_016_parsed_13ga_exit_overhang_allocator_overlap.py",
+    "data/experiments/exp-20260619-016/exp_20260619_016_parsed_13ga_exit_overhang_allocator_overlap.json",
+    "experiments/logs/exp-20260619-016.json",
+    "experiments/cards/exp-20260619-016.md",
+    "experiments/manifests/exp-20260619-016.json",
+    "experiments/tickets/exp-20260619-016.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "reproduce": ".venv/Scripts/python.exe -B quant/experiments/exp_20260619_016_parsed_13ga_exit_overhang_allocator_overlap.py",
+  "single_causal_variable": "parsed_13ga_exit_below5_overhang_veto_for_accepted_allocator_rows_v1",
+  "status": "rejected",
+  "timestamp": "2026-06-19T18:03:21Z",
+  "trial_family": "parsed_13ga_exit_overhang_allocator_overlap",
+  "trial_variant_id": "exit_below5_non_big3_overlap_10_trading_sessions_v1"
+}

@@ -1,0 +1,209 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260620_018_sec_offering_primary_text_economics.py",
+    "data/experiments/exp-20260620-018/exp_20260620_018_sec_offering_primary_text_economics.json",
+    "experiments/cards/exp-20260620-018.md",
+    "experiments/manifests/exp-20260620-018.json",
+    "experiments/tickets/exp-20260620-018.json",
+    "experiments/logs/exp-20260620-018.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260620-018.md",
+  "causal_components": [
+    "SEC filing primary text parser",
+    "financing amount and security/use-of-proceeds classifier",
+    "PIT market-cap normalization",
+    "historical replay",
+    "Gate 1-4 artifact",
+    "production parity boundary"
+  ],
+  "change_type": "default_off_paper_candidate_pool_replay_scout",
+  "changed_variable": "sec_offering_primary_text_economics_candidate_source_v1",
+  "claimed_at": "2026-06-20T16:15:05+00:00",
+  "completed_at": null,
+  "created_at": "2026-06-20T16:14:58+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260620-018",
+  "experiment_uid": "expuid-adf4d57caf6d4271",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260620-018",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-20T16:14:58+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_offering_primary_text_economics"
+  },
+  "hypothesis": "candidate_pool: SEC offering/prospectus primary-document economics with parsed financing amount normalized by PIT market cap, security type, and use-of-proceeds may separate constructive capital raised for growth/project financing from raw dilution-noise offering events when price action absorbs the filing.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "sec_offering_primary_text_economics_candidate_source_v1"
+  ],
+  "mechanism_family": "default_off_paper_candidate_pool_replay_scout",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260617-023",
+    "exp-20260618-013",
+    "exp-20260619-020"
+  ],
+  "new_evidence_type": "not_declared",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "fundamental_growth_rs_default_off_candidate_pool",
+        "score": 0.62,
+        "status": "frozen_rejected",
+        "trials": 6
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "industry_normalized_reinvestment_productivity_candidate_pool",
+        "score": 0.62,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "kova_companyfacts_capital_efficient_growth_candidate_pool",
+        "score": 0.62,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "sector_normalized_reinvestment_productivity_candidate_pool",
+        "score": 0.62,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "supplier_financing_debt_relief_intersection_candidate_pool",
+        "score": 0.62,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "companyfacts_ratio",
+      "field_tags": [
+        "absorbs",
+        "action",
+        "amount",
+        "by",
+        "cap",
+        "capital",
+        "constructive",
+        "dilution",
+        "document",
+        "economics",
+        "events",
+        "filing",
+        "financing",
+        "from",
+        "growth",
+        "market",
+        "may",
+        "noise",
+        "normalized",
+        "of",
+        "offering",
+        "parsed",
+        "pit",
+        "price",
+        "primary",
+        "proceeds",
+        "project",
+        "prospectus",
+        "raised",
+        "raw",
+        "security",
+        "separate",
+        "text",
+        "type",
+        "use",
+        "when"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "fundamental_growth_rs_default_off_candidate_pool",
+        "reopen_condition": "If positive, implement only as shared default-off paper before activation; if rejected, require forward rows or a new source-quality field, not a nearby sector/ticker/exposure or Companyfacts/RS threshold retune.",
+        "score": 0.62,
+        "status": "frozen_rejected",
+        "trials": 6
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "industry_normalized_reinvestment_productivity_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT reinvestment evidence such as segment/customer capacity disclosures or closed forward replacement-value rows.",
+        "score": 0.62,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "kova_companyfacts_capital_efficient_growth_candidate_pool",
+        "reopen_condition": "A valid retry needs a materially different PIT data edge such as analyst breadth/dispersion, options/borrow/ownership flow, customer/supplier relation provenance, or closed forward replacement rows from a shared daily helper.",
+        "score": 0.62,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "sector_normalized_reinvestment_productivity_candidate_pool",
+        "reopen_condition": "If rejected, a retry needs materially different PIT reinvestment evidence such as segment/customer capacity disclosures or closed forward replacement-value rows. Do not sweep peer-count, percentile, productivity formula, raw CapEx/D&A thresholds, sector exclusions, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.62,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "supplier_financing_debt_relief_intersection_candidate_pool",
+        "reopen_condition": "Need supplier/payment-term provenance, covenant/refinancing context, or closed forward replacement-value rows before revisiting this Companyfacts cross-statement family.",
+        "score": 0.62,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Accession-level SEC filing primary text rows now exist across the three canonical windows and are parsed for financing amount, debt/equity/ATM/security type, use-of-proceeds, and PIT market-cap normalized materiality; this is distinct from metadata-only offering price absorption and from the prior readiness blocker that lacked primary text.",
+    "override": true,
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "confidence_reason": "Raw SEC offering price absorption failed all windows and a June 18 readiness run blocked because primary-document economics were missing; the current repo now has accession-level SEC filing text rows across all three windows with proceeds/notes/offering terms, making parsed amount/use-of-proceeds/market-cap normalization a genuinely new but still noisy evidence axis.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "thin_sample",
+      "offering_events_are_dilution_noise",
+      "window_regression",
+      "concentration_failed",
+      "accepted_distribution_comparator_not_beaten"
+    ],
+    "recorded_at": "2026-06-20T16:14:45+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 0,
+  "result": null,
+  "revision_manifest_file": "experiments/manifests/exp-20260620-018.json",
+  "single_causal_variable": "sec_offering_primary_text_economics_candidate_source_v1",
+  "status": "claimed",
+  "ticket_file": "experiments/tickets/exp-20260620-018.json",
+  "trial_family": "default_off_paper_candidate_pool_replay_scout",
+  "trial_variant_id": "exp-20260620-018"
+}
