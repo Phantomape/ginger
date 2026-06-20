@@ -1,0 +1,255 @@
+{
+  "acceptance_rule": "Gate 1-4 per docs/backtesting.md: positive aggregate EV/PnL, no unacceptable window EV/PnL regression, survival >=5%, >=20 target trades, drawdown drift <=0.5pp, concentration pass, and accepted compression/distribution comparators beaten; replay positives are leads only until shared helper parity exists.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260620_021_credit_relief_cyclical_leadership.py",
+    "data/experiments/exp-20260620-021/**",
+    "experiments/logs/exp-20260620-021.json",
+    "experiments/cards/exp-20260620-021.md",
+    "experiments/manifests/exp-20260620-021.json",
+    "experiments/tickets/exp-20260620-021.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260620-021.md",
+  "causal_components": [
+    "HYG_vs_LQD_credit_relief_context",
+    "liquid_cyclical_sector_candidate_gate",
+    "SPY_relative_leadership",
+    "next_open_10d_paper_execution"
+  ],
+  "change_type": "candidate_pool",
+  "changed_variable": "credit_relief_cyclical_leadership_candidate_source_v1",
+  "claimed_at": "2026-06-20T17:09:38+00:00",
+  "completed_at": "2026-06-20T17:11:44+00:00",
+  "created_at": "2026-06-20T17:09:29+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260620-021",
+  "experiment_uid": "expuid-5a1e50a2c945418d",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260620-021",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-20T17:09:29+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "credit_relief_cyclical_leadership"
+  },
+  "hypothesis": "candidate_pool: PIT high-yield credit relief, measured by HYG relative strength versus LQD/SPY plus non-stressed SPY tape, may identify liquid cyclical and levered-equity leadership candidates whose 10-trading-day continuation is driven by credit-spread/risk-appetite improvement rather than generic single-name momentum.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "canonical_windows",
+    "next_open_entry",
+    "10d_exit",
+    "round_trip_cost",
+    "top1_per_day",
+    "10d_same_ticker_cooldown"
+  ],
+  "mechanism_family": "production_visible_free_ohlcv_cross_asset_credit_relief_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "free_ohlcv_cross_asset_credit_spread_proxy",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "broad_full_liquid_5d_winner_continuation_candidate_pool",
+        "score": 0.6364,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "sector_relative_risk_adjusted_momentum",
+        "score": 0.6261,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "opening_range_continuation_sector_leadership_paper_sleeve",
+        "score": 0.6174,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "post_earnings_reset_continuation",
+        "score": 0.617,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "broad_full_liquid_5d_winner_low_deployment_continuation_candidate_pool",
+        "score": 0.6163,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_momentum",
+      "field_tags": [
+        "appetite",
+        "asset",
+        "by",
+        "candidates",
+        "continuation",
+        "credit",
+        "cross",
+        "cyclical",
+        "driven",
+        "equity",
+        "generic",
+        "high",
+        "hyg",
+        "identify",
+        "is",
+        "leadership",
+        "levered",
+        "liquid",
+        "lqd",
+        "may",
+        "measured",
+        "momentum",
+        "name",
+        "non",
+        "pit",
+        "plus",
+        "rather",
+        "relative",
+        "risk",
+        "single",
+        "spread",
+        "spy",
+        "strength",
+        "stressed",
+        "tape",
+        "than",
+        "trading",
+        "versus",
+        "whose",
+        "yield"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "broad_full_liquid_5d_winner_continuation_candidate_pool",
+        "reopen_condition": "A retry needs a materially new PIT state field, such as real-time breadth/changepoint persistence or cost-adjusted replacement rows; do not simply retune pressure thresholds, hold days, cooldown, or paper notional on this frozen sample.",
+        "score": 0.6364,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "sector_relative_risk_adjusted_momentum",
+        "reopen_condition": "Forward replacement-value rows or an orthogonal free-data quality field; do not simply retune sector residual/volatility thresholds.",
+        "score": 0.6261,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "opening_range_continuation_sector_leadership_paper_sleeve",
+        "reopen_condition": "Forward opening-range paper rows or a genuinely new non-price source confirmation.",
+        "score": 0.6174,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "post_earnings_reset_continuation",
+        "reopen_condition": null,
+        "score": 0.617,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "broad_full_liquid_5d_winner_low_deployment_continuation_candidate_pool",
+        "reopen_condition": "A retry needs a materially new PIT data edge or forward replacement-value rows. Local broad OHLCV continuation retunes should stay frozen after exp-20260606-004/005/006.",
+        "score": 0.6163,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "PIT HYG-versus-LQD high-yield credit relief proxy from free OHLCV, joined to sector-constrained liquid cyclical stock leadership; distinct from TLT rate relief, defensive ETF breadth, uranium/theme baskets, VIXY volatility relief, and generic price-only continuation.",
+    "override": true,
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-search",
+  "prediction": {
+    "confidence_reason": "Recent TLT/defensive/theme OHLCV scouts failed, but no recent fixed HYG-vs-LQD credit-spread proxy has been tested; the economic channel is credit-risk appetite improving for levered/cyclical equities. Risk is that it is generic beta after next-open execution and costs.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "macro_proxy_not_incremental",
+      "window_regression",
+      "accepted_comparator_not_beaten",
+      "credit_beta_concentration",
+      "drawdown_drift"
+    ],
+    "recorded_at": "2026-06-20T17:09:16+00:00",
+    "success_probability": 0.16
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260620-021/before_baseline.json",
+    "after_result_file": "data/experiments/exp-20260620-021/after_no_strategy_change.json",
+    "delta_metrics": {},
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.16,
+      "brier_score": 0.0256,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": null,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": null,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "macro_proxy_not_incremental",
+        "window_regression",
+        "accepted_comparator_not_beaten",
+        "credit_beta_concentration",
+        "drawdown_drift"
+      ],
+      "realized_failure_mode": "missing_credit_etf_ohlcv_coverage",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "The HYG/LQD hypothesis was economically distinct enough for novelty override, but the local warehouse cannot replay HYG/LQD over standard windows."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260620-021.json",
+  "single_causal_variable": "credit_relief_cyclical_leadership_candidate_source_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260620-021.json",
+  "trial_family": "credit_relief_cyclical_leadership_candidate_pool",
+  "trial_variant_id": "credit_relief_cyclical_leadership_top1_next_open_10d_v1"
+}

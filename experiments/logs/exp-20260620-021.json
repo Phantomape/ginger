@@ -1,0 +1,127 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 0,
+    "brier_score": 0.0256,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "macro_proxy_not_incremental",
+      "window_regression",
+      "accepted_comparator_not_beaten",
+      "credit_beta_concentration",
+      "drawdown_drift"
+    ],
+    "predicted_success_probability": 0.16,
+    "realized_failure_mode": "missing_credit_etf_ohlcv_coverage",
+    "surprise_level": "very_low",
+    "surprise_note": "The HYG/LQD hypothesis was economically distinct enough for novelty override, but the local warehouse cannot replay HYG/LQD over standard windows."
+  },
+  "causal_components": [
+    "HYG_vs_LQD_credit_relief_context",
+    "liquid_cyclical_sector_candidate_gate",
+    "SPY_relative_leadership",
+    "next_open_10d_paper_execution"
+  ],
+  "change_summary": "Blocked before strategy implementation: HYG/LQD credit-relief proxy is absent from the local OHLCV warehouse, so the proposed free-data credit-spread alpha cannot be evaluated across the three canonical windows.",
+  "change_type": "candidate_pool",
+  "changed_variable": "credit_relief_cyclical_leadership_candidate_source_v1",
+  "component": "quant/experiments/exp_20260620_021_credit_relief_cyclical_leadership.py, data/experiments/exp-20260620-021/**, experiments/logs/exp-20260620-021.json, experiments/cards/exp-20260620-021.md, experiments/manifests/exp-20260620-021.json, experiments/tickets/exp-20260620-021.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260620-021",
+  "hypothesis": "candidate_pool: PIT high-yield credit relief, measured by HYG relative strength versus LQD/SPY plus non-stressed SPY tape, may identify liquid cyclical and levered-equity leadership candidates whose 10-trading-day continuation is driven by credit-spread/risk-appetite improvement rather than generic single-name momentum.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "production_visible_free_ohlcv_cross_asset_credit_relief_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "free_ohlcv_cross_asset_credit_spread_proxy",
+  "next_retry_requires": [],
+  "notes": "Gate 2 coverage proof: coverage_summary has only SPY among HYG/LQD/SPY/IWM/XLF/XLI/XLE/XLY; ohlcv has IWM/SPY/XLE but no HYG/LQD. No strategy, helper, production adapter, ranking, sizing, exits, watchlist, LLM, or order behavior changed. Before/after artifacts are identical canonical baseline.",
+  "parameters": {
+    "locked_variables": [
+      "canonical_windows",
+      "next_open_entry",
+      "10d_exit",
+      "round_trip_cost",
+      "top1_per_day",
+      "10d_same_ticker_cooldown"
+    ],
+    "single_causal_variable": "credit_relief_cyclical_leadership_candidate_source_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry HYG/LQD credit-relief, high-yield spread proxy, or sector-constrained credit-beta leadership variants on the current warehouse, because HYG and LQD have no replayable OHLCV rows across the canonical windows.",
+    "new_evidence_required": "Reopen only with PIT historical credit-risk coverage across all canonical windows: HYG and LQD OHLCV loaded into the warehouse, an official credit-spread series, or closed forward replacement-value rows from a shared default-off credit-relief helper.",
+    "realized_failure_mode": "missing_credit_etf_ohlcv_coverage",
+    "why_result_happened": "The HYG/LQD hypothesis was economically distinct enough for novelty override, but the local warehouse cannot replay HYG/LQD over standard windows."
+  },
+  "prediction": {
+    "confidence_reason": "Recent TLT/defensive/theme OHLCV scouts failed, but no recent fixed HYG-vs-LQD credit-spread proxy has been tested; the economic channel is credit-risk appetite improving for levered/cyclical equities. Risk is that it is generic beta after next-open execution and costs.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "macro_proxy_not_incremental",
+      "window_regression",
+      "accepted_comparator_not_beaten",
+      "credit_beta_concentration",
+      "drawdown_drift"
+    ],
+    "recorded_at": "2026-06-20T17:09:16+00:00",
+    "success_probability": 0.16
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "No AGENTS.md Gate 4 acceptance condition was met.",
+  "related_files": [
+    "data/experiments/exp-20260620-021/before_baseline.json",
+    "data/experiments/exp-20260620-021/after_no_strategy_change.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-06-20T17:11:44+00:00",
+  "trial_family": "credit_relief_cyclical_leadership_candidate_pool",
+  "trial_variant_id": "credit_relief_cyclical_leadership_top1_next_open_10d_v1"
+}
