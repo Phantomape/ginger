@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -171,9 +172,32 @@ def generate_broad_market_paper_universe(
         target.parent.mkdir(parents=True, exist_ok=True)
         tmp = target.with_suffix(target.suffix + ".tmp")
         tmp.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
-        tmp.replace(target)
+        _atomic_replace_with_retry(tmp, target)
         payload["path"] = str(target)
     return payload
+
+
+def _atomic_replace_with_retry(
+    tmp: Path, target: Path, *, attempts: int = 6, base_delay: float = 0.25
+) -> None:
+    """Replace ``target`` with ``tmp``, retrying transient Windows file locks.
+
+    On Windows another process holding a handle to ``target`` (the auto-committer
+    / git-LFS / antivirus during a scheduled run) makes the atomic rename raise
+    ``PermissionError`` (WinError 5, access denied). The write itself is valid, so
+    retry with short backoff instead of aborting the whole universe-feed step.
+    """
+    last_exc: Exception | None = None
+    for i in range(max(1, attempts)):
+        try:
+            tmp.replace(target)
+            return
+        except PermissionError as exc:  # WinError 5 / 32 transient lock
+            last_exc = exc
+            time.sleep(base_delay * (2 ** i))
+    # Final attempt: let the exception propagate so the caller logs it.
+    if last_exc is not None:
+        tmp.replace(target)
 
 
 def main() -> None:

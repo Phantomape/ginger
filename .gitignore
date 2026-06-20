@@ -41,6 +41,16 @@ data/experiments/*/git_objects/
 data/experiments/*/finra_source_cache/
 data/experiments/*/warehouse_main.sqlite
 
+# Hot-tier OHLCV warehouse: written every daily run and folded into the cold
+# warehouse periodically via `python quant/ohlcv_warehouse.py merge-hot`. It must
+# NOT be auto-committed/LFS-tracked — doing so made the auto-committer/git-LFS
+# hold the file open during the daily write, causing SQLite "disk I/O error" and
+# stalling OHLCV accumulation. Only the cold blob is committed (at merge time).
+data/warehouse/warehouse_main_hot.sqlite
+data/warehouse/warehouse_main_hot.sqlite-journal
+data/warehouse/warehouse_main_hot.sqlite-wal
+data/warehouse/warehouse_main_hot.sqlite-shm
+
 # exp-20260613-007: SEC 13F source zips are ~100MB and regenerable from SEC on
 # demand; only the aggregated holdings_*.json + latest.json are tracked.
 data/non_ohlcv/sec13f_institutional/source_cache/
