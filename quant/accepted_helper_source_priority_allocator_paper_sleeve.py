@@ -71,8 +71,10 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 
 
 SLEEVE_NAME = "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER"
-RULE_VERSION = "accepted_helper_source_priority_shared_default_off_allocator_v2"
-SOURCE_RULE_VERSION = "accepted_helper_source_priority_top1_with_lagged_consensus_allocation_v1"
+RULE_VERSION = "accepted_helper_source_priority_shared_default_off_allocator_v3"
+SOURCE_RULE_VERSION = (
+    "accepted_helper_source_priority_top1_with_independent_source_notional_v1"
+)
 STATE_SCHEMA_VERSION = 1
 LAGGED_CONSENSUS_SOURCE_ARTIFACT = (
     DATA_ROOT
@@ -106,12 +108,23 @@ DEFAULT_CONFIG = {
     "hold_days": HOLD_DAYS,
     "same_ticker_cooldown_days": SAME_TICKER_COOLDOWN_DAYS,
     "round_trip_cost_pct": ROUND_TRIP_COST_PCT,
+    "source_notional_scalars": {
+        "industry_laggard_repair": 1.25,
+        "revision_surprise_low_extension": 1.25,
+    },
     "forward_gate_min_closed_trades": 60,
     "forward_gate_positive_net_pnl": True,
     "forward_gate_min_win_rate": 0.50,
     "forward_gate_max_single_ticker_positive_share": 0.50,
     "forward_gate_max_positive_hhi": 0.35,
 }
+
+SOURCE_NOTIONAL_SCALARS: "OrderedDict[str, float]" = OrderedDict(
+    [
+        ("industry_laggard_repair", 1.25),
+        ("revision_surprise_low_extension", 1.25),
+    ]
+)
 
 SOURCE_PRIORITY: "OrderedDict[str, dict[str, Any]]" = OrderedDict(
     [
@@ -397,6 +410,7 @@ def build_accepted_helper_source_priority_allocator_historical_trades(
         "rule_version": RULE_VERSION,
         "source_rule_version": SOURCE_RULE_VERSION,
         "source_priority": SOURCE_PRIORITY,
+        "source_notional_scalars": _source_notional_scalars(cfg),
         "selected_by_window": {},
         "selected_source_counts_by_window": {},
         "source_trade_counts_by_window": {},
@@ -518,20 +532,29 @@ def select_accepted_helper_source_priority_rows(
         if pos < next_allowed_pos_by_ticker.get(ticker, -1):
             rejected.append({**row, "filter_reason": "same_ticker_cooldown"})
             continue
-        out = {
-            **deepcopy(row),
-            "source": SLEEVE_NAME,
-            "sleeve": SLEEVE_NAME,
-            "rule_version": RULE_VERSION,
-            "source_rule_version": SOURCE_RULE_VERSION,
-            "decision_id": _decision_id(row),
-            "candidate_score": _allocator_score(row),
-            "paper_notional_usd": float(cfg["paper_notional_usd"]),
-            "notional_usd": float(cfg["paper_notional_usd"]),
-            "paper_status": "closed" if create_trades else "candidate",
-            "trade_enabled": False,
-            "alters_orders": False,
-        }
+        notional_scalar = _source_notional_scalar(row, cfg)
+        paper_notional = leader._round(float(cfg["paper_notional_usd"]) * notional_scalar, 2)
+        out = _scale_historical_pnl(
+            deepcopy(row),
+            paper_notional=paper_notional,
+        )
+        out.update(
+            {
+                "source": SLEEVE_NAME,
+                "sleeve": SLEEVE_NAME,
+                "rule_version": RULE_VERSION,
+                "source_rule_version": SOURCE_RULE_VERSION,
+                "decision_id": _decision_id(row),
+                "candidate_score": _allocator_score(row),
+                "base_paper_notional_usd": float(cfg["paper_notional_usd"]),
+                "source_notional_scalar": notional_scalar,
+                "paper_notional_usd": paper_notional,
+                "notional_usd": paper_notional,
+                "paper_status": "closed" if create_trades else "candidate",
+                "trade_enabled": False,
+                "alters_orders": False,
+            }
+        )
         selected.append(out)
         used_date_counts[signal_date] += 1
         next_allowed_pos_by_ticker[ticker] = pos + int(cfg["same_ticker_cooldown_days"])
@@ -547,6 +570,7 @@ def select_accepted_helper_source_priority_rows(
         ),
         "daily_entry_slots": int(cfg["daily_entry_slots"]),
         "same_ticker_cooldown_days": int(cfg["same_ticker_cooldown_days"]),
+        "source_notional_scalars": _source_notional_scalars(cfg),
     }
     return selected, rejected, audit
 
@@ -888,8 +912,19 @@ def _pending_entry_from_candidate(candidate: dict[str, Any], config: dict[str, A
             "sleeve": SLEEVE_NAME,
             "rule_version": RULE_VERSION,
             "source_rule_version": SOURCE_RULE_VERSION,
-            "paper_notional_usd": float(config["paper_notional_usd"]),
-            "notional_usd": float(config["paper_notional_usd"]),
+            "base_paper_notional_usd": float(config["paper_notional_usd"]),
+            "source_notional_scalar": _source_notional_scalar(candidate, config),
+            "paper_notional_usd": float(
+                candidate.get("paper_notional_usd")
+                or float(config["paper_notional_usd"])
+                * _source_notional_scalar(candidate, config)
+            ),
+            "notional_usd": float(
+                candidate.get("notional_usd")
+                or candidate.get("paper_notional_usd")
+                or float(config["paper_notional_usd"])
+                * _source_notional_scalar(candidate, config)
+            ),
             "entry_timing": "next_session_open",
             "hold_days": int(config["hold_days"]),
             "paper_status": "pending_entry",
@@ -1039,6 +1074,7 @@ def _trading_dates(rows_by_ticker: dict[str, list[dict[str, Any]]]) -> list[str]
 def _parameter_summary(config: dict[str, Any]) -> dict[str, Any]:
     return {
         "paper_notional_usd": config["paper_notional_usd"],
+        "source_notional_scalars": _source_notional_scalars(config),
         "daily_entry_slots": config["daily_entry_slots"],
         "hold_days": config["hold_days"],
         "same_ticker_cooldown_days": config["same_ticker_cooldown_days"],
@@ -1053,6 +1089,39 @@ def _config(overrides: dict[str, Any] | None = None) -> dict[str, Any]:
     cfg["enabled"] = False
     cfg["trade_enabled"] = False
     return cfg
+
+
+def _source_notional_scalars(config: dict[str, Any] | None = None) -> dict[str, float]:
+    raw = (config or {}).get("source_notional_scalars")
+    if not isinstance(raw, dict):
+        raw = SOURCE_NOTIONAL_SCALARS
+    out: dict[str, float] = {}
+    for source_family, scalar in raw.items():
+        value = _float(scalar, 1.0)
+        if value > 0.0 and value != 1.0:
+            out[str(source_family)] = value
+    return out
+
+
+def _source_notional_scalar(row: dict[str, Any], config: dict[str, Any]) -> float:
+    source_family = str(row.get("source_family") or "")
+    return _source_notional_scalars(config).get(source_family, 1.0)
+
+
+def _scale_historical_pnl(row: dict[str, Any], *, paper_notional: float | None) -> dict[str, Any]:
+    if paper_notional is None or row.get("pnl") is None:
+        return row
+    pnl_pct = row.get("pnl_pct_net")
+    if pnl_pct is not None:
+        row["pnl"] = leader._round(float(paper_notional) * _float(pnl_pct), 2)
+        return row
+    source_notional = _float(row.get("paper_notional_usd") or row.get("notional_usd"))
+    if source_notional > 0.0:
+        row["pnl"] = leader._round(
+            _float(row.get("pnl")) * float(paper_notional) / source_notional,
+            2,
+        )
+    return row
 
 
 def _float(value: Any, default: float = 0.0) -> float:
@@ -1099,8 +1168,10 @@ def _production_impact() -> dict[str, Any]:
 EXECUTION_ENVELOPE: dict[str, Any] = {
     "rule_version": "accepted_helper_source_priority_allocator_execution_envelope_v2",
     "mode": "dedicated_bucket_zero_core_displacement",
-    "bucket_notional_usd": 32_000.0,
+    "bucket_notional_usd": 40_000.0,
     "base_notional_usd": BASE_NOTIONAL_USD,
+    "max_source_notional_scalar": 1.25,
+    "max_position_notional_usd": 5_000.0,
     "max_concurrent_positions": 8,
     "max_capital_pct_of_bucket": 1.0,
     "min_avg_dollar_volume_20d": 10_000_000.0,

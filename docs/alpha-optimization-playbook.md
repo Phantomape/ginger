@@ -427,6 +427,20 @@ supplier/customer contract identity, covenant/refinancing terms, or parsed
 counterparty economics. Do not retry by sweeping DPO/debt thresholds, risk
 scalars, adapter notional, allocator rank, theme baskets, Form 4 compensation
 code lists, SEC phrase lists, top-N, hold, or cooldown on the frozen windows.
+
+`exp-20260620-032` added a narrow accepted allocator-capital lesson after the
+read-only sleeve independence map (`exp-20260620-029`) and zero-fire correction
+(`exp-20260620-031`): keep accepted-helper source selection unchanged, but give
+selected `industry_laggard_repair` and `revision_surprise_low_extension` rows a
+fixed `1.25x` default-off paper notional scalar. The shared helper and daily
+snapshot path now expose the same source scalar, improving the current
+unscaled allocator by aggregate EV `+0.0667` and PnL `+$1,245.12` across all
+three canonical windows, with `201` affected rows and clean drawdown /
+concentration. This is accepted paper-only capital allocation, not a license to
+sweep allocator ranks or scalars. Future allocator capital changes need closed
+forward source-family replacement-value rows or a materially new out-of-sample
+independence surface.
+
 The later quarterly inventory-turnover acceleration proposal
 (`exp-20260620-017`) was correctly blocked before strategy logic because it
 collapsed into the already rejected `exp-20260616-022` quarterly

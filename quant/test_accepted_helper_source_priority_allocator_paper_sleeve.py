@@ -175,6 +175,34 @@ def test_revision_source_ranked_ahead_of_compression() -> None:
     assert audit["selected_source_counts"] == {"revision_surprise_low_extension": 1}
 
 
+def test_independent_source_notional_scalar_keeps_selection_order() -> None:
+    trading_dates = _business_dates(5)
+    signal_date = trading_dates[1]
+
+    selected, rejected, audit = select_accepted_helper_source_priority_rows(
+        source_rows=[
+            {
+                "ticker": "TOP",
+                "date": signal_date,
+                "source_family": "industry_laggard_repair",
+                "candidate_score": 1.0,
+            }
+        ],
+        trading_dates=trading_dates,
+        create_trades=False,
+    )
+
+    assert not rejected
+    assert [row["ticker"] for row in selected] == ["TOP"]
+    assert selected[0]["source_priority_rank"] == SOURCE_PRIORITY["industry_laggard_repair"][
+        "rank"
+    ]
+    assert selected[0]["base_paper_notional_usd"] == 4000.0
+    assert selected[0]["source_notional_scalar"] == 1.25
+    assert selected[0]["paper_notional_usd"] == 5000.0
+    assert audit["source_notional_scalars"]["industry_laggard_repair"] == 1.25
+
+
 def test_daily_snapshot_creates_default_off_pending_from_source_snapshots() -> None:
     ohlcv = _ohlcv()
     signal_date = ohlcv["SPY"][5]["date"]
@@ -268,3 +296,37 @@ def test_daily_snapshot_uses_lagged_consensus_snapshot_as_rank_one_source() -> N
     assert snapshot["source_priority_context"]["priority_audit"][
         "selected_source_counts"
     ] == {"lagged_cross_source_consensus": 1}
+
+
+def test_daily_snapshot_preserves_independent_source_scaled_pending_notional() -> None:
+    ohlcv = _ohlcv()
+    signal_date = ohlcv["SPY"][5]["date"]
+
+    snapshot = build_accepted_helper_source_priority_allocator_snapshot(
+        as_of=signal_date,
+        source_snapshots={
+            "industry_laggard_repair": {
+                "candidate_count": 1,
+                "candidates": [
+                    {
+                        "ticker": "TOP",
+                        "date": signal_date,
+                        "source_family": "industry_laggard_repair",
+                        "candidate_score": 1.0,
+                    }
+                ],
+            }
+        },
+        ohlcv_by_ticker=ohlcv,
+        state=empty_accepted_helper_source_priority_allocator_state(),
+        persist=False,
+    )
+
+    assert snapshot["candidate_count"] == 1
+    candidate = snapshot["candidates"][0]
+    pending = snapshot["new_pending_entries"][0]
+    assert candidate["source_family"] == "industry_laggard_repair"
+    assert candidate["source_notional_scalar"] == 1.25
+    assert candidate["paper_notional_usd"] == 5000.0
+    assert pending["paper_notional_usd"] == 5000.0
+    assert pending["trade_enabled"] is False
