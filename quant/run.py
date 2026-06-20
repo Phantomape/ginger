@@ -1263,6 +1263,10 @@ def main():
         empty_sbc_burden_improvement_paper_sleeve_snapshot,
         prep_and_build_sbc_burden_improvement_paper_sleeve_snapshot,
     )
+    from supplier_financing_debt_relief_paper_sleeve import (
+        empty_supplier_financing_debt_relief_paper_sleeve_snapshot,
+        prep_and_build_supplier_financing_debt_relief_paper_sleeve_snapshot,
+    )
     from revision_surprise_low_extension_paper_sleeve import (
         empty_revision_surprise_low_extension_snapshot,
         prep_and_build_revision_surprise_low_extension_snapshot,
@@ -2927,6 +2931,19 @@ def main():
         log_metrics=_STD_SLEEVE_METRICS,
     )
 
+    supplier_financing_debt_relief_paper_sleeve = _sleeve(
+        lambda: prep_and_build_supplier_financing_debt_relief_paper_sleeve_snapshot(
+            as_of=today_iso, broad_market_ohlcv=broad_market_ohlcv,
+            broad_market_candidate_universe=broad_market_candidate_universe,
+            spy_ohlcv=spy_ohlcv, open_prices=current_open_prices,
+            current_prices=current_prices,
+        ),
+        empty_supplier_financing_debt_relief_paper_sleeve_snapshot,
+        "Supplier-financing debt-relief",
+        "supplier_financing_debt_relief_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
+
     revision_surprise_low_extension_paper_sleeve = _sleeve(
         lambda: prep_and_build_revision_surprise_low_extension_snapshot(
             as_of=today_iso, broad_market_ohlcv=broad_market_ohlcv,
@@ -3069,6 +3086,7 @@ def main():
     trend_signals_dict["narrow_range_compression_breakout_paper_sleeve"] = narrow_range_compression_breakout_paper_sleeve
     trend_signals_dict["distribution_day_absorption_leadership_paper_sleeve"] = distribution_day_absorption_leadership_paper_sleeve
     trend_signals_dict["sbc_burden_improvement_paper_sleeve"] = sbc_burden_improvement_paper_sleeve
+    trend_signals_dict["supplier_financing_debt_relief_paper_sleeve"] = supplier_financing_debt_relief_paper_sleeve
     trend_signals_dict["revision_surprise_low_extension_paper_sleeve"] = revision_surprise_low_extension_paper_sleeve
     trend_signals_dict["accepted_helper_source_priority_allocator_paper_sleeve"] = accepted_helper_source_priority_allocator_paper_sleeve
     trend_signals_dict["ai_optical_paper_sleeve"] = ai_optical_paper_sleeve
@@ -3215,6 +3233,7 @@ def main():
         "narrow_range_compression_breakout_paper_sleeve": narrow_range_compression_breakout_paper_sleeve,
         "distribution_day_absorption_leadership_paper_sleeve": distribution_day_absorption_leadership_paper_sleeve,
         "sbc_burden_improvement_paper_sleeve": sbc_burden_improvement_paper_sleeve,
+        "supplier_financing_debt_relief_paper_sleeve": supplier_financing_debt_relief_paper_sleeve,
         "revision_surprise_low_extension_paper_sleeve": revision_surprise_low_extension_paper_sleeve,
         "accepted_helper_source_priority_allocator_paper_sleeve": accepted_helper_source_priority_allocator_paper_sleeve,
         "ai_optical_paper_sleeve": ai_optical_paper_sleeve,

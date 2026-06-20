@@ -77,6 +77,33 @@ SBC burden-improvement decision matrix addendum:
 | --- | --- | --- | --- | --- |
 | Default-off SBC burden-improvement paper sleeve | `sbc_burden_improvement_paper_sleeve.py`, `run.py` | default core backtests do not trade it; historical evidence comes from positive `exp-20260616-014` and accepted shared-helper promotion `exp-20260616-015`; replay must use the shared helper with raw SEC Companyfacts filed-date `<= signal_date` annual SBC/revenue/gross-profit facts, same-SBC-tag prior-period comparison, fixed dilution-quality gates, signal-date SPY-relative OHLCV confirmation, top-1/day, fixed `$4,000` paper notional, 10-trading-day same-ticker cooldown, next-open paper entry, 10-trading-day close exit, costs, and concentration guard before promotion | daily observation derives candidates from the same broad-market free-OHLCV universe plus `SPY`, reads the same raw Companyfacts cache and warehouse CIK map, may emit same-day pending candidates without future exit bars, and advances pending/open/closed paper ledger state only when exact `as_of` OHLCV rows exist | observe-only; no core universe expansion, no live/default orders, no core ranking/sizing/exit/watchlist/LLM/news changes, and live activation requires >= 30 closed forward 10-day paper trades, positive forward PnL, replacement value, and kill-switch parity under the declared envelope |
 
+## Supplier-Financing Debt-Relief Risk-Scaled Paper Adapter
+
+`exp-20260620-009` accepts the production-faithful shared `$4,000` version of
+the supplier-financing/debt-relief risk-scaled lead into
+`quant/supplier_financing_debt_relief_paper_sleeve.py`. `exp-20260620-008`
+rejected exact promotion of the larger private `exp-20260620-007` replay
+magnitude; that private magnitude is retained only as a diagnostic drift.
+Backtests and production observation must use the same shared default-off
+paper adapter semantics: raw SEC Companyfacts quarterly accounts-payable DPO
+extension and annual principal debt/revenue burden relief must both be known by
+filed date `<= signal_date`; signal-date OHLCV confirmation, top-1/day,
+10-trading-day same-ticker cooldown, next-open paper entry, 10-trading-day
+close exit, slippage, round-trip cost, and the one-way PIT 20-day
+volatility/ADV20 paper-notional scalar are fixed. Production daily observation
+may emit same-day pending candidates without future exit bars, but historical
+replay must require a 10-trading-day exit bar before counting a closed target
+trade. The sleeve remains observe-only: `trade_enabled=false`, no live/default
+orders, no core universe expansion, and no core ranking, sizing, exit,
+watchlist, LLM/news, or activation behavior may diverge between replay and
+production.
+
+Supplier-financing debt-relief decision matrix addendum:
+
+| Decision point | Shared source | Backtester use | Production use | Allowed difference |
+| --- | --- | --- | --- | --- |
+| Default-off supplier-financing debt-relief risk-scaled paper sleeve | `supplier_financing_debt_relief_paper_sleeve.py`, `run.py` | default core backtests do not trade it; full-stack evidence comes from `exp-20260620-009`; replay must use the shared helper with the fixed `exp-20260620-005` DPO+debt-relief source, `$4,000` base paper notional, and the `exp-20260620-007` PIT volatility/liquidity notional envelope | daily observation derives candidates from the broad-market free-OHLCV universe plus `SPY`, reads the same raw Companyfacts cache and warehouse CIK map, may emit same-day pending candidates without future exit bars, and advances pending/open/closed paper ledger state only when exact `as_of` OHLCV rows exist | observe-only; no live/default orders, no core ranking/sizing/exit/watchlist/LLM/news changes, and live activation requires >= 30 closed forward 10-day paper trades, positive forward PnL, replacement value, and kill-switch parity under the declared envelope |
+
 ## Post-Earnings Underpriced Drift Paper Adapter
 
 `exp-20260602-026` promoted the positive `exp-20260602-023` lead into
