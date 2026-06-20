@@ -133,7 +133,12 @@ def _call_sleeve(mod_name: str, fn_name: str, kwarg_pool: dict[str, Any]):
     sig = inspect.signature(fn)
     accepted = {k: v for k, v in kwarg_pool.items() if k in sig.parameters}
     res = fn(**accepted)
-    trades = res[0] if isinstance(res, tuple) else res
+    if isinstance(res, tuple):
+        trades = res[0]
+    elif isinstance(res, dict):  # e.g. volatility_relief returns {"trades": [...], ...}
+        trades = res.get("trades")
+    else:
+        trades = res
     return list(trades or [])
 
 
@@ -215,13 +220,23 @@ def run() -> dict[str, Any]:
         sector_entries = framework._load_sector_entries()
     except Exception:
         sector_entries = {}
+    try:
+        from fundamental_growth_rs_paper_sleeve import load_companyfacts_rows
+
+        companyfacts_growth_rows = load_companyfacts_rows()
+    except Exception:
+        companyfacts_growth_rows = []
     kwarg_pool = {
         "ohlcv_by_ticker": merged_ohlcv,
         "core_entries_by_date": {},
         "windows": windows,
         "sector_entries": sector_entries,
         "calendar_dates": calendar,
-        "candidate_universe": set(merged_ohlcv),
+        "dates": calendar,
+        # canonical allocator input is the sector-entries dict, not a bare set;
+        # turn_of_month / vol_relief call .get on it.
+        "candidate_universe": sector_entries or {t: {} for t in merged_ohlcv},
+        "companyfacts_growth_rows": companyfacts_growth_rows,
     }
 
     series: dict[str, np.ndarray] = {}
@@ -452,8 +467,23 @@ def _append_log(payload: dict[str, Any]) -> None:
         "log": _repo_rel(LOG_JSON),
         "anti_js": "No JavaScript was used.",
     }
-    with EXPERIMENT_LOG.open("a", encoding="utf-8") as fh:
-        fh.write(json.dumps(record, sort_keys=True) + "\n")
+    # upsert by experiment_id so a re-run does not duplicate the line
+    existing = []
+    if EXPERIMENT_LOG.exists():
+        for line in EXPERIMENT_LOG.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                row = json.loads(line)
+            except Exception:
+                existing.append(line)
+                continue
+            if row.get("experiment_id") == EXPERIMENT_ID:
+                continue
+            existing.append(line)
+    existing.append(json.dumps(record, sort_keys=True))
+    EXPERIMENT_LOG.write_text("\n".join(existing) + "\n", encoding="utf-8")
 
 
 def _write_manifest(payload: dict[str, Any]) -> None:
