@@ -1,0 +1,142 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "anti_js": "No JavaScript was used.",
+  "attribution": {
+    "companyfacts_meta": {
+      "ok": true,
+      "rows": 13807
+    },
+    "core_entry_day_total": 55,
+    "core_entry_days_by_window": {
+      "late_strong": 14,
+      "mid_weak": 21,
+      "old_thin": 20
+    },
+    "exp029_reported_zero_fire": [
+      "fiftytwo_wk_high",
+      "industry_stable_flow",
+      "peer_shock",
+      "vol_relief",
+      "peer_confirmed"
+    ],
+    "sleeve_results": {
+      "fiftytwo_wk_high": {
+        "args_used": [
+          "candidate_universe",
+          "core_entries_by_date",
+          "ohlcv_by_ticker",
+          "sector_entries",
+          "windows"
+        ],
+        "classification": "harness_artifact_recovered",
+        "raw_candidate_count_by_window": {
+          "late_strong": 10,
+          "mid_weak": 17,
+          "old_thin": 16
+        },
+        "reason_kind": "core_flow",
+        "trades_with_correct_inputs": 24
+      },
+      "industry_stable_flow": {
+        "args_used": [
+          "candidate_universe",
+          "core_entries_by_date",
+          "ohlcv_by_ticker",
+          "sector_entries",
+          "windows"
+        ],
+        "classification": "core_flow_gated_rare_core_days",
+        "raw_candidate_count_by_window": {
+          "late_strong": 0,
+          "mid_weak": 0,
+          "old_thin": 0
+        },
+        "reason_kind": "core_flow",
+        "trades_with_correct_inputs": 0
+      },
+      "peer_confirmed": {
+        "args_used": [
+          "companyfacts_growth_rows",
+          "ohlcv_by_ticker",
+          "windows"
+        ],
+        "classification": "no_candidates_even_with_facts",
+        "growth_ticker_count": 0,
+        "reason_kind": "companyfacts",
+        "trades_with_correct_inputs": 0
+      },
+      "peer_shock": {
+        "args_used": [
+          "candidate_universe",
+          "core_entries_by_date",
+          "ohlcv_by_ticker",
+          "sector_entries",
+          "windows"
+        ],
+        "classification": "harness_artifact_recovered",
+        "raw_candidate_count_by_window": {
+          "late_strong": 0,
+          "mid_weak": 10,
+          "old_thin": 6
+        },
+        "reason_kind": "core_flow",
+        "trades_with_correct_inputs": 5
+      },
+      "vol_relief": {
+        "args_used": [
+          "candidate_universe",
+          "core_entries_by_date",
+          "dates",
+          "ohlcv_by_ticker"
+        ],
+        "candidate_universe_count": 34,
+        "classification": "harness_artifact_recovered",
+        "reason_kind": "vixy",
+        "trades_with_correct_inputs": 51,
+        "vixy_present": true,
+        "volatility_relief_days": 45
+      }
+    },
+    "vixy_meta": {
+      "first": "2024-09-20",
+      "last": "2026-04-21",
+      "ok": true,
+      "rows": 396
+    }
+  },
+  "changed_variable": "zero_fire_sleeve_diagnosis",
+  "corrects": "exp-20260620-029",
+  "decision": "measurement_repair_zero_fire_sleeve_diagnosis_built",
+  "diagnostic_only": true,
+  "experiment_id": "exp-20260620-031",
+  "hypothesis": "The 5 zero-fire sleeves in exp-029 were starved by the harness (core_entries={}, no VIXY, failed companyfacts load), not by genuine gate strictness.",
+  "interpretation": "With correct inputs (core entries on 55 days, VIXY injected, 13807 companyfacts rows): fiftytwo_wk_high=24, industry_stable_flow=0, peer_shock=5, vol_relief=51, peer_confirmed=0. Recovered (now fire): ['fiftytwo_wk_high', 'peer_shock', 'vol_relief']. The exp-029 '5 zero-fire' count was mostly a harness artifact, not a gate problem; the 3 core-flow sleeves are structurally gated on rare core-entry days.",
+  "lane": "measurement_repair",
+  "limitations": [
+    "core_entries_by_date built from CLOSED core trades only (open-at-end entries omitted); core-flow days are therefore a slight undercount.",
+    "VIXY via yfinance auto-adjusted; volatility-relief detection also needs SPY/QQQ confirm which come from the snapshot.",
+    "companyfacts loaded with max_filed=window-end cap; the sleeve still PIT-filters by signal date internally.",
+    "in-sample on the 3 frozen windows; core ~56-name universe."
+  ],
+  "next_evidence_needed": "exp-029's independence map should be re-read with this correction: the 3 core-flow sleeves are not dead, they are gated on the core's own ~20 entry-days per window; vol_relief and peer_confirmed need VIXY and companyfacts wired into any future independence/forward harness.",
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "diagnostic_only": true,
+    "parity_note": "Read-only replay diagnosis. No order/ranking/sizing/exit/Gate-4 change.",
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "quant/experiments/exp_20260620_031_zero_fire_sleeve_diagnosis.py",
+    "data/experiments/exp-20260620-031/exp_20260620_031_zero_fire_sleeve_diagnosis.json",
+    "experiments/cards/exp-20260620-031.md",
+    "experiments/manifests/exp-20260620-031.json",
+    "experiments/tickets/exp-20260620-031.json",
+    "experiments/logs/exp-20260620-031.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "status": "measurement_repair_observed_only",
+  "timestamp": "2026-06-20T22:33:18Z"
+}
