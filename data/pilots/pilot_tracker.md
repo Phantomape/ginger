@@ -1,4 +1,4 @@
-# Pilot tracker - as of 2026-06-18T03:26:17+00:00
+# Pilot tracker - as of 2026-06-20T03:21:25+00:00
 
 Per-position book: $10,000. Read-only; manual execution.
 Graduate/kill rule (pre-committed): >= 20 closed AND sum rv_vs_SPY > 0 AND book DD < 15%.
@@ -6,7 +6,7 @@ Manual stop overlay: cut a held position at -15% from entry (does not change the
 
 ## [!] Cross-pilot overlap (stacked exposure on one name)
 
-- **CRDO**: held by 2 pilots (Source-priority allocator (TOP-1 only), Fundamental growth + RS) -> $20,000 real exposure
+- **DDOG**: held by 2 pilots (Source-priority allocator (TOP-1 only), Fundamental growth + RS) -> $20,000 real exposure
 
 ## Scorecard
 
@@ -19,17 +19,18 @@ Manual stop overlay: cut a held position at -15% from entry (does not change the
 ## Today's signals (BUY / HOLD / SELL)
 
 ### Source-priority allocator (TOP-1 only)  (`accepted_helper_source_priority_allocator`, max_concurrent=1)
-- hold CRDO: day 3/10 (7 left); entry 270.13, last next-open (n/a)
+- hold DDOG: day 1/10 (9 left); entry 224.15, last next-open (n/a)
+- _skip_ CRDO (SKIP_concurrency_cap)
 - _skip_ SBUX (SKIP_concurrency_cap)
 - _skip_ WDC (SKIP_concurrency_cap)
-- _skip_ DDOG (SKIP_concurrency_cap)
+- _skip_ MU (SKIP_concurrency_cap)
 
 ### Distribution-day absorption leadership  (`distribution_day_absorption_leadership`, max_concurrent=None)
 - _no position / no signal today_
 
 ### Fundamental growth + RS  (`fundamental_growth_rs`, max_concurrent=None)
-- hold AMD: day 7/10 (3 left); entry 503.70, last 512.48 (+1.7%)
-- hold CRDO: day 3/10 (7 left); entry 270.13, last 249.33 (-7.7%)
-- hold MU: day 1/10 (9 left); entry 1099.93, last 1043.19 (-5.2%)
-- hold DDOG: day 0/10 (10 left); entry 230.19, last 226.63 (-1.6%)
+- hold AMD: day 8/10 (2 left); entry 503.70, last 537.37 (+6.7%)
+- hold CRDO: day 4/10 (6 left); entry 270.13, last 271.83 (+0.6%)
+- hold MU: day 2/10 (8 left); entry 1099.93, last 1133.99 (+3.1%)
+- hold DDOG: day 1/10 (9 left); entry 230.19, last 223.00 (-3.1%)
 
