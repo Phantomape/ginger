@@ -39,6 +39,7 @@ STEM = "vcp_rank_notional_profile"
 TRIAL_FAMILY = "volatility_contraction_breakout_default_off_paper_sleeve"
 CHANGED_VARIABLE = "vcp_top2_rank_notional_profile"
 RANK_NOTIONAL_RULE_VERSION = "vcp_top2_rank_notional_profile_v1"
+BASE_PAPER_NOTIONAL_USD = 10_000.0
 
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / f"{STEM}.json"
@@ -85,6 +86,7 @@ def _configure_base_module() -> None:
     base.MAX_DRAWDOWN_WORSE = MAX_DRAWDOWN_WORSE_VS_EXP037
     base.MAX_SINGLE_POSITIVE_SHARE = MAX_SINGLE_POSITIVE_SHARE
     base.MAX_POSITIVE_HHI = MAX_POSITIVE_HHI
+    base.BASE_NOTIONAL_USD = BASE_PAPER_NOTIONAL_USD
     base.shadow = volatility_shadow
 
     for name in (
@@ -139,7 +141,7 @@ def _apply_rank_notional_profile(
         trade.get("vcp_candidate_rank_on_signal_date"),
         profile,
     )
-    base_notional = float(base.BASE_NOTIONAL_USD)
+    base_notional = float(trade.get("paper_notional_usd") or BASE_PAPER_NOTIONAL_USD)
     base_pnl = float(trade.get("pnl") or 0.0)
     return {
         **trade,
@@ -527,7 +529,7 @@ def _build_payload() -> dict[str, Any]:
                 "artifact_source": source_exp037["source"],
                 "artifact_path": source_exp037["path"],
             },
-            "base_paper_notional_usd": base.BASE_NOTIONAL_USD,
+            "base_paper_notional_usd": BASE_PAPER_NOTIONAL_USD,
             "hold_days": base.HOLD_DAYS,
             "max_paper_trades_per_day": MAX_PAPER_TRADES_PER_DAY,
             "profiles": PROFILES,
