@@ -133,11 +133,14 @@ def test_lagged_consensus_source_ranked_first() -> None:
     assert SOURCE_PRIORITY["volatility_relief"]["rank"] == 2
     assert [row["ticker"] for row in selected] == ["TOP"]
     assert selected[0]["source_family"] == "lagged_cross_source_consensus"
+    assert selected[0]["source_notional_scalar"] == 1.25
+    assert selected[0]["paper_notional_usd"] == 5000.0
     assert selected[0]["uses_free_ohlcv_only"] is False
     assert selected[0]["uses_free_non_ohlcv"] is True
     assert rejected[0]["source_family"] == "volatility_relief"
     assert rejected[0]["filter_reason"] == "daily_top1_source_priority_limit"
     assert audit["selected_source_counts"] == {"lagged_cross_source_consensus": 1}
+    assert audit["source_notional_scalars"]["lagged_cross_source_consensus"] == 1.25
 
 
 def test_revision_source_ranked_ahead_of_compression() -> None:
@@ -293,6 +296,9 @@ def test_daily_snapshot_uses_lagged_consensus_snapshot_as_rank_one_source() -> N
     assert candidate["ticker"] == "TOP"
     assert candidate["source_family"] == "lagged_cross_source_consensus"
     assert candidate["source_priority_rank"] == 1
+    assert candidate["source_notional_scalar"] == 1.25
+    assert candidate["paper_notional_usd"] == 5000.0
+    assert snapshot["new_pending_entries"][0]["paper_notional_usd"] == 5000.0
     assert snapshot["source_priority_context"]["priority_audit"][
         "selected_source_counts"
     ] == {"lagged_cross_source_consensus": 1}

@@ -466,6 +466,18 @@ hold, cooldown, calendar labels, or OHLCV thresholds on frozen windows.
 Further allocator-capital work requires closed forward source-family
 replacement-value rows or a materially new out-of-sample independence surface.
 
+`exp-20260621-007` extends the allocator-capital lesson to selected
+`lagged_cross_source_consensus` rows, again using the corrected current
+allocator before state with all prior accepted source scalars active. Adding
+only the lagged-consensus `1.25x` default-off paper scalar improved the current
+accepted allocator by aggregate EV `+0.1716` and PnL `+$3,018.50`, with all
+three canonical windows positive, `42` affected rows, no incremental drawdown
+degradation, and clean concentration. This is accepted paper-only sizing for
+the existing rank-1 consensus source; do not retry by sweeping consensus
+source-set, source rank, scalar, top-N, hold, cooldown, or timing on frozen
+windows. Further work needs closed forward replacement-value rows or a new
+out-of-sample independence surface.
+
 The later quarterly inventory-turnover acceleration proposal
 (`exp-20260620-017`) was correctly blocked before strategy logic because it
 collapsed into the already rejected `exp-20260616-022` quarterly
