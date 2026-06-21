@@ -1,0 +1,832 @@
+{
+  "anti_js": "No JavaScript was used.",
+  "calibration": {
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 0,
+    "brier_score": 0.0121,
+    "failure_modes_observed": [
+      "sec_event_builder_default_forms_exclude_6k",
+      "sec_text_builder_default_forms_exclude_6k",
+      "aggregate_sec_events_have_zero_6k_rows",
+      "daily_sec_event_files_have_zero_6k_rows",
+      "form_index_6k_rows_are_metadata_only_not_trade_ready_pit_events",
+      "production_visible_6k_unique_events_below_20",
+      "production_visible_6k_missing_three_window_coverage",
+      "production_visible_6k_window_sample_below_5"
+    ],
+    "predicted_success_probability": 0.11
+  },
+  "change_type": "candidate_pool_full_stack",
+  "changed_files": [
+    "quant/experiments/exp_20260621_018_sec_6k_foreign_issuer_readiness.py",
+    "data/experiments/exp-20260621-018/exp_20260621_018_sec_6k_foreign_issuer_readiness.json",
+    "experiments/logs/exp-20260621-018.json",
+    "experiments/cards/exp-20260621-018.md",
+    "experiments/manifests/exp-20260621-018.json",
+    "experiments/tickets/exp-20260621-018.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "sec_6k_foreign_issuer_event_candidate_pool_readiness_v1",
+  "decision": "blocked_sec_6k_daily_event_surface_missing",
+  "delta_metrics": {
+    "aggregate_expected_value_score": 0.0,
+    "aggregate_total_pnl": 0.0,
+    "max_window_drawdown_pct": 0.0,
+    "total_trade_count": 0
+  },
+  "experiment_id": "exp-20260621-018",
+  "gate1": {
+    "aggregate": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "max_window_drawdown_pct": 0.1119,
+      "min_survival_rate": 0.7925,
+      "total_trade_count": 61
+    },
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "passed": true,
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23",
+        "strategy_total_return_pct": 117.07,
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23",
+        "strategy_total_return_pct": 78.11,
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02",
+        "strategy_total_return_pct": 39.67,
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22
+      }
+    }
+  },
+  "gate2": {
+    "blocking_reasons": [
+      "sec_event_builder_default_forms_exclude_6k",
+      "sec_text_builder_default_forms_exclude_6k",
+      "aggregate_sec_events_have_zero_6k_rows",
+      "daily_sec_event_files_have_zero_6k_rows",
+      "form_index_6k_rows_are_metadata_only_not_trade_ready_pit_events"
+    ],
+    "dependency_fields_checked": [
+      "ticker",
+      "cik",
+      "accession_number",
+      "form_type",
+      "filing_date",
+      "accepted_at",
+      "usable_trade_date",
+      "entry_date",
+      "target_price"
+    ],
+    "form_index": {
+      "blocking_verdict": "form_index_has_historical_6k_metadata_but_lacks_ticker_accepted_at_usable_trade_date_entry_date_and_target_price",
+      "dependency_presence": {
+        "accepted_at": false,
+        "accession_number": false,
+        "cik": true,
+        "company_name": true,
+        "entry_date": false,
+        "file_name": true,
+        "filing_date": true,
+        "form_type": true,
+        "target_price": false,
+        "ticker": false,
+        "usable_trade_date": false
+      },
+      "file_count": 7,
+      "files": [
+        "form_2024_QTR4.idx",
+        "form_2025_QTR1.idx",
+        "form_2025_QTR2.idx",
+        "form_2025_QTR3.idx",
+        "form_2025_QTR4.idx",
+        "form_2026_QTR1.idx",
+        "form_2026_QTR2.idx"
+      ],
+      "parsed_rows": 2180493,
+      "sample_target_rows": [
+        {
+          "cik": "1738906",
+          "company_name": "111, Inc.",
+          "file_name": "edgar/data/1738906/0000950103-24-015850.txt",
+          "filing_date": "2024-11-04",
+          "form_type": "6-K",
+          "source_file": "data/cache/sec/form_index/form_2024_QTR4.idx"
+        },
+        {
+          "cik": "1738906",
+          "company_name": "111, Inc.",
+          "file_name": "edgar/data/1738906/0000950103-24-016821.txt",
+          "filing_date": "2024-11-27",
+          "form_type": "6-K",
+          "source_file": "data/cache/sec/form_index/form_2024_QTR4.idx"
+        },
+        {
+          "cik": "1821468",
+          "company_name": "17 Education & Technology Group Inc.",
+          "file_name": "edgar/data/1821468/0000950170-24-135590.txt",
+          "filing_date": "2024-12-12",
+          "form_type": "6-K",
+          "source_file": "data/cache/sec/form_index/form_2024_QTR4.idx"
+        },
+        {
+          "cik": "1779476",
+          "company_name": "36Kr Holdings Inc.",
+          "file_name": "edgar/data/1779476/0001104659-24-109676.txt",
+          "filing_date": "2024-10-18",
+          "form_type": "6-K",
+          "source_file": "data/cache/sec/form_index/form_2024_QTR4.idx"
+        },
+        {
+          "cik": "825171",
+          "company_name": "37 CAPITAL INC",
+          "file_name": "edgar/data/825171/0001713282-24-001138.txt",
+          "filing_date": "2024-10-01",
+          "form_type": "6-K",
+          "source_file": "data/cache/sec/form_index/form_2024_QTR4.idx"
+        },
+        {
+          "cik": "825171",
+          "company_name": "37 CAPITAL INC",
+          "file_name": "edgar/data/825171/0001713282-24-001236.txt",
+          "filing_date": "2024-11-04",
+          "form_type": "6-K",
+          "source_file": "data/cache/sec/form_index/form_2024_QTR4.idx"
+        },
+        {
+          "cik": "825171",
+          "company_name": "37 CAPITAL INC",
+          "file_name": "edgar/data/825171/0001713282-24-001371.txt",
+          "filing_date": "2024-11-29",
+          "form_type": "6-K",
+          "source_file": "data/cache/sec/form_index/form_2024_QTR4.idx"
+        },
+        {
+          "cik": "825171",
+          "company_name": "37 CAPITAL INC",
+          "file_name": "edgar/data/825171/0001713282-24-001372.txt",
+          "filing_date": "2024-11-29",
+          "form_type": "6-K",
+          "source_file": "data/cache/sec/form_index/form_2024_QTR4.idx"
+        }
+      ],
+      "source_dir": "data/cache/sec/form_index",
+      "target_forms": [
+        "6-K",
+        "6-K/A"
+      ],
+      "target_rows_by_file": {
+        "form_2024_QTR4.idx": 6708,
+        "form_2025_QTR1.idx": 6416,
+        "form_2025_QTR2.idx": 7347,
+        "form_2025_QTR3.idx": 6907,
+        "form_2025_QTR4.idx": 7163,
+        "form_2026_QTR1.idx": 6907,
+        "form_2026_QTR2.idx": 6331
+      },
+      "target_rows_by_window": {
+        "late_strong": 14159,
+        "mid_weak": 14141,
+        "old_thin": 14535
+      },
+      "target_rows_total_in_windows": 42835,
+      "top_forms": [
+        [
+          "4",
+          626123
+        ],
+        [
+          "424B2",
+          286071
+        ],
+        [
+          "144",
+          124380
+        ],
+        [
+          "8-K",
+          115103
+        ],
+        [
+          "NPORT-P",
+          88032
+        ],
+        [
+          "D",
+          62495
+        ],
+        [
+          "3",
+          62142
+        ],
+        [
+          "13F-HR",
+          59790
+        ],
+        [
+          "SCHEDULE 13G/A",
+          54362
+        ],
+        [
+          "6-K",
+          47243
+        ],
+        [
+          "FWP",
+          43120
+        ],
+        [
+          "D/A",
+          38105
+        ]
+      ]
+    },
+    "passed": false,
+    "sec_surfaces": {
+      "aggregate_events": {
+        "dependency_presence": {
+          "accepted_at": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "accession_number": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "cik": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "entry_date": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "filing_date": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "target_price": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "ticker": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "usable_trade_date": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          }
+        },
+        "file_count": 1,
+        "form_counts": [
+          [
+            "8-K",
+            969
+          ],
+          [
+            "10-Q",
+            199
+          ],
+          [
+            "10-K",
+            88
+          ],
+          [
+            "8-K/A",
+            20
+          ],
+          [
+            "10-Q/A",
+            5
+          ],
+          [
+            "10-K/A",
+            5
+          ]
+        ],
+        "invalid_json_lines": 0,
+        "sample_target_rows": [],
+        "target_rows_by_window": {
+          "late_strong": 0,
+          "mid_weak": 0,
+          "old_thin": 0
+        },
+        "target_rows_total_in_windows": 0,
+        "target_unique_events_by_window": {
+          "late_strong": 0,
+          "mid_weak": 0,
+          "old_thin": 0
+        }
+      },
+      "aggregate_text": {
+        "dependency_presence": {
+          "accepted_at": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "accession_number": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "cik": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "entry_date": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "filing_date": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "target_price": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "ticker": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "usable_trade_date": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          }
+        },
+        "file_count": 1,
+        "form_counts": [
+          [
+            "8-K",
+            306
+          ]
+        ],
+        "invalid_json_lines": 0,
+        "sample_target_rows": [],
+        "target_rows_by_window": {
+          "late_strong": 0,
+          "mid_weak": 0,
+          "old_thin": 0
+        },
+        "target_rows_total_in_windows": 0,
+        "target_unique_events_by_window": {
+          "late_strong": 0,
+          "mid_weak": 0,
+          "old_thin": 0
+        }
+      },
+      "all_text_files": {
+        "dependency_presence": {
+          "accepted_at": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "accession_number": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "cik": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "entry_date": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "filing_date": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "target_price": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "ticker": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "usable_trade_date": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          }
+        },
+        "file_count": 462,
+        "form_counts": [
+          [
+            "8-K",
+            9072
+          ],
+          [
+            "8-K/A",
+            161
+          ]
+        ],
+        "invalid_json_lines": 0,
+        "sample_target_rows": [],
+        "target_rows_by_window": {
+          "late_strong": 0,
+          "mid_weak": 0,
+          "old_thin": 0
+        },
+        "target_rows_total_in_windows": 0,
+        "target_unique_events_by_window": {
+          "late_strong": 0,
+          "mid_weak": 0,
+          "old_thin": 0
+        }
+      },
+      "daily_event_files": {
+        "dependency_presence": {
+          "accepted_at": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "accession_number": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "cik": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "entry_date": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "filing_date": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "target_price": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "ticker": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          },
+          "usable_trade_date": {
+            "present_rate": 0.0,
+            "present_rows": 0,
+            "target_rows_scanned": 0
+          }
+        },
+        "file_count": 461,
+        "form_counts": [
+          [
+            "8-K",
+            8766
+          ],
+          [
+            "10-Q",
+            1908
+          ],
+          [
+            "10-K",
+            665
+          ],
+          [
+            "8-K/A",
+            161
+          ],
+          [
+            "10-K/A",
+            49
+          ],
+          [
+            "10-Q/A",
+            43
+          ]
+        ],
+        "invalid_json_lines": 0,
+        "sample_target_rows": [],
+        "target_rows_by_window": {
+          "late_strong": 0,
+          "mid_weak": 0,
+          "old_thin": 0
+        },
+        "target_rows_total_in_windows": 0,
+        "target_unique_events_by_window": {
+          "late_strong": 0,
+          "mid_weak": 0,
+          "old_thin": 0
+        }
+      },
+      "event_default_forms": [
+        "8-K",
+        "8-K/A",
+        "10-Q",
+        "10-Q/A",
+        "10-K",
+        "10-K/A"
+      ],
+      "event_default_includes_6k": false,
+      "production_visible_6k_event_ready": false,
+      "production_visible_6k_text_ready": false,
+      "text_default_forms": [
+        "8-K"
+      ],
+      "text_default_includes_6k": false
+    }
+  },
+  "gate3": {
+    "baseline_survival_by_window": {
+      "late_strong": {
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      "mid_weak": {
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      "old_thin": {
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    },
+    "blocking_reasons": [
+      "production_visible_6k_unique_events_below_20",
+      "production_visible_6k_missing_three_window_coverage",
+      "production_visible_6k_window_sample_below_5"
+    ],
+    "minimum_target_unique_events": 20,
+    "minimum_target_unique_events_per_window": 5,
+    "minimum_target_windows": 3,
+    "passed": false,
+    "production_visible_unique_6k_events_by_window": {
+      "late_strong": 0,
+      "mid_weak": 0,
+      "old_thin": 0
+    },
+    "production_visible_unique_6k_events_total": 0,
+    "signals_generated": 0,
+    "signals_survived": 0,
+    "survival_rate": 0.0,
+    "target_windows": []
+  },
+  "gate4": {
+    "after_windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23",
+        "strategy_total_return_pct": 117.07,
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23",
+        "strategy_total_return_pct": 78.11,
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02",
+        "strategy_total_return_pct": 39.67,
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22
+      }
+    },
+    "aggregate_after": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "max_window_drawdown_pct": 0.1119,
+      "min_survival_rate": 0.7925,
+      "total_trade_count": 61
+    },
+    "aggregate_before": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "max_window_drawdown_pct": 0.1119,
+      "min_survival_rate": 0.7925,
+      "total_trade_count": 61
+    },
+    "aggregate_delta": {
+      "aggregate_expected_value_score": 0.0,
+      "aggregate_total_pnl": 0.0,
+      "max_window_drawdown_pct": 0.0,
+      "min_survival_rate": 0.0,
+      "total_trade_count": 0
+    },
+    "before_windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23",
+        "strategy_total_return_pct": 117.07,
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23",
+        "strategy_total_return_pct": 78.11,
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02",
+        "strategy_total_return_pct": 39.67,
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22
+      }
+    },
+    "delta_by_window": {
+      "late_strong": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0.0
+      }
+    },
+    "passed": false,
+    "ran_after_strategy": false,
+    "reason_after_not_run": "Blocked at Gate 2/3: 6-K exists in raw form-index metadata, but not in the current production-visible SEC event/text surfaces."
+  },
+  "hypothesis": "candidate_pool/data-edge: PIT SEC 6-K foreign-issuer current-report events may identify ADR and foreign-company information shocks that are not covered by the domestic 8-K/10-K/10-Q SEC event pool; a tradeable default-off source is allowed only if the daily SEC event/text production path exposes 6-K rows with usable_trade_date across all three canonical windows.",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "mechanism_family": "production_visible_free_sec_6k_foreign_issuer_candidate_pool",
+  "nearby_prior_experiments": [
+    "exp-20260621-015",
+    "exp-20260621-016",
+    "exp-20260618-007"
+  ],
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry 6-K by trading raw form-index filing dates, broadening to 6-K/A, or adding OHLCV close, volume, top-N, hold, cooldown, or notional filters on the same non-shared metadata surface.",
+    "negative_result_reflection": "This is a data-edge block, not a losing strategy result. The alpha idea may still be economically plausible, but the present local surface cannot support a fair three-window backtest without creating a production/backtest mismatch.",
+    "new_evidence_required": "Build or acquire a PIT 6-K daily event/text surface with ticker, accession, accepted_at, usable_trade_date, and shared helper entry mapping across all three standard windows, then run the same Gate 1-4 protocol.",
+    "why_result_happened": "6-K has raw historical form-index volume, but the current SEC event builder emits domestic current and periodic forms while the text builder is 8-K oriented. There are zero production-visible 6-K event rows in the canonical event surface, so a replay would use a different data path than production."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "6-K filings are a free SEC channel for foreign issuer current reports and may surface ADR information shocks not captured by domestic 8-K/10-Q/10-K event alphas.",
+    "2_history_check": {
+      "exp-20260618-007": "blocked 10-K/10-Q historical filer-status surface; this run does not use cover-page status.",
+      "exp-20260621-015": "audited form_index as a broad frontier surface and counted 6-K metadata, but did not test whether daily SEC production events carry 6-K rows.",
+      "exp-20260621-016": "blocked 8-K cover-page booleans; this run is a distinct foreign issuer form-family readiness test.",
+      "novelty_gate": "no strong near-neighbor for this 6-K daily-surface readiness hypothesis"
+    },
+    "3_single_decision_hypothesis": "sec_6k_foreign_issuer_event_candidate_pool_readiness_v1",
+    "4_acceptance_standard": "Gate 2 must show production-visible SEC event/text rows for 6-K with ticker, accession, accepted_at, usable_trade_date, entry_date/target mapping via shared helper; Gate 3 needs at least 20 unique target events across all three windows with at least five per window; Gate 4 must use docs/backtesting.md before/after three-window metrics.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260621_018_sec_6k_foreign_issuer_readiness.py"
+  },
+  "prediction": {
+    "confidence_reason": "Historical form index files show many 6-K rows, so raw event volume may exist. The SEC event builder includes domestic current and periodic forms, and the text builder is 8-K oriented, so the prior probability is low until a production-visible 6-K event surface with PIT trade dates is observed.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "daily_pipeline_missing_6k",
+      "sec_text_pipeline_8k_only",
+      "form_index_metadata_only",
+      "foreign_issuer_ticker_join_gap",
+      "near_neighbor_sec_metadata"
+    ],
+    "recorded_at": "2026-06-21T18:11:08+00:00",
+    "success_probability": 0.11
+  },
+  "production_impact": {
+    "backtest_production_parity_risk": "avoided_by_blocking_before_replay",
+    "backtester_adapter_changed": false,
+    "daily_snapshot_changed": false,
+    "default_off_paper_only": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "parity_note": "This run changes no trading path. It blocks promotion because the candidate source is visible only as raw SEC form-index metadata, not as a shared daily/backtest policy surface.",
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "shared_helper_changed": false,
+    "strategy_code_changed": false,
+    "trade_enabled_changed": false
+  },
+  "reproduction": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260621_018_sec_6k_foreign_issuer_readiness.py",
+  "single_causal_variable": "sec_6k_foreign_issuer_event_candidate_pool_readiness_v1",
+  "status": "blocked",
+  "timestamp": "2026-06-21T18:15:49+00:00",
+  "trial_family": "sec_6k_foreign_issuer_event_candidate_pool",
+  "trial_variant_id": "sec_6k_daily_surface_readiness_v1"
+}

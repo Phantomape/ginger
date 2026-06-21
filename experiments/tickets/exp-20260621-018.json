@@ -1,0 +1,1125 @@
+{
+  "acceptance_rule": "Blocked unless 6-K exists in the production-visible SEC event/text surface with enough three-window target sample and shared helper entry mapping.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260621_018_sec_6k_foreign_issuer_readiness.py",
+    "data/experiments/exp-20260621-018/exp_20260621_018_sec_6k_foreign_issuer_readiness.json",
+    "experiments/cards/exp-20260621-018.md",
+    "experiments/manifests/exp-20260621-018.json",
+    "experiments/tickets/exp-20260621-018.json",
+    "experiments/logs/exp-20260621-018.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260621-018.md",
+  "causal_components": [
+    "form-index historical coverage audit",
+    "daily-sec-event parity check",
+    "standard-window baseline disclosure",
+    "blocked-or-launch verdict"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "sec_6k_foreign_issuer_event_candidate_pool_readiness_v1",
+  "claimed_at": "2026-06-21T18:11:31+00:00",
+  "completed_at": "2026-06-21T18:15:49+00:00",
+  "created_at": "2026-06-21T18:11:21+00:00",
+  "evaluation_windows": [
+    {
+      "label": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json"
+    },
+    {
+      "label": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json"
+    },
+    {
+      "label": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json"
+    }
+  ],
+  "experiment_id": "exp-20260621-018",
+  "experiment_uid": "expuid-67a153d30cc44692",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260621-018",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-21T18:11:21+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_6k_foreign_issuer_readiness"
+  },
+  "hypothesis": "candidate_pool/data-edge: PIT SEC 6-K foreign-issuer current-report events may identify ADR and foreign-company information shocks that are not covered by the domestic 8-K/10-K/10-Q SEC event pool; a tradeable default-off source is allowed only if the daily SEC event/text production path exposes 6-K rows with usable_trade_date across all three canonical windows.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "sec_6k_foreign_issuer_event_candidate_pool_readiness_v1"
+  ],
+  "mechanism_family": "production_visible_free_sec_6k_foreign_issuer_candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260621-015",
+    "exp-20260621-016",
+    "exp-20260618-007"
+  ],
+  "new_evidence_type": "sec_6k_daily_event_surface_readiness",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "6k",
+        "a",
+        "across",
+        "adr",
+        "all",
+        "allowed",
+        "are",
+        "by",
+        "canonical",
+        "company",
+        "covered",
+        "current",
+        "daily",
+        "data",
+        "date",
+        "domestic",
+        "edge",
+        "event",
+        "events",
+        "exposes",
+        "foreign",
+        "identify",
+        "if",
+        "information",
+        "is",
+        "issuer",
+        "k",
+        "may",
+        "not",
+        "only",
+        "path",
+        "pit",
+        "q",
+        "readiness",
+        "report",
+        "rows",
+        "shocks",
+        "text",
+        "that",
+        "three",
+        "trade",
+        "tradeable",
+        "usable",
+        "windows"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "non_ohlcv_options_structure_overlay",
+        "reopen_condition": null,
+        "score": 0.1722,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "post_20260619_nonrepeat_surface_readiness",
+        "reopen_condition": null,
+        "score": 0.167,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_text_price_alignment_issuer_continuation_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.167,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "earnings_snapshot_date_revision_readiness",
+        "reopen_condition": null,
+        "score": 0.1667,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "issuer_8k_governance_resolution_text_candidate_pool",
+        "reopen_condition": "A retry needs materially richer evidence, such as parsed counterparty/holder identity, board-seat count, ownership threshold, explicit standstill duration, evidence spans, or closed forward replacement rows. Do not sweep phrase lists, item codes, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.1663,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "success_probability": 0.11,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "daily_pipeline_missing_6k",
+      "sec_text_pipeline_8k_only",
+      "form_index_metadata_only",
+      "foreign_issuer_ticker_join_gap",
+      "near_neighbor_sec_metadata"
+    ],
+    "confidence_reason": "Historical form index files show many 6-K rows, so raw event volume may exist. The SEC event builder includes domestic current and periodic forms, and the text builder is 8-K oriented, so the prior probability is low until a production-visible 6-K event surface with PIT trade dates is observed.",
+    "recorded_at": "2026-06-21T18:11:08+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "decision": "blocked_sec_6k_daily_event_surface_missing",
+    "artifact": "data/experiments/exp-20260621-018/exp_20260621_018_sec_6k_foreign_issuer_readiness.json",
+    "log": "experiments/logs/exp-20260621-018.json",
+    "runner": "quant/experiments/exp_20260621_018_sec_6k_foreign_issuer_readiness.py",
+    "delta_metrics": {
+      "aggregate_expected_value_score": 0.0,
+      "aggregate_total_pnl": 0.0,
+      "total_trade_count": 0,
+      "max_window_drawdown_pct": 0.0
+    },
+    "gate4": {
+      "ran_after_strategy": false,
+      "reason_after_not_run": "Blocked at Gate 2/3: 6-K exists in raw form-index metadata, but not in the current production-visible SEC event/text surfaces.",
+      "before_windows": {
+        "late_strong": {
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "strategy_total_return_pct": 117.07,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        "mid_weak": {
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "strategy_total_return_pct": 78.11,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        "old_thin": {
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "strategy_total_return_pct": 39.67,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      },
+      "after_windows": {
+        "late_strong": {
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "strategy_total_return_pct": 117.07,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        "mid_weak": {
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "strategy_total_return_pct": 78.11,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        "old_thin": {
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "strategy_total_return_pct": 39.67,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      },
+      "delta_by_window": {
+        "late_strong": {
+          "expected_value_score": 0.0,
+          "total_pnl": 0.0,
+          "max_drawdown_pct": 0.0,
+          "trade_count": 0.0,
+          "survival_rate": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": 0.0,
+          "total_pnl": 0.0,
+          "max_drawdown_pct": 0.0,
+          "trade_count": 0.0,
+          "survival_rate": 0.0
+        },
+        "old_thin": {
+          "expected_value_score": 0.0,
+          "total_pnl": 0.0,
+          "max_drawdown_pct": 0.0,
+          "trade_count": 0.0,
+          "survival_rate": 0.0
+        }
+      },
+      "aggregate_before": {
+        "aggregate_expected_value_score": 7.8941,
+        "aggregate_total_pnl": 234850.99,
+        "total_trade_count": 61,
+        "min_survival_rate": 0.7925,
+        "max_window_drawdown_pct": 0.1119
+      },
+      "aggregate_after": {
+        "aggregate_expected_value_score": 7.8941,
+        "aggregate_total_pnl": 234850.99,
+        "total_trade_count": 61,
+        "min_survival_rate": 0.7925,
+        "max_window_drawdown_pct": 0.1119
+      },
+      "aggregate_delta": {
+        "aggregate_expected_value_score": 0.0,
+        "aggregate_total_pnl": 0.0,
+        "total_trade_count": 0,
+        "min_survival_rate": 0.0,
+        "max_window_drawdown_pct": 0.0
+      },
+      "passed": false
+    },
+    "calibration": {
+      "predicted_success_probability": 0.11,
+      "actual_success": 0,
+      "brier_score": 0.0121,
+      "actual_ev_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "failure_modes_observed": [
+        "sec_event_builder_default_forms_exclude_6k",
+        "sec_text_builder_default_forms_exclude_6k",
+        "aggregate_sec_events_have_zero_6k_rows",
+        "daily_sec_event_files_have_zero_6k_rows",
+        "form_index_6k_rows_are_metadata_only_not_trade_ready_pit_events",
+        "production_visible_6k_unique_events_below_20",
+        "production_visible_6k_missing_three_window_coverage",
+        "production_visible_6k_window_sample_below_5"
+      ]
+    },
+    "summary": "6-K has raw historical form-index volume, but the current SEC event builder emits domestic current and periodic forms while the text builder is 8-K oriented. There are zero production-visible 6-K event rows in the canonical event surface, so a replay would use a different data path than production."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260621-018.json",
+  "single_causal_variable": "sec_6k_foreign_issuer_event_candidate_pool_readiness_v1",
+  "status": "blocked",
+  "ticket_file": "experiments/tickets/exp-20260621-018.json",
+  "trial_family": "sec_6k_foreign_issuer_event_candidate_pool",
+  "trial_variant_id": "sec_6k_daily_surface_readiness_v1",
+  "decision": "blocked_sec_6k_daily_event_surface_missing",
+  "summary": "6-K has raw historical form-index volume, but the current SEC event builder emits domestic current and periodic forms while the text builder is 8-K oriented. There are zero production-visible 6-K event rows in the canonical event surface, so a replay would use a different data path than production.",
+  "artifact": "data/experiments/exp-20260621-018/exp_20260621_018_sec_6k_foreign_issuer_readiness.json",
+  "log": "experiments/logs/exp-20260621-018.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "windows": {
+      "late_strong": {
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "expected_value_score": 5.1628,
+        "sharpe_daily": 4.41,
+        "strategy_total_return_pct": 117.07,
+        "total_pnl": 117072.92,
+        "max_drawdown_pct": 0.0665,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      "mid_weak": {
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "expected_value_score": 2.1402,
+        "sharpe_daily": 2.74,
+        "strategy_total_return_pct": 78.11,
+        "total_pnl": 78110.11,
+        "max_drawdown_pct": 0.1119,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      "old_thin": {
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "expected_value_score": 0.5911,
+        "sharpe_daily": 1.49,
+        "strategy_total_return_pct": 39.67,
+        "total_pnl": 39667.96,
+        "max_drawdown_pct": 0.1001,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    },
+    "aggregate": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "total_trade_count": 61,
+      "min_survival_rate": 0.7925,
+      "max_window_drawdown_pct": 0.1119
+    },
+    "passed": true
+  },
+  "gate2": {
+    "dependency_fields_checked": [
+      "ticker",
+      "cik",
+      "accession_number",
+      "form_type",
+      "filing_date",
+      "accepted_at",
+      "usable_trade_date",
+      "entry_date",
+      "target_price"
+    ],
+    "form_index": {
+      "source_dir": "data/cache/sec/form_index",
+      "file_count": 7,
+      "files": [
+        "form_2024_QTR4.idx",
+        "form_2025_QTR1.idx",
+        "form_2025_QTR2.idx",
+        "form_2025_QTR3.idx",
+        "form_2025_QTR4.idx",
+        "form_2026_QTR1.idx",
+        "form_2026_QTR2.idx"
+      ],
+      "parsed_rows": 2180493,
+      "top_forms": [
+        [
+          "4",
+          626123
+        ],
+        [
+          "424B2",
+          286071
+        ],
+        [
+          "144",
+          124380
+        ],
+        [
+          "8-K",
+          115103
+        ],
+        [
+          "NPORT-P",
+          88032
+        ],
+        [
+          "D",
+          62495
+        ],
+        [
+          "3",
+          62142
+        ],
+        [
+          "13F-HR",
+          59790
+        ],
+        [
+          "SCHEDULE 13G/A",
+          54362
+        ],
+        [
+          "6-K",
+          47243
+        ],
+        [
+          "FWP",
+          43120
+        ],
+        [
+          "D/A",
+          38105
+        ]
+      ],
+      "target_forms": [
+        "6-K",
+        "6-K/A"
+      ],
+      "target_rows_by_window": {
+        "late_strong": 14159,
+        "mid_weak": 14141,
+        "old_thin": 14535
+      },
+      "target_rows_by_file": {
+        "form_2024_QTR4.idx": 6708,
+        "form_2025_QTR1.idx": 6416,
+        "form_2025_QTR2.idx": 7347,
+        "form_2025_QTR3.idx": 6907,
+        "form_2025_QTR4.idx": 7163,
+        "form_2026_QTR1.idx": 6907,
+        "form_2026_QTR2.idx": 6331
+      },
+      "target_rows_total_in_windows": 42835,
+      "sample_target_rows": [
+        {
+          "form_type": "6-K",
+          "company_name": "111, Inc.",
+          "cik": "1738906",
+          "filing_date": "2024-11-04",
+          "file_name": "edgar/data/1738906/0000950103-24-015850.txt",
+          "source_file": "data/cache/sec/form_index/form_2024_QTR4.idx"
+        },
+        {
+          "form_type": "6-K",
+          "company_name": "111, Inc.",
+          "cik": "1738906",
+          "filing_date": "2024-11-27",
+          "file_name": "edgar/data/1738906/0000950103-24-016821.txt",
+          "source_file": "data/cache/sec/form_index/form_2024_QTR4.idx"
+        },
+        {
+          "form_type": "6-K",
+          "company_name": "17 Education & Technology Group Inc.",
+          "cik": "1821468",
+          "filing_date": "2024-12-12",
+          "file_name": "edgar/data/1821468/0000950170-24-135590.txt",
+          "source_file": "data/cache/sec/form_index/form_2024_QTR4.idx"
+        },
+        {
+          "form_type": "6-K",
+          "company_name": "36Kr Holdings Inc.",
+          "cik": "1779476",
+          "filing_date": "2024-10-18",
+          "file_name": "edgar/data/1779476/0001104659-24-109676.txt",
+          "source_file": "data/cache/sec/form_index/form_2024_QTR4.idx"
+        },
+        {
+          "form_type": "6-K",
+          "company_name": "37 CAPITAL INC",
+          "cik": "825171",
+          "filing_date": "2024-10-01",
+          "file_name": "edgar/data/825171/0001713282-24-001138.txt",
+          "source_file": "data/cache/sec/form_index/form_2024_QTR4.idx"
+        },
+        {
+          "form_type": "6-K",
+          "company_name": "37 CAPITAL INC",
+          "cik": "825171",
+          "filing_date": "2024-11-04",
+          "file_name": "edgar/data/825171/0001713282-24-001236.txt",
+          "source_file": "data/cache/sec/form_index/form_2024_QTR4.idx"
+        },
+        {
+          "form_type": "6-K",
+          "company_name": "37 CAPITAL INC",
+          "cik": "825171",
+          "filing_date": "2024-11-29",
+          "file_name": "edgar/data/825171/0001713282-24-001371.txt",
+          "source_file": "data/cache/sec/form_index/form_2024_QTR4.idx"
+        },
+        {
+          "form_type": "6-K",
+          "company_name": "37 CAPITAL INC",
+          "cik": "825171",
+          "filing_date": "2024-11-29",
+          "file_name": "edgar/data/825171/0001713282-24-001372.txt",
+          "source_file": "data/cache/sec/form_index/form_2024_QTR4.idx"
+        }
+      ],
+      "dependency_presence": {
+        "form_type": true,
+        "company_name": true,
+        "cik": true,
+        "filing_date": true,
+        "file_name": true,
+        "ticker": false,
+        "accession_number": false,
+        "accepted_at": false,
+        "usable_trade_date": false,
+        "entry_date": false,
+        "target_price": false
+      },
+      "blocking_verdict": "form_index_has_historical_6k_metadata_but_lacks_ticker_accepted_at_usable_trade_date_entry_date_and_target_price"
+    },
+    "sec_surfaces": {
+      "event_default_forms": [
+        "8-K",
+        "8-K/A",
+        "10-Q",
+        "10-Q/A",
+        "10-K",
+        "10-K/A"
+      ],
+      "event_default_includes_6k": false,
+      "text_default_forms": [
+        "8-K"
+      ],
+      "text_default_includes_6k": false,
+      "aggregate_events": {
+        "file_count": 1,
+        "invalid_json_lines": 0,
+        "form_counts": [
+          [
+            "8-K",
+            969
+          ],
+          [
+            "10-Q",
+            199
+          ],
+          [
+            "10-K",
+            88
+          ],
+          [
+            "8-K/A",
+            20
+          ],
+          [
+            "10-Q/A",
+            5
+          ],
+          [
+            "10-K/A",
+            5
+          ]
+        ],
+        "target_rows_by_window": {
+          "late_strong": 0,
+          "mid_weak": 0,
+          "old_thin": 0
+        },
+        "target_unique_events_by_window": {
+          "late_strong": 0,
+          "mid_weak": 0,
+          "old_thin": 0
+        },
+        "target_rows_total_in_windows": 0,
+        "sample_target_rows": [],
+        "dependency_presence": {
+          "ticker": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "cik": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "accession_number": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "filing_date": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "accepted_at": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "usable_trade_date": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "entry_date": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "target_price": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          }
+        }
+      },
+      "daily_event_files": {
+        "file_count": 461,
+        "invalid_json_lines": 0,
+        "form_counts": [
+          [
+            "8-K",
+            8766
+          ],
+          [
+            "10-Q",
+            1908
+          ],
+          [
+            "10-K",
+            665
+          ],
+          [
+            "8-K/A",
+            161
+          ],
+          [
+            "10-K/A",
+            49
+          ],
+          [
+            "10-Q/A",
+            43
+          ]
+        ],
+        "target_rows_by_window": {
+          "late_strong": 0,
+          "mid_weak": 0,
+          "old_thin": 0
+        },
+        "target_unique_events_by_window": {
+          "late_strong": 0,
+          "mid_weak": 0,
+          "old_thin": 0
+        },
+        "target_rows_total_in_windows": 0,
+        "sample_target_rows": [],
+        "dependency_presence": {
+          "ticker": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "cik": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "accession_number": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "filing_date": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "accepted_at": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "usable_trade_date": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "entry_date": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "target_price": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          }
+        }
+      },
+      "aggregate_text": {
+        "file_count": 1,
+        "invalid_json_lines": 0,
+        "form_counts": [
+          [
+            "8-K",
+            306
+          ]
+        ],
+        "target_rows_by_window": {
+          "late_strong": 0,
+          "mid_weak": 0,
+          "old_thin": 0
+        },
+        "target_unique_events_by_window": {
+          "late_strong": 0,
+          "mid_weak": 0,
+          "old_thin": 0
+        },
+        "target_rows_total_in_windows": 0,
+        "sample_target_rows": [],
+        "dependency_presence": {
+          "ticker": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "cik": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "accession_number": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "filing_date": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "accepted_at": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "usable_trade_date": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "entry_date": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "target_price": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          }
+        }
+      },
+      "all_text_files": {
+        "file_count": 462,
+        "invalid_json_lines": 0,
+        "form_counts": [
+          [
+            "8-K",
+            9072
+          ],
+          [
+            "8-K/A",
+            161
+          ]
+        ],
+        "target_rows_by_window": {
+          "late_strong": 0,
+          "mid_weak": 0,
+          "old_thin": 0
+        },
+        "target_unique_events_by_window": {
+          "late_strong": 0,
+          "mid_weak": 0,
+          "old_thin": 0
+        },
+        "target_rows_total_in_windows": 0,
+        "sample_target_rows": [],
+        "dependency_presence": {
+          "ticker": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "cik": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "accession_number": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "filing_date": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "accepted_at": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "usable_trade_date": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "entry_date": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          },
+          "target_price": {
+            "present_rows": 0,
+            "target_rows_scanned": 0,
+            "present_rate": 0.0
+          }
+        }
+      },
+      "production_visible_6k_event_ready": false,
+      "production_visible_6k_text_ready": false
+    },
+    "passed": false,
+    "blocking_reasons": [
+      "sec_event_builder_default_forms_exclude_6k",
+      "sec_text_builder_default_forms_exclude_6k",
+      "aggregate_sec_events_have_zero_6k_rows",
+      "daily_sec_event_files_have_zero_6k_rows",
+      "form_index_6k_rows_are_metadata_only_not_trade_ready_pit_events"
+    ]
+  },
+  "gate3": {
+    "baseline_survival_by_window": {
+      "late_strong": {
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      "mid_weak": {
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      "old_thin": {
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    },
+    "minimum_target_unique_events": 20,
+    "minimum_target_windows": 3,
+    "minimum_target_unique_events_per_window": 5,
+    "production_visible_unique_6k_events_by_window": {
+      "late_strong": 0,
+      "mid_weak": 0,
+      "old_thin": 0
+    },
+    "production_visible_unique_6k_events_total": 0,
+    "target_windows": [],
+    "signals_generated": 0,
+    "signals_survived": 0,
+    "survival_rate": 0.0,
+    "passed": false,
+    "blocking_reasons": [
+      "production_visible_6k_unique_events_below_20",
+      "production_visible_6k_missing_three_window_coverage",
+      "production_visible_6k_window_sample_below_5"
+    ]
+  },
+  "gate4": {
+    "ran_after_strategy": false,
+    "reason_after_not_run": "Blocked at Gate 2/3: 6-K exists in raw form-index metadata, but not in the current production-visible SEC event/text surfaces.",
+    "before_windows": {
+      "late_strong": {
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "expected_value_score": 5.1628,
+        "sharpe_daily": 4.41,
+        "strategy_total_return_pct": 117.07,
+        "total_pnl": 117072.92,
+        "max_drawdown_pct": 0.0665,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      "mid_weak": {
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "expected_value_score": 2.1402,
+        "sharpe_daily": 2.74,
+        "strategy_total_return_pct": 78.11,
+        "total_pnl": 78110.11,
+        "max_drawdown_pct": 0.1119,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      "old_thin": {
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "expected_value_score": 0.5911,
+        "sharpe_daily": 1.49,
+        "strategy_total_return_pct": 39.67,
+        "total_pnl": 39667.96,
+        "max_drawdown_pct": 0.1001,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    },
+    "after_windows": {
+      "late_strong": {
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "expected_value_score": 5.1628,
+        "sharpe_daily": 4.41,
+        "strategy_total_return_pct": 117.07,
+        "total_pnl": 117072.92,
+        "max_drawdown_pct": 0.0665,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      "mid_weak": {
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "expected_value_score": 2.1402,
+        "sharpe_daily": 2.74,
+        "strategy_total_return_pct": 78.11,
+        "total_pnl": 78110.11,
+        "max_drawdown_pct": 0.1119,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      "old_thin": {
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "expected_value_score": 0.5911,
+        "sharpe_daily": 1.49,
+        "strategy_total_return_pct": 39.67,
+        "total_pnl": 39667.96,
+        "max_drawdown_pct": 0.1001,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    },
+    "delta_by_window": {
+      "late_strong": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "max_drawdown_pct": 0.0,
+        "trade_count": 0.0,
+        "survival_rate": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "max_drawdown_pct": 0.0,
+        "trade_count": 0.0,
+        "survival_rate": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "max_drawdown_pct": 0.0,
+        "trade_count": 0.0,
+        "survival_rate": 0.0
+      }
+    },
+    "aggregate_before": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "total_trade_count": 61,
+      "min_survival_rate": 0.7925,
+      "max_window_drawdown_pct": 0.1119
+    },
+    "aggregate_after": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "total_trade_count": 61,
+      "min_survival_rate": 0.7925,
+      "max_window_drawdown_pct": 0.1119
+    },
+    "aggregate_delta": {
+      "aggregate_expected_value_score": 0.0,
+      "aggregate_total_pnl": 0.0,
+      "total_trade_count": 0,
+      "min_survival_rate": 0.0,
+      "max_window_drawdown_pct": 0.0
+    },
+    "passed": false
+  },
+  "production_impact": {
+    "strategy_code_changed": false,
+    "shared_helper_changed": false,
+    "daily_snapshot_changed": false,
+    "live_orders_changed": false,
+    "trade_enabled_changed": false,
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": false,
+    "live_ready": false,
+    "backtest_production_parity_risk": "avoided_by_blocking_before_replay",
+    "parity_note": "This run changes no trading path. It blocks promotion because the candidate source is visible only as raw SEC form-index metadata, not as a shared daily/backtest policy surface."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "6-K has raw historical form-index volume, but the current SEC event builder emits domestic current and periodic forms while the text builder is 8-K oriented. There are zero production-visible 6-K event rows in the canonical event surface, so a replay would use a different data path than production.",
+    "negative_result_reflection": "This is a data-edge block, not a losing strategy result. The alpha idea may still be economically plausible, but the present local surface cannot support a fair three-window backtest without creating a production/backtest mismatch.",
+    "forbidden_near_neighbor_retry": "Do not retry 6-K by trading raw form-index filing dates, broadening to 6-K/A, or adding OHLCV close, volume, top-N, hold, cooldown, or notional filters on the same non-shared metadata surface.",
+    "new_evidence_required": "Build or acquire a PIT 6-K daily event/text surface with ticker, accession, accepted_at, usable_trade_date, and shared helper entry mapping across all three standard windows, then run the same Gate 1-4 protocol."
+  },
+  "lean_quality_passed": true,
+  "updated_at": "2026-06-21T18:15:49+00:00"
+}
