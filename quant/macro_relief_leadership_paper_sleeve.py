@@ -877,6 +877,21 @@ def _normalise_ohlcv_by_ticker(raw: dict[str, Any]) -> dict[str, list[dict[str, 
     }
 
 
+def _lookup_ohlcv_source(
+    ohlcv_dict: dict[str, Any] | None,
+    ticker: str,
+    cached_ohlcv_fn: Any = None,
+) -> Any:
+    ticker = str(ticker).upper()
+    if isinstance(ohlcv_dict, dict):
+        value = ohlcv_dict.get(ticker)
+        if value is not None:
+            return value
+    if cached_ohlcv_fn is not None:
+        return cached_ohlcv_fn(ticker)
+    return None
+
+
 def _normalise_ohlcv_rows(data: Any) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     if data is None:
@@ -1155,6 +1170,7 @@ def prep_and_build_macro_relief_leadership_snapshot(
     spy_ohlcv=None,
     ohlcv_dict=None,
     cached_ohlcv_fn=None,
+    persist: bool = True,
 ):
     if not broad_market_candidate_universe.get("tickers"):
         return empty_macro_relief_leadership_snapshot(
@@ -1163,10 +1179,11 @@ def prep_and_build_macro_relief_leadership_snapshot(
     if "SPY" not in ohlcv and spy_ohlcv is not None:
         ohlcv["SPY"] = spy_ohlcv
     if "QQQ" not in ohlcv:
-        ohlcv["QQQ"] = (ohlcv_dict or {}).get("QQQ") or (cached_ohlcv_fn("QQQ") if cached_ohlcv_fn else None)
+        ohlcv["QQQ"] = _lookup_ohlcv_source(ohlcv_dict, "QQQ", cached_ohlcv_fn)
     return build_macro_relief_leadership_snapshot(
         as_of=as_of, ohlcv_by_ticker=ohlcv,
         candidate_universe=broad_market_candidate_universe,
+        persist=persist,
     )
 
 

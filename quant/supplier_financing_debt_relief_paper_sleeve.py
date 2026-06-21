@@ -892,16 +892,20 @@ def _framework_snapshot(ohlcv_by_ticker: dict[str, Any]) -> dict[str, list[dict[
 def _normalise_rows(rows: Any) -> list[dict[str, Any]]:
     if rows is None:
         return []
-    if hasattr(rows, "to_dict"):
-        try:
-            rows = rows.to_dict("records")
-        except TypeError:
-            rows = rows.to_dict()
     out: list[dict[str, Any]] = []
-    for raw in rows or []:
+    if hasattr(rows, "iterrows"):
+        iterator = ((raw, idx) for idx, raw in rows.iterrows())
+    elif isinstance(rows, list):
+        iterator = ((raw, None) for raw in rows)
+    else:
+        iterator = ()
+    for raw, idx in iterator:
         if not isinstance(raw, dict):
-            continue
-        date_value = raw.get("Date", raw.get("date"))
+            try:
+                raw = raw.to_dict()
+            except AttributeError:
+                continue
+        date_value = raw.get("Date", raw.get("date", idx))
         date_text = _date10(date_value)
         open_ = _float_or_none(raw.get("Open", raw.get("open")))
         high = _float_or_none(raw.get("High", raw.get("high")))

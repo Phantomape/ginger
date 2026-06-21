@@ -47,6 +47,8 @@ def test_report_flags_failing_builds_and_stale_dirs(tmp_path):
     payloads = {
         "fresh_sleeve_paper_sleeve": {"asof_date": "2026-06-11", "candidate_count": 1},
         "broken_paper_sleeve": {"error": "missing_sector_entries"},
+        "holiday_paper_sleeve": {"error": "non_us_equity_session"},
+        "retired_paper_sleeve": {"error": "retired_default_off_paper_disabled"},
         "unrelated_payload": {"error": "ignored"},
     }
     report = sh.build_sleeve_health_report(

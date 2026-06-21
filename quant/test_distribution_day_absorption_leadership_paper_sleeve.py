@@ -2,12 +2,15 @@ from __future__ import annotations
 
 from datetime import date, timedelta
 
+import pytest
+
 from quant.distribution_day_absorption_leadership_paper_sleeve import (
     RULE_VERSION,
     SOURCE_RULE_VERSION,
     build_distribution_day_absorption_leadership_historical_trades,
     build_distribution_day_absorption_leadership_snapshot,
     empty_distribution_day_absorption_leadership_state,
+    prep_and_build_distribution_day_absorption_leadership_snapshot,
 )
 
 
@@ -147,6 +150,36 @@ def test_snapshot_creates_default_off_pending_without_future_data_or_orders() ->
     assert candidate["ticker"] == "LEAD"
     assert candidate["rule_version"] == RULE_VERSION
     assert candidate["source_rule_version"] == SOURCE_RULE_VERSION
+
+
+def test_prep_handles_dataframe_qqq_fallback_without_boolean_coercion() -> None:
+    pd = pytest.importorskip("pandas")
+    full_ohlcv = _ohlcv()
+    signal_day = full_ohlcv["SPY"][70]["date"]
+    truncated = {ticker: rows[:71] for ticker, rows in full_ohlcv.items()}
+
+    def frame(rows: list[dict]) -> object:
+        return pd.DataFrame(rows).set_index("date")
+
+    snapshot = prep_and_build_distribution_day_absorption_leadership_snapshot(
+        as_of=signal_day,
+        broad_market_ohlcv={
+            "SPY": frame(truncated["SPY"]),
+            "LEAD": frame(truncated["LEAD"]),
+            "ALT": frame(truncated["ALT"]),
+        },
+        broad_market_candidate_universe={
+            "status": "test_broad_market_universe",
+            "tickers": ["LEAD", "ALT"],
+            "records": _sector_entries(),
+        },
+        ohlcv_dict={"QQQ": frame(truncated["QQQ"])},
+        core_entries=[{"ticker": "CORE"}],
+        persist=False,
+    )
+
+    assert snapshot["trade_enabled"] is False
+    assert snapshot["candidate_count"] == 1
 
 
 def test_historical_replay_and_daily_snapshot_share_candidate_decision() -> None:

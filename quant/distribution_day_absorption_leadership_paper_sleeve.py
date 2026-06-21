@@ -1136,6 +1136,7 @@ def prep_and_build_distribution_day_absorption_leadership_snapshot(
     ohlcv_dict=None,
     cached_ohlcv_fn=None,
     core_entries=None,
+    persist: bool = True,
 ):
     if not broad_market_candidate_universe.get("tickers"):
         return empty_distribution_day_absorption_leadership_snapshot(
@@ -1144,11 +1145,12 @@ def prep_and_build_distribution_day_absorption_leadership_snapshot(
     if "SPY" not in ohlcv and spy_ohlcv is not None:
         ohlcv["SPY"] = spy_ohlcv
     if "QQQ" not in ohlcv:
-        ohlcv["QQQ"] = (ohlcv_dict or {}).get("QQQ") or (cached_ohlcv_fn("QQQ") if cached_ohlcv_fn else None)
+        ohlcv["QQQ"] = leader._lookup_ohlcv_source(ohlcv_dict, "QQQ", cached_ohlcv_fn)
     return build_distribution_day_absorption_leadership_snapshot(
         as_of=as_of, ohlcv_by_ticker=ohlcv,
         candidate_universe=broad_market_candidate_universe,
         core_entries=core_entries,
+        persist=persist,
     )
 
 

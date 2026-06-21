@@ -490,6 +490,15 @@ def build_sec_ftd_finra_paper_sleeve_snapshot(
 ) -> dict[str, Any]:
     cfg = _config(config)
     as_of_date = _date10(as_of)
+    try:
+        from us_market_calendar import is_us_equity_session
+    except ImportError:  # pragma: no cover - package-style imports in tests
+        from quant.us_market_calendar import is_us_equity_session
+
+    if not is_us_equity_session(as_of_date):
+        return empty_sec_ftd_finra_paper_sleeve_snapshot(
+            as_of_date, "non_us_equity_session"
+        )
     rows_by_ticker = {
         str(ticker).upper(): _normalise_ohlcv_rows(rows)
         for ticker, rows in (ohlcv_by_ticker or {}).items()

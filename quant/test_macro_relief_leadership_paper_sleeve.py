@@ -2,12 +2,15 @@ from __future__ import annotations
 
 from datetime import date, timedelta
 
+import pytest
+
 from quant.default_off_alpha_attribution import build_default_off_alpha_attribution_report
 from quant.macro_relief_leadership_paper_sleeve import (
     SLEEVE_NAME,
     SOURCE_RULE_VERSION,
     build_macro_relief_leadership_snapshot,
     empty_macro_relief_leadership_state,
+    prep_and_build_macro_relief_leadership_snapshot,
 )
 from quant.report_generator import generate_daily_report
 
@@ -85,6 +88,29 @@ def test_macro_relief_leadership_selects_top_two_without_orders() -> None:
     assert snapshot["new_pending_count"] == 2
     assert snapshot["pending_entries"][0]["paper_status"] == "pending_entry"
     assert snapshot["pending_entries"][0]["entry_timing"] == "next_session_open"
+
+
+def test_prep_handles_dataframe_qqq_fallback_without_boolean_coercion() -> None:
+    pd = pytest.importorskip("pandas")
+
+    def frame(rows: list[dict]) -> object:
+        return pd.DataFrame(rows).set_index("date")
+
+    snapshot = prep_and_build_macro_relief_leadership_snapshot(
+        as_of="2025-01-15",
+        broad_market_ohlcv={
+            "SPY": frame(_rows(start_price=100.0, daily_step=0.0008, event_gain=0.007)),
+            "AAA": frame(_rows(start_price=70.0, daily_step=0.0018, event_gain=0.036)),
+        },
+        broad_market_candidate_universe=_universe("AAA"),
+        ohlcv_dict={
+            "QQQ": frame(_rows(start_price=100.0, daily_step=0.0010, event_gain=0.009)),
+        },
+        persist=False,
+    )
+
+    assert snapshot["trade_enabled"] is False
+    assert snapshot["macro_relief_context"]["passed"] is True
 
 
 def test_macro_relief_leadership_replay_uses_next_open_and_10_day_close() -> None:

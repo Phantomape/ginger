@@ -204,6 +204,22 @@ def test_stale_missing_asof_price_does_not_fill_pending_entry():
     assert snapshot["open_position_count"] == 0
 
 
+def test_non_session_returns_neutral_skip_before_spy_asof_check():
+    snapshot = build_sec_ftd_finra_paper_sleeve_snapshot(
+        as_of="2026-06-20",
+        ohlcv_by_ticker={},
+        candidate_universe=["WIN"],
+        ftd_rows=[],
+        finra_rows=[],
+        state=empty_sec_ftd_finra_paper_state(),
+        persist=False,
+        config={"allow_network_fetch": False},
+    )
+
+    assert snapshot["error"] == "non_us_equity_session"
+    assert snapshot["data_source"]["status"] == "non_us_equity_session"
+
+
 def test_default_off_alpha_attribution_includes_sec_ftd_finra_surface():
     report = build_default_off_alpha_attribution_report(
         as_of="2026-03-02",

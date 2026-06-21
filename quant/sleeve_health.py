@@ -34,6 +34,10 @@ PAYLOAD_KEY_SUFFIXES = ("_sleeve", "_paper_sleeve", "_overlay")
 # A sleeve whose snapshots.jsonl has not gained a row for more than this many
 # completed US equity sessions is flagged stale.
 DEFAULT_STALE_SESSION_THRESHOLD = 3
+NON_FAILING_BUILD_STATUSES = {
+    "non_us_equity_session",
+    "retired_default_off_paper_disabled",
+}
 
 
 def sessions_between(start: str, end: str) -> int:
@@ -168,7 +172,11 @@ def build_sleeve_health_report(
                     stalled.append(sleeve_dir.name)
             disk_status[sleeve_dir.name] = entry
 
-    failing_builds = sorted(k for k, v in build_status.items() if v != "ok")
+    failing_builds = sorted(
+        k
+        for k, v in build_status.items()
+        if v != "ok" and v not in NON_FAILING_BUILD_STATUSES
+    )
     report = {
         "rule_version": RULE_VERSION,
         "asof_date": as_of_date,

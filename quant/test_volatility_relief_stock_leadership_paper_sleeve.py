@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from datetime import date, timedelta
 
+import pytest
+
 from quant.default_off_alpha_attribution import build_default_off_alpha_attribution_report
 from quant.report_generator import generate_daily_report
 from quant.volatility_relief_stock_leadership_paper_sleeve import (
@@ -10,6 +12,7 @@ from quant.volatility_relief_stock_leadership_paper_sleeve import (
     build_volatility_relief_stock_leadership_historical_trades,
     build_volatility_relief_stock_leadership_snapshot,
     empty_volatility_relief_stock_leadership_state,
+    prep_and_build_volatility_relief_stock_leadership_snapshot,
 )
 
 
@@ -89,6 +92,31 @@ def test_volatility_relief_leadership_selects_top_two_without_orders() -> None:
     assert snapshot["new_pending_count"] == 2
     assert snapshot["pending_entries"][0]["paper_status"] == "pending_entry"
     assert snapshot["pending_entries"][0]["entry_timing"] == "next_session_open"
+
+
+def test_prep_handles_dataframe_index_fallbacks_without_boolean_coercion() -> None:
+    pd = pytest.importorskip("pandas")
+    ohlcv = _ohlcv()
+
+    def frame(rows: list[dict]) -> object:
+        return pd.DataFrame(rows).set_index("date")
+
+    snapshot = prep_and_build_volatility_relief_stock_leadership_snapshot(
+        as_of="2025-01-15",
+        broad_market_ohlcv={
+            "SPY": frame(ohlcv["SPY"]),
+            "AAA": frame(ohlcv["AAA"]),
+        },
+        broad_market_candidate_universe=_universe("AAA"),
+        ohlcv_dict={
+            "QQQ": frame(ohlcv["QQQ"]),
+            "VIXY": frame(ohlcv["VIXY"]),
+        },
+        persist=False,
+    )
+
+    assert snapshot["trade_enabled"] is False
+    assert snapshot["volatility_relief_context"]["passed"] is True
 
 
 def test_volatility_relief_historical_and_daily_candidate_semantics_match() -> None:

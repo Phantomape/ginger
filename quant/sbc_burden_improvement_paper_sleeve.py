@@ -1148,26 +1148,31 @@ def _candidate_universe_tickers(
 
 
 def _normalise_ohlcv_by_ticker(ohlcv_by_ticker: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
-    return {
-        str(ticker).upper(): _normalise_ohlcv_rows(rows)
-        for ticker, rows in (ohlcv_by_ticker or {}).items()
-        if _normalise_ohlcv_rows(rows)
-    }
+    out: dict[str, list[dict[str, Any]]] = {}
+    for ticker, rows in (ohlcv_by_ticker or {}).items():
+        normalised = _normalise_ohlcv_rows(rows)
+        if normalised:
+            out[str(ticker).upper()] = normalised
+    return out
 
 
 def _normalise_ohlcv_rows(rows: Any) -> list[dict[str, Any]]:
     if rows is None:
         return []
-    if hasattr(rows, "to_dict"):
-        try:
-            rows = rows.to_dict("records")
-        except TypeError:
-            rows = rows.to_dict()
     out: list[dict[str, Any]] = []
-    for raw in rows or []:
+    if hasattr(rows, "iterrows"):
+        iterator = ((raw, idx) for idx, raw in rows.iterrows())
+    elif isinstance(rows, list):
+        iterator = ((raw, None) for raw in rows)
+    else:
+        iterator = ()
+    for raw, idx in iterator:
         if not isinstance(raw, dict):
-            continue
-        date_value = raw.get("date", raw.get("Date"))
+            try:
+                raw = raw.to_dict()
+            except AttributeError:
+                continue
+        date_value = raw.get("date", raw.get("Date", idx))
         date_text = _date10(date_value)
         open_ = _float_or_none(raw.get("open", raw.get("Open")))
         high = _float_or_none(raw.get("high", raw.get("High")))

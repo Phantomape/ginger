@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from datetime import date, timedelta
 
+import pytest
+
 from quant.supplier_financing_debt_relief_paper_sleeve import (
     RULE_VERSION,
     SOURCE_RULE_VERSION,
@@ -220,6 +222,29 @@ def _sector_entries() -> dict[str, dict]:
         "LEAD": {"sector": "Industrials", "industry": "Machinery", "sector_coverage_status": "ok"},
         "WEAK": {"sector": "Industrials", "industry": "Machinery", "sector_coverage_status": "ok"},
     }
+
+
+def test_snapshot_normalises_indexed_dataframe_ohlcv() -> None:
+    pd = pytest.importorskip("pandas")
+    full_ohlcv = _ohlcv()
+    signal_day = full_ohlcv["SPY"][70]["date"]
+    truncated = {ticker: rows[:71] for ticker, rows in full_ohlcv.items()}
+    indexed = {
+        ticker: pd.DataFrame(rows).set_index("date")
+        for ticker, rows in truncated.items()
+    }
+
+    snapshot = build_supplier_financing_debt_relief_paper_sleeve_snapshot(
+        as_of=signal_day,
+        ohlcv_by_ticker=indexed,
+        quality_index=_quality_index(),
+        sector_entries=_sector_entries(),
+        state=empty_supplier_financing_debt_relief_state(),
+        persist=False,
+    )
+
+    assert snapshot.get("error") is None
+    assert snapshot["candidate_count"] == 1
 
 
 def test_snapshot_creates_default_off_risk_scaled_pending_without_orders() -> None:
