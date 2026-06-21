@@ -330,3 +330,37 @@ def test_daily_snapshot_preserves_independent_source_scaled_pending_notional() -
     assert candidate["paper_notional_usd"] == 5000.0
     assert pending["paper_notional_usd"] == 5000.0
     assert pending["trade_enabled"] is False
+
+
+def test_daily_snapshot_preserves_peer_shock_scaled_pending_notional() -> None:
+    ohlcv = _ohlcv()
+    signal_date = ohlcv["SPY"][5]["date"]
+
+    snapshot = build_accepted_helper_source_priority_allocator_snapshot(
+        as_of=signal_date,
+        source_snapshots={
+            "rolling_peer_shock": {
+                "candidate_count": 1,
+                "candidates": [
+                    {
+                        "ticker": "TOP",
+                        "date": signal_date,
+                        "source_family": "rolling_peer_shock",
+                        "candidate_score": 1.0,
+                    }
+                ],
+            }
+        },
+        ohlcv_by_ticker=ohlcv,
+        state=empty_accepted_helper_source_priority_allocator_state(),
+        persist=False,
+    )
+
+    assert snapshot["candidate_count"] == 1
+    candidate = snapshot["candidates"][0]
+    pending = snapshot["new_pending_entries"][0]
+    assert candidate["source_family"] == "rolling_peer_shock"
+    assert candidate["source_notional_scalar"] == 1.25
+    assert candidate["paper_notional_usd"] == 5000.0
+    assert pending["paper_notional_usd"] == 5000.0
+    assert pending["trade_enabled"] is False

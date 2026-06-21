@@ -441,6 +441,19 @@ sweep allocator ranks or scalars. Future allocator capital changes need closed
 forward source-family replacement-value rows or a materially new out-of-sample
 independence surface.
 
+`exp-20260621-001` extended that same accepted paper-only allocator-capital
+lesson to the one low-correlation source left out of `exp-20260620-032`:
+selected `rolling_peer_shock` rows now also receive the fixed `1.25x`
+default-off paper notional scalar. The before state was the current accepted
+allocator with laggard/revision scalars already active; adding only peer-shock
+capital improved aggregate EV by `+0.0780` and PnL by `+$1,071.90`, with all
+three canonical windows positive, `37` affected rows, zero drawdown drift, and
+clean concentration. This is accepted default-off paper sizing only; do not
+retry by sweeping peer-shock scalar, source rank, top-N, hold, cooldown, or
+peer-shock OHLCV thresholds on frozen windows. Further allocator capital work
+requires closed forward source-family replacement-value rows or a genuinely
+new out-of-sample independence surface.
+
 The later quarterly inventory-turnover acceleration proposal
 (`exp-20260620-017`) was correctly blocked before strategy logic because it
 collapsed into the already rejected `exp-20260616-022` quarterly

@@ -73,7 +73,7 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 SLEEVE_NAME = "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER"
 RULE_VERSION = "accepted_helper_source_priority_shared_default_off_allocator_v3"
 SOURCE_RULE_VERSION = (
-    "accepted_helper_source_priority_top1_with_independent_source_notional_v1"
+    "accepted_helper_source_priority_top1_with_peer_shock_source_notional_v2"
 )
 STATE_SCHEMA_VERSION = 1
 LAGGED_CONSENSUS_SOURCE_ARTIFACT = (
@@ -111,6 +111,7 @@ DEFAULT_CONFIG = {
     "source_notional_scalars": {
         "industry_laggard_repair": 1.25,
         "revision_surprise_low_extension": 1.25,
+        "rolling_peer_shock": 1.25,
     },
     "forward_gate_min_closed_trades": 60,
     "forward_gate_positive_net_pnl": True,
@@ -123,6 +124,7 @@ SOURCE_NOTIONAL_SCALARS: "OrderedDict[str, float]" = OrderedDict(
     [
         ("industry_laggard_repair", 1.25),
         ("revision_surprise_low_extension", 1.25),
+        ("rolling_peer_shock", 1.25),
     ]
 )
 
