@@ -101,6 +101,40 @@ def _save_text(text, filepath):
     log.info(f"Saved → {filepath}")
 
 
+def _refresh_open_positions_from_moomoo():
+    """Refresh open_positions.json from the moomoo account before loading it.
+
+    moomoo is the authoritative source for qty / avg_cost / cash / market_val;
+    the operator only maintains the tag map (``operator_inputs/position_tags.json``).
+    On any failure (SDK missing, OpenD down, empty account) the generator keeps
+    the existing file untouched, so the daily run degrades gracefully to the
+    last-known holdings rather than trading on a stale or empty book. Set
+    ``GINGER_SKIP_MOOMOO_REFRESH=1`` to skip the live pull (offline reruns,
+    backtests driving run.py).
+    """
+    if os.environ.get("GINGER_SKIP_MOOMOO_REFRESH"):
+        log.info("Skipping moomoo open-positions refresh (GINGER_SKIP_MOOMOO_REFRESH set).")
+        return
+    try:
+        from moomoo_open_positions import generate as _moomoo_generate
+    except ImportError as e:
+        log.warning(f"moomoo_open_positions unavailable; using existing open_positions.json: {e}")
+        return
+    try:
+        result = _moomoo_generate(preview=False)
+    except Exception as e:  # noqa: BLE001
+        log.warning(f"moomoo open-positions refresh failed; using existing file: {e}")
+        return
+    if result.get("status") == "written":
+        untagged = result.get("untagged") or []
+        msg = f"Refreshed open_positions.json from moomoo -> {repo_relative(result.get('wrote'))}."
+        if untagged:
+            msg += f" Untagged tickers default to sleeve section: {untagged}."
+        log.info(msg)
+    else:
+        log.warning("moomoo unavailable/empty; using existing open_positions.json (fallback).")
+
+
 def _load_open_positions():
     path = open_positions_path()
     if path.exists():
@@ -528,6 +562,7 @@ def main():
         persist_sec_10k_forward_watch,
     )
 
+    _refresh_open_positions_from_moomoo()
     open_positions    = _load_open_positions()
     _stored_pv        = (open_positions or {}).get("portfolio_value_usd")
     portfolio_value   = _stored_pv          # updated below after OHLCV is available
