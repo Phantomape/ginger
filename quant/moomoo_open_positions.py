@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import json
 import os
+import socket
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -242,6 +243,21 @@ def build_payload(
 # --------------------------------------------------------------------------
 # moomoo I/O (thin; not unit-tested — exercised via preview run).
 # --------------------------------------------------------------------------
+def _opend_reachable(host: str, port: int, timeout: float = 2.0) -> bool:
+    """Fast TCP probe so a down OpenD fails fast instead of retrying forever.
+
+    The moomoo SDK retries ``connect`` in an indefinite loop when OpenD is not
+    listening (each attempt ~8s), which would hang the daily run rather than
+    let the caller fall back to the existing file. A short connect probe lets us
+    bail in seconds when the gateway is offline.
+    """
+    try:
+        with socket.create_connection((host, port), timeout=timeout):
+            return True
+    except OSError:
+        return False
+
+
 def fetch_moomoo_state(
     *,
     acc_id: int = DEFAULT_ACCOUNT_ID,
@@ -251,6 +267,9 @@ def fetch_moomoo_state(
     fills_lookback_days: int = FILLS_LOOKBACK_DAYS,
 ) -> dict[str, Any] | None:
     """Pull positions, USD account info, and ~2y of fills. None on failure."""
+    if not _opend_reachable(host, port):
+        print(f"[moomoo_open_positions] OpenD not reachable at {host}:{port} -> fallback.")
+        return None
     try:
         from moomoo import (
             OpenSecTradeContext, TrdMarket, TrdEnv, SecurityFirm, Currency, RET_OK,
