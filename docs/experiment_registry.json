@@ -80831,8 +80831,335 @@
       "artifact": "data/experiments/exp-20260621-004/exp_20260621_004_accepted_allocator_volatility_relief_notional.json",
       "log": "experiments/logs/exp-20260621-004.json",
       "updated_at": "2026-06-21T03:15:53+00:00"
+    },
+    {
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260621_005_fx_oci_drawdown_envelope.py",
+        "data/experiments/exp-20260621-005/exp_20260621_005_fx_oci_drawdown_envelope.json",
+        "experiments/cards/exp-20260621-005.md",
+        "experiments/manifests/exp-20260621-005.json",
+        "experiments/tickets/exp-20260621-005.json",
+        "experiments/logs/exp-20260621-005.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data/experiments/exp-20260620-026/exp_20260620_026_foreign_currency_oci_component_tailwind.json",
+      "card_file": "experiments/cards/exp-20260621-005.md",
+      "causal_components": [
+        "fixed raw FX OCI source",
+        "unchanged candidate ranking",
+        "OHLCV prior-volatility notional envelope",
+        "historical replay",
+        "execution envelope",
+        "Gate 1-4 verdict"
+      ],
+      "change_type": "risk_allocation_replay_scout",
+      "changed_variable": "fx_oci_drawdown_aware_volatility_notional_envelope_v1",
+      "claimed_at": "2026-06-21T04:09:16+00:00",
+      "completed_at": "2026-06-21T04:15:19+00:00",
+      "created_at": "2026-06-21T04:09:09+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260621-005",
+      "experiment_uid": "expuid-30480e6e035f4113",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260621-005",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-21T04:09:09+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "fx_oci_drawdown_envelope"
+      },
+      "hypothesis": "risk_allocation: the raw SEC FX-translation OCI component tailwind source was positive in all three canonical windows but failed only drawdown; applying one fixed PIT OHLCV volatility/drawdown notional envelope may preserve replacement value while bringing max drawdown drift inside Gate 4.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "fx_oci_drawdown_aware_volatility_notional_envelope_v1"
+      ],
+      "mechanism_family": "production_visible_free_sec_companyfacts_oci_component_candidate_pool",
+      "multiple_testing_risk_bucket": "moderate",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260620-026",
+        "exp-20260620-028",
+        "exp-20260620-030"
+      ],
+      "new_evidence_type": "pit_ohlcv_drawdown_aware_policy_bundle",
+      "novelty": {
+        "blocking_matches": [
+          {
+            "accept_rate": 0.0,
+            "family_key": "supplier_financing_debt_relief_risk_allocation",
+            "score": 0.6279,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "family_key": "companyfacts_cost_liquidity_support",
+            "score": 0.6098,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "companyfacts_operating_margin_expansion_support",
+            "score": 0.6098,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.5,
+            "family_key": "companyfacts_sector_residual_strength_support",
+            "score": 0.6098,
+            "status": "has_accepted",
+            "trials": 2
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "companyfacts_dual_growth_pair_support",
+            "score": 0.6095,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "companyfacts_ratio",
+          "field_tags": [
+            "all",
+            "allocation",
+            "applying",
+            "aware",
+            "bringing",
+            "but",
+            "canonical",
+            "companyfacts",
+            "component",
+            "drawdown",
+            "drift",
+            "envelope",
+            "failed",
+            "fx",
+            "gate",
+            "in",
+            "inside",
+            "max",
+            "may",
+            "notional",
+            "oci",
+            "one",
+            "only",
+            "pit",
+            "positive",
+            "preserve",
+            "raw",
+            "replacement",
+            "risk",
+            "tailwind",
+            "three",
+            "translation",
+            "value",
+            "volatility",
+            "was",
+            "while",
+            "windows"
+          ],
+          "gate_shape": "notional_scalar"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "companyfacts_ratio",
+            "family_key": "supplier_financing_debt_relief_risk_allocation",
+            "reopen_condition": "Need supplier/payment-term provenance, covenant/refinancing context, or closed forward replacement-value rows before revisiting this Companyfacts cross-statement/risk family.",
+            "score": 0.6279,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "companyfacts_ratio",
+            "family_key": "companyfacts_cost_liquidity_support",
+            "reopen_condition": null,
+            "score": 0.6098,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "companyfacts_ratio",
+            "family_key": "companyfacts_operating_margin_expansion_support",
+            "reopen_condition": "Do not retry operating-margin thresholds/scalars on the frozen windows. The useful Companyfacts next step is forward replacement-value accumulation or a materially new free-data field.",
+            "score": 0.6098,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.5,
+            "data_source": "companyfacts_ratio",
+            "family_key": "companyfacts_sector_residual_strength_support",
+            "reopen_condition": null,
+            "score": 0.6098,
+            "status": "has_accepted",
+            "trials": 2
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "companyfacts_ratio",
+            "family_key": "companyfacts_dual_growth_pair_support",
+            "reopen_condition": null,
+            "score": 0.6095,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": "Predeclared PIT OHLCV prior-volatility and prior-drawdown notional envelope explicitly allowed by exp-20260620-026 closeout as a drawdown-aware policy bundle; FX OCI tags, source thresholds, ranking, hold, cooldown, and daily top-1 selection stay fixed.",
+        "override": true,
+        "warn": true,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-search-automation",
+      "prediction": {
+        "success_probability": 0.18,
+        "expected_ev_delta": 0.25,
+        "expected_pnl_delta": 4500.0,
+        "main_failure_modes": [
+          "pnl_comparator_not_beaten",
+          "drawdown_still_high",
+          "window_regression",
+          "source_risk_not_ex_ante_separable"
+        ],
+        "confidence_reason": "The source already showed positive EV/PnL in all three fixed windows and failed only the drawdown guard; the allowed new axis is a predeclared OHLCV risk envelope, not FX tag/notional/hold threshold mining. Main risk is that the drawdown came from needed winners, so risk scaling loses the accepted distribution comparator.",
+        "recorded_at": "2026-06-21T04:08:56+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "decision": "rejected_fx_oci_drawdown_envelope",
+        "accepted": false,
+        "numeric_gate4_passed": false,
+        "artifact": "data/experiments/exp-20260621-005/exp_20260621_005_fx_oci_drawdown_envelope.json",
+        "log": "experiments/logs/exp-20260621-005.json",
+        "aggregate_expected_value_delta": 0.4828,
+        "aggregate_strategy_total_pnl_delta": 11077.81,
+        "gate4": {
+          "passed": false,
+          "decision": "rejected_fx_oci_drawdown_envelope",
+          "failed_reasons": [
+            "drawdown_drift_too_high",
+            "accepted_distribution_ev_not_beaten"
+          ],
+          "aggregate_ev_delta": 0.4828,
+          "aggregate_pnl_delta": 11077.81,
+          "windows_ev_improved": 3,
+          "windows_ev_regressed": 0,
+          "windows_pnl_improved": 3,
+          "windows_pnl_regressed": 0,
+          "target_trade_count": 146,
+          "target_trade_count_min": 20,
+          "target_windows": [
+            "late_strong",
+            "mid_weak",
+            "old_thin"
+          ],
+          "target_window_count_min": 3,
+          "max_drawdown_worse": 0.0078,
+          "max_drawdown_worse_guardrail": 0.005,
+          "minimum_core_survival_rate": 0.7925,
+          "survival_guard_passed": true,
+          "target_concentration": {
+            "passed": true,
+            "max_single_positive_pnl_share": 0.291918,
+            "max_single_positive_pnl_share_guardrail": 0.5,
+            "positive_pnl_hhi": 0.198469,
+            "positive_pnl_hhi_guardrail": 0.35
+          },
+          "accepted_compression_comparator": {
+            "experiment_id": "exp-20260608-013",
+            "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+            "aggregate_expected_value_delta": 0.1608,
+            "aggregate_pnl_delta": 2248.98
+          },
+          "accepted_distribution_comparator": {
+            "experiment_id": "exp-20260611-007",
+            "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+            "aggregate_expected_value_delta": 0.5286,
+            "aggregate_pnl_delta": 10432.91
+          }
+        },
+        "calibration": {
+          "predicted_success_probability": 0.18,
+          "actual_gate4_passed": false,
+          "actual_success": 0,
+          "failure_modes_observed": [
+            "drawdown_drift_too_high",
+            "accepted_distribution_ev_not_beaten"
+          ],
+          "brier_score": 0.0324,
+          "expected_ev_delta": 0.25,
+          "actual_ev_delta": 0.4828,
+          "expected_pnl_delta": 4500.0,
+          "actual_pnl_delta": 11077.81
+        },
+        "production_impact": {
+          "trade_enabled": false,
+          "alters_orders": false,
+          "adapter_status": "private_replay_scout_no_shared_adapter",
+          "shared_policy_changed": false,
+          "backtester_adapter_changed": false,
+          "run_adapter_changed": false,
+          "replay_only": true,
+          "default_off_paper_only": true,
+          "daily_snapshot_exposed": false,
+          "parity_test_added": false,
+          "production_signal_path_changed": false,
+          "production_orders_changed": false,
+          "production_watchlist_changed": false,
+          "alters_signal_generation": false,
+          "alters_candidate_ranking": false,
+          "alters_sizing": false,
+          "alters_exits": false,
+          "uses_llm": false,
+          "uses_free_sec_companyfacts": true,
+          "uses_free_ohlcv": true,
+          "live_realism_evaluated": true,
+          "live_ready": false,
+          "execution_envelope": {
+            "trade_enabled": false,
+            "target_notional_per_paper_trade": "4000 * scalar, scalar clipped to 0.35-1.00",
+            "daily_entry_slots": 1,
+            "same_ticker_cooldown_days": 10,
+            "hold_days": 10,
+            "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+            "order_semantics": "observe-only next-session-open paper entry; no broker order",
+            "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+            "kill_switch": "trade_enabled remains false; no production adapter changes",
+            "failure_handling": "missing FX OCI source fields, missing OHLCV risk fields, missing next open, or missing 10d exit rejects the paper candidate",
+            "notional_scalar_rule": "min(1.0, target_vol20 / realized_vol20, target_drawdown20 / prior_drawdown20), floored at 0.35"
+          },
+          "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper computes the same raw SEC FX OCI source plus the same PIT OHLCV realized-volatility and prior-drawdown notional envelope in both historical replay and daily production observation."
+        },
+        "post_run_reflection": {
+          "why_result_happened": "The drawdown-aware OHLCV notional envelope did not clear Gate 4 (failed: drawdown_drift_too_high, accepted_distribution_ev_not_beaten). The fixed source and entry logic were unchanged; the result shows whether ex-ante vol/drawdown can separate the raw FX OCI source's tail risk without losing too much accepted-comparator replacement value.",
+          "outcome_summary": "Aggregate EV delta +0.4828; aggregate PnL delta $+11,077.81; max drawdown drift +0.0078; 146 paper trades.",
+          "forbidden_near_neighbor_retry": "Do not retry by sweeping FX OCI tags, FX OCI ratio/improvement, revenue, fact freshness, price/RS/volume guards, top-N, hold, cooldown, or the vol/drawdown scalar constants on these frozen windows.",
+          "new_evidence_required": "A valid retry needs materially richer PIT global-exposure evidence such as segment/currency revenue mix, FX sensitivity disclosure, cash-flow hedge OCI reclassification detail, or closed forward replacement-value rows under a shared default-off helper."
+        }
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260621-005.json",
+      "single_causal_variable": "fx_oci_drawdown_aware_volatility_notional_envelope_v1",
+      "status": "rejected",
+      "ticket_file": "experiments/tickets/exp-20260621-005.json",
+      "trial_family": "fx_oci_drawdown_aware_risk_allocation",
+      "trial_variant_id": "fx_oci_prior_vol_drawdown_notional_envelope_top1_next_open_10d_v1",
+      "decision": "rejected_fx_oci_drawdown_envelope",
+      "summary": "The drawdown-aware OHLCV notional envelope did not clear Gate 4 (failed: drawdown_drift_too_high, accepted_distribution_ev_not_beaten). The fixed source and entry logic were unchanged; the result shows whether ex-ante vol/drawdown can separate the raw FX OCI source's tail risk without losing too much accepted-comparator replacement value.",
+      "artifact": "data/experiments/exp-20260621-005/exp_20260621_005_fx_oci_drawdown_envelope.json",
+      "log": "experiments/logs/exp-20260621-005.json",
+      "aggregate_expected_value_delta": 0.4828,
+      "aggregate_strategy_total_pnl_delta": 11077.81,
+      "updated_at": "2026-06-21T04:15:19+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-21T03:15:53+00:00"
+  "updated_at": "2026-06-21T04:15:19+00:00"
 }
