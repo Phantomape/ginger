@@ -454,6 +454,18 @@ peer-shock OHLCV thresholds on frozen windows. Further allocator capital work
 requires closed forward source-family replacement-value rows or a genuinely
 new out-of-sample independence surface.
 
+`exp-20260621-006` extends the same allocator-capital lesson to selected
+`turn_of_month` rows, but only after fixing the before state to include the
+already accepted laggard/revision/peer-shock scalars. Adding only the
+turn-of-month `1.25x` default-off paper scalar improved the current accepted
+allocator by aggregate EV `+0.0336` and PnL `+$745.80`, with all three
+canonical windows positive, `54` affected rows, zero incremental drawdown
+drift, and clean concentration. This remains paper-only source-family capital
+allocation; do not retry by sweeping turn-of-month scalar, source rank, top-N,
+hold, cooldown, calendar labels, or OHLCV thresholds on frozen windows.
+Further allocator-capital work requires closed forward source-family
+replacement-value rows or a materially new out-of-sample independence surface.
+
 The later quarterly inventory-turnover acceleration proposal
 (`exp-20260620-017`) was correctly blocked before strategy logic because it
 collapsed into the already rejected `exp-20260616-022` quarterly
