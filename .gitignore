@@ -41,11 +41,18 @@ data/experiments/*/git_objects/
 data/experiments/*/finra_source_cache/
 data/experiments/*/warehouse_main.sqlite
 
-# Hot-tier OHLCV warehouse: written every daily run and folded into the cold
-# warehouse periodically via `python quant/ohlcv_warehouse.py merge-hot`. It must
-# NOT be auto-committed/LFS-tracked — doing so made the auto-committer/git-LFS
-# hold the file open during the daily write, causing SQLite "disk I/O error" and
-# stalling OHLCV accumulation. Only the cold blob is committed (at merge time).
+# OHLCV warehouse (hot + cold): written/merged every daily run via
+# `python quant/ohlcv_warehouse.py merge-hot`. NEITHER tier is committed.
+# The hot tier must not be LFS-tracked (the auto-committer/git-LFS held it open
+# during daily writes -> SQLite "disk I/O error", stalling OHLCV accumulation).
+# The cold tier (~720MB) was previously committed via LFS, but each daily merge
+# produced a fresh ~755MB LFS object that exhausted the repo's LFS budget and
+# blocked pushes; it is regenerable from the OHLCV sources, so it is no longer
+# tracked. Rebuild/share it out-of-band rather than through git.
+data/warehouse/warehouse_main.sqlite
+data/warehouse/warehouse_main.sqlite-journal
+data/warehouse/warehouse_main.sqlite-wal
+data/warehouse/warehouse_main.sqlite-shm
 data/warehouse/warehouse_main_hot.sqlite
 data/warehouse/warehouse_main_hot.sqlite-journal
 data/warehouse/warehouse_main_hot.sqlite-wal
