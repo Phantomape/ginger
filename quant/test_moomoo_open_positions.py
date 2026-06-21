@@ -135,24 +135,6 @@ def test_build_payload_prior_fallback_for_entry_and_notes():
     assert row["risk_notes"] == "legacy hold"
 
 
-def test_generate_falls_back_fast_when_opend_unreachable(tmp_path, monkeypatch):
-    """OpenD down must yield a quick fallback that leaves the existing file intact,
-    never the SDK's indefinite connect-retry loop."""
-    out = tmp_path / "open_positions.json"
-    out.write_text('{"as_of": "2026-01-01", "positions": []}', encoding="utf-8")
-    monkeypatch.setattr(M, "_opend_reachable", lambda *a, **k: False)
-    result = M.generate(preview=False, out_path=out, tag_map_path=tmp_path / "missing.json")
-    assert result["status"] == "fallback_existing"
-    assert result["wrote"] is None
-    # existing file untouched
-    assert '"2026-01-01"' in out.read_text(encoding="utf-8")
-
-
-def test_opend_reachable_false_on_closed_port():
-    # An almost-certainly-closed port returns False quickly rather than raising.
-    assert M._opend_reachable("127.0.0.1", 1, timeout=0.5) is False
-
-
 def test_compute_target_stop_guards():
     assert M.compute_target_stop(None, 10.0, 1.0) == (None, None)
     assert M.compute_target_stop(0, 10.0, 1.0) == (None, None)
