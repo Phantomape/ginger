@@ -1,0 +1,548 @@
+{
+  "acceptance_rule": "Gate 1-4 per docs/backtesting.md; after daily_entry_slots=2 must improve aggregate EV and PnL versus current slots=1, no EV/PnL window regression, survival >=5%, drawdown drift <=0.5pp, second-slot sample spans all 3 windows with >=20 added rows, concentration passes, and execution-envelope metrics remain default-off production-consistent.",
+  "allowed_write_scope": [
+    "data/experiments",
+    "data/experiments/exp-20260621-008/exp_20260621_008_accepted_allocator_daily_second_slot_capacity.json",
+    "docs/alpha-optimization-playbook.md",
+    "docs/alpha_context_pack.md",
+    "docs/current_state_snapshot.md",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/production_backtest_parity_matrix.md",
+    "experiments/cards",
+    "experiments/cards/exp-20260621-008.md",
+    "experiments/logs",
+    "experiments/logs/exp-20260621-008.json",
+    "experiments/manifests",
+    "experiments/manifests/exp-20260621-008.json",
+    "experiments/tickets",
+    "experiments/tickets/exp-20260621-008.json",
+    "quant/accepted_helper_source_priority_allocator_paper_sleeve.py",
+    "quant/experiments",
+    "quant/experiments/exp_20260621_008_accepted_allocator_daily_second_slot_capacity.py",
+    "quant/test_accepted_helper_source_priority_allocator_paper_sleeve.py"
+  ],
+  "artifact": "data/experiments/exp-20260621-008/exp_20260621_008_accepted_allocator_daily_second_slot_capacity.json",
+  "baseline_result_file": "data/experiments/exp-20260621-007/exp_20260621_007_accepted_allocator_lagged_consensus_notional.json",
+  "card_file": "experiments/cards/exp-20260621-008.md",
+  "causal_components": [
+    "shared helper",
+    "historical replay",
+    "daily default-off snapshot",
+    "parity test",
+    "execution envelope",
+    "full-stack verdict"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "accepted_allocator_daily_second_slot_capacity_v1",
+  "claimed_at": "2026-06-21T09:14:31+00:00",
+  "completed_at": "2026-06-21T09:34:58+00:00",
+  "created_at": "2026-06-21T09:14:08+00:00",
+  "decision": "rejected_allocator_daily_second_slot_capacity",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260621-008",
+  "experiment_uid": "expuid-b8e56423294e455c",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260621-008",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-21T09:14:08+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "accepted_allocator_daily_second_slot_capacity"
+  },
+  "hypothesis": "candidate_pool/allocation: after the accepted source-notional stack, the shared accepted-helper source-priority allocator may have enough independent second-choice daily candidates that allowing two default-off paper entries per signal date improves replacement value without changing source definitions, rank, hold, cooldown, source notional scalars, LLM/news, or live/default orders.",
+  "implementation_mode": "replay_screen_rejected_before_shared_change",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "source priority order",
+    "source definitions",
+    "hold_days",
+    "same_ticker_cooldown_days",
+    "source_notional_scalars",
+    "trade_enabled",
+    "live/default orders"
+  ],
+  "log": "experiments/logs/exp-20260621-008.json",
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [
+    "quant/live_trading.py",
+    "quant/run.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260611-005",
+    "exp-20260612-024",
+    "exp-20260616-016",
+    "exp-20260620-032",
+    "exp-20260621-001",
+    "exp-20260621-006",
+    "exp-20260621-007"
+  ],
+  "new_evidence_type": "current_accepted_scalar_stack_second_slot_replacement_value",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "accepted_default_off_helper_gap_fill_allocation",
+        "score": 0.6417,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "accepted_helper_source_priority_allocator_tail_state_routing",
+        "score": 0.6348,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "accepted_free_data_cross_source_consensus_candidate_ranking",
+        "score": 0.634,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "accepted_helper_source_priority_allocator_tail_state_attribution",
+        "score": 0.634,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.5,
+        "family_key": "allocator_activation_envelope",
+        "score": 0.6327,
+        "status": "has_accepted",
+        "trials": 2
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "allocator",
+      "field_tags": [
+        "accepted",
+        "after",
+        "allocation",
+        "allocator",
+        "allowing",
+        "alpha",
+        "candidates",
+        "capacity",
+        "changing",
+        "choice",
+        "cooldown",
+        "daily",
+        "date",
+        "definitions",
+        "enough",
+        "entries",
+        "have",
+        "helper",
+        "hold",
+        "improves",
+        "independent",
+        "live",
+        "llm",
+        "may",
+        "news",
+        "notional",
+        "or",
+        "orders",
+        "per",
+        "priority",
+        "rank",
+        "replacement",
+        "scalars",
+        "second",
+        "signal",
+        "slot",
+        "stack",
+        "that",
+        "two",
+        "value",
+        "without"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "accepted_default_off_helper_gap_fill_allocation",
+        "reopen_condition": "Retry only with closed forward replacement-value rows, a shared daily no-displacement helper, or a new PIT flow/catalyst field that explains why empty-date distribution rows should displace accepted allocator idle cash.",
+        "score": 0.6417,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "accepted_helper_source_priority_allocator_tail_state_routing",
+        "reopen_condition": "A retry needs closed forward allocator replacement rows, a shared daily tail-state field collected before routing, or a materially different PIT displacement field.",
+        "score": 0.6348,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "accepted_free_data_cross_source_consensus_candidate_ranking",
+        "reopen_condition": null,
+        "score": 0.634,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "accepted_helper_source_priority_allocator_tail_state_attribution",
+        "reopen_condition": "A retry needs closed forward allocator replacement rows, a predeclared tail-state field collected daily, or a frozen out-of-sample threshold derived before routing.",
+        "score": 0.634,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.5,
+        "data_source": "allocator",
+        "family_key": "allocator_activation_envelope",
+        "reopen_condition": "Genuine forward closed rows under the unified universe plus replay-vs-forward parity; then live pilot sizing is an operator config decision behind the kill switch.",
+        "score": 0.6327,
+        "status": "has_accepted",
+        "trials": 2
+      }
+    ],
+    "new_evidence_axis": "current exp-20260621-007 accepted source-notional stack provides a new after-arbitration state; this tests second-slot replacement value under that exact shared helper/scalar stack, not a source/rank/threshold/hold/cooldown retry",
+    "override": true,
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "success_probability": 0.14,
+    "expected_ev_delta": 0.1,
+    "expected_pnl_delta": 2000.0,
+    "main_failure_modes": [
+      "redundant_second_slot_candidates",
+      "drawdown_drift",
+      "window_regression",
+      "max_concurrent_envelope_skips",
+      "allocator_capacity_near_neighbor"
+    ],
+    "confidence_reason": "The current accepted scalar stack creates more source depth than the original top-1 allocator, but capacity/position-cap families are heavily explored and second slots may add correlated or lower-quality trades.",
+    "recorded_at": "2026-06-21T09:13:55+00:00"
+  },
+  "prior_trial_count": 7,
+  "result": {
+    "decision": "rejected_allocator_daily_second_slot_capacity",
+    "full_stack_verdict": "reject",
+    "artifact": "data/experiments/exp-20260621-008/exp_20260621_008_accepted_allocator_daily_second_slot_capacity.json",
+    "log": "experiments/logs/exp-20260621-008.json",
+    "card": "experiments/cards/exp-20260621-008.md",
+    "aggregate_expected_value_delta": 0.0775,
+    "aggregate_strategy_total_pnl_delta": 3199.05,
+    "accepted": false,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_allocator_daily_second_slot_capacity",
+      "failed_reasons": [
+        "enveloped_window_ev_regression",
+        "enveloped_window_pnl_regression",
+        "current_allocator_already_violates_execution_envelope",
+        "expanded_allocator_violates_execution_envelope",
+        "second_slot_cooldown_displaced_existing_top1_rows"
+      ],
+      "binding_metric": "execution_envelope_adjusted_current_slots1_vs_expanded_slots2",
+      "aggregate_ev_delta_vs_current_allocator": 0.0775,
+      "aggregate_pnl_delta_vs_current_allocator": 3199.05,
+      "raw_aggregate_ev_delta_vs_current_allocator": 0.6548,
+      "raw_aggregate_pnl_delta_vs_current_allocator": 10126.9,
+      "windows_ev_improved": 2,
+      "windows_ev_regressed": 1,
+      "windows_pnl_improved": 2,
+      "windows_pnl_regressed": 1,
+      "added_trade_count": 152,
+      "added_trade_count_min": 20,
+      "added_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "added_window_count_min": 3,
+      "dropped_current_top1_trade_count": 2,
+      "max_drawdown_worse_vs_current": -0.0008,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "execution_envelope": {
+        "passed": false,
+        "current_skipped_count": 46,
+        "expanded_skipped_count": 192,
+        "by_window": {
+          "late_strong": {
+            "current": {
+              "rule_version": "accepted_helper_source_priority_allocator_execution_envelope_v2",
+              "max_concurrent_positions": 8,
+              "min_avg_dollar_volume_20d": 10000000.0,
+              "input_trade_count": 111,
+              "kept_trade_count": 95,
+              "skipped_trade_count": 16,
+              "skip_reasons": {
+                "max_concurrent_positions": 16
+              },
+              "kill_switch_halted": false,
+              "kill_switch_halt_entry_date": null,
+              "final_kill_switch_state": {
+                "rule_version": "accepted_helper_source_priority_allocator_execution_envelope_v2",
+                "bucket_notional_usd": 40000.0,
+                "kill_switch_drawdown_pct": 0.15,
+                "closed_trade_count": 95,
+                "realized_pnl_usd": 5639.06,
+                "max_realized_drawdown_pct_of_peak_equity": 0.110517,
+                "triggered": false,
+                "trigger_exit_date": null
+              }
+            },
+            "expanded": {
+              "rule_version": "accepted_helper_source_priority_allocator_execution_envelope_v2",
+              "max_concurrent_positions": 8,
+              "min_avg_dollar_volume_20d": 10000000.0,
+              "input_trade_count": 152,
+              "kept_trade_count": 95,
+              "skipped_trade_count": 57,
+              "skip_reasons": {
+                "max_concurrent_positions": 57
+              },
+              "kill_switch_halted": false,
+              "kill_switch_halt_entry_date": null,
+              "final_kill_switch_state": {
+                "rule_version": "accepted_helper_source_priority_allocator_execution_envelope_v2",
+                "bucket_notional_usd": 40000.0,
+                "kill_switch_drawdown_pct": 0.15,
+                "closed_trade_count": 95,
+                "realized_pnl_usd": 5298.03,
+                "max_realized_drawdown_pct_of_peak_equity": 0.110764,
+                "triggered": false,
+                "trigger_exit_date": null
+              }
+            },
+            "current_skipped_count": 16,
+            "expanded_skipped_count": 57,
+            "current_skip_reasons": {
+              "max_concurrent_positions": 16
+            },
+            "expanded_skip_reasons": {
+              "max_concurrent_positions": 57
+            }
+          },
+          "mid_weak": {
+            "current": {
+              "rule_version": "accepted_helper_source_priority_allocator_execution_envelope_v2",
+              "max_concurrent_positions": 8,
+              "min_avg_dollar_volume_20d": 10000000.0,
+              "input_trade_count": 113,
+              "kept_trade_count": 95,
+              "skipped_trade_count": 18,
+              "skip_reasons": {
+                "max_concurrent_positions": 18
+              },
+              "kill_switch_halted": false,
+              "kill_switch_halt_entry_date": null,
+              "final_kill_switch_state": {
+                "rule_version": "accepted_helper_source_priority_allocator_execution_envelope_v2",
+                "bucket_notional_usd": 40000.0,
+                "kill_switch_drawdown_pct": 0.15,
+                "closed_trade_count": 95,
+                "realized_pnl_usd": 8184.72,
+                "max_realized_drawdown_pct_of_peak_equity": 0.046892,
+                "triggered": false,
+                "trigger_exit_date": null
+              }
+            },
+            "expanded": {
+              "rule_version": "accepted_helper_source_priority_allocator_execution_envelope_v2",
+              "max_concurrent_positions": 8,
+              "min_avg_dollar_volume_20d": 10000000.0,
+              "input_trade_count": 173,
+              "kept_trade_count": 97,
+              "skipped_trade_count": 76,
+              "skip_reasons": {
+                "max_concurrent_positions": 76
+              },
+              "kill_switch_halted": false,
+              "kill_switch_halt_entry_date": null,
+              "final_kill_switch_state": {
+                "rule_version": "accepted_helper_source_priority_allocator_execution_envelope_v2",
+                "bucket_notional_usd": 40000.0,
+                "kill_switch_drawdown_pct": 0.15,
+                "closed_trade_count": 97,
+                "realized_pnl_usd": 11043.4,
+                "max_realized_drawdown_pct_of_peak_equity": 0.050387,
+                "triggered": false,
+                "trigger_exit_date": null
+              }
+            },
+            "current_skipped_count": 18,
+            "expanded_skipped_count": 76,
+            "current_skip_reasons": {
+              "max_concurrent_positions": 18
+            },
+            "expanded_skip_reasons": {
+              "max_concurrent_positions": 76
+            }
+          },
+          "old_thin": {
+            "current": {
+              "rule_version": "accepted_helper_source_priority_allocator_execution_envelope_v2",
+              "max_concurrent_positions": 8,
+              "min_avg_dollar_volume_20d": 10000000.0,
+              "input_trade_count": 112,
+              "kept_trade_count": 100,
+              "skipped_trade_count": 12,
+              "skip_reasons": {
+                "max_concurrent_positions": 12
+              },
+              "kill_switch_halted": false,
+              "kill_switch_halt_entry_date": null,
+              "final_kill_switch_state": {
+                "rule_version": "accepted_helper_source_priority_allocator_execution_envelope_v2",
+                "bucket_notional_usd": 40000.0,
+                "kill_switch_drawdown_pct": 0.15,
+                "closed_trade_count": 100,
+                "realized_pnl_usd": 14761.38,
+                "max_realized_drawdown_pct_of_peak_equity": 0.047192,
+                "triggered": false,
+                "trigger_exit_date": null
+              }
+            },
+            "expanded": {
+              "rule_version": "accepted_helper_source_priority_allocator_execution_envelope_v2",
+              "max_concurrent_positions": 8,
+              "min_avg_dollar_volume_20d": 10000000.0,
+              "input_trade_count": 161,
+              "kept_trade_count": 102,
+              "skipped_trade_count": 59,
+              "skip_reasons": {
+                "max_concurrent_positions": 59
+              },
+              "kill_switch_halted": false,
+              "kill_switch_halt_entry_date": null,
+              "final_kill_switch_state": {
+                "rule_version": "accepted_helper_source_priority_allocator_execution_envelope_v2",
+                "bucket_notional_usd": 40000.0,
+                "kill_switch_drawdown_pct": 0.15,
+                "closed_trade_count": 102,
+                "realized_pnl_usd": 15442.78,
+                "max_realized_drawdown_pct_of_peak_equity": 0.049523,
+                "triggered": false,
+                "trigger_exit_date": null
+              }
+            },
+            "current_skipped_count": 12,
+            "expanded_skipped_count": 59,
+            "current_skip_reasons": {
+              "max_concurrent_positions": 12
+            },
+            "expanded_skip_reasons": {
+              "max_concurrent_positions": 59
+            }
+          }
+        }
+      },
+      "added_trade_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.093903,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.035986,
+        "positive_pnl_hhi_guardrail": 0.35,
+        "top5_positive_share": 0.334475
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.14,
+      "actual_gate4_passed": false,
+      "actual_success": 0,
+      "failure_modes_observed": [
+        "enveloped_window_ev_regression",
+        "enveloped_window_pnl_regression",
+        "current_allocator_already_violates_execution_envelope",
+        "expanded_allocator_violates_execution_envelope",
+        "second_slot_cooldown_displaced_existing_top1_rows"
+      ],
+      "brier_score": 0.0196
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "replay_only_no_shared_change",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "default_off_paper_only": true,
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_ohlcv_only": false,
+      "uses_free_non_ohlcv": true,
+      "live_realism_evaluated": true,
+      "live_ready": false,
+      "execution_envelope": {
+        "rule_version": "accepted_helper_source_priority_allocator_execution_envelope_v2",
+        "mode": "dedicated_bucket_zero_core_displacement",
+        "bucket_notional_usd": 40000.0,
+        "base_notional_usd": 4000.0,
+        "max_source_notional_scalar": 1.25,
+        "max_position_notional_usd": 5000.0,
+        "max_concurrent_positions": 8,
+        "max_capital_pct_of_bucket": 1.0,
+        "min_avg_dollar_volume_20d": 10000000.0,
+        "max_notional_pct_of_adv20": 0.001,
+        "order_semantics": "next_trading_day_open_market_order",
+        "missed_fill_policy": "skip_no_chase",
+        "halt_policy": "halt_remaining_window_once_triggered",
+        "kill_switch_basis": "realized_drawdown_vs_realized_equity_peak",
+        "kill_switch_drawdown_pct": 0.15,
+        "kill_switch_calibration_note": "15pct is about 1.5x the worst healthy-window giveback (about 10pct of peak equity in late_strong); calibrated on frozen windows, so the in-sample no-false-trigger check is partially circular and the binding validation is OOS plus genuine forward rows (exp-20260612-024)",
+        "core_displacement": 0,
+        "slippage_model": "entry/exit 5bps plus ROUND_TRIP_COST_PCT per quant/fill_model.py and quant/constants.py; conservative for 4k USD orders above the ADV floor",
+        "cash_management_note": "idle bucket cash may sit in the accepted low-deployment ETF substitute at operator level; not part of sleeve trade policy",
+        "trade_enabled": false
+      },
+      "parity_note": "If accepted, historical replay and daily default-off snapshots would use the same shared accepted-helper allocator daily_entry_slots=2 config with the current accepted source_notional_scalars. If rejected, no shared helper, daily snapshot, live/default orders, or core behavior changes are retained."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The second slot did not clear a production-consistent replacement-value screen. The likely failure mode is that the added rows are lower-rank/correlated capacity, or the extra entries create execution-envelope pressure that the raw historical overlay alone would understate.",
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping daily_entry_slots, max_active_positions, source ranks, source thresholds, hold days, cooldown, or source notional on the same frozen windows.",
+      "new_evidence_required": "Closed forward replacement-value rows for rejected second-slot candidates, or a materially new PIT field that predicts which second slot should displace idle allocator capacity."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260621-008.json",
+  "single_causal_variable": "accepted_allocator_daily_second_slot_capacity_v1",
+  "status": "rejected",
+  "summary": "The second daily slot failed Gate 4 and is not retained.",
+  "ticket_file": "experiments/tickets/exp-20260621-008.json",
+  "trial_family": "accepted_default_off_helper_source_priority_allocation",
+  "trial_variant_id": "accepted_allocator_daily_second_slot_capacity_v1",
+  "updated_at": "2026-06-21T09:34:58+00:00"
+}

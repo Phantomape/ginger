@@ -478,6 +478,19 @@ source-set, source rank, scalar, top-N, hold, cooldown, or timing on frozen
 windows. Further work needs closed forward replacement-value rows or a new
 out-of-sample independence surface.
 
+`exp-20260621-008` rejects the obvious post-scalar allocator capacity retry.
+After the accepted source-scalar stack, raising accepted-helper
+`daily_entry_slots` from `1` to `2` looked positive in raw overlay metrics
+(aggregate EV `+0.6548`, PnL `+$10,126.90`) but failed the binding
+production-consistent execution-envelope comparison: `late_strong` regressed
+by EV `-0.0769` and PnL `-$341.03`, the current slots=1 allocator already had
+`46` max-concurrent envelope skips, the expanded slots=2 allocator had `192`
+skips, and the second slot displaced `2` existing top-1 rows through cooldown.
+Do not retry allocator daily slots, top-N capacity, max-active cap release, or
+adjacent gap-fill capacity on frozen windows. A retry needs closed forward
+second-slot replacement-value rows or a materially new PIT field that predicts
+which second candidate should survive the envelope.
+
 The later quarterly inventory-turnover acceleration proposal
 (`exp-20260620-017`) was correctly blocked before strategy logic because it
 collapsed into the already rejected `exp-20260616-022` quarterly
