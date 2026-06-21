@@ -1,0 +1,348 @@
+{
+  "acceptance_rule": "Pass only if aggregate EV/PnL improve, no EV/PnL window regression occurs, target trades span all three windows with >=20 trades, survival >=5%, drawdown drift <=0.5pp, concentration passes, and accepted allocator comparator is respected; positive private replay is lead-only until shared daily parity exists.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260621_020_sec13f_sector_normalized_ownership_surprise.py",
+    "data/experiments/exp-20260621-020/**",
+    "experiments/logs/exp-20260621-020.json",
+    "experiments/tickets/exp-20260621-020.json",
+    "experiments/cards/exp-20260621-020.md",
+    "experiments/manifests/exp-20260621-020.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260621-020.md",
+  "causal_components": [
+    "SEC 13F window pairs",
+    "sector-relative holder/value surprise z-scores",
+    "liquid leadership gates",
+    "same-ticker core overlap exclusion",
+    "next-open paper entry",
+    "10d exit",
+    "costs",
+    "three-window Gate 1-4"
+  ],
+  "change_type": "experiment_local_replay_candidate_pool",
+  "changed_variable": "sec13f_sector_normalized_ownership_surprise_liquid_leadership_candidate_source_v1",
+  "claimed_at": "2026-06-21T20:10:40+00:00",
+  "completed_at": "2026-06-21T20:19:00+00:00",
+  "created_at": "2026-06-21T20:10:26+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260621-020",
+  "experiment_uid": "expuid-d3562e1946734d25",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260621-020",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-21T20:10:26+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec13f_sector_normalized_ownership_surprise"
+  },
+  "hypothesis": "candidate_pool: PIT SEC 13F sector-normalized ownership surprise, confirmed by liquid leadership, may identify institutional accumulation that is stronger than same-sector ownership drift and more informative than absolute holder-count or manager-conviction thresholds.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "canonical windows",
+    "base core replay",
+    "liquid leadership envelope",
+    "next-open entry",
+    "10d exit",
+    "costs",
+    "trade_enabled false"
+  ],
+  "mechanism_family": "production_visible_free_sec_13f_candidate_pool",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/backtester.py",
+    "live orders",
+    "core ranking",
+    "sizing",
+    "exits",
+    "LLM/news"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260613-014",
+    "exp-20260613-017",
+    "exp-20260615-009",
+    "exp-20260621-019"
+  ],
+  "new_evidence_type": "pit_sec_13f_sector_normalized_ownership_surprise",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "sec13f_new_holder_initiation_candidate_pool",
+        "score": 0.65,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "sec13f_sponsorship_acceleration_candidate_pool",
+        "score": 0.6375,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "sec13f_crowding_context_candidate_pool",
+        "score": 0.6343,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "sec_13d13g_holder_stake_candidate_pool",
+        "score": 0.6229,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "companyfacts_shareholder_yield_fcf_combo",
+        "score": 0.6,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "sec13f_ownership",
+      "field_tags": [
+        "13f",
+        "absolute",
+        "accumulation",
+        "by",
+        "confirmed",
+        "conviction",
+        "count",
+        "drift",
+        "holder",
+        "identify",
+        "informative",
+        "institutional",
+        "is",
+        "leadership",
+        "liquid",
+        "manager",
+        "may",
+        "more",
+        "normalized",
+        "or",
+        "ownership",
+        "pit",
+        "same",
+        "sec13f",
+        "sector",
+        "stronger",
+        "surprise",
+        "than",
+        "that",
+        "thresholds"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_new_holder_initiation_candidate_pool",
+        "reopen_condition": "Need manager identity/quality, sector-normalized new-holder surprise, independent options/borrow evidence, or forward replacement-value rows from a shared helper.",
+        "score": 0.65,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_sponsorship_acceleration_candidate_pool",
+        "reopen_condition": "A retry needs manager identity/quality, true new-position signals, sector-relative sponsorship surprise, or shared daily default-off forward rows.",
+        "score": 0.6375,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_crowding_context_candidate_pool",
+        "reopen_condition": "Raw PIT 13F candidate rows, manager identity/quality, sector-relative crowding surprise, or daily default-off forward observations.",
+        "score": 0.6343,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec_13d13g_holder_stake_candidate_pool",
+        "reopen_condition": "13G/A amendment ingestion for stake-change DIRECTION (new adds vs trims), 13D Item-4 purpose-text classification (active accumulation vs passive intent), extending pre-2025 structured-XML coverage to repair the old_thin gap, and closed forward replacement-value rows under a live-realistic envelope before any shared-paper-first sleeve.",
+        "score": 0.6229,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "companyfacts_shareholder_yield_fcf_combo",
+        "reopen_condition": "Only retry with a genuinely broader free-data candidate pool or forward closed rows, not by loosening the same thresholds on these windows.",
+        "score": 0.6,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "sector-normalized holder/value-growth surprise computed within each 13F window-pair sector distribution, not absolute holder-count/value/new-holder/low-crowding/manager-position-weight thresholds; this is explicitly listed as required new evidence in exp-20260621-019",
+    "override": true,
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": 0.18,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "stale_quarterly_data",
+      "sector_zscore_noise",
+      "window_regression",
+      "drawdown_drift",
+      "not_incremental"
+    ],
+    "confidence_reason": "The last 13F manager-conviction failure explicitly required sector-normalized ownership surprise as new evidence; local PIT 13F zips cover all windows, but quarterly lag and overlap with liquid leadership keep odds low.",
+    "recorded_at": "2026-06-21T20:10:13+00:00"
+  },
+  "prior_trial_count": 4,
+  "result": {
+    "decision": "rejected_sec13f_sector_normalized_ownership_surprise_candidate_pool",
+    "accepted": false,
+    "numeric_gate4_passed": false,
+    "artifact": "data/experiments/exp-20260621-020/exp_20260621_020_sec13f_sector_normalized_ownership_surprise.json",
+    "log": "experiments/logs/exp-20260621-020.json",
+    "card": "experiments/cards/exp-20260621-020.md",
+    "aggregate_expected_value_delta": 0.0933,
+    "aggregate_strategy_total_pnl_delta": 3080.64,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_sec13f_sector_normalized_ownership_surprise_candidate_pool",
+      "failed_reasons": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows"
+      ],
+      "aggregate_ev_delta": 0.0933,
+      "aggregate_pnl_delta": 3080.64,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 2,
+      "windows_pnl_improved": 2,
+      "windows_pnl_regressed": 1,
+      "target_trade_count": 226,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.004,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.067742,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.030646,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "accepted_allocator_comparator": {
+        "experiment_id": "exp-20260611-005",
+        "decision": "accepted_source_consensus_allocator_extension",
+        "expected_value_score_delta_sum": 2.1849,
+        "total_pnl_delta_sum": 40397.21,
+        "note": "Promotion comparator only. This private 13F scout is still lead-only without a shared daily helper even if numeric Gate 4 passes."
+      },
+      "accepted_allocator_comparator_beaten": {
+        "ev": false,
+        "pnl": false
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.18,
+      "actual_gate4_passed": false,
+      "failure_modes_observed": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows"
+      ],
+      "brier_score": 0.0324
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "private_replay_scout_no_live_adapter",
+      "implementation_mode": "private_replay_scout",
+      "private_replay_scout_escape_reason": "The sector-normalized 13F ownership-surprise aggregation is implemented only in this experiment. A positive result is lead-only until a shared helper computes the same field in historical replay and daily default-off snapshots.",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "default_off_paper_only": true,
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_sec_13f": true,
+      "uses_free_ohlcv": true,
+      "live_realism_evaluated": false,
+      "live_ready": false,
+      "execution_envelope": {
+        "trade_enabled": false,
+        "paper_notional_usd": 4000.0,
+        "daily_entry_slots": 1,
+        "same_ticker_cooldown_days": 20,
+        "hold_days": 10,
+        "min_avg_dollar_volume_20d": 50000000.0,
+        "order_semantics": "observe-only next-session-open paper entry; no broker order",
+        "portfolio_displacement": "none unless a later shared helper and activation envelope pass",
+        "kill_switch": "trade_enabled remains false; no production adapter changes in this scout",
+        "failure_handling": "missing 13F pair, OHLCV, next open, or exit bar rejects the paper candidate"
+      },
+      "parity_note": "This experiment changes no production code. A positive result remains a replay lead until a shared default-off helper computes the same PIT 13F window pair, sector-relative holder/value surprise fields, leadership gates, overlap exclusion, entry, exit, costs, cooldown, and ledger fields identically in historical replay and daily production snapshots."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The sector-normalized 13F ownership-surprise field failed Gate 4. Relative ownership change added economic specificity versus absolute 13F thresholds, but the delayed quarterly signal still did not create stable all-window replacement value after next-open execution and costs.",
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping sector z-score thresholds, holder/value growth thresholds, sector sample sizes, ADV, close-location, ret20/ret60, top-N, hold-day, cooldown, or notional thresholds on the same frozen windows.",
+      "new_evidence_required": "Need materially richer manager identity/quality, sector-normalized ownership surprise with independent borrow/options evidence, or forward replacement-value rows from a shared helper."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260621-020.json",
+  "single_causal_variable": "sec13f_sector_normalized_ownership_surprise_liquid_leadership_candidate_source_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260621-020.json",
+  "trial_family": "sec13f_sector_normalized_ownership_surprise_candidate_pool",
+  "trial_variant_id": "sec13f_sector_surprise_liquid_leadership_top1_10d_v1",
+  "decision": "rejected_sec13f_sector_normalized_ownership_surprise_candidate_pool",
+  "summary": "The SEC 13F sector-normalized ownership-surprise candidate source was rejected under the standard three-window protocol.",
+  "artifact": "data/experiments/exp-20260621-020/exp_20260621_020_sec13f_sector_normalized_ownership_surprise.json",
+  "log": "experiments/logs/exp-20260621-020.json",
+  "aggregate_expected_value_delta": 0.0933,
+  "aggregate_strategy_total_pnl_delta": 3080.64,
+  "updated_at": "2026-06-21T20:19:00+00:00"
+}
