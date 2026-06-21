@@ -6,9 +6,9 @@ complete state database.
 
 ## Source Snapshot
 
-- Strategy records counted: `1437`
-- Accepted strategy records: `228`
-- History fingerprint: `7b9db316a090c60a`
+- Strategy records counted: `1447`
+- Accepted strategy records: `230`
+- History fingerprint: `167a5805e2dc50bc`
 - Generated from committed experiment logs when using `--git-ref HEAD`.
 
 ## Exact State Sources
@@ -87,8 +87,8 @@ complete state database.
 - `production_visible_default_off_paper_adapter_for_candidate_pool_alpha` priority `0.8479`, experiments `2`, accept `100.00%`.
 - `default_off_paper_adapter` priority `0.8171`, experiments `7`, accept `85.71%`.
 - `default_off_paper_shared_adapter` priority `0.7477`, experiments `3`, accept `100.00%`.
-- `candidate_pool_full_stack` priority `0.7113`, experiments `6`, accept `50.00%`.
 - `paper_notional_support_scout` priority `0.7009`, experiments `3`, accept `66.67%`.
+- `candidate_pool_full_stack` priority `0.6543`, experiments `8`, accept `37.50%`.
 
 ## State Migration Note
 

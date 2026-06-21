@@ -6,19 +6,15 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `117`
-- Accepted / rejected: `14` / `96`
-- Accept rate: `11.97%`
+- Experiments: `121`
+- Accepted / rejected: `16` / `98`
+- Accept rate: `13.22%`
 - Sum EV delta: `+71.7916`
 - Sum PnL delta: `$1,426,627.62`
-- Latest: `exp-20260621-001` `accepted_allocator_peer_shock_source_notional_scalar` with EV `+0.0000` and PnL `$0.00`.
+- Latest: `exp-20260621-008` `rejected_allocator_daily_second_slot_capacity` with EV `+0.0000` and PnL `$0.00`.
 
 ## Retained Or Positive Evidence
 
-- `exp-20260610-005` `accepted_shared_default_off_accepted_helper_source_priority_allocator`: EV `+0.8971`, PnL `$14,502.52`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
-  Lesson: The alpha worked because it expanded the usable candidate pool across several accepted OHLCV helper sensors while limiting same-day overlap to one ex-ante highest-priority paper risk slot. The shared helper removes th...
-- `exp-20260610-014` `accepted_shared_default_off_revision_allocator_source_extension`: EV `+0.9720`, PnL `$15,197.05`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
-  Lesson: The revision rows added replacement value on dates where expectation revision evidence displaced pure OHLCV rows or supplied coverage on dates where the higher-priority helpers had weaker candidates. The shared helper...
 - `exp-20260611-005` `accepted_lagged_consensus_shared_allocator_source_extension`: EV `+2.1849`, PnL `$40,397.21`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
   Lesson: The lagged consensus rows added distinct multi-source confirmation and improved replacement value across all canonical windows after being moved into the shared allocator/daily snapshot boundary. Do not retry by chang...
 - `exp-20260612-024` `accepted_allocator_activation_envelope_gate_v2`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `allocator_activation_envelope`.
@@ -27,13 +23,13 @@ records before making strategy changes.
   Lesson: The selected industry laggard repair and revision rows were sufficiently positive after current allocator arbitration, so source-aware paper capital improved without changing selection. Do not retry by sweeping the 1....
 - `exp-20260621-001` `accepted_allocator_peer_shock_source_notional_scalar`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
   Lesson: The corrected peer_shock independence signal translated into incremental after-arbitration paper capital without changing selection. Do not retry by sweeping peer_shock scalar, source rank, allocator top-N, hold days,...
+- `exp-20260621-006` `accepted_allocator_turn_of_month_source_notional_scalar`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
+  Lesson: The corrected turn_of_month independence signal translated into incremental after-arbitration paper capital without changing selection. Do not retry by sweeping turn_of_month scalar, source rank, allocator top-N, hold...
+- `exp-20260621-007` `accepted_allocator_lagged_consensus_source_notional_scalar`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
+  Lesson: The current after-arbitration lagged_cross_source_consensus signal translated into incremental after-arbitration paper capital without changing selection. Do not retry by sweeping lagged consensus scalar, source rank,...
 
 ## Rejections And Failure Lessons
 
-- `exp-20260613-015` `rejected_source_confirmation_allocator`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_allocator_source_arbitration`.
-  Lesson: Same-ticker source confirmation either arrived too sparsely or mostly duplicated the accepted lagged-consensus signal. It did not explain the oracle source-choice gap better than the accepted fixed priority. Do not re...
-- `exp-20260613-033` `rejected_correlation_crowding_allocator`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `allocator_correlation_crowding`.
-  Lesson: The correlation-crowding proxy did not improve fixed source priority robustly enough across the canonical windows. This suggests same-day source-choice errors are not primarily a simple crowded-beta issue, or the usef...
 - `exp-20260614-003` `rejected_no_forward_activation_ready`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `forward_paper_replacement_maturity`.
   Lesson: The accepted default-off paper sleeve surface is still dominated by immature forward samples. The only sleeve with a near-usable closed count is low_deployment_etf, but its 17 positive rows were recorded while core de...
 - `exp-20260614-009` `rejected_sec_financial_report_allocator_source_extension`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
@@ -46,6 +42,10 @@ records before making strategy changes.
   Lesson: Removing displacement was not sufficient. Empty allocator dates did not supply distribution rows with enough incremental quality to beat the accepted allocator comparator after costs, cooldown, and concentration check...
 - `exp-20260620-011` `rejected_supplier_financing_rank3_allocator_source`: EV `+2.4918`, PnL `$41,503.66`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
   Lesson: The supplier financing and deleveraging rows did not add enough incremental replacement value after lagged consensus and volatility relief. The source likely overlaps broad momentum/quality rows or displaces better lo...
+- `exp-20260621-004` `rejected_allocator_volatility_relief_source_notional_scalar`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
+  Lesson: The current accepted allocator selected zero volatility_relief rows after higher-priority sources and same-ticker cooldown, so the proposed scalar had no after-arbitration exposure and could not change EV or PnL. Do n...
+- `exp-20260621-008` `rejected_allocator_daily_second_slot_capacity`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
+  Lesson: The second slot did not clear a production-consistent replacement-value screen. The likely failure mode is that the added rows are lower-rank/correlated capacity, or the extra entries create execution-envelope pressur...
 
 ## Retry Discipline
 
@@ -67,9 +67,9 @@ records before making strategy changes.
 
 ## Recent Raw Records
 
-- `exp-20260616-016` source `experiments/logs/exp-20260616-016.json`.
-- `exp-20260618-021` source `experiments/logs/exp-20260618-021.json`.
-- `exp-20260618-022` source `experiments/logs/exp-20260618-022.json`.
-- `exp-20260620-011` source `experiments/logs/exp-20260620-011.json`.
 - `exp-20260620-032` source `experiments/logs/exp-20260620-032.json`.
 - `exp-20260621-001` source `experiments/logs/exp-20260621-001.json`.
+- `exp-20260621-004` source `experiments/logs/exp-20260621-004.json`.
+- `exp-20260621-006` source `experiments/logs/exp-20260621-006.json`.
+- `exp-20260621-007` source `experiments/logs/exp-20260621-007.json`.
+- `exp-20260621-008` source `experiments/logs/exp-20260621-008.json`.

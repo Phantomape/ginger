@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-06-20.
+Last refreshed: 2026-06-21.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -32,6 +32,38 @@ Implementable fields:
 
 Source: <https://www.nber.org/papers/w35158>
 
+### Regime Volatility Forecasts Are Risk Gates, Not Alpha By Themselves
+
+A June 2026 high-frequency equity study finds a familiar pattern: volatility
+and regime forecasts are more reliable than unconditional return forecasts.
+Naive predictive trading fails after realistic transaction costs, while
+defensive implementations can improve only when low-volatility gating,
+volatility scaling, walk-forward threshold calibration, and turnover controls
+are fixed before evaluation. Ginger's translation: use regime-volatility
+forecasts as an execution-envelope and capacity surface, not as a new entry
+signal unless it beats accepted comparators after costs.
+
+Implementable fields:
+
+- `realized_vol_forecast_version`
+- `vol_regime_probability_bucket`
+- `low_volatility_gate_flag`
+- `vol_scaled_notional_pct`
+- `walk_forward_threshold_id`
+- `turnover_control_reason`
+- `defensive_allocation_delta_bucket`
+- `vol_regime_after_cost_replacement_value`
+
+Controls:
+
+- estimate thresholds only with walk-forward / prior data;
+- compare low-vol gates against cash, SPY/QQQ, and the exact displaced helper;
+- report turnover saved and trades skipped as first-class evidence;
+- treat broad return-prediction gains without costed implementation as
+  diagnostic only.
+
+Source: <https://arxiv.org/abs/2606.09478>
+
 ### Agentic LLM Portfolio Control
 
 Recent regime-aware LLM portfolio research supports a strict boundary: LLMs can
@@ -50,6 +82,36 @@ Implementable fields:
 - `constraint_shadow_price_bucket`
 
 Source: <https://link.springer.com/article/10.1007/s41060-026-01066-0>
+
+### Verifiable Forecast Actions For LLM Views
+
+StockR1 is useful because it forces an LLM market view into a structured
+forecast action before any time-series decoder or reward step can use it. The
+local design lesson is not to deploy an LLM forecaster; it is to make every LLM
+view schema-bound, numerically checkable, uncertainty-tagged, and comparable
+to the subsequent realized trajectory. That fits Ginger's LLM boundary: the
+LLM may produce a replayable evidence row, while deterministic code owns
+orders, sizing, exits, and constraint handling.
+
+Implementable fields:
+
+- `llm_forecast_action_schema_version`
+- `llm_forecast_action_direction_bucket`
+- `llm_forecast_action_horizon`
+- `llm_distributional_path_hash`
+- `llm_forecast_uncertainty_bucket`
+- `llm_action_realized_consistency_score`
+- `llm_view_numeric_grounding_passed`
+- `llm_forecast_replacement_value_bucket`
+
+Controls:
+
+- freeze the forecast-action schema before scoring;
+- store model id, prompt, evidence set, action JSON, uncertainty, and timestamp;
+- score consistency against realized 5/10/20-day paths before using the view;
+- keep forecast actions default-off until a shared helper passes Gate 1-4.
+
+Source: <https://arxiv.org/abs/2605.21975>
 
 ### Stratified LLM Strategy Alignment
 
@@ -207,6 +269,37 @@ Controls:
 - keep the conversion rule fixed before measuring after-cost replacement value.
 
 Source: <https://arxiv.org/abs/2606.00060>
+
+### Multi-Period Optimization Aligns Forecasts With Costs
+
+Integrated Prediction and Multi-period Portfolio Optimization (IPMO) highlights
+a local measurement problem: optimizing prediction error separately from the
+portfolio decision can misalign the model with after-cost performance. The
+paper's useful pattern is a multi-period objective with turnover penalties and
+path-aware allocation, not another black-box predictor. Ginger can translate
+this into allocator-envelope diagnostics: candidate sources should be judged by
+the capital path, turnover, slot displacement, and net replacement value they
+create over the intended holding horizon.
+
+Implementable fields:
+
+- `multi_period_allocation_horizon`
+- `turnover_penalty_version`
+- `path_dependent_risk_bucket`
+- `forecast_decision_alignment_score`
+- `allocation_path_coherence_bucket`
+- `slot_displacement_cost_bucket`
+- `multi_period_replacement_value_after_cost`
+- `capacity_shadow_price_bucket`
+
+Controls:
+
+- evaluate the whole allocation path, not only next-trade PnL;
+- include turnover and cooldown displacement in the after artifact;
+- compare against the current accepted one-slot allocator and cash alternative;
+- use this first for envelope design before changing live or paper capacity.
+
+Source: <https://arxiv.org/abs/2512.11273>
 
 ### Agentic Nowcasting
 

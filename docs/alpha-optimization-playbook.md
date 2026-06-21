@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-06-20.
+Last refreshed: 2026-06-21.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -514,6 +514,33 @@ freshness, top-N, hold, cooldown, or notional on these frozen windows. A valid
 capital-return retry needs dividend-initiation evidence, payout sustainability
 tied to free cash flow, special-dividend exclusion from declaration text, or
 closed forward rows.
+
+The June 21 post-scalar batch says the current accepted-helper allocator is
+near the end of frozen-window capital tuning. Peer-shock, turn-of-month, and
+lagged-consensus source-family `1.25x` default-off scalars were accepted only
+because each was tested against the corrected current before state with all
+prior accepted source scalars active, affected a real selected-source cohort,
+and improved all three fixed windows without drawdown or concentration drift.
+The obvious next allocator move failed: `daily_entry_slots=2` added gross
+overlay PnL but regressed `late_strong`, created far more envelope skips, and
+displaced existing top-1 rows through cooldown. Treat the one-slot accepted
+allocator plus fixed source scalars as the current frozen-window endpoint
+unless closed forward replacement-value rows identify a specific second-slot
+candidate or a genuinely new PIT independence surface appears.
+
+The same batch closed several tempting escape paths. A prior-close SPY
+trend-down beta hedge was negative after the strict risk-allocation comparator;
+factor-residual leadership was blocked because the production-visible warehouse
+lacks PIT MTUM/QUAL/VLUE/USMV/SIZE rows; FX OCI drawdown-aware sizing remained
+aggregate-positive but still failed drawdown and accepted-distribution
+comparators; available-proxy residual leadership produced high aggregate EV/PnL
+but regressed windows, worsened drawdown, and missed the accepted distribution
+PnL comparator; stricter SEC no-covenant credit-facility and customer
+prepayment/capacity-commitment text tuples produced zero useful target events.
+The current queue is therefore not another hedge, residual, SEC phrase, or
+allocator-capacity retry. It is new PIT data construction with parity-safe
+coverage, or forward replacement-value maturation under already accepted
+paper-only envelopes.
 
 ## Detail Sources
 
@@ -1178,6 +1205,47 @@ production-visible field:
   next step needs closed forward replacement-value rows under that unchanged
   envelope, or materially new supplier/payment-term, covenant/refinancing,
   customer/supplier contract, or counterparty-economics provenance;
+- accepted-helper allocator capital/capacity retries after the
+  laggard/revision/peer-shock/turn-of-month/lagged-consensus source scalar
+  stack. Do not sweep source scalar, source rank, source-set, top-N, hold,
+  cooldown, `daily_entry_slots`, max-active cap, or second-slot admission on
+  the frozen windows. `exp-20260621-008` showed the second slot adds gross
+  overlay PnL but regresses `late_strong`, creates many more envelope skips,
+  and displaces existing top-1 rows. A valid retry needs closed forward
+  source-family or second-slot replacement-value rows, or a materially new
+  out-of-sample PIT independence surface;
+- portfolio hedges based on prior-close SPY trend-down state, fixed hedge
+  fraction, or adjacent beta-hedge thresholds. `exp-20260621-002` failed
+  aggregate EV/PnL and window gates even with a state gate. A valid portfolio
+  risk retry needs a different mechanism such as regime-conditioned capacity
+  with forward evidence, not a SPY-threshold or hedge-size sweep;
+- factor/style residual leadership candidate pools that rely on MTUM/QUAL/VLUE/
+  USMV/SIZE or adjacent factor ETF lists before those references exist in the
+  production-visible PIT warehouse. `exp-20260621-003` blocked at Gate 2; a
+  diagnostic sidecar is not enough. Reopen only after warehouse/daily parity
+  coverage exists or with a materially different PIT flow, ownership,
+  borrow/options, or forward replacement-value field;
+- FX translation OCI tailwind allocation or drawdown-envelope retries that
+  sweep volatility, drawdown, liquidity, notional, top-N, hold, cooldown, hedge
+  confirmation, or cash-effect confirmation on frozen windows. `exp-20260621-005`
+  remained aggregate-positive but failed drawdown and accepted-distribution
+  comparators, following the earlier raw/hedge/cash-effect OCI failures. Reopen
+  only with closed forward rows or materially richer PIT OCI component /
+  hedging provenance;
+- available-proxy residual idiosyncratic leadership and adjacent proxy-residual
+  OHLCV candidate pools that only change proxy lists, beta lookbacks, residual
+  thresholds, close/volume/volatility gates, top-N, hold, cooldown, or notional.
+  `exp-20260621-011` had high aggregate EV/PnL but regressed windows, worsened
+  drawdown, and failed the accepted distribution PnL comparator. A valid retry
+  needs a new PIT flow, ownership, borrow/options, event-quality, or forward
+  replacement-value field rather than another residual momentum relabel;
+- SEC no-covenant credit-facility and customer prepayment / capacity-commitment
+  text tuples that sweep phrase lists, dollar/market-cap thresholds, item
+  codes, RS/close/volume/volatility guards, top-N, hold, cooldown, or notional.
+  `exp-20260621-012` and `exp-20260621-014` produced zero useful target events
+  in the fixed historical text surface. A valid retry needs normalized named
+  customer/lender identity, non-cancelable exposure, contract duration/funding
+  certainty, covenant/refinancing economics, or closed forward rows;
 - parsed Schedule 13G/A amendment stake-change DIRECTION candidate pools that
   sweep the increase/decrease/exit cut, stake-percent delta, holder-type, Big3
   vs non-Big3, top-N, hold, cooldown, or notional on the frozen windows:
