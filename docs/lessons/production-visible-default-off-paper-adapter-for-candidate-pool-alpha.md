@@ -6,19 +6,15 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `115`
-- Accepted / rejected: `12` / `96`
-- Accept rate: `10.43%`
+- Experiments: `117`
+- Accepted / rejected: `14` / `96`
+- Accept rate: `11.97%`
 - Sum EV delta: `+71.7916`
 - Sum PnL delta: `$1,426,627.62`
-- Latest: `exp-20260620-011` `rejected_supplier_financing_rank3_allocator_source` with EV `+2.4918` and PnL `$41,503.66`.
+- Latest: `exp-20260621-001` `accepted_allocator_peer_shock_source_notional_scalar` with EV `+0.0000` and PnL `$0.00`.
 
 ## Retained Or Positive Evidence
 
-- `exp-20260604-009` `accepted_lagged_consensus_shared_default_off_adapter`: EV `+1.9949`, PnL `$35,553.87`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_free_data_cross_source_consensus_source_timing_adapter`.
-  Lesson: exp-20260604-008 improved core and the accepted same-day consensus comparator across all three windows; this run adds the shared helper, source-history contract, and focused tests without enabling orders.
-- `exp-20260607-019` `accepted_volatility_relief_stock_leadership_shared_default_off_adapter`: EV `+0.5732`, PnL `$11,934.79`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `volatility_relief_stock_leadership_shared_adapter`.
-  Lesson: Shared replay matched the exp-20260607-018 lead because the alpha came from a distinct VIXY volatility-compression state plus liquid stock leadership, not runner-only implementation details. Do not retry by sweeping V...
 - `exp-20260610-005` `accepted_shared_default_off_accepted_helper_source_priority_allocator`: EV `+0.8971`, PnL `$14,502.52`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
   Lesson: The alpha worked because it expanded the usable candidate pool across several accepted OHLCV helper sensors while limiting same-day overlap to one ex-ante highest-priority paper risk slot. The shared helper removes th...
 - `exp-20260610-014` `accepted_shared_default_off_revision_allocator_source_extension`: EV `+0.9720`, PnL `$15,197.05`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
@@ -27,6 +23,10 @@ records before making strategy changes.
   Lesson: The lagged consensus rows added distinct multi-source confirmation and improved replacement value across all canonical windows after being moved into the shared allocator/daily snapshot boundary. Do not retry by chang...
 - `exp-20260612-024` `accepted_allocator_activation_envelope_gate_v2`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `allocator_activation_envelope`.
   Lesson: The allocator selects at most one ex-ante ranked row per day, so the concurrency cap mostly trims overlapping tail entries; retention and kill-switch outcomes quantify exactly what production can execute. Do not sweep...
+- `exp-20260620-032` `accepted_allocator_independent_source_notional_scalar`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
+  Lesson: The selected industry laggard repair and revision rows were sufficiently positive after current allocator arbitration, so source-aware paper capital improved without changing selection. Do not retry by sweeping the 1....
+- `exp-20260621-001` `accepted_allocator_peer_shock_source_notional_scalar`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
+  Lesson: The corrected peer_shock independence signal translated into incremental after-arbitration paper capital without changing selection. Do not retry by sweeping peer_shock scalar, source rank, allocator top-N, hold days,...
 
 ## Rejections And Failure Lessons
 
@@ -67,9 +67,9 @@ records before making strategy changes.
 
 ## Recent Raw Records
 
-- `exp-20260614-003` source `experiments/logs/exp-20260614-003.json`.
-- `exp-20260614-009` source `experiments/logs/exp-20260614-009.json`.
 - `exp-20260616-016` source `experiments/logs/exp-20260616-016.json`.
 - `exp-20260618-021` source `experiments/logs/exp-20260618-021.json`.
 - `exp-20260618-022` source `experiments/logs/exp-20260618-022.json`.
 - `exp-20260620-011` source `experiments/logs/exp-20260620-011.json`.
+- `exp-20260620-032` source `experiments/logs/exp-20260620-032.json`.
+- `exp-20260621-001` source `experiments/logs/exp-20260621-001.json`.
