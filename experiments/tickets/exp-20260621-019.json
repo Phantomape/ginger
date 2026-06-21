@@ -1,0 +1,158 @@
+{
+  "experiment_id": "exp-20260621-019",
+  "created_at": "2026-06-21T19:32:19+00:00",
+  "owner": "alpha-search-automation",
+  "hypothesis": "candidate_pool: PIT SEC 13F new-manager portfolio-weight conviction, confirmed by liquid leadership, may identify institutional accumulation with more information content than aggregate holder-count or low-crowding 13F fields.",
+  "change_type": "experiment_local_replay_candidate_pool",
+  "mechanism_family": "production_visible_free_sec_13f_candidate_pool",
+  "trial_family": "sec13f_manager_conviction_candidate_pool",
+  "trial_variant_id": "sec13f_new_manager_conviction_liquid_leadership_top1_10d_v1",
+  "single_causal_variable": "sec13f_new_manager_conviction_liquid_leadership_candidate_source_v1",
+  "changed_variable": "sec13f_new_manager_conviction_liquid_leadership_candidate_source_v1",
+  "prior_trial_count": 3,
+  "nearby_prior_experiments": [
+    "exp-20260613-014",
+    "exp-20260613-017",
+    "exp-20260615-009"
+  ],
+  "multiple_testing_risk_bucket": "high",
+  "new_evidence_type": "pit_sec_13f_manager_portfolio_weight_conviction",
+  "decision": "rejected_sec13f_manager_conviction_candidate_pool",
+  "summary": "The SEC 13F manager-conviction candidate source was rejected under the standard three-window protocol.",
+  "artifact": "data/experiments/exp-20260621-019/exp_20260621_019_sec13f_manager_conviction.json",
+  "log": "experiments/logs/exp-20260621-019.json",
+  "ticket_file": "experiments/tickets/exp-20260621-019.json",
+  "card_file": "experiments/cards/exp-20260621-019.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260621-019.json",
+  "aggregate_expected_value_delta": 0.4786,
+  "aggregate_strategy_total_pnl_delta": 7956.78,
+  "lane": "alpha_search",
+  "status": "rejected",
+  "prediction": {
+    "success_probability": 0.16,
+    "expected_ev_delta": 0.12,
+    "expected_pnl_delta": 2000.0,
+    "main_failure_modes": [
+      "stale_quarterly_data",
+      "window_regression",
+      "drawdown_drift",
+      "not_incremental",
+      "accepted_comparator_not_beaten"
+    ],
+    "confidence_reason": "Prior 13F aggregate holder/value and low-crowding entries failed, but their reflections explicitly require manager-quality segmentation. Local SEC 13F source-cache zips now allow a distinct PIT field: new managers whose position is meaningful within their own reported portfolio, reducing stale aggregate ownership noise. Main risk is quarterly delay and overlap with accepted liquid leadership sources.",
+    "recorded_at": "2026-06-21T19:07:08+00:00"
+  },
+  "result": {
+    "decision": "rejected_sec13f_manager_conviction_candidate_pool",
+    "accepted": false,
+    "numeric_gate4_passed": false,
+    "artifact": "data/experiments/exp-20260621-019/exp_20260621_019_sec13f_manager_conviction.json",
+    "log": "experiments/logs/exp-20260621-019.json",
+    "card": "experiments/cards/exp-20260621-019.md",
+    "aggregate_expected_value_delta": 0.4786,
+    "aggregate_strategy_total_pnl_delta": 7956.78,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_sec13f_manager_conviction_candidate_pool",
+      "failed_reasons": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "drawdown_drift_too_high"
+      ],
+      "aggregate_ev_delta": 0.4786,
+      "aggregate_pnl_delta": 7956.78,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 2,
+      "windows_pnl_improved": 1,
+      "windows_pnl_regressed": 2,
+      "target_trade_count": 344,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0105,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.103185,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.042618,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "accepted_allocator_comparator": {
+        "experiment_id": "exp-20260611-005",
+        "decision": "accepted_source_consensus_allocator_extension",
+        "expected_value_score_delta_sum": 2.1849,
+        "total_pnl_delta_sum": 40397.21,
+        "note": "Promotion comparator only. This private 13F scout is still lead-only without a shared daily helper even if numeric Gate 4 passes."
+      },
+      "accepted_allocator_comparator_beaten": {
+        "ev": false,
+        "pnl": false
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.16,
+      "actual_gate4_passed": false,
+      "failure_modes_observed": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "drawdown_drift_too_high"
+      ],
+      "brier_score": 0.0256
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "private_replay_scout_no_live_adapter",
+      "implementation_mode": "private_replay_scout",
+      "private_replay_scout_escape_reason": "The manager-level portfolio-weight aggregation is implemented only in this experiment. A positive result is lead-only until a shared helper computes the same field in historical replay and daily default-off snapshots.",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "default_off_paper_only": true,
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_sec_13f": true,
+      "uses_free_ohlcv": true,
+      "live_realism_evaluated": false,
+      "live_ready": false,
+      "execution_envelope": {
+        "trade_enabled": false,
+        "paper_notional_usd": 4000.0,
+        "daily_entry_slots": 1,
+        "same_ticker_cooldown_days": 20,
+        "hold_days": 10,
+        "min_avg_dollar_volume_20d": 50000000.0,
+        "order_semantics": "observe-only next-session-open paper entry; no broker order",
+        "portfolio_displacement": "none unless a later shared helper and activation envelope pass",
+        "kill_switch": "trade_enabled remains false; no production adapter changes in this scout",
+        "failure_handling": "missing 13F pair, OHLCV, next open, or exit bar rejects the paper candidate"
+      },
+      "parity_note": "This experiment changes no production code. A positive result remains a replay lead until a shared default-off helper computes the same PIT 13F window pair, manager-level position weights, leadership gates, overlap exclusion, entry, exit, costs, cooldown, and ledger fields identically in historical replay and daily production snapshots."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The manager-conviction field failed Gate 4. Requiring new manager portfolio weight improved the economic specificity of the 13F signal, but quarterly delayed ownership still overlaps liquid leadership and did not create stable all-window replacement value after next-open costs.",
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping manager position weight, conviction manager count, conviction value, value share, ADV, close-location, ret20/ret60, top-N, hold-day, cooldown, or notional thresholds on the same frozen windows.",
+      "new_evidence_required": "Need materially richer manager identity/quality, sector-normalized ownership surprise, independent borrow/options evidence, or forward replacement-value rows from a shared helper."
+    }
+  },
+  "updated_at": "2026-06-21T19:32:19+00:00",
+  "completed_at": "2026-06-21T19:32:19+00:00"
+}
