@@ -779,6 +779,24 @@ optional `universe_ohlcv_by_ticker` param, so the remaining wiring is one kwarg
 once run.py frees up. Then validate the exposure_scalar soft tilt on forward /
 live-pilot rows; do not tune constants on frozen windows.
 
+`exp-20260622-017` (read-only) closes the obvious over-generalization of the
+chop tilt: it regime-attributed the **core accepted stack** (61 canonical
+baseline trades, exp-20260602-003) at full fidelity, which exp-019 never did
+(exp-019 only covered the FGRS sleeve plus one scout). The core stack does NOT
+share the FGRS chop-loss -- sign reversed and consistent across all three
+windows: pooled `Spearman(p_choppy, PnL)` = **+0.116** (per-window +0.119 /
++0.082 / +0.118) vs FGRS -0.324, chop-bucket mean PnL +$2,991 (positive), and
+the core enters in chop only 6/61 = 10% of the time because its entry gates
+already concentrate in trend regimes. Applying the shared exposure_scalar soft
+down-tilt to the whole core book would have CUT core PnL by -$29,048 (~12%) on
+the frozen windows. Lesson: chop-sensitivity is SLEEVE-SPECIFIC, not
+portfolio-wide. Any chop down-tilt must be scoped to the specific default-off
+sleeves with individually-negative `Spearman(p_choppy, PnL)` (confirmed FGRS),
+NEVER the core stack or a portfolio-wide capital tilt, and still requires
+forward entry-regime-tagged rows -- not a frozen-window re-slice. Chop-bucket N
+is small (6 core trades), so the direction is robust across windows but the
+magnitude is indicative.
+
 Candidate fields:
 
 - `winner_continuation_tail_state_bucket`

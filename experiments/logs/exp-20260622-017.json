@@ -1,0 +1,41 @@
+{
+  "experiment_id": "exp-20260622-017",
+  "lane": "measurement_repair",
+  "status": "measurement_repair_observed_only",
+  "decision": "measurement_repair_core_stack_does_not_lose_in_chop",
+  "diagnostic_only": true,
+  "accepted": false,
+  "timestamp": "2026-06-22T16:40:00Z",
+  "hypothesis": "The core accepted stack's chop-regime sensitivity is unmeasured: exp-20260615-019 only regime-attributed the FGRS sleeve plus one scout, so a portfolio-level chop down-tilt cannot be credibly proposed without knowing whether the core book itself loses in directionless chop or whether chop-loss is sleeve-specific.",
+  "changed_variable": "read-only entry-day regime_chop_state attribution of the canonical core accepted-stack trades across all three fixed windows",
+  "method": "For all 61 trades in the canonical core baseline (exp-20260602-003, per-window after.json) across late_strong/mid_weak/old_thin, recompute the entry-day regime via quant/regime_chop_state.py:regime_chop_from_spy_universe at full fidelity (SPY trend/momentum/drawdown/vol + universe breadth above 50d SMA + index agreement), strictly PIT (bars <= entry_date). Bucket realized PnL by regime label; compute Spearman(p_choppy, pnl), Spearman(exposure_scalar, pnl), and the counterfactual of applying the shared exposure_scalar soft tilt. All 61 resolved at full fidelity (stress_confident=true).",
+  "result": {
+    "pooled_n": 61,
+    "by_regime": {
+      "risk_on_trend": {"n": 51, "mean_pnl": 3812.6, "win_rate": 0.5686},
+      "choppy_range": {"n": 6, "mean_pnl": 2991.26, "win_rate": 0.5},
+      "risk_off_stress": {"n": 4, "mean_pnl": 5615.24, "win_rate": 0.75}
+    },
+    "spearman_pchoppy_pnl_pooled": 0.1157,
+    "spearman_pchoppy_pnl_by_window": {"late_strong": 0.119, "mid_weak": 0.082, "old_thin": 0.118},
+    "fgrs_sleeve_reference_spearman": -0.324,
+    "counterfactual_core_chop_tilt_pnl_delta": -29048.43,
+    "actual_core_total_pnl": 234850.99,
+    "tilted_core_total_pnl": 205802.56
+  },
+  "interpretation": "The core accepted stack does NOT lose in chop: chop-bucket mean PnL is +$2,991 (positive) and Spearman(p_choppy, pnl) is +0.116 pooled and positive in all three windows -- the opposite sign of the FGRS sleeve (-0.324). The core enters in chop only 10% of the time because its entry gates already concentrate entries in trend regimes. Applying the regime_chop_state soft down-tilt to the whole core book would have cut core PnL by -$29,048 (~12%). Conclusion: chop-sensitivity is sleeve-specific, not portfolio-wide. A portfolio-level chop tilt must be scoped to the default-off sleeves with individually-negative Spearman(p_choppy, pnl), never the core stack, and validated on forward entry-regime-tagged rows -- not by re-slicing these frozen windows. Caveat: chop-bucket N is small (6 core trades); direction is robust across windows, magnitude is indicative.",
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "diagnostic_only": true,
+    "parity_note": "Read-only replay attribution of the canonical core baseline. No order/ranking/sizing/exit/Gate-4 change."
+  },
+  "next_evidence": "Sleeve-scoped (FGRS-like) chop soft tilt validated on closed forward rows tagged with entry-time regime. Forward rows are blocked because paper sleeve snapshots emit no regime tag and the daily full-fidelity breadth wiring is deferred behind the run.py Step-6 claim (exp-20260607-003).",
+  "nearby_prior_experiments": ["exp-20260615-019", "exp-20260615-025", "exp-20260615-028", "exp-20260613-005", "exp-20260617-021"],
+  "artifact": "data/experiments/exp-20260622-017/exp_20260622_017_core_stack_regime_chop_attribution.json",
+  "runner": "quant/experiments/exp_20260622_017_core_stack_regime_chop_attribution.py",
+  "anti_js": "No JavaScript was used.",
+  "reproduction": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260622_017_core_stack_regime_chop_attribution.py"
+}

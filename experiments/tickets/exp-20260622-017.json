@@ -16,7 +16,7 @@
   "change_type": "identity_or_measurement_repair",
   "changed_variable": "read-only entry-day regime_chop_state attribution of the canonical core accepted-stack trades across all three fixed windows",
   "claimed_at": "2026-06-22T16:17:22+00:00",
-  "completed_at": null,
+  "completed_at": "2026-06-22T16:21:21+00:00",
   "created_at": "2026-06-22T16:17:00+00:00",
   "evaluation_windows": [],
   "experiment_id": "exp-20260622-017",
@@ -164,11 +164,50 @@
   "owner": "alpha-regime-core-attribution",
   "prediction": null,
   "prior_trial_count": 0,
-  "result": null,
+  "result": {
+    "decision": "measurement_repair_core_stack_does_not_lose_in_chop",
+    "diagnostic_only": true,
+    "accepted": false,
+    "summary": "The core accepted stack does NOT lose in chop: chop-bucket mean PnL is +$2,991 (positive) and Spearman(p_choppy, pnl) is +0.116 pooled and positive in all three windows -- the opposite sign of the FGRS sleeve (-0.324). The core enters in chop only 10% of the time because its entry gates already concentrate entries in trend regimes. Applying the regime_chop_state soft down-tilt to the whole core book would have cut core PnL by -$29,048 (~12%). Conclusion: chop-sensitivity is sleeve-specific, not portfolio-wide. A portfolio-level chop tilt must be scoped to the default-off sleeves with individually-negative Spearman(p_choppy, pnl), never the core stack, and validated on forward entry-regime-tagged rows -- not by re-slicing these frozen windows. Caveat: chop-bucket N is small (6 core trades); direction is robust across windows, magnitude is indicative.",
+    "metrics": {
+      "pooled_n": 61,
+      "by_regime": {
+        "risk_on_trend": {
+          "n": 51,
+          "mean_pnl": 3812.6,
+          "win_rate": 0.5686
+        },
+        "choppy_range": {
+          "n": 6,
+          "mean_pnl": 2991.26,
+          "win_rate": 0.5
+        },
+        "risk_off_stress": {
+          "n": 4,
+          "mean_pnl": 5615.24,
+          "win_rate": 0.75
+        }
+      },
+      "spearman_pchoppy_pnl_pooled": 0.1157,
+      "spearman_pchoppy_pnl_by_window": {
+        "late_strong": 0.119,
+        "mid_weak": 0.082,
+        "old_thin": 0.118
+      },
+      "fgrs_sleeve_reference_spearman": -0.324,
+      "counterfactual_core_chop_tilt_pnl_delta": -29048.43,
+      "actual_core_total_pnl": 234850.99,
+      "tilted_core_total_pnl": 205802.56
+    },
+    "artifact": "data/experiments/exp-20260622-017/exp_20260622_017_core_stack_regime_chop_attribution.json"
+  },
   "revision_manifest_file": "experiments/manifests/exp-20260622-017.json",
   "single_causal_variable": "read-only entry-day regime_chop_state attribution of the canonical core accepted-stack trades across all three fixed windows",
-  "status": "claimed",
+  "status": "measurement_repair_observed_only",
   "ticket_file": "experiments/tickets/exp-20260622-017.json",
   "trial_family": "identity_or_measurement_repair",
-  "trial_variant_id": "exp-20260622-017"
+  "trial_variant_id": "exp-20260622-017",
+  "decision": "measurement_repair_core_stack_does_not_lose_in_chop",
+  "artifact": "data/experiments/exp-20260622-017/exp_20260622_017_core_stack_regime_chop_attribution.json",
+  "updated_at": "2026-06-22T16:21:21+00:00"
 }
