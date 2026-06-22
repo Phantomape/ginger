@@ -95126,8 +95126,2033 @@
       "aggregate_expected_value_delta": 0.0,
       "aggregate_strategy_total_pnl_delta": 0.0,
       "updated_at": "2026-06-22T03:15:35+00:00"
+    },
+    {
+      "acceptance_rule": "Blocked unless Kova multi-source data has PIT fixed-window coverage or at least 20-30 closed forward replacement-value rows plus a shared daily/backtest helper.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260622_005_kova_multisource_candidate_pool_readiness.py",
+        "data/experiments/exp-20260622-005/exp_20260622_005_kova_multisource_candidate_pool_readiness.json",
+        "experiments/cards/exp-20260622-005.md",
+        "experiments/manifests/exp-20260622-005.json",
+        "experiments/tickets/exp-20260622-005.json",
+        "experiments/logs/exp-20260622-005.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260622-005.md",
+      "causal_components": [
+        "kova_surface_coverage_audit",
+        "three_window_gate1_context",
+        "gate2_runtime_field_check",
+        "forward_replacement_value_check",
+        "production_parity_path_check"
+      ],
+      "change_type": "candidate_pool_full_stack",
+      "changed_variable": "kova_multisource_candidate_pool_readiness_v1",
+      "claimed_at": "2026-06-22T04:05:36+00:00",
+      "completed_at": "2026-06-22T04:13:36+00:00",
+      "created_at": "2026-06-22T04:05:28+00:00",
+      "evaluation_windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json"
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json"
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json"
+        }
+      ],
+      "experiment_id": "exp-20260622-005",
+      "experiment_uid": "expuid-4e63617cae2843b3",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260622-005",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-22T04:05:28+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "kova_multisource_candidate_pool_readiness"
+      },
+      "hypothesis": "candidate_pool/data-edge: Kova multi-source forward snapshots combining RS proxy, fundamentals, institutional ownership, and intraday flow may expose a production-visible free-data candidate-pool edge, but only if the local surface has PIT coverage across the three canonical windows or enough closed forward replacement rows.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "kova_multisource_candidate_pool_readiness_v1"
+      ],
+      "mechanism_family": "production_visible_kova_multisource_candidate_pool",
+      "multiple_testing_risk_bucket": "moderate",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260621-017",
+        "exp-20260622-003",
+        "exp-20260621-003",
+        "exp-20260621-019",
+        "exp-20260621-020",
+        "exp-20260614-014"
+      ],
+      "new_evidence_type": "new_production_visible_forward_data_surface",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "other",
+          "field_tags": [
+            "a",
+            "across",
+            "but",
+            "canonical",
+            "closed",
+            "combining",
+            "coverage",
+            "data",
+            "edge",
+            "enough",
+            "expose",
+            "flow",
+            "forward",
+            "fundamentals",
+            "has",
+            "if",
+            "institutional",
+            "intraday",
+            "kova",
+            "local",
+            "may",
+            "multi",
+            "multisource",
+            "only",
+            "or",
+            "ownership",
+            "pit",
+            "proxy",
+            "readiness",
+            "replacement",
+            "rows",
+            "rs",
+            "snapshots",
+            "surface",
+            "three",
+            "windows"
+          ],
+          "gate_shape": "candidate_pool_top1_10d"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "post_20260619_nonrepeat_surface_readiness",
+            "reopen_condition": null,
+            "score": 0.1816,
+            "status": "frozen_rejected",
+            "trials": 2
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "revision_expectation",
+            "family_key": "form144_revision_data_readiness",
+            "reopen_condition": "Required new evidence is PIT parsed Form 144 planned-sale shares or value, holder role, relationship-to-issuer, public float and sale_pct_float, or historical/forward analyst-count, revenue-estimate, dispersion, vendor_asof, and fiscal-period coverage with closed candidate outcomes.",
+            "score": 0.1786,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "revision_expectation",
+            "family_key": "earnings_snapshot_date_revision_readiness",
+            "reopen_condition": null,
+            "score": 0.17,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_relation",
+            "family_key": "multi_peer_correlation_cluster_edge_stability_candidate_pool",
+            "reopen_condition": "Need named economic relation provenance or forward displacement rows before revisiting multi-peer correlation-cluster alpha.",
+            "score": 0.17,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "companyfacts_ratio",
+            "family_key": "free_cash_flow_capex_coverage_quality_candidate_pool",
+            "reopen_condition": "A retry needs materially different PIT capex/cash-flow evidence or closed forward replacement rows. Do not sweep FCF/assets, OCF/capex, capex/assets, fact freshness, RS/close/volume/vol guards, top-N, hold, cooldown, or notional on these frozen windows.",
+            "score": 0.1695,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": "New data-surface audit for Kova multi-source snapshots: rs_proxy, fundamentals, institutional ownership, and intraday rows, distinct from Moomoo one-day capital-flow, SEC text, raw Companyfacts ratio, and 13F direct-entry threshold families.",
+        "override": false,
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-search-automation",
+      "prediction": {
+        "success_probability": 0.15,
+        "expected_ev_delta": 0.0,
+        "expected_pnl_delta": 0.0,
+        "main_failure_modes": [
+          "forward_only_surface",
+          "no_fixed_window_history",
+          "no_closed_forward_outcomes",
+          "not_shared_daily_helper_ready"
+        ],
+        "confidence_reason": "Kova is a distinct production-visible free-data surface rather than a SEC phrase or OHLCV threshold retune, but local files appear concentrated in 2026-05/06 forward snapshots, so Gate 2/3 blocking is the likely outcome unless coverage or forward replacement rows exist.",
+        "recorded_at": "2026-06-22T04:05:14+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "accepted": false,
+        "accepted_alpha": false,
+        "decision": "blocked_kova_multisource_surface_not_gate_ready",
+        "artifact": "data/experiments/exp-20260622-005/exp_20260622_005_kova_multisource_candidate_pool_readiness.json",
+        "log": "experiments/logs/exp-20260622-005.json",
+        "delta_metrics": {
+          "aggregate_expected_value_score": 0.0,
+          "aggregate_total_pnl": 0.0,
+          "total_trade_count": 0,
+          "max_window_drawdown_pct": 0.0
+        },
+        "gate4": {
+          "ran_after_strategy": false,
+          "reason_after_not_run": "Blocked at Gate 2/3 readiness; after intentionally equals before.",
+          "before_windows": {
+            "late_strong": {
+              "label": "late_strong",
+              "start": "2025-10-23",
+              "end": "2026-04-21",
+              "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+              "expected_value_score": 5.1628,
+              "sharpe_daily": 4.41,
+              "total_pnl": 117072.92,
+              "max_drawdown_pct": 0.0665,
+              "win_rate": 0.8333,
+              "trade_count": 18,
+              "signals_generated": 51,
+              "signals_survived": 41,
+              "survival_rate": 0.8039
+            },
+            "mid_weak": {
+              "label": "mid_weak",
+              "start": "2025-04-23",
+              "end": "2025-10-22",
+              "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+              "expected_value_score": 2.1402,
+              "sharpe_daily": 2.74,
+              "total_pnl": 78110.11,
+              "max_drawdown_pct": 0.1119,
+              "win_rate": 0.5238,
+              "trade_count": 21,
+              "signals_generated": 53,
+              "signals_survived": 42,
+              "survival_rate": 0.7925
+            },
+            "old_thin": {
+              "label": "old_thin",
+              "start": "2024-10-02",
+              "end": "2025-04-22",
+              "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+              "expected_value_score": 0.5911,
+              "sharpe_daily": 1.49,
+              "total_pnl": 39667.96,
+              "max_drawdown_pct": 0.1001,
+              "win_rate": 0.4091,
+              "trade_count": 22,
+              "signals_generated": 60,
+              "signals_survived": 52,
+              "survival_rate": 0.8667
+            }
+          },
+          "after_windows": {
+            "late_strong": {
+              "label": "late_strong",
+              "start": "2025-10-23",
+              "end": "2026-04-21",
+              "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+              "expected_value_score": 5.1628,
+              "sharpe_daily": 4.41,
+              "total_pnl": 117072.92,
+              "max_drawdown_pct": 0.0665,
+              "win_rate": 0.8333,
+              "trade_count": 18,
+              "signals_generated": 51,
+              "signals_survived": 41,
+              "survival_rate": 0.8039
+            },
+            "mid_weak": {
+              "label": "mid_weak",
+              "start": "2025-04-23",
+              "end": "2025-10-22",
+              "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+              "expected_value_score": 2.1402,
+              "sharpe_daily": 2.74,
+              "total_pnl": 78110.11,
+              "max_drawdown_pct": 0.1119,
+              "win_rate": 0.5238,
+              "trade_count": 21,
+              "signals_generated": 53,
+              "signals_survived": 42,
+              "survival_rate": 0.7925
+            },
+            "old_thin": {
+              "label": "old_thin",
+              "start": "2024-10-02",
+              "end": "2025-04-22",
+              "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+              "expected_value_score": 0.5911,
+              "sharpe_daily": 1.49,
+              "total_pnl": 39667.96,
+              "max_drawdown_pct": 0.1001,
+              "win_rate": 0.4091,
+              "trade_count": 22,
+              "signals_generated": 60,
+              "signals_survived": 52,
+              "survival_rate": 0.8667
+            }
+          },
+          "delta_by_window": {
+            "late_strong": {
+              "expected_value_score": 0.0,
+              "total_pnl": 0.0,
+              "max_drawdown_pct": 0.0,
+              "trade_count": 0.0,
+              "survival_rate": 0.0
+            },
+            "mid_weak": {
+              "expected_value_score": 0.0,
+              "total_pnl": 0.0,
+              "max_drawdown_pct": 0.0,
+              "trade_count": 0.0,
+              "survival_rate": 0.0
+            },
+            "old_thin": {
+              "expected_value_score": 0.0,
+              "total_pnl": 0.0,
+              "max_drawdown_pct": 0.0,
+              "trade_count": 0.0,
+              "survival_rate": 0.0
+            }
+          },
+          "aggregate_before": {
+            "aggregate_expected_value_score": 7.8941,
+            "aggregate_total_pnl": 234850.99,
+            "total_trade_count": 61,
+            "aggregate_signals_generated": 164,
+            "aggregate_signals_survived": 135,
+            "min_survival_rate": 0.7925,
+            "max_window_drawdown_pct": 0.1119
+          },
+          "aggregate_after": {
+            "aggregate_expected_value_score": 7.8941,
+            "aggregate_total_pnl": 234850.99,
+            "total_trade_count": 61,
+            "aggregate_signals_generated": 164,
+            "aggregate_signals_survived": 135,
+            "min_survival_rate": 0.7925,
+            "max_window_drawdown_pct": 0.1119
+          },
+          "aggregate_delta": {
+            "aggregate_expected_value_score": 0.0,
+            "aggregate_total_pnl": 0.0,
+            "total_trade_count": 0,
+            "min_survival_rate": 0.0,
+            "max_window_drawdown_pct": 0.0
+          },
+          "failed_reasons": [
+            "gate2_surface_readiness_blocked",
+            "no_after_strategy_run",
+            "no_candidate_trades"
+          ],
+          "passed": false
+        },
+        "calibration": {
+          "predicted_success_probability": 0.15,
+          "actual_success": 0,
+          "brier_score": 0.0225,
+          "realized": "blocked_before_strategy_replay",
+          "realized_failure_modes": [
+            "rs_proxy:file_date_three_window_coverage_missing",
+            "companyfacts_growth:existing_companyfacts_growth_family_not_new_by_itself",
+            "sec13f_ownership:no_ok_rows",
+            "sec13f_ownership:file_date_three_window_coverage_missing",
+            "intraday_ohlcv:no_ok_rows",
+            "intraday_ohlcv:file_date_three_window_coverage_missing",
+            "kova_snapshots:file_date_three_window_coverage_missing",
+            "kova_forward_replacement_rows_below_20",
+            "missing_shared_kova_multisource_helper"
+          ]
+        },
+        "summary": "Kova is a distinct forward data surface, but it is not a Gate-4 candidate source yet. RS proxy has only late/recent file-date coverage, Companyfacts growth is an already explored/frozen family by itself, SEC13F and intraday rows are skipped in the current local snapshots, no Kova shared helper exists, and no closed Kova forward replacement-value rows are present."
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260622-005.json",
+      "single_causal_variable": "kova_multisource_candidate_pool_readiness_v1",
+      "status": "blocked",
+      "ticket_file": "experiments/tickets/exp-20260622-005.json",
+      "trial_family": "kova_multisource_candidate_pool_readiness",
+      "trial_variant_id": "kova_forward_snapshot_coverage_v1",
+      "implementation_mode": "data_edge_readiness_gate",
+      "decision": "blocked_kova_multisource_surface_not_gate_ready",
+      "summary": "Kova is a distinct forward data surface, but it is not a Gate-4 candidate source yet. RS proxy has only late/recent file-date coverage, Companyfacts growth is an already explored/frozen family by itself, SEC13F and intraday rows are skipped in the current local snapshots, no Kova shared helper exists, and no closed Kova forward replacement-value rows are present.",
+      "artifact": "data/experiments/exp-20260622-005/exp_20260622_005_kova_multisource_candidate_pool_readiness.json",
+      "log": "experiments/logs/exp-20260622-005.json",
+      "aggregate_expected_value_delta": 0.0,
+      "aggregate_strategy_total_pnl_delta": 0.0,
+      "gate1": {
+        "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "generated_at": "2026-06-04T22:29:38.821937",
+        "windows": {
+          "late_strong": {
+            "label": "late_strong",
+            "start": "2025-10-23",
+            "end": "2026-04-21",
+            "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+            "expected_value_score": 5.1628,
+            "sharpe_daily": 4.41,
+            "total_pnl": 117072.92,
+            "max_drawdown_pct": 0.0665,
+            "win_rate": 0.8333,
+            "trade_count": 18,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "survival_rate": 0.8039
+          },
+          "mid_weak": {
+            "label": "mid_weak",
+            "start": "2025-04-23",
+            "end": "2025-10-22",
+            "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+            "expected_value_score": 2.1402,
+            "sharpe_daily": 2.74,
+            "total_pnl": 78110.11,
+            "max_drawdown_pct": 0.1119,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "survival_rate": 0.7925
+          },
+          "old_thin": {
+            "label": "old_thin",
+            "start": "2024-10-02",
+            "end": "2025-04-22",
+            "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+            "expected_value_score": 0.5911,
+            "sharpe_daily": 1.49,
+            "total_pnl": 39667.96,
+            "max_drawdown_pct": 0.1001,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "signals_generated": 60,
+            "signals_survived": 52,
+            "survival_rate": 0.8667
+          }
+        },
+        "aggregate": {
+          "aggregate_expected_value_score": 7.8941,
+          "aggregate_total_pnl": 234850.99,
+          "total_trade_count": 61,
+          "aggregate_signals_generated": 164,
+          "aggregate_signals_survived": 135,
+          "min_survival_rate": 0.7925,
+          "max_window_drawdown_pct": 0.1119
+        },
+        "passed": true
+      },
+      "gate2": {
+        "passed": false,
+        "blocking_reasons": [
+          "rs_proxy:file_date_three_window_coverage_missing",
+          "companyfacts_growth:existing_companyfacts_growth_family_not_new_by_itself",
+          "sec13f_ownership:no_ok_rows",
+          "sec13f_ownership:file_date_three_window_coverage_missing",
+          "intraday_ohlcv:no_ok_rows",
+          "intraday_ohlcv:file_date_three_window_coverage_missing",
+          "kova_snapshots:file_date_three_window_coverage_missing",
+          "kova_forward_replacement_rows_below_20",
+          "missing_shared_kova_multisource_helper"
+        ],
+        "dependency_fields_checked": {
+          "rs_proxy": [
+            "ticker",
+            "asof_date",
+            "known_at",
+            "rs_proxy_rank_pct_20d",
+            "excess_ret_20d_vs_spy",
+            "status",
+            "entry_date",
+            "target_price"
+          ],
+          "companyfacts_growth": [
+            "ticker",
+            "asof_date",
+            "query_asof_date",
+            "known_at",
+            "canonical",
+            "yoy_growth",
+            "growth_status",
+            "entry_date",
+            "target_price"
+          ],
+          "sec13f_ownership": [
+            "ticker",
+            "asof_date",
+            "provider",
+            "status",
+            "reason",
+            "entry_date",
+            "target_price"
+          ],
+          "intraday_ohlcv": [
+            "ticker",
+            "asof_date",
+            "provider",
+            "status",
+            "reason",
+            "entry_date",
+            "target_price"
+          ],
+          "kova_snapshots": [
+            "asof_date",
+            "status",
+            "entry_date",
+            "target_price"
+          ]
+        },
+        "surface_audits": {
+          "rs_proxy": {
+            "surface": "rs_proxy",
+            "directory": "data/kova/rs_proxy",
+            "glob": "rs_proxy_*.jsonl",
+            "file_count": 28,
+            "row_count": 7507,
+            "scan_limits": {
+              "max_rows_per_file": 5000,
+              "max_rows_per_surface": 40000,
+              "truncated_file_count": 0,
+              "scanned_file_sample": [
+                {
+                  "file": "data/kova/rs_proxy/rs_proxy_20260421.jsonl",
+                  "file_date": "2026-04-21",
+                  "scanned_rows": 3,
+                  "truncated": false,
+                  "size_bytes": 2108
+                },
+                {
+                  "file": "data/kova/rs_proxy/rs_proxy_20260526.jsonl",
+                  "file_date": "2026-05-26",
+                  "scanned_rows": 58,
+                  "truncated": false,
+                  "size_bytes": 40169
+                },
+                {
+                  "file": "data/kova/rs_proxy/rs_proxy_20260527.jsonl",
+                  "file_date": "2026-05-27",
+                  "scanned_rows": 58,
+                  "truncated": false,
+                  "size_bytes": 40103
+                },
+                {
+                  "file": "data/kova/rs_proxy/rs_proxy_20260528.jsonl",
+                  "file_date": "2026-05-28",
+                  "scanned_rows": 58,
+                  "truncated": false,
+                  "size_bytes": 40160
+                },
+                {
+                  "file": "data/kova/rs_proxy/rs_proxy_20260529.jsonl",
+                  "file_date": "2026-05-29",
+                  "scanned_rows": 58,
+                  "truncated": false,
+                  "size_bytes": 40168
+                },
+                {
+                  "file": "data/kova/rs_proxy/rs_proxy_20260530.jsonl",
+                  "file_date": "2026-05-30",
+                  "scanned_rows": 58,
+                  "truncated": false,
+                  "size_bytes": 40168
+                },
+                {
+                  "file": "data/kova/rs_proxy/rs_proxy_20260531.jsonl",
+                  "file_date": "2026-05-31",
+                  "scanned_rows": 59,
+                  "truncated": false,
+                  "size_bytes": 40872
+                },
+                {
+                  "file": "data/kova/rs_proxy/rs_proxy_20260601.jsonl",
+                  "file_date": "2026-06-01",
+                  "scanned_rows": 59,
+                  "truncated": false,
+                  "size_bytes": 40877
+                },
+                {
+                  "file": "data/kova/rs_proxy/rs_proxy_20260602.jsonl",
+                  "file_date": "2026-06-02",
+                  "scanned_rows": 59,
+                  "truncated": false,
+                  "size_bytes": 40826
+                },
+                {
+                  "file": "data/kova/rs_proxy/rs_proxy_20260603.jsonl",
+                  "file_date": "2026-06-03",
+                  "scanned_rows": 58,
+                  "truncated": false,
+                  "size_bytes": 40176
+                },
+                {
+                  "file": "data/kova/rs_proxy/rs_proxy_20260604.jsonl",
+                  "file_date": "2026-06-04",
+                  "scanned_rows": 58,
+                  "truncated": false,
+                  "size_bytes": 40164
+                },
+                {
+                  "file": "data/kova/rs_proxy/rs_proxy_20260605.jsonl",
+                  "file_date": "2026-06-05",
+                  "scanned_rows": 58,
+                  "truncated": false,
+                  "size_bytes": 40112
+                },
+                {
+                  "file": "data/kova/rs_proxy/rs_proxy_20260606.jsonl",
+                  "file_date": "2026-06-06",
+                  "scanned_rows": 58,
+                  "truncated": false,
+                  "size_bytes": 40111
+                },
+                {
+                  "file": "data/kova/rs_proxy/rs_proxy_20260607.jsonl",
+                  "file_date": "2026-06-07",
+                  "scanned_rows": 58,
+                  "truncated": false,
+                  "size_bytes": 40111
+                },
+                {
+                  "file": "data/kova/rs_proxy/rs_proxy_20260608.jsonl",
+                  "file_date": "2026-06-08",
+                  "scanned_rows": 58,
+                  "truncated": false,
+                  "size_bytes": 40169
+                },
+                {
+                  "file": "data/kova/rs_proxy/rs_proxy_20260609.jsonl",
+                  "file_date": "2026-06-09",
+                  "scanned_rows": 57,
+                  "truncated": false,
+                  "size_bytes": 39406
+                },
+                {
+                  "file": "data/kova/rs_proxy/rs_proxy_20260610.jsonl",
+                  "file_date": "2026-06-10",
+                  "scanned_rows": 57,
+                  "truncated": false,
+                  "size_bytes": 39593
+                },
+                {
+                  "file": "data/kova/rs_proxy/rs_proxy_20260611.jsonl",
+                  "file_date": "2026-06-11",
+                  "scanned_rows": 57,
+                  "truncated": false,
+                  "size_bytes": 39584
+                },
+                {
+                  "file": "data/kova/rs_proxy/rs_proxy_20260612.jsonl",
+                  "file_date": "2026-06-12",
+                  "scanned_rows": 57,
+                  "truncated": false,
+                  "size_bytes": 39589
+                },
+                {
+                  "file": "data/kova/rs_proxy/rs_proxy_20260613.jsonl",
+                  "file_date": "2026-06-13",
+                  "scanned_rows": 57,
+                  "truncated": false,
+                  "size_bytes": 39589
+                }
+              ]
+            },
+            "ok_row_count": 7500,
+            "unique_tickers": 1248,
+            "first_file_date": "2026-04-21",
+            "last_file_date": "2026-06-21",
+            "file_date_count": 28,
+            "row_asof_date_count": 28,
+            "first_row_asof_date": "2026-04-21",
+            "last_row_asof_date": "2026-06-21",
+            "rows_by_canonical_window_file_date": {
+              "late_strong": 3,
+              "mid_weak": 0,
+              "old_thin": 0
+            },
+            "rows_by_canonical_window_row_asof": {
+              "late_strong": 3,
+              "mid_weak": 0,
+              "old_thin": 0
+            },
+            "canonical_windows_with_file_rows": [
+              "late_strong"
+            ],
+            "canonical_windows_with_row_asof_rows": [
+              "late_strong"
+            ],
+            "status_counts": {
+              "insufficient_history": 7,
+              "ok": 7500
+            },
+            "dependency_presence": {
+              "ticker": {
+                "present_rows": 7507,
+                "scanned_rows": 7507,
+                "present_rate": 1.0
+              },
+              "asof_date": {
+                "present_rows": 7507,
+                "scanned_rows": 7507,
+                "present_rate": 1.0
+              },
+              "known_at": {
+                "present_rows": 7507,
+                "scanned_rows": 7507,
+                "present_rate": 1.0
+              },
+              "rs_proxy_rank_pct_20d": {
+                "present_rows": 7500,
+                "scanned_rows": 7507,
+                "present_rate": 0.9991
+              },
+              "excess_ret_20d_vs_spy": {
+                "present_rows": 7500,
+                "scanned_rows": 7507,
+                "present_rate": 0.9991
+              },
+              "status": {
+                "present_rows": 7507,
+                "scanned_rows": 7507,
+                "present_rate": 1.0
+              },
+              "entry_date": {
+                "present_rows": 0,
+                "scanned_rows": 7507,
+                "present_rate": 0.0
+              },
+              "target_price": {
+                "present_rows": 0,
+                "scanned_rows": 7507,
+                "present_rate": 0.0
+              }
+            },
+            "sample_rows": [
+              {
+                "ticker": "AAPL",
+                "asof_date": "2026-04-21",
+                "status": "ok",
+                "known_at": "daily OHLCV rows with date <= asof_date",
+                "_source_file": "data/kova/rs_proxy/rs_proxy_20260421.jsonl"
+              },
+              {
+                "ticker": "MSFT",
+                "asof_date": "2026-04-21",
+                "status": "ok",
+                "known_at": "daily OHLCV rows with date <= asof_date",
+                "_source_file": "data/kova/rs_proxy/rs_proxy_20260421.jsonl"
+              },
+              {
+                "ticker": "NVDA",
+                "asof_date": "2026-04-21",
+                "status": "ok",
+                "known_at": "daily OHLCV rows with date <= asof_date",
+                "_source_file": "data/kova/rs_proxy/rs_proxy_20260421.jsonl"
+              },
+              {
+                "ticker": "AAPL",
+                "asof_date": "2026-05-26",
+                "status": "ok",
+                "known_at": "daily OHLCV rows with date <= asof_date",
+                "_source_file": "data/kova/rs_proxy/rs_proxy_20260526.jsonl"
+              },
+              {
+                "ticker": "AMD",
+                "asof_date": "2026-05-26",
+                "status": "ok",
+                "known_at": "daily OHLCV rows with date <= asof_date",
+                "_source_file": "data/kova/rs_proxy/rs_proxy_20260526.jsonl"
+              }
+            ],
+            "readiness": {
+              "passed_for_multisource_alpha": false,
+              "blocking_reasons": [
+                "file_date_three_window_coverage_missing"
+              ]
+            }
+          },
+          "companyfacts_growth": {
+            "surface": "companyfacts_growth",
+            "directory": "data/kova/fundamentals",
+            "glob": "companyfacts_growth*.jsonl",
+            "file_count": 29,
+            "row_count": 40000,
+            "scan_limits": {
+              "max_rows_per_file": 5000,
+              "max_rows_per_surface": 40000,
+              "truncated_file_count": 21,
+              "scanned_file_sample": [
+                {
+                  "file": "data/kova/fundamentals/companyfacts_growth_20260421.jsonl",
+                  "file_date": "2026-04-21",
+                  "scanned_rows": 728,
+                  "truncated": false,
+                  "size_bytes": 451828
+                },
+                {
+                  "file": "data/kova/fundamentals/companyfacts_growth_20260526.jsonl",
+                  "file_date": "2026-05-26",
+                  "scanned_rows": 5000,
+                  "truncated": true,
+                  "size_bytes": 3415499
+                },
+                {
+                  "file": "data/kova/fundamentals/companyfacts_growth_20260527.jsonl",
+                  "file_date": "2026-05-27",
+                  "scanned_rows": 4611,
+                  "truncated": false,
+                  "size_bytes": 2856793
+                },
+                {
+                  "file": "data/kova/fundamentals/companyfacts_growth_20260528.jsonl",
+                  "file_date": "2026-05-28",
+                  "scanned_rows": 4611,
+                  "truncated": false,
+                  "size_bytes": 2856793
+                },
+                {
+                  "file": "data/kova/fundamentals/companyfacts_growth_20260529.jsonl",
+                  "file_date": "2026-05-29",
+                  "scanned_rows": 4593,
+                  "truncated": false,
+                  "size_bytes": 2845559
+                },
+                {
+                  "file": "data/kova/fundamentals/companyfacts_growth_20260530.jsonl",
+                  "file_date": "2026-05-30",
+                  "scanned_rows": 4588,
+                  "truncated": false,
+                  "size_bytes": 2842426
+                },
+                {
+                  "file": "data/kova/fundamentals/companyfacts_growth_20260531.jsonl",
+                  "file_date": "2026-05-31",
+                  "scanned_rows": 4588,
+                  "truncated": false,
+                  "size_bytes": 2842426
+                },
+                {
+                  "file": "data/kova/fundamentals/companyfacts_growth_20260601.jsonl",
+                  "file_date": "2026-06-01",
+                  "scanned_rows": 4588,
+                  "truncated": false,
+                  "size_bytes": 2842426
+                },
+                {
+                  "file": "data/kova/fundamentals/companyfacts_growth_20260602.jsonl",
+                  "file_date": "2026-06-02",
+                  "scanned_rows": 4588,
+                  "truncated": false,
+                  "size_bytes": 2842426
+                },
+                {
+                  "file": "data/kova/fundamentals/companyfacts_growth_20260603.jsonl",
+                  "file_date": "2026-06-03",
+                  "scanned_rows": 2105,
+                  "truncated": true,
+                  "size_bytes": 2842426
+                },
+                {
+                  "file": "data/kova/fundamentals/companyfacts_growth_20260604.jsonl",
+                  "file_date": "2026-06-04",
+                  "scanned_rows": 0,
+                  "truncated": true,
+                  "reason": "surface_scan_cap_reached"
+                },
+                {
+                  "file": "data/kova/fundamentals/companyfacts_growth_20260605.jsonl",
+                  "file_date": "2026-06-05",
+                  "scanned_rows": 0,
+                  "truncated": true,
+                  "reason": "surface_scan_cap_reached"
+                },
+                {
+                  "file": "data/kova/fundamentals/companyfacts_growth_20260606.jsonl",
+                  "file_date": "2026-06-06",
+                  "scanned_rows": 0,
+                  "truncated": true,
+                  "reason": "surface_scan_cap_reached"
+                },
+                {
+                  "file": "data/kova/fundamentals/companyfacts_growth_20260607.jsonl",
+                  "file_date": "2026-06-07",
+                  "scanned_rows": 0,
+                  "truncated": true,
+                  "reason": "surface_scan_cap_reached"
+                },
+                {
+                  "file": "data/kova/fundamentals/companyfacts_growth_20260608.jsonl",
+                  "file_date": "2026-06-08",
+                  "scanned_rows": 0,
+                  "truncated": true,
+                  "reason": "surface_scan_cap_reached"
+                },
+                {
+                  "file": "data/kova/fundamentals/companyfacts_growth_20260609.jsonl",
+                  "file_date": "2026-06-09",
+                  "scanned_rows": 0,
+                  "truncated": true,
+                  "reason": "surface_scan_cap_reached"
+                },
+                {
+                  "file": "data/kova/fundamentals/companyfacts_growth_20260610.jsonl",
+                  "file_date": "2026-06-10",
+                  "scanned_rows": 0,
+                  "truncated": true,
+                  "reason": "surface_scan_cap_reached"
+                },
+                {
+                  "file": "data/kova/fundamentals/companyfacts_growth_20260611.jsonl",
+                  "file_date": "2026-06-11",
+                  "scanned_rows": 0,
+                  "truncated": true,
+                  "reason": "surface_scan_cap_reached"
+                },
+                {
+                  "file": "data/kova/fundamentals/companyfacts_growth_20260612.jsonl",
+                  "file_date": "2026-06-12",
+                  "scanned_rows": 0,
+                  "truncated": true,
+                  "reason": "surface_scan_cap_reached"
+                },
+                {
+                  "file": "data/kova/fundamentals/companyfacts_growth_20260613.jsonl",
+                  "file_date": "2026-06-13",
+                  "scanned_rows": 0,
+                  "truncated": true,
+                  "reason": "surface_scan_cap_reached"
+                }
+              ]
+            },
+            "ok_row_count": 21608,
+            "unique_tickers": 40,
+            "first_file_date": "2026-04-21",
+            "last_file_date": "2026-06-03",
+            "file_date_count": 10,
+            "row_asof_date_count": 256,
+            "first_row_asof_date": "2023-04-28",
+            "last_row_asof_date": "2026-05-01",
+            "rows_by_canonical_window_file_date": {
+              "late_strong": 728,
+              "mid_weak": 0,
+              "old_thin": 0
+            },
+            "rows_by_canonical_window_row_asof": {
+              "late_strong": 9786,
+              "mid_weak": 9919,
+              "old_thin": 9742
+            },
+            "canonical_windows_with_file_rows": [
+              "late_strong"
+            ],
+            "canonical_windows_with_row_asof_rows": [
+              "late_strong",
+              "mid_weak",
+              "old_thin"
+            ],
+            "status_counts": {
+              "missing_prior_period": 18392,
+              "ok": 21608
+            },
+            "dependency_presence": {
+              "ticker": {
+                "present_rows": 40000,
+                "scanned_rows": 40000,
+                "present_rate": 1.0
+              },
+              "asof_date": {
+                "present_rows": 40000,
+                "scanned_rows": 40000,
+                "present_rate": 1.0
+              },
+              "query_asof_date": {
+                "present_rows": 40000,
+                "scanned_rows": 40000,
+                "present_rate": 1.0
+              },
+              "known_at": {
+                "present_rows": 40000,
+                "scanned_rows": 40000,
+                "present_rate": 1.0
+              },
+              "canonical": {
+                "present_rows": 40000,
+                "scanned_rows": 40000,
+                "present_rate": 1.0
+              },
+              "yoy_growth": {
+                "present_rows": 21608,
+                "scanned_rows": 40000,
+                "present_rate": 0.5402
+              },
+              "growth_status": {
+                "present_rows": 40000,
+                "scanned_rows": 40000,
+                "present_rate": 1.0
+              },
+              "entry_date": {
+                "present_rows": 0,
+                "scanned_rows": 40000,
+                "present_rate": 0.0
+              },
+              "target_price": {
+                "present_rows": 0,
+                "scanned_rows": 40000,
+                "present_rate": 0.0
+              }
+            },
+            "sample_rows": [
+              {
+                "ticker": "AAPL",
+                "asof_date": "2023-05-05",
+                "query_asof_date": "2026-04-21",
+                "growth_status": "missing_prior_period",
+                "known_at": "SEC companyfacts filed date; use only rows with asof_date <= signal_date",
+                "_source_file": "data/kova/fundamentals/companyfacts_growth_20260421.jsonl"
+              },
+              {
+                "ticker": "AAPL",
+                "asof_date": "2023-05-05",
+                "query_asof_date": "2026-04-21",
+                "growth_status": "missing_prior_period",
+                "known_at": "SEC companyfacts filed date; use only rows with asof_date <= signal_date",
+                "_source_file": "data/kova/fundamentals/companyfacts_growth_20260421.jsonl"
+              },
+              {
+                "ticker": "AAPL",
+                "asof_date": "2023-05-05",
+                "query_asof_date": "2026-04-21",
+                "growth_status": "missing_prior_period",
+                "known_at": "SEC companyfacts filed date; use only rows with asof_date <= signal_date",
+                "_source_file": "data/kova/fundamentals/companyfacts_growth_20260421.jsonl"
+              },
+              {
+                "ticker": "AAPL",
+                "asof_date": "2023-05-05",
+                "query_asof_date": "2026-04-21",
+                "growth_status": "missing_prior_period",
+                "known_at": "SEC companyfacts filed date; use only rows with asof_date <= signal_date",
+                "_source_file": "data/kova/fundamentals/companyfacts_growth_20260421.jsonl"
+              },
+              {
+                "ticker": "AAPL",
+                "asof_date": "2023-05-05",
+                "query_asof_date": "2026-04-21",
+                "growth_status": "missing_prior_period",
+                "known_at": "SEC companyfacts filed date; use only rows with asof_date <= signal_date",
+                "_source_file": "data/kova/fundamentals/companyfacts_growth_20260421.jsonl"
+              }
+            ],
+            "readiness": {
+              "passed_for_multisource_alpha": false,
+              "blocking_reasons": [
+                "existing_companyfacts_growth_family_not_new_by_itself"
+              ]
+            }
+          },
+          "sec13f_ownership": {
+            "surface": "sec13f_ownership",
+            "directory": "data/kova/institutional",
+            "glob": "sec13f_ownership_*.jsonl",
+            "file_count": 28,
+            "row_count": 12286,
+            "scan_limits": {
+              "max_rows_per_file": 5000,
+              "max_rows_per_surface": 40000,
+              "truncated_file_count": 0,
+              "scanned_file_sample": [
+                {
+                  "file": "data/kova/institutional/sec13f_ownership_20260421.jsonl",
+                  "file_date": "2026-04-21",
+                  "scanned_rows": 3,
+                  "truncated": false,
+                  "size_bytes": 726
+                },
+                {
+                  "file": "data/kova/institutional/sec13f_ownership_20260526.jsonl",
+                  "file_date": "2026-05-26",
+                  "scanned_rows": 59,
+                  "truncated": false,
+                  "size_bytes": 14240
+                },
+                {
+                  "file": "data/kova/institutional/sec13f_ownership_20260527.jsonl",
+                  "file_date": "2026-05-27",
+                  "scanned_rows": 59,
+                  "truncated": false,
+                  "size_bytes": 14240
+                },
+                {
+                  "file": "data/kova/institutional/sec13f_ownership_20260528.jsonl",
+                  "file_date": "2026-05-28",
+                  "scanned_rows": 59,
+                  "truncated": false,
+                  "size_bytes": 14240
+                },
+                {
+                  "file": "data/kova/institutional/sec13f_ownership_20260529.jsonl",
+                  "file_date": "2026-05-29",
+                  "scanned_rows": 59,
+                  "truncated": false,
+                  "size_bytes": 14240
+                },
+                {
+                  "file": "data/kova/institutional/sec13f_ownership_20260530.jsonl",
+                  "file_date": "2026-05-30",
+                  "scanned_rows": 59,
+                  "truncated": false,
+                  "size_bytes": 14240
+                },
+                {
+                  "file": "data/kova/institutional/sec13f_ownership_20260531.jsonl",
+                  "file_date": "2026-05-31",
+                  "scanned_rows": 60,
+                  "truncated": false,
+                  "size_bytes": 14482
+                },
+                {
+                  "file": "data/kova/institutional/sec13f_ownership_20260601.jsonl",
+                  "file_date": "2026-06-01",
+                  "scanned_rows": 60,
+                  "truncated": false,
+                  "size_bytes": 14482
+                },
+                {
+                  "file": "data/kova/institutional/sec13f_ownership_20260602.jsonl",
+                  "file_date": "2026-06-02",
+                  "scanned_rows": 60,
+                  "truncated": false,
+                  "size_bytes": 14482
+                },
+                {
+                  "file": "data/kova/institutional/sec13f_ownership_20260603.jsonl",
+                  "file_date": "2026-06-03",
+                  "scanned_rows": 59,
+                  "truncated": false,
+                  "size_bytes": 14240
+                },
+                {
+                  "file": "data/kova/institutional/sec13f_ownership_20260604.jsonl",
+                  "file_date": "2026-06-04",
+                  "scanned_rows": 59,
+                  "truncated": false,
+                  "size_bytes": 14240
+                },
+                {
+                  "file": "data/kova/institutional/sec13f_ownership_20260605.jsonl",
+                  "file_date": "2026-06-05",
+                  "scanned_rows": 59,
+                  "truncated": false,
+                  "size_bytes": 14240
+                },
+                {
+                  "file": "data/kova/institutional/sec13f_ownership_20260606.jsonl",
+                  "file_date": "2026-06-06",
+                  "scanned_rows": 59,
+                  "truncated": false,
+                  "size_bytes": 14240
+                },
+                {
+                  "file": "data/kova/institutional/sec13f_ownership_20260607.jsonl",
+                  "file_date": "2026-06-07",
+                  "scanned_rows": 59,
+                  "truncated": false,
+                  "size_bytes": 14240
+                },
+                {
+                  "file": "data/kova/institutional/sec13f_ownership_20260608.jsonl",
+                  "file_date": "2026-06-08",
+                  "scanned_rows": 59,
+                  "truncated": false,
+                  "size_bytes": 14240
+                },
+                {
+                  "file": "data/kova/institutional/sec13f_ownership_20260609.jsonl",
+                  "file_date": "2026-06-09",
+                  "scanned_rows": 58,
+                  "truncated": false,
+                  "size_bytes": 13998
+                },
+                {
+                  "file": "data/kova/institutional/sec13f_ownership_20260610.jsonl",
+                  "file_date": "2026-06-10",
+                  "scanned_rows": 58,
+                  "truncated": false,
+                  "size_bytes": 13998
+                },
+                {
+                  "file": "data/kova/institutional/sec13f_ownership_20260611.jsonl",
+                  "file_date": "2026-06-11",
+                  "scanned_rows": 58,
+                  "truncated": false,
+                  "size_bytes": 13998
+                },
+                {
+                  "file": "data/kova/institutional/sec13f_ownership_20260612.jsonl",
+                  "file_date": "2026-06-12",
+                  "scanned_rows": 58,
+                  "truncated": false,
+                  "size_bytes": 13998
+                },
+                {
+                  "file": "data/kova/institutional/sec13f_ownership_20260613.jsonl",
+                  "file_date": "2026-06-13",
+                  "scanned_rows": 1246,
+                  "truncated": false,
+                  "size_bytes": 300671
+                }
+              ]
+            },
+            "ok_row_count": 0,
+            "unique_tickers": 1249,
+            "first_file_date": "2026-04-21",
+            "last_file_date": "2026-06-21",
+            "file_date_count": 28,
+            "row_asof_date_count": 28,
+            "first_row_asof_date": "2026-04-21",
+            "last_row_asof_date": "2026-06-21",
+            "rows_by_canonical_window_file_date": {
+              "late_strong": 3,
+              "mid_weak": 0,
+              "old_thin": 0
+            },
+            "rows_by_canonical_window_row_asof": {
+              "late_strong": 3,
+              "mid_weak": 0,
+              "old_thin": 0
+            },
+            "canonical_windows_with_file_rows": [
+              "late_strong"
+            ],
+            "canonical_windows_with_row_asof_rows": [
+              "late_strong"
+            ],
+            "status_counts": {
+              "skipped": 12286
+            },
+            "dependency_presence": {
+              "ticker": {
+                "present_rows": 12286,
+                "scanned_rows": 12286,
+                "present_rate": 1.0
+              },
+              "asof_date": {
+                "present_rows": 12286,
+                "scanned_rows": 12286,
+                "present_rate": 1.0
+              },
+              "provider": {
+                "present_rows": 12286,
+                "scanned_rows": 12286,
+                "present_rate": 1.0
+              },
+              "status": {
+                "present_rows": 12286,
+                "scanned_rows": 12286,
+                "present_rate": 1.0
+              },
+              "reason": {
+                "present_rows": 12286,
+                "scanned_rows": 12286,
+                "present_rate": 1.0
+              },
+              "entry_date": {
+                "present_rows": 0,
+                "scanned_rows": 12286,
+                "present_rate": 0.0
+              },
+              "target_price": {
+                "present_rows": 0,
+                "scanned_rows": 12286,
+                "present_rate": 0.0
+              }
+            },
+            "sample_rows": [
+              {
+                "ticker": "AAPL",
+                "asof_date": "2026-04-21",
+                "status": "skipped",
+                "reason": "no_sec13f_zip_or_year_quarter_supplied",
+                "_source_file": "data/kova/institutional/sec13f_ownership_20260421.jsonl"
+              },
+              {
+                "ticker": "MSFT",
+                "asof_date": "2026-04-21",
+                "status": "skipped",
+                "reason": "no_sec13f_zip_or_year_quarter_supplied",
+                "_source_file": "data/kova/institutional/sec13f_ownership_20260421.jsonl"
+              },
+              {
+                "ticker": "NVDA",
+                "asof_date": "2026-04-21",
+                "status": "skipped",
+                "reason": "no_sec13f_zip_or_year_quarter_supplied",
+                "_source_file": "data/kova/institutional/sec13f_ownership_20260421.jsonl"
+              },
+              {
+                "ticker": "AAPL",
+                "asof_date": "2026-05-26",
+                "status": "skipped",
+                "reason": "no_sec13f_zip_or_year_quarter_supplied",
+                "_source_file": "data/kova/institutional/sec13f_ownership_20260526.jsonl"
+              },
+              {
+                "ticker": "AMD",
+                "asof_date": "2026-05-26",
+                "status": "skipped",
+                "reason": "no_sec13f_zip_or_year_quarter_supplied",
+                "_source_file": "data/kova/institutional/sec13f_ownership_20260526.jsonl"
+              }
+            ],
+            "readiness": {
+              "passed_for_multisource_alpha": false,
+              "blocking_reasons": [
+                "no_ok_rows",
+                "file_date_three_window_coverage_missing"
+              ]
+            }
+          },
+          "intraday_ohlcv": {
+            "surface": "intraday_ohlcv",
+            "directory": "data/kova/intraday",
+            "glob": "intraday_ohlcv_*.jsonl",
+            "file_count": 28,
+            "row_count": 12286,
+            "scan_limits": {
+              "max_rows_per_file": 5000,
+              "max_rows_per_surface": 40000,
+              "truncated_file_count": 0,
+              "scanned_file_sample": [
+                {
+                  "file": "data/kova/intraday/intraday_ohlcv_20260421.jsonl",
+                  "file_date": "2026-04-21",
+                  "scanned_rows": 3,
+                  "truncated": false,
+                  "size_bytes": 720
+                },
+                {
+                  "file": "data/kova/intraday/intraday_ohlcv_20260526.jsonl",
+                  "file_date": "2026-05-26",
+                  "scanned_rows": 59,
+                  "truncated": false,
+                  "size_bytes": 14122
+                },
+                {
+                  "file": "data/kova/intraday/intraday_ohlcv_20260527.jsonl",
+                  "file_date": "2026-05-27",
+                  "scanned_rows": 59,
+                  "truncated": false,
+                  "size_bytes": 14122
+                },
+                {
+                  "file": "data/kova/intraday/intraday_ohlcv_20260528.jsonl",
+                  "file_date": "2026-05-28",
+                  "scanned_rows": 59,
+                  "truncated": false,
+                  "size_bytes": 14122
+                },
+                {
+                  "file": "data/kova/intraday/intraday_ohlcv_20260529.jsonl",
+                  "file_date": "2026-05-29",
+                  "scanned_rows": 59,
+                  "truncated": false,
+                  "size_bytes": 14122
+                },
+                {
+                  "file": "data/kova/intraday/intraday_ohlcv_20260530.jsonl",
+                  "file_date": "2026-05-30",
+                  "scanned_rows": 59,
+                  "truncated": false,
+                  "size_bytes": 14122
+                },
+                {
+                  "file": "data/kova/intraday/intraday_ohlcv_20260531.jsonl",
+                  "file_date": "2026-05-31",
+                  "scanned_rows": 60,
+                  "truncated": false,
+                  "size_bytes": 14362
+                },
+                {
+                  "file": "data/kova/intraday/intraday_ohlcv_20260601.jsonl",
+                  "file_date": "2026-06-01",
+                  "scanned_rows": 60,
+                  "truncated": false,
+                  "size_bytes": 14362
+                },
+                {
+                  "file": "data/kova/intraday/intraday_ohlcv_20260602.jsonl",
+                  "file_date": "2026-06-02",
+                  "scanned_rows": 60,
+                  "truncated": false,
+                  "size_bytes": 14362
+                },
+                {
+                  "file": "data/kova/intraday/intraday_ohlcv_20260603.jsonl",
+                  "file_date": "2026-06-03",
+                  "scanned_rows": 59,
+                  "truncated": false,
+                  "size_bytes": 14122
+                },
+                {
+                  "file": "data/kova/intraday/intraday_ohlcv_20260604.jsonl",
+                  "file_date": "2026-06-04",
+                  "scanned_rows": 59,
+                  "truncated": false,
+                  "size_bytes": 14122
+                },
+                {
+                  "file": "data/kova/intraday/intraday_ohlcv_20260605.jsonl",
+                  "file_date": "2026-06-05",
+                  "scanned_rows": 59,
+                  "truncated": false,
+                  "size_bytes": 14122
+                },
+                {
+                  "file": "data/kova/intraday/intraday_ohlcv_20260606.jsonl",
+                  "file_date": "2026-06-06",
+                  "scanned_rows": 59,
+                  "truncated": false,
+                  "size_bytes": 14122
+                },
+                {
+                  "file": "data/kova/intraday/intraday_ohlcv_20260607.jsonl",
+                  "file_date": "2026-06-07",
+                  "scanned_rows": 59,
+                  "truncated": false,
+                  "size_bytes": 14122
+                },
+                {
+                  "file": "data/kova/intraday/intraday_ohlcv_20260608.jsonl",
+                  "file_date": "2026-06-08",
+                  "scanned_rows": 59,
+                  "truncated": false,
+                  "size_bytes": 14122
+                },
+                {
+                  "file": "data/kova/intraday/intraday_ohlcv_20260609.jsonl",
+                  "file_date": "2026-06-09",
+                  "scanned_rows": 58,
+                  "truncated": false,
+                  "size_bytes": 13882
+                },
+                {
+                  "file": "data/kova/intraday/intraday_ohlcv_20260610.jsonl",
+                  "file_date": "2026-06-10",
+                  "scanned_rows": 58,
+                  "truncated": false,
+                  "size_bytes": 13882
+                },
+                {
+                  "file": "data/kova/intraday/intraday_ohlcv_20260611.jsonl",
+                  "file_date": "2026-06-11",
+                  "scanned_rows": 58,
+                  "truncated": false,
+                  "size_bytes": 13882
+                },
+                {
+                  "file": "data/kova/intraday/intraday_ohlcv_20260612.jsonl",
+                  "file_date": "2026-06-12",
+                  "scanned_rows": 58,
+                  "truncated": false,
+                  "size_bytes": 13882
+                },
+                {
+                  "file": "data/kova/intraday/intraday_ohlcv_20260613.jsonl",
+                  "file_date": "2026-06-13",
+                  "scanned_rows": 1246,
+                  "truncated": false,
+                  "size_bytes": 298179
+                }
+              ]
+            },
+            "ok_row_count": 0,
+            "unique_tickers": 1249,
+            "first_file_date": "2026-04-21",
+            "last_file_date": "2026-06-21",
+            "file_date_count": 28,
+            "row_asof_date_count": 28,
+            "first_row_asof_date": "2026-04-21",
+            "last_row_asof_date": "2026-06-21",
+            "rows_by_canonical_window_file_date": {
+              "late_strong": 3,
+              "mid_weak": 0,
+              "old_thin": 0
+            },
+            "rows_by_canonical_window_row_asof": {
+              "late_strong": 3,
+              "mid_weak": 0,
+              "old_thin": 0
+            },
+            "canonical_windows_with_file_rows": [
+              "late_strong"
+            ],
+            "canonical_windows_with_row_asof_rows": [
+              "late_strong"
+            ],
+            "status_counts": {
+              "skipped": 12286
+            },
+            "dependency_presence": {
+              "ticker": {
+                "present_rows": 12286,
+                "scanned_rows": 12286,
+                "present_rate": 1.0
+              },
+              "asof_date": {
+                "present_rows": 12286,
+                "scanned_rows": 12286,
+                "present_rate": 1.0
+              },
+              "provider": {
+                "present_rows": 12286,
+                "scanned_rows": 12286,
+                "present_rate": 1.0
+              },
+              "status": {
+                "present_rows": 12286,
+                "scanned_rows": 12286,
+                "present_rate": 1.0
+              },
+              "reason": {
+                "present_rows": 12286,
+                "scanned_rows": 12286,
+                "present_rate": 1.0
+              },
+              "entry_date": {
+                "present_rows": 0,
+                "scanned_rows": 12286,
+                "present_rate": 0.0
+              },
+              "target_price": {
+                "present_rows": 0,
+                "scanned_rows": 12286,
+                "present_rate": 0.0
+              }
+            },
+            "sample_rows": [
+              {
+                "ticker": "AAPL",
+                "asof_date": "2026-04-21",
+                "status": "skipped",
+                "reason": "refresh_intraday_false_or_missing_ALPHA_VANTAGE_API_KEY",
+                "_source_file": "data/kova/intraday/intraday_ohlcv_20260421.jsonl"
+              },
+              {
+                "ticker": "MSFT",
+                "asof_date": "2026-04-21",
+                "status": "skipped",
+                "reason": "refresh_intraday_false_or_missing_ALPHA_VANTAGE_API_KEY",
+                "_source_file": "data/kova/intraday/intraday_ohlcv_20260421.jsonl"
+              },
+              {
+                "ticker": "NVDA",
+                "asof_date": "2026-04-21",
+                "status": "skipped",
+                "reason": "refresh_intraday_false_or_missing_ALPHA_VANTAGE_API_KEY",
+                "_source_file": "data/kova/intraday/intraday_ohlcv_20260421.jsonl"
+              },
+              {
+                "ticker": "AAPL",
+                "asof_date": "2026-05-26",
+                "status": "skipped",
+                "reason": "refresh_intraday_false_or_missing_ALPHA_VANTAGE_API_KEY",
+                "_source_file": "data/kova/intraday/intraday_ohlcv_20260526.jsonl"
+              },
+              {
+                "ticker": "AMD",
+                "asof_date": "2026-05-26",
+                "status": "skipped",
+                "reason": "refresh_intraday_false_or_missing_ALPHA_VANTAGE_API_KEY",
+                "_source_file": "data/kova/intraday/intraday_ohlcv_20260526.jsonl"
+              }
+            ],
+            "readiness": {
+              "passed_for_multisource_alpha": false,
+              "blocking_reasons": [
+                "no_ok_rows",
+                "file_date_three_window_coverage_missing"
+              ]
+            }
+          },
+          "kova_snapshots": {
+            "surface": "kova_snapshots",
+            "directory": "data/kova/snapshots",
+            "glob": "kova_data_snapshot_*.json",
+            "file_count": 28,
+            "row_count": 28,
+            "scan_limits": {
+              "max_rows_per_file": 5000,
+              "max_rows_per_surface": 40000,
+              "truncated_file_count": 0,
+              "scanned_file_sample": [
+                {
+                  "file": "data/kova/snapshots/kova_data_snapshot_20260421.json",
+                  "file_date": "2026-04-21",
+                  "scanned_rows": 1,
+                  "truncated": false,
+                  "size_bytes": 1401
+                },
+                {
+                  "file": "data/kova/snapshots/kova_data_snapshot_20260526.json",
+                  "file_date": "2026-05-26",
+                  "scanned_rows": 1,
+                  "truncated": false,
+                  "size_bytes": 2074
+                },
+                {
+                  "file": "data/kova/snapshots/kova_data_snapshot_20260527.json",
+                  "file_date": "2026-05-27",
+                  "scanned_rows": 1,
+                  "truncated": false,
+                  "size_bytes": 2101
+                },
+                {
+                  "file": "data/kova/snapshots/kova_data_snapshot_20260528.json",
+                  "file_date": "2026-05-28",
+                  "scanned_rows": 1,
+                  "truncated": false,
+                  "size_bytes": 2101
+                },
+                {
+                  "file": "data/kova/snapshots/kova_data_snapshot_20260529.json",
+                  "file_date": "2026-05-29",
+                  "scanned_rows": 1,
+                  "truncated": false,
+                  "size_bytes": 2101
+                },
+                {
+                  "file": "data/kova/snapshots/kova_data_snapshot_20260530.json",
+                  "file_date": "2026-05-30",
+                  "scanned_rows": 1,
+                  "truncated": false,
+                  "size_bytes": 2101
+                },
+                {
+                  "file": "data/kova/snapshots/kova_data_snapshot_20260531.json",
+                  "file_date": "2026-05-31",
+                  "scanned_rows": 1,
+                  "truncated": false,
+                  "size_bytes": 2114
+                },
+                {
+                  "file": "data/kova/snapshots/kova_data_snapshot_20260601.json",
+                  "file_date": "2026-06-01",
+                  "scanned_rows": 1,
+                  "truncated": false,
+                  "size_bytes": 2114
+                },
+                {
+                  "file": "data/kova/snapshots/kova_data_snapshot_20260602.json",
+                  "file_date": "2026-06-02",
+                  "scanned_rows": 1,
+                  "truncated": false,
+                  "size_bytes": 2114
+                },
+                {
+                  "file": "data/kova/snapshots/kova_data_snapshot_20260603.json",
+                  "file_date": "2026-06-03",
+                  "scanned_rows": 1,
+                  "truncated": false,
+                  "size_bytes": 2101
+                },
+                {
+                  "file": "data/kova/snapshots/kova_data_snapshot_20260604.json",
+                  "file_date": "2026-06-04",
+                  "scanned_rows": 1,
+                  "truncated": false,
+                  "size_bytes": 2101
+                },
+                {
+                  "file": "data/kova/snapshots/kova_data_snapshot_20260605.json",
+                  "file_date": "2026-06-05",
+                  "scanned_rows": 1,
+                  "truncated": false,
+                  "size_bytes": 2101
+                },
+                {
+                  "file": "data/kova/snapshots/kova_data_snapshot_20260606.json",
+                  "file_date": "2026-06-06",
+                  "scanned_rows": 1,
+                  "truncated": false,
+                  "size_bytes": 2101
+                },
+                {
+                  "file": "data/kova/snapshots/kova_data_snapshot_20260607.json",
+                  "file_date": "2026-06-07",
+                  "scanned_rows": 1,
+                  "truncated": false,
+                  "size_bytes": 2101
+                },
+                {
+                  "file": "data/kova/snapshots/kova_data_snapshot_20260608.json",
+                  "file_date": "2026-06-08",
+                  "scanned_rows": 1,
+                  "truncated": false,
+                  "size_bytes": 2101
+                },
+                {
+                  "file": "data/kova/snapshots/kova_data_snapshot_20260609.json",
+                  "file_date": "2026-06-09",
+                  "scanned_rows": 1,
+                  "truncated": false,
+                  "size_bytes": 2088
+                },
+                {
+                  "file": "data/kova/snapshots/kova_data_snapshot_20260610.json",
+                  "file_date": "2026-06-10",
+                  "scanned_rows": 1,
+                  "truncated": false,
+                  "size_bytes": 2088
+                },
+                {
+                  "file": "data/kova/snapshots/kova_data_snapshot_20260611.json",
+                  "file_date": "2026-06-11",
+                  "scanned_rows": 1,
+                  "truncated": false,
+                  "size_bytes": 2088
+                },
+                {
+                  "file": "data/kova/snapshots/kova_data_snapshot_20260612.json",
+                  "file_date": "2026-06-12",
+                  "scanned_rows": 1,
+                  "truncated": false,
+                  "size_bytes": 2088
+                },
+                {
+                  "file": "data/kova/snapshots/kova_data_snapshot_20260613.json",
+                  "file_date": "2026-06-13",
+                  "scanned_rows": 1,
+                  "truncated": false,
+                  "size_bytes": 44760
+                }
+              ]
+            },
+            "ok_row_count": 28,
+            "unique_tickers": 0,
+            "first_file_date": "2026-04-21",
+            "last_file_date": "2026-06-21",
+            "file_date_count": 28,
+            "row_asof_date_count": 28,
+            "first_row_asof_date": "2026-04-21",
+            "last_row_asof_date": "2026-06-21",
+            "rows_by_canonical_window_file_date": {
+              "late_strong": 1,
+              "mid_weak": 0,
+              "old_thin": 0
+            },
+            "rows_by_canonical_window_row_asof": {
+              "late_strong": 1,
+              "mid_weak": 0,
+              "old_thin": 0
+            },
+            "canonical_windows_with_file_rows": [
+              "late_strong"
+            ],
+            "canonical_windows_with_row_asof_rows": [
+              "late_strong"
+            ],
+            "status_counts": {
+              "ok": 28
+            },
+            "dependency_presence": {
+              "asof_date": {
+                "present_rows": 28,
+                "scanned_rows": 28,
+                "present_rate": 1.0
+              },
+              "status": {
+                "present_rows": 28,
+                "scanned_rows": 28,
+                "present_rate": 1.0
+              },
+              "entry_date": {
+                "present_rows": 0,
+                "scanned_rows": 28,
+                "present_rate": 0.0
+              },
+              "target_price": {
+                "present_rows": 0,
+                "scanned_rows": 28,
+                "present_rate": 0.0
+              }
+            },
+            "sample_rows": [
+              {
+                "asof_date": "2026-04-21",
+                "status": "ok",
+                "_source_file": "data/kova/snapshots/kova_data_snapshot_20260421.json"
+              },
+              {
+                "asof_date": "2026-05-26",
+                "status": "ok",
+                "_source_file": "data/kova/snapshots/kova_data_snapshot_20260526.json"
+              },
+              {
+                "asof_date": "2026-05-27",
+                "status": "ok",
+                "_source_file": "data/kova/snapshots/kova_data_snapshot_20260527.json"
+              },
+              {
+                "asof_date": "2026-05-28",
+                "status": "ok",
+                "_source_file": "data/kova/snapshots/kova_data_snapshot_20260528.json"
+              },
+              {
+                "asof_date": "2026-05-29",
+                "status": "ok",
+                "_source_file": "data/kova/snapshots/kova_data_snapshot_20260529.json"
+              }
+            ],
+            "readiness": {
+              "passed_for_multisource_alpha": false,
+              "blocking_reasons": [
+                "file_date_three_window_coverage_missing"
+              ]
+            }
+          }
+        },
+        "shared_helper_paths": {
+          "helper_count": 0,
+          "helpers": [],
+          "daily_run_wiring_found": false,
+          "historical_replay_wiring_found": false,
+          "status": "missing_shared_kova_multisource_helper"
+        },
+        "forward_replacement_value_matches": {
+          "ledger_path": "data/paper_sleeves/forward_replacement_value.jsonl",
+          "ledger_rows_scanned": 31,
+          "matched_rows": 0,
+          "enriched_matched_rows": 0,
+          "sample_matches": []
+        }
+      },
+      "gate3": {
+        "passed": false,
+        "blocking_reason": "Kova multi-source candidate generation is blocked before survival/sample checks because Gate 2 found incomplete fixed-window coverage, skipped institutional/intraday surfaces, no shared helper, and no Kova closed forward replacement rows.",
+        "baseline_survival_by_window": {
+          "late_strong": {
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "survival_rate": 0.8039
+          },
+          "mid_weak": {
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "survival_rate": 0.7925
+          },
+          "old_thin": {
+            "signals_generated": 60,
+            "signals_survived": 52,
+            "survival_rate": 0.8667
+          }
+        },
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "survival_rate": 0.0,
+        "minimum_core_survival_rate": 0.7925
+      },
+      "gate4": {
+        "ran_after_strategy": false,
+        "reason_after_not_run": "Blocked at Gate 2/3 readiness; after intentionally equals before.",
+        "before_windows": {
+          "late_strong": {
+            "label": "late_strong",
+            "start": "2025-10-23",
+            "end": "2026-04-21",
+            "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+            "expected_value_score": 5.1628,
+            "sharpe_daily": 4.41,
+            "total_pnl": 117072.92,
+            "max_drawdown_pct": 0.0665,
+            "win_rate": 0.8333,
+            "trade_count": 18,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "survival_rate": 0.8039
+          },
+          "mid_weak": {
+            "label": "mid_weak",
+            "start": "2025-04-23",
+            "end": "2025-10-22",
+            "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+            "expected_value_score": 2.1402,
+            "sharpe_daily": 2.74,
+            "total_pnl": 78110.11,
+            "max_drawdown_pct": 0.1119,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "survival_rate": 0.7925
+          },
+          "old_thin": {
+            "label": "old_thin",
+            "start": "2024-10-02",
+            "end": "2025-04-22",
+            "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+            "expected_value_score": 0.5911,
+            "sharpe_daily": 1.49,
+            "total_pnl": 39667.96,
+            "max_drawdown_pct": 0.1001,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "signals_generated": 60,
+            "signals_survived": 52,
+            "survival_rate": 0.8667
+          }
+        },
+        "after_windows": {
+          "late_strong": {
+            "label": "late_strong",
+            "start": "2025-10-23",
+            "end": "2026-04-21",
+            "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+            "expected_value_score": 5.1628,
+            "sharpe_daily": 4.41,
+            "total_pnl": 117072.92,
+            "max_drawdown_pct": 0.0665,
+            "win_rate": 0.8333,
+            "trade_count": 18,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "survival_rate": 0.8039
+          },
+          "mid_weak": {
+            "label": "mid_weak",
+            "start": "2025-04-23",
+            "end": "2025-10-22",
+            "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+            "expected_value_score": 2.1402,
+            "sharpe_daily": 2.74,
+            "total_pnl": 78110.11,
+            "max_drawdown_pct": 0.1119,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "survival_rate": 0.7925
+          },
+          "old_thin": {
+            "label": "old_thin",
+            "start": "2024-10-02",
+            "end": "2025-04-22",
+            "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+            "expected_value_score": 0.5911,
+            "sharpe_daily": 1.49,
+            "total_pnl": 39667.96,
+            "max_drawdown_pct": 0.1001,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "signals_generated": 60,
+            "signals_survived": 52,
+            "survival_rate": 0.8667
+          }
+        },
+        "delta_by_window": {
+          "late_strong": {
+            "expected_value_score": 0.0,
+            "total_pnl": 0.0,
+            "max_drawdown_pct": 0.0,
+            "trade_count": 0.0,
+            "survival_rate": 0.0
+          },
+          "mid_weak": {
+            "expected_value_score": 0.0,
+            "total_pnl": 0.0,
+            "max_drawdown_pct": 0.0,
+            "trade_count": 0.0,
+            "survival_rate": 0.0
+          },
+          "old_thin": {
+            "expected_value_score": 0.0,
+            "total_pnl": 0.0,
+            "max_drawdown_pct": 0.0,
+            "trade_count": 0.0,
+            "survival_rate": 0.0
+          }
+        },
+        "aggregate_before": {
+          "aggregate_expected_value_score": 7.8941,
+          "aggregate_total_pnl": 234850.99,
+          "total_trade_count": 61,
+          "aggregate_signals_generated": 164,
+          "aggregate_signals_survived": 135,
+          "min_survival_rate": 0.7925,
+          "max_window_drawdown_pct": 0.1119
+        },
+        "aggregate_after": {
+          "aggregate_expected_value_score": 7.8941,
+          "aggregate_total_pnl": 234850.99,
+          "total_trade_count": 61,
+          "aggregate_signals_generated": 164,
+          "aggregate_signals_survived": 135,
+          "min_survival_rate": 0.7925,
+          "max_window_drawdown_pct": 0.1119
+        },
+        "aggregate_delta": {
+          "aggregate_expected_value_score": 0.0,
+          "aggregate_total_pnl": 0.0,
+          "total_trade_count": 0,
+          "min_survival_rate": 0.0,
+          "max_window_drawdown_pct": 0.0
+        },
+        "failed_reasons": [
+          "gate2_surface_readiness_blocked",
+          "no_after_strategy_run",
+          "no_candidate_trades"
+        ],
+        "passed": false
+      },
+      "production_impact": {
+        "strategy_code_changed": false,
+        "shared_helper_changed": false,
+        "backtester_adapter_changed": false,
+        "run_adapter_changed": false,
+        "daily_snapshot_changed": false,
+        "daily_snapshot_exposed": false,
+        "live_orders_changed": false,
+        "trade_enabled_changed": false,
+        "trade_enabled": false,
+        "uses_kova_data": true,
+        "backtest_production_parity_risk": "avoided_by_blocking_before_strategy_logic",
+        "parity_note": "No buy/sell/filter/ranking/sizing/risk code changed. A future positive Kova alpha must use one shared default-off helper that historical replay and daily snapshots both call."
+      },
+      "post_run_reflection": {
+        "why_blocked": "Kova is a distinct forward data surface, but it is not a Gate-4 candidate source yet. RS proxy has only late/recent file-date coverage, Companyfacts growth is an already explored/frozen family by itself, SEC13F and intraday rows are skipped in the current local snapshots, no Kova shared helper exists, and no closed Kova forward replacement-value rows are present.",
+        "negative_result_reflection": "This is a data-edge readiness block, not evidence that Kova flow/fundamental data lacks alpha. The failure is that the surface cannot support the required three-window before/after or production/backtest parity claim today.",
+        "forbidden_near_neighbor_retry": "Do not sweep Kova RS rank percentiles, Companyfacts growth thresholds, 13F skipped rows, intraday refresh flags, top-N, hold days, cooldown, or notional until there is fixed-window PIT coverage or closed forward replacement-value evidence.",
+        "next_new_evidence_required": "Accumulate at least 20-30 closed Kova forward replacement rows under a shared default-off observer, or add PIT historical coverage for the same fields across all three canonical windows."
+      },
+      "lean_quality_passed": true,
+      "updated_at": "2026-06-22T04:13:36+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-22T03:15:35+00:00"
+  "updated_at": "2026-06-22T04:13:36+00:00"
 }
