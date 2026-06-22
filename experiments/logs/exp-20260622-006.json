@@ -1,0 +1,113 @@
+{
+  "after_metrics": {
+    "expected_value_score": 7.7161,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": 232656.61,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 7.8941,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": 234850.99,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": -0.178,
+    "actual_pnl_delta": -2194.38,
+    "actual_success": 0,
+    "brier_score": 0.09,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -0.328,
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "thin_sample",
+      "not_incremental_vs_rolling_corr",
+      "index_overlap_noise"
+    ],
+    "predicted_success_probability": 0.3,
+    "realized_failure_mode": "not_incremental_vs_rolling_corr",
+    "surprise_level": "low",
+    "surprise_note": "Not merely non-incremental: co-ownership laggards were net-negative and lower win-rate than corr peers, i.e. adverse selection vs the accepted peer definition."
+  },
+  "causal_components": [
+    "shared helper",
+    "historical replay",
+    "daily default-off snapshot",
+    "parity test",
+    "execution envelope",
+    "full-stack verdict"
+  ],
+  "change_summary": "Co-ownership (13F shared-holder graph) peer-shock laggard admission vs accepted rolling-corr peer definition, 3-window default-off paper overlay.",
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "Use the 13F co-ownership graph (manager_cik bipartite projection edges) as the peer-adjacency source for peer-shock laggard admission, replacing rolling-correlation peers.",
+  "component": "quant/experiments/exp_20260622_006_coownership_peer_shock.py, data/experiments/exp-20260622-006/exp_20260622_006_coownership_peer_shock.json, experiments/cards/exp-20260622-006.md, experiments/manifests/exp-20260622-006.json, experiments/tickets/exp-20260622-006.json, experiments/logs/exp-20260622-006.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": -0.178,
+    "total_pnl": -2194.38
+  },
+  "experiment_id": "exp-20260622-006",
+  "hypothesis": "Stocks linked by shared 13F institutional holders (co-ownership network peers, Anton-Polk Connected Stocks) under-react to an idiosyncratic up-move in a co-held peer and drift to catch up over ~10d; admitting the lagging co-held peer with same-day price confirmation yields incremental EV over the rolling-correlation peer definition.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "peer_shock",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260606-018"
+  ],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Co-ownership overlay reduces core aggregate EV (7.8941 -> 7.7161, delta -0.178); standalone overlay PnL -2194 vs rolling_corr +5746; loses in all 3 windows; win rate 42% vs 63%. Co-ownership peers (quarterly, broad, index-overlap-heavy) are a worse peer-adjacency source than rolling price correlation. Edge persistence (sec13f_coownership_edges) retained as measurement infra; sleeve NOT wired into run.py.",
+  "parameters": {
+    "locked_variables": [
+      "Use the 13F co-ownership graph (manager_cik bipartite projection edges) as the peer-adjacency source for peer-shock laggard admission, replacing rolling-correlation peers."
+    ],
+    "single_causal_variable": "Use the 13F co-ownership graph (manager_cik bipartite projection edges) as the peer-adjacency source for peer-shock laggard admission, replacing rolling-correlation peers."
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not re-run co-ownership peer-shock by loosening min_coownership_lift / min_shared_managers on these same 3 windows and the same broad universe, and do not relabel it as a different peer overlay (sector/industry co-hold) — the peer-adjacency family is now tested and net-negative vs rolling_corr.",
+    "new_evidence_required": "A genuinely new relation axis or data shape: e.g. holdings-CHANGE co-movement (managers adding the same two names same quarter, not static co-hold), 13F concentration-weighted edges restricted to high-conviction active managers only, or a non-quarterly ownership signal. Or forward closed paper rows if the static graph is revisited at all.",
+    "realized_failure_mode": "not_incremental_vs_rolling_corr",
+    "why_result_happened": "Not merely non-incremental: co-ownership laggards were net-negative and lower win-rate than corr peers, i.e. adverse selection vs the accepted peer definition."
+  },
+  "prediction": {
+    "confidence_reason": "Anton-Polk (JF 2014) documents cross-predictability among stocks held by common institutional owners. The persisted 13F edges surface high-lift connected pairs (A-KEYS lift 7.4) distinct from price-correlation or sector peers. Main disconfirmer: 13F is quarterly/stale and broad-universe co-holding may be dominated by index overlap, making the peer set redundant with corr/sector peers or too noisy to add EV over rolling_corr_peer_shock.",
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "thin_sample",
+      "not_incremental_vs_rolling_corr",
+      "index_overlap_noise"
+    ],
+    "recorded_at": "2026-06-22T06:42:57+00:00",
+    "success_probability": 0.3
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "No AGENTS.md Gate 4 acceptance condition was met.",
+  "related_files": [
+    "data/experiments/exp-20260622-006/before_core_baseline.json",
+    "data/experiments/exp-20260622-006/after_coownership_overlay.json"
+  ],
+  "secondary_windows": [],
+  "status": "rejected",
+  "timestamp": "2026-06-22T06:57:11+00:00",
+  "trial_family": "coownership_peer_shock",
+  "trial_variant_id": "exp-20260622-006"
+}
