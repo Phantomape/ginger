@@ -252,30 +252,6 @@ def _collect_quant_signal_evidence(data_dir: Path, target_tickers: set[str]) -> 
     return dict(evidence_by_ticker)
 
 
-def _collect_manual_trades(path: Path, target_tickers: set[str]) -> dict:
-    trades_by_ticker: dict[str, list[dict]] = defaultdict(list)
-    if not path.exists():
-        return {}
-    try:
-        lines = path.read_text(encoding="utf-8").splitlines()
-    except Exception:
-        return {}
-    for raw in lines:
-        raw = raw.strip()
-        if not raw:
-            continue
-        try:
-            trade = json.loads(raw)
-        except json.JSONDecodeError:
-            continue
-        if not isinstance(trade, dict):
-            continue
-        ticker = _ticker(trade.get("ticker"))
-        if ticker in target_tickers:
-            trades_by_ticker[ticker].append(trade)
-    return dict(trades_by_ticker)
-
-
 def _score_evidence(evidence: dict, entry_date: str | None) -> tuple[int, str, int | None]:
     evidence_type = evidence.get("evidence_type")
     source_date = evidence.get("source_date")
@@ -309,7 +285,6 @@ def _score_evidence(evidence: dict, entry_date: str | None) -> tuple[int, str, i
 def reconstruct_entry_intents(
     open_positions: dict,
     data_dir: str | Path = "data",
-    manual_trades_path: str | Path = "operator_inputs/manual_trades.jsonl",
 ) -> dict:
     data_path = Path(data_dir)
     positions = _current_nonlegacy_positions(open_positions)
@@ -317,7 +292,6 @@ def reconstruct_entry_intents(
 
     advice_evidence, archived_actions = _collect_advice_evidence(data_path, target_tickers)
     quant_evidence = _collect_quant_signal_evidence(data_path, target_tickers)
-    manual_trades = _collect_manual_trades(Path(manual_trades_path), target_tickers)
 
     rows = []
     high_confidence_count = 0
@@ -364,11 +338,6 @@ def reconstruct_entry_intents(
             a for a in post_actions
             if a.get("action") in {"REDUCE", "EXIT"}
         ]
-        trades_after_entry = []
-        for trade in manual_trades.get(ticker, []):
-            delta_days = _days_between(trade.get("trade_date"), entry_date)
-            if delta_days is None or delta_days >= 0:
-                trades_after_entry.append(trade)
 
         if top and top.get("score", 0) >= 90:
             high_confidence_count += 1
@@ -411,7 +380,6 @@ def reconstruct_entry_intents(
             "post_entry_action_count": len(post_actions),
             "post_entry_reduce_exit_count": len(reduce_exit_actions),
             "post_entry_actions": post_actions,
-            "manual_trades_after_entry": trades_after_entry,
         })
 
     return {
@@ -466,8 +434,6 @@ def render_markdown(report: dict) -> str:
             notes.append(f"shortfall {shortfall:g} shares")
         if row.get("post_entry_reduce_exit_count"):
             notes.append(f"{row['post_entry_reduce_exit_count']} reduce/exit actions after entry")
-        if row.get("manual_trades_after_entry"):
-            notes.append(f"{len(row['manual_trades_after_entry'])} manual trades after entry")
         if row.get("unique_candidate_values") and len(row["unique_candidate_values"]) > 1:
             notes.append(f"candidate conflict {row['unique_candidate_values']}")
         lines.append(
@@ -496,7 +462,6 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--open-positions", default="operator_inputs/open_positions.json")
     parser.add_argument("--data-dir", default="data")
-    parser.add_argument("--manual-trades", default="operator_inputs/manual_trades.jsonl")
     parser.add_argument("--json-out")
     parser.add_argument("--markdown-out")
     args = parser.parse_args(argv)
@@ -505,7 +470,7 @@ def main(argv: list[str] | None = None) -> int:
     if not isinstance(open_positions, dict):
         raise SystemExit(f"Could not load open positions: {args.open_positions}")
 
-    report = reconstruct_entry_intents(open_positions, args.data_dir, args.manual_trades)
+    report = reconstruct_entry_intents(open_positions, args.data_dir)
     if args.json_out:
         out = Path(args.json_out)
         out.parent.mkdir(parents=True, exist_ok=True)

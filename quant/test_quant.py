@@ -1597,11 +1597,6 @@ def test_snxx_profit_target_no_reduce_before_signal_target():
         ts,
         heat_data={},
         regime_data={"regime": "NORMAL"},
-        manual_trades=[
-            {"trade_date": "2026-05-05", "ticker": "SNXX", "side": "BUY", "shares": 2, "price": 127.0},
-            {"trade_date": "2026-05-05", "ticker": "SNXX", "side": "BUY", "shares": 2, "price": 131.0},
-        ],
-        asof_date="2026-05-05",
     )
     assert result["position_states"]["SNXX"] == "HOLD"
     assert "SNXX" not in result["suggested_reduce_pct"]
@@ -1758,48 +1753,6 @@ def test_normalize_ohlcv_drops_trailing_nan_close_bar():
     out = _normalize_ohlcv_frame("TEST", df)
     assert len(out) == 2
     assert out["Close"].iloc[-1] == 11.2
-
-
-def test_same_day_manual_buy_blocks_profit_reduce_rule():
-    from preflight_validator import compute_account_state
-
-    ts = {
-        "signals": {
-            "SNXX": {
-                "close": 130.56,
-                "position": {
-                    "shares": 24,
-                    "avg_cost": 103.52,
-                    "unrealized_pnl_pct": 0.2612,
-                    "breach_status": "OK",
-                    "exit_levels": {"hard_stop_price": 91.1},
-                    "exit_signals": {
-                        "any_triggered": True,
-                        "triggered_rules": [
-                            {
-                                "rule": "PROFIT_TARGET",
-                                "urgency": "MEDIUM",
-                                "message": "old profit target trigger",
-                            }
-                        ],
-                    },
-                },
-            }
-        }
-    }
-
-    result = compute_account_state(
-        ts,
-        heat_data={},
-        regime_data={"regime": "NORMAL"},
-        manual_trades=[
-            {"trade_date": "2026-05-05", "ticker": "SNXX", "side": "BUY", "shares": 2, "price": 127.0},
-        ],
-        asof_date="2026-05-05",
-    )
-    assert result["position_states"]["SNXX"] == "HOLD"
-    assert "SNXX" not in result["suggested_reduce_pct"]
-    assert result["manual_trade_conflicts"]["SNXX"]["guard"] == "SAME_DAY_MANUAL_BUY_NO_PROFIT_REDUCE"
 
 
 def _make_ohlcv(n=250, base_close=100.0, trend=0.001):
@@ -4705,7 +4658,6 @@ def test_preflight_outputs_required_fields():
         "lock_reason",
         "position_states",
         "suggested_reduce_pct",
-        "manual_trade_conflicts",
         "bear_emergency_stops",
         "data_warnings",
     ]
@@ -4957,7 +4909,6 @@ PROMPT_FIELD_REGISTRY = {
             "lock_reason",             # explains why trading is locked
             "account_state",           # FIRE | DEFENSIVE | NORMAL
             "position_states",         # {ticker: CRITICAL_EXIT|ATR_EXIT|TARGET_EXIT|HIGH_REDUCE|HOLD}
-            "manual_trade_conflicts",  # same-day manual BUY guardrail
             "suggested_reduce_pct",    # {ticker: int} — pre-computed reduce %
             "bear_emergency_stops",    # {ticker: float} — current_price × 0.95 in BEAR
             "current_prices",          # {ticker: float} — for BEAR rule on HOLD positions
@@ -5026,7 +4977,7 @@ def test_registry_fields_exist_in_code_output():
     # current_prices is added by llm_advisor from trend_signals — test it separately
     preflight_provided = {
         "new_trade_locked", "lock_reason", "account_state",
-        "position_states", "suggested_reduce_pct", "manual_trade_conflicts",
+        "position_states", "suggested_reduce_pct",
         "bear_emergency_stops",
     }
     for field in preflight_provided:

@@ -38,7 +38,7 @@ def test_reconstructs_new_trade_intended_shares(tmp_path):
         ]
     }
 
-    report = reconstruct_entry_intents(open_positions, data_dir, tmp_path / "manual.jsonl")
+    report = reconstruct_entry_intents(open_positions, data_dir)
 
     row = report["positions"][0]
     assert row["ticker"] == "AMZN"
@@ -76,7 +76,7 @@ def test_reconstructs_original_shares_from_quant_addon(tmp_path):
         ]
     }
 
-    report = reconstruct_entry_intents(open_positions, data_dir, tmp_path / "manual.jsonl")
+    report = reconstruct_entry_intents(open_positions, data_dir)
 
     row = report["positions"][0]
     assert row["recommended_intended_shares"] == 20
@@ -128,7 +128,7 @@ def test_reduce_action_blocks_ready_confirmation_but_keeps_high_confidence(tmp_p
         ]
     }
 
-    report = reconstruct_entry_intents(open_positions, data_dir, tmp_path / "manual.jsonl")
+    report = reconstruct_entry_intents(open_positions, data_dir)
 
     row = report["positions"][0]
     assert row["recommended_intended_shares"] == 20
@@ -151,7 +151,7 @@ def test_reconstruction_marks_missing_when_no_archive_candidate(tmp_path):
         ]
     }
 
-    report = reconstruct_entry_intents(open_positions, data_dir, tmp_path / "manual.jsonl")
+    report = reconstruct_entry_intents(open_positions, data_dir)
 
     row = report["positions"][0]
     assert row["recommended_intended_shares"] is None

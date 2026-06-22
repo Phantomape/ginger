@@ -64,4 +64,4 @@ has different content, move it under the relevant canonical archive directory
 instead of leaving it in `data/`.
 
 Manual operator-maintained inputs live in `../operator_inputs/`, especially
-`open_positions.json` and `manual_trades.jsonl`.
+`open_positions.json`.

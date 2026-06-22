@@ -502,7 +502,6 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
     # verdict, not the raw flags, reducing the chance of conflicting rule
     # interpretations and "优先HOLD"/"必须EXIT" contradictions.
     from preflight_validator import enrich_positions_with_breach_status, compute_account_state
-    from manual_trades import load_manual_trades
     from pending_actions import get_open_pending_actions
     from position_intent import audit_position_intent_coverage
     if trend_signals:
@@ -516,8 +515,6 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
         trend_signals = trend_signals,
         heat_data     = heat,
         regime_data   = regime,
-        manual_trades = load_manual_trades(),
-        asof_date     = datetime.now().strftime("%Y-%m-%d"),
         core_fire_tickers = core_fire_tickers,
     )
     if isinstance(trend_signals, dict):
@@ -554,7 +551,6 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
         "new_trade_locked": preflight["new_trade_locked"],
         "lock_reason":      preflight["lock_reason"],
         "position_states":      preflight["position_states"],   # {ticker: CRITICAL_EXIT | ATR_EXIT | TARGET_EXIT | HIGH_REDUCE | HOLD}
-        "manual_trade_conflicts": preflight.get("manual_trade_conflicts", {}),
         "pending_unexecuted_actions": pending_actions,
         "entry_intent_audit": entry_intent_audit,
         # Pre-computed reduce % for HIGH_REDUCE positions; LLM reads directly.
@@ -704,7 +700,6 @@ def _save_decision_log(date_str, trade_news, trend_signals, data_dir=None):
         # trend_signals (injected by build_prompt -> preflight_validator).
         position_states = {}
         suggested_reduce = {}
-        manual_trade_conflicts = {}
         new_trade_locked = None
         account_state = None
         lock_reason = None
@@ -713,7 +708,6 @@ def _save_decision_log(date_str, trade_news, trend_signals, data_dir=None):
             if isinstance(preflight, dict):
                 position_states = preflight.get("position_states") or {}
                 suggested_reduce = preflight.get("suggested_reduce_pct") or {}
-                manual_trade_conflicts = preflight.get("manual_trade_conflicts") or {}
                 new_trade_locked = preflight.get("new_trade_locked")
                 account_state = preflight.get("account_state")
                 lock_reason = preflight.get("lock_reason")
@@ -746,7 +740,6 @@ def _save_decision_log(date_str, trade_news, trend_signals, data_dir=None):
             "lock_reason": lock_reason,
             "position_states": position_states,
             "suggested_reduce_pct": suggested_reduce,
-            "manual_trade_conflicts": manual_trade_conflicts,
         }
 
         log_file = str(daily_artifact_path("llm_decision_log", date_str, data_dir))
