@@ -102,6 +102,35 @@ Escape hatches: `--no-enforce-novelty` makes a single reservation warn-only;
 missing it silently skips. Check ad hoc with
 `scripts/check_experiment_novelty.py --describe "..." --trial-family ...`.
 
+### Source-saturation gate (anti-field-churn)
+
+The near-neighbor gate sees each new field as a distinct fingerprint, so it
+cannot stop the "scan yet another single field on the same data source" churn:
+each swap looks novel even when the source has been tried dozens of times and
+almost never accepted. The **source-saturation gate** is a second, independent
+block for exactly that pattern.
+
+On a `candidate_pool` (scan-shape) reservation it rolls up every prior family
+sharing the proposal's `(gate_shape, data_source)` from
+`docs/frozen_families.jsonl`. If that source has been tried enough and almost
+never paid out (default: **trials ≥ 12 and accept rate ≤ 5%**) it is `saturated`
+and the alpha-lane reservation is **refused**. As of 2026-06-21 this blocks new
+candidate-pool scans on `companyfacts_ratio` (3/84), `sec_text_event` (0/38),
+`form4_insider` (0/13), and `revision_expectation` (1/24); it leaves live cells
+open — `finra_short_interest` (4/15), `ohlcv_momentum`, `ohlcv_relation` — plus
+all non-scan shapes (`allocator_source`, `notional_scalar`). The point is to
+push searches off proven-dry sources, not to stop alpha search.
+
+Override is deliberately a **separate** flag from `--novelty-override` (so it is
+not waved through by reflex): pass `--saturated-source-override` **and**
+`--new-evidence-axis "<a new data source/field never scanned on this shape, not
+another field on the same dry source>"`. The override is recorded on the ticket
+for audit. Thresholds are env-tunable: `GINGER_SATURATION_MIN_TRIALS` (default
+12) and `GINGER_SATURATION_MAX_ACCEPT` (default 0.05). Fails safe and applies
+only to scan-shape alpha lanes. Inspect ad hoc with the same
+`scripts/check_experiment_novelty.py` invocation — it now prints a
+`Source saturation:` line.
+
 ## Claim
 
 Preferred command:

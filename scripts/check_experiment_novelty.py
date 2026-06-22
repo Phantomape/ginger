@@ -64,6 +64,72 @@ def _load_families() -> list[dict[str, Any]]:
     return rows
 
 
+# Scan-style gate shapes whose data_source can go "saturated": cheap to
+# generate, high-volume, and exactly where field-swap churn happens. Re-scanning
+# a proven-dry source under a fresh field name is the token-waste pattern the
+# saturation gate penalizes (the near-neighbor gate can't see it because each new
+# field is a distinct fingerprint).
+_SCAN_GATE_SHAPES = {"candidate_pool_top1_10d"}
+
+
+def source_saturation(
+    fingerprint: dict[str, Any],
+    *,
+    min_trials: int = 12,
+    max_accept_rate: float = 0.05,
+) -> dict[str, Any]:
+    """Roll up prior accept stats for the proposed (gate_shape, data_source).
+
+    Aggregates trials/accepts across every known family sharing this proposal's
+    scan gate_shape AND data_source, and returns a `saturated` verdict: True when
+    the cell has been tried enough (>= min_trials) and almost never accepted
+    (<= max_accept_rate). This penalizes re-scanning a data source history shows
+    is dry, instead of letting each new field look novel to the near-neighbor
+    gate. Only applies to scan-style shapes; everything else returns
+    applicable=False. Fails safe to applicable=False on any error.
+    """
+    base = {
+        "applicable": False,
+        "saturated": False,
+        "source": fingerprint.get("data_source"),
+        "gate_shape": fingerprint.get("gate_shape"),
+        "trials": 0,
+        "accepts": 0,
+        "accept_rate": 0.0,
+        "min_trials": min_trials,
+        "max_accept_rate": max_accept_rate,
+    }
+    try:
+        shape = fingerprint.get("gate_shape")
+        source = fingerprint.get("data_source")
+        if shape not in _SCAN_GATE_SHAPES or source in (None, "", "other"):
+            return base
+        trials = 0
+        accepts = 0.0
+        for fam in _load_families():
+            fpr = fam.get("fingerprint") or {}
+            if fpr.get("gate_shape") != shape or fpr.get("data_source") != source:
+                continue
+            t = fam.get("trials") or 0
+            try:
+                ar = float(fam.get("accept_rate") or 0.0)
+            except (TypeError, ValueError):
+                ar = 0.0
+            trials += t
+            accepts += ar * t
+        accept_rate = (accepts / trials) if trials else 0.0
+        base.update(
+            applicable=True,
+            saturated=bool(trials >= min_trials and accept_rate <= max_accept_rate),
+            trials=trials,
+            accepts=round(accepts),
+            accept_rate=round(accept_rate, 4),
+        )
+    except Exception:
+        return base
+    return base
+
+
 def check(fingerprint: dict[str, Any], *, top_n: int = 5) -> dict[str, Any]:
     """Return nearest families and a warn verdict. Importable by experiment.py."""
     families = _load_families()
@@ -142,6 +208,14 @@ def main() -> int:
     print()
     verdict = "WARN  near-neighbor of a frozen / explored / prior-failed family" if result["warn"] else "ok    no strong near-neighbor"
     print(f"Verdict: {verdict}  (threshold {result['warn_threshold']})")
+    sat = source_saturation(fingerprint)
+    if sat.get("applicable"):
+        flag = "SATURATED (block)" if sat["saturated"] else "ok"
+        print(
+            f"Source saturation: {flag}  source={sat['source']} "
+            f"{sat['accepts']}/{sat['trials']} accepted ({100 * sat['accept_rate']:.1f}%, "
+            f"block if <= {100 * sat['max_accept_rate']:.0f}% over >= {sat['min_trials']} trials)"
+        )
     print("\nNearest known families:")
     for n in result["nearest"]:
         flag = "  <-- explored/prior-failed" if _is_prior_signal(n) and n["score"] >= fp.WARN_THRESHOLD else ""

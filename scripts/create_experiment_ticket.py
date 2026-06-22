@@ -81,6 +81,25 @@ def _novelty_check(args):
     else:
         print("[novelty] ok: no strong near-neighbor.", file=sys.stderr)
 
+    # Source-saturation penalty: independent of the near-neighbor gate. Each new
+    # field is a distinct fingerprint so the near-neighbor gate waves it through,
+    # but re-scanning a data source that history shows is dry (low accept rate
+    # over enough trials) is pure token churn. Thresholds tunable via env.
+    try:
+        min_tr = int(os.environ.get("GINGER_SATURATION_MIN_TRIALS", "12"))
+    except (TypeError, ValueError):
+        min_tr = 12
+    try:
+        max_ar = float(os.environ.get("GINGER_SATURATION_MAX_ACCEPT", "0.05"))
+    except (TypeError, ValueError):
+        max_ar = 0.05
+    try:
+        saturation = cen.source_saturation(
+            fingerprint, min_trials=min_tr, max_accept_rate=max_ar
+        )
+    except Exception:
+        saturation = {"applicable": False, "saturated": False}
+
     out = {
         "fingerprint": fingerprint,
         "warn": bool(result.get("warn")),
@@ -90,6 +109,8 @@ def _novelty_check(args):
         "new_evidence_axis": (args.new_evidence_axis or "").strip() or None,
         "override": bool(args.novelty_override),
         "enforced": enforce,
+        "source_saturation": saturation,
+        "saturated_source_override": bool(getattr(args, "saturated_source_override", False)),
     }
 
     if result.get("warn") and enforce and alpha_lane:
@@ -103,6 +124,40 @@ def _novelty_check(args):
             )
         print(
             f"[novelty] override accepted; new_evidence_axis={out['new_evidence_axis']}",
+            file=sys.stderr,
+        )
+
+    if saturation.get("saturated"):
+        print(
+            f"[saturation] data_source '{saturation['source']}' is dry for "
+            f"{saturation['gate_shape']} scans: "
+            f"{saturation['accepts']}/{saturation['trials']} accepted "
+            f"({100 * saturation['accept_rate']:.1f}%, threshold "
+            f"{100 * saturation['max_accept_rate']:.1f}% over >= "
+            f"{saturation['min_trials']} trials).",
+            file=sys.stderr,
+        )
+    if saturation.get("saturated") and enforce and alpha_lane:
+        if not (
+            getattr(args, "saturated_source_override", False)
+            and (args.new_evidence_axis or "").strip()
+        ):
+            raise SystemExit(
+                "saturation gate blocked this reservation: candidate-pool scans on "
+                f"data_source '{saturation['source']}' are historically dry "
+                f"({saturation['accepts']}/{saturation['trials']} accepted, "
+                f"{100 * saturation['accept_rate']:.1f}% over "
+                f">= {saturation['min_trials']} trials). Stop swapping fields on a "
+                "proven-dry source. Prefer a higher-yield source (e.g. "
+                "finra_short_interest, ohlcv_momentum), a non-scan gate_shape "
+                "(allocator_source / notional_scalar), or a genuinely new data "
+                "source. To proceed anyway, re-run with --saturated-source-override "
+                'and --new-evidence-axis "<a new data source/field never scanned on '
+                'this shape, not another field on the same dry source>".'
+            )
+        print(
+            f"[saturation] override accepted on dry source '{saturation['source']}'"
+            f" ({100 * saturation['accept_rate']:.1f}%); axis={out['new_evidence_axis']}",
             file=sys.stderr,
         )
     return out
@@ -233,6 +288,16 @@ def main(description=__doc__):
         "--novelty-override",
         action="store_true",
         help="Proceed despite a near-neighbor warning (records the override).",
+    )
+    parser.add_argument(
+        "--saturated-source-override",
+        action="store_true",
+        help=(
+            "Proceed despite a source-saturation block (re-scanning a data source "
+            "whose candidate-pool history is dry). Distinct from --novelty-override "
+            "on purpose: also requires --new-evidence-axis naming a genuinely new "
+            "data source/field, and is recorded for audit."
+        ),
     )
     parser.add_argument(
         "--enforce-novelty",
