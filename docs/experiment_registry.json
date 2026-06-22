@@ -93393,8 +93393,314 @@
       "aggregate_expected_value_delta": 0.0047,
       "aggregate_strategy_total_pnl_delta": 166.52,
       "updated_at": "2026-06-22T00:20:05+00:00"
+    },
+    {
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260622_002_sec_share_repurchase_authorization.py",
+        "data/experiments/exp-20260622-002/exp_20260622_002_sec_share_repurchase_authorization.json",
+        "experiments/cards/exp-20260622-002.md",
+        "experiments/manifests/exp-20260622-002.json",
+        "experiments/tickets/exp-20260622-002.json",
+        "experiments/logs/exp-20260622-002.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260622-002.md",
+      "causal_components": [
+        "sec_text_event_parser",
+        "historical_replay",
+        "gate1_4",
+        "production_parity_boundary",
+        "execution_envelope",
+        "closeout_record"
+      ],
+      "change_type": "default_off_paper_candidate_pool_replay_scout",
+      "changed_variable": "sec_8k_share_repurchase_authorization_candidate_source_v1",
+      "claimed_at": "2026-06-22T01:05:06+00:00",
+      "completed_at": "2026-06-22T01:11:10+00:00",
+      "created_at": "2026-06-22T01:04:58+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260622-002",
+      "experiment_uid": "expuid-c4f3d1f3ce2c42dd",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260622-002",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-22T01:04:58+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "sec_share_repurchase_authorization"
+      },
+      "hypothesis": "candidate_pool: PIT SEC 8-K disclosures of fresh board-authorized share-repurchase programs or expansions with explicit dollar-value evidence may identify shareholder-yield support shocks before a next-open 10-day default-off paper continuation.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "sec_8k_share_repurchase_authorization_candidate_source_v1"
+      ],
+      "mechanism_family": "production_visible_sec_text_shareholder_yield_candidate_pool",
+      "multiple_testing_risk_bucket": "moderate",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260616-009",
+        "exp-20260616-017",
+        "exp-20260620-019"
+      ],
+      "new_evidence_type": "sec_8k_fresh_share_repurchase_authorization_text",
+      "novelty": {
+        "blocking_matches": [
+          {
+            "accept_rate": 0.0,
+            "family_key": "event_governance_semantic_cell_quality",
+            "score": 0.6098,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "sec13f_ownership",
+          "field_tags": [
+            "8k",
+            "a",
+            "absorption",
+            "after",
+            "amount",
+            "authorization",
+            "authorized",
+            "board",
+            "continue",
+            "discloses",
+            "dollar",
+            "exclusions",
+            "expansion",
+            "explicit",
+            "financing",
+            "fresh",
+            "identify",
+            "k",
+            "may",
+            "offering",
+            "or",
+            "pit",
+            "program",
+            "repurchase",
+            "share",
+            "shareholder",
+            "shocks",
+            "signal",
+            "support",
+            "text",
+            "that",
+            "yield"
+          ],
+          "gate_shape": "notional_scalar"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec13f_ownership",
+            "family_key": "event_governance_semantic_cell_quality",
+            "reopen_condition": null,
+            "score": 0.6098,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec13f_ownership",
+            "family_key": "sec_after_hours_5_07_governance_candidate_pool",
+            "reopen_condition": null,
+            "score": 0.4808,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec13f_ownership",
+            "family_key": "companyfacts_shareholder_yield_fcf_combo",
+            "reopen_condition": "Only retry with a genuinely broader free-data candidate pool or forward closed rows, not by loosening the same thresholds on these windows.",
+            "score": 0.4716,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec13f_ownership",
+            "family_key": "kova_13f_institutional_readiness",
+            "reopen_condition": null,
+            "score": 0.45,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "sec13f_ownership",
+            "family_key": "kova_free_data_backfill_and_forward_snapshot",
+            "reopen_condition": null,
+            "score": 0.45,
+            "status": "has_accepted",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": "Fresh PIT SEC 8-K board authorization or expansion event timestamp with local dollar amount and financing/offering exclusions; not annual Companyfacts actual repurchase cash-flow ratio, per-share SBC net of buybacks, dividend signaling, or generic SEC contract/customer text.",
+        "override": true,
+        "warn": true,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-search-automation",
+      "prediction": {
+        "success_probability": 0.16,
+        "expected_ev_delta": null,
+        "expected_pnl_delta": null,
+        "main_failure_modes": [
+          "old_thin_regression",
+          "drawdown_drift",
+          "authorized_not_executed",
+          "accepted_distribution_comparator_not_beaten",
+          "thin_sample"
+        ],
+        "confidence_reason": "Fresh 8-K authorization timing is materially different from the rejected annual Companyfacts actual-repurchase/OCF ratio, but buyback and SEC-text families are crowded and authorization may not translate into near-term executed demand.",
+        "recorded_at": "2026-06-22T01:04:44+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "decision": "rejected_sec_share_repurchase_authorization_candidate_pool",
+        "accepted": false,
+        "numeric_gate4_passed": false,
+        "artifact": "data/experiments/exp-20260622-002/exp_20260622_002_sec_share_repurchase_authorization.json",
+        "log": "experiments/logs/exp-20260622-002.json",
+        "aggregate_expected_value_delta": 0.0028,
+        "aggregate_strategy_total_pnl_delta": 104.41,
+        "gate4": {
+          "passed": false,
+          "decision": "rejected_sec_share_repurchase_authorization_candidate_pool",
+          "failed_reasons": [
+            "fewer_than_two_ev_improved_windows",
+            "target_sample_too_small",
+            "target_window_coverage_too_small",
+            "target_concentration_failed",
+            "accepted_compression_ev_not_beaten",
+            "accepted_compression_pnl_not_beaten",
+            "accepted_distribution_ev_not_beaten",
+            "accepted_distribution_pnl_not_beaten"
+          ],
+          "aggregate_ev_delta": 0.0028,
+          "aggregate_pnl_delta": 104.41,
+          "windows_ev_improved": 1,
+          "windows_ev_regressed": 0,
+          "windows_pnl_improved": 1,
+          "windows_pnl_regressed": 0,
+          "target_trade_count": 2,
+          "target_trade_count_min": 20,
+          "target_windows": [
+            "mid_weak"
+          ],
+          "target_window_count_min": 3,
+          "max_drawdown_worse": 0.0,
+          "max_drawdown_worse_guardrail": 0.005,
+          "minimum_core_survival_rate": 0.7925,
+          "survival_guard_passed": true,
+          "target_concentration": {
+            "passed": false,
+            "max_single_positive_pnl_share": 1.0,
+            "max_single_positive_pnl_share_guardrail": 0.5,
+            "positive_pnl_hhi": 1.0,
+            "positive_pnl_hhi_guardrail": 0.35
+          },
+          "accepted_compression_comparator": {
+            "experiment_id": "exp-20260608-013",
+            "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+            "aggregate_expected_value_delta": 0.1608,
+            "aggregate_pnl_delta": 2248.98
+          },
+          "accepted_distribution_comparator": {
+            "experiment_id": "exp-20260611-007",
+            "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+            "aggregate_expected_value_delta": 0.5286,
+            "aggregate_pnl_delta": 10432.91
+          }
+        },
+        "calibration": {
+          "predicted_success_probability": 0.16,
+          "actual_gate4_passed": false,
+          "actual_success": 0,
+          "failure_modes_observed": [
+            "fewer_than_two_ev_improved_windows",
+            "target_sample_too_small",
+            "target_window_coverage_too_small",
+            "target_concentration_failed",
+            "accepted_compression_ev_not_beaten",
+            "accepted_compression_pnl_not_beaten",
+            "accepted_distribution_ev_not_beaten",
+            "accepted_distribution_pnl_not_beaten"
+          ],
+          "brier_score": 0.0256,
+          "expected_ev_delta": null,
+          "actual_ev_delta": 0.0028,
+          "expected_pnl_delta": null,
+          "actual_pnl_delta": 104.41
+        },
+        "production_impact": {
+          "trade_enabled": false,
+          "alters_orders": false,
+          "adapter_status": "private_replay_scout_no_shared_adapter",
+          "shared_policy_changed": false,
+          "backtester_adapter_changed": false,
+          "run_adapter_changed": false,
+          "replay_only": true,
+          "default_off_paper_only": true,
+          "daily_snapshot_exposed": false,
+          "parity_test_added": false,
+          "production_signal_path_changed": false,
+          "production_orders_changed": false,
+          "production_watchlist_changed": false,
+          "alters_signal_generation": false,
+          "alters_candidate_ranking": false,
+          "alters_sizing": false,
+          "alters_exits": false,
+          "uses_llm": false,
+          "uses_free_sec_companyfacts": false,
+          "uses_free_ohlcv": true,
+          "live_realism_evaluated": true,
+          "live_ready": false,
+          "execution_envelope": {
+            "trade_enabled": false,
+            "target_notional_per_paper_trade": 4000.0,
+            "daily_entry_slots": 1,
+            "same_ticker_cooldown_days": 10,
+            "hold_days": 10,
+            "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+            "order_semantics": "observe-only next-session-open paper entry; no broker order",
+            "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+            "kill_switch": "trade_enabled remains false; no production adapter changes",
+            "failure_handling": "missing SEC filing text, missing fresh board/share-repurchase authorization local evidence span, missing local dollar amount, financing/offering/repurchase-agreement false-positive text, missing OHLCV, missing next open, or missing 10d exit rejects the paper candidate"
+          },
+          "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper parses the same SEC 8-K filing text fields, fresh authorization evidence spans, exclusion rules, same-day OHLCV confirmation, cooldown, next-open paper entry, 10-day exit, costs, and concentration controls in both historical replay and daily production.",
+          "uses_free_sec_filing_text": true,
+          "uses_raw_companyfacts_cache": false
+        },
+        "post_run_reflection": {
+          "why_result_happened": "The SEC share-repurchase authorization source did not clear Gate 4 (failed: fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too_small, target_concentration_failed, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). It is not retained or promoted.",
+          "outcome_summary": "Aggregate EV delta +0.0028; aggregate PnL delta $+104.41; max drawdown drift +0.0000; 2 paper trades.",
+          "forbidden_near_neighbor_retry": "Do not retry by sweeping share-repurchase phrase lists, dollar thresholds, item codes, RS/close/volume/vol guards, top-N, hold days, cooldown, or notional on these frozen windows.",
+          "new_evidence_required": "A valid retry needs materially richer PIT repurchase provenance such as authorization amount normalized by market cap/float, actual accelerated-repurchase execution terms, Rule 10b5-1 plan execution context, issuer cash/debt funding state joined at event time, or closed forward replacement-value rows from a shared daily helper. Do not sweep phrase lists, dollar thresholds, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows."
+        }
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260622-002.json",
+      "single_causal_variable": "sec_8k_share_repurchase_authorization_candidate_source_v1",
+      "status": "rejected",
+      "ticket_file": "experiments/tickets/exp-20260622-002.json",
+      "trial_family": "sec_text_share_repurchase_authorization_candidate_pool",
+      "trial_variant_id": "sec_share_repurchase_authorization_top1_next_open_10d_v1",
+      "decision": "rejected_sec_share_repurchase_authorization_candidate_pool",
+      "summary": "The SEC share-repurchase authorization source did not clear Gate 4 (failed: fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too_small, target_concentration_failed, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). It is not retained or promoted.",
+      "artifact": "data/experiments/exp-20260622-002/exp_20260622_002_sec_share_repurchase_authorization.json",
+      "log": "experiments/logs/exp-20260622-002.json",
+      "aggregate_expected_value_delta": 0.0028,
+      "aggregate_strategy_total_pnl_delta": 104.41,
+      "updated_at": "2026-06-22T01:11:10+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-22T00:20:05+00:00"
+  "updated_at": "2026-06-22T01:11:10+00:00"
 }
