@@ -1,0 +1,110 @@
+{
+  "after_metrics": {
+    "aggregate_expected_value_score": 7.8941,
+    "aggregate_total_pnl": 234850.99,
+    "artifact_rows": 33,
+    "min_survival_rate": 0.7925,
+    "missing_comparator_bar_rows": 0,
+    "path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "rows_by_status": {
+      "enriched": 33
+    },
+    "skipped_closed_rows_missing_replacement": 0,
+    "total_trade_count": 61
+  },
+  "before_metrics": {
+    "aggregate_expected_value_score": 7.8941,
+    "aggregate_total_pnl": 234850.99,
+    "artifact_rows": 33,
+    "min_survival_rate": 0.7925,
+    "missing_comparator_bar_rows": 4,
+    "path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "rows_by_status": {
+      "enriched": 29,
+      "missing_comparator_bars": 4
+    },
+    "skipped_closed_rows_missing_replacement": 0,
+    "total_trade_count": 61
+  },
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair_forward_replacement_comparator_session_resolution",
+    "actual_success": 1,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "existing rows already stamped idempotently",
+      "missing hot overlay bars",
+      "state artifact reconciliation drift"
+    ],
+    "predicted_success_probability": 0.82,
+    "realized_failure_mode": null,
+    "surprise_note": "The repair refreshed all previously blocked comparator rows; local overlay-aware SPY/QQQ bars plus non-session prior-session resolution were sufficient."
+  },
+  "causal_components": [
+    "refresh missing_comparator_bars rows",
+    "resolve non-session comparator dates",
+    "rebuild current-state forward replacement artifact"
+  ],
+  "change_summary": "Forward replacement-value enrichment now refreshes missing-comparator rows and resolves non-session comparator dates to nearby executable SPY/QQQ bars.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "forward_replacement_value_comparator_session_resolution_v1",
+  "decision": "accepted_measurement_repair_forward_replacement_comparator_session_resolution",
+  "delta_metrics": {
+    "aggregate_expected_value_score": 0.0,
+    "aggregate_total_pnl": 0.0,
+    "artifact_rows": 0,
+    "missing_comparator_bar_rows": -4,
+    "rows_refreshed": 4
+  },
+  "experiment_id": "exp-20260622-012",
+  "hypothesis": "Repair forward replacement-value comparator enrichment so closed paper rows with non-session entry dates resolve to executable SPY/QQQ comparator bars instead of blocking activation readiness.",
+  "implementation_mode": "measurement_repair",
+  "lane": "measurement_repair",
+  "mechanism_family": "forward_replacement_value_readiness_audit",
+  "notes": "Gate 4 strategy backtests were not rerun because no strategy behavior changed. Baseline metrics are recorded and unchanged; this is a measurement repair.",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not rerun generic forward replacement refreshes unless the artifact again has missing comparator rows or state/artifact drift. Do not treat this repair as activation evidence by itself.",
+    "new_evidence_required": "Run a forward readiness audit over the now-enriched artifact and require enough closed rows per source family with positive replacement value versus cash, SPY, and QQQ before any activation-envelope experiment.",
+    "why_result_happened": "The blocker was not alpha weakness; it was measurement idempotency plus old non-session paper entry dates. Existing rows stamped as missing_comparator_bars were skipped by later enrichment passes, so fresh SPY/QQQ bars could not repair them."
+  },
+  "prediction": {
+    "confidence_reason": "The current activation blocker is measurement-only: four closed default-off paper rows have cash PnL but missing SPY/QQQ replacement values, and local overlay-aware comparator bars exist for the required sessions except rows whose recorded entry date is a weekend/non-session.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "existing rows already stamped idempotently",
+      "missing hot overlay bars",
+      "state artifact reconciliation drift"
+    ],
+    "recorded_at": "2026-06-22T12:05:27+00:00",
+    "success_probability": 0.82
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_attribution_only": true,
+    "parity_note": "Shared forward replacement-value enrichment changed only the measurement of already-closed paper rows. No sleeve admission, entry, exit, rank, sizing, or order behavior changed.",
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "quant/forward_replacement_value.py",
+    "quant/test_forward_replacement_value.py",
+    "quant/experiments/exp_20260622_012_forward_replacement_comparator_session_resolution.py",
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "data/paper_sleeves/fundamental_growth_rs/state.json",
+    "data/paper_sleeves/sec_governance/state.json",
+    "data/paper_sleeves/sec_leadership/state.json",
+    "data/paper_sleeves/sec_negative/state.json",
+    "data/experiments/exp-20260622-012/forward_replacement_value_pre_resolution.jsonl"
+  ],
+  "status": "accepted",
+  "timestamp": "2026-06-22T12:11:04+00:00",
+  "trial_family": "default_off_forward_replacement_value_activation_readiness",
+  "trial_variant_id": "comparator_session_resolution_v1"
+}

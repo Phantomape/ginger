@@ -24,7 +24,7 @@ DEFAULT_END = "2026-04-21"
 DEFAULT_USER_AGENT = "ginger-research/1.0 contact: research@example.com"
 SEC_SUBMISSION_FILE_URL = "https://data.sec.gov/submissions/{name}"
 NON_COMPANY_TICKERS = {"SPY", "QQQ", "IWM", "GLD", "IAU", "SLV"}
-DEFAULT_FORMS = ("8-K", "8-K/A", "10-Q", "10-Q/A", "10-K", "10-K/A")
+DEFAULT_FORMS = ("8-K", "8-K/A", "10-Q", "10-Q/A", "10-K", "10-K/A", "6-K", "6-K/A")
 
 
 def _repo_path(path: Path | str) -> Path:

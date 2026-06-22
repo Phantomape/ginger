@@ -41,6 +41,8 @@ def test_daily_snapshot_writes_dated_artifacts_and_all_sec_text_items(tmp_path, 
     assert calls["sec_events"].start == "2026-05-01"
     assert calls["sec_events"].end == "2026-05-04"
     assert calls["sec_events"].refresh_submissions is True
+    assert "6-K" in calls["sec_events"].forms[0]
+    assert "6-K" in calls["sec_text"].forms
     assert calls["sec_text"].item_codes == ["all"]
     assert calls["sec_text"].events.endswith("sec_filing_events_20260504.jsonl")
     assert calls["form4"].output.endswith("form4_transactions_20260504.jsonl")

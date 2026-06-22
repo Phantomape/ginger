@@ -1,0 +1,847 @@
+{
+  "acceptance_rule": "Accepted as measurement repair only if shared daily event/text defaults include 6-K, text item-code filtering no longer rejects non-8-K forms, and local cache replay shows at least 20 unique 6-K events across all three canonical windows with at least five per window.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260622_014_sec_6k_daily_event_surface_repair.py",
+    "data/experiments/exp-20260622-014/exp_20260622_014_sec_6k_daily_event_surface_repair.json",
+    "experiments/cards/exp-20260622-014.md",
+    "experiments/manifests/exp-20260622-014.json",
+    "experiments/tickets/exp-20260622-014.json",
+    "experiments/logs/exp-20260622-014.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260622-014.md",
+  "causal_components": [],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "sec_6k_daily_event_surface_trade_ready_mapping_v1",
+  "claimed_at": "2026-06-22T14:05:51+00:00",
+  "completed_at": "2026-06-22T14:14:35+00:00",
+  "created_at": "2026-06-22T14:05:40+00:00",
+  "evaluation_windows": [
+    {
+      "label": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json"
+    },
+    {
+      "label": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json"
+    },
+    {
+      "label": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json"
+    }
+  ],
+  "experiment_id": "exp-20260622-014",
+  "experiment_uid": "expuid-7cf0db61c47d4b75",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260622-014",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-22T14:05:40+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_6k_daily_event_surface_repair"
+  },
+  "hypothesis": "measurement_repair/candidate_pool: repair the shared daily SEC event and text surface so PIT 6-K foreign issuer current reports are production-visible instead of existing only as raw form-index metadata.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "sec_6k_daily_event_surface_trade_ready_mapping_v1"
+  ],
+  "mechanism_family": "production_visible_free_sec_6k_foreign_issuer_candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260621-018"
+  ],
+  "new_evidence_type": "sec_6k_daily_event_surface_repair",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "6k",
+        "alpha",
+        "blocked",
+        "by",
+        "daily",
+        "event",
+        "foreign",
+        "form",
+        "index",
+        "is",
+        "issuer",
+        "k",
+        "longer",
+        "mapping",
+        "metadata",
+        "no",
+        "only",
+        "raw",
+        "ready",
+        "repair",
+        "so",
+        "surface",
+        "trade"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "nonrepeat_alpha_candidate_readiness",
+        "reopen_condition": "A valid alpha retry needs a daily and historical structured-event helper that writes actor/object/relation/magnitude/provenance rows before decision time, covers all three canonical windows, and can be called by both backtest and production default-off snapshots.",
+        "score": 0.1944,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "event_rotation_plus_state_surface_candidate_pool_allocation",
+        "reopen_condition": null,
+        "score": 0.1796,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "form144_revision_data_readiness",
+        "reopen_condition": "Required new evidence is PIT parsed Form 144 planned-sale shares or value, holder role, relationship-to-issuer, public float and sale_pct_float, or historical/forward analyst-count, revenue-estimate, dispersion, vendor_asof, and fiscal-period coverage with closed candidate outcomes.",
+        "score": 0.1767,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "raw_sec_companyfacts_foreign_currency_oci_component_tailwind",
+        "reopen_condition": "Because this failed only on drawdown despite positive three-window gross deltas, a valid next step needs a materially richer PIT global-exposure or risk-control evidence axis, not a parameter sweep: segment/currency revenue mix, cash-flow hedge OCI reclassification detail, FX sensitivity disclosure, closed forward replacement-value rows, or a separately predeclared drawdown-aware policy bundle.",
+        "score": 0.1767,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "alpha_direction_triage",
+        "reopen_condition": "Build a new free PIT data edge first: analyst-count/revenue/dispersion/provenance rows matched to historical candidates, structured customer/supplier contract economics, usable 13F holdings, closed options outcomes, or enough true-trigger forward replacement rows.",
+        "score": 0.1729,
+        "status": "frozen_rejected",
+        "trials": 3
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-explore",
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "decision": "accepted_measurement_repair_sec_6k_daily_surface_wired",
+    "artifact": "data/experiments/exp-20260622-014/exp_20260622_014_sec_6k_daily_event_surface_repair.json",
+    "log": "experiments/logs/exp-20260622-014.json",
+    "runner": "quant/experiments/exp_20260622_014_sec_6k_daily_event_surface_repair.py",
+    "delta_metrics": {
+      "aggregate_expected_value_score": 0.0,
+      "aggregate_total_pnl": 0.0,
+      "total_trade_count": 0,
+      "production_visible_6k_surface_repaired": true
+    },
+    "gate2": {
+      "dependency_fields_checked": [
+        "ticker",
+        "cik",
+        "accession_number",
+        "form_type",
+        "filing_date",
+        "accepted_at",
+        "usable_trade_date",
+        "archive_url",
+        "index_url"
+      ],
+      "entry_date_target_price_note": "This measurement repair exposes filing rows with usable_trade_date. Strategy entry_date and target_price are intentionally not claimed until a later shared alpha helper converts 6-K events into candidates.",
+      "cache_replay_surface": {
+        "cache_dir": "data/cache/sec/submissions",
+        "cache_files_scanned": 1235,
+        "cache_files_mapped_to_ticker": 1235,
+        "invalid_json_files": 0,
+        "event_default_forms": [
+          "8-K",
+          "8-K/A",
+          "10-Q",
+          "10-Q/A",
+          "10-K",
+          "10-K/A",
+          "6-K",
+          "6-K/A"
+        ],
+        "event_default_includes_6k": true,
+        "form_counts_from_default_scope": [
+          [
+            "8-K",
+            20346
+          ],
+          [
+            "6-K",
+            7975
+          ],
+          [
+            "10-Q",
+            4523
+          ],
+          [
+            "10-K",
+            2085
+          ],
+          [
+            "8-K/A",
+            407
+          ],
+          [
+            "10-K/A",
+            67
+          ],
+          [
+            "6-K/A",
+            35
+          ],
+          [
+            "10-Q/A",
+            30
+          ]
+        ],
+        "target_rows_total": 8010,
+        "target_rows_by_window": {
+          "late_strong": 2492,
+          "mid_weak": 2703,
+          "old_thin": 2798
+        },
+        "target_unique_events_by_window": {
+          "late_strong": 2492,
+          "mid_weak": 2703,
+          "old_thin": 2798
+        },
+        "target_unique_events_total": 8010,
+        "target_tickers": 137,
+        "dependency_presence": {
+          "ticker": {
+            "present_rows": 8010,
+            "target_rows_scanned": 8010,
+            "present_rate": 1.0
+          },
+          "cik": {
+            "present_rows": 8010,
+            "target_rows_scanned": 8010,
+            "present_rate": 1.0
+          },
+          "accession_number": {
+            "present_rows": 8010,
+            "target_rows_scanned": 8010,
+            "present_rate": 1.0
+          },
+          "form_type": {
+            "present_rows": 8010,
+            "target_rows_scanned": 8010,
+            "present_rate": 1.0
+          },
+          "filing_date": {
+            "present_rows": 8010,
+            "target_rows_scanned": 8010,
+            "present_rate": 1.0
+          },
+          "accepted_at": {
+            "present_rows": 8010,
+            "target_rows_scanned": 8010,
+            "present_rate": 1.0
+          },
+          "usable_trade_date": {
+            "present_rows": 8010,
+            "target_rows_scanned": 8010,
+            "present_rate": 1.0
+          },
+          "archive_url": {
+            "present_rows": 8010,
+            "target_rows_scanned": 8010,
+            "present_rate": 1.0
+          },
+          "index_url": {
+            "present_rows": 8010,
+            "target_rows_scanned": 8010,
+            "present_rate": 1.0
+          }
+        },
+        "sample_target_rows": [
+          {
+            "ticker": "NEWEN",
+            "cik": "0001004315",
+            "accession_number": "0001654954-24-012604",
+            "form_type": "6-K",
+            "filing_date": "2024-10-02",
+            "accepted_at": "2024-10-01T18:08:18",
+            "usable_trade_date": "2024-10-02",
+            "primary_document": "a5357g.htm"
+          },
+          {
+            "ticker": "RTPPF",
+            "cik": "0000863064",
+            "accession_number": "0001628280-24-041766",
+            "form_type": "6-K",
+            "filing_date": "2024-10-02",
+            "accepted_at": "2024-10-01T21:34:46",
+            "usable_trade_date": "2024-10-02",
+            "primary_document": "form6k2024sept.htm"
+          },
+          {
+            "ticker": "BBAAY",
+            "cik": "0001577552",
+            "accession_number": "0001104659-24-105192",
+            "form_type": "6-K",
+            "filing_date": "2024-10-02",
+            "accepted_at": "2024-10-02T10:30:28",
+            "usable_trade_date": "2024-10-03",
+            "primary_document": "tm2425406d1_6k.htm"
+          },
+          {
+            "ticker": "BTAFF",
+            "cik": "0001303523",
+            "accession_number": "0000950157-24-001343",
+            "form_type": "6-K",
+            "filing_date": "2024-10-02",
+            "accepted_at": "2024-10-02T11:52:17",
+            "usable_trade_date": "2024-10-03",
+            "primary_document": "form6-k.htm"
+          },
+          {
+            "ticker": "HBCYF",
+            "cik": "0001089113",
+            "accession_number": "0001654954-24-012624",
+            "form_type": "6-K",
+            "filing_date": "2024-10-02",
+            "accepted_at": "2024-10-02T15:02:20",
+            "usable_trade_date": "2024-10-03",
+            "primary_document": "a7031g.htm"
+          },
+          {
+            "ticker": "HBCYF",
+            "cik": "0001089113",
+            "accession_number": "0001654954-24-012640",
+            "form_type": "6-K",
+            "filing_date": "2024-10-02",
+            "accepted_at": "2024-10-02T18:05:55",
+            "usable_trade_date": "2024-10-03",
+            "primary_document": "a7227g.htm"
+          },
+          {
+            "ticker": "HNDAF",
+            "cik": "0000715153",
+            "accession_number": "0001193125-24-230626",
+            "form_type": "6-K",
+            "filing_date": "2024-10-02",
+            "accepted_at": "2024-10-02T10:06:55",
+            "usable_trade_date": "2024-10-03",
+            "primary_document": "d896665d6k.htm"
+          },
+          {
+            "ticker": "PBR-A",
+            "cik": "0001119639",
+            "accession_number": "0001292814-24-003640",
+            "form_type": "6-K",
+            "filing_date": "2024-10-03",
+            "accepted_at": "2024-10-02T23:02:05",
+            "usable_trade_date": "2024-10-03",
+            "primary_document": "pbr20241002_6k.htm"
+          },
+          {
+            "ticker": "PMMBF",
+            "cik": "0001546066",
+            "accession_number": "0001546066-24-000024",
+            "form_type": "6-K",
+            "filing_date": "2024-10-03",
+            "accepted_at": "2024-10-02T23:10:36",
+            "usable_trade_date": "2024-10-03",
+            "primary_document": "october22024form6-kcover.htm"
+          },
+          {
+            "ticker": "RBSPF",
+            "cik": "0000844150",
+            "accession_number": "0001654954-24-012611",
+            "form_type": "6-K",
+            "filing_date": "2024-10-02",
+            "accepted_at": "2024-10-02T08:07:52",
+            "usable_trade_date": "2024-10-03",
+            "primary_document": "a6621g.htm"
+          }
+        ]
+      },
+      "text_surface": {
+        "text_default_forms": [
+          "8-K",
+          "6-K"
+        ],
+        "text_default_includes_6k": true,
+        "text_default_item_codes": [
+          "2.02"
+        ],
+        "six_k_admitted_under_default_item_codes": true,
+        "eight_k_202_admitted_under_default_item_codes": true,
+        "eight_k_nonmatching_item_rejected_under_default_item_codes": true,
+        "daily_snapshot_text_forms": [
+          "8-K",
+          "6-K"
+        ],
+        "daily_snapshot_text_scope_follows_default_6k": true,
+        "daily_snapshot_item_codes": [
+          "all"
+        ]
+      },
+      "passed": true,
+      "blocking_reasons": []
+    },
+    "gate3": {
+      "minimum_target_unique_events": 20,
+      "minimum_target_windows": 3,
+      "minimum_target_unique_events_per_window": 5,
+      "target_unique_events_by_window": {
+        "late_strong": 2492,
+        "mid_weak": 2703,
+        "old_thin": 2798
+      },
+      "target_unique_events_total": 8010,
+      "target_tickers": 137,
+      "passed": true,
+      "blocking_reasons": []
+    },
+    "gate4": {
+      "ran_after_strategy": false,
+      "reason_after_not_run": "Measurement repair only: SEC daily data surface changed, but no buy, sell, ranking, sizing, risk, or backtest policy changed.",
+      "aggregate_before": {
+        "aggregate_expected_value_score": 7.8941,
+        "aggregate_total_pnl": 234850.99,
+        "total_trade_count": 61
+      },
+      "aggregate_after": {
+        "aggregate_expected_value_score": 7.8941,
+        "aggregate_total_pnl": 234850.99,
+        "total_trade_count": 61
+      },
+      "aggregate_delta": {
+        "aggregate_expected_value_score": 0.0,
+        "aggregate_total_pnl": 0.0,
+        "total_trade_count": 0
+      },
+      "passed": true
+    },
+    "calibration": {
+      "prediction_required": false,
+      "actual_success": 1,
+      "actual_ev_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "failure_modes_observed": []
+    },
+    "summary": "The prior block was a surface mismatch: 6-K existed in raw SEC metadata but the shared daily event/text builders excluded it. The repair adds 6-K/6-KA to event defaults, adds 6-K to text defaults, and keeps 8-K item-code filtering from suppressing non-8-K forms."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260622-014.json",
+  "single_causal_variable": "sec_6k_daily_event_surface_trade_ready_mapping_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260622-014.json",
+  "trial_family": "sec_6k_foreign_issuer_event_candidate_pool",
+  "trial_variant_id": "sec_6k_daily_surface_repair_v1",
+  "decision": "accepted_measurement_repair_sec_6k_daily_surface_wired",
+  "summary": "The prior block was a surface mismatch: 6-K existed in raw SEC metadata but the shared daily event/text builders excluded it. The repair adds 6-K/6-KA to event defaults, adds 6-K to text defaults, and keeps 8-K item-code filtering from suppressing non-8-K forms.",
+  "artifact": "data/experiments/exp-20260622-014/exp_20260622_014_sec_6k_daily_event_surface_repair.json",
+  "log": "experiments/logs/exp-20260622-014.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline": {
+      "path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ],
+      "aggregate": {
+        "aggregate_expected_value_score": 7.8941,
+        "aggregate_total_pnl": 234850.99,
+        "total_trade_count": 61
+      }
+    },
+    "passed": true
+  },
+  "gate2": {
+    "dependency_fields_checked": [
+      "ticker",
+      "cik",
+      "accession_number",
+      "form_type",
+      "filing_date",
+      "accepted_at",
+      "usable_trade_date",
+      "archive_url",
+      "index_url"
+    ],
+    "entry_date_target_price_note": "This measurement repair exposes filing rows with usable_trade_date. Strategy entry_date and target_price are intentionally not claimed until a later shared alpha helper converts 6-K events into candidates.",
+    "cache_replay_surface": {
+      "cache_dir": "data/cache/sec/submissions",
+      "cache_files_scanned": 1235,
+      "cache_files_mapped_to_ticker": 1235,
+      "invalid_json_files": 0,
+      "event_default_forms": [
+        "8-K",
+        "8-K/A",
+        "10-Q",
+        "10-Q/A",
+        "10-K",
+        "10-K/A",
+        "6-K",
+        "6-K/A"
+      ],
+      "event_default_includes_6k": true,
+      "form_counts_from_default_scope": [
+        [
+          "8-K",
+          20346
+        ],
+        [
+          "6-K",
+          7975
+        ],
+        [
+          "10-Q",
+          4523
+        ],
+        [
+          "10-K",
+          2085
+        ],
+        [
+          "8-K/A",
+          407
+        ],
+        [
+          "10-K/A",
+          67
+        ],
+        [
+          "6-K/A",
+          35
+        ],
+        [
+          "10-Q/A",
+          30
+        ]
+      ],
+      "target_rows_total": 8010,
+      "target_rows_by_window": {
+        "late_strong": 2492,
+        "mid_weak": 2703,
+        "old_thin": 2798
+      },
+      "target_unique_events_by_window": {
+        "late_strong": 2492,
+        "mid_weak": 2703,
+        "old_thin": 2798
+      },
+      "target_unique_events_total": 8010,
+      "target_tickers": 137,
+      "dependency_presence": {
+        "ticker": {
+          "present_rows": 8010,
+          "target_rows_scanned": 8010,
+          "present_rate": 1.0
+        },
+        "cik": {
+          "present_rows": 8010,
+          "target_rows_scanned": 8010,
+          "present_rate": 1.0
+        },
+        "accession_number": {
+          "present_rows": 8010,
+          "target_rows_scanned": 8010,
+          "present_rate": 1.0
+        },
+        "form_type": {
+          "present_rows": 8010,
+          "target_rows_scanned": 8010,
+          "present_rate": 1.0
+        },
+        "filing_date": {
+          "present_rows": 8010,
+          "target_rows_scanned": 8010,
+          "present_rate": 1.0
+        },
+        "accepted_at": {
+          "present_rows": 8010,
+          "target_rows_scanned": 8010,
+          "present_rate": 1.0
+        },
+        "usable_trade_date": {
+          "present_rows": 8010,
+          "target_rows_scanned": 8010,
+          "present_rate": 1.0
+        },
+        "archive_url": {
+          "present_rows": 8010,
+          "target_rows_scanned": 8010,
+          "present_rate": 1.0
+        },
+        "index_url": {
+          "present_rows": 8010,
+          "target_rows_scanned": 8010,
+          "present_rate": 1.0
+        }
+      },
+      "sample_target_rows": [
+        {
+          "ticker": "NEWEN",
+          "cik": "0001004315",
+          "accession_number": "0001654954-24-012604",
+          "form_type": "6-K",
+          "filing_date": "2024-10-02",
+          "accepted_at": "2024-10-01T18:08:18",
+          "usable_trade_date": "2024-10-02",
+          "primary_document": "a5357g.htm"
+        },
+        {
+          "ticker": "RTPPF",
+          "cik": "0000863064",
+          "accession_number": "0001628280-24-041766",
+          "form_type": "6-K",
+          "filing_date": "2024-10-02",
+          "accepted_at": "2024-10-01T21:34:46",
+          "usable_trade_date": "2024-10-02",
+          "primary_document": "form6k2024sept.htm"
+        },
+        {
+          "ticker": "BBAAY",
+          "cik": "0001577552",
+          "accession_number": "0001104659-24-105192",
+          "form_type": "6-K",
+          "filing_date": "2024-10-02",
+          "accepted_at": "2024-10-02T10:30:28",
+          "usable_trade_date": "2024-10-03",
+          "primary_document": "tm2425406d1_6k.htm"
+        },
+        {
+          "ticker": "BTAFF",
+          "cik": "0001303523",
+          "accession_number": "0000950157-24-001343",
+          "form_type": "6-K",
+          "filing_date": "2024-10-02",
+          "accepted_at": "2024-10-02T11:52:17",
+          "usable_trade_date": "2024-10-03",
+          "primary_document": "form6-k.htm"
+        },
+        {
+          "ticker": "HBCYF",
+          "cik": "0001089113",
+          "accession_number": "0001654954-24-012624",
+          "form_type": "6-K",
+          "filing_date": "2024-10-02",
+          "accepted_at": "2024-10-02T15:02:20",
+          "usable_trade_date": "2024-10-03",
+          "primary_document": "a7031g.htm"
+        },
+        {
+          "ticker": "HBCYF",
+          "cik": "0001089113",
+          "accession_number": "0001654954-24-012640",
+          "form_type": "6-K",
+          "filing_date": "2024-10-02",
+          "accepted_at": "2024-10-02T18:05:55",
+          "usable_trade_date": "2024-10-03",
+          "primary_document": "a7227g.htm"
+        },
+        {
+          "ticker": "HNDAF",
+          "cik": "0000715153",
+          "accession_number": "0001193125-24-230626",
+          "form_type": "6-K",
+          "filing_date": "2024-10-02",
+          "accepted_at": "2024-10-02T10:06:55",
+          "usable_trade_date": "2024-10-03",
+          "primary_document": "d896665d6k.htm"
+        },
+        {
+          "ticker": "PBR-A",
+          "cik": "0001119639",
+          "accession_number": "0001292814-24-003640",
+          "form_type": "6-K",
+          "filing_date": "2024-10-03",
+          "accepted_at": "2024-10-02T23:02:05",
+          "usable_trade_date": "2024-10-03",
+          "primary_document": "pbr20241002_6k.htm"
+        },
+        {
+          "ticker": "PMMBF",
+          "cik": "0001546066",
+          "accession_number": "0001546066-24-000024",
+          "form_type": "6-K",
+          "filing_date": "2024-10-03",
+          "accepted_at": "2024-10-02T23:10:36",
+          "usable_trade_date": "2024-10-03",
+          "primary_document": "october22024form6-kcover.htm"
+        },
+        {
+          "ticker": "RBSPF",
+          "cik": "0000844150",
+          "accession_number": "0001654954-24-012611",
+          "form_type": "6-K",
+          "filing_date": "2024-10-02",
+          "accepted_at": "2024-10-02T08:07:52",
+          "usable_trade_date": "2024-10-03",
+          "primary_document": "a6621g.htm"
+        }
+      ]
+    },
+    "text_surface": {
+      "text_default_forms": [
+        "8-K",
+        "6-K"
+      ],
+      "text_default_includes_6k": true,
+      "text_default_item_codes": [
+        "2.02"
+      ],
+      "six_k_admitted_under_default_item_codes": true,
+      "eight_k_202_admitted_under_default_item_codes": true,
+      "eight_k_nonmatching_item_rejected_under_default_item_codes": true,
+      "daily_snapshot_text_forms": [
+        "8-K",
+        "6-K"
+      ],
+      "daily_snapshot_text_scope_follows_default_6k": true,
+      "daily_snapshot_item_codes": [
+        "all"
+      ]
+    },
+    "passed": true,
+    "blocking_reasons": []
+  },
+  "gate3": {
+    "minimum_target_unique_events": 20,
+    "minimum_target_windows": 3,
+    "minimum_target_unique_events_per_window": 5,
+    "target_unique_events_by_window": {
+      "late_strong": 2492,
+      "mid_weak": 2703,
+      "old_thin": 2798
+    },
+    "target_unique_events_total": 8010,
+    "target_tickers": 137,
+    "passed": true,
+    "blocking_reasons": []
+  },
+  "gate4": {
+    "ran_after_strategy": false,
+    "reason_after_not_run": "Measurement repair only: SEC daily data surface changed, but no buy, sell, ranking, sizing, risk, or backtest policy changed.",
+    "aggregate_before": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "total_trade_count": 61
+    },
+    "aggregate_after": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "total_trade_count": 61
+    },
+    "aggregate_delta": {
+      "aggregate_expected_value_score": 0.0,
+      "aggregate_total_pnl": 0.0,
+      "total_trade_count": 0
+    },
+    "passed": true
+  },
+  "production_impact": {
+    "strategy_code_changed": false,
+    "shared_data_builder_changed": true,
+    "daily_snapshot_changed": true,
+    "backtester_adapter_changed": false,
+    "live_orders_changed": false,
+    "trade_enabled_changed": false,
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "default_off_paper_only": true,
+    "live_ready": false,
+    "parity_note": "The repair makes 6-K visible through the shared daily SEC data path; it does not add an alpha helper or any live trading behavior."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The prior block was a surface mismatch: 6-K existed in raw SEC metadata but the shared daily event/text builders excluded it. The repair adds 6-K/6-KA to event defaults, adds 6-K to text defaults, and keeps 8-K item-code filtering from suppressing non-8-K forms.",
+    "negative_result_reflection": "No strategy result is accepted here. A follow-up alpha still needs a shared helper that maps 6-K event text into entry/exit/ranking rules and then runs Gate 1-4.",
+    "anti_repeat": "Do not rerun the old raw-form-index-only 6-K readiness check. The new evidence axis is an actual 6-K semantic candidate helper or daily generated 6-K text artifact with replayable labels.",
+    "next_step": "Build a default-off 6-K semantic classifier/helper using the repaired event/text surface, then run full three-window Gate 1-4."
+  },
+  "lean_quality_passed": true,
+  "updated_at": "2026-06-22T14:14:35+00:00"
+}

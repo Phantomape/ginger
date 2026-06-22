@@ -53,6 +53,45 @@ def test_parse_filing_rows_filters_forms_and_window():
     assert rows[1]["archive_url"].endswith("/000032019325000010/q.htm")
 
 
+def test_default_forms_include_6k_surface_rows():
+    payload = {
+        "cik": "0001046179",
+        "filings": {
+            "recent": {
+                "form": ["6-K", "6-K/A", "20-F"],
+                "filingDate": ["2025-11-03", "2025-11-04", "2025-11-05"],
+                "reportDate": ["2025-11-03", "2025-11-04", "2025-11-05"],
+                "acceptanceDateTime": ["20251103171500", "20251104120000", "20251105120000"],
+                "accessionNumber": [
+                    "0001046179-25-000001",
+                    "0001046179-25-000002",
+                    "0001046179-25-000003",
+                ],
+                "primaryDocument": ["a6k.htm", "a6ka.htm", "20f.htm"],
+                "items": ["", "", ""],
+                "isXBRL": [0, 0, 0],
+                "isInlineXBRL": [0, 0, 0],
+            }
+        },
+    }
+
+    rows = parse_filing_rows(
+        payload,
+        ticker="SHOP",
+        cik="0001046179",
+        forms=set(backfill.DEFAULT_FORMS),
+        start=date(2025, 11, 1),
+        end=date(2025, 11, 30),
+        pit_source="test",
+    )
+
+    assert [row["form_type"] for row in rows] == ["6-K", "6-K/A"]
+    assert [row["form_base"] for row in rows] == ["6-K", "6-K"]
+    assert rows[0]["ticker"] == "SHOP"
+    assert rows[0]["eight_k_item_codes"] == []
+    assert rows[0]["usable_trade_date"] == "2025-11-04"
+
+
 def test_ticker_to_cik_map_falls_back_to_shared_reference(tmp_path, monkeypatch):
     monkeypatch.setattr(backfill, "DATA_DIR", tmp_path)
     monkeypatch.setattr(

@@ -1,0 +1,190 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "expected_value_score": 7.9281,
+    "max_drawdown_pct": null,
+    "total_pnl": 236763.09,
+    "trade_count": 11
+  },
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260622-007/exp_20260622_007_sec13f_coaccumulation_peer_shock.json",
+  "before_metrics": {
+    "expected_value_score": 7.8941,
+    "max_drawdown_pct": 0.1119,
+    "total_pnl": 234850.99
+  },
+  "calibration": {
+    "actual_ev_delta": 0.034,
+    "actual_pnl_delta": 1912.1,
+    "actual_success": 0,
+    "brier_score": 0.0484,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "thin_sample",
+      "stale_13f_signal",
+      "index_overlap_noise",
+      "not_incremental_vs_rolling_corr"
+    ],
+    "predicted_success_probability": 0.22,
+    "realized_failure_mode": "fewer_than_two_ev_improved_windows",
+    "surprise_level": "low",
+    "surprise_note": "Co-accumulation failed the predeclared Gate-4 screen; the main risk was stale/noisy 13F relation data not adding enough over rolling-correlation peer shock."
+  },
+  "causal_components": [
+    "historical replay",
+    "execution envelope",
+    "full-stack verdict"
+  ],
+  "change_summary": "Replay-only SEC 13F same-manager co-accumulation peer graph as peer-shock laggard admission source.",
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "Use SEC 13F shared-manager co-accumulation edges as the peer-adjacency source for peer-shock laggard admission.",
+  "component": "quant/experiments/exp_20260622_007_sec13f_coaccumulation_peer_shock.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": 0.034,
+    "max_drawdown_pct": 0.0001,
+    "total_pnl": 1912.1
+  },
+  "experiment_id": "exp-20260622-007",
+  "gate4": {
+    "accepted_comparator": {
+      "aggregate_ev_delta": 0.3683,
+      "aggregate_pnl_delta": 5745.7,
+      "decision": "accepted_rolling_corr_peer_shock_shared_default_off_adapter",
+      "experiment_id": "exp-20260606-025",
+      "name": "rolling_corr_peer_shock"
+    },
+    "aggregate_ev_delta": 0.034,
+    "aggregate_pnl_delta": 1912.1,
+    "failed_reasons": [
+      "fewer_than_two_ev_improved_windows",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "target_sample_too_small",
+      "target_concentration_failed",
+      "rolling_corr_peer_shock_ev_not_beaten",
+      "rolling_corr_peer_shock_pnl_not_beaten"
+    ],
+    "max_drawdown_worse": 0.0001,
+    "max_drawdown_worse_guardrail": 0.005,
+    "passed": false,
+    "target_concentration": {
+      "passed": false,
+      "positive_pnl_hhi": 0.5802,
+      "positive_pnl_hhi_guardrail": 0.35,
+      "single_ticker_positive_share": 0.7443,
+      "single_ticker_positive_share_guardrail": 0.5
+    },
+    "target_trade_count": 11,
+    "target_trade_count_min": 20,
+    "windows_ev_improved": 1,
+    "windows_ev_regressed": 2,
+    "windows_pnl_improved": 1,
+    "windows_pnl_regressed": 2
+  },
+  "hypothesis": "candidate_pool: SEC 13F co-accumulation peer graph, where the same institutional managers increased both names across consecutive filing windows, may admit cleaner peer-shock laggards than static co-ownership and beat rolling-correlation peer-shock after costs.",
+  "implementation_mode": "private_replay_scout",
+  "log": "experiments/logs/exp-20260622-007.json",
+  "mechanism_family": "peer_shock",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260622-006"
+  ],
+  "new_evidence_type": "SEC 13F same-manager co-accumulation edge",
+  "next_retry_requires": [
+    "non-quarterly ownership/flow evidence",
+    "manager-level active conviction classification",
+    "closed forward replacement-value rows"
+  ],
+  "parameters": {
+    "coaccumulation": {
+      "daily_entry_slots": 1,
+      "edge_top_k": 20,
+      "hold_days": 10,
+      "manager_max_accumulations": 80,
+      "manager_max_holdings": 120,
+      "manager_min_accumulations": 2,
+      "manager_min_holdings": 5,
+      "min_accumulation_increase_pct": 0.1,
+      "min_coaccumulation_lift": 1.25,
+      "min_current_value_usd_thousands": 5000.0,
+      "min_shared_accumulating_managers": 2,
+      "paper_notional_usd": 4000.0,
+      "same_ticker_cooldown_days": 10
+    }
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry by sweeping min_accumulation_increase_pct, min_shared_accumulating_managers, min_coaccumulation_lift, manager holding-count bounds, top-K, hold days, cooldown, or notional on these frozen windows.",
+    "new_evidence_required": "A valid retry needs non-quarterly ownership/flow evidence, active-manager conviction classification independent of holding count, manager-level alpha attribution, or closed forward replacement-value rows from a shared default-off helper.",
+    "why_result_happened": "The same-manager co-accumulation graph did not clear the predeclared Gate-4 screen; 13F relation staleness and quarterly batch effects likely remain too noisy for peer-shock admission versus the accepted rolling-corr relation."
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260622-006 rejected static co-ownership but explicitly left holdings-change co-movement as a valid new evidence axis; co-accumulation should be less index-overlap-heavy than static co-hold, though quarterly filing lag and sample size are major risks.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "thin_sample",
+      "stale_13f_signal",
+      "index_overlap_noise",
+      "not_incremental_vs_rolling_corr"
+    ],
+    "recorded_at": "2026-06-22T07:05:32+00:00",
+    "success_probability": 0.22
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "activation_envelope": {
+      "daily_entry_slots": 1,
+      "hold_days": 10,
+      "kill_switch": "trade_enabled remains false; no production adapter changes",
+      "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+      "order_semantics": "observe-only next-session-open paper entry; no broker order",
+      "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+      "same_ticker_cooldown_days": 10,
+      "target_notional_per_paper_trade": 4000.0
+    },
+    "adapter_status": "private_replay_scout_no_shared_adapter",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "parity_note": "This experiment changes no production code. A positive result would be only a replay lead until a shared default-off helper builds the same 13F co-accumulation edge map and daily snapshot path.",
+    "parity_test_added": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_free_ohlcv": true,
+    "uses_free_sec13f": true,
+    "uses_llm": false
+  },
+  "rejection_reason": "fewer_than_two_ev_improved_windows; window_ev_regression; window_pnl_regression; target_sample_too_small; target_concentration_failed; rolling_corr_peer_shock_ev_not_beaten; rolling_corr_peer_shock_pnl_not_beaten",
+  "related_files": [
+    "quant/experiments/exp_20260622_007_sec13f_coaccumulation_peer_shock.py",
+    "data/experiments/exp-20260622-007/exp_20260622_007_sec13f_coaccumulation_peer_shock.json",
+    "experiments/logs/exp-20260622-007.json",
+    "experiments/cards/exp-20260622-007.md",
+    "experiments/manifests/exp-20260622-007.json",
+    "experiments/tickets/exp-20260622-007.json"
+  ],
+  "secondary_windows": [],
+  "status": "rejected",
+  "timestamp": "2026-06-22T07:17:54Z",
+  "trial_family": "sec13f_coaccumulation_peer_shock",
+  "trial_variant_id": "coaccumulation_peer_graph_top1_next_open_10d_v1"
+}

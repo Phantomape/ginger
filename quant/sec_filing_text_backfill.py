@@ -20,7 +20,7 @@ DEFAULT_OUTPUT = DATA_DIR / "non_ohlcv" / "sec_filing_text_20241002_20260421.jso
 DEFAULT_SUMMARY = DATA_DIR / "non_ohlcv" / "sec_filing_text_backfill_summary_20241002_20260421.json"
 DEFAULT_CACHE_DIR = DATA_DIR / "cache" / "sec" / "filing_text"
 DEFAULT_USER_AGENT = "ginger-research/1.0 contact: research@example.com"
-DEFAULT_FORMS = ("8-K",)
+DEFAULT_FORMS = ("8-K", "6-K")
 DEFAULT_ITEM_CODES = ("2.02",)
 
 
@@ -216,6 +216,8 @@ def _event_matches(row: dict[str, Any], forms: set[str], item_codes: set[str] | 
     if form_base not in forms:
         return False
     if item_codes is None:
+        return True
+    if form_base != "8-K":
         return True
     codes = {str(code).strip() for code in row.get("eight_k_item_codes") or [] if str(code).strip()}
     return bool(codes & item_codes)

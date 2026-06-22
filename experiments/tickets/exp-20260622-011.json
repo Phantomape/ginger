@@ -1,0 +1,180 @@
+{
+  "acceptance_rule": "Accept as measurement repair if skipped_missing_replacement falls from 2 to 0, artifact rows rise from 31 to 33, no artifact/state mismatch remains, and Gate-4 standard baseline metrics are unchanged by construction because no decision policy changes.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260622_011_forward_replacement_current_state_refresh.py;data/experiments/exp-20260622-011/;data/paper_sleeves/forward_replacement_value.jsonl;data/paper_sleeves/fundamental_growth_rs/state.json;data/paper_sleeves/sec_governance/state.json;docs/experiment_log.jsonl;docs/experiment_registry.json;experiments/logs/exp-20260622-011.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260622-011.md",
+  "causal_components": [
+    "state enrichment for rows missing replacement_value_rule_version",
+    "canonical artifact rebuild",
+    "readiness coverage audit"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "replacement_value_fields_on_current_closed_paper_state_rows",
+  "claimed_at": "2026-06-22T11:07:23+00:00",
+  "completed_at": "2026-06-22T11:11:13+00:00",
+  "created_at": "2026-06-22T11:07:17+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260622-011",
+  "experiment_uid": "expuid-642e8632da7c4e6b",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260622-011",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-22T11:07:17+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "forward_replacement_current_state_refresh"
+  },
+  "hypothesis": "Fresh 2026-06-21 default-off paper sleeve state has two newly closed decisions missing forward replacement-value fields, so activation/readiness evidence undercounts closed rows until the shared enrichment helper refreshes current state and rebuilds the canonical artifact.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "current_state_forward_replacement_value_refresh_for_new_closed_rows"
+  ],
+  "mechanism_family": "forward_replacement_value_readiness_audit",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260611-020",
+    "exp-20260612-012",
+    "exp-20260620-013"
+  ],
+  "new_evidence_type": "new_forward_closed_rows",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "activation",
+        "artifact",
+        "audit",
+        "canonical",
+        "closed",
+        "current",
+        "decisions",
+        "enrichment",
+        "evidence",
+        "fields",
+        "forward",
+        "fresh",
+        "has",
+        "helper",
+        "missing",
+        "new",
+        "newly",
+        "readiness",
+        "rebuilds",
+        "refresh",
+        "refreshes",
+        "replacement",
+        "rows",
+        "sleeve",
+        "so",
+        "state",
+        "two",
+        "undercounts",
+        "until",
+        "value"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "paper_sleeve_forward_accumulation_integrity",
+        "reopen_condition": "Future activation work should wait for more current-state closed replacement rows and should treat status=missing_comparator_bars or non_session_entry_fill rows as coverage blockers, not enriched comparator evidence.",
+        "score": 0.097,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.25,
+        "data_source": "other",
+        "family_key": "default_off_forward_replacement_value_activation_readiness",
+        "reopen_condition": "More closed forward rows per sleeve, diversified positive contributors, positive replacement value versus cash/SPY/QQQ, and a measured activation envelope with kill-switch parity.",
+        "score": 0.0903,
+        "status": "has_accepted",
+        "trials": 4
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "forward_paper_replacement_maturity",
+        "reopen_condition": "At least 20 closed true-trigger forward rows for one shared default-off helper with replacement value enriched versus cash, SPY, and QQQ, plus a documented shared exit/target contract and daily snapshot parity before any production-facing change.",
+        "score": 0.0485,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "market_state_sleeve_replacement_value_attribution",
+        "reopen_condition": null,
+        "score": 0.0485,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "vcp_forward_replacement_value_readiness",
+        "reopen_condition": null,
+        "score": 0.0485,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-explore",
+  "prediction": {
+    "success_probability": 0.85,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "missing SPY/QQQ comparator bars for fresh exits",
+      "state schema drift",
+      "artifact rebuild mismatch"
+    ],
+    "confidence_reason": "The shared helper already repaired the same surface and current skipped rows have ticker, entry_date, exit_date, pnl, and plausible notional inputs.",
+    "recorded_at": "2026-06-22T11:07:10+00:00"
+  },
+  "prior_trial_count": 2,
+  "result": {
+    "decision": "accepted_measurement_repair_forward_replacement_current_state_refresh",
+    "artifact": "data/experiments/exp-20260622-011/exp_20260622_011_forward_replacement_current_state_refresh.json",
+    "log": "experiments/logs/exp-20260622-011.json",
+    "archive": "data/experiments/exp-20260622-011/forward_replacement_value_pre_refresh.jsonl",
+    "before_rows": 31,
+    "after_rows": 33,
+    "rows_enriched": 2,
+    "skipped_missing_before": 2,
+    "skipped_missing_after": 0,
+    "accepted": true
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260622-011.json",
+  "single_causal_variable": "current_state_forward_replacement_value_refresh_for_new_closed_rows",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260622-011.json",
+  "trial_family": "default_off_forward_replacement_value_activation_readiness",
+  "trial_variant_id": "current_state_refresh_20260621_v1",
+  "decision": "accepted_measurement_repair_forward_replacement_current_state_refresh",
+  "updated_at": "2026-06-22T11:11:13+00:00"
+}

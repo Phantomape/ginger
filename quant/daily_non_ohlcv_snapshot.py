@@ -28,6 +28,7 @@ try:
     )
     from sec_filing_text_backfill import (
         DEFAULT_CACHE_DIR as SEC_TEXT_CACHE_DIR,
+        DEFAULT_FORMS as SEC_TEXT_DEFAULT_FORMS,
         build_rows as build_sec_filing_text_rows,
         write_json as write_sec_filing_text_summary,
         write_jsonl as write_sec_filing_text_jsonl,
@@ -47,6 +48,7 @@ except ImportError:  # pragma: no cover - package-style imports in tests
     )
     from quant.sec_filing_text_backfill import (
         DEFAULT_CACHE_DIR as SEC_TEXT_CACHE_DIR,
+        DEFAULT_FORMS as SEC_TEXT_DEFAULT_FORMS,
         build_rows as build_sec_filing_text_rows,
         write_json as write_sec_filing_text_summary,
         write_jsonl as write_sec_filing_text_jsonl,
@@ -266,7 +268,7 @@ def _run_sec_filing_text(
             output=str(paths["sec_filing_text"]),
             summary_output=str(paths["sec_filing_text_summary"]),
             cache_dir=str(SEC_TEXT_CACHE_DIR),
-            forms=["8-K"],
+            forms=list(SEC_TEXT_DEFAULT_FORMS),
             item_codes=["all"],
             max_documents=4,
             max_chars_per_doc=180000,

@@ -23,6 +23,8 @@ Comparator convention (fixed, recorded on every enriched row):
 from __future__ import annotations
 
 import json
+from bisect import bisect_left
+from datetime import date
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -55,6 +57,7 @@ ARTIFACT_RELPATH = Path("paper_sleeves") / "forward_replacement_value.jsonl"
 # derivation is treated as failed rather than silently recorded.
 MIN_PLAUSIBLE_NOTIONAL_USD = 500.0
 MAX_PLAUSIBLE_NOTIONAL_USD = 2_000_000.0
+MAX_COMPARATOR_SESSION_RESOLUTION_GAP_DAYS = 4
 
 PRODUCTION_IMPACT = {
     "shared_policy_changed": False,
@@ -109,6 +112,67 @@ def load_comparator_bars(warehouse_path=None, tickers=COMPARATOR_TICKERS):
     return bars
 
 
+def _parse_date(value):
+    try:
+        return date.fromisoformat(str(value))
+    except (TypeError, ValueError):
+        return None
+
+
+def _resolve_bar(bars, requested_date, *, prefer="exact_or_next"):
+    requested = str(requested_date or "")
+    if not requested:
+        return None, None, "missing_requested_date"
+    if requested in bars:
+        return requested, bars[requested], "exact"
+
+    requested_dt = _parse_date(requested)
+    if requested_dt is None:
+        return None, None, "invalid_requested_date"
+
+    dates = sorted(bars)
+    if not dates:
+        return None, None, "missing_bars"
+
+    idx = bisect_left(dates, requested)
+    candidates = []
+    if prefer in ("exact_or_previous", "nearest") and idx > 0:
+        candidates.append(("previous_session", dates[idx - 1]))
+    if prefer in ("exact_or_next", "nearest") and idx < len(dates):
+        candidates.append(("next_session", dates[idx]))
+    if prefer == "exact_or_next" and idx > 0:
+        candidates.append(("previous_session_fallback", dates[idx - 1]))
+    if prefer == "exact_or_previous" and idx < len(dates):
+        candidates.append(("next_session_fallback", dates[idx]))
+
+    best = None
+    for resolution, resolved in candidates:
+        resolved_dt = _parse_date(resolved)
+        if resolved_dt is None:
+            continue
+        gap_days = abs((resolved_dt - requested_dt).days)
+        if gap_days > MAX_COMPARATOR_SESSION_RESOLUTION_GAP_DAYS:
+            continue
+        candidate = (gap_days, resolution, resolved)
+        if best is None or candidate < best:
+            best = candidate
+    if best is None:
+        return None, None, "missing_nearby_session"
+    gap_days, resolution, resolved = best
+    return resolved, bars[resolved], resolution
+
+
+def _row_needs_replacement_refresh(row):
+    if not row.get("replacement_value_rule_version"):
+        return True
+    if row.get("replacement_value_status") != "missing_comparator_bars":
+        return False
+    return any(
+        row.get("replacement_value_vs_" + ticker.lower() + "_usd") is None
+        for ticker in COMPARATOR_TICKERS
+    )
+
+
 def _notional_for_row(row):
     """Best-effort recovery of the paper notional behind a closed row."""
     for key in ("notional_usd", "paper_notional_usd"):
@@ -153,9 +217,21 @@ def _notional_for_row(row):
     return None, "missing"
 
 
-def _comparator_pnl(bars, entry_date, exit_date, notional):
-    entry_bar = bars.get(entry_date)
-    exit_bar = bars.get(exit_date)
+def _comparator_pnl(
+    bars,
+    entry_date,
+    exit_date,
+    notional,
+    *,
+    entry_prefer="exact_or_next",
+    exit_prefer="exact_or_previous",
+):
+    entry_resolved, entry_bar, entry_resolution = _resolve_bar(
+        bars, entry_date, prefer=entry_prefer
+    )
+    exit_resolved, exit_bar, exit_resolution = _resolve_bar(
+        bars, exit_date, prefer=exit_prefer
+    )
     if not entry_bar or not exit_bar:
         return None
     entry_fill = apply_slippage(entry_bar["open"], SLIPPAGE_BPS_ENTRY, "buy")
@@ -165,7 +241,13 @@ def _comparator_pnl(bars, entry_date, exit_date, notional):
     gross = (exit_fill / entry_fill) - 1.0
     pnl = notional * gross - notional * ROUND_TRIP_COST_PCT
     return {
+        "requested_entry_date": entry_date,
+        "entry_date": entry_resolved,
+        "entry_date_resolution": entry_resolution,
         "entry_fill": round(entry_fill, 4),
+        "requested_exit_date": exit_date,
+        "exit_date": exit_resolved,
+        "exit_date_resolution": exit_resolution,
         "exit_fill": round(exit_fill, 4),
         "net_pnl_usd": round(pnl, 2),
     }
@@ -346,12 +428,15 @@ def enrich_state_closed_rows(state, bars_by_ticker, asof_date, sleeve_key=""):
     """
     records = []
     for row in _closed_rows(state):
-        if row.get("replacement_value_rule_version"):
+        if not _row_needs_replacement_refresh(row):
             continue
         pnl = _to_float(row.get("pnl"))
         entry_date = str(row.get("entry_date") or "")
         exit_date = str(row.get("exit_date") or row.get("entry_date") or "")
         notional, notional_method = _notional_for_row(row)
+        entry_prefer = (
+            "exact_or_previous" if row.get("non_session_entry_fill") else "exact_or_next"
+        )
 
         status = "enriched"
         comparators = {}
@@ -362,7 +447,11 @@ def enrich_state_closed_rows(state, bars_by_ticker, asof_date, sleeve_key=""):
         else:
             for ticker in COMPARATOR_TICKERS:
                 comparators[ticker] = _comparator_pnl(
-                    bars_by_ticker.get(ticker, {}), entry_date, exit_date, notional
+                    bars_by_ticker.get(ticker, {}),
+                    entry_date,
+                    exit_date,
+                    notional,
+                    entry_prefer=entry_prefer,
                 )
             if any(detail is None for detail in comparators.values()):
                 status = "missing_comparator_bars"

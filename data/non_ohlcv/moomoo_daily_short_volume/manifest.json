@@ -1,0 +1,172 @@
+{
+  "activity_only_warning": "Moomoo daily short volume is an activity field, not FINRA short-interest positioning. Any future candidate-pool helper must use it as activity-only sell-pressure context and must map usable trade dates explicitly.",
+  "archive": {
+    "deduplicated_key": "source_code|activity_date",
+    "path": "data/non_ohlcv/moomoo_daily_short_volume/rows.jsonl",
+    "rows_added_or_updated": 2250,
+    "rows_after": 2250,
+    "rows_before": 0,
+    "sha256": "b40eaa8dfed84f1ecdf782359b0a9083b68b68007b074d4653b141d95d9229cf"
+  },
+  "last_fetch": {
+    "bounded_policy": {
+      "max_pages_per_ticker": 18,
+      "oldest_required_activity_date": "2024-10-02",
+      "page_num": 50,
+      "request_sleep_sec": 1.05
+    },
+    "collected_at": "2026-06-22T09:11:50+00:00",
+    "connected": true,
+    "experiment_id": "exp-20260622-009",
+    "fetch_error": null,
+    "per_ticker": [
+      {
+        "api_columns": [
+          "timestamp",
+          "timestamp_str",
+          "total_shares_short",
+          "nasdaq_shares_short",
+          "nyse_shares_short",
+          "short_percent",
+          "volume",
+          "close_price",
+          "last_close_price",
+          "daily_trade_avg_ratio"
+        ],
+        "code": "US.AAPL",
+        "earliest": "2024-09-03",
+        "error": null,
+        "hit_page_cap": false,
+        "latest": "2026-06-18",
+        "pages": 9,
+        "reaches_oldest_window": true,
+        "row_count": 450
+      },
+      {
+        "api_columns": [
+          "timestamp",
+          "timestamp_str",
+          "total_shares_short",
+          "nasdaq_shares_short",
+          "nyse_shares_short",
+          "short_percent",
+          "volume",
+          "close_price",
+          "last_close_price",
+          "daily_trade_avg_ratio"
+        ],
+        "code": "US.NVDA",
+        "earliest": "2024-09-03",
+        "error": null,
+        "hit_page_cap": false,
+        "latest": "2026-06-18",
+        "pages": 9,
+        "reaches_oldest_window": true,
+        "row_count": 450
+      },
+      {
+        "api_columns": [
+          "timestamp",
+          "timestamp_str",
+          "total_shares_short",
+          "nasdaq_shares_short",
+          "nyse_shares_short",
+          "short_percent",
+          "volume",
+          "close_price",
+          "last_close_price",
+          "daily_trade_avg_ratio"
+        ],
+        "code": "US.TSLA",
+        "earliest": "2024-09-03",
+        "error": null,
+        "hit_page_cap": false,
+        "latest": "2026-06-18",
+        "pages": 9,
+        "reaches_oldest_window": true,
+        "row_count": 450
+      },
+      {
+        "api_columns": [
+          "timestamp",
+          "timestamp_str",
+          "total_shares_short",
+          "nasdaq_shares_short",
+          "nyse_shares_short",
+          "short_percent",
+          "volume",
+          "close_price",
+          "last_close_price",
+          "daily_trade_avg_ratio"
+        ],
+        "code": "US.PLTR",
+        "earliest": "2024-09-03",
+        "error": null,
+        "hit_page_cap": false,
+        "latest": "2026-06-18",
+        "pages": 9,
+        "reaches_oldest_window": true,
+        "row_count": 450
+      },
+      {
+        "api_columns": [
+          "timestamp",
+          "timestamp_str",
+          "total_shares_short",
+          "nasdaq_shares_short",
+          "nyse_shares_short",
+          "short_percent",
+          "volume",
+          "close_price",
+          "last_close_price",
+          "daily_trade_avg_ratio"
+        ],
+        "code": "US.SOFI",
+        "earliest": "2024-09-03",
+        "error": null,
+        "hit_page_cap": false,
+        "latest": "2026-06-18",
+        "pages": 9,
+        "reaches_oldest_window": true,
+        "row_count": 450
+      }
+    ],
+    "tickers": [
+      "US.AAPL",
+      "US.NVDA",
+      "US.TSLA",
+      "US.PLTR",
+      "US.SOFI"
+    ]
+  },
+  "next_required_work": [
+    "Broaden archive beyond the five probe tickers to the candidate universe.",
+    "Add a shared default-off helper that maps activity_date to usable_trade_date.",
+    "Expose a daily default-off snapshot with trade_enabled=false.",
+    "Run parity tests and Gate 1-4 before any threshold or ranking use."
+  ],
+  "pit_boundary": {
+    "activity_date": "Moomoo row date for reported short-volume activity.",
+    "leakage_guard": "Do not use a same-day row for pre-close decisions. The current production run is after market close, but helper parity must still make that timing explicit.",
+    "usable_trade_date": "Not populated by the raw archive. A future shared helper must map activity_date to the next valid trading session under a documented vendor-publication policy."
+  },
+  "schema_version": "moomoo_daily_short_volume_activity_v1",
+  "source": "moomoo_get_daily_short_volume",
+  "summary": {
+    "earliest_activity_date": "2024-09-03",
+    "latest_activity_date": "2026-06-18",
+    "reaches_oldest_window": true,
+    "row_count": 2250,
+    "rows_by_ticker": {
+      "US.AAPL": 450,
+      "US.NVDA": 450,
+      "US.PLTR": 450,
+      "US.SOFI": 450,
+      "US.TSLA": 450
+    },
+    "short_volume_ratio_max": 0.262232,
+    "short_volume_ratio_median": 0.102907,
+    "ticker_count": 5
+  },
+  "updated_at": "2026-06-22T09:12:41+00:00"
+}

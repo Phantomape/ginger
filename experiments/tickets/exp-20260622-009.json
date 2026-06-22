@@ -1,0 +1,724 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260622_009_moomoo_daily_short_volume_raw_archive.py",
+    "data/experiments/exp-20260622-009/exp_20260622_009_moomoo_daily_short_volume_raw_archive.json",
+    "data/experiments/exp-20260622-009/",
+    "data/non_ohlcv/moomoo_daily_short_volume/",
+    "experiments/cards/exp-20260622-009.md",
+    "experiments/manifests/exp-20260622-009.json",
+    "experiments/tickets/exp-20260622-009.json",
+    "experiments/logs/exp-20260622-009.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260622-009.md",
+  "causal_components": [
+    "raw archive schema contract",
+    "bounded OpenD backfill attempt",
+    "activity-only PIT row manifest",
+    "Gate 1-4 no-strategy-change measurement record"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "moomoo_daily_short_volume_raw_archive_contract_v1",
+  "claimed_at": "2026-06-22T09:04:59+00:00",
+  "completed_at": "2026-06-22T09:12:42+00:00",
+  "created_at": "2026-06-22T09:04:52+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260622-009",
+  "experiment_uid": "expuid-7a61976bb24c4dc3",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260622-009",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-22T09:04:52+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "moomoo_daily_short_volume_raw_archive"
+  },
+  "hypothesis": "measurement_repair/alpha_blocker: Moomoo daily short-volume activity may be a future sell-pressure candidate-pool context field, but exp-20260622-008 blocked alpha replay because the repository had no raw PIT row archive. This run seeds the archive contract and a bounded raw-row backfill without changing any strategy behavior.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "moomoo_daily_short_volume_raw_archive_contract_v1"
+  ],
+  "mechanism_family": "measurement_repair_moomoo_daily_short_volume_activity_archive",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260622-008",
+    "exp-20260622-003",
+    "exp-20260621-017"
+  ],
+  "new_evidence_type": "new_raw_activity_archive",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "alpha",
+        "an",
+        "archive",
+        "attempting",
+        "auditable",
+        "backfill",
+        "blocker",
+        "bounded",
+        "by",
+        "contract",
+        "creating",
+        "daily",
+        "from",
+        "moomoo",
+        "opend",
+        "pit",
+        "positive",
+        "probe",
+        "raw",
+        "repair",
+        "row",
+        "short",
+        "surface",
+        "volume"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "nonrepeat_alpha_direction_blocker",
+        "reopen_condition": null,
+        "score": 0.0387,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "alpha_direction_triage",
+        "reopen_condition": "Build a new free PIT data edge first: analyst-count/revenue/dispersion/provenance rows matched to historical candidates, structured customer/supplier contract economics, usable 13F holdings, closed options outcomes, or enough true-trigger forward replacement rows.",
+        "score": 0.0333,
+        "status": "frozen_rejected",
+        "trials": 3
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "sec_public_pit_filing_backfill",
+        "reopen_condition": null,
+        "score": 0.0296,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "default_off_alpha_attribution_report_surface",
+        "reopen_condition": "Use the report surface to choose the next activation candidate with enough forward outcomes and controlled concentration; do not let the report itself influence live trading.",
+        "score": 0.0286,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "industry_volume_breadth_laggard_repair_candidate_pool",
+        "reopen_condition": "A retry requires independent PIT confirmation such as earnings peer provenance, news/event catalyst context, options/borrow/ownership data with adequate history, or closed forward rows from a shared default-off adapter.",
+        "score": 0.0286,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore-automation",
+  "prediction": {
+    "success_probability": 0.35,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "OpenD unavailable",
+      "API schema unknown",
+      "rate_limit_or_no_rows"
+    ],
+    "confidence_reason": "exp-20260622-008 showed 5/5 liquid tickers have historical get_daily_short_volume coverage, but no raw PIT archive exists; the blocker is concrete and directly prevents any future candidate-pool Gate 2 replay.",
+    "recorded_at": "2026-06-22T09:04:36+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "decision": "accepted_measurement_repair_moomoo_daily_short_volume_raw_archive_seeded",
+    "artifact": "data/experiments/exp-20260622-009/exp_20260622_009_moomoo_daily_short_volume_raw_archive.json",
+    "before": "data/experiments/exp-20260622-009/before_baseline.json",
+    "after": "data/experiments/exp-20260622-009/after_no_strategy_change.json",
+    "log": "experiments/logs/exp-20260622-009.json",
+    "runner": "quant/experiments/exp_20260622_009_moomoo_daily_short_volume_raw_archive.py",
+    "archive": {
+      "rows": "data/non_ohlcv/moomoo_daily_short_volume/rows.jsonl",
+      "manifest": "data/non_ohlcv/moomoo_daily_short_volume/manifest.json",
+      "source_files": "data/non_ohlcv/moomoo_daily_short_volume/source_files.json",
+      "summary": {
+        "row_count": 2250,
+        "ticker_count": 5,
+        "rows_by_ticker": {
+          "US.AAPL": 450,
+          "US.NVDA": 450,
+          "US.PLTR": 450,
+          "US.SOFI": 450,
+          "US.TSLA": 450
+        },
+        "earliest_activity_date": "2024-09-03",
+        "latest_activity_date": "2026-06-18",
+        "reaches_oldest_window": true,
+        "short_volume_ratio_median": 0.102907,
+        "short_volume_ratio_max": 0.262232
+      },
+      "write": {
+        "path": "data/non_ohlcv/moomoo_daily_short_volume/rows.jsonl",
+        "rows_before": 0,
+        "rows_after": 2250,
+        "rows_added_or_updated": 2250,
+        "deduplicated_key": "source_code|activity_date",
+        "sha256": "b40eaa8dfed84f1ecdf782359b0a9083b68b68007b074d4653b141d95d9229cf"
+      }
+    },
+    "delta_metrics": {
+      "aggregate_expected_value_score": 0.0,
+      "aggregate_total_pnl": 0.0,
+      "total_trade_count": 0,
+      "min_survival_rate": 0.0,
+      "max_window_drawdown_pct": 0.0
+    },
+    "gate4": {
+      "strategy_after_ran": false,
+      "reason_after_not_run": "Measurement repair only; no strategy logic changed.",
+      "before_windows": {
+        "late_strong": {
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        "mid_weak": {
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        "old_thin": {
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      },
+      "after_windows": {
+        "late_strong": {
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        "mid_weak": {
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        "old_thin": {
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      },
+      "delta_by_window": {
+        "late_strong": {
+          "expected_value_score": 0.0,
+          "total_pnl": 0.0,
+          "max_drawdown_pct": 0.0,
+          "trade_count": 0.0,
+          "survival_rate": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": 0.0,
+          "total_pnl": 0.0,
+          "max_drawdown_pct": 0.0,
+          "trade_count": 0.0,
+          "survival_rate": 0.0
+        },
+        "old_thin": {
+          "expected_value_score": 0.0,
+          "total_pnl": 0.0,
+          "max_drawdown_pct": 0.0,
+          "trade_count": 0.0,
+          "survival_rate": 0.0
+        }
+      },
+      "aggregate_before": {
+        "aggregate_expected_value_score": 7.8941,
+        "aggregate_total_pnl": 234850.99,
+        "total_trade_count": 61,
+        "min_survival_rate": 0.7925,
+        "max_window_drawdown_pct": 0.1119
+      },
+      "aggregate_after": {
+        "aggregate_expected_value_score": 7.8941,
+        "aggregate_total_pnl": 234850.99,
+        "total_trade_count": 61,
+        "min_survival_rate": 0.7925,
+        "max_window_drawdown_pct": 0.1119
+      },
+      "aggregate_delta": {
+        "aggregate_expected_value_score": 0.0,
+        "aggregate_total_pnl": 0.0,
+        "total_trade_count": 0,
+        "min_survival_rate": 0.0,
+        "max_window_drawdown_pct": 0.0
+      },
+      "measurement_repair_passed": true,
+      "alpha_accepted": false,
+      "passed": true
+    },
+    "calibration": {
+      "actual_decision": "accepted_measurement_repair_moomoo_daily_short_volume_raw_archive_seeded",
+      "actual_success": 1,
+      "predicted_success_probability": 0.35,
+      "brier_score": 0.4225,
+      "predicted_failure_modes": [
+        "OpenD unavailable",
+        "API schema unknown",
+        "rate_limit_or_no_rows"
+      ],
+      "realized_failure_modes": [],
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "OpenD was reachable after redirecting Moomoo SDK logs into the experiment directory, so the raw archive blocker could be partially repaired."
+    },
+    "summary": "The prior blocker was concrete rather than strategic: the Moomoo API had rows, but Ginger had no raw PIT archive. The bounded backfill seeded activity-only rows and manifest labels without touching strategy logic."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260622-009.json",
+  "single_causal_variable": "moomoo_daily_short_volume_raw_archive_contract_v1",
+  "status": "accepted_measurement_repair_moomoo_daily_short_volume_raw_archive_seeded",
+  "ticket_file": "experiments/tickets/exp-20260622-009.json",
+  "trial_family": "moomoo_daily_short_volume_raw_archive_contract",
+  "trial_variant_id": "bounded_probe_tickers_to_old_thin_start_v1",
+  "decision": "accepted_measurement_repair_moomoo_daily_short_volume_raw_archive_seeded",
+  "artifact": "data/experiments/exp-20260622-009/exp_20260622_009_moomoo_daily_short_volume_raw_archive.json",
+  "before": "data/experiments/exp-20260622-009/before_baseline.json",
+  "after": "data/experiments/exp-20260622-009/after_no_strategy_change.json",
+  "log": "experiments/logs/exp-20260622-009.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "generated_at": "2026-06-04T22:29:38.821937",
+    "windows": {
+      "late_strong": {
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "expected_value_score": 5.1628,
+        "sharpe_daily": 4.41,
+        "total_pnl": 117072.92,
+        "max_drawdown_pct": 0.0665,
+        "win_rate": 0.8333,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      "mid_weak": {
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "expected_value_score": 2.1402,
+        "sharpe_daily": 2.74,
+        "total_pnl": 78110.11,
+        "max_drawdown_pct": 0.1119,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      "old_thin": {
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "expected_value_score": 0.5911,
+        "sharpe_daily": 1.49,
+        "total_pnl": 39667.96,
+        "max_drawdown_pct": 0.1001,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    },
+    "aggregate": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "total_trade_count": 61,
+      "min_survival_rate": 0.7925,
+      "max_window_drawdown_pct": 0.1119
+    },
+    "passed": true
+  },
+  "gate2": {
+    "measurement_fields_checked": [
+      "schema_version",
+      "source",
+      "source_code",
+      "ticker",
+      "activity_date",
+      "total_shares_short",
+      "volume",
+      "short_volume_ratio",
+      "pit_boundary",
+      "collected_at"
+    ],
+    "archive_field_presence": {
+      "schema_version": {
+        "present_rows": 2250,
+        "scanned_rows": 2250,
+        "present_rate": 1.0
+      },
+      "source": {
+        "present_rows": 2250,
+        "scanned_rows": 2250,
+        "present_rate": 1.0
+      },
+      "source_code": {
+        "present_rows": 2250,
+        "scanned_rows": 2250,
+        "present_rate": 1.0
+      },
+      "ticker": {
+        "present_rows": 2250,
+        "scanned_rows": 2250,
+        "present_rate": 1.0
+      },
+      "activity_date": {
+        "present_rows": 2250,
+        "scanned_rows": 2250,
+        "present_rate": 1.0
+      },
+      "total_shares_short": {
+        "present_rows": 2250,
+        "scanned_rows": 2250,
+        "present_rate": 1.0
+      },
+      "volume": {
+        "present_rows": 2250,
+        "scanned_rows": 2250,
+        "present_rate": 1.0
+      },
+      "short_volume_ratio": {
+        "present_rows": 2250,
+        "scanned_rows": 2250,
+        "present_rate": 1.0
+      },
+      "pit_boundary": {
+        "present_rows": 2250,
+        "scanned_rows": 2250,
+        "present_rate": 1.0
+      },
+      "collected_at": {
+        "present_rows": 2250,
+        "scanned_rows": 2250,
+        "present_rate": 1.0
+      }
+    },
+    "archive_rows_path": "data/non_ohlcv/moomoo_daily_short_volume/rows.jsonl",
+    "archive_manifest_path": "data/non_ohlcv/moomoo_daily_short_volume/manifest.json",
+    "archive_fields_passed": true,
+    "requested_tickers_reached_oldest_window": true,
+    "strategy_runtime_fields_checked": [
+      "entry_date",
+      "target_price"
+    ],
+    "strategy_runtime_fields_present": false,
+    "strategy_replay_ready": false,
+    "passed": true,
+    "note": "Measurement repair only: raw archive fields can pass while candidate-pool replay remains blocked until a shared helper creates entry_date and target_price rows."
+  },
+  "gate3": {
+    "baseline_survival_by_window": {
+      "late_strong": {
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      "mid_weak": {
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      "old_thin": {
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    },
+    "new_strategy_filter_added": false,
+    "archive_row_count": 2250,
+    "archive_ticker_count": 5,
+    "archive_reaches_oldest_window": true,
+    "passed": true
+  },
+  "gate4": {
+    "strategy_after_ran": false,
+    "reason_after_not_run": "Measurement repair only; no strategy logic changed.",
+    "before_windows": {
+      "late_strong": {
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "expected_value_score": 5.1628,
+        "sharpe_daily": 4.41,
+        "total_pnl": 117072.92,
+        "max_drawdown_pct": 0.0665,
+        "win_rate": 0.8333,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      "mid_weak": {
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "expected_value_score": 2.1402,
+        "sharpe_daily": 2.74,
+        "total_pnl": 78110.11,
+        "max_drawdown_pct": 0.1119,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      "old_thin": {
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "expected_value_score": 0.5911,
+        "sharpe_daily": 1.49,
+        "total_pnl": 39667.96,
+        "max_drawdown_pct": 0.1001,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    },
+    "after_windows": {
+      "late_strong": {
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "expected_value_score": 5.1628,
+        "sharpe_daily": 4.41,
+        "total_pnl": 117072.92,
+        "max_drawdown_pct": 0.0665,
+        "win_rate": 0.8333,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      "mid_weak": {
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "expected_value_score": 2.1402,
+        "sharpe_daily": 2.74,
+        "total_pnl": 78110.11,
+        "max_drawdown_pct": 0.1119,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      "old_thin": {
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "expected_value_score": 0.5911,
+        "sharpe_daily": 1.49,
+        "total_pnl": 39667.96,
+        "max_drawdown_pct": 0.1001,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    },
+    "delta_by_window": {
+      "late_strong": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "max_drawdown_pct": 0.0,
+        "trade_count": 0.0,
+        "survival_rate": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "max_drawdown_pct": 0.0,
+        "trade_count": 0.0,
+        "survival_rate": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "max_drawdown_pct": 0.0,
+        "trade_count": 0.0,
+        "survival_rate": 0.0
+      }
+    },
+    "aggregate_before": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "total_trade_count": 61,
+      "min_survival_rate": 0.7925,
+      "max_window_drawdown_pct": 0.1119
+    },
+    "aggregate_after": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "total_trade_count": 61,
+      "min_survival_rate": 0.7925,
+      "max_window_drawdown_pct": 0.1119
+    },
+    "aggregate_delta": {
+      "aggregate_expected_value_score": 0.0,
+      "aggregate_total_pnl": 0.0,
+      "total_trade_count": 0,
+      "min_survival_rate": 0.0,
+      "max_window_drawdown_pct": 0.0
+    },
+    "measurement_repair_passed": true,
+    "alpha_accepted": false,
+    "passed": true
+  },
+  "archive": {
+    "rows": "data/non_ohlcv/moomoo_daily_short_volume/rows.jsonl",
+    "manifest": "data/non_ohlcv/moomoo_daily_short_volume/manifest.json",
+    "source_files": "data/non_ohlcv/moomoo_daily_short_volume/source_files.json",
+    "summary": {
+      "row_count": 2250,
+      "ticker_count": 5,
+      "rows_by_ticker": {
+        "US.AAPL": 450,
+        "US.NVDA": 450,
+        "US.PLTR": 450,
+        "US.SOFI": 450,
+        "US.TSLA": 450
+      },
+      "earliest_activity_date": "2024-09-03",
+      "latest_activity_date": "2026-06-18",
+      "reaches_oldest_window": true,
+      "short_volume_ratio_median": 0.102907,
+      "short_volume_ratio_max": 0.262232
+    },
+    "write": {
+      "path": "data/non_ohlcv/moomoo_daily_short_volume/rows.jsonl",
+      "rows_before": 0,
+      "rows_after": 2250,
+      "rows_added_or_updated": 2250,
+      "deduplicated_key": "source_code|activity_date",
+      "sha256": "b40eaa8dfed84f1ecdf782359b0a9083b68b68007b074d4653b141d95d9229cf"
+    }
+  },
+  "production_impact": {
+    "strategy_code_changed": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_orders_changed": false,
+    "trade_enabled": false,
+    "trade_enabled_changed": false,
+    "data_archive_changed": true,
+    "archive_path": "data/non_ohlcv/moomoo_daily_short_volume/rows.jsonl",
+    "parity_note": "No buy/sell/filter/ranking/sizing/risk code changed. The new archive is raw activity data only; a future shared helper must own usable-date mapping and daily/backtest parity before replay."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The prior blocker was concrete rather than strategic: the Moomoo API had rows, but Ginger had no raw PIT archive. The bounded backfill seeded activity-only rows and manifest labels without touching strategy logic.",
+    "forbidden_near_neighbor_retry": "Do not threshold-sweep daily_short_volume_ratio, top-N, hold days, notional, cooldown, or FINRA short-interest labels from this raw archive. It is activity data, not positioning data.",
+    "new_evidence_required": "Next valid alpha work needs a shared default-off helper that maps activity_date to usable_trade_date, daily snapshot parity, broader candidate-universe archive coverage, and then Gate 1-4 replay against accepted comparators."
+  },
+  "lean_quality_passed": true,
+  "updated_at": "2026-06-22T09:12:42+00:00"
+}

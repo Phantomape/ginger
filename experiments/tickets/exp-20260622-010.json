@@ -1,0 +1,1127 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260622_010_moomoo_daily_short_volume_activity_absorption.py",
+    "quant/experiments/exp_20260622_010_moomoo_daily_short_volume_activity_helper.py",
+    "quant/test_exp_20260622_010_moomoo_daily_short_volume_activity_helper.py",
+    "data/experiments/exp-20260622-010",
+    "experiments/tickets/exp-20260622-010.json",
+    "experiments/logs/exp-20260622-010.json",
+    "experiments/cards/exp-20260622-010.md",
+    "experiments/manifests/exp-20260622-010.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260622-010.md",
+  "causal_components": [
+    "experiment-local helper",
+    "historical replay",
+    "snapshot parity function",
+    "focused parity test",
+    "execution envelope",
+    "Gate 1-4 verdict"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "moomoo_daily_short_volume_activity_absorption_candidate_pool_v1",
+  "claimed_at": "2026-06-22T10:04:18+00:00",
+  "completed_at": "2026-06-22T10:23:56+00:00",
+  "created_at": "2026-06-22T10:04:08+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260622-010",
+  "experiment_uid": "expuid-47f77abdeaa14b22",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260622-010",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-22T10:04:08+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "moomoo_daily_short_volume_activity_absorption"
+  },
+  "hypothesis": "candidate_pool: archived Moomoo daily short-volume activity shocks, treated as activity-only sell-pressure context and mapped to the next tradable session, may identify liquid names where visible short-sale activity is absorbed by price and continues over a fixed 10-trading-day paper hold.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "moomoo_daily_short_volume_activity_absorption_candidate_pool_v1"
+  ],
+  "mechanism_family": "production_visible_moomoo_daily_short_volume_activity_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260622-008",
+    "exp-20260622-009",
+    "exp-20260503-039",
+    "exp-20260619-007"
+  ],
+  "new_evidence_type": "new_raw_activity_archive_experiment_local_helper",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "absorbed",
+        "absorption",
+        "activity",
+        "archived",
+        "as",
+        "by",
+        "context",
+        "continues",
+        "daily",
+        "hold",
+        "identify",
+        "is",
+        "liquid",
+        "mapped",
+        "may",
+        "moomoo",
+        "names",
+        "only",
+        "over",
+        "pressure",
+        "price",
+        "sale",
+        "sell",
+        "session",
+        "shocks",
+        "short",
+        "to",
+        "tradable",
+        "trading",
+        "treated",
+        "volume",
+        "where"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "form144_sale_notice_absorption_candidate_pool",
+        "reopen_condition": "Parsed Form 144 document fields, holder role, planned-sale size as percent of float, holder identity, a broader PIT universe, or forward replacement-value rows from a shared helper.",
+        "score": 0.1833,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_borrow_pressure_candidate_pool",
+        "reopen_condition": "If accepted, build a shared default-off adapter plus parity tests. If rejected, move away from FINRA threshold/support variants unless new borrow-cost, loan-availability, or forward replacement evidence arrives.",
+        "score": 0.18,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_public_float_normalized_short_pressure_candidate_pool",
+        "reopen_condition": "If positive, build a shared-paper-first FINRA/public-float helper with historical replay, daily default-off snapshot, parity tests, and closed forward replacement-value rows before promotion. If negative, a valid retry needs materially different PIT borrow-cost, loan-availability, float-change, or forward replacement evidence rather than threshold retunes.",
+        "score": 0.1793,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "broad_companyfacts_peer_price_absorption_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.1729,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_short_pressure_breakout_candidate_pool",
+        "reopen_condition": "Forward replacement-value rows or a materially stronger free/cheap short-pressure field, such as borrow fee, borrow availability, or float-normalized short interest.",
+        "score": 0.1729,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "First Gate-4 alpha attempt using the newly seeded raw Moomoo daily short-volume activity archive plus explicit next-session usable-date mapping and shared helper semantics; prior FINRA short-interest/float retries had no archived daily short-volume activity rows and exp-20260622-009 was measurement repair only.",
+    "override": true,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore-automation",
+  "prediction": {
+    "success_probability": 0.12,
+    "expected_ev_delta": 0.05,
+    "expected_pnl_delta": 1000.0,
+    "main_failure_modes": [
+      "five_ticker_sample_too_thin",
+      "concentration_failed",
+      "daily_short_volume_activity_not_positioning",
+      "accepted_comparator_not_beaten"
+    ],
+    "confidence_reason": "exp-20260622-009 created the first PIT raw daily short-volume activity archive after prior short/borrow audits had no usable daily-short-volume rows. The new evidence is the archived activity-only Moomoo field plus explicit next-session usable-date mapping; the main risk is that five probe tickers are too concentrated and daily short volume is activity rather than positioning.",
+    "recorded_at": "2026-06-22T10:03:54+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "decision": "rejected_moomoo_daily_short_volume_activity_absorption_candidate_pool",
+    "artifact": "data/experiments/exp-20260622-010/exp_20260622_010_moomoo_daily_short_volume_activity_absorption.json",
+    "log": "experiments/logs/exp-20260622-010.json",
+    "runner": "quant/experiments/exp_20260622_010_moomoo_daily_short_volume_activity_absorption.py",
+    "delta_metrics": {
+      "aggregate_expected_value_score": -0.0938,
+      "aggregate_total_pnl": -1465.51,
+      "max_window_drawdown_pct": 0.0005,
+      "total_trade_count": 11
+    },
+    "gate4": {
+      "accepted_compression_comparator": {
+        "aggregate_expected_value_delta": 0.1608,
+        "aggregate_pnl_delta": 2248.98,
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "experiment_id": "exp-20260608-013"
+      },
+      "accepted_distribution_comparator": {
+        "aggregate_expected_value_delta": 0.5286,
+        "aggregate_pnl_delta": 10432.91,
+        "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+        "experiment_id": "exp-20260611-007"
+      },
+      "aggregate_ev_delta": -0.0938,
+      "aggregate_pnl_delta": -1465.51,
+      "decision": "rejected_moomoo_daily_short_volume_activity_absorption_candidate_pool",
+      "failed_reasons": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_concentration_failed",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "max_drawdown_worse": 0.0005,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "passed": false,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "max_single_positive_pnl_share": 0.657748,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "passed": false,
+        "positive_pnl_hhi": 0.549769,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "target_trade_count": 11,
+      "target_trade_count_min": 20,
+      "target_window_count_min": 3,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "windows_ev_improved": 0,
+      "windows_ev_regressed": 3,
+      "windows_pnl_improved": 0,
+      "windows_pnl_regressed": 3
+    },
+    "full_stack": {
+      "execution_envelope": {
+        "base_notional": 4000.0,
+        "complete": true,
+        "kill_switch_drawdown_pct": 0.08,
+        "max_capital_pct": 0.2,
+        "max_concurrent": 8,
+        "max_displacement": 1,
+        "min_dollar_volume": 50000000.0,
+        "missing": [],
+        "notes": "Default-off paper only: top-1/day, fixed $4k notional, 10-trading-day close exit, 10-day same-ticker cooldown. Daily short volume is activity context only and must not be described as short-interest positioning.",
+        "order_semantics": "next_open_after_activity_date",
+        "sleeve_drawdown_stop_pct": 0.05,
+        "slippage_bps": 5.0
+      },
+      "gate4_canonical_auxiliary": {
+        "hard_failures": [
+          "non_positive_aggregate_ev",
+          "non_positive_aggregate_pnl",
+          "insufficient_ev_improved_windows",
+          "ev_regressed_windows",
+          "single_ticker_positive_share_cap",
+          "top_5_contribution_pct_cap",
+          "hhi_concentration_cap",
+          "missing_tail_concentration_baseline"
+        ],
+        "materiality": null,
+        "passed": false,
+        "promotion_gate": {
+          "checks": {
+            "adjusted_trade_sample": true,
+            "adjusted_window_coverage": true,
+            "drawdown_worse_guard": true,
+            "ev_improved_window_coverage": false,
+            "no_ev_regressed_windows": false,
+            "positive_aggregate_ev": false,
+            "positive_aggregate_pnl": false,
+            "tail_concentration_cap": false,
+            "tail_concentration_evidence": true,
+            "tail_concentration_not_worse": false
+          },
+          "concentration_checks": [
+            {
+              "baseline": null,
+              "cap_passed": false,
+              "delta": null,
+              "max_allowed": 0.5,
+              "name": "single_ticker_positive_share",
+              "not_worse": null,
+              "value": 0.657748
+            },
+            {
+              "baseline": null,
+              "cap_passed": false,
+              "delta": null,
+              "max_allowed": 0.6,
+              "name": "top_5_contribution_pct",
+              "not_worse": null,
+              "value": 1.0
+            },
+            {
+              "baseline": null,
+              "cap_passed": false,
+              "delta": null,
+              "max_allowed": 0.35,
+              "name": "hhi_concentration",
+              "not_worse": null,
+              "value": 0.549769
+            }
+          ],
+          "hard_failures": [
+            "non_positive_aggregate_ev",
+            "non_positive_aggregate_pnl",
+            "insufficient_ev_improved_windows",
+            "ev_regressed_windows",
+            "single_ticker_positive_share_cap",
+            "top_5_contribution_pct_cap",
+            "hhi_concentration_cap",
+            "missing_tail_concentration_baseline"
+          ],
+          "metrics": {
+            "adjusted_trade_count": 11,
+            "adjusted_window_count": 3,
+            "adjusted_windows": [],
+            "aggregate_ev_delta": -0.0938,
+            "aggregate_pnl_delta": -1465.51,
+            "max_drawdown_worse": 0.0005,
+            "windows_ev_improved": 0.0,
+            "windows_ev_regressed": 3.0
+          },
+          "passed": false,
+          "status": "blocked",
+          "thresholds": {
+            "concentration_tolerance": 0.0,
+            "max_drawdown_worse": 0.005,
+            "max_ev_regressed_windows": 0,
+            "max_hhi_concentration": 0.35,
+            "max_single_ticker_positive_share": 0.5,
+            "max_top_5_contribution_pct": 0.6,
+            "min_adjusted_trades": 9,
+            "min_adjusted_windows": 2,
+            "min_aggregate_ev_delta": 0.0,
+            "min_aggregate_pnl_delta": 0.0,
+            "min_ev_improved_windows": 2,
+            "require_tail_concentration_evidence": true,
+            "require_tail_concentration_not_worse": true
+          },
+          "warnings": [
+            "missing_single_ticker_positive_share_baseline",
+            "missing_top_5_contribution_pct_baseline",
+            "missing_hhi_concentration_baseline"
+          ]
+        },
+        "status": "blocked",
+        "warnings": [
+          "missing_single_ticker_positive_share_baseline",
+          "missing_top_5_contribution_pct_baseline",
+          "missing_hhi_concentration_baseline"
+        ]
+      },
+      "gate4_strict_materiality": {
+        "hard_failures": [
+          "non_positive_aggregate_ev",
+          "non_positive_aggregate_pnl",
+          "insufficient_ev_improved_windows",
+          "ev_regressed_windows",
+          "single_ticker_positive_share_cap",
+          "top_5_contribution_pct_cap",
+          "hhi_concentration_cap",
+          "missing_tail_concentration_baseline",
+          "immaterial_effect"
+        ],
+        "materiality": {
+          "avg_pnl_per_trade_delta": -133.2281818182,
+          "avg_return_delta_pp": null,
+          "material": false,
+          "min_avg_pnl_per_trade_delta": 500.0,
+          "min_avg_return_delta_pp": 5.0,
+          "warnings": []
+        },
+        "passed": false,
+        "promotion_gate": {
+          "checks": {
+            "adjusted_trade_sample": true,
+            "adjusted_window_coverage": true,
+            "drawdown_worse_guard": true,
+            "ev_improved_window_coverage": false,
+            "no_ev_regressed_windows": false,
+            "positive_aggregate_ev": false,
+            "positive_aggregate_pnl": false,
+            "tail_concentration_cap": false,
+            "tail_concentration_evidence": true,
+            "tail_concentration_not_worse": false
+          },
+          "concentration_checks": [
+            {
+              "baseline": null,
+              "cap_passed": false,
+              "delta": null,
+              "max_allowed": 0.5,
+              "name": "single_ticker_positive_share",
+              "not_worse": null,
+              "value": 0.657748
+            },
+            {
+              "baseline": null,
+              "cap_passed": false,
+              "delta": null,
+              "max_allowed": 0.6,
+              "name": "top_5_contribution_pct",
+              "not_worse": null,
+              "value": 1.0
+            },
+            {
+              "baseline": null,
+              "cap_passed": false,
+              "delta": null,
+              "max_allowed": 0.35,
+              "name": "hhi_concentration",
+              "not_worse": null,
+              "value": 0.549769
+            }
+          ],
+          "hard_failures": [
+            "non_positive_aggregate_ev",
+            "non_positive_aggregate_pnl",
+            "insufficient_ev_improved_windows",
+            "ev_regressed_windows",
+            "single_ticker_positive_share_cap",
+            "top_5_contribution_pct_cap",
+            "hhi_concentration_cap",
+            "missing_tail_concentration_baseline"
+          ],
+          "metrics": {
+            "adjusted_trade_count": 11,
+            "adjusted_window_count": 3,
+            "adjusted_windows": [],
+            "aggregate_ev_delta": -0.0938,
+            "aggregate_pnl_delta": -1465.51,
+            "max_drawdown_worse": 0.0005,
+            "windows_ev_improved": 0.0,
+            "windows_ev_regressed": 3.0
+          },
+          "passed": false,
+          "status": "blocked",
+          "thresholds": {
+            "concentration_tolerance": 0.0,
+            "max_drawdown_worse": 0.005,
+            "max_ev_regressed_windows": 0,
+            "max_hhi_concentration": 0.35,
+            "max_single_ticker_positive_share": 0.5,
+            "max_top_5_contribution_pct": 0.6,
+            "min_adjusted_trades": 9,
+            "min_adjusted_windows": 2,
+            "min_aggregate_ev_delta": 0.0,
+            "min_aggregate_pnl_delta": 0.0,
+            "min_ev_improved_windows": 2,
+            "require_tail_concentration_evidence": true,
+            "require_tail_concentration_not_worse": true
+          },
+          "warnings": [
+            "missing_single_ticker_positive_share_baseline",
+            "missing_top_5_contribution_pct_baseline",
+            "missing_hhi_concentration_baseline"
+          ]
+        },
+        "status": "blocked",
+        "warnings": [
+          "missing_single_ticker_positive_share_baseline",
+          "missing_top_5_contribution_pct_baseline",
+          "missing_hhi_concentration_baseline"
+        ]
+      },
+      "live_readiness": {
+        "blockers": [
+          "forward_rows_immature:0/30",
+          "forward_pnl_not_positive",
+          "replacement_value_not_passed"
+        ],
+        "closed_forward_trades": 0,
+        "envelope_missing": [],
+        "forward_pnl": null,
+        "kill_switch_parity_passed": true,
+        "min_closed_forward_trades": 30,
+        "ready": false,
+        "replacement_value_passed": false
+      },
+      "snapshot_historical_parity": {
+        "checked": true,
+        "historical_decision_id": "moomoo_daily_short_volume_activity_absorption_candidate_pool_v1:2025-10-27:SOFI",
+        "matched": true,
+        "snapshot_candidate_count": 1,
+        "snapshot_decision_id": "moomoo_daily_short_volume_activity_absorption_candidate_pool_v1:2025-10-27:SOFI"
+      },
+      "verdict": {
+        "anti_js": "No JavaScript was used.",
+        "execution_envelope": {
+          "base_notional": 4000.0,
+          "complete": true,
+          "kill_switch_drawdown_pct": 0.08,
+          "max_capital_pct": 0.2,
+          "max_concurrent": 8,
+          "max_displacement": 1,
+          "min_dollar_volume": 50000000.0,
+          "missing": [],
+          "notes": "Default-off paper only: top-1/day, fixed $4k notional, 10-trading-day close exit, 10-day same-ticker cooldown. Daily short volume is activity context only and must not be described as short-interest positioning.",
+          "order_semantics": "next_open_after_activity_date",
+          "sleeve_drawdown_stop_pct": 0.05,
+          "slippage_bps": 5.0
+        },
+        "gate4": {
+          "hard_failures": [
+            "aggregate_ev_not_positive",
+            "aggregate_pnl_not_positive",
+            "window_ev_regression",
+            "window_pnl_regression",
+            "fewer_than_two_ev_improved_windows",
+            "target_sample_too_small",
+            "target_concentration_failed",
+            "accepted_compression_ev_not_beaten",
+            "accepted_compression_pnl_not_beaten",
+            "accepted_distribution_ev_not_beaten",
+            "accepted_distribution_pnl_not_beaten"
+          ],
+          "passed": false
+        },
+        "gate4_passed": false,
+        "live_readiness": {
+          "blockers": [
+            "forward_rows_immature:0/30",
+            "forward_pnl_not_positive",
+            "replacement_value_not_passed"
+          ],
+          "closed_forward_trades": 0,
+          "envelope_missing": [],
+          "forward_pnl": null,
+          "kill_switch_parity_passed": true,
+          "min_closed_forward_trades": 30,
+          "ready": false,
+          "replacement_value_passed": false
+        },
+        "live_ready": false,
+        "next_step": "Roll back the sleeve change and log the failure. Gate 4 did not pass; do not retune on the frozen sample.",
+        "verdict": "reject"
+      },
+      "window_metrics": {
+        "adjusted_trade_count": 11,
+        "adjusted_window_count": 3,
+        "aggregate_ev_delta": -0.0938,
+        "aggregate_pnl_delta": -1465.51,
+        "avg_pnl_per_trade_delta": -133.2281818182,
+        "hhi_concentration": 0.549769,
+        "max_drawdown_worse_max": 0.0005,
+        "single_ticker_positive_share": 0.657748,
+        "top_5_contribution_pct": 1.0,
+        "windows_ev_improved": 0,
+        "windows_ev_regressed": 3,
+        "windows_pnl_improved": 0,
+        "windows_pnl_regressed": 3
+      }
+    },
+    "calibration": {
+      "actual_decision": "rejected_moomoo_daily_short_volume_activity_absorption_candidate_pool",
+      "actual_ev_delta": -0.0938,
+      "actual_pnl_delta": -1465.51,
+      "actual_success": 0,
+      "brier_score": 0.0144,
+      "ev_prediction_error": -0.1438,
+      "expected_ev_delta": 0.05,
+      "expected_pnl_delta": 1000.0,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_concentration_failed",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "pnl_prediction_error": -2465.51,
+      "predicted_failure_mode_hit": true,
+      "predicted_failure_modes": [
+        "five_ticker_sample_too_thin",
+        "concentration_failed",
+        "daily_short_volume_activity_not_positioning",
+        "accepted_comparator_not_beaten"
+      ],
+      "predicted_success_probability": 0.12,
+      "surprise_note": "The main predicted risk was five-ticker concentration / weak incrementality; see Gate 4 failures."
+    },
+    "summary": "The archived Moomoo daily short-volume activity source did not clear Gate 4; the fixed bundle was judged on a five-ticker raw archive and activity-only semantics, so sample/concentration and accepted-comparator weakness are expected failure modes."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260622-010.json",
+  "single_causal_variable": "moomoo_daily_short_volume_activity_absorption_candidate_pool_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260622-010.json",
+  "trial_family": "moomoo_daily_short_volume_activity_absorption_candidate_pool",
+  "trial_variant_id": "archived_5ticker_activity_shock_absorption_next_open_10d_v1",
+  "decision": "rejected_moomoo_daily_short_volume_activity_absorption_candidate_pool",
+  "artifact": "data/experiments/exp-20260622-010/exp_20260622_010_moomoo_daily_short_volume_activity_absorption.json",
+  "log": "experiments/logs/exp-20260622-010.json",
+  "aggregate_expected_value_delta": -0.0938,
+  "aggregate_strategy_total_pnl_delta": -1465.51,
+  "gate1": {
+    "baseline_artifact": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_metrics": {
+      "late_strong": {
+        "expected_value_score": 5.1628,
+        "max_consecutive_losses": 2,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "strategy_total_return_pct": 1.1707,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.5146,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "win_rate": 0.8333,
+        "worst_trade_pct": -0.0397
+      },
+      "mid_weak": {
+        "expected_value_score": 2.1402,
+        "max_consecutive_losses": 6,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "strategy_total_return_pct": 0.7811,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.5493,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "win_rate": 0.5238,
+        "worst_trade_pct": -0.0897
+      },
+      "old_thin": {
+        "expected_value_score": 0.5911,
+        "max_consecutive_losses": 4,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "strategy_total_return_pct": 0.3967,
+        "survival_rate": 0.8667,
+        "tail_loss_share": 0.5193,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "win_rate": 0.4091,
+        "worst_trade_pct": -0.0635
+      }
+    },
+    "baseline_protocol": "docs/backtesting.md canonical three-window baseline",
+    "passed": true
+  },
+  "gate2": {
+    "activity_archive_rows": 2250,
+    "activity_archive_tickers": [
+      "AAPL",
+      "NVDA",
+      "PLTR",
+      "SOFI",
+      "TSLA"
+    ],
+    "passed": true,
+    "runtime_candidate_fields_checked": [
+      "entry_date",
+      "target_price",
+      "activity_date",
+      "usable_trade_date",
+      "short_volume_ratio",
+      "warehouse OHLCV Date/Open/High/Low/Close/Volume"
+    ],
+    "sample_trade_has_required_fields": true
+  },
+  "gate3": {
+    "candidate_pool_changed": false,
+    "minimum_core_survival_rate": 0.7925,
+    "new_core_filter_added": false,
+    "note": "No core filter or executable entry rule changed.",
+    "passed": true,
+    "survival_rate_by_window": {
+      "late_strong": 0.8039,
+      "mid_weak": 0.7925,
+      "old_thin": 0.8667
+    }
+  },
+  "gate4": {
+    "accepted_compression_comparator": {
+      "aggregate_expected_value_delta": 0.1608,
+      "aggregate_pnl_delta": 2248.98,
+      "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+      "experiment_id": "exp-20260608-013"
+    },
+    "accepted_distribution_comparator": {
+      "aggregate_expected_value_delta": 0.5286,
+      "aggregate_pnl_delta": 10432.91,
+      "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+      "experiment_id": "exp-20260611-007"
+    },
+    "aggregate_ev_delta": -0.0938,
+    "aggregate_pnl_delta": -1465.51,
+    "decision": "rejected_moomoo_daily_short_volume_activity_absorption_candidate_pool",
+    "failed_reasons": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "target_sample_too_small",
+      "target_concentration_failed",
+      "accepted_compression_ev_not_beaten",
+      "accepted_compression_pnl_not_beaten",
+      "accepted_distribution_ev_not_beaten",
+      "accepted_distribution_pnl_not_beaten"
+    ],
+    "max_drawdown_worse": 0.0005,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": false,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.657748,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": false,
+      "positive_pnl_hhi": 0.549769,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 11,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_ev_improved": 0,
+    "windows_ev_regressed": 3,
+    "windows_pnl_improved": 0,
+    "windows_pnl_regressed": 3
+  },
+  "full_stack": {
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "complete": true,
+      "kill_switch_drawdown_pct": 0.08,
+      "max_capital_pct": 0.2,
+      "max_concurrent": 8,
+      "max_displacement": 1,
+      "min_dollar_volume": 50000000.0,
+      "missing": [],
+      "notes": "Default-off paper only: top-1/day, fixed $4k notional, 10-trading-day close exit, 10-day same-ticker cooldown. Daily short volume is activity context only and must not be described as short-interest positioning.",
+      "order_semantics": "next_open_after_activity_date",
+      "sleeve_drawdown_stop_pct": 0.05,
+      "slippage_bps": 5.0
+    },
+    "gate4_canonical_auxiliary": {
+      "hard_failures": [
+        "non_positive_aggregate_ev",
+        "non_positive_aggregate_pnl",
+        "insufficient_ev_improved_windows",
+        "ev_regressed_windows",
+        "single_ticker_positive_share_cap",
+        "top_5_contribution_pct_cap",
+        "hhi_concentration_cap",
+        "missing_tail_concentration_baseline"
+      ],
+      "materiality": null,
+      "passed": false,
+      "promotion_gate": {
+        "checks": {
+          "adjusted_trade_sample": true,
+          "adjusted_window_coverage": true,
+          "drawdown_worse_guard": true,
+          "ev_improved_window_coverage": false,
+          "no_ev_regressed_windows": false,
+          "positive_aggregate_ev": false,
+          "positive_aggregate_pnl": false,
+          "tail_concentration_cap": false,
+          "tail_concentration_evidence": true,
+          "tail_concentration_not_worse": false
+        },
+        "concentration_checks": [
+          {
+            "baseline": null,
+            "cap_passed": false,
+            "delta": null,
+            "max_allowed": 0.5,
+            "name": "single_ticker_positive_share",
+            "not_worse": null,
+            "value": 0.657748
+          },
+          {
+            "baseline": null,
+            "cap_passed": false,
+            "delta": null,
+            "max_allowed": 0.6,
+            "name": "top_5_contribution_pct",
+            "not_worse": null,
+            "value": 1.0
+          },
+          {
+            "baseline": null,
+            "cap_passed": false,
+            "delta": null,
+            "max_allowed": 0.35,
+            "name": "hhi_concentration",
+            "not_worse": null,
+            "value": 0.549769
+          }
+        ],
+        "hard_failures": [
+          "non_positive_aggregate_ev",
+          "non_positive_aggregate_pnl",
+          "insufficient_ev_improved_windows",
+          "ev_regressed_windows",
+          "single_ticker_positive_share_cap",
+          "top_5_contribution_pct_cap",
+          "hhi_concentration_cap",
+          "missing_tail_concentration_baseline"
+        ],
+        "metrics": {
+          "adjusted_trade_count": 11,
+          "adjusted_window_count": 3,
+          "adjusted_windows": [],
+          "aggregate_ev_delta": -0.0938,
+          "aggregate_pnl_delta": -1465.51,
+          "max_drawdown_worse": 0.0005,
+          "windows_ev_improved": 0.0,
+          "windows_ev_regressed": 3.0
+        },
+        "passed": false,
+        "status": "blocked",
+        "thresholds": {
+          "concentration_tolerance": 0.0,
+          "max_drawdown_worse": 0.005,
+          "max_ev_regressed_windows": 0,
+          "max_hhi_concentration": 0.35,
+          "max_single_ticker_positive_share": 0.5,
+          "max_top_5_contribution_pct": 0.6,
+          "min_adjusted_trades": 9,
+          "min_adjusted_windows": 2,
+          "min_aggregate_ev_delta": 0.0,
+          "min_aggregate_pnl_delta": 0.0,
+          "min_ev_improved_windows": 2,
+          "require_tail_concentration_evidence": true,
+          "require_tail_concentration_not_worse": true
+        },
+        "warnings": [
+          "missing_single_ticker_positive_share_baseline",
+          "missing_top_5_contribution_pct_baseline",
+          "missing_hhi_concentration_baseline"
+        ]
+      },
+      "status": "blocked",
+      "warnings": [
+        "missing_single_ticker_positive_share_baseline",
+        "missing_top_5_contribution_pct_baseline",
+        "missing_hhi_concentration_baseline"
+      ]
+    },
+    "gate4_strict_materiality": {
+      "hard_failures": [
+        "non_positive_aggregate_ev",
+        "non_positive_aggregate_pnl",
+        "insufficient_ev_improved_windows",
+        "ev_regressed_windows",
+        "single_ticker_positive_share_cap",
+        "top_5_contribution_pct_cap",
+        "hhi_concentration_cap",
+        "missing_tail_concentration_baseline",
+        "immaterial_effect"
+      ],
+      "materiality": {
+        "avg_pnl_per_trade_delta": -133.2281818182,
+        "avg_return_delta_pp": null,
+        "material": false,
+        "min_avg_pnl_per_trade_delta": 500.0,
+        "min_avg_return_delta_pp": 5.0,
+        "warnings": []
+      },
+      "passed": false,
+      "promotion_gate": {
+        "checks": {
+          "adjusted_trade_sample": true,
+          "adjusted_window_coverage": true,
+          "drawdown_worse_guard": true,
+          "ev_improved_window_coverage": false,
+          "no_ev_regressed_windows": false,
+          "positive_aggregate_ev": false,
+          "positive_aggregate_pnl": false,
+          "tail_concentration_cap": false,
+          "tail_concentration_evidence": true,
+          "tail_concentration_not_worse": false
+        },
+        "concentration_checks": [
+          {
+            "baseline": null,
+            "cap_passed": false,
+            "delta": null,
+            "max_allowed": 0.5,
+            "name": "single_ticker_positive_share",
+            "not_worse": null,
+            "value": 0.657748
+          },
+          {
+            "baseline": null,
+            "cap_passed": false,
+            "delta": null,
+            "max_allowed": 0.6,
+            "name": "top_5_contribution_pct",
+            "not_worse": null,
+            "value": 1.0
+          },
+          {
+            "baseline": null,
+            "cap_passed": false,
+            "delta": null,
+            "max_allowed": 0.35,
+            "name": "hhi_concentration",
+            "not_worse": null,
+            "value": 0.549769
+          }
+        ],
+        "hard_failures": [
+          "non_positive_aggregate_ev",
+          "non_positive_aggregate_pnl",
+          "insufficient_ev_improved_windows",
+          "ev_regressed_windows",
+          "single_ticker_positive_share_cap",
+          "top_5_contribution_pct_cap",
+          "hhi_concentration_cap",
+          "missing_tail_concentration_baseline"
+        ],
+        "metrics": {
+          "adjusted_trade_count": 11,
+          "adjusted_window_count": 3,
+          "adjusted_windows": [],
+          "aggregate_ev_delta": -0.0938,
+          "aggregate_pnl_delta": -1465.51,
+          "max_drawdown_worse": 0.0005,
+          "windows_ev_improved": 0.0,
+          "windows_ev_regressed": 3.0
+        },
+        "passed": false,
+        "status": "blocked",
+        "thresholds": {
+          "concentration_tolerance": 0.0,
+          "max_drawdown_worse": 0.005,
+          "max_ev_regressed_windows": 0,
+          "max_hhi_concentration": 0.35,
+          "max_single_ticker_positive_share": 0.5,
+          "max_top_5_contribution_pct": 0.6,
+          "min_adjusted_trades": 9,
+          "min_adjusted_windows": 2,
+          "min_aggregate_ev_delta": 0.0,
+          "min_aggregate_pnl_delta": 0.0,
+          "min_ev_improved_windows": 2,
+          "require_tail_concentration_evidence": true,
+          "require_tail_concentration_not_worse": true
+        },
+        "warnings": [
+          "missing_single_ticker_positive_share_baseline",
+          "missing_top_5_contribution_pct_baseline",
+          "missing_hhi_concentration_baseline"
+        ]
+      },
+      "status": "blocked",
+      "warnings": [
+        "missing_single_ticker_positive_share_baseline",
+        "missing_top_5_contribution_pct_baseline",
+        "missing_hhi_concentration_baseline"
+      ]
+    },
+    "live_readiness": {
+      "blockers": [
+        "forward_rows_immature:0/30",
+        "forward_pnl_not_positive",
+        "replacement_value_not_passed"
+      ],
+      "closed_forward_trades": 0,
+      "envelope_missing": [],
+      "forward_pnl": null,
+      "kill_switch_parity_passed": true,
+      "min_closed_forward_trades": 30,
+      "ready": false,
+      "replacement_value_passed": false
+    },
+    "snapshot_historical_parity": {
+      "checked": true,
+      "historical_decision_id": "moomoo_daily_short_volume_activity_absorption_candidate_pool_v1:2025-10-27:SOFI",
+      "matched": true,
+      "snapshot_candidate_count": 1,
+      "snapshot_decision_id": "moomoo_daily_short_volume_activity_absorption_candidate_pool_v1:2025-10-27:SOFI"
+    },
+    "verdict": {
+      "anti_js": "No JavaScript was used.",
+      "execution_envelope": {
+        "base_notional": 4000.0,
+        "complete": true,
+        "kill_switch_drawdown_pct": 0.08,
+        "max_capital_pct": 0.2,
+        "max_concurrent": 8,
+        "max_displacement": 1,
+        "min_dollar_volume": 50000000.0,
+        "missing": [],
+        "notes": "Default-off paper only: top-1/day, fixed $4k notional, 10-trading-day close exit, 10-day same-ticker cooldown. Daily short volume is activity context only and must not be described as short-interest positioning.",
+        "order_semantics": "next_open_after_activity_date",
+        "sleeve_drawdown_stop_pct": 0.05,
+        "slippage_bps": 5.0
+      },
+      "gate4": {
+        "hard_failures": [
+          "aggregate_ev_not_positive",
+          "aggregate_pnl_not_positive",
+          "window_ev_regression",
+          "window_pnl_regression",
+          "fewer_than_two_ev_improved_windows",
+          "target_sample_too_small",
+          "target_concentration_failed",
+          "accepted_compression_ev_not_beaten",
+          "accepted_compression_pnl_not_beaten",
+          "accepted_distribution_ev_not_beaten",
+          "accepted_distribution_pnl_not_beaten"
+        ],
+        "passed": false
+      },
+      "gate4_passed": false,
+      "live_readiness": {
+        "blockers": [
+          "forward_rows_immature:0/30",
+          "forward_pnl_not_positive",
+          "replacement_value_not_passed"
+        ],
+        "closed_forward_trades": 0,
+        "envelope_missing": [],
+        "forward_pnl": null,
+        "kill_switch_parity_passed": true,
+        "min_closed_forward_trades": 30,
+        "ready": false,
+        "replacement_value_passed": false
+      },
+      "live_ready": false,
+      "next_step": "Roll back the sleeve change and log the failure. Gate 4 did not pass; do not retune on the frozen sample.",
+      "verdict": "reject"
+    },
+    "window_metrics": {
+      "adjusted_trade_count": 11,
+      "adjusted_window_count": 3,
+      "aggregate_ev_delta": -0.0938,
+      "aggregate_pnl_delta": -1465.51,
+      "avg_pnl_per_trade_delta": -133.2281818182,
+      "hhi_concentration": 0.549769,
+      "max_drawdown_worse_max": 0.0005,
+      "single_ticker_positive_share": 0.657748,
+      "top_5_contribution_pct": 1.0,
+      "windows_ev_improved": 0,
+      "windows_ev_regressed": 3,
+      "windows_pnl_improved": 0,
+      "windows_pnl_regressed": 3
+    }
+  },
+  "production_impact": {
+    "activity_only_not_positioning": true,
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "complete": true,
+      "kill_switch_drawdown_pct": 0.08,
+      "max_capital_pct": 0.2,
+      "max_concurrent": 8,
+      "max_displacement": 1,
+      "min_dollar_volume": 50000000.0,
+      "missing": [],
+      "notes": "Default-off paper only: top-1/day, fixed $4k notional, 10-trading-day close exit, 10-day same-ticker cooldown. Daily short volume is activity context only and must not be described as short-interest positioning.",
+      "order_semantics": "next_open_after_activity_date",
+      "sleeve_drawdown_stop_pct": 0.05,
+      "slippage_bps": 5.0
+    },
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "parity_note": "Historical replay and snapshot parity use experiment-local code in quant/experiments/exp_20260622_010_moomoo_daily_short_volume_activity_helper.py after the rejected top-level helper was rolled back. It is not wired into quant/run.py and cannot change orders, core ranking, sizing, exits, watchlists, LLM, or news behavior.",
+    "parity_test_added": true,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "rejected_helper_rolled_back_to_experiment_scope": true,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_free_ohlcv": true,
+    "uses_llm": false,
+    "uses_moomoo_daily_short_volume": true
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry by sweeping short_volume_ratio thresholds, ratio-vs-median thresholds, top-N, hold days, notional, cooldown, or FINRA short-interest labels on this five-ticker archive.",
+    "new_evidence_required": "A valid retry needs broader archived Moomoo activity coverage, PIT borrow fee/utilization or loan-availability context, or closed forward replacement-value rows under the unchanged activity-only helper.",
+    "why_result_happened": "The archived Moomoo daily short-volume activity source did not clear Gate 4; the fixed bundle was judged on a five-ticker raw archive and activity-only semantics, so sample/concentration and accepted-comparator weakness are expected failure modes."
+  },
+  "updated_at": "2026-06-22T10:23:56+00:00",
+  "related_files": [
+    "quant/experiments/exp_20260622_010_moomoo_daily_short_volume_activity_absorption.py",
+    "quant/experiments/exp_20260622_010_moomoo_daily_short_volume_activity_helper.py",
+    "quant/test_exp_20260622_010_moomoo_daily_short_volume_activity_helper.py",
+    "data/experiments/exp-20260622-010/exp_20260622_010_moomoo_daily_short_volume_activity_absorption.json",
+    "experiments/logs/exp-20260622-010.json",
+    "experiments/cards/exp-20260622-010.md",
+    "experiments/manifests/exp-20260622-010.json",
+    "experiments/tickets/exp-20260622-010.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ]
+}

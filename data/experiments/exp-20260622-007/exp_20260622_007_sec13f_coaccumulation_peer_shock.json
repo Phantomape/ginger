@@ -1,0 +1,602 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "aggregate": {
+    "baseline": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "max_window_drawdown_pct": 0.1119
+    },
+    "coaccumulation": {
+      "aggregate_expected_value_after": 7.9281,
+      "aggregate_expected_value_delta": 0.034,
+      "aggregate_total_pnl_after": 236763.09,
+      "aggregate_total_pnl_delta": 1912.1,
+      "economics_all_windows": {
+        "avg_pnl_per_trade": 173.83,
+        "net_pnl": 1912.1,
+        "positive_pnl_hhi": 0.5802,
+        "single_ticker_positive_share": 0.7443,
+        "trade_count": 11,
+        "unique_tickers": 9,
+        "win_rate": 0.5455
+      },
+      "max_drawdown_worse": 0.0001,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 2,
+      "windows_pnl_improved": 1,
+      "windows_pnl_regressed": 2
+    },
+    "incremental_vs_rolling_corr": {
+      "expected_value_delta": -0.3343,
+      "total_pnl_delta": -3833.6
+    },
+    "rolling_corr": {
+      "aggregate_expected_value_after": 8.2624,
+      "aggregate_expected_value_delta": 0.3683,
+      "aggregate_total_pnl_after": 240596.69,
+      "aggregate_total_pnl_delta": 5745.7,
+      "economics_all_windows": {
+        "avg_pnl_per_trade": 119.7,
+        "net_pnl": 5745.7,
+        "positive_pnl_hhi": 0.0601,
+        "single_ticker_positive_share": 0.1272,
+        "trade_count": 48,
+        "unique_tickers": 44,
+        "win_rate": 0.625
+      },
+      "max_drawdown_worse": 0.001,
+      "windows_ev_improved": 3,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 3,
+      "windows_pnl_regressed": 0
+    }
+  },
+  "backtest_protocol": {
+    "replay_llm": false,
+    "replay_news": false,
+    "source": "docs/backtesting.md canonical three-window core replay plus replay-only default-off 13F co-accumulation overlay",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "calibration": {
+    "actual_ev_delta": 0.034,
+    "actual_pnl_delta": 1912.1,
+    "actual_success": 0,
+    "brier_score": 0.0484,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "thin_sample",
+      "stale_13f_signal",
+      "index_overlap_noise",
+      "not_incremental_vs_rolling_corr"
+    ],
+    "predicted_success_probability": 0.22,
+    "realized_failure_mode": "fewer_than_two_ev_improved_windows",
+    "surprise_level": "low",
+    "surprise_note": "Co-accumulation failed the predeclared Gate-4 screen; the main risk was stale/noisy 13F relation data not adding enough over rolling-correlation peer shock."
+  },
+  "causal_components": [
+    "historical replay",
+    "execution envelope",
+    "full-stack verdict"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "Use SEC 13F shared-manager co-accumulation edges as the peer-adjacency source for peer-shock laggard admission.",
+  "decision": "rejected",
+  "experiment_id": "exp-20260622-007",
+  "gate4": {
+    "accepted_comparator": {
+      "aggregate_ev_delta": 0.3683,
+      "aggregate_pnl_delta": 5745.7,
+      "decision": "accepted_rolling_corr_peer_shock_shared_default_off_adapter",
+      "experiment_id": "exp-20260606-025",
+      "name": "rolling_corr_peer_shock"
+    },
+    "aggregate_ev_delta": 0.034,
+    "aggregate_pnl_delta": 1912.1,
+    "failed_reasons": [
+      "fewer_than_two_ev_improved_windows",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "target_sample_too_small",
+      "target_concentration_failed",
+      "rolling_corr_peer_shock_ev_not_beaten",
+      "rolling_corr_peer_shock_pnl_not_beaten"
+    ],
+    "max_drawdown_worse": 0.0001,
+    "max_drawdown_worse_guardrail": 0.005,
+    "passed": false,
+    "target_concentration": {
+      "passed": false,
+      "positive_pnl_hhi": 0.5802,
+      "positive_pnl_hhi_guardrail": 0.35,
+      "single_ticker_positive_share": 0.7443,
+      "single_ticker_positive_share_guardrail": 0.5
+    },
+    "target_trade_count": 11,
+    "target_trade_count_min": 20,
+    "windows_ev_improved": 1,
+    "windows_ev_regressed": 2,
+    "windows_pnl_improved": 1,
+    "windows_pnl_regressed": 2
+  },
+  "hypothesis": "candidate_pool: SEC 13F co-accumulation peer graph, where the same institutional managers increased both names across consecutive filing windows, may admit cleaner peer-shock laggards than static co-ownership and beat rolling-correlation peer-shock after costs.",
+  "implementation_mode": "private_replay_scout",
+  "mechanism_family": "peer_shock",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260622-006"
+  ],
+  "new_evidence_type": "SEC 13F same-manager co-accumulation edge",
+  "next_retry_requires": [
+    "non-quarterly ownership/flow evidence",
+    "manager-level active conviction classification",
+    "closed forward replacement-value rows"
+  ],
+  "parameters": {
+    "coaccumulation": {
+      "daily_entry_slots": 1,
+      "edge_top_k": 20,
+      "hold_days": 10,
+      "manager_max_accumulations": 80,
+      "manager_max_holdings": 120,
+      "manager_min_accumulations": 2,
+      "manager_min_holdings": 5,
+      "min_accumulation_increase_pct": 0.1,
+      "min_coaccumulation_lift": 1.25,
+      "min_current_value_usd_thousands": 5000.0,
+      "min_shared_accumulating_managers": 2,
+      "paper_notional_usd": 4000.0,
+      "same_ticker_cooldown_days": 10
+    }
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry by sweeping min_accumulation_increase_pct, min_shared_accumulating_managers, min_coaccumulation_lift, manager holding-count bounds, top-K, hold days, cooldown, or notional on these frozen windows.",
+    "new_evidence_required": "A valid retry needs non-quarterly ownership/flow evidence, active-manager conviction classification independent of holding count, manager-level alpha attribution, or closed forward replacement-value rows from a shared default-off helper.",
+    "why_result_happened": "The same-manager co-accumulation graph did not clear the predeclared Gate-4 screen; 13F relation staleness and quarterly batch effects likely remain too noisy for peer-shock admission versus the accepted rolling-corr relation."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "candidate_pool: SEC 13F co-accumulation peer graph, where the same institutional managers increased both names across consecutive filing windows, may admit cleaner peer-shock laggards than static co-ownership and beat rolling-correlation peer-shock after costs.",
+    "2_history_check": {
+      "exp-20260622-006": "Rejected static 13F co-ownership peer graph; allowed holdings-change co-movement as a new evidence axis.",
+      "novelty_gate": "Reservation required novelty override because adjacent 13F families exist; override records same-manager co-accumulation across consecutive filing windows."
+    },
+    "3_single_decision_hypothesis": "Use SEC 13F shared-manager co-accumulation edges as the peer-adjacency source for peer-shock laggard admission.",
+    "4_acceptance_standard": "Gate 4 requires positive aggregate EV/PnL, no EV/PnL window regression, >=20 trades, drawdown drift <=0.5pp, concentration pass, and beating accepted rolling-corr peer-shock on EV and PnL. Positive replay-only evidence is only a lead.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260622_007_sec13f_coaccumulation_peer_shock.py"
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260622-006 rejected static co-ownership but explicitly left holdings-change co-movement as a valid new evidence axis; co-accumulation should be less index-overlap-heavy than static co-hold, though quarterly filing lag and sample size are major risks.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "thin_sample",
+      "stale_13f_signal",
+      "index_overlap_noise",
+      "not_incremental_vs_rolling_corr"
+    ],
+    "recorded_at": "2026-06-22T07:05:32+00:00",
+    "success_probability": 0.22
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "activation_envelope": {
+      "daily_entry_slots": 1,
+      "hold_days": 10,
+      "kill_switch": "trade_enabled remains false; no production adapter changes",
+      "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+      "order_semantics": "observe-only next-session-open paper entry; no broker order",
+      "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+      "same_ticker_cooldown_days": 10,
+      "target_notional_per_paper_trade": 4000.0
+    },
+    "adapter_status": "private_replay_scout_no_shared_adapter",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "parity_note": "This experiment changes no production code. A positive result would be only a replay lead until a shared default-off helper builds the same 13F co-accumulation edge map and daily snapshot path.",
+    "parity_test_added": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_free_ohlcv": true,
+    "uses_free_sec13f": true,
+    "uses_llm": false
+  },
+  "rejection_reason": "fewer_than_two_ev_improved_windows; window_ev_regression; window_pnl_regression; target_sample_too_small; target_concentration_failed; rolling_corr_peer_shock_ev_not_beaten; rolling_corr_peer_shock_pnl_not_beaten",
+  "related_files": [
+    "quant/experiments/exp_20260622_007_sec13f_coaccumulation_peer_shock.py",
+    "data/experiments/exp-20260622-007/exp_20260622_007_sec13f_coaccumulation_peer_shock.json",
+    "experiments/logs/exp-20260622-007.json",
+    "experiments/cards/exp-20260622-007.md",
+    "experiments/manifests/exp-20260622-007.json",
+    "experiments/tickets/exp-20260622-007.json"
+  ],
+  "single_causal_variable": "Use SEC 13F shared-manager co-accumulation edges as the peer-adjacency source for peer-shock laggard admission.",
+  "status": "rejected",
+  "timestamp": "2026-06-22T07:17:54Z",
+  "trial_family": "sec13f_coaccumulation_peer_shock",
+  "trial_variant_id": "coaccumulation_peer_graph_top1_next_open_10d_v1",
+  "windows": [
+    {
+      "before_ev": 5.1628,
+      "before_pnl": 117072.92,
+      "coaccumulation_ev_delta": -0.0205,
+      "coaccumulation_pnl_delta": -198.5,
+      "coaccumulation_scan": {
+        "core_flow_confirmation_required": true,
+        "days_missing_edge_window": 0,
+        "days_with_coaccumulation_pairs": 4,
+        "days_with_laggard_candidates": 14,
+        "days_with_peer_shocks": 14,
+        "edge_labels_used": {
+          "01dec2025-28feb2026": 3,
+          "01jun2025-31aug2025": 2,
+          "01sep2025-30nov2025": 9
+        },
+        "edge_provider_audit": {
+          "01dec2025-28feb2026": {
+            "current_window_label": "01dec2025-28feb2026",
+            "directed_edge_count": 799,
+            "managers_current": 5707,
+            "managers_prior": 5211,
+            "managers_with_valid_accumulation_sets": 2167,
+            "params": {
+              "edge_top_k": 20,
+              "manager_max_accumulations": 80,
+              "manager_max_holdings": 120,
+              "manager_min_accumulations": 2,
+              "manager_min_holdings": 5,
+              "min_accumulation_increase_pct": 0.1,
+              "min_coaccumulation_lift": 1.25,
+              "min_current_value_usd_thousands": 5000.0,
+              "min_shared_accumulating_managers": 2
+            },
+            "prior_window_label": "01sep2025-30nov2025",
+            "status": "ok",
+            "tickers_with_edges": 41
+          },
+          "01jun2025-31aug2025": {
+            "current_window_label": "01jun2025-31aug2025",
+            "directed_edge_count": 810,
+            "managers_current": 5237,
+            "managers_prior": 5313,
+            "managers_with_valid_accumulation_sets": 1890,
+            "params": {
+              "edge_top_k": 20,
+              "manager_max_accumulations": 80,
+              "manager_max_holdings": 120,
+              "manager_min_accumulations": 2,
+              "manager_min_holdings": 5,
+              "min_accumulation_increase_pct": 0.1,
+              "min_coaccumulation_lift": 1.25,
+              "min_current_value_usd_thousands": 5000.0,
+              "min_shared_accumulating_managers": 2
+            },
+            "prior_window_label": "01mar2025-31may2025",
+            "status": "ok",
+            "tickers_with_edges": 41
+          },
+          "01sep2025-30nov2025": {
+            "current_window_label": "01sep2025-30nov2025",
+            "directed_edge_count": 816,
+            "managers_current": 5211,
+            "managers_prior": 5237,
+            "managers_with_valid_accumulation_sets": 1843,
+            "params": {
+              "edge_top_k": 20,
+              "manager_max_accumulations": 80,
+              "manager_max_holdings": 120,
+              "manager_min_accumulations": 2,
+              "manager_min_holdings": 5,
+              "min_accumulation_increase_pct": 0.1,
+              "min_coaccumulation_lift": 1.25,
+              "min_current_value_usd_thousands": 5000.0,
+              "min_shared_accumulating_managers": 2
+            },
+            "prior_window_label": "01jun2025-31aug2025",
+            "status": "ok",
+            "tickers_with_edges": 41
+          }
+        },
+        "edge_windows_available": [
+          "01jun2024-31aug2024",
+          "01sep2024-30nov2024",
+          "01dec2024-28feb2025",
+          "01mar2025-31may2025",
+          "01jun2025-31aug2025",
+          "01sep2025-30nov2025",
+          "01dec2025-28feb2026",
+          "01mar2026-31may2026"
+        ],
+        "params": {
+          "daily_entry_slots": 1,
+          "edge_top_k": 20,
+          "hold_days": 10,
+          "manager_max_accumulations": 80,
+          "manager_max_holdings": 120,
+          "manager_min_accumulations": 2,
+          "manager_min_holdings": 5,
+          "min_accumulation_increase_pct": 0.1,
+          "min_coaccumulation_lift": 1.25,
+          "min_current_value_usd_thousands": 5000.0,
+          "min_shared_accumulating_managers": 2,
+          "paper_notional_usd": 4000.0,
+          "same_ticker_cooldown_days": 10
+        },
+        "positive_candidate_signal_return_required": true,
+        "raw_candidates_after_core_flow_filter": 10,
+        "raw_candidates_before_core_flow_filter": 10,
+        "raw_coaccumulation_pairs": 10,
+        "raw_laggard_candidates": 2043,
+        "raw_peer_shocks": 275,
+        "rule_version": "sec13f_coaccumulation_peer_shock_replay_scout_v1",
+        "scanned_trading_days": 123
+      },
+      "coaccumulation_trade_count": 4,
+      "end": "2026-04-21",
+      "label": "late_strong",
+      "rolling_corr_ev_delta": 0.2005,
+      "rolling_corr_pnl_delta": 2372.27,
+      "rolling_corr_trade_count": 13,
+      "start": "2025-10-23"
+    },
+    {
+      "before_ev": 2.1402,
+      "before_pnl": 78110.11,
+      "coaccumulation_ev_delta": -0.0046,
+      "coaccumulation_pnl_delta": -170.93,
+      "coaccumulation_scan": {
+        "core_flow_confirmation_required": true,
+        "days_missing_edge_window": 0,
+        "days_with_coaccumulation_pairs": 4,
+        "days_with_laggard_candidates": 20,
+        "days_with_peer_shocks": 20,
+        "edge_labels_used": {
+          "01dec2024-28feb2025": 1,
+          "01jun2025-31aug2025": 6,
+          "01mar2025-31may2025": 13
+        },
+        "edge_provider_audit": {
+          "01dec2024-28feb2025": {
+            "current_window_label": "01dec2024-28feb2025",
+            "directed_edge_count": 818,
+            "managers_current": 5086,
+            "managers_prior": 4833,
+            "managers_with_valid_accumulation_sets": 1522,
+            "params": {
+              "edge_top_k": 20,
+              "manager_max_accumulations": 80,
+              "manager_max_holdings": 120,
+              "manager_min_accumulations": 2,
+              "manager_min_holdings": 5,
+              "min_accumulation_increase_pct": 0.1,
+              "min_coaccumulation_lift": 1.25,
+              "min_current_value_usd_thousands": 5000.0,
+              "min_shared_accumulating_managers": 2
+            },
+            "prior_window_label": "01sep2024-30nov2024",
+            "status": "ok",
+            "tickers_with_edges": 41
+          },
+          "01jun2025-31aug2025": {
+            "current_window_label": "01jun2025-31aug2025",
+            "directed_edge_count": 810,
+            "managers_current": 5237,
+            "managers_prior": 5313,
+            "managers_with_valid_accumulation_sets": 1890,
+            "params": {
+              "edge_top_k": 20,
+              "manager_max_accumulations": 80,
+              "manager_max_holdings": 120,
+              "manager_min_accumulations": 2,
+              "manager_min_holdings": 5,
+              "min_accumulation_increase_pct": 0.1,
+              "min_coaccumulation_lift": 1.25,
+              "min_current_value_usd_thousands": 5000.0,
+              "min_shared_accumulating_managers": 2
+            },
+            "prior_window_label": "01mar2025-31may2025",
+            "status": "ok",
+            "tickers_with_edges": 41
+          },
+          "01mar2025-31may2025": {
+            "current_window_label": "01mar2025-31may2025",
+            "directed_edge_count": 819,
+            "managers_current": 5313,
+            "managers_prior": 5086,
+            "managers_with_valid_accumulation_sets": 1819,
+            "params": {
+              "edge_top_k": 20,
+              "manager_max_accumulations": 80,
+              "manager_max_holdings": 120,
+              "manager_min_accumulations": 2,
+              "manager_min_holdings": 5,
+              "min_accumulation_increase_pct": 0.1,
+              "min_coaccumulation_lift": 1.25,
+              "min_current_value_usd_thousands": 5000.0,
+              "min_shared_accumulating_managers": 2
+            },
+            "prior_window_label": "01dec2024-28feb2025",
+            "status": "ok",
+            "tickers_with_edges": 41
+          }
+        },
+        "edge_windows_available": [
+          "01jun2024-31aug2024",
+          "01sep2024-30nov2024",
+          "01dec2024-28feb2025",
+          "01mar2025-31may2025",
+          "01jun2025-31aug2025",
+          "01sep2025-30nov2025",
+          "01dec2025-28feb2026",
+          "01mar2026-31may2026"
+        ],
+        "params": {
+          "daily_entry_slots": 1,
+          "edge_top_k": 20,
+          "hold_days": 10,
+          "manager_max_accumulations": 80,
+          "manager_max_holdings": 120,
+          "manager_min_accumulations": 2,
+          "manager_min_holdings": 5,
+          "min_accumulation_increase_pct": 0.1,
+          "min_coaccumulation_lift": 1.25,
+          "min_current_value_usd_thousands": 5000.0,
+          "min_shared_accumulating_managers": 2,
+          "paper_notional_usd": 4000.0,
+          "same_ticker_cooldown_days": 10
+        },
+        "positive_candidate_signal_return_required": true,
+        "raw_candidates_after_core_flow_filter": 12,
+        "raw_candidates_before_core_flow_filter": 12,
+        "raw_coaccumulation_pairs": 12,
+        "raw_laggard_candidates": 2542,
+        "raw_peer_shocks": 246,
+        "rule_version": "sec13f_coaccumulation_peer_shock_replay_scout_v1",
+        "scanned_trading_days": 127
+      },
+      "coaccumulation_trade_count": 4,
+      "end": "2025-10-22",
+      "label": "mid_weak",
+      "rolling_corr_ev_delta": 0.1445,
+      "rolling_corr_pnl_delta": 2622.62,
+      "rolling_corr_trade_count": 18,
+      "start": "2025-04-23"
+    },
+    {
+      "before_ev": 0.5911,
+      "before_pnl": 39667.96,
+      "coaccumulation_ev_delta": 0.0591,
+      "coaccumulation_pnl_delta": 2281.53,
+      "coaccumulation_scan": {
+        "core_flow_confirmation_required": true,
+        "days_missing_edge_window": 11,
+        "days_with_coaccumulation_pairs": 3,
+        "days_with_laggard_candidates": 9,
+        "days_with_peer_shocks": 9,
+        "edge_labels_used": {
+          "01dec2024-28feb2025": 2,
+          "01jun2024-31aug2024": 11,
+          "01sep2024-30nov2024": 7
+        },
+        "edge_provider_audit": {
+          "01dec2024-28feb2025": {
+            "current_window_label": "01dec2024-28feb2025",
+            "directed_edge_count": 818,
+            "managers_current": 5086,
+            "managers_prior": 4833,
+            "managers_with_valid_accumulation_sets": 1522,
+            "params": {
+              "edge_top_k": 20,
+              "manager_max_accumulations": 80,
+              "manager_max_holdings": 120,
+              "manager_min_accumulations": 2,
+              "manager_min_holdings": 5,
+              "min_accumulation_increase_pct": 0.1,
+              "min_coaccumulation_lift": 1.25,
+              "min_current_value_usd_thousands": 5000.0,
+              "min_shared_accumulating_managers": 2
+            },
+            "prior_window_label": "01sep2024-30nov2024",
+            "status": "ok",
+            "tickers_with_edges": 41
+          },
+          "01jun2024-31aug2024": {
+            "edge_count": 0,
+            "status": "missing_prior_13f_window"
+          },
+          "01sep2024-30nov2024": {
+            "current_window_label": "01sep2024-30nov2024",
+            "directed_edge_count": 783,
+            "managers_current": 4833,
+            "managers_prior": 4806,
+            "managers_with_valid_accumulation_sets": 1831,
+            "params": {
+              "edge_top_k": 20,
+              "manager_max_accumulations": 80,
+              "manager_max_holdings": 120,
+              "manager_min_accumulations": 2,
+              "manager_min_holdings": 5,
+              "min_accumulation_increase_pct": 0.1,
+              "min_coaccumulation_lift": 1.25,
+              "min_current_value_usd_thousands": 5000.0,
+              "min_shared_accumulating_managers": 2
+            },
+            "prior_window_label": "01jun2024-31aug2024",
+            "status": "ok",
+            "tickers_with_edges": 40
+          }
+        },
+        "edge_windows_available": [
+          "01jun2024-31aug2024",
+          "01sep2024-30nov2024",
+          "01dec2024-28feb2025",
+          "01mar2025-31may2025",
+          "01jun2025-31aug2025",
+          "01sep2025-30nov2025",
+          "01dec2025-28feb2026",
+          "01mar2026-31may2026"
+        ],
+        "params": {
+          "daily_entry_slots": 1,
+          "edge_top_k": 20,
+          "hold_days": 10,
+          "manager_max_accumulations": 80,
+          "manager_max_holdings": 120,
+          "manager_min_accumulations": 2,
+          "manager_min_holdings": 5,
+          "min_accumulation_increase_pct": 0.1,
+          "min_coaccumulation_lift": 1.25,
+          "min_current_value_usd_thousands": 5000.0,
+          "min_shared_accumulating_managers": 2,
+          "paper_notional_usd": 4000.0,
+          "same_ticker_cooldown_days": 10
+        },
+        "positive_candidate_signal_return_required": true,
+        "raw_candidates_after_core_flow_filter": 4,
+        "raw_candidates_before_core_flow_filter": 4,
+        "raw_coaccumulation_pairs": 4,
+        "raw_laggard_candidates": 1203,
+        "raw_peer_shocks": 57,
+        "rule_version": "sec13f_coaccumulation_peer_shock_replay_scout_v1",
+        "scanned_trading_days": 138
+      },
+      "coaccumulation_trade_count": 3,
+      "end": "2025-04-22",
+      "label": "old_thin",
+      "rolling_corr_ev_delta": 0.0233,
+      "rolling_corr_pnl_delta": 750.81,
+      "rolling_corr_trade_count": 17,
+      "start": "2024-10-02"
+    }
+  ]
+}

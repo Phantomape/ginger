@@ -1,0 +1,106 @@
+{
+  "activation_blockers": {
+    "missing_comparator_bar_rows": 4,
+    "missing_comparator_bar_rows_by_sleeve": {
+      "fundamental_growth_rs": 1,
+      "sec_governance": 1,
+      "sec_leadership": 1,
+      "sec_negative": 1
+    },
+    "reason": "Rows with status=missing_comparator_bars have cash replacement value but lack SPY/QQQ replacement values, so they are not valid activation evidence versus liquid ETF substitutes."
+  },
+  "activation_readiness_status": "blocked_missing_comparator_bars",
+  "after_metrics": {
+    "aggregate_expected_value_score": 7.8941,
+    "aggregate_total_pnl": 234850.99,
+    "artifact_rows": 33,
+    "missing_comparator_bar_rows": 4,
+    "rows_by_status": {
+      "enriched": 29,
+      "missing_comparator_bars": 4
+    },
+    "skipped_closed_rows_missing_replacement": 0,
+    "state_replacement_rows": 33
+  },
+  "before_metrics": {
+    "aggregate_expected_value_score": 7.8941,
+    "aggregate_total_pnl": 234850.99,
+    "artifact_rows": 31,
+    "missing_comparator_bar_rows": 2,
+    "rows_by_status": {
+      "enriched": 29,
+      "missing_comparator_bars": 2
+    },
+    "skipped_closed_rows_missing_replacement": 2,
+    "state_replacement_rows": 31
+  },
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair_forward_replacement_current_state_refresh_with_comparator_blocker",
+    "actual_success": 1,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "missing SPY/QQQ comparator bars for fresh exits",
+      "state schema drift",
+      "artifact rebuild mismatch"
+    ],
+    "predicted_success_probability": 0.85,
+    "realized_failure_mode": "missing_spy_qqq_comparator_bars",
+    "surprise_note": "The refresh eliminated skipped replacement rows, but the new AVGO and BKNG rows landed as missing_comparator_bars because the current SPY/QQQ warehouse coverage does not span their exit dates. The measurement repair is accepted; activation readiness remains blocked on comparator OHLCV coverage."
+  },
+  "causal_components": [
+    "state enrichment for rows missing replacement_value_rule_version",
+    "canonical artifact rebuild",
+    "readiness coverage audit"
+  ],
+  "change_summary": "Archived the 31-row forward replacement-value artifact, enriched the two current closed rows missing replacement fields via quant/forward_replacement_value.py, and rebuilt the canonical artifact to 33 rows.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "replacement_value_fields_on_current_closed_paper_state_rows",
+  "decision": "accepted_measurement_repair_forward_replacement_current_state_refresh_with_comparator_blocker",
+  "delta_metrics": {
+    "aggregate_expected_value_score": 0.0,
+    "aggregate_total_pnl": 0.0,
+    "artifact_rows": 2,
+    "missing_comparator_bar_rows": 2,
+    "rows_enriched": 2,
+    "skipped_closed_rows_missing_replacement": -2,
+    "state_replacement_rows": 2
+  },
+  "experiment_id": "exp-20260622-011",
+  "hypothesis": "Fresh 2026-06-21 default-off paper sleeve state has two newly closed decisions missing forward replacement-value fields, so activation/readiness evidence undercounts closed rows until the shared enrichment helper refreshes current state and rebuilds the canonical artifact.",
+  "implementation_mode": "measurement_repair",
+  "lane": "measurement_repair",
+  "mechanism_family": "forward_replacement_value_readiness_audit",
+  "notes": "Gate 4 backtests were not rerun because this is a current-state measurement repair. Baseline metrics are included and unchanged; no strategy or backtester decision policy changed.",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not repeat a generic forward replacement-value refresh unless current_state_replacement_records reports skipped closed rows or state/artifact keys diverge. Activation work should consume the canonical artifact and wait for materially more closed rows.",
+    "new_evidence_required": "Fresh SPY/QQQ comparator OHLCV through the latest paper exits, then at least 20-60 enriched closed forward rows for a single helper or source family, with positive replacement value versus cash, SPY, and QQQ and no snapshot/state drift, before testing a production-facing activation envelope.",
+    "why_result_happened": "The daily paper sleeves had accumulated two additional closed rows after the prior artifact rebuild. Those rows were closed in state but had not yet passed through the replacement-value helper, so the artifact stayed at 31 rows while current state needed 33."
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_attribution_only": true,
+    "parity_note": "Current-state measurement materialization only. The existing daily run already invokes the same enrichment helper. No sleeve admission, close, ranking, sizing, or order semantics changed.",
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "quant/forward_replacement_value.py",
+    "quant/test_forward_replacement_value.py",
+    "quant/experiments/exp_20260622_011_forward_replacement_current_state_refresh.py",
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "data/paper_sleeves/fundamental_growth_rs/state.json",
+    "data/paper_sleeves/sec_governance/state.json",
+    "data/experiments/exp-20260622-011/forward_replacement_value_pre_refresh.jsonl"
+  ],
+  "status": "accepted",
+  "timestamp": "2026-06-22T11:11:13+00:00",
+  "trial_family": "default_off_forward_replacement_value_activation_readiness",
+  "trial_variant_id": "current_state_refresh_20260621_v1"
+}

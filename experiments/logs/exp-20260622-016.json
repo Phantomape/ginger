@@ -1,0 +1,181 @@
+{
+  "experiment_id": "exp-20260622-016",
+  "lane": "alpha_search",
+  "status": "blocked",
+  "decision": "blocked_missing_historical_sec_6k_text_rows_for_structured_financial_growth",
+  "completed_at": "2026-06-22T16:14:56+00:00",
+  "hypothesis": "candidate_pool/data-shape scout: PIT SEC 6-K foreign issuer text with structured financial-result numeric growth tables, not generic positive phrase spans, may identify ADR post-report drift when paired with same-day liquid SPY-relative confirmation.",
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "sec_6k_structured_financial_result_growth_candidate_source_v1",
+  "single_causal_variable": "sec_6k_structured_financial_result_growth_candidate_source_v1",
+  "trial_family": "sec_6k_foreign_issuer_structured_financial_result_candidate_pool",
+  "trial_variant_id": "sec_6k_structured_financial_growth_v1",
+  "mechanism_family": "production_visible_free_sec_6k_foreign_issuer_candidate_pool",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": 0.2,
+    "expected_pnl_delta": 3000.0,
+    "main_failure_modes": [
+      "structured_numeric_coverage_too_sparse",
+      "sec_text_false_positives",
+      "accepted_comparator_not_beaten",
+      "old_thin_window_fragility"
+    ],
+    "confidence_reason": "The prior 6-K surface repair found thousands of replayable foreign-issuer reports, while the positive operating-update helper produced zero trades; structured financial-result growth is a materially richer evidence field named as the valid next axis, but SEC text/source saturation and sparse table extraction make success unlikely.",
+    "recorded_at": "2026-06-22T16:04:43+00:00"
+  },
+  "calibration": {
+    "success_probability": 0.18,
+    "actual_success": 0.0,
+    "brier_score": 0.0324,
+    "gate4_passed": false,
+    "predicted_failure_modes": [
+      "structured_numeric_coverage_too_sparse",
+      "sec_text_false_positives",
+      "accepted_comparator_not_beaten",
+      "old_thin_window_fragility"
+    ],
+    "observed_failure_modes": [
+      "structured_numeric_coverage_too_sparse",
+      "missing_historical_6k_text_rows",
+      "missing_6k_text_cache",
+      "blocked_before_entry_date_target_price"
+    ],
+    "surprise_note": "The prior measurement repair reported local 6-K coverage, but the current generated replay text/event/cache artifacts still expose zero 6-K rows, so the richer semantic scout could not reach replay."
+  },
+  "gate_verdict": {
+    "gate1_baseline": {
+      "passed": true,
+      "baseline_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "baseline_sha256": "33966aafb7816653089b27d4bb19508f64cafa1522de7aa3e19a16718160959e",
+      "aggregate": {
+        "expected_value_score": 7.8941,
+        "total_pnl": 234850.99,
+        "trade_count": 61,
+        "signals_generated": 164,
+        "signals_survived": 135,
+        "survival_rate": 0.8232,
+        "max_drawdown_pct_max": 0.1119
+      }
+    },
+    "gate2_runtime_fields": {
+      "passed": false,
+      "required_source_fields": [
+        "ticker",
+        "accession_number",
+        "usable_trade_date",
+        "combined_text",
+        "form_type",
+        "form_base"
+      ],
+      "minimum_trade_fields": [
+        "entry_date",
+        "target_price"
+      ],
+      "field_status": "blocked_before_entry_fields; no historical 6-K / 6-KA text rows exist in the current generated text surface",
+      "six_k_text_rows": 0,
+      "six_k_text_nonempty_rows": 0,
+      "six_k_event_rows": 0,
+      "six_k_cache_rows": 0,
+      "structured_financial_result_hits": 0
+    },
+    "gate3_survival": {
+      "passed": false,
+      "signals_generated": 0,
+      "signals_survived": 0,
+      "survival_rate": null,
+      "verdict": "blocked; zero generated structured 6-K candidates and therefore zero survived candidates"
+    },
+    "gate4_before_after": {
+      "passed": false,
+      "ran": false,
+      "after_equals_before": true,
+      "reason": "Gate 2 failed before candidate construction; no same-protocol after replay was run."
+    }
+  },
+  "before": {
+    "expected_value_score": 7.8941,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "max_drawdown_pct_max": 0.1119
+  },
+  "after": {
+    "expected_value_score": 7.8941,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "max_drawdown_pct_max": 0.1119
+  },
+  "delta": {
+    "expected_value_score": 0.0,
+    "total_pnl": 0.0,
+    "trade_count": 0,
+    "signals_generated": 0,
+    "signals_survived": 0
+  },
+  "result_summary": {
+    "six_k_event_rows": 0,
+    "six_k_text_rows": 0,
+    "six_k_cache_rows": 0,
+    "structured_financial_result_hits": 0
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "alters_orders": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "production_signal_path_changed": false,
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "daily_snapshot_exposed": false,
+    "default_off_paper_only": false,
+    "replay_only": true,
+    "uses_llm": false,
+    "uses_free_sec_filing_text": true,
+    "live_realism_evaluated": true,
+    "live_ready": false,
+    "execution_envelope": {
+      "trade_enabled": false,
+      "order_semantics": "none; blocked before any paper entry construction",
+      "notional_cap": "not evaluated because no source candidates exist",
+      "liquidity_guard": "planned same-day liquid SPY-relative confirmation was not reached",
+      "kill_switch": "no production adapter or shared helper was changed",
+      "failure_handling": "missing historical 6-K / 6-KA text rows block extraction before entry_date, target_price, ranking, sizing, or exits are evaluated"
+    },
+    "parity_note": "No shared policy/helper was implemented because Gate 2 found no historical 6-K filing text rows in the current replay surface. A future retry must first regenerate/backfill the SEC event and text artifacts with 6-K / 6-KA rows, then wire a shared default-off helper if candidates exist."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The experiment was blocked because the code-level SEC defaults now include 6-K / 6-KA, but the existing generated historical event/text artifacts and filing-text cache still contain zero replayable 6-K text rows. Structured financial growth extraction therefore has no source rows to evaluate, so a Gate 4 alpha verdict would be false precision.",
+    "forbidden_near_neighbor_retry": "Do not retry by sweeping 6-K positive phrases, numeric regex terms, RS/volume thresholds, top-N selection, hold days, cooldown, or notional until the historical SEC 6-K / 6-KA event and text surface is regenerated and contains replayable rows.",
+    "new_evidence_required": "First run a measurement repair/backfill that materializes 6-K / 6-KA events and filing text across the canonical windows, then rerun a fixed structured financial-result growth bundle with shared default-off historical/daily parity if candidates exist."
+  },
+  "artifact": "data/experiments/exp-20260622-016/exp_20260622_016_sec_6k_structured_financial_growth.json",
+  "log_file": "experiments/logs/exp-20260622-016.json",
+  "card_file": "experiments/cards/exp-20260622-016.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260622-016.json",
+  "changed_files": [
+    "quant/experiments/exp_20260622_016_sec_6k_structured_financial_growth.py",
+    "data/experiments/exp-20260622-016/exp_20260622_016_sec_6k_structured_financial_growth.json",
+    "experiments/logs/exp-20260622-016.json",
+    "experiments/cards/exp-20260622-016.md",
+    "experiments/manifests/exp-20260622-016.json",
+    "experiments/tickets/exp-20260622-016.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260622_016_sec_6k_structured_financial_growth.py",
+    ".venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true
+}

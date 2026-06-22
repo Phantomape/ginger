@@ -1,0 +1,1021 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "activation_ready_groups": 0,
+    "aggregate_expected_value_score": 7.8941,
+    "aggregate_total_pnl": 234850.99,
+    "artifact_rows": 33,
+    "watchlist_ready_groups": 0
+  },
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260622-013/exp_20260622_013_forward_replacement_activation_readiness_20260622.json",
+  "before_metrics": {
+    "activation_ready_groups": 0,
+    "aggregate_expected_value_score": 7.8941,
+    "aggregate_total_pnl": 234850.99,
+    "artifact_rows": 33
+  },
+  "calibration": {
+    "actual_decision": "rejected_no_forward_activation_ready_after_comparator_repair",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 0,
+    "brier_score": 0.0324,
+    "ev_prediction_error": 0.0,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "failure_modes_observed": [
+      "no_activation_ready_sleeve_or_source_family",
+      "closed_rows_too_few",
+      "no_20_row_watchlist_candidate"
+    ],
+    "pnl_prediction_error": 0.0,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "closed_rows_too_few",
+      "single_ticker_concentration",
+      "negative_replacement_vs_etfs",
+      "source_family_immature"
+    ],
+    "predicted_success_probability": 0.18,
+    "surprise_note": "Low surprise. Comparator repair made the artifact usable, but no sleeve/source family has enough diversified closed rows for an activation-envelope test."
+  },
+  "causal_components": [
+    "forward replacement artifact audit",
+    "source-family replacement-value gates",
+    "activation blocker report",
+    "no strategy behavior change"
+  ],
+  "change_summary": "Audit the fully enriched current forward replacement-value artifact for default-off sleeve/source-family activation readiness.",
+  "change_type": "default_off_forward_readiness_audit",
+  "changed_variable": "comparator_enriched_forward_replacement_activation_readiness_v1",
+  "decision": "rejected_no_forward_activation_ready_after_comparator_repair",
+  "delta_metrics": {
+    "activation_ready_groups": 0,
+    "aggregate_expected_value_score": 0.0,
+    "aggregate_total_pnl": 0.0,
+    "artifact_rows": 0
+  },
+  "experiment_id": "exp-20260622-013",
+  "gate1": {
+    "baseline_artifact": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_metrics": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "min_survival_rate": 0.7925,
+      "path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "total_trade_count": 61,
+      "windows": [
+        {
+          "expected_value_score": 5.1628,
+          "label": "late_strong",
+          "max_drawdown_pct": 0.0665,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039,
+          "total_pnl": 117072.92,
+          "trade_count": 18
+        },
+        {
+          "expected_value_score": 2.1402,
+          "label": "mid_weak",
+          "max_drawdown_pct": 0.1119,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925,
+          "total_pnl": 78110.11,
+          "trade_count": 21
+        },
+        {
+          "expected_value_score": 0.5911,
+          "label": "old_thin",
+          "max_drawdown_pct": 0.1001,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667,
+          "total_pnl": 39667.96,
+          "trade_count": 22
+        }
+      ]
+    },
+    "note": "Strategy baseline is recorded for context; no before/after strategy replay changed.",
+    "passed": true
+  },
+  "gate2": {
+    "artifact_audit": {
+      "artifact_rows": 33,
+      "missing_comparator_bar_rows": 0,
+      "rows_by_sleeve": {
+        "fundamental_growth_rs": 3,
+        "low_deployment_etf": 17,
+        "sec_governance": 2,
+        "sec_leadership": 1,
+        "sec_negative": 2,
+        "state_surface": 3,
+        "volatility_contraction": 2,
+        "volume_breadth_breakout": 3
+      },
+      "rows_by_status": {
+        "enriched": 33
+      },
+      "rows_not_in_current_state": [],
+      "skipped_closed_rows_missing_replacement": 0,
+      "state_replacement_rows": 33,
+      "state_rows_missing_artifact": []
+    },
+    "passed": true,
+    "runtime_fields_checked": [
+      "entry_date",
+      "exit_date",
+      "notional_usd",
+      "pnl_usd",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd"
+    ],
+    "target_price_scope": "Not required for this closed forward replacement artifact; activation readiness is based on realized entry/exit rows and does not create a new executable policy."
+  },
+  "gate3": {
+    "baseline_min_survival_rate": 0.7925,
+    "new_core_filter_added": false,
+    "note": "No filter, entry rule, ranking, or core candidate pool changed.",
+    "passed": true
+  },
+  "gate4": {
+    "activation_candidates": [],
+    "activation_thresholds": {
+      "max_single_positive_share": 0.5,
+      "min_activation_closed_rows": 60,
+      "min_entry_span_days": 20,
+      "min_watchlist_closed_rows": 20,
+      "min_win_rate": 0.5
+    },
+    "artifact_all_enriched": true,
+    "decision": "rejected_no_forward_activation_ready_after_comparator_repair",
+    "failed_reasons": [
+      "no_activation_ready_sleeve_or_source_family",
+      "closed_rows_too_few",
+      "no_20_row_watchlist_candidate"
+    ],
+    "passed": false,
+    "total_forward_rows": 33,
+    "watchlist_candidates": []
+  },
+  "hypothesis": "Forward replacement rows fully enriched after exp-20260622-012 may identify a default-off paper sleeve/source family that is ready for a production activation-envelope test using positive replacement value versus cash, SPY, and QQQ.",
+  "implementation_mode": "observed_only_forward_readiness_audit",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "log": "experiments/logs/exp-20260622-013.json",
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260605-028",
+    "exp-20260608-021",
+    "exp-20260622-011",
+    "exp-20260622-012"
+  ],
+  "new_evidence_type": "comparator_enriched_forward_replacement_rows",
+  "next_retry_requires": [
+    "materially more enriched closed forward rows",
+    "diversified positive replacement value by sleeve/source family",
+    "no relaxation of low_deployment ETF concentration gates"
+  ],
+  "overall_forward_replacement_summary": {
+    "activation_blockers": [
+      "closed_rows_below_activation_min"
+    ],
+    "activation_ready": false,
+    "closed_rows": 33,
+    "entry_date_max": "2026-06-04",
+    "entry_date_min": "2026-05-05",
+    "entry_span_days": 30,
+    "key": "all_forward_rows",
+    "max_single_positive_share_cash": 0.404631,
+    "medians": {
+      "replacement_value_vs_cash_usd": 134.31,
+      "replacement_value_vs_qqq_usd": 449.78,
+      "replacement_value_vs_spy_usd": 456.47
+    },
+    "positive_by_ticker_cash": {
+      "AMD": 2303.04,
+      "BKNG": 134.31,
+      "CRDO": 3250.57,
+      "DE": 1098.16,
+      "GS": 390.84,
+      "QQQ": 6761.79,
+      "SNXX": 2772.28
+    },
+    "rows_by_sleeve": {
+      "fundamental_growth_rs": 3,
+      "low_deployment_etf": 17,
+      "sec_governance": 2,
+      "sec_leadership": 1,
+      "sec_negative": 2,
+      "state_surface": 3,
+      "volatility_contraction": 2,
+      "volume_breadth_breakout": 3
+    },
+    "tickers": {
+      "AAPL": 1,
+      "AMD": 1,
+      "AVGO": 1,
+      "BKNG": 1,
+      "CRDO": 2,
+      "DDOG": 1,
+      "DE": 1,
+      "GE": 1,
+      "GS": 1,
+      "HOOD": 1,
+      "LITE": 1,
+      "MU": 1,
+      "NOW": 1,
+      "QQQ": 17,
+      "SNOW": 1,
+      "SNXX": 1
+    },
+    "totals": {
+      "replacement_value_vs_cash_usd": 5813.79,
+      "replacement_value_vs_qqq_usd": 10378.01,
+      "replacement_value_vs_spy_usd": 11900.49
+    },
+    "watchlist_blockers": [],
+    "watchlist_ready": true,
+    "win_rates": {
+      "replacement_value_vs_cash_usd": 0.5455,
+      "replacement_value_vs_qqq_usd": 0.7273,
+      "replacement_value_vs_spy_usd": 0.7273
+    }
+  },
+  "parameters": {
+    "max_single_positive_share": 0.5,
+    "min_activation_closed_rows": 60,
+    "min_entry_span_days": 20,
+    "min_watchlist_closed_rows": 20,
+    "min_win_rate": 0.5
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not rerun forward activation readiness, relax the 60-row minimum, or retune low_deployment/state_surface thresholds until new closed replacement-value rows arrive. Do not treat QQQ-only low_deployment rows as diversified live evidence.",
+    "new_evidence_required": "At least 20-60 additional enriched closed forward rows for a single helper/source family, diversified across tickers, with positive replacement value versus cash, SPY, and QQQ. A state_surface-specific follow-up needs forward rows, not frozen window re-slicing.",
+    "why_result_happened": "The comparator repair was useful measurement work: all 33 rows are now enriched. The alpha/readiness result is still negative because the only moderately populated sleeve is low_deployment_etf with 17 QQQ-only rows, while the strongest stock sleeve, state_surface, has only 3 closed rows."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Forward replacement rows fully enriched after exp-20260622-012 may identify a default-off paper sleeve/source family that is ready for a production activation-envelope test using positive replacement value versus cash, SPY, and QQQ.",
+    "2_history_check": {
+      "exp-20260605-028": "Rejected activation readiness: closed rows too few and low_deployment ETF was QQQ-concentrated.",
+      "exp-20260608-021": "Rejected activation readiness through 2026-06-07: no new mature closed-row delta.",
+      "exp-20260622-011": "Accepted measurement refresh but left four rows missing SPY/QQQ comparator bars.",
+      "exp-20260622-012": "Accepted comparator-session repair; all 33 current rows are now enriched.",
+      "novelty_gate": "Reservation passed; new evidence axis is the now fully comparator-enriched forward artifact."
+    },
+    "3_single_decision_hypothesis": "comparator_enriched_forward_replacement_activation_readiness_v1",
+    "4_acceptance_standard": "A sleeve/source family is activation-envelope-ready only if the current forward artifact is all enriched, it has at least 60 closed rows, positive aggregate replacement value versus cash/SPY/QQQ, win rate versus each comparator is at least 50%, max single positive ticker share is at most 50%, and rows span at least 20 calendar days. A 20-row tier is only a watchlist, not activation-ready.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260622_013_forward_replacement_activation_readiness_20260622.py"
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260622-012 created the first all-enriched current forward replacement artifact, but only 33 total rows exist and prior readiness audits were blocked by thin/concentrated samples; success needs a sleeve family with enough rows and positive value versus cash, SPY, and QQQ.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "closed_rows_too_few",
+      "single_ticker_concentration",
+      "negative_replacement_vs_etfs",
+      "source_family_immature"
+    ],
+    "recorded_at": "2026-06-22T13:03:56+00:00",
+    "success_probability": 0.18
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "parity_note": "Read-only forward readiness audit. It consumes the current replacement artifact and does not change helper logic, snapshots, orders, ranking, sizing, exits, LLM/news, or live/default behavior.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_llm": false
+  },
+  "rejection_reason": "no_activation_ready_sleeve_or_source_family; closed_rows_too_few; no_20_row_watchlist_candidate",
+  "related_files": [
+    "quant/experiments/exp_20260622_013_forward_replacement_activation_readiness_20260622.py",
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "data/experiments/exp-20260622-013/exp_20260622_013_forward_replacement_activation_readiness_20260622.json",
+    "experiments/logs/exp-20260622-013.json",
+    "experiments/cards/exp-20260622-013.md",
+    "experiments/manifests/exp-20260622-013.json",
+    "experiments/tickets/exp-20260622-013.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "single_causal_variable": "comparator_enriched_forward_replacement_activation_readiness_v1",
+  "sleeve_summaries": [
+    {
+      "activation_blockers": [
+        "closed_rows_below_activation_min",
+        "single_ticker_positive_share_failed"
+      ],
+      "activation_ready": false,
+      "closed_rows": 17,
+      "entry_date_max": "2026-06-04",
+      "entry_date_min": "2026-05-12",
+      "entry_span_days": 23,
+      "key": "low_deployment_etf",
+      "max_single_positive_share_cash": 1.0,
+      "medians": {
+        "replacement_value_vs_cash_usd": 487.29,
+        "replacement_value_vs_qqq_usd": 450.2,
+        "replacement_value_vs_spy_usd": 599.57
+      },
+      "positive_by_ticker_cash": {
+        "QQQ": 6761.79
+      },
+      "tickers": {
+        "QQQ": 17
+      },
+      "totals": {
+        "replacement_value_vs_cash_usd": 4690.01,
+        "replacement_value_vs_qqq_usd": 7517.99,
+        "replacement_value_vs_spy_usd": 8952.04
+      },
+      "watchlist_blockers": [
+        "single_ticker_positive_share_failed",
+        "closed_rows_below_watchlist_min"
+      ],
+      "watchlist_ready": false,
+      "win_rates": {
+        "replacement_value_vs_cash_usd": 0.6471,
+        "replacement_value_vs_qqq_usd": 1.0,
+        "replacement_value_vs_spy_usd": 0.9412
+      }
+    },
+    {
+      "activation_blockers": [
+        "closed_rows_below_activation_min",
+        "nonpositive_replacement_value",
+        "win_rate_below_min",
+        "single_ticker_positive_share_failed",
+        "entry_span_too_short"
+      ],
+      "activation_ready": false,
+      "closed_rows": 3,
+      "entry_date_max": "2026-06-03",
+      "entry_date_min": "2026-05-29",
+      "entry_span_days": 5,
+      "key": "fundamental_growth_rs",
+      "max_single_positive_share_cash": 1.0,
+      "medians": {
+        "replacement_value_vs_cash_usd": -799.06,
+        "replacement_value_vs_qqq_usd": -90.42,
+        "replacement_value_vs_spy_usd": -305.49
+      },
+      "positive_by_ticker_cash": {
+        "CRDO": 1085.66
+      },
+      "tickers": {
+        "AVGO": 1,
+        "CRDO": 1,
+        "MU": 1
+      },
+      "totals": {
+        "replacement_value_vs_cash_usd": -2525.18,
+        "replacement_value_vs_qqq_usd": -1147.13,
+        "replacement_value_vs_spy_usd": -1554.0
+      },
+      "watchlist_blockers": [
+        "nonpositive_replacement_value",
+        "win_rate_below_min",
+        "single_ticker_positive_share_failed",
+        "entry_span_too_short",
+        "closed_rows_below_watchlist_min"
+      ],
+      "watchlist_ready": false,
+      "win_rates": {
+        "replacement_value_vs_cash_usd": 0.3333,
+        "replacement_value_vs_qqq_usd": 0.3333,
+        "replacement_value_vs_spy_usd": 0.3333
+      }
+    },
+    {
+      "activation_blockers": [
+        "closed_rows_below_activation_min",
+        "entry_span_too_short"
+      ],
+      "activation_ready": false,
+      "closed_rows": 3,
+      "entry_date_max": "2026-05-08",
+      "entry_date_min": "2026-05-08",
+      "entry_span_days": 0,
+      "key": "state_surface",
+      "max_single_positive_share_cash": 0.382899,
+      "medians": {
+        "replacement_value_vs_cash_usd": 2303.04,
+        "replacement_value_vs_qqq_usd": 1800.09,
+        "replacement_value_vs_spy_usd": 2055.1
+      },
+      "positive_by_ticker_cash": {
+        "AMD": 2303.04,
+        "CRDO": 2164.91,
+        "SNXX": 2772.28
+      },
+      "tickers": {
+        "AMD": 1,
+        "CRDO": 1,
+        "SNXX": 1
+      },
+      "totals": {
+        "replacement_value_vs_cash_usd": 7240.23,
+        "replacement_value_vs_qqq_usd": 6166.42,
+        "replacement_value_vs_spy_usd": 6760.53
+      },
+      "watchlist_blockers": [
+        "entry_span_too_short",
+        "closed_rows_below_watchlist_min"
+      ],
+      "watchlist_ready": false,
+      "win_rates": {
+        "replacement_value_vs_cash_usd": 1.0,
+        "replacement_value_vs_qqq_usd": 1.0,
+        "replacement_value_vs_spy_usd": 1.0
+      }
+    },
+    {
+      "activation_blockers": [
+        "closed_rows_below_activation_min",
+        "nonpositive_replacement_value",
+        "win_rate_below_min",
+        "single_ticker_positive_share_failed",
+        "entry_span_too_short"
+      ],
+      "activation_ready": false,
+      "closed_rows": 3,
+      "entry_date_max": "2026-06-02",
+      "entry_date_min": "2026-05-29",
+      "entry_span_days": 4,
+      "key": "volume_breadth_breakout",
+      "max_single_positive_share_cash": null,
+      "medians": {
+        "replacement_value_vs_cash_usd": -883.7,
+        "replacement_value_vs_qqq_usd": -350.19,
+        "replacement_value_vs_spy_usd": -536.24
+      },
+      "positive_by_ticker_cash": {},
+      "tickers": {
+        "HOOD": 1,
+        "NOW": 1,
+        "SNOW": 1
+      },
+      "totals": {
+        "replacement_value_vs_cash_usd": -3030.14,
+        "replacement_value_vs_qqq_usd": -1550.64,
+        "replacement_value_vs_spy_usd": -2047.47
+      },
+      "watchlist_blockers": [
+        "nonpositive_replacement_value",
+        "win_rate_below_min",
+        "single_ticker_positive_share_failed",
+        "entry_span_too_short",
+        "closed_rows_below_watchlist_min"
+      ],
+      "watchlist_ready": false,
+      "win_rates": {
+        "replacement_value_vs_cash_usd": 0.0,
+        "replacement_value_vs_qqq_usd": 0.3333,
+        "replacement_value_vs_spy_usd": 0.3333
+      }
+    },
+    {
+      "activation_blockers": [
+        "closed_rows_below_activation_min",
+        "single_ticker_positive_share_failed"
+      ],
+      "activation_ready": false,
+      "closed_rows": 2,
+      "entry_date_max": "2026-06-04",
+      "entry_date_min": "2026-05-05",
+      "entry_span_days": 30,
+      "key": "sec_governance",
+      "max_single_positive_share_cash": 0.744245,
+      "medians": {
+        "replacement_value_vs_cash_usd": 262.575,
+        "replacement_value_vs_qqq_usd": 44.485,
+        "replacement_value_vs_spy_usd": 209.975
+      },
+      "positive_by_ticker_cash": {
+        "BKNG": 134.31,
+        "GS": 390.84
+      },
+      "tickers": {
+        "BKNG": 1,
+        "GS": 1
+      },
+      "totals": {
+        "replacement_value_vs_cash_usd": 525.15,
+        "replacement_value_vs_qqq_usd": 88.97,
+        "replacement_value_vs_spy_usd": 419.95
+      },
+      "watchlist_blockers": [
+        "single_ticker_positive_share_failed",
+        "closed_rows_below_watchlist_min"
+      ],
+      "watchlist_ready": false,
+      "win_rates": {
+        "replacement_value_vs_cash_usd": 1.0,
+        "replacement_value_vs_qqq_usd": 0.5,
+        "replacement_value_vs_spy_usd": 1.0
+      }
+    },
+    {
+      "activation_blockers": [
+        "closed_rows_below_activation_min",
+        "single_ticker_positive_share_failed",
+        "entry_span_too_short"
+      ],
+      "activation_ready": false,
+      "closed_rows": 2,
+      "entry_date_max": "2026-05-23",
+      "entry_date_min": "2026-05-07",
+      "entry_span_days": 16,
+      "key": "sec_negative",
+      "max_single_positive_share_cash": 1.0,
+      "medians": {
+        "replacement_value_vs_cash_usd": 369.335,
+        "replacement_value_vs_qqq_usd": 190.85,
+        "replacement_value_vs_spy_usd": 317.24
+      },
+      "positive_by_ticker_cash": {
+        "DE": 1098.16
+      },
+      "tickers": {
+        "DE": 1,
+        "LITE": 1
+      },
+      "totals": {
+        "replacement_value_vs_cash_usd": 738.67,
+        "replacement_value_vs_qqq_usd": 381.7,
+        "replacement_value_vs_spy_usd": 634.48
+      },
+      "watchlist_blockers": [
+        "single_ticker_positive_share_failed",
+        "entry_span_too_short",
+        "closed_rows_below_watchlist_min"
+      ],
+      "watchlist_ready": false,
+      "win_rates": {
+        "replacement_value_vs_cash_usd": 0.5,
+        "replacement_value_vs_qqq_usd": 0.5,
+        "replacement_value_vs_spy_usd": 0.5
+      }
+    },
+    {
+      "activation_blockers": [
+        "closed_rows_below_activation_min",
+        "nonpositive_replacement_value",
+        "win_rate_below_min",
+        "single_ticker_positive_share_failed",
+        "entry_span_too_short"
+      ],
+      "activation_ready": false,
+      "closed_rows": 2,
+      "entry_date_max": "2026-06-03",
+      "entry_date_min": "2026-06-01",
+      "entry_span_days": 2,
+      "key": "volatility_contraction",
+      "max_single_positive_share_cash": null,
+      "medians": {
+        "replacement_value_vs_cash_usd": -824.685,
+        "replacement_value_vs_qqq_usd": -379.94,
+        "replacement_value_vs_spy_usd": -524.275
+      },
+      "positive_by_ticker_cash": {},
+      "tickers": {
+        "AAPL": 1,
+        "DDOG": 1
+      },
+      "totals": {
+        "replacement_value_vs_cash_usd": -1649.37,
+        "replacement_value_vs_qqq_usd": -759.88,
+        "replacement_value_vs_spy_usd": -1048.55
+      },
+      "watchlist_blockers": [
+        "nonpositive_replacement_value",
+        "win_rate_below_min",
+        "single_ticker_positive_share_failed",
+        "entry_span_too_short",
+        "closed_rows_below_watchlist_min"
+      ],
+      "watchlist_ready": false,
+      "win_rates": {
+        "replacement_value_vs_cash_usd": 0.0,
+        "replacement_value_vs_qqq_usd": 0.0,
+        "replacement_value_vs_spy_usd": 0.0
+      }
+    },
+    {
+      "activation_blockers": [
+        "closed_rows_below_activation_min",
+        "nonpositive_replacement_value",
+        "win_rate_below_min",
+        "single_ticker_positive_share_failed",
+        "entry_span_too_short"
+      ],
+      "activation_ready": false,
+      "closed_rows": 1,
+      "entry_date_max": "2026-05-09",
+      "entry_date_min": "2026-05-09",
+      "entry_span_days": 0,
+      "key": "sec_leadership",
+      "max_single_positive_share_cash": null,
+      "medians": {
+        "replacement_value_vs_cash_usd": -175.58,
+        "replacement_value_vs_qqq_usd": -319.42,
+        "replacement_value_vs_spy_usd": -216.49
+      },
+      "positive_by_ticker_cash": {},
+      "tickers": {
+        "GE": 1
+      },
+      "totals": {
+        "replacement_value_vs_cash_usd": -175.58,
+        "replacement_value_vs_qqq_usd": -319.42,
+        "replacement_value_vs_spy_usd": -216.49
+      },
+      "watchlist_blockers": [
+        "nonpositive_replacement_value",
+        "win_rate_below_min",
+        "single_ticker_positive_share_failed",
+        "entry_span_too_short",
+        "closed_rows_below_watchlist_min"
+      ],
+      "watchlist_ready": false,
+      "win_rates": {
+        "replacement_value_vs_cash_usd": 0.0,
+        "replacement_value_vs_qqq_usd": 0.0,
+        "replacement_value_vs_spy_usd": 0.0
+      }
+    }
+  ],
+  "source_summaries": [
+    {
+      "activation_blockers": [
+        "closed_rows_below_activation_min",
+        "single_ticker_positive_share_failed"
+      ],
+      "activation_ready": false,
+      "closed_rows": 17,
+      "entry_date_max": "2026-06-04",
+      "entry_date_min": "2026-05-12",
+      "entry_span_days": 23,
+      "key": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER",
+      "max_single_positive_share_cash": 1.0,
+      "medians": {
+        "replacement_value_vs_cash_usd": 487.29,
+        "replacement_value_vs_qqq_usd": 450.2,
+        "replacement_value_vs_spy_usd": 599.57
+      },
+      "positive_by_ticker_cash": {
+        "QQQ": 6761.79
+      },
+      "tickers": {
+        "QQQ": 17
+      },
+      "totals": {
+        "replacement_value_vs_cash_usd": 4690.01,
+        "replacement_value_vs_qqq_usd": 7517.99,
+        "replacement_value_vs_spy_usd": 8952.04
+      },
+      "watchlist_blockers": [
+        "single_ticker_positive_share_failed",
+        "closed_rows_below_watchlist_min"
+      ],
+      "watchlist_ready": false,
+      "win_rates": {
+        "replacement_value_vs_cash_usd": 0.6471,
+        "replacement_value_vs_qqq_usd": 1.0,
+        "replacement_value_vs_spy_usd": 0.9412
+      }
+    },
+    {
+      "activation_blockers": [
+        "closed_rows_below_activation_min",
+        "nonpositive_replacement_value",
+        "win_rate_below_min",
+        "single_ticker_positive_share_failed",
+        "entry_span_too_short"
+      ],
+      "activation_ready": false,
+      "closed_rows": 3,
+      "entry_date_max": "2026-06-03",
+      "entry_date_min": "2026-05-29",
+      "entry_span_days": 5,
+      "key": "FUNDAMENTAL_GROWTH_RS_PAPER",
+      "max_single_positive_share_cash": 1.0,
+      "medians": {
+        "replacement_value_vs_cash_usd": -799.06,
+        "replacement_value_vs_qqq_usd": -90.42,
+        "replacement_value_vs_spy_usd": -305.49
+      },
+      "positive_by_ticker_cash": {
+        "CRDO": 1085.66
+      },
+      "tickers": {
+        "AVGO": 1,
+        "CRDO": 1,
+        "MU": 1
+      },
+      "totals": {
+        "replacement_value_vs_cash_usd": -2525.18,
+        "replacement_value_vs_qqq_usd": -1147.13,
+        "replacement_value_vs_spy_usd": -1554.0
+      },
+      "watchlist_blockers": [
+        "nonpositive_replacement_value",
+        "win_rate_below_min",
+        "single_ticker_positive_share_failed",
+        "entry_span_too_short",
+        "closed_rows_below_watchlist_min"
+      ],
+      "watchlist_ready": false,
+      "win_rates": {
+        "replacement_value_vs_cash_usd": 0.3333,
+        "replacement_value_vs_qqq_usd": 0.3333,
+        "replacement_value_vs_spy_usd": 0.3333
+      }
+    },
+    {
+      "activation_blockers": [
+        "closed_rows_below_activation_min",
+        "entry_span_too_short"
+      ],
+      "activation_ready": false,
+      "closed_rows": 3,
+      "entry_date_max": "2026-05-08",
+      "entry_date_min": "2026-05-08",
+      "entry_span_days": 0,
+      "key": "STATE_SURFACE_SATELLITE_PAPER",
+      "max_single_positive_share_cash": 0.382899,
+      "medians": {
+        "replacement_value_vs_cash_usd": 2303.04,
+        "replacement_value_vs_qqq_usd": 1800.09,
+        "replacement_value_vs_spy_usd": 2055.1
+      },
+      "positive_by_ticker_cash": {
+        "AMD": 2303.04,
+        "CRDO": 2164.91,
+        "SNXX": 2772.28
+      },
+      "tickers": {
+        "AMD": 1,
+        "CRDO": 1,
+        "SNXX": 1
+      },
+      "totals": {
+        "replacement_value_vs_cash_usd": 7240.23,
+        "replacement_value_vs_qqq_usd": 6166.42,
+        "replacement_value_vs_spy_usd": 6760.53
+      },
+      "watchlist_blockers": [
+        "entry_span_too_short",
+        "closed_rows_below_watchlist_min"
+      ],
+      "watchlist_ready": false,
+      "win_rates": {
+        "replacement_value_vs_cash_usd": 1.0,
+        "replacement_value_vs_qqq_usd": 1.0,
+        "replacement_value_vs_spy_usd": 1.0
+      }
+    },
+    {
+      "activation_blockers": [
+        "closed_rows_below_activation_min",
+        "nonpositive_replacement_value",
+        "win_rate_below_min",
+        "single_ticker_positive_share_failed",
+        "entry_span_too_short"
+      ],
+      "activation_ready": false,
+      "closed_rows": 3,
+      "entry_date_max": "2026-06-02",
+      "entry_date_min": "2026-05-29",
+      "entry_span_days": 4,
+      "key": "VOLUME_BREADTH_BREAKOUT_PAPER",
+      "max_single_positive_share_cash": null,
+      "medians": {
+        "replacement_value_vs_cash_usd": -883.7,
+        "replacement_value_vs_qqq_usd": -350.19,
+        "replacement_value_vs_spy_usd": -536.24
+      },
+      "positive_by_ticker_cash": {},
+      "tickers": {
+        "HOOD": 1,
+        "NOW": 1,
+        "SNOW": 1
+      },
+      "totals": {
+        "replacement_value_vs_cash_usd": -3030.14,
+        "replacement_value_vs_qqq_usd": -1550.64,
+        "replacement_value_vs_spy_usd": -2047.47
+      },
+      "watchlist_blockers": [
+        "nonpositive_replacement_value",
+        "win_rate_below_min",
+        "single_ticker_positive_share_failed",
+        "entry_span_too_short",
+        "closed_rows_below_watchlist_min"
+      ],
+      "watchlist_ready": false,
+      "win_rates": {
+        "replacement_value_vs_cash_usd": 0.0,
+        "replacement_value_vs_qqq_usd": 0.3333,
+        "replacement_value_vs_spy_usd": 0.3333
+      }
+    },
+    {
+      "activation_blockers": [
+        "closed_rows_below_activation_min",
+        "single_ticker_positive_share_failed"
+      ],
+      "activation_ready": false,
+      "closed_rows": 2,
+      "entry_date_max": "2026-06-04",
+      "entry_date_min": "2026-05-05",
+      "entry_span_days": 30,
+      "key": "SEC_GOVERNANCE_EVENT_SLEEVE_PAPER",
+      "max_single_positive_share_cash": 0.744245,
+      "medians": {
+        "replacement_value_vs_cash_usd": 262.575,
+        "replacement_value_vs_qqq_usd": 44.485,
+        "replacement_value_vs_spy_usd": 209.975
+      },
+      "positive_by_ticker_cash": {
+        "BKNG": 134.31,
+        "GS": 390.84
+      },
+      "tickers": {
+        "BKNG": 1,
+        "GS": 1
+      },
+      "totals": {
+        "replacement_value_vs_cash_usd": 525.15,
+        "replacement_value_vs_qqq_usd": 88.97,
+        "replacement_value_vs_spy_usd": 419.95
+      },
+      "watchlist_blockers": [
+        "single_ticker_positive_share_failed",
+        "closed_rows_below_watchlist_min"
+      ],
+      "watchlist_ready": false,
+      "win_rates": {
+        "replacement_value_vs_cash_usd": 1.0,
+        "replacement_value_vs_qqq_usd": 0.5,
+        "replacement_value_vs_spy_usd": 1.0
+      }
+    },
+    {
+      "activation_blockers": [
+        "closed_rows_below_activation_min",
+        "single_ticker_positive_share_failed",
+        "entry_span_too_short"
+      ],
+      "activation_ready": false,
+      "closed_rows": 2,
+      "entry_date_max": "2026-05-23",
+      "entry_date_min": "2026-05-07",
+      "entry_span_days": 16,
+      "key": "SEC_NEGATIVE_REACTION_EVENT_SLEEVE_PAPER",
+      "max_single_positive_share_cash": 1.0,
+      "medians": {
+        "replacement_value_vs_cash_usd": 369.335,
+        "replacement_value_vs_qqq_usd": 190.85,
+        "replacement_value_vs_spy_usd": 317.24
+      },
+      "positive_by_ticker_cash": {
+        "DE": 1098.16
+      },
+      "tickers": {
+        "DE": 1,
+        "LITE": 1
+      },
+      "totals": {
+        "replacement_value_vs_cash_usd": 738.67,
+        "replacement_value_vs_qqq_usd": 381.7,
+        "replacement_value_vs_spy_usd": 634.48
+      },
+      "watchlist_blockers": [
+        "single_ticker_positive_share_failed",
+        "entry_span_too_short",
+        "closed_rows_below_watchlist_min"
+      ],
+      "watchlist_ready": false,
+      "win_rates": {
+        "replacement_value_vs_cash_usd": 0.5,
+        "replacement_value_vs_qqq_usd": 0.5,
+        "replacement_value_vs_spy_usd": 0.5
+      }
+    },
+    {
+      "activation_blockers": [
+        "closed_rows_below_activation_min",
+        "nonpositive_replacement_value",
+        "win_rate_below_min",
+        "single_ticker_positive_share_failed",
+        "entry_span_too_short"
+      ],
+      "activation_ready": false,
+      "closed_rows": 2,
+      "entry_date_max": "2026-06-03",
+      "entry_date_min": "2026-06-01",
+      "entry_span_days": 2,
+      "key": "VOLATILITY_CONTRACTION_QQQ_CONFIRMED_PAPER",
+      "max_single_positive_share_cash": null,
+      "medians": {
+        "replacement_value_vs_cash_usd": -824.685,
+        "replacement_value_vs_qqq_usd": -379.94,
+        "replacement_value_vs_spy_usd": -524.275
+      },
+      "positive_by_ticker_cash": {},
+      "tickers": {
+        "AAPL": 1,
+        "DDOG": 1
+      },
+      "totals": {
+        "replacement_value_vs_cash_usd": -1649.37,
+        "replacement_value_vs_qqq_usd": -759.88,
+        "replacement_value_vs_spy_usd": -1048.55
+      },
+      "watchlist_blockers": [
+        "nonpositive_replacement_value",
+        "win_rate_below_min",
+        "single_ticker_positive_share_failed",
+        "entry_span_too_short",
+        "closed_rows_below_watchlist_min"
+      ],
+      "watchlist_ready": false,
+      "win_rates": {
+        "replacement_value_vs_cash_usd": 0.0,
+        "replacement_value_vs_qqq_usd": 0.0,
+        "replacement_value_vs_spy_usd": 0.0
+      }
+    },
+    {
+      "activation_blockers": [
+        "closed_rows_below_activation_min",
+        "nonpositive_replacement_value",
+        "win_rate_below_min",
+        "single_ticker_positive_share_failed",
+        "entry_span_too_short"
+      ],
+      "activation_ready": false,
+      "closed_rows": 1,
+      "entry_date_max": "2026-05-09",
+      "entry_date_min": "2026-05-09",
+      "entry_span_days": 0,
+      "key": "SEC_LEADERSHIP_CHANGE_EVENT_SLEEVE_PAPER",
+      "max_single_positive_share_cash": null,
+      "medians": {
+        "replacement_value_vs_cash_usd": -175.58,
+        "replacement_value_vs_qqq_usd": -319.42,
+        "replacement_value_vs_spy_usd": -216.49
+      },
+      "positive_by_ticker_cash": {},
+      "tickers": {
+        "GE": 1
+      },
+      "totals": {
+        "replacement_value_vs_cash_usd": -175.58,
+        "replacement_value_vs_qqq_usd": -319.42,
+        "replacement_value_vs_spy_usd": -216.49
+      },
+      "watchlist_blockers": [
+        "nonpositive_replacement_value",
+        "win_rate_below_min",
+        "single_ticker_positive_share_failed",
+        "entry_span_too_short",
+        "closed_rows_below_watchlist_min"
+      ],
+      "watchlist_ready": false,
+      "win_rates": {
+        "replacement_value_vs_cash_usd": 0.0,
+        "replacement_value_vs_qqq_usd": 0.0,
+        "replacement_value_vs_spy_usd": 0.0
+      }
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-06-22T13:08:37Z",
+  "trial_family": "default_off_forward_replacement_value_activation_readiness",
+  "trial_variant_id": "comparator_enriched_current_artifact_20260622_v1"
+}

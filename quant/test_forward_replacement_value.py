@@ -14,10 +14,12 @@ import forward_replacement_value as frv
 BARS = {
     "SPY": {
         "2026-05-05": {"open": 100.0, "close": 101.0},
+        "2026-05-08": {"open": 103.0, "close": 103.5},
         "2026-05-15": {"open": 102.0, "close": 104.0},
     },
     "QQQ": {
         "2026-05-05": {"open": 200.0, "close": 201.0},
+        "2026-05-08": {"open": 204.0, "close": 205.0},
         "2026-05-15": {"open": 208.0, "close": 210.0},
     },
 }
@@ -88,6 +90,50 @@ def test_enrich_row_fields_and_idempotency():
     # second pass must be a no-op
     assert frv.enrich_state_closed_rows(state, BARS, "2026-06-12", "test_sleeve") == []
     assert row["replacement_value_asof"] == "2026-06-11"
+
+
+def test_enrich_row_refreshes_missing_comparator_bars():
+    stale = _row(
+        replacement_value_rule_version=frv.RULE_VERSION,
+        replacement_value_status="missing_comparator_bars",
+        replacement_value_vs_cash_usd=390.84,
+        replacement_value_vs_spy_usd=None,
+        replacement_value_vs_qqq_usd=None,
+        replacement_value_comparator_detail={"SPY": None, "QQQ": None},
+    )
+    state = {"closed_positions": [stale]}
+
+    records = frv.enrich_state_closed_rows(state, BARS, "2026-06-22", "test_sleeve")
+
+    assert len(records) == 1
+    row = state["closed_positions"][0]
+    assert row["replacement_value_status"] == "enriched"
+    assert row["replacement_value_vs_spy_usd"] is not None
+    assert row["replacement_value_vs_qqq_usd"] is not None
+    assert row["replacement_value_asof"] == "2026-06-22"
+
+
+def test_non_session_entry_resolves_to_prior_session_when_marked():
+    state = {
+        "closed_positions": [
+            _row(
+                entry_date="2026-05-09",
+                non_session_entry_fill=True,
+                non_session_entry_note="entry_date was a Saturday; filled with prior session open",
+            )
+        ]
+    }
+
+    records = frv.enrich_state_closed_rows(state, BARS, "2026-06-22", "test_sleeve")
+
+    assert len(records) == 1
+    detail = state["closed_positions"][0]["replacement_value_comparator_detail"]["SPY"]
+    assert detail["requested_entry_date"] == "2026-05-09"
+    assert detail["entry_date"] == "2026-05-08"
+    assert detail["entry_date_resolution"] == "previous_session"
+    assert detail["requested_exit_date"] == "2026-05-15"
+    assert detail["exit_date"] == "2026-05-15"
+    assert detail["exit_date_resolution"] == "exact"
 
 
 def test_enrich_row_missing_bars_status():

@@ -1,0 +1,428 @@
+{
+  "acceptance_rule": "Gate 4 must improve aggregate EV/PnL versus current baseline, improve at least two windows without unacceptable drawdown/concentration drift, and beat accepted compression/distribution default-off comparators; if not, no shared helper is promoted.",
+  "allowed_write_scope": [
+    "quant/sec_6k_positive_operating_update_paper_sleeve.py",
+    "quant/test_sec_6k_positive_operating_update_paper_sleeve.py",
+    "quant/experiments/exp_20260622_015_sec_6k_positive_operating_update.py",
+    "data/experiments/exp-20260622-015",
+    "experiments/logs/exp-20260622-015.json",
+    "experiments/cards/exp-20260622-015.md",
+    "experiments/manifests/exp-20260622-015.json",
+    "experiments/tickets/exp-20260622-015.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260622-015.md",
+  "causal_components": [
+    "6-K text semantic classifier",
+    "historical replay",
+    "daily-capable helper surface",
+    "execution envelope",
+    "Gate 1-4 verdict"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "sec_6k_positive_operating_update_candidate_source_v1",
+  "claimed_at": "2026-06-22T15:04:58+00:00",
+  "completed_at": "2026-06-22T15:15:15+00:00",
+  "created_at": "2026-06-22T15:04:13+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260622-015",
+  "experiment_uid": "expuid-9be037d837f7479d",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260622-015",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-22T15:04:13+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_6k_positive_operating_update"
+  },
+  "hypothesis": "candidate_pool: PIT SEC 6-K foreign issuer text with explicit positive operating updates or raised outlook, plus same-day liquid SPY-relative absorption, may identify ADR information shocks missed by domestic SEC event sleeves.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "sec_6k_positive_operating_update_candidate_source_v1"
+  ],
+  "mechanism_family": "production_visible_free_sec_6k_foreign_issuer_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/backtester.py",
+    "data/paper_sleeves"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260621-018",
+    "exp-20260622-014",
+    "exp-20260622-004"
+  ],
+  "new_evidence_type": "sec_6k_daily_text_surface_repaired",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "6k",
+        "absorption",
+        "adr",
+        "by",
+        "domestic",
+        "event",
+        "explicit",
+        "foreign",
+        "identify",
+        "information",
+        "issuer",
+        "k",
+        "liquid",
+        "may",
+        "missed",
+        "operating",
+        "or",
+        "outlook",
+        "pit",
+        "plus",
+        "positive",
+        "raised",
+        "relative",
+        "same",
+        "shocks",
+        "sleeves",
+        "spy",
+        "text",
+        "update"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "post_earnings_positive_surprise_pre_event_underpricing_candidate_pool",
+        "reopen_condition": "Forward replacement-value rows or a materially richer post-earnings event-quality field; do not simply retune the pre-event RS threshold.",
+        "score": 0.1932,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "broad_full_liquid_reversal_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.1864,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "broad_full_liquid_5d_winner_continuation_candidate_pool",
+        "reopen_condition": "A retry needs a materially new PIT state field, such as real-time breadth/changepoint persistence or cost-adjusted replacement rows; do not simply retune pressure thresholds, hold days, cooldown, or paper notional on this frozen sample.",
+        "score": 0.1853,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "sec_business_update_event_leadership_candidate_pool",
+        "reopen_condition": "A retry needs materially richer free PIT event evidence, such as parsed agreement/product/customer/buyback/guidance semantics from the filing text, event-time before/after close verification, or a shared daily snapshot field that separates economically material 8-K business updates from generic Item 8.01/7.01 filings. Pure subtype or momentum threshold tuning stays frozen.",
+        "score": 0.1758,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "sec_quantified_counterparty_commitment_candidate_pool",
+        "reopen_condition": "A retry needs materially new PIT evidence outside this text field, such as a broader free data edge in customer/supplier relations, source-utility labels, or forward daily parity observations showing this semantic bucket displaces accepted distribution or allocator candidates.",
+        "score": 0.175,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-search-automation",
+  "prediction": {
+    "success_probability": 0.22,
+    "expected_ev_delta": 0.25,
+    "expected_pnl_delta": 3500.0,
+    "main_failure_modes": [
+      "sparse_semantic_hits",
+      "sec_text_false_positives",
+      "accepted_comparator_not_beaten",
+      "old_thin_window_fragility"
+    ],
+    "confidence_reason": "exp-20260622-014 repaired production-visible 6-K event/text rows across all windows, and 6-K is a new foreign-issuer channel; however SEC text candidate pools are saturated and semantic false positives plus accepted-comparator weakness are likely.",
+    "recorded_at": "2026-06-22T15:03:59+00:00"
+  },
+  "prior_trial_count": 1,
+  "result": {
+    "decision": "rejected_sec_6k_positive_operating_update_candidate_pool",
+    "accepted": false,
+    "accepted_alpha": false,
+    "numeric_gate4_passed": false,
+    "artifact": "data/experiments/exp-20260622-015/exp_20260622_015_sec_6k_positive_operating_update.json",
+    "log": "experiments/logs/exp-20260622-015.json",
+    "aggregate_expected_value_delta": 0.0,
+    "aggregate_strategy_total_pnl_delta": 0.0,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_sec_6k_positive_operating_update_candidate_pool",
+      "failed_reasons": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "target_concentration_failed",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "aggregate_ev_delta": 0.0,
+      "aggregate_pnl_delta": 0.0,
+      "windows_ev_improved": 0,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 0,
+      "windows_pnl_regressed": 0,
+      "target_trade_count": 0,
+      "target_trade_count_min": 20,
+      "target_windows": [],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": false,
+        "max_single_positive_pnl_share": null,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": null,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "accepted_compression_comparator": {
+        "experiment_id": "exp-20260608-013",
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "aggregate_expected_value_delta": 0.1608,
+        "aggregate_pnl_delta": 2248.98
+      },
+      "accepted_distribution_comparator": {
+        "experiment_id": "exp-20260611-007",
+        "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+        "aggregate_expected_value_delta": 0.5286,
+        "aggregate_pnl_delta": 10432.91
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.22,
+      "actual_gate4_passed": false,
+      "actual_success": 0,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "target_concentration_failed",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "brier_score": 0.0484,
+      "expected_ev_delta": 0.25,
+      "actual_ev_delta": 0.0,
+      "ev_prediction_error": -0.25,
+      "expected_pnl_delta": 3500.0,
+      "actual_pnl_delta": 0.0,
+      "pnl_prediction_error": -3500.0,
+      "predicted_failure_mode_hit": false
+    },
+    "production_impact": {
+      "shared_policy_changed": true,
+      "shared_policy_note": "default-off paper candidate helper only; no live/default orders",
+      "backtester_adapter_changed": true,
+      "run_adapter_changed": false,
+      "replay_only": false,
+      "default_off_paper_only": true,
+      "daily_snapshot_exposed": false,
+      "trade_enabled": false,
+      "alters_orders": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_sec_filing_text": true,
+      "uses_free_ohlcv": true,
+      "adapter_status": "shared_helper_not_wired_to_run_adapter",
+      "scope": "default_off_sec_6k_positive_operating_update_observation",
+      "shared_helper_added": true,
+      "live_realism_evaluated": true,
+      "live_ready": false,
+      "parity_test_added": true,
+      "execution_envelope": {
+        "trade_enabled": false,
+        "target_notional_per_paper_trade": 4000.0,
+        "daily_entry_slots": 1,
+        "same_ticker_cooldown_days": 10,
+        "hold_days": 10,
+        "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+        "order_semantics": "observe-only next-session-open paper entry; no broker order",
+        "portfolio_displacement": "cash/default-off overlay only unless a future run adapter and activation gate pass",
+        "kill_switch": "trade_enabled remains false; no production adapter changes",
+        "failure_handling": "missing 6-K/6-KA text, missing positive operating-update evidence, excluded financing/legal text, missing OHLCV, missing next open, or missing 10d exit rejects the paper candidate"
+      },
+      "parity_note": "The helper exposes the same classifier and candidate builder for historical replay and daily snapshot construction, but this experiment does not wire it into run.py or write paper-sleeve state. A failing Gate 4 means no strategy promotion."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The SEC 6-K positive operating-update helper did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too_small, target_concentration_failed, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). It is not promoted as a retained default-off strategy surface.",
+      "outcome_summary": "Aggregate EV delta +0.0000; aggregate PnL delta $+0.00; max drawdown drift +0.0000; 0 paper trades.",
+      "forbidden_near_neighbor_retry": "Do not retry by sweeping 6-K positive phrase lists, operating-term lists, percentage thresholds, same-day absorption/RS/volume guards, top-N, hold days, cooldown, or notional on these frozen windows.",
+      "new_evidence_required": "A valid retry needs materially richer 6-K semantics such as normalized issuer country/ADR liquidity, structured earnings table extraction, guidance revision magnitude, English-translation provenance, or closed forward replacement-value rows from a wired daily default-off helper. Do not sweep positive phrase lists, percentage thresholds, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260622-015.json",
+  "single_causal_variable": "sec_6k_positive_operating_update_candidate_source_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260622-015.json",
+  "trial_family": "sec_6k_foreign_issuer_text_positive_operating_update_candidate_pool",
+  "trial_variant_id": "sec_6k_positive_operating_update_v1",
+  "implementation_mode": "shared_helper_replay_no_run_adapter",
+  "decision": "rejected_sec_6k_positive_operating_update_candidate_pool",
+  "summary": "The SEC 6-K positive operating-update helper did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too_small, target_concentration_failed, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). It is not promoted as a retained default-off strategy surface.",
+  "artifact": "data/experiments/exp-20260622-015/exp_20260622_015_sec_6k_positive_operating_update.json",
+  "log": "experiments/logs/exp-20260622-015.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate4": {
+    "passed": false,
+    "decision": "rejected_sec_6k_positive_operating_update_candidate_pool",
+    "failed_reasons": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "fewer_than_two_ev_improved_windows",
+      "target_sample_too_small",
+      "target_window_coverage_too_small",
+      "target_concentration_failed",
+      "accepted_compression_ev_not_beaten",
+      "accepted_compression_pnl_not_beaten",
+      "accepted_distribution_ev_not_beaten",
+      "accepted_distribution_pnl_not_beaten"
+    ],
+    "aggregate_ev_delta": 0.0,
+    "aggregate_pnl_delta": 0.0,
+    "windows_ev_improved": 0,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 0,
+    "windows_pnl_regressed": 0,
+    "target_trade_count": 0,
+    "target_trade_count_min": 20,
+    "target_windows": [],
+    "target_window_count_min": 3,
+    "max_drawdown_worse": 0.0,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "passed": false,
+      "max_single_positive_pnl_share": null,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "positive_pnl_hhi": null,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "accepted_compression_comparator": {
+      "experiment_id": "exp-20260608-013",
+      "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+      "aggregate_expected_value_delta": 0.1608,
+      "aggregate_pnl_delta": 2248.98
+    },
+    "accepted_distribution_comparator": {
+      "experiment_id": "exp-20260611-007",
+      "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+      "aggregate_expected_value_delta": 0.5286,
+      "aggregate_pnl_delta": 10432.91
+    }
+  },
+  "production_impact": {
+    "shared_policy_changed": true,
+    "shared_policy_note": "default-off paper candidate helper only; no live/default orders",
+    "backtester_adapter_changed": true,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "default_off_paper_only": true,
+    "daily_snapshot_exposed": false,
+    "trade_enabled": false,
+    "alters_orders": false,
+    "production_signal_path_changed": false,
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "uses_llm": false,
+    "uses_free_sec_filing_text": true,
+    "uses_free_ohlcv": true,
+    "adapter_status": "shared_helper_not_wired_to_run_adapter",
+    "scope": "default_off_sec_6k_positive_operating_update_observation",
+    "shared_helper_added": true,
+    "live_realism_evaluated": true,
+    "live_ready": false,
+    "parity_test_added": true,
+    "execution_envelope": {
+      "trade_enabled": false,
+      "target_notional_per_paper_trade": 4000.0,
+      "daily_entry_slots": 1,
+      "same_ticker_cooldown_days": 10,
+      "hold_days": 10,
+      "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+      "order_semantics": "observe-only next-session-open paper entry; no broker order",
+      "portfolio_displacement": "cash/default-off overlay only unless a future run adapter and activation gate pass",
+      "kill_switch": "trade_enabled remains false; no production adapter changes",
+      "failure_handling": "missing 6-K/6-KA text, missing positive operating-update evidence, excluded financing/legal text, missing OHLCV, missing next open, or missing 10d exit rejects the paper candidate"
+    },
+    "parity_note": "The helper exposes the same classifier and candidate builder for historical replay and daily snapshot construction, but this experiment does not wire it into run.py or write paper-sleeve state. A failing Gate 4 means no strategy promotion."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The SEC 6-K positive operating-update helper did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too_small, target_concentration_failed, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). It is not promoted as a retained default-off strategy surface.",
+    "outcome_summary": "Aggregate EV delta +0.0000; aggregate PnL delta $+0.00; max drawdown drift +0.0000; 0 paper trades.",
+    "forbidden_near_neighbor_retry": "Do not retry by sweeping 6-K positive phrase lists, operating-term lists, percentage thresholds, same-day absorption/RS/volume guards, top-N, hold days, cooldown, or notional on these frozen windows.",
+    "new_evidence_required": "A valid retry needs materially richer 6-K semantics such as normalized issuer country/ADR liquidity, structured earnings table extraction, guidance revision magnitude, English-translation provenance, or closed forward replacement-value rows from a wired daily default-off helper. Do not sweep positive phrase lists, percentage thresholds, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows."
+  },
+  "lean_quality_passed": true,
+  "updated_at": "2026-06-22T15:15:15+00:00"
+}

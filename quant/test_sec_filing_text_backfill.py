@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sec_filing_text_backfill as text_backfill
 from sec_filing_text_backfill import candidate_documents, html_to_text, normalize_text
 
 
@@ -38,3 +39,24 @@ def test_candidate_documents_prioritizes_exhibit_99_and_primary() -> None:
 
 def test_normalize_text_collapses_whitespace() -> None:
     assert normalize_text("  a\n\n b\t c  ") == "a b c"
+
+
+def test_default_form_scope_admits_6k_without_8k_item_codes() -> None:
+    forms = {form.upper().replace("/A", "") for form in text_backfill.DEFAULT_FORMS}
+    item_codes = {"2.02"}
+
+    assert text_backfill._event_matches(
+        {"form_type": "6-K", "form_base": "6-K", "eight_k_item_codes": []},
+        forms,
+        item_codes,
+    )
+    assert text_backfill._event_matches(
+        {"form_type": "8-K", "form_base": "8-K", "eight_k_item_codes": ["2.02"]},
+        forms,
+        item_codes,
+    )
+    assert not text_backfill._event_matches(
+        {"form_type": "8-K", "form_base": "8-K", "eight_k_item_codes": ["5.02"]},
+        forms,
+        item_codes,
+    )
