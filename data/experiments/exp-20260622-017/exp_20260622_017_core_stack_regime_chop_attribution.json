@@ -1,0 +1,888 @@
+{
+  "experiment_id": "exp-20260622-017",
+  "lane": "measurement_repair",
+  "diagnostic_only": true,
+  "trade_enabled": false,
+  "alters_orders": false,
+  "generated_at": "2026-06-22T16:18:40Z",
+  "rule_version": "regime_chop_state_v1",
+  "hypothesis": "The core accepted stack's chop-regime sensitivity is unmeasured; exp-20260615-019 only attributed the FGRS sleeve plus one scout.",
+  "method": {
+    "trades_source": "data/experiments/exp-20260602-003 per-window after.json (canonical accepted core stack)",
+    "regime_module": "quant/regime_chop_state.py:regime_chop_from_spy_universe",
+    "fidelity": "full (SPY trend/momentum/drawdown/vol + universe breadth above 50d SMA + index agreement)",
+    "point_in_time": "regime uses only bars dated <= entry_date; breadth/agreement computed within-snapshot",
+    "windows": {
+      "late_strong": {
+        "trades": "data/experiments/exp-20260602-003/late_strong_after.json",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json"
+      },
+      "mid_weak": {
+        "trades": "data/experiments/exp-20260602-003/mid_weak_after.json",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json"
+      },
+      "old_thin": {
+        "trades": "data/experiments/exp-20260602-003/old_thin_after.json",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json"
+      }
+    }
+  },
+  "baseline_aggregate_ev": 7.8941,
+  "per_window": {
+    "late_strong": {
+      "n_trades": 18,
+      "unresolved": 0,
+      "by_regime": {
+        "risk_on_trend": {
+          "n": 14,
+          "mean_pnl": 6226.58,
+          "median_pnl": 8048.31,
+          "win_rate": 0.7857,
+          "total_pnl": 87172.07
+        },
+        "choppy_range": {
+          "n": 1,
+          "mean_pnl": 6335.94,
+          "median_pnl": 6335.94,
+          "win_rate": 1.0,
+          "total_pnl": 6335.94
+        },
+        "risk_off_stress": {
+          "n": 3,
+          "mean_pnl": 7854.97,
+          "median_pnl": 6609.38,
+          "win_rate": 1.0,
+          "total_pnl": 23564.91
+        }
+      },
+      "spearman_pchoppy_pnl": 0.11904819314044043,
+      "spearman_exposure_pnl": -0.11904819314044043
+    },
+    "mid_weak": {
+      "n_trades": 21,
+      "unresolved": 0,
+      "by_regime": {
+        "risk_on_trend": {
+          "n": 20,
+          "mean_pnl": 3906.53,
+          "median_pnl": 1754.8,
+          "win_rate": 0.55,
+          "total_pnl": 78130.67
+        },
+        "choppy_range": {
+          "n": 1,
+          "mean_pnl": -20.56,
+          "median_pnl": -20.56,
+          "win_rate": 0.0,
+          "total_pnl": -20.56
+        },
+        "risk_off_stress": {
+          "n": 0,
+          "mean_pnl": null,
+          "median_pnl": null,
+          "win_rate": null,
+          "total_pnl": 0.0
+        }
+      },
+      "spearman_pchoppy_pnl": 0.08181818181818182,
+      "spearman_exposure_pnl": -0.08181818181818182
+    },
+    "old_thin": {
+      "n_trades": 22,
+      "unresolved": 0,
+      "by_regime": {
+        "risk_on_trend": {
+          "n": 17,
+          "mean_pnl": 1714.1,
+          "median_pnl": -78.48,
+          "win_rate": 0.4118,
+          "total_pnl": 29139.72
+        },
+        "choppy_range": {
+          "n": 4,
+          "mean_pnl": 2908.05,
+          "median_pnl": 3411.53,
+          "win_rate": 0.5,
+          "total_pnl": 11632.19
+        },
+        "risk_off_stress": {
+          "n": 1,
+          "mean_pnl": -1103.95,
+          "median_pnl": -1103.95,
+          "win_rate": 0.0,
+          "total_pnl": -1103.95
+        }
+      },
+      "spearman_pchoppy_pnl": 0.11807911489021741,
+      "spearman_exposure_pnl": -0.11807911489021741
+    }
+  },
+  "pooled": {
+    "n_trades": 61,
+    "by_regime": {
+      "risk_on_trend": {
+        "n": 51,
+        "mean_pnl": 3812.6,
+        "median_pnl": 2402.05,
+        "win_rate": 0.5686,
+        "total_pnl": 194442.46
+      },
+      "choppy_range": {
+        "n": 6,
+        "mean_pnl": 2991.26,
+        "median_pnl": 3157.69,
+        "win_rate": 0.5,
+        "total_pnl": 17947.57
+      },
+      "risk_off_stress": {
+        "n": 4,
+        "mean_pnl": 5615.24,
+        "median_pnl": 6425.78,
+        "win_rate": 0.75,
+        "total_pnl": 22460.96
+      }
+    },
+    "spearman_pchoppy_pnl": 0.11566532749283576,
+    "spearman_exposure_pnl": -0.11566532749283576
+  },
+  "counterfactual_soft_tilt": {
+    "note": "diagnostic estimate only; scales each trade PnL by its entry-day exposure_scalar",
+    "actual_core_total_pnl": 234850.99,
+    "tilted_core_total_pnl": 205802.56,
+    "tilt_delta_pnl": -29048.43
+  },
+  "trades": [
+    {
+      "window": "late_strong",
+      "ticker": "LLY",
+      "entry_date": "2025-11-04",
+      "pnl": 6609.38,
+      "regime_label": "risk_off_stress",
+      "p_choppy": 0.170915,
+      "exposure_scalar": 0.914543,
+      "bull_score": 0.695276,
+      "risk_off_score": 0.439117,
+      "stress_confident": true
+    },
+    {
+      "window": "late_strong",
+      "ticker": "GOOG",
+      "entry_date": "2025-10-31",
+      "pnl": 7450.31,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.136208,
+      "exposure_scalar": 0.931896,
+      "bull_score": 0.783577,
+      "risk_off_score": 0.37064,
+      "stress_confident": true
+    },
+    {
+      "window": "late_strong",
+      "ticker": "SLV",
+      "entry_date": "2025-12-02",
+      "pnl": 10713.35,
+      "regime_label": "risk_off_stress",
+      "p_choppy": 0.32298,
+      "exposure_scalar": 0.83851,
+      "bull_score": 0.50656,
+      "risk_off_score": 0.345452,
+      "stress_confident": true
+    },
+    {
+      "window": "late_strong",
+      "ticker": "CVX",
+      "entry_date": "2026-01-06",
+      "pnl": -2296.65,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.302889,
+      "exposure_scalar": 0.848555,
+      "bull_score": 0.669706,
+      "risk_off_score": 0.08297,
+      "stress_confident": true
+    },
+    {
+      "window": "late_strong",
+      "ticker": "XOM",
+      "entry_date": "2026-01-06",
+      "pnl": -1867.92,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.302889,
+      "exposure_scalar": 0.848555,
+      "bull_score": 0.669706,
+      "risk_off_score": 0.08297,
+      "stress_confident": true
+    },
+    {
+      "window": "late_strong",
+      "ticker": "IAU",
+      "entry_date": "2025-12-15",
+      "pnl": 3652.39,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.238621,
+      "exposure_scalar": 0.88069,
+      "bull_score": 0.715066,
+      "risk_off_score": 0.16254,
+      "stress_confident": true
+    },
+    {
+      "window": "late_strong",
+      "ticker": "GLD",
+      "entry_date": "2025-12-15",
+      "pnl": 3609.31,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.238621,
+      "exposure_scalar": 0.88069,
+      "bull_score": 0.715066,
+      "risk_off_score": 0.16254,
+      "stress_confident": true
+    },
+    {
+      "window": "late_strong",
+      "ticker": "MU",
+      "entry_date": "2026-01-07",
+      "pnl": 9425.48,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.23323,
+      "exposure_scalar": 0.883385,
+      "bull_score": 0.7439,
+      "risk_off_score": 0.089301,
+      "stress_confident": true
+    },
+    {
+      "window": "late_strong",
+      "ticker": "GLD",
+      "entry_date": "2026-01-22",
+      "pnl": 9911.0,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.254973,
+      "exposure_scalar": 0.872514,
+      "bull_score": 0.700441,
+      "risk_off_score": 0.148839,
+      "stress_confident": true
+    },
+    {
+      "window": "late_strong",
+      "ticker": "IAU",
+      "entry_date": "2026-01-22",
+      "pnl": 9968.06,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.254973,
+      "exposure_scalar": 0.872514,
+      "bull_score": 0.700441,
+      "risk_off_score": 0.148839,
+      "stress_confident": true
+    },
+    {
+      "window": "late_strong",
+      "ticker": "GS",
+      "entry_date": "2026-01-06",
+      "pnl": -298.79,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.302889,
+      "exposure_scalar": 0.848555,
+      "bull_score": 0.669706,
+      "risk_off_score": 0.08297,
+      "stress_confident": true
+    },
+    {
+      "window": "late_strong",
+      "ticker": "XOM",
+      "entry_date": "2026-01-15",
+      "pnl": 8646.3,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.237684,
+      "exposure_scalar": 0.881158,
+      "bull_score": 0.742756,
+      "risk_off_score": 0.076034,
+      "stress_confident": true
+    },
+    {
+      "window": "late_strong",
+      "ticker": "CAT",
+      "entry_date": "2026-01-30",
+      "pnl": 14493.45,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.262209,
+      "exposure_scalar": 0.868896,
+      "bull_score": 0.696704,
+      "risk_off_score": 0.135468,
+      "stress_confident": true
+    },
+    {
+      "window": "late_strong",
+      "ticker": "CVX",
+      "entry_date": "2026-02-02",
+      "pnl": 11127.52,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.253979,
+      "exposure_scalar": 0.87301,
+      "bull_score": 0.707965,
+      "risk_off_score": 0.130311,
+      "stress_confident": true
+    },
+    {
+      "window": "late_strong",
+      "ticker": "XOM",
+      "entry_date": "2026-02-04",
+      "pnl": 12548.48,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.390569,
+      "exposure_scalar": 0.804716,
+      "bull_score": 0.535953,
+      "risk_off_score": 0.158341,
+      "stress_confident": true
+    },
+    {
+      "window": "late_strong",
+      "ticker": "CVX",
+      "entry_date": "2026-03-13",
+      "pnl": 6335.94,
+      "regime_label": "choppy_range",
+      "p_choppy": 0.518102,
+      "exposure_scalar": 0.740949,
+      "bull_score": 0.347688,
+      "risk_off_score": 0.205746,
+      "stress_confident": true
+    },
+    {
+      "window": "late_strong",
+      "ticker": "AMZN",
+      "entry_date": "2026-04-10",
+      "pnl": 6242.18,
+      "regime_label": "risk_off_stress",
+      "p_choppy": 0.199846,
+      "exposure_scalar": 0.900077,
+      "bull_score": 0.636179,
+      "risk_off_score": 0.450703,
+      "stress_confident": true
+    },
+    {
+      "window": "late_strong",
+      "ticker": "AMD",
+      "entry_date": "2026-04-17",
+      "pnl": 803.13,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.145896,
+      "exposure_scalar": 0.927052,
+      "bull_score": 0.773341,
+      "risk_off_score": 0.356319,
+      "stress_confident": true
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "COIN",
+      "entry_date": "2025-05-14",
+      "pnl": 12766.98,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.151941,
+      "exposure_scalar": 0.92403,
+      "bull_score": 0.76399,
+      "risk_off_score": 0.356211,
+      "stress_confident": true
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "GS",
+      "entry_date": "2025-06-23",
+      "pnl": 6751.29,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.226642,
+      "exposure_scalar": 0.886679,
+      "bull_score": 0.752765,
+      "risk_off_score": 0.083293,
+      "stress_confident": true
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "AMD",
+      "entry_date": "2025-06-17",
+      "pnl": 1107.55,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.232982,
+      "exposure_scalar": 0.883509,
+      "bull_score": 0.738949,
+      "risk_off_score": 0.107526,
+      "stress_confident": true
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "COIN",
+      "entry_date": "2025-06-26",
+      "pnl": 13936.45,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.205348,
+      "exposure_scalar": 0.897326,
+      "bull_score": 0.783642,
+      "risk_off_score": 0.050888,
+      "stress_confident": true
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "TSM",
+      "entry_date": "2025-07-18",
+      "pnl": -9.27,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.211107,
+      "exposure_scalar": 0.894447,
+      "bull_score": 0.780284,
+      "risk_off_score": 0.039184,
+      "stress_confident": true
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "SLV",
+      "entry_date": "2025-06-03",
+      "pnl": 7573.74,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.197142,
+      "exposure_scalar": 0.901429,
+      "bull_score": 0.766011,
+      "risk_off_score": 0.157472,
+      "stress_confident": true
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "COIN",
+      "entry_date": "2025-07-21",
+      "pnl": -380.41,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.207476,
+      "exposure_scalar": 0.896262,
+      "bull_score": 0.784161,
+      "risk_off_score": 0.038747,
+      "stress_confident": true
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "AMD",
+      "entry_date": "2025-07-30",
+      "pnl": -101.77,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.234223,
+      "exposure_scalar": 0.882889,
+      "bull_score": 0.757325,
+      "risk_off_score": 0.034829,
+      "stress_confident": true
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "DIS",
+      "entry_date": "2025-06-11",
+      "pnl": -51.24,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.207773,
+      "exposure_scalar": 0.896114,
+      "bull_score": 0.773698,
+      "risk_off_score": 0.081878,
+      "stress_confident": true
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "PLTR",
+      "entry_date": "2025-08-06",
+      "pnl": -8.11,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.325068,
+      "exposure_scalar": 0.837466,
+      "bull_score": 0.652973,
+      "risk_off_score": 0.063278,
+      "stress_confident": true
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "META",
+      "entry_date": "2025-08-01",
+      "pnl": -20.56,
+      "regime_label": "choppy_range",
+      "p_choppy": 0.484236,
+      "exposure_scalar": 0.757882,
+      "bull_score": 0.483961,
+      "risk_off_score": 0.061629,
+      "stress_confident": true
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "SNOW",
+      "entry_date": "2025-08-29",
+      "pnl": -445.19,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.207226,
+      "exposure_scalar": 0.896387,
+      "bull_score": 0.767959,
+      "risk_off_score": 0.106943,
+      "stress_confident": true
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "AAPL",
+      "entry_date": "2025-08-11",
+      "pnl": 8642.39,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.314017,
+      "exposure_scalar": 0.842991,
+      "bull_score": 0.664889,
+      "risk_off_score": 0.062947,
+      "stress_confident": true
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "SLV",
+      "entry_date": "2025-09-02",
+      "pnl": 6178.14,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.249978,
+      "exposure_scalar": 0.875011,
+      "bull_score": 0.721707,
+      "risk_off_score": 0.101744,
+      "stress_confident": true
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "GLD",
+      "entry_date": "2025-09-03",
+      "pnl": 5615.86,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.23637,
+      "exposure_scalar": 0.881815,
+      "bull_score": 0.73934,
+      "risk_off_score": 0.093186,
+      "stress_confident": true
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "APP",
+      "entry_date": "2025-09-09",
+      "pnl": 2402.05,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.216545,
+      "exposure_scalar": 0.891727,
+      "bull_score": 0.763485,
+      "risk_off_score": 0.084433,
+      "stress_confident": true
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "SLV",
+      "entry_date": "2025-09-29",
+      "pnl": 9398.33,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.207129,
+      "exposure_scalar": 0.896435,
+      "bull_score": 0.776004,
+      "risk_off_score": 0.075299,
+      "stress_confident": true
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "AMD",
+      "entry_date": "2025-10-09",
+      "pnl": -765.61,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.187743,
+      "exposure_scalar": 0.906128,
+      "bull_score": 0.800897,
+      "risk_off_score": 0.057058,
+      "stress_confident": true
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "IWM",
+      "entry_date": "2025-08-25",
+      "pnl": 6046.19,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.220238,
+      "exposure_scalar": 0.889881,
+      "bull_score": 0.748035,
+      "risk_off_score": 0.125917,
+      "stress_confident": true
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "LLY",
+      "entry_date": "2025-10-02",
+      "pnl": -502.66,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.194009,
+      "exposure_scalar": 0.902996,
+      "bull_score": 0.79482,
+      "risk_off_score": 0.054445,
+      "stress_confident": true
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "ISRG",
+      "entry_date": "2025-10-23",
+      "pnl": -24.04,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.153311,
+      "exposure_scalar": 0.923344,
+      "bull_score": 0.788588,
+      "risk_off_score": 0.274822,
+      "stress_confident": true
+    },
+    {
+      "window": "old_thin",
+      "ticker": "DDOG",
+      "entry_date": "2024-10-11",
+      "pnl": -2177.23,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.149371,
+      "exposure_scalar": 0.925315,
+      "bull_score": 0.834648,
+      "risk_off_score": 0.096651,
+      "stress_confident": true
+    },
+    {
+      "window": "old_thin",
+      "ticker": "TSM",
+      "entry_date": "2024-10-18",
+      "pnl": -99.83,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.169069,
+      "exposure_scalar": 0.915465,
+      "bull_score": 0.815759,
+      "risk_off_score": 0.082349,
+      "stress_confident": true
+    },
+    {
+      "window": "old_thin",
+      "ticker": "ISRG",
+      "entry_date": "2024-10-21",
+      "pnl": -440.94,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.178634,
+      "exposure_scalar": 0.910683,
+      "bull_score": 0.804766,
+      "risk_off_score": 0.085025,
+      "stress_confident": true
+    },
+    {
+      "window": "old_thin",
+      "ticker": "JPM",
+      "entry_date": "2024-10-14",
+      "pnl": 4711.48,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.128741,
+      "exposure_scalar": 0.93563,
+      "bull_score": 0.85661,
+      "risk_off_score": 0.102165,
+      "stress_confident": true
+    },
+    {
+      "window": "old_thin",
+      "ticker": "NFLX",
+      "entry_date": "2024-10-21",
+      "pnl": 5737.69,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.178634,
+      "exposure_scalar": 0.910683,
+      "bull_score": 0.804766,
+      "risk_off_score": 0.085025,
+      "stress_confident": true
+    },
+    {
+      "window": "old_thin",
+      "ticker": "APP",
+      "entry_date": "2024-11-08",
+      "pnl": 14956.27,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.15876,
+      "exposure_scalar": 0.92062,
+      "bull_score": 0.81184,
+      "risk_off_score": 0.156253,
+      "stress_confident": true
+    },
+    {
+      "window": "old_thin",
+      "ticker": "BKNG",
+      "entry_date": "2024-11-01",
+      "pnl": 4278.91,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.348491,
+      "exposure_scalar": 0.825755,
+      "bull_score": 0.581632,
+      "risk_off_score": 0.167024,
+      "stress_confident": true
+    },
+    {
+      "window": "old_thin",
+      "ticker": "NFLX",
+      "entry_date": "2024-11-22",
+      "pnl": -78.48,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.19204,
+      "exposure_scalar": 0.90398,
+      "bull_score": 0.773146,
+      "risk_off_score": 0.153464,
+      "stress_confident": true
+    },
+    {
+      "window": "old_thin",
+      "ticker": "NOW",
+      "entry_date": "2024-10-25",
+      "pnl": 1102.21,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.244846,
+      "exposure_scalar": 0.877577,
+      "bull_score": 0.726473,
+      "risk_off_score": 0.104858,
+      "stress_confident": true
+    },
+    {
+      "window": "old_thin",
+      "ticker": "AMZN",
+      "entry_date": "2024-11-04",
+      "pnl": 6044.92,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.233552,
+      "exposure_scalar": 0.883224,
+      "bull_score": 0.722892,
+      "risk_off_score": 0.157182,
+      "stress_confident": true
+    },
+    {
+      "window": "old_thin",
+      "ticker": "GOOG",
+      "entry_date": "2024-12-12",
+      "pnl": -434.82,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.306831,
+      "exposure_scalar": 0.846585,
+      "bull_score": 0.673798,
+      "risk_off_score": 0.059385,
+      "stress_confident": true
+    },
+    {
+      "window": "old_thin",
+      "ticker": "DDOG",
+      "entry_date": "2024-11-25",
+      "pnl": -9.86,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.206652,
+      "exposure_scalar": 0.896674,
+      "bull_score": 0.757083,
+      "risk_off_score": 0.149289,
+      "stress_confident": true
+    },
+    {
+      "window": "old_thin",
+      "ticker": "TSM",
+      "entry_date": "2025-01-07",
+      "pnl": -24.25,
+      "regime_label": "choppy_range",
+      "p_choppy": 0.420986,
+      "exposure_scalar": 0.789507,
+      "bull_score": 0.435695,
+      "risk_off_score": 0.253974,
+      "stress_confident": true
+    },
+    {
+      "window": "old_thin",
+      "ticker": "V",
+      "entry_date": "2024-11-26",
+      "pnl": -1503.72,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.203275,
+      "exposure_scalar": 0.898363,
+      "bull_score": 0.762832,
+      "risk_off_score": 0.142908,
+      "stress_confident": true
+    },
+    {
+      "window": "old_thin",
+      "ticker": "JPM",
+      "entry_date": "2025-01-16",
+      "pnl": 6990.25,
+      "regime_label": "choppy_range",
+      "p_choppy": 0.362382,
+      "exposure_scalar": 0.818809,
+      "bull_score": 0.478546,
+      "risk_off_score": 0.305055,
+      "stress_confident": true
+    },
+    {
+      "window": "old_thin",
+      "ticker": "GS",
+      "entry_date": "2025-01-16",
+      "pnl": 6847.32,
+      "regime_label": "choppy_range",
+      "p_choppy": 0.362382,
+      "exposure_scalar": 0.818809,
+      "bull_score": 0.478546,
+      "risk_off_score": 0.305055,
+      "stress_confident": true
+    },
+    {
+      "window": "old_thin",
+      "ticker": "MCD",
+      "entry_date": "2025-02-11",
+      "pnl": -2677.05,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.212491,
+      "exposure_scalar": 0.893754,
+      "bull_score": 0.759266,
+      "risk_off_score": 0.11732,
+      "stress_confident": true
+    },
+    {
+      "window": "old_thin",
+      "ticker": "TRIP",
+      "entry_date": "2025-01-24",
+      "pnl": -2973.84,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.18241,
+      "exposure_scalar": 0.908795,
+      "bull_score": 0.785783,
+      "risk_off_score": 0.148481,
+      "stress_confident": true
+    },
+    {
+      "window": "old_thin",
+      "ticker": "V",
+      "entry_date": "2025-03-03",
+      "pnl": -2181.13,
+      "regime_label": "choppy_range",
+      "p_choppy": 0.430461,
+      "exposure_scalar": 0.78477,
+      "bull_score": 0.401399,
+      "risk_off_score": 0.280888,
+      "stress_confident": true
+    },
+    {
+      "window": "old_thin",
+      "ticker": "NFLX",
+      "entry_date": "2025-01-23",
+      "pnl": -3049.82,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.186886,
+      "exposure_scalar": 0.906557,
+      "bull_score": 0.782481,
+      "risk_off_score": 0.14083,
+      "stress_confident": true
+    },
+    {
+      "window": "old_thin",
+      "ticker": "GLD",
+      "entry_date": "2025-01-31",
+      "pnl": 5753.83,
+      "regime_label": "risk_on_trend",
+      "p_choppy": 0.218764,
+      "exposure_scalar": 0.890618,
+      "bull_score": 0.73871,
+      "risk_off_score": 0.162754,
+      "stress_confident": true
+    },
+    {
+      "window": "old_thin",
+      "ticker": "SLV",
+      "entry_date": "2025-03-14",
+      "pnl": -1103.95,
+      "regime_label": "risk_off_stress",
+      "p_choppy": 0.300653,
+      "exposure_scalar": 0.849674,
+      "bull_score": 0.272704,
+      "risk_off_score": 0.586616,
+      "stress_confident": true
+    }
+  ]
+}
