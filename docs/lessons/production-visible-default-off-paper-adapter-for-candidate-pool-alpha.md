@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `121`
-- Accepted / rejected: `16` / `98`
-- Accept rate: `13.22%`
+- Experiments: `122`
+- Accepted / rejected: `16` / `99`
+- Accept rate: `13.11%`
 - Sum EV delta: `+71.7916`
 - Sum PnL delta: `$1,426,627.62`
-- Latest: `exp-20260621-008` `rejected_allocator_daily_second_slot_capacity` with EV `+0.0000` and PnL `$0.00`.
+- Latest: `exp-20260622-013` `rejected_no_forward_activation_ready_after_comparator_repair` with EV `+0.0000` and PnL `$0.00`.
 
 ## Retained Or Positive Evidence
 
@@ -30,8 +30,6 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260614-003` `rejected_no_forward_activation_ready`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `forward_paper_replacement_maturity`.
-  Lesson: The accepted default-off paper sleeve surface is still dominated by immature forward samples. The only sleeve with a near-usable closed count is low_deployment_etf, but its 17 positive rows were recorded while core de...
 - `exp-20260614-009` `rejected_sec_financial_report_allocator_source_extension`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
   Lesson: The standalone SEC financial-report sleeve can remain useful, but its event rows did not add robust incremental replacement value after lagged consensus and the accepted allocator stack. The likely failure mode is ove...
 - `exp-20260616-016` `rejected_sbc_burden_rank2_allocator_source_extension`: EV `+0.7532`, PnL `$23,673.34`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
@@ -46,6 +44,8 @@ records before making strategy changes.
   Lesson: The current accepted allocator selected zero volatility_relief rows after higher-priority sources and same-ticker cooldown, so the proposed scalar had no after-arbitration exposure and could not change EV or PnL. Do n...
 - `exp-20260621-008` `rejected_allocator_daily_second_slot_capacity`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
   Lesson: The second slot did not clear a production-consistent replacement-value screen. The likely failure mode is that the added rows are lower-rank/correlated capacity, or the extra entries create execution-envelope pressur...
+- `exp-20260622-013` `rejected_no_forward_activation_ready_after_comparator_repair`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `default_off_forward_replacement_value_activation_readiness`.
+  Lesson: The comparator repair was useful measurement work: all 33 rows are now enriched. The alpha/readiness result is still negative because the only moderately populated sleeve is low_deployment_etf with 17 QQQ-only rows, w...
 
 ## Retry Discipline
 
@@ -67,9 +67,9 @@ records before making strategy changes.
 
 ## Recent Raw Records
 
-- `exp-20260620-032` source `experiments/logs/exp-20260620-032.json`.
 - `exp-20260621-001` source `experiments/logs/exp-20260621-001.json`.
 - `exp-20260621-004` source `experiments/logs/exp-20260621-004.json`.
 - `exp-20260621-006` source `experiments/logs/exp-20260621-006.json`.
 - `exp-20260621-007` source `experiments/logs/exp-20260621-007.json`.
 - `exp-20260621-008` source `experiments/logs/exp-20260621-008.json`.
+- `exp-20260622-013` source `experiments/logs/exp-20260622-013.json`.

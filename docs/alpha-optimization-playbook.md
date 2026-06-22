@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-06-21.
+Last refreshed: 2026-06-22.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -541,6 +541,32 @@ The current queue is therefore not another hedge, residual, SEC phrase, or
 allocator-capacity retry. It is new PIT data construction with parity-safe
 coverage, or forward replacement-value maturation under already accepted
 paper-only envelopes.
+
+The June 22 batch reinforces that new data surfaces matter only after they are
+replayable and comparator-aware. SEC 13F same-manager co-accumulation was a
+valid new relation axis after static co-ownership failed, but it still did not
+beat the accepted rolling-correlation peer-shock helper: quarterly ownership
+lag, thin sample, concentration, and window regression dominated the apparent
+aggregate lift. Moomoo capital-flow is forward-only and current-snapshot-only,
+so it remains blocked until it has enough dated closed replacement-value rows;
+Moomoo daily short-volume is a better data-engineering lead because the live
+probe and raw archive reached the canonical history, but the first activity
+absorption helper was negative and concentrated. Treat short-volume rows as an
+activity/liquidity/borrow-context surface until broader archived coverage,
+borrow fee/utilization/availability, or closed forward replacement value exists.
+The forward-replacement refresh also says no accepted helper is activation-ready
+yet: comparator-session repair made the ledger measurable, but no sleeve/source
+family has enough enriched closed rows across cash, SPY, and QQQ. Finally, the
+6-K repair is a measurement win, not an alpha win: daily SEC event/text surfaces
+now expose 6-K/6-KA, but the first positive operating-update semantic helper
+found zero tradable target rows, and the first structured financial-result
+growth scout then blocked because the generated historical SEC event/text/cache
+artifacts still contained zero replayable 6-K rows. Do not sweep 6-K phrase
+lists, numeric regexes, or price guards. The next valid work is a measurement
+repair that materializes historical 6-K/6-KA text rows across the canonical
+windows, then a fixed structured semantic helper with guidance-revision
+magnitude, issuer-country/ADR liquidity provenance, translation quality, or
+forward rows.
 
 ## Detail Sources
 
@@ -1259,6 +1285,38 @@ production-visible field:
   blocks (1,724/2,700 rows stayed direction-unknown), 13D Item-4
   campaign/board-seat outcome provenance, or closed forward replacement-value
   rows;
+- SEC 13F same-manager co-accumulation peer-shock relation retries that sweep
+  accumulation thresholds, shared-manager counts, lift, manager holding-count
+  bounds, edge top-K, hold, cooldown, or notional on the frozen windows.
+  `exp-20260622-007` was a legitimate new edge after static co-ownership, but
+  failed window, sample, concentration, and accepted rolling-correlation
+  comparator gates. Reopen only with non-quarterly ownership/flow evidence,
+  active-manager conviction attribution, or closed forward replacement rows;
+- Moomoo current-snapshot capital-flow candidate pools and Moomoo daily
+  short-volume activity-absorption retries that sweep main-flow, daily
+  short-volume activity, RS/absorption, top-N, hold, cooldown, or notional.
+  `exp-20260621-017` blocked capital flow as forward-only, while
+  `exp-20260622-008`/`009` made daily short-volume a positive backfill/archive
+  lead and `exp-20260622-010` rejected the first activity helper. A valid retry
+  needs broader archived coverage, a shared daily/backtest observation helper,
+  PIT borrow fee/utilization/loan availability, or closed forward replacement
+  value;
+- forward activation-envelope experiments for accepted default-off helpers
+  before one helper/source family has enough enriched closed rows with positive
+  replacement value versus cash, SPY, and QQQ. `exp-20260622-011` and
+  `exp-20260622-012` repaired measurement; `exp-20260622-013` found no
+  activation-ready family. Do not re-slice frozen windows to force readiness;
+- SEC 6-K positive-operating-update text candidate pools that sweep positive
+  phrase lists, operating terms, percentage thresholds, same-day absorption,
+  RS/volume guards, top-N, hold, cooldown, or notional. `exp-20260622-014`
+  repaired the production-visible 6-K event/text surface, but
+  `exp-20260622-015` produced zero target trades, and `exp-20260622-016`
+  blocked before replay because generated historical 6-K text/cache artifacts
+  still contained zero rows. Reopen only after a measurement repair materializes
+  replayable 6-K/6-KA text rows across the canonical windows, then test one
+  materially richer semantic field such as structured earnings tables,
+  guidance-revision magnitude, issuer-country/ADR liquidity, translation
+  provenance, or closed forward rows;
 - missing archive/text availability as an alpha field.
 
 ## Update Discipline

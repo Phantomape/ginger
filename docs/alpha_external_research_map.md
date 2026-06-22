@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-06-21.
+Last refreshed: 2026-06-22.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -63,6 +63,38 @@ Controls:
   diagnostic only.
 
 Source: <https://arxiv.org/abs/2606.09478>
+
+### Friction-Aware Regime Conditioning Requires Inaction Bands
+
+FR-LUX is useful because it treats transaction costs and regimes as part of
+the policy objective, not as an after-the-fact haircut. Its practical pattern is
+directly compatible with Ginger's repeated allocator/capacity failures:
+calibrate costs from liquidity proxies, condition on volatility-liquidity
+states, constrain inventory-flow changes, and allow proportional costs to
+create explicit no-trade / inaction bands. The local translation is not a new
+reinforcement-learning allocator. It is a stricter activation-envelope surface
+for default-off helpers before adding slots, scalars, or live capital.
+
+Implementable fields:
+
+- `friction_policy_version`
+- `vol_liquidity_regime_bucket`
+- `inventory_flow_change_budget`
+- `inaction_band_reason`
+- `cost_calibration_source_id`
+- `turnover_bound_bucket`
+- `regime_conditioned_capacity_delta`
+- `cost_scenario_replacement_value`
+
+Controls:
+
+- evaluate capacity/scalar changes across cost scenarios, not only the base
+  fill model;
+- report no-trade decisions as intentional inaction, not missing coverage;
+- compare candidate capacity against the current one-slot accepted allocator;
+- require forward replacement rows before using regime labels to add slots.
+
+Source: <https://arxiv.org/abs/2510.02986>
 
 ### Agentic LLM Portfolio Control
 
@@ -144,6 +176,36 @@ Controls:
 
 Source: <https://arxiv.org/abs/2605.06024>
 
+### Real-Time LLM Prediction Benchmarks Need Adversarial News Controls
+
+PriceSeer is useful as an evaluation pattern for LLM market views because it is
+live/dynamic, sector-balanced, horizon-aware, and explicitly tests vulnerability
+to fake news. Ginger should copy the controls, not the direct prediction task:
+every LLM-derived forecast or event label should carry a source set, horizon,
+sector bucket, fake-news/adversarial-source flag, and realized path score before
+it can condition a deterministic helper.
+
+Implementable fields:
+
+- `llm_live_benchmark_protocol_id`
+- `llm_prediction_horizon_bucket`
+- `llm_sector_context_bucket`
+- `llm_external_info_source_hash`
+- `llm_fake_news_susceptibility_flag`
+- `llm_long_horizon_degradation_bucket`
+- `llm_view_realized_path_score`
+- `llm_sector_specific_error_bucket`
+
+Controls:
+
+- test LLM views under fixed horizons instead of mixing 5/10/20-day outcomes;
+- include adversarial or low-credibility news flags in the evidence ledger;
+- score sector-specific failures before promoting a generic text feature;
+- keep LLM outputs schema-bound and default-off until replacement value clears
+  accepted non-text comparators.
+
+Source: <https://arxiv.org/abs/2601.06088>
+
 ### Index-To-Equity Transfer Learning
 
 Recent transformer work shows that pre-training on market-index behavior can
@@ -194,6 +256,36 @@ Controls:
   forward replacement value under a fixed envelope.
 
 Source: <https://arxiv.org/abs/2605.20636>
+
+### Sectoral Regime Allocation Is An Envelope, Not A Signal Shortcut
+
+RegimeFolio's useful engineering pattern is modular: an interpretable
+volatility-regime classifier, sector-specific learners, and shrinkage-aware
+allocation. This reinforces Ginger's rule that regimes should shape capacity,
+risk, and comparator selection before they become entry filters. Sector/regime
+conditioning is only useful if it is PIT, interpretable, and benchmarked
+against static sector/style alternatives after turnover costs.
+
+Implementable fields:
+
+- `vix_regime_classifier_version`
+- `sector_specific_forecast_bucket`
+- `sector_regime_allocation_score`
+- `shrinkage_covariance_version`
+- `static_sector_benchmark_delta`
+- `regime_sector_turnover_cost`
+- `sector_capacity_cap_reason`
+- `sector_regime_replacement_value`
+
+Controls:
+
+- keep the regime classifier interpretable and frozen before replay;
+- separate sector beta, style exposure, and residual alpha;
+- compare against static sector/style allocations and SPY/QQQ after costs;
+- use the surface first for capacity/risk attribution unless Gate 1-4 proves
+  an entry or allocation change.
+
+Source: <https://arxiv.org/abs/2510.14986>
 
 ### Graphs, Correlations, And Market Structure
 
