@@ -120102,17 +120102,605 @@
       "updated_at": "2026-06-23T15:08:43+00:00"
     },
     {
-      "experiment_id": "exp-20260623-019",
-      "status": "claimed",
-      "lane": "alpha_search",
-      "owner": "alpha-explore",
-      "hypothesis": "alpha_search/readiness: current post-20260622 production-visible surfaces should only launch a new strategy experiment if they provide materially new closed forward replacement rows or non-frozen PIT fields; otherwise another candidate-pool, exit, Kova, options, short-volume, or factor-residual retry is expected to be non-production-parity or a frozen near-neighbor.",
-      "ticket_file": "experiments/tickets/exp-20260623-019.json",
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260623_019_current_surface_alpha_readiness_delta.py",
+        "data/experiments/exp-20260623-019/exp_20260623_019_current_surface_alpha_readiness_delta.json",
+        "experiments/cards/exp-20260623-019.md",
+        "experiments/manifests/exp-20260623-019.json",
+        "experiments/tickets/exp-20260623-019.json",
+        "experiments/logs/exp-20260623-019.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
       "card_file": "experiments/cards/exp-20260623-019.md",
+      "causal_components": [
+        "forward replacement delta",
+        "Kova intraday/13F availability",
+        "factor residual novelty check",
+        "options/daily-short-volume/exit lifecycle closeout scan",
+        "no strategy behavior change"
+      ],
+      "change_type": "current_alpha_surface_readiness_delta",
+      "changed_variable": "current_post_20260622_alpha_surface_readiness_delta_v1",
+      "claimed_at": "2026-06-23T16:07:40+00:00",
+      "completed_at": "2026-06-23T16:13:33+00:00",
+      "created_at": "2026-06-23T16:06:54+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260623-019",
+      "experiment_uid": "expuid-375f02a68abd4d06",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260623-019",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-23T16:06:54+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "current_surface_alpha_readiness_delta"
+      },
+      "hypothesis": "alpha_search/readiness: current post-20260622 production-visible surfaces should only launch a new strategy experiment if they provide materially new closed forward replacement rows or non-frozen PIT fields; otherwise another candidate-pool, exit, Kova, options, short-volume, or factor-residual retry is expected to be non-production-parity or a frozen near-neighbor.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "current_post_20260622_alpha_surface_readiness_delta_v1"
+      ],
+      "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+      "multiple_testing_risk_bucket": "low",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260622-003",
+        "exp-20260622-013",
+        "exp-20260623-004",
+        "exp-20260623-014",
+        "exp-20260623-010",
+        "exp-20260623-018",
+        "exp-20260622-025"
+      ],
+      "new_evidence_type": "post_20260622_closed_forward_rows_and_surface_closeouts",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "other",
+          "field_tags": [
+            "a",
+            "alpha",
+            "another",
+            "be",
+            "closed",
+            "current",
+            "delta",
+            "exit",
+            "expected",
+            "experiment",
+            "factor",
+            "fields",
+            "forward",
+            "frozen",
+            "if",
+            "is",
+            "kova",
+            "launch",
+            "materially",
+            "near",
+            "neighbor",
+            "new",
+            "non",
+            "nonrepeat",
+            "only",
+            "options",
+            "or",
+            "otherwise",
+            "parity",
+            "pit",
+            "post",
+            "provide",
+            "readiness",
+            "replacement",
+            "residual",
+            "retry",
+            "rows",
+            "search",
+            "short",
+            "should",
+            "strategy",
+            "surface",
+            "surfaces",
+            "they",
+            "to",
+            "volume"
+          ],
+          "gate_shape": "candidate_pool_top1_10d"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "candidate_pool_data_surface_readiness_gate",
+            "reopen_condition": "A valid next alpha needs a materially new PIT field with three-window coverage and a shared helper path, or enough closed forward replacement rows from a default-off daily observer.",
+            "score": 0.1971,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "post_20260619_nonrepeat_surface_readiness",
+            "reopen_condition": null,
+            "score": 0.1935,
+            "status": "frozen_rejected",
+            "trials": 2
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "nonrepeat_alpha_candidate_readiness",
+            "reopen_condition": "A valid alpha retry needs a daily and historical structured-event helper that writes actor/object/relation/magnitude/provenance rows before decision time, covers all three canonical windows, and can be called by both backtest and production default-off snapshots.",
+            "score": 0.1827,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "revision_expectation",
+            "family_key": "form144_revision_data_readiness",
+            "reopen_condition": "Required new evidence is PIT parsed Form 144 planned-sale shares or value, holder role, relationship-to-issuer, public float and sale_pct_float, or historical/forward analyst-count, revenue-estimate, dispersion, vendor_asof, and fiscal-period coverage with closed candidate outcomes.",
+            "score": 0.1814,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "non_ohlcv_options_structure_overlay",
+            "reopen_condition": null,
+            "score": 0.1791,
+            "status": "frozen_rejected",
+            "trials": 2
+          }
+        ],
+        "new_evidence_axis": "Post-20260622 repository state adds two newly enriched forward replacement rows and completed 20260623 closeouts for Kova/options/daily short volume/exit lifecycle/pilot/factor surfaces; this audits whether that new evidence is enough to proceed, not a threshold or source retune.",
+        "override": true,
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "candidate_pool_top1_10d",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "other",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": {
+        "success_probability": 0.12,
+        "expected_ev_delta": 0.0,
+        "expected_pnl_delta": 0.0,
+        "main_failure_modes": [
+          "too_few_new_forward_rows",
+          "all_new_surfaces_recently_rejected",
+          "kova_intraday_13f_unavailable",
+          "near_neighbor_frozen_family"
+        ],
+        "confidence_reason": "This is a guardrail alpha-readiness delta after many same-day closeouts: the money-making path would be a production-visible default-off or forward replacement surface, but current evidence is likely too thin; success only means a concrete next alpha is gate-ready.",
+        "recorded_at": "2026-06-23T16:06:39+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "accepted": false,
+        "accepted_alpha": false,
+        "observed_only_lead": false,
+        "decision": "rejected_no_gate_ready_current_alpha_surface_delta",
+        "artifact": "data/experiments/exp-20260623-019/exp_20260623_019_current_surface_alpha_readiness_delta.json",
+        "log": "experiments/logs/exp-20260623-019.json",
+        "runner": "quant/experiments/exp_20260623_019_current_surface_alpha_readiness_delta.py",
+        "gate4": {
+          "passed": false,
+          "decision": "rejected_no_gate_ready_current_alpha_surface_delta",
+          "failed_reasons": [
+            "too_few_new_forward_rows_since_exp_20260622_013",
+            "no_forward_activation_ready_sleeve",
+            "no_forward_watchlist_ready_sleeve",
+            "kova_intraday_all_skipped",
+            "kova_sec13f_all_skipped",
+            "recent_surface_closeouts_have_no_observed_lead",
+            "factor_residual_reopen_requires_materially_new_flow_ownership_borrow_options_or_forward_rows"
+          ],
+          "acceptance_rule": {
+            "min_new_forward_rows_since_prior_readiness": 20,
+            "min_activation_closed_rows_per_sleeve": 60,
+            "min_watchlist_closed_rows_per_sleeve": 20,
+            "min_positive_rate": 0.5,
+            "max_single_positive_cash_share": 0.5,
+            "require_non_skipped_kova_intraday_or_13f": false,
+            "require_recent_surface_observed_lead": false
+          },
+          "current_forward_rows": 35,
+          "new_forward_rows_since_exp_20260622_013": 2,
+          "activation_ready_sleeves": [],
+          "watchlist_ready_sleeves": [],
+          "recent_observed_leads": [],
+          "strategy_rerun_required": false,
+          "before_after_strategy_delta": {
+            "expected_value_score": 0.0,
+            "total_pnl": 0.0,
+            "trade_count": 0,
+            "max_drawdown_pct": 0.0
+          }
+        },
+        "calibration": {
+          "actual_success": 0,
+          "actual_decision": "rejected_no_gate_ready_current_alpha_surface_delta",
+          "predicted_success_probability": 0.12,
+          "brier_score": 0.0144,
+          "predicted_failure_modes": [
+            "too_few_new_forward_rows",
+            "all_new_surfaces_recently_rejected",
+            "kova_intraday_13f_unavailable",
+            "near_neighbor_frozen_family"
+          ],
+          "failure_modes_observed": [
+            "too_few_new_forward_rows_since_exp_20260622_013",
+            "no_forward_activation_ready_sleeve",
+            "no_forward_watchlist_ready_sleeve",
+            "kova_intraday_all_skipped",
+            "kova_sec13f_all_skipped",
+            "recent_surface_closeouts_have_no_observed_lead",
+            "factor_residual_reopen_requires_materially_new_flow_ownership_borrow_options_or_forward_rows"
+          ],
+          "predicted_failure_mode_hit": true
+        },
+        "summary": "The current evidence delta is not enough to justify a new strategy-affecting alpha: forward replacement gained only 2 rows since the prior readiness audit, Kova intraday/13F remain skipped, and the completed Kova/options/short-volume/exit/pilot/factor surfaces were all rejected or non-leads."
+      },
       "revision_manifest_file": "experiments/manifests/exp-20260623-019.json",
-      "updated_at": "2026-06-23T16:07:40+00:00"
+      "single_causal_variable": "current_post_20260622_alpha_surface_readiness_delta_v1",
+      "status": "rejected",
+      "ticket_file": "experiments/tickets/exp-20260623-019.json",
+      "trial_family": "current_nonrepeat_alpha_surface_readiness",
+      "trial_variant_id": "post_20260622_surface_delta_v1",
+      "new_evidence_axis": "Post-20260622 repository state adds two newly enriched forward replacement rows and completed 20260623 closeouts for Kova/options/daily short volume/exit lifecycle/pilot/factor surfaces; this audits whether that new evidence is enough to proceed, not a threshold or source retune.",
+      "decision": "rejected_no_gate_ready_current_alpha_surface_delta",
+      "artifact": "data/experiments/exp-20260623-019/exp_20260623_019_current_surface_alpha_readiness_delta.json",
+      "log": "experiments/logs/exp-20260623-019.json",
+      "aggregate_expected_value_delta": 0.0,
+      "aggregate_strategy_total_pnl_delta": 0.0,
+      "gate1": {
+        "passed": true,
+        "baseline_loaded": true,
+        "baseline_metrics": {
+          "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+          "aggregate_expected_value_score": 7.8941,
+          "aggregate_total_pnl": 234850.99,
+          "total_trade_count": 61,
+          "aggregate_signals_generated": 164,
+          "aggregate_signals_survived": 135,
+          "min_survival_rate": 0.7925,
+          "max_window_drawdown_pct": 0.1119,
+          "windows": [
+            {
+              "label": "late_strong",
+              "start": "2025-10-23",
+              "end": "2026-04-21",
+              "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+              "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+              "expected_value_score": 5.1628,
+              "sharpe_daily": 4.41,
+              "total_pnl": 117072.92,
+              "max_drawdown_pct": 0.0665,
+              "win_rate": 0.8333,
+              "trade_count": 18,
+              "signals_generated": 51,
+              "signals_survived": 41,
+              "survival_rate": 0.8039
+            },
+            {
+              "label": "mid_weak",
+              "start": "2025-04-23",
+              "end": "2025-10-22",
+              "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+              "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+              "expected_value_score": 2.1402,
+              "sharpe_daily": 2.74,
+              "total_pnl": 78110.11,
+              "max_drawdown_pct": 0.1119,
+              "win_rate": 0.5238,
+              "trade_count": 21,
+              "signals_generated": 53,
+              "signals_survived": 42,
+              "survival_rate": 0.7925
+            },
+            {
+              "label": "old_thin",
+              "start": "2024-10-02",
+              "end": "2025-04-22",
+              "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+              "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+              "expected_value_score": 0.5911,
+              "sharpe_daily": 1.49,
+              "total_pnl": 39667.96,
+              "max_drawdown_pct": 0.1001,
+              "win_rate": 0.4091,
+              "trade_count": 22,
+              "signals_generated": 60,
+              "signals_survived": 52,
+              "survival_rate": 0.8667
+            }
+          ]
+        }
+      },
+      "gate2": {
+        "passed": true,
+        "runtime_fields_checked": [
+          "entry_date",
+          "replacement_value_vs_cash_usd",
+          "replacement_value_vs_spy_usd",
+          "replacement_value_vs_qqq_usd",
+          "entry_regime_label",
+          "Kova intraday status",
+          "Kova 13F status",
+          "recent closeout decisions"
+        ],
+        "target_price_scope": "No executable candidate or exit is scheduled; target_price is not consumed by this readiness audit.",
+        "forward_replacement": {
+          "artifact": "data/paper_sleeves/forward_replacement_value.jsonl",
+          "current_rows": 35,
+          "prior_rows_exp_20260622_013": 33,
+          "row_delta_since_exp_20260622_013": 2,
+          "rows_by_sleeve": {
+            "low_deployment_etf": 17,
+            "fundamental_growth_rs": 4,
+            "state_surface": 3,
+            "volume_breadth_breakout": 3,
+            "sec_governance": 2,
+            "sec_negative": 2,
+            "volatility_contraction": 2,
+            "free_data_cross_source_consensus": 1,
+            "sec_leadership": 1
+          },
+          "rows_by_entry_regime_label": {
+            "risk_on_trend": 35
+          },
+          "sleeve_summaries": [
+            {
+              "sleeve_key": "low_deployment_etf",
+              "closed_rows": 17,
+              "prior_closed_rows": 17,
+              "row_delta_since_exp_20260622_013": 0,
+              "ticker_count": 1,
+              "sum_replacement_value_vs_cash_usd": 4690.01,
+              "sum_replacement_value_vs_spy_usd": 8952.04,
+              "sum_replacement_value_vs_qqq_usd": 7517.99,
+              "cash_positive_rate": 0.6471,
+              "max_single_positive_cash_share": 1.0,
+              "activation_ready": false,
+              "watchlist_ready": false
+            },
+            {
+              "sleeve_key": "fundamental_growth_rs",
+              "closed_rows": 4,
+              "prior_closed_rows": 3,
+              "row_delta_since_exp_20260622_013": 1,
+              "ticker_count": 4,
+              "sum_replacement_value_vs_cash_usd": -1364.93,
+              "sum_replacement_value_vs_spy_usd": -382.26,
+              "sum_replacement_value_vs_qqq_usd": -192.99,
+              "cash_positive_rate": 0.5,
+              "max_single_positive_cash_share": 0.516606,
+              "activation_ready": false,
+              "watchlist_ready": false
+            },
+            {
+              "sleeve_key": "state_surface",
+              "closed_rows": 3,
+              "prior_closed_rows": 3,
+              "row_delta_since_exp_20260622_013": 0,
+              "ticker_count": 3,
+              "sum_replacement_value_vs_cash_usd": 7240.23,
+              "sum_replacement_value_vs_spy_usd": 6760.53,
+              "sum_replacement_value_vs_qqq_usd": 6166.42,
+              "cash_positive_rate": 1.0,
+              "max_single_positive_cash_share": 0.382899,
+              "activation_ready": false,
+              "watchlist_ready": false
+            },
+            {
+              "sleeve_key": "volume_breadth_breakout",
+              "closed_rows": 3,
+              "prior_closed_rows": 3,
+              "row_delta_since_exp_20260622_013": 0,
+              "ticker_count": 3,
+              "sum_replacement_value_vs_cash_usd": -3030.14,
+              "sum_replacement_value_vs_spy_usd": -2047.47,
+              "sum_replacement_value_vs_qqq_usd": -1550.64,
+              "cash_positive_rate": 0.0,
+              "max_single_positive_cash_share": null,
+              "activation_ready": false,
+              "watchlist_ready": false
+            },
+            {
+              "sleeve_key": "sec_governance",
+              "closed_rows": 2,
+              "prior_closed_rows": 2,
+              "row_delta_since_exp_20260622_013": 0,
+              "ticker_count": 2,
+              "sum_replacement_value_vs_cash_usd": 525.15,
+              "sum_replacement_value_vs_spy_usd": 419.95,
+              "sum_replacement_value_vs_qqq_usd": 88.97,
+              "cash_positive_rate": 1.0,
+              "max_single_positive_cash_share": 0.744245,
+              "activation_ready": false,
+              "watchlist_ready": false
+            },
+            {
+              "sleeve_key": "sec_negative",
+              "closed_rows": 2,
+              "prior_closed_rows": 2,
+              "row_delta_since_exp_20260622_013": 0,
+              "ticker_count": 2,
+              "sum_replacement_value_vs_cash_usd": 738.67,
+              "sum_replacement_value_vs_spy_usd": 634.48,
+              "sum_replacement_value_vs_qqq_usd": 381.7,
+              "cash_positive_rate": 0.5,
+              "max_single_positive_cash_share": 1.0,
+              "activation_ready": false,
+              "watchlist_ready": false
+            },
+            {
+              "sleeve_key": "volatility_contraction",
+              "closed_rows": 2,
+              "prior_closed_rows": 2,
+              "row_delta_since_exp_20260622_013": 0,
+              "ticker_count": 2,
+              "sum_replacement_value_vs_cash_usd": -1649.37,
+              "sum_replacement_value_vs_spy_usd": -1048.55,
+              "sum_replacement_value_vs_qqq_usd": -759.88,
+              "cash_positive_rate": 0.0,
+              "max_single_positive_cash_share": null,
+              "activation_ready": false,
+              "watchlist_ready": false
+            },
+            {
+              "sleeve_key": "free_data_cross_source_consensus",
+              "closed_rows": 1,
+              "prior_closed_rows": 0,
+              "row_delta_since_exp_20260622_013": 1,
+              "ticker_count": 1,
+              "sum_replacement_value_vs_cash_usd": 463.3,
+              "sum_replacement_value_vs_spy_usd": 451.1,
+              "sum_replacement_value_vs_qqq_usd": 368.03,
+              "cash_positive_rate": 1.0,
+              "max_single_positive_cash_share": 1.0,
+              "activation_ready": false,
+              "watchlist_ready": false
+            },
+            {
+              "sleeve_key": "sec_leadership",
+              "closed_rows": 1,
+              "prior_closed_rows": 1,
+              "row_delta_since_exp_20260622_013": 0,
+              "ticker_count": 1,
+              "sum_replacement_value_vs_cash_usd": -175.58,
+              "sum_replacement_value_vs_spy_usd": -216.49,
+              "sum_replacement_value_vs_qqq_usd": -319.42,
+              "cash_positive_rate": 0.0,
+              "max_single_positive_cash_share": null,
+              "activation_ready": false,
+              "watchlist_ready": false
+            }
+          ],
+          "activation_ready_sleeves": [],
+          "watchlist_ready_sleeves": [],
+          "new_rows_material_enough": false
+        },
+        "kova_intraday": {
+          "path": "data/kova/intraday/intraday_ohlcv_20260622.jsonl",
+          "row_count": 1247,
+          "statuses": {
+            "skipped": 1247
+          },
+          "non_skipped_rows": 0,
+          "top_reasons": {
+            "refresh_intraday_false_or_missing_ALPHA_VANTAGE_API_KEY": 1247
+          }
+        },
+        "kova_sec13f": {
+          "path": "data/kova/institutional/sec13f_ownership_20260622.jsonl",
+          "row_count": 1247,
+          "statuses": {
+            "skipped": 1247
+          },
+          "non_skipped_rows": 0,
+          "top_reasons": {
+            "no_sec13f_zip_or_year_quarter_supplied": 1247
+          }
+        }
+      },
+      "gate3": {
+        "passed": true,
+        "new_core_filter_added": false,
+        "baseline_min_survival_rate": 0.7925,
+        "note": "No entry filter, ranking, sizing, exit, or candidate generation rule changed."
+      },
+      "gate4": {
+        "passed": false,
+        "decision": "rejected_no_gate_ready_current_alpha_surface_delta",
+        "failed_reasons": [
+          "too_few_new_forward_rows_since_exp_20260622_013",
+          "no_forward_activation_ready_sleeve",
+          "no_forward_watchlist_ready_sleeve",
+          "kova_intraday_all_skipped",
+          "kova_sec13f_all_skipped",
+          "recent_surface_closeouts_have_no_observed_lead",
+          "factor_residual_reopen_requires_materially_new_flow_ownership_borrow_options_or_forward_rows"
+        ],
+        "acceptance_rule": {
+          "min_new_forward_rows_since_prior_readiness": 20,
+          "min_activation_closed_rows_per_sleeve": 60,
+          "min_watchlist_closed_rows_per_sleeve": 20,
+          "min_positive_rate": 0.5,
+          "max_single_positive_cash_share": 0.5,
+          "require_non_skipped_kova_intraday_or_13f": false,
+          "require_recent_surface_observed_lead": false
+        },
+        "current_forward_rows": 35,
+        "new_forward_rows_since_exp_20260622_013": 2,
+        "activation_ready_sleeves": [],
+        "watchlist_ready_sleeves": [],
+        "recent_observed_leads": [],
+        "strategy_rerun_required": false,
+        "before_after_strategy_delta": {
+          "expected_value_score": 0.0,
+          "total_pnl": 0.0,
+          "trade_count": 0,
+          "max_drawdown_pct": 0.0
+        }
+      },
+      "production_impact": {
+        "shared_policy_changed": false,
+        "backtester_adapter_changed": false,
+        "run_adapter_changed": false,
+        "replay_only": false,
+        "trade_enabled": false,
+        "daily_snapshot_exposed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "production_orders_changed": false,
+        "production_signal_path_changed": false,
+        "production_watchlist_changed": false,
+        "alters_signal_generation": false,
+        "alters_candidate_ranking": false,
+        "alters_sizing": false,
+        "alters_exits": false,
+        "alters_orders": false,
+        "uses_llm": false,
+        "parity_note": "Read-only readiness delta audit over existing artifacts/logs; no production or backtest behavior changed."
+      },
+      "post_run_reflection": {
+        "why_result_happened": "The current evidence delta is not enough to justify a new strategy-affecting alpha: forward replacement gained only 2 rows since the prior readiness audit, Kova intraday/13F remain skipped, and the completed Kova/options/short-volume/exit/pilot/factor surfaces were all rejected or non-leads.",
+        "forbidden_near_neighbor_retry": "Do not retry factor residual, Kova RS/growth, Kova intraday refresh flags, options skew, daily short-volume imbalance, exit lifecycle pressure, pilot scalar, low_deployment ETF concentration, or forward regime cells on the same rows by relaxing thresholds, row-count gates, hold days, top-N, notional, cooldown, or source ranks.",
+        "new_evidence_required": "A valid next alpha needs materially more closed forward replacement rows for one diversified sleeve/source family, non-skipped Kova intraday or 13F provenance, PIT borrow/loan or options history with stronger provenance, or a new production-visible field not already saturated."
+      },
+      "related_files": [
+        "quant/experiments/exp_20260623_019_current_surface_alpha_readiness_delta.py",
+        "data/paper_sleeves/forward_replacement_value.jsonl",
+        "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "data/kova/intraday/intraday_ohlcv_20260622.jsonl",
+        "data/kova/institutional/sec13f_ownership_20260622.jsonl",
+        "experiments/logs/exp-20260622-025.json",
+        "experiments/logs/exp-20260623-004.json",
+        "experiments/logs/exp-20260623-008.json",
+        "experiments/logs/exp-20260623-010.json",
+        "experiments/logs/exp-20260623-014.json",
+        "experiments/logs/exp-20260623-017.json",
+        "experiments/logs/exp-20260623-018.json"
+      ],
+      "updated_at": "2026-06-23T16:13:33+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-23T16:07:40+00:00"
+  "updated_at": "2026-06-23T16:13:33+00:00"
 }
