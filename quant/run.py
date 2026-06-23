@@ -2034,6 +2034,36 @@ def main():
     current_price_dates = latest_ohlcv_dates(ohlcv_dict)
     current_open_price_dates = dict(current_price_dates)
 
+    # Resting bracket-order playbook (default-off, OUTPUT ONLY): turn the
+    # operator's target/stop levels into the exact GTC orders to place so live
+    # execution matches the backtester's modeled high/low bracket fills. run.py
+    # never submits orders; it only writes the plan for the operator to place.
+    bracket_orders_plan = None
+    try:
+        from bracket_orders import build_bracket_orders
+        from data_paths import daily_artifact_glob
+        prior_plan = None
+        prior_files = [p for p in daily_artifact_glob("bracket_orders") if today not in p.name]
+        if prior_files:
+            try:
+                prior_plan = json.loads(prior_files[-1].read_text(encoding="utf-8"))
+            except Exception:
+                prior_plan = None
+        bracket_orders_plan = build_bracket_orders(
+            open_positions, current_prices, asof_date=today_iso, prior_orders=prior_plan
+        )
+        orders_path = daily_artifact_path("bracket_orders", today)
+        orders_path.parent.mkdir(parents=True, exist_ok=True)
+        atomic_write_json(bracket_orders_plan, orders_path)
+        _bs = bracket_orders_plan["summary"]
+        log.info(
+            "Bracket orders: %d resting (%d target, %d stop), %d exit-now, %d warnings -> %s",
+            _bs["resting_orders_to_maintain"], _bs["target_limits"], _bs["protective_stops"],
+            _bs["exit_now_flags"], _bs["warnings"], orders_path,
+        )
+    except Exception as e:
+        log.warning("Bracket-order playbook failed (non-fatal): %s", e)
+
     portfolio_heat = None
     heat_blocked_signals = []
     heat_blocked_pilot_signals = []
@@ -3242,6 +3272,7 @@ def main():
         sec_10k_forward_watch = sec_10k_forward_watch,
         non_ohlcv_snapshot = non_ohlcv_snapshot,
         crypto_sleeve = crypto_sleeve,
+        bracket_orders = bracket_orders_plan,
     )
     print("\n" + report)
     save_report(report)

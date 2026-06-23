@@ -120,7 +120,8 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            platform_rs20_watch=None,
                            sec_10k_forward_watch=None,
                            non_ohlcv_snapshot=None,
-                           crypto_sleeve=None):
+                           crypto_sleeve=None,
+                           bracket_orders=None):
     """
     Build a human-readable daily trade report string.
 
@@ -298,6 +299,12 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         can_add  = portfolio_heat.get("can_add_new_positions", True)
         status   = "OK to add" if can_add else "CAPPED — no new trades"
         lines.append(f"\nPORTFOLIO HEAT: {heat_pct*100:.1f}%  ({status})")
+
+    if bracket_orders:
+        from bracket_orders import render_bracket_orders_section
+        section = render_bracket_orders_section(bracket_orders)
+        if section:
+            lines.append(section)
 
     if crypto_sleeve:
         lines.append("\n" + "-" * 60)

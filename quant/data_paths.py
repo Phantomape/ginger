@@ -298,6 +298,7 @@ DAILY_ARTIFACTS: dict[str, tuple[str, str]] = {
     "trend_signals": ("daily/signals/trend", "trend_signals_{date}.json"),
     "quant_signals": ("daily/signals/quant", "quant_signals_{date}.json"),
     "report": ("daily/reports", "report_{date}.txt"),
+    "bracket_orders": ("daily/orders", "bracket_orders_{date}.json"),
     "llm_prompt": ("daily/llm/prompts", "llm_prompt_{date}.txt"),
     "llm_prompt_resp": ("daily/llm/responses", "llm_prompt_resp_{date}.json"),
     "llm_decision_log": ("daily/llm/decisions", "llm_decision_log_{date}.json"),
