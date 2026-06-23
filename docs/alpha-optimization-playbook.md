@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-06-22.
+Last refreshed: 2026-06-23.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -568,6 +568,22 @@ windows, then a fixed structured semantic helper with guidance-revision
 magnitude, issuer-country/ADR liquidity provenance, translation quality, or
 forward rows.
 
+The June 23 work moved the queue toward forward measurement rather than a new
+accepted trading rule. Entry-time `regime_chop_state` tags are now attached to
+closed forward replacement rows, which is the right surface for sleeve-specific
+regime validation; the first read found no activation-ready sleeve/regime cell.
+The pilot scorecard now treats a breached predeclared drawdown ceiling as an
+immediate KILL verdict, so manual pilot recommendations cannot keep adding
+entries after the envelope fails. Options and Kova now have append-only forward
+observation ledgers, but first closed-row reads rejected monotonic options-skew
+and Kova RS/fundamental-alignment edges. Exit/LLM attribution produced only
+observed-only leads: high-urgency exit lifecycle rows and LLM exit-pressure
+states can separate worse forward outcomes, but confluence, above-cost subsets,
+and next-open replacement-value checks did not yet produce a deployable shared
+exit policy. Do not convert these diagnostics into exits, scalars, or live
+pilot promotion; the next evidence is more closed forward replacement-value
+rows with fixed schemas, not a frozen-window threshold sweep.
+
 ## Detail Sources
 
 Generated mechanism memory lives in `docs/lessons/*.md`; exact facts live in
@@ -606,6 +622,9 @@ evidence on accepted paper adapters:
 - SBC burden-improvement dilution-quality shared default-off adapter from
   `exp-20260616-015`;
 - VBB / VCP / Space observe-only buckets where nonzero forward rows exist.
+- entry-regime-tagged forward replacement rows, options forward observations,
+  Kova multi-source observations, and exit/LLM advisory outcomes as
+  attribution surfaces only until closed-row replacement value is stable.
 
 Minimum forward package:
 
@@ -938,6 +957,9 @@ production-visible field:
 - state-surface rank/profile/notional retunes below the hard EV threshold;
 - ticker-specific exceptions from one or two trades;
 - simple target, stop, time-stop, or fixed max-loss exit changes;
+- exit-lifecycle advisory, LLM position-state, above-cost, confluence, or
+  next-open diagnostic exits before a shared policy shows closed forward
+  replacement value against cash, SPY, QQQ, and the existing hold path;
 - LLM direct buy/sell/sizing/exit authority;
 - raw full-universe `alpha_score` top-N or weight tuning;
 - broad OHLCV factor mining that only rediscovers momentum;
@@ -1081,9 +1103,24 @@ production-visible field:
   capacity, unit economics, OCI component attribution, contractual numeric
   spans, borrow/options context, or closed forward replacement-value rows;
 - options-chain skew / open-interest candidate-pool claims before fixed-window
-  historical coverage or a forward-only observation ledger has vendor-as-of,
-  publication-lag, stale-chain, and fill-cost controls. `exp-20260617-004`
-  blocks this as a measurement surface, not as a rejected alpha;
+  historical coverage or a materially stronger forward evidence surface.
+  `exp-20260617-004` and `exp-20260618-023` blocked this as measurement
+  coverage, `exp-20260623-009` built the forward observation ledger, and
+  `exp-20260623-010` then rejected the first closed-forward monotonicity read
+  despite 1,252 closed rows / 969 quality rows: call-led / low-put-protection
+  skew did not beat the low-bullish bucket on mean, median, SPY, QQQ, or
+  month-cohort checks. Do not retry by sweeping put/call ratio, IV skew, open
+  interest, volume, expiration, moneyness, top-N, hold, cooldown, or notional
+  on this ledger; a valid retry needs materially more closed rows with
+  replacement value, PIT vendor-as-of controls, borrow / loan-availability
+  context, or historical PIT options chains covering the canonical windows;
+- Kova multi-source RS/fundamental-alignment candidate-pool claims that only
+  sweep alignment score, source count, RS threshold, growth breadth, top-N,
+  hold, cooldown, or notional. `exp-20260623-013` built the forward ledger,
+  while `exp-20260623-014` rejected the first closed-forward monotonicity read.
+  Reopen only with materially more closed replacement-value rows, a new Kova
+  source with PIT provenance, or a different relation field that beats cash,
+  SPY, QQQ, and accepted default-off comparators after costs;
 - post-earnings high-liquidity, sector-residual, core-overlap, DTE, latest
   surprise, average surprise, pre-event RS, score, rank, or scalar retunes;
 - SEC item-code / phrase / same-day absorption retries without richer semantic

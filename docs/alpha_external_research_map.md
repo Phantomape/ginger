@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-06-22.
+Last refreshed: 2026-06-23.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -1083,6 +1083,39 @@ Controls:
 
 Source: <https://arxiv.org/abs/2606.08285>
 
+### Financial AI Determinism Is A Production Contract
+
+A May 2026 financial-AI auditability survey reframes reproducibility as a
+systems property: tabular explanations, graph embeddings, and LLM agent
+trajectories can vary across identical inputs because of sampling,
+asynchronous graph updates, batching, and hardware-level numerical effects.
+For Ginger, this is not a reason to avoid LLMs or graph features. It is a rule
+that any model-generated field used for attribution, ranking, exits, or
+activation must carry a replay hash, model/runtime identity, and stability
+measurement before it can influence a shared policy.
+
+Implementable fields:
+
+- `model_runtime_identity_hash`
+- `agent_replay_trace_hash`
+- `llm_output_stability_bucket`
+- `graph_embedding_variance_bucket`
+- `feature_attribution_rank_stability`
+- `batching_nondeterminism_flag`
+- `hardware_runtime_drift_bucket`
+- `audit_replay_passed`
+
+Controls:
+
+- store prompt/input, model id, runtime version, decoding settings, and output
+  JSON for every LLM-derived field;
+- measure repeated-run agreement for borderline labels before promotion;
+- prefer deterministic parsers / exact explainers for numeric and rule-owned
+  fields;
+- fail closed when a field cannot be reconstructed from committed artifacts.
+
+Source: <https://arxiv.org/abs/2605.23955>
+
 ### Nonlinear Market Impact And Turnover Discipline
 
 Recent RL trading-environment work shows that replacing fixed-cost assumptions
@@ -1609,9 +1642,12 @@ Source: <https://arxiv.org/abs/2512.19484>
 
 Recent options research still maps better to risk/execution context than to
 daily equity alpha. A 2025 SPXW put-writing study emphasizes regime-aware
-position sizing and drawdown control, while 2026 volatility-surface work
-reinforces that skew/term-structure fitting is model- and market-specific. For
-Ginger, options rows should first become timestamped risk, crowding, and
+position sizing and drawdown control, while 2026 volatility-surface and
+synthetic American-option work reinforces that skew/term-structure fitting is
+model- and market-specific. The synthetic-options result is especially useful
+as a stress-test pattern: scheduled event distance and same-sector coupling can
+dominate generalization error in option surfaces. For Ginger, options rows
+should first become timestamped risk, crowding, event-distance, and
 execution-envelope fields. They should not be accepted as fixed-window equity
 alpha until historical chain coverage, stale-chain controls, and fill costs are
 replayable.
@@ -1624,6 +1660,8 @@ Implementable fields:
 - `option_liquidity_cost_bucket`
 - `vol_regime_sizing_bucket`
 - `options_chain_stale_flag`
+- `options_event_distance_bucket`
+- `same_sector_option_coupling_bucket`
 - `option_signal_costed_replacement_value`
 - `options_tail_risk_context_bucket`
 
@@ -1641,6 +1679,7 @@ Sources:
 
 - <https://arxiv.org/abs/2508.16598>
 - <https://arxiv.org/abs/2603.27501>
+- <https://arxiv.org/abs/2605.13998>
 
 ### 13F Is Delayed Ownership And Crowding Context
 

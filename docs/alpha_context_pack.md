@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1462`
-- Raw records loaded by meta report: `2222`
-- History fingerprint: `ac23335d25990ab6`
+- Strategy records counted: `1464`
+- Raw records loaded by meta report: `2272`
+- History fingerprint: `03a10b028f439cdc`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -36,10 +36,10 @@ facts before changing strategy behavior.
   Reason: 3/3 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; still has ro...
 - `paper_notional_support_scout` priority `0.7009`: experiments `3`, accept `66.67%`, sum EV `+0.0804`, sum PnL `$1,393.64`.
   Reason: 3/3 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
-- `pilot_or_sleeve` priority `0.6328`: experiments `175`, accept `26.86%`, sum EV `+66.2321`, sum PnL `$1,149,056.08`.
+- `pilot_or_sleeve` priority `0.6326`: experiments `175`, accept `26.86%`, sum EV `+66.2321`, sum PnL `$1,149,056.08`.
   Reason: 174/175 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually changes sizing/allocation rather than...
   Guardrail: heavily explored family; diminishing-return risk; many prior rejections in this family
-- `slot_or_ranking` priority `0.5794`: experiments `164`, accept `26.22%`, sum EV `+42.8157`, sum PnL `$765,969.87`.
+- `slot_or_ranking` priority `0.5793`: experiments `164`, accept `26.22%`, sum EV `+42.8157`, sum PnL `$765,969.87`.
   Reason: 157/164 records show multi-window evidence; 8/164 records have sample >= 10; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
   Guardrail: can change survival, trade count, or exit distribution broadly; heavily explored family; diminishing-return risk; many prior rejections in this family
 - `default_off_paper_allocation` priority `0.5641`: experiments `12`, accept `33.33%`, sum EV `+0.0285`, sum PnL `$456.30`.
@@ -64,10 +64,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260621-020` `rejected_sec13f_sector_normalized_ownership_surprise_candidate_pool`: EV `+0.0933`, PnL `$3,080.64`, family `production_visible_free_sec_13f_candidate_pool`, trial `sec13f_sector_normalized_ownership_surprise_candidate_pool`.
-  Lesson: The sector-normalized 13F ownership-surprise field failed Gate 4. Relative ownership change added economic specificity versus absolute 13F thresholds, but the delayed quarterly signal still did not create stable all-w...
-- `exp-20260621-021` `rejected_afs_oci_component_relief_candidate_pool`: EV `+0.0779`, PnL `$1,715.54`, family `production_visible_free_sec_companyfacts_oci_component_candidate_pool`, trial `raw_sec_companyfacts_afs_oci_component_relief_candidate_pool`.
-  Lesson: The raw SEC AFS securities OCI component relief source did not clear Gate 4 (failed: drawdown_drift_too_high, target_concentration_failed, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accep...
 - `exp-20260621-022` `rejected_sec_divestiture_spinoff_completion_candidate_pool`: EV `-0.0227`, PnL `$-939.69`, family `production_visible_sec_text_structure_simplification_candidate_pool`, trial `sec_divestiture_spinoff_completion_text_candidate_pool`.
   Lesson: The SEC divestiture / spin-off completion source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, ac...
 - `exp-20260621-023` `rejected_sec_cyber_incident_containment_candidate_pool`: EV `+0.0204`, PnL `$92.14`, family `production_visible_sec_text_cyber_incident_candidate_pool`, trial `sec_text_cyber_incident_containment_candidate_pool`.
@@ -88,6 +84,10 @@ facts before changing strategy behavior.
   Lesson: The SEC 6-K positive operating-update helper did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too...
 - `exp-20260622-016` `blocked_missing_historical_sec_6k_text_rows_for_structured_financial_growth`: EV `+0.0000`, PnL `$0.00`, family `production_visible_free_sec_6k_foreign_issuer_candidate_pool`, trial `sec_6k_foreign_issuer_structured_financial_result_candidate_pool`.
   Lesson: The experiment was blocked because the code-level SEC defaults now include 6-K / 6-KA, but the existing generated historical event/text artifacts and filing-text cache still contain zero replayable 6-K text rows. Stru...
+- `exp-20260622-023` `rejected_ibit_crypto_equity_relation_candidate_pool`: EV `-0.0286`, PnL `$1,942.57`, family `production_visible_free_ohlcv_crypto_relation_candidate_pool`, trial `ibit_crypto_equity_relation_candidate_pool`.
+  Lesson: Rejected. IBIT Bitcoin-anchor plus crypto-equity leadership did not add robust replacement value versus the accepted compression/distribution candidate-pool comparators after next-open execution, costs, cooldown, and...
+- `exp-20260622-025` `rejected_factor_residual_post_repair_candidate_pool`: EV `+0.8435`, PnL `$8,876.56`, family `production_visible_free_factor_residual_ohlcv_candidate_pool`, trial `factor_residual_idiosyncratic_leadership_candidate_pool`.
+  Lesson: Rejected after repair. Once the factor ETF surface was available, the fixed factor-residual leadership bundle did not add robust replacement value versus accepted compression/distribution candidate-pool comparators af...
 
 ## Highest-Signal Historical Records
 
