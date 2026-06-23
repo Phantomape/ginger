@@ -187,8 +187,19 @@ def _scorecard(pilot: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
     rv_rows = sum(1 for r in closed if r.get("replacement_value_vs_spy_usd") is not None)
     dd = _book_drawdown(closed)
 
-    # pre-committed verdict
-    if n < GRADUATE_MIN_CLOSED:
+    drawdown_breached = dd["max_drawdown_pct"] >= GRADUATE_MAX_BOOK_DD_PCT
+
+    # pre-committed verdict. The drawdown kill switch applies immediately;
+    # sample-size gates only decide whether a surviving pilot can graduate.
+    if drawdown_breached:
+        verdict = "KILL"
+        verdict_note = (
+            "book drawdown {actual:.1%} breaches {limit:.0%} ceiling -> stop pilot"
+        ).format(
+            actual=dd["max_drawdown_pct"],
+            limit=GRADUATE_MAX_BOOK_DD_PCT,
+        )
+    elif n < GRADUATE_MIN_CLOSED:
         verdict = "COLLECTING"
         verdict_note = f"{n}/{GRADUATE_MIN_CLOSED} closed trades; keep tracking"
     elif rv_spy > GRADUATE_MIN_RV_SPY_USD and dd["max_drawdown_pct"] < GRADUATE_MAX_BOOK_DD_PCT:
@@ -214,6 +225,7 @@ def _scorecard(pilot: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
         "rv_vs_qqq_usd": round(rv_qqq, 2),
         "book_max_drawdown_usd": dd["max_drawdown_usd"],
         "book_max_drawdown_pct": dd["max_drawdown_pct"],
+        "drawdown_ceiling_breached": drawdown_breached,
         "verdict": verdict,
         "verdict_note": verdict_note,
     }
@@ -274,16 +286,27 @@ def _rec_row(row: dict[str, Any], status: str) -> dict[str, Any]:
     }
 
 
-def _recommendations(pilot: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
+def _recommendations(
+    pilot: dict[str, Any],
+    state: dict[str, Any],
+    scorecard: dict[str, Any],
+) -> dict[str, Any]:
     open_rows = [r for r in (state.get("open_positions") or []) if isinstance(r, dict)]
     pending = [r for r in (state.get("pending_entries") or []) if isinstance(r, dict)]
     closed = [r for r in (state.get("closed_positions") or []) if isinstance(r, dict)]
     as_of_day = str(state.get("updated_at") or "")[:10]
     cap = pilot.get("max_concurrent")
     held, skipped = _apply_concurrency(open_rows, cap)
-    # if we are at the concurrency cap, new pending entries are skipped too
+    # If the scorecard has killed the pilot, continue showing held/exiting rows
+    # but block new entries in the manual recommendation sheet.
     pend_allowed, pend_skipped = ([], pending)
-    if cap is None or len(held) < cap:
+    if scorecard.get("verdict") == "KILL":
+        pend_allowed, pend_skipped = [], pending
+        pending_skip_status = "SKIP_pilot_kill_verdict"
+    else:
+        pending_skip_status = "SKIP_concurrency_cap"
+    # if we are at the concurrency cap, new pending entries are skipped too
+    if scorecard.get("verdict") != "KILL" and (cap is None or len(held) < cap):
         room = None if cap is None else cap - len(held)
         if room is None:
             pend_allowed, pend_skipped = pending, []
@@ -299,7 +322,8 @@ def _recommendations(pilot: dict[str, Any], state: dict[str, Any]) -> dict[str, 
     rows = (
         [_rec_row(r, _hold_status(r)) for r in held]
         + [_rec_row(r, "ENTER_NEXT_OPEN") for r in pend_allowed]
-        + [_rec_row(r, "SKIP_concurrency_cap") for r in skipped + pend_skipped]
+        + [_rec_row(r, "SKIP_concurrency_cap") for r in skipped]
+        + [_rec_row(r, pending_skip_status) for r in pend_skipped]
     )
     return {
         "pilot": pilot["key"],
@@ -307,6 +331,9 @@ def _recommendations(pilot: dict[str, Any], state: dict[str, Any]) -> dict[str, 
         "sleeve": pilot["sleeve"],
         "as_of": state.get("updated_at"),
         "max_concurrent": cap,
+        "pilot_verdict": scorecard.get("verdict"),
+        "pilot_verdict_note": scorecard.get("verdict_note"),
+        "new_entries_blocked": scorecard.get("verdict") == "KILL",
         "actionable": [r for r in rows if not r["status"].startswith("SKIP")],
         "exits_executed_today": exits_today,
         "skipped": [r for r in rows if r["status"].startswith("SKIP")],
@@ -397,6 +424,8 @@ def _render_md(recs: list[dict[str, Any]], cards: list[dict[str, Any]],
         L.append(f"### {r['label']}  (`{r['sleeve']}`, max_concurrent={r['max_concurrent']})")
         acts = sorted(r["actionable"], key=lambda a: order.get(a["status"], 9))
         exits_done = r.get("exits_executed_today") or []
+        if r.get("new_entries_blocked"):
+            L.append("- _new entries blocked: KILL verdict_")
         if not acts and not exits_done:
             L.append("- _no position / no signal today_")
         for a in acts:
@@ -443,11 +472,15 @@ def generate(write: bool = True) -> dict[str, Any]:
                           "verdict": "NO_STATE", "verdict_note": state.get("_error", "no state file")})
             recs.append({"pilot": pilot["key"], "label": pilot["label"], "sleeve": pilot["sleeve"],
                          "as_of": None, "max_concurrent": pilot.get("max_concurrent"),
+                         "pilot_verdict": "NO_STATE",
+                         "pilot_verdict_note": state.get("_error", "no state file"),
+                         "new_entries_blocked": False,
                          "actionable": [], "skipped": []})
             continue
         as_of = max(as_of, str(state.get("updated_at") or ""))
-        cards.append(_scorecard(pilot, state))
-        recs.append(_recommendations(pilot, state))
+        card = _scorecard(pilot, state)
+        cards.append(card)
+        recs.append(_recommendations(pilot, state, card))
 
     overlaps = _cross_pilot_overlap(recs)
     stop_alerts = _stop_alerts(recs)

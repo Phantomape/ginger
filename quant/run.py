@@ -2164,6 +2164,61 @@ def main():
             entry_candidate_review["operator_review_count"],
         )
 
+    try:
+        from core_risk_intensity_ledger import (
+            append_core_risk_intensity_observation_snapshot,
+            build_core_risk_intensity_observation_snapshot,
+        )
+
+        core_risk_intensity_forward_observation = (
+            build_core_risk_intensity_observation_snapshot(
+                as_of=today_iso,
+                advisory_signals=advisory_entry_signals,
+                selected_signals=signals,
+                entry_execution_plan=entry_execution_plan,
+                metadata={
+                    "source": "quant.run.step6_entry_sizing",
+                    "active_positions_scope": entry_execution_plan.get(
+                        "active_positions_scope"
+                    ),
+                    "trade_enabled": False,
+                },
+            )
+        )
+        core_risk_intensity_persistence = (
+            append_core_risk_intensity_observation_snapshot(
+                core_risk_intensity_forward_observation
+            )
+        )
+        core_risk_intensity_forward_observation[
+            "persistence"
+        ] = core_risk_intensity_persistence
+        if core_risk_intensity_persistence.get("rows_written"):
+            log.info(
+                "Core risk-intensity forward ledger: wrote %d/%d row(s)",
+                core_risk_intensity_persistence.get("rows_written", 0),
+                core_risk_intensity_persistence.get("rows_seen", 0),
+            )
+    except Exception as exc:
+        log.warning("Core risk-intensity forward ledger unavailable: %s", exc)
+        core_risk_intensity_forward_observation = {
+            "schema_version": 1,
+            "rule_version": "core_risk_intensity_forward_observation_v1",
+            "as_of": today_iso,
+            "trade_enabled": False,
+            "candidate_count": 0,
+            "rows": [],
+            "status": "build_failed",
+            "error": str(exc),
+            "production_impact": {
+                "entry_rules_changed": False,
+                "exit_rules_changed": False,
+                "ranking_changed": False,
+                "sizing_changed": False,
+                "orders_changed": False,
+            },
+        }
+
     space_catalyst_observation_slot = _build_space_catalyst_observation_step(
         today_iso=today_iso,
         space_catalyst_shadow=space_catalyst_shadow,
@@ -2224,6 +2279,9 @@ def main():
         trend_signals_dict["entry_execution_plan"] = entry_execution_plan
         trend_signals_dict["strategy_entry_execution_plan"] = strategy_entry_execution_plan
         trend_signals_dict["entry_candidate_review"] = entry_candidate_review
+        trend_signals_dict[
+            "core_risk_intensity_forward_observation"
+        ] = core_risk_intensity_forward_observation
         trend_signals_dict["market_state_snapshot"] = market_state_snapshot
         trend_signals_dict["pilot_entry_filter_audit"] = pilot_entry_filter_audit
         trend_signals_dict["pilot_entry_execution_plan"] = pilot_entry_execution_plan
@@ -3200,6 +3258,7 @@ def main():
         "entry_execution_plan": entry_execution_plan,
         "strategy_entry_execution_plan": strategy_entry_execution_plan,
         "entry_candidate_review": entry_candidate_review,
+        "core_risk_intensity_forward_observation": core_risk_intensity_forward_observation,
         "market_state_snapshot": market_state_snapshot,
         "pilot_entry_filter_audit": pilot_entry_filter_audit,
         "pilot_entry_execution_plan": pilot_entry_execution_plan,

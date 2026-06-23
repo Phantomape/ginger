@@ -94,8 +94,24 @@ def _novelty_check(args):
     except (TypeError, ValueError):
         max_ar = 0.05
     try:
+        # gate_shape for the saturation decision must come from the STRUCTURED
+        # identifiers (trial_family / changed_variable / decision-variable /
+        # file_slug), not the free-text hypothesis. Prose like "ranking" matches
+        # the allocator gate_shape first (first-match-wins) and would silently
+        # mislabel a candidate-pool scan as allocator_source, skipping the
+        # saturation gate. The structured slugs reliably carry the
+        # candidate_pool marker, so re-infer gate_shape from them alone.
+        struct_shape = efp.infer_fingerprint(
+            args.trial_family or "",
+            args.changed_variable or "",
+            args.single_causal_variable or "",
+            args.file_slug or "",
+        ).get("gate_shape")
+        sat_fp = dict(fingerprint)
+        if struct_shape and struct_shape != "other":
+            sat_fp["gate_shape"] = struct_shape
         saturation = cen.source_saturation(
-            fingerprint, min_trials=min_tr, max_accept_rate=max_ar
+            sat_fp, min_trials=min_tr, max_accept_rate=max_ar
         )
     except Exception:
         saturation = {"applicable": False, "saturated": False}

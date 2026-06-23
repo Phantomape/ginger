@@ -38,6 +38,10 @@ try:
         connect_overlay_reader,
         hot_path_for,
     )
+    from regime_chop_state import (
+        RULE_VERSION as REGIME_CHOP_RULE_VERSION,
+        regime_chop_from_spy_universe,
+    )
 except ImportError:  # pragma: no cover - package-style import fallback
     from quant.constants import ROUND_TRIP_COST_PCT
     from quant.data_paths import DATA_ROOT, atomic_write_json
@@ -47,9 +51,14 @@ except ImportError:  # pragma: no cover - package-style import fallback
         connect_overlay_reader,
         hot_path_for,
     )
+    from quant.regime_chop_state import (
+        RULE_VERSION as REGIME_CHOP_RULE_VERSION,
+        regime_chop_from_spy_universe,
+    )
 
 
 RULE_VERSION = "forward_replacement_value_v1"
+ENTRY_REGIME_TAG_RULE_VERSION = "forward_replacement_entry_regime_tag_v1"
 COMPARATOR_TICKERS = ("SPY", "QQQ")
 ARTIFACT_RELPATH = Path("paper_sleeves") / "forward_replacement_value.jsonl"
 
@@ -65,6 +74,7 @@ PRODUCTION_IMPACT = {
     "run_adapter_changed": True,
     "replay_only": False,
     "default_off_attribution_only": True,
+    "entry_regime_tagging_only": True,
     "alters_signal_generation": False,
     "alters_candidate_ranking": False,
     "alters_sizing": False,
@@ -110,6 +120,37 @@ def load_comparator_bars(warehouse_path=None, tickers=COMPARATOR_TICKERS):
     finally:
         con.close()
     return bars
+
+
+def load_regime_spy_bars(warehouse_path=None):
+    """Load PIT SPY bars used only for entry-time regime attribution."""
+    path = Path(warehouse_path) if warehouse_path else Path(DEFAULT_WAREHOUSE_PATH)
+    if not path.exists() and not hot_path_for(path).exists():
+        return []
+    con = connect_overlay_reader(path)
+    rows = []
+    try:
+        cur = con.cursor()
+        cur.execute(
+            "SELECT date, high, close FROM ohlcv_overlay "
+            "WHERE ticker = ? ORDER BY date",
+            ["SPY"],
+        )
+        for bar_date, high_px, close_px in cur.fetchall():
+            close_f = _to_float(close_px)
+            if close_f is None:
+                continue
+            high_f = _to_float(high_px)
+            rows.append(
+                {
+                    "Date": str(bar_date),
+                    "Close": close_f,
+                    "High": high_f if high_f is not None else close_f,
+                }
+            )
+    finally:
+        con.close()
+    return rows
 
 
 def _parse_date(value):
@@ -171,6 +212,46 @@ def _row_needs_replacement_refresh(row):
         row.get("replacement_value_vs_" + ticker.lower() + "_usd") is None
         for ticker in COMPARATOR_TICKERS
     )
+
+
+def _row_needs_entry_regime_tag(row):
+    if row.get("entry_regime_tag_rule_version") != ENTRY_REGIME_TAG_RULE_VERSION:
+        return True
+    return row.get("entry_regime_status") in {
+        "missing_spy_bars",
+        "insufficient_lookback",
+    }
+
+
+def _apply_entry_regime_tag(row, regime_spy_bars):
+    entry_date = str(row.get("entry_date") or "")[:10]
+    if not entry_date:
+        tag = {
+            "rule_version": REGIME_CHOP_RULE_VERSION,
+            "regime_label": "unknown",
+            "coverage": "missing_entry_date",
+            "exposure_scalar": 1.0,
+        }
+    elif not regime_spy_bars:
+        tag = {
+            "rule_version": REGIME_CHOP_RULE_VERSION,
+            "regime_label": "unknown",
+            "coverage": "missing_spy_bars",
+            "exposure_scalar": 1.0,
+        }
+    else:
+        tag = regime_chop_from_spy_universe(regime_spy_bars, entry_date)
+
+    row["entry_regime_tag_rule_version"] = ENTRY_REGIME_TAG_RULE_VERSION
+    row["entry_regime_rule_version"] = REGIME_CHOP_RULE_VERSION
+    row["entry_regime_asof_date"] = entry_date or None
+    row["entry_regime_status"] = tag.get("coverage")
+    row["entry_regime_label"] = tag.get("regime_label")
+    row["entry_regime_p_risk_on_trend"] = tag.get("p_risk_on_trend")
+    row["entry_regime_p_choppy_range"] = tag.get("p_choppy_range")
+    row["entry_regime_p_risk_off_stress"] = tag.get("p_risk_off_stress")
+    row["entry_regime_exposure_scalar"] = tag.get("exposure_scalar")
+    row["entry_regime_detail"] = tag
 
 
 def _notional_for_row(row):
@@ -304,6 +385,16 @@ def _record_from_state_row(row, sleeve_key):
         "replacement_value_vs_spy_usd": row.get("replacement_value_vs_spy_usd"),
         "replacement_value_vs_qqq_usd": row.get("replacement_value_vs_qqq_usd"),
         "comparator_detail": row.get("replacement_value_comparator_detail"),
+        "entry_regime_tag_rule_version": row.get("entry_regime_tag_rule_version"),
+        "entry_regime_rule_version": row.get("entry_regime_rule_version"),
+        "entry_regime_asof_date": row.get("entry_regime_asof_date"),
+        "entry_regime_status": row.get("entry_regime_status"),
+        "entry_regime_label": row.get("entry_regime_label"),
+        "entry_regime_p_risk_on_trend": row.get("entry_regime_p_risk_on_trend"),
+        "entry_regime_p_choppy_range": row.get("entry_regime_p_choppy_range"),
+        "entry_regime_p_risk_off_stress": row.get("entry_regime_p_risk_off_stress"),
+        "entry_regime_exposure_scalar": row.get("entry_regime_exposure_scalar"),
+        "entry_regime_detail": row.get("entry_regime_detail"),
     }
 
 
@@ -401,11 +492,19 @@ def rebuild_current_state_artifact(
 
     rows_by_status = {}
     rows_by_sleeve = {}
+    rows_by_entry_regime_label = {}
+    rows_with_entry_regime = 0
     for record in current_records:
         status = str(record.get("status") or "unknown")
         sleeve_key = str(record.get("sleeve_key") or "unknown")
         rows_by_status[status] = rows_by_status.get(status, 0) + 1
         rows_by_sleeve[sleeve_key] = rows_by_sleeve.get(sleeve_key, 0) + 1
+        label = record.get("entry_regime_label")
+        if label:
+            rows_with_entry_regime += 1
+            rows_by_entry_regime_label[str(label)] = (
+                rows_by_entry_regime_label.get(str(label), 0) + 1
+            )
 
     return {
         "status": "ok",
@@ -414,82 +513,81 @@ def rebuild_current_state_artifact(
         "rows_written": len(current_records),
         "rows_by_status": rows_by_status,
         "rows_by_sleeve": rows_by_sleeve,
+        "rows_with_entry_regime": rows_with_entry_regime,
+        "rows_by_entry_regime_label": rows_by_entry_regime_label,
         "previous_rows_not_in_current_state": previous_rows_not_in_current_state,
         "skipped_missing_replacement": skipped_missing_replacement,
     }
 
 
-def enrich_state_closed_rows(state, bars_by_ticker, asof_date, sleeve_key=""):
+def enrich_state_closed_rows(
+    state,
+    bars_by_ticker,
+    asof_date,
+    sleeve_key="",
+    *,
+    regime_spy_bars=None,
+):
     """Add replacement-value fields to closed rows that lack them.
 
     Mutates ``state`` in place and returns one artifact record per newly
-    enriched row. Rows already carrying ``replacement_value_rule_version`` are
-    left untouched, so the pass is idempotent.
+    updated row. Rows already carrying replacement-value and entry-regime tag
+    fields are left untouched, so the pass is idempotent.
     """
     records = []
     for row in _closed_rows(state):
-        if not _row_needs_replacement_refresh(row):
-            continue
-        pnl = _to_float(row.get("pnl"))
-        entry_date = str(row.get("entry_date") or "")
-        exit_date = str(row.get("exit_date") or row.get("entry_date") or "")
-        notional, notional_method = _notional_for_row(row)
-        entry_prefer = (
-            "exact_or_previous" if row.get("non_session_entry_fill") else "exact_or_next"
-        )
+        updated = False
+        if _row_needs_replacement_refresh(row):
+            pnl = _to_float(row.get("pnl"))
+            entry_date = str(row.get("entry_date") or "")
+            exit_date = str(row.get("exit_date") or row.get("entry_date") or "")
+            notional, notional_method = _notional_for_row(row)
+            entry_prefer = (
+                "exact_or_previous" if row.get("non_session_entry_fill") else "exact_or_next"
+            )
 
-        status = "enriched"
-        comparators = {}
-        if pnl is None or not entry_date or not exit_date:
-            status = "missing_row_fields"
-        elif notional is None:
-            status = "missing_notional"
-        else:
-            for ticker in COMPARATOR_TICKERS:
-                comparators[ticker] = _comparator_pnl(
-                    bars_by_ticker.get(ticker, {}),
-                    entry_date,
-                    exit_date,
-                    notional,
-                    entry_prefer=entry_prefer,
-                )
-            if any(detail is None for detail in comparators.values()):
-                status = "missing_comparator_bars"
-
-        row["replacement_value_rule_version"] = RULE_VERSION
-        row["replacement_value_asof"] = asof_date
-        row["replacement_value_status"] = status
-        row["replacement_value_notional_usd"] = notional
-        row["replacement_value_notional_method"] = notional_method
-        row["replacement_value_vs_cash_usd"] = round(pnl, 2) if pnl is not None else None
-        for ticker in COMPARATOR_TICKERS:
-            detail = comparators.get(ticker)
-            field = "replacement_value_vs_" + ticker.lower() + "_usd"
-            if pnl is not None and detail is not None:
-                row[field] = round(pnl - detail["net_pnl_usd"], 2)
+            status = "enriched"
+            comparators = {}
+            if pnl is None or not entry_date or not exit_date:
+                status = "missing_row_fields"
+            elif notional is None:
+                status = "missing_notional"
             else:
-                row[field] = None
-        row["replacement_value_comparator_detail"] = comparators
+                for ticker in COMPARATOR_TICKERS:
+                    comparators[ticker] = _comparator_pnl(
+                        bars_by_ticker.get(ticker, {}),
+                        entry_date,
+                        exit_date,
+                        notional,
+                        entry_prefer=entry_prefer,
+                    )
+                if any(detail is None for detail in comparators.values()):
+                    status = "missing_comparator_bars"
 
-        records.append(
-            {
-                "rule_version": RULE_VERSION,
-                "asof_date": asof_date,
-                "sleeve_key": sleeve_key,
-                "decision_id": row.get("decision_id"),
-                "ticker": row.get("ticker"),
-                "entry_date": entry_date or None,
-                "exit_date": exit_date or None,
-                "pnl_usd": round(pnl, 2) if pnl is not None else None,
-                "notional_usd": notional,
-                "notional_method": notional_method,
-                "status": status,
-                "replacement_value_vs_cash_usd": row["replacement_value_vs_cash_usd"],
-                "replacement_value_vs_spy_usd": row["replacement_value_vs_spy_usd"],
-                "replacement_value_vs_qqq_usd": row["replacement_value_vs_qqq_usd"],
-                "comparator_detail": comparators,
-            }
-        )
+            row["replacement_value_rule_version"] = RULE_VERSION
+            row["replacement_value_asof"] = asof_date
+            row["replacement_value_status"] = status
+            row["replacement_value_notional_usd"] = notional
+            row["replacement_value_notional_method"] = notional_method
+            row["replacement_value_vs_cash_usd"] = round(pnl, 2) if pnl is not None else None
+            for ticker in COMPARATOR_TICKERS:
+                detail = comparators.get(ticker)
+                field = "replacement_value_vs_" + ticker.lower() + "_usd"
+                if pnl is not None and detail is not None:
+                    row[field] = round(pnl - detail["net_pnl_usd"], 2)
+                else:
+                    row[field] = None
+            row["replacement_value_comparator_detail"] = comparators
+            updated = True
+
+        if regime_spy_bars is not None and _row_needs_entry_regime_tag(row):
+            _apply_entry_regime_tag(row, regime_spy_bars)
+            updated = True
+
+        if updated:
+            record = _record_from_state_row(row, sleeve_key)
+            if record is not None:
+                records.append(record)
     return records
 
 
@@ -498,6 +596,7 @@ def enrich_all_sleeve_states(
     *,
     sleeves_root=None,
     bars_by_ticker=None,
+    regime_spy_bars=None,
     warehouse_path=None,
     artifact_path=None,
 ):
@@ -509,14 +608,19 @@ def enrich_all_sleeve_states(
     """
     root = Path(sleeves_root) if sleeves_root else DATA_ROOT / "paper_sleeves"
     artifact = Path(artifact_path) if artifact_path else DATA_ROOT / ARTIFACT_RELPATH
+    load_from_warehouse = bars_by_ticker is None
     if bars_by_ticker is None:
         bars_by_ticker = load_comparator_bars(warehouse_path)
+    if regime_spy_bars is None and load_from_warehouse:
+        regime_spy_bars = load_regime_spy_bars(warehouse_path)
 
     summary = {
         "rule_version": RULE_VERSION,
+        "entry_regime_tag_rule_version": ENTRY_REGIME_TAG_RULE_VERSION,
         "asof_date": asof_date,
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "production_impact": dict(PRODUCTION_IMPACT),
+        "entry_regime_tagging_enabled": regime_spy_bars is not None,
         "sleeves_scanned": 0,
         "rows_enriched": 0,
         "rows_enriched_by_status": {},
@@ -535,7 +639,13 @@ def enrich_all_sleeve_states(
             summary["sleeves"][sleeve_key] = {"status": "unreadable_state"}
             continue
         summary["sleeves_scanned"] += 1
-        records = enrich_state_closed_rows(state, bars_by_ticker, asof_date, sleeve_key)
+        records = enrich_state_closed_rows(
+            state,
+            bars_by_ticker,
+            asof_date,
+            sleeve_key,
+            regime_spy_bars=regime_spy_bars,
+        )
         if records:
             atomic_write_json(state, state_path)
             new_records.extend(records)
@@ -555,6 +665,12 @@ def enrich_all_sleeve_states(
     summary["rows_enriched_by_status"] = by_status
     summary["artifact_rows"] = artifact_summary["rows_written"]
     summary["artifact_rows_by_status"] = artifact_summary["rows_by_status"]
+    summary["artifact_rows_with_entry_regime"] = artifact_summary[
+        "rows_with_entry_regime"
+    ]
+    summary["artifact_rows_by_entry_regime_label"] = artifact_summary[
+        "rows_by_entry_regime_label"
+    ]
     summary["artifact_previous_rows_not_in_current_state"] = len(
         artifact_summary["previous_rows_not_in_current_state"]
     )

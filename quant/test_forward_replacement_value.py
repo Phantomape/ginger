@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import sys
+from datetime import date, timedelta
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -38,6 +39,16 @@ def _row(**overrides):
     }
     row.update(overrides)
     return row
+
+
+def _regime_bars():
+    start = date(2025, 8, 1)
+    rows = []
+    for i in range(300):
+        d = start + timedelta(days=i)
+        close = 100.0 + i * 0.25
+        rows.append({"Date": d.isoformat(), "Close": close, "High": close + 1.0})
+    return rows
 
 
 def test_notional_explicit_wins():
@@ -145,6 +156,84 @@ def test_enrich_row_missing_bars_status():
     assert row["replacement_value_vs_cash_usd"] == 390.84
 
 
+def test_enrich_row_adds_entry_regime_tag_when_bars_supplied():
+    state = {"closed_positions": [_row()]}
+
+    records = frv.enrich_state_closed_rows(
+        state,
+        BARS,
+        "2026-06-23",
+        "test_sleeve",
+        regime_spy_bars=_regime_bars(),
+    )
+
+    assert len(records) == 1
+    row = state["closed_positions"][0]
+    assert row["entry_regime_tag_rule_version"] == frv.ENTRY_REGIME_TAG_RULE_VERSION
+    assert row["entry_regime_rule_version"] == frv.REGIME_CHOP_RULE_VERSION
+    assert row["entry_regime_asof_date"] == "2026-05-05"
+    assert row["entry_regime_label"] in {"risk_on_trend", "choppy_range", "risk_off_stress"}
+    assert row["entry_regime_detail"]["rule_version"] == frv.REGIME_CHOP_RULE_VERSION
+    assert records[0]["entry_regime_label"] == row["entry_regime_label"]
+    assert records[0]["entry_regime_exposure_scalar"] == row["entry_regime_exposure_scalar"]
+
+    assert (
+        frv.enrich_state_closed_rows(
+            state,
+            BARS,
+            "2026-06-24",
+            "test_sleeve",
+            regime_spy_bars=_regime_bars(),
+        )
+        == []
+    )
+
+
+def test_existing_replacement_row_gets_regime_tag_without_repricing():
+    state = {"closed_positions": [_row()]}
+    frv.enrich_state_closed_rows(state, BARS, "2026-06-11", "test_sleeve")
+    row = state["closed_positions"][0]
+    assert row.get("entry_regime_tag_rule_version") is None
+
+    records = frv.enrich_state_closed_rows(
+        state,
+        BARS,
+        "2026-06-23",
+        "test_sleeve",
+        regime_spy_bars=_regime_bars(),
+    )
+
+    assert len(records) == 1
+    assert row["replacement_value_asof"] == "2026-06-11"
+    assert row["entry_regime_asof_date"] == "2026-05-05"
+    assert records[0]["status"] == "enriched"
+
+
+def test_missing_regime_tag_status_refreshes_when_bars_arrive():
+    state = {"closed_positions": [_row()]}
+    frv.enrich_state_closed_rows(
+        state,
+        BARS,
+        "2026-06-23",
+        "test_sleeve",
+        regime_spy_bars=[],
+    )
+    row = state["closed_positions"][0]
+    assert row["entry_regime_status"] == "missing_spy_bars"
+
+    records = frv.enrich_state_closed_rows(
+        state,
+        BARS,
+        "2026-06-24",
+        "test_sleeve",
+        regime_spy_bars=_regime_bars(),
+    )
+
+    assert len(records) == 1
+    assert row["entry_regime_status"] == "ok"
+    assert row["entry_regime_label"] in {"risk_on_trend", "choppy_range", "risk_off_stress"}
+
+
 def test_enrich_all_sleeve_states_roundtrip(tmp_path):
     root = tmp_path / "paper_sleeves"
     sleeve_dir = root / "demo_sleeve"
@@ -157,6 +246,7 @@ def test_enrich_all_sleeve_states_roundtrip(tmp_path):
         "2026-06-11",
         sleeves_root=root,
         bars_by_ticker=BARS,
+        regime_spy_bars=_regime_bars(),
         artifact_path=artifact,
     )
     assert summary["status"] == "ok"
@@ -170,12 +260,16 @@ def test_enrich_all_sleeve_states_roundtrip(tmp_path):
     assert len(lines) == 1
     assert lines[0]["sleeve_key"] == "demo_sleeve"
     assert lines[0]["status"] == "enriched"
+    assert lines[0]["entry_regime_tag_rule_version"] == frv.ENTRY_REGIME_TAG_RULE_VERSION
+    assert summary["artifact_rows_with_entry_regime"] == 1
+    assert summary["artifact_rows_by_entry_regime_label"]
 
     # idempotent second run appends nothing
     summary2 = frv.enrich_all_sleeve_states(
         "2026-06-12",
         sleeves_root=root,
         bars_by_ticker=BARS,
+        regime_spy_bars=_regime_bars(),
         artifact_path=artifact,
     )
     assert summary2["rows_enriched"] == 0
