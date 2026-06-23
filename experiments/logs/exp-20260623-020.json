@@ -1,0 +1,77 @@
+{
+  "after_metrics": {
+    "expected_value_score": 5.5377,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": 133843.13,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 7.8941,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": 234850.99,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "causal_components": [
+    "clean static-vs-trailing 3-window backtest",
+    "resting-GTC-STOP execution envelope",
+    "parity test",
+    "decision"
+  ],
+  "change_summary": "Static (frozen entry) stop vs ATR-trailing stop, canonical 3 windows on current code; static is the EV-optimal policy.",
+  "change_type": "production_parity_repair",
+  "changed_variable": "Stop exit policy: static frozen entry-stop (resting GTC STOP, set once) vs daily trailing stop (high-water-mark * (1 - TRAILING_STOP_PCT)). Pick the EV-maximizing one and make backtester + live execution share it.",
+  "component": "quant/experiments/exp_20260623_020_stop_policy_static_vs_trailing.py, data/experiments/exp-20260623-020/exp_20260623_020_stop_policy_static_vs_trailing.json, experiments/cards/exp-20260623-020.md, experiments/manifests/exp-20260623-020.json, experiments/tickets/exp-20260623-020.json, experiments/logs/exp-20260623-020.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": -2.3564,
+    "total_pnl": -101007.86
+  },
+  "experiment_id": "exp-20260623-020",
+  "hypothesis": "A static/frozen protective stop set once at entry (resting GTC STOP) maximizes EV over a daily-trailing stop on the canonical 3 windows; align backtester and production to the winner, closing the stop-policy parity gap that the bracket-order playbook now makes executable.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "production_parity_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260503-009"
+  ],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Static stop = documented baseline (EV 7.8941, reproduced bit-exact). ATR trailing loses in all 3 windows: trail(3,2) 5.5377 (-2.36 EV / -30% / -101k), trail(4,2) 3.4325 (-57%). Worst-DD ~same (~11%), so trailing buys no risk reduction - it cuts winners short before the 3.5xATR target. Confirms exp-20260503-009 (which rejected trailing on the old 5.18 baseline). DECISION: static wins; backtester already aligned (uses static). Production/operator action: set the protective stop ONCE at entry and do NOT trail it up; the bracket-order playbook stop leg should emit the static entry stop, not open_positions trailed stop_price. Added a default-off --set CONFIG override to backtester.py (baseline bit-exact).",
+  "parameters": {
+    "locked_variables": [
+      "Stop exit policy: static frozen entry-stop (resting GTC STOP, set once) vs daily trailing stop (high-water-mark * (1 - TRAILING_STOP_PCT)). Pick the EV-maximizing one and make backtester + live execution share it."
+    ],
+    "single_causal_variable": "Stop exit policy: static frozen entry-stop (resting GTC STOP, set once) vs daily trailing stop (high-water-mark * (1 - TRAILING_STOP_PCT)). Pick the EV-maximizing one and make backtester + live execution share it."
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not re-run ATR-trailing-stop sweeps (TRAIL_TRIGGER/OFFSET) on these 3 windows - now confirmed twice (this + exp-20260503-009) that static dominates. Do not retune trail trigger/offset hoping for a win.",
+    "new_evidence_required": "Only revisit trailing with a genuinely different mechanism: e.g. regime-conditional trailing (trail only in chop/old_thin where giveback bites, static in trends), a percent-of-MFE giveback stop rather than ATR-offset, or forward live giveback data. A flat ATR trail is closed.",
+    "realized_failure_mode": "trailing_cuts_winners_before_target",
+    "why_result_happened": "Trailing gave NO drawdown benefit (~11% either way), so it is strictly dominated by static here - it only sacrifices upside."
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "No AGENTS.md Gate 4 acceptance condition was met.",
+  "related_files": [
+    "data/experiments/exp-20260623-020/before_static.json",
+    "data/experiments/exp-20260623-020/after_trailing.json"
+  ],
+  "secondary_windows": [],
+  "status": "rejected",
+  "timestamp": "2026-06-23T16:55:46+00:00",
+  "trial_family": "production_parity_repair",
+  "trial_variant_id": "exp-20260623-020"
+}

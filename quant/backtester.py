@@ -4869,6 +4869,11 @@ def main():
                               "market-on-open fill (faithful EOD production "
                               "decision-then-next-session lag) instead of a "
                               "same-day resting-stop fill. Default: off."))
+    parser.add_argument("--set", dest="set_overrides", nargs=2, action="append",
+                        metavar=("KEY", "VALUE"), default=None,
+                        help=("Override a DEFAULT_CONFIG key (repeatable), e.g. "
+                              "--set TRAIL_TRIGGER_ATR_MULT 2 --set TRAIL_OFFSET_ATR_MULT 3. "
+                              "Numeric strings are coerced to int/float. Default: none."))
     args = parser.parse_args()
 
     # Default: last 6 months
@@ -4892,6 +4897,13 @@ def main():
         "ATR_STOP_TRIGGER_ON_CLOSE": args.atr_stop_trigger_on_close,
         "ATR_STOP_EXIT_NEXT_OPEN": args.atr_stop_exit_next_open,
     }
+    # Generic config overrides (default-off; baseline stays bit-exact when unused).
+    for _key, _val in (args.set_overrides or []):
+        try:
+            _num = float(_val)
+            cfg[_key] = int(_num) if _num.is_integer() else _num
+        except ValueError:
+            cfg[_key] = _val
     engine = BacktestEngine(universe, start=args.start, end=args.end,
                             config=cfg,
                             replay_llm=args.replay_llm,

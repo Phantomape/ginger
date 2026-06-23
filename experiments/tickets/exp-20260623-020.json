@@ -1,0 +1,188 @@
+{
+  "acceptance_rule": "Accept the stop policy with higher aggregate EV across the standard 3 windows without unacceptable drawdown/trade-count/survival regression; align backtester+production to it.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260623_020_stop_policy_static_vs_trailing.py",
+    "data/experiments/exp-20260623-020/exp_20260623_020_stop_policy_static_vs_trailing.json",
+    "experiments/cards/exp-20260623-020.md",
+    "experiments/manifests/exp-20260623-020.json",
+    "experiments/tickets/exp-20260623-020.json",
+    "experiments/logs/exp-20260623-020.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260623-020.md",
+  "causal_components": [
+    "clean static-vs-trailing 3-window backtest",
+    "resting-GTC-STOP execution envelope",
+    "parity test",
+    "decision"
+  ],
+  "change_type": "production_parity_repair",
+  "changed_variable": "Stop exit policy: static frozen entry-stop (resting GTC STOP, set once) vs daily trailing stop (high-water-mark * (1 - TRAILING_STOP_PCT)). Pick the EV-maximizing one and make backtester + live execution share it.",
+  "claimed_at": "2026-06-23T16:40:37+00:00",
+  "completed_at": "2026-06-23T16:55:45+00:00",
+  "created_at": "2026-06-23T16:38:27+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260623-020",
+  "experiment_uid": "expuid-8bfb0ad788e9494e",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260623-020",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-23T16:38:27+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "stop_policy_static_vs_trailing"
+  },
+  "hypothesis": "A static/frozen protective stop set once at entry (resting GTC STOP) maximizes EV over a daily-trailing stop on the canonical 3 windows; align backtester and production to the winner, closing the stop-policy parity gap that the bracket-order playbook now makes executable.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "Stop exit policy: static frozen entry-stop (resting GTC STOP, set once) vs daily trailing stop (high-water-mark * (1 - TRAILING_STOP_PCT)). Pick the EV-maximizing one and make backtester + live execution share it."
+  ],
+  "mechanism_family": "production_parity_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260503-009"
+  ],
+  "new_evidence_type": "not_declared",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_relation",
+      "field_tags": [
+        "a",
+        "align",
+        "at",
+        "backtester",
+        "bracket",
+        "canonical",
+        "closing",
+        "daily",
+        "entry",
+        "ev",
+        "executable",
+        "execution",
+        "exit",
+        "frozen",
+        "gap",
+        "gtc",
+        "high",
+        "it",
+        "live",
+        "make",
+        "makes",
+        "mark",
+        "maximizes",
+        "maximizing",
+        "now",
+        "on",
+        "once",
+        "one",
+        "order",
+        "over",
+        "parity",
+        "pct",
+        "pick",
+        "playbook",
+        "policy",
+        "protective",
+        "resting",
+        "set",
+        "share",
+        "static",
+        "stop",
+        "that",
+        "to",
+        "trailing",
+        "water",
+        "windows",
+        "winner"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "gap_up_entry_state_lifecycle_allocation",
+        "reopen_condition": null,
+        "score": 0.4657,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "gap_up_hold_high_close_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.4654,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "core_overnight_gap_share20_risk",
+        "reopen_condition": null,
+        "score": 0.4651,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "prebreakout_catalyst_qualified_entry",
+        "reopen_condition": "If rejected, do not retune this as a broad pullback/reclaim clone or a catalyst-keyword variant. A valid retry needs a materially better catalyst-quality field or forward replacement-value evidence on named latency cases.",
+        "score": 0.4651,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "gap_and_hold_qqq_confirmed_default_off_paper_sleeve",
+        "reopen_condition": "If revisited, use forward paper outcomes or a materially different free data edge, such as verified event/sector context. Do not just retune gap, close-location, QQQ/SPY lookback, or topN thresholds on the frozen windows.",
+        "score": 0.4648,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_relation",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "stop-policy-agent",
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260623-020/before_static.json",
+    "after_result_file": "data/experiments/exp-20260623-020/after_trailing.json",
+    "delta_metrics": {
+      "expected_value_score": -2.3564,
+      "total_pnl": -101007.86
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260623-020.json",
+  "single_causal_variable": "Stop exit policy: static frozen entry-stop (resting GTC STOP, set once) vs daily trailing stop (high-water-mark * (1 - TRAILING_STOP_PCT)). Pick the EV-maximizing one and make backtester + live execution share it.",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260623-020.json",
+  "trial_family": "production_parity_repair",
+  "trial_variant_id": "exp-20260623-020"
+}
