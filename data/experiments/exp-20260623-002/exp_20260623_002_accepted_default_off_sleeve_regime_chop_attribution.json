@@ -1,0 +1,1072 @@
+{
+  "experiment_id": "exp-20260623-002",
+  "lane": "measurement_repair",
+  "diagnostic_only": true,
+  "trade_enabled": false,
+  "alters_orders": false,
+  "generated_at": "2026-06-23T16:16:35Z",
+  "rule_version": "regime_chop_state_v1",
+  "hypothesis": "Chop-regime PnL sensitivity is sleeve-specific; attributing every accepted default-off sleeve identifies the subset a chop-scoped soft down-tilt should cover and which it must exclude.",
+  "method": {
+    "trades_source": "each sleeve acceptance artifact target_trades_by_window (default-off paper replay)",
+    "regime_module": "quant/regime_chop_state.py:regime_chop_from_spy_universe",
+    "fidelity": "full (SPY trend/momentum/drawdown/vol + universe breadth above 50d SMA + index agreement)",
+    "point_in_time": "regime uses only bars dated <= entry_date; breadth/agreement computed within-snapshot",
+    "roster": {
+      "industry_stable_core_flow": "exp-20260608-008",
+      "narrow_range_compression_breakout": "exp-20260608-013",
+      "turn_of_month_liquid_leadership": "exp-20260609-027",
+      "fiftytwo_week_high_proximity": "exp-20260610-008",
+      "distribution_day_absorption_leadership": "exp-20260611-007",
+      "sbc_burden_improvement": "exp-20260616-015",
+      "supplier_financing_debt_relief": "exp-20260620-009",
+      "revision_surprise_low_extension": "exp-20260609-011"
+    },
+    "windows": {
+      "late_strong": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+      "mid_weak": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+      "old_thin": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json"
+    },
+    "scope_rule": {
+      "spearman_pchoppy_pnl_max": -0.1,
+      "min_trades": 20
+    }
+  },
+  "prior_reference_pooled_spearman": {
+    "fundamental_growth_rs (exp-20260615-019/025)": -0.324,
+    "core_accepted_stack (exp-20260622-017)": 0.116
+  },
+  "sleeves": {
+    "industry_stable_core_flow": {
+      "experiment_id": "exp-20260608-008",
+      "n_trades": 47,
+      "pooled_spearman_pchoppy_pnl": 0.05353839037927845,
+      "pooled_spearman_exposure_pnl": -0.05353839037927845,
+      "pooled_by_regime": {
+        "risk_on_trend": {
+          "n": 41,
+          "mean_pnl": 78.38,
+          "median_pnl": 62.26,
+          "win_rate": 0.5854,
+          "total_pnl": 3213.46
+        },
+        "choppy_range": {
+          "n": 4,
+          "mean_pnl": 124.4,
+          "median_pnl": 117.71,
+          "win_rate": 0.75,
+          "total_pnl": 497.59
+        },
+        "risk_off_stress": {
+          "n": 2,
+          "mean_pnl": 10.24,
+          "median_pnl": 10.24,
+          "win_rate": 0.5,
+          "total_pnl": 20.49
+        }
+      },
+      "per_window": {
+        "late_strong": {
+          "n_trades": 12,
+          "unresolved": 0,
+          "by_regime": {
+            "risk_on_trend": {
+              "n": 9,
+              "mean_pnl": 25.84,
+              "median_pnl": -57.16,
+              "win_rate": 0.4444,
+              "total_pnl": 232.54
+            },
+            "choppy_range": {
+              "n": 2,
+              "mean_pnl": 204.19,
+              "median_pnl": 204.19,
+              "win_rate": 1.0,
+              "total_pnl": 408.38
+            },
+            "risk_off_stress": {
+              "n": 1,
+              "mean_pnl": -9.25,
+              "median_pnl": -9.25,
+              "win_rate": 0.0,
+              "total_pnl": -9.25
+            }
+          },
+          "spearman_pchoppy_pnl": -0.34265734265734266
+        },
+        "mid_weak": {
+          "n_trades": 16,
+          "unresolved": 0,
+          "by_regime": {
+            "risk_on_trend": {
+              "n": 16,
+              "mean_pnl": 98.42,
+              "median_pnl": 76.68,
+              "win_rate": 0.6875,
+              "total_pnl": 1574.77
+            },
+            "choppy_range": {
+              "n": 0,
+              "mean_pnl": null,
+              "median_pnl": null,
+              "win_rate": null,
+              "total_pnl": 0.0
+            },
+            "risk_off_stress": {
+              "n": 0,
+              "mean_pnl": null,
+              "median_pnl": null,
+              "win_rate": null,
+              "total_pnl": 0.0
+            }
+          },
+          "spearman_pchoppy_pnl": 0.5235294117647059
+        },
+        "old_thin": {
+          "n_trades": 19,
+          "unresolved": 0,
+          "by_regime": {
+            "risk_on_trend": {
+              "n": 16,
+              "mean_pnl": 87.88,
+              "median_pnl": 33.34,
+              "win_rate": 0.5625,
+              "total_pnl": 1406.15
+            },
+            "choppy_range": {
+              "n": 2,
+              "mean_pnl": 44.6,
+              "median_pnl": 44.6,
+              "win_rate": 0.5,
+              "total_pnl": 89.21
+            },
+            "risk_off_stress": {
+              "n": 1,
+              "mean_pnl": 29.74,
+              "median_pnl": 29.74,
+              "win_rate": 1.0,
+              "total_pnl": 29.74
+            }
+          },
+          "spearman_pchoppy_pnl": 0.07368421052631577
+        }
+      },
+      "counterfactual_soft_tilt": {
+        "actual_total_pnl": 3731.54,
+        "tilted_total_pnl": 3212.14,
+        "tilt_delta_pnl": -519.4
+      }
+    },
+    "narrow_range_compression_breakout": {
+      "experiment_id": "exp-20260608-013",
+      "n_trades": 44,
+      "pooled_spearman_pchoppy_pnl": -0.023114869626497538,
+      "pooled_spearman_exposure_pnl": 0.023114869626497538,
+      "pooled_by_regime": {
+        "risk_on_trend": {
+          "n": 37,
+          "mean_pnl": 55.59,
+          "median_pnl": 18.65,
+          "win_rate": 0.5405,
+          "total_pnl": 2056.87
+        },
+        "choppy_range": {
+          "n": 2,
+          "mean_pnl": -168.02,
+          "median_pnl": -168.02,
+          "win_rate": 0.0,
+          "total_pnl": -336.04
+        },
+        "risk_off_stress": {
+          "n": 5,
+          "mean_pnl": 105.63,
+          "median_pnl": 16.97,
+          "win_rate": 0.6,
+          "total_pnl": 528.15
+        }
+      },
+      "per_window": {
+        "late_strong": {
+          "n_trades": 9,
+          "unresolved": 0,
+          "by_regime": {
+            "risk_on_trend": {
+              "n": 9,
+              "mean_pnl": 114.51,
+              "median_pnl": 63.48,
+              "win_rate": 0.7778,
+              "total_pnl": 1030.63
+            },
+            "choppy_range": {
+              "n": 0,
+              "mean_pnl": null,
+              "median_pnl": null,
+              "win_rate": null,
+              "total_pnl": 0.0
+            },
+            "risk_off_stress": {
+              "n": 0,
+              "mean_pnl": null,
+              "median_pnl": null,
+              "win_rate": null,
+              "total_pnl": 0.0
+            }
+          },
+          "spearman_pchoppy_pnl": 0.39999999999999997
+        },
+        "mid_weak": {
+          "n_trades": 24,
+          "unresolved": 0,
+          "by_regime": {
+            "risk_on_trend": {
+              "n": 21,
+              "mean_pnl": -25.43,
+              "median_pnl": -59.59,
+              "win_rate": 0.4762,
+              "total_pnl": -534.08
+            },
+            "choppy_range": {
+              "n": 0,
+              "mean_pnl": null,
+              "median_pnl": null,
+              "win_rate": null,
+              "total_pnl": 0.0
+            },
+            "risk_off_stress": {
+              "n": 3,
+              "mean_pnl": 459.6,
+              "median_pnl": 214.16,
+              "win_rate": 1.0,
+              "total_pnl": 1378.81
+            }
+          },
+          "spearman_pchoppy_pnl": 0.01652173913043478
+        },
+        "old_thin": {
+          "n_trades": 11,
+          "unresolved": 0,
+          "by_regime": {
+            "risk_on_trend": {
+              "n": 7,
+              "mean_pnl": 222.9,
+              "median_pnl": -1.57,
+              "win_rate": 0.4286,
+              "total_pnl": 1560.32
+            },
+            "choppy_range": {
+              "n": 2,
+              "mean_pnl": -168.02,
+              "median_pnl": -168.02,
+              "win_rate": 0.0,
+              "total_pnl": -336.04
+            },
+            "risk_off_stress": {
+              "n": 2,
+              "mean_pnl": -425.33,
+              "median_pnl": -425.33,
+              "win_rate": 0.0,
+              "total_pnl": -850.66
+            }
+          },
+          "spearman_pchoppy_pnl": -0.24545454545454545
+        }
+      },
+      "counterfactual_soft_tilt": {
+        "actual_total_pnl": 2248.98,
+        "tilted_total_pnl": 2100.7,
+        "tilt_delta_pnl": -148.28
+      }
+    },
+    "turn_of_month_liquid_leadership": {
+      "experiment_id": "exp-20260609-027",
+      "n_trades": 73,
+      "pooled_spearman_pchoppy_pnl": -0.1221461187214612,
+      "pooled_spearman_exposure_pnl": 0.1221461187214612,
+      "pooled_by_regime": {
+        "risk_on_trend": {
+          "n": 44,
+          "mean_pnl": 55.82,
+          "median_pnl": 107.2,
+          "win_rate": 0.5909,
+          "total_pnl": 2456.19
+        },
+        "choppy_range": {
+          "n": 12,
+          "mean_pnl": -91.11,
+          "median_pnl": -51.73,
+          "win_rate": 0.4167,
+          "total_pnl": -1093.27
+        },
+        "risk_off_stress": {
+          "n": 17,
+          "mean_pnl": 230.87,
+          "median_pnl": 121.04,
+          "win_rate": 0.7059,
+          "total_pnl": 3924.77
+        }
+      },
+      "per_window": {
+        "late_strong": {
+          "n_trades": 23,
+          "unresolved": 0,
+          "by_regime": {
+            "risk_on_trend": {
+              "n": 10,
+              "mean_pnl": -61.22,
+              "median_pnl": 34.4,
+              "win_rate": 0.5,
+              "total_pnl": -612.22
+            },
+            "choppy_range": {
+              "n": 4,
+              "mean_pnl": -15.34,
+              "median_pnl": -0.82,
+              "win_rate": 0.5,
+              "total_pnl": -61.35
+            },
+            "risk_off_stress": {
+              "n": 9,
+              "mean_pnl": 194.97,
+              "median_pnl": 121.04,
+              "win_rate": 0.5556,
+              "total_pnl": 1754.77
+            }
+          },
+          "spearman_pchoppy_pnl": 0.001976284584980237
+        },
+        "mid_weak": {
+          "n_trades": 24,
+          "unresolved": 0,
+          "by_regime": {
+            "risk_on_trend": {
+              "n": 19,
+              "mean_pnl": 83.37,
+              "median_pnl": 107.67,
+              "win_rate": 0.5789,
+              "total_pnl": 1584.02
+            },
+            "choppy_range": {
+              "n": 1,
+              "mean_pnl": -93.49,
+              "median_pnl": -93.49,
+              "win_rate": 0.0,
+              "total_pnl": -93.49
+            },
+            "risk_off_stress": {
+              "n": 4,
+              "mean_pnl": 90.94,
+              "median_pnl": 118.46,
+              "win_rate": 0.75,
+              "total_pnl": 363.76
+            }
+          },
+          "spearman_pchoppy_pnl": 0.08956521739130435
+        },
+        "old_thin": {
+          "n_trades": 26,
+          "unresolved": 0,
+          "by_regime": {
+            "risk_on_trend": {
+              "n": 15,
+              "mean_pnl": 98.96,
+              "median_pnl": 139.55,
+              "win_rate": 0.6667,
+              "total_pnl": 1484.39
+            },
+            "choppy_range": {
+              "n": 7,
+              "mean_pnl": -134.06,
+              "median_pnl": -97.43,
+              "win_rate": 0.4286,
+              "total_pnl": -938.43
+            },
+            "risk_off_stress": {
+              "n": 4,
+              "mean_pnl": 451.56,
+              "median_pnl": 315.93,
+              "win_rate": 1.0,
+              "total_pnl": 1806.24
+            }
+          },
+          "spearman_pchoppy_pnl": -0.29025641025641025
+        }
+      },
+      "counterfactual_soft_tilt": {
+        "actual_total_pnl": 5287.69,
+        "tilted_total_pnl": 4796.71,
+        "tilt_delta_pnl": -490.98
+      }
+    },
+    "fiftytwo_week_high_proximity": {
+      "experiment_id": "exp-20260610-008",
+      "n_trades": 54,
+      "pooled_spearman_pchoppy_pnl": -0.29773203735467885,
+      "pooled_spearman_exposure_pnl": 0.29773203735467885,
+      "pooled_by_regime": {
+        "risk_on_trend": {
+          "n": 47,
+          "mean_pnl": 193.83,
+          "median_pnl": 97.57,
+          "win_rate": 0.6596,
+          "total_pnl": 9109.82
+        },
+        "choppy_range": {
+          "n": 4,
+          "mean_pnl": -137.02,
+          "median_pnl": -122.59,
+          "win_rate": 0.25,
+          "total_pnl": -548.08
+        },
+        "risk_off_stress": {
+          "n": 3,
+          "mean_pnl": 244.53,
+          "median_pnl": 47.07,
+          "win_rate": 0.6667,
+          "total_pnl": 733.6
+        }
+      },
+      "per_window": {
+        "late_strong": {
+          "n_trades": 14,
+          "unresolved": 0,
+          "by_regime": {
+            "risk_on_trend": {
+              "n": 10,
+              "mean_pnl": 172.06,
+              "median_pnl": 258.52,
+              "win_rate": 0.7,
+              "total_pnl": 1720.59
+            },
+            "choppy_range": {
+              "n": 2,
+              "mean_pnl": -374.45,
+              "median_pnl": -374.45,
+              "win_rate": 0.0,
+              "total_pnl": -748.91
+            },
+            "risk_off_stress": {
+              "n": 2,
+              "mean_pnl": 420.92,
+              "median_pnl": 420.92,
+              "win_rate": 1.0,
+              "total_pnl": 841.84
+            }
+          },
+          "spearman_pchoppy_pnl": -0.512087912087912
+        },
+        "mid_weak": {
+          "n_trades": 20,
+          "unresolved": 0,
+          "by_regime": {
+            "risk_on_trend": {
+              "n": 20,
+              "mean_pnl": 241.81,
+              "median_pnl": 115.98,
+              "win_rate": 0.75,
+              "total_pnl": 4836.19
+            },
+            "choppy_range": {
+              "n": 0,
+              "mean_pnl": null,
+              "median_pnl": null,
+              "win_rate": null,
+              "total_pnl": 0.0
+            },
+            "risk_off_stress": {
+              "n": 0,
+              "mean_pnl": null,
+              "median_pnl": null,
+              "win_rate": null,
+              "total_pnl": 0.0
+            }
+          },
+          "spearman_pchoppy_pnl": -0.22255639097744362
+        },
+        "old_thin": {
+          "n_trades": 20,
+          "unresolved": 0,
+          "by_regime": {
+            "risk_on_trend": {
+              "n": 17,
+              "mean_pnl": 150.18,
+              "median_pnl": 62.26,
+              "win_rate": 0.5294,
+              "total_pnl": 2553.04
+            },
+            "choppy_range": {
+              "n": 2,
+              "mean_pnl": 100.41,
+              "median_pnl": 100.41,
+              "win_rate": 0.5,
+              "total_pnl": 200.83
+            },
+            "risk_off_stress": {
+              "n": 1,
+              "mean_pnl": -108.24,
+              "median_pnl": -108.24,
+              "win_rate": 0.0,
+              "total_pnl": -108.24
+            }
+          },
+          "spearman_pchoppy_pnl": -0.29473684210526313
+        }
+      },
+      "counterfactual_soft_tilt": {
+        "actual_total_pnl": 9295.34,
+        "tilted_total_pnl": 8443.58,
+        "tilt_delta_pnl": -851.76
+      }
+    },
+    "distribution_day_absorption_leadership": {
+      "experiment_id": "exp-20260611-007",
+      "n_trades": 113,
+      "pooled_spearman_pchoppy_pnl": -0.12563211125158028,
+      "pooled_spearman_exposure_pnl": 0.12563211125158028,
+      "pooled_by_regime": {
+        "risk_on_trend": {
+          "n": 80,
+          "mean_pnl": 120.27,
+          "median_pnl": 66.48,
+          "win_rate": 0.55,
+          "total_pnl": 9621.22
+        },
+        "choppy_range": {
+          "n": 23,
+          "mean_pnl": 4.45,
+          "median_pnl": 34.5,
+          "win_rate": 0.5217,
+          "total_pnl": 102.29
+        },
+        "risk_off_stress": {
+          "n": 10,
+          "mean_pnl": 70.94,
+          "median_pnl": 31.38,
+          "win_rate": 0.5,
+          "total_pnl": 709.4
+        }
+      },
+      "per_window": {
+        "late_strong": {
+          "n_trades": 40,
+          "unresolved": 0,
+          "by_regime": {
+            "risk_on_trend": {
+              "n": 20,
+              "mean_pnl": -23.29,
+              "median_pnl": -30.83,
+              "win_rate": 0.45,
+              "total_pnl": -465.76
+            },
+            "choppy_range": {
+              "n": 15,
+              "mean_pnl": -13.18,
+              "median_pnl": -11.37,
+              "win_rate": 0.4667,
+              "total_pnl": -197.67
+            },
+            "risk_off_stress": {
+              "n": 5,
+              "mean_pnl": 322.2,
+              "median_pnl": 93.1,
+              "win_rate": 0.6,
+              "total_pnl": 1611.02
+            }
+          },
+          "spearman_pchoppy_pnl": 0.024390243902439025
+        },
+        "mid_weak": {
+          "n_trades": 33,
+          "unresolved": 0,
+          "by_regime": {
+            "risk_on_trend": {
+              "n": 33,
+              "mean_pnl": 229.77,
+              "median_pnl": 113.1,
+              "win_rate": 0.6364,
+              "total_pnl": 7582.39
+            },
+            "choppy_range": {
+              "n": 0,
+              "mean_pnl": null,
+              "median_pnl": null,
+              "win_rate": null,
+              "total_pnl": 0.0
+            },
+            "risk_off_stress": {
+              "n": 0,
+              "mean_pnl": null,
+              "median_pnl": null,
+              "win_rate": null,
+              "total_pnl": 0.0
+            }
+          },
+          "spearman_pchoppy_pnl": -0.0875668449197861
+        },
+        "old_thin": {
+          "n_trades": 40,
+          "unresolved": 0,
+          "by_regime": {
+            "risk_on_trend": {
+              "n": 27,
+              "mean_pnl": 92.76,
+              "median_pnl": 26.41,
+              "win_rate": 0.5185,
+              "total_pnl": 2504.59
+            },
+            "choppy_range": {
+              "n": 8,
+              "mean_pnl": 37.5,
+              "median_pnl": 109.53,
+              "win_rate": 0.625,
+              "total_pnl": 299.96
+            },
+            "risk_off_stress": {
+              "n": 5,
+              "mean_pnl": -180.32,
+              "median_pnl": -13.11,
+              "win_rate": 0.4,
+              "total_pnl": -901.62
+            }
+          },
+          "spearman_pchoppy_pnl": -0.050093808630394
+        }
+      },
+      "counterfactual_soft_tilt": {
+        "actual_total_pnl": 10432.91,
+        "tilted_total_pnl": 9399.19,
+        "tilt_delta_pnl": -1033.72
+      }
+    },
+    "sbc_burden_improvement": {
+      "experiment_id": "exp-20260616-015",
+      "n_trades": 108,
+      "pooled_spearman_pchoppy_pnl": -0.22656644469214138,
+      "pooled_spearman_exposure_pnl": 0.22656644469214138,
+      "pooled_by_regime": {
+        "risk_on_trend": {
+          "n": 89,
+          "mean_pnl": 122.28,
+          "median_pnl": 113.48,
+          "win_rate": 0.6517,
+          "total_pnl": 10883.12
+        },
+        "choppy_range": {
+          "n": 9,
+          "mean_pnl": -126.19,
+          "median_pnl": -290.02,
+          "win_rate": 0.2222,
+          "total_pnl": -1135.68
+        },
+        "risk_off_stress": {
+          "n": 10,
+          "mean_pnl": 600.08,
+          "median_pnl": 610.17,
+          "win_rate": 0.9,
+          "total_pnl": 6000.75
+        }
+      },
+      "per_window": {
+        "late_strong": {
+          "n_trades": 40,
+          "unresolved": 0,
+          "by_regime": {
+            "risk_on_trend": {
+              "n": 27,
+              "mean_pnl": 49.31,
+              "median_pnl": 12.7,
+              "win_rate": 0.5556,
+              "total_pnl": 1331.37
+            },
+            "choppy_range": {
+              "n": 6,
+              "mean_pnl": 42.72,
+              "median_pnl": -169.49,
+              "win_rate": 0.3333,
+              "total_pnl": 256.32
+            },
+            "risk_off_stress": {
+              "n": 7,
+              "mean_pnl": 668.89,
+              "median_pnl": 690.65,
+              "win_rate": 0.8571,
+              "total_pnl": 4682.24
+            }
+          },
+          "spearman_pchoppy_pnl": -0.022889305816135085
+        },
+        "mid_weak": {
+          "n_trades": 46,
+          "unresolved": 0,
+          "by_regime": {
+            "risk_on_trend": {
+              "n": 43,
+              "mean_pnl": 164.42,
+              "median_pnl": 133.02,
+              "win_rate": 0.7209,
+              "total_pnl": 7069.92
+            },
+            "choppy_range": {
+              "n": 0,
+              "mean_pnl": null,
+              "median_pnl": null,
+              "win_rate": null,
+              "total_pnl": 0.0
+            },
+            "risk_off_stress": {
+              "n": 3,
+              "mean_pnl": 439.5,
+              "median_pnl": 437.87,
+              "win_rate": 1.0,
+              "total_pnl": 1318.51
+            }
+          },
+          "spearman_pchoppy_pnl": -0.38871415356151706
+        },
+        "old_thin": {
+          "n_trades": 22,
+          "unresolved": 0,
+          "by_regime": {
+            "risk_on_trend": {
+              "n": 19,
+              "mean_pnl": 130.62,
+              "median_pnl": 95.21,
+              "win_rate": 0.6316,
+              "total_pnl": 2481.83
+            },
+            "choppy_range": {
+              "n": 3,
+              "mean_pnl": -464.0,
+              "median_pnl": -421.23,
+              "win_rate": 0.0,
+              "total_pnl": -1392.0
+            },
+            "risk_off_stress": {
+              "n": 0,
+              "mean_pnl": null,
+              "median_pnl": null,
+              "win_rate": null,
+              "total_pnl": 0.0
+            }
+          },
+          "spearman_pchoppy_pnl": -0.43195934500282324
+        }
+      },
+      "counterfactual_soft_tilt": {
+        "actual_total_pnl": 15748.19,
+        "tilted_total_pnl": 14320.34,
+        "tilt_delta_pnl": -1427.85
+      }
+    },
+    "supplier_financing_debt_relief": {
+      "experiment_id": "exp-20260620-009",
+      "n_trades": 88,
+      "pooled_spearman_pchoppy_pnl": -0.23197492163009406,
+      "pooled_spearman_exposure_pnl": 0.23197492163009406,
+      "pooled_by_regime": {
+        "risk_on_trend": {
+          "n": 69,
+          "mean_pnl": 148.8,
+          "median_pnl": 95.21,
+          "win_rate": 0.6667,
+          "total_pnl": 10267.17
+        },
+        "choppy_range": {
+          "n": 7,
+          "mean_pnl": -50.01,
+          "median_pnl": -91.44,
+          "win_rate": 0.1429,
+          "total_pnl": -350.07
+        },
+        "risk_off_stress": {
+          "n": 12,
+          "mean_pnl": 203.2,
+          "median_pnl": 224.54,
+          "win_rate": 0.8333,
+          "total_pnl": 2438.38
+        }
+      },
+      "per_window": {
+        "late_strong": {
+          "n_trades": 32,
+          "unresolved": 0,
+          "by_regime": {
+            "risk_on_trend": {
+              "n": 23,
+              "mean_pnl": 97.79,
+              "median_pnl": 74.16,
+              "win_rate": 0.6957,
+              "total_pnl": 2249.24
+            },
+            "choppy_range": {
+              "n": 4,
+              "mean_pnl": -108.95,
+              "median_pnl": -117.19,
+              "win_rate": 0.0,
+              "total_pnl": -435.81
+            },
+            "risk_off_stress": {
+              "n": 5,
+              "mean_pnl": 348.28,
+              "median_pnl": 322.36,
+              "win_rate": 1.0,
+              "total_pnl": 1741.4
+            }
+          },
+          "spearman_pchoppy_pnl": -0.08687683284457477
+        },
+        "mid_weak": {
+          "n_trades": 36,
+          "unresolved": 0,
+          "by_regime": {
+            "risk_on_trend": {
+              "n": 32,
+              "mean_pnl": 188.71,
+              "median_pnl": 123.14,
+              "win_rate": 0.75,
+              "total_pnl": 6038.85
+            },
+            "choppy_range": {
+              "n": 0,
+              "mean_pnl": null,
+              "median_pnl": null,
+              "win_rate": null,
+              "total_pnl": 0.0
+            },
+            "risk_off_stress": {
+              "n": 4,
+              "mean_pnl": 267.54,
+              "median_pnl": 248.12,
+              "win_rate": 1.0,
+              "total_pnl": 1070.15
+            }
+          },
+          "spearman_pchoppy_pnl": -0.3287001287001287
+        },
+        "old_thin": {
+          "n_trades": 20,
+          "unresolved": 0,
+          "by_regime": {
+            "risk_on_trend": {
+              "n": 14,
+              "mean_pnl": 141.36,
+              "median_pnl": -91.33,
+              "win_rate": 0.4286,
+              "total_pnl": 1979.08
+            },
+            "choppy_range": {
+              "n": 3,
+              "mean_pnl": 28.58,
+              "median_pnl": -83.47,
+              "win_rate": 0.3333,
+              "total_pnl": 85.74
+            },
+            "risk_off_stress": {
+              "n": 3,
+              "mean_pnl": -124.39,
+              "median_pnl": -87.3,
+              "win_rate": 0.3333,
+              "total_pnl": -373.17
+            }
+          },
+          "spearman_pchoppy_pnl": -0.14736842105263157
+        }
+      },
+      "counterfactual_soft_tilt": {
+        "actual_total_pnl": 12355.48,
+        "tilted_total_pnl": 11080.92,
+        "tilt_delta_pnl": -1274.56
+      }
+    },
+    "revision_surprise_low_extension": {
+      "experiment_id": "exp-20260609-011",
+      "n_trades": 31,
+      "pooled_spearman_pchoppy_pnl": 0.005241935483870968,
+      "pooled_spearman_exposure_pnl": -0.005241935483870968,
+      "pooled_by_regime": {
+        "risk_on_trend": {
+          "n": 29,
+          "mean_pnl": 98.8,
+          "median_pnl": 26.78,
+          "win_rate": 0.6207,
+          "total_pnl": 2865.25
+        },
+        "choppy_range": {
+          "n": 0,
+          "mean_pnl": null,
+          "median_pnl": null,
+          "win_rate": null,
+          "total_pnl": 0.0
+        },
+        "risk_off_stress": {
+          "n": 2,
+          "mean_pnl": 14.25,
+          "median_pnl": 14.25,
+          "win_rate": 0.5,
+          "total_pnl": 28.5
+        }
+      },
+      "per_window": {
+        "late_strong": {
+          "n_trades": 7,
+          "unresolved": 0,
+          "by_regime": {
+            "risk_on_trend": {
+              "n": 6,
+              "mean_pnl": 258.59,
+              "median_pnl": 303.26,
+              "win_rate": 0.6667,
+              "total_pnl": 1551.56
+            },
+            "choppy_range": {
+              "n": 0,
+              "mean_pnl": null,
+              "median_pnl": null,
+              "win_rate": null,
+              "total_pnl": 0.0
+            },
+            "risk_off_stress": {
+              "n": 1,
+              "mean_pnl": -126.12,
+              "median_pnl": -126.12,
+              "win_rate": 0.0,
+              "total_pnl": -126.12
+            }
+          },
+          "spearman_pchoppy_pnl": 0.3571428571428571
+        },
+        "mid_weak": {
+          "n_trades": 15,
+          "unresolved": 0,
+          "by_regime": {
+            "risk_on_trend": {
+              "n": 14,
+              "mean_pnl": 38.2,
+              "median_pnl": 12.4,
+              "win_rate": 0.5714,
+              "total_pnl": 534.74
+            },
+            "choppy_range": {
+              "n": 0,
+              "mean_pnl": null,
+              "median_pnl": null,
+              "win_rate": null,
+              "total_pnl": 0.0
+            },
+            "risk_off_stress": {
+              "n": 1,
+              "mean_pnl": 154.62,
+              "median_pnl": 154.62,
+              "win_rate": 1.0,
+              "total_pnl": 154.62
+            }
+          },
+          "spearman_pchoppy_pnl": -0.15357142857142858
+        },
+        "old_thin": {
+          "n_trades": 9,
+          "unresolved": 0,
+          "by_regime": {
+            "risk_on_trend": {
+              "n": 9,
+              "mean_pnl": 86.55,
+              "median_pnl": 41.07,
+              "win_rate": 0.6667,
+              "total_pnl": 778.95
+            },
+            "choppy_range": {
+              "n": 0,
+              "mean_pnl": null,
+              "median_pnl": null,
+              "win_rate": null,
+              "total_pnl": 0.0
+            },
+            "risk_off_stress": {
+              "n": 0,
+              "mean_pnl": null,
+              "median_pnl": null,
+              "win_rate": null,
+              "total_pnl": 0.0
+            }
+          },
+          "spearman_pchoppy_pnl": 0.4666666666666666
+        }
+      },
+      "counterfactual_soft_tilt": {
+        "actual_total_pnl": 2893.75,
+        "tilted_total_pnl": 2592.08,
+        "tilt_delta_pnl": -301.67
+      }
+    }
+  },
+  "scope_partition": {
+    "chop_down_tilt_scope_set": [
+      {
+        "sleeve": "fiftytwo_week_high_proximity",
+        "pooled_spearman_pchoppy_pnl": -0.29773203735467885,
+        "n_trades": 54,
+        "chop_bucket_mean_pnl": -137.02,
+        "chop_bucket_n": 4,
+        "counterfactual_tilt_delta_pnl": -851.76
+      },
+      {
+        "sleeve": "supplier_financing_debt_relief",
+        "pooled_spearman_pchoppy_pnl": -0.23197492163009406,
+        "n_trades": 88,
+        "chop_bucket_mean_pnl": -50.01,
+        "chop_bucket_n": 7,
+        "counterfactual_tilt_delta_pnl": -1274.56
+      },
+      {
+        "sleeve": "sbc_burden_improvement",
+        "pooled_spearman_pchoppy_pnl": -0.22656644469214138,
+        "n_trades": 108,
+        "chop_bucket_mean_pnl": -126.19,
+        "chop_bucket_n": 9,
+        "counterfactual_tilt_delta_pnl": -1427.85
+      },
+      {
+        "sleeve": "distribution_day_absorption_leadership",
+        "pooled_spearman_pchoppy_pnl": -0.12563211125158028,
+        "n_trades": 113,
+        "chop_bucket_mean_pnl": 4.45,
+        "chop_bucket_n": 23,
+        "counterfactual_tilt_delta_pnl": -1033.72
+      },
+      {
+        "sleeve": "turn_of_month_liquid_leadership",
+        "pooled_spearman_pchoppy_pnl": -0.1221461187214612,
+        "n_trades": 73,
+        "chop_bucket_mean_pnl": -91.11,
+        "chop_bucket_n": 12,
+        "counterfactual_tilt_delta_pnl": -490.98
+      }
+    ],
+    "exclude_set": [
+      {
+        "sleeve": "narrow_range_compression_breakout",
+        "pooled_spearman_pchoppy_pnl": -0.023114869626497538,
+        "n_trades": 44,
+        "chop_bucket_mean_pnl": -168.02,
+        "chop_bucket_n": 2,
+        "counterfactual_tilt_delta_pnl": -148.28
+      },
+      {
+        "sleeve": "revision_surprise_low_extension",
+        "pooled_spearman_pchoppy_pnl": 0.005241935483870968,
+        "n_trades": 31,
+        "chop_bucket_mean_pnl": null,
+        "chop_bucket_n": 0,
+        "counterfactual_tilt_delta_pnl": -301.67
+      },
+      {
+        "sleeve": "industry_stable_core_flow",
+        "pooled_spearman_pchoppy_pnl": 0.05353839037927845,
+        "n_trades": 47,
+        "chop_bucket_mean_pnl": 124.4,
+        "chop_bucket_n": 4,
+        "counterfactual_tilt_delta_pnl": -519.4
+      }
+    ],
+    "note": "Scope set = sleeves with pooled Spearman(p_choppy,PnL) <= -0.1 on >= 20 trades. This is a diagnostic scoping surface only; a separate Gate 1-4 plus forward entry-regime-tagged rows are required before any soft tilt drives capital."
+  }
+}
