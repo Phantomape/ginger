@@ -16,43 +16,61 @@ def _plan(positions, prices, prior=None):
 
 def test_normal_position_emits_both_legs():
     plan = _plan(
-        [{"ticker": "HOOD", "shares": 10, "avg_cost": 105.20, "stop_price": 90.73, "target_price": 126.24}],
+        [{"ticker": "HOOD", "shares": 10, "avg_cost": 105.20, "entry_stop_price": 95.0,
+          "stop_price": 90.73, "target_price": 126.24}],
         {"HOOD": 110.0},
     )
     by_leg = {o["leg"]: o for o in plan["orders"]}
     assert by_leg["target"]["order_type"] == "LIMIT" and by_leg["target"]["price"] == 126.24
     assert by_leg["target"]["action"] == "PLACE" and by_leg["target"]["tif"] == "GTC"
-    assert by_leg["stop"]["order_type"] == "STOP" and by_leg["stop"]["price"] == 90.73
-    assert by_leg["stop"]["action"] == "PLACE"
+    # static entry stop (95.0) preferred over the trailed stop_price (90.73)
+    assert by_leg["stop"]["order_type"] == "STOP" and by_leg["stop"]["price"] == 95.0
+    assert by_leg["stop"]["action"] == "PLACE" and by_leg["stop"]["stop_basis"] == "static_entry"
     assert plan["summary"]["resting_orders_to_maintain"] == 2
+    assert plan["summary"]["stops_static_entry"] == 1
     assert plan["warnings"] == []
 
 
-def test_trailing_stop_winner_is_valid():
-    # NVDA: stop above cost but below target and below current -> valid trailing stop.
+def test_static_entry_stop_preferred_over_trailed():
+    # NVDA: trailed stop_price 194.08 but static entry stop 160 -> emit the static one
+    # (exp-20260623-020: static is EV-optimal, do not trail).
     plan = _plan(
-        [{"ticker": "NVDA", "shares": 5, "avg_cost": 177.24, "stop_price": 194.08, "target_price": 212.69}],
+        [{"ticker": "NVDA", "shares": 5, "avg_cost": 177.24, "entry_stop_price": 160.0,
+          "stop_price": 194.08, "target_price": 212.69}],
         {"NVDA": 205.0},
     )
     stop = next(o for o in plan["orders"] if o["leg"] == "stop")
-    assert stop["action"] == "PLACE" and stop["price"] == 194.08
-    assert not any("CORRUPT" in w for w in plan["warnings"])
+    assert stop["price"] == 160.0 and stop["stop_basis"] == "static_entry"
+    assert stop["action"] == "PLACE"
 
 
-def test_runner_past_target_keeps_trailing_stop_no_limit():
-    # AMD real shape: price (551) blew through the recorded target (209) long ago;
-    # stop (483) is a valid trailing stop BELOW market. -> runner: place the stop,
-    # no resting limit, flag the stale target. The stop is NOT corrupt.
+def test_trailed_fallback_when_no_entry_stop():
+    # No entry_stop_price -> fall back to the trailed stop_price, but warn.
     plan = _plan(
-        [{"ticker": "AMD", "shares": 7, "avg_cost": 174.21, "stop_price": 483.39, "target_price": 209.06}],
+        [{"ticker": "FOO", "shares": 5, "avg_cost": 100.0, "stop_price": 95.0, "target_price": 120.0}],
+        {"FOO": 110.0},
+    )
+    stop = next(o for o in plan["orders"] if o["leg"] == "stop")
+    assert stop["price"] == 95.0 and stop["stop_basis"] == "trailed_fallback"
+    assert plan["summary"]["stops_trailed_fallback"] == 1
+    assert any("TRAILED" in w and "FOO" in w for w in plan["warnings"])
+
+
+def test_runner_past_target_keeps_static_stop_no_limit():
+    # AMD: price (551) blew through the recorded target (209) long ago; the STATIC
+    # entry stop (150) is below market. -> runner: place the static stop, no resting
+    # limit, flag the stale target. The trailed 483 is NOT used.
+    plan = _plan(
+        [{"ticker": "AMD", "shares": 7, "avg_cost": 174.21, "entry_stop_price": 150.0,
+          "stop_price": 483.39, "target_price": 209.06}],
         {"AMD": 551.63},
     )
     stop = next(o for o in plan["orders"] if o["leg"] == "stop")
-    assert stop["action"] == "PLACE" and stop["price"] == 483.39  # valid trailing stop
+    assert stop["action"] == "PLACE" and stop["price"] == 150.0  # static, not trailed 483
+    assert stop["stop_basis"] == "static_entry"
     assert not any(o["leg"] == "target" for o in plan["orders"])   # no resting limit
     assert plan["summary"]["past_target_runners"] == 1
     assert any("runner" in w and "AMD" in w for w in plan["warnings"])
-    assert not any("CORRUPT" in w for w in plan["warnings"])
 
 
 def test_target_reached_without_protective_stop_flags_exit_now():

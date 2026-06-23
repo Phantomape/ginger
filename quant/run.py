@@ -2042,6 +2042,32 @@ def main():
     try:
         from bracket_orders import build_bracket_orders
         from data_paths import daily_artifact_glob
+        from position_manager import compute_atr
+        from constants import ATR_STOP_MULT
+        # Reconstruct the EV-optimal STATIC entry stop (avg_cost - 1.5*ATR-at-entry)
+        # per exp-20260623-020, since open_positions.stop_price has been trailed.
+        # Inject as entry_stop_price; the playbook prefers it over the trailed stop.
+        positions_for_bracket = {**open_positions} if isinstance(open_positions, dict) else open_positions
+        if isinstance(open_positions, dict):
+            _rows = open_positions.get("positions") or open_positions.get("open_positions") or []
+            _enriched = []
+            for _p in _rows:
+                _p2 = dict(_p) if isinstance(_p, dict) else _p
+                if isinstance(_p2, dict):
+                    _tk = str(_p2.get("ticker") or "").upper()
+                    _ed = _p2.get("entry_date")
+                    _ac = _p2.get("avg_cost")
+                    _df = ohlcv_dict.get(_tk)
+                    try:
+                        if _df is not None and _ed and _ac:
+                            _atr = compute_atr(_df.loc[:str(_ed)])
+                            if _atr and _atr > 0:
+                                _p2["entry_stop_price"] = round(float(_ac) - ATR_STOP_MULT * float(_atr), 2)
+                    except Exception:
+                        pass
+                _enriched.append(_p2)
+            key = "positions" if open_positions.get("positions") is not None else "open_positions"
+            positions_for_bracket = {**open_positions, key: _enriched}
         prior_plan = None
         prior_files = [p for p in daily_artifact_glob("bracket_orders") if today not in p.name]
         if prior_files:
@@ -2050,15 +2076,17 @@ def main():
             except Exception:
                 prior_plan = None
         bracket_orders_plan = build_bracket_orders(
-            open_positions, current_prices, asof_date=today_iso, prior_orders=prior_plan
+            positions_for_bracket, current_prices, asof_date=today_iso, prior_orders=prior_plan
         )
         orders_path = daily_artifact_path("bracket_orders", today)
         orders_path.parent.mkdir(parents=True, exist_ok=True)
         atomic_write_json(bracket_orders_plan, orders_path)
         _bs = bracket_orders_plan["summary"]
         log.info(
-            "Bracket orders: %d resting (%d target, %d stop), %d exit-now, %d warnings -> %s",
+            "Bracket orders: %d resting (%d target, %d stop: %d static/%d trailed-fallback), "
+            "%d exit-now, %d warnings -> %s",
             _bs["resting_orders_to_maintain"], _bs["target_limits"], _bs["protective_stops"],
+            _bs.get("stops_static_entry", 0), _bs.get("stops_trailed_fallback", 0),
             _bs["exit_now_flags"], _bs["warnings"], orders_path,
         )
     except Exception as e:

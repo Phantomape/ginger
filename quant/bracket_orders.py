@@ -98,11 +98,21 @@ def build_bracket_orders(
             continue
         avg_cost = _num(pos.get("avg_cost"))
         target = _num(pos.get("target_price"))
-        stop = _num(pos.get("stop_price"))
         px = prices.get(ticker)
+        # Stop policy: exp-20260623-020 found the STATIC stop frozen at entry is
+        # EV-optimal (trailing loses 30-57% EV with no drawdown benefit). Prefer
+        # the reconstructed static entry stop; fall back to the operator's trailed
+        # stop_price only when the entry stop is unavailable.
+        static_stop = _num(pos.get("entry_stop_price"))
+        trailed_stop = _num(pos.get("stop_price"))
+        if static_stop is not None and static_stop > 0:
+            stop, stop_basis = static_stop, "static_entry"
+        else:
+            stop, stop_basis = trailed_stop, "trailed_fallback"
 
-        def _base(order_type: str, price: float, leg: str, action: str, note: str) -> dict[str, Any]:
-            return {
+        def _base(order_type: str, price: float, leg: str, action: str, note: str,
+                  basis: str | None = None) -> dict[str, Any]:
+            row = {
                 "ticker": ticker,
                 "side": "SELL",
                 "order_type": order_type,
@@ -115,6 +125,9 @@ def build_bracket_orders(
                 "avg_cost": avg_cost,
                 "note": note,
             }
+            if basis is not None:
+                row["stop_basis"] = basis
+            return row
 
         # ---- TARGET leg: resting SELL LIMIT at target_price -----------------
         # A long limit-sell only rests ABOVE market. If price is already past the
@@ -131,8 +144,8 @@ def build_bracket_orders(
             if stop is not None and 0 < stop < px:
                 runners += 1
                 warnings.append(
-                    f"{ticker}: price {px:.2f} is past recorded target {target:.2f} - runner managed "
-                    f"by trailing stop {stop:.2f}; no resting limit emitted. Raise target_price to set a ceiling."
+                    f"{ticker}: price {px:.2f} is past recorded target {target:.2f} - runner protected "
+                    f"by {stop_basis} stop {stop:.2f}; no resting limit emitted. Raise target_price to set a ceiling."
                 )
             else:
                 orders.append(_base(
@@ -146,7 +159,7 @@ def build_bracket_orders(
                 note += " (current price unavailable - verify it is below target)"
             orders.append(_base("LIMIT", target, "target", "PLACE", note))
 
-        # ---- STOP leg: resting SELL STOP at stop_price ----------------------
+        # ---- STOP leg: resting SELL STOP (static entry stop preferred) -------
         # A long sell-stop only rests BELOW market. stop >= current price means the
         # stop is already breached (price fell to/through it) -> exit now.
         if stop is None or stop <= 0:
@@ -154,22 +167,31 @@ def build_bracket_orders(
         elif px is not None and stop >= px:
             orders.append(_base(
                 "STOP", stop, "stop", "EXIT_NOW",
-                f"current {px:.2f} <= stop {stop:.2f}; stop already breached - exit now "
+                f"current {px:.2f} <= {stop_basis} stop {stop:.2f}; stop already breached - exit now "
                 "(cannot rest a sell-stop at/above market).",
+                basis=stop_basis,
             ))
         else:
             prior = prior_stop.get(ticker)
-            if prior is not None and abs(prior - stop) >= 0.01:
+            if stop_basis == "static_entry":
+                action = "PLACE"
+                note = "static entry stop (EV-optimal per exp-20260623-020); place once, do NOT trail it up."
+            elif prior is not None and abs(prior - stop) >= 0.01:
                 action = "MOVE"
-                note = f"trailing stop moved {prior:.2f} -> {stop:.2f}; cancel old stop and replace."
+                note = (f"trailed stop moved {prior:.2f} -> {stop:.2f}; cancel old and replace. "
+                        "NOTE: entry stop unavailable; static stop is EV-optimal - reconstruct it.")
             else:
                 action = "PLACE"
-                note = "resting protective stop; place once, move up only as it trails."
+                note = ("trailed stop (entry stop unavailable); static entry stop is EV-optimal "
+                        "per exp-20260623-020 - reconstruct rather than trail.")
+            if stop_basis == "trailed_fallback":
+                warnings.append(
+                    f"{ticker}: emitting TRAILED stop {stop:.2f} - entry stop could not be "
+                    "reconstructed; static entry stop is EV-optimal."
+                )
             if px is None:
                 note += " (current price unavailable - verify it is below market)"
-                if target is not None and stop >= target:
-                    note += " [stop>=recorded target: runner if target is stale, else verify]"
-            orders.append(_base("STOP", stop, "stop", action, note))
+            orders.append(_base("STOP", stop, "stop", action, note, basis=stop_basis))
 
     place = [o for o in orders if o["action"] in {"PLACE", "MOVE"}]
     exit_now = [o for o in orders if o["action"] == "EXIT_NOW"]
@@ -178,6 +200,8 @@ def build_bracket_orders(
         "resting_orders_to_maintain": len(place),
         "target_limits": len([o for o in place if o["leg"] == "target"]),
         "protective_stops": len([o for o in place if o["leg"] == "stop"]),
+        "stops_static_entry": len([o for o in place if o["leg"] == "stop" and o.get("stop_basis") == "static_entry"]),
+        "stops_trailed_fallback": len([o for o in place if o["leg"] == "stop" and o.get("stop_basis") == "trailed_fallback"]),
         "exit_now_flags": len(exit_now),
         "past_target_runners": runners,
         "warnings": len(warnings),
