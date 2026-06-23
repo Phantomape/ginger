@@ -1,0 +1,1099 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260623_015_exit_lifecycle_llm_confluence_forward_loss.py",
+    "data/experiments/exp-20260623-015/exp_20260623_015_exit_lifecycle_llm_confluence_forward_loss.json",
+    "experiments/cards/exp-20260623-015.md",
+    "experiments/manifests/exp-20260623-015.json",
+    "experiments/tickets/exp-20260623-015.json",
+    "experiments/logs/exp-20260623-015.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260623-015.md",
+  "causal_components": [
+    "production exit-lifecycle shadow logs",
+    "daily LLM decision logs",
+    "cross-surface confluence buckets",
+    "warehouse OHLCV forward settlement",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "exit_lifecycle_llm_state_confluence_forward_loss_attribution_v1",
+  "claimed_at": "2026-06-23T12:03:44+00:00",
+  "completed_at": "2026-06-23T12:09:26+00:00",
+  "created_at": "2026-06-23T12:03:35+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260623-015",
+  "experiment_uid": "expuid-41e309fd0c864ced",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260623-015",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-23T12:03:35+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "exit_lifecycle_llm_confluence_forward_loss"
+  },
+  "hypothesis": "Observed-only attribution: rows where production exit-lifecycle advisory severity and LLM decision-log exit pressure agree should show worse next-5-trading-day outcomes than single-surface or no-pressure rows, creating a future shared exit/risk policy lead only if confluence improves forward loss separation.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "exit_lifecycle_llm_state_confluence_forward_loss_attribution_v1"
+  ],
+  "mechanism_family": "exit_lifecycle_llm_confluence_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260623-011",
+    "exp-20260623-012",
+    "exp-20260429-032"
+  ],
+  "new_evidence_type": "cross_surface_forward_production_rows",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "advisory",
+        "agree",
+        "attribution",
+        "confluence",
+        "creating",
+        "decision",
+        "exit",
+        "forward",
+        "future",
+        "if",
+        "improves",
+        "lead",
+        "lifecycle",
+        "llm",
+        "log",
+        "loss",
+        "no",
+        "observed",
+        "only",
+        "or",
+        "outcomes",
+        "policy",
+        "pressure",
+        "risk",
+        "rows",
+        "separation",
+        "severity",
+        "should",
+        "show",
+        "single",
+        "state",
+        "surface",
+        "than",
+        "trading",
+        "where",
+        "worse"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "market_state_family_replacement_value_attribution",
+        "reopen_condition": null,
+        "score": 0.0364,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "state_surface_core_overlap_attribution",
+        "reopen_condition": "Closed forward state-surface paper outcomes plus core-entry overlap on those forward rows (not just the frozen sample).",
+        "score": 0.03,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "canonical_state_vector_ranking_validation",
+        "reopen_condition": "Run a separate Gate 1-4 alpha experiment for a small shared-policy post-sizing top-up on entry-day leadership_vector.state == strong and non-hot risk state; do not promote from attribution alone.",
+        "score": 0.0286,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "pit_regime_state_classifier_diagnostic",
+        "reopen_condition": "If a sleeve shows stable cross-window regime separation here, the next step is a shared default-off regime artifact + portfolio-level soft capital tilt (monotonic in risk_off_score, few parameters), validated on forward state-tagged replacement-value rows, NOT a hard per-window on/off gate. exp-20260614-010 already showed a hard frozen-window breadth filter regresses all three windows.",
+        "score": 0.0286,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "broad_momentum_tail_state_attribution",
+        "reopen_condition": "A retry needs a materially different PIT tail-risk field, forward closed replacement-value rows, or a shared helper that tests the bucket against accepted compression, distribution, and allocator comparators.",
+        "score": 0.0279,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape combining two independently logged production surfaces on the same ticker/as_of date; not a retune of either exit-lifecycle advisory labels or LLM position-state labels alone.",
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.28,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "sample_too_small",
+      "no_confluence_incremental_separation",
+      "surfaces_are_same_endogenous_label",
+      "warehouse_outcomes_missing",
+      "ticker_concentration"
+    ],
+    "confidence_reason": "Both exp-20260623-011 and exp-20260623-012 produced observed-only forward loss leads on distinct production surfaces; confluence may reduce label noise, but overlap/endogeneity and limited closed dates make this a low-confidence diagnostic, not a promotable exit rule.",
+    "recorded_at": "2026-06-23T12:03:20+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "rejected_no_incremental_exit_lifecycle_llm_confluence_edge",
+    "artifact": "data/experiments/exp-20260623-015/exp_20260623_015_exit_lifecycle_llm_confluence_forward_loss.json",
+    "log": "experiments/logs/exp-20260623-015.json",
+    "runner": "quant/experiments/exp_20260623_015_exit_lifecycle_llm_confluence_forward_loss.py",
+    "gate4": {
+      "observed_only_lead": false,
+      "failed_reasons": [
+        "single_surface_sample_too_small",
+        "dual_mean_not_below_single_surface",
+        "dual_median_not_below_single_surface"
+      ],
+      "acceptance_checks": {
+        "raw_settled_rows": 164,
+        "deduped_settled_rows": 134,
+        "no_pressure_rows": 103,
+        "single_surface_rows": 0,
+        "dual_pressure_rows": 31,
+        "joined_settled_bucket_counts": {
+          "no_pressure": 103,
+          "dual_pressure": 31
+        },
+        "severity_spearman_return": -0.178643,
+        "severity_spearman_spy_replacement": -0.244209,
+        "date_support": {
+          "comparable_dates": 10,
+          "dual_worse_dates": 8,
+          "details": [
+            {
+              "as_of_date": "2026-05-31",
+              "no_pressure_rows": 9,
+              "dual_pressure_rows": 2,
+              "no_pressure_mean_return": -0.029501,
+              "dual_pressure_mean_return": -0.081924,
+              "dual_worse": true
+            },
+            {
+              "as_of_date": "2026-06-01",
+              "no_pressure_rows": 10,
+              "dual_pressure_rows": 3,
+              "no_pressure_mean_return": -0.073202,
+              "dual_pressure_mean_return": -0.105928,
+              "dual_worse": true
+            },
+            {
+              "as_of_date": "2026-06-02",
+              "no_pressure_rows": 10,
+              "dual_pressure_rows": 3,
+              "no_pressure_mean_return": -0.098963,
+              "dual_pressure_mean_return": -0.106758,
+              "dual_worse": true
+            },
+            {
+              "as_of_date": "2026-06-03",
+              "no_pressure_rows": 10,
+              "dual_pressure_rows": 3,
+              "no_pressure_mean_return": -0.03756,
+              "dual_pressure_mean_return": -0.003312,
+              "dual_worse": false
+            },
+            {
+              "as_of_date": "2026-06-04",
+              "no_pressure_rows": 10,
+              "dual_pressure_rows": 5,
+              "no_pressure_mean_return": -0.030538,
+              "dual_pressure_mean_return": 0.012549,
+              "dual_worse": false
+            },
+            {
+              "as_of_date": "2026-06-05",
+              "no_pressure_rows": 11,
+              "dual_pressure_rows": 4,
+              "no_pressure_mean_return": 0.096617,
+              "dual_pressure_mean_return": -0.006877,
+              "dual_worse": true
+            },
+            {
+              "as_of_date": "2026-06-08",
+              "no_pressure_rows": 11,
+              "dual_pressure_rows": 4,
+              "no_pressure_mean_return": 0.039082,
+              "dual_pressure_mean_return": -0.023111,
+              "dual_worse": true
+            },
+            {
+              "as_of_date": "2026-06-09",
+              "no_pressure_rows": 11,
+              "dual_pressure_rows": 2,
+              "no_pressure_mean_return": 0.051174,
+              "dual_pressure_mean_return": -0.039935,
+              "dual_worse": true
+            },
+            {
+              "as_of_date": "2026-06-10",
+              "no_pressure_rows": 10,
+              "dual_pressure_rows": 3,
+              "no_pressure_mean_return": 0.087974,
+              "dual_pressure_mean_return": 0.052765,
+              "dual_worse": true
+            },
+            {
+              "as_of_date": "2026-06-11",
+              "no_pressure_rows": 11,
+              "dual_pressure_rows": 2,
+              "no_pressure_mean_return": 0.045249,
+              "dual_pressure_mean_return": -0.060808,
+              "dual_worse": true
+            }
+          ]
+        },
+        "max_dual_adverse_pnl_share": 0.385905,
+        "dual_mean_return": -0.029427,
+        "dual_median_return": -0.041519,
+        "no_pressure_mean_return": 0.007427,
+        "no_pressure_median_return": -0.013772,
+        "single_surface_mean_return": null,
+        "single_surface_median_return": null,
+        "dual_concentration": {
+          "adverse_pnl": 7026.03,
+          "max_single_adverse_pnl_share": 0.385905,
+          "adverse_pnl_hhi": 0.214987,
+          "top_adverse_tickers": [
+            {
+              "ticker": "APP",
+              "adverse_pnl": 2711.38,
+              "share": 0.385905
+            },
+            {
+              "ticker": "MSFT",
+              "adverse_pnl": 891.73,
+              "share": 0.126918
+            },
+            {
+              "ticker": "QQQ",
+              "adverse_pnl": 887.6,
+              "share": 0.12633
+            },
+            {
+              "ticker": "NFLX",
+              "adverse_pnl": 815.47,
+              "share": 0.116064
+            },
+            {
+              "ticker": "META",
+              "adverse_pnl": 702.63,
+              "share": 0.100004
+            },
+            {
+              "ticker": "SNXX",
+              "adverse_pnl": 541.84,
+              "share": 0.077119
+            },
+            {
+              "ticker": "RKLB",
+              "adverse_pnl": 475.38,
+              "share": 0.06766
+            }
+          ]
+        },
+        "joined_sample_min_passed": true,
+        "no_pressure_sample_min_passed": true,
+        "single_surface_sample_min_passed": false,
+        "dual_pressure_sample_min_passed": true,
+        "dual_mean_below_no_pressure": true,
+        "dual_median_below_no_pressure": true,
+        "dual_mean_below_single_surface": false,
+        "dual_median_below_single_surface": false,
+        "severity_spearman_return_negative": true,
+        "severity_spearman_spy_replacement_negative": true,
+        "date_support_passed": true,
+        "dual_concentration_passed": true
+      },
+      "decision": "rejected_no_incremental_exit_lifecycle_llm_confluence_edge",
+      "strategy_rerun_required": false,
+      "before_after_strategy_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "max_drawdown_pct": 0.0
+      },
+      "lead_limitations": [
+        "Forward-only production rows, not canonical fixed-window PIT replay.",
+        "No shared helper, adapter, daily execution rule, or exit policy was promoted.",
+        "Rows are deduped by ticker, entry date, exit date, and confluence bucket.",
+        "Outcome is gross diagnostic next-open-to-5d-close path attribution."
+      ]
+    },
+    "calibration": {
+      "predicted_success_probability": 0.28,
+      "actual_success": false,
+      "brier_score": 0.0784,
+      "predicted_failure_modes": [
+        "sample_too_small",
+        "no_confluence_incremental_separation",
+        "surfaces_are_same_endogenous_label",
+        "warehouse_outcomes_missing",
+        "ticker_concentration"
+      ],
+      "failed_reasons": [
+        "single_surface_sample_too_small",
+        "dual_mean_not_below_single_surface",
+        "dual_median_not_below_single_surface"
+      ],
+      "predicted_failure_modes_hit": [
+        "sample_too_small",
+        "no_confluence_incremental_separation",
+        "surfaces_are_same_endogenous_label"
+      ]
+    },
+    "summary": "The two production surfaces mostly agree on the same rows, leaving too little single-surface disagreement to prove incremental confluence value. The dual-pressure rows can still be monitored, but this does not justify an exit or risk rule."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260623-015.json",
+  "single_causal_variable": "exit_lifecycle_llm_state_confluence_forward_loss_attribution_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260623-015.json",
+  "trial_family": "exit_lifecycle_llm_state_confluence_forward_attribution",
+  "trial_variant_id": "dual_surface_exit_pressure_next5d_v1",
+  "implementation_mode": "observed_only_attribution_runner",
+  "new_evidence_axis": "New gate shape combining two independently logged production surfaces on the same ticker/as_of date; not a retune of either exit-lifecycle advisory labels or LLM position-state labels alone.",
+  "decision": "rejected_no_incremental_exit_lifecycle_llm_confluence_edge",
+  "artifact": "data/experiments/exp-20260623-015/exp_20260623_015_exit_lifecycle_llm_confluence_forward_loss.json",
+  "log": "experiments/logs/exp-20260623-015.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    },
+    "note": "Observed-only attribution; before and after policy are identical."
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "fields_checked": [
+      "as_of_date",
+      "ticker",
+      "entry_date",
+      "target_price",
+      "market_value_usd",
+      "advisory_events.event_type",
+      "has_advisory_event",
+      "position_states",
+      "llm_position_state",
+      "confluence_bucket",
+      "forward_5d_return_pct",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd"
+    ],
+    "entry_date_present": true,
+    "target_price_present_count": 295,
+    "target_price_relevance": "Checked for Gate 2. This attribution does not schedule target exits.",
+    "source_audit": {
+      "lifecycle": {
+        "source_dir": "data/exit_lifecycle",
+        "files": [
+          "data/exit_lifecycle/exit_lifecycle_20260531.jsonl",
+          "data/exit_lifecycle/exit_lifecycle_20260601.jsonl",
+          "data/exit_lifecycle/exit_lifecycle_20260602.jsonl",
+          "data/exit_lifecycle/exit_lifecycle_20260603.jsonl",
+          "data/exit_lifecycle/exit_lifecycle_20260604.jsonl",
+          "data/exit_lifecycle/exit_lifecycle_20260605.jsonl",
+          "data/exit_lifecycle/exit_lifecycle_20260606.jsonl",
+          "data/exit_lifecycle/exit_lifecycle_20260607.jsonl",
+          "data/exit_lifecycle/exit_lifecycle_20260608.jsonl",
+          "data/exit_lifecycle/exit_lifecycle_20260609.jsonl",
+          "data/exit_lifecycle/exit_lifecycle_20260610.jsonl",
+          "data/exit_lifecycle/exit_lifecycle_20260611.jsonl",
+          "data/exit_lifecycle/exit_lifecycle_20260612.jsonl",
+          "data/exit_lifecycle/exit_lifecycle_20260613.jsonl",
+          "data/exit_lifecycle/exit_lifecycle_20260614.jsonl",
+          "data/exit_lifecycle/exit_lifecycle_20260615.jsonl",
+          "data/exit_lifecycle/exit_lifecycle_20260616.jsonl",
+          "data/exit_lifecycle/exit_lifecycle_20260617.jsonl",
+          "data/exit_lifecycle/exit_lifecycle_20260618.jsonl",
+          "data/exit_lifecycle/exit_lifecycle_20260619.jsonl",
+          "data/exit_lifecycle/exit_lifecycle_20260620.jsonl",
+          "data/exit_lifecycle/exit_lifecycle_20260621.jsonl",
+          "data/exit_lifecycle/exit_lifecycle_20260622.jsonl"
+        ],
+        "file_count": 23,
+        "rows": 321,
+        "skipped_rows": [],
+        "dates": [
+          "2026-05-31",
+          "2026-06-01",
+          "2026-06-02",
+          "2026-06-03",
+          "2026-06-04",
+          "2026-06-05",
+          "2026-06-06",
+          "2026-06-07",
+          "2026-06-08",
+          "2026-06-09",
+          "2026-06-10",
+          "2026-06-11",
+          "2026-06-12",
+          "2026-06-13",
+          "2026-06-14",
+          "2026-06-15",
+          "2026-06-16",
+          "2026-06-17",
+          "2026-06-18",
+          "2026-06-19",
+          "2026-06-20",
+          "2026-06-21",
+          "2026-06-22"
+        ],
+        "tickers": [
+          "AMD",
+          "AMZN",
+          "APP",
+          "COHR",
+          "CRDO",
+          "GOOG",
+          "HOOD",
+          "META",
+          "MRVL",
+          "MSFT",
+          "MUU",
+          "NBIS",
+          "NFLX",
+          "NVDA",
+          "QQQ",
+          "RKLB",
+          "RKLZ",
+          "SNOW",
+          "SNXX",
+          "TRIP",
+          "TSLA"
+        ],
+        "bucket_counts": {
+          "hard_stop": 40,
+          "high_urgency": 45,
+          "none": 236
+        }
+      },
+      "llm": {
+        "source_dir": "data/daily/llm/decisions",
+        "files": [
+          "data/daily/llm/decisions/llm_decision_log_20260412.json",
+          "data/daily/llm/decisions/llm_decision_log_20260413.json",
+          "data/daily/llm/decisions/llm_decision_log_20260414.json",
+          "data/daily/llm/decisions/llm_decision_log_20260415.json",
+          "data/daily/llm/decisions/llm_decision_log_20260416.json",
+          "data/daily/llm/decisions/llm_decision_log_20260417.json",
+          "data/daily/llm/decisions/llm_decision_log_20260420.json",
+          "data/daily/llm/decisions/llm_decision_log_20260421.json",
+          "data/daily/llm/decisions/llm_decision_log_20260422.json",
+          "data/daily/llm/decisions/llm_decision_log_20260423.json",
+          "data/daily/llm/decisions/llm_decision_log_20260424.json",
+          "data/daily/llm/decisions/llm_decision_log_20260427.json",
+          "data/daily/llm/decisions/llm_decision_log_20260428.json",
+          "data/daily/llm/decisions/llm_decision_log_20260429.json",
+          "data/daily/llm/decisions/llm_decision_log_20260430.json",
+          "data/daily/llm/decisions/llm_decision_log_20260501.json",
+          "data/daily/llm/decisions/llm_decision_log_20260503.json",
+          "data/daily/llm/decisions/llm_decision_log_20260504.json",
+          "data/daily/llm/decisions/llm_decision_log_20260505.json",
+          "data/daily/llm/decisions/llm_decision_log_20260506.json",
+          "data/daily/llm/decisions/llm_decision_log_20260507.json",
+          "data/daily/llm/decisions/llm_decision_log_20260508.json",
+          "data/daily/llm/decisions/llm_decision_log_20260509.json",
+          "data/daily/llm/decisions/llm_decision_log_20260510.json",
+          "data/daily/llm/decisions/llm_decision_log_20260511.json",
+          "data/daily/llm/decisions/llm_decision_log_20260512.json",
+          "data/daily/llm/decisions/llm_decision_log_20260513.json",
+          "data/daily/llm/decisions/llm_decision_log_20260514.json",
+          "data/daily/llm/decisions/llm_decision_log_20260515.json",
+          "data/daily/llm/decisions/llm_decision_log_20260516.json",
+          "data/daily/llm/decisions/llm_decision_log_20260517.json",
+          "data/daily/llm/decisions/llm_decision_log_20260518.json",
+          "data/daily/llm/decisions/llm_decision_log_20260519.json",
+          "data/daily/llm/decisions/llm_decision_log_20260520.json",
+          "data/daily/llm/decisions/llm_decision_log_20260521.json",
+          "data/daily/llm/decisions/llm_decision_log_20260522.json",
+          "data/daily/llm/decisions/llm_decision_log_20260523.json",
+          "data/daily/llm/decisions/llm_decision_log_20260524.json",
+          "data/daily/llm/decisions/llm_decision_log_20260525.json",
+          "data/daily/llm/decisions/llm_decision_log_20260526.json",
+          "data/daily/llm/decisions/llm_decision_log_20260527.json",
+          "data/daily/llm/decisions/llm_decision_log_20260528.json",
+          "data/daily/llm/decisions/llm_decision_log_20260529.json",
+          "data/daily/llm/decisions/llm_decision_log_20260530.json",
+          "data/daily/llm/decisions/llm_decision_log_20260531.json",
+          "data/daily/llm/decisions/llm_decision_log_20260601.json",
+          "data/daily/llm/decisions/llm_decision_log_20260602.json",
+          "data/daily/llm/decisions/llm_decision_log_20260603.json",
+          "data/daily/llm/decisions/llm_decision_log_20260604.json",
+          "data/daily/llm/decisions/llm_decision_log_20260605.json",
+          "data/daily/llm/decisions/llm_decision_log_20260606.json",
+          "data/daily/llm/decisions/llm_decision_log_20260607.json",
+          "data/daily/llm/decisions/llm_decision_log_20260608.json",
+          "data/daily/llm/decisions/llm_decision_log_20260609.json",
+          "data/daily/llm/decisions/llm_decision_log_20260610.json",
+          "data/daily/llm/decisions/llm_decision_log_20260611.json",
+          "data/daily/llm/decisions/llm_decision_log_20260613.json",
+          "data/daily/llm/decisions/llm_decision_log_20260615.json",
+          "data/daily/llm/decisions/llm_decision_log_20260616.json",
+          "data/daily/llm/decisions/llm_decision_log_20260617.json",
+          "data/daily/llm/decisions/llm_decision_log_20260618.json",
+          "data/daily/llm/decisions/llm_decision_log_20260619.json",
+          "data/daily/llm/decisions/llm_decision_log_20260620.json",
+          "data/daily/llm/decisions/llm_decision_log_20260621.json",
+          "data/daily/llm/decisions/llm_decision_log_20260622.json"
+        ],
+        "file_count": 65,
+        "rows": 653,
+        "skipped_rows": [
+          {
+            "file": "data/daily/llm/decisions/llm_decision_log_20260412.json",
+            "reason": "missing_position_states"
+          },
+          {
+            "file": "data/daily/llm/decisions/llm_decision_log_20260413.json",
+            "reason": "missing_position_states"
+          },
+          {
+            "file": "data/daily/llm/decisions/llm_decision_log_20260414.json",
+            "reason": "missing_position_states"
+          },
+          {
+            "file": "data/daily/llm/decisions/llm_decision_log_20260415.json",
+            "reason": "missing_position_states"
+          },
+          {
+            "file": "data/daily/llm/decisions/llm_decision_log_20260416.json",
+            "reason": "missing_position_states"
+          },
+          {
+            "file": "data/daily/llm/decisions/llm_decision_log_20260417.json",
+            "reason": "missing_position_states"
+          },
+          {
+            "file": "data/daily/llm/decisions/llm_decision_log_20260420.json",
+            "reason": "missing_position_states"
+          },
+          {
+            "file": "data/daily/llm/decisions/llm_decision_log_20260421.json",
+            "reason": "missing_position_states"
+          },
+          {
+            "file": "data/daily/llm/decisions/llm_decision_log_20260422.json",
+            "reason": "missing_position_states"
+          }
+        ],
+        "dates": [
+          "2026-04-23",
+          "2026-04-24",
+          "2026-04-27",
+          "2026-04-28",
+          "2026-04-29",
+          "2026-04-30",
+          "2026-05-01",
+          "2026-05-03",
+          "2026-05-04",
+          "2026-05-05",
+          "2026-05-06",
+          "2026-05-07",
+          "2026-05-08",
+          "2026-05-09",
+          "2026-05-10",
+          "2026-05-11",
+          "2026-05-12",
+          "2026-05-13",
+          "2026-05-14",
+          "2026-05-15",
+          "2026-05-16",
+          "2026-05-17",
+          "2026-05-18",
+          "2026-05-19",
+          "2026-05-20",
+          "2026-05-21",
+          "2026-05-22",
+          "2026-05-23",
+          "2026-05-24",
+          "2026-05-25",
+          "2026-05-26",
+          "2026-05-27",
+          "2026-05-28",
+          "2026-05-29",
+          "2026-05-30",
+          "2026-05-31",
+          "2026-06-01",
+          "2026-06-02",
+          "2026-06-03",
+          "2026-06-04",
+          "2026-06-05",
+          "2026-06-06",
+          "2026-06-07",
+          "2026-06-08",
+          "2026-06-09",
+          "2026-06-10",
+          "2026-06-11",
+          "2026-06-13",
+          "2026-06-15",
+          "2026-06-16",
+          "2026-06-17",
+          "2026-06-18",
+          "2026-06-19",
+          "2026-06-20",
+          "2026-06-21",
+          "2026-06-22"
+        ],
+        "tickers": [
+          "AMD",
+          "AMZN",
+          "APP",
+          "COHR",
+          "CRDO",
+          "GOOG",
+          "HOOD",
+          "IAU",
+          "ISRG",
+          "MCD",
+          "META",
+          "MRVL",
+          "MSFT",
+          "MU",
+          "MUU",
+          "NBIS",
+          "NFLX",
+          "NVDA",
+          "QQQ",
+          "RKLB",
+          "RKLZ",
+          "SNOW",
+          "SNXX",
+          "TRIP",
+          "TSLA",
+          "UNH"
+        ],
+        "state_counts": {
+          "ATR_EXIT": 6,
+          "CRITICAL_EXIT": 44,
+          "HIGH_REDUCE": 30,
+          "HOLD": 505,
+          "TARGET_EXIT": 68
+        },
+        "bucket_counts": {
+          "atr_exit": 6,
+          "critical_exit": 44,
+          "high_reduce": 30,
+          "hold": 505,
+          "target_exit": 68
+        }
+      },
+      "joined_rows": 295,
+      "joined_dates": [
+        "2026-05-31",
+        "2026-06-01",
+        "2026-06-02",
+        "2026-06-03",
+        "2026-06-04",
+        "2026-06-05",
+        "2026-06-06",
+        "2026-06-07",
+        "2026-06-08",
+        "2026-06-09",
+        "2026-06-10",
+        "2026-06-11",
+        "2026-06-13",
+        "2026-06-15",
+        "2026-06-16",
+        "2026-06-17",
+        "2026-06-18",
+        "2026-06-19",
+        "2026-06-20",
+        "2026-06-21",
+        "2026-06-22"
+      ],
+      "joined_tickers": [
+        "AMD",
+        "AMZN",
+        "APP",
+        "COHR",
+        "CRDO",
+        "GOOG",
+        "HOOD",
+        "META",
+        "MRVL",
+        "MSFT",
+        "MUU",
+        "NBIS",
+        "NFLX",
+        "NVDA",
+        "QQQ",
+        "RKLB",
+        "RKLZ",
+        "SNOW",
+        "SNXX",
+        "TRIP",
+        "TSLA"
+      ],
+      "confluence_bucket_counts": {
+        "dual_pressure": 77,
+        "no_pressure": 218
+      },
+      "surface_disagreement_rows": 0,
+      "surface_agreement_rate": 1.0
+    },
+    "settlement_audit": {
+      "warehouse_path": "data/warehouse/warehouse_main.sqlite",
+      "loaded_tickers": [
+        "AMD",
+        "AMZN",
+        "APP",
+        "COHR",
+        "CRDO",
+        "GOOG",
+        "HOOD",
+        "META",
+        "MRVL",
+        "MSFT",
+        "MUU",
+        "NBIS",
+        "NFLX",
+        "NVDA",
+        "QQQ",
+        "RKLB",
+        "RKLZ",
+        "SNOW",
+        "SNXX",
+        "SPY",
+        "TRIP",
+        "TSLA"
+      ],
+      "raw_settled_rows": 164,
+      "skipped_reasons": {
+        "missing_next_session": 16,
+        "not_yet_5d_closed": 115
+      },
+      "settled_date_range": {
+        "as_of_start": "2026-05-31",
+        "as_of_end": "2026-06-11",
+        "entry_start": "2026-06-01",
+        "entry_end": "2026-06-12",
+        "exit_start": "2026-06-08",
+        "exit_end": "2026-06-22"
+      }
+    }
+  },
+  "gate3": {
+    "filter_added": false,
+    "signals_generated": 295,
+    "signals_survived": 164,
+    "survival_rate": 0.5559,
+    "baseline_survival_rate": 0.8232,
+    "note": "No executable filter was added; rows are attributed only."
+  },
+  "gate4": {
+    "observed_only_lead": false,
+    "failed_reasons": [
+      "single_surface_sample_too_small",
+      "dual_mean_not_below_single_surface",
+      "dual_median_not_below_single_surface"
+    ],
+    "acceptance_checks": {
+      "raw_settled_rows": 164,
+      "deduped_settled_rows": 134,
+      "no_pressure_rows": 103,
+      "single_surface_rows": 0,
+      "dual_pressure_rows": 31,
+      "joined_settled_bucket_counts": {
+        "no_pressure": 103,
+        "dual_pressure": 31
+      },
+      "severity_spearman_return": -0.178643,
+      "severity_spearman_spy_replacement": -0.244209,
+      "date_support": {
+        "comparable_dates": 10,
+        "dual_worse_dates": 8,
+        "details": [
+          {
+            "as_of_date": "2026-05-31",
+            "no_pressure_rows": 9,
+            "dual_pressure_rows": 2,
+            "no_pressure_mean_return": -0.029501,
+            "dual_pressure_mean_return": -0.081924,
+            "dual_worse": true
+          },
+          {
+            "as_of_date": "2026-06-01",
+            "no_pressure_rows": 10,
+            "dual_pressure_rows": 3,
+            "no_pressure_mean_return": -0.073202,
+            "dual_pressure_mean_return": -0.105928,
+            "dual_worse": true
+          },
+          {
+            "as_of_date": "2026-06-02",
+            "no_pressure_rows": 10,
+            "dual_pressure_rows": 3,
+            "no_pressure_mean_return": -0.098963,
+            "dual_pressure_mean_return": -0.106758,
+            "dual_worse": true
+          },
+          {
+            "as_of_date": "2026-06-03",
+            "no_pressure_rows": 10,
+            "dual_pressure_rows": 3,
+            "no_pressure_mean_return": -0.03756,
+            "dual_pressure_mean_return": -0.003312,
+            "dual_worse": false
+          },
+          {
+            "as_of_date": "2026-06-04",
+            "no_pressure_rows": 10,
+            "dual_pressure_rows": 5,
+            "no_pressure_mean_return": -0.030538,
+            "dual_pressure_mean_return": 0.012549,
+            "dual_worse": false
+          },
+          {
+            "as_of_date": "2026-06-05",
+            "no_pressure_rows": 11,
+            "dual_pressure_rows": 4,
+            "no_pressure_mean_return": 0.096617,
+            "dual_pressure_mean_return": -0.006877,
+            "dual_worse": true
+          },
+          {
+            "as_of_date": "2026-06-08",
+            "no_pressure_rows": 11,
+            "dual_pressure_rows": 4,
+            "no_pressure_mean_return": 0.039082,
+            "dual_pressure_mean_return": -0.023111,
+            "dual_worse": true
+          },
+          {
+            "as_of_date": "2026-06-09",
+            "no_pressure_rows": 11,
+            "dual_pressure_rows": 2,
+            "no_pressure_mean_return": 0.051174,
+            "dual_pressure_mean_return": -0.039935,
+            "dual_worse": true
+          },
+          {
+            "as_of_date": "2026-06-10",
+            "no_pressure_rows": 10,
+            "dual_pressure_rows": 3,
+            "no_pressure_mean_return": 0.087974,
+            "dual_pressure_mean_return": 0.052765,
+            "dual_worse": true
+          },
+          {
+            "as_of_date": "2026-06-11",
+            "no_pressure_rows": 11,
+            "dual_pressure_rows": 2,
+            "no_pressure_mean_return": 0.045249,
+            "dual_pressure_mean_return": -0.060808,
+            "dual_worse": true
+          }
+        ]
+      },
+      "max_dual_adverse_pnl_share": 0.385905,
+      "dual_mean_return": -0.029427,
+      "dual_median_return": -0.041519,
+      "no_pressure_mean_return": 0.007427,
+      "no_pressure_median_return": -0.013772,
+      "single_surface_mean_return": null,
+      "single_surface_median_return": null,
+      "dual_concentration": {
+        "adverse_pnl": 7026.03,
+        "max_single_adverse_pnl_share": 0.385905,
+        "adverse_pnl_hhi": 0.214987,
+        "top_adverse_tickers": [
+          {
+            "ticker": "APP",
+            "adverse_pnl": 2711.38,
+            "share": 0.385905
+          },
+          {
+            "ticker": "MSFT",
+            "adverse_pnl": 891.73,
+            "share": 0.126918
+          },
+          {
+            "ticker": "QQQ",
+            "adverse_pnl": 887.6,
+            "share": 0.12633
+          },
+          {
+            "ticker": "NFLX",
+            "adverse_pnl": 815.47,
+            "share": 0.116064
+          },
+          {
+            "ticker": "META",
+            "adverse_pnl": 702.63,
+            "share": 0.100004
+          },
+          {
+            "ticker": "SNXX",
+            "adverse_pnl": 541.84,
+            "share": 0.077119
+          },
+          {
+            "ticker": "RKLB",
+            "adverse_pnl": 475.38,
+            "share": 0.06766
+          }
+        ]
+      },
+      "joined_sample_min_passed": true,
+      "no_pressure_sample_min_passed": true,
+      "single_surface_sample_min_passed": false,
+      "dual_pressure_sample_min_passed": true,
+      "dual_mean_below_no_pressure": true,
+      "dual_median_below_no_pressure": true,
+      "dual_mean_below_single_surface": false,
+      "dual_median_below_single_surface": false,
+      "severity_spearman_return_negative": true,
+      "severity_spearman_spy_replacement_negative": true,
+      "date_support_passed": true,
+      "dual_concentration_passed": true
+    },
+    "decision": "rejected_no_incremental_exit_lifecycle_llm_confluence_edge",
+    "strategy_rerun_required": false,
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "max_drawdown_pct": 0.0
+    },
+    "lead_limitations": [
+      "Forward-only production rows, not canonical fixed-window PIT replay.",
+      "No shared helper, adapter, daily execution rule, or exit policy was promoted.",
+      "Rows are deduped by ticker, entry date, exit date, and confluence bucket.",
+      "Outcome is gross diagnostic next-open-to-5d-close path attribution."
+    ]
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "shared_helper_promoted": false,
+    "daily_snapshot_exposed": false,
+    "uses_exit_lifecycle_shadow_log": true,
+    "uses_llm_decision_log": true,
+    "live_realistic_execution_envelope": "Not evaluated for live use; this is observed-only attribution and cannot become live-ready."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The two production surfaces mostly agree on the same rows, leaving too little single-surface disagreement to prove incremental confluence value. The dual-pressure rows can still be monitored, but this does not justify an exit or risk rule.",
+    "forbidden_near_neighbor_retry": "Do not retry by converting dual-surface exit pressure, HIGH_REDUCE, TARGET_EXIT, ATR_EXIT, CRITICAL_EXIT, high-urgency, hard-stop, target-width, or trailing-stop labels into executable rules on the same forward rows. A valid retry needs materially more closed rows with actual single-surface disagreement, PIT intratrade path features, slot-reuse/winner-collateral accounting, and a shared default-off advisory helper before Gate 1-4 promotion.",
+    "new_evidence_required": "More closed production rows where the LLM and exit-lifecycle surfaces disagree, or a distinct PIT feature that explains why dual pressure predicts avoidable future loss rather than merely duplicating the same current exit label."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260623_015_exit_lifecycle_llm_confluence_forward_loss.py",
+    "data/exit_lifecycle",
+    "data/daily/llm/decisions",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260623-011.json",
+    "experiments/logs/exp-20260623-012.json",
+    "experiments/logs/exp-20260429-032.json"
+  ],
+  "updated_at": "2026-06-23T12:09:26+00:00"
+}

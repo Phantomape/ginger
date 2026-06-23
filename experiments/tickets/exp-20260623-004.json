@@ -1,0 +1,1840 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260623_004_forward_replacement_regime_activation_attribution.py",
+    "data/experiments/exp-20260623-004/exp_20260623_004_forward_replacement_regime_activation_attribution.json",
+    "experiments/cards/exp-20260623-004.md",
+    "experiments/manifests/exp-20260623-004.json",
+    "experiments/tickets/exp-20260623-004.json",
+    "experiments/logs/exp-20260623-004.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260623-004.md",
+  "causal_components": [
+    "closed forward replacement rows",
+    "entry-time regime tag",
+    "sleeve/regime cohort attribution",
+    "no strategy change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "forward_replacement_entry_regime_activation_attribution_v1",
+  "claimed_at": "2026-06-23T03:03:21+00:00",
+  "completed_at": "2026-06-23T03:10:10+00:00",
+  "created_at": "2026-06-23T03:03:09+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260623-004",
+  "experiment_uid": "expuid-0569cd98862b4ac2",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260623-004",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-23T03:03:09+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "forward_replacement_regime_activation_attribution"
+  },
+  "hypothesis": "Observed-only attribution: closed default-off paper forward replacement rows tagged with entry-time regime may identify a sleeve/regime activation lead with positive replacement value versus cash, SPY, and QQQ without retuning frozen windows.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "forward_replacement_entry_regime_activation_attribution_v1"
+  ],
+  "mechanism_family": "forward_replacement_regime_attribution",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260622-013",
+    "exp-20260623-002",
+    "exp-20260613-005"
+  ],
+  "new_evidence_type": "entry_regime_tagged_forward_rows",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "regime_state",
+      "field_tags": [
+        "a",
+        "activation",
+        "attribution",
+        "cash",
+        "closed",
+        "entry",
+        "forward",
+        "frozen",
+        "identify",
+        "lead",
+        "may",
+        "observed",
+        "only",
+        "positive",
+        "qqq",
+        "regime",
+        "replacement",
+        "retuning",
+        "rows",
+        "sleeve",
+        "spy",
+        "tagged",
+        "time",
+        "value",
+        "versus",
+        "windows",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "market_state_family_replacement_value_attribution",
+        "reopen_condition": null,
+        "score": 0.5106,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "market_state_sleeve_replacement_value_attribution",
+        "reopen_condition": null,
+        "score": 0.5033,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "regime_tagged_forward_scorecard",
+        "reopen_condition": "Accumulate closed forward / live-pilot rows across more regimes (especially choppy_range), then a separate Gate 1-4 can test whether the exposure_scalar soft tilt improves cost-adjusted replacement value out-of-sample. Re-run this scorecard to refresh tags.",
+        "score": 0.4914,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "entry_state_rs20_regime_scoped_allocation",
+        "reopen_condition": "Do not retry nearby RS20 regime-scope variants unless a forward or event/news discriminator shows defensive/non-risk-on RS20 leaders have different replacement value.",
+        "score": 0.4742,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "pit_regime_state_classifier_diagnostic",
+        "reopen_condition": "If a sleeve shows stable cross-window regime separation here, the next step is a shared default-off regime artifact + portfolio-level soft capital tilt (monotonic in risk_off_score, few parameters), validated on forward state-tagged replacement-value rows, NOT a hard per-window on/off gate. exp-20260614-010 already showed a hard frozen-window breadth filter regresses all three windows.",
+        "score": 0.4742,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "new entry-time regime tags on closed forward replacement rows from exp-20260623-002; no sleeve helper, source rank, threshold, notional, hold, cooldown, or frozen-window retune",
+    "override": true,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "regime_state",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.24,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "too_few_closed_rows",
+      "missing_entry_regime_tags",
+      "QQQ_concentration",
+      "no_positive_replacement_value_vs_spy_qqq"
+    ],
+    "confidence_reason": "Forward activation has been blocked by thin rows, but exp-20260623-002 added a new production-visible entry-time regime tag that can test whether existing closed rows concentrate in a deployable sleeve/regime cell; the main risk is the current forward sample is still too small and concentrated.",
+    "recorded_at": "2026-06-23T03:02:53+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "rejected_no_forward_regime_activation_cell_ready",
+    "artifact": "data/experiments/exp-20260623-004/exp_20260623_004_forward_replacement_regime_activation_attribution.json",
+    "log": "experiments/logs/exp-20260623-004.json",
+    "runner": "quant/experiments/exp_20260623_004_forward_replacement_regime_activation_attribution.py",
+    "attribution": {
+      "n_rows": 33,
+      "all_rows": {
+        "n": 33,
+        "sums": {
+          "replacement_value_vs_cash_usd": 5813.79,
+          "replacement_value_vs_spy_usd": 11900.49,
+          "replacement_value_vs_qqq_usd": 10378.01,
+          "pnl_usd": 5813.79
+        },
+        "averages": {
+          "replacement_value_vs_cash_usd": 176.18,
+          "replacement_value_vs_spy_usd": 360.62,
+          "replacement_value_vs_qqq_usd": 314.49,
+          "pnl_usd": 176.18
+        },
+        "positive_rates": {
+          "replacement_value_vs_cash_usd": 0.5455,
+          "replacement_value_vs_spy_usd": 0.7273,
+          "replacement_value_vs_qqq_usd": 0.7273,
+          "pnl_usd": 0.5455
+        },
+        "sleeves_present": [
+          "fundamental_growth_rs",
+          "low_deployment_etf",
+          "sec_governance",
+          "sec_leadership",
+          "sec_negative",
+          "state_surface",
+          "volatility_contraction",
+          "volume_breadth_breakout"
+        ],
+        "entry_regimes_present": [
+          "risk_on_trend"
+        ],
+        "tickers_present": [
+          "AAPL",
+          "AMD",
+          "AVGO",
+          "BKNG",
+          "CRDO",
+          "DDOG",
+          "DE",
+          "GE",
+          "GS",
+          "HOOD",
+          "LITE",
+          "MU",
+          "NOW",
+          "QQQ",
+          "SNOW",
+          "SNXX"
+        ],
+        "distinct_tickers": 16,
+        "max_single_ticker_row_share": 0.5152,
+        "max_single_ticker_positive_cash_share": 0.4046,
+        "top_tickers_by_rows": [
+          {
+            "key": "QQQ",
+            "n": 17,
+            "row_share": 0.5152
+          },
+          {
+            "key": "CRDO",
+            "n": 2,
+            "row_share": 0.0606
+          },
+          {
+            "key": "AAPL",
+            "n": 1,
+            "row_share": 0.0303
+          },
+          {
+            "key": "AMD",
+            "n": 1,
+            "row_share": 0.0303
+          },
+          {
+            "key": "AVGO",
+            "n": 1,
+            "row_share": 0.0303
+          },
+          {
+            "key": "BKNG",
+            "n": 1,
+            "row_share": 0.0303
+          },
+          {
+            "key": "DDOG",
+            "n": 1,
+            "row_share": 0.0303
+          },
+          {
+            "key": "DE",
+            "n": 1,
+            "row_share": 0.0303
+          }
+        ]
+      },
+      "tagged_rows": {
+        "n": 33,
+        "sums": {
+          "replacement_value_vs_cash_usd": 5813.79,
+          "replacement_value_vs_spy_usd": 11900.49,
+          "replacement_value_vs_qqq_usd": 10378.01,
+          "pnl_usd": 5813.79
+        },
+        "averages": {
+          "replacement_value_vs_cash_usd": 176.18,
+          "replacement_value_vs_spy_usd": 360.62,
+          "replacement_value_vs_qqq_usd": 314.49,
+          "pnl_usd": 176.18
+        },
+        "positive_rates": {
+          "replacement_value_vs_cash_usd": 0.5455,
+          "replacement_value_vs_spy_usd": 0.7273,
+          "replacement_value_vs_qqq_usd": 0.7273,
+          "pnl_usd": 0.5455
+        },
+        "sleeves_present": [
+          "fundamental_growth_rs",
+          "low_deployment_etf",
+          "sec_governance",
+          "sec_leadership",
+          "sec_negative",
+          "state_surface",
+          "volatility_contraction",
+          "volume_breadth_breakout"
+        ],
+        "entry_regimes_present": [
+          "risk_on_trend"
+        ],
+        "tickers_present": [
+          "AAPL",
+          "AMD",
+          "AVGO",
+          "BKNG",
+          "CRDO",
+          "DDOG",
+          "DE",
+          "GE",
+          "GS",
+          "HOOD",
+          "LITE",
+          "MU",
+          "NOW",
+          "QQQ",
+          "SNOW",
+          "SNXX"
+        ],
+        "distinct_tickers": 16,
+        "max_single_ticker_row_share": 0.5152,
+        "max_single_ticker_positive_cash_share": 0.4046,
+        "top_tickers_by_rows": [
+          {
+            "key": "QQQ",
+            "n": 17,
+            "row_share": 0.5152
+          },
+          {
+            "key": "CRDO",
+            "n": 2,
+            "row_share": 0.0606
+          },
+          {
+            "key": "AAPL",
+            "n": 1,
+            "row_share": 0.0303
+          },
+          {
+            "key": "AMD",
+            "n": 1,
+            "row_share": 0.0303
+          },
+          {
+            "key": "AVGO",
+            "n": 1,
+            "row_share": 0.0303
+          },
+          {
+            "key": "BKNG",
+            "n": 1,
+            "row_share": 0.0303
+          },
+          {
+            "key": "DDOG",
+            "n": 1,
+            "row_share": 0.0303
+          },
+          {
+            "key": "DE",
+            "n": 1,
+            "row_share": 0.0303
+          }
+        ]
+      },
+      "best_candidate_cell": {
+        "n": 17,
+        "sums": {
+          "replacement_value_vs_cash_usd": 4690.01,
+          "replacement_value_vs_spy_usd": 8952.04,
+          "replacement_value_vs_qqq_usd": 7517.99,
+          "pnl_usd": 4690.01
+        },
+        "averages": {
+          "replacement_value_vs_cash_usd": 275.88,
+          "replacement_value_vs_spy_usd": 526.59,
+          "replacement_value_vs_qqq_usd": 442.23,
+          "pnl_usd": 275.88
+        },
+        "positive_rates": {
+          "replacement_value_vs_cash_usd": 0.6471,
+          "replacement_value_vs_spy_usd": 0.9412,
+          "replacement_value_vs_qqq_usd": 1.0,
+          "pnl_usd": 0.6471
+        },
+        "sleeves_present": [
+          "low_deployment_etf"
+        ],
+        "entry_regimes_present": [
+          "risk_on_trend"
+        ],
+        "tickers_present": [
+          "QQQ"
+        ],
+        "distinct_tickers": 1,
+        "max_single_ticker_row_share": 1.0,
+        "max_single_ticker_positive_cash_share": 1.0,
+        "top_tickers_by_rows": [
+          {
+            "key": "QQQ",
+            "n": 17,
+            "row_share": 1.0
+          }
+        ],
+        "key": "low_deployment_etf|risk_on_trend",
+        "passes_activation_lead_screen": false,
+        "failed_reasons": [
+          "cell_too_few_distinct_tickers",
+          "cell_single_ticker_row_concentration",
+          "cell_single_ticker_positive_cash_concentration"
+        ]
+      }
+    },
+    "gate4": {
+      "observed_only_lead": false,
+      "failed_reasons": [
+        "no_deployable_sleeve_regime_cell"
+      ],
+      "decision": "rejected_no_forward_regime_activation_cell_ready",
+      "strategy_rerun_required": false,
+      "before_after_strategy_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "max_drawdown_pct": 0.0
+      },
+      "acceptance_checks": {
+        "acceptance_rule": {
+          "min_total_rows": 20,
+          "min_tagged_rows": 20,
+          "min_cell_rows": 8,
+          "min_cell_distinct_tickers": 3,
+          "min_cell_positive_rate_vs_cash": 0.5,
+          "min_cell_positive_rate_vs_spy": 0.5,
+          "min_cell_positive_rate_vs_qqq": 0.5,
+          "max_single_ticker_row_share": 0.7,
+          "max_single_ticker_positive_cash_share": 0.5,
+          "required_positive_sum_fields": [
+            "replacement_value_vs_cash_usd",
+            "replacement_value_vs_spy_usd",
+            "replacement_value_vs_qqq_usd"
+          ]
+        },
+        "best_candidate_cell": {
+          "n": 17,
+          "sums": {
+            "replacement_value_vs_cash_usd": 4690.01,
+            "replacement_value_vs_spy_usd": 8952.04,
+            "replacement_value_vs_qqq_usd": 7517.99,
+            "pnl_usd": 4690.01
+          },
+          "averages": {
+            "replacement_value_vs_cash_usd": 275.88,
+            "replacement_value_vs_spy_usd": 526.59,
+            "replacement_value_vs_qqq_usd": 442.23,
+            "pnl_usd": 275.88
+          },
+          "positive_rates": {
+            "replacement_value_vs_cash_usd": 0.6471,
+            "replacement_value_vs_spy_usd": 0.9412,
+            "replacement_value_vs_qqq_usd": 1.0,
+            "pnl_usd": 0.6471
+          },
+          "sleeves_present": [
+            "low_deployment_etf"
+          ],
+          "entry_regimes_present": [
+            "risk_on_trend"
+          ],
+          "tickers_present": [
+            "QQQ"
+          ],
+          "distinct_tickers": 1,
+          "max_single_ticker_row_share": 1.0,
+          "max_single_ticker_positive_cash_share": 1.0,
+          "top_tickers_by_rows": [
+            {
+              "key": "QQQ",
+              "n": 17,
+              "row_share": 1.0
+            }
+          ],
+          "key": "low_deployment_etf|risk_on_trend",
+          "passes_activation_lead_screen": false,
+          "failed_reasons": [
+            "cell_too_few_distinct_tickers",
+            "cell_single_ticker_row_concentration",
+            "cell_single_ticker_positive_cash_concentration"
+          ]
+        },
+        "candidate_sleeve_regime_cells": [
+          {
+            "n": 17,
+            "sums": {
+              "replacement_value_vs_cash_usd": 4690.01,
+              "replacement_value_vs_spy_usd": 8952.04,
+              "replacement_value_vs_qqq_usd": 7517.99,
+              "pnl_usd": 4690.01
+            },
+            "averages": {
+              "replacement_value_vs_cash_usd": 275.88,
+              "replacement_value_vs_spy_usd": 526.59,
+              "replacement_value_vs_qqq_usd": 442.23,
+              "pnl_usd": 275.88
+            },
+            "positive_rates": {
+              "replacement_value_vs_cash_usd": 0.6471,
+              "replacement_value_vs_spy_usd": 0.9412,
+              "replacement_value_vs_qqq_usd": 1.0,
+              "pnl_usd": 0.6471
+            },
+            "sleeves_present": [
+              "low_deployment_etf"
+            ],
+            "entry_regimes_present": [
+              "risk_on_trend"
+            ],
+            "tickers_present": [
+              "QQQ"
+            ],
+            "distinct_tickers": 1,
+            "max_single_ticker_row_share": 1.0,
+            "max_single_ticker_positive_cash_share": 1.0,
+            "top_tickers_by_rows": [
+              {
+                "key": "QQQ",
+                "n": 17,
+                "row_share": 1.0
+              }
+            ],
+            "key": "low_deployment_etf|risk_on_trend",
+            "passes_activation_lead_screen": false,
+            "failed_reasons": [
+              "cell_too_few_distinct_tickers",
+              "cell_single_ticker_row_concentration",
+              "cell_single_ticker_positive_cash_concentration"
+            ]
+          },
+          {
+            "n": 3,
+            "sums": {
+              "replacement_value_vs_cash_usd": 7240.23,
+              "replacement_value_vs_spy_usd": 6760.53,
+              "replacement_value_vs_qqq_usd": 6166.42,
+              "pnl_usd": 7240.23
+            },
+            "averages": {
+              "replacement_value_vs_cash_usd": 2413.41,
+              "replacement_value_vs_spy_usd": 2253.51,
+              "replacement_value_vs_qqq_usd": 2055.47,
+              "pnl_usd": 2413.41
+            },
+            "positive_rates": {
+              "replacement_value_vs_cash_usd": 1.0,
+              "replacement_value_vs_spy_usd": 1.0,
+              "replacement_value_vs_qqq_usd": 1.0,
+              "pnl_usd": 1.0
+            },
+            "sleeves_present": [
+              "state_surface"
+            ],
+            "entry_regimes_present": [
+              "risk_on_trend"
+            ],
+            "tickers_present": [
+              "AMD",
+              "CRDO",
+              "SNXX"
+            ],
+            "distinct_tickers": 3,
+            "max_single_ticker_row_share": 0.3333,
+            "max_single_ticker_positive_cash_share": 0.3829,
+            "top_tickers_by_rows": [
+              {
+                "key": "AMD",
+                "n": 1,
+                "row_share": 0.3333
+              },
+              {
+                "key": "CRDO",
+                "n": 1,
+                "row_share": 0.3333
+              },
+              {
+                "key": "SNXX",
+                "n": 1,
+                "row_share": 0.3333
+              }
+            ],
+            "key": "state_surface|risk_on_trend",
+            "passes_activation_lead_screen": false,
+            "failed_reasons": [
+              "cell_too_few_rows"
+            ]
+          },
+          {
+            "n": 3,
+            "sums": {
+              "replacement_value_vs_cash_usd": -2525.18,
+              "replacement_value_vs_spy_usd": -1554.0,
+              "replacement_value_vs_qqq_usd": -1147.13,
+              "pnl_usd": -2525.18
+            },
+            "averages": {
+              "replacement_value_vs_cash_usd": -841.73,
+              "replacement_value_vs_spy_usd": -518.0,
+              "replacement_value_vs_qqq_usd": -382.38,
+              "pnl_usd": -841.73
+            },
+            "positive_rates": {
+              "replacement_value_vs_cash_usd": 0.3333,
+              "replacement_value_vs_spy_usd": 0.3333,
+              "replacement_value_vs_qqq_usd": 0.3333,
+              "pnl_usd": 0.3333
+            },
+            "sleeves_present": [
+              "fundamental_growth_rs"
+            ],
+            "entry_regimes_present": [
+              "risk_on_trend"
+            ],
+            "tickers_present": [
+              "AVGO",
+              "CRDO",
+              "MU"
+            ],
+            "distinct_tickers": 3,
+            "max_single_ticker_row_share": 0.3333,
+            "max_single_ticker_positive_cash_share": 1.0,
+            "top_tickers_by_rows": [
+              {
+                "key": "AVGO",
+                "n": 1,
+                "row_share": 0.3333
+              },
+              {
+                "key": "CRDO",
+                "n": 1,
+                "row_share": 0.3333
+              },
+              {
+                "key": "MU",
+                "n": 1,
+                "row_share": 0.3333
+              }
+            ],
+            "key": "fundamental_growth_rs|risk_on_trend",
+            "passes_activation_lead_screen": false,
+            "failed_reasons": [
+              "cell_too_few_rows",
+              "replacement_value_vs_cash_usd_sum_not_positive",
+              "replacement_value_vs_spy_usd_sum_not_positive",
+              "replacement_value_vs_qqq_usd_sum_not_positive",
+              "cell_cash_positive_rate_too_low",
+              "cell_spy_positive_rate_too_low",
+              "cell_qqq_positive_rate_too_low",
+              "cell_single_ticker_positive_cash_concentration"
+            ]
+          },
+          {
+            "n": 3,
+            "sums": {
+              "replacement_value_vs_cash_usd": -3030.14,
+              "replacement_value_vs_spy_usd": -2047.47,
+              "replacement_value_vs_qqq_usd": -1550.64,
+              "pnl_usd": -3030.14
+            },
+            "averages": {
+              "replacement_value_vs_cash_usd": -1010.05,
+              "replacement_value_vs_spy_usd": -682.49,
+              "replacement_value_vs_qqq_usd": -516.88,
+              "pnl_usd": -1010.05
+            },
+            "positive_rates": {
+              "replacement_value_vs_cash_usd": 0.0,
+              "replacement_value_vs_spy_usd": 0.3333,
+              "replacement_value_vs_qqq_usd": 0.3333,
+              "pnl_usd": 0.0
+            },
+            "sleeves_present": [
+              "volume_breadth_breakout"
+            ],
+            "entry_regimes_present": [
+              "risk_on_trend"
+            ],
+            "tickers_present": [
+              "HOOD",
+              "NOW",
+              "SNOW"
+            ],
+            "distinct_tickers": 3,
+            "max_single_ticker_row_share": 0.3333,
+            "max_single_ticker_positive_cash_share": null,
+            "top_tickers_by_rows": [
+              {
+                "key": "HOOD",
+                "n": 1,
+                "row_share": 0.3333
+              },
+              {
+                "key": "NOW",
+                "n": 1,
+                "row_share": 0.3333
+              },
+              {
+                "key": "SNOW",
+                "n": 1,
+                "row_share": 0.3333
+              }
+            ],
+            "key": "volume_breadth_breakout|risk_on_trend",
+            "passes_activation_lead_screen": false,
+            "failed_reasons": [
+              "cell_too_few_rows",
+              "replacement_value_vs_cash_usd_sum_not_positive",
+              "replacement_value_vs_spy_usd_sum_not_positive",
+              "replacement_value_vs_qqq_usd_sum_not_positive",
+              "cell_cash_positive_rate_too_low",
+              "cell_spy_positive_rate_too_low",
+              "cell_qqq_positive_rate_too_low"
+            ]
+          },
+          {
+            "n": 2,
+            "sums": {
+              "replacement_value_vs_cash_usd": 738.67,
+              "replacement_value_vs_spy_usd": 634.48,
+              "replacement_value_vs_qqq_usd": 381.7,
+              "pnl_usd": 738.67
+            },
+            "averages": {
+              "replacement_value_vs_cash_usd": 369.33,
+              "replacement_value_vs_spy_usd": 317.24,
+              "replacement_value_vs_qqq_usd": 190.85,
+              "pnl_usd": 369.33
+            },
+            "positive_rates": {
+              "replacement_value_vs_cash_usd": 0.5,
+              "replacement_value_vs_spy_usd": 0.5,
+              "replacement_value_vs_qqq_usd": 0.5,
+              "pnl_usd": 0.5
+            },
+            "sleeves_present": [
+              "sec_negative"
+            ],
+            "entry_regimes_present": [
+              "risk_on_trend"
+            ],
+            "tickers_present": [
+              "DE",
+              "LITE"
+            ],
+            "distinct_tickers": 2,
+            "max_single_ticker_row_share": 0.5,
+            "max_single_ticker_positive_cash_share": 1.0,
+            "top_tickers_by_rows": [
+              {
+                "key": "DE",
+                "n": 1,
+                "row_share": 0.5
+              },
+              {
+                "key": "LITE",
+                "n": 1,
+                "row_share": 0.5
+              }
+            ],
+            "key": "sec_negative|risk_on_trend",
+            "passes_activation_lead_screen": false,
+            "failed_reasons": [
+              "cell_too_few_rows",
+              "cell_too_few_distinct_tickers",
+              "cell_single_ticker_positive_cash_concentration"
+            ]
+          },
+          {
+            "n": 2,
+            "sums": {
+              "replacement_value_vs_cash_usd": 525.15,
+              "replacement_value_vs_spy_usd": 419.95,
+              "replacement_value_vs_qqq_usd": 88.97,
+              "pnl_usd": 525.15
+            },
+            "averages": {
+              "replacement_value_vs_cash_usd": 262.57,
+              "replacement_value_vs_spy_usd": 209.97,
+              "replacement_value_vs_qqq_usd": 44.48,
+              "pnl_usd": 262.57
+            },
+            "positive_rates": {
+              "replacement_value_vs_cash_usd": 1.0,
+              "replacement_value_vs_spy_usd": 1.0,
+              "replacement_value_vs_qqq_usd": 0.5,
+              "pnl_usd": 1.0
+            },
+            "sleeves_present": [
+              "sec_governance"
+            ],
+            "entry_regimes_present": [
+              "risk_on_trend"
+            ],
+            "tickers_present": [
+              "BKNG",
+              "GS"
+            ],
+            "distinct_tickers": 2,
+            "max_single_ticker_row_share": 0.5,
+            "max_single_ticker_positive_cash_share": 0.7442,
+            "top_tickers_by_rows": [
+              {
+                "key": "BKNG",
+                "n": 1,
+                "row_share": 0.5
+              },
+              {
+                "key": "GS",
+                "n": 1,
+                "row_share": 0.5
+              }
+            ],
+            "key": "sec_governance|risk_on_trend",
+            "passes_activation_lead_screen": false,
+            "failed_reasons": [
+              "cell_too_few_rows",
+              "cell_too_few_distinct_tickers",
+              "cell_single_ticker_positive_cash_concentration"
+            ]
+          },
+          {
+            "n": 2,
+            "sums": {
+              "replacement_value_vs_cash_usd": -1649.37,
+              "replacement_value_vs_spy_usd": -1048.55,
+              "replacement_value_vs_qqq_usd": -759.88,
+              "pnl_usd": -1649.37
+            },
+            "averages": {
+              "replacement_value_vs_cash_usd": -824.68,
+              "replacement_value_vs_spy_usd": -524.27,
+              "replacement_value_vs_qqq_usd": -379.94,
+              "pnl_usd": -824.68
+            },
+            "positive_rates": {
+              "replacement_value_vs_cash_usd": 0.0,
+              "replacement_value_vs_spy_usd": 0.0,
+              "replacement_value_vs_qqq_usd": 0.0,
+              "pnl_usd": 0.0
+            },
+            "sleeves_present": [
+              "volatility_contraction"
+            ],
+            "entry_regimes_present": [
+              "risk_on_trend"
+            ],
+            "tickers_present": [
+              "AAPL",
+              "DDOG"
+            ],
+            "distinct_tickers": 2,
+            "max_single_ticker_row_share": 0.5,
+            "max_single_ticker_positive_cash_share": null,
+            "top_tickers_by_rows": [
+              {
+                "key": "AAPL",
+                "n": 1,
+                "row_share": 0.5
+              },
+              {
+                "key": "DDOG",
+                "n": 1,
+                "row_share": 0.5
+              }
+            ],
+            "key": "volatility_contraction|risk_on_trend",
+            "passes_activation_lead_screen": false,
+            "failed_reasons": [
+              "cell_too_few_rows",
+              "cell_too_few_distinct_tickers",
+              "replacement_value_vs_cash_usd_sum_not_positive",
+              "replacement_value_vs_spy_usd_sum_not_positive",
+              "replacement_value_vs_qqq_usd_sum_not_positive",
+              "cell_cash_positive_rate_too_low",
+              "cell_spy_positive_rate_too_low",
+              "cell_qqq_positive_rate_too_low"
+            ]
+          },
+          {
+            "n": 1,
+            "sums": {
+              "replacement_value_vs_cash_usd": -175.58,
+              "replacement_value_vs_spy_usd": -216.49,
+              "replacement_value_vs_qqq_usd": -319.42,
+              "pnl_usd": -175.58
+            },
+            "averages": {
+              "replacement_value_vs_cash_usd": -175.58,
+              "replacement_value_vs_spy_usd": -216.49,
+              "replacement_value_vs_qqq_usd": -319.42,
+              "pnl_usd": -175.58
+            },
+            "positive_rates": {
+              "replacement_value_vs_cash_usd": 0.0,
+              "replacement_value_vs_spy_usd": 0.0,
+              "replacement_value_vs_qqq_usd": 0.0,
+              "pnl_usd": 0.0
+            },
+            "sleeves_present": [
+              "sec_leadership"
+            ],
+            "entry_regimes_present": [
+              "risk_on_trend"
+            ],
+            "tickers_present": [
+              "GE"
+            ],
+            "distinct_tickers": 1,
+            "max_single_ticker_row_share": 1.0,
+            "max_single_ticker_positive_cash_share": null,
+            "top_tickers_by_rows": [
+              {
+                "key": "GE",
+                "n": 1,
+                "row_share": 1.0
+              }
+            ],
+            "key": "sec_leadership|risk_on_trend",
+            "passes_activation_lead_screen": false,
+            "failed_reasons": [
+              "cell_too_few_rows",
+              "cell_too_few_distinct_tickers",
+              "replacement_value_vs_cash_usd_sum_not_positive",
+              "replacement_value_vs_spy_usd_sum_not_positive",
+              "replacement_value_vs_qqq_usd_sum_not_positive",
+              "cell_cash_positive_rate_too_low",
+              "cell_spy_positive_rate_too_low",
+              "cell_qqq_positive_rate_too_low",
+              "cell_single_ticker_row_concentration"
+            ]
+          }
+        ]
+      },
+      "lead_limitations": [
+        "Uses current closed forward paper rows only.",
+        "No shared helper, adapter, rank, notional, exit, or order rule was changed.",
+        "Any positive lead would require a separate fixed activation-envelope Gate 1-4."
+      ]
+    },
+    "calibration": {
+      "predicted_success_probability": 0.24,
+      "actual_success": false,
+      "brier_score": 0.0576,
+      "failed_reasons": [
+        "no_deployable_sleeve_regime_cell"
+      ],
+      "prediction_failure_modes_hit": [
+        "QQQ_concentration",
+        "no_positive_replacement_value_vs_spy_qqq"
+      ]
+    },
+    "summary": "The current forward sample is still not activation-ready after tagging: no sleeve/regime cell simultaneously has enough rows, positive replacement value versus cash/SPY/QQQ, and acceptable ticker concentration."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260623-004.json",
+  "single_causal_variable": "forward_replacement_entry_regime_activation_attribution_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260623-004.json",
+  "trial_family": "forward_replacement_entry_regime_activation_attribution",
+  "trial_variant_id": "current_closed_forward_rows_regime_cells_v1",
+  "new_evidence_axis": "New entry-time regime tags on closed forward replacement rows from exp-20260623-002; no sleeve helper, source rank, threshold, notional, hold, cooldown, or frozen-window retune.",
+  "decision": "rejected_no_forward_regime_activation_cell_ready",
+  "artifact": "data/experiments/exp-20260623-004/exp_20260623_004_forward_replacement_regime_activation_attribution.json",
+  "log": "experiments/logs/exp-20260623-004.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119,
+      "window_count": 3,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    },
+    "note": "Observed-only attribution; before and after policy are identical."
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "entry_date_present": true,
+    "target_price_checked": true,
+    "target_price_relevance": "No target order or exit rule is scheduled. The diagnostic uses closed paper rows with entry_date/exit_date and replacement-value fields only.",
+    "runtime_fields_checked": [
+      "sleeve_key",
+      "ticker",
+      "entry_date",
+      "exit_date",
+      "pnl_usd",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd",
+      "entry_regime_label",
+      "entry_regime_tag_rule_version"
+    ],
+    "source_audit": {
+      "sleeves_root": "data/paper_sleeves",
+      "current_forward_artifact": "data/paper_sleeves/forward_replacement_value.jsonl",
+      "current_forward_artifact_rows": 33,
+      "state_closed_rows_scanned": 33,
+      "state_replacement_rows_before": 33,
+      "state_rows_with_entry_regime_before": 0,
+      "tagged_records_built_in_memory": 33,
+      "rows_updated_in_memory": 33,
+      "regime_spy_bars_loaded": 700,
+      "comparator_bar_counts": {
+        "SPY": 700,
+        "QQQ": 701
+      },
+      "sleeves": {
+        "accepted_helper_source_priority_allocator": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "accepted_source_consensus": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "ai_optical": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "alpha_score_market_regime": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "broad_market": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "core_misfit": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "distribution_day_absorption_leadership": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "finra_iwm": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "form4": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "free_data_cross_source_consensus": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "fundamental_growth_rs": {
+          "closed_rows": 3,
+          "replacement_rows_after_in_memory_tag": 3,
+          "updated_rows_in_memory": 3
+        },
+        "industry_relative_laggard_repair": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "industry_stable_core_flow": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "low_deployment_etf": {
+          "closed_rows": 17,
+          "replacement_rows_after_in_memory_tag": 17,
+          "updated_rows_in_memory": 17
+        },
+        "macro_relief_leadership": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "narrow_range_compression_breakout": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "platform_rs20_no_gap": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "post_earnings_underpriced_drift": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "revision_surprise_low_extension": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "rolling_corr_peer_shock": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "sbc_burden_improvement": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "sec_10k_liquidity": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "sec_financial_report": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "sec_ftd_finra": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "sec_governance": {
+          "closed_rows": 2,
+          "replacement_rows_after_in_memory_tag": 2,
+          "updated_rows_in_memory": 2
+        },
+        "sec_leadership": {
+          "closed_rows": 1,
+          "replacement_rows_after_in_memory_tag": 1,
+          "updated_rows_in_memory": 1
+        },
+        "sec_negative": {
+          "closed_rows": 2,
+          "replacement_rows_after_in_memory_tag": 2,
+          "updated_rows_in_memory": 2
+        },
+        "space_catalyst": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "state_surface": {
+          "closed_rows": 3,
+          "replacement_rows_after_in_memory_tag": 3,
+          "updated_rows_in_memory": 3
+        },
+        "supplier_financing_debt_relief": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "turn_of_month_liquid_leadership": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "volatility_contraction": {
+          "closed_rows": 2,
+          "replacement_rows_after_in_memory_tag": 2,
+          "updated_rows_in_memory": 2
+        },
+        "volatility_relief_leadership": {
+          "closed_rows": 0,
+          "replacement_rows_after_in_memory_tag": 0,
+          "updated_rows_in_memory": 0
+        },
+        "volume_breadth_breakout": {
+          "closed_rows": 3,
+          "replacement_rows_after_in_memory_tag": 3,
+          "updated_rows_in_memory": 3
+        }
+      },
+      "artifact_not_mutated": true,
+      "state_files_not_mutated": true
+    }
+  },
+  "gate3": {
+    "filter_added": false,
+    "baseline_signals_generated": 164,
+    "baseline_signals_survived": 135,
+    "baseline_survival_rate": 0.8232,
+    "forward_rows_evaluated": 33,
+    "tagged_forward_rows": 33,
+    "note": "No executable filter was added; closed paper rows are attributed only."
+  },
+  "gate4": {
+    "observed_only_lead": false,
+    "failed_reasons": [
+      "no_deployable_sleeve_regime_cell"
+    ],
+    "decision": "rejected_no_forward_regime_activation_cell_ready",
+    "strategy_rerun_required": false,
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "max_drawdown_pct": 0.0
+    },
+    "acceptance_checks": {
+      "acceptance_rule": {
+        "min_total_rows": 20,
+        "min_tagged_rows": 20,
+        "min_cell_rows": 8,
+        "min_cell_distinct_tickers": 3,
+        "min_cell_positive_rate_vs_cash": 0.5,
+        "min_cell_positive_rate_vs_spy": 0.5,
+        "min_cell_positive_rate_vs_qqq": 0.5,
+        "max_single_ticker_row_share": 0.7,
+        "max_single_ticker_positive_cash_share": 0.5,
+        "required_positive_sum_fields": [
+          "replacement_value_vs_cash_usd",
+          "replacement_value_vs_spy_usd",
+          "replacement_value_vs_qqq_usd"
+        ]
+      },
+      "best_candidate_cell": {
+        "n": 17,
+        "sums": {
+          "replacement_value_vs_cash_usd": 4690.01,
+          "replacement_value_vs_spy_usd": 8952.04,
+          "replacement_value_vs_qqq_usd": 7517.99,
+          "pnl_usd": 4690.01
+        },
+        "averages": {
+          "replacement_value_vs_cash_usd": 275.88,
+          "replacement_value_vs_spy_usd": 526.59,
+          "replacement_value_vs_qqq_usd": 442.23,
+          "pnl_usd": 275.88
+        },
+        "positive_rates": {
+          "replacement_value_vs_cash_usd": 0.6471,
+          "replacement_value_vs_spy_usd": 0.9412,
+          "replacement_value_vs_qqq_usd": 1.0,
+          "pnl_usd": 0.6471
+        },
+        "sleeves_present": [
+          "low_deployment_etf"
+        ],
+        "entry_regimes_present": [
+          "risk_on_trend"
+        ],
+        "tickers_present": [
+          "QQQ"
+        ],
+        "distinct_tickers": 1,
+        "max_single_ticker_row_share": 1.0,
+        "max_single_ticker_positive_cash_share": 1.0,
+        "top_tickers_by_rows": [
+          {
+            "key": "QQQ",
+            "n": 17,
+            "row_share": 1.0
+          }
+        ],
+        "key": "low_deployment_etf|risk_on_trend",
+        "passes_activation_lead_screen": false,
+        "failed_reasons": [
+          "cell_too_few_distinct_tickers",
+          "cell_single_ticker_row_concentration",
+          "cell_single_ticker_positive_cash_concentration"
+        ]
+      },
+      "candidate_sleeve_regime_cells": [
+        {
+          "n": 17,
+          "sums": {
+            "replacement_value_vs_cash_usd": 4690.01,
+            "replacement_value_vs_spy_usd": 8952.04,
+            "replacement_value_vs_qqq_usd": 7517.99,
+            "pnl_usd": 4690.01
+          },
+          "averages": {
+            "replacement_value_vs_cash_usd": 275.88,
+            "replacement_value_vs_spy_usd": 526.59,
+            "replacement_value_vs_qqq_usd": 442.23,
+            "pnl_usd": 275.88
+          },
+          "positive_rates": {
+            "replacement_value_vs_cash_usd": 0.6471,
+            "replacement_value_vs_spy_usd": 0.9412,
+            "replacement_value_vs_qqq_usd": 1.0,
+            "pnl_usd": 0.6471
+          },
+          "sleeves_present": [
+            "low_deployment_etf"
+          ],
+          "entry_regimes_present": [
+            "risk_on_trend"
+          ],
+          "tickers_present": [
+            "QQQ"
+          ],
+          "distinct_tickers": 1,
+          "max_single_ticker_row_share": 1.0,
+          "max_single_ticker_positive_cash_share": 1.0,
+          "top_tickers_by_rows": [
+            {
+              "key": "QQQ",
+              "n": 17,
+              "row_share": 1.0
+            }
+          ],
+          "key": "low_deployment_etf|risk_on_trend",
+          "passes_activation_lead_screen": false,
+          "failed_reasons": [
+            "cell_too_few_distinct_tickers",
+            "cell_single_ticker_row_concentration",
+            "cell_single_ticker_positive_cash_concentration"
+          ]
+        },
+        {
+          "n": 3,
+          "sums": {
+            "replacement_value_vs_cash_usd": 7240.23,
+            "replacement_value_vs_spy_usd": 6760.53,
+            "replacement_value_vs_qqq_usd": 6166.42,
+            "pnl_usd": 7240.23
+          },
+          "averages": {
+            "replacement_value_vs_cash_usd": 2413.41,
+            "replacement_value_vs_spy_usd": 2253.51,
+            "replacement_value_vs_qqq_usd": 2055.47,
+            "pnl_usd": 2413.41
+          },
+          "positive_rates": {
+            "replacement_value_vs_cash_usd": 1.0,
+            "replacement_value_vs_spy_usd": 1.0,
+            "replacement_value_vs_qqq_usd": 1.0,
+            "pnl_usd": 1.0
+          },
+          "sleeves_present": [
+            "state_surface"
+          ],
+          "entry_regimes_present": [
+            "risk_on_trend"
+          ],
+          "tickers_present": [
+            "AMD",
+            "CRDO",
+            "SNXX"
+          ],
+          "distinct_tickers": 3,
+          "max_single_ticker_row_share": 0.3333,
+          "max_single_ticker_positive_cash_share": 0.3829,
+          "top_tickers_by_rows": [
+            {
+              "key": "AMD",
+              "n": 1,
+              "row_share": 0.3333
+            },
+            {
+              "key": "CRDO",
+              "n": 1,
+              "row_share": 0.3333
+            },
+            {
+              "key": "SNXX",
+              "n": 1,
+              "row_share": 0.3333
+            }
+          ],
+          "key": "state_surface|risk_on_trend",
+          "passes_activation_lead_screen": false,
+          "failed_reasons": [
+            "cell_too_few_rows"
+          ]
+        },
+        {
+          "n": 3,
+          "sums": {
+            "replacement_value_vs_cash_usd": -2525.18,
+            "replacement_value_vs_spy_usd": -1554.0,
+            "replacement_value_vs_qqq_usd": -1147.13,
+            "pnl_usd": -2525.18
+          },
+          "averages": {
+            "replacement_value_vs_cash_usd": -841.73,
+            "replacement_value_vs_spy_usd": -518.0,
+            "replacement_value_vs_qqq_usd": -382.38,
+            "pnl_usd": -841.73
+          },
+          "positive_rates": {
+            "replacement_value_vs_cash_usd": 0.3333,
+            "replacement_value_vs_spy_usd": 0.3333,
+            "replacement_value_vs_qqq_usd": 0.3333,
+            "pnl_usd": 0.3333
+          },
+          "sleeves_present": [
+            "fundamental_growth_rs"
+          ],
+          "entry_regimes_present": [
+            "risk_on_trend"
+          ],
+          "tickers_present": [
+            "AVGO",
+            "CRDO",
+            "MU"
+          ],
+          "distinct_tickers": 3,
+          "max_single_ticker_row_share": 0.3333,
+          "max_single_ticker_positive_cash_share": 1.0,
+          "top_tickers_by_rows": [
+            {
+              "key": "AVGO",
+              "n": 1,
+              "row_share": 0.3333
+            },
+            {
+              "key": "CRDO",
+              "n": 1,
+              "row_share": 0.3333
+            },
+            {
+              "key": "MU",
+              "n": 1,
+              "row_share": 0.3333
+            }
+          ],
+          "key": "fundamental_growth_rs|risk_on_trend",
+          "passes_activation_lead_screen": false,
+          "failed_reasons": [
+            "cell_too_few_rows",
+            "replacement_value_vs_cash_usd_sum_not_positive",
+            "replacement_value_vs_spy_usd_sum_not_positive",
+            "replacement_value_vs_qqq_usd_sum_not_positive",
+            "cell_cash_positive_rate_too_low",
+            "cell_spy_positive_rate_too_low",
+            "cell_qqq_positive_rate_too_low",
+            "cell_single_ticker_positive_cash_concentration"
+          ]
+        },
+        {
+          "n": 3,
+          "sums": {
+            "replacement_value_vs_cash_usd": -3030.14,
+            "replacement_value_vs_spy_usd": -2047.47,
+            "replacement_value_vs_qqq_usd": -1550.64,
+            "pnl_usd": -3030.14
+          },
+          "averages": {
+            "replacement_value_vs_cash_usd": -1010.05,
+            "replacement_value_vs_spy_usd": -682.49,
+            "replacement_value_vs_qqq_usd": -516.88,
+            "pnl_usd": -1010.05
+          },
+          "positive_rates": {
+            "replacement_value_vs_cash_usd": 0.0,
+            "replacement_value_vs_spy_usd": 0.3333,
+            "replacement_value_vs_qqq_usd": 0.3333,
+            "pnl_usd": 0.0
+          },
+          "sleeves_present": [
+            "volume_breadth_breakout"
+          ],
+          "entry_regimes_present": [
+            "risk_on_trend"
+          ],
+          "tickers_present": [
+            "HOOD",
+            "NOW",
+            "SNOW"
+          ],
+          "distinct_tickers": 3,
+          "max_single_ticker_row_share": 0.3333,
+          "max_single_ticker_positive_cash_share": null,
+          "top_tickers_by_rows": [
+            {
+              "key": "HOOD",
+              "n": 1,
+              "row_share": 0.3333
+            },
+            {
+              "key": "NOW",
+              "n": 1,
+              "row_share": 0.3333
+            },
+            {
+              "key": "SNOW",
+              "n": 1,
+              "row_share": 0.3333
+            }
+          ],
+          "key": "volume_breadth_breakout|risk_on_trend",
+          "passes_activation_lead_screen": false,
+          "failed_reasons": [
+            "cell_too_few_rows",
+            "replacement_value_vs_cash_usd_sum_not_positive",
+            "replacement_value_vs_spy_usd_sum_not_positive",
+            "replacement_value_vs_qqq_usd_sum_not_positive",
+            "cell_cash_positive_rate_too_low",
+            "cell_spy_positive_rate_too_low",
+            "cell_qqq_positive_rate_too_low"
+          ]
+        },
+        {
+          "n": 2,
+          "sums": {
+            "replacement_value_vs_cash_usd": 738.67,
+            "replacement_value_vs_spy_usd": 634.48,
+            "replacement_value_vs_qqq_usd": 381.7,
+            "pnl_usd": 738.67
+          },
+          "averages": {
+            "replacement_value_vs_cash_usd": 369.33,
+            "replacement_value_vs_spy_usd": 317.24,
+            "replacement_value_vs_qqq_usd": 190.85,
+            "pnl_usd": 369.33
+          },
+          "positive_rates": {
+            "replacement_value_vs_cash_usd": 0.5,
+            "replacement_value_vs_spy_usd": 0.5,
+            "replacement_value_vs_qqq_usd": 0.5,
+            "pnl_usd": 0.5
+          },
+          "sleeves_present": [
+            "sec_negative"
+          ],
+          "entry_regimes_present": [
+            "risk_on_trend"
+          ],
+          "tickers_present": [
+            "DE",
+            "LITE"
+          ],
+          "distinct_tickers": 2,
+          "max_single_ticker_row_share": 0.5,
+          "max_single_ticker_positive_cash_share": 1.0,
+          "top_tickers_by_rows": [
+            {
+              "key": "DE",
+              "n": 1,
+              "row_share": 0.5
+            },
+            {
+              "key": "LITE",
+              "n": 1,
+              "row_share": 0.5
+            }
+          ],
+          "key": "sec_negative|risk_on_trend",
+          "passes_activation_lead_screen": false,
+          "failed_reasons": [
+            "cell_too_few_rows",
+            "cell_too_few_distinct_tickers",
+            "cell_single_ticker_positive_cash_concentration"
+          ]
+        },
+        {
+          "n": 2,
+          "sums": {
+            "replacement_value_vs_cash_usd": 525.15,
+            "replacement_value_vs_spy_usd": 419.95,
+            "replacement_value_vs_qqq_usd": 88.97,
+            "pnl_usd": 525.15
+          },
+          "averages": {
+            "replacement_value_vs_cash_usd": 262.57,
+            "replacement_value_vs_spy_usd": 209.97,
+            "replacement_value_vs_qqq_usd": 44.48,
+            "pnl_usd": 262.57
+          },
+          "positive_rates": {
+            "replacement_value_vs_cash_usd": 1.0,
+            "replacement_value_vs_spy_usd": 1.0,
+            "replacement_value_vs_qqq_usd": 0.5,
+            "pnl_usd": 1.0
+          },
+          "sleeves_present": [
+            "sec_governance"
+          ],
+          "entry_regimes_present": [
+            "risk_on_trend"
+          ],
+          "tickers_present": [
+            "BKNG",
+            "GS"
+          ],
+          "distinct_tickers": 2,
+          "max_single_ticker_row_share": 0.5,
+          "max_single_ticker_positive_cash_share": 0.7442,
+          "top_tickers_by_rows": [
+            {
+              "key": "BKNG",
+              "n": 1,
+              "row_share": 0.5
+            },
+            {
+              "key": "GS",
+              "n": 1,
+              "row_share": 0.5
+            }
+          ],
+          "key": "sec_governance|risk_on_trend",
+          "passes_activation_lead_screen": false,
+          "failed_reasons": [
+            "cell_too_few_rows",
+            "cell_too_few_distinct_tickers",
+            "cell_single_ticker_positive_cash_concentration"
+          ]
+        },
+        {
+          "n": 2,
+          "sums": {
+            "replacement_value_vs_cash_usd": -1649.37,
+            "replacement_value_vs_spy_usd": -1048.55,
+            "replacement_value_vs_qqq_usd": -759.88,
+            "pnl_usd": -1649.37
+          },
+          "averages": {
+            "replacement_value_vs_cash_usd": -824.68,
+            "replacement_value_vs_spy_usd": -524.27,
+            "replacement_value_vs_qqq_usd": -379.94,
+            "pnl_usd": -824.68
+          },
+          "positive_rates": {
+            "replacement_value_vs_cash_usd": 0.0,
+            "replacement_value_vs_spy_usd": 0.0,
+            "replacement_value_vs_qqq_usd": 0.0,
+            "pnl_usd": 0.0
+          },
+          "sleeves_present": [
+            "volatility_contraction"
+          ],
+          "entry_regimes_present": [
+            "risk_on_trend"
+          ],
+          "tickers_present": [
+            "AAPL",
+            "DDOG"
+          ],
+          "distinct_tickers": 2,
+          "max_single_ticker_row_share": 0.5,
+          "max_single_ticker_positive_cash_share": null,
+          "top_tickers_by_rows": [
+            {
+              "key": "AAPL",
+              "n": 1,
+              "row_share": 0.5
+            },
+            {
+              "key": "DDOG",
+              "n": 1,
+              "row_share": 0.5
+            }
+          ],
+          "key": "volatility_contraction|risk_on_trend",
+          "passes_activation_lead_screen": false,
+          "failed_reasons": [
+            "cell_too_few_rows",
+            "cell_too_few_distinct_tickers",
+            "replacement_value_vs_cash_usd_sum_not_positive",
+            "replacement_value_vs_spy_usd_sum_not_positive",
+            "replacement_value_vs_qqq_usd_sum_not_positive",
+            "cell_cash_positive_rate_too_low",
+            "cell_spy_positive_rate_too_low",
+            "cell_qqq_positive_rate_too_low"
+          ]
+        },
+        {
+          "n": 1,
+          "sums": {
+            "replacement_value_vs_cash_usd": -175.58,
+            "replacement_value_vs_spy_usd": -216.49,
+            "replacement_value_vs_qqq_usd": -319.42,
+            "pnl_usd": -175.58
+          },
+          "averages": {
+            "replacement_value_vs_cash_usd": -175.58,
+            "replacement_value_vs_spy_usd": -216.49,
+            "replacement_value_vs_qqq_usd": -319.42,
+            "pnl_usd": -175.58
+          },
+          "positive_rates": {
+            "replacement_value_vs_cash_usd": 0.0,
+            "replacement_value_vs_spy_usd": 0.0,
+            "replacement_value_vs_qqq_usd": 0.0,
+            "pnl_usd": 0.0
+          },
+          "sleeves_present": [
+            "sec_leadership"
+          ],
+          "entry_regimes_present": [
+            "risk_on_trend"
+          ],
+          "tickers_present": [
+            "GE"
+          ],
+          "distinct_tickers": 1,
+          "max_single_ticker_row_share": 1.0,
+          "max_single_ticker_positive_cash_share": null,
+          "top_tickers_by_rows": [
+            {
+              "key": "GE",
+              "n": 1,
+              "row_share": 1.0
+            }
+          ],
+          "key": "sec_leadership|risk_on_trend",
+          "passes_activation_lead_screen": false,
+          "failed_reasons": [
+            "cell_too_few_rows",
+            "cell_too_few_distinct_tickers",
+            "replacement_value_vs_cash_usd_sum_not_positive",
+            "replacement_value_vs_spy_usd_sum_not_positive",
+            "replacement_value_vs_qqq_usd_sum_not_positive",
+            "cell_cash_positive_rate_too_low",
+            "cell_spy_positive_rate_too_low",
+            "cell_qqq_positive_rate_too_low",
+            "cell_single_ticker_row_concentration"
+          ]
+        }
+      ]
+    },
+    "lead_limitations": [
+      "Uses current closed forward paper rows only.",
+      "No shared helper, adapter, rank, notional, exit, or order rule was changed.",
+      "Any positive lead would require a separate fixed activation-envelope Gate 1-4."
+    ]
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "default_off_attribution_only": true,
+    "trade_enabled": false,
+    "daily_snapshot_exposed": false,
+    "live_ready": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "source_helper_used": "forward_replacement_value",
+    "source_helper_production_impact": {
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": true,
+      "replay_only": false,
+      "default_off_attribution_only": true,
+      "entry_regime_tagging_only": true,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "alters_orders": false,
+      "trade_enabled": false
+    }
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The current forward sample is still not activation-ready after tagging: no sleeve/regime cell simultaneously has enough rows, positive replacement value versus cash/SPY/QQQ, and acceptable ticker concentration.",
+    "forbidden_near_neighbor_retry": "Do not retry by relaxing row-count, concentration, SPY/QQQ replacement-value, source-rank, notional, hold-day, cooldown, or regime-threshold requirements on the same 33 closed rows.",
+    "new_evidence_required": "Need materially more closed forward replacement rows carrying entry_regime tags, especially outside QQQ-only low-deployment ETF rows, before any activation-envelope test."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260623_004_forward_replacement_regime_activation_attribution.py",
+    "data/experiments/exp-20260623-004/exp_20260623_004_forward_replacement_regime_activation_attribution.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "quant/forward_replacement_value.py",
+    "quant/regime_chop_state.py",
+    "experiments/logs/exp-20260622-013.json",
+    "experiments/logs/exp-20260623-002.json",
+    "experiments/logs/exp-20260613-005.json"
+  ],
+  "updated_at": "2026-06-23T03:10:10+00:00"
+}

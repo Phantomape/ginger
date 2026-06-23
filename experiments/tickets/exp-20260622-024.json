@@ -1,0 +1,190 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260622_024_factor_etf_reference_warehouse_repair.py",
+    "data/experiments/exp-20260622-024/exp_20260622_024_factor_etf_reference_warehouse_repair.json",
+    "experiments/cards/exp-20260622-024.md",
+    "experiments/manifests/exp-20260622-024.json",
+    "experiments/tickets/exp-20260622-024.json",
+    "experiments/logs/exp-20260622-024.json",
+    "data/warehouse/warehouse_main.sqlite",
+    "data/warehouse/warehouse_main_hot.sqlite",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260622-024.md",
+  "causal_components": [
+    "offline sidecar-to-warehouse reference seed",
+    "close-only reference OHLCV provenance",
+    "before/after warehouse coverage audit",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "factor_etf_reference_warehouse_surface_v1",
+  "claimed_at": "2026-06-22T23:06:11+00:00",
+  "completed_at": "2026-06-22T23:18:19+00:00",
+  "created_at": "2026-06-22T23:06:03+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260622-024",
+  "experiment_uid": "expuid-d02f34a9ff054694",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260622-024",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-22T23:06:03+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "factor_etf_reference_warehouse_repair"
+  },
+  "hypothesis": "measurement_repair/alpha_blocker: MTUM/QUAL/VLUE/USMV/SIZE factor ETF reference rows must exist in the production-visible OHLCV warehouse before factor-residual candidate alpha can be evaluated without a replay-only sidecar.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "factor_etf_reference_warehouse_surface_v1"
+  ],
+  "mechanism_family": "production_visible_free_factor_residual_ohlcv_candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "factor_etf_reference_rows_materialized_in_hot_overlay_warehouse",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "are",
+        "diagnostic",
+        "etf",
+        "factor",
+        "from",
+        "instead",
+        "main",
+        "mtum",
+        "of",
+        "only",
+        "qual",
+        "reference",
+        "repair",
+        "replayable",
+        "rows",
+        "sidecar",
+        "size",
+        "so",
+        "surface",
+        "usmv",
+        "vlue",
+        "warehouse"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "pit_regime_state_classifier_diagnostic",
+        "reopen_condition": "If a sleeve shows stable cross-window regime separation here, the next step is a shared default-off regime artifact + portfolio-level soft capital tilt (monotonic in risk_off_score, few parameters), validated on forward state-tagged replacement-value rows, NOT a hard per-window on/off gate. exp-20260614-010 already showed a hard frozen-window breadth filter regresses all three windows.",
+        "score": 0.0276,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.5,
+        "data_source": "other",
+        "family_key": "core_misfit_no_trade_forward_maturation",
+        "reopen_condition": "Reach 20 closed 10d CORE_MISFIT_PAPER outcomes, then test exactly one live-path haircut or exclusion variable.",
+        "score": 0.0258,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.5,
+        "data_source": "other",
+        "family_key": "sec_6k_foreign_issuer_event_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.0258,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "sleeve_health_measurement_repair",
+        "reopen_condition": "A future non-snapshot surface without a dated summary file should add one rather than being excluded from health.",
+        "score": 0.0258,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "expectation_revision_coverage_repair",
+        "reopen_condition": "Continue PIT earnings snapshots and estimate-revision ledgers until future candidates have usable eps_estimate_delta_7d rows; then rerun exp-20260525-021.",
+        "score": 0.0154,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "accepted_measurement_repair_factor_etf_reference_warehouse_seeded",
+    "accepted": true,
+    "accepted_alpha": false,
+    "artifact": "data/experiments/exp-20260622-024/exp_20260622_024_factor_etf_reference_warehouse_repair.json",
+    "log": "experiments/logs/exp-20260622-024.json",
+    "factor_reference_rows_inserted": 745,
+    "production_impact": {
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "warehouse_reference_rows_changed": true,
+      "warehouse_write_tier": "hot_overlay",
+      "strategy_code_changed": false,
+      "entry_rules_changed": false,
+      "ranking_changed": false,
+      "sizing_changed": false,
+      "exit_rules_changed": false,
+      "live_orders_changed": false,
+      "production_watchlist_changed": false,
+      "trade_enabled": false,
+      "live_ready": false,
+      "replay_only": false,
+      "parity_note": "The cold+hot warehouse overlay now exposes the same factor ETF reference dates that a daily run can refresh. The rows are reference-only and cannot create orders by themselves."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The blocker was a data-surface mismatch, not an alpha verdict. The existing factor sidecar had 396 adjusted-close rows per ETF, while the cold+hot overlay had no old_thin coverage and only partial mid_weak/late_strong coverage for MTUM/QUAL/VLUE/USMV/SIZE. Seeding the missing dates as close-only reference bars makes Gate 2 replayable without changing strategy behavior.",
+      "forbidden_near_neighbor_retry": "Do not sweep factor-residual thresholds merely because the warehouse is repaired. The next alpha retry must rerun the fixed exp-20260621-003 policy bundle once, then accept or reject it.",
+      "new_evidence_required": "Next valid alpha_search: rerun the fixed factor-residual idiosyncratic leadership bundle with this repaired warehouse surface; do not change thresholds, hold days, notional, or ETF list."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260622-024.json",
+  "single_causal_variable": "factor_etf_reference_warehouse_surface_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260622-024.json",
+  "trial_family": "factor_etf_reference_warehouse_repair",
+  "trial_variant_id": "factor_etf_close_only_reference_seed_v1",
+  "decision": "accepted_measurement_repair_factor_etf_reference_warehouse_seeded",
+  "summary": "The blocker was a data-surface mismatch, not an alpha verdict. The existing factor sidecar had 396 adjusted-close rows per ETF, while the cold+hot overlay had no old_thin coverage and only partial mid_weak/late_strong coverage for MTUM/QUAL/VLUE/USMV/SIZE. Seeding the missing dates as close-only reference bars makes Gate 2 replayable without changing strategy behavior.",
+  "artifact": "data/experiments/exp-20260622-024/exp_20260622_024_factor_etf_reference_warehouse_repair.json",
+  "log": "experiments/logs/exp-20260622-024.json",
+  "updated_at": "2026-06-22T23:18:19+00:00"
+}

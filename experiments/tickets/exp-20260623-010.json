@@ -1,0 +1,764 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260623_010_options_closed_forward_skew_attribution.py",
+    "data/experiments/exp-20260623-010/exp_20260623_010_options_closed_forward_skew_attribution.json",
+    "experiments/cards/exp-20260623-010.md",
+    "experiments/manifests/exp-20260623-010.json",
+    "experiments/tickets/exp-20260623-010.json",
+    "experiments/logs/exp-20260623-010.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260623-010.md",
+  "causal_components": [
+    "exp009 options forward ledger",
+    "warehouse OHLCV outcome settlement",
+    "put-call volume and IV skew tertiles",
+    "replacement value versus cash SPY QQQ",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "onclickmedia_options_closed_forward_skew_monotonicity_v1",
+  "claimed_at": "2026-06-23T07:06:09+00:00",
+  "completed_at": "2026-06-23T07:11:22+00:00",
+  "created_at": "2026-06-23T07:06:01+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260623-010",
+  "experiment_uid": "expuid-3ff6c8dc4b0045d4",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260623-010",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-23T07:06:01+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "options_closed_forward_skew_attribution"
+  },
+  "hypothesis": "Observed-only attribution: closed forward OnclickMedia options ledger rows may show monotonic next-10-trading-day replacement-value separation from put/call volume and IV skew, creating a future options confirmation lead without changing any strategy behavior.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "onclickmedia_options_closed_forward_skew_monotonicity_v1"
+  ],
+  "mechanism_family": "production_visible_forward_options_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260617-004",
+    "exp-20260618-023",
+    "exp-20260623-009"
+  ],
+  "new_evidence_type": "closed_forward_replacement_value_rows",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "any",
+        "attribution",
+        "behavior",
+        "call",
+        "changing",
+        "closed",
+        "confirmation",
+        "creating",
+        "forward",
+        "from",
+        "future",
+        "iv",
+        "lead",
+        "ledger",
+        "may",
+        "monotonic",
+        "monotonicity",
+        "observed",
+        "onclickmedia",
+        "only",
+        "options",
+        "put",
+        "replacement",
+        "rows",
+        "separation",
+        "show",
+        "skew",
+        "strategy",
+        "trading",
+        "value",
+        "volume",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "market_state_family_replacement_value_attribution",
+        "reopen_condition": null,
+        "score": 0.0632,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "options_forward_closed_outcome_overlay",
+        "reopen_condition": "A retry requires an OHLCV/outcome snapshot covering at least 20 trading days after May-June 2026 candidate dates, plus PIT-safe short-interest/borrow and earnings-date joins before squeeze or earnings-vol tags can be production candidates.",
+        "score": 0.0432,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "options_skew_leadership_confirmation_candidate_pool",
+        "reopen_condition": "Backfill PIT-safe historical options chains through 2024-10-02 to 2026-04-21 with vendor/as-of controls, or collect 20-30 closed forward default-off rows with replacement value.",
+        "score": 0.0432,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "volume_breadth_breakout_rank_monotonic_attribution",
+        "reopen_condition": null,
+        "score": 0.041,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "broad_market_forward_maturation",
+        "reopen_condition": "Populate the candidate universe feed, then collect closed 20d replacement-value outcomes versus paper cash or displaced core slots.",
+        "score": 0.0333,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New closed forward replacement-value rows derived from the exp-20260623-009 options observation ledger; this is not a canonical-window options threshold, moneyness, expiration, top-N, hold, or notional sweep.",
+    "override": true,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.22,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "closed_sample_too_small",
+      "no_monotonic_separation",
+      "options_quality_flags_dominate",
+      "mega_cap_concentration"
+    ],
+    "confidence_reason": "Prior options alpha attempts were blocked for missing PIT coverage, but exp-20260623-009 normalized 1846 forward observations with usable trade dates. This run uses only newly closeable forward outcomes from that ledger, not historical threshold sweeps; the main risk is that sample quality and vendor-asof caveats overwhelm any skew signal.",
+    "recorded_at": "2026-06-23T07:05:46+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "rejected_no_monotonic_options_forward_skew_edge",
+    "artifact": "data/experiments/exp-20260623-010/exp_20260623_010_options_closed_forward_skew_attribution.json",
+    "log": "experiments/logs/exp-20260623-010.json",
+    "runner": "quant/experiments/exp_20260623_010_options_closed_forward_skew_attribution.py",
+    "gate4": {
+      "observed_only_lead": false,
+      "failed_reasons": [
+        "high_mean_cash_beats_low",
+        "high_median_cash_beats_low",
+        "high_mean_spy_beats_low",
+        "high_mean_qqq_beats_low",
+        "mean_cash_monotonic_high_mid_low",
+        "median_cash_monotonic_high_mid_low",
+        "at_least_two_months_high_beats_low",
+        "at_least_two_months_high_positive"
+      ],
+      "acceptance_checks": {
+        "closed_sample_min_passed": true,
+        "quality_sample_min_passed": true,
+        "high_mean_cash_beats_low": false,
+        "high_median_cash_beats_low": false,
+        "high_mean_spy_beats_low": false,
+        "high_mean_qqq_beats_low": false,
+        "mean_cash_monotonic_high_mid_low": false,
+        "median_cash_monotonic_high_mid_low": false,
+        "spearman_cash_positive": true,
+        "spearman_spy_positive": true,
+        "concentration_passed": true,
+        "at_least_two_months_high_beats_low": false,
+        "at_least_two_months_high_positive": false
+      },
+      "decision": "rejected_no_monotonic_options_forward_skew_edge",
+      "strategy_rerun_required": false,
+      "before_after_strategy_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "max_drawdown_pct": 0.0
+      },
+      "lead_limitations": [
+        "Forward-only observations, not canonical fixed-window PIT options coverage.",
+        "No shared helper or daily adapter promoted.",
+        "Vendor-asof is missing and open-interest same-day usability remains false."
+      ]
+    },
+    "calibration": {
+      "actual_success": 0,
+      "actual_decision": "rejected_no_monotonic_options_forward_skew_edge",
+      "predicted_success_probability": 0.22,
+      "brier_score": 0.0484,
+      "predicted_failure_modes": [
+        "closed_sample_too_small",
+        "no_monotonic_separation",
+        "options_quality_flags_dominate",
+        "mega_cap_concentration"
+      ],
+      "realized_failure_modes": [
+        "high_mean_cash_beats_low",
+        "high_median_cash_beats_low",
+        "high_mean_spy_beats_low",
+        "high_mean_qqq_beats_low",
+        "mean_cash_monotonic_high_mid_low",
+        "median_cash_monotonic_high_mid_low",
+        "at_least_two_months_high_beats_low",
+        "at_least_two_months_high_positive"
+      ],
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Closed options rows did not show robust monotonic separation; this matches the low-confidence, quality-caveat prediction."
+    },
+    "attribution": {
+      "all_closed_rows": {
+        "n": 1252,
+        "mean_pnl": 87.1744,
+        "median_pnl": -8.47,
+        "total_pnl": 109142.29,
+        "win_rate": 0.490415,
+        "mean_replacement_vs_spy": 91.7649,
+        "mean_replacement_vs_qqq": 55.964,
+        "median_replacement_vs_spy": 0.0,
+        "median_replacement_vs_qqq": -28.6,
+        "mean_bullish_score": 0.5,
+        "ticker_count": 60,
+        "entry_months": [
+          "2025-01",
+          "2026-05",
+          "2026-06"
+        ],
+        "concentration": {
+          "positive_pnl": 261739.24,
+          "max_single_positive_pnl_share": 0.091548,
+          "positive_pnl_hhi": 0.043655,
+          "top_positive_tickers": [
+            {
+              "ticker": "SNOW",
+              "pnl": 23961.61,
+              "share": 0.091548
+            },
+            {
+              "ticker": "MRVL",
+              "pnl": 23930.25,
+              "share": 0.091428
+            },
+            {
+              "ticker": "SNXX",
+              "pnl": 18563.11,
+              "share": 0.070922
+            },
+            {
+              "ticker": "MU",
+              "pnl": 15833.9,
+              "share": 0.060495
+            },
+            {
+              "ticker": "CRDO",
+              "pnl": 14626.25,
+              "share": 0.055881
+            },
+            {
+              "ticker": "TRIP",
+              "pnl": 10999.95,
+              "share": 0.042026
+            },
+            {
+              "ticker": "WDC",
+              "pnl": 10833.27,
+              "share": 0.04139
+            },
+            {
+              "ticker": "HOOD",
+              "pnl": 10371.63,
+              "share": 0.039626
+            }
+          ]
+        }
+      },
+      "quality_rows": {
+        "n": 969,
+        "mean_pnl": 106.486,
+        "median_pnl": 3.85,
+        "total_pnl": 103184.97,
+        "win_rate": 0.505676,
+        "mean_replacement_vs_spy": 104.9941,
+        "mean_replacement_vs_qqq": 64.708,
+        "median_replacement_vs_spy": 0.0,
+        "median_replacement_vs_qqq": -29.84,
+        "mean_bullish_score": 0.49578,
+        "ticker_count": 56,
+        "entry_months": [
+          "2026-05",
+          "2026-06"
+        ],
+        "concentration": {
+          "positive_pnl": 221356.15,
+          "max_single_positive_pnl_share": 0.105322,
+          "positive_pnl_hhi": 0.049007,
+          "top_positive_tickers": [
+            {
+              "ticker": "MRVL",
+              "pnl": 23313.78,
+              "share": 0.105322
+            },
+            {
+              "ticker": "SNOW",
+              "pnl": 21719.09,
+              "share": 0.098118
+            },
+            {
+              "ticker": "MU",
+              "pnl": 15418.51,
+              "share": 0.069655
+            },
+            {
+              "ticker": "CRDO",
+              "pnl": 14402.67,
+              "share": 0.065066
+            },
+            {
+              "ticker": "SNXX",
+              "pnl": 13774.34,
+              "share": 0.062227
+            },
+            {
+              "ticker": "WDC",
+              "pnl": 10698.17,
+              "share": 0.04833
+            },
+            {
+              "ticker": "HOOD",
+              "pnl": 9716.83,
+              "share": 0.043897
+            },
+            {
+              "ticker": "NOW",
+              "pnl": 9246.2,
+              "share": 0.041771
+            }
+          ]
+        }
+      },
+      "quality_bucket_summary": {
+        "low_bullish": {
+          "n": 332,
+          "mean_pnl": 100.0336,
+          "median_pnl": -22.345,
+          "total_pnl": 33211.17,
+          "win_rate": 0.475904,
+          "mean_replacement_vs_spy": 100.8072,
+          "mean_replacement_vs_qqq": 62.1361,
+          "median_replacement_vs_spy": 0.0,
+          "median_replacement_vs_qqq": -23.35,
+          "mean_bullish_score": 0.164488,
+          "ticker_count": 20,
+          "entry_months": [
+            "2026-05",
+            "2026-06"
+          ],
+          "concentration": {
+            "positive_pnl": 73567.08,
+            "max_single_positive_pnl_share": 0.295228,
+            "positive_pnl_hhi": 0.161222,
+            "top_positive_tickers": [
+              {
+                "ticker": "SNOW",
+                "pnl": 21719.09,
+                "share": 0.295228
+              },
+              {
+                "ticker": "SNXX",
+                "pnl": 13774.34,
+                "share": 0.187235
+              },
+              {
+                "ticker": "WDC",
+                "pnl": 10698.17,
+                "share": 0.145421
+              },
+              {
+                "ticker": "SPOT",
+                "pnl": 6264.32,
+                "share": 0.085151
+              },
+              {
+                "ticker": "SOFI",
+                "pnl": 3831.21,
+                "share": 0.052078
+              },
+              {
+                "ticker": "TSM",
+                "pnl": 3414.56,
+                "share": 0.046414
+              },
+              {
+                "ticker": "RBLX",
+                "pnl": 3356.93,
+                "share": 0.045631
+              },
+              {
+                "ticker": "PLTR",
+                "pnl": 2957.64,
+                "share": 0.040203
+              }
+            ]
+          }
+        },
+        "mid_bullish": {
+          "n": 312,
+          "mean_pnl": 164.3253,
+          "median_pnl": 63.365,
+          "total_pnl": 51269.48,
+          "win_rate": 0.580128,
+          "mean_replacement_vs_spy": 163.0926,
+          "mean_replacement_vs_qqq": 121.7863,
+          "median_replacement_vs_spy": 67.13,
+          "median_replacement_vs_qqq": 3.155,
+          "mean_bullish_score": 0.489606,
+          "ticker_count": 19,
+          "entry_months": [
+            "2026-05",
+            "2026-06"
+          ],
+          "concentration": {
+            "positive_pnl": 83293.55,
+            "max_single_positive_pnl_share": 0.279899,
+            "positive_pnl_hhi": 0.149944,
+            "top_positive_tickers": [
+              {
+                "ticker": "MRVL",
+                "pnl": 23313.78,
+                "share": 0.279899
+              },
+              {
+                "ticker": "MU",
+                "pnl": 15418.51,
+                "share": 0.18511
+              },
+              {
+                "ticker": "HOOD",
+                "pnl": 9716.83,
+                "share": 0.116658
+              },
+              {
+                "ticker": "NOW",
+                "pnl": 9246.2,
+                "share": 0.111007
+              },
+              {
+                "ticker": "GS",
+                "pnl": 4755.06,
+                "share": 0.057088
+              },
+              {
+                "ticker": "LLY",
+                "pnl": 4510.73,
+                "share": 0.054155
+              },
+              {
+                "ticker": "INTC",
+                "pnl": 4058.71,
+                "share": 0.048728
+              },
+              {
+                "ticker": "JPM",
+                "pnl": 2564.81,
+                "share": 0.030792
+              }
+            ]
+          }
+        },
+        "high_bullish": {
+          "n": 325,
+          "mean_pnl": 57.5518,
+          "median_pnl": -40.63,
+          "total_pnl": 18704.32,
+          "win_rate": 0.464615,
+          "mean_replacement_vs_spy": 53.4965,
+          "mean_replacement_vs_qqq": 12.54,
+          "median_replacement_vs_spy": -43.18,
+          "median_replacement_vs_qqq": -50.56,
+          "mean_bullish_score": 0.840135,
+          "ticker_count": 19,
+          "entry_months": [
+            "2026-05",
+            "2026-06"
+          ],
+          "concentration": {
+            "positive_pnl": 64495.52,
+            "max_single_positive_pnl_share": 0.223313,
+            "positive_pnl_hhi": 0.117418,
+            "top_positive_tickers": [
+              {
+                "ticker": "CRDO",
+                "pnl": 14402.67,
+                "share": 0.223313
+              },
+              {
+                "ticker": "DDOG",
+                "pnl": 8378.34,
+                "share": 0.129906
+              },
+              {
+                "ticker": "APP",
+                "pnl": 8216.44,
+                "share": 0.127396
+              },
+              {
+                "ticker": "AMD",
+                "pnl": 7589.47,
+                "share": 0.117674
+              },
+              {
+                "ticker": "GE",
+                "pnl": 4640.37,
+                "share": 0.071949
+              },
+              {
+                "ticker": "BE",
+                "pnl": 4343.74,
+                "share": 0.067349
+              },
+              {
+                "ticker": "APLD",
+                "pnl": 4091.11,
+                "share": 0.063432
+              },
+              {
+                "ticker": "COHR",
+                "pnl": 3176.31,
+                "share": 0.049249
+              }
+            ]
+          }
+        }
+      },
+      "spearman_score_to_cash_replacement": 0.008145
+    },
+    "summary": "The closed forward options rows did not show enough monotonic replacement-value separation. The ledger is usable for observation, but current vendor-asof caveats, spread/zero-bid quality flags, and mega-cap option-flow noise are not yet a tradeable confirmation edge."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260623-010.json",
+  "single_causal_variable": "onclickmedia_options_closed_forward_skew_monotonicity_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260623-010.json",
+  "trial_family": "onclickmedia_options_closed_forward_skew_attribution",
+  "trial_variant_id": "closed_forward_put_call_iv_skew_monotonicity_v1",
+  "implementation_mode": "observed_only_attribution_runner",
+  "new_evidence_axis": "New closed forward replacement-value rows derived from the exp-20260623-009 options observation ledger; this is not a canonical-window options threshold, moneyness, expiration, top-N, hold, or notional sweep.",
+  "decision": "rejected_no_monotonic_options_forward_skew_edge",
+  "artifact": "data/experiments/exp-20260623-010/exp_20260623_010_options_closed_forward_skew_attribution.json",
+  "log": "experiments/logs/exp-20260623-010.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    },
+    "note": "Observed-only attribution; before and after policy are identical."
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "source_ledger_exists": true,
+    "source_ledger_rows": 1846,
+    "settled_rows": 1252,
+    "quality_rows": 969,
+    "fields_checked": [
+      "usable_trade_date",
+      "entry_date",
+      "exit_date",
+      "put_call_volume_ratio",
+      "put_minus_call_volume_weighted_iv",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd"
+    ],
+    "entry_date_present": true,
+    "target_price_relevance": "Not applicable: this is observed-only 10-trading-day outcome attribution and does not schedule target exits or orders.",
+    "settlement_audit": {
+      "source_ledger_rows": 1846,
+      "loaded_ohlcv_tickers": 62,
+      "warehouse_path": "data/warehouse/warehouse_main.sqlite",
+      "settled_rows": 1252,
+      "skipped_reasons": {
+        "missing_entry_bar": 60,
+        "not_yet_10d_closed": 534
+      },
+      "settled_date_range": {
+        "entry_start": "2025-01-14",
+        "entry_end": "2026-06-05",
+        "exit_start": "2025-01-29",
+        "exit_end": "2026-06-22"
+      }
+    }
+  },
+  "gate3": {
+    "filter_added": false,
+    "signals_generated": 1846,
+    "signals_survived": 1252,
+    "survival_rate": 0.6782,
+    "baseline_survival_rate": 0.8232,
+    "note": "No executable filter was added; rows are attributed only."
+  },
+  "gate4": {
+    "observed_only_lead": false,
+    "failed_reasons": [
+      "high_mean_cash_beats_low",
+      "high_median_cash_beats_low",
+      "high_mean_spy_beats_low",
+      "high_mean_qqq_beats_low",
+      "mean_cash_monotonic_high_mid_low",
+      "median_cash_monotonic_high_mid_low",
+      "at_least_two_months_high_beats_low",
+      "at_least_two_months_high_positive"
+    ],
+    "acceptance_checks": {
+      "closed_sample_min_passed": true,
+      "quality_sample_min_passed": true,
+      "high_mean_cash_beats_low": false,
+      "high_median_cash_beats_low": false,
+      "high_mean_spy_beats_low": false,
+      "high_mean_qqq_beats_low": false,
+      "mean_cash_monotonic_high_mid_low": false,
+      "median_cash_monotonic_high_mid_low": false,
+      "spearman_cash_positive": true,
+      "spearman_spy_positive": true,
+      "concentration_passed": true,
+      "at_least_two_months_high_beats_low": false,
+      "at_least_two_months_high_positive": false
+    },
+    "decision": "rejected_no_monotonic_options_forward_skew_edge",
+    "strategy_rerun_required": false,
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "max_drawdown_pct": 0.0
+    },
+    "lead_limitations": [
+      "Forward-only observations, not canonical fixed-window PIT options coverage.",
+      "No shared helper or daily adapter promoted.",
+      "Vendor-asof is missing and open-interest same-day usability remains false."
+    ]
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "shared_helper_promoted": false,
+    "daily_snapshot_exposed": false,
+    "uses_onclickmedia_options": true,
+    "forward_only_not_fixed_window_pit_coverage": true,
+    "live_realistic_execution_envelope": "Not evaluated for live use; this is observed-only attribution and cannot become live-ready."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The closed forward options rows did not show enough monotonic replacement-value separation. The ledger is usable for observation, but current vendor-asof caveats, spread/zero-bid quality flags, and mega-cap option-flow noise are not yet a tradeable confirmation edge.",
+    "forbidden_near_neighbor_retry": "Do not retry options put/call ratio, IV skew, open interest, volume, expiration, moneyness, top-N, hold, cooldown, or notional thresholds on this forward ledger. It now has closed outcomes, and the fixed monotonic screen is the attribution result.",
+    "new_evidence_required": "A valid options retry needs materially more closed forward rows with replacement value, PIT vendor/asof controls, borrow or loan-availability context, or historical PIT options chains covering the canonical windows."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260623_010_options_closed_forward_skew_attribution.py",
+    "data/experiments/exp-20260623-009/options_forward_observation_ledger.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260617-004.json",
+    "experiments/logs/exp-20260618-023.json",
+    "experiments/logs/exp-20260623-009.json"
+  ],
+  "updated_at": "2026-06-23T07:11:22+00:00"
+}

@@ -1,0 +1,718 @@
+{
+  "acceptance_rule": "Observed-only lead only if residualized risk_intensity has positive pooled Spearman with residual PnL, at least two of three window residual Spearman values are positive, and the high residual-intensity tertile beats low on residual mean and median PnL; otherwise reject and forbid scalar promotion.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260622_020_core_risk_intensity_residual_attribution.py",
+    "data/experiments/exp-20260622-020/exp_20260622_020_core_risk_intensity_residual_attribution.json",
+    "experiments/logs/exp-20260622-020.json",
+    "experiments/cards/exp-20260622-020.md",
+    "experiments/manifests/exp-20260622-020.json",
+    "experiments/tickets/exp-20260622-020.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260622-020.md",
+  "causal_components": [
+    "canonical closed core trades",
+    "risk-intensity residualization",
+    "no strategy change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "core_risk_intensity_residual_attribution_v1",
+  "claimed_at": "2026-06-22T19:03:59+00:00",
+  "completed_at": "2026-06-22T19:09:47+00:00",
+  "created_at": "2026-06-22T19:03:49+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260622-020",
+  "experiment_uid": "expuid-b29891924bbe4a24",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260622-020",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-22T19:03:49+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "core_risk_intensity_residual_attribution"
+  },
+  "hypothesis": "Observed-only deconfounding: if current core risk intensity is a real alpha attribution surface, the positive PnL relation should survive residualizing by window, ticker, sector, entry strategy, and applied multiplier-family buckets before any future sizing policy is considered.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "entry_rules",
+    "exit_rules",
+    "ranking_rules",
+    "sizing_rules",
+    "live_orders",
+    "paper_orders"
+  ],
+  "mechanism_family": "risk_allocation_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/backtest*.py",
+    "quant/portfolio_engine.py",
+    "quant/risk_engine.py",
+    "quant/run.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260622-019",
+    "exp-20260622-017",
+    "exp-20260618-008"
+  ],
+  "new_evidence_type": "residualized_accepted_core_closed_trade_risk_intensity_attribution",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_relation",
+      "field_tags": [
+        "a",
+        "allocation",
+        "alpha",
+        "any",
+        "applied",
+        "attribution",
+        "before",
+        "buckets",
+        "by",
+        "considered",
+        "core",
+        "current",
+        "deconfounding",
+        "entry",
+        "family",
+        "future",
+        "if",
+        "intensity",
+        "is",
+        "multiplier",
+        "observed",
+        "only",
+        "pnl",
+        "policy",
+        "positive",
+        "real",
+        "relation",
+        "residual",
+        "residualizing",
+        "risk",
+        "sector",
+        "should",
+        "sizing",
+        "strategy",
+        "surface",
+        "survive",
+        "ticker",
+        "window"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "core_mid_alpha_mid_breadth_interaction_topup",
+        "reopen_condition": null,
+        "score": 0.4872,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "risk_on_breakout_risk_allocation",
+        "reopen_condition": null,
+        "score": 0.4872,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "current_stack_existing_haircut_residual_risk",
+        "reopen_condition": "Reopen only with new forward closed Communication Services breakout rows or a distinct production-visible event-quality discriminator.",
+        "score": 0.4864,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "core_overnight_gap_share20_risk",
+        "reopen_condition": null,
+        "score": 0.4779,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "core_breadth_alignment_component_topup",
+        "reopen_condition": null,
+        "score": 0.4773,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Residualized attribution of the positive exp-20260622-019 risk-intensity lead; no scalar, filter, ranking, entry, exit, or production behavior change.",
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_relation",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.24,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "relation_explained_by_ticker_or_window",
+      "relation_explained_by_strategy_or_multiplier",
+      "thin_group_residuals",
+      "non_monotonic_residual_pnl",
+      "endogenous_sizing_stack"
+    ],
+    "confidence_reason": "exp-20260622-019 found strong raw monotonicity, but prior risk scalar/topup retunes were fragile and the relation may simply identify existing winning tickers or multiplier labels rather than a new deployable decision variable.",
+    "recorded_at": "2026-06-22T19:03:35+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": true,
+    "decision": "observed_only_positive_core_risk_intensity_residual_lead_not_promoted",
+    "artifact": "data/experiments/exp-20260622-020/exp_20260622_020_core_risk_intensity_residual_attribution.json",
+    "log": "experiments/logs/exp-20260622-020.json",
+    "runner": "quant/experiments/exp_20260622_020_core_risk_intensity_residual_attribution.py",
+    "attribution": {
+      "n_rows": 61,
+      "raw_spearman": 0.4803,
+      "residual_spearman": 0.5915,
+      "residual_bucket_summary": {
+        "low": {
+          "n": 21,
+          "raw_total_pnl": 43009.13,
+          "raw_mean_pnl": 2048.05,
+          "raw_median_pnl": -99.83,
+          "mean_risk_intensity": 1.2866,
+          "win_rate": 0.4286,
+          "residual_mean_pnl": -2241.858,
+          "residual_median_pnl": -1819.0146,
+          "mean_residual_risk_intensity": -0.456732
+        },
+        "mid": {
+          "n": 20,
+          "raw_total_pnl": 66171.54,
+          "raw_mean_pnl": 3308.58,
+          "raw_median_pnl": 3630.85,
+          "mean_risk_intensity": 1.6615,
+          "win_rate": 0.55,
+          "residual_mean_pnl": 354.0168,
+          "residual_median_pnl": 540.0957,
+          "mean_residual_risk_intensity": 0.008792
+        },
+        "high": {
+          "n": 20,
+          "raw_total_pnl": 125670.32,
+          "raw_mean_pnl": 6283.52,
+          "raw_median_pnl": 6398.1,
+          "mean_risk_intensity": 2.2847,
+          "win_rate": 0.75,
+          "residual_mean_pnl": 1999.9341,
+          "residual_median_pnl": 2022.6522,
+          "mean_residual_risk_intensity": 0.470776
+        }
+      }
+    },
+    "gate4": {
+      "strategy_rerun_required": false,
+      "reason": "Observed-only residual attribution; before and after policy are identical.",
+      "acceptance_checks": {
+        "pooled_residual_spearman_positive": true,
+        "window_residual_spearman_positive_count": 3,
+        "window_residual_spearman_values": {
+          "late_strong": 0.8163,
+          "mid_weak": 0.7338,
+          "old_thin": 0.2795
+        },
+        "high_residual_bucket_mean_beats_low": true,
+        "high_residual_bucket_median_beats_low": true,
+        "high_residual_bucket_n": 20,
+        "low_residual_bucket_n": 21
+      },
+      "failed_reasons": [],
+      "decision": "observed_only_positive_core_risk_intensity_residual_lead_not_promoted",
+      "lead_limitations": [
+        "No trading rule was changed.",
+        "The field is endogenous to the already accepted sizing stack.",
+        "Promotion would require a shared daily/forward attribution surface and closed rows."
+      ]
+    },
+    "summary": "Risk intensity retained positive residual association with realized PnL after additive controls for window, ticker, sector, strategy, and multiplier-family buckets. This is still observed-only because it is endogenous to the accepted sizing stack and no after-policy was tested."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260622-020.json",
+  "single_causal_variable": "core_risk_intensity_residual_attribution_v1",
+  "status": "observed_only_positive_lead",
+  "ticket_file": "experiments/tickets/exp-20260622-020.json",
+  "trial_family": "core_risk_intensity_residual_attribution",
+  "trial_variant_id": "observed_only_residualized_canonical_windows_v1",
+  "new_evidence_axis": "Residualized attribution of the positive exp-20260622-019 risk-intensity lead; no scalar, filter, ranking, entry, exit, or production behavior change.",
+  "decision": "observed_only_positive_core_risk_intensity_residual_lead_not_promoted",
+  "artifact": "data/experiments/exp-20260622-020/exp_20260622_020_core_risk_intensity_residual_attribution.json",
+  "log": "experiments/logs/exp-20260622-020.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "window_files": {
+      "late_strong": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+      "mid_weak": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+      "old_thin": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+    },
+    "baseline_metrics": {
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "expected_value_score_mean": 2.6314,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    }
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "field_presence": {
+      "entry_date": 61,
+      "target_price": 0,
+      "base_risk_pct": 61,
+      "actual_risk_pct": 61,
+      "pnl": 61,
+      "sector": 61,
+      "strategy": 61,
+      "sizing_multipliers": 61
+    },
+    "dimension_group_counts": {
+      "window": {
+        "group_count": 3,
+        "singleton_count": 0,
+        "top_groups": [
+          {
+            "value": "old_thin",
+            "n": 22
+          },
+          {
+            "value": "mid_weak",
+            "n": 21
+          },
+          {
+            "value": "late_strong",
+            "n": 18
+          }
+        ]
+      },
+      "ticker": {
+        "group_count": 30,
+        "singleton_count": 12,
+        "top_groups": [
+          {
+            "value": "SLV",
+            "n": 5
+          },
+          {
+            "value": "AMD",
+            "n": 4
+          },
+          {
+            "value": "GLD",
+            "n": 4
+          },
+          {
+            "value": "COIN",
+            "n": 3
+          },
+          {
+            "value": "CVX",
+            "n": 3
+          },
+          {
+            "value": "GS",
+            "n": 3
+          },
+          {
+            "value": "NFLX",
+            "n": 3
+          },
+          {
+            "value": "TSM",
+            "n": 3
+          },
+          {
+            "value": "XOM",
+            "n": 3
+          },
+          {
+            "value": "AMZN",
+            "n": 2
+          },
+          {
+            "value": "APP",
+            "n": 2
+          },
+          {
+            "value": "DDOG",
+            "n": 2
+          }
+        ]
+      },
+      "sector": {
+        "group_count": 9,
+        "singleton_count": 2,
+        "top_groups": [
+          {
+            "value": "Technology",
+            "n": 19
+          },
+          {
+            "value": "Commodities",
+            "n": 11
+          },
+          {
+            "value": "Financials",
+            "n": 10
+          },
+          {
+            "value": "Energy",
+            "n": 6
+          },
+          {
+            "value": "Consumer Discretionary",
+            "n": 5
+          },
+          {
+            "value": "Communication Services",
+            "n": 4
+          },
+          {
+            "value": "Healthcare",
+            "n": 4
+          },
+          {
+            "value": "ETF",
+            "n": 1
+          },
+          {
+            "value": "Industrials",
+            "n": 1
+          }
+        ]
+      },
+      "strategy": {
+        "group_count": 2,
+        "singleton_count": 0,
+        "top_groups": [
+          {
+            "value": "trend_long",
+            "n": 39
+          },
+          {
+            "value": "breakout_long",
+            "n": 22
+          }
+        ]
+      },
+      "family_risk_on": {
+        "group_count": 2,
+        "singleton_count": 0,
+        "top_groups": [
+          {
+            "value": "no",
+            "n": 34
+          },
+          {
+            "value": "yes",
+            "n": 27
+          }
+        ]
+      },
+      "family_spy_relative": {
+        "group_count": 1,
+        "singleton_count": 0,
+        "top_groups": [
+          {
+            "value": "no",
+            "n": 61
+          }
+        ]
+      },
+      "family_rs": {
+        "group_count": 2,
+        "singleton_count": 0,
+        "top_groups": [
+          {
+            "value": "yes",
+            "n": 33
+          },
+          {
+            "value": "no",
+            "n": 28
+          }
+        ]
+      },
+      "family_clean_spy": {
+        "group_count": 2,
+        "singleton_count": 0,
+        "top_groups": [
+          {
+            "value": "no",
+            "n": 51
+          },
+          {
+            "value": "yes",
+            "n": 10
+          }
+        ]
+      },
+      "family_signal_day": {
+        "group_count": 2,
+        "singleton_count": 0,
+        "top_groups": [
+          {
+            "value": "no",
+            "n": 38
+          },
+          {
+            "value": "yes",
+            "n": 23
+          }
+        ]
+      },
+      "family_trend": {
+        "group_count": 2,
+        "singleton_count": 0,
+        "top_groups": [
+          {
+            "value": "yes",
+            "n": 35
+          },
+          {
+            "value": "no",
+            "n": 26
+          }
+        ]
+      },
+      "family_slot_topup": {
+        "group_count": 2,
+        "singleton_count": 0,
+        "top_groups": [
+          {
+            "value": "no",
+            "n": 55
+          },
+          {
+            "value": "yes",
+            "n": 6
+          }
+        ]
+      },
+      "family_ticker_specific": {
+        "group_count": 2,
+        "singleton_count": 0,
+        "top_groups": [
+          {
+            "value": "no",
+            "n": 56
+          },
+          {
+            "value": "yes",
+            "n": 5
+          }
+        ]
+      },
+      "family_dte": {
+        "group_count": 2,
+        "singleton_count": 0,
+        "top_groups": [
+          {
+            "value": "no",
+            "n": 54
+          },
+          {
+            "value": "yes",
+            "n": 7
+          }
+        ]
+      },
+      "family_extension": {
+        "group_count": 2,
+        "singleton_count": 0,
+        "top_groups": [
+          {
+            "value": "no",
+            "n": 35
+          },
+          {
+            "value": "yes",
+            "n": 26
+          }
+        ]
+      },
+      "family_sector_specific": {
+        "group_count": 2,
+        "singleton_count": 0,
+        "top_groups": [
+          {
+            "value": "yes",
+            "n": 32
+          },
+          {
+            "value": "no",
+            "n": 29
+          }
+        ]
+      }
+    },
+    "total_trades": 61,
+    "usable_trades": 61,
+    "skipped_trades": [],
+    "entry_date": {
+      "required": true,
+      "present_rows": 61
+    },
+    "target_price": {
+      "checked": true,
+      "present_rows": 0,
+      "used": false,
+      "reason": "This observed-only closed-trade attribution consumes no candidate/order target_price and changes no trading rule."
+    },
+    "required_observed_fields": [
+      "entry_date",
+      "base_risk_pct",
+      "actual_risk_pct",
+      "pnl",
+      "sector",
+      "strategy",
+      "sizing_multipliers"
+    ]
+  },
+  "gate3": {
+    "survival_filter_added": false,
+    "survival_rate_floor_checked": true,
+    "baseline_survival_rate": 0.8232,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "observed_rows_survival_rate": 1.0,
+    "note": "No new filter was added; this is closed-trade attribution only."
+  },
+  "gate4": {
+    "strategy_rerun_required": false,
+    "reason": "Observed-only residual attribution; before and after policy are identical.",
+    "acceptance_checks": {
+      "pooled_residual_spearman_positive": true,
+      "window_residual_spearman_positive_count": 3,
+      "window_residual_spearman_values": {
+        "late_strong": 0.8163,
+        "mid_weak": 0.7338,
+        "old_thin": 0.2795
+      },
+      "high_residual_bucket_mean_beats_low": true,
+      "high_residual_bucket_median_beats_low": true,
+      "high_residual_bucket_n": 20,
+      "low_residual_bucket_n": 21
+    },
+    "failed_reasons": [],
+    "decision": "observed_only_positive_core_risk_intensity_residual_lead_not_promoted",
+    "lead_limitations": [
+      "No trading rule was changed.",
+      "The field is endogenous to the already accepted sizing stack.",
+      "Promotion would require a shared daily/forward attribution surface and closed rows."
+    ]
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "shared_helper_promoted": false,
+    "live_realistic_execution_envelope": "Not evaluated; this is observed-only attribution, not a live-ready strategy."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "Risk intensity retained positive residual association with realized PnL after additive controls for window, ticker, sector, strategy, and multiplier-family buckets. This is still observed-only because it is endogenous to the accepted sizing stack and no after-policy was tested.",
+    "forbidden_near_neighbor_retry": "Do not convert this result into a historical risk scalar, top-up, cap, or multiplier sweep on the same windows. A scalar promotion would be a different policy and would confound endogenous accepted-stack attribution with new alpha.",
+    "new_evidence_required": "A valid promotion path needs a shared default-off daily ledger or forward attribution surface that records pre-execution risk-intensity rank, then enough closed rows to test whether incremental sizing or ranking improves EV without worse drawdown or concentration."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260622_020_core_risk_intensity_residual_attribution.py",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json",
+    "experiments/logs/exp-20260622-019.json",
+    "experiments/logs/exp-20260622-017.json",
+    "experiments/logs/exp-20260618-008.json"
+  ],
+  "updated_at": "2026-06-22T19:09:47+00:00"
+}

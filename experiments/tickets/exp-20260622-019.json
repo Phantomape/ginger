@@ -1,0 +1,434 @@
+{
+  "acceptance_rule": "Observed-only lead only if high risk-intensity tertile has higher mean and median PnL than mid and low pooled, positive total PnL in all three windows, and Spearman(risk_intensity,pnl) is positive pooled and non-negative in at least two of three windows; otherwise reject and do not propose scalar retry.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260622_019_core_actual_risk_intensity_attribution.py",
+    "data/experiments/exp-20260622-019/",
+    "experiments/logs/exp-20260622-019.json",
+    "experiments/cards/exp-20260622-019.md",
+    "experiments/manifests/exp-20260622-019.json",
+    "experiments/tickets/exp-20260622-019.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260622-019.md",
+  "causal_components": [
+    "accepted core closed trades",
+    "pooled risk-intensity tertile attribution",
+    "no strategy change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "core_actual_risk_intensity_attribution_v1",
+  "claimed_at": "2026-06-22T18:10:08+00:00",
+  "completed_at": "2026-06-22T18:15:13+00:00",
+  "created_at": "2026-06-22T18:09:50+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260622-019",
+  "experiment_uid": "expuid-17fd2185e65d4d48",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260622-019",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-22T18:09:50+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "core_actual_risk_intensity_attribution"
+  },
+  "hypothesis": "Observed-only attribution: accepted core stack trades with higher ex-ante realized risk intensity should show monotonic realized-PnL separation before any future risk-allocation scalar or multiplier retry is justified.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "entry_rules",
+    "exit_rules",
+    "ranking_rules",
+    "live_orders",
+    "paper_orders",
+    "sizing_rules"
+  ],
+  "mechanism_family": "risk_allocation_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/paper_sleeves/",
+    "quant/backtest*.py",
+    "quant/runner.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260622-017",
+    "exp-20260618-008",
+    "exp-20260614-004"
+  ],
+  "new_evidence_type": "accepted_core_closed_trade_risk_intensity_attribution",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "accepted",
+        "actual",
+        "allocation",
+        "ante",
+        "any",
+        "attribution",
+        "before",
+        "core",
+        "ex",
+        "future",
+        "higher",
+        "intensity",
+        "is",
+        "justified",
+        "monotonic",
+        "multiplier",
+        "observed",
+        "only",
+        "or",
+        "pnl",
+        "realized",
+        "retry",
+        "risk",
+        "scalar",
+        "separation",
+        "should",
+        "show",
+        "stack",
+        "trades"
+      ],
+      "gate_shape": "notional_scalar"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "pre_entry_catalyst_core_risk_allocation",
+        "reopen_condition": null,
+        "score": 0.1957,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "post_accepted_scalar_stack_candidate_pool_readiness",
+        "reopen_condition": null,
+        "score": 0.1875,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "core_sentiment_surface_constructive_risk",
+        "reopen_condition": null,
+        "score": 0.1864,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "core_rs_accel_no_chase_risk",
+        "reopen_condition": null,
+        "score": 0.1853,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "core_signal_day_close_location_risk",
+        "reopen_condition": null,
+        "score": 0.1853,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "observed-only accepted-core closed-trade attribution over current canonical post-DTE baseline; no scalar, filter, sizing, entry, or exit change",
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "notional_scalar",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.2,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "non_monotonic_pnl",
+      "thin_high_intensity_bucket",
+      "window_fragility",
+      "risk_multiplier_crowding",
+      "not_incremental_vs_risk_scalars"
+    ],
+    "confidence_reason": "Risk multipliers are production-visible and high-leverage, but prior scalar/topup retunes were fragile; closed accepted core trades can cheaply falsify whether intensity ranking is an alpha surface before touching rules.",
+    "recorded_at": "2026-06-22T18:09:42+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": true,
+    "decision": "observed_only_positive_core_risk_intensity_lead_not_promoted",
+    "artifact": "data/experiments/exp-20260622-019/exp_20260622_019_core_actual_risk_intensity_attribution.json",
+    "log": "experiments/logs/exp-20260622-019.json",
+    "runner": "quant/experiments/exp_20260622_019_core_actual_risk_intensity_attribution.py",
+    "attribution": {
+      "n_rows": 61,
+      "pooled_bucket_summary": {
+        "low": {
+          "n": 21,
+          "total_pnl": -587.74,
+          "mean_pnl": -27.99,
+          "median_pnl": -78.48,
+          "win_rate": 0.1429,
+          "mean_risk_intensity": 0.2864,
+          "median_risk_intensity": 0.2518,
+          "risk_intensity_min": 0.0078,
+          "risk_intensity_max": 1.5
+        },
+        "mid": {
+          "n": 20,
+          "total_pnl": 95176.86,
+          "mean_pnl": 4758.84,
+          "median_pnl": 6045.56,
+          "win_rate": 0.75,
+          "mean_risk_intensity": 2.0124,
+          "median_risk_intensity": 2.0,
+          "risk_intensity_min": 1.5,
+          "risk_intensity_max": 2.4961
+        },
+        "high": {
+          "n": 20,
+          "total_pnl": 140261.87,
+          "mean_pnl": 7013.09,
+          "median_pnl": 6918.78,
+          "win_rate": 0.85,
+          "mean_risk_intensity": 2.9841,
+          "median_risk_intensity": 2.7972,
+          "risk_intensity_min": 2.5,
+          "risk_intensity_max": 4.6415
+        }
+      },
+      "spearman_risk_intensity_pnl": 0.4803,
+      "window_spearman_risk_intensity_pnl": {
+        "late_strong": 0.3311,
+        "mid_weak": 0.7662,
+        "old_thin": 0.1616
+      }
+    },
+    "gate4": {
+      "strategy_rerun_required": false,
+      "reason": "Observed-only attribution; before and after policy are identical.",
+      "acceptance_checks": {
+        "pooled_mean_monotonic": true,
+        "pooled_median_monotonic": true,
+        "high_bucket_positive_windows": [
+          "late_strong",
+          "mid_weak",
+          "old_thin"
+        ],
+        "all_windows_high_bucket_positive": true,
+        "pooled_spearman_positive": true,
+        "window_spearman_nonnegative_count": 3,
+        "window_spearman_values": {
+          "late_strong": 0.3311,
+          "mid_weak": 0.7662,
+          "old_thin": 0.1616
+        }
+      },
+      "failed_reasons": [],
+      "decision": "observed_only_positive_core_risk_intensity_lead_not_promoted",
+      "lead_limitations": [
+        "No trading rule was changed.",
+        "The signal is endogenous to the already accepted sizing stack.",
+        "Promotion would require a shared default-off helper and forward closed rows."
+      ]
+    },
+    "summary": "The current accepted risk stack appears to allocate higher actual/base risk intensity toward trades that subsequently produce larger PnL across all three canonical windows. This supports the existing stack as an attribution surface, but it does not prove that increasing risk scalars would improve EV."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260622-019.json",
+  "single_causal_variable": "core_actual_risk_intensity_attribution_v1",
+  "status": "observed_only_positive_lead",
+  "ticket_file": "experiments/tickets/exp-20260622-019.json",
+  "trial_family": "core_actual_risk_intensity",
+  "trial_variant_id": "observed_only_canonical_windows_v1",
+  "new_evidence_axis": "observed-only accepted-core closed-trade attribution over current canonical post-DTE baseline; no scalar, filter, sizing, entry, or exit change",
+  "decision": "observed_only_positive_core_risk_intensity_lead_not_promoted",
+  "artifact": "data/experiments/exp-20260622-019/exp_20260622_019_core_actual_risk_intensity_attribution.json",
+  "log": "experiments/logs/exp-20260622-019.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "window_files": {
+      "late_strong": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+      "mid_weak": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+      "old_thin": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+    },
+    "baseline_metrics": {
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "expected_value_score_mean": 2.6314,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    }
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "field_presence": {
+      "entry_date": 61,
+      "target_price": 0,
+      "base_risk_pct": 61,
+      "actual_risk_pct": 61,
+      "pnl": 61
+    },
+    "total_trades": 61,
+    "usable_trades": 61,
+    "skipped_trades": [],
+    "entry_date": {
+      "required": true,
+      "present_rows": 61
+    },
+    "target_price": {
+      "checked": true,
+      "present_rows": 0,
+      "used": false,
+      "reason": "This observed-only closed-trade attribution consumes no candidate/order target_price and changes no trading rule."
+    },
+    "required_observed_fields": [
+      "entry_date",
+      "base_risk_pct",
+      "actual_risk_pct",
+      "pnl"
+    ]
+  },
+  "gate3": {
+    "survival_filter_added": false,
+    "survival_rate_floor_checked": true,
+    "baseline_survival_rate": 0.8232,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "observed_rows_survival_rate": 1.0,
+    "note": "No new filter was added; this is closed-trade attribution only."
+  },
+  "gate4": {
+    "strategy_rerun_required": false,
+    "reason": "Observed-only attribution; before and after policy are identical.",
+    "acceptance_checks": {
+      "pooled_mean_monotonic": true,
+      "pooled_median_monotonic": true,
+      "high_bucket_positive_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "all_windows_high_bucket_positive": true,
+      "pooled_spearman_positive": true,
+      "window_spearman_nonnegative_count": 3,
+      "window_spearman_values": {
+        "late_strong": 0.3311,
+        "mid_weak": 0.7662,
+        "old_thin": 0.1616
+      }
+    },
+    "failed_reasons": [],
+    "decision": "observed_only_positive_core_risk_intensity_lead_not_promoted",
+    "lead_limitations": [
+      "No trading rule was changed.",
+      "The signal is endogenous to the already accepted sizing stack.",
+      "Promotion would require a shared default-off helper and forward closed rows."
+    ]
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "shared_helper_promoted": false,
+    "live_realistic_execution_envelope": "Not evaluated; this is an observed-only positive lead, not a live-ready strategy."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The current accepted risk stack appears to allocate higher actual/base risk intensity toward trades that subsequently produce larger PnL across all three canonical windows. This supports the existing stack as an attribution surface, but it does not prove that increasing risk scalars would improve EV.",
+    "forbidden_near_neighbor_retry": "Do not use this positive attribution as permission to retry simple risk_scalar, topup, or notional multiplier sweeps on the same historical windows. That would confound an endogenous sizing-stack attribution with a new policy.",
+    "new_evidence_required": "A valid promotion path needs a shared default-off daily ledger or ablation that records risk-intensity rank before execution, then enough forward closed rows to prove that any incremental ranking/sizing rule improves EV without worse drawdown."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260622_019_core_actual_risk_intensity_attribution.py",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json",
+    "experiments/logs/exp-20260622-017.json",
+    "experiments/logs/exp-20260618-008.json",
+    "experiments/logs/exp-20260614-004.json"
+  ],
+  "updated_at": "2026-06-22T18:15:13+00:00"
+}

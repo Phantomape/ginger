@@ -1,0 +1,667 @@
+{
+  "acceptance_rule": "Shared-paper-first default-off (trade_enabled=False). Gate 1-4 on the three standard windows: accept only if aggregate expected_value_score positive with no unacceptable drawdown/sample regression and target_concentration guard passes (single positive-PnL share <=0.5, HHI <=0.35), windows not majority-regressed. No change to live/core orders, ranking, sizing, or exits.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260622_021_finra_daily_short_volume_imbalance.py",
+    "data/experiments/exp-20260622-021/exp_20260622_021_finra_daily_short_volume_imbalance.json",
+    "experiments/cards/exp-20260622-021.md",
+    "experiments/manifests/exp-20260622-021.json",
+    "experiments/tickets/exp-20260622-021.json",
+    "experiments/logs/exp-20260622-021.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260622-021.md",
+  "causal_components": [
+    "archived activity-only daily short-volume rows",
+    "next-open 10-trading-day paper outcome attribution",
+    "trailing imbalance buckets",
+    "no strategy change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "moomoo_finra_daily_short_volume_imbalance_default_off_candidate_source_v1",
+  "claimed_at": "2026-06-22T19:40:23+00:00",
+  "completed_at": "2026-06-22T20:09:09+00:00",
+  "created_at": "2026-06-22T19:40:23+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260622-021",
+  "experiment_uid": "expuid-7f9151e36f0e4db5",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260622-021",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-22T19:40:23+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "finra_daily_short_volume_imbalance"
+  },
+  "hypothesis": "Observed-only attribution: Moomoo/FINRA daily short-volume imbalance (short-volume ratio versus its own trailing history) should show monotonic next-10-trading-day paper-return separation among liquid SPY/QQQ-relative leader rows before any future default-off helper or threshold retry is justified.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "moomoo_finra_daily_short_volume_imbalance_default_off_candidate_source_v1"
+  ],
+  "mechanism_family": "production_visible_free_finra_daily_short_volume_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260622-008",
+    "exp-20260622-009",
+    "exp-20260622-010",
+    "exp-20260619-007"
+  ],
+  "new_evidence_type": "observed_only_archived_daily_short_volume_imbalance_outcomes",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "finra_short_interest",
+      "field_tags": [
+        "a",
+        "all",
+        "bi",
+        "change",
+        "core",
+        "covers",
+        "daily",
+        "distinct",
+        "elevated",
+        "enabled",
+        "exits",
+        "false",
+        "finra",
+        "first",
+        "flow",
+        "from",
+        "helper",
+        "historical",
+        "history",
+        "identifies",
+        "imbalance",
+        "interest",
+        "is",
+        "leaders",
+        "level",
+        "liquid",
+        "live",
+        "measure",
+        "moomoo",
+        "no",
+        "on",
+        "one",
+        "orders",
+        "own",
+        "percent",
+        "pools",
+        "pressure",
+        "prior",
+        "qqq",
+        "ranking",
+        "ratio",
+        "relative",
+        "sale",
+        "short",
+        "sizing",
+        "snapshot",
+        "spy",
+        "standard",
+        "three",
+        "to",
+        "trade",
+        "tradeable",
+        "trailing",
+        "used",
+        "volume",
+        "weekly",
+        "windows"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_borrow_pressure_candidate_pool",
+        "reopen_condition": "If accepted, build a shared default-off adapter plus parity tests. If rejected, move away from FINRA threshold/support variants unless new borrow-cost, loan-availability, or forward replacement evidence arrives.",
+        "score": 0.4823,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "sec_ftd_finra_no_core_flow_candidate_pool",
+        "reopen_condition": "Forward replacement rows or a materially new free data field, such as a borrow-cost, catalyst, liquidity, or order-flow relation that explains why core-flow dates should be displaced rather than retained.",
+        "score": 0.4767,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "fiftytwo_week_high_finra_borrow_pressure_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT evidence separating durable and exhausted 52-week-high leaders, such as borrow-cost or availability history, institutional ownership changes, options-implied move/skew, or closed forward replacement-value rows. Pure FINRA or 52-week threshold retunes stay frozen.",
+        "score": 0.4762,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_covering_relief_leadership_candidate_pool",
+        "reopen_condition": "Forward replacement rows or a materially richer borrow dataset are required: borrow fee, lendable-share availability, or float-normalized short-interest decline with the FINRA publication lag explicitly modeled.",
+        "score": 0.4754,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_public_float_normalized_short_pressure_candidate_pool",
+        "reopen_condition": "If positive, build a shared-paper-first FINRA/public-float helper with historical replay, daily default-off snapshot, parity tests, and closed forward replacement-value rows before promotion. If negative, a valid retry needs materially different PIT borrow-cost, loan-availability, float-change, or forward replacement evidence rather than threshold retunes.",
+        "score": 0.475,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "moomoo get_daily_short_volume = FINRA DAILY short-sale VOLUME dataset, verified live backfillable to ~2020 (data/probes/moomoo_daily_short_volume_probe_2026-06-21.json) and PIT next-day-published; never ingested before. Distinct from the bi-weekly settlement short-INTEREST level used by every prior finra short-pressure candidate pool (finra_short_pressure_breakout, finra_covering_relief, finra_borrow_pressure, finra_public_float_normalized_short_pressure) — daily flow resolution, not a bi-weekly snapshot.",
+    "override": true,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "finra_short_interest",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.2,
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "target_concentration_failed",
+      "thin_signal_low_sample",
+      "edge_not_power",
+      "daily_short_volume_not_next10d_predictive",
+      "universe_coverage_gap_smallcap"
+    ],
+    "confidence_reason": "New PIT daily dataset in the only live candidate-pool source family (finra 26.7%), but prior bi-weekly short-pressure pools are 0/5 so the broader thesis is unproven; daily flow is the genuinely new axis.",
+    "recorded_at": "2026-06-22T19:40:09+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "rejected_no_monotonic_daily_short_volume_imbalance_edge",
+    "artifact": "data/experiments/exp-20260622-021/exp_20260622_021_finra_daily_short_volume_imbalance.json",
+    "log": "experiments/logs/exp-20260622-021.json",
+    "runner": "quant/experiments/exp_20260622_021_finra_daily_short_volume_imbalance.py",
+    "attribution": {
+      "n_rows": 1376,
+      "leader_context_rows": {
+        "n": 388,
+        "bucket_summary": {
+          "low": {
+            "n": 130,
+            "mean_pnl": 42.72,
+            "median_pnl": 31.97,
+            "win_rate": 0.5308,
+            "total_pnl": 5553.54,
+            "mean_pnl_pct_net": 0.01068,
+            "median_imbalance": 0.841826
+          },
+          "mid": {
+            "n": 129,
+            "mean_pnl": 44.38,
+            "median_pnl": 13.68,
+            "win_rate": 0.5194,
+            "total_pnl": 5724.75,
+            "mean_pnl_pct_net": 0.011094,
+            "median_imbalance": 1.066257
+          },
+          "high": {
+            "n": 129,
+            "mean_pnl": 2.28,
+            "median_pnl": -32.89,
+            "win_rate": 0.4264,
+            "total_pnl": 293.51,
+            "mean_pnl_pct_net": 0.000569,
+            "median_imbalance": 1.290597
+          }
+        },
+        "per_window": {
+          "old_thin": {
+            "n": 116,
+            "bucket_summary": {
+              "low": {
+                "n": 51,
+                "mean_pnl": 97.33,
+                "median_pnl": 110.15,
+                "win_rate": 0.6667,
+                "total_pnl": 4963.7,
+                "mean_pnl_pct_net": 0.024332,
+                "median_imbalance": 0.86201
+              },
+              "mid": {
+                "n": 34,
+                "mean_pnl": 13.47,
+                "median_pnl": 11.3,
+                "win_rate": 0.5,
+                "total_pnl": 457.95,
+                "mean_pnl_pct_net": 0.003367,
+                "median_imbalance": 1.044299
+              },
+              "high": {
+                "n": 31,
+                "mean_pnl": -114.37,
+                "median_pnl": -190.54,
+                "win_rate": 0.1935,
+                "total_pnl": -3545.62,
+                "mean_pnl_pct_net": -0.028594,
+                "median_imbalance": 1.327433
+              }
+            },
+            "mean_monotonic_high_mid_low": false,
+            "median_monotonic_high_mid_low": false,
+            "spearman_imbalance_to_pnl": -0.271995
+          },
+          "mid_weak": {
+            "n": 182,
+            "bucket_summary": {
+              "low": {
+                "n": 52,
+                "mean_pnl": 108.6,
+                "median_pnl": 93.34,
+                "win_rate": 0.6154,
+                "total_pnl": 5647.34,
+                "mean_pnl_pct_net": 0.027151,
+                "median_imbalance": 0.831691
+              },
+              "mid": {
+                "n": 69,
+                "mean_pnl": 104.61,
+                "median_pnl": 65.71,
+                "win_rate": 0.5942,
+                "total_pnl": 7218.19,
+                "mean_pnl_pct_net": 0.026153,
+                "median_imbalance": 1.074398
+              },
+              "high": {
+                "n": 61,
+                "mean_pnl": 100.09,
+                "median_pnl": 105.63,
+                "win_rate": 0.6066,
+                "total_pnl": 6105.58,
+                "mean_pnl_pct_net": 0.025023,
+                "median_imbalance": 1.26828
+              }
+            },
+            "mean_monotonic_high_mid_low": false,
+            "median_monotonic_high_mid_low": false,
+            "spearman_imbalance_to_pnl": 0.019971
+          },
+          "late_strong": {
+            "n": 90,
+            "bucket_summary": {
+              "low": {
+                "n": 27,
+                "mean_pnl": -187.31,
+                "median_pnl": -124.46,
+                "win_rate": 0.1111,
+                "total_pnl": -5057.5,
+                "mean_pnl_pct_net": -0.046829,
+                "median_imbalance": 0.788931
+              },
+              "mid": {
+                "n": 26,
+                "mean_pnl": -75.05,
+                "median_pnl": -67.42,
+                "win_rate": 0.3462,
+                "total_pnl": -1951.39,
+                "mean_pnl_pct_net": -0.018763,
+                "median_imbalance": 1.068211
+              },
+              "high": {
+                "n": 37,
+                "mean_pnl": -61.26,
+                "median_pnl": -108.22,
+                "win_rate": 0.3243,
+                "total_pnl": -2266.45,
+                "mean_pnl_pct_net": -0.015314,
+                "median_imbalance": 1.312298
+              }
+            },
+            "mean_monotonic_high_mid_low": true,
+            "median_monotonic_high_mid_low": false,
+            "spearman_imbalance_to_pnl": 0.226835
+          }
+        },
+        "spearman_imbalance_to_pnl": -0.064915,
+        "ticker_contribution": [
+          {
+            "value": "TSLA",
+            "n": 79,
+            "total_pnl": 10330.89
+          },
+          {
+            "value": "AAPL",
+            "n": 78,
+            "total_pnl": -4729.86
+          },
+          {
+            "value": "PLTR",
+            "n": 129,
+            "total_pnl": 4366.16
+          },
+          {
+            "value": "NVDA",
+            "n": 102,
+            "total_pnl": 1604.61
+          }
+        ]
+      }
+    },
+    "gate4": {
+      "observed_only_lead": false,
+      "failed_reasons": [
+        "window_positive_high_count_failed",
+        "pooled_high_mean_not_above_low",
+        "pooled_high_median_not_above_low",
+        "pooled_mean_not_monotonic",
+        "pooled_median_not_monotonic",
+        "leader_spearman_not_positive"
+      ],
+      "acceptance_checks": {
+        "leader_rows_min_sample_passed": true,
+        "leader_high_bucket_min_count": 31,
+        "leader_high_bucket_min_count_passed": true,
+        "pooled_mean_high_beats_low": false,
+        "pooled_median_high_beats_low": false,
+        "pooled_mean_monotonic_high_mid_low": false,
+        "pooled_median_monotonic_high_mid_low": false,
+        "leader_spearman_positive": false,
+        "window_positive_high_count": 1,
+        "window_positive_high_count_passed": false,
+        "window_spearman_positive_count": 2,
+        "window_spearman_positive_count_passed": true,
+        "window_high_counts": {
+          "old_thin": 31,
+          "mid_weak": 61,
+          "late_strong": 37
+        }
+      },
+      "decision": "rejected_no_monotonic_daily_short_volume_imbalance_edge",
+      "strategy_rerun_required": false,
+      "before_after_strategy_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "max_drawdown_pct": 0.0
+      },
+      "lead_limitations": [
+        "Five archived ticker surface only.",
+        "No shared helper or daily adapter promoted.",
+        "Daily short volume remains activity-only, not short-interest positioning."
+      ]
+    },
+    "calibration": {
+      "actual_success": 0,
+      "actual_decision": "rejected_no_monotonic_daily_short_volume_imbalance_edge",
+      "predicted_success_probability": 0.2,
+      "brier_score": 0.04,
+      "predicted_failure_modes": [
+        "target_concentration_failed",
+        "thin_signal_low_sample",
+        "edge_not_power",
+        "daily_short_volume_not_next10d_predictive",
+        "universe_coverage_gap_smallcap"
+      ],
+      "realized_failure_modes": [
+        "window_positive_high_count_failed",
+        "pooled_high_mean_not_above_low",
+        "pooled_high_median_not_above_low",
+        "pooled_mean_not_monotonic",
+        "pooled_median_not_monotonic",
+        "leader_spearman_not_positive"
+      ],
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Daily short-volume imbalance did not produce the required monotonic leader-context separation; this matches the main edge-not-power risk."
+    },
+    "summary": "Daily short-volume imbalance did not show enough monotonic predictive power in the leader-context rows. The archived surface is real and PIT-mappable, but high imbalance was not consistently better across pooled mean/median and window-level Spearman tests."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260622-021.json",
+  "single_causal_variable": "moomoo_finra_daily_short_volume_imbalance_default_off_candidate_source_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260622-021.json",
+  "trial_family": "finra_daily_short_volume_imbalance_candidate_pool",
+  "trial_variant_id": "observed_only_archived_5ticker_imbalance_monotonicity_v1",
+  "new_evidence_axis": "Uses the archived Moomoo daily short-volume activity rows from exp-20260622-009 to test monotonic imbalance outcome attribution directly, rather than retuning the rejected exp-20260622-010 activity-absorption threshold bundle.",
+  "decision": "rejected_no_monotonic_daily_short_volume_imbalance_edge",
+  "artifact": "data/experiments/exp-20260622-021/exp_20260622_021_finra_daily_short_volume_imbalance.json",
+  "log": "experiments/logs/exp-20260622-021.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    },
+    "note": "Observed-only attribution; before and after policy are identical."
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "activity_archive_rows": 2250,
+    "outcome_rows": 1376,
+    "archive_tickers": [
+      "AAPL",
+      "NVDA",
+      "PLTR",
+      "SOFI",
+      "TSLA"
+    ],
+    "fields_checked": [
+      "activity_date",
+      "entry_date",
+      "exit_date",
+      "short_volume_ratio",
+      "short_volume_ratio_vs_median",
+      "pnl",
+      "leader_context"
+    ],
+    "entry_date_present": true,
+    "target_price_relevance": "Not applicable: this is observed-only outcome attribution and does not schedule target exits or orders.",
+    "audit": {
+      "by_window": {
+        "old_thin": {
+          "activity_rows_in_window": 690,
+          "outcome_rows": 448,
+          "reject_reasons": {
+            "insufficient_activity_history": 76,
+            "missing_entry_or_exit_bar": 28,
+            "missing_ohlcv": 138
+          },
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json"
+        },
+        "mid_weak": {
+          "activity_rows_in_window": 635,
+          "outcome_rows": 476,
+          "reject_reasons": {
+            "missing_entry_or_exit_bar": 32,
+            "missing_ohlcv": 127
+          },
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json"
+        },
+        "late_strong": {
+          "activity_rows_in_window": 615,
+          "outcome_rows": 452,
+          "reject_reasons": {
+            "missing_entry_or_exit_bar": 40,
+            "missing_ohlcv": 123
+          },
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json"
+        }
+      },
+      "reject_reasons": {
+        "insufficient_activity_history": 76,
+        "missing_entry_or_exit_bar": 100,
+        "missing_ohlcv": 388
+      }
+    }
+  },
+  "gate3": {
+    "filter_added": false,
+    "signals_generated": 2250,
+    "signals_survived": 1376,
+    "survival_rate": 0.6116,
+    "baseline_survival_rate": 0.8232,
+    "note": "No executable filter was added; rows are attributed only."
+  },
+  "gate4": {
+    "observed_only_lead": false,
+    "failed_reasons": [
+      "window_positive_high_count_failed",
+      "pooled_high_mean_not_above_low",
+      "pooled_high_median_not_above_low",
+      "pooled_mean_not_monotonic",
+      "pooled_median_not_monotonic",
+      "leader_spearman_not_positive"
+    ],
+    "acceptance_checks": {
+      "leader_rows_min_sample_passed": true,
+      "leader_high_bucket_min_count": 31,
+      "leader_high_bucket_min_count_passed": true,
+      "pooled_mean_high_beats_low": false,
+      "pooled_median_high_beats_low": false,
+      "pooled_mean_monotonic_high_mid_low": false,
+      "pooled_median_monotonic_high_mid_low": false,
+      "leader_spearman_positive": false,
+      "window_positive_high_count": 1,
+      "window_positive_high_count_passed": false,
+      "window_spearman_positive_count": 2,
+      "window_spearman_positive_count_passed": true,
+      "window_high_counts": {
+        "old_thin": 31,
+        "mid_weak": 61,
+        "late_strong": 37
+      }
+    },
+    "decision": "rejected_no_monotonic_daily_short_volume_imbalance_edge",
+    "strategy_rerun_required": false,
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "max_drawdown_pct": 0.0
+    },
+    "lead_limitations": [
+      "Five archived ticker surface only.",
+      "No shared helper or daily adapter promoted.",
+      "Daily short volume remains activity-only, not short-interest positioning."
+    ]
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "shared_helper_promoted": false,
+    "daily_snapshot_exposed": false,
+    "uses_moomoo_daily_short_volume": true,
+    "activity_only_not_positioning": true,
+    "live_realistic_execution_envelope": "Not evaluated for live use; this is observed-only attribution and cannot become live-ready."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "Daily short-volume imbalance did not show enough monotonic predictive power in the leader-context rows. The archived surface is real and PIT-mappable, but high imbalance was not consistently better across pooled mean/median and window-level Spearman tests.",
+    "forbidden_near_neighbor_retry": "Do not retry short_volume_ratio, ratio-vs-median, z-score, top-N, hold-day, notional, cooldown, or activity-absorption threshold sweeps on the same five-ticker archive. That would repeat exp-20260622-010/021 near neighbors.",
+    "new_evidence_required": "A valid retry needs a materially broader archived Moomoo coverage set, PIT borrow fee/utilization or loan-availability data, options/flow confirmation, or closed forward replacement-value rows from a shared default-off helper."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260622_021_finra_daily_short_volume_imbalance.py",
+    "data/non_ohlcv/moomoo_daily_short_volume/rows.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260622-010.json",
+    "quant/experiments/exp_20260622_010_moomoo_daily_short_volume_activity_helper.py"
+  ],
+  "updated_at": "2026-06-22T20:09:09+00:00"
+}

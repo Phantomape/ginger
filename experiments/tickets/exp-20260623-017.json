@@ -1,0 +1,537 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260623_017_live_pilot_competition_scalar_outcome_attribution.py",
+    "data/experiments/exp-20260623-017/exp_20260623_017_live_pilot_competition_scalar_outcome_attribution.json",
+    "experiments/cards/exp-20260623-017.md",
+    "experiments/manifests/exp-20260623-017.json",
+    "experiments/tickets/exp-20260623-017.json",
+    "experiments/logs/exp-20260623-017.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260623-017.md",
+  "causal_components": [
+    "pilot_competition_decisions ledger",
+    "hot warehouse 10d settlement",
+    "pilot_sleeve_scalar buckets",
+    "event_guard/full_history tags",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "live_pilot_competition_scalar_forward_outcome_monotonicity_v1",
+  "claimed_at": "2026-06-23T14:11:22+00:00",
+  "completed_at": "2026-06-23T14:15:53+00:00",
+  "created_at": "2026-06-23T14:11:14+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260623-017",
+  "experiment_uid": "expuid-13325a133bff4a22",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260623-017",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-23T14:11:14+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "live_pilot_competition_scalar_outcome_attribution"
+  },
+  "hypothesis": "Observed-only attribution: live pilot competition decision snapshots with higher applied pilot sleeve scalar and selected event-guarded full-history sleeve status should show positive next-10-trading-day replacement value versus cash/SPY/QQQ before any pilot allocation promotion is justified.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "live_pilot_competition_scalar_forward_outcome_monotonicity_v1"
+  ],
+  "mechanism_family": "pilot_competition_forward_attribution",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260623-006",
+    "exp-20260612-022",
+    "exp-20260612-024"
+  ],
+  "new_evidence_type": "closed_live_pilot_decision_rows",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "allocation",
+        "any",
+        "applied",
+        "attribution",
+        "before",
+        "cash",
+        "competition",
+        "decision",
+        "event",
+        "forward",
+        "full",
+        "guarded",
+        "higher",
+        "history",
+        "is",
+        "justified",
+        "live",
+        "monotonicity",
+        "observed",
+        "only",
+        "outcome",
+        "pilot",
+        "positive",
+        "promotion",
+        "qqq",
+        "replacement",
+        "scalar",
+        "selected",
+        "should",
+        "show",
+        "sleeve",
+        "snapshots",
+        "spy",
+        "status",
+        "trading",
+        "value",
+        "versus"
+      ],
+      "gate_shape": "notional_scalar"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "event_overlay_replacement_value_core_overlap_context",
+        "reopen_condition": "Do not retry nearby core-overlap event scalars on the frozen sample without new closed forward rows or a shared production-visible overlap/displacement adapter.",
+        "score": 0.1881,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "event_benchmark_momentum_context",
+        "reopen_condition": null,
+        "score": 0.1872,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "event_source_quality_allocation",
+        "reopen_condition": null,
+        "score": 0.18,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "space_forward_replacement_consistency",
+        "reopen_condition": "Do not promote this forward-consistency scalar from the current sample. Revisit only after new closed Space forward rows broaden the multi-event consistency cohort beyond its current support.",
+        "score": 0.1793,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.5,
+        "data_source": "other",
+        "family_key": "event_reaction_context_quality",
+        "reopen_condition": null,
+        "score": 0.1786,
+        "status": "has_accepted",
+        "trials": 2
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "notional_scalar",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.16,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "sample_too_small",
+      "no_monotonic_separation",
+      "warehouse_outcomes_missing",
+      "pilot_concentration",
+      "forward_window_too_short"
+    ],
+    "confidence_reason": "Pilot sleeves are playbook-relevant and production-visible, but current scorecards show thin closed evidence and one killed pilot; this run only settles existing append-only competition decisions and does not change entries, sizing, exits, rankings, or orders.",
+    "recorded_at": "2026-06-23T14:10:59+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "rejected_sample_too_small_live_pilot_competition_scalar_edge",
+    "artifact": "data/experiments/exp-20260623-017/exp_20260623_017_live_pilot_competition_scalar_outcome_attribution.json",
+    "log": "experiments/logs/exp-20260623-017.json",
+    "runner": "quant/experiments/exp_20260623_017_live_pilot_competition_scalar_outcome_attribution.py",
+    "gate4": {
+      "observed_only_lead": false,
+      "failed_reasons": [
+        "closed_decision_sample_min_passed",
+        "each_bucket_min_rows_passed",
+        "high_mean_cash_beats_mid_and_low",
+        "high_mean_spy_positive",
+        "high_mean_qqq_positive",
+        "spearman_cash_positive",
+        "spearman_spy_positive",
+        "closed_ticker_concentration_passed",
+        "positive_pnl_concentration_passed"
+      ],
+      "acceptance_checks": {
+        "closed_decision_sample_min_passed": false,
+        "each_bucket_min_rows_passed": false,
+        "high_mean_cash_beats_mid_and_low": false,
+        "high_mean_spy_positive": false,
+        "high_mean_qqq_positive": false,
+        "spearman_cash_positive": false,
+        "spearman_spy_positive": false,
+        "closed_ticker_concentration_passed": false,
+        "positive_pnl_concentration_passed": false
+      },
+      "decision": "rejected_sample_too_small_live_pilot_competition_scalar_edge",
+      "strategy_rerun_required": false,
+      "before_after_strategy_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "max_drawdown_pct": 0.0
+      }
+    },
+    "calibration": {
+      "actual_decision": "rejected_sample_too_small_live_pilot_competition_scalar_edge",
+      "actual_success": 0,
+      "predicted_success_probability": 0.16,
+      "brier_score": 0.0256,
+      "predicted_failure_modes": [
+        "sample_too_small",
+        "no_monotonic_separation",
+        "warehouse_outcomes_missing",
+        "pilot_concentration",
+        "forward_window_too_short"
+      ],
+      "realized_failure_modes": [
+        "closed_decision_sample_min_passed",
+        "each_bucket_min_rows_passed",
+        "high_mean_cash_beats_mid_and_low",
+        "high_mean_spy_positive",
+        "high_mean_qqq_positive",
+        "spearman_cash_positive",
+        "spearman_spy_positive",
+        "closed_ticker_concentration_passed",
+        "positive_pnl_concentration_passed"
+      ],
+      "predicted_failure_mode_hit": true
+    },
+    "attribution": {
+      "all_settled_rows": {
+        "n": 4,
+        "mean_pnl_usd": -312.3325,
+        "median_pnl_usd": -424.47,
+        "sum_pnl_usd": -1249.33,
+        "mean_pnl_pct_net": -0.041799,
+        "win_rate": 0.25,
+        "mean_replacement_vs_spy_usd": -406.1675,
+        "mean_replacement_vs_qqq_usd": -473.2325,
+        "median_replacement_vs_spy_usd": -527.18,
+        "median_replacement_vs_qqq_usd": -596.87,
+        "concentration": {
+          "ticker_count": 2,
+          "max_single_ticker_closed_share": 0.75,
+          "top_closed_ticker": {
+            "ticker": "INTC",
+            "rows": 3
+          },
+          "max_single_positive_pnl_share": 1.0,
+          "top_positive_pnl_ticker": {
+            "ticker": "COHR",
+            "positive_pnl_usd": 61.98
+          }
+        }
+      },
+      "bucket_summary": {
+        "low_scalar": {
+          "n": 0,
+          "mean_pnl_usd": null,
+          "median_pnl_usd": null,
+          "sum_pnl_usd": 0.0,
+          "mean_pnl_pct_net": null,
+          "win_rate": null,
+          "mean_replacement_vs_spy_usd": null,
+          "mean_replacement_vs_qqq_usd": null,
+          "median_replacement_vs_spy_usd": null,
+          "median_replacement_vs_qqq_usd": null,
+          "concentration": {
+            "max_single_ticker_closed_share": null,
+            "max_single_positive_pnl_share": null,
+            "top_closed_ticker": null,
+            "top_positive_pnl_ticker": null
+          }
+        },
+        "mid_scalar": {
+          "n": 1,
+          "mean_pnl_usd": 61.98,
+          "median_pnl_usd": 61.98,
+          "sum_pnl_usd": 61.98,
+          "mean_pnl_pct_net": 0.01484,
+          "win_rate": 1.0,
+          "mean_replacement_vs_spy_usd": 3.94,
+          "mean_replacement_vs_qqq_usd": -49.03,
+          "median_replacement_vs_spy_usd": 3.94,
+          "median_replacement_vs_qqq_usd": -49.03,
+          "concentration": {
+            "ticker_count": 1,
+            "max_single_ticker_closed_share": 1.0,
+            "top_closed_ticker": {
+              "ticker": "COHR",
+              "rows": 1
+            },
+            "max_single_positive_pnl_share": 1.0,
+            "top_positive_pnl_ticker": {
+              "ticker": "COHR",
+              "positive_pnl_usd": 61.98
+            }
+          }
+        },
+        "high_scalar": {
+          "n": 3,
+          "mean_pnl_usd": -437.1033,
+          "median_pnl_usd": -424.47,
+          "sum_pnl_usd": -1311.31,
+          "mean_pnl_pct_net": -0.060678,
+          "win_rate": 0.0,
+          "mean_replacement_vs_spy_usd": -542.87,
+          "mean_replacement_vs_qqq_usd": -614.6333,
+          "median_replacement_vs_spy_usd": -527.18,
+          "median_replacement_vs_qqq_usd": -596.87,
+          "concentration": {
+            "ticker_count": 1,
+            "max_single_ticker_closed_share": 1.0,
+            "top_closed_ticker": {
+              "ticker": "INTC",
+              "rows": 3
+            },
+            "max_single_positive_pnl_share": null,
+            "top_positive_pnl_ticker": null
+          }
+        }
+      },
+      "spearman_scalar_to_cash_replacement": -0.8165
+    },
+    "summary": "The live pilot competition ledger has too few closed unique decisions and too much INTC concentration to support a pilot allocation scalar promotion. This is useful forward measurement, not alpha acceptance."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260623-017.json",
+  "single_causal_variable": "live_pilot_competition_scalar_forward_outcome_monotonicity_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260623-017.json",
+  "trial_family": "live_pilot_competition_scalar_outcome_attribution",
+  "trial_variant_id": "hot_warehouse_10d_v1",
+  "implementation_mode": "observed_only_attribution_runner",
+  "decision": "rejected_sample_too_small_live_pilot_competition_scalar_edge",
+  "artifact": "data/experiments/exp-20260623-017/exp_20260623_017_live_pilot_competition_scalar_outcome_attribution.json",
+  "log": "experiments/logs/exp-20260623-017.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    },
+    "note": "Observed-only attribution; before and after strategy policy are identical."
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "source_decisions": 5,
+    "settled_rows": 4,
+    "fields_checked": [
+      "decision_id",
+      "asof_date",
+      "ticker",
+      "pilot_sleeve_scalar_applied",
+      "planned_notional_usd",
+      "entry_date",
+      "exit_date",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd"
+    ],
+    "entry_date_present": true,
+    "target_price_present": true,
+    "target_price_relevance": "Target price is validated from the pilot ranking snapshot, but the observed-only settlement uses a fixed 10-trading-day outcome and does not change exit policy.",
+    "ledger_audit": {
+      "ledger_path": "data/ledgers/pilot_competition_decisions.jsonl",
+      "ledger_exists": true,
+      "raw_rows": 7,
+      "bad_json_rows": 0,
+      "unique_decisions": 5,
+      "usable_decisions": 5,
+      "raw_duplicate_decision_counts": {
+        "2026-05-08-AI_INFRA_AGGRESSIVE-INTC-breakout_long-1": 3
+      },
+      "skipped": {}
+    },
+    "settlement_audit": {
+      "warehouse_path": "data/warehouse/warehouse_main_hot.sqlite",
+      "ticker_count_requested": 5,
+      "ticker_count_with_rows": 5,
+      "decision_rows": 5,
+      "settled_rows": 4,
+      "skipped": {
+        "missing_10d_exit_bar": 1
+      },
+      "entry_rule": "first tradable open strictly after decision_id date",
+      "exit_rule": "close after 10 trading bars from entry",
+      "settled_date_range": {
+        "asof_start": "2026-05-08",
+        "asof_end": "2026-05-11",
+        "entry_start": "2026-05-11",
+        "entry_end": "2026-05-12",
+        "exit_start": "2026-05-26",
+        "exit_end": "2026-05-27"
+      }
+    }
+  },
+  "gate3": {
+    "filter_added": false,
+    "signals_generated": 5,
+    "signals_survived": 4,
+    "survival_rate": 0.8,
+    "baseline_survival_rate": 0.8232,
+    "note": "No executable filter was added; rows are attributed only."
+  },
+  "gate4": {
+    "observed_only_lead": false,
+    "failed_reasons": [
+      "closed_decision_sample_min_passed",
+      "each_bucket_min_rows_passed",
+      "high_mean_cash_beats_mid_and_low",
+      "high_mean_spy_positive",
+      "high_mean_qqq_positive",
+      "spearman_cash_positive",
+      "spearman_spy_positive",
+      "closed_ticker_concentration_passed",
+      "positive_pnl_concentration_passed"
+    ],
+    "acceptance_checks": {
+      "closed_decision_sample_min_passed": false,
+      "each_bucket_min_rows_passed": false,
+      "high_mean_cash_beats_mid_and_low": false,
+      "high_mean_spy_positive": false,
+      "high_mean_qqq_positive": false,
+      "spearman_cash_positive": false,
+      "spearman_spy_positive": false,
+      "closed_ticker_concentration_passed": false,
+      "positive_pnl_concentration_passed": false
+    },
+    "decision": "rejected_sample_too_small_live_pilot_competition_scalar_edge",
+    "strategy_rerun_required": false,
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "max_drawdown_pct": 0.0
+    }
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "shared_helper_promoted": false,
+    "daily_snapshot_exposed": false,
+    "uses_live_pilot_ledger": true,
+    "live_realistic_execution_envelope": "Not evaluated for live use; this is observed-only attribution over existing logged pilot snapshots and cannot become live-ready."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The live pilot competition ledger has too few closed unique decisions and too much INTC concentration to support a pilot allocation scalar promotion. This is useful forward measurement, not alpha acceptance.",
+    "forbidden_near_neighbor_retry": "Do not promote or retune pilot scalar, max risk/capital scalar, event guard, hold, target, stop, or notional from these five unique competition decisions. Wait for more closed live pilot rows.",
+    "new_evidence_required": "At least 10-20 closed unique live pilot competition decisions with less single-ticker concentration and intact replacement-value fields."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260623_017_live_pilot_competition_scalar_outcome_attribution.py",
+    "data/ledgers/pilot_competition_decisions.jsonl",
+    "data/warehouse/warehouse_main_hot.sqlite",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260623-006.json"
+  ],
+  "updated_at": "2026-06-23T14:15:53+00:00"
+}

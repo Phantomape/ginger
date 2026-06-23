@@ -1,0 +1,297 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "alpha_hypothesis": "Accepted default-off sleeves can only become activation evidence if live pilot scorecards enforce the same risk envelope used for maturation.",
+  "analysis": {
+    "blocked_new_entries": [
+      {
+        "pilot": "fundamental_growth_rs",
+        "status": "SKIP_pilot_kill_verdict",
+        "ticker": "AMD"
+      }
+    ],
+    "blocked_new_entry_count": 1,
+    "killed_pilots_have_no_new_buys": true,
+    "recommendations": [
+      {
+        "actionable_statuses": [
+          "HOLD"
+        ],
+        "enter_next_open_count": 0,
+        "kill_blocked_pending_entries": [],
+        "label": "Source-priority allocator (TOP-1 only)",
+        "new_entries_blocked": false,
+        "pilot": "allocator_top1",
+        "pilot_verdict": "COLLECTING"
+      },
+      {
+        "actionable_statuses": [],
+        "enter_next_open_count": 0,
+        "kill_blocked_pending_entries": [],
+        "label": "Distribution-day absorption leadership",
+        "new_entries_blocked": false,
+        "pilot": "distribution_absorption",
+        "pilot_verdict": "COLLECTING"
+      },
+      {
+        "actionable_statuses": [
+          "HOLD",
+          "HOLD",
+          "HOLD"
+        ],
+        "enter_next_open_count": 0,
+        "kill_blocked_pending_entries": [
+          {
+            "status": "SKIP_pilot_kill_verdict",
+            "ticker": "AMD"
+          }
+        ],
+        "label": "Fundamental growth + RS",
+        "new_entries_blocked": true,
+        "pilot": "fundamental_growth_rs",
+        "pilot_verdict": "KILL"
+      }
+    ],
+    "repaired_count": 1,
+    "repaired_pilots": [
+      {
+        "after_verdict": "KILL",
+        "after_verdict_note": "book drawdown 24.3% breaches 15% ceiling -> stop pilot",
+        "before_verdict_legacy": "COLLECTING",
+        "before_verdict_note_legacy": "4/20 closed trades; keep tracking",
+        "book_max_drawdown_pct": 0.2429,
+        "closed_trades": 4,
+        "drawdown_ceiling_breached": true,
+        "label": "Fundamental growth + RS",
+        "pilot": "fundamental_growth_rs",
+        "rv_vs_spy_usd": -1295.49,
+        "sleeve": "fundamental_growth_rs"
+      }
+    ],
+    "scorecards": [
+      {
+        "after_verdict": "COLLECTING",
+        "after_verdict_note": "0/20 closed trades; keep tracking",
+        "before_verdict_legacy": "COLLECTING",
+        "before_verdict_note_legacy": "0/20 closed trades; keep tracking",
+        "book_max_drawdown_pct": 0.0,
+        "closed_trades": 0,
+        "drawdown_ceiling_breached": false,
+        "label": "Source-priority allocator (TOP-1 only)",
+        "pilot": "allocator_top1",
+        "rv_vs_spy_usd": 0,
+        "sleeve": "accepted_helper_source_priority_allocator"
+      },
+      {
+        "after_verdict": "COLLECTING",
+        "after_verdict_note": "0/20 closed trades; keep tracking",
+        "before_verdict_legacy": "COLLECTING",
+        "before_verdict_note_legacy": "0/20 closed trades; keep tracking",
+        "book_max_drawdown_pct": 0.0,
+        "closed_trades": 0,
+        "drawdown_ceiling_breached": false,
+        "label": "Distribution-day absorption leadership",
+        "pilot": "distribution_absorption",
+        "rv_vs_spy_usd": 0,
+        "sleeve": "distribution_day_absorption_leadership"
+      },
+      {
+        "after_verdict": "KILL",
+        "after_verdict_note": "book drawdown 24.3% breaches 15% ceiling -> stop pilot",
+        "before_verdict_legacy": "COLLECTING",
+        "before_verdict_note_legacy": "4/20 closed trades; keep tracking",
+        "book_max_drawdown_pct": 0.2429,
+        "closed_trades": 4,
+        "drawdown_ceiling_breached": true,
+        "label": "Fundamental growth + RS",
+        "pilot": "fundamental_growth_rs",
+        "rv_vs_spy_usd": -1295.49,
+        "sleeve": "fundamental_growth_rs"
+      }
+    ],
+    "verdicts_after": {
+      "allocator_top1": "COLLECTING",
+      "distribution_absorption": "COLLECTING",
+      "fundamental_growth_rs": "KILL"
+    }
+  },
+  "anti_js": {
+    "evidence": "Python runner and pytest only.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260623-006/exp_20260623_006_pilot_scorecard_drawdown_kill_verdict.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_success": true,
+    "failure_modes_observed": [],
+    "predicted_failure_modes": [
+      "ambiguous_graduate_vs_kill_semantics",
+      "existing_dirty_pilot_artifacts",
+      "tests_missing_fixture"
+    ],
+    "predicted_success_probability": 0.8,
+    "surprise_note": "The repair was straightforward: the existing scorecard already computed drawdown; verdict precedence and recommendation-sheet new-entry blocking were the missing pieces."
+  },
+  "causal_components": [
+    "pilot scorecard verdict",
+    "pre-committed drawdown ceiling",
+    "pilot recommendation new-entry block",
+    "no strategy signal change",
+    "no live order change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "pilot_scorecard_drawdown_kill_verdict_v1",
+  "decision": "accepted_measurement_repair_pilot_drawdown_kill_verdict",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "pending_entries_blocked_by_kill": 1,
+    "pilot_verdicts_repaired": 1,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260623-006",
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    }
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "entry_date_target_price_note": "No strategy candidates are built. This repair changes only pilot scorecard verdict and manual recommendation reporting.",
+    "fields_checked": [
+      "closed_trades",
+      "book_max_drawdown_pct",
+      "verdict",
+      "pending_entries",
+      "recommendations.actionable.status",
+      "recommendations.skipped.status",
+      "replacement_value_vs_spy_usd"
+    ],
+    "pilot_scorecard_path": "data/pilots/pilot_scorecard.json"
+  },
+  "gate3": {
+    "baseline_signals_generated": 164,
+    "baseline_signals_survived": 135,
+    "baseline_survival_rate": 0.8232,
+    "filter_added": false,
+    "note": "No executable filter or strategy rule was added."
+  },
+  "gate4": {
+    "acceptance_checks": {
+      "all_drawdown_breaches_are_kill": true,
+      "killed_pilots_have_no_new_buys": true,
+      "pending_entries_blocked_by_kill": 1,
+      "repaired_drawdown_breach_count": 1,
+      "strategy_behavior_changed": false
+    },
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "max_drawdown_pct": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0
+    },
+    "decision": "accepted_measurement_repair_pilot_drawdown_kill_verdict",
+    "failed_reasons": [],
+    "passed": true,
+    "strategy_rerun_required": false
+  },
+  "hypothesis": "measurement_repair/alpha_blocker: manual live pilot forward maturation is unreliable if a pilot that already breaches the pre-committed 15% book drawdown ceiling remains labelled COLLECTING instead of risk-stopped; repair the scorecard verdict so activation evidence and operator review respect the declared envelope.",
+  "implementation_mode": "measurement_repair",
+  "lane": "measurement_repair",
+  "log": "experiments/logs/exp-20260623-006.json",
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260612-024",
+    "exp-20260620-029",
+    "exp-20260623-004"
+  ],
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not treat low-sample pilot scorecards as activation evidence when the pre-committed drawdown ceiling is already breached.",
+    "new_evidence_required": "Fresh closed pilot rows after the stopped pilot is reviewed, with the scorecard verdict and replacement-value fields intact.",
+    "why_result_happened": "The scorecard computed drawdown correctly but evaluated the closed-trade minimum before the drawdown kill ceiling, so low-sample pilots could hide an envelope breach behind COLLECTING and still surface pending entries as new BUY recommendations."
+  },
+  "prediction": {
+    "confidence_reason": "The pilot tracker already declares a graduate/kill rule with max_book_dd_pct=15%, and current generated data shows fundamental_growth_rs at 24.3% drawdown while still labelled COLLECTING; this is a narrow scorecard/envelope repair that does not touch entries, exits, sizing, ranking, or orders.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "ambiguous_graduate_vs_kill_semantics",
+      "existing_dirty_pilot_artifacts",
+      "tests_missing_fixture"
+    ],
+    "recorded_at": "2026-06-23T05:07:36+00:00",
+    "success_probability": 0.8
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "paper_orders_changed": false,
+    "parity_note": "Only the manual pilot scorecard/recommendation sheet changes. Sleeve state, daily candidate generation, live orders, ranking, sizing, and exits are unchanged.",
+    "pilot_recommendation_changed": true,
+    "pilot_reporting_changed": true,
+    "pilot_verdict_changed": true,
+    "ranking_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "quant/experiments/exp_20260623_006_pilot_scorecard_drawdown_kill_verdict.py",
+    "quant/pilot_tracker.py",
+    "quant/test_pilot_tracker.py",
+    "data/experiments/exp-20260623-006/exp_20260623_006_pilot_scorecard_drawdown_kill_verdict.json",
+    "data/pilots/pilot_scorecard.json",
+    "data/pilots/pilot_tracker.md",
+    "data/pilots/pilot_recommendations_2026-06-23.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260623_006_pilot_scorecard_drawdown_kill_verdict.py",
+    ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_pilot_tracker.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\pilot_tracker.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "pilot_scorecard_drawdown_kill_verdict_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-06-23T05:16:26Z",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260623-006"
+}

@@ -1,0 +1,1223 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260623_012_llm_position_state_forward_outcome.py",
+    "data/experiments/exp-20260623-012/exp_20260623_012_llm_position_state_forward_outcome.json",
+    "experiments/cards/exp-20260623-012.md",
+    "experiments/manifests/exp-20260623-012.json",
+    "experiments/tickets/exp-20260623-012.json",
+    "experiments/logs/exp-20260623-012.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260623-012.md",
+  "causal_components": [
+    "daily LLM decision logs",
+    "position state severity buckets",
+    "warehouse OHLCV forward settlement",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "llm_position_state_forward_outcome_attribution_v1",
+  "claimed_at": "2026-06-23T09:05:43+00:00",
+  "completed_at": "2026-06-23T09:13:15+00:00",
+  "created_at": "2026-06-23T09:05:35+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260623-012",
+  "experiment_uid": "expuid-13f770802f3e484c",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260623-012",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-23T09:05:35+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "llm_position_state_forward_outcome"
+  },
+  "hypothesis": "Observed-only LLM event scoring: production LLM decision-log position states such as CRITICAL_EXIT, TARGET_EXIT, and ATR_EXIT may identify held positions with worse next-5-trading-day outcomes than HOLD across the longer daily decision-log history.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "llm_position_state_forward_outcome_attribution_v1"
+  ],
+  "mechanism_family": "llm_exit_state_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260623-011",
+    "exp-20260417-004"
+  ],
+  "new_evidence_type": "longer_daily_llm_decision_log_rows",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "across",
+        "as",
+        "atr",
+        "attribution",
+        "critical",
+        "daily",
+        "decision",
+        "event",
+        "exit",
+        "forward",
+        "held",
+        "history",
+        "hold",
+        "identify",
+        "llm",
+        "log",
+        "longer",
+        "may",
+        "observed",
+        "only",
+        "outcome",
+        "outcomes",
+        "position",
+        "positions",
+        "scoring",
+        "state",
+        "states",
+        "such",
+        "target",
+        "than",
+        "trading",
+        "worse"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "market_state_family_replacement_value_attribution",
+        "reopen_condition": null,
+        "score": 0.041,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "options_forward_closed_outcome_overlay",
+        "reopen_condition": "A retry requires an OHLCV/outcome snapshot covering at least 20 trading days after May-June 2026 candidate dates, plus PIT-safe short-interest/borrow and earnings-date joins before squeeze or earnings-vol tags can be production candidates.",
+        "score": 0.0324,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "broad_momentum_tail_state_attribution",
+        "reopen_condition": "A retry needs a materially different PIT tail-risk field, forward closed replacement-value rows, or a shared helper that tests the bucket against accepted compression, distribution, and allocator comparators.",
+        "score": 0.0316,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "regime_state",
+        "family_key": "market_state_attribution_plumbing",
+        "reopen_condition": null,
+        "score": 0.0308,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "state_aware_candidate_pool_lifecycle",
+        "reopen_condition": "Keep the accepted 20-day state-surface paper hold; next state-surface alpha should use a different production-visible discriminator or forward replacement-value evidence.",
+        "score": 0.0235,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.22,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "no_monotonic_forward_separation",
+      "exit_states_are_current_loss_labels",
+      "warehouse_outcomes_missing",
+      "LLM_decision_logs_too_sparse"
+    ],
+    "confidence_reason": "This uses saved production LLM decision logs over a longer date range than the exit-lifecycle shadow rows; the money hypothesis is that LLM/state context captures forward avoidable loss, but the likely disconfirmers are endogeneity and overlap with existing exit state logic.",
+    "recorded_at": "2026-06-23T09:05:21+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": true,
+    "decision": "observed_only_llm_position_state_loss_lead_not_promoted",
+    "artifact": "data/experiments/exp-20260623-012/exp_20260623_012_llm_position_state_forward_outcome.json",
+    "log": "experiments/logs/exp-20260623-012.json",
+    "runner": "quant/experiments/exp_20260623_012_llm_position_state_forward_outcome.py",
+    "gate4": {
+      "observed_only_lead": true,
+      "failed_reasons": [],
+      "acceptance_checks": {
+        "min_settled_rows": 250,
+        "raw_settled_rows": 522,
+        "deduped_settled_rows": 399,
+        "hold_rows": 310,
+        "non_hold_rows": 89,
+        "hard_exit_rows": 61,
+        "critical_rows": 22,
+        "severity_spearman_return": -0.081643,
+        "severity_spearman_spy_replacement": -0.10395,
+        "non_hold_mean_return_below_hold": true,
+        "non_hold_median_return_below_hold": true,
+        "hard_exit_mean_return_below_hold": true,
+        "hard_exit_median_return_below_hold": true,
+        "critical_mean_return_below_hold": true,
+        "critical_median_return_below_hold": true,
+        "date_support": {
+          "comparable_dates": 35,
+          "non_hold_worse_dates": 24,
+          "details": [
+            {
+              "as_of_date": "2026-04-23",
+              "hold_rows": 9,
+              "non_hold_rows": 4,
+              "hold_mean_return": 0.031295,
+              "non_hold_mean_return": 0.020658,
+              "non_hold_worse": true
+            },
+            {
+              "as_of_date": "2026-04-24",
+              "hold_rows": 8,
+              "non_hold_rows": 5,
+              "hold_mean_return": 0.003232,
+              "non_hold_mean_return": 0.029341,
+              "non_hold_worse": false
+            },
+            {
+              "as_of_date": "2026-04-27",
+              "hold_rows": 6,
+              "non_hold_rows": 6,
+              "hold_mean_return": 0.024634,
+              "non_hold_mean_return": 0.060466,
+              "non_hold_worse": false
+            },
+            {
+              "as_of_date": "2026-04-28",
+              "hold_rows": 6,
+              "non_hold_rows": 5,
+              "hold_mean_return": 0.036872,
+              "non_hold_mean_return": 0.068227,
+              "non_hold_worse": false
+            },
+            {
+              "as_of_date": "2026-04-29",
+              "hold_rows": 9,
+              "non_hold_rows": 2,
+              "hold_mean_return": 0.04283,
+              "non_hold_mean_return": -0.010894,
+              "non_hold_worse": true
+            },
+            {
+              "as_of_date": "2026-04-30",
+              "hold_rows": 10,
+              "non_hold_rows": 2,
+              "hold_mean_return": 0.154707,
+              "non_hold_mean_return": -0.006926,
+              "non_hold_worse": true
+            },
+            {
+              "as_of_date": "2026-05-01",
+              "hold_rows": 9,
+              "non_hold_rows": 2,
+              "hold_mean_return": 0.120788,
+              "non_hold_mean_return": -0.073815,
+              "non_hold_worse": true
+            },
+            {
+              "as_of_date": "2026-05-04",
+              "hold_rows": 9,
+              "non_hold_rows": 3,
+              "hold_mean_return": 0.060386,
+              "non_hold_mean_return": -0.004076,
+              "non_hold_worse": true
+            },
+            {
+              "as_of_date": "2026-05-05",
+              "hold_rows": 9,
+              "non_hold_rows": 4,
+              "hold_mean_return": 0.030057,
+              "non_hold_mean_return": 0.01381,
+              "non_hold_worse": true
+            },
+            {
+              "as_of_date": "2026-05-06",
+              "hold_rows": 10,
+              "non_hold_rows": 3,
+              "hold_mean_return": 0.023685,
+              "non_hold_mean_return": 0.008356,
+              "non_hold_worse": true
+            },
+            {
+              "as_of_date": "2026-05-07",
+              "hold_rows": 9,
+              "non_hold_rows": 4,
+              "hold_mean_return": -0.00362,
+              "non_hold_mean_return": 0.004364,
+              "non_hold_worse": false
+            },
+            {
+              "as_of_date": "2026-05-08",
+              "hold_rows": 9,
+              "non_hold_rows": 1,
+              "hold_mean_return": -0.045293,
+              "non_hold_mean_return": -0.006307,
+              "non_hold_worse": false
+            },
+            {
+              "as_of_date": "2026-05-11",
+              "hold_rows": 9,
+              "non_hold_rows": 1,
+              "hold_mean_return": -0.037863,
+              "non_hold_mean_return": -0.009446,
+              "non_hold_worse": false
+            },
+            {
+              "as_of_date": "2026-05-12",
+              "hold_rows": 10,
+              "non_hold_rows": 1,
+              "hold_mean_return": -0.025198,
+              "non_hold_mean_return": 0.004493,
+              "non_hold_worse": false
+            },
+            {
+              "as_of_date": "2026-05-13",
+              "hold_rows": 8,
+              "non_hold_rows": 3,
+              "hold_mean_return": 0.007012,
+              "non_hold_mean_return": -0.002292,
+              "non_hold_worse": true
+            },
+            {
+              "as_of_date": "2026-05-14",
+              "hold_rows": 8,
+              "non_hold_rows": 1,
+              "hold_mean_return": 0.030213,
+              "non_hold_mean_return": 0.011531,
+              "non_hold_worse": true
+            },
+            {
+              "as_of_date": "2026-05-15",
+              "hold_rows": 8,
+              "non_hold_rows": 1,
+              "hold_mean_return": 0.047975,
+              "non_hold_mean_return": 0.027465,
+              "non_hold_worse": true
+            },
+            {
+              "as_of_date": "2026-05-18",
+              "hold_rows": 7,
+              "non_hold_rows": 1,
+              "hold_mean_return": 0.060848,
+              "non_hold_mean_return": 0.0435,
+              "non_hold_worse": true
+            },
+            {
+              "as_of_date": "2026-05-19",
+              "hold_rows": 7,
+              "non_hold_rows": 1,
+              "hold_mean_return": 0.075297,
+              "non_hold_mean_return": 0.044121,
+              "non_hold_worse": true
+            },
+            {
+              "as_of_date": "2026-05-20",
+              "hold_rows": 7,
+              "non_hold_rows": 1,
+              "hold_mean_return": 0.042652,
+              "non_hold_mean_return": 0.041355,
+              "non_hold_worse": true
+            },
+            {
+              "as_of_date": "2026-05-21",
+              "hold_rows": 7,
+              "non_hold_rows": 1,
+              "hold_mean_return": 0.02888,
+              "non_hold_mean_return": 0.034356,
+              "non_hold_worse": false
+            },
+            {
+              "as_of_date": "2026-05-22",
+              "hold_rows": 7,
+              "non_hold_rows": 1,
+              "hold_mean_return": 0.042549,
+              "non_hold_mean_return": 0.027825,
+              "non_hold_worse": true
+            },
+            {
+              "as_of_date": "2026-05-26",
+              "hold_rows": 9,
+              "non_hold_rows": 1,
+              "hold_mean_return": 0.014433,
+              "non_hold_mean_return": 0.015349,
+              "non_hold_worse": false
+            },
+            {
+              "as_of_date": "2026-05-27",
+              "hold_rows": 9,
+              "non_hold_rows": 1,
+              "hold_mean_return": 0.025284,
+              "non_hold_mean_return": 0.01491,
+              "non_hold_worse": true
+            },
+            {
+              "as_of_date": "2026-05-28",
+              "hold_rows": 8,
+              "non_hold_rows": 2,
+              "hold_mean_return": -0.0661,
+              "non_hold_mean_return": -0.10573,
+              "non_hold_worse": true
+            },
+            {
+              "as_of_date": "2026-05-29",
+              "hold_rows": 8,
+              "non_hold_rows": 2,
+              "hold_mean_return": -0.019828,
+              "non_hold_mean_return": -0.081924,
+              "non_hold_worse": true
+            },
+            {
+              "as_of_date": "2026-06-01",
+              "hold_rows": 10,
+              "non_hold_rows": 3,
+              "hold_mean_return": -0.073202,
+              "non_hold_mean_return": -0.105928,
+              "non_hold_worse": true
+            },
+            {
+              "as_of_date": "2026-06-02",
+              "hold_rows": 10,
+              "non_hold_rows": 3,
+              "hold_mean_return": -0.098963,
+              "non_hold_mean_return": -0.106758,
+              "non_hold_worse": true
+            },
+            {
+              "as_of_date": "2026-06-03",
+              "hold_rows": 10,
+              "non_hold_rows": 3,
+              "hold_mean_return": -0.03756,
+              "non_hold_mean_return": -0.003312,
+              "non_hold_worse": false
+            },
+            {
+              "as_of_date": "2026-06-04",
+              "hold_rows": 10,
+              "non_hold_rows": 5,
+              "hold_mean_return": -0.030538,
+              "non_hold_mean_return": 0.012549,
+              "non_hold_worse": false
+            },
+            {
+              "as_of_date": "2026-06-05",
+              "hold_rows": 11,
+              "non_hold_rows": 4,
+              "hold_mean_return": 0.096617,
+              "non_hold_mean_return": -0.006877,
+              "non_hold_worse": true
+            },
+            {
+              "as_of_date": "2026-06-08",
+              "hold_rows": 11,
+              "non_hold_rows": 4,
+              "hold_mean_return": 0.039082,
+              "non_hold_mean_return": -0.023111,
+              "non_hold_worse": true
+            },
+            {
+              "as_of_date": "2026-06-09",
+              "hold_rows": 11,
+              "non_hold_rows": 2,
+              "hold_mean_return": 0.051174,
+              "non_hold_mean_return": -0.039935,
+              "non_hold_worse": true
+            },
+            {
+              "as_of_date": "2026-06-10",
+              "hold_rows": 10,
+              "non_hold_rows": 3,
+              "hold_mean_return": 0.087974,
+              "non_hold_mean_return": 0.052765,
+              "non_hold_worse": true
+            },
+            {
+              "as_of_date": "2026-06-11",
+              "hold_rows": 11,
+              "non_hold_rows": 2,
+              "hold_mean_return": 0.045249,
+              "non_hold_mean_return": -0.060808,
+              "non_hold_worse": true
+            }
+          ]
+        },
+        "max_single_adverse_pnl_share": 0.23472
+      },
+      "decision": "observed_only_llm_position_state_loss_lead_not_promoted",
+      "strategy_rerun_required": false,
+      "before_after_strategy_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "max_drawdown_pct": 0.0
+      },
+      "lead_limitations": [
+        "Forward-only production decision-log rows, not canonical fixed-window PIT replay.",
+        "No shared helper, adapter, daily execution rule, or exit policy was promoted.",
+        "Rows are deduped by ticker, entry date, exit date, and position state to reduce weekend/repeat overweight.",
+        "Outcome is gross diagnostic next-open-to-5d-close path attribution."
+      ]
+    },
+    "calibration": {
+      "predicted_success_probability": 0.22,
+      "actual_success": true,
+      "brier_score": 0.6084,
+      "predicted_failure_modes": [
+        "no_monotonic_forward_separation",
+        "exit_states_are_current_loss_labels",
+        "warehouse_outcomes_missing",
+        "LLM_decision_logs_too_sparse"
+      ],
+      "failed_reasons": [],
+      "predicted_failure_modes_hit": []
+    },
+    "summary": "Logged LLM position states showed negative forward outcome separation after deduping repeated ticker/entry/state observations. This remains diagnostic-only because no shared executable exit policy or fixed-window strategy replay was tested."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260623-012.json",
+  "single_causal_variable": "llm_position_state_forward_outcome_attribution_v1",
+  "status": "observed_only_positive_lead",
+  "ticket_file": "experiments/tickets/exp-20260623-012.json",
+  "trial_family": "llm_position_state_forward_outcome_attribution",
+  "trial_variant_id": "critical_target_atr_next5d_v1",
+  "implementation_mode": "observed_only_attribution_runner",
+  "new_evidence_axis": "Saved production LLM decision logs over a longer history than the exit-lifecycle shadow rows; this tests logged position-state labels, not a new executable exit rule or the exit-lifecycle advisory event stream.",
+  "decision": "observed_only_llm_position_state_loss_lead_not_promoted",
+  "artifact": "data/experiments/exp-20260623-012/exp_20260623_012_llm_position_state_forward_outcome.json",
+  "log": "experiments/logs/exp-20260623-012.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    },
+    "note": "Observed-only attribution; before and after policy are identical."
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "fields_checked": [
+      "date",
+      "position_states",
+      "ticker",
+      "entry_date",
+      "target_price",
+      "position_state",
+      "state_bucket",
+      "state_severity",
+      "forward_5d_return_pct",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd"
+    ],
+    "entry_date_present": true,
+    "target_price_present_count": 0,
+    "target_price_relevance": "Checked for Gate 2. The LLM decision log has no target_price field and this attribution does not schedule target exits.",
+    "source_audit": {
+      "source_dir": "data/daily/llm/decisions",
+      "files": [
+        "data/daily/llm/decisions/llm_decision_log_20260412.json",
+        "data/daily/llm/decisions/llm_decision_log_20260413.json",
+        "data/daily/llm/decisions/llm_decision_log_20260414.json",
+        "data/daily/llm/decisions/llm_decision_log_20260415.json",
+        "data/daily/llm/decisions/llm_decision_log_20260416.json",
+        "data/daily/llm/decisions/llm_decision_log_20260417.json",
+        "data/daily/llm/decisions/llm_decision_log_20260420.json",
+        "data/daily/llm/decisions/llm_decision_log_20260421.json",
+        "data/daily/llm/decisions/llm_decision_log_20260422.json",
+        "data/daily/llm/decisions/llm_decision_log_20260423.json",
+        "data/daily/llm/decisions/llm_decision_log_20260424.json",
+        "data/daily/llm/decisions/llm_decision_log_20260427.json",
+        "data/daily/llm/decisions/llm_decision_log_20260428.json",
+        "data/daily/llm/decisions/llm_decision_log_20260429.json",
+        "data/daily/llm/decisions/llm_decision_log_20260430.json",
+        "data/daily/llm/decisions/llm_decision_log_20260501.json",
+        "data/daily/llm/decisions/llm_decision_log_20260503.json",
+        "data/daily/llm/decisions/llm_decision_log_20260504.json",
+        "data/daily/llm/decisions/llm_decision_log_20260505.json",
+        "data/daily/llm/decisions/llm_decision_log_20260506.json",
+        "data/daily/llm/decisions/llm_decision_log_20260507.json",
+        "data/daily/llm/decisions/llm_decision_log_20260508.json",
+        "data/daily/llm/decisions/llm_decision_log_20260509.json",
+        "data/daily/llm/decisions/llm_decision_log_20260510.json",
+        "data/daily/llm/decisions/llm_decision_log_20260511.json",
+        "data/daily/llm/decisions/llm_decision_log_20260512.json",
+        "data/daily/llm/decisions/llm_decision_log_20260513.json",
+        "data/daily/llm/decisions/llm_decision_log_20260514.json",
+        "data/daily/llm/decisions/llm_decision_log_20260515.json",
+        "data/daily/llm/decisions/llm_decision_log_20260516.json",
+        "data/daily/llm/decisions/llm_decision_log_20260517.json",
+        "data/daily/llm/decisions/llm_decision_log_20260518.json",
+        "data/daily/llm/decisions/llm_decision_log_20260519.json",
+        "data/daily/llm/decisions/llm_decision_log_20260520.json",
+        "data/daily/llm/decisions/llm_decision_log_20260521.json",
+        "data/daily/llm/decisions/llm_decision_log_20260522.json",
+        "data/daily/llm/decisions/llm_decision_log_20260523.json",
+        "data/daily/llm/decisions/llm_decision_log_20260524.json",
+        "data/daily/llm/decisions/llm_decision_log_20260525.json",
+        "data/daily/llm/decisions/llm_decision_log_20260526.json",
+        "data/daily/llm/decisions/llm_decision_log_20260527.json",
+        "data/daily/llm/decisions/llm_decision_log_20260528.json",
+        "data/daily/llm/decisions/llm_decision_log_20260529.json",
+        "data/daily/llm/decisions/llm_decision_log_20260530.json",
+        "data/daily/llm/decisions/llm_decision_log_20260531.json",
+        "data/daily/llm/decisions/llm_decision_log_20260601.json",
+        "data/daily/llm/decisions/llm_decision_log_20260602.json",
+        "data/daily/llm/decisions/llm_decision_log_20260603.json",
+        "data/daily/llm/decisions/llm_decision_log_20260604.json",
+        "data/daily/llm/decisions/llm_decision_log_20260605.json",
+        "data/daily/llm/decisions/llm_decision_log_20260606.json",
+        "data/daily/llm/decisions/llm_decision_log_20260607.json",
+        "data/daily/llm/decisions/llm_decision_log_20260608.json",
+        "data/daily/llm/decisions/llm_decision_log_20260609.json",
+        "data/daily/llm/decisions/llm_decision_log_20260610.json",
+        "data/daily/llm/decisions/llm_decision_log_20260611.json",
+        "data/daily/llm/decisions/llm_decision_log_20260613.json",
+        "data/daily/llm/decisions/llm_decision_log_20260615.json",
+        "data/daily/llm/decisions/llm_decision_log_20260616.json",
+        "data/daily/llm/decisions/llm_decision_log_20260617.json",
+        "data/daily/llm/decisions/llm_decision_log_20260618.json",
+        "data/daily/llm/decisions/llm_decision_log_20260619.json",
+        "data/daily/llm/decisions/llm_decision_log_20260620.json",
+        "data/daily/llm/decisions/llm_decision_log_20260621.json",
+        "data/daily/llm/decisions/llm_decision_log_20260622.json"
+      ],
+      "file_count": 65,
+      "source_rows": 653,
+      "skipped_rows": [
+        {
+          "file": "data/daily/llm/decisions/llm_decision_log_20260412.json",
+          "reason": "missing_position_states"
+        },
+        {
+          "file": "data/daily/llm/decisions/llm_decision_log_20260413.json",
+          "reason": "missing_position_states"
+        },
+        {
+          "file": "data/daily/llm/decisions/llm_decision_log_20260414.json",
+          "reason": "missing_position_states"
+        },
+        {
+          "file": "data/daily/llm/decisions/llm_decision_log_20260415.json",
+          "reason": "missing_position_states"
+        },
+        {
+          "file": "data/daily/llm/decisions/llm_decision_log_20260416.json",
+          "reason": "missing_position_states"
+        },
+        {
+          "file": "data/daily/llm/decisions/llm_decision_log_20260417.json",
+          "reason": "missing_position_states"
+        },
+        {
+          "file": "data/daily/llm/decisions/llm_decision_log_20260420.json",
+          "reason": "missing_position_states"
+        },
+        {
+          "file": "data/daily/llm/decisions/llm_decision_log_20260421.json",
+          "reason": "missing_position_states"
+        },
+        {
+          "file": "data/daily/llm/decisions/llm_decision_log_20260422.json",
+          "reason": "missing_position_states"
+        }
+      ],
+      "dates": [
+        "2026-04-23",
+        "2026-04-24",
+        "2026-04-27",
+        "2026-04-28",
+        "2026-04-29",
+        "2026-04-30",
+        "2026-05-01",
+        "2026-05-03",
+        "2026-05-04",
+        "2026-05-05",
+        "2026-05-06",
+        "2026-05-07",
+        "2026-05-08",
+        "2026-05-09",
+        "2026-05-10",
+        "2026-05-11",
+        "2026-05-12",
+        "2026-05-13",
+        "2026-05-14",
+        "2026-05-15",
+        "2026-05-16",
+        "2026-05-17",
+        "2026-05-18",
+        "2026-05-19",
+        "2026-05-20",
+        "2026-05-21",
+        "2026-05-22",
+        "2026-05-23",
+        "2026-05-24",
+        "2026-05-25",
+        "2026-05-26",
+        "2026-05-27",
+        "2026-05-28",
+        "2026-05-29",
+        "2026-05-30",
+        "2026-05-31",
+        "2026-06-01",
+        "2026-06-02",
+        "2026-06-03",
+        "2026-06-04",
+        "2026-06-05",
+        "2026-06-06",
+        "2026-06-07",
+        "2026-06-08",
+        "2026-06-09",
+        "2026-06-10",
+        "2026-06-11",
+        "2026-06-13",
+        "2026-06-15",
+        "2026-06-16",
+        "2026-06-17",
+        "2026-06-18",
+        "2026-06-19",
+        "2026-06-20",
+        "2026-06-21",
+        "2026-06-22"
+      ],
+      "tickers": [
+        "AMD",
+        "AMZN",
+        "APP",
+        "COHR",
+        "CRDO",
+        "GOOG",
+        "HOOD",
+        "IAU",
+        "ISRG",
+        "MCD",
+        "META",
+        "MRVL",
+        "MSFT",
+        "MU",
+        "MUU",
+        "NBIS",
+        "NFLX",
+        "NVDA",
+        "QQQ",
+        "RKLB",
+        "RKLZ",
+        "SNOW",
+        "SNXX",
+        "TRIP",
+        "TSLA",
+        "UNH"
+      ],
+      "state_counts": {
+        "ATR_EXIT": 6,
+        "CRITICAL_EXIT": 44,
+        "HIGH_REDUCE": 30,
+        "HOLD": 505,
+        "TARGET_EXIT": 68
+      },
+      "bucket_counts": {
+        "atr_exit": 6,
+        "critical_exit": 44,
+        "high_reduce": 30,
+        "hold": 505,
+        "target_exit": 68
+      }
+    },
+    "settlement_audit": {
+      "warehouse_path": "data/warehouse/warehouse_main.sqlite",
+      "loaded_tickers": [
+        "AMD",
+        "AMZN",
+        "APP",
+        "COHR",
+        "CRDO",
+        "GOOG",
+        "HOOD",
+        "IAU",
+        "ISRG",
+        "MCD",
+        "META",
+        "MRVL",
+        "MSFT",
+        "MU",
+        "MUU",
+        "NBIS",
+        "NFLX",
+        "NVDA",
+        "QQQ",
+        "RKLB",
+        "RKLZ",
+        "SNOW",
+        "SNXX",
+        "SPY",
+        "TRIP",
+        "TSLA",
+        "UNH"
+      ],
+      "raw_settled_rows": 522,
+      "skipped_reasons": {
+        "missing_next_session": 16,
+        "not_yet_5d_closed": 115
+      },
+      "settled_date_range": {
+        "as_of_start": "2026-04-23",
+        "as_of_end": "2026-06-11",
+        "entry_start": "2026-04-24",
+        "entry_end": "2026-06-12",
+        "exit_start": "2026-05-01",
+        "exit_end": "2026-06-22"
+      }
+    }
+  },
+  "gate3": {
+    "filter_added": false,
+    "signals_generated": 653,
+    "signals_survived": 522,
+    "survival_rate": 0.7994,
+    "baseline_survival_rate": 0.8232,
+    "note": "No executable filter was added; rows are attributed only."
+  },
+  "gate4": {
+    "observed_only_lead": true,
+    "failed_reasons": [],
+    "acceptance_checks": {
+      "min_settled_rows": 250,
+      "raw_settled_rows": 522,
+      "deduped_settled_rows": 399,
+      "hold_rows": 310,
+      "non_hold_rows": 89,
+      "hard_exit_rows": 61,
+      "critical_rows": 22,
+      "severity_spearman_return": -0.081643,
+      "severity_spearman_spy_replacement": -0.10395,
+      "non_hold_mean_return_below_hold": true,
+      "non_hold_median_return_below_hold": true,
+      "hard_exit_mean_return_below_hold": true,
+      "hard_exit_median_return_below_hold": true,
+      "critical_mean_return_below_hold": true,
+      "critical_median_return_below_hold": true,
+      "date_support": {
+        "comparable_dates": 35,
+        "non_hold_worse_dates": 24,
+        "details": [
+          {
+            "as_of_date": "2026-04-23",
+            "hold_rows": 9,
+            "non_hold_rows": 4,
+            "hold_mean_return": 0.031295,
+            "non_hold_mean_return": 0.020658,
+            "non_hold_worse": true
+          },
+          {
+            "as_of_date": "2026-04-24",
+            "hold_rows": 8,
+            "non_hold_rows": 5,
+            "hold_mean_return": 0.003232,
+            "non_hold_mean_return": 0.029341,
+            "non_hold_worse": false
+          },
+          {
+            "as_of_date": "2026-04-27",
+            "hold_rows": 6,
+            "non_hold_rows": 6,
+            "hold_mean_return": 0.024634,
+            "non_hold_mean_return": 0.060466,
+            "non_hold_worse": false
+          },
+          {
+            "as_of_date": "2026-04-28",
+            "hold_rows": 6,
+            "non_hold_rows": 5,
+            "hold_mean_return": 0.036872,
+            "non_hold_mean_return": 0.068227,
+            "non_hold_worse": false
+          },
+          {
+            "as_of_date": "2026-04-29",
+            "hold_rows": 9,
+            "non_hold_rows": 2,
+            "hold_mean_return": 0.04283,
+            "non_hold_mean_return": -0.010894,
+            "non_hold_worse": true
+          },
+          {
+            "as_of_date": "2026-04-30",
+            "hold_rows": 10,
+            "non_hold_rows": 2,
+            "hold_mean_return": 0.154707,
+            "non_hold_mean_return": -0.006926,
+            "non_hold_worse": true
+          },
+          {
+            "as_of_date": "2026-05-01",
+            "hold_rows": 9,
+            "non_hold_rows": 2,
+            "hold_mean_return": 0.120788,
+            "non_hold_mean_return": -0.073815,
+            "non_hold_worse": true
+          },
+          {
+            "as_of_date": "2026-05-04",
+            "hold_rows": 9,
+            "non_hold_rows": 3,
+            "hold_mean_return": 0.060386,
+            "non_hold_mean_return": -0.004076,
+            "non_hold_worse": true
+          },
+          {
+            "as_of_date": "2026-05-05",
+            "hold_rows": 9,
+            "non_hold_rows": 4,
+            "hold_mean_return": 0.030057,
+            "non_hold_mean_return": 0.01381,
+            "non_hold_worse": true
+          },
+          {
+            "as_of_date": "2026-05-06",
+            "hold_rows": 10,
+            "non_hold_rows": 3,
+            "hold_mean_return": 0.023685,
+            "non_hold_mean_return": 0.008356,
+            "non_hold_worse": true
+          },
+          {
+            "as_of_date": "2026-05-07",
+            "hold_rows": 9,
+            "non_hold_rows": 4,
+            "hold_mean_return": -0.00362,
+            "non_hold_mean_return": 0.004364,
+            "non_hold_worse": false
+          },
+          {
+            "as_of_date": "2026-05-08",
+            "hold_rows": 9,
+            "non_hold_rows": 1,
+            "hold_mean_return": -0.045293,
+            "non_hold_mean_return": -0.006307,
+            "non_hold_worse": false
+          },
+          {
+            "as_of_date": "2026-05-11",
+            "hold_rows": 9,
+            "non_hold_rows": 1,
+            "hold_mean_return": -0.037863,
+            "non_hold_mean_return": -0.009446,
+            "non_hold_worse": false
+          },
+          {
+            "as_of_date": "2026-05-12",
+            "hold_rows": 10,
+            "non_hold_rows": 1,
+            "hold_mean_return": -0.025198,
+            "non_hold_mean_return": 0.004493,
+            "non_hold_worse": false
+          },
+          {
+            "as_of_date": "2026-05-13",
+            "hold_rows": 8,
+            "non_hold_rows": 3,
+            "hold_mean_return": 0.007012,
+            "non_hold_mean_return": -0.002292,
+            "non_hold_worse": true
+          },
+          {
+            "as_of_date": "2026-05-14",
+            "hold_rows": 8,
+            "non_hold_rows": 1,
+            "hold_mean_return": 0.030213,
+            "non_hold_mean_return": 0.011531,
+            "non_hold_worse": true
+          },
+          {
+            "as_of_date": "2026-05-15",
+            "hold_rows": 8,
+            "non_hold_rows": 1,
+            "hold_mean_return": 0.047975,
+            "non_hold_mean_return": 0.027465,
+            "non_hold_worse": true
+          },
+          {
+            "as_of_date": "2026-05-18",
+            "hold_rows": 7,
+            "non_hold_rows": 1,
+            "hold_mean_return": 0.060848,
+            "non_hold_mean_return": 0.0435,
+            "non_hold_worse": true
+          },
+          {
+            "as_of_date": "2026-05-19",
+            "hold_rows": 7,
+            "non_hold_rows": 1,
+            "hold_mean_return": 0.075297,
+            "non_hold_mean_return": 0.044121,
+            "non_hold_worse": true
+          },
+          {
+            "as_of_date": "2026-05-20",
+            "hold_rows": 7,
+            "non_hold_rows": 1,
+            "hold_mean_return": 0.042652,
+            "non_hold_mean_return": 0.041355,
+            "non_hold_worse": true
+          },
+          {
+            "as_of_date": "2026-05-21",
+            "hold_rows": 7,
+            "non_hold_rows": 1,
+            "hold_mean_return": 0.02888,
+            "non_hold_mean_return": 0.034356,
+            "non_hold_worse": false
+          },
+          {
+            "as_of_date": "2026-05-22",
+            "hold_rows": 7,
+            "non_hold_rows": 1,
+            "hold_mean_return": 0.042549,
+            "non_hold_mean_return": 0.027825,
+            "non_hold_worse": true
+          },
+          {
+            "as_of_date": "2026-05-26",
+            "hold_rows": 9,
+            "non_hold_rows": 1,
+            "hold_mean_return": 0.014433,
+            "non_hold_mean_return": 0.015349,
+            "non_hold_worse": false
+          },
+          {
+            "as_of_date": "2026-05-27",
+            "hold_rows": 9,
+            "non_hold_rows": 1,
+            "hold_mean_return": 0.025284,
+            "non_hold_mean_return": 0.01491,
+            "non_hold_worse": true
+          },
+          {
+            "as_of_date": "2026-05-28",
+            "hold_rows": 8,
+            "non_hold_rows": 2,
+            "hold_mean_return": -0.0661,
+            "non_hold_mean_return": -0.10573,
+            "non_hold_worse": true
+          },
+          {
+            "as_of_date": "2026-05-29",
+            "hold_rows": 8,
+            "non_hold_rows": 2,
+            "hold_mean_return": -0.019828,
+            "non_hold_mean_return": -0.081924,
+            "non_hold_worse": true
+          },
+          {
+            "as_of_date": "2026-06-01",
+            "hold_rows": 10,
+            "non_hold_rows": 3,
+            "hold_mean_return": -0.073202,
+            "non_hold_mean_return": -0.105928,
+            "non_hold_worse": true
+          },
+          {
+            "as_of_date": "2026-06-02",
+            "hold_rows": 10,
+            "non_hold_rows": 3,
+            "hold_mean_return": -0.098963,
+            "non_hold_mean_return": -0.106758,
+            "non_hold_worse": true
+          },
+          {
+            "as_of_date": "2026-06-03",
+            "hold_rows": 10,
+            "non_hold_rows": 3,
+            "hold_mean_return": -0.03756,
+            "non_hold_mean_return": -0.003312,
+            "non_hold_worse": false
+          },
+          {
+            "as_of_date": "2026-06-04",
+            "hold_rows": 10,
+            "non_hold_rows": 5,
+            "hold_mean_return": -0.030538,
+            "non_hold_mean_return": 0.012549,
+            "non_hold_worse": false
+          },
+          {
+            "as_of_date": "2026-06-05",
+            "hold_rows": 11,
+            "non_hold_rows": 4,
+            "hold_mean_return": 0.096617,
+            "non_hold_mean_return": -0.006877,
+            "non_hold_worse": true
+          },
+          {
+            "as_of_date": "2026-06-08",
+            "hold_rows": 11,
+            "non_hold_rows": 4,
+            "hold_mean_return": 0.039082,
+            "non_hold_mean_return": -0.023111,
+            "non_hold_worse": true
+          },
+          {
+            "as_of_date": "2026-06-09",
+            "hold_rows": 11,
+            "non_hold_rows": 2,
+            "hold_mean_return": 0.051174,
+            "non_hold_mean_return": -0.039935,
+            "non_hold_worse": true
+          },
+          {
+            "as_of_date": "2026-06-10",
+            "hold_rows": 10,
+            "non_hold_rows": 3,
+            "hold_mean_return": 0.087974,
+            "non_hold_mean_return": 0.052765,
+            "non_hold_worse": true
+          },
+          {
+            "as_of_date": "2026-06-11",
+            "hold_rows": 11,
+            "non_hold_rows": 2,
+            "hold_mean_return": 0.045249,
+            "non_hold_mean_return": -0.060808,
+            "non_hold_worse": true
+          }
+        ]
+      },
+      "max_single_adverse_pnl_share": 0.23472
+    },
+    "decision": "observed_only_llm_position_state_loss_lead_not_promoted",
+    "strategy_rerun_required": false,
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "max_drawdown_pct": 0.0
+    },
+    "lead_limitations": [
+      "Forward-only production decision-log rows, not canonical fixed-window PIT replay.",
+      "No shared helper, adapter, daily execution rule, or exit policy was promoted.",
+      "Rows are deduped by ticker, entry date, exit date, and position state to reduce weekend/repeat overweight.",
+      "Outcome is gross diagnostic next-open-to-5d-close path attribution."
+    ]
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "shared_helper_promoted": false,
+    "daily_snapshot_exposed": false,
+    "uses_llm_decision_log": true,
+    "live_realistic_execution_envelope": "Not evaluated for live use; this is observed-only attribution and cannot become live-ready."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "Logged LLM position states showed negative forward outcome separation after deduping repeated ticker/entry/state observations. This remains diagnostic-only because no shared executable exit policy or fixed-window strategy replay was tested.",
+    "forbidden_near_neighbor_retry": "Do not retry by converting HIGH_REDUCE, TARGET_EXIT, ATR_EXIT, CRITICAL_EXIT, or equivalent LLM state labels into executable exit/risk rules on the same decision-log rows. A valid retry needs materially more closed rows, PIT intratrade features available before the label, slot-reuse/winner-collateral accounting, and a shared default-off helper before Gate 1-4 promotion.",
+    "new_evidence_required": "More closed production LLM decision-log rows plus a predeclared shared default-off advisory helper, or a distinct PIT feature that explains why the LLM state predicts future avoidable loss instead of merely labeling current loss."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260623_012_llm_position_state_forward_outcome.py",
+    "data/daily/llm/decisions",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260623-011.json",
+    "experiments/logs/exp-20260417-004.json"
+  ],
+  "updated_at": "2026-06-23T09:13:15+00:00"
+}

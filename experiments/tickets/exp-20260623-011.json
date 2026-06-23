@@ -1,0 +1,708 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260623_011_exit_lifecycle_forward_advisory_outcome.py",
+    "data/experiments/exp-20260623-011/exp_20260623_011_exit_lifecycle_forward_advisory_outcome.json",
+    "experiments/cards/exp-20260623-011.md",
+    "experiments/manifests/exp-20260623-011.json",
+    "experiments/tickets/exp-20260623-011.json",
+    "experiments/logs/exp-20260623-011.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260623-011.md",
+  "causal_components": [
+    "production exit lifecycle shadow logs",
+    "warehouse OHLCV forward settlement",
+    "advisory severity buckets",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "exit_lifecycle_forward_advisory_outcome_attribution_v1",
+  "claimed_at": "2026-06-23T08:04:46+00:00",
+  "completed_at": "2026-06-23T08:10:03+00:00",
+  "created_at": "2026-06-23T08:04:37+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260623-011",
+  "experiment_uid": "expuid-67696236042048e7",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260623-011",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-23T08:04:37+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "exit_lifecycle_forward_advisory_outcome"
+  },
+  "hypothesis": "Observed-only attribution: production exit-lifecycle high-urgency and hard-stop shadow events may identify held positions with worse next-5-trading-day returns than no-advisory rows, justifying a future shared exit/risk policy only if separation is monotonic.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "exit_lifecycle_forward_advisory_outcome_attribution_v1"
+  ],
+  "mechanism_family": "exit_lifecycle_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260429-032",
+    "exp-20260612-007",
+    "exp-20260623-003"
+  ],
+  "new_evidence_type": "forward_production_exit_lifecycle_rows",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "advisory",
+        "attribution",
+        "events",
+        "exit",
+        "forward",
+        "future",
+        "hard",
+        "held",
+        "high",
+        "identify",
+        "if",
+        "is",
+        "justifying",
+        "lifecycle",
+        "may",
+        "monotonic",
+        "no",
+        "observed",
+        "only",
+        "outcome",
+        "policy",
+        "positions",
+        "returns",
+        "risk",
+        "rows",
+        "separation",
+        "shadow",
+        "stop",
+        "than",
+        "trading",
+        "urgency",
+        "worse"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "kova_defensive_exit_shadow_replay",
+        "reopen_condition": null,
+        "score": 0.0316,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "options_forward_closed_outcome_overlay",
+        "reopen_condition": "A retry requires an OHLCV/outcome snapshot covering at least 20 trading days after May-June 2026 candidate dates, plus PIT-safe short-interest/borrow and earnings-date joins before squeeze or earnings-vol tags can be production candidates.",
+        "score": 0.0316,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "earnings_imminent_surprise_rs_event_lifecycle",
+        "reopen_condition": "If revisited, use closed forward replacement-value rows or a richer expectation-quality field; do not simply retune the 1-7 day candidate or pre-event hold thresholds on the frozen windows.",
+        "score": 0.0308,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "kova_failed_breakout_lifecycle_shadow_replay",
+        "reopen_condition": null,
+        "score": 0.0308,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.5,
+        "data_source": "other",
+        "family_key": "core_misfit_no_trade_forward_maturation",
+        "reopen_condition": "Reach 20 closed 10d CORE_MISFIT_PAPER outcomes, then test exactly one live-path haircut or exclusion variable.",
+        "score": 0.03,
+        "status": "has_accepted",
+        "trials": 2
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.24,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "sample_too_small",
+      "no_monotonic_forward_separation",
+      "advisory_events_are_loss_state_not_predictive",
+      "warehouse_outcomes_missing"
+    ],
+    "confidence_reason": "This uses actual daily exit-lifecycle shadow rows unavailable in prior SIGNAL_TARGET replay and fixed-entry oracle experiments; risk is that advisory events simply label already-losing positions rather than future avoidable loss.",
+    "recorded_at": "2026-06-23T08:04:23+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": true,
+    "decision": "observed_only_exit_lifecycle_advisory_loss_lead_not_promoted",
+    "artifact": "data/experiments/exp-20260623-011/exp_20260623_011_exit_lifecycle_forward_advisory_outcome.json",
+    "log": "experiments/logs/exp-20260623-011.json",
+    "runner": "quant/experiments/exp_20260623_011_exit_lifecycle_forward_advisory_outcome.py",
+    "gate4": {
+      "observed_only_lead": true,
+      "failed_reasons": [],
+      "acceptance_checks": {
+        "min_settled_rows": 100,
+        "settled_rows": 164,
+        "advisory_rows": 39,
+        "hard_stop_rows": 18,
+        "severity_spearman_return": -0.201443,
+        "severity_spearman_spy_replacement": -0.281383,
+        "high_mean_return_below_none": true,
+        "high_median_return_below_none": true,
+        "hard_mean_return_below_none": true,
+        "hard_median_return_below_none": true,
+        "date_support": {
+          "comparable_dates": 12,
+          "advisory_worse_dates": 10,
+          "details": [
+            {
+              "as_of_date": "2026-05-31",
+              "none_rows": 9,
+              "advisory_rows": 2,
+              "none_mean_return": -0.029501,
+              "advisory_mean_return": -0.081924,
+              "advisory_worse": true
+            },
+            {
+              "as_of_date": "2026-06-01",
+              "none_rows": 10,
+              "advisory_rows": 3,
+              "none_mean_return": -0.073202,
+              "advisory_mean_return": -0.105928,
+              "advisory_worse": true
+            },
+            {
+              "as_of_date": "2026-06-02",
+              "none_rows": 10,
+              "advisory_rows": 3,
+              "none_mean_return": -0.098963,
+              "advisory_mean_return": -0.106758,
+              "advisory_worse": true
+            },
+            {
+              "as_of_date": "2026-06-03",
+              "none_rows": 10,
+              "advisory_rows": 3,
+              "none_mean_return": -0.03756,
+              "advisory_mean_return": -0.003312,
+              "advisory_worse": false
+            },
+            {
+              "as_of_date": "2026-06-04",
+              "none_rows": 10,
+              "advisory_rows": 5,
+              "none_mean_return": -0.030538,
+              "advisory_mean_return": 0.012549,
+              "advisory_worse": false
+            },
+            {
+              "as_of_date": "2026-06-05",
+              "none_rows": 11,
+              "advisory_rows": 4,
+              "none_mean_return": 0.096617,
+              "advisory_mean_return": -0.006877,
+              "advisory_worse": true
+            },
+            {
+              "as_of_date": "2026-06-06",
+              "none_rows": 11,
+              "advisory_rows": 4,
+              "none_mean_return": 0.096617,
+              "advisory_mean_return": -0.006877,
+              "advisory_worse": true
+            },
+            {
+              "as_of_date": "2026-06-07",
+              "none_rows": 11,
+              "advisory_rows": 4,
+              "none_mean_return": 0.096617,
+              "advisory_mean_return": -0.006877,
+              "advisory_worse": true
+            },
+            {
+              "as_of_date": "2026-06-08",
+              "none_rows": 11,
+              "advisory_rows": 4,
+              "none_mean_return": 0.039082,
+              "advisory_mean_return": -0.023111,
+              "advisory_worse": true
+            },
+            {
+              "as_of_date": "2026-06-09",
+              "none_rows": 11,
+              "advisory_rows": 2,
+              "none_mean_return": 0.051174,
+              "advisory_mean_return": -0.039935,
+              "advisory_worse": true
+            },
+            {
+              "as_of_date": "2026-06-10",
+              "none_rows": 10,
+              "advisory_rows": 3,
+              "none_mean_return": 0.087974,
+              "advisory_mean_return": 0.052765,
+              "advisory_worse": true
+            },
+            {
+              "as_of_date": "2026-06-11",
+              "none_rows": 11,
+              "advisory_rows": 2,
+              "none_mean_return": 0.045249,
+              "advisory_mean_return": -0.060808,
+              "advisory_worse": true
+            }
+          ]
+        },
+        "max_single_adverse_pnl_share": 0.218021
+      },
+      "decision": "observed_only_exit_lifecycle_advisory_loss_lead_not_promoted",
+      "strategy_rerun_required": false,
+      "before_after_strategy_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "max_drawdown_pct": 0.0
+      },
+      "lead_limitations": [
+        "Forward-only daily production rows, not canonical fixed-window PIT replay.",
+        "No shared helper, adapter, daily execution rule, or exit policy was promoted.",
+        "Outcome is gross diagnostic next-open-to-5d-close path attribution."
+      ]
+    },
+    "calibration": {
+      "predicted_success_probability": 0.24,
+      "actual_success": true,
+      "brier_score": 0.5776,
+      "predicted_failure_modes": [
+        "sample_too_small",
+        "no_monotonic_forward_separation",
+        "advisory_events_are_loss_state_not_predictive",
+        "warehouse_outcomes_missing"
+      ],
+      "failed_reasons": [],
+      "predicted_failure_modes_hit": []
+    },
+    "summary": "Exit-lifecycle advisory severity showed negative forward outcome separation versus no-advisory rows. This remains diagnostic-only because no shared executable lifecycle policy was tested."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260623-011.json",
+  "single_causal_variable": "exit_lifecycle_forward_advisory_outcome_attribution_v1",
+  "status": "observed_only_positive_lead",
+  "ticket_file": "experiments/tickets/exp-20260623-011.json",
+  "trial_family": "exit_lifecycle_forward_advisory_outcome_attribution",
+  "trial_variant_id": "high_urgency_hard_stop_next5d_forward_v1",
+  "implementation_mode": "observed_only_attribution_runner",
+  "new_evidence_axis": "New daily production exit-lifecycle shadow rows with closeable forward OHLCV outcomes; this is not a SIGNAL_TARGET trim replay, target-width sweep, or fixed-entry oracle regret bucket retry.",
+  "decision": "observed_only_exit_lifecycle_advisory_loss_lead_not_promoted",
+  "artifact": "data/experiments/exp-20260623-011/exp_20260623_011_exit_lifecycle_forward_advisory_outcome.json",
+  "log": "experiments/logs/exp-20260623-011.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    },
+    "note": "Observed-only attribution; before and after policy are identical."
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "fields_checked": [
+      "as_of_date",
+      "ticker",
+      "entry_date",
+      "target_price",
+      "market_value_usd",
+      "advisory_events.event_type",
+      "has_advisory_event",
+      "forward_5d_return_pct",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd"
+    ],
+    "entry_date_present": true,
+    "target_price_present_count": 321,
+    "target_price_relevance": "Checked for Gate 2. It is not consumed by this attribution and no target exit is scheduled.",
+    "source_audit": {
+      "files": [
+        "data/exit_lifecycle/exit_lifecycle_20260531.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260601.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260602.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260603.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260604.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260605.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260606.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260607.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260608.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260609.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260610.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260611.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260612.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260613.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260614.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260615.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260616.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260617.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260618.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260619.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260620.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260621.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260622.jsonl"
+      ],
+      "file_count": 23,
+      "source_rows": 321,
+      "skipped_rows": [],
+      "dates": [
+        "2026-05-31",
+        "2026-06-01",
+        "2026-06-02",
+        "2026-06-03",
+        "2026-06-04",
+        "2026-06-05",
+        "2026-06-06",
+        "2026-06-07",
+        "2026-06-08",
+        "2026-06-09",
+        "2026-06-10",
+        "2026-06-11",
+        "2026-06-12",
+        "2026-06-13",
+        "2026-06-14",
+        "2026-06-15",
+        "2026-06-16",
+        "2026-06-17",
+        "2026-06-18",
+        "2026-06-19",
+        "2026-06-20",
+        "2026-06-21",
+        "2026-06-22"
+      ],
+      "tickers": [
+        "AMD",
+        "AMZN",
+        "APP",
+        "COHR",
+        "CRDO",
+        "GOOG",
+        "HOOD",
+        "META",
+        "MRVL",
+        "MSFT",
+        "MUU",
+        "NBIS",
+        "NFLX",
+        "NVDA",
+        "QQQ",
+        "RKLB",
+        "RKLZ",
+        "SNOW",
+        "SNXX",
+        "TRIP",
+        "TSLA"
+      ]
+    },
+    "settlement_audit": {
+      "warehouse_path": "data/warehouse/warehouse_main.sqlite",
+      "loaded_tickers": [
+        "AMD",
+        "AMZN",
+        "APP",
+        "COHR",
+        "CRDO",
+        "GOOG",
+        "HOOD",
+        "META",
+        "MRVL",
+        "MSFT",
+        "MUU",
+        "NBIS",
+        "NFLX",
+        "NVDA",
+        "QQQ",
+        "RKLB",
+        "RKLZ",
+        "SNOW",
+        "SNXX",
+        "SPY",
+        "TRIP",
+        "TSLA"
+      ],
+      "settled_rows": 164,
+      "skipped_reasons": {
+        "missing_next_session": 16,
+        "not_yet_5d_closed": 141
+      },
+      "settled_date_range": {
+        "as_of_start": "2026-05-31",
+        "as_of_end": "2026-06-11",
+        "entry_start": "2026-06-01",
+        "entry_end": "2026-06-12",
+        "exit_start": "2026-06-08",
+        "exit_end": "2026-06-22"
+      }
+    }
+  },
+  "gate3": {
+    "filter_added": false,
+    "signals_generated": 321,
+    "signals_survived": 164,
+    "survival_rate": 0.5109,
+    "baseline_survival_rate": 0.8232,
+    "note": "No executable filter was added; rows are attributed only."
+  },
+  "gate4": {
+    "observed_only_lead": true,
+    "failed_reasons": [],
+    "acceptance_checks": {
+      "min_settled_rows": 100,
+      "settled_rows": 164,
+      "advisory_rows": 39,
+      "hard_stop_rows": 18,
+      "severity_spearman_return": -0.201443,
+      "severity_spearman_spy_replacement": -0.281383,
+      "high_mean_return_below_none": true,
+      "high_median_return_below_none": true,
+      "hard_mean_return_below_none": true,
+      "hard_median_return_below_none": true,
+      "date_support": {
+        "comparable_dates": 12,
+        "advisory_worse_dates": 10,
+        "details": [
+          {
+            "as_of_date": "2026-05-31",
+            "none_rows": 9,
+            "advisory_rows": 2,
+            "none_mean_return": -0.029501,
+            "advisory_mean_return": -0.081924,
+            "advisory_worse": true
+          },
+          {
+            "as_of_date": "2026-06-01",
+            "none_rows": 10,
+            "advisory_rows": 3,
+            "none_mean_return": -0.073202,
+            "advisory_mean_return": -0.105928,
+            "advisory_worse": true
+          },
+          {
+            "as_of_date": "2026-06-02",
+            "none_rows": 10,
+            "advisory_rows": 3,
+            "none_mean_return": -0.098963,
+            "advisory_mean_return": -0.106758,
+            "advisory_worse": true
+          },
+          {
+            "as_of_date": "2026-06-03",
+            "none_rows": 10,
+            "advisory_rows": 3,
+            "none_mean_return": -0.03756,
+            "advisory_mean_return": -0.003312,
+            "advisory_worse": false
+          },
+          {
+            "as_of_date": "2026-06-04",
+            "none_rows": 10,
+            "advisory_rows": 5,
+            "none_mean_return": -0.030538,
+            "advisory_mean_return": 0.012549,
+            "advisory_worse": false
+          },
+          {
+            "as_of_date": "2026-06-05",
+            "none_rows": 11,
+            "advisory_rows": 4,
+            "none_mean_return": 0.096617,
+            "advisory_mean_return": -0.006877,
+            "advisory_worse": true
+          },
+          {
+            "as_of_date": "2026-06-06",
+            "none_rows": 11,
+            "advisory_rows": 4,
+            "none_mean_return": 0.096617,
+            "advisory_mean_return": -0.006877,
+            "advisory_worse": true
+          },
+          {
+            "as_of_date": "2026-06-07",
+            "none_rows": 11,
+            "advisory_rows": 4,
+            "none_mean_return": 0.096617,
+            "advisory_mean_return": -0.006877,
+            "advisory_worse": true
+          },
+          {
+            "as_of_date": "2026-06-08",
+            "none_rows": 11,
+            "advisory_rows": 4,
+            "none_mean_return": 0.039082,
+            "advisory_mean_return": -0.023111,
+            "advisory_worse": true
+          },
+          {
+            "as_of_date": "2026-06-09",
+            "none_rows": 11,
+            "advisory_rows": 2,
+            "none_mean_return": 0.051174,
+            "advisory_mean_return": -0.039935,
+            "advisory_worse": true
+          },
+          {
+            "as_of_date": "2026-06-10",
+            "none_rows": 10,
+            "advisory_rows": 3,
+            "none_mean_return": 0.087974,
+            "advisory_mean_return": 0.052765,
+            "advisory_worse": true
+          },
+          {
+            "as_of_date": "2026-06-11",
+            "none_rows": 11,
+            "advisory_rows": 2,
+            "none_mean_return": 0.045249,
+            "advisory_mean_return": -0.060808,
+            "advisory_worse": true
+          }
+        ]
+      },
+      "max_single_adverse_pnl_share": 0.218021
+    },
+    "decision": "observed_only_exit_lifecycle_advisory_loss_lead_not_promoted",
+    "strategy_rerun_required": false,
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "max_drawdown_pct": 0.0
+    },
+    "lead_limitations": [
+      "Forward-only daily production rows, not canonical fixed-window PIT replay.",
+      "No shared helper, adapter, daily execution rule, or exit policy was promoted.",
+      "Outcome is gross diagnostic next-open-to-5d-close path attribution."
+    ]
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "shared_helper_promoted": false,
+    "daily_snapshot_exposed": false,
+    "uses_exit_lifecycle_shadow_log": true,
+    "live_realistic_execution_envelope": "Not evaluated for live use; this is observed-only attribution and cannot become live-ready."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "Exit-lifecycle advisory severity showed negative forward outcome separation versus no-advisory rows. This remains diagnostic-only because no shared executable lifecycle policy was tested.",
+    "forbidden_near_neighbor_retry": "Do not retry by converting high-urgency, hard-stop, target, trailing-stop, time-stop, MFE/giveback, or target-width labels into executable exit rules on the same forward rows. A valid retry needs materially more closed rows, a predeclared shared default-off advisory helper, or PIT intratrade path features available before the advisory event.",
+    "new_evidence_required": "More closed production exit-lifecycle rows with next-open settlement, slot-reuse/winner-collateral accounting, and a shared default-off advisory lifecycle helper before any Gate 1-4 exit-policy promotion."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260623_011_exit_lifecycle_forward_advisory_outcome.py",
+    "data/exit_lifecycle",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260429-032.json",
+    "experiments/logs/exp-20260612-007.json",
+    "experiments/logs/exp-20260623-003.json"
+  ],
+  "updated_at": "2026-06-23T08:10:03+00:00"
+}

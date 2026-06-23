@@ -1,0 +1,352 @@
+{
+  "acceptance_rule": "Observed-only lead only if high concentration bucket has >=20 trades, appears in all three windows, and average plus median PnL are monotonic high>mid>low with high bucket positive in at least two windows; otherwise reject/no helper.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260622_018_sec13f_manager_active_concentration_attribution.py",
+    "data/experiments/exp-20260622-018/exp_20260622_018_sec13f_manager_active_concentration_attribution.json",
+    "experiments/logs/exp-20260622-018.json",
+    "experiments/cards/exp-20260622-018.md",
+    "experiments/manifests/exp-20260622-018.json",
+    "experiments/tickets/exp-20260622-018.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260621-019/exp_20260621_019_sec13f_manager_conviction.json",
+  "card_file": "experiments/cards/exp-20260622-018.md",
+  "causal_components": [
+    "reuse closed exp-20260621-019 target trades",
+    "predeclared concentration buckets",
+    "no strategy change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "sec13f_manager_active_concentration_attribution_v1",
+  "claimed_at": "2026-06-22T17:06:18+00:00",
+  "completed_at": "2026-06-22T17:10:47+00:00",
+  "created_at": "2026-06-22T17:06:11+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260622-018",
+  "experiment_uid": "expuid-c1eb92f7fad6472d",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260622-018",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-22T17:06:11+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec13f_manager_active_concentration_attribution"
+  },
+  "hypothesis": "Observed-only attribution: SEC 13F new-manager active concentration should show monotonic realized-PnL separation on already closed paper rows before any future shared helper or threshold retry is justified.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "entry logic",
+    "exit logic",
+    "sizing",
+    "ranking",
+    "live orders",
+    "default-on behavior"
+  ],
+  "mechanism_family": "sec13f_manager_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/strategy/**",
+    "quant/backtest_runner.py",
+    "quant/live_runner.py",
+    "quant/paper_runner.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260621-019",
+    "exp-20260622-007"
+  ],
+  "new_evidence_type": "manager_level_outcome_attribution",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "sec13f_ownership",
+      "field_tags": [
+        "13f",
+        "active",
+        "already",
+        "any",
+        "attribution",
+        "before",
+        "closed",
+        "concentration",
+        "future",
+        "helper",
+        "is",
+        "justified",
+        "manager",
+        "monotonic",
+        "new",
+        "observed",
+        "on",
+        "only",
+        "or",
+        "pnl",
+        "realized",
+        "retry",
+        "rows",
+        "sec13f",
+        "separation",
+        "should",
+        "show",
+        "threshold"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_manager_conviction_candidate_pool",
+        "reopen_condition": "Need materially richer manager identity/quality, sector-normalized ownership surprise, independent borrow/options evidence, or forward replacement-value rows from a shared helper.",
+        "score": 0.4887,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_coaccumulation_peer_shock",
+        "reopen_condition": "A valid retry needs non-quarterly ownership/flow evidence, active-manager conviction classification independent of holding count, manager-level alpha attribution, or closed forward replacement-value rows from a shared default-off helper.",
+        "score": 0.48,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_new_holder_initiation_candidate_pool",
+        "reopen_condition": "Need manager identity/quality, sector-normalized new-holder surprise, independent options/borrow evidence, or forward replacement-value rows from a shared helper.",
+        "score": 0.475,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_crowding_context_candidate_pool",
+        "reopen_condition": "Raw PIT 13F candidate rows, manager identity/quality, sector-relative crowding surprise, or daily default-off forward observations.",
+        "score": 0.4735,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "coownership_peer_shock",
+        "reopen_condition": "A genuinely new relation axis or data shape: e.g. holdings-CHANGE co-movement (managers adding the same two names same quarter, not static co-hold), 13F concentration-weighted edges restricted to high-conviction active managers only, or a non-quarterly ownership signal. Or forward closed paper rows if the static graph is revisited at all.",
+        "score": 0.4667,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Outcome attribution of closed SEC13F paper trades by predeclared manager concentration buckets; no new entry threshold or production helper.",
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "sec13f_ownership",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "non_monotonic_pnl",
+      "thin_high_bucket",
+      "old_window_regression",
+      "quarterly_staleness",
+      "not_incremental_vs_13f_priors"
+    ],
+    "confidence_reason": "Prior SEC13F manager-weight and coaccumulation scouts failed, but their closeouts requested manager-level alpha attribution rather than another threshold sweep.",
+    "recorded_at": "2026-06-22T17:05:56+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "rejected_no_monotonic_manager_concentration_edge",
+    "artifact": "data/experiments/exp-20260622-018/exp_20260622_018_sec13f_manager_active_concentration_attribution.json",
+    "log": "experiments/logs/exp-20260622-018.json",
+    "runner": "quant/experiments/exp_20260622_018_sec13f_manager_active_concentration_attribution.py",
+    "attribution": {
+      "n_rows": 344,
+      "pooled_bucket_summary": {
+        "low_lt_0p06": {
+          "n": 90,
+          "mean_pnl": 18.23,
+          "median_pnl": 26.07,
+          "win_rate": 0.5444,
+          "total_pnl": 1641.14,
+          "mean_weight_max": 0.041969,
+          "median_weight_max": 0.043046
+        },
+        "mid_0p06_0p15": {
+          "n": 140,
+          "mean_pnl": 42.23,
+          "median_pnl": 10.11,
+          "win_rate": 0.5071,
+          "total_pnl": 5911.53,
+          "mean_weight_max": 0.09243,
+          "median_weight_max": 0.08575
+        },
+        "high_gte_0p15": {
+          "n": 114,
+          "mean_pnl": 3.54,
+          "median_pnl": 10.48,
+          "win_rate": 0.5088,
+          "total_pnl": 404.11,
+          "mean_weight_max": 0.445138,
+          "median_weight_max": 0.324328
+        }
+      },
+      "spearman_weight_max_pnl": -0.040053
+    },
+    "gate4": {
+      "accepted_lead": false,
+      "failed_reasons": [
+        "pooled_mean_not_monotonic_high_mid_low",
+        "pooled_median_not_monotonic_high_mid_low",
+        "high_bucket_positive_in_only_one_window"
+      ],
+      "acceptance_checks": {
+        "high_bucket_min_count_by_window": 27,
+        "high_bucket_min_count_passed": true,
+        "high_bucket_all_three_windows": true,
+        "pooled_mean_monotonic_high_mid_low": false,
+        "pooled_median_monotonic_high_mid_low": false,
+        "window_mean_monotonic_count": 0,
+        "window_median_monotonic_count": 0,
+        "high_bucket_positive_windows": 1,
+        "high_bucket_positive_windows_passed": false
+      },
+      "before_after_strategy_delta": {
+        "aggregate_expected_value_score": 0.0,
+        "aggregate_total_pnl": 0.0,
+        "max_drawdown_pct": 0.0,
+        "trade_count": 0
+      },
+      "no_strategy_change": true
+    },
+    "summary": "Manager concentration was not a clean alpha discriminator on the closed SEC13F paper rows. The high bucket was negative in late_strong and old_thin, while the low/mid buckets carried most of the pooled PnL. The field appears to mix stale quarterly ownership disclosure and crowded mega-cap exposure rather than fresh active-manager alpha."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260622-018.json",
+  "single_causal_variable": "sec13f_manager_active_concentration_attribution_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260622-018.json",
+  "trial_family": "sec13f_active_manager_concentration",
+  "trial_variant_id": "observed_only_closed_rows_v1",
+  "decision": "rejected_no_monotonic_manager_concentration_edge",
+  "artifact": "data/experiments/exp-20260622-018/exp_20260622_018_sec13f_manager_active_concentration_attribution.json",
+  "log": "experiments/logs/exp-20260622-018.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_result_file": "data/experiments/exp-20260621-019/exp_20260621_019_sec13f_manager_conviction.json",
+    "baseline_aggregate": {
+      "baseline_result_file": "data/experiments/exp-20260621-019/exp_20260621_019_sec13f_manager_conviction.json",
+      "aggregate_expected_value_score": 8.3727,
+      "aggregate_total_pnl": 242807.77,
+      "target_trade_count_sum": 344,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 2
+    },
+    "no_strategy_after_replay": true,
+    "reason": "Observed-only attribution over already closed paper rows."
+  },
+  "gate2": {
+    "fields_checked": [
+      "entry_date",
+      "exit_date",
+      "pnl",
+      "sec13f_new_conviction_weight_max"
+    ],
+    "rows_checked": 344,
+    "skipped_by_reason": {},
+    "entry_date_present": true,
+    "pnl_present": true,
+    "weight_max_present": true,
+    "target_price_runtime_present": false,
+    "target_price_relevance": "Not applicable: no signal replay or order decision is made; closed paper rows carry exit_price/pnl rather than target_price."
+  },
+  "gate3": {
+    "signals_generated": 344,
+    "signals_survived": 344,
+    "survival_rate": 1.0,
+    "filter_added": false,
+    "note": "Rows are attributed, not filtered into a new strategy."
+  },
+  "gate4": {
+    "accepted_lead": false,
+    "failed_reasons": [
+      "pooled_mean_not_monotonic_high_mid_low",
+      "pooled_median_not_monotonic_high_mid_low",
+      "high_bucket_positive_in_only_one_window"
+    ],
+    "acceptance_checks": {
+      "high_bucket_min_count_by_window": 27,
+      "high_bucket_min_count_passed": true,
+      "high_bucket_all_three_windows": true,
+      "pooled_mean_monotonic_high_mid_low": false,
+      "pooled_median_monotonic_high_mid_low": false,
+      "window_mean_monotonic_count": 0,
+      "window_median_monotonic_count": 0,
+      "high_bucket_positive_windows": 1,
+      "high_bucket_positive_windows_passed": false
+    },
+    "before_after_strategy_delta": {
+      "aggregate_expected_value_score": 0.0,
+      "aggregate_total_pnl": 0.0,
+      "max_drawdown_pct": 0.0,
+      "trade_count": 0
+    },
+    "no_strategy_change": true
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "shared_helper_promoted": false,
+    "live_realistic_execution_envelope": "Not evaluated; result is rejected observed-only attribution."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "Manager concentration was not a clean alpha discriminator on the closed SEC13F paper rows. The high bucket was negative in late_strong and old_thin, while the low/mid buckets carried most of the pooled PnL. The field appears to mix stale quarterly ownership disclosure and crowded mega-cap exposure rather than fresh active-manager alpha.",
+    "forbidden_near_neighbor_retry": "Do not retry SEC13F manager weight, holder-count, value-share, or coownership threshold sweeps on the same closed historical windows. That would be another 13F threshold search, not new evidence.",
+    "new_evidence_required": "A valid retry needs independent active-manager quality or manager alpha attribution, non-quarterly ownership/flow data, borrow/options cross-evidence, or closed forward rows from a shared default-off helper."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260622_018_sec13f_manager_active_concentration_attribution.py",
+    "data/experiments/exp-20260621-019/exp_20260621_019_sec13f_manager_conviction.json",
+    "experiments/logs/exp-20260621-019.json",
+    "experiments/logs/exp-20260622-007.json"
+  ],
+  "updated_at": "2026-06-22T17:10:47+00:00"
+}

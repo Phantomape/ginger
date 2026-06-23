@@ -1,0 +1,167 @@
+{
+  "after": {
+    "expected_value_score": 7.8941,
+    "max_drawdown_pct_max": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "total_pnl": 234850.99,
+    "trade_count": 61
+  },
+  "alpha_hypothesis": "Structured numeric financial-result growth in foreign issuer 6-K/6-KA filing text may identify ADR post-report drift when paired with same-day liquid SPY-relative confirmation.",
+  "artifact": "data/experiments/exp-20260623-001/exp_20260623_001_sec_6k_historical_text_materialization.json",
+  "before": {
+    "expected_value_score": 7.8941,
+    "max_drawdown_pct_max": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "total_pnl": 234850.99,
+    "trade_count": 61
+  },
+  "calibration": {
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 0.0,
+    "failure_modes_observed": [
+      "historical_6k_text_materialization_unavailable",
+      "sec_archive_network_fetch_failed"
+    ],
+    "prediction_required": false,
+    "surprise_note": "Local submissions cache can materialize 8,010 6-K/6-KA events across all canonical windows, but this restricted environment cannot reach SEC archive documents for filing text."
+  },
+  "card_file": "experiments/cards/exp-20260623-001.md",
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260623_001_sec_6k_historical_text_materialization.py",
+    "data/experiments/exp-20260623-001/exp_20260623_001_sec_6k_historical_text_materialization.json",
+    "data/experiments/exp-20260623-001/sec_6k_6ka_events_20241002_20260421.jsonl",
+    "data/experiments/exp-20260623-001/sec_6k_6ka_text_probe_20241002_20260421.jsonl",
+    "experiments/logs/exp-20260623-001.json",
+    "experiments/cards/exp-20260623-001.md",
+    "experiments/manifests/exp-20260623-001.json",
+    "experiments/tickets/exp-20260623-001.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "historical_sec_6k_6ka_event_text_materialization_v1",
+  "completed_at": "2026-06-23T00:15:04+00:00",
+  "decision": "blocked_sec_6k_text_fetch_unavailable_after_event_materialization",
+  "delta": {
+    "expected_value_score": 0.0,
+    "signals_generated": 0,
+    "signals_survived": 0,
+    "total_pnl": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260623-001",
+  "gate_verdict": {
+    "gate1_baseline": {
+      "aggregate": {
+        "expected_value_score": 7.8941,
+        "max_drawdown_pct_max": 0.1119,
+        "signals_generated": 164,
+        "signals_survived": 135,
+        "survival_rate": 0.8232,
+        "total_pnl": 234850.99,
+        "trade_count": 61
+      },
+      "baseline_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "baseline_sha256": "33966aafb7816653089b27d4bb19508f64cafa1522de7aa3e19a16718160959e",
+      "passed": true
+    },
+    "gate2_runtime_fields": {
+      "blocking_reasons": [
+        "historical_6k_text_materialization_unavailable",
+        "sec_archive_network_fetch_failed"
+      ],
+      "event_materialized": true,
+      "passed": false,
+      "required_event_fields": [
+        "ticker",
+        "cik",
+        "accession_number",
+        "form_type",
+        "form_base",
+        "filing_date",
+        "accepted_at",
+        "usable_trade_date",
+        "archive_url",
+        "index_url",
+        "primary_document"
+      ],
+      "required_text_fields": [
+        "ticker",
+        "accession_number",
+        "usable_trade_date",
+        "combined_text",
+        "form_type",
+        "form_base"
+      ],
+      "text_materialized": false
+    },
+    "gate3_survival": {
+      "passed": false,
+      "signals_generated": 0,
+      "signals_survived": 0,
+      "survival_rate": null,
+      "verdict": "blocked before candidate construction; event rows exist but text rows remain unavailable, so no structured 6-K candidates can be generated."
+    },
+    "gate4_before_after": {
+      "after_equals_before": true,
+      "passed": false,
+      "ran": false,
+      "reason": "Measurement repair is incomplete and no buy/sell/ranking/sizing/exits policy changed."
+    }
+  },
+  "hypothesis": "measurement_repair: materialize historical SEC 6-K/6-KA event and text rows so the blocked structured financial-result alpha can pass Gate 2 with replayable filing rows across the canonical windows.",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "log_file": "experiments/logs/exp-20260623-001.json",
+  "mechanism_family": "production_visible_free_sec_6k_foreign_issuer_candidate_pool",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry structured 6-K phrase, numeric, threshold, top-N, hold-day, or notional sweeps until non-empty 6-K/6-KA filing text rows exist in the standard replay surface or an approved local raw-document cache.",
+    "new_evidence_required": "Run the same text materialization in an environment with SEC archive access, or add a local raw SEC filing-document cache; then write standard sec_filing_text rows and rerun the fixed structured financial-result growth helper.",
+    "why_result_happened": "The prior zero-event surface was a generated-artifact problem, not a local metadata problem: cached SEC submissions contain broad 6-K/6-KA event coverage. Filing text still cannot be materialized here because SEC archive HTTP requests are refused."
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": false,
+    "live_ready": false,
+    "parity_note": "This runner materializes diagnostic SEC replay artifacts only; no shared alpha helper or daily production adapter is changed.",
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260623_001_sec_6k_historical_text_materialization.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "result_summary": {
+    "event_rows_by_usable_window": {
+      "late_strong": 2492,
+      "mid_weak": 2703,
+      "old_thin": 2798
+    },
+    "materialized_six_k_event_rows": 8010,
+    "materialized_six_k_event_tickers": 137,
+    "materialized_six_k_text_rows": 0,
+    "standard_six_k_event_rows_before": 0,
+    "standard_six_k_text_rows_before": 0,
+    "text_probe_status": "empty_text"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260623-001.json",
+  "single_causal_variable": "historical_sec_6k_6ka_event_text_materialization_v1",
+  "status": "blocked",
+  "trial_family": "sec_6k_foreign_issuer_historical_text_materialization",
+  "trial_variant_id": "sec_6k_historical_text_materialization_v1"
+}
