@@ -1,0 +1,124 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "artifact": "data/experiments/exp-20260623-025/exp_20260623_025_non_ohlcv_confluence_shared_adapter.json",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "changed_variable": "non_ohlcv_cross_source_attention_confluence_shared_default_off_adapter_v1",
+  "decision": "rejected_preimplementation_accepted_distribution_comparator_not_beaten",
+  "experiment_id": "exp-20260623-025",
+  "gate1": {
+    "baseline_expected_value_score_sum": null,
+    "baseline_loaded": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_total_pnl": null,
+    "source": "canonical standard-window baseline from docs/backtesting.md"
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "entry_date_present": true,
+    "fields_checked": [
+      "activity_date",
+      "entry_date",
+      "target_price",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd",
+      "form4_present",
+      "sec_present",
+      "source_bucket"
+    ],
+    "outcome_rows": 862,
+    "source_files": {
+      "form4": [
+        "data/non_ohlcv/form4_transactions_20241002_20260502.jsonl"
+      ],
+      "sec_event": [
+        "data/non_ohlcv/sec_filing_events_20241002_20260421.jsonl"
+      ],
+      "sec_text": [
+        "data/non_ohlcv/sec_filing_text_20241002_20260421.jsonl"
+      ]
+    },
+    "source_ticker_date_rows": 3441,
+    "target_price_present": true
+  },
+  "gate3": {
+    "baseline_survival_rate": 0.8232,
+    "passed_minimum_survival": true,
+    "signals_generated": 3441,
+    "signals_survived": 862,
+    "survival_rate": 0.2505
+  },
+  "gate4": {
+    "accepted": false,
+    "accepted_comparators": {
+      "compression_shared_adapter": {
+        "expected_value_delta": 0.1608,
+        "experiment_id": "exp-20260608-013",
+        "source": "experiments/cards/exp-20260608-013.md",
+        "total_pnl_delta": 2248.98
+      },
+      "distribution_day_shared_adapter": {
+        "expected_value_delta": 0.5286,
+        "experiment_id": "exp-20260611-007",
+        "source": "experiments/cards/exp-20260611-007.md",
+        "total_pnl_delta": 10432.91
+      }
+    },
+    "comparator_checks": {
+      "beats_compression_pnl": true,
+      "beats_distribution_pnl": false,
+      "distribution_comparator_required": true,
+      "pnl_gap_to_distribution_usd": -7993.9
+    },
+    "confluence_replacement_value_vs_cash_usd": 2439.01,
+    "confluence_replacement_value_vs_qqq_usd": 2747.04,
+    "confluence_replacement_value_vs_spy_usd": 2596.9,
+    "decision": "rejected_preimplementation_accepted_distribution_comparator_not_beaten",
+    "failed_reasons": [
+      "accepted_distribution_pnl_comparator_not_beaten"
+    ],
+    "preimplementation_screen": true,
+    "reasoning": "The fixed confluence lead is positive and beats the older compression PnL comparator, but it is less than one quarter of the accepted distribution-day shared adapter PnL delta. Adding a shared helper would create production-visible strategy surface without a credible accepted-comparator path.",
+    "shared_adapter_implemented": false,
+    "strategy_rerun_required": false
+  },
+  "hypothesis": "Shared-paper-first candidate_pool: the fixed same usable-trade-date Form 4 plus SEC filing event/text confluence lead from exp-20260623-024 should reproduce through a shared historical replay and daily default-off snapshot helper without changing live orders, ranking, sizing, or exits.",
+  "lane": "alpha_search",
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry by sweeping Form4 transaction code, SEC form type, close-location, ADV, same-day return, hold-day, notional, top-N, cooldown, or benchmark thresholds on the same archived sources.",
+    "new_evidence_required": "A valid retry needs a materially new evidence axis such as parsed filing surprise semantics, named customer/supplier entities, borrow/options structure joined to the same events, or closed forward replacement rows from a shared helper built for a stronger source.",
+    "why_result_happened": "The exp024 confluence lead is directionally positive but too small to justify shared adapter work: $2,439.01 cash replacement value versus $10,432.91 for the current accepted distribution-day shared adapter."
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260623-024 found a fixed cross-source non-OHLCV confluence lead with 30 outcome rows, 21 tickers, positive cash/SPY/QQQ replacement value in all three windows, and no concentration failure. The risk is that the lead remains too small versus accepted comparators.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "observed_only_lead_not_reproduced",
+      "daily_path_missing_source_rows",
+      "parity_mismatch",
+      "accepted_comparator_not_beaten"
+    ],
+    "recorded_at": "2026-06-23T21:02:58+00:00",
+    "success_probability": 0.28
+  },
+  "production_impact": {
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_realistic_execution_envelope": "Not live-ready and not promoted. The inherited diagnostic envelope is $4,000 paper notional, price >= $10, ADV20 >= $50M, next-open paper entry, 10-trading-day close exit, shared slippage/cost conventions, and no capital cap, order semantics, kill switch, or displacement path.",
+    "paper_orders_changed": false,
+    "ranking_changed": false,
+    "shared_helper_promoted": false,
+    "sizing_changed": false,
+    "trade_enabled": false,
+    "uses_non_ohlcv_sources": true
+  },
+  "runner": "quant/experiments/exp_20260623_025_non_ohlcv_confluence_shared_adapter.py",
+  "single_causal_variable": "non_ohlcv_cross_source_attention_confluence_shared_default_off_adapter_v1",
+  "status": "rejected",
+  "timestamp": "2026-06-23T21:11:06Z"
+}

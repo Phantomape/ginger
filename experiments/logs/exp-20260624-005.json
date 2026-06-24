@@ -1,0 +1,115 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 0,
+    "brier_score": 0.0576,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 5.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "regime_gate_misses_drawdown",
+      "old_thin_only_benefit",
+      "bull_window_return_drag",
+      "covariance_noise",
+      "survivorship_bias"
+    ],
+    "predicted_success_probability": 0.24,
+    "realized_failure_mode": "duplicate_prior_experiment_already_rejected",
+    "surprise_level": "very_low",
+    "surprise_note": "Prior same-day experiment existed in registry/log but was not in the initial memory snapshot."
+  },
+  "causal_components": [
+    "PIT adverse/chop regime gate",
+    "15pct single-name risk contribution cap",
+    "30pct annualized vol target",
+    "monthly rebalance",
+    "trailing-90d covariance",
+    "excess to cash",
+    "static weights in confirmed uptrend"
+  ],
+  "change_summary": "Closed duplicate reservation without implementation: exp-20260624-003 already tested the same regime-conditioned held-book risk-budget overlay and rejected it versus static hold.",
+  "change_type": "risk_allocation",
+  "changed_variable": "held_book_regime_conditioned_risk_budget_overlay_v1",
+  "component": "quant/experiments/exp_20260624_005_held_book_regime_conditioned_risk_budget.py, data/experiments/exp-20260624-005/exp_20260624_005_held_book_regime_conditioned_risk_budget.json, experiments/cards/exp-20260624-005.md, experiments/manifests/exp-20260624-005.json, experiments/tickets/exp-20260624-005.json, experiments/logs/exp-20260624-005.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "rejected",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260624-005",
+  "hypothesis": "risk_allocation: held-book PIT risk-budget overlay should activate only in adverse/chop market regimes while confirmed uptrends keep static weights, preserving winner upside while reducing drawdown versus static hold and the rejected regime-indiscriminate overlay.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "held_book_risk_allocation",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260623-026"
+  ],
+  "new_evidence_type": "regime_conditioned_risk_allocation_gate",
+  "next_retry_requires": [],
+  "notes": "No exp-20260624-005 runner or strategy artifact was created. The prior exp-20260624-003 result is the controlling evidence: regime EV 29.092 improved over always-on 18.5897 but remained below static 44.3857; future work needs a different objective, faster independently validated regime signal, or a forward non-survivorship book.",
+  "parameters": {
+    "locked_variables": [
+      "held_book_regime_conditioned_risk_budget_overlay_v1"
+    ],
+    "single_causal_variable": "held_book_regime_conditioned_risk_budget_overlay_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not rerun the 200d-MA / compute_market_regime gated held-book risk-budget overlay, or sweep its BULL definition, MA length, overlay cap, vol target, rebalance cadence, covariance lookback, or current-held universe. exp-20260624-003 is the controlling rejected test for this policy family.",
+    "new_evidence_required": "A valid retry needs a genuinely different evidence axis: a faster independently validated regime/chop signal tested without threshold tuning, a tail-risk objective that explicitly values drawdown reduction, or a forward non-survivorship book. Another static-vs-regime gate on the same held winners is frozen.",
+    "realized_failure_mode": "duplicate_prior_experiment_already_rejected",
+    "why_result_happened": "Prior same-day experiment existed in registry/log but was not in the initial memory snapshot."
+  },
+  "prediction": {
+    "confidence_reason": "Static risk budget sharply reduced drawdown but lost too much bull-window return; prior closeout named regime-conditioned de-risking as the real next axis rather than cap/target sweeps.",
+    "expected_ev_delta": 5.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "regime_gate_misses_drawdown",
+      "old_thin_only_benefit",
+      "bull_window_return_drag",
+      "covariance_noise",
+      "survivorship_bias"
+    ],
+    "recorded_at": "2026-06-24T03:08:39+00:00",
+    "success_probability": 0.24
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "No AGENTS.md Gate 4 acceptance condition was met.",
+  "related_files": [
+    "data/experiments/exp-20260624-003/exp_20260624_003_regime_conditioned_held_book_risk_budget_overlay.json",
+    "data/experiments/exp-20260624-003/exp_20260624_003_regime_conditioned_held_book_risk_budget_overlay.json"
+  ],
+  "secondary_windows": [],
+  "status": "rejected",
+  "timestamp": "2026-06-24T03:10:32+00:00",
+  "trial_family": "held_book_regime_conditioned_risk_budget",
+  "trial_variant_id": "adverse_chop_only_risk_budget_static_uptrend_v1"
+}

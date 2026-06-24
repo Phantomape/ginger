@@ -1,0 +1,939 @@
+{
+  "acceptance_rule": "Observed-only positive lead only if stock-only rows have positive total and median replacement value versus cash SPY and QQQ, at least 15 stock rows, at least 8 distinct stock tickers, no single ticker contributes over 50 percent of positive cash value, and stock-only mean beats ETF-only mean on at least two comparators. No helper promotion in this experiment.",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "data/experiments",
+    "experiments/logs",
+    "experiments/cards",
+    "experiments/manifests",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260623-028.md",
+  "causal_components": [
+    "read-only forward replacement rows",
+    "fixed ETF ticker set versus stock ticker split",
+    "cash/SPY/QQQ replacement-value attribution",
+    "ticker and sleeve concentration checks",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "Stock-only versus ETF-only composition attribution on enriched forward replacement value rows; no ranking, sizing, entry, exit, or live policy change.",
+  "claimed_at": "2026-06-23T23:09:08+00:00",
+  "completed_at": "2026-06-23T23:13:12+00:00",
+  "created_at": "2026-06-23T23:08:42+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260623-028",
+  "experiment_uid": "expuid-f6a3d40d050743bd",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260623-028",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-23T23:08:42+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "forward_stock_vs_etf_replacement"
+  },
+  "hypothesis": "If the closed forward replacement rows are a real candidate-pool lead rather than QQQ/ETF beta, then stock-only rows should show positive replacement value versus cash, SPY, and QQQ with diversified ticker and sleeve support; otherwise activation remains blocked.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "Stock-only versus ETF-only composition attribution on enriched forward replacement value rows; no ranking, sizing, entry, exit, or live policy change."
+  ],
+  "mechanism_family": "default_off_paper_candidate_pool_forward_value",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260622-013",
+    "exp-20260623-019",
+    "exp-20260623-027"
+  ],
+  "new_evidence_type": "forward_replacement_composition_attribution",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "activation",
+        "are",
+        "attribution",
+        "beta",
+        "blocked",
+        "cash",
+        "change",
+        "closed",
+        "composition",
+        "diversification",
+        "diversified",
+        "enriched",
+        "entry",
+        "etf",
+        "exit",
+        "forward",
+        "if",
+        "lead",
+        "live",
+        "no",
+        "on",
+        "only",
+        "or",
+        "otherwise",
+        "policy",
+        "positive",
+        "qqq",
+        "ranking",
+        "rather",
+        "real",
+        "remains",
+        "replacement",
+        "rows",
+        "should",
+        "show",
+        "sizing",
+        "sleeve",
+        "spy",
+        "stock",
+        "support",
+        "than",
+        "then",
+        "ticker",
+        "value",
+        "versus"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "entry_day_component_attribution",
+        "reopen_condition": "Use the schema v2 PIT component attribution report before any future component-aware allocation test; do not retry raw expectation_revision, post_earnings_drift, or trend scalars on the frozen canonical windows without new forward evidence or a materially different interaction.",
+        "score": 0.175,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "canonical_state_vector_ranking_validation",
+        "reopen_condition": "Run a separate Gate 1-4 alpha experiment for a small shared-policy post-sizing top-up on entry-day leadership_vector.state == strong and non-hot risk state; do not promote from attribution alone.",
+        "score": 0.1735,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "cross_sectional_ranking_attribution",
+        "reopen_condition": "Cross-sectional ranking via alpha_score is closed for new alpha on robust broad-universe evidence: the edge shrinks when the universe broadens (the opposite of a generalizable alpha) and the only tilt is single-regime (late_strong). Do not propose alpha_score reweighting as a live ranking/sizing change. Reviving a ranking surface needs genuinely populated non-momentum components on the broad unive",
+        "score": 0.1722,
+        "status": "frozen_rejected",
+        "trials": 4
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "expectation_true_ranking_replacement_attribution",
+        "reopen_condition": "If promising, create a separate default-off or strategy Gate 1-4 experiment with shared production-visible ranking logic. If not promising, do not promote this simple additive expectation/residual component; pivot to PEAD eligibility or richer expectation fields.",
+        "score": 0.1722,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "cross_sectional_ranking_component_attribution",
+        "reopen_condition": null,
+        "score": 0.1714,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.34,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "stock rows too few",
+      "stock replacement value dominated by one ticker",
+      "ETF rows explain most value",
+      "benchmark-adjusted replacement value negative"
+    ],
+    "confidence_reason": "Forward rows are enriched but sparse; prior readiness failed, while sleeve summaries hinted non-ETF rows may still have positive replacement value.",
+    "recorded_at": "2026-06-23T23:08:27+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "rejected_stock_forward_replacement_attribution_not_activation_ready",
+    "artifact": "data/experiments/exp-20260623-028/exp_20260623_028_forward_stock_vs_etf_replacement.json",
+    "log": "experiments/logs/exp-20260623-028.json",
+    "runner": "quant/experiments/exp_20260623_028_forward_stock_vs_etf_replacement.py",
+    "gate4": {
+      "observed_only_lead": false,
+      "decision": "rejected_stock_forward_replacement_attribution_not_activation_ready",
+      "failed_reasons": [
+        "stock_mean_beats_etf_two_comparators"
+      ],
+      "acceptance_checks": {
+        "stock_rows_passed": true,
+        "stock_distinct_tickers_passed": true,
+        "stock_total_positive_all_comparators": true,
+        "stock_median_positive_all_comparators": true,
+        "stock_cash_positive_concentration_passed": true,
+        "stock_mean_beats_etf_two_comparators": false
+      },
+      "strategy_rerun_required": false,
+      "before_after_strategy_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "max_drawdown_pct": 0.0
+      },
+      "lead_limitations": [
+        "Forward-only closed paper rows, not canonical fixed-window alpha evidence.",
+        "No shared helper, daily adapter, rank, notional, exit, or order rule changed.",
+        "Any activation requires a separate shared-paper-first Gate 1-4 experiment."
+      ]
+    },
+    "calibration": {
+      "predicted_success_probability": 0.34,
+      "actual_success": 0,
+      "brier_score": 0.1156,
+      "failed_reasons": [
+        "stock_mean_beats_etf_two_comparators"
+      ],
+      "failure_modes_observed": [
+        "ETF rows explain most value"
+      ],
+      "predicted_failure_modes": [
+        "stock rows too few",
+        "stock replacement value dominated by one ticker",
+        "ETF rows explain most value",
+        "benchmark-adjusted replacement value negative"
+      ],
+      "predicted_failure_mode_hit": true
+    },
+    "attribution": {
+      "cohorts": {
+        "stock": {
+          "n": 18,
+          "distinct_tickers": 15,
+          "distinct_sleeves": 8,
+          "tickers": [
+            {
+              "key": "CRDO",
+              "n": 3,
+              "row_share": 0.166667
+            },
+            {
+              "key": "AMD",
+              "n": 2,
+              "row_share": 0.111111
+            },
+            {
+              "key": "GS",
+              "n": 1,
+              "row_share": 0.055556
+            },
+            {
+              "key": "LITE",
+              "n": 1,
+              "row_share": 0.055556
+            },
+            {
+              "key": "SNXX",
+              "n": 1,
+              "row_share": 0.055556
+            },
+            {
+              "key": "GE",
+              "n": 1,
+              "row_share": 0.055556
+            },
+            {
+              "key": "DE",
+              "n": 1,
+              "row_share": 0.055556
+            },
+            {
+              "key": "MU",
+              "n": 1,
+              "row_share": 0.055556
+            },
+            {
+              "key": "SNOW",
+              "n": 1,
+              "row_share": 0.055556
+            },
+            {
+              "key": "DDOG",
+              "n": 1,
+              "row_share": 0.055556
+            }
+          ],
+          "sleeves": [
+            {
+              "key": "fundamental_growth_rs",
+              "n": 4,
+              "row_share": 0.222222
+            },
+            {
+              "key": "state_surface",
+              "n": 3,
+              "row_share": 0.166667
+            },
+            {
+              "key": "volume_breadth_breakout",
+              "n": 3,
+              "row_share": 0.166667
+            },
+            {
+              "key": "sec_governance",
+              "n": 2,
+              "row_share": 0.111111
+            },
+            {
+              "key": "sec_negative",
+              "n": 2,
+              "row_share": 0.111111
+            },
+            {
+              "key": "volatility_contraction",
+              "n": 2,
+              "row_share": 0.111111
+            },
+            {
+              "key": "sec_leadership",
+              "n": 1,
+              "row_share": 0.055556
+            },
+            {
+              "key": "free_data_cross_source_consensus",
+              "n": 1,
+              "row_share": 0.055556
+            }
+          ],
+          "entry_months": [
+            {
+              "key": "2026-05",
+              "n": 9,
+              "row_share": 0.5
+            },
+            {
+              "key": "2026-06",
+              "n": 9,
+              "row_share": 0.5
+            }
+          ],
+          "notional_methods": [
+            {
+              "key": "derived_from_prices",
+              "n": 10,
+              "row_share": 0.555556
+            },
+            {
+              "key": "derived_from_net_return_percent",
+              "n": 8,
+              "row_share": 0.444444
+            }
+          ],
+          "replacement_value_vs_cash_usd": {
+            "sum": 2747.33,
+            "mean": 152.6294,
+            "median": 38.305,
+            "min": -2811.78,
+            "max": 2772.28,
+            "positive_rate": 0.5,
+            "concentration": {
+              "positive_total": 11572.75,
+              "max_single_ticker_positive_share": 0.320915,
+              "max_single_sleeve_positive_share": 0.625627,
+              "top_positive_tickers": [
+                {
+                  "ticker": "CRDO",
+                  "positive_value": 3713.87,
+                  "share": 0.320915
+                },
+                {
+                  "ticker": "AMD",
+                  "positive_value": 3463.29,
+                  "share": 0.299262
+                },
+                {
+                  "ticker": "SNXX",
+                  "positive_value": 2772.28,
+                  "share": 0.239552
+                },
+                {
+                  "ticker": "DE",
+                  "positive_value": 1098.16,
+                  "share": 0.094892
+                },
+                {
+                  "ticker": "GS",
+                  "positive_value": 390.84,
+                  "share": 0.033772
+                },
+                {
+                  "ticker": "BKNG",
+                  "positive_value": 134.31,
+                  "share": 0.011606
+                }
+              ],
+              "top_positive_sleeves": [
+                {
+                  "sleeve": "state_surface",
+                  "positive_value": 7240.23,
+                  "share": 0.625627
+                },
+                {
+                  "sleeve": "fundamental_growth_rs",
+                  "positive_value": 2245.91,
+                  "share": 0.194069
+                },
+                {
+                  "sleeve": "sec_negative",
+                  "positive_value": 1098.16,
+                  "share": 0.094892
+                },
+                {
+                  "sleeve": "sec_governance",
+                  "positive_value": 525.15,
+                  "share": 0.045378
+                },
+                {
+                  "sleeve": "free_data_cross_source_consensus",
+                  "positive_value": 463.3,
+                  "share": 0.040034
+                }
+              ]
+            }
+          },
+          "replacement_value_vs_spy_usd": {
+            "sum": 4571.29,
+            "mean": 253.9606,
+            "median": 208.005,
+            "min": -2640.41,
+            "max": 2788.46,
+            "positive_rate": 0.555556,
+            "concentration": {
+              "positive_total": 11414.13,
+              "max_single_ticker_positive_share": 0.329414,
+              "max_single_sleeve_positive_share": 0.592295,
+              "top_positive_tickers": [
+                {
+                  "ticker": "CRDO",
+                  "positive_value": 3759.97,
+                  "share": 0.329414
+                },
+                {
+                  "ticker": "AMD",
+                  "positive_value": 3226.84,
+                  "share": 0.282706
+                },
+                {
+                  "ticker": "SNXX",
+                  "positive_value": 2788.46,
+                  "share": 0.244299
+                },
+                {
+                  "ticker": "DE",
+                  "positive_value": 997.9,
+                  "share": 0.087427
+                },
+                {
+                  "ticker": "BKNG",
+                  "positive_value": 224.95,
+                  "share": 0.019708
+                },
+                {
+                  "ticker": "SNOW",
+                  "positive_value": 221.01,
+                  "share": 0.019363
+                },
+                {
+                  "ticker": "GS",
+                  "positive_value": 195.0,
+                  "share": 0.017084
+                }
+              ],
+              "top_positive_sleeves": [
+                {
+                  "sleeve": "state_surface",
+                  "positive_value": 6760.53,
+                  "share": 0.592295
+                },
+                {
+                  "sleeve": "fundamental_growth_rs",
+                  "positive_value": 2563.64,
+                  "share": 0.224602
+                },
+                {
+                  "sleeve": "sec_negative",
+                  "positive_value": 997.9,
+                  "share": 0.087427
+                },
+                {
+                  "sleeve": "free_data_cross_source_consensus",
+                  "positive_value": 451.1,
+                  "share": 0.039521
+                },
+                {
+                  "sleeve": "sec_governance",
+                  "positive_value": 419.95,
+                  "share": 0.036792
+                },
+                {
+                  "sleeve": "volume_breadth_breakout",
+                  "positive_value": 221.01,
+                  "share": 0.019363
+                }
+              ]
+            }
+          },
+          "replacement_value_vs_qqq_usd": {
+            "sum": 4182.19,
+            "mean": 232.3439,
+            "median": 44.485,
+            "min": -2489.65,
+            "max": 2704.37,
+            "positive_rate": 0.5,
+            "concentration": {
+              "positive_total": 10159.62,
+              "max_single_ticker_positive_share": 0.340852,
+              "max_single_sleeve_positive_share": 0.606954,
+              "top_positive_tickers": [
+                {
+                  "ticker": "CRDO",
+                  "positive_value": 3462.93,
+                  "share": 0.340852
+                },
+                {
+                  "ticker": "AMD",
+                  "positive_value": 2754.23,
+                  "share": 0.271096
+                },
+                {
+                  "ticker": "SNXX",
+                  "positive_value": 2704.37,
+                  "share": 0.266188
+                },
+                {
+                  "ticker": "DE",
+                  "positive_value": 829.57,
+                  "share": 0.081654
+                },
+                {
+                  "ticker": "SNOW",
+                  "positive_value": 299.03,
+                  "share": 0.029433
+                },
+                {
+                  "ticker": "BKNG",
+                  "positive_value": 109.49,
+                  "share": 0.010777
+                }
+              ],
+              "top_positive_sleeves": [
+                {
+                  "sleeve": "state_surface",
+                  "positive_value": 6166.42,
+                  "share": 0.606954
+                },
+                {
+                  "sleeve": "fundamental_growth_rs",
+                  "positive_value": 2387.08,
+                  "share": 0.234958
+                },
+                {
+                  "sleeve": "sec_negative",
+                  "positive_value": 829.57,
+                  "share": 0.081654
+                },
+                {
+                  "sleeve": "free_data_cross_source_consensus",
+                  "positive_value": 368.03,
+                  "share": 0.036225
+                },
+                {
+                  "sleeve": "volume_breadth_breakout",
+                  "positive_value": 299.03,
+                  "share": 0.029433
+                },
+                {
+                  "sleeve": "sec_governance",
+                  "positive_value": 109.49,
+                  "share": 0.010777
+                }
+              ]
+            }
+          }
+        },
+        "etf": {
+          "n": 17,
+          "distinct_tickers": 1,
+          "distinct_sleeves": 1,
+          "tickers": [
+            {
+              "key": "QQQ",
+              "n": 17,
+              "row_share": 1.0
+            }
+          ],
+          "sleeves": [
+            {
+              "key": "low_deployment_etf",
+              "n": 17,
+              "row_share": 1.0
+            }
+          ],
+          "entry_months": [
+            {
+              "key": "2026-05",
+              "n": 13,
+              "row_share": 0.764706
+            },
+            {
+              "key": "2026-06",
+              "n": 4,
+              "row_share": 0.235294
+            }
+          ],
+          "notional_methods": [
+            {
+              "key": "explicit",
+              "n": 17,
+              "row_share": 1.0
+            }
+          ],
+          "replacement_value_vs_cash_usd": {
+            "sum": 4690.01,
+            "mean": 275.8829,
+            "median": 487.29,
+            "min": -795.5,
+            "max": 1114.41,
+            "positive_rate": 0.647059,
+            "concentration": {
+              "positive_total": 6761.79,
+              "max_single_ticker_positive_share": 1.0,
+              "max_single_sleeve_positive_share": 1.0,
+              "top_positive_tickers": [
+                {
+                  "ticker": "QQQ",
+                  "positive_value": 6761.79,
+                  "share": 1.0
+                }
+              ],
+              "top_positive_sleeves": [
+                {
+                  "sleeve": "low_deployment_etf",
+                  "positive_value": 6761.79,
+                  "share": 1.0
+                }
+              ]
+            }
+          },
+          "replacement_value_vs_spy_usd": {
+            "sum": 8952.04,
+            "mean": 526.5906,
+            "median": 599.57,
+            "min": -186.22,
+            "max": 967.8,
+            "positive_rate": 0.941176,
+            "concentration": {
+              "positive_total": 9138.26,
+              "max_single_ticker_positive_share": 1.0,
+              "max_single_sleeve_positive_share": 1.0,
+              "top_positive_tickers": [
+                {
+                  "ticker": "QQQ",
+                  "positive_value": 9138.26,
+                  "share": 1.0
+                }
+              ],
+              "top_positive_sleeves": [
+                {
+                  "sleeve": "low_deployment_etf",
+                  "positive_value": 9138.26,
+                  "share": 1.0
+                }
+              ]
+            }
+          },
+          "replacement_value_vs_qqq_usd": {
+            "sum": 7517.99,
+            "mean": 442.2347,
+            "median": 450.2,
+            "min": 314.49,
+            "max": 451.04,
+            "positive_rate": 1.0,
+            "concentration": {
+              "positive_total": 7517.99,
+              "max_single_ticker_positive_share": 1.0,
+              "max_single_sleeve_positive_share": 1.0,
+              "top_positive_tickers": [
+                {
+                  "ticker": "QQQ",
+                  "positive_value": 7517.99,
+                  "share": 1.0
+                }
+              ],
+              "top_positive_sleeves": [
+                {
+                  "sleeve": "low_deployment_etf",
+                  "positive_value": 7517.99,
+                  "share": 1.0
+                }
+              ]
+            }
+          }
+        }
+      },
+      "stock_vs_etf": {
+        "by_field": {
+          "replacement_value_vs_cash_usd": {
+            "stock_mean": 152.6294,
+            "etf_mean": 275.8829,
+            "stock_minus_etf_mean": -123.2535,
+            "stock_beats_etf_mean": false
+          },
+          "replacement_value_vs_spy_usd": {
+            "stock_mean": 253.9606,
+            "etf_mean": 526.5906,
+            "stock_minus_etf_mean": -272.63,
+            "stock_beats_etf_mean": false
+          },
+          "replacement_value_vs_qqq_usd": {
+            "stock_mean": 232.3439,
+            "etf_mean": 442.2347,
+            "stock_minus_etf_mean": -209.8908,
+            "stock_beats_etf_mean": false
+          }
+        },
+        "stock_mean_comparator_wins": 0
+      }
+    },
+    "summary": "The stock-only cohort did not pass the fixed composition checks, so current forward replacement evidence remains insufficient for activation and should not be treated as diversified stock alpha."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260623-028.json",
+  "single_causal_variable": "Stock-only versus ETF-only composition attribution on enriched forward replacement value rows; no ranking, sizing, entry, exit, or live policy change.",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260623-028.json",
+  "trial_family": "forward_replacement_stock_vs_etf_diversification",
+  "trial_variant_id": "exp-20260623-028",
+  "implementation_mode": "observed_only_attribution_runner",
+  "new_evidence_axis": "New gate shape: split enriched closed forward replacement rows by stock-only versus ETF-only composition to test whether the current forward lead is diversified stock alpha or QQQ/ETF beta. This is not an activation threshold relaxation, regime-scalar retune, or sleeve parameter sweep.",
+  "decision": "rejected_stock_forward_replacement_attribution_not_activation_ready",
+  "artifact": "data/experiments/exp-20260623-028/exp_20260623_028_forward_stock_vs_etf_replacement.json",
+  "log": "experiments/logs/exp-20260623-028.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    },
+    "note": "Observed-only attribution; before and after policy are identical."
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "source_audit": {
+      "source_artifact": "data/paper_sleeves/forward_replacement_value.jsonl",
+      "raw_rows": 35,
+      "deduped_rows": 35,
+      "usable_rows": 35,
+      "missing_required_rows": 0,
+      "cohort_counts": {
+        "etf": 17,
+        "stock": 18
+      },
+      "etf_ticker_set": [
+        "DIA",
+        "IVV",
+        "IWM",
+        "QQQ",
+        "SMH",
+        "SOXX",
+        "SPY",
+        "VOO",
+        "VTI",
+        "XLK"
+      ],
+      "artifact_not_mutated": true
+    },
+    "fields_checked": [
+      "entry_date",
+      "exit_date",
+      "ticker",
+      "sleeve_key",
+      "notional_usd",
+      "notional_method",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd"
+    ],
+    "entry_date_present": true,
+    "target_price_relevance": "Not applicable: no executable entry, target, exit, order, or paper ledger mutation is scheduled by this observed-only attribution."
+  },
+  "gate3": {
+    "filter_added": false,
+    "signals_generated": 35,
+    "signals_survived": 35,
+    "survival_rate": 1.0,
+    "baseline_survival_rate": 0.8232,
+    "note": "No executable filter was added; rows are attributed only."
+  },
+  "gate4": {
+    "observed_only_lead": false,
+    "decision": "rejected_stock_forward_replacement_attribution_not_activation_ready",
+    "failed_reasons": [
+      "stock_mean_beats_etf_two_comparators"
+    ],
+    "acceptance_checks": {
+      "stock_rows_passed": true,
+      "stock_distinct_tickers_passed": true,
+      "stock_total_positive_all_comparators": true,
+      "stock_median_positive_all_comparators": true,
+      "stock_cash_positive_concentration_passed": true,
+      "stock_mean_beats_etf_two_comparators": false
+    },
+    "strategy_rerun_required": false,
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "max_drawdown_pct": 0.0
+    },
+    "lead_limitations": [
+      "Forward-only closed paper rows, not canonical fixed-window alpha evidence.",
+      "No shared helper, daily adapter, rank, notional, exit, or order rule changed.",
+      "Any activation requires a separate shared-paper-first Gate 1-4 experiment."
+    ]
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "trade_enabled": false,
+    "daily_snapshot_exposed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "production_orders_changed": false,
+    "parity_note": "Read-only attribution over existing forward replacement artifact."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The stock-only cohort did not pass the fixed composition checks, so current forward replacement evidence remains insufficient for activation and should not be treated as diversified stock alpha.",
+    "forbidden_near_neighbor_retry": "Do not retry by changing ETF ticker set, minimum rows, ticker count, concentration cap, comparator count, sleeve inclusion, notional method, hold days, or activation thresholds on the same forward replacement rows.",
+    "new_evidence_required": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260623_028_forward_stock_vs_etf_replacement.py",
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260622-013.json",
+    "experiments/logs/exp-20260623-019.json",
+    "experiments/logs/exp-20260623-027.json",
+    "docs/backtesting.md",
+    "docs/production_backtest_parity.md"
+  ],
+  "updated_at": "2026-06-23T23:13:12+00:00"
+}

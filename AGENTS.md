@@ -37,7 +37,16 @@ LLM 可以承担新闻理解、事件分类、语义强弱判断和风险解释�
 
 1. 默认优先 `alpha_search`。只有直接阻断 alpha 评估或生产一致性的测量问题可以插队。
 2. 每轮至少提出 1 个 `alpha_hypothesis`；若不做 alpha，必须说明哪个阻断项让实验不可信。
+   当 novelty / source-saturation 闸门在某个 scan 源上触发时，**不要反射式 `--novelty-override`
+   重跑一个单字段 full-stack 实验**：这些源的历史命中率已证明是低概率彩票（例如
+   `companyfacts_ratio` 3/84、`sec_text_event` 0/38），换个相邻字段不改变基准率。此时
+   合规的 alpha 假设应转向 forward 行成熟、缺失数据/字段构建，或一个尚未饱和的新源；
+   override 仅在你能命名一条机器可查的全新证据轴（新数据源 / 无前例字段 / 新 gate shape /
+   forward 替换行）时才用，不能用自由文本绕过。
 3. 禁止连续多轮只做日志、replay、parity、目录整理或文档，而不提出新的 alpha 假设。
+   但 **forward 行埋点（入场期 regime / 替换价值标签）、缺失候选匹配面构建、饱和源以外的
+   新数据源接入，都算 alpha-enabling 工作，不受本条限制**——尤其当 frozen-window 面已饱和、
+   新增证据只能来自 forward 行或新数据时。
 4. 优先选择高赚钱潜力、高可验证性、低复杂度、可生产执行的候选。
 5. 高潜力、生产可见的 default-off paper alpha 默认走 **shared-paper-first**：第一次严肃实验就实现共享 helper，同时覆盖 historical replay 和 daily default-off snapshot，再跑 Gate 1-4。private replay scout 只适合数据形态不确定或非常早期的低成本探索；正向也只能记为 lead，不能算 accepted alpha。
 

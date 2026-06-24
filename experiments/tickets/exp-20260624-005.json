@@ -1,0 +1,210 @@
+{
+  "acceptance_rule": "Aggregate EV must improve versus static hold and rejected static overlay, worst drawdown must improve versus static hold, and mean return drag versus static must be less than 15 percentage points; observed-only discretionary policy simulation, no production order change.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260624_005_held_book_regime_conditioned_risk_budget.py",
+    "data/experiments/exp-20260624-005/exp_20260624_005_held_book_regime_conditioned_risk_budget.json",
+    "experiments/cards/exp-20260624-005.md",
+    "experiments/manifests/exp-20260624-005.json",
+    "experiments/tickets/exp-20260624-005.json",
+    "experiments/logs/exp-20260624-005.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260623-026/exp_20260623_026_held_book_risk_budget_overlay.json",
+  "card_file": "experiments/cards/exp-20260624-005.md",
+  "causal_components": [
+    "PIT adverse/chop regime gate",
+    "15pct single-name risk contribution cap",
+    "30pct annualized vol target",
+    "monthly rebalance",
+    "trailing-90d covariance",
+    "excess to cash",
+    "static weights in confirmed uptrend"
+  ],
+  "change_type": "risk_allocation",
+  "changed_variable": "held_book_regime_conditioned_risk_budget_overlay_v1",
+  "claimed_at": "2026-06-24T03:09:03+00:00",
+  "completed_at": "2026-06-24T03:10:32+00:00",
+  "created_at": "2026-06-24T03:08:54+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260624-005",
+  "experiment_uid": "expuid-1bf8507a8706432d",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260624-005",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-24T03:08:54+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "held_book_regime_conditioned_risk_budget"
+  },
+  "hypothesis": "risk_allocation: held-book PIT risk-budget overlay should activate only in adverse/chop market regimes while confirmed uptrends keep static weights, preserving winner upside while reducing drawdown versus static hold and the rejected regime-indiscriminate overlay.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "held_book_regime_conditioned_risk_budget_overlay_v1"
+  ],
+  "mechanism_family": "held_book_risk_allocation",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260623-026"
+  ],
+  "new_evidence_type": "regime_conditioned_risk_allocation_gate",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "regime_state",
+      "field_tags": [
+        "activate",
+        "adverse",
+        "allocation",
+        "book",
+        "budget",
+        "chop",
+        "conditioned",
+        "confirmed",
+        "drawdown",
+        "held",
+        "hold",
+        "in",
+        "indiscriminate",
+        "keep",
+        "market",
+        "only",
+        "overlay",
+        "pit",
+        "preserving",
+        "reducing",
+        "regime",
+        "regimes",
+        "rejected",
+        "risk",
+        "should",
+        "static",
+        "upside",
+        "uptrends",
+        "versus",
+        "weights",
+        "while",
+        "winner"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "full_universe_alpha_score_candidate_pool_safe_risk_budget",
+        "reopen_condition": "A shared production/replay default-off adapter for the alpha_score market-regime source, parity tests, and forward replacement-value rows. No live/default orders before that adapter exists.",
+        "score": 0.4921,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "free_ohlcv_intraindustry_liquidity_leader_lead_lag_candidate_pool",
+        "reopen_condition": "Do not retry this same frozen-window regime re-slice by changing risk_off/chop/on labels or probability thresholds. A valid next step needs closed forward replacement-value rows tagged with entry-time regime, a shared default-off daily/backtest adapter for the source, or a materially different relation provenance such as customer/supplier links or a non-OHLCV relation graph.",
+        "score": 0.49,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "shared_pit_regime_chop_state_helper",
+        "reopen_condition": "Forward / live-pilot rows tagged with entry-time regime_chop and exposure_scalar. Do not tune the regime constants or exposure floor on the frozen windows.",
+        "score": 0.4833,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "full_universe_alpha_score_candidate_pool_regime_gate",
+        "reopen_condition": "Forward replacement-value rows, a shared production/replay alpha_score adapter, or a materially richer rank-validity field. Do not just mine alpha_score state gates on the same frozen replay.",
+        "score": 0.4816,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "pit_regime_soft_chop_down_tilt",
+        "reopen_condition": "Retry only after a shared daily regime artifact has accumulated enough closed forward replacement-value rows in choppy_range, or after a materially different PIT chop discriminator is available.",
+        "score": 0.4793,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape: apply the previously fixed risk-budget overlay only when a PIT market-regime classifier marks adverse/chop conditions; keep static exposure in confirmed uptrends. This is not a cap, vol-target, rebalance, or ticker-universe sweep.",
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "regime_state",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "Static risk budget sharply reduced drawdown but lost too much bull-window return; prior closeout named regime-conditioned de-risking as the real next axis rather than cap/target sweeps.",
+    "expected_ev_delta": 5.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "regime_gate_misses_drawdown",
+      "old_thin_only_benefit",
+      "bull_window_return_drag",
+      "covariance_noise",
+      "survivorship_bias"
+    ],
+    "recorded_at": "2026-06-24T03:08:39+00:00",
+    "success_probability": 0.24
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260624-003/exp_20260624_003_regime_conditioned_held_book_risk_budget_overlay.json",
+    "after_result_file": "data/experiments/exp-20260624-003/exp_20260624_003_regime_conditioned_held_book_risk_budget_overlay.json",
+    "delta_metrics": {},
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.24,
+      "brier_score": 0.0576,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 5.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "regime_gate_misses_drawdown",
+        "old_thin_only_benefit",
+        "bull_window_return_drag",
+        "covariance_noise",
+        "survivorship_bias"
+      ],
+      "realized_failure_mode": "duplicate_prior_experiment_already_rejected",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "Prior same-day experiment existed in registry/log but was not in the initial memory snapshot."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260624-005.json",
+  "single_causal_variable": "held_book_regime_conditioned_risk_budget_overlay_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260624-005.json",
+  "trial_family": "held_book_regime_conditioned_risk_budget",
+  "trial_variant_id": "adverse_chop_only_risk_budget_static_uptrend_v1"
+}

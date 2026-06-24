@@ -1,0 +1,250 @@
+{
+  "acceptance_rule": "PIT trailing-only covariance AND regime (no lookahead). Compare static vs always-on overlay (exp-026) vs regime-conditioned overlay over 3 windows. Accept if aggregate EV (total_return x sharpe_daily) beats BOTH static and always-on overlay, with drawdown still reduced vs static in non-BULL windows. Frozen overlay params (cap 15pct, vol target 30pct); only the regime gate is new. Observed-only; production = discretionary risk policy.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260624_003_regime_conditioned_held_book_risk_budget_overlay.py",
+    "data/experiments/exp-20260624-003/exp_20260624_003_regime_conditioned_held_book_risk_budget_overlay.json",
+    "experiments/cards/exp-20260624-003.md",
+    "experiments/manifests/exp-20260624-003.json",
+    "experiments/tickets/exp-20260624-003.json",
+    "experiments/logs/exp-20260624-003.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260624-003.md",
+  "causal_components": [
+    "exp-026 overlay bundle",
+    "PIT 200d MA regime gate (compute_market_regime)",
+    "overlay only when not BULL",
+    "static when BULL",
+    "monthly rebalance"
+  ],
+  "change_type": "risk_allocation",
+  "changed_variable": "regime_conditioned_held_book_risk_budget_overlay_v1",
+  "claimed_at": "2026-06-24T01:38:23+00:00",
+  "completed_at": "2026-06-24T01:39:58+00:00",
+  "created_at": "2026-06-24T01:38:06+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260624-003",
+  "experiment_uid": "expuid-9a878659860b491b",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260624-003",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-24T01:38:06+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "regime_conditioned_held_book_risk_budget_overlay"
+  },
+  "hypothesis": "Regime-conditioned held-book risk-budget overlay: apply the exp-20260623-026 overlay (15pct single-name risk cap + 30pct vol target, excess to cash) ONLY when the PIT market regime is NOT BULL, and hold static (full weights) when regime is BULL. Regime = production compute_market_regime() (SPY+QQQ vs 200d MA), evaluated PIT with trailing-only data at each monthly rebalance. Hypothesis: the gate keeps the drawdown protection in non-BULL windows while removing the bull-window return drag that made the always-on overlay EV-negative, so aggregate EV beats BOTH static and the always-on overlay. Observed-only; no core-strategy/order change.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "regime_conditioned_held_book_risk_budget_overlay_v1"
+  ],
+  "mechanism_family": "held_book_risk_budget_overlay",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260623-026"
+  ],
+  "new_evidence_type": "regime_gated_overlay_simulation",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "regime_state",
+      "field_tags": [
+        "15pct",
+        "200d",
+        "30pct",
+        "aggregate",
+        "always",
+        "apply",
+        "at",
+        "beats",
+        "book",
+        "both",
+        "budget",
+        "bull",
+        "cap",
+        "cash",
+        "change",
+        "compute",
+        "conditioned",
+        "core",
+        "data",
+        "drag",
+        "drawdown",
+        "each",
+        "ev",
+        "evaluated",
+        "excess",
+        "exp",
+        "full",
+        "gate",
+        "held",
+        "hold",
+        "hypothesis",
+        "in",
+        "is",
+        "keeps",
+        "ma",
+        "made",
+        "market",
+        "monthly",
+        "name",
+        "negative",
+        "no",
+        "non",
+        "not",
+        "observed",
+        "on",
+        "only",
+        "order",
+        "overlay",
+        "pit",
+        "protection",
+        "qqq",
+        "rebalance",
+        "regime",
+        "removing",
+        "return",
+        "risk",
+        "single",
+        "so",
+        "spy",
+        "static",
+        "strategy",
+        "target",
+        "that",
+        "to",
+        "trailing",
+        "vol",
+        "weights",
+        "when",
+        "while",
+        "window",
+        "windows"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "full_universe_alpha_score_candidate_pool_regime_gate",
+        "reopen_condition": "Forward replacement-value rows, a shared production/replay alpha_score adapter, or a materially richer rank-validity field. Do not just mine alpha_score state gates on the same frozen replay.",
+        "score": 0.4767,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "full_universe_alpha_score_candidate_pool_safe_risk_budget",
+        "reopen_condition": "A shared production/replay default-off adapter for the alpha_score market-regime source, parity tests, and forward replacement-value rows. No live/default orders before that adapter exists.",
+        "score": 0.4763,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "market_state_family_replacement_value_attribution",
+        "reopen_condition": null,
+        "score": 0.476,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "free_ohlcv_intraindustry_liquidity_leader_lead_lag_candidate_pool",
+        "reopen_condition": "Do not retry this same frozen-window regime re-slice by changing risk_off/chop/on labels or probability thresholds. A valid next step needs closed forward replacement-value rows tagged with entry-time regime, a shared default-off daily/backtest adapter for the source, or a materially different relation provenance such as customer/supplier links or a non-OHLCV relation graph.",
+        "score": 0.4703,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "broad_full_liquid_5d_winner_changepoint_tail_state_candidate_pool",
+        "reopen_condition": "A future retry needs genuinely new PIT evidence such as forward replacement-value rows, external free breadth data with production parity, or a non-OHLCV context layer. Broad 5-day continuation threshold retunes should stay frozen.",
+        "score": 0.4698,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Adds a PIT 200d-MA market-regime GATE (existing production compute_market_regime, unchanged) on top of the rejected always-on overlay exp-20260623-026. The gate is the single new variable; thresholds of the underlying overlay are frozen at exp-026 values (not a sweep). Distinct from exp-026 (always-on) which was rejected for bull-window return drag.",
+    "override": true,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "regime_state",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "agent_session_68cf2b14",
+  "prediction": {
+    "success_probability": 0.35,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "regime_gate_too_slow_200ma",
+      "bull_windows_still_drag",
+      "non_bull_windows_misclassified",
+      "gate_adds_no_separation"
+    ],
+    "confidence_reason": "200d MA regime is slow and may not cleanly separate the windows (late_strong had a big drawdown despite being a bull window); honest coin-flip whether the gate recovers EV vs the always-on overlay.",
+    "recorded_at": "2026-06-24T01:37:51+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "decision": "rejected_regime_conditioned_overlay",
+    "ev_static": 44.3857,
+    "ev_always": 18.5897,
+    "ev_regime": 29.092,
+    "regime_vs_always_ev_gain": 10.502,
+    "regime_vs_static_ev_gap": -15.294,
+    "observed_only": true
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260624-003.json",
+  "single_causal_variable": "regime_conditioned_held_book_risk_budget_overlay_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260624-003.json",
+  "trial_family": "regime_conditioned_held_book_risk_budget_overlay",
+  "trial_variant_id": "exp-20260624-003",
+  "decision": "rejected_regime_conditioned_overlay",
+  "post_run_reflection": {
+    "why_result_happened": "The 200d-MA regime gate recovered most of the bull-window upside the always-on overlay discarded: aggregate EV nearly doubled vs always-on (18.6->29.1, mean return 29%->46%) while keeping partial drawdown protection (worst DD 44%->32% vs static -44%). But it still lost to static (EV 44.4) because static hold of these winners over overwhelmingly-bull windows is a brutal EV baseline, and the 200d MA gate is too slow - it had BEAR sub-periods inside bull windows (return cost) and stayed BULL through part of the old_thin drawdown (incomplete protection).",
+    "forbidden_near_neighbor_retry": "Do not sweep the regime gate (MA period, BULL definition) or the frozen overlay params toward old_thin - that curve-fits the one known-bad window. Cross-experiment lesson (exp-026 + this): no de-risking variant beats static hold on EV for this winner book over these bull windows.",
+    "new_evidence_required": "A genuinely different OBJECTIVE that prices tail risk explicitly (then always-on/regime overlays already win on drawdown), OR a structurally faster, independently-validated chop/regime signal (exp-019 efficiency-ratio chop state) tested without threshold tuning, OR a forward non-survivorship book. Not gate/param sweeps."
+  },
+  "artifact": "data/experiments/exp-20260624-003/exp_20260624_003_regime_conditioned_held_book_risk_budget_overlay.json",
+  "changed_files": [
+    "quant/experiments/exp_20260624_003_regime_conditioned_held_book_risk_budget_overlay.py"
+  ],
+  "updated_at": "2026-06-24T01:39:58+00:00"
+}

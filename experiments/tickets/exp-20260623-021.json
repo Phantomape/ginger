@@ -1,0 +1,1001 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260623_021_live_held_book_cluster_risk_attribution.py",
+    "data/experiments/exp-20260623-021",
+    "experiments/logs/exp-20260623-021.json",
+    "experiments/cards/exp-20260623-021.md",
+    "experiments/manifests/exp-20260623-021.json",
+    "experiments/tickets/exp-20260623-021.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260623-021.md",
+  "causal_components": [
+    "current open-position weights",
+    "broad warehouse return covariance",
+    "cluster-cap counterfactual",
+    "observed-only verdict",
+    "no strategy behavior change"
+  ],
+  "change_type": "risk_allocation_observed_only",
+  "changed_variable": "live_held_book_ai_semis_cluster_risk_attribution_v1",
+  "claimed_at": "2026-06-23T17:05:42+00:00",
+  "completed_at": "2026-06-23T17:11:05+00:00",
+  "created_at": "2026-06-23T17:05:34+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260623-021",
+  "experiment_uid": "expuid-6a2eaa3a4c164a9b",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260623-021",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-23T17:05:34+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "live_held_book_cluster_risk_attribution"
+  },
+  "hypothesis": "risk_allocation: current live held-book AI/semis concentration may dominate portfolio variance; if a capped cluster envelope materially lowers ex-ante volatility without destroying trailing risk-adjusted return, it justifies a later Gate 1-4 shared risk-allocation experiment rather than more candidate-pool scans.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "live_held_book_ai_semis_cluster_risk_attribution_v1"
+  ],
+  "mechanism_family": "live_held_book_risk_allocation_attribution",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260623-019",
+    "exp-20260623-020"
+  ],
+  "new_evidence_type": "current_live_position_risk_surface",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "adjusted",
+        "ai",
+        "allocation",
+        "ante",
+        "attribution",
+        "book",
+        "capped",
+        "cluster",
+        "concentration",
+        "current",
+        "destroying",
+        "dominate",
+        "envelope",
+        "ex",
+        "experiment",
+        "gate",
+        "held",
+        "if",
+        "it",
+        "justifies",
+        "later",
+        "live",
+        "lowers",
+        "materially",
+        "may",
+        "more",
+        "portfolio",
+        "rather",
+        "return",
+        "risk",
+        "scans",
+        "semis",
+        "than",
+        "trailing",
+        "variance",
+        "volatility",
+        "without"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "governed_compute_memory_storage_risk_capped_candidate_pool",
+        "reopen_condition": "Forward compute-memory/storage replacement-value outcomes or a pre-specified memory/storage quality field that reduces concentration without simply tuning ticker weights.",
+        "score": 0.1686,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "full_universe_alpha_score_candidate_pool_regime_gate",
+        "reopen_condition": "Forward replacement-value rows, a shared production/replay alpha_score adapter, or a materially richer rank-validity field. Do not just mine alpha_score state gates on the same frozen replay.",
+        "score": 0.1678,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "sector_relative_risk_adjusted_momentum",
+        "reopen_condition": "Forward replacement-value rows or an orthogonal free-data quality field; do not simply retune sector residual/volatility thresholds.",
+        "score": 0.1678,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "free_ohlcv_intraindustry_liquidity_leader_lead_lag_candidate_pool",
+        "reopen_condition": "Do not retry this same frozen-window regime re-slice by changing risk_off/chop/on labels or probability thresholds. A valid next step needs closed forward replacement-value rows tagged with entry-time regime, a shared default-off daily/backtest adapter for the source, or a materially different relation provenance such as customer/supplier links or a non-OHLCV relation graph.",
+        "score": 0.1667,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "volatility_relief_industry_laggard_repair_candidate_pool",
+        "reopen_condition": "Next useful evidence would be forward replacement-value rows versus the accepted vol-relief stock-leadership sleeve, or an orthogonal free data edge that explains laggard catch-up within relief states without threshold retuning.",
+        "score": 0.1598,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.2,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "lookback_return_bias",
+      "no_canonical_gate4_evidence",
+      "cluster_cap_sacrifices_return",
+      "no_material_vol_reduction"
+    ],
+    "confidence_reason": "This uses a genuinely current live-position risk surface rather than another frozen-window candidate scan. The possible money mechanism is risk allocation: portfolio variance may be dominated by correlated AI/semis names. Main disconfirmers are winner-lookback return bias and the fact that observed-only covariance cannot justify live cap changes without a later shared Gate 1-4 policy.",
+    "recorded_at": "2026-06-23T17:05:19+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": true,
+    "decision": "observed_only_cluster_risk_concentration_lead_not_promoted",
+    "artifact": "data/experiments/exp-20260623-021/exp_20260623_021_live_held_book_cluster_risk_attribution.json",
+    "log": "experiments/logs/exp-20260623-021.json",
+    "runner": "quant/experiments/exp_20260623_021_live_held_book_cluster_risk_attribution.py",
+    "gate4": {
+      "passed": false,
+      "decision": "observed_only_cluster_risk_concentration_lead_not_promoted",
+      "failed_reasons": [
+        "observed_only_current_book_not_canonical_gate4",
+        "requires_later_shared_policy_gate4_before_any_cap_change"
+      ],
+      "observed_only": true,
+      "strategy_rerun_required": false,
+      "acceptance_rule": {
+        "material_cluster_risk_share": 0.45,
+        "material_cash_redeploy_vol_reduction_pp": 5.0,
+        "canonical_gate4_required_before_cap_change": true
+      },
+      "before_after_strategy_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "max_drawdown_pct": 0.0
+      },
+      "risk_attribution": {
+        "cluster_risk_share": 0.527602,
+        "required_cluster_risk_share": 0.45,
+        "cash_redeploy_vol_reduction_pp": 9.35382,
+        "required_vol_reduction_pp": 5.0
+      }
+    },
+    "calibration": {
+      "actual_decision": "observed_only_cluster_risk_concentration_lead_not_promoted",
+      "actual_success": 0,
+      "brier_score": 0.04,
+      "predicted_success_probability": 0.2,
+      "predicted_failure_modes": [
+        "lookback_return_bias",
+        "no_canonical_gate4_evidence",
+        "cluster_cap_sacrifices_return",
+        "no_material_vol_reduction"
+      ],
+      "failure_modes_observed": [
+        "observed_only_current_book_not_canonical_gate4",
+        "requires_later_shared_policy_gate4_before_any_cap_change"
+      ],
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "The concentration surface can be diagnostic, but it is still not canonical strategy evidence because it is current-book, lookback-biased, and not a shared Gate 1-4 policy."
+    },
+    "summary": "The current book risk surface is useful for risk attribution, but it cannot be accepted alpha because it is not a historical PIT policy replay and does not change before/after strategy metrics."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260623-021.json",
+  "single_causal_variable": "live_held_book_ai_semis_cluster_risk_attribution_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260623-021.json",
+  "trial_family": "live_held_book_cluster_concentration_attribution",
+  "trial_variant_id": "ai_semis_cluster_cap_observed_only_v1",
+  "implementation_mode": "observed_only_attribution",
+  "decision": "observed_only_cluster_risk_concentration_lead_not_promoted",
+  "artifact": "data/experiments/exp-20260623-021/exp_20260623_021_live_held_book_cluster_risk_attribution.json",
+  "log": "experiments/logs/exp-20260623-021.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "passed": true,
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "total_trade_count": 61,
+      "aggregate_signals_generated": 164,
+      "aggregate_signals_survived": 135,
+      "min_survival_rate": 0.7925,
+      "max_window_drawdown_pct": 0.1119,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields_checked": [
+      "entry_date",
+      "target_price",
+      "market_val",
+      "portfolio_value_usd",
+      "warehouse close history"
+    ],
+    "field_coverage": {
+      "entry_date_present": 17,
+      "target_price_present": 17,
+      "market_val_present": 17,
+      "position_count": 17
+    },
+    "priced_position_count": 15,
+    "dropped_tickers": [
+      {
+        "ticker": "RKLZ",
+        "reason": "missing_or_short_warehouse_history",
+        "history_rows": 0
+      },
+      {
+        "ticker": "SPCX",
+        "reason": "missing_or_short_warehouse_history",
+        "history_rows": 1
+      }
+    ]
+  },
+  "gate3": {
+    "passed": true,
+    "new_core_filter_added": false,
+    "baseline_min_survival_rate": 0.7925,
+    "note": "No entry filter, ranking, sizing, exit, or candidate generation rule changed."
+  },
+  "gate4": {
+    "passed": false,
+    "decision": "observed_only_cluster_risk_concentration_lead_not_promoted",
+    "failed_reasons": [
+      "observed_only_current_book_not_canonical_gate4",
+      "requires_later_shared_policy_gate4_before_any_cap_change"
+    ],
+    "observed_only": true,
+    "strategy_rerun_required": false,
+    "acceptance_rule": {
+      "material_cluster_risk_share": 0.45,
+      "material_cash_redeploy_vol_reduction_pp": 5.0,
+      "canonical_gate4_required_before_cap_change": true
+    },
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "max_drawdown_pct": 0.0
+    },
+    "risk_attribution": {
+      "cluster_risk_share": 0.527602,
+      "required_cluster_risk_share": 0.45,
+      "cash_redeploy_vol_reduction_pp": 9.35382,
+      "required_vol_reduction_pp": 5.0
+    }
+  },
+  "risk_attribution": {
+    "as_of": "2026-06-23",
+    "account": {
+      "account": "moomoo_futusg",
+      "portfolio_value_usd": 74133.3314,
+      "cash_usd": 9429.23,
+      "cash_weight": 0.127193,
+      "invested_market_value_priced": 61540.88,
+      "priced_position_count": 15,
+      "all_position_count": 17
+    },
+    "input_paths": {
+      "open_positions": "operator_inputs/open_positions.json",
+      "warehouse": "data/warehouse/warehouse_main.sqlite"
+    },
+    "field_coverage": {
+      "entry_date_present": 17,
+      "target_price_present": 17,
+      "market_val_present": 17,
+      "position_count": 17
+    },
+    "position_rows": [
+      {
+        "ticker": "AMZN",
+        "group": "core_positions",
+        "sleeve": "core_strategy",
+        "slot_policy": "consumes_core_slot",
+        "market_val": 925.04,
+        "entry_date": "2026-04-15",
+        "target_price_present": true
+      },
+      {
+        "ticker": "COHR",
+        "group": "core_positions",
+        "sleeve": "core_strategy",
+        "slot_policy": "consumes_core_slot",
+        "market_val": 7698.42,
+        "entry_date": "2026-05-12",
+        "target_price_present": true
+      },
+      {
+        "ticker": "MRVL",
+        "group": "core_positions",
+        "sleeve": "core_strategy",
+        "slot_policy": "consumes_core_slot",
+        "market_val": 6937.92,
+        "entry_date": "2026-06-02",
+        "target_price_present": true
+      },
+      {
+        "ticker": "AMD",
+        "group": "positions",
+        "sleeve": "discretionary",
+        "slot_policy": "no_core_slot",
+        "market_val": 3725.26,
+        "entry_date": "2025-02-04",
+        "target_price_present": true
+      },
+      {
+        "ticker": "CRDO",
+        "group": "positions",
+        "sleeve": "fomo",
+        "slot_policy": "no_core_slot",
+        "market_val": 4350.0,
+        "entry_date": "2026-06-12",
+        "target_price_present": true
+      },
+      {
+        "ticker": "GOOG",
+        "group": "positions",
+        "sleeve": "discretionary",
+        "slot_policy": "no_core_slot",
+        "market_val": 2058.18,
+        "entry_date": "2025-10-20",
+        "target_price_present": true
+      },
+      {
+        "ticker": "HOOD",
+        "group": "positions",
+        "sleeve": "alpha_score_market_regime",
+        "slot_policy": "no_core_slot",
+        "market_val": 3124.18,
+        "entry_date": "2026-06-18",
+        "target_price_present": true
+      },
+      {
+        "ticker": "MUU",
+        "group": "positions",
+        "sleeve": "fomo",
+        "slot_policy": "no_core_slot",
+        "market_val": 7714.0,
+        "entry_date": "2026-06-12",
+        "target_price_present": true
+      },
+      {
+        "ticker": "NBIS",
+        "group": "positions",
+        "sleeve": "fomo",
+        "slot_policy": "no_core_slot",
+        "market_val": 2645.0,
+        "entry_date": "2026-05-28",
+        "target_price_present": true
+      },
+      {
+        "ticker": "NVDA",
+        "group": "positions",
+        "sleeve": "discretionary",
+        "slot_policy": "no_core_slot",
+        "market_val": 6365.54,
+        "entry_date": "2026-04-02",
+        "target_price_present": true
+      },
+      {
+        "ticker": "RKLZ",
+        "group": "positions",
+        "sleeve": "lottery",
+        "slot_policy": "no_core_slot",
+        "market_val": 1650.0,
+        "entry_date": "2026-06-12",
+        "target_price_present": true
+      },
+      {
+        "ticker": "SPCX",
+        "group": "positions",
+        "sleeve": "fomo",
+        "slot_policy": "no_core_slot",
+        "market_val": 1520.2,
+        "entry_date": "2026-06-12",
+        "target_price_present": true
+      },
+      {
+        "ticker": "TRIP",
+        "group": "positions",
+        "sleeve": "mom",
+        "slot_policy": "no_core_slot",
+        "market_val": 2706.84,
+        "entry_date": "2026-02-26",
+        "target_price_present": true
+      },
+      {
+        "ticker": "TSLA",
+        "group": "positions",
+        "sleeve": "discretionary",
+        "slot_policy": "no_core_slot",
+        "market_val": 1988.0,
+        "entry_date": "2024-10-24",
+        "target_price_present": true
+      },
+      {
+        "ticker": "APP",
+        "group": "observations",
+        "sleeve": "legacy",
+        "slot_policy": "no_core_slot",
+        "market_val": 3693.28,
+        "entry_date": "2025-03-13",
+        "target_price_present": true
+      },
+      {
+        "ticker": "META",
+        "group": "observations",
+        "sleeve": "legacy",
+        "slot_policy": "no_core_slot",
+        "market_val": 5047.92,
+        "entry_date": "2025-01-31",
+        "target_price_present": true
+      },
+      {
+        "ticker": "NFLX",
+        "group": "observations",
+        "sleeve": "legacy",
+        "slot_policy": "no_core_slot",
+        "market_val": 2561.3,
+        "entry_date": "2026-04-02",
+        "target_price_present": true
+      }
+    ],
+    "priced_tickers": [
+      "AMD",
+      "AMZN",
+      "APP",
+      "COHR",
+      "CRDO",
+      "GOOG",
+      "HOOD",
+      "META",
+      "MRVL",
+      "MUU",
+      "NBIS",
+      "NFLX",
+      "NVDA",
+      "TRIP",
+      "TSLA"
+    ],
+    "dropped_tickers": [
+      {
+        "ticker": "RKLZ",
+        "reason": "missing_or_short_warehouse_history",
+        "history_rows": 0
+      },
+      {
+        "ticker": "SPCX",
+        "reason": "missing_or_short_warehouse_history",
+        "history_rows": 1
+      }
+    ],
+    "common_history": {
+      "start": "2025-05-12",
+      "end": "2026-06-12",
+      "price_dates": 274,
+      "return_dates": 273,
+      "min_history_days": 60
+    },
+    "portfolio_risk": {
+      "annualized_vol": 0.433626,
+      "trailing_annualized_return_proxy": 1.174404,
+      "trailing_sharpe_proxy": 2.708333,
+      "risk_model": "annualized covariance of daily log returns over common warehouse history",
+      "return_proxy_caveat": "Trailing realized return is biased by live winner selection; use vol/correlation/risk-share as the robust diagnostic."
+    },
+    "ai_semis_cluster": {
+      "predeclared_tickers": [
+        "AMD",
+        "COHR",
+        "CRDO",
+        "MRVL",
+        "NBIS",
+        "NVDA"
+      ],
+      "present_tickers": [
+        "AMD",
+        "COHR",
+        "CRDO",
+        "MRVL",
+        "NBIS",
+        "NVDA"
+      ],
+      "market_value_usd": 31722.14,
+      "account_weight": 0.427907,
+      "equity_book_weight": 0.515465,
+      "risk_share": 0.527602,
+      "avg_intra_cluster_corr": 0.402418,
+      "risk_share_threshold": 0.45,
+      "material_risk_concentration": true
+    },
+    "adjacent_non_cluster_corr_to_ai_semis": [
+      {
+        "ticker": "MUU",
+        "avg_corr_to_cluster": 0.43203,
+        "equity_book_weight": 0.125348,
+        "risk_share": 0.306807
+      },
+      {
+        "ticker": "HOOD",
+        "avg_corr_to_cluster": 0.372733,
+        "equity_book_weight": 0.050766,
+        "risk_share": 0.044932
+      },
+      {
+        "ticker": "TSLA",
+        "avg_corr_to_cluster": 0.306796,
+        "equity_book_weight": 0.032304,
+        "risk_share": 0.01727
+      },
+      {
+        "ticker": "AMZN",
+        "avg_corr_to_cluster": 0.262901,
+        "equity_book_weight": 0.015031,
+        "risk_share": 0.004599
+      },
+      {
+        "ticker": "APP",
+        "avg_corr_to_cluster": 0.262474,
+        "equity_book_weight": 0.060013,
+        "risk_share": 0.045226
+      },
+      {
+        "ticker": "META",
+        "avg_corr_to_cluster": 0.23802,
+        "equity_book_weight": 0.082025,
+        "risk_share": 0.027097
+      },
+      {
+        "ticker": "GOOG",
+        "avg_corr_to_cluster": 0.230339,
+        "equity_book_weight": 0.033444,
+        "risk_share": 0.00838
+      },
+      {
+        "ticker": "TRIP",
+        "avg_corr_to_cluster": 0.143722,
+        "equity_book_weight": 0.043984,
+        "risk_share": 0.014943
+      },
+      {
+        "ticker": "NFLX",
+        "avg_corr_to_cluster": 0.067145,
+        "equity_book_weight": 0.041619,
+        "risk_share": 0.003145
+      }
+    ],
+    "per_ticker_risk": [
+      {
+        "ticker": "MUU",
+        "market_val": 7714.0,
+        "account_weight": 0.104056,
+        "equity_book_weight": 0.125348,
+        "risk_share": 0.306807,
+        "annualized_vol": 1.323305,
+        "trailing_annualized_return_proxy": 3.816812,
+        "beta_spy": 5.684087,
+        "cluster_member": false
+      },
+      {
+        "ticker": "COHR",
+        "market_val": 7698.42,
+        "account_weight": 0.103846,
+        "equity_book_weight": 0.125094,
+        "risk_share": 0.148597,
+        "annualized_vol": 0.715085,
+        "trailing_annualized_return_proxy": 1.476522,
+        "beta_spy": 2.876003,
+        "cluster_member": true
+      },
+      {
+        "ticker": "MRVL",
+        "market_val": 6937.92,
+        "account_weight": 0.093587,
+        "equity_book_weight": 0.112737,
+        "risk_share": 0.116831,
+        "annualized_vol": 0.676746,
+        "trailing_annualized_return_proxy": 1.356694,
+        "beta_spy": 2.624083,
+        "cluster_member": true
+      },
+      {
+        "ticker": "CRDO",
+        "market_val": 4350.0,
+        "account_weight": 0.058678,
+        "equity_book_weight": 0.070685,
+        "risk_share": 0.091872,
+        "annualized_vol": 0.839442,
+        "trailing_annualized_return_proxy": 1.39679,
+        "beta_spy": 2.958886,
+        "cluster_member": true
+      },
+      {
+        "ticker": "AMD",
+        "market_val": 3725.26,
+        "account_weight": 0.050251,
+        "equity_book_weight": 0.060533,
+        "risk_share": 0.059345,
+        "annualized_vol": 0.637713,
+        "trailing_annualized_return_proxy": 1.434686,
+        "beta_spy": 2.783384,
+        "cluster_member": true
+      },
+      {
+        "ticker": "NVDA",
+        "market_val": 6365.54,
+        "account_weight": 0.085866,
+        "equity_book_weight": 0.103436,
+        "risk_share": 0.056706,
+        "annualized_vol": 0.348422,
+        "trailing_annualized_return_proxy": 0.472604,
+        "beta_spy": 1.835442,
+        "cluster_member": true
+      },
+      {
+        "ticker": "NBIS",
+        "market_val": 2645.0,
+        "account_weight": 0.035679,
+        "equity_book_weight": 0.04298,
+        "risk_share": 0.054251,
+        "annualized_vol": 0.975331,
+        "trailing_annualized_return_proxy": 1.792182,
+        "beta_spy": 3.025692,
+        "cluster_member": true
+      },
+      {
+        "ticker": "APP",
+        "market_val": 3693.28,
+        "account_weight": 0.049819,
+        "equity_book_weight": 0.060013,
+        "risk_share": 0.045226,
+        "annualized_vol": 0.709385,
+        "trailing_annualized_return_proxy": 0.328811,
+        "beta_spy": 2.173369,
+        "cluster_member": false
+      },
+      {
+        "ticker": "HOOD",
+        "market_val": 3124.18,
+        "account_weight": 0.042143,
+        "equity_book_weight": 0.050766,
+        "risk_share": 0.044932,
+        "annualized_vol": 0.676632,
+        "trailing_annualized_return_proxy": 0.446837,
+        "beta_spy": 3.146212,
+        "cluster_member": false
+      },
+      {
+        "ticker": "META",
+        "market_val": 5047.92,
+        "account_weight": 0.068092,
+        "equity_book_weight": 0.082025,
+        "risk_share": 0.027097,
+        "annualized_vol": 0.348301,
+        "trailing_annualized_return_proxy": -0.108128,
+        "beta_spy": 1.419726,
+        "cluster_member": false
+      },
+      {
+        "ticker": "TSLA",
+        "market_val": 1988.0,
+        "account_weight": 0.026817,
+        "equity_book_weight": 0.032304,
+        "risk_share": 0.01727,
+        "annualized_vol": 0.472114,
+        "trailing_annualized_return_proxy": 0.225384,
+        "beta_spy": 2.125735,
+        "cluster_member": false
+      },
+      {
+        "ticker": "TRIP",
+        "market_val": 2706.84,
+        "account_weight": 0.036513,
+        "equity_book_weight": 0.043984,
+        "risk_share": 0.014943,
+        "annualized_vol": 0.528062,
+        "trailing_annualized_return_proxy": -0.193246,
+        "beta_spy": 1.863192,
+        "cluster_member": false
+      },
+      {
+        "ticker": "GOOG",
+        "market_val": 2058.18,
+        "account_weight": 0.027763,
+        "equity_book_weight": 0.033444,
+        "risk_share": 0.00838,
+        "annualized_vol": 0.28112,
+        "trailing_annualized_return_proxy": 0.749433,
+        "beta_spy": 1.199872,
+        "cluster_member": false
+      },
+      {
+        "ticker": "AMZN",
+        "market_val": 925.04,
+        "account_weight": 0.012478,
+        "equity_book_weight": 0.015031,
+        "risk_share": 0.004599,
+        "annualized_vol": 0.294932,
+        "trailing_annualized_return_proxy": 0.123663,
+        "beta_spy": 1.407603,
+        "cluster_member": false
+      },
+      {
+        "ticker": "NFLX",
+        "market_val": 2561.3,
+        "account_weight": 0.03455,
+        "equity_book_weight": 0.041619,
+        "risk_share": 0.003145,
+        "annualized_vol": 0.323851,
+        "trailing_annualized_return_proxy": -0.298396,
+        "beta_spy": 0.347336,
+        "cluster_member": false
+      }
+    ],
+    "cluster_cap_counterfactual": {
+      "cluster_cap_equity_book_weight": 0.3,
+      "redeploy_excess_pro_rata_non_cluster": {
+        "annualized_vol_before": 0.433626,
+        "annualized_vol_after": 0.436072,
+        "annualized_vol_delta_pp": 0.244629,
+        "trailing_annualized_return_proxy_before": 1.174404,
+        "trailing_annualized_return_proxy_after": 1.136636,
+        "trailing_annualized_return_proxy_delta_pp": -3.776789,
+        "trailing_sharpe_proxy_before": 2.708333,
+        "trailing_sharpe_proxy_after": 2.606531
+      },
+      "redeploy_excess_to_cash": {
+        "annualized_vol_before": 0.433626,
+        "annualized_vol_after": 0.340088,
+        "annualized_vol_delta_pp": -9.35382,
+        "trailing_annualized_return_proxy_before": 1.174404,
+        "trailing_annualized_return_proxy_after": 0.903062,
+        "trailing_annualized_return_proxy_delta_pp": -27.134226,
+        "trailing_sharpe_proxy_before": 2.708333,
+        "trailing_sharpe_proxy_after": 2.655377,
+        "cash_weight_created": 0.215465
+      }
+    },
+    "observed_only_lead": true,
+    "observed_only_lead_basis": {
+      "cluster_risk_share": 0.527602,
+      "required_cluster_risk_share": 0.45,
+      "cash_redeploy_vol_reduction_pp": 9.35382,
+      "required_vol_reduction_pp": 5.0
+    }
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "trade_enabled": false,
+    "daily_snapshot_exposed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "parity_note": "Read-only current-book risk attribution. Any real cluster cap requires a separate shared policy and canonical Gate 1-4 test."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The current book risk surface is useful for risk attribution, but it cannot be accepted alpha because it is not a historical PIT policy replay and does not change before/after strategy metrics.",
+    "forbidden_near_neighbor_retry": "Do not directly cap AI/semis, tune the cap percentage, or reclassify adjacent tickers from this current-book snapshot alone.",
+    "new_evidence_required": "A retry needs a shared risk-allocation policy with canonical Gate 1-4 before/after windows, or forward/live risk outcomes under a predeclared cluster envelope.",
+    "outcome_summary": "AI/semis risk share 52.76%; observed-only lead=True; no strategy behavior changed."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260623_021_live_held_book_cluster_risk_attribution.py",
+    "data/experiments/exp-20260623-021/exp_20260623_021_live_held_book_cluster_risk_attribution.json",
+    "experiments/logs/exp-20260623-021.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "operator_inputs/open_positions.json",
+    "data/warehouse/warehouse_main.sqlite"
+  ],
+  "updated_at": "2026-06-23T17:11:05+00:00",
+  "risk_attribution_summary": {
+    "observed_only_lead": true,
+    "ai_semis_cluster": {
+      "predeclared_tickers": [
+        "AMD",
+        "COHR",
+        "CRDO",
+        "MRVL",
+        "NBIS",
+        "NVDA"
+      ],
+      "present_tickers": [
+        "AMD",
+        "COHR",
+        "CRDO",
+        "MRVL",
+        "NBIS",
+        "NVDA"
+      ],
+      "market_value_usd": 31722.14,
+      "account_weight": 0.427907,
+      "equity_book_weight": 0.515465,
+      "risk_share": 0.527602,
+      "avg_intra_cluster_corr": 0.402418,
+      "risk_share_threshold": 0.45,
+      "material_risk_concentration": true
+    },
+    "lead_basis": {
+      "cluster_risk_share": 0.527602,
+      "required_cluster_risk_share": 0.45,
+      "cash_redeploy_vol_reduction_pp": 9.35382,
+      "required_vol_reduction_pp": 5.0
+    },
+    "common_history": {
+      "start": "2025-05-12",
+      "end": "2026-06-12",
+      "price_dates": 274,
+      "return_dates": 273,
+      "min_history_days": 60
+    },
+    "top_risk_tickers": [
+      {
+        "ticker": "MUU",
+        "market_val": 7714.0,
+        "account_weight": 0.104056,
+        "equity_book_weight": 0.125348,
+        "risk_share": 0.306807,
+        "annualized_vol": 1.323305,
+        "trailing_annualized_return_proxy": 3.816812,
+        "beta_spy": 5.684087,
+        "cluster_member": false
+      },
+      {
+        "ticker": "COHR",
+        "market_val": 7698.42,
+        "account_weight": 0.103846,
+        "equity_book_weight": 0.125094,
+        "risk_share": 0.148597,
+        "annualized_vol": 0.715085,
+        "trailing_annualized_return_proxy": 1.476522,
+        "beta_spy": 2.876003,
+        "cluster_member": true
+      },
+      {
+        "ticker": "MRVL",
+        "market_val": 6937.92,
+        "account_weight": 0.093587,
+        "equity_book_weight": 0.112737,
+        "risk_share": 0.116831,
+        "annualized_vol": 0.676746,
+        "trailing_annualized_return_proxy": 1.356694,
+        "beta_spy": 2.624083,
+        "cluster_member": true
+      },
+      {
+        "ticker": "CRDO",
+        "market_val": 4350.0,
+        "account_weight": 0.058678,
+        "equity_book_weight": 0.070685,
+        "risk_share": 0.091872,
+        "annualized_vol": 0.839442,
+        "trailing_annualized_return_proxy": 1.39679,
+        "beta_spy": 2.958886,
+        "cluster_member": true
+      },
+      {
+        "ticker": "AMD",
+        "market_val": 3725.26,
+        "account_weight": 0.050251,
+        "equity_book_weight": 0.060533,
+        "risk_share": 0.059345,
+        "annualized_vol": 0.637713,
+        "trailing_annualized_return_proxy": 1.434686,
+        "beta_spy": 2.783384,
+        "cluster_member": true
+      }
+    ]
+  }
+}

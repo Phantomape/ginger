@@ -1,0 +1,459 @@
+{
+  "acceptance_rule": "Fixed-entry diagnostic must improve aggregate PnL/EV and at least two canonical windows without worsening concentration; positive result is a lead only until implemented as shared production/backtest exit policy.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260623_022_regime_conditional_chop_trailing_exit.py",
+    "data/experiments/exp-20260623-022/exp_20260623_022_regime_conditional_chop_trailing_exit.json",
+    "experiments/cards/exp-20260623-022.md",
+    "experiments/manifests/exp-20260623-022.json",
+    "experiments/tickets/exp-20260623-022.json",
+    "experiments/logs/exp-20260623-022.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260623-022.md",
+  "causal_components": [
+    "fixed baseline entries",
+    "shared regime_chop_state entry tag",
+    "ATR trail only in choppy_range",
+    "static stop/target elsewhere",
+    "canonical three-window fixed-entry replay",
+    "observed-only parity boundary"
+  ],
+  "change_type": "exit_policy_replay_scout",
+  "changed_variable": "regime_conditional_chop_only_atr_trailing_exit_v1",
+  "claimed_at": "2026-06-23T18:04:50+00:00",
+  "completed_at": "2026-06-23T18:11:22+00:00",
+  "created_at": "2026-06-23T18:04:40+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260623-022",
+  "experiment_uid": "expuid-2fad297461264dc9",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260623-022",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-23T18:04:40+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "regime_conditional_chop_trailing_exit"
+  },
+  "hypothesis": "Exit/risk allocation hypothesis: fixed-entry ATR trailing may only add value when entry-time shared regime_chop_state labels the market as choppy_range; in risk_on/risk_off trend regimes the current static entry stop and target should remain unchanged to avoid cutting winners.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "regime_conditional_chop_only_atr_trailing_exit_v1"
+  ],
+  "mechanism_family": "exit_policy",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260623-020",
+    "exp-20260623-003",
+    "exp-20260622-017",
+    "exp-20260503-009"
+  ],
+  "new_evidence_type": "new_gate_shape_shared_regime_chop_state",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "regime_state",
+      "field_tags": [
+        "add",
+        "allocation",
+        "as",
+        "atr",
+        "avoid",
+        "chop",
+        "choppy",
+        "conditional",
+        "current",
+        "cutting",
+        "entry",
+        "exit",
+        "hypothesis",
+        "in",
+        "labels",
+        "market",
+        "may",
+        "on",
+        "only",
+        "policy",
+        "range",
+        "regime",
+        "regimes",
+        "remain",
+        "risk",
+        "should",
+        "state",
+        "static",
+        "stop",
+        "target",
+        "time",
+        "to",
+        "trailing",
+        "trend",
+        "unchanged",
+        "value",
+        "when",
+        "winners"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "entry_state_rs20_regime_scoped_allocation",
+        "reopen_condition": "Do not retry nearby RS20 regime-scope variants unless a forward or event/news discriminator shows defensive/non-risk-on RS20 leaders have different replacement value.",
+        "score": 0.4881,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "market_state_family_replacement_value_attribution",
+        "reopen_condition": null,
+        "score": 0.4856,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "free_ohlcv_intraindustry_liquidity_leader_lead_lag_candidate_pool",
+        "reopen_condition": "Do not retry this same frozen-window regime re-slice by changing risk_off/chop/on labels or probability thresholds. A valid next step needs closed forward replacement-value rows tagged with entry-time regime, a shared default-off daily/backtest adapter for the source, or a materially different relation provenance such as customer/supplier links or a non-OHLCV relation graph.",
+        "score": 0.4848,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "pit_regime_soft_chop_down_tilt",
+        "reopen_condition": "Retry only after a shared daily regime artifact has accumulated enough closed forward replacement-value rows in choppy_range, or after a materially different PIT chop discriminator is available.",
+        "score": 0.4848,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "market_state_sleeve_replacement_value_attribution",
+        "reopen_condition": null,
+        "score": 0.4786,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape: ATR trailing is applied only when the existing shared PIT entry-time regime_chop_state labels choppy_range; this is not a trail trigger/offset sweep and was named as the valid reopen condition in exp-20260623-020.",
+    "override": true,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "regime_state",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.16,
+    "expected_ev_delta": 0.05,
+    "expected_pnl_delta": 2000.0,
+    "main_failure_modes": [
+      "trailing_still_cuts_winners",
+      "chop_label_not_exit_predictive",
+      "too_few_choppy_trades",
+      "fixed_entry_not_portfolio_replay"
+    ],
+    "confidence_reason": "exp-20260623-020 rejected flat ATR trailing because it cut trend winners, but its closeout explicitly left regime-conditional trailing open as a different mechanism. exp-20260622-017 provides the shared PIT regime_chop_state tag for core trades; success odds remain low because exit-policy families have repeatedly failed and fixed-entry evidence is not production parity.",
+    "recorded_at": "2026-06-23T18:04:25+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "rejected_regime_conditional_trailing_exit_scout",
+    "artifact": "data/experiments/exp-20260623-022/exp_20260623_022_regime_conditional_chop_trailing_exit.json",
+    "log": "experiments/logs/exp-20260623-022.json",
+    "runner": "quant/experiments/exp_20260623_022_regime_conditional_chop_trailing_exit.py",
+    "gate4": {
+      "passed": false,
+      "observed_only_lead": false,
+      "decision": "rejected_regime_conditional_trailing_exit_scout",
+      "failed_reasons": [
+        "aggregate_pnl_delta_not_positive",
+        "fewer_than_two_windows_improved",
+        "window_pnl_regression",
+        "positive_delta_concentration_failed",
+        "fixed_entry_replay_not_shared_production_policy",
+        "full_strategy_ev_and_drawdown_not_recomputed"
+      ],
+      "acceptance_checks": {
+        "aggregate_delta_pnl_positive": false,
+        "windows_improved": 1,
+        "windows_regressed": 2,
+        "affected_choppy_trade_count": 6,
+        "trail_activated_trade_count": 4,
+        "positive_delta_concentration": {
+          "positive_delta_sum": 29.18,
+          "max_single_positive_delta_share": 1.0,
+          "positive_delta_hhi": 1.0,
+          "top_positive_delta_tickers": [
+            {
+              "ticker": "META",
+              "delta_pnl": 29.18,
+              "share": 1.0
+            }
+          ],
+          "passed": false
+        }
+      },
+      "before_after_strategy_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "max_drawdown_pct": 0.0
+      },
+      "lead_limitations": [
+        "Fixed-entry replay only; not a full strategy cash/slot/addon replay.",
+        "No shared production/backtest exit helper was implemented.",
+        "Full strategy EV and drawdown were not recomputed."
+      ]
+    },
+    "calibration": {
+      "predicted_success_probability": 0.16,
+      "actual_success": false,
+      "brier_score": 0.0256,
+      "predicted_failure_modes": [
+        "trailing_still_cuts_winners",
+        "chop_label_not_exit_predictive",
+        "too_few_choppy_trades",
+        "fixed_entry_not_portfolio_replay"
+      ],
+      "failed_reasons": [
+        "aggregate_pnl_delta_not_positive",
+        "fewer_than_two_windows_improved",
+        "window_pnl_regression",
+        "positive_delta_concentration_failed",
+        "fixed_entry_replay_not_shared_production_policy",
+        "full_strategy_ev_and_drawdown_not_recomputed"
+      ],
+      "predicted_failure_modes_hit": [
+        "trailing_still_cuts_winners",
+        "chop_label_not_exit_predictive",
+        "fixed_entry_not_portfolio_replay"
+      ]
+    },
+    "summary": "The shared entry-time chop label did not rescue ATR trailing. The conditional rule either had too few activations or failed the aggregate/window/concentration checks, while the replay remains fixed-entry only."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260623-022.json",
+  "single_causal_variable": "regime_conditional_chop_only_atr_trailing_exit_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260623-022.json",
+  "trial_family": "regime_conditional_trailing_stop",
+  "trial_variant_id": "entry_regime_chop_atr_trail_static_elsewhere_v1",
+  "implementation_mode": "fixed_entry_replay_scout",
+  "new_evidence_axis": "ATR trailing is applied only when the existing shared PIT entry-time regime_chop_state labels choppy_range. This is not a trail trigger/offset sweep and was named as the valid reopen condition in exp-20260623-020.",
+  "decision": "rejected_regime_conditional_trailing_exit_scout",
+  "artifact": "data/experiments/exp-20260623-022/exp_20260623_022_regime_conditional_chop_trailing_exit.json",
+  "log": "experiments/logs/exp-20260623-022.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "fixed_entry_total_pnl_delta": -8948.91,
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "baseline_protocol_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "total_trade_count": 61,
+      "min_survival_rate": 0.7925,
+      "max_window_drawdown_pct": 0.1119,
+      "windows": {
+        "late_strong": {
+          "expected_value_score": 5.1628,
+          "max_drawdown_pct": 0.0665,
+          "sharpe_daily": 4.41,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "strategy_total_return_pct": 1.1707,
+          "survival_rate": 0.8039,
+          "total_pnl": 117072.92,
+          "trade_count": 18,
+          "win_rate": 0.8333
+        },
+        "mid_weak": {
+          "expected_value_score": 2.1402,
+          "max_drawdown_pct": 0.1119,
+          "sharpe_daily": 2.74,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "strategy_total_return_pct": 0.7811,
+          "survival_rate": 0.7925,
+          "total_pnl": 78110.11,
+          "trade_count": 21,
+          "win_rate": 0.5238
+        },
+        "old_thin": {
+          "expected_value_score": 0.5911,
+          "max_drawdown_pct": 0.1001,
+          "sharpe_daily": 1.49,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "strategy_total_return_pct": 0.3967,
+          "survival_rate": 0.8667,
+          "total_pnl": 39667.96,
+          "trade_count": 22,
+          "win_rate": 0.4091
+        }
+      }
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields_checked": [
+      "entry_date",
+      "target_price reconstructed from stop_price and target_mult_used",
+      "stop_price",
+      "shares",
+      "ticker OHLCV",
+      "SPY OHLCV",
+      "regime_chop_state"
+    ],
+    "target_price_note": "Canonical closed trade rows do not store target_price; the runner reconstructs it from entry_price, stop_price, ATR_STOP_MULT, and target_mult_used for fixed-entry replay."
+  },
+  "gate3": {
+    "passed": true,
+    "new_core_filter_added": false,
+    "baseline_min_survival_rate": 0.7925,
+    "note": "No entry filter, ranking, sizing, candidate generation, or production exit rule changed."
+  },
+  "gate4": {
+    "passed": false,
+    "observed_only_lead": false,
+    "decision": "rejected_regime_conditional_trailing_exit_scout",
+    "failed_reasons": [
+      "aggregate_pnl_delta_not_positive",
+      "fewer_than_two_windows_improved",
+      "window_pnl_regression",
+      "positive_delta_concentration_failed",
+      "fixed_entry_replay_not_shared_production_policy",
+      "full_strategy_ev_and_drawdown_not_recomputed"
+    ],
+    "acceptance_checks": {
+      "aggregate_delta_pnl_positive": false,
+      "windows_improved": 1,
+      "windows_regressed": 2,
+      "affected_choppy_trade_count": 6,
+      "trail_activated_trade_count": 4,
+      "positive_delta_concentration": {
+        "positive_delta_sum": 29.18,
+        "max_single_positive_delta_share": 1.0,
+        "positive_delta_hhi": 1.0,
+        "top_positive_delta_tickers": [
+          {
+            "ticker": "META",
+            "delta_pnl": 29.18,
+            "share": 1.0
+          }
+        ],
+        "passed": false
+      }
+    },
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "max_drawdown_pct": 0.0
+    },
+    "lead_limitations": [
+      "Fixed-entry replay only; not a full strategy cash/slot/addon replay.",
+      "No shared production/backtest exit helper was implemented.",
+      "Full strategy EV and drawdown were not recomputed."
+    ]
+  },
+  "analysis_summary": {
+    "trade_count": 61,
+    "affected_choppy_trade_count": 6,
+    "trail_activated_trade_count": 4,
+    "affected_addon_trade_count": 1,
+    "baseline_total_pnl": 234850.99,
+    "after_total_pnl": 225902.08,
+    "delta_pnl": -8948.91,
+    "affected_delta_summary": {
+      "n": 6,
+      "sum": -8948.91,
+      "mean": -1491.48,
+      "median": -963.74,
+      "positive_rate": 0.1667
+    },
+    "trail_active_delta_summary": {
+      "n": 4,
+      "sum": -8946.73,
+      "mean": -2236.68,
+      "median": -2124.09,
+      "positive_rate": 0.25
+    },
+    "windows_improved": 1,
+    "windows_regressed": 2,
+    "positive_delta_concentration": {
+      "positive_delta_sum": 29.18,
+      "max_single_positive_delta_share": 1.0,
+      "positive_delta_hhi": 1.0,
+      "top_positive_delta_tickers": [
+        {
+          "ticker": "META",
+          "delta_pnl": 29.18,
+          "share": 1.0
+        }
+      ],
+      "passed": false
+    },
+    "regime_counts": {
+      "risk_off_stress": 4,
+      "risk_on_trend": 51,
+      "choppy_range": 6
+    }
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "orders_changed": false,
+    "daily_snapshot_exposed": false,
+    "replay_only": true,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "parity_note": "This runner is a fixed-entry diagnostic. A positive result would require a separate shared production/backtest exit policy and canonical Gate 1-4 before retention."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The shared entry-time chop label did not rescue ATR trailing. The conditional rule either had too few activations or failed the aggregate/window/concentration checks, while the replay remains fixed-entry only.",
+    "forbidden_near_neighbor_retry": "Do not retry ATR trailing by sweeping trigger/offset, choppy_range probability thresholds, static-vs-trailing toggles, MFE giveback thresholds, or target trims on these same canonical windows.",
+    "new_evidence_required": "A valid retry needs a shared exit lifecycle policy tested through full strategy Gate 1-4, or materially new forward live giveback rows with slot-reuse and winner-collateral accounting."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260623_022_regime_conditional_chop_trailing_exit.py",
+    "data/experiments/exp-20260623-022/exp_20260623_022_regime_conditional_chop_trailing_exit.json",
+    "experiments/logs/exp-20260623-022.json",
+    "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "experiments/logs/exp-20260623-020.json",
+    "experiments/logs/exp-20260622-017.json",
+    "experiments/logs/exp-20260623-003.json"
+  ],
+  "updated_at": "2026-06-23T18:11:22+00:00"
+}

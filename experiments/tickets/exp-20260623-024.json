@@ -1,0 +1,1183 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260623_024_non_ohlcv_attention_confluence.py",
+    "data/experiments/exp-20260623-024/exp_20260623_024_non_ohlcv_attention_confluence.json",
+    "experiments/cards/exp-20260623-024.md",
+    "experiments/manifests/exp-20260623-024.json",
+    "experiments/tickets/exp-20260623-024.json",
+    "experiments/logs/exp-20260623-024.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260623-024.md",
+  "causal_components": [
+    "historical replay",
+    "source confluence attribution",
+    "execution envelope",
+    "observed-only verdict"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "non_ohlcv_cross_source_attention_confluence_candidate_pool_v1",
+  "claimed_at": "2026-06-23T20:05:59+00:00",
+  "completed_at": "2026-06-23T20:15:23+00:00",
+  "created_at": "2026-06-23T20:05:52+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260623-024",
+  "experiment_uid": "expuid-53654950b8874023",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260623-024",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-23T20:05:52+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "non_ohlcv_attention_confluence"
+  },
+  "hypothesis": "Production-visible non-OHLCV cross-source attention confluence where a ticker has same usable-trade-date Form 4 activity plus SEC filing event/text coverage and fixed same-day liquid price confirmation may identify better next-10-trading-day replacement value than single-source event days.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "non_ohlcv_cross_source_attention_confluence_candidate_pool_v1"
+  ],
+  "mechanism_family": "production_visible_non_ohlcv_cross_source_attention_candidate_pool",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260623-008",
+    "exp-20260621-016",
+    "exp-20260620-004"
+  ],
+  "new_evidence_type": "cross_source_non_ohlcv_attention_confluence",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "activity",
+        "attention",
+        "better",
+        "confirmation",
+        "confluence",
+        "coverage",
+        "cross",
+        "date",
+        "event",
+        "filing",
+        "form",
+        "has",
+        "identify",
+        "liquid",
+        "may",
+        "non",
+        "observed",
+        "only",
+        "plus",
+        "price",
+        "replacement",
+        "same",
+        "single",
+        "text",
+        "than",
+        "ticker",
+        "trade",
+        "trading",
+        "usable",
+        "value",
+        "where"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_text_peer_theme_propagation_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.1824,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "non_ohlcv_options_structure_overlay",
+        "reopen_condition": null,
+        "score": 0.1786,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "delayed_sec_filing_confirmation_candidate_pool",
+        "reopen_condition": "A retry needs richer PIT semantics such as named customer, supplier, contract value/duration, parsed filing surprise, or closed forward replacement-value data.",
+        "score": 0.1742,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "same_day_sector_cap_candidate_replacement",
+        "reopen_condition": null,
+        "score": 0.1735,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_iwm_same_ticker_cooldown_candidate_pool",
+        "reopen_condition": "Closed forward replacement-value rows, cash/core displacement comparison, concentration and kill-gate monitoring before any live activation review.",
+        "score": 0.1729,
+        "status": "has_accepted",
+        "trials": 2
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "sec_form4_sources_saturated",
+      "sample_too_thin",
+      "not_incremental_vs_price_momentum",
+      "concentration_failed"
+    ],
+    "confidence_reason": "Novelty gate does not find a strong near-neighbor because this tests cross-source non-OHLCV attention confluence rather than a single SEC text, Form4, options, or short-volume threshold. Mechanism is that independent regulatory attention channels plus same-day price confirmation may separate real information shocks from routine filings; risk is high because SEC text and Form4 sources are individually saturated and may only add noisy attention labels.",
+    "recorded_at": "2026-06-23T20:05:37+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": true,
+    "decision": "observed_only_positive_non_ohlcv_confluence_lead_not_promoted",
+    "artifact": "data/experiments/exp-20260623-024/exp_20260623_024_non_ohlcv_attention_confluence.json",
+    "log": "experiments/logs/exp-20260623-024.json",
+    "runner": "quant/experiments/exp_20260623_024_non_ohlcv_attention_confluence.py",
+    "attribution": {
+      "n_source_rows": 3441,
+      "n_outcome_rows": 862,
+      "by_bucket": {
+        "confluence": {
+          "n": 30,
+          "distinct_tickers": 21,
+          "max_single_ticker_row_share": 0.0667,
+          "top_tickers": [
+            {
+              "ticker": "APP",
+              "rows": 2,
+              "row_share": 0.0667
+            },
+            {
+              "ticker": "AVGO",
+              "rows": 2,
+              "row_share": 0.0667
+            },
+            {
+              "ticker": "V",
+              "rows": 2,
+              "row_share": 0.0667
+            },
+            {
+              "ticker": "SNOW",
+              "rows": 2,
+              "row_share": 0.0667
+            },
+            {
+              "ticker": "META",
+              "rows": 2,
+              "row_share": 0.0667
+            },
+            {
+              "ticker": "ISRG",
+              "rows": 2,
+              "row_share": 0.0667
+            },
+            {
+              "ticker": "CVX",
+              "rows": 2,
+              "row_share": 0.0667
+            },
+            {
+              "ticker": "MCD",
+              "rows": 2,
+              "row_share": 0.0667
+            },
+            {
+              "ticker": "LITE",
+              "rows": 2,
+              "row_share": 0.0667
+            },
+            {
+              "ticker": "LLY",
+              "rows": 1,
+              "row_share": 0.0333
+            }
+          ],
+          "total_replacement_value_vs_cash_usd": 2439.01,
+          "mean_replacement_value_vs_cash_usd": 81.3,
+          "median_replacement_value_vs_cash_usd": 87.72,
+          "win_rate_vs_cash": 0.6,
+          "total_replacement_value_vs_spy_usd": 2596.9,
+          "mean_replacement_value_vs_spy_usd": 86.56,
+          "median_replacement_value_vs_spy_usd": 74.56,
+          "win_rate_vs_spy": 0.5667,
+          "total_replacement_value_vs_qqq_usd": 2747.04,
+          "mean_replacement_value_vs_qqq_usd": 91.57,
+          "median_replacement_value_vs_qqq_usd": 50.78,
+          "win_rate_vs_qqq": 0.6,
+          "mean_same_day_return_excess_spy": 0.044953
+        },
+        "form4_only": {
+          "n": 634,
+          "distinct_tickers": 38,
+          "max_single_ticker_row_share": 0.0836,
+          "top_tickers": [
+            {
+              "ticker": "META",
+              "rows": 53,
+              "row_share": 0.0836
+            },
+            {
+              "ticker": "CRDO",
+              "rows": 38,
+              "row_share": 0.0599
+            },
+            {
+              "ticker": "LLY",
+              "rows": 35,
+              "row_share": 0.0552
+            },
+            {
+              "ticker": "DDOG",
+              "rows": 34,
+              "row_share": 0.0536
+            },
+            {
+              "ticker": "NFLX",
+              "rows": 32,
+              "row_share": 0.0505
+            },
+            {
+              "ticker": "NVDA",
+              "rows": 28,
+              "row_share": 0.0442
+            },
+            {
+              "ticker": "SNOW",
+              "rows": 28,
+              "row_share": 0.0442
+            },
+            {
+              "ticker": "PLTR",
+              "rows": 26,
+              "row_share": 0.041
+            },
+            {
+              "ticker": "COIN",
+              "rows": 26,
+              "row_share": 0.041
+            },
+            {
+              "ticker": "CAT",
+              "rows": 24,
+              "row_share": 0.0379
+            }
+          ],
+          "total_replacement_value_vs_cash_usd": 15082.34,
+          "mean_replacement_value_vs_cash_usd": 23.79,
+          "median_replacement_value_vs_cash_usd": 2.94,
+          "win_rate_vs_cash": 0.5063,
+          "total_replacement_value_vs_spy_usd": 22593.64,
+          "mean_replacement_value_vs_spy_usd": 35.64,
+          "median_replacement_value_vs_spy_usd": 11.5,
+          "win_rate_vs_spy": 0.5189,
+          "total_replacement_value_vs_qqq_usd": 20372.61,
+          "mean_replacement_value_vs_qqq_usd": 32.13,
+          "median_replacement_value_vs_qqq_usd": 1.67,
+          "win_rate_vs_qqq": 0.5032,
+          "mean_same_day_return_excess_spy": 0.022205
+        },
+        "sec_only": {
+          "n": 198,
+          "distinct_tickers": 37,
+          "max_single_ticker_row_share": 0.0707,
+          "top_tickers": [
+            {
+              "ticker": "XOM",
+              "rows": 14,
+              "row_share": 0.0707
+            },
+            {
+              "ticker": "JPM",
+              "rows": 11,
+              "row_share": 0.0556
+            },
+            {
+              "ticker": "CVX",
+              "rows": 11,
+              "row_share": 0.0556
+            },
+            {
+              "ticker": "DIS",
+              "rows": 10,
+              "row_share": 0.0505
+            },
+            {
+              "ticker": "GS",
+              "rows": 9,
+              "row_share": 0.0455
+            },
+            {
+              "ticker": "TSLA",
+              "rows": 9,
+              "row_share": 0.0455
+            },
+            {
+              "ticker": "DE",
+              "rows": 9,
+              "row_share": 0.0455
+            },
+            {
+              "ticker": "AVGO",
+              "rows": 9,
+              "row_share": 0.0455
+            },
+            {
+              "ticker": "V",
+              "rows": 8,
+              "row_share": 0.0404
+            },
+            {
+              "ticker": "UNH",
+              "rows": 8,
+              "row_share": 0.0404
+            }
+          ],
+          "total_replacement_value_vs_cash_usd": -4419.68,
+          "mean_replacement_value_vs_cash_usd": -22.32,
+          "median_replacement_value_vs_cash_usd": -18.77,
+          "win_rate_vs_cash": 0.4545,
+          "total_replacement_value_vs_spy_usd": -3380.86,
+          "mean_replacement_value_vs_spy_usd": -17.08,
+          "median_replacement_value_vs_spy_usd": -3.74,
+          "win_rate_vs_spy": 0.4899,
+          "total_replacement_value_vs_qqq_usd": -3894.07,
+          "mean_replacement_value_vs_qqq_usd": -19.67,
+          "median_replacement_value_vs_qqq_usd": -6.34,
+          "win_rate_vs_qqq": 0.4798,
+          "mean_same_day_return_excess_spy": 0.033273
+        },
+        "any_single_source": {
+          "n": 832,
+          "distinct_tickers": 39,
+          "max_single_ticker_row_share": 0.0661,
+          "top_tickers": [
+            {
+              "ticker": "META",
+              "rows": 55,
+              "row_share": 0.0661
+            },
+            {
+              "ticker": "CRDO",
+              "rows": 42,
+              "row_share": 0.0505
+            },
+            {
+              "ticker": "LLY",
+              "rows": 38,
+              "row_share": 0.0457
+            },
+            {
+              "ticker": "NFLX",
+              "rows": 37,
+              "row_share": 0.0445
+            },
+            {
+              "ticker": "DDOG",
+              "rows": 37,
+              "row_share": 0.0445
+            },
+            {
+              "ticker": "SNOW",
+              "rows": 33,
+              "row_share": 0.0397
+            },
+            {
+              "ticker": "PLTR",
+              "rows": 31,
+              "row_share": 0.0373
+            },
+            {
+              "ticker": "COIN",
+              "rows": 30,
+              "row_share": 0.0361
+            },
+            {
+              "ticker": "NVDA",
+              "rows": 29,
+              "row_share": 0.0349
+            },
+            {
+              "ticker": "CAT",
+              "rows": 27,
+              "row_share": 0.0325
+            }
+          ],
+          "total_replacement_value_vs_cash_usd": 10662.66,
+          "mean_replacement_value_vs_cash_usd": 12.82,
+          "median_replacement_value_vs_cash_usd": -1.96,
+          "win_rate_vs_cash": 0.494,
+          "total_replacement_value_vs_spy_usd": 19212.78,
+          "mean_replacement_value_vs_spy_usd": 23.09,
+          "median_replacement_value_vs_spy_usd": 6.04,
+          "win_rate_vs_spy": 0.512,
+          "total_replacement_value_vs_qqq_usd": 16478.54,
+          "mean_replacement_value_vs_qqq_usd": 19.81,
+          "median_replacement_value_vs_qqq_usd": -2.03,
+          "win_rate_vs_qqq": 0.4976,
+          "mean_same_day_return_excess_spy": 0.024839
+        }
+      }
+    },
+    "gate4": {
+      "observed_only_lead": true,
+      "failed_reasons": [],
+      "acceptance_checks": {
+        "min_confluence_rows_passed": true,
+        "confluence_distinct_tickers_passed": true,
+        "confluence_concentration_passed": true,
+        "confluence_total_cash_positive": true,
+        "confluence_mean_cash_positive": true,
+        "confluence_total_spy_positive": true,
+        "confluence_mean_spy_positive": true,
+        "confluence_total_qqq_positive": true,
+        "confluence_mean_qqq_positive": true,
+        "mean_cash_beats_single_source": true,
+        "median_cash_beats_single_source": true,
+        "positive_confluence_window_count": 3,
+        "positive_confluence_windows_passed": true,
+        "per_window_confluence": {
+          "old_thin": {
+            "n": 8,
+            "distinct_tickers": 7,
+            "max_single_ticker_row_share": 0.25,
+            "top_tickers": [
+              {
+                "ticker": "APP",
+                "rows": 2,
+                "row_share": 0.25
+              },
+              {
+                "ticker": "AVGO",
+                "rows": 1,
+                "row_share": 0.125
+              },
+              {
+                "ticker": "V",
+                "rows": 1,
+                "row_share": 0.125
+              },
+              {
+                "ticker": "LLY",
+                "rows": 1,
+                "row_share": 0.125
+              },
+              {
+                "ticker": "MA",
+                "rows": 1,
+                "row_share": 0.125
+              },
+              {
+                "ticker": "SNOW",
+                "rows": 1,
+                "row_share": 0.125
+              },
+              {
+                "ticker": "CRDO",
+                "rows": 1,
+                "row_share": 0.125
+              }
+            ],
+            "total_replacement_value_vs_cash_usd": 715.09,
+            "mean_replacement_value_vs_cash_usd": 89.39,
+            "median_replacement_value_vs_cash_usd": 111.14,
+            "win_rate_vs_cash": 0.625,
+            "total_replacement_value_vs_spy_usd": 1194.72,
+            "mean_replacement_value_vs_spy_usd": 149.34,
+            "median_replacement_value_vs_spy_usd": 145.82,
+            "win_rate_vs_spy": 0.625,
+            "total_replacement_value_vs_qqq_usd": 1321.17,
+            "mean_replacement_value_vs_qqq_usd": 165.15,
+            "median_replacement_value_vs_qqq_usd": 109.8,
+            "win_rate_vs_qqq": 0.625,
+            "mean_same_day_return_excess_spy": 0.083242
+          },
+          "mid_weak": {
+            "n": 9,
+            "distinct_tickers": 9,
+            "max_single_ticker_row_share": 0.1111,
+            "top_tickers": [
+              {
+                "ticker": "META",
+                "rows": 1,
+                "row_share": 0.1111
+              },
+              {
+                "ticker": "ISRG",
+                "rows": 1,
+                "row_share": 0.1111
+              },
+              {
+                "ticker": "RTX",
+                "rows": 1,
+                "row_share": 0.1111
+              },
+              {
+                "ticker": "COIN",
+                "rows": 1,
+                "row_share": 0.1111
+              },
+              {
+                "ticker": "CVX",
+                "rows": 1,
+                "row_share": 0.1111
+              },
+              {
+                "ticker": "TSLA",
+                "rows": 1,
+                "row_share": 0.1111
+              },
+              {
+                "ticker": "AVGO",
+                "rows": 1,
+                "row_share": 0.1111
+              },
+              {
+                "ticker": "MCD",
+                "rows": 1,
+                "row_share": 0.1111
+              },
+              {
+                "ticker": "CAT",
+                "rows": 1,
+                "row_share": 0.1111
+              }
+            ],
+            "total_replacement_value_vs_cash_usd": 1392.81,
+            "mean_replacement_value_vs_cash_usd": 154.76,
+            "median_replacement_value_vs_cash_usd": 188.9,
+            "win_rate_vs_cash": 0.7778,
+            "total_replacement_value_vs_spy_usd": 537.73,
+            "mean_replacement_value_vs_spy_usd": 59.75,
+            "median_replacement_value_vs_spy_usd": 71.51,
+            "win_rate_vs_spy": 0.6667,
+            "total_replacement_value_vs_qqq_usd": 268.43,
+            "mean_replacement_value_vs_qqq_usd": 29.83,
+            "median_replacement_value_vs_qqq_usd": 27.64,
+            "win_rate_vs_qqq": 0.5556,
+            "mean_same_day_return_excess_spy": 0.016574
+          },
+          "late_strong": {
+            "n": 13,
+            "distinct_tickers": 12,
+            "max_single_ticker_row_share": 0.1538,
+            "top_tickers": [
+              {
+                "ticker": "LITE",
+                "rows": 2,
+                "row_share": 0.1538
+              },
+              {
+                "ticker": "NFLX",
+                "rows": 1,
+                "row_share": 0.0769
+              },
+              {
+                "ticker": "CVX",
+                "rows": 1,
+                "row_share": 0.0769
+              },
+              {
+                "ticker": "AMD",
+                "rows": 1,
+                "row_share": 0.0769
+              },
+              {
+                "ticker": "MU",
+                "rows": 1,
+                "row_share": 0.0769
+              },
+              {
+                "ticker": "META",
+                "rows": 1,
+                "row_share": 0.0769
+              },
+              {
+                "ticker": "V",
+                "rows": 1,
+                "row_share": 0.0769
+              },
+              {
+                "ticker": "MCD",
+                "rows": 1,
+                "row_share": 0.0769
+              },
+              {
+                "ticker": "NOW",
+                "rows": 1,
+                "row_share": 0.0769
+              },
+              {
+                "ticker": "DDOG",
+                "rows": 1,
+                "row_share": 0.0769
+              }
+            ],
+            "total_replacement_value_vs_cash_usd": 331.11,
+            "mean_replacement_value_vs_cash_usd": 25.47,
+            "median_replacement_value_vs_cash_usd": -106.71,
+            "win_rate_vs_cash": 0.4615,
+            "total_replacement_value_vs_spy_usd": 864.45,
+            "mean_replacement_value_vs_spy_usd": 66.5,
+            "median_replacement_value_vs_spy_usd": -27.93,
+            "win_rate_vs_spy": 0.4615,
+            "total_replacement_value_vs_qqq_usd": 1157.44,
+            "mean_replacement_value_vs_qqq_usd": 89.03,
+            "median_replacement_value_vs_qqq_usd": 57.16,
+            "win_rate_vs_qqq": 0.6154,
+            "mean_same_day_return_excess_spy": 0.041037
+          }
+        }
+      },
+      "decision": "observed_only_positive_non_ohlcv_confluence_lead_not_promoted",
+      "strategy_rerun_required": false,
+      "before_after_strategy_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "max_drawdown_pct": 0.0
+      },
+      "lead_limitations": [
+        "Observed-only, not shared-paper-first.",
+        "No shared helper or daily default-off snapshot promoted.",
+        "Confluence uses replayable public-PIT proxies, not proof of live observation."
+      ]
+    },
+    "calibration": {
+      "actual_success": 1,
+      "actual_decision": "observed_only_positive_non_ohlcv_confluence_lead_not_promoted",
+      "predicted_success_probability": 0.18,
+      "brier_score": 0.6724,
+      "predicted_failure_modes": [
+        "sec_form4_sources_saturated",
+        "sample_too_thin",
+        "not_incremental_vs_price_momentum",
+        "concentration_failed"
+      ],
+      "realized_failure_modes": [],
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "The confluence screen passed observed-only lead criteria but remains non-promoted."
+    },
+    "summary": "The fixed cross-source confluence screen produced a positive observed-only lead, but no shared helper or production path was promoted."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260623-024.json",
+  "single_causal_variable": "non_ohlcv_cross_source_attention_confluence_candidate_pool_v1",
+  "status": "observed_only_positive_lead",
+  "ticket_file": "experiments/tickets/exp-20260623-024.json",
+  "trial_family": "non_ohlcv_cross_source_attention_confluence_candidate_pool",
+  "trial_variant_id": "form4_sec_event_text_same_day_price_confirmed_v1",
+  "new_evidence_axis": "Same usable-trade-date confluence across independent archived Form 4 and SEC filing event/text sources, plus fixed liquid same-day price confirmation. This is not a retune of single-source SEC text, Form 4, options, or short-volume threshold families.",
+  "decision": "observed_only_positive_non_ohlcv_confluence_lead_not_promoted",
+  "artifact": "data/experiments/exp-20260623-024/exp_20260623_024_non_ohlcv_attention_confluence.json",
+  "log": "experiments/logs/exp-20260623-024.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    },
+    "note": "Observed-only attribution; before and after policy are identical."
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "source_ticker_date_rows": 3441,
+    "outcome_rows": 862,
+    "source_audit": {
+      "source_files": {
+        "form4": [
+          "data/non_ohlcv/form4_transactions_20241002_20260502.jsonl"
+        ],
+        "sec_event": [
+          "data/non_ohlcv/sec_filing_events_20241002_20260421.jsonl"
+        ],
+        "sec_text": [
+          "data/non_ohlcv/sec_filing_text_20241002_20260421.jsonl"
+        ]
+      },
+      "raw_rows_seen": {
+        "form4": 27879,
+        "sec_event": 1286,
+        "sec_text": 306
+      },
+      "rows_in_windows": {
+        "form4": 27254,
+        "sec_event": 1277,
+        "sec_text": 302
+      },
+      "unique_source_rows": {
+        "form4": 26838,
+        "sec_event": 1277,
+        "sec_text": 302
+      },
+      "duplicate_rows": {
+        "form4": 416
+      },
+      "invalid_rows": {},
+      "unique_ticker_date_rows": 3441,
+      "source_bucket_counts": {
+        "sec_only": 948,
+        "form4_only": 2358,
+        "confluence": 135
+      }
+    },
+    "outcome_audit": {
+      "by_window": {
+        "old_thin": {
+          "source_ticker_date_rows": 1130,
+          "outcome_rows": 277,
+          "source_bucket_counts": {
+            "sec_only": 319,
+            "form4_only": 771,
+            "confluence": 40
+          },
+          "outcome_bucket_counts": {
+            "form4_only": 205,
+            "sec_only": 64,
+            "confluence": 8
+          },
+          "reject_reasons": {
+            "close_location_floor": 411,
+            "missing_ohlcv": 247,
+            "same_day_return_excess_spy_floor": 130,
+            "liquidity_floor": 17,
+            "activity_date_missing_from_ohlcv": 46,
+            "missing_entry_or_exit_bar": 2
+          },
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json"
+        },
+        "mid_weak": {
+          "source_ticker_date_rows": 1175,
+          "outcome_rows": 298,
+          "source_bucket_counts": {
+            "sec_only": 301,
+            "form4_only": 828,
+            "confluence": 46
+          },
+          "outcome_bucket_counts": {
+            "sec_only": 66,
+            "form4_only": 223,
+            "confluence": 9
+          },
+          "reject_reasons": {
+            "close_location_floor": 399,
+            "same_day_return_excess_spy_floor": 120,
+            "missing_ohlcv": 302,
+            "liquidity_floor": 12,
+            "activity_date_missing_from_ohlcv": 21,
+            "missing_entry_or_exit_bar": 23
+          },
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json"
+        },
+        "late_strong": {
+          "source_ticker_date_rows": 1136,
+          "outcome_rows": 287,
+          "source_bucket_counts": {
+            "sec_only": 328,
+            "form4_only": 759,
+            "confluence": 49
+          },
+          "outcome_bucket_counts": {
+            "form4_only": 206,
+            "sec_only": 68,
+            "confluence": 13
+          },
+          "reject_reasons": {
+            "missing_ohlcv": 255,
+            "same_day_return_excess_spy_floor": 119,
+            "close_location_floor": 384,
+            "liquidity_floor": 14,
+            "activity_date_missing_from_ohlcv": 45,
+            "price_floor": 5,
+            "missing_entry_or_exit_bar": 27
+          },
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json"
+        }
+      },
+      "reject_reasons": {
+        "close_location_floor": 1194,
+        "missing_ohlcv": 804,
+        "same_day_return_excess_spy_floor": 369,
+        "liquidity_floor": 43,
+        "activity_date_missing_from_ohlcv": 112,
+        "missing_entry_or_exit_bar": 52,
+        "price_floor": 5
+      }
+    },
+    "fields_checked": [
+      "activity_date",
+      "entry_date",
+      "target_price",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd",
+      "form4_present",
+      "sec_present",
+      "source_bucket"
+    ],
+    "entry_date_present": true,
+    "target_price_present": true,
+    "target_price_contract": "Diagnostic only; the observed-only exit is fixed at close after 10 trading days and target_price is not an exit rule."
+  },
+  "gate3": {
+    "filter_added": false,
+    "signals_generated": 3441,
+    "signals_survived": 862,
+    "survival_rate": 0.2505,
+    "baseline_survival_rate": 0.8232,
+    "note": "No executable filter was added. Price/liquidity confirmation is part of observed-only attribution and did not change live or paper candidate generation."
+  },
+  "gate4": {
+    "observed_only_lead": true,
+    "failed_reasons": [],
+    "acceptance_checks": {
+      "min_confluence_rows_passed": true,
+      "confluence_distinct_tickers_passed": true,
+      "confluence_concentration_passed": true,
+      "confluence_total_cash_positive": true,
+      "confluence_mean_cash_positive": true,
+      "confluence_total_spy_positive": true,
+      "confluence_mean_spy_positive": true,
+      "confluence_total_qqq_positive": true,
+      "confluence_mean_qqq_positive": true,
+      "mean_cash_beats_single_source": true,
+      "median_cash_beats_single_source": true,
+      "positive_confluence_window_count": 3,
+      "positive_confluence_windows_passed": true,
+      "per_window_confluence": {
+        "old_thin": {
+          "n": 8,
+          "distinct_tickers": 7,
+          "max_single_ticker_row_share": 0.25,
+          "top_tickers": [
+            {
+              "ticker": "APP",
+              "rows": 2,
+              "row_share": 0.25
+            },
+            {
+              "ticker": "AVGO",
+              "rows": 1,
+              "row_share": 0.125
+            },
+            {
+              "ticker": "V",
+              "rows": 1,
+              "row_share": 0.125
+            },
+            {
+              "ticker": "LLY",
+              "rows": 1,
+              "row_share": 0.125
+            },
+            {
+              "ticker": "MA",
+              "rows": 1,
+              "row_share": 0.125
+            },
+            {
+              "ticker": "SNOW",
+              "rows": 1,
+              "row_share": 0.125
+            },
+            {
+              "ticker": "CRDO",
+              "rows": 1,
+              "row_share": 0.125
+            }
+          ],
+          "total_replacement_value_vs_cash_usd": 715.09,
+          "mean_replacement_value_vs_cash_usd": 89.39,
+          "median_replacement_value_vs_cash_usd": 111.14,
+          "win_rate_vs_cash": 0.625,
+          "total_replacement_value_vs_spy_usd": 1194.72,
+          "mean_replacement_value_vs_spy_usd": 149.34,
+          "median_replacement_value_vs_spy_usd": 145.82,
+          "win_rate_vs_spy": 0.625,
+          "total_replacement_value_vs_qqq_usd": 1321.17,
+          "mean_replacement_value_vs_qqq_usd": 165.15,
+          "median_replacement_value_vs_qqq_usd": 109.8,
+          "win_rate_vs_qqq": 0.625,
+          "mean_same_day_return_excess_spy": 0.083242
+        },
+        "mid_weak": {
+          "n": 9,
+          "distinct_tickers": 9,
+          "max_single_ticker_row_share": 0.1111,
+          "top_tickers": [
+            {
+              "ticker": "META",
+              "rows": 1,
+              "row_share": 0.1111
+            },
+            {
+              "ticker": "ISRG",
+              "rows": 1,
+              "row_share": 0.1111
+            },
+            {
+              "ticker": "RTX",
+              "rows": 1,
+              "row_share": 0.1111
+            },
+            {
+              "ticker": "COIN",
+              "rows": 1,
+              "row_share": 0.1111
+            },
+            {
+              "ticker": "CVX",
+              "rows": 1,
+              "row_share": 0.1111
+            },
+            {
+              "ticker": "TSLA",
+              "rows": 1,
+              "row_share": 0.1111
+            },
+            {
+              "ticker": "AVGO",
+              "rows": 1,
+              "row_share": 0.1111
+            },
+            {
+              "ticker": "MCD",
+              "rows": 1,
+              "row_share": 0.1111
+            },
+            {
+              "ticker": "CAT",
+              "rows": 1,
+              "row_share": 0.1111
+            }
+          ],
+          "total_replacement_value_vs_cash_usd": 1392.81,
+          "mean_replacement_value_vs_cash_usd": 154.76,
+          "median_replacement_value_vs_cash_usd": 188.9,
+          "win_rate_vs_cash": 0.7778,
+          "total_replacement_value_vs_spy_usd": 537.73,
+          "mean_replacement_value_vs_spy_usd": 59.75,
+          "median_replacement_value_vs_spy_usd": 71.51,
+          "win_rate_vs_spy": 0.6667,
+          "total_replacement_value_vs_qqq_usd": 268.43,
+          "mean_replacement_value_vs_qqq_usd": 29.83,
+          "median_replacement_value_vs_qqq_usd": 27.64,
+          "win_rate_vs_qqq": 0.5556,
+          "mean_same_day_return_excess_spy": 0.016574
+        },
+        "late_strong": {
+          "n": 13,
+          "distinct_tickers": 12,
+          "max_single_ticker_row_share": 0.1538,
+          "top_tickers": [
+            {
+              "ticker": "LITE",
+              "rows": 2,
+              "row_share": 0.1538
+            },
+            {
+              "ticker": "NFLX",
+              "rows": 1,
+              "row_share": 0.0769
+            },
+            {
+              "ticker": "CVX",
+              "rows": 1,
+              "row_share": 0.0769
+            },
+            {
+              "ticker": "AMD",
+              "rows": 1,
+              "row_share": 0.0769
+            },
+            {
+              "ticker": "MU",
+              "rows": 1,
+              "row_share": 0.0769
+            },
+            {
+              "ticker": "META",
+              "rows": 1,
+              "row_share": 0.0769
+            },
+            {
+              "ticker": "V",
+              "rows": 1,
+              "row_share": 0.0769
+            },
+            {
+              "ticker": "MCD",
+              "rows": 1,
+              "row_share": 0.0769
+            },
+            {
+              "ticker": "NOW",
+              "rows": 1,
+              "row_share": 0.0769
+            },
+            {
+              "ticker": "DDOG",
+              "rows": 1,
+              "row_share": 0.0769
+            }
+          ],
+          "total_replacement_value_vs_cash_usd": 331.11,
+          "mean_replacement_value_vs_cash_usd": 25.47,
+          "median_replacement_value_vs_cash_usd": -106.71,
+          "win_rate_vs_cash": 0.4615,
+          "total_replacement_value_vs_spy_usd": 864.45,
+          "mean_replacement_value_vs_spy_usd": 66.5,
+          "median_replacement_value_vs_spy_usd": -27.93,
+          "win_rate_vs_spy": 0.4615,
+          "total_replacement_value_vs_qqq_usd": 1157.44,
+          "mean_replacement_value_vs_qqq_usd": 89.03,
+          "median_replacement_value_vs_qqq_usd": 57.16,
+          "win_rate_vs_qqq": 0.6154,
+          "mean_same_day_return_excess_spy": 0.041037
+        }
+      }
+    },
+    "decision": "observed_only_positive_non_ohlcv_confluence_lead_not_promoted",
+    "strategy_rerun_required": false,
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "max_drawdown_pct": 0.0
+    },
+    "lead_limitations": [
+      "Observed-only, not shared-paper-first.",
+      "No shared helper or daily default-off snapshot promoted.",
+      "Confluence uses replayable public-PIT proxies, not proof of live observation."
+    ]
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "shared_helper_promoted": false,
+    "daily_snapshot_exposed": false,
+    "uses_non_ohlcv_sources": true,
+    "live_realistic_execution_envelope": "Not live-ready. The measured paper envelope is $4,000 notional, price >= $10, ADV20 >= $50M, next-open entry, 10-trading-day close exit, shared slippage helper, and round-trip cost. No capital cap, live order semantics, kill switch, or portfolio displacement path was promoted."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The fixed cross-source confluence screen produced a positive observed-only lead, but no shared helper or production path was promoted.",
+    "forbidden_near_neighbor_retry": "Do not retry this by sweeping Form4 transaction code, SEC form type, close-location, ADV, same-day return, hold-day, notional, or benchmark thresholds on the same archived sources. That would convert a confluence scout into source-threshold mining.",
+    "new_evidence_required": "A valid retry needs a materially new evidence axis such as parsed filing surprise semantics, named customer/supplier entities, borrow/options structure joined to the same events, or closed forward replacement rows from a shared default-off helper."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260623_024_non_ohlcv_attention_confluence.py",
+    "data/non_ohlcv/form4_transactions_20241002_20260502.jsonl",
+    "data/non_ohlcv/sec_filing_events_20241002_20260421.jsonl",
+    "data/non_ohlcv/sec_filing_text_20241002_20260421.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "docs/production_backtest_parity.md",
+    "docs/backtesting.md"
+  ],
+  "updated_at": "2026-06-23T20:15:23+00:00"
+}

@@ -1,0 +1,919 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260624_004_forward_ticker_memory_replacement_attribution.py",
+    "data/experiments/exp-20260624-004/exp_20260624_004_forward_ticker_memory_replacement_attribution.json",
+    "experiments/cards/exp-20260624-004.md",
+    "experiments/manifests/exp-20260624-004.json",
+    "experiments/tickets/exp-20260624-004.json",
+    "experiments/logs/exp-20260624-004.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260624-004.md",
+  "causal_components": [
+    "read-only forward replacement ledger",
+    "point-in-time prior closed ticker outcome cohorting",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "forward_replacement_prior_same_ticker_positive_memory_v1",
+  "claimed_at": "2026-06-24T02:07:24+00:00",
+  "completed_at": "2026-06-24T02:11:19+00:00",
+  "created_at": "2026-06-24T02:07:14+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260624-004",
+  "experiment_uid": "expuid-46be3465a900432e",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260624-004",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-24T02:07:14+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "forward_ticker_memory_replacement_attribution"
+  },
+  "hypothesis": "Forward replacement rows whose ticker had a prior closed positive replacement-value row before entry may carry persistent production-visible edge and deserve later allocation attention; if not, same-ticker forward memory must stay measurement-only.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "forward_replacement_prior_same_ticker_positive_memory_v1"
+  ],
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260622-013",
+    "exp-20260623-027",
+    "exp-20260623-028",
+    "exp-20260624-001"
+  ],
+  "new_evidence_type": "forward_replacement_ledger_prior_ticker_memory",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "allocation",
+        "alpha",
+        "attention",
+        "attribution",
+        "before",
+        "carry",
+        "closed",
+        "deserve",
+        "edge",
+        "entry",
+        "forward",
+        "had",
+        "if",
+        "later",
+        "may",
+        "measurement",
+        "memory",
+        "must",
+        "not",
+        "only",
+        "persistent",
+        "positive",
+        "prior",
+        "replacement",
+        "row",
+        "rows",
+        "same",
+        "stay",
+        "ticker",
+        "value",
+        "whose"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "space_forward_replacement_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.1833,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "full_universe_alpha_score_candidate_pool_deconcentration",
+        "reopen_condition": "Forward replacement-value rows, a shared production/replay alpha_score adapter, or a materially richer risk-aware ranking component. Do not just mine alpha_score thresholds or cooldown lengths on the same frozen replay.",
+        "score": 0.1816,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "sector_peer_moderate_shock_candidate_pool",
+        "reopen_condition": "Forward replacement-value rows or a materially stronger relation source such as customer/supplier links, source overlap, or audited multi-season early-peer earnings transfer.",
+        "score": 0.1816,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "same_day_sector_cap_candidate_replacement",
+        "reopen_condition": null,
+        "score": 0.1735,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_iwm_same_ticker_cooldown_candidate_pool",
+        "reopen_condition": "Closed forward replacement-value rows, cash/core displacement comparison, concentration and kill-gate monitoring before any live activation review.",
+        "score": 0.1729,
+        "status": "has_accepted",
+        "trials": 2
+      }
+    ],
+    "new_evidence_axis": "Entry-time PIT prior closed same-ticker replacement outcome from the production forward_replacement_value ledger; not a sleeve activation threshold, source rank, notional, hold-day, ETF/stock composition, regime, sleeve_health, or estimate-revision retry.",
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "forward_rows_too_few",
+      "qqq_concentration",
+      "prior_positive_not_monotonic",
+      "no_pit_prior_closed_rows"
+    ],
+    "confidence_reason": "Mechanism is forward-ledger learning from realized same-ticker paper outcomes known before later entries; confidence is low because the current forward ledger is small and low_deployment_etf/QQQ concentration may dominate.",
+    "recorded_at": "2026-06-24T02:06:59+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "rejected_forward_ticker_memory_not_allocation_ready",
+    "artifact": "data/experiments/exp-20260624-004/exp_20260624_004_forward_ticker_memory_replacement_attribution.json",
+    "log": "experiments/logs/exp-20260624-004.json",
+    "runner": "quant/experiments/exp_20260624_004_forward_ticker_memory_replacement_attribution.py",
+    "gate4": {
+      "observed_only_lead": false,
+      "decision": "rejected_forward_ticker_memory_not_allocation_ready",
+      "failed_reasons": [
+        "prior_positive_concentration_passed"
+      ],
+      "acceptance_checks": {
+        "prior_positive_rows_passed": true,
+        "prior_positive_tickers_passed": true,
+        "no_prior_rows_passed": true,
+        "prior_positive_total_positive_all_comparators": true,
+        "prior_positive_mean_positive_all_comparators": true,
+        "prior_positive_beats_no_prior_two_comparators": true,
+        "prior_positive_concentration_passed": false
+      },
+      "target_concentration": {
+        "max_single_ticker_positive_share": 0.735937,
+        "guardrail": 0.6
+      },
+      "prior_positive_mean_comparator_wins": 3,
+      "strategy_rerun_required": false,
+      "before_after_strategy_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "max_drawdown_pct": 0.0
+      },
+      "lead_limitations": [
+        "Forward-only closed paper rows, not canonical fixed-window Gate 4 evidence.",
+        "No shared helper, daily adapter, rank, notional, exit, or order rule changed.",
+        "Any allocation gate requires a separate shared-policy Gate 1-4 experiment."
+      ]
+    },
+    "calibration": {
+      "predicted_success_probability": 0.18,
+      "actual_success": 0,
+      "brier_score": 0.0324,
+      "failed_reasons": [
+        "prior_positive_concentration_passed"
+      ],
+      "failure_modes_observed": [
+        "qqq_concentration"
+      ],
+      "predicted_failure_modes": [
+        "forward_rows_too_few",
+        "qqq_concentration",
+        "prior_positive_not_monotonic",
+        "no_pit_prior_closed_rows"
+      ],
+      "predicted_failure_mode_hit": true
+    },
+    "attribution": {
+      "source_audit": {
+        "source_artifact": "data/paper_sleeves/forward_replacement_value.jsonl",
+        "raw_rows": 35,
+        "deduped_rows": 35,
+        "usable_rows": 35,
+        "missing_required_rows": 0,
+        "entry_date_min": "2026-05-05",
+        "entry_date_max": "2026-06-12",
+        "artifact_not_mutated": true
+      },
+      "cohorts": {
+        "prior_positive_all": {
+          "n": 18,
+          "distinct_tickers": 3,
+          "distinct_sleeves": 3,
+          "tickers": [
+            {
+              "key": "QQQ",
+              "n": 15,
+              "row_share": 0.833333
+            },
+            {
+              "key": "CRDO",
+              "n": 2,
+              "row_share": 0.111111
+            },
+            {
+              "key": "AMD",
+              "n": 1,
+              "row_share": 0.055556
+            }
+          ],
+          "sleeves": [
+            {
+              "key": "low_deployment_etf",
+              "n": 15,
+              "row_share": 0.833333
+            },
+            {
+              "key": "fundamental_growth_rs",
+              "n": 2,
+              "row_share": 0.111111
+            },
+            {
+              "key": "free_data_cross_source_consensus",
+              "n": 1,
+              "row_share": 0.055556
+            }
+          ],
+          "entry_months": [
+            {
+              "key": "2026-05",
+              "n": 11,
+              "row_share": 0.611111
+            },
+            {
+              "key": "2026-06",
+              "n": 7,
+              "row_share": 0.388889
+            }
+          ],
+          "prior_closed_count_distribution": {
+            "1": 2,
+            "2": 2,
+            "3": 1,
+            "4": 1,
+            "5": 1,
+            "6": 1,
+            "7": 1,
+            "8": 1,
+            "9": 1,
+            "10": 1,
+            "11": 1,
+            "12": 1,
+            "13": 1,
+            "14": 1,
+            "15": 1,
+            "16": 1
+          },
+          "replacement_value_vs_cash_usd": {
+            "n": 18,
+            "sum": 6868.53,
+            "mean": 381.585,
+            "median": 496.9,
+            "min": -795.5,
+            "max": 1160.25,
+            "positive_rate": 0.722222,
+            "max_single_ticker_positive_share": 0.692202
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 18,
+            "sum": 11230.54,
+            "mean": 623.9189,
+            "median": 626.835,
+            "min": -186.22,
+            "max": 1391.9,
+            "positive_rate": 0.944444,
+            "max_single_ticker_positive_share": 0.735937
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 18,
+            "sum": 9372.67,
+            "mean": 520.7039,
+            "median": 450.35,
+            "min": 314.49,
+            "max": 1432.94,
+            "positive_rate": 1.0,
+            "max_single_ticker_positive_share": 0.706049
+          }
+        },
+        "no_prior_positive": {
+          "n": 17,
+          "distinct_tickers": 16,
+          "distinct_sleeves": 8,
+          "tickers": [
+            {
+              "key": "QQQ",
+              "n": 2,
+              "row_share": 0.117647
+            },
+            {
+              "key": "GS",
+              "n": 1,
+              "row_share": 0.058824
+            },
+            {
+              "key": "LITE",
+              "n": 1,
+              "row_share": 0.058824
+            },
+            {
+              "key": "AMD",
+              "n": 1,
+              "row_share": 0.058824
+            },
+            {
+              "key": "CRDO",
+              "n": 1,
+              "row_share": 0.058824
+            },
+            {
+              "key": "SNXX",
+              "n": 1,
+              "row_share": 0.058824
+            },
+            {
+              "key": "GE",
+              "n": 1,
+              "row_share": 0.058824
+            },
+            {
+              "key": "DE",
+              "n": 1,
+              "row_share": 0.058824
+            },
+            {
+              "key": "MU",
+              "n": 1,
+              "row_share": 0.058824
+            },
+            {
+              "key": "SNOW",
+              "n": 1,
+              "row_share": 0.058824
+            },
+            {
+              "key": "DDOG",
+              "n": 1,
+              "row_share": 0.058824
+            },
+            {
+              "key": "HOOD",
+              "n": 1,
+              "row_share": 0.058824
+            }
+          ],
+          "sleeves": [
+            {
+              "key": "state_surface",
+              "n": 3,
+              "row_share": 0.176471
+            },
+            {
+              "key": "volume_breadth_breakout",
+              "n": 3,
+              "row_share": 0.176471
+            },
+            {
+              "key": "sec_governance",
+              "n": 2,
+              "row_share": 0.117647
+            },
+            {
+              "key": "sec_negative",
+              "n": 2,
+              "row_share": 0.117647
+            },
+            {
+              "key": "low_deployment_etf",
+              "n": 2,
+              "row_share": 0.117647
+            },
+            {
+              "key": "fundamental_growth_rs",
+              "n": 2,
+              "row_share": 0.117647
+            },
+            {
+              "key": "volatility_contraction",
+              "n": 2,
+              "row_share": 0.117647
+            },
+            {
+              "key": "sec_leadership",
+              "n": 1,
+              "row_share": 0.058824
+            }
+          ],
+          "entry_months": [
+            {
+              "key": "2026-05",
+              "n": 11,
+              "row_share": 0.647059
+            },
+            {
+              "key": "2026-06",
+              "n": 6,
+              "row_share": 0.352941
+            }
+          ],
+          "prior_closed_count_distribution": {
+            "0": 16,
+            "1": 1
+          },
+          "replacement_value_vs_cash_usd": {
+            "n": 17,
+            "sum": 568.81,
+            "mean": 33.4594,
+            "median": -138.4,
+            "min": -2811.78,
+            "max": 2772.28,
+            "positive_rate": 0.411765,
+            "max_single_ticker_positive_share": 0.29082
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 17,
+            "sum": 2292.79,
+            "mean": 134.87,
+            "median": 136.67,
+            "min": -2640.41,
+            "max": 2788.46,
+            "positive_rate": 0.529412,
+            "max_single_ticker_positive_share": 0.305229
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 17,
+            "sum": 2327.51,
+            "mean": 136.9124,
+            "median": -20.52,
+            "min": -2489.65,
+            "max": 2704.37,
+            "positive_rate": 0.470588,
+            "max_single_ticker_positive_share": 0.325634
+          }
+        },
+        "no_prior_closed": {
+          "n": 16,
+          "distinct_tickers": 16,
+          "distinct_sleeves": 8,
+          "tickers": [
+            {
+              "key": "GS",
+              "n": 1,
+              "row_share": 0.0625
+            },
+            {
+              "key": "LITE",
+              "n": 1,
+              "row_share": 0.0625
+            },
+            {
+              "key": "AMD",
+              "n": 1,
+              "row_share": 0.0625
+            },
+            {
+              "key": "CRDO",
+              "n": 1,
+              "row_share": 0.0625
+            },
+            {
+              "key": "SNXX",
+              "n": 1,
+              "row_share": 0.0625
+            },
+            {
+              "key": "GE",
+              "n": 1,
+              "row_share": 0.0625
+            },
+            {
+              "key": "QQQ",
+              "n": 1,
+              "row_share": 0.0625
+            },
+            {
+              "key": "DE",
+              "n": 1,
+              "row_share": 0.0625
+            },
+            {
+              "key": "MU",
+              "n": 1,
+              "row_share": 0.0625
+            },
+            {
+              "key": "SNOW",
+              "n": 1,
+              "row_share": 0.0625
+            },
+            {
+              "key": "DDOG",
+              "n": 1,
+              "row_share": 0.0625
+            },
+            {
+              "key": "HOOD",
+              "n": 1,
+              "row_share": 0.0625
+            }
+          ],
+          "sleeves": [
+            {
+              "key": "state_surface",
+              "n": 3,
+              "row_share": 0.1875
+            },
+            {
+              "key": "volume_breadth_breakout",
+              "n": 3,
+              "row_share": 0.1875
+            },
+            {
+              "key": "sec_governance",
+              "n": 2,
+              "row_share": 0.125
+            },
+            {
+              "key": "sec_negative",
+              "n": 2,
+              "row_share": 0.125
+            },
+            {
+              "key": "fundamental_growth_rs",
+              "n": 2,
+              "row_share": 0.125
+            },
+            {
+              "key": "volatility_contraction",
+              "n": 2,
+              "row_share": 0.125
+            },
+            {
+              "key": "sec_leadership",
+              "n": 1,
+              "row_share": 0.0625
+            },
+            {
+              "key": "low_deployment_etf",
+              "n": 1,
+              "row_share": 0.0625
+            }
+          ],
+          "entry_months": [
+            {
+              "key": "2026-05",
+              "n": 10,
+              "row_share": 0.625
+            },
+            {
+              "key": "2026-06",
+              "n": 6,
+              "row_share": 0.375
+            }
+          ],
+          "prior_closed_count_distribution": {
+            "0": 16
+          },
+          "replacement_value_vs_cash_usd": {
+            "n": 16,
+            "sum": -100.28,
+            "mean": -6.2675,
+            "median": -156.99,
+            "min": -2811.78,
+            "max": 2772.28,
+            "positive_rate": 0.375,
+            "max_single_ticker_positive_share": 0.312773
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 16,
+            "sum": 1693.22,
+            "mean": 105.8263,
+            "median": -39.91,
+            "min": -2640.41,
+            "max": 2788.46,
+            "positive_rate": 0.5,
+            "max_single_ticker_positive_share": 0.326668
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 16,
+            "sum": 1876.86,
+            "mean": 117.3037,
+            "median": -55.47,
+            "min": -2489.65,
+            "max": 2704.37,
+            "positive_rate": 0.4375,
+            "max_single_ticker_positive_share": 0.344318
+          }
+        },
+        "prior_nonpositive_only": {
+          "n": 1,
+          "distinct_tickers": 1,
+          "distinct_sleeves": 1,
+          "tickers": [
+            {
+              "key": "QQQ",
+              "n": 1,
+              "row_share": 1.0
+            }
+          ],
+          "sleeves": [
+            {
+              "key": "low_deployment_etf",
+              "n": 1,
+              "row_share": 1.0
+            }
+          ],
+          "entry_months": [
+            {
+              "key": "2026-05",
+              "n": 1,
+              "row_share": 1.0
+            }
+          ],
+          "prior_closed_count_distribution": {
+            "1": 1
+          },
+          "replacement_value_vs_cash_usd": {
+            "n": 1,
+            "sum": 669.09,
+            "mean": 669.09,
+            "median": 669.09,
+            "min": 669.09,
+            "max": 669.09,
+            "positive_rate": 1.0,
+            "max_single_ticker_positive_share": 1.0
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 1,
+            "sum": 599.57,
+            "mean": 599.57,
+            "median": 599.57,
+            "min": 599.57,
+            "max": 599.57,
+            "positive_rate": 1.0,
+            "max_single_ticker_positive_share": 1.0
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 1,
+            "sum": 450.65,
+            "mean": 450.65,
+            "median": 450.65,
+            "min": 450.65,
+            "max": 450.65,
+            "positive_rate": 1.0,
+            "max_single_ticker_positive_share": 1.0
+          }
+        }
+      },
+      "prior_positive_vs_no_prior_positive": {
+        "mean_comparator_wins": 3,
+        "by_field": {
+          "replacement_value_vs_cash_usd": {
+            "target_mean": 381.585,
+            "comparator_mean": 33.4594,
+            "target_minus_comparator_mean": 348.1256,
+            "target_beats_comparator_mean": true
+          },
+          "replacement_value_vs_spy_usd": {
+            "target_mean": 623.9189,
+            "comparator_mean": 134.87,
+            "target_minus_comparator_mean": 489.0489,
+            "target_beats_comparator_mean": true
+          },
+          "replacement_value_vs_qqq_usd": {
+            "target_mean": 520.7039,
+            "comparator_mean": 136.9124,
+            "target_minus_comparator_mean": 383.7915,
+            "target_beats_comparator_mean": true
+          }
+        }
+      }
+    },
+    "summary": "Same-ticker forward memory did not clear the fixed attribution screen; the likely blockers are thin prior-positive samples, QQQ concentration, and non-monotonic benchmark-relative replacement value."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260624-004.json",
+  "single_causal_variable": "forward_replacement_prior_same_ticker_positive_memory_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260624-004.json",
+  "trial_family": "forward_replacement_prior_same_ticker_memory",
+  "trial_variant_id": "v1",
+  "implementation_mode": "observed_only_read_only_runner",
+  "new_evidence_axis": "Entry-time PIT prior closed same-ticker replacement outcome from the production forward_replacement_value ledger; not a sleeve activation threshold, source rank, notional, hold-day, ETF/stock composition, regime, sleeve_health, or estimate-revision retry.",
+  "decision": "rejected_forward_ticker_memory_not_allocation_ready",
+  "artifact": "data/experiments/exp-20260624-004/exp_20260624_004_forward_ticker_memory_replacement_attribution.json",
+  "log": "experiments/logs/exp-20260624-004.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_summary": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    },
+    "note": "Observed-only attribution; before and after strategy policy are identical."
+  },
+  "gate2": {
+    "passed": true,
+    "source_audit": {
+      "source_artifact": "data/paper_sleeves/forward_replacement_value.jsonl",
+      "raw_rows": 35,
+      "deduped_rows": 35,
+      "usable_rows": 35,
+      "missing_required_rows": 0,
+      "entry_date_min": "2026-05-05",
+      "entry_date_max": "2026-06-12",
+      "artifact_not_mutated": true
+    },
+    "required_fields": [
+      "entry_date",
+      "exit_date",
+      "ticker",
+      "sleeve_key",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd"
+    ],
+    "entry_date_present": true,
+    "target_price": {
+      "available": false,
+      "source": "not_applicable_observed_only_forward_replacement_rows",
+      "reason": "No executable target, entry, exit, order, or paper ledger mutation is scheduled."
+    }
+  },
+  "gate3": {
+    "strategy_filter_added": false,
+    "signals_generated": 35,
+    "signals_survived": 35,
+    "survival_rate": 1.0,
+    "baseline_survival_rate": 0.8232,
+    "passed": true,
+    "note": "No executable filter was added; rows are attributed only."
+  },
+  "gate4": {
+    "observed_only_lead": false,
+    "decision": "rejected_forward_ticker_memory_not_allocation_ready",
+    "failed_reasons": [
+      "prior_positive_concentration_passed"
+    ],
+    "acceptance_checks": {
+      "prior_positive_rows_passed": true,
+      "prior_positive_tickers_passed": true,
+      "no_prior_rows_passed": true,
+      "prior_positive_total_positive_all_comparators": true,
+      "prior_positive_mean_positive_all_comparators": true,
+      "prior_positive_beats_no_prior_two_comparators": true,
+      "prior_positive_concentration_passed": false
+    },
+    "target_concentration": {
+      "max_single_ticker_positive_share": 0.735937,
+      "guardrail": 0.6
+    },
+    "prior_positive_mean_comparator_wins": 3,
+    "strategy_rerun_required": false,
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "max_drawdown_pct": 0.0
+    },
+    "lead_limitations": [
+      "Forward-only closed paper rows, not canonical fixed-window Gate 4 evidence.",
+      "No shared helper, daily adapter, rank, notional, exit, or order rule changed.",
+      "Any allocation gate requires a separate shared-policy Gate 1-4 experiment."
+    ]
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "trade_enabled": false,
+    "daily_snapshot_exposed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "production_orders_changed": false,
+    "parity_note": "Read-only attribution over existing forward replacement ledger rows."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "Same-ticker forward memory did not clear the fixed attribution screen; the likely blockers are thin prior-positive samples, QQQ concentration, and non-monotonic benchmark-relative replacement value.",
+    "forbidden_near_neighbor_retry": "Do not retry by changing prior-positive definitions, row-count gates, ticker concentration caps, sleeve inclusion, notional method, hold days, or activation thresholds on this same 35-row forward ledger.",
+    "new_evidence_required": "Need materially more closed forward replacement rows with prior same-ticker history, or a separate shared-policy Gate 1-4 allocation test after the ledger has genuine multi-ticker prior-positive coverage."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260624_004_forward_ticker_memory_replacement_attribution.py",
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260622-013.json",
+    "experiments/logs/exp-20260623-027.json",
+    "experiments/logs/exp-20260623-028.json",
+    "experiments/logs/exp-20260624-001.json",
+    "docs/backtesting.md",
+    "docs/production_backtest_parity.md"
+  ],
+  "updated_at": "2026-06-24T02:11:19+00:00"
+}

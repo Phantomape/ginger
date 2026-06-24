@@ -1,0 +1,36 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260624-003/exp_20260624_003_regime_conditioned_held_book_risk_budget_overlay.json",
+  "changed_files": [
+    "quant/experiments/exp_20260624_003_regime_conditioned_held_book_risk_budget_overlay.py"
+  ],
+  "changed_variable": "regime_conditioned_held_book_risk_budget_overlay_v1",
+  "decision": "rejected_regime_conditioned_overlay",
+  "experiment_id": "exp-20260624-003",
+  "family": "held_book_risk_budget_overlay",
+  "hypothesis": "Regime-conditioned held-book risk-budget overlay: apply the exp-20260623-026 overlay only when the PIT market regime is not BULL, and hold static weights when regime is BULL.",
+  "lane": "alpha_search",
+  "owner": "agent_session_68cf2b14",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not sweep the regime gate, MA period, BULL definition, or frozen overlay parameters toward old_thin. The same held-book regime-gated overlay is rejected unless a genuinely different evidence axis arrives.",
+    "new_evidence_required": "A valid retry needs a different objective that explicitly prices tail risk, a faster independently validated chop or regime signal tested without threshold tuning, or a forward non-survivorship book. Another gate or parameter sweep on the same held winners is frozen.",
+    "why_result_happened": "The 200d-MA regime gate recovered much of the return the always-on overlay discarded, improving EV versus always-on from 18.5897 to 29.092, but it still lost to static EV 44.3857. The gate was too slow: it added BEAR sub-period return cost inside bull windows and stayed BULL through part of old_thin drawdown."
+  },
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "decision": "rejected_regime_conditioned_overlay",
+    "ev_always": 18.5897,
+    "ev_regime": 29.092,
+    "ev_static": 44.3857,
+    "observed_only": true,
+    "regime_vs_always_ev_gain": 10.502,
+    "regime_vs_static_ev_gap": -15.294
+  },
+  "status": "rejected",
+  "timestamp": "2026-06-24T01:39:58+00:00",
+  "trial_family": "regime_conditioned_held_book_risk_budget_overlay",
+  "trial_variant_id": "exp-20260624-003"
+}

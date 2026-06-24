@@ -1,0 +1,126 @@
+{
+  "after_metrics": {
+    "expected_value_score": 18.5897,
+    "max_drawdown_pct": -14.612,
+    "sharpe": null,
+    "sharpe_daily": 0.1301,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 44.3857,
+    "max_drawdown_pct": -44.19,
+    "sharpe": null,
+    "sharpe_daily": 0.1381,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": -25.796,
+    "actual_pnl_delta": null,
+    "actual_success": 0,
+    "brier_score": 0.16,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -25.996,
+    "expected_ev_delta": 0.2,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "return_drag_exceeds_drawdown_benefit",
+      "survivorship_makes_static_unbeatable",
+      "turnover_cost_kills_edge",
+      "short_window_covariance_noise"
+    ],
+    "predicted_success_probability": 0.4,
+    "realized_failure_mode": "return_drag_exceeds_drawdown_benefit",
+    "surprise_level": "low",
+    "surprise_note": null
+  },
+  "causal_components": [
+    "single-name risk-contribution cap 15pct",
+    "annualized vol target 30pct",
+    "monthly rebalance",
+    "trailing 90d PIT covariance",
+    "excess to cash",
+    "long-only no-short"
+  ],
+  "change_summary": "Held-book PIT risk-budget overlay (15% single-name risk cap + 30% vol target, monthly, trailing-90d cov, excess to cash) vs static hold over 3 standard windows.",
+  "change_type": "risk_allocation",
+  "changed_variable": "held_book_pit_risk_contribution_cap_vol_target_overlay_v1",
+  "component": "quant/experiments/exp_20260623_026_held_book_risk_budget_overlay.py, data/experiments/exp-20260623-026/exp_20260623_026_held_book_risk_budget_overlay.json, experiments/cards/exp-20260623-026.md, experiments/manifests/exp-20260623-026.json, experiments/tickets/exp-20260623-026.json, experiments/logs/exp-20260623-026.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {
+    "end": "2025-04-22",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": -25.796,
+    "max_drawdown_pct": 29.578,
+    "sharpe_daily": -0.008
+  },
+  "experiment_id": "exp-20260623-026",
+  "hypothesis": "Held-book risk-budget overlay: applying a PIT risk-contribution cap (cap any single name at 15% of ex-ante portfolio risk) plus a 30% annualized vol target (excess to cash), rebalanced monthly using ONLY trailing 90d covariance, improves risk-adjusted return (Sharpe up, max-drawdown down) at acceptable return cost versus static buy-and-hold of the same held names, aggregated over the three standard windows. Motivated by the read-only diagnostic (scripts/probe_held_book_concentration.py): MUU alone is 34% of portfolio risk and the only real de-risk lever is raising cash, not rotating among correlated high-beta names. Observed-only policy simulation on the held universe; no core-strategy/order/ranking change; discretionary risk policy if it wins.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "held_book_risk_budget_overlay",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "held_book_pit_risk_budget_overlay_simulation",
+  "next_retry_requires": [],
+  "notes": "Overlay cuts worst max-drawdown 44%->15% (Δ+30pp) but halves aggregate EV (44.4->18.6) by giving up ~34pp return: the 30% vol target forces 18-33% cash in the two bull windows and caps winners (~45% upside capture). Big winner only in old_thin (the drawdown window: -12%->-1%, DD 44%->11%). Static-target de-risking is regime-indiscriminate. NOT a forbidden-retry to sweep cap/vol-target; the real next axis is regime-CONDITIONED de-risking (only in adverse/chop regimes, full in confirmed uptrends) or an objective that weights tail-risk. Survivorship: universe=currently-held winners.",
+  "parameters": {
+    "locked_variables": [
+      "held_book_pit_risk_contribution_cap_vol_target_overlay_v1"
+    ],
+    "single_causal_variable": "held_book_pit_risk_contribution_cap_vol_target_overlay_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not sweep the single-name risk cap, vol target, lookback, rebalance frequency, or held-book universe on the same three windows. That would be a parameter retune of the rejected regime-indiscriminate static-target overlay.",
+    "new_evidence_required": "A valid retry needs a different evidence axis: a regime-conditioned overlay that de-risks only in adverse/chop regimes, a tail-risk-weighted objective where drawdown reduction is explicitly valued, genuinely uncorrelated ballast, or a forward non-survivorship book.",
+    "realized_failure_mode": "return_drag_exceeds_drawdown_benefit",
+    "why_result_happened": "The 30% vol target forced substantial cash in the bull windows, capping high-beta winners. The drawdown improvement was real, especially in old_thin, but the return drag dominated expected value versus static hold."
+  },
+  "prediction": {
+    "confidence_reason": "Diagnostic strongly implies vol-target-to-cash cuts vol with Sharpe ~unchanged; but trailing Sharpe is bull-window-inflated and static hold of winners is a hard baseline to beat on return.",
+    "expected_ev_delta": 0.2,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "return_drag_exceeds_drawdown_benefit",
+      "survivorship_makes_static_unbeatable",
+      "turnover_cost_kills_edge",
+      "short_window_covariance_noise"
+    ],
+    "recorded_at": "2026-06-23T21:57:04+00:00",
+    "success_probability": 0.4
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "No AGENTS.md Gate 4 acceptance condition was met.",
+  "related_files": [
+    "data/experiments/exp-20260623-026/before_static.json",
+    "data/experiments/exp-20260623-026/after_overlay.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-06-23T22:00:08+00:00",
+  "trial_family": "held_book_risk_contribution_cap_vol_target",
+  "trial_variant_id": "exp-20260623-026"
+}

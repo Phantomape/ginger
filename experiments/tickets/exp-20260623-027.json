@@ -1,0 +1,1528 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260623_027_forward_regime_scalar_attribution.py",
+    "data/experiments/exp-20260623-027/exp_20260623_027_forward_regime_scalar_attribution.json",
+    "experiments/cards/exp-20260623-027.md",
+    "experiments/manifests/exp-20260623-027.json",
+    "experiments/tickets/exp-20260623-027.json",
+    "experiments/logs/exp-20260623-027.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260623-027.md",
+  "causal_components": [
+    "read-only forward rows",
+    "entry-time regime_chop exposure scalar",
+    "cash/SPY/QQQ replacement-value buckets",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "forward_replacement_entry_regime_exposure_scalar_monotonicity_v1",
+  "claimed_at": "2026-06-23T22:05:00+00:00",
+  "completed_at": "2026-06-23T22:09:26+00:00",
+  "created_at": "2026-06-23T22:04:52+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260623-027",
+  "experiment_uid": "expuid-45b0eb5afeb745ba",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260623-027",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-23T22:04:52+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "forward_regime_scalar_attribution"
+  },
+  "hypothesis": "Observed-only attribution: closed forward replacement rows tagged by exp-20260623-002 should show monotonic replacement value improvement as entry_regime_exposure_scalar rises; otherwise the regime soft-tilt is not forward-ready.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "forward_replacement_entry_regime_exposure_scalar_monotonicity_v1"
+  ],
+  "mechanism_family": "regime_router_forward_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260615-025",
+    "exp-20260622-017",
+    "exp-20260623-002",
+    "exp-20260623-004"
+  ],
+  "new_evidence_type": "entry_regime_tagged_forward_replacement_rows",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "shared_pit_regime_chop_state_helper",
+        "score": 0.6375,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "pit_efficiency_ratio_chop_axis_diagnostic",
+        "score": 0.6229,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "event_market_state_context_quality",
+        "score": 0.6111,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "full_universe_alpha_score_candidate_pool_safe_risk_budget",
+        "score": 0.6108,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "event_market_state_crowding_context",
+        "score": 0.6105,
+        "status": "frozen_rejected",
+        "trials": 2
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "regime_state",
+      "field_tags": [
+        "as",
+        "attribution",
+        "by",
+        "closed",
+        "entry",
+        "exp",
+        "exposure",
+        "forward",
+        "is",
+        "monotonic",
+        "monotonicity",
+        "not",
+        "observed",
+        "only",
+        "otherwise",
+        "ready",
+        "regime",
+        "replacement",
+        "rises",
+        "router",
+        "rows",
+        "scalar",
+        "should",
+        "show",
+        "soft",
+        "tagged",
+        "tilt",
+        "value"
+      ],
+      "gate_shape": "notional_scalar"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "shared_pit_regime_chop_state_helper",
+        "reopen_condition": "Forward / live-pilot rows tagged with entry-time regime_chop and exposure_scalar. Do not tune the regime constants or exposure floor on the frozen windows.",
+        "score": 0.6375,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "pit_efficiency_ratio_chop_axis_diagnostic",
+        "reopen_condition": "If Spearman(ER, PnL) is clearly positive and low-ER mean PnL is negative in the windows with chop samples, promote ER to a shared daily regime artifact and apply the continuous exposure scalar as a portfolio-level soft tilt, validated on forward rows / live-pilot scorecard. Do not tune ER window or exposure floor on frozen windows.",
+        "score": 0.6229,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "regime_state",
+        "family_key": "event_market_state_context_quality",
+        "reopen_condition": null,
+        "score": 0.6111,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "full_universe_alpha_score_candidate_pool_safe_risk_budget",
+        "reopen_condition": "A shared production/replay default-off adapter for the alpha_score market-regime source, parity tests, and forward replacement-value rows. No live/default orders before that adapter exists.",
+        "score": 0.6108,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "event_market_state_crowding_context",
+        "reopen_condition": "Do not promote narrow-cap leadership event haircuts on this frozen sample. Revisit only with new closed forward event rows or a materially different source-quality field that broadens support beyond four trades.",
+        "score": 0.6105,
+        "status": "frozen_rejected",
+        "trials": 2
+      }
+    ],
+    "new_evidence_axis": "New evidence is not a retuned regime classifier or frozen-window slice: exp-20260623-002 added entry-time regime_chop exposure_scalar tags to closed forward replacement-value rows, enabling a forward-only monotonicity check before any tilt promotion.",
+    "override": true,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "notional_scalar",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "regime_state",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "forward_rows_too_thin",
+      "exposure_scalar_range_too_narrow",
+      "no_monotonicity",
+      "low_deployment_etf_concentration"
+    ],
+    "confidence_reason": "Playbook explicitly asks to validate regime_chop exposure_scalar on entry-regime-tagged forward rows before any sleeve tilt. Prior frozen-window evidence was sleeve-specific and core-wide tilt failed; current forward rows are likely thin and concentrated, so success probability is low.",
+    "recorded_at": "2026-06-23T22:04:37+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "rejected_no_forward_regime_scalar_monotonicity",
+    "artifact": "data/experiments/exp-20260623-027/exp_20260623_027_forward_regime_scalar_attribution.json",
+    "log": "experiments/logs/exp-20260623-027.json",
+    "runner": "quant/experiments/exp_20260623_027_forward_regime_scalar_attribution.py",
+    "gate4": {
+      "observed_only_lead": false,
+      "decision": "rejected_no_forward_regime_scalar_monotonicity",
+      "failed_reasons": [
+        "month_support_passed"
+      ],
+      "acceptance_checks": {
+        "min_rows_passed": true,
+        "min_bucket_rows_passed": true,
+        "scalar_range_passed": true,
+        "spearman_cash_positive": true,
+        "spearman_spy_positive": true,
+        "spearman_qqq_positive": true,
+        "high_mean_cash_beats_low": true,
+        "high_median_cash_beats_low": true,
+        "high_mean_spy_beats_low": true,
+        "high_mean_qqq_beats_low": true,
+        "high_sums_positive": true,
+        "cash_positive_concentration_passed": true,
+        "month_support_passed": false
+      },
+      "strategy_rerun_required": false,
+      "before_after_strategy_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "max_drawdown_pct": 0.0
+      },
+      "lead_limitations": [
+        "Forward-only closed paper rows, not canonical fixed-window evidence.",
+        "No shared helper, daily adapter, rank, notional, exit, or order rule changed.",
+        "Any positive lead would require a separate activation-envelope Gate 1-4."
+      ]
+    },
+    "calibration": {
+      "predicted_success_probability": 0.18,
+      "actual_success": 0,
+      "brier_score": 0.0324,
+      "failed_reasons": [
+        "month_support_passed"
+      ],
+      "failure_modes_observed": [],
+      "predicted_failure_modes": [
+        "forward_rows_too_thin",
+        "exposure_scalar_range_too_narrow",
+        "no_monotonicity",
+        "low_deployment_etf_concentration"
+      ],
+      "predicted_failure_mode_hit": false
+    },
+    "attribution": {
+      "all_rows": {
+        "n": 35,
+        "distinct_tickers": 16,
+        "sleeves": [
+          {
+            "key": "low_deployment_etf",
+            "n": 17,
+            "row_share": 0.485714
+          },
+          {
+            "key": "fundamental_growth_rs",
+            "n": 4,
+            "row_share": 0.114286
+          },
+          {
+            "key": "volume_breadth_breakout",
+            "n": 3,
+            "row_share": 0.085714
+          },
+          {
+            "key": "state_surface",
+            "n": 3,
+            "row_share": 0.085714
+          },
+          {
+            "key": "sec_governance",
+            "n": 2,
+            "row_share": 0.057143
+          },
+          {
+            "key": "sec_negative",
+            "n": 2,
+            "row_share": 0.057143
+          },
+          {
+            "key": "volatility_contraction",
+            "n": 2,
+            "row_share": 0.057143
+          },
+          {
+            "key": "free_data_cross_source_consensus",
+            "n": 1,
+            "row_share": 0.028571
+          }
+        ],
+        "tickers": [
+          {
+            "key": "QQQ",
+            "n": 17,
+            "row_share": 0.485714
+          },
+          {
+            "key": "CRDO",
+            "n": 3,
+            "row_share": 0.085714
+          },
+          {
+            "key": "AMD",
+            "n": 2,
+            "row_share": 0.057143
+          },
+          {
+            "key": "BKNG",
+            "n": 1,
+            "row_share": 0.028571
+          },
+          {
+            "key": "DE",
+            "n": 1,
+            "row_share": 0.028571
+          },
+          {
+            "key": "AVGO",
+            "n": 1,
+            "row_share": 0.028571
+          },
+          {
+            "key": "AAPL",
+            "n": 1,
+            "row_share": 0.028571
+          },
+          {
+            "key": "LITE",
+            "n": 1,
+            "row_share": 0.028571
+          }
+        ],
+        "entry_months": [
+          "2026-05",
+          "2026-06"
+        ],
+        "entry_regimes": [
+          {
+            "key": "risk_on_trend",
+            "n": 35,
+            "row_share": 1.0
+          }
+        ],
+        "scalar_mean": 0.892384,
+        "scalar_min": 0.861294,
+        "scalar_max": 0.904325,
+        "replacement_value_vs_cash_usd": {
+          "sum": 7437.34,
+          "mean": 212.4954,
+          "median": 245.8,
+          "positive_rate": 0.571429,
+          "concentration": {
+            "positive_total": 18334.54,
+            "max_single_ticker_positive_share": 0.368801,
+            "max_single_sleeve_positive_share": 0.394896,
+            "top_positive_tickers": [
+              {
+                "ticker": "QQQ",
+                "positive_value": 6761.79,
+                "share": 0.368801
+              },
+              {
+                "ticker": "CRDO",
+                "positive_value": 3713.87,
+                "share": 0.202561
+              },
+              {
+                "ticker": "AMD",
+                "positive_value": 3463.29,
+                "share": 0.188894
+              },
+              {
+                "ticker": "SNXX",
+                "positive_value": 2772.28,
+                "share": 0.151205
+              },
+              {
+                "ticker": "DE",
+                "positive_value": 1098.16,
+                "share": 0.059896
+              },
+              {
+                "ticker": "GS",
+                "positive_value": 390.84,
+                "share": 0.021317
+              },
+              {
+                "ticker": "BKNG",
+                "positive_value": 134.31,
+                "share": 0.007326
+              }
+            ],
+            "top_positive_sleeves": [
+              {
+                "sleeve": "state_surface",
+                "positive_value": 7240.23,
+                "share": 0.394896
+              },
+              {
+                "sleeve": "low_deployment_etf",
+                "positive_value": 6761.79,
+                "share": 0.368801
+              },
+              {
+                "sleeve": "fundamental_growth_rs",
+                "positive_value": 2245.91,
+                "share": 0.122496
+              },
+              {
+                "sleeve": "sec_negative",
+                "positive_value": 1098.16,
+                "share": 0.059896
+              },
+              {
+                "sleeve": "sec_governance",
+                "positive_value": 525.15,
+                "share": 0.028643
+              },
+              {
+                "sleeve": "free_data_cross_source_consensus",
+                "positive_value": 463.3,
+                "share": 0.025269
+              }
+            ]
+          }
+        },
+        "replacement_value_vs_spy_usd": {
+          "sum": 13523.33,
+          "mean": 386.3809,
+          "median": 456.47,
+          "positive_rate": 0.742857,
+          "concentration": {
+            "positive_total": 20552.39,
+            "max_single_ticker_positive_share": 0.444632,
+            "max_single_sleeve_positive_share": 0.444632,
+            "top_positive_tickers": [
+              {
+                "ticker": "QQQ",
+                "positive_value": 9138.26,
+                "share": 0.444632
+              },
+              {
+                "ticker": "CRDO",
+                "positive_value": 3759.97,
+                "share": 0.182946
+              },
+              {
+                "ticker": "AMD",
+                "positive_value": 3226.84,
+                "share": 0.157006
+              },
+              {
+                "ticker": "SNXX",
+                "positive_value": 2788.46,
+                "share": 0.135676
+              },
+              {
+                "ticker": "DE",
+                "positive_value": 997.9,
+                "share": 0.048554
+              },
+              {
+                "ticker": "BKNG",
+                "positive_value": 224.95,
+                "share": 0.010945
+              },
+              {
+                "ticker": "SNOW",
+                "positive_value": 221.01,
+                "share": 0.010753
+              },
+              {
+                "ticker": "GS",
+                "positive_value": 195.0,
+                "share": 0.009488
+              }
+            ],
+            "top_positive_sleeves": [
+              {
+                "sleeve": "low_deployment_etf",
+                "positive_value": 9138.26,
+                "share": 0.444632
+              },
+              {
+                "sleeve": "state_surface",
+                "positive_value": 6760.53,
+                "share": 0.328941
+              },
+              {
+                "sleeve": "fundamental_growth_rs",
+                "positive_value": 2563.64,
+                "share": 0.124737
+              },
+              {
+                "sleeve": "sec_negative",
+                "positive_value": 997.9,
+                "share": 0.048554
+              },
+              {
+                "sleeve": "free_data_cross_source_consensus",
+                "positive_value": 451.1,
+                "share": 0.021949
+              },
+              {
+                "sleeve": "sec_governance",
+                "positive_value": 419.95,
+                "share": 0.020433
+              },
+              {
+                "sleeve": "volume_breadth_breakout",
+                "positive_value": 221.01,
+                "share": 0.010753
+              }
+            ]
+          }
+        },
+        "replacement_value_vs_qqq_usd": {
+          "sum": 11700.18,
+          "mean": 334.2909,
+          "median": 449.78,
+          "positive_rate": 0.742857,
+          "concentration": {
+            "positive_total": 17677.61,
+            "max_single_ticker_positive_share": 0.425283,
+            "max_single_sleeve_positive_share": 0.425283,
+            "top_positive_tickers": [
+              {
+                "ticker": "QQQ",
+                "positive_value": 7517.99,
+                "share": 0.425283
+              },
+              {
+                "ticker": "CRDO",
+                "positive_value": 3462.93,
+                "share": 0.195894
+              },
+              {
+                "ticker": "AMD",
+                "positive_value": 2754.23,
+                "share": 0.155803
+              },
+              {
+                "ticker": "SNXX",
+                "positive_value": 2704.37,
+                "share": 0.152983
+              },
+              {
+                "ticker": "DE",
+                "positive_value": 829.57,
+                "share": 0.046928
+              },
+              {
+                "ticker": "SNOW",
+                "positive_value": 299.03,
+                "share": 0.016916
+              },
+              {
+                "ticker": "BKNG",
+                "positive_value": 109.49,
+                "share": 0.006194
+              }
+            ],
+            "top_positive_sleeves": [
+              {
+                "sleeve": "low_deployment_etf",
+                "positive_value": 7517.99,
+                "share": 0.425283
+              },
+              {
+                "sleeve": "state_surface",
+                "positive_value": 6166.42,
+                "share": 0.348827
+              },
+              {
+                "sleeve": "fundamental_growth_rs",
+                "positive_value": 2387.08,
+                "share": 0.135034
+              },
+              {
+                "sleeve": "sec_negative",
+                "positive_value": 829.57,
+                "share": 0.046928
+              },
+              {
+                "sleeve": "free_data_cross_source_consensus",
+                "positive_value": 368.03,
+                "share": 0.020819
+              },
+              {
+                "sleeve": "volume_breadth_breakout",
+                "positive_value": 299.03,
+                "share": 0.016916
+              },
+              {
+                "sleeve": "sec_governance",
+                "positive_value": 109.49,
+                "share": 0.006194
+              }
+            ]
+          }
+        }
+      },
+      "bucket_summary": {
+        "low_exposure": {
+          "n": 12,
+          "distinct_tickers": 6,
+          "sleeves": [
+            {
+              "key": "low_deployment_etf",
+              "n": 7,
+              "row_share": 0.583333
+            },
+            {
+              "key": "fundamental_growth_rs",
+              "n": 2,
+              "row_share": 0.166667
+            },
+            {
+              "key": "free_data_cross_source_consensus",
+              "n": 1,
+              "row_share": 0.083333
+            },
+            {
+              "key": "sec_governance",
+              "n": 1,
+              "row_share": 0.083333
+            },
+            {
+              "key": "sec_negative",
+              "n": 1,
+              "row_share": 0.083333
+            }
+          ],
+          "tickers": [
+            {
+              "key": "QQQ",
+              "n": 7,
+              "row_share": 0.583333
+            },
+            {
+              "key": "AMD",
+              "n": 1,
+              "row_share": 0.083333
+            },
+            {
+              "key": "CRDO",
+              "n": 1,
+              "row_share": 0.083333
+            },
+            {
+              "key": "BKNG",
+              "n": 1,
+              "row_share": 0.083333
+            },
+            {
+              "key": "DE",
+              "n": 1,
+              "row_share": 0.083333
+            },
+            {
+              "key": "AVGO",
+              "n": 1,
+              "row_share": 0.083333
+            }
+          ],
+          "entry_months": [
+            "2026-05",
+            "2026-06"
+          ],
+          "entry_regimes": [
+            {
+              "key": "risk_on_trend",
+              "n": 12,
+              "row_share": 1.0
+            }
+          ],
+          "scalar_mean": 0.881568,
+          "scalar_min": 0.861294,
+          "scalar_max": 0.888839,
+          "replacement_value_vs_cash_usd": {
+            "sum": 1630.64,
+            "mean": 135.8867,
+            "median": 354.55,
+            "positive_rate": 0.666667,
+            "concentration": {
+              "positive_total": 5482.12,
+              "max_single_ticker_positive_share": 0.47903,
+              "max_single_sleeve_positive_share": 0.47903,
+              "top_positive_tickers": [
+                {
+                  "ticker": "QQQ",
+                  "positive_value": 2626.1,
+                  "share": 0.47903
+                },
+                {
+                  "ticker": "AMD",
+                  "positive_value": 1160.25,
+                  "share": 0.211643
+                },
+                {
+                  "ticker": "DE",
+                  "positive_value": 1098.16,
+                  "share": 0.200317
+                },
+                {
+                  "ticker": "CRDO",
+                  "positive_value": 463.3,
+                  "share": 0.084511
+                },
+                {
+                  "ticker": "BKNG",
+                  "positive_value": 134.31,
+                  "share": 0.0245
+                }
+              ],
+              "top_positive_sleeves": [
+                {
+                  "sleeve": "low_deployment_etf",
+                  "positive_value": 2626.1,
+                  "share": 0.47903
+                },
+                {
+                  "sleeve": "fundamental_growth_rs",
+                  "positive_value": 1160.25,
+                  "share": 0.211643
+                },
+                {
+                  "sleeve": "sec_negative",
+                  "positive_value": 1098.16,
+                  "share": 0.200317
+                },
+                {
+                  "sleeve": "free_data_cross_source_consensus",
+                  "positive_value": 463.3,
+                  "share": 0.084511
+                },
+                {
+                  "sleeve": "sec_governance",
+                  "positive_value": 134.31,
+                  "share": 0.0245
+                }
+              ]
+            }
+          },
+          "replacement_value_vs_spy_usd": {
+            "sum": 3773.56,
+            "mean": 314.4633,
+            "median": 544.435,
+            "positive_rate": 0.833333,
+            "concentration": {
+              "positive_total": 6600.19,
+              "max_single_ticker_positive_share": 0.568847,
+              "max_single_sleeve_positive_share": 0.568847,
+              "top_positive_tickers": [
+                {
+                  "ticker": "QQQ",
+                  "positive_value": 3754.5,
+                  "share": 0.568847
+                },
+                {
+                  "ticker": "AMD",
+                  "positive_value": 1171.74,
+                  "share": 0.177531
+                },
+                {
+                  "ticker": "DE",
+                  "positive_value": 997.9,
+                  "share": 0.151193
+                },
+                {
+                  "ticker": "CRDO",
+                  "positive_value": 451.1,
+                  "share": 0.068347
+                },
+                {
+                  "ticker": "BKNG",
+                  "positive_value": 224.95,
+                  "share": 0.034082
+                }
+              ],
+              "top_positive_sleeves": [
+                {
+                  "sleeve": "low_deployment_etf",
+                  "positive_value": 3754.5,
+                  "share": 0.568847
+                },
+                {
+                  "sleeve": "fundamental_growth_rs",
+                  "positive_value": 1171.74,
+                  "share": 0.177531
+                },
+                {
+                  "sleeve": "sec_negative",
+                  "positive_value": 997.9,
+                  "share": 0.151193
+                },
+                {
+                  "sleeve": "free_data_cross_source_consensus",
+                  "positive_value": 451.1,
+                  "share": 0.068347
+                },
+                {
+                  "sleeve": "sec_governance",
+                  "positive_value": 224.95,
+                  "share": 0.034082
+                }
+              ]
+            }
+          },
+          "replacement_value_vs_qqq_usd": {
+            "sum": 2786.82,
+            "mean": 232.235,
+            "median": 449.83,
+            "positive_rate": 0.916667,
+            "concentration": {
+              "positive_total": 5276.47,
+              "max_single_ticker_positive_share": 0.57145,
+              "max_single_sleeve_positive_share": 0.57145,
+              "top_positive_tickers": [
+                {
+                  "ticker": "QQQ",
+                  "positive_value": 3015.24,
+                  "share": 0.57145
+                },
+                {
+                  "ticker": "AMD",
+                  "positive_value": 954.14,
+                  "share": 0.180829
+                },
+                {
+                  "ticker": "DE",
+                  "positive_value": 829.57,
+                  "share": 0.157221
+                },
+                {
+                  "ticker": "CRDO",
+                  "positive_value": 368.03,
+                  "share": 0.069749
+                },
+                {
+                  "ticker": "BKNG",
+                  "positive_value": 109.49,
+                  "share": 0.020751
+                }
+              ],
+              "top_positive_sleeves": [
+                {
+                  "sleeve": "low_deployment_etf",
+                  "positive_value": 3015.24,
+                  "share": 0.57145
+                },
+                {
+                  "sleeve": "fundamental_growth_rs",
+                  "positive_value": 954.14,
+                  "share": 0.180829
+                },
+                {
+                  "sleeve": "sec_negative",
+                  "positive_value": 829.57,
+                  "share": 0.157221
+                },
+                {
+                  "sleeve": "free_data_cross_source_consensus",
+                  "positive_value": 368.03,
+                  "share": 0.069749
+                },
+                {
+                  "sleeve": "sec_governance",
+                  "positive_value": 109.49,
+                  "share": 0.020751
+                }
+              ]
+            }
+          }
+        },
+        "mid_exposure": {
+          "n": 12,
+          "distinct_tickers": 6,
+          "sleeves": [
+            {
+              "key": "low_deployment_etf",
+              "n": 7,
+              "row_share": 0.583333
+            },
+            {
+              "key": "fundamental_growth_rs",
+              "n": 2,
+              "row_share": 0.166667
+            },
+            {
+              "key": "volatility_contraction",
+              "n": 1,
+              "row_share": 0.083333
+            },
+            {
+              "key": "sec_negative",
+              "n": 1,
+              "row_share": 0.083333
+            },
+            {
+              "key": "volume_breadth_breakout",
+              "n": 1,
+              "row_share": 0.083333
+            }
+          ],
+          "tickers": [
+            {
+              "key": "QQQ",
+              "n": 7,
+              "row_share": 0.583333
+            },
+            {
+              "key": "AAPL",
+              "n": 1,
+              "row_share": 0.083333
+            },
+            {
+              "key": "LITE",
+              "n": 1,
+              "row_share": 0.083333
+            },
+            {
+              "key": "MU",
+              "n": 1,
+              "row_share": 0.083333
+            },
+            {
+              "key": "SNOW",
+              "n": 1,
+              "row_share": 0.083333
+            },
+            {
+              "key": "CRDO",
+              "n": 1,
+              "row_share": 0.083333
+            }
+          ],
+          "entry_months": [
+            "2026-05",
+            "2026-06"
+          ],
+          "entry_regimes": [
+            {
+              "key": "risk_on_trend",
+              "n": 12,
+              "row_share": 1.0
+            }
+          ],
+          "scalar_mean": 0.894542,
+          "scalar_min": 0.888839,
+          "scalar_max": 0.898278,
+          "replacement_value_vs_cash_usd": {
+            "sum": 303.79,
+            "mean": 25.3158,
+            "median": -98.05,
+            "positive_rate": 0.416667,
+            "concentration": {
+              "positive_total": 3186.95,
+              "max_single_ticker_positive_share": 0.659342,
+              "max_single_sleeve_positive_share": 0.659342,
+              "top_positive_tickers": [
+                {
+                  "ticker": "QQQ",
+                  "positive_value": 2101.29,
+                  "share": 0.659342
+                },
+                {
+                  "ticker": "CRDO",
+                  "positive_value": 1085.66,
+                  "share": 0.340658
+                }
+              ],
+              "top_positive_sleeves": [
+                {
+                  "sleeve": "low_deployment_etf",
+                  "positive_value": 2101.29,
+                  "share": 0.659342
+                },
+                {
+                  "sleeve": "fundamental_growth_rs",
+                  "positive_value": 1085.66,
+                  "share": 0.340658
+                }
+              ]
+            }
+          },
+          "replacement_value_vs_spy_usd": {
+            "sum": 4143.98,
+            "mean": 345.3317,
+            "median": 329.01,
+            "positive_rate": 0.75,
+            "concentration": {
+              "positive_total": 5134.05,
+              "max_single_ticker_positive_share": 0.685841,
+              "max_single_sleeve_positive_share": 0.685841,
+              "top_positive_tickers": [
+                {
+                  "ticker": "QQQ",
+                  "positive_value": 3521.14,
+                  "share": 0.685841
+                },
+                {
+                  "ticker": "CRDO",
+                  "positive_value": 1391.9,
+                  "share": 0.271112
+                },
+                {
+                  "ticker": "SNOW",
+                  "positive_value": 221.01,
+                  "share": 0.043048
+                }
+              ],
+              "top_positive_sleeves": [
+                {
+                  "sleeve": "low_deployment_etf",
+                  "positive_value": 3521.14,
+                  "share": 0.685841
+                },
+                {
+                  "sleeve": "fundamental_growth_rs",
+                  "positive_value": 1391.9,
+                  "share": 0.271112
+                },
+                {
+                  "sleeve": "volume_breadth_breakout",
+                  "positive_value": 221.01,
+                  "share": 0.043048
+                }
+              ]
+            }
+          },
+          "replacement_value_vs_qqq_usd": {
+            "sum": 4158.23,
+            "mean": 346.5192,
+            "median": 449.675,
+            "positive_rate": 0.75,
+            "concentration": {
+              "positive_total": 4882.78,
+              "max_single_ticker_positive_share": 0.64529,
+              "max_single_sleeve_positive_share": 0.64529,
+              "top_positive_tickers": [
+                {
+                  "ticker": "QQQ",
+                  "positive_value": 3150.81,
+                  "share": 0.64529
+                },
+                {
+                  "ticker": "CRDO",
+                  "positive_value": 1432.94,
+                  "share": 0.293468
+                },
+                {
+                  "ticker": "SNOW",
+                  "positive_value": 299.03,
+                  "share": 0.061242
+                }
+              ],
+              "top_positive_sleeves": [
+                {
+                  "sleeve": "low_deployment_etf",
+                  "positive_value": 3150.81,
+                  "share": 0.64529
+                },
+                {
+                  "sleeve": "fundamental_growth_rs",
+                  "positive_value": 1432.94,
+                  "share": 0.293468
+                },
+                {
+                  "sleeve": "volume_breadth_breakout",
+                  "positive_value": 299.03,
+                  "share": 0.061242
+                }
+              ]
+            }
+          }
+        },
+        "high_exposure": {
+          "n": 11,
+          "distinct_tickers": 9,
+          "sleeves": [
+            {
+              "key": "low_deployment_etf",
+              "n": 3,
+              "row_share": 0.272727
+            },
+            {
+              "key": "state_surface",
+              "n": 3,
+              "row_share": 0.272727
+            },
+            {
+              "key": "volume_breadth_breakout",
+              "n": 2,
+              "row_share": 0.181818
+            },
+            {
+              "key": "volatility_contraction",
+              "n": 1,
+              "row_share": 0.090909
+            },
+            {
+              "key": "sec_governance",
+              "n": 1,
+              "row_share": 0.090909
+            },
+            {
+              "key": "sec_leadership",
+              "n": 1,
+              "row_share": 0.090909
+            }
+          ],
+          "tickers": [
+            {
+              "key": "QQQ",
+              "n": 3,
+              "row_share": 0.272727
+            },
+            {
+              "key": "DDOG",
+              "n": 1,
+              "row_share": 0.090909
+            },
+            {
+              "key": "HOOD",
+              "n": 1,
+              "row_share": 0.090909
+            },
+            {
+              "key": "NOW",
+              "n": 1,
+              "row_share": 0.090909
+            },
+            {
+              "key": "GS",
+              "n": 1,
+              "row_share": 0.090909
+            },
+            {
+              "key": "AMD",
+              "n": 1,
+              "row_share": 0.090909
+            },
+            {
+              "key": "CRDO",
+              "n": 1,
+              "row_share": 0.090909
+            },
+            {
+              "key": "SNXX",
+              "n": 1,
+              "row_share": 0.090909
+            }
+          ],
+          "entry_months": [
+            "2026-05",
+            "2026-06"
+          ],
+          "entry_regimes": [
+            {
+              "key": "risk_on_trend",
+              "n": 11,
+              "row_share": 1.0
+            }
+          ],
+          "scalar_mean": 0.901831,
+          "scalar_min": 0.898278,
+          "scalar_max": 0.904325,
+          "replacement_value_vs_cash_usd": {
+            "sum": 5502.91,
+            "mean": 500.2645,
+            "median": 506.51,
+            "positive_rate": 0.636364,
+            "concentration": {
+              "positive_total": 9665.47,
+              "max_single_ticker_positive_share": 0.286823,
+              "max_single_sleeve_positive_share": 0.749082,
+              "top_positive_tickers": [
+                {
+                  "ticker": "SNXX",
+                  "positive_value": 2772.28,
+                  "share": 0.286823
+                },
+                {
+                  "ticker": "AMD",
+                  "positive_value": 2303.04,
+                  "share": 0.238275
+                },
+                {
+                  "ticker": "CRDO",
+                  "positive_value": 2164.91,
+                  "share": 0.223984
+                },
+                {
+                  "ticker": "QQQ",
+                  "positive_value": 2034.4,
+                  "share": 0.210481
+                },
+                {
+                  "ticker": "GS",
+                  "positive_value": 390.84,
+                  "share": 0.040437
+                }
+              ],
+              "top_positive_sleeves": [
+                {
+                  "sleeve": "state_surface",
+                  "positive_value": 7240.23,
+                  "share": 0.749082
+                },
+                {
+                  "sleeve": "low_deployment_etf",
+                  "positive_value": 2034.4,
+                  "share": 0.210481
+                },
+                {
+                  "sleeve": "sec_governance",
+                  "positive_value": 390.84,
+                  "share": 0.040437
+                }
+              ]
+            }
+          },
+          "replacement_value_vs_spy_usd": {
+            "sum": 5605.79,
+            "mean": 509.6173,
+            "median": 566.24,
+            "positive_rate": 0.636364,
+            "concentration": {
+              "positive_total": 8818.15,
+              "max_single_ticker_positive_share": 0.316218,
+              "max_single_sleeve_positive_share": 0.766661,
+              "top_positive_tickers": [
+                {
+                  "ticker": "SNXX",
+                  "positive_value": 2788.46,
+                  "share": 0.316218
+                },
+                {
+                  "ticker": "AMD",
+                  "positive_value": 2055.1,
+                  "share": 0.233053
+                },
+                {
+                  "ticker": "CRDO",
+                  "positive_value": 1916.97,
+                  "share": 0.217389
+                },
+                {
+                  "ticker": "QQQ",
+                  "positive_value": 1862.62,
+                  "share": 0.211226
+                },
+                {
+                  "ticker": "GS",
+                  "positive_value": 195.0,
+                  "share": 0.022113
+                }
+              ],
+              "top_positive_sleeves": [
+                {
+                  "sleeve": "state_surface",
+                  "positive_value": 6760.53,
+                  "share": 0.766661
+                },
+                {
+                  "sleeve": "low_deployment_etf",
+                  "positive_value": 1862.62,
+                  "share": 0.211226
+                },
+                {
+                  "sleeve": "sec_governance",
+                  "positive_value": 195.0,
+                  "share": 0.022113
+                }
+              ]
+            }
+          },
+          "replacement_value_vs_qqq_usd": {
+            "sum": 4755.13,
+            "mean": 432.2845,
+            "median": 450.5,
+            "positive_rate": 0.545455,
+            "concentration": {
+              "positive_total": 7518.36,
+              "max_single_ticker_positive_share": 0.359702,
+              "max_single_sleeve_positive_share": 0.820182,
+              "top_positive_tickers": [
+                {
+                  "ticker": "SNXX",
+                  "positive_value": 2704.37,
+                  "share": 0.359702
+                },
+                {
+                  "ticker": "AMD",
+                  "positive_value": 1800.09,
+                  "share": 0.239426
+                },
+                {
+                  "ticker": "CRDO",
+                  "positive_value": 1661.96,
+                  "share": 0.221054
+                },
+                {
+                  "ticker": "QQQ",
+                  "positive_value": 1351.94,
+                  "share": 0.179818
+                }
+              ],
+              "top_positive_sleeves": [
+                {
+                  "sleeve": "state_surface",
+                  "positive_value": 6166.42,
+                  "share": 0.820182
+                },
+                {
+                  "sleeve": "low_deployment_etf",
+                  "positive_value": 1351.94,
+                  "share": 0.179818
+                }
+              ]
+            }
+          }
+        }
+      },
+      "scalar_range": 0.043031,
+      "spearman_scalar_to_cash": 0.118324,
+      "spearman_scalar_to_spy": 0.013755,
+      "spearman_scalar_to_qqq": 0.085205
+    },
+    "summary": "The current entry-regime-tagged forward rows do not show robust monotonic replacement-value improvement as exposure_scalar rises. The sample is still a forward attribution surface, not activation evidence for a regime soft tilt."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260623-027.json",
+  "single_causal_variable": "forward_replacement_entry_regime_exposure_scalar_monotonicity_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260623-027.json",
+  "trial_family": "forward_replacement_entry_regime_exposure_scalar",
+  "trial_variant_id": "closed_forward_rows_exposure_scalar_tertiles_v1",
+  "implementation_mode": "observed_only_attribution_runner",
+  "new_evidence_axis": "New evidence is not a retuned regime classifier or frozen-window slice: exp-20260623-002 added entry-time regime_chop exposure_scalar tags to closed forward replacement-value rows, enabling a forward-only monotonicity check before any tilt promotion.",
+  "decision": "rejected_no_forward_regime_scalar_monotonicity",
+  "artifact": "data/experiments/exp-20260623-027/exp_20260623_027_forward_regime_scalar_attribution.json",
+  "log": "experiments/logs/exp-20260623-027.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    },
+    "note": "Observed-only attribution; before and after policy are identical."
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "source_audit": {
+      "source_artifact": "data/paper_sleeves/forward_replacement_value.jsonl",
+      "raw_rows": 35,
+      "deduped_rows": 35,
+      "tagged_usable_rows": 35,
+      "rows_missing_usable_scalar_or_replacement": 0,
+      "artifact_not_mutated": true
+    },
+    "fields_checked": [
+      "entry_date",
+      "exit_date",
+      "sleeve_key",
+      "ticker",
+      "entry_regime_status",
+      "entry_regime_exposure_scalar",
+      "entry_regime_p_choppy_range",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd"
+    ],
+    "entry_date_present": true,
+    "target_price_relevance": "Not applicable: no target exit, entry, order, or paper ledger mutation is scheduled by this observed-only attribution."
+  },
+  "gate3": {
+    "filter_added": false,
+    "signals_generated": 35,
+    "signals_survived": 35,
+    "survival_rate": 1.0,
+    "baseline_survival_rate": 0.8232,
+    "note": "No executable filter was added; rows are attributed only."
+  },
+  "gate4": {
+    "observed_only_lead": false,
+    "decision": "rejected_no_forward_regime_scalar_monotonicity",
+    "failed_reasons": [
+      "month_support_passed"
+    ],
+    "acceptance_checks": {
+      "min_rows_passed": true,
+      "min_bucket_rows_passed": true,
+      "scalar_range_passed": true,
+      "spearman_cash_positive": true,
+      "spearman_spy_positive": true,
+      "spearman_qqq_positive": true,
+      "high_mean_cash_beats_low": true,
+      "high_median_cash_beats_low": true,
+      "high_mean_spy_beats_low": true,
+      "high_mean_qqq_beats_low": true,
+      "high_sums_positive": true,
+      "cash_positive_concentration_passed": true,
+      "month_support_passed": false
+    },
+    "strategy_rerun_required": false,
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "max_drawdown_pct": 0.0
+    },
+    "lead_limitations": [
+      "Forward-only closed paper rows, not canonical fixed-window evidence.",
+      "No shared helper, daily adapter, rank, notional, exit, or order rule changed.",
+      "Any positive lead would require a separate activation-envelope Gate 1-4."
+    ]
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "trade_enabled": false,
+    "daily_snapshot_exposed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "production_orders_changed": false,
+    "parity_note": "Read-only attribution over existing forward replacement artifact."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The current entry-regime-tagged forward rows do not show robust monotonic replacement-value improvement as exposure_scalar rises. The sample is still a forward attribution surface, not activation evidence for a regime soft tilt.",
+    "forbidden_near_neighbor_retry": "Do not retry by changing exposure-scalar floor, regime constants, tertile boundaries, row-count gates, concentration guards, source rank, notional, hold days, or cooldown on the same closed rows.",
+    "new_evidence_required": "Need materially more closed forward replacement rows carrying entry_regime tags across diversified sleeves and non-risk-on states before any regime soft-tilt activation test."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260623_027_forward_regime_scalar_attribution.py",
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "quant/regime_chop_state.py",
+    "experiments/logs/exp-20260615-025.json",
+    "experiments/logs/exp-20260622-017.json",
+    "experiments/logs/exp-20260623-002.json",
+    "experiments/logs/exp-20260623-004.json"
+  ],
+  "updated_at": "2026-06-23T22:09:26+00:00"
+}

@@ -1,11 +1,6 @@
 {
   "acceptance_rule": "Forward Gate 5 before any activation: >= 30 closed forward paper trades within 10 weeks, positive net PnL, single-ticker positive PnL share <= 50%, and top-5 positive PnL share <= 60%. This is a default-off data-coverage expansion; no live orders, ranking, sizing, or exits change.",
   "allowed_write_scope": [
-    "quant/pead_broad_universe_tickers.py",
-    "quant/fetch_broad_earnings_snapshot.py",
-    "quant/pead_broad_universe_paper_sleeve.py",
-    "quant/earnings_snapshot.py",
-    "quant/run.py",
     "data/daily/snapshots/earnings",
     "data/paper_sleeves/pead_broad_universe_state.json",
     "data/paper_sleeves/pead_broad_universe_snapshots.jsonl",
@@ -14,6 +9,7 @@
     "experiments/tickets/exp-20260607-003.json",
     "docs/current_state.md"
   ],
+  "claim_maintenance_note": "2026-06-23: code-wiring portion of this ticket has SHIPPED -- run.py already wires the broad earnings fetch (run.py:373) and the PEAD broad-universe sleeve (run.py:1294-3361), and the daily sleeve is live (pead_broad_universe_state.json updated 2026-06-23). This ticket is now purely in its ~10-week forward-observation phase (Gate 5), which needs no source-code write lock. Released the landed code files (quant/run.py, quant/fetch_broad_earnings_snapshot.py, quant/pead_broad_universe_tickers.py, quant/earnings_snapshot.py, quant/pead_broad_universe_paper_sleeve.py) from allowed_write_scope so they stop blocking other work (notably the deferred regime/breadth run.py wiring). Status left as 'running' because forward observation is legitimately ongoing; do NOT mark abandoned. Original full scope preserved in git history.",
   "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
   "card_file": "experiments/cards/exp-20260607-003.md",
   "change_type": "default_off_paper_data_coverage_expansion",

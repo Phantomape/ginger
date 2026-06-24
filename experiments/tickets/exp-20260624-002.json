@@ -1,0 +1,1102 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260624_002_estimate_revision_ledger_direction_forward_outcome.py",
+    "data/experiments/exp-20260624-002/exp_20260624_002_estimate_revision_ledger_direction_forward_outcome.json",
+    "experiments/cards/exp-20260624-002.md",
+    "experiments/manifests/exp-20260624-002.json",
+    "experiments/tickets/exp-20260624-002.json",
+    "experiments/logs/exp-20260624-002.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260624-002.md",
+  "causal_components": [
+    "read-only production estimate_revision ledger",
+    "warehouse next-10-trading-day outcome settlement",
+    "direction cohort attribution",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "estimate_revision_ledger_direction_forward_outcome_v1",
+  "claimed_at": "2026-06-24T01:08:44+00:00",
+  "completed_at": "2026-06-24T01:15:49+00:00",
+  "created_at": "2026-06-24T01:08:30+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260624-002",
+  "experiment_uid": "expuid-3025dee8b4e9432b",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260624-002",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-24T01:08:30+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "estimate_revision_ledger_direction_forward_outcome"
+  },
+  "hypothesis": "event/ranking attribution: production estimate-revision ledger rows with positive EPS estimate deltas should show stronger next-10-trading-day replacement value than flat or negative ledger rows, using only point-in-time ledger fields and warehouse-settled forward prices; otherwise the revision ledger remains data-only and must not feed candidate ranking.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "estimate_revision_ledger_direction_forward_outcome_v1"
+  ],
+  "mechanism_family": "estimate_revision_forward_ledger_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260528-007",
+    "exp-20260604-029",
+    "exp-20260605-029",
+    "exp-20260619-001"
+  ],
+  "new_evidence_type": "production_visible_forward_estimate_revision_ledger_outcome",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "expectation_true_ranking_replacement_attribution",
+        "score": 0.6261,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "expectation_residual_component_ranking_proxy",
+        "score": 0.619,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "revision_expectation",
+      "field_tags": [
+        "attribution",
+        "data",
+        "deltas",
+        "direction",
+        "eps",
+        "estimate",
+        "event",
+        "feed",
+        "fields",
+        "flat",
+        "forward",
+        "in",
+        "ledger",
+        "must",
+        "negative",
+        "not",
+        "only",
+        "or",
+        "otherwise",
+        "outcome",
+        "point",
+        "positive",
+        "prices",
+        "ranking",
+        "remains",
+        "replacement",
+        "revision",
+        "rows",
+        "settled",
+        "should",
+        "show",
+        "stronger",
+        "than",
+        "time",
+        "trading",
+        "using",
+        "value",
+        "warehouse"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "expectation_true_ranking_replacement_attribution",
+        "reopen_condition": "If promising, create a separate default-off or strategy Gate 1-4 experiment with shared production-visible ranking logic. If not promising, do not promote this simple additive expectation/residual component; pivot to PEAD eligibility or richer expectation fields.",
+        "score": 0.6261,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "expectation_residual_component_ranking_proxy",
+        "reopen_condition": "Persist PIT old alpha_score/rank for the same rows, then rerun true old-vs-new ranking attribution.",
+        "score": 0.619,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "eps_revision_lead_window_attribution",
+        "reopen_condition": "If Bucket A remains sparse, continue PIT estimate-revision and candidate accumulation or add a default-off paper sleeve that tracks positive revision rows independently of same-day core candidates.",
+        "score": 0.489,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "earnings_estimate_revision_event_confirmation_overlay",
+        "reopen_condition": null,
+        "score": 0.4793,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "estimate_revision_persistence_underreaction_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.4793,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "post-20260622 production estimate_revision_ledger rows settled against warehouse forward outcomes as read-only direction cohorts; no candidate_pool threshold, rank, sizing, or shared-policy change",
+    "override": true,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "revision_expectation",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "revision_family_saturated",
+      "settled_rows_too_few",
+      "no_directional_monotonicity",
+      "warehouse_outcomes_missing",
+      "up_revision_rows_concentrated"
+    ],
+    "confidence_reason": "Prior revision candidate-pool scans are mostly frozen, but exp-20260528-007 tested an expectation residual ranking increment, not the later production estimate_revision_ledger as independent PIT direction cohorts settled against warehouse outcomes. Confidence is low because earlier revision thresholds were weak and the latest ledger reported no candidate matches.",
+    "recorded_at": "2026-06-24T01:08:15+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "observed_only_rejected_revision_direction_no_edge",
+    "artifact": "data/experiments/exp-20260624-002/exp_20260624_002_estimate_revision_ledger_direction_forward_outcome.json",
+    "log": "experiments/logs/exp-20260624-002.json",
+    "runner": "quant/experiments/exp_20260624_002_estimate_revision_ledger_direction_forward_outcome.py",
+    "gate4": {
+      "observed_only_lead": false,
+      "decision": "observed_only_rejected_revision_direction_no_edge",
+      "failed_reasons": [
+        "months_passed"
+      ],
+      "acceptance_checks": {
+        "positive_rows_passed": true,
+        "positive_tickers_passed": true,
+        "flat_rows_passed": true,
+        "negative_rows_passed": true,
+        "months_passed": false,
+        "positive_mean_positive_all_comparators": true,
+        "positive_median_positive_all_comparators": true,
+        "positive_mean_beats_flat_two_comparators": true,
+        "positive_mean_beats_negative_two_comparators": true,
+        "positive_concentration_passed": true
+      },
+      "positive_beats_flat_mean_comparator_count": 3,
+      "positive_beats_negative_mean_comparator_count": 3,
+      "strategy_rerun_required": false,
+      "before_after_strategy_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "max_drawdown_pct": 0.0
+      },
+      "lead_limitations": [
+        "Observed-only warehouse settlement, not canonical fixed-window Gate 4 evidence.",
+        "No shared helper, daily adapter, rank, notional, exit, or order rule changed.",
+        "Any promotion requires a separate shared-policy/default-off experiment."
+      ]
+    },
+    "calibration": {
+      "predicted_success_probability": 0.18,
+      "actual_success": 0,
+      "brier_score": 0.0324,
+      "failed_reasons": [
+        "months_passed"
+      ],
+      "failure_modes_observed": [
+        "months_passed"
+      ]
+    },
+    "attribution": {
+      "settled_row_count": 957,
+      "cohorts": {
+        "flat_delta": {
+          "n": 754,
+          "distinct_tickers": 52,
+          "distinct_as_of_dates": 19,
+          "as_of_date_min": "2026-05-08",
+          "as_of_date_max": "2026-05-31",
+          "entry_date_min": "2026-05-11",
+          "entry_date_max": "2026-06-01",
+          "as_of_months": [
+            {
+              "key": "2026-05",
+              "n": 754,
+              "row_share": 1.0
+            }
+          ],
+          "direction_cohorts": [
+            {
+              "key": "flat_delta",
+              "n": 754,
+              "row_share": 1.0
+            }
+          ],
+          "revision_direction_prev": [
+            {
+              "key": "flat",
+              "n": 754,
+              "row_share": 1.0
+            }
+          ],
+          "tickers": [
+            {
+              "key": "AMZN",
+              "n": 19,
+              "row_share": 0.025199
+            },
+            {
+              "key": "BE",
+              "n": 19,
+              "row_share": 0.025199
+            },
+            {
+              "key": "CRDO",
+              "n": 19,
+              "row_share": 0.025199
+            },
+            {
+              "key": "GE",
+              "n": 19,
+              "row_share": 0.025199
+            },
+            {
+              "key": "GOOG",
+              "n": 19,
+              "row_share": 0.025199
+            },
+            {
+              "key": "GS",
+              "n": 19,
+              "row_share": 0.025199
+            },
+            {
+              "key": "INTC",
+              "n": 19,
+              "row_share": 0.025199
+            },
+            {
+              "key": "ISRG",
+              "n": 19,
+              "row_share": 0.025199
+            },
+            {
+              "key": "MA",
+              "n": 19,
+              "row_share": 0.025199
+            },
+            {
+              "key": "NFLX",
+              "n": 19,
+              "row_share": 0.025199
+            },
+            {
+              "key": "NOW",
+              "n": 19,
+              "row_share": 0.025199
+            },
+            {
+              "key": "PLTR",
+              "n": 19,
+              "row_share": 0.025199
+            },
+            {
+              "key": "RTX",
+              "n": 19,
+              "row_share": 0.025199
+            },
+            {
+              "key": "TSLA",
+              "n": 19,
+              "row_share": 0.025199
+            },
+            {
+              "key": "TSM",
+              "n": 19,
+              "row_share": 0.025199
+            },
+            {
+              "key": "HOOD",
+              "n": 18,
+              "row_share": 0.023873
+            },
+            {
+              "key": "WDC",
+              "n": 18,
+              "row_share": 0.023873
+            },
+            {
+              "key": "SNOW",
+              "n": 17,
+              "row_share": 0.022546
+            },
+            {
+              "key": "BKNG",
+              "n": 16,
+              "row_share": 0.02122
+            },
+            {
+              "key": "LITE",
+              "n": 16,
+              "row_share": 0.02122
+            }
+          ],
+          "stock_return": {
+            "n": 754,
+            "sum": 19.68,
+            "mean": 0.0261,
+            "median": 0.0061,
+            "min": -0.2862,
+            "max": 0.7879,
+            "positive_rate": 0.5265
+          },
+          "pnl_vs_cash_usd": {
+            "n": 754,
+            "sum": 196779.03,
+            "mean": 260.9801,
+            "median": 60.7565,
+            "min": -2861.996,
+            "max": 7878.7498,
+            "positive_rate": 0.5265
+          },
+          "pnl_vs_cash_usd_max_single_ticker_positive_share": 0.135281,
+          "pnl_vs_spy_usd": {
+            "n": 754,
+            "sum": 172664.07,
+            "mean": 228.9974,
+            "median": 22.9238,
+            "min": -2531.1729,
+            "max": 7625.8544,
+            "positive_rate": 0.5186
+          },
+          "pnl_vs_spy_usd_max_single_ticker_positive_share": 0.139647,
+          "pnl_vs_qqq_usd": {
+            "n": 754,
+            "sum": 131385.9,
+            "mean": 174.2519,
+            "median": 10.0665,
+            "min": -2368.115,
+            "max": 7440.2641,
+            "positive_rate": 0.5027
+          },
+          "pnl_vs_qqq_usd_max_single_ticker_positive_share": 0.144252
+        },
+        "mixed_delta": {
+          "n": 2,
+          "distinct_tickers": 2,
+          "distinct_as_of_dates": 2,
+          "as_of_date_min": "2026-05-15",
+          "as_of_date_max": "2026-05-28",
+          "entry_date_min": "2026-05-18",
+          "entry_date_max": "2026-05-29",
+          "as_of_months": [
+            {
+              "key": "2026-05",
+              "n": 2,
+              "row_share": 1.0
+            }
+          ],
+          "direction_cohorts": [
+            {
+              "key": "mixed_delta",
+              "n": 2,
+              "row_share": 1.0
+            }
+          ],
+          "revision_direction_prev": [
+            {
+              "key": "up",
+              "n": 1,
+              "row_share": 0.5
+            },
+            {
+              "key": "down",
+              "n": 1,
+              "row_share": 0.5
+            }
+          ],
+          "tickers": [
+            {
+              "key": "XOM",
+              "n": 1,
+              "row_share": 0.5
+            },
+            {
+              "key": "NVDA",
+              "n": 1,
+              "row_share": 0.5
+            }
+          ],
+          "stock_return": {
+            "n": 2,
+            "sum": -0.09,
+            "mean": -0.0473,
+            "median": -0.0473,
+            "min": -0.0505,
+            "max": -0.0441,
+            "positive_rate": 0.0
+          },
+          "pnl_vs_cash_usd": {
+            "n": 2,
+            "sum": -946.09,
+            "mean": -473.0445,
+            "median": -473.0445,
+            "min": -504.7039,
+            "max": -441.385,
+            "positive_rate": 0.0
+          },
+          "pnl_vs_cash_usd_max_single_ticker_positive_share": null,
+          "pnl_vs_spy_usd": {
+            "n": 2,
+            "sum": -959.01,
+            "mean": -479.5026,
+            "median": -479.5026,
+            "min": -757.5993,
+            "max": -201.406,
+            "positive_rate": 0.0
+          },
+          "pnl_vs_spy_usd_max_single_ticker_positive_share": null,
+          "pnl_vs_qqq_usd": {
+            "n": 2,
+            "sum": -1103.75,
+            "mean": -551.8773,
+            "median": -551.8773,
+            "min": -943.1896,
+            "max": -160.5649,
+            "positive_rate": 0.0
+          },
+          "pnl_vs_qqq_usd_max_single_ticker_positive_share": null
+        },
+        "negative_delta": {
+          "n": 105,
+          "distinct_tickers": 23,
+          "distinct_as_of_dates": 16,
+          "as_of_date_min": "2026-05-09",
+          "as_of_date_max": "2026-05-31",
+          "entry_date_min": "2026-05-11",
+          "entry_date_max": "2026-06-01",
+          "as_of_months": [
+            {
+              "key": "2026-05",
+              "n": 105,
+              "row_share": 1.0
+            }
+          ],
+          "direction_cohorts": [
+            {
+              "key": "negative_delta",
+              "n": 105,
+              "row_share": 1.0
+            }
+          ],
+          "revision_direction_prev": [
+            {
+              "key": "flat",
+              "n": 79,
+              "row_share": 0.752381
+            },
+            {
+              "key": "down",
+              "n": 26,
+              "row_share": 0.247619
+            }
+          ],
+          "tickers": [
+            {
+              "key": "COIN",
+              "n": 11,
+              "row_share": 0.104762
+            },
+            {
+              "key": "SPOT",
+              "n": 8,
+              "row_share": 0.07619
+            },
+            {
+              "key": "JPM",
+              "n": 7,
+              "row_share": 0.066667
+            },
+            {
+              "key": "VRT",
+              "n": 7,
+              "row_share": 0.066667
+            },
+            {
+              "key": "TRIP",
+              "n": 6,
+              "row_share": 0.057143
+            },
+            {
+              "key": "XOM",
+              "n": 6,
+              "row_share": 0.057143
+            },
+            {
+              "key": "DE",
+              "n": 6,
+              "row_share": 0.057143
+            },
+            {
+              "key": "MCD",
+              "n": 5,
+              "row_share": 0.047619
+            },
+            {
+              "key": "CVX",
+              "n": 5,
+              "row_share": 0.047619
+            },
+            {
+              "key": "SOFI",
+              "n": 5,
+              "row_share": 0.047619
+            },
+            {
+              "key": "MRVL",
+              "n": 4,
+              "row_share": 0.038095
+            },
+            {
+              "key": "META",
+              "n": 4,
+              "row_share": 0.038095
+            },
+            {
+              "key": "NVO",
+              "n": 4,
+              "row_share": 0.038095
+            },
+            {
+              "key": "UNH",
+              "n": 4,
+              "row_share": 0.038095
+            },
+            {
+              "key": "APLD",
+              "n": 4,
+              "row_share": 0.038095
+            },
+            {
+              "key": "LITE",
+              "n": 3,
+              "row_share": 0.028571
+            },
+            {
+              "key": "BKNG",
+              "n": 3,
+              "row_share": 0.028571
+            },
+            {
+              "key": "GEV",
+              "n": 3,
+              "row_share": 0.028571
+            },
+            {
+              "key": "MSFT",
+              "n": 3,
+              "row_share": 0.028571
+            },
+            {
+              "key": "NVDA",
+              "n": 3,
+              "row_share": 0.028571
+            }
+          ],
+          "stock_return": {
+            "n": 105,
+            "sum": 2.4,
+            "mean": 0.0229,
+            "median": -0.0174,
+            "min": -0.1605,
+            "max": 0.7665,
+            "positive_rate": 0.4476
+          },
+          "pnl_vs_cash_usd": {
+            "n": 105,
+            "sum": 23998.19,
+            "mean": 228.5542,
+            "median": -173.828,
+            "min": -1605.2632,
+            "max": 7665.3914,
+            "positive_rate": 0.4476
+          },
+          "pnl_vs_cash_usd_max_single_ticker_positive_share": 0.370657,
+          "pnl_vs_spy_usd": {
+            "n": 105,
+            "sum": 20906.48,
+            "mean": 199.1093,
+            "median": -242.3831,
+            "min": -1690.8718,
+            "max": 7328.0118,
+            "positive_rate": 0.4381
+          },
+          "pnl_vs_spy_usd_max_single_ticker_positive_share": 0.368803,
+          "pnl_vs_qqq_usd": {
+            "n": 105,
+            "sum": 12499.73,
+            "mean": 119.0451,
+            "median": -264.4744,
+            "min": -1816.4412,
+            "max": 7003.0691,
+            "positive_rate": 0.4095
+          },
+          "pnl_vs_qqq_usd_max_single_ticker_positive_share": 0.374285
+        },
+        "positive_delta": {
+          "n": 96,
+          "distinct_tickers": 24,
+          "distinct_as_of_dates": 15,
+          "as_of_date_min": "2026-05-09",
+          "as_of_date_max": "2026-05-31",
+          "entry_date_min": "2026-05-11",
+          "entry_date_max": "2026-06-01",
+          "as_of_months": [
+            {
+              "key": "2026-05",
+              "n": 96,
+              "row_share": 1.0
+            }
+          ],
+          "direction_cohorts": [
+            {
+              "key": "positive_delta",
+              "n": 96,
+              "row_share": 1.0
+            }
+          ],
+          "revision_direction_prev": [
+            {
+              "key": "flat",
+              "n": 62,
+              "row_share": 0.645833
+            },
+            {
+              "key": "up",
+              "n": 34,
+              "row_share": 0.354167
+            }
+          ],
+          "tickers": [
+            {
+              "key": "MU",
+              "n": 10,
+              "row_share": 0.104167
+            },
+            {
+              "key": "CVX",
+              "n": 9,
+              "row_share": 0.09375
+            },
+            {
+              "key": "APP",
+              "n": 7,
+              "row_share": 0.072917
+            },
+            {
+              "key": "CAT",
+              "n": 6,
+              "row_share": 0.0625
+            },
+            {
+              "key": "NVDA",
+              "n": 6,
+              "row_share": 0.0625
+            },
+            {
+              "key": "XOM",
+              "n": 6,
+              "row_share": 0.0625
+            },
+            {
+              "key": "AMD",
+              "n": 5,
+              "row_share": 0.052083
+            },
+            {
+              "key": "COHR",
+              "n": 5,
+              "row_share": 0.052083
+            },
+            {
+              "key": "RBLX",
+              "n": 5,
+              "row_share": 0.052083
+            },
+            {
+              "key": "AAPL",
+              "n": 4,
+              "row_share": 0.041667
+            },
+            {
+              "key": "DIS",
+              "n": 4,
+              "row_share": 0.041667
+            },
+            {
+              "key": "AVGO",
+              "n": 4,
+              "row_share": 0.041667
+            },
+            {
+              "key": "MCD",
+              "n": 4,
+              "row_share": 0.041667
+            },
+            {
+              "key": "UNH",
+              "n": 4,
+              "row_share": 0.041667
+            },
+            {
+              "key": "LLY",
+              "n": 3,
+              "row_share": 0.03125
+            },
+            {
+              "key": "NVO",
+              "n": 3,
+              "row_share": 0.03125
+            },
+            {
+              "key": "DDOG",
+              "n": 2,
+              "row_share": 0.020833
+            },
+            {
+              "key": "MTSI",
+              "n": 2,
+              "row_share": 0.020833
+            },
+            {
+              "key": "V",
+              "n": 2,
+              "row_share": 0.020833
+            },
+            {
+              "key": "COIN",
+              "n": 1,
+              "row_share": 0.010417
+            }
+          ],
+          "stock_return": {
+            "n": 96,
+            "sum": 2.54,
+            "mean": 0.0264,
+            "median": 0.0134,
+            "min": -0.2043,
+            "max": 0.4689,
+            "positive_rate": 0.5521
+          },
+          "pnl_vs_cash_usd": {
+            "n": 96,
+            "sum": 25378.96,
+            "mean": 264.3642,
+            "median": 134.0346,
+            "min": -2043.3267,
+            "max": 4688.8254,
+            "positive_rate": 0.5521
+          },
+          "pnl_vs_cash_usd_max_single_ticker_positive_share": 0.219959,
+          "pnl_vs_spy_usd": {
+            "n": 96,
+            "sum": 25239.81,
+            "mean": 262.9147,
+            "median": 179.498,
+            "min": -1803.3477,
+            "max": 4436.9603,
+            "positive_rate": 0.5833
+          },
+          "pnl_vs_spy_usd_max_single_ticker_positive_share": 0.22489,
+          "pnl_vs_qqq_usd": {
+            "n": 96,
+            "sum": 20099.51,
+            "mean": 209.3699,
+            "median": 116.109,
+            "min": -1762.5066,
+            "max": 4136.995,
+            "positive_rate": 0.5625
+          },
+          "pnl_vs_qqq_usd_max_single_ticker_positive_share": 0.231273
+        },
+        "unknown_delta": {
+          "n": 0,
+          "distinct_tickers": 0,
+          "distinct_as_of_dates": 0,
+          "as_of_date_min": null,
+          "as_of_date_max": null,
+          "entry_date_min": null,
+          "entry_date_max": null,
+          "as_of_months": [],
+          "direction_cohorts": [],
+          "revision_direction_prev": [],
+          "tickers": [],
+          "stock_return": {
+            "n": 0,
+            "sum": null,
+            "mean": null,
+            "median": null,
+            "min": null,
+            "max": null,
+            "positive_rate": null
+          },
+          "pnl_vs_cash_usd": {
+            "n": 0,
+            "sum": null,
+            "mean": null,
+            "median": null,
+            "min": null,
+            "max": null,
+            "positive_rate": null
+          },
+          "pnl_vs_cash_usd_max_single_ticker_positive_share": null,
+          "pnl_vs_spy_usd": {
+            "n": 0,
+            "sum": null,
+            "mean": null,
+            "median": null,
+            "min": null,
+            "max": null,
+            "positive_rate": null
+          },
+          "pnl_vs_spy_usd_max_single_ticker_positive_share": null,
+          "pnl_vs_qqq_usd": {
+            "n": 0,
+            "sum": null,
+            "mean": null,
+            "median": null,
+            "min": null,
+            "max": null,
+            "positive_rate": null
+          },
+          "pnl_vs_qqq_usd_max_single_ticker_positive_share": null
+        }
+      },
+      "skipped": {
+        "not_usable_or_not_pit_safe": 2950,
+        "missing_forward_ticker_window": 4556,
+        "missing_benchmark_window": 20
+      }
+    },
+    "summary": "Positive estimate-revision rows formed a production-visible cohort, but the acceptance checks require broad, deconcentrated, benchmark-relative separation from both flat and negative rows. The result therefore remains observed-only until the field proves monotonic enough to justify a shared paper helper."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260624-002.json",
+  "single_causal_variable": "estimate_revision_ledger_direction_forward_outcome_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260624-002.json",
+  "trial_family": "estimate_revision_ledger_direction_outcome",
+  "trial_variant_id": "v1",
+  "implementation_mode": "observed_only_read_only_runner",
+  "new_evidence_axis": "post-20260622 production estimate_revision_ledger rows settled against warehouse forward outcomes as read-only direction cohorts; no candidate_pool threshold, rank, sizing, or shared-policy change",
+  "decision": "observed_only_rejected_revision_direction_no_edge",
+  "artifact": "data/experiments/exp-20260624-002/exp_20260624_002_estimate_revision_ledger_direction_forward_outcome.json",
+  "log": "experiments/logs/exp-20260624-002.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_summary": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "max_drawdown_pct_worst": 0.1119,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "required_fields": [
+      "ticker",
+      "as_of_date",
+      "eps_estimate_delta_prev",
+      "eps_estimate_delta_7d",
+      "revision_direction_prev",
+      "estimate_revision_usable",
+      "pit_safe_flag",
+      "same_event_revision_identifiable"
+    ],
+    "missing_required_fields": [],
+    "field_presence": {
+      "ticker": 8483,
+      "as_of_date": 8483,
+      "eps_estimate": 7951,
+      "estimate_revision_usable": 8483,
+      "pit_safe_flag": 8483,
+      "same_event_revision_identifiable": 8483,
+      "same_event_history_count": 8483,
+      "next_earnings_date": 7072,
+      "eps_estimate_delta_prev": 5789,
+      "revision_direction_prev": 5789,
+      "eps_estimate_delta_7d": 3096,
+      "eps_estimate_delta_30d": 781
+    },
+    "entry_date": {
+      "source": "next warehouse trading session after ledger as_of_date",
+      "settled_rows_with_entry_date": 957
+    },
+    "target_price": {
+      "source": "not_applicable_observed_only_forward_settlement_uses_entry_open_exit_close",
+      "available": false,
+      "reason": "No executable target is used in this read-only attribution."
+    }
+  },
+  "gate3": {
+    "strategy_filter_added": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "passed": true,
+    "note": "No new filter was applied; baseline survival is reported for protocol visibility."
+  },
+  "gate4": {
+    "observed_only_lead": false,
+    "decision": "observed_only_rejected_revision_direction_no_edge",
+    "failed_reasons": [
+      "months_passed"
+    ],
+    "acceptance_checks": {
+      "positive_rows_passed": true,
+      "positive_tickers_passed": true,
+      "flat_rows_passed": true,
+      "negative_rows_passed": true,
+      "months_passed": false,
+      "positive_mean_positive_all_comparators": true,
+      "positive_median_positive_all_comparators": true,
+      "positive_mean_beats_flat_two_comparators": true,
+      "positive_mean_beats_negative_two_comparators": true,
+      "positive_concentration_passed": true
+    },
+    "positive_beats_flat_mean_comparator_count": 3,
+    "positive_beats_negative_mean_comparator_count": 3,
+    "strategy_rerun_required": false,
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "max_drawdown_pct": 0.0
+    },
+    "lead_limitations": [
+      "Observed-only warehouse settlement, not canonical fixed-window Gate 4 evidence.",
+      "No shared helper, daily adapter, rank, notional, exit, or order rule changed.",
+      "Any promotion requires a separate shared-policy/default-off experiment."
+    ]
+  },
+  "production_impact": {
+    "strategy_behavior_changed": false,
+    "trade_enabled_changed": false,
+    "live_orders_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_changed": false,
+    "shared_helper_added": false,
+    "default_off_only": true,
+    "live_ready": false,
+    "execution_envelope": "Not live-ready. This is a gross proxy forward-settlement attribution using 10000 USD notional; no liquidity, slippage, portfolio displacement, kill switch, or order semantics were introduced."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "Positive estimate-revision rows formed a production-visible cohort, but the acceptance checks require broad, deconcentrated, benchmark-relative separation from both flat and negative rows. The result therefore remains observed-only until the field proves monotonic enough to justify a shared paper helper.",
+    "forbidden_near_neighbor_retry": "Do not retry static EPS revision threshold scans, simple expectation residual rank additions, same-day candidate-pool overlays, or one-month ledger direction cohorts as accepted alpha. Those are near-neighbors of exp-20260528-007, exp-20260604-029, exp-20260605-029, and this rejected run.",
+    "new_evidence_required": "A retry needs materially new evidence: at least another settled month of production estimate_revision_ledger rows, a distinct PIT revision field not used here, or a shared default-off helper that passes canonical Gate 1-4 rather than this gross proxy warehouse attribution.",
+    "what_to_avoid_next": "Do not retry static EPS revision thresholds, additive expectation ranking components, or candidate-pool overlays without a new forward production field or a materially different settlement axis.",
+    "next_step": "If accepted as a lead, build a shared default-off helper and canonical Gate 1-4 replay. If rejected, pivot away from revision ledger direction and test a different production-visible data edge.",
+    "surprise_note": "The novelty gate was overridden only because this settles the newer production ledger itself rather than rerunning the prior expectation residual ranking component."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260624_002_estimate_revision_ledger_direction_forward_outcome.py",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/warehouse/warehouse_main.sqlite",
+    "data/non_ohlcv/estimate_revision_ledger_*.jsonl"
+  ],
+  "updated_at": "2026-06-24T01:15:49+00:00"
+}
