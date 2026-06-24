@@ -98,7 +98,8 @@ def metrics(equity: list[float]) -> dict[str, float]:
     rets = np.diff(eq) / eq[:-1]
     total_ret = float(eq[-1] / eq[0] - 1.0)
     sd = float(rets.std(ddof=1)) if len(rets) > 1 else 0.0
-    sharpe_daily = float(rets.mean() / sd) if sd > 0 else 0.0
+    # annualized to match repo convention (backtester.py: sharpe_daily = mean/std * sqrt(252))
+    sharpe_daily = float(rets.mean() / sd) * (TRADING_DAYS ** 0.5) if sd > 0 else 0.0
     peak = np.maximum.accumulate(eq)
     max_dd = float(((eq - peak) / peak).min()) if len(eq) else 0.0
     return {

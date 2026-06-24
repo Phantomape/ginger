@@ -1,0 +1,186 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "after_surface": {
+    "ok_pct": 77.79,
+    "ok_rows": 970,
+    "provider_counts": {
+      "local_sec13f_holdings_summary": 1247
+    },
+    "reason_counts": {
+      "ticker_missing_from_local_sec13f_holdings_summary": 277
+    },
+    "row_count": 1247,
+    "skipped_rows": 277,
+    "status_counts": {
+      "ok": 970,
+      "skipped": 277
+    },
+    "ticker_count": 1247
+  },
+  "allowed_write_scope": [
+    "quant/kova_data_sidecar.py",
+    "quant/test_kova_data_sidecar.py",
+    "quant/experiments/exp_20260624_015_kova_sec13f_holdings_summary_sidecar_bridge.py",
+    "data/experiments/exp-20260624-015/exp_20260624_015_kova_sec13f_holdings_summary_sidecar_bridge.json",
+    "experiments/cards/exp-20260624-015.md",
+    "experiments/manifests/exp-20260624-015.json",
+    "experiments/tickets/exp-20260624-015.json",
+    "experiments/logs/exp-20260624-015.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "Kova RS/fundamental rows may become a more useful candidate-pool evidence surface when paired with production-visible institutional sponsorship context; the first blocker is non-skipped 13F provenance, not another threshold or source-rank retune.",
+  "alpha_ready": false,
+  "anti_js": {
+    "node_repl_used": false,
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260624-015/exp_20260624_015_kova_sec13f_holdings_summary_sidecar_bridge.json",
+  "before_surface": {
+    "ok_pct": 0.0,
+    "ok_rows": 0,
+    "provider_counts": {
+      "sec_13f_data_set": 1247
+    },
+    "reason_counts": {
+      "no_sec13f_zip_or_year_quarter_supplied": 1247
+    },
+    "row_count": 1247,
+    "skipped_rows": 1247,
+    "status_counts": {
+      "skipped": 1247
+    },
+    "ticker_count": 1247
+  },
+  "causal_components": [
+    "local SEC13F holdings summary PIT fallback",
+    "default-off Kova institutional context rows",
+    "no strategy behavior change",
+    "no live order change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/kova_data_sidecar.py",
+    "quant/test_kova_data_sidecar.py",
+    "quant/experiments/exp_20260624_015_kova_sec13f_holdings_summary_sidecar_bridge.py",
+    "data/experiments/exp-20260624-015/exp_20260624_015_kova_sec13f_holdings_summary_sidecar_bridge.json",
+    "experiments/logs/exp-20260624-015.json",
+    "experiments/cards/exp-20260624-015.md",
+    "experiments/manifests/exp-20260624-015.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "kova_sec13f_holdings_summary_sidecar_bridge_v1",
+  "decision": "accepted_measurement_repair_kova_sec13f_holdings_summary_bridge",
+  "delta_metrics": {
+    "expected_value_delta": 0.0,
+    "ok_pct_delta": 77.79,
+    "ok_rows_delta": 970,
+    "strategy_total_pnl_delta": 0.0
+  },
+  "experiment_id": "exp-20260624-015",
+  "gate1": {
+    "baseline_expected_value_score": 7.8941,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_strategy_total_pnl": 234850.99,
+    "note": "Measurement repair; no strategy backtest rerun because orders and policy are unchanged.",
+    "status": "passed"
+  },
+  "gate2": {
+    "entry_date_checked": "not_applicable_default_off_data_sidecar",
+    "required_fields": [
+      "ticker",
+      "asof_date",
+      "status",
+      "provider",
+      "alters_orders"
+    ],
+    "rows_missing_required_fields": 0,
+    "status": "passed",
+    "target_price_checked": "not_applicable_default_off_data_sidecar"
+  },
+  "gate3": {
+    "note": "Unchanged accepted fixed-window baseline; this repair adds no filter.",
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "status": "passed",
+    "survival_rate": 0.8232
+  },
+  "gate4": {
+    "after_ok_pct": 77.79,
+    "after_ok_rows": 970,
+    "before_ok_rows": 0,
+    "decision_basis": "accepted measurement repair: current Kova 13F ok rows increased while all rows remain default-off and non-ordering",
+    "expected_value_delta": 0.0,
+    "live_orders_changed": false,
+    "status": "passed",
+    "strategy_total_pnl_delta": 0.0
+  },
+  "hypothesis": "Kova multi-source alpha is blocked by skipped SEC 13F institutional rows; when no SEC ZIP is supplied, bridging the existing PIT SEC13F institutional holdings summary into the default-off Kova sidecar should create non-skipped institutional context without changing strategy orders.",
+  "implementation_mode": "shared_default_off_data_sidecar_repair",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260624-015.json",
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260624-007",
+    "exp-20260623-013",
+    "exp-20260527-906"
+  ],
+  "new_evidence_axis": "Use the existing PIT SEC13F institutional holdings summary as a Kova sidecar fallback when no SEC ZIP/year-quarter is configured; no new trading rule or 13F threshold is introduced.",
+  "new_evidence_type": "non_skipped_kova_sec13f_provenance_bridge",
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune Kova RS/fundamental/13F thresholds from this repair alone. Next alpha work needs closed forward replacement rows using the repaired context or a genuinely new non-skipped data source.",
+    "next_new_evidence": "Run the next daily Kova default-off snapshot with this bridge, then evaluate closed forward replacement rows that include holder_count/value context.",
+    "why_result_happened": "The current Kova 13F sidecar had 0 non-skipped rows because no SEC ZIP/year-quarter was configured. The repo already had a PIT SEC13F holdings summary known on 2026-06-11; using it as a fallback produced 970 non-skipped institutional rows without changing orders."
+  },
+  "prediction": null,
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": true,
+    "default_off_paper_only": true,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "ranking_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "scope": "default_off_kova_data_sidecar_measurement_repair",
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "data/kova/institutional/sec13f_ownership_20260623.jsonl",
+    "data/non_ohlcv/sec13f_institutional/holdings_01mar2026-31may2026.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_kova_data_sidecar.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260624_015_kova_sec13f_holdings_summary_sidecar_bridge.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "kova_sec13f_holdings_summary_sidecar_bridge_v1",
+  "source_summary": {
+    "ok_rows": 970,
+    "rows_written": 1247,
+    "rule_version": "sec13f_universe_name_match_v1",
+    "skipped_rows": 277,
+    "source": "local_sec13f_holdings_summary",
+    "source_asof_date": "2026-06-11",
+    "source_rows": 971,
+    "source_snapshot": "data/non_ohlcv/sec13f_institutional/holdings_01mar2026-31may2026.json",
+    "status": "ok",
+    "universe_coverage_pct": 79.0,
+    "universe_covered_count": 971,
+    "window_label": "01mar2026-31may2026"
+  },
+  "status": "accepted_measurement_repair",
+  "target_date": "2026-06-23",
+  "trial_family": "kova_sec13f_holdings_summary_sidecar_bridge",
+  "trial_variant_id": "post_20260623_local_sec13f_summary_fallback_v1"
+}

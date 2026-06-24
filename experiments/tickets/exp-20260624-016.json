@@ -1,0 +1,740 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260624_016_kova_forward_sec13f_sponsorship_ledger.py",
+    "data/experiments/exp-20260624-016/exp_20260624_016_kova_forward_sec13f_sponsorship_ledger.json",
+    "data/experiments/exp-20260624-016/kova_forward_sec13f_sponsorship_ledger.jsonl",
+    "experiments/cards/exp-20260624-016.md",
+    "experiments/manifests/exp-20260624-016.json",
+    "experiments/tickets/exp-20260624-016.json",
+    "experiments/logs/exp-20260624-016.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260624-016.md",
+  "causal_components": [
+    "PIT local SEC13F holdings fallback",
+    "Kova forward observation rows",
+    "holder/value field capture",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "kova_forward_sec13f_sponsorship_observation_ledger_v1",
+  "claimed_at": "2026-06-24T13:08:23+00:00",
+  "completed_at": "2026-06-24T13:14:28+00:00",
+  "created_at": "2026-06-24T13:08:11+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260624-016",
+  "experiment_uid": "expuid-9c0d1426f12644c0",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260624-016",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-24T13:08:11+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "kova_forward_sec13f_sponsorship_ledger"
+  },
+  "hypothesis": "Kova multi-source alpha cannot use institutional sponsorship until forward observation rows store PIT-safe holder/value fields; rebuild an experiment-owned Kova forward ledger with the exp-20260624-015 local SEC13F holdings fallback while leaving entries, ranking, sizing, exits, paper fills, live orders, and shared policy unchanged.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "kova_forward_sec13f_sponsorship_observation_ledger_v1"
+  ],
+  "mechanism_family": "kova_multisource_forward_observation",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260623-013",
+    "exp-20260624-015",
+    "exp-20260623-014"
+  ],
+  "new_evidence_type": "pit_sec13f_sponsorship_forward_observation_rows",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "sec13f_ownership",
+      "field_tags": [
+        "alpha",
+        "an",
+        "cannot",
+        "entries",
+        "exits",
+        "exp",
+        "experiment",
+        "fallback",
+        "fields",
+        "fills",
+        "forward",
+        "holder",
+        "holdings",
+        "institutional",
+        "kova",
+        "leaving",
+        "ledger",
+        "live",
+        "local",
+        "multi",
+        "multisource",
+        "observation",
+        "orders",
+        "owned",
+        "pit",
+        "policy",
+        "ranking",
+        "rebuild",
+        "rows",
+        "safe",
+        "sec13f",
+        "sizing",
+        "sponsorship",
+        "store",
+        "unchanged",
+        "until",
+        "use",
+        "value",
+        "while"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_sponsorship_acceleration_candidate_pool",
+        "reopen_condition": "A retry needs manager identity/quality, true new-position signals, sector-relative sponsorship surprise, or shared daily default-off forward rows.",
+        "score": 0.469,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_new_holder_initiation_candidate_pool",
+        "reopen_condition": "Need manager identity/quality, sector-normalized new-holder surprise, independent options/borrow evidence, or forward replacement-value rows from a shared helper.",
+        "score": 0.4686,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_active_manager_concentration",
+        "reopen_condition": "A valid retry needs independent active-manager quality or manager alpha attribution, non-quarterly ownership/flow data, borrow/options cross-evidence, or closed forward rows from a shared default-off helper.",
+        "score": 0.4674,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "kova_13f_institutional_readiness",
+        "reopen_condition": null,
+        "score": 0.467,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "kova_free_data_backfill_and_forward_snapshot",
+        "reopen_condition": null,
+        "score": 0.4667,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "sec13f_ownership",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.75,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "local_13f_fallback_not_pit_valid",
+      "no_kova_snapshot_rows",
+      "no_sec13f_coverage",
+      "duplicate_observation_ids"
+    ],
+    "confidence_reason": "exp-20260623-013 created Kova forward rows but every 13F field was skipped; exp-20260624-015 repaired the local PIT SEC13F holdings fallback with source_asof_date 2026-06-11, which is valid for the 2026-06-13+ Kova observation dates. This is measurement repair only, not a 13F threshold or ranking rule.",
+    "recorded_at": "2026-06-24T13:08:02+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "observed_only_lead": false,
+    "decision": "accepted_measurement_repair_kova_forward_sec13f_sponsorship_ledger",
+    "artifact": "data/experiments/exp-20260624-016/exp_20260624_016_kova_forward_sec13f_sponsorship_ledger.json",
+    "ledger": "data/experiments/exp-20260624-016/kova_forward_sec13f_sponsorship_ledger.jsonl",
+    "log": "experiments/logs/exp-20260624-016.json",
+    "runner": "quant/experiments/exp_20260624_016_kova_forward_sec13f_sponsorship_ledger.py",
+    "gate4": {
+      "passed": true,
+      "decision": "accepted_measurement_repair_kova_forward_sec13f_sponsorship_ledger",
+      "failed_reasons": [],
+      "acceptance_checks": {
+        "ledger_rows_positive": true,
+        "duplicate_observation_ids_zero": true,
+        "multi_date_forward_surface": true,
+        "sec13f_ok_rows_present": true,
+        "sec13f_ok_coverage_floor": true,
+        "sec13f_source_asof_valid": true,
+        "strategy_behavior_changed": false
+      },
+      "before_after_strategy_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "max_drawdown_pct": 0.0
+      },
+      "strategy_rerun_required": false,
+      "measurement_repair": true
+    },
+    "ledger_summary": {
+      "ledger_rows": 13716,
+      "asof_date_start": "2026-06-13",
+      "asof_date_end": "2026-06-23",
+      "asof_date_count": 11,
+      "ticker_count": 1249,
+      "duplicate_observation_ids": 0,
+      "pending_outcome_rows": 13716,
+      "rs_proxy_ok_rows": 8944,
+      "companyfacts_with_selected_components": 12068,
+      "sec13f_ok_rows": 10675,
+      "sec13f_ok_coverage": 0.778288,
+      "sec13f_status_counts": {
+        "ok": 10675,
+        "skipped": 3041
+      },
+      "stale_sec13f_status_counts": {
+        "skipped": 13716
+      },
+      "sec13f_source_asof_dates": [
+        "2026-06-11"
+      ],
+      "sec13f_source_asof_violations": 0,
+      "sec13f_holder_count_summary": {
+        "n": 10675,
+        "min": 1.0,
+        "median": 367.0,
+        "mean": 527.3197,
+        "max": 4645.0
+      },
+      "sec13f_total_value_usd_summary": {
+        "n": 10675,
+        "min": 207260.0,
+        "median": 5952764942.0,
+        "mean": 34962762319.9527,
+        "max": 3222032515587.0
+      },
+      "intraday_status_counts": {
+        "skipped": 13716
+      },
+      "quality_flag_counts": {
+        "intraday_unavailable_or_skipped": 13716,
+        "no_companyfacts_growth_ok_components": 1648,
+        "no_entry_date_target_price_by_design": 13716,
+        "pending_forward_close": 13716,
+        "rs_proxy_not_ok": 4772,
+        "sec13f_unavailable_or_skipped": 3041
+      },
+      "sample_observations": [
+        {
+          "schema_version": 1,
+          "experiment_id": "exp-20260624-016",
+          "rule_version": "kova_forward_sec13f_sponsorship_observation_ledger_v1",
+          "observation_id": "e8e9ee30432ec94c3073b7a5",
+          "source": "kova_multisource_forward_snapshot",
+          "alpha_candidate_state": "observation_only_pending_outcome",
+          "asof_date": "2026-06-13",
+          "symbol": "A",
+          "ticker": "A",
+          "source_snapshot_file": "data/kova/snapshots/kova_data_snapshot_20260613.json",
+          "rs_proxy_source_file": "data/kova/rs_proxy/rs_proxy_20260613.jsonl",
+          "companyfacts_growth_source_file": "data/kova/fundamentals/companyfacts_growth_20260613.jsonl",
+          "stale_sec13f_source_file": "data/kova/institutional/sec13f_ownership_20260613.jsonl",
+          "sec13f_source_file": "data/non_ohlcv/sec13f_institutional/holdings_01mar2026-31may2026.json",
+          "intraday_source_file": "data/kova/intraday/intraday_ohlcv_20260613.jsonl",
+          "rs_proxy_status": null,
+          "rs_proxy_rank_pct_20d": null,
+          "rs_proxy_rank_pct_60d": null,
+          "rs_proxy_rank_pct_120d": null,
+          "excess_ret_20d_vs_spy": null,
+          "excess_ret_60d_vs_spy": null,
+          "excess_ret_120d_vs_spy": null,
+          "available_window_count": null,
+          "companyfacts_growth_row_count": 48,
+          "companyfacts_growth_ok_raw_rows": 24,
+          "companyfacts_selected_ok_component_count": 3,
+          "companyfacts_selected_positive_yoy_count": 3,
+          "companyfacts_latest_component_yoy_growth": {
+            "eps_diluted": 0.6,
+            "net_income": 0.576744,
+            "revenue": 0.10012
+          },
+          "companyfacts_latest_component_asof": {
+            "eps_diluted": "2026-06-01",
+            "net_income": "2026-06-01",
+            "revenue": "2026-06-01"
+          },
+          "stale_sec13f_status": "skipped",
+          "stale_sec13f_reason": "no_sec13f_zip_or_year_quarter_supplied",
+          "sec13f_status": "ok",
+          "sec13f_reason": null,
+          "sec13f_provider": "local_sec13f_holdings_summary",
+          "sec13f_holder_count": 862,
+          "sec13f_position_row_count": 1546,
+          "sec13f_total_shares": 287666555.0,
+          "sec13f_total_value_usd": 31645938809.0,
+          "sec13f_report_period": "31-MAR-2026",
+          "sec13f_window_label": "01mar2026-31may2026",
+          "sec13f_source_asof_date": "2026-06-11",
+          "sec13f_query_asof_date": "2026-06-13",
+          "sec13f_ticker_mapping_status": "sec13f_ingest_universe_name_match",
+          "intraday_status": "skipped",
+          "intraday_reason": "refresh_intraday_false_or_missing_ALPHA_VANTAGE_API_KEY",
+          "entry_date": null,
+          "target_price": null,
+          "planned_entry_date": null,
+          "planned_exit_date": null,
+          "entry_date_resolution": "not_scheduled_observation_only",
+          "target_price_resolution": "not_scheduled_observation_only",
+          "outcome_status": "pending_forward_close",
+          "forward_5d_return_pct": null,
+          "forward_10d_return_pct": null,
+          "replacement_value_vs_cash_usd": null,
+          "replacement_value_vs_spy_usd": null,
+          "replacement_value_vs_qqq_usd": null,
+          "quality_flags": [
+            "pending_forward_close",
+            "no_entry_date_target_price_by_design",
+            "rs_proxy_not_ok",
+            "intraday_unavailable_or_skipped"
+          ],
+          "trade_enabled": false,
+          "alters_orders": false
+        },
+        {
+          "schema_version": 1,
+          "experiment_id": "exp-20260624-016",
+          "rule_version": "kova_forward_sec13f_sponsorship_observation_ledger_v1",
+          "observation_id": "9646ea9639634710a33ccdb9",
+          "source": "kova_multisource_forward_snapshot",
+          "alpha_candidate_state": "observation_only_pending_outcome",
+          "asof_date": "2026-06-13",
+          "symbol": "AA",
+          "ticker": "AA",
+          "source_snapshot_file": "data/kova/snapshots/kova_data_snapshot_20260613.json",
+          "rs_proxy_source_file": "data/kova/rs_proxy/rs_proxy_20260613.jsonl",
+          "companyfacts_growth_source_file": "data/kova/fundamentals/companyfacts_growth_20260613.jsonl",
+          "stale_sec13f_source_file": "data/kova/institutional/sec13f_ownership_20260613.jsonl",
+          "sec13f_source_file": "data/non_ohlcv/sec13f_institutional/holdings_01mar2026-31may2026.json",
+          "intraday_source_file": "data/kova/intraday/intraday_ohlcv_20260613.jsonl",
+          "rs_proxy_status": null,
+          "rs_proxy_rank_pct_20d": null,
+          "rs_proxy_rank_pct_60d": null,
+          "rs_proxy_rank_pct_120d": null,
+          "excess_ret_20d_vs_spy": null,
+          "excess_ret_60d_vs_spy": null,
+          "excess_ret_120d_vs_spy": null,
+          "available_window_count": null,
+          "companyfacts_growth_row_count": 50,
+          "companyfacts_growth_ok_raw_rows": 15,
+          "companyfacts_selected_ok_component_count": 3,
+          "companyfacts_selected_positive_yoy_count": 0,
+          "companyfacts_latest_component_yoy_growth": {
+            "eps_diluted": -0.227053,
+            "net_income": -0.239051,
+            "revenue": -0.052241
+          },
+          "companyfacts_latest_component_asof": {
+            "eps_diluted": "2026-04-30",
+            "net_income": "2026-04-30",
+            "revenue": "2026-04-30"
+          },
+          "stale_sec13f_status": "skipped",
+          "stale_sec13f_reason": "no_sec13f_zip_or_year_quarter_supplied",
+          "sec13f_status": "ok",
+          "sec13f_reason": null,
+          "sec13f_provider": "local_sec13f_holdings_summary",
+          "sec13f_holder_count": 624,
+          "sec13f_position_row_count": 1128,
+          "sec13f_total_shares": 248566686.0,
+          "sec13f_total_value_usd": 15646682191.0,
+          "sec13f_report_period": "31-MAR-2026",
+          "sec13f_window_label": "01mar2026-31may2026",
+          "sec13f_source_asof_date": "2026-06-11",
+          "sec13f_query_asof_date": "2026-06-13",
+          "sec13f_ticker_mapping_status": "sec13f_ingest_universe_name_match",
+          "intraday_status": "skipped",
+          "intraday_reason": "refresh_intraday_false_or_missing_ALPHA_VANTAGE_API_KEY",
+          "entry_date": null,
+          "target_price": null,
+          "planned_entry_date": null,
+          "planned_exit_date": null,
+          "entry_date_resolution": "not_scheduled_observation_only",
+          "target_price_resolution": "not_scheduled_observation_only",
+          "outcome_status": "pending_forward_close",
+          "forward_5d_return_pct": null,
+          "forward_10d_return_pct": null,
+          "replacement_value_vs_cash_usd": null,
+          "replacement_value_vs_spy_usd": null,
+          "replacement_value_vs_qqq_usd": null,
+          "quality_flags": [
+            "pending_forward_close",
+            "no_entry_date_target_price_by_design",
+            "rs_proxy_not_ok",
+            "intraday_unavailable_or_skipped"
+          ],
+          "trade_enabled": false,
+          "alters_orders": false
+        },
+        {
+          "schema_version": 1,
+          "experiment_id": "exp-20260624-016",
+          "rule_version": "kova_forward_sec13f_sponsorship_observation_ledger_v1",
+          "observation_id": "3a661340d56494bdfec5c3b7",
+          "source": "kova_multisource_forward_snapshot",
+          "alpha_candidate_state": "observation_only_pending_outcome",
+          "asof_date": "2026-06-13",
+          "symbol": "AAL",
+          "ticker": "AAL",
+          "source_snapshot_file": "data/kova/snapshots/kova_data_snapshot_20260613.json",
+          "rs_proxy_source_file": "data/kova/rs_proxy/rs_proxy_20260613.jsonl",
+          "companyfacts_growth_source_file": "data/kova/fundamentals/companyfacts_growth_20260613.jsonl",
+          "stale_sec13f_source_file": "data/kova/institutional/sec13f_ownership_20260613.jsonl",
+          "sec13f_source_file": "data/non_ohlcv/sec13f_institutional/holdings_01mar2026-31may2026.json",
+          "intraday_source_file": "data/kova/intraday/intraday_ohlcv_20260613.jsonl",
+          "rs_proxy_status": null,
+          "rs_proxy_rank_pct_20d": null,
+          "rs_proxy_rank_pct_60d": null,
+          "rs_proxy_rank_pct_120d": null,
+          "excess_ret_20d_vs_spy": null,
+          "excess_ret_60d_vs_spy": null,
+          "excess_ret_120d_vs_spy": null,
+          "available_window_count": null,
+          "companyfacts_growth_row_count": 43,
+          "companyfacts_growth_ok_raw_rows": 12,
+          "companyfacts_selected_ok_component_count": 3,
+          "companyfacts_selected_positive_yoy_count": 1,
+          "companyfacts_latest_component_yoy_growth": {
+            "eps_diluted": -0.194444,
+            "net_income": -0.192389,
+            "revenue": 0.108438
+          },
+          "companyfacts_latest_component_asof": {
+            "eps_diluted": "2026-04-23",
+            "net_income": "2026-04-23",
+            "revenue": "2026-04-23"
+          },
+          "stale_sec13f_status": "skipped",
+          "stale_sec13f_reason": "no_sec13f_zip_or_year_quarter_supplied",
+          "sec13f_status": "ok",
+          "sec13f_reason": null,
+          "sec13f_provider": "local_sec13f_holdings_summary",
+          "sec13f_holder_count": 435,
+          "sec13f_position_row_count": 776,
+          "sec13f_total_shares": 710836072.0,
+          "sec13f_total_value_usd": 6940282492.0,
+          "sec13f_report_period": "31-MAR-2026",
+          "sec13f_window_label": "01mar2026-31may2026",
+          "sec13f_source_asof_date": "2026-06-11",
+          "sec13f_query_asof_date": "2026-06-13",
+          "sec13f_ticker_mapping_status": "sec13f_ingest_universe_name_match",
+          "intraday_status": "skipped",
+          "intraday_reason": "refresh_intraday_false_or_missing_ALPHA_VANTAGE_API_KEY",
+          "entry_date": null,
+          "target_price": null,
+          "planned_entry_date": null,
+          "planned_exit_date": null,
+          "entry_date_resolution": "not_scheduled_observation_only",
+          "target_price_resolution": "not_scheduled_observation_only",
+          "outcome_status": "pending_forward_close",
+          "forward_5d_return_pct": null,
+          "forward_10d_return_pct": null,
+          "replacement_value_vs_cash_usd": null,
+          "replacement_value_vs_spy_usd": null,
+          "replacement_value_vs_qqq_usd": null,
+          "quality_flags": [
+            "pending_forward_close",
+            "no_entry_date_target_price_by_design",
+            "rs_proxy_not_ok",
+            "intraday_unavailable_or_skipped"
+          ],
+          "trade_enabled": false,
+          "alters_orders": false
+        }
+      ]
+    },
+    "calibration": {
+      "actual_success": 1,
+      "actual_decision": "accepted_measurement_repair_kova_forward_sec13f_sponsorship_ledger",
+      "predicted_success_probability": 0.75,
+      "brier_score": 0.0625,
+      "predicted_failure_modes": [
+        "local_13f_fallback_not_pit_valid",
+        "no_kova_snapshot_rows",
+        "no_sec13f_coverage",
+        "duplicate_observation_ids"
+      ],
+      "realized_failure_modes": [],
+      "surprise_note": "The local SEC13F fallback produced PIT-valid holder/value coverage for Kova forward rows, matching the pre-run measurement-repair expectation."
+    },
+    "summary": "The exp-20260624-015 fallback can now attach PIT-valid SEC13F holder/value context to Kova 2026-06-13+ observation rows. This repairs the exp-20260623-013 all-skipped SEC13F caveat but does not prove alpha because the rows are still pending forward close."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260624-016.json",
+  "single_causal_variable": "kova_forward_sec13f_sponsorship_observation_ledger_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260624-016.json",
+  "trial_family": "kova_forward_sec13f_sponsorship_ledger",
+  "trial_variant_id": "post_exp015_local_sec13f_fallback_rows_v1",
+  "implementation_mode": "measurement_repair",
+  "new_evidence_axis": "exp-20260624-015 local SEC13F holdings fallback with source_asof_date 2026-06-11 joined to Kova 2026-06-13+ forward observation rows; no 13F threshold, holder-type, rank, top-N, hold, cooldown, notional, or live policy change.",
+  "decision": "accepted_measurement_repair_kova_forward_sec13f_sponsorship_ledger",
+  "artifact": "data/experiments/exp-20260624-016/exp_20260624_016_kova_forward_sec13f_sponsorship_ledger.json",
+  "ledger": "data/experiments/exp-20260624-016/kova_forward_sec13f_sponsorship_ledger.jsonl",
+  "log": "experiments/logs/exp-20260624-016.json",
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    }
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "fields_checked": [
+      "observation_id",
+      "asof_date",
+      "ticker",
+      "rs_proxy_status",
+      "rs_proxy_rank_pct_20d",
+      "companyfacts_growth_row_count",
+      "sec13f_status",
+      "sec13f_holder_count",
+      "sec13f_total_value_usd",
+      "sec13f_source_asof_date",
+      "outcome_status",
+      "entry_date",
+      "target_price",
+      "planned_entry_date",
+      "planned_exit_date"
+    ],
+    "field_coverage": {
+      "observation_id": {
+        "present_rows": 13716,
+        "scanned_rows": 13716,
+        "coverage": 1.0
+      },
+      "asof_date": {
+        "present_rows": 13716,
+        "scanned_rows": 13716,
+        "coverage": 1.0
+      },
+      "ticker": {
+        "present_rows": 13716,
+        "scanned_rows": 13716,
+        "coverage": 1.0
+      },
+      "rs_proxy_status": {
+        "present_rows": 8953,
+        "scanned_rows": 13716,
+        "coverage": 0.652741
+      },
+      "rs_proxy_rank_pct_20d": {
+        "present_rows": 8944,
+        "scanned_rows": 13716,
+        "coverage": 0.652085
+      },
+      "companyfacts_growth_row_count": {
+        "present_rows": 13716,
+        "scanned_rows": 13716,
+        "coverage": 1.0
+      },
+      "sec13f_status": {
+        "present_rows": 13716,
+        "scanned_rows": 13716,
+        "coverage": 1.0
+      },
+      "sec13f_holder_count": {
+        "present_rows": 10675,
+        "scanned_rows": 13716,
+        "coverage": 0.778288
+      },
+      "sec13f_total_value_usd": {
+        "present_rows": 10675,
+        "scanned_rows": 13716,
+        "coverage": 0.778288
+      },
+      "sec13f_source_asof_date": {
+        "present_rows": 13716,
+        "scanned_rows": 13716,
+        "coverage": 1.0
+      },
+      "outcome_status": {
+        "present_rows": 13716,
+        "scanned_rows": 13716,
+        "coverage": 1.0
+      }
+    },
+    "entry_date_present": false,
+    "target_price_present": false,
+    "entry_date_target_price_note": "Kova observations are not executable candidates. entry_date and target_price stay null; future settlement will define diagnostic entry/exit dates without scheduling orders.",
+    "ledger_rows": 13716,
+    "asof_date_range": {
+      "start": "2026-06-13",
+      "end": "2026-06-23",
+      "count": 11
+    },
+    "ticker_count": 1249,
+    "failed_reasons": []
+  },
+  "gate3": {
+    "filter_added": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "note": "No executable filter or strategy rule was added."
+  },
+  "gate4": {
+    "passed": true,
+    "decision": "accepted_measurement_repair_kova_forward_sec13f_sponsorship_ledger",
+    "failed_reasons": [],
+    "acceptance_checks": {
+      "ledger_rows_positive": true,
+      "duplicate_observation_ids_zero": true,
+      "multi_date_forward_surface": true,
+      "sec13f_ok_rows_present": true,
+      "sec13f_ok_coverage_floor": true,
+      "sec13f_source_asof_valid": true,
+      "strategy_behavior_changed": false
+    },
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "max_drawdown_pct": 0.0
+    },
+    "strategy_rerun_required": false,
+    "measurement_repair": true
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "watchlist_changed": false,
+    "llm_decision_boundary_changed": false,
+    "replay_only": false,
+    "live_ready": false,
+    "parity_note": "This experiment writes an experiment-owned observation ledger only. It reads the repaired Kova sidecar helper and does not modify data/kova daily files or any execution path."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The exp-20260624-015 fallback can now attach PIT-valid SEC13F holder/value context to Kova 2026-06-13+ observation rows. This repairs the exp-20260623-013 all-skipped SEC13F caveat but does not prove alpha because the rows are still pending forward close.",
+    "forbidden_near_neighbor_retry": "Do not retry Kova 13F holder_count, total_value_usd, ownership, RS, Companyfacts, top-N, hold, cooldown, notional, or allocator thresholds from this open ledger. The next alpha step must use closed replacement-value rows or materially richer PIT manager/flow provenance.",
+    "new_evidence_required": "Close Kova 2026-06-13+ rows with cash/SPY/QQQ replacement value, then test a predeclared sponsorship monotonicity or interaction hypothesis. Historical canonical-window promotion requires a separate shared helper with PIT 13F coverage."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260624_016_kova_forward_sec13f_sponsorship_ledger.py",
+    "data/experiments/exp-20260624-016/kova_forward_sec13f_sponsorship_ledger.jsonl",
+    "data/experiments/exp-20260624-016/exp_20260624_016_kova_forward_sec13f_sponsorship_ledger.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260623-013.json",
+    "experiments/logs/exp-20260624-015.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260624_016_kova_forward_sec13f_sponsorship_ledger.py",
+    "data/experiments/exp-20260624-016/exp_20260624_016_kova_forward_sec13f_sponsorship_ledger.json",
+    "data/experiments/exp-20260624-016/kova_forward_sec13f_sponsorship_ledger.jsonl",
+    "experiments/logs/exp-20260624-016.json",
+    "experiments/cards/exp-20260624-016.md",
+    "experiments/manifests/exp-20260624-016.json",
+    "experiments/tickets/exp-20260624-016.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-06-24T13:14:28+00:00"
+}

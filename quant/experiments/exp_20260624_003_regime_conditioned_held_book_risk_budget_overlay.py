@@ -118,7 +118,8 @@ def metrics(equity):
     rets = np.diff(eq) / eq[:-1]
     total_ret = float(eq[-1] / eq[0] - 1.0)
     sd = float(rets.std(ddof=1)) if len(rets) > 1 else 0.0
-    sharpe = float(rets.mean() / sd) if sd > 0 else 0.0
+    # annualized to match repo convention (backtester.py: sharpe_daily = mean/std * sqrt(252))
+    sharpe = float(rets.mean() / sd) * (TRADING_DAYS ** 0.5) if sd > 0 else 0.0
     peak = np.maximum.accumulate(eq)
     max_dd = float(((eq - peak) / peak).min()) if len(eq) else 0.0
     return {"total_return_pct": round(100 * total_ret, 3), "sharpe_daily": round(sharpe, 4),

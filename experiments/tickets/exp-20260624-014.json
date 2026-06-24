@@ -1,0 +1,398 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260624_014_accepted_allocator_current_open_envelope_readiness.py",
+    "data/experiments/exp-20260624-014/exp_20260624_014_accepted_allocator_current_open_envelope_readiness.json",
+    "experiments/cards/exp-20260624-014.md",
+    "experiments/manifests/exp-20260624-014.json",
+    "experiments/tickets/exp-20260624-014.json",
+    "experiments/logs/exp-20260624-014.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260624-014.md",
+  "causal_components": [
+    "current open-row price attribution",
+    "activation envelope checks",
+    "pilot tracker verdict context",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "accepted_allocator_current_open_activation_envelope_readiness_v1",
+  "claimed_at": "2026-06-24T11:05:22+00:00",
+  "completed_at": "2026-06-24T11:10:52+00:00",
+  "created_at": "2026-06-24T11:05:12+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260624-014",
+  "experiment_uid": "expuid-dd12166d8a11478b",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260624-014",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-24T11:05:12+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "accepted_allocator_current_open_envelope_readiness"
+  },
+  "hypothesis": "alpha_search/readiness: after exp-20260624-013 materialized accepted allocator open-row prices, the current default-off allocator book may now reveal whether the predeclared activation envelope is watchlist-ready, blocked by open-book risk, or still immature without changing source rank, sizing, entries, exits, or orders.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "accepted_allocator_current_open_activation_envelope_readiness_v1"
+  ],
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260624-013",
+    "exp-20260624-011",
+    "exp-20260622-013",
+    "exp-20260612-024"
+  ],
+  "new_evidence_type": "current_materialized_forward_open_rows",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.5,
+        "family_key": "allocator_activation_envelope",
+        "score": 0.6364,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "post_supplier_allocator_nonrepeat_surface_readiness",
+        "score": 0.6279,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "accepted_allocator_source_arbitration",
+        "score": 0.62,
+        "status": "frozen_rejected",
+        "trials": 5
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "allocator_correlation_crowding",
+        "score": 0.62,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "accepted_allocator_source_arbitration_attribution",
+        "score": 0.6186,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "allocator",
+      "field_tags": [
+        "accepted",
+        "activation",
+        "after",
+        "allocator",
+        "alpha",
+        "blocked",
+        "book",
+        "by",
+        "changing",
+        "current",
+        "entries",
+        "envelope",
+        "exits",
+        "exp",
+        "forward",
+        "immature",
+        "is",
+        "materialized",
+        "may",
+        "now",
+        "or",
+        "orders",
+        "predeclared",
+        "prices",
+        "rank",
+        "readiness",
+        "ready",
+        "reveal",
+        "risk",
+        "row",
+        "search",
+        "sizing",
+        "still",
+        "watchlist",
+        "whether",
+        "without"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.5,
+        "data_source": "allocator",
+        "family_key": "allocator_activation_envelope",
+        "reopen_condition": "Genuine forward closed rows under the unified universe plus replay-vs-forward parity; then live pilot sizing is an operator config decision behind the kill switch.",
+        "score": 0.6364,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "post_supplier_allocator_nonrepeat_surface_readiness",
+        "reopen_condition": null,
+        "score": 0.6279,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "accepted_allocator_source_arbitration",
+        "reopen_condition": "Forward default-off source-conflict outcome ledger or a separate relation-aware candidate-pool source, not another allocator source arbitration scalar.",
+        "score": 0.62,
+        "status": "frozen_rejected",
+        "trials": 5
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "allocator_correlation_crowding",
+        "reopen_condition": "A valid retry needs closed forward source-competition replacement rows, a materially richer PIT relation field, or a shared daily helper recording the field before replay promotion.",
+        "score": 0.62,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "accepted_allocator_source_arbitration_attribution",
+        "reopen_condition": "Point-in-time free relation/source-maturity data that explains oracle switches before the next open, implemented through a shared default-off helper if tested.",
+        "score": 0.6186,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Current forward open-row price materialization from exp-20260624-013: seven accepted allocator open positions now have last_price, unrealized PnL, and pilot tracker verdict context; this is not a source/rank/scalar retune.",
+    "override": true,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "allocator",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.22,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "no_closed_allocator_rows",
+      "open_drawdown_or_stop_risk",
+      "cross_pilot_overlap_with_kill_verdict",
+      "insufficient_forward_maturity"
+    ],
+    "confidence_reason": "This uses the new exp-20260624-013 materialized allocator open prices and pilot verdict context, but activation evidence probably remains immature because allocator_top1 has 0 closed forward rows and one open row is already down double digits.",
+    "recorded_at": "2026-06-24T11:04:55+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "rejected_allocator_current_open_activation_not_ready",
+    "artifact": "data/experiments/exp-20260624-014/exp_20260624_014_accepted_allocator_current_open_envelope_readiness.json",
+    "log": "experiments/logs/exp-20260624-014.json",
+    "runner": "quant/experiments/exp_20260624_014_accepted_allocator_current_open_envelope_readiness.py",
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_allocator_current_open_activation_not_ready",
+      "failed_reasons": [
+        "no_closed_allocator_rows",
+        "scorecard_verdict_not_graduate",
+        "cross_pilot_overlap_with_kill_verdict",
+        "replacement_value_vs_spy_not_positive"
+      ],
+      "acceptance_checks": {
+        "all_current_open_rows_priced": true,
+        "closed_trade_gate_met": false,
+        "scorecard_verdict_graduate": false,
+        "no_allocator_stop_alerts": true,
+        "no_cross_pilot_kill_overlap": false,
+        "positive_replacement_value_vs_spy": false,
+        "book_drawdown_within_ceiling": true
+      },
+      "before_after_strategy_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "max_drawdown_pct": 0.0
+      },
+      "ran_after_strategy": false,
+      "strategy_rerun_required": false,
+      "reason_after_not_run": "Read-only current forward attribution; no policy changed and activation failed before any strategy replay."
+    },
+    "calibration": {
+      "predicted_success_probability": 0.22,
+      "actual_success": 0,
+      "brier_score": 0.0484,
+      "failure_modes_observed": [
+        "no_closed_allocator_rows",
+        "scorecard_verdict_not_graduate",
+        "cross_pilot_overlap_with_kill_verdict",
+        "replacement_value_vs_spy_not_positive"
+      ],
+      "predicted_failure_modes": [
+        "no_closed_allocator_rows",
+        "open_drawdown_or_stop_risk",
+        "cross_pilot_overlap_with_kill_verdict",
+        "insufficient_forward_maturity"
+      ],
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "The pre-run read was directionally right: price materialization is complete, but allocator_top1 has zero closed rows and overlaps DDOG with a killed fundamental-growth pilot."
+    },
+    "summary": "exp-20260624-013 fixed the prerequisite price surface, but current allocator activation evidence is still immature: allocator_top1 has 0 closed trades versus the 20-row pilot threshold, no SPY/QQQ/cash replacement rows, and the one actionable DDOG row overlaps a fundamental-growth pilot already marked KILL."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260624-014.json",
+  "single_causal_variable": "accepted_allocator_current_open_activation_envelope_readiness_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260624-014.json",
+  "trial_family": "accepted_allocator_forward_activation_readiness",
+  "trial_variant_id": "current_open_price_materialized_envelope_v1",
+  "implementation_mode": "observed_only_attribution",
+  "new_evidence_axis": "Current forward open-row price materialization from exp-20260624-013: seven accepted allocator open positions now have last_price, unrealized PnL, and pilot tracker verdict context; this is not a source/rank/scalar retune.",
+  "decision": "rejected_allocator_current_open_activation_not_ready",
+  "artifact": "data/experiments/exp-20260624-014/exp_20260624_014_accepted_allocator_current_open_envelope_readiness.json",
+  "log": "experiments/logs/exp-20260624-014.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "passed": true,
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119,
+      "window_count": 3
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "dependencies_validated": true,
+    "fields_checked": [
+      "entry_date",
+      "entry_price",
+      "last_price",
+      "last_price_asof",
+      "unrealized_pnl",
+      "unrealized_return_pct"
+    ],
+    "target_price_scope": "No executable candidate or target-price exit is scheduled; this default-off time-exit sleeve does not consume target_price."
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "baseline_signals_generated": 164,
+    "baseline_signals_survived": 135,
+    "baseline_survival_rate": 0.8232,
+    "note": "No buy/sell/filter/ranking/sizing rule was added."
+  },
+  "gate4": {
+    "passed": false,
+    "decision": "rejected_allocator_current_open_activation_not_ready",
+    "failed_reasons": [
+      "no_closed_allocator_rows",
+      "scorecard_verdict_not_graduate",
+      "cross_pilot_overlap_with_kill_verdict",
+      "replacement_value_vs_spy_not_positive"
+    ],
+    "acceptance_checks": {
+      "all_current_open_rows_priced": true,
+      "closed_trade_gate_met": false,
+      "scorecard_verdict_graduate": false,
+      "no_allocator_stop_alerts": true,
+      "no_cross_pilot_kill_overlap": false,
+      "positive_replacement_value_vs_spy": false,
+      "book_drawdown_within_ceiling": true
+    },
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "max_drawdown_pct": 0.0
+    },
+    "ran_after_strategy": false,
+    "strategy_rerun_required": false,
+    "reason_after_not_run": "Read-only current forward attribution; no policy changed and activation failed before any strategy replay."
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "replay_only": false,
+    "default_off_paper_only": true,
+    "activation_envelope": {
+      "source": "quant/pilot_tracker.py manual pilot constants plus accepted allocator current state",
+      "pilot_notional_usd": 10000.0,
+      "graduate_min_closed": 20,
+      "stop_loss_pct": 0.15,
+      "max_book_drawdown_pct": 0.15,
+      "order_semantics": "manual pilot review only; no orders emitted",
+      "kill_switch": "KILL verdict when book drawdown breaches 15% or sample fails SPY replacement test"
+    }
+  },
+  "post_run_reflection": {
+    "why_result_happened": "exp-20260624-013 fixed the prerequisite price surface, but current allocator activation evidence is still immature: allocator_top1 has 0 closed trades versus the 20-row pilot threshold, no SPY/QQQ/cash replacement rows, and the one actionable DDOG row overlaps a fundamental-growth pilot already marked KILL.",
+    "forbidden_near_neighbor_retry": "Do not use this result to retune allocator source rank, source scalars, top-N, hold days, stop levels, concurrency, or activation thresholds on frozen windows.",
+    "new_evidence_required": "Wait for closed allocator_top1 forward replacement-value rows under the existing envelope, or add a genuinely new PIT source that is not an allocator/source-arbitration neighbor."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260624_014_accepted_allocator_current_open_envelope_readiness.py",
+    "data/paper_sleeves/accepted_helper_source_priority_allocator/state.json",
+    "data/pilots/pilot_recommendations_2026-06-24.json",
+    "data/pilots/pilot_scorecard.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260624-013.json",
+    "experiments/logs/exp-20260612-024.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260624_014_accepted_allocator_current_open_envelope_readiness.py",
+    "data/experiments/exp-20260624-014/exp_20260624_014_accepted_allocator_current_open_envelope_readiness.json",
+    "experiments/logs/exp-20260624-014.json",
+    "experiments/cards/exp-20260624-014.md",
+    "experiments/manifests/exp-20260624-014.json",
+    "experiments/tickets/exp-20260624-014.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-06-24T11:10:52+00:00"
+}

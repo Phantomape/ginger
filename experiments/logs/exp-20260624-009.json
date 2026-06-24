@@ -1,0 +1,239 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260624_009_pilot_cross_overlap_verdict_context.py",
+    "data/experiments/exp-20260624-009/exp_20260624_009_pilot_cross_overlap_verdict_context.json",
+    "experiments/cards/exp-20260624-009.md",
+    "experiments/manifests/exp-20260624-009.json",
+    "experiments/tickets/exp-20260624-009.json",
+    "experiments/logs/exp-20260624-009.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "Default-off alpha sleeves can only graduate toward live activation when manual pilot overlap reporting makes stacked exposure and killed-pilot unwind context auditable.",
+  "anti_js": {
+    "evidence": "Python runner only.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260624-009/exp_20260624_009_pilot_cross_overlap_verdict_context.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_success": false,
+    "failure_modes_observed": [
+      "daily_cross_pilot_overlap_lacks_verdict_status_context",
+      "current_overlap_contains_kill_verdict_pilot",
+      "shared_tracker_and_tests_not_in_allowed_write_scope",
+      "no_strategy_or_daily_output_change"
+    ],
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "shared_tracker_not_in_allowed_write_scope",
+      "no_current_killed_pilot_overlap",
+      "daily_payload_already_has_context"
+    ],
+    "predicted_success_probability": 0.72,
+    "surprise_note": "The data gap was present and locally enrichable, but this ticket cannot write the shared tracker or tests, so the repair cannot be accepted under the current scope."
+  },
+  "causal_components": [
+    "pilot cross-pilot overlap report",
+    "per-pilot verdict context",
+    "per-position actionable status context",
+    "no strategy signal change",
+    "no live order change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260624_009_pilot_cross_overlap_verdict_context.py",
+    "data/experiments/exp-20260624-009/exp_20260624_009_pilot_cross_overlap_verdict_context.json",
+    "experiments/logs/exp-20260624-009.json",
+    "experiments/cards/exp-20260624-009.md",
+    "experiments/manifests/exp-20260624-009.json",
+    "experiments/tickets/exp-20260624-009.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "pilot_cross_pilot_overlap_verdict_context_v1",
+  "decision": "blocked_pilot_cross_overlap_verdict_context_not_wired",
+  "delta_metrics": {
+    "cross_pilot_overlap_count": 1,
+    "daily_context_missing_count": 1,
+    "daily_output_changed": false,
+    "expected_value_score_sum_delta": 0.0,
+    "kill_unwind_exposure_usd": 10000.0,
+    "kill_verdict_overlap_count": 1,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "total_stacked_exposure_usd": 20000.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260624-009",
+  "follow_up_write_scope_needed": [
+    "quant/pilot_tracker.py",
+    "quant/test_pilot_tracker.py",
+    "data/pilots/pilot_scorecard.json",
+    "data/pilots/pilot_tracker.md",
+    "data/pilots/pilot_recommendations_2026-06-24.json"
+  ],
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "entry_date_target_price_note": "entry_date is present on overlap participants where the sleeve has an open row. target_price is not consumed because this is a pilot-reporting audit, not an executable exit or target-price strategy change.",
+    "fields_checked": [
+      "cross_pilot_overlap.ticker",
+      "cross_pilot_overlap.pilots",
+      "recommendations.pilot_verdict",
+      "recommendations.new_entries_blocked",
+      "recommendations.actionable.status",
+      "recommendations.actionable.entry_date",
+      "recommendations.actionable.ticker",
+      "scorecards.verdict",
+      "scorecards.book_max_drawdown_pct"
+    ],
+    "input_files": [
+      "data/pilots/pilot_scorecard.json",
+      "data/pilots/pilot_recommendations_2026-06-24.json",
+      "data/pilots/pilot_tracker.md"
+    ],
+    "passed": true
+  },
+  "gate3": {
+    "baseline_signals_generated": 164,
+    "baseline_signals_survived": 135,
+    "baseline_survival_rate": 0.8232,
+    "filter_added": false,
+    "note": "No buy/sell/filter/ranking/sizing rule was added.",
+    "passed": true
+  },
+  "gate4": {
+    "acceptance_checks": {
+      "current_overlap_contains_kill_verdict_pilot": true,
+      "daily_overlap_lacks_verdict_context": true,
+      "daily_pilot_output_changed": false,
+      "local_enrichment_proves_context_available": true,
+      "shared_tracker_in_allowed_write_scope": false,
+      "strategy_behavior_changed": false,
+      "tracker_tests_in_allowed_write_scope": false
+    },
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "max_drawdown_pct": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0
+    },
+    "decision": "blocked_pilot_cross_overlap_verdict_context_not_wired",
+    "failed_reasons": [
+      "daily_cross_pilot_overlap_lacks_verdict_status_context",
+      "current_overlap_contains_kill_verdict_pilot",
+      "shared_tracker_and_tests_not_in_allowed_write_scope",
+      "no_strategy_or_daily_output_change"
+    ],
+    "passed": false,
+    "ran_after_strategy": false,
+    "reason_after_not_run": "Blocked as a measurement-reporting scope gap before any strategy or daily-output patch.",
+    "strategy_rerun_required": false
+  },
+  "hypothesis": "measurement_repair/alpha_blocker: live pilot forward maturation and activation-envelope review are unreliable when cross-pilot same-ticker overlap is reported without per-pilot verdict/status context; enrich overlap reporting so killed-pilot unwind exposure is auditable without changing orders.",
+  "implementation_mode": "read_only_measurement_audit",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260624-009.json",
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260623-006",
+    "exp-20260624-008"
+  ],
+  "new_evidence_axis": "Current 2026-06-24 pilot recommendations include same-ticker DDOG overlap where one participant is a KILL-verdict pilot, but the daily cross_pilot_overlap row has no per-pilot verdict/status context.",
+  "new_evidence_type": "forward_pilot_overlap_reporting_gap",
+  "observed_only_lead": false,
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not treat same-ticker pilot overlap as activation-ready evidence when one participant is a killed pilot unless the daily overlap report exposes per-pilot verdict and actionable status context.",
+    "new_evidence_required": "Open a follow-up measurement repair whose write scope includes quant/pilot_tracker.py and quant/test_pilot_tracker.py, then wire participant_context into cross_pilot_overlap and regenerate the 2026-06-24 pilot files.",
+    "why_result_happened": "The daily tracker detects DDOG stacked exposure, but the overlap row only lists pilot labels and total notional. The underlying recommendation rows already contain the missing verdict/status context: allocator_top1 is COLLECTING/HOLD, while fundamental_growth_rs is KILL/HOLD with new entries blocked."
+  },
+  "prediction": {
+    "confidence_reason": "Current 2026-06-24 pilot recommendations show a DDOG overlap between allocator_top1 and a KILL-verdict fundamental_growth_rs pilot, while cross_pilot_overlap only exposes labels and exposure.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "shared_tracker_not_in_allowed_write_scope",
+      "no_current_killed_pilot_overlap",
+      "daily_payload_already_has_context"
+    ],
+    "recorded_at": "2026-06-24T07:04:06+00:00",
+    "success_probability": 0.72
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "paper_orders_changed": false,
+    "parity_note": "Read-only audit only. The shared pilot tracker and daily pilot files are inputs, not outputs, for this experiment.",
+    "pilot_reporting_changed": false,
+    "ranking_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "quant/experiments/exp_20260624_009_pilot_cross_overlap_verdict_context.py",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/pilots/pilot_scorecard.json",
+    "data/pilots/pilot_tracker.md",
+    "data/pilots/pilot_recommendations_2026-06-24.json",
+    "quant/pilot_tracker.py"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260624_009_pilot_cross_overlap_verdict_context.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "pilot_cross_pilot_overlap_verdict_context_v1",
+  "status": "blocked",
+  "timestamp": "2026-06-24T07:10:22Z",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260624-009"
+}

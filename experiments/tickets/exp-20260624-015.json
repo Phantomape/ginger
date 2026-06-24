@@ -1,0 +1,270 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/kova_data_sidecar.py",
+    "quant/test_kova_data_sidecar.py",
+    "quant/experiments/exp_20260624_015_kova_sec13f_holdings_summary_sidecar_bridge.py",
+    "data/experiments/exp-20260624-015/exp_20260624_015_kova_sec13f_holdings_summary_sidecar_bridge.json",
+    "experiments/cards/exp-20260624-015.md",
+    "experiments/manifests/exp-20260624-015.json",
+    "experiments/tickets/exp-20260624-015.json",
+    "experiments/logs/exp-20260624-015.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260624-015.md",
+  "causal_components": [
+    "local SEC13F holdings summary PIT fallback",
+    "default-off Kova institutional context rows",
+    "no strategy behavior change",
+    "no live order change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "kova_sec13f_holdings_summary_sidecar_bridge_v1",
+  "claimed_at": "2026-06-24T12:06:16+00:00",
+  "completed_at": "2026-06-24T12:12:09+00:00",
+  "created_at": "2026-06-24T12:06:03+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260624-015",
+  "experiment_uid": "expuid-64c76b5509b04bba",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260624-015",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-24T12:06:03+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "kova_sec13f_holdings_summary_sidecar_bridge"
+  },
+  "hypothesis": "Kova multi-source alpha is blocked by skipped SEC 13F institutional rows; when no SEC ZIP is supplied, bridging the existing PIT SEC13F institutional holdings summary into the default-off Kova sidecar should create non-skipped institutional context without changing strategy orders.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "kova_sec13f_holdings_summary_sidecar_bridge_v1"
+  ],
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260624-007",
+    "exp-20260623-013",
+    "exp-20260527-906"
+  ],
+  "new_evidence_type": "non_skipped_kova_sec13f_provenance_bridge",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "sec13f_ownership",
+      "field_tags": [
+        "13f",
+        "alpha",
+        "blocked",
+        "bridge",
+        "bridging",
+        "by",
+        "changing",
+        "context",
+        "create",
+        "existing",
+        "holdings",
+        "institutional",
+        "into",
+        "is",
+        "kova",
+        "multi",
+        "no",
+        "non",
+        "orders",
+        "pit",
+        "rows",
+        "sec13f",
+        "should",
+        "sidecar",
+        "skipped",
+        "strategy",
+        "summary",
+        "supplied",
+        "when",
+        "without",
+        "zip"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "kova_13f_institutional_readiness",
+        "reopen_condition": null,
+        "score": 0.4816,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "kova_free_data_backfill_and_forward_snapshot",
+        "reopen_condition": null,
+        "score": 0.4808,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_crowding_context_candidate_pool",
+        "reopen_condition": "Raw PIT 13F candidate rows, manager identity/quality, sector-relative crowding surprise, or daily default-off forward observations.",
+        "score": 0.4716,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_active_manager_concentration",
+        "reopen_condition": "A valid retry needs independent active-manager quality or manager alpha attribution, non-quarterly ownership/flow data, borrow/options cross-evidence, or closed forward rows from a shared default-off helper.",
+        "score": 0.4711,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_coaccumulation_peer_shock",
+        "reopen_condition": "A valid retry needs non-quarterly ownership/flow evidence, active-manager conviction classification independent of holding count, manager-level alpha attribution, or closed forward replacement-value rows from a shared default-off helper.",
+        "score": 0.4682,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "sec13f_ownership",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "observed_only_lead": false,
+    "decision": "accepted_measurement_repair_kova_sec13f_holdings_summary_bridge",
+    "artifact": "data/experiments/exp-20260624-015/exp_20260624_015_kova_sec13f_holdings_summary_sidecar_bridge.json",
+    "log": "experiments/logs/exp-20260624-015.json",
+    "runner": "quant/experiments/exp_20260624_015_kova_sec13f_holdings_summary_sidecar_bridge.py",
+    "gate4": {
+      "status": "passed",
+      "decision_basis": "accepted measurement repair: current Kova 13F ok rows increased while all rows remain default-off and non-ordering",
+      "expected_value_delta": 0.0,
+      "strategy_total_pnl_delta": 0.0,
+      "live_orders_changed": false,
+      "before_ok_rows": 0,
+      "after_ok_rows": 970,
+      "after_ok_pct": 77.79
+    },
+    "summary": "The current Kova 13F sidecar had 0 non-skipped rows because no SEC ZIP/year-quarter was configured. The repo already had a PIT SEC13F holdings summary known on 2026-06-11; using it as a fallback produced 970 non-skipped institutional rows without changing orders."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260624-015.json",
+  "single_causal_variable": "kova_sec13f_holdings_summary_sidecar_bridge_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260624-015.json",
+  "trial_family": "kova_sec13f_holdings_summary_sidecar_bridge",
+  "trial_variant_id": "post_20260623_local_sec13f_summary_fallback_v1",
+  "implementation_mode": "shared_default_off_data_sidecar_repair",
+  "new_evidence_axis": "Use the existing PIT SEC13F institutional holdings summary as a Kova sidecar fallback when no SEC ZIP/year-quarter is configured; no new trading rule or 13F threshold is introduced.",
+  "decision": "accepted_measurement_repair_kova_sec13f_holdings_summary_bridge",
+  "artifact": "data/experiments/exp-20260624-015/exp_20260624_015_kova_sec13f_holdings_summary_sidecar_bridge.json",
+  "log": "experiments/logs/exp-20260624-015.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "status": "passed",
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_expected_value_score": 7.8941,
+    "baseline_strategy_total_pnl": 234850.99,
+    "note": "Measurement repair; no strategy backtest rerun because orders and policy are unchanged."
+  },
+  "gate2": {
+    "status": "passed",
+    "required_fields": [
+      "ticker",
+      "asof_date",
+      "status",
+      "provider",
+      "alters_orders"
+    ],
+    "entry_date_checked": "not_applicable_default_off_data_sidecar",
+    "target_price_checked": "not_applicable_default_off_data_sidecar",
+    "rows_missing_required_fields": 0
+  },
+  "gate3": {
+    "status": "passed",
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "note": "Unchanged accepted fixed-window baseline; this repair adds no filter."
+  },
+  "gate4": {
+    "status": "passed",
+    "decision_basis": "accepted measurement repair: current Kova 13F ok rows increased while all rows remain default-off and non-ordering",
+    "expected_value_delta": 0.0,
+    "strategy_total_pnl_delta": 0.0,
+    "live_orders_changed": false,
+    "before_ok_rows": 0,
+    "after_ok_rows": 970,
+    "after_ok_pct": 77.79
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "daily_snapshot_exposed": true,
+    "default_off_paper_only": true,
+    "replay_only": false,
+    "scope": "default_off_kova_data_sidecar_measurement_repair"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The current Kova 13F sidecar had 0 non-skipped rows because no SEC ZIP/year-quarter was configured. The repo already had a PIT SEC13F holdings summary known on 2026-06-11; using it as a fallback produced 970 non-skipped institutional rows without changing orders.",
+    "forbidden_near_neighbor_retry": "Do not retune Kova RS/fundamental/13F thresholds from this repair alone. Next alpha work needs closed forward replacement rows using the repaired context or a genuinely new non-skipped data source.",
+    "next_new_evidence": "Run the next daily Kova default-off snapshot with this bridge, then evaluate closed forward replacement rows that include holder_count/value context."
+  },
+  "related_files": [
+    "data/kova/institutional/sec13f_ownership_20260623.jsonl",
+    "data/non_ohlcv/sec13f_institutional/holdings_01mar2026-31may2026.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "changed_files": [
+    "quant/kova_data_sidecar.py",
+    "quant/test_kova_data_sidecar.py",
+    "quant/experiments/exp_20260624_015_kova_sec13f_holdings_summary_sidecar_bridge.py",
+    "data/experiments/exp-20260624-015/exp_20260624_015_kova_sec13f_holdings_summary_sidecar_bridge.json",
+    "experiments/logs/exp-20260624-015.json",
+    "experiments/cards/exp-20260624-015.md",
+    "experiments/manifests/exp-20260624-015.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-06-24T12:12:09+00:00"
+}
