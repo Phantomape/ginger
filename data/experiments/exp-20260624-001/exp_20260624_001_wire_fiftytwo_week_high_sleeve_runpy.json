@@ -1,0 +1,46 @@
+{
+  "experiment_id": "exp-20260624-001",
+  "lane": "measurement_repair",
+  "diagnostic_only": false,
+  "trade_enabled": false,
+  "alters_orders": false,
+  "decision": "measurement_repair_wired_fiftytwo_week_high_sleeve_into_daily_runpy",
+  "hypothesis": "The accepted fiftytwo_week_high_proximity default-off paper sleeve (exp-20260610-008) has a complete shared helper but was never wired into quant/run.py, so it emitted zero daily snapshots and could never accumulate forward entry-regime-tagged rows. Wiring it observe-only repairs that measurement gap.",
+  "motivation": "exp-20260623-002 found fiftytwo_week_high_proximity is the most chop-negative accepted default-off sleeve (pooled Spearman(p_choppy,pnl) -0.298) and thus a prime member of the chop-down-tilt scope set, but it had no data/paper_sleeves/fiftytwo_week_high_proximity/ directory and zero forward rows because run.py never called its helper (grep -niE 'fiftytwo|52.?week|week_high' quant/run.py returned zero hits, unlike the three sibling sleeves wired at run.py ~1250-1268 / ~2884-2945).",
+  "change": {
+    "files": [
+      "quant/fiftytwo_week_high_proximity_paper_sleeve.py",
+      "quant/run.py"
+    ],
+    "fiftytwo_week_high_proximity_paper_sleeve.py": "Added prep_and_build_fiftytwo_week_high_proximity_snapshot(...) production adapter mirroring prep_and_build_industry_stable_core_flow_snapshot: maps run.py broad-market context into the existing shared build_fiftytwo_week_high_proximity_snapshot, guards on empty candidate universe, injects SPY when absent. No change to the accepted rule version or candidate logic.",
+    "run.py": "Wired the sleeve at the four standard sites used by sibling core-flow sleeves: (1) import of empty_/prep_and_build_ helpers; (2) _sleeve(...) construction with as_of/broad_market_ohlcv/broad_market_candidate_universe/spy_ohlcv/core_entries=signals and _STD_SLEEVE_METRICS; (3) trend_signals_dict registration; (4) report-dict registration. NOT added to the accepted_helper_source_priority_allocator source_snapshots set (that would change accepted allocator behavior and needs Gate 4)."
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": true,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "default_off_paper_only": true,
+    "daily_snapshot_exposed": true,
+    "parity_note": "Adds a default-off observe-only daily snapshot for an already-accepted full-stack sleeve (exp-20260610-008). The sleeve's build_*_snapshot keeps trade_enabled=False and emits no live/default orders, ranking, or sizing. This is the production adapter the acceptance assumed; no core trading policy changes."
+  },
+  "verification": {
+    "py_compile": "quant/run.py + quant/fiftytwo_week_high_proximity_paper_sleeve.py compile clean",
+    "sleeve_unit_tests": "quant/test_fiftytwo_week_high_proximity_paper_sleeve.py 8 passed",
+    "roster_tests": "quant/test_sleeve_standard_layout.py + test_sleeve_health.py + test_turn_of_month_liquid_leadership_paper_sleeve.py 11 passed (no test asserts an exact sleeve roster, so the addition breaks nothing)",
+    "wrapper_smoke_test": "prep_and_build wrapper: empty-universe guard returns reason 'broad_market_candidate_universe_unavailable'; happy path injects SPY, preserves broad ohlcv, and passes candidate_universe + core_entries + as_of through to the builder",
+    "not_verified_here": "Full daily run.py end-to-end snapshot generation was NOT run: the warehouse sqlite (data/experiments/exp-20260519-030/warehouse_main.sqlite) is gitignored and absent in worktrees. Confirm a real data/paper_sleeves/fiftytwo_week_high_proximity/snapshots.jsonl entry is written on the next daily run in the main environment."
+  },
+  "post_run_reflection": {
+    "why": "Pure wiring gap: an accepted sleeve's shared helper existed with tests but the daily adapter call site was missing, so no forward rows could ever accumulate for it.",
+    "forbidden_retry": "Do not add this sleeve to the accepted_helper_source_priority_allocator source set or change its rule version / thresholds / notional on frozen windows -- that is a separate Gate-4 question.",
+    "next_evidence": "After daily snapshots begin writing, accumulate closed forward rows tagged with entry-time regime (quant/regime_tagged_scorecard.py); those rows are the out-of-sample input the chop-scoped down-tilt (exp-20260623-002 scope set) needs before any Gate 1-4."
+  },
+  "related_experiments": ["exp-20260610-008", "exp-20260623-002", "exp-20260622-017", "exp-20260615-025"],
+  "anti_js": "No JavaScript was used."
+}

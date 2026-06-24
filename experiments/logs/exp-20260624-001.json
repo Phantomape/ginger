@@ -1,0 +1,29 @@
+{
+  "experiment_id": "exp-20260624-001",
+  "lane": "measurement_repair",
+  "status": "measurement_repair_applied",
+  "decision": "measurement_repair_wired_fiftytwo_week_high_sleeve_into_daily_runpy",
+  "diagnostic_only": false,
+  "accepted": null,
+  "timestamp": "2026-06-24T01:43:48Z",
+  "hypothesis": "The accepted fiftytwo_week_high_proximity default-off paper sleeve (exp-20260610-008) has a complete shared helper but was never wired into quant/run.py, so it emitted zero daily snapshots and could never accumulate forward entry-regime-tagged rows. Wiring it observe-only repairs that measurement gap.",
+  "changed_variable": "wire fiftytwo_week_high_proximity paper sleeve into daily run.py default-off snapshot path (trade_enabled=False) + add prep_and_build adapter",
+  "interpretation": "Wired the accepted fiftytwo_week_high_proximity default-off paper sleeve into quant/run.py (import + _sleeve construction + trend_signals_dict + report dict), and added the missing prep_and_build_fiftytwo_week_high_proximity_snapshot adapter mirroring the sibling core-flow sleeves. Observe-only (trade_enabled=False, alters_orders=False); NOT added to the accepted source-priority allocator. Verified: py_compile clean, 8 sleeve unit tests pass, 11 roster/health tests pass (no exact-roster assertion), and a wrapper smoke test confirms SPY injection + candidate_universe/core_entries passthrough. Full daily-run snapshot generation NOT run here (warehouse absent in worktree) -- confirm snapshots.jsonl is written on the next main-env daily run. Motivated by exp-20260623-002 which ranked this sleeve the most chop-negative (Spearman -0.298) yet it had zero forward rows because run.py never called it.",
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": true,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "default_off_paper_only": true,
+    "daily_snapshot_exposed": true,
+    "parity_note": "Adds a default-off observe-only daily snapshot for an already-accepted full-stack sleeve (exp-20260610-008). The sleeve's build_*_snapshot keeps trade_enabled=False and emits no live/default orders, ranking, or sizing. This is the production adapter the acceptance assumed; no core trading policy changes."
+  },
+  "artifact": "data/experiments/exp-20260624-001/exp_20260624_001_wire_fiftytwo_week_high_sleeve_runpy.json",
+  "log": "experiments/logs/exp-20260624-001.json",
+  "anti_js": "No JavaScript was used."
+}

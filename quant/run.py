@@ -1247,6 +1247,10 @@ def main():
         empty_industry_stable_core_flow_snapshot,
         prep_and_build_industry_stable_core_flow_snapshot,
     )
+    from fiftytwo_week_high_proximity_paper_sleeve import (
+        empty_fiftytwo_week_high_proximity_snapshot,
+        prep_and_build_fiftytwo_week_high_proximity_snapshot,
+    )
     from turn_of_month_liquid_leadership_paper_sleeve import (
         empty_turn_of_month_liquid_leadership_snapshot,
         prep_and_build_turn_of_month_liquid_leadership_snapshot,
@@ -2893,6 +2897,18 @@ def main():
         log_metrics=_STD_SLEEVE_METRICS,
     )
 
+    fiftytwo_week_high_proximity_paper_sleeve = _sleeve(
+        lambda: prep_and_build_fiftytwo_week_high_proximity_snapshot(
+            as_of=today_iso, broad_market_ohlcv=broad_market_ohlcv,
+            broad_market_candidate_universe=broad_market_candidate_universe,
+            spy_ohlcv=spy_ohlcv, core_entries=signals,
+        ),
+        empty_fiftytwo_week_high_proximity_snapshot,
+        "Fifty-two-week-high proximity core-flow",
+        "fiftytwo_week_high_proximity_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
+
     narrow_range_compression_breakout_paper_sleeve = _sleeve(
         lambda: prep_and_build_narrow_range_compression_breakout_snapshot(
             as_of=today_iso, broad_market_ohlcv=broad_market_ohlcv,
@@ -3083,6 +3099,7 @@ def main():
     trend_signals_dict["industry_relative_laggard_repair_paper_sleeve"] = industry_relative_laggard_repair_paper_sleeve
     trend_signals_dict["industry_stable_core_flow_paper_sleeve"] = industry_stable_core_flow_paper_sleeve
     trend_signals_dict["turn_of_month_liquid_leadership_paper_sleeve"] = turn_of_month_liquid_leadership_paper_sleeve
+    trend_signals_dict["fiftytwo_week_high_proximity_paper_sleeve"] = fiftytwo_week_high_proximity_paper_sleeve
     trend_signals_dict["narrow_range_compression_breakout_paper_sleeve"] = narrow_range_compression_breakout_paper_sleeve
     trend_signals_dict["distribution_day_absorption_leadership_paper_sleeve"] = distribution_day_absorption_leadership_paper_sleeve
     trend_signals_dict["sbc_burden_improvement_paper_sleeve"] = sbc_burden_improvement_paper_sleeve
@@ -3230,6 +3247,7 @@ def main():
         "industry_relative_laggard_repair_paper_sleeve": industry_relative_laggard_repair_paper_sleeve,
         "industry_stable_core_flow_paper_sleeve": industry_stable_core_flow_paper_sleeve,
         "turn_of_month_liquid_leadership_paper_sleeve": turn_of_month_liquid_leadership_paper_sleeve,
+        "fiftytwo_week_high_proximity_paper_sleeve": fiftytwo_week_high_proximity_paper_sleeve,
         "narrow_range_compression_breakout_paper_sleeve": narrow_range_compression_breakout_paper_sleeve,
         "distribution_day_absorption_leadership_paper_sleeve": distribution_day_absorption_leadership_paper_sleeve,
         "sbc_burden_improvement_paper_sleeve": sbc_burden_improvement_paper_sleeve,
