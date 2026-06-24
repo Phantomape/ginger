@@ -102,6 +102,61 @@ def _save_text(text, filepath):
     log.info(f"Saved → {filepath}")
 
 
+_RUN_LOCK_HANDLE = None  # kept alive for the process lifetime so the OS holds the lock
+
+
+def _acquire_run_lock():
+    """Refuse to start if another run.py already holds the singleton lock.
+
+    Concurrent run.py instances (a cron firing while a manual run is going, or a
+    duplicate scheduled task) race on the shared warehouse sqlite and the
+    paper-sleeve state/snapshot files. That corrupts artifacts and can hard-kill
+    a process mid-pipeline (observed: a run vanished with no traceback while a
+    second run.py was active). This is an OS-managed advisory file lock that is
+    auto-released when the process exits or dies, so a crash never leaves a stale
+    lock. Set ``GINGER_SKIP_RUN_LOCK=1`` to bypass (offline/backtest reruns).
+    """
+    global _RUN_LOCK_HANDLE
+    if os.environ.get("GINGER_SKIP_RUN_LOCK"):
+        log.info("Skipping run.py singleton lock (GINGER_SKIP_RUN_LOCK set).")
+        return
+    repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    lock_path = os.path.join(repo_root, "data", "run.lock")
+    pid_path = lock_path + ".pid"
+    os.makedirs(os.path.dirname(lock_path), exist_ok=True)
+    handle = open(lock_path, "a+")
+    try:
+        if os.name == "nt":
+            import msvcrt
+            handle.seek(0)
+            msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+        else:
+            import fcntl
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        holder = ""
+        try:
+            with open(pid_path, "r", encoding="utf-8") as _pf:
+                holder = _pf.read().strip()
+        except OSError:
+            pass
+        handle.close()
+        log.error(
+            "Another run.py is already running (lock %s held by %s). Exiting to "
+            "avoid concurrent warehouse/sleeve corruption. Wait for it to finish, "
+            "or set GINGER_SKIP_RUN_LOCK=1 to override.",
+            lock_path, holder or "an unknown process",
+        )
+        raise SystemExit(3)
+    _RUN_LOCK_HANDLE = handle  # hold for process lifetime; OS frees it on exit/death
+    try:
+        with open(pid_path, "w", encoding="utf-8") as _pf:
+            _pf.write(f"pid={os.getpid()} started={datetime.now().isoformat(timespec='seconds')}\n")
+    except OSError:
+        pass
+    log.info("Acquired run.py singleton lock (%s).", lock_path)
+
+
 def _refresh_open_positions_from_moomoo():
     """Refresh open_positions.json from the moomoo account before loading it.
 
@@ -1081,6 +1136,9 @@ def _step5_position_context(
 
 
 def main():
+    # Refuse to run concurrently with another run.py (cron + manual overlap is
+    # what corrupts the shared warehouse/sleeve files and hard-kills a process).
+    _acquire_run_lock()
     today = datetime.now().strftime("%Y%m%d")
     today_iso = datetime.now().date().isoformat()
 
