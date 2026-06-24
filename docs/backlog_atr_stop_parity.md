@@ -1,6 +1,10 @@
 # Backlog — ATR Stop Production/Backtest Parity
 
-> Status: **OPEN / investigated, not implemented.** Owner decision pending.
+> Status: **RESOLVED 2026-06-23 (exp-20260623-020).** Decision: STATIC stop frozen
+> at entry is EV-optimal (trailing rejected, -30/-57% EV, no drawdown benefit); the
+> fix is to PLACE the resting GTC bracket. Shipped as the daily output-only
+> bracket-order playbook (`quant/bracket_orders.py` + `run.py`). See
+> `docs/lessons/exit-bracket-and-static-stop.md`. Original investigation below.
 > Type: `measurement_repair` (touches an executable exit rule → needs Gate 1-4 + parity test before any production change).
 > Opened: 2026-06-19. Trigger: SNOW ATR_STOP forced EXIT on 2026-06-17 review.
 
