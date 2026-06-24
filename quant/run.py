@@ -115,25 +115,26 @@ def _refresh_open_positions_from_moomoo():
     """
     if os.environ.get("GINGER_SKIP_MOOMOO_REFRESH"):
         log.info("Skipping moomoo open-positions refresh (GINGER_SKIP_MOOMOO_REFRESH set).")
-        return
+        return "skipped"
     try:
         from moomoo_open_positions import generate as _moomoo_generate
     except ImportError as e:
         log.warning(f"moomoo_open_positions unavailable; using existing open_positions.json: {e}")
-        return
+        return "unavailable"
     try:
         result = _moomoo_generate(preview=False)
     except Exception as e:  # noqa: BLE001
         log.warning(f"moomoo open-positions refresh failed; using existing file: {e}")
-        return
+        return "fallback"
     if result.get("status") == "written":
         untagged = result.get("untagged") or []
         msg = f"Refreshed open_positions.json from moomoo -> {repo_relative(result.get('wrote'))}."
         if untagged:
             msg += f" Untagged tickers default to sleeve section: {untagged}."
         log.info(msg)
-    else:
-        log.warning("moomoo unavailable/empty; using existing open_positions.json (fallback).")
+        return "refreshed"
+    log.warning("moomoo unavailable/empty; using existing open_positions.json (fallback).")
+    return "fallback"
 
 
 def _load_open_positions():
@@ -1341,7 +1342,8 @@ def main():
         select_pilot_entry_candidates,
     )
 
-    _refresh_open_positions_from_moomoo()
+    _moomoo_refresh_status = _refresh_open_positions_from_moomoo()
+    _positions_stale = _moomoo_refresh_status in ("fallback", "unavailable")
     open_positions    = _load_open_positions()
     _stored_pv        = (open_positions or {}).get("portfolio_value_usd")
     portfolio_value   = _stored_pv          # updated below after OHLCV is available
@@ -2044,30 +2046,24 @@ def main():
         from data_paths import daily_artifact_glob
         from position_manager import compute_atr
         from constants import ATR_STOP_MULT
+        from open_position_schema import account_positions
         # Reconstruct the EV-optimal STATIC entry stop (avg_cost - 1.5*ATR-at-entry)
         # per exp-20260623-020, since open_positions.stop_price has been trailed.
-        # Inject as entry_stop_price; the playbook prefers it over the trailed stop.
-        positions_for_bracket = {**open_positions} if isinstance(open_positions, dict) else open_positions
-        if isinstance(open_positions, dict):
-            _rows = open_positions.get("positions") or open_positions.get("open_positions") or []
-            _enriched = []
-            for _p in _rows:
-                _p2 = dict(_p) if isinstance(_p, dict) else _p
-                if isinstance(_p2, dict):
-                    _tk = str(_p2.get("ticker") or "").upper()
-                    _ed = _p2.get("entry_date")
-                    _ac = _p2.get("avg_cost")
-                    _df = ohlcv_dict.get(_tk)
-                    try:
-                        if _df is not None and _ed and _ac:
-                            _atr = compute_atr(_df.loc[:str(_ed)])
-                            if _atr and _atr > 0:
-                                _p2["entry_stop_price"] = round(float(_ac) - ATR_STOP_MULT * float(_atr), 2)
-                    except Exception:
-                        pass
-                _enriched.append(_p2)
-            key = "positions" if open_positions.get("positions") is not None else "open_positions"
-            positions_for_bracket = {**open_positions, key: _enriched}
+        # Build a {ticker: entry_stop} map over ALL holdings (positions +
+        # core_positions + observations), passed to the playbook.
+        entry_stops = {}
+        for _p in account_positions(open_positions, positive_only=True):
+            _tk = str(_p.get("ticker") or "").upper()
+            _ed = _p.get("entry_date")
+            _ac = _p.get("avg_cost")
+            _df = ohlcv_dict.get(_tk)
+            try:
+                if _df is not None and _ed and _ac:
+                    _atr = compute_atr(_df.loc[:str(_ed)])
+                    if _atr and _atr > 0:
+                        entry_stops[_tk] = round(float(_ac) - ATR_STOP_MULT * float(_atr), 2)
+            except Exception:
+                pass
         prior_plan = None
         prior_files = [p for p in daily_artifact_glob("bracket_orders") if today not in p.name]
         if prior_files:
@@ -2076,15 +2072,17 @@ def main():
             except Exception:
                 prior_plan = None
         bracket_orders_plan = build_bracket_orders(
-            positions_for_bracket, current_prices, asof_date=today_iso, prior_orders=prior_plan
+            open_positions, current_prices, asof_date=today_iso, prior_orders=prior_plan,
+            entry_stops=entry_stops, positions_stale=_positions_stale,
         )
         orders_path = daily_artifact_path("bracket_orders", today)
         orders_path.parent.mkdir(parents=True, exist_ok=True)
         atomic_write_json(bracket_orders_plan, orders_path)
         _bs = bracket_orders_plan["summary"]
         log.info(
-            "Bracket orders: %d resting (%d target, %d stop: %d static/%d trailed-fallback), "
+            "Bracket orders%s: %d resting (%d target, %d stop: %d static/%d trailed-fallback), "
             "%d exit-now, %d warnings -> %s",
+            " [POSITIONS STALE - informational only]" if _positions_stale else "",
             _bs["resting_orders_to_maintain"], _bs["target_limits"], _bs["protective_stops"],
             _bs.get("stops_static_entry", 0), _bs.get("stops_trailed_fallback", 0),
             _bs["exit_now_flags"], _bs["warnings"], orders_path,

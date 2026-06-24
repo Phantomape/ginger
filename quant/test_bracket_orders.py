@@ -126,6 +126,41 @@ def test_output_only_policy_and_no_submission():
     assert "HOOD" in section
 
 
+def test_covers_all_holding_groups():
+    # Holdings split across positions / core_positions / observations must all be covered.
+    payload = {
+        "positions": [{"ticker": "GOOG", "shares": 6, "avg_cost": 290.0, "stop_price": 280.0, "target_price": 348.0}],
+        "core_positions": [{"ticker": "AMZN", "shares": 4, "avg_cost": 248.0, "stop_price": 230.0, "target_price": 300.0}],
+        "observations": [{"ticker": "META", "shares": 2, "avg_cost": 500.0, "stop_price": 480.0, "target_price": 600.0}],
+    }
+    plan = bo.build_bracket_orders(payload, {"GOOG": 300, "AMZN": 260, "META": 520}, asof_date="2026-06-23")
+    tickers = {o["ticker"] for o in plan["orders"]}
+    assert {"GOOG", "AMZN", "META"} <= tickers  # all three groups covered
+    assert plan["summary"]["positions"] == 3
+
+
+def test_entry_stops_map_is_used():
+    plan = bo.build_bracket_orders(
+        {"core_positions": [{"ticker": "AMZN", "shares": 4, "avg_cost": 248.0, "stop_price": 230.0, "target_price": 300.0}]},
+        {"AMZN": 260.0}, asof_date="2026-06-23", entry_stops={"AMZN": 215.0},
+    )
+    stop = next(o for o in plan["orders"] if o["leg"] == "stop")
+    assert stop["price"] == 215.0 and stop["stop_basis"] == "static_entry"
+
+
+def test_positions_stale_suppresses_executable_orders():
+    plan = bo.build_bracket_orders(
+        {"positions": [{"ticker": "GOOG", "shares": 6, "avg_cost": 290.0, "entry_stop_price": 270.0,
+                        "stop_price": 280.0, "target_price": 348.0}]},
+        {"GOOG": 300.0}, asof_date="2026-06-23", positions_stale=True,
+    )
+    assert plan["positions_stale"] is True
+    assert plan["summary"]["resting_orders_to_maintain"] == 0  # nothing placeable
+    assert all(o["action"] == "SKIP_STALE" for o in plan["orders"])
+    assert any("STALE" in w for w in plan["warnings"])
+    assert "POSITIONS STALE" in bo.render_bracket_orders_section(plan)
+
+
 def test_zero_shares_skipped():
     plan = _plan([{"ticker": "GONE", "shares": 0, "avg_cost": 10, "stop_price": 9, "target_price": 12}], {"GONE": 11})
     assert plan["orders"] == []

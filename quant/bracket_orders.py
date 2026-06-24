@@ -24,6 +24,14 @@ from __future__ import annotations
 
 from typing import Any
 
+try:
+    from open_position_schema import account_positions as _account_positions
+except ImportError:  # pragma: no cover - package-style import
+    try:
+        from quant.open_position_schema import account_positions as _account_positions
+    except ImportError:
+        _account_positions = None
+
 GTC = "GTC"
 
 
@@ -45,7 +53,13 @@ def _qty(shares: Any) -> float | int | None:
 
 
 def _positions(open_positions: Any) -> list[dict]:
+    # The operator file splits holdings across positions / core_positions /
+    # observations; account_positions() aggregates all of them (positive shares
+    # only). Falling back to the single "positions" list would silently omit
+    # core_positions (e.g. AMZN) and observations (e.g. META/NFLX).
     if isinstance(open_positions, dict):
+        if _account_positions is not None:
+            return [r for r in _account_positions(open_positions, positive_only=True) if isinstance(r, dict)]
         rows = open_positions.get("positions") or open_positions.get("open_positions") or []
     elif isinstance(open_positions, list):
         rows = open_positions
@@ -75,6 +89,8 @@ def build_bracket_orders(
     *,
     asof_date: str,
     prior_orders: dict | None = None,
+    entry_stops: dict[str, Any] | None = None,
+    positions_stale: bool = False,
 ) -> dict[str, Any]:
     """Build the resting bracket-order plan for the day.
 
@@ -84,6 +100,7 @@ def build_bracket_orders(
     missing the leg is still emitted but flagged for manual verification.
     """
     prices = {str(k).upper(): _num(v) for k, v in (current_prices or {}).items()}
+    entry_stop_map = {str(k).upper(): _num(v) for k, v in (entry_stops or {}).items()}
     prior_stop = _prior_stop_prices(prior_orders)
     orders: list[dict[str, Any]] = []
     warnings: list[str] = []
@@ -103,7 +120,9 @@ def build_bracket_orders(
         # EV-optimal (trailing loses 30-57% EV with no drawdown benefit). Prefer
         # the reconstructed static entry stop; fall back to the operator's trailed
         # stop_price only when the entry stop is unavailable.
-        static_stop = _num(pos.get("entry_stop_price"))
+        static_stop = entry_stop_map.get(ticker)
+        if static_stop is None:
+            static_stop = _num(pos.get("entry_stop_price"))
         trailed_stop = _num(pos.get("stop_price"))
         if static_stop is not None and static_stop > 0:
             stop, stop_basis = static_stop, "static_entry"
@@ -193,6 +212,16 @@ def build_bracket_orders(
                 note += " (current price unavailable - verify it is below market)"
             orders.append(_base("STOP", stop, "stop", action, note, basis=stop_basis))
 
+    if positions_stale:
+        # Holdings could not be refreshed from the broker -> they may reflect a
+        # book the operator no longer has. Do NOT emit placeable orders; keep the
+        # computed plan as informational only so nothing gets placed on a stale
+        # (possibly already-sold) position.
+        warnings.insert(0, "POSITIONS STALE: broker refresh failed - orders are informational "
+                           "ONLY, do NOT place (they may reflect already-closed positions).")
+        for o in orders:
+            o["action"] = "SKIP_STALE"
+
     place = [o for o in orders if o["action"] in {"PLACE", "MOVE"}]
     exit_now = [o for o in orders if o["action"] == "EXIT_NOW"]
     summary = {
@@ -210,6 +239,7 @@ def build_bracket_orders(
         "asof_date": asof_date,
         "sleeve": "RESTING_BRACKET_ORDERS",
         "policy": "output_only_operator_places_orders",
+        "positions_stale": bool(positions_stale),
         "orders": orders,
         "warnings": warnings,
         "summary": summary,
@@ -224,6 +254,12 @@ def render_bracket_orders_section(plan: dict[str, Any]) -> str:
     lines.append("\n" + "-" * 60)
     lines.append("BRACKET ORDERS TO MAINTAIN (resting GTC; place yourself)")
     lines.append("-" * 60)
+    if plan.get("positions_stale"):
+        lines.append("  ##############################################################")
+        lines.append("  ## POSITIONS STALE - broker (moomoo) refresh FAILED.        ##")
+        lines.append("  ## Holdings below may already be SOLD. Orders are           ##")
+        lines.append("  ## INFORMATIONAL ONLY - do NOT place. Fix OpenD and re-run. ##")
+        lines.append("  ##############################################################")
     s = plan.get("summary", {})
     lines.append(
         f"  Positions: {s.get('positions', 0)}  |  Resting orders: {s.get('resting_orders_to_maintain', 0)} "
