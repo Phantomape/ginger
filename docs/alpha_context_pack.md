@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1464`
-- Raw records loaded by meta report: `2274`
-- History fingerprint: `03a10b028f439cdc`
+- Strategy records counted: `1468`
+- Raw records loaded by meta report: `2329`
+- History fingerprint: `1b90ed7de8eeff11`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -39,8 +39,8 @@ facts before changing strategy behavior.
 - `pilot_or_sleeve` priority `0.6326`: experiments `175`, accept `26.86%`, sum EV `+66.2321`, sum PnL `$1,149,056.08`.
   Reason: 174/175 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually changes sizing/allocation rather than...
   Guardrail: heavily explored family; diminishing-return risk; many prior rejections in this family
-- `slot_or_ranking` priority `0.5793`: experiments `164`, accept `26.22%`, sum EV `+42.8157`, sum PnL `$765,969.87`.
-  Reason: 157/164 records show multi-window evidence; 8/164 records have sample >= 10; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
+- `slot_or_ranking` priority `0.5763`: experiments `166`, accept `25.90%`, sum EV `+42.8157`, sum PnL `$765,969.87`.
+  Reason: 157/166 records show multi-window evidence; 8/166 records have sample >= 10; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
   Guardrail: can change survival, trade count, or exit distribution broadly; heavily explored family; diminishing-return risk; many prior rejections in this family
 - `default_off_paper_allocation` priority `0.5641`: experiments `12`, accept `33.33%`, sum EV `+0.0285`, sum PnL `$456.30`.
   Reason: 12/12 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs
@@ -64,14 +64,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260621-022` `rejected_sec_divestiture_spinoff_completion_candidate_pool`: EV `-0.0227`, PnL `$-939.69`, family `production_visible_sec_text_structure_simplification_candidate_pool`, trial `sec_divestiture_spinoff_completion_text_candidate_pool`.
-  Lesson: The SEC divestiture / spin-off completion source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, ac...
-- `exp-20260621-023` `rejected_sec_cyber_incident_containment_candidate_pool`: EV `+0.0204`, PnL `$92.14`, family `production_visible_sec_text_cyber_incident_candidate_pool`, trial `sec_text_cyber_incident_containment_candidate_pool`.
-  Lesson: The SEC cyber incident containment source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too_small, accep...
-- `exp-20260622-001` `rejected_sec_public_funding_award_candidate_pool`: EV `+0.0047`, PnL `$166.52`, family `production_visible_sec_text_public_funding_candidate_pool`, trial `sec_text_non_dilutive_public_funding_candidate_pool`.
-  Lesson: The SEC public non-dilutive funding award source did not clear Gate 4 (failed: fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too_small, target_concentration_failed, accepted_compr...
-- `exp-20260622-002` `rejected_sec_share_repurchase_authorization_candidate_pool`: EV `+0.0028`, PnL `$104.41`, family `production_visible_sec_text_shareholder_yield_candidate_pool`, trial `sec_text_share_repurchase_authorization_candidate_pool`.
-  Lesson: The SEC share-repurchase authorization source did not clear Gate 4 (failed: fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too_small, target_concentration_failed, accepted_compress...
 - `exp-20260622-004` `rejected_sec_supplier_payment_terms_structured_text_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `production_visible_sec_text_supplier_payment_terms_candidate_pool`, trial `sec_supplier_payment_terms_structured_text_candidate_pool`.
   Lesson: The SEC supplier payment-terms structured text source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_cov...
 - `exp-20260622-007` `rejected`: EV `+0.0340`, PnL `$1,912.10`, family `peer_shock`, trial `sec13f_coaccumulation_peer_shock`.
@@ -88,6 +80,14 @@ facts before changing strategy behavior.
   Lesson: Rejected. IBIT Bitcoin-anchor plus crypto-equity leadership did not add robust replacement value versus the accepted compression/distribution candidate-pool comparators after next-open execution, costs, cooldown, and...
 - `exp-20260622-025` `rejected_factor_residual_post_repair_candidate_pool`: EV `+0.8435`, PnL `$8,876.56`, family `production_visible_free_factor_residual_ohlcv_candidate_pool`, trial `factor_residual_idiosyncratic_leadership_candidate_pool`.
   Lesson: Rejected after repair. Once the factor ETF surface was available, the fixed factor-residual leadership bundle did not add robust replacement value versus accepted compression/distribution candidate-pool comparators af...
+- `exp-20260623-022` `rejected_regime_conditional_trailing_exit_scout`: EV `+0.0000`, PnL `$0.00`, family `exit_policy`, trial `regime_conditional_trailing_stop`.
+  Lesson: The shared entry-time chop label did not rescue ATR trailing. The conditional rule either had too few activations or failed the aggregate/window/concentration checks, while the replay remains fixed-entry only. Do not...
+- `exp-20260623-025` `rejected_preimplementation_accepted_distribution_comparator_not_beaten`: EV `+0.0000`, PnL `$0.00`, family `slot_or_ranking`, trial `slot_or_ranking`.
+  Lesson: The exp024 confluence lead is directionally positive but too small to justify shared adapter work: $2,439.01 cash replacement value versus $10,432.91 for the current accepted distribution-day shared adapter. Do not re...
+- `exp-20260624-003` `rejected_regime_conditioned_overlay`: EV `+0.0000`, PnL `$0.00`, family `regime_conditioned_held_book_risk_budget_overlay`, trial `regime_conditioned_held_book_risk_budget_overlay`.
+  Lesson: The 200d-MA regime gate recovered much of the return the always-on overlay discarded, improving EV versus always-on from 18.5897 to 29.092, but it still lost to static EV 44.3857. The gate was too slow: it added BEAR...
+- `exp-20260624-005` `rejected`: EV `+0.0000`, PnL `$0.00`, family `held_book_risk_allocation`, trial `held_book_regime_conditioned_risk_budget`.
+  Lesson: Prior same-day experiment existed in registry/log but was not in the initial memory snapshot. Do not rerun the 200d-MA / compute_market_regime gated held-book risk-budget overlay, or sweep its BULL definition, MA leng...
 
 ## Highest-Signal Historical Records
 

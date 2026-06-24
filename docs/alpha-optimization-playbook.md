@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-06-23.
+Last refreshed: 2026-06-24.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -584,6 +584,30 @@ exit policy. Do not convert these diagnostics into exits, scalars, or live
 pilot promotion; the next evidence is more closed forward replacement-value
 rows with fixed schemas, not a frozen-window threshold sweep.
 
+The June 24 batch tightened the same forward-first boundary. Same-entry-date
+multi-sleeve breadth did not prove allocation readiness, and a broader source
+triage found no compliant gate-ready alpha surface after novelty and
+source-saturation checks. The useful work was measurement repair around
+activation evidence: cross-pilot overlap rows now carry participant verdict and
+status context, accepted-allocator open rows now carry current close/unrealized
+price attribution, and current allocator price materialization cleared
+`no_price` rows without changing any order path. That still did not make the
+allocator activation-ready: there are zero closed allocator-top1 rows, the
+scorecard is not graduate, and DDOG still overlaps a killed pilot. The new
+positive lead is narrower and forward-only: Kova rows can now attach PIT SEC13F
+holder/value sponsorship from the local holdings summary, partial 1d/3d/5d
+cash/SPY/QQQ outcomes are settled, and high-sponsorship rows beat low/missing
+sponsorship across those short horizons. This is not a promoted helper and not
+canonical fixed-window evidence. A follow-on coownership-network attribution on
+the same ledger did not separate primary 5d cash/SPY/QQQ outcomes, so the
+relation graph is not a free upgrade over sponsorship context. Do not sweep
+Kova sponsorship score, holder-count, value, coownership peer count/lift/shared
+manager/Jaccard fields, RS, source-count, top-N, hold, cooldown, notional, or
+allocator thresholds on the same partial forward ledger. The next admissible
+evidence is enough closed 10d replacement rows, materially richer PIT
+manager/active-flow provenance, borrow/options cross-evidence, or a shared
+default-off helper with historical PIT coverage.
+
 ## Detail Sources
 
 Generated mechanism memory lives in `docs/lessons/*.md`; exact facts live in
@@ -625,6 +649,9 @@ evidence on accepted paper adapters:
 - entry-regime-tagged forward replacement rows, options forward observations,
   Kova multi-source observations, and exit/LLM advisory outcomes as
   attribution surfaces only until closed-row replacement value is stable.
+  Kova SEC13F sponsorship is now a positive observed-only 1d/3d/5d lead, but
+  remains forward-only until 10d rows and/or historical PIT helper coverage
+  mature.
 
 Minimum forward package:
 
@@ -1114,13 +1141,21 @@ production-visible field:
   on this ledger; a valid retry needs materially more closed rows with
   replacement value, PIT vendor-as-of controls, borrow / loan-availability
   context, or historical PIT options chains covering the canonical windows;
-- Kova multi-source RS/fundamental-alignment candidate-pool claims that only
-  sweep alignment score, source count, RS threshold, growth breadth, top-N,
-  hold, cooldown, or notional. `exp-20260623-013` built the forward ledger,
-  while `exp-20260623-014` rejected the first closed-forward monotonicity read.
-  Reopen only with materially more closed replacement-value rows, a new Kova
-  source with PIT provenance, or a different relation field that beats cash,
-  SPY, QQQ, and accepted default-off comparators after costs;
+- Kova multi-source RS/fundamental-alignment, SEC13F-sponsorship, or
+  SEC13F-coownership-network
+  candidate-pool claims that only sweep alignment score, source count, RS
+  threshold, growth breadth, sponsorship score, holder count, 13F value,
+  coownership peer count, lift, shared-manager count, Jaccard, network score,
+  top-N, hold, cooldown, notional, or allocator thresholds.
+  `exp-20260623-013` built the forward ledger, `exp-20260623-014` rejected the
+  first RS/growth monotonicity read, `exp-20260624-015`/`016`/`017` repaired
+  PIT SEC13F sponsorship and partial forward outcomes, `exp-20260624-018` found
+  a positive observed-only 1d/3d/5d sponsorship lead that is not promoted, and
+  `exp-20260624-019` rejected the coownership-network follow-up. Reopen
+  only with enough closed 10d replacement-value rows, materially richer PIT
+  manager/flow provenance, borrow/options cross-evidence, a new Kova source
+  with PIT provenance, or a shared default-off helper with historical PIT
+  coverage that beats cash, SPY, QQQ, and accepted comparators after costs;
 - post-earnings high-liquidity, sector-residual, core-overlap, DTE, latest
   surprise, average surprise, pre-event RS, score, rank, or scalar retunes;
 - SEC item-code / phrase / same-day absorption retries without richer semantic

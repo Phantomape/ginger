@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `88`
-- Accepted / rejected: `33` / `52`
-- Accept rate: `37.50%`
+- Experiments: `89`
+- Accepted / rejected: `33` / `53`
+- Accept rate: `37.08%`
 - Sum EV delta: `-0.5488`
 - Sum PnL delta: `$-62,664.98`
-- Latest: `exp-20260614-005` `blocked_no_valid_nonrepeat_alpha_candidate` with EV `+0.0000` and PnL `$0.00`.
+- Latest: `exp-20260623-025` `rejected_preimplementation_accepted_distribution_comparator_not_beaten` with EV `+0.0000` and PnL `$0.00`.
 
 ## Retained Or Positive Evidence
 
@@ -30,8 +30,6 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260513-106` `rejected`: EV `+0.0000`, PnL `$0.00`, family `slot_or_ranking`, trial `slot_or_ranking`.
-  Lesson: No tested regulatory customer-source scalar improved aggregate EV/PnL across the three standard windows without a window-level EV regression and risk/survival violation.
 - `exp-20260513-111` `rejected`: EV `+0.0000`, PnL `$0.00`, family `slot_or_ranking`, trial `slot_or_ranking`.
   Lesson: No tested strong peer-excess source-diversity scalar improved aggregate EV/PnL across the three standard windows without a window-level EV regression and risk/survival violation.
 - `exp-20260514-016` `rejected`: EV `+0.0000`, PnL `$0.00`, family `slot_or_ranking`, trial `slot_or_ranking`.
@@ -46,6 +44,8 @@ records before making strategy changes.
   Lesson: Lowering the breakout Financials 8-14 DTE risk scalar did not clear the full Gate 4 sample and robustness requirements; do not promote or keep sweeping this two-row DTE pocket on frozen windows.
 - `exp-20260524-021` `rejected`: EV `+0.0000`, PnL `$0.00`, family `slot_or_ranking`, trial `slot_or_ranking`.
   Lesson: Existing SLV Commodities trend_long signals may have lower expected value under the current 7 ATR commodity target; compressing only the SLV target could improve exits without adding filters, ranking complexity, candi...
+- `exp-20260623-025` `rejected_preimplementation_accepted_distribution_comparator_not_beaten`: EV `+0.0000`, PnL `$0.00`, family `slot_or_ranking`, trial `slot_or_ranking`.
+  Lesson: The exp024 confluence lead is directionally positive but too small to justify shared adapter work: $2,439.01 cash replacement value versus $10,432.91 for the current accepted distribution-day shared adapter. Do not re...
 
 ## Retry Discipline
 
@@ -65,9 +65,9 @@ records before making strategy changes.
 
 ## Recent Raw Records
 
-- `exp-20260517-007` source `experiments/logs/exp-20260517-007.json`.
 - `exp-20260518-027` source `experiments/logs/exp-20260518-027.json`.
 - `exp-20260519-001` source `experiments/logs/exp-20260519-001.json`.
 - `exp-20260519-028` source `experiments/logs/exp-20260519-028.json`.
 - `exp-20260524-021` source `experiments/logs/exp-20260524-021.json`.
 - `exp-20260614-005` source `experiments/logs/exp-20260614-005.json`.
+- `exp-20260623-025` source `experiments/logs/exp-20260623-025.json`.

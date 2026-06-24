@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-06-23.
+Last refreshed: 2026-06-24.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -14,6 +14,72 @@ in raw experiment records and generated `docs/lessons/*.md`.
 
 These are not authority to add models. They are design patterns that must be
 converted into auditable fields and tested through Gate 1-4.
+
+### LLM Research Is A Pipeline Checklist, Not A Trading Delegate
+
+The 2025 survey "The New Quant" is useful because it organizes LLM work around
+tasks that Ginger can audit: sentiment/event extraction, numeric reasoning,
+retrieval, multimodal fusion, agentic research tooling, and portfolio
+construction under exposure, turnover, capacity, latency, and cost controls.
+The local conclusion is not "use an LLM to trade." It is that every LLM output
+must become a timestamped, schema-bound evidence row with source coverage,
+tool-verified numerics, and after-cost replacement value before it affects a
+deterministic helper.
+
+Implementable fields:
+
+- `llm_task_taxonomy_bucket`
+- `llm_retrieval_source_hash`
+- `llm_tool_verified_numeric_flag`
+- `llm_source_coverage_fraction`
+- `llm_latency_bucket`
+- `llm_capacity_constraint_bucket`
+- `llm_costed_replacement_value`
+- `llm_governance_failure_bucket`
+
+Controls:
+
+- separate event extraction, numeric extraction, forecast view, and execution
+  suggestion into different schemas and ledgers;
+- require deterministic recomputation for arithmetic, joins, and period
+  matching;
+- report coverage, latency, cost, turnover, and capacity in the same artifact
+  as any LLM-derived signal;
+- keep LLMs in evidence construction unless a shared helper passes Gate 1-4.
+
+Source: <https://arxiv.org/abs/2510.05533>
+
+### Complex ML Return Predictors Need Recency Placebos
+
+The 2025 debate around very complex return predictors is a useful warning:
+apparent ML complexity can collapse into recent-return similarity or
+volatility-timed momentum. Ginger should add a placebo layer before trusting
+high-dimensional models, graph embeddings, or LLM-produced score vectors: prove
+that the model beats simple recency, momentum, and volatility-scaled momentum
+baselines under the same PIT data, costs, and displacement comparator.
+
+Implementable fields:
+
+- `model_complexity_bucket`
+- `recency_similarity_score`
+- `momentum_placebo_delta`
+- `vol_timed_momentum_placebo_delta`
+- `feature_similarity_lookback_bucket`
+- `complex_model_incremental_replacement_value`
+- `simple_baseline_comparator_set`
+- `overcomplexity_failure_reason`
+
+Controls:
+
+- compare any high-dimensional predictor against recency-weighted returns,
+  cross-sectional momentum, and volatility-scaled momentum;
+- run the placebo on the exact same decision dates, universe, costs, and
+  candidate displacement path;
+- require positive incremental replacement value, not only better prediction
+  loss;
+- treat "more parameters" as model-risk evidence until the placebo clears.
+
+Source: <https://www.ft.com/content/89d88cbf-a92c-43d2-b8af-88ae26529be0>
 
 ### State-Dependent Predictability
 
