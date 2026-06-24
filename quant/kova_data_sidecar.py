@@ -104,6 +104,14 @@ def _float_or_none(value: Any) -> float | None:
     return out if math.isfinite(out) else None
 
 
+def _int_or_none(value: Any) -> int | None:
+    try:
+        out = int(value)
+    except (TypeError, ValueError):
+        return None
+    return out
+
+
 def _repo_rel(path: Path | str) -> str:
     value = Path(path)
     if not value.is_absolute():
@@ -675,6 +683,133 @@ def parse_sec13f_zip(
     return sorted(rows, key=lambda row: (str(row.get("ticker") or ""), str(row.get("asof_date") or ""), str(row.get("accession_number") or "")))
 
 
+def _load_latest_sec13f_holdings_summary(
+    *,
+    non_ohlcv_dir: Path | str,
+    asof_date: str | date | datetime,
+) -> tuple[Path | None, dict[str, Any] | None, dict[str, Any]]:
+    asof = _parse_date(asof_date)
+    if asof is None:
+        return None, None, {"status": "missing", "reason": "invalid_query_asof_date"}
+    root = Path(non_ohlcv_dir) / "sec13f_institutional"
+    candidates: list[tuple[date, str, Path, dict[str, Any]]] = []
+    for path in sorted(root.glob("holdings_*.json")):
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        payload_asof = _parse_date(payload.get("as_of"))
+        holdings = payload.get("holdings")
+        if payload_asof is None or payload_asof > asof or not isinstance(holdings, list):
+            continue
+        candidates.append((payload_asof, path.name, path, payload))
+    if not candidates:
+        return (
+            None,
+            None,
+            {
+                "status": "missing",
+                "reason": "no_local_sec13f_holdings_summary_at_or_before_asof",
+                "path_glob": _repo_rel(root / "holdings_*.json"),
+            },
+        )
+    payload_asof, _, path, payload = max(candidates, key=lambda item: (item[0], item[1]))
+    return (
+        path,
+        payload,
+        {
+            "status": "selected",
+            "source_snapshot": _repo_rel(path),
+            "source_asof_date": payload_asof.isoformat(),
+            "window_label": payload.get("window_label"),
+            "rule_version": payload.get("rule_version"),
+            "universe_covered_count": payload.get("universe_covered_count"),
+            "universe_coverage_pct": payload.get("universe_coverage_pct"),
+        },
+    )
+
+
+def load_sec13f_holdings_summary_rows(
+    *,
+    non_ohlcv_dir: Path | str,
+    asof_date: str | date | datetime,
+    tickers: Iterable[str] | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Load the latest local aggregate 13F holdings summary known by asof_date."""
+    asof = _date_text(asof_date)
+    ticker_list = normalize_tickers(tickers)
+    path, payload, summary = _load_latest_sec13f_holdings_summary(
+        non_ohlcv_dir=non_ohlcv_dir,
+        asof_date=asof,
+    )
+    if payload is None or path is None:
+        return [], {"source": "local_sec13f_holdings_summary", **summary}
+
+    holdings = payload.get("holdings") or []
+    by_ticker = {
+        str(row.get("ticker") or "").upper(): row
+        for row in holdings
+        if str(row.get("ticker") or "").strip()
+    }
+    selected_tickers = ticker_list or sorted(by_ticker)
+    rows: list[dict[str, Any]] = []
+    for ticker in selected_tickers:
+        holding = by_ticker.get(ticker)
+        if holding is None:
+            rows.append(
+                {
+                    "schema_version": 1,
+                    "surface": "sec13f_institutional_ownership",
+                    "ticker": ticker,
+                    "asof_date": str(payload.get("as_of") or asof)[:10],
+                    "query_asof_date": asof,
+                    "status": "skipped",
+                    "reason": "ticker_missing_from_local_sec13f_holdings_summary",
+                    "provider": "local_sec13f_holdings_summary",
+                    "source_snapshot": _repo_rel(path),
+                    "known_at": "local SEC 13F holdings summary with payload as_of <= query_asof_date",
+                    "alters_orders": False,
+                }
+            )
+            continue
+        rows.append(
+            {
+                "schema_version": 1,
+                "surface": "sec13f_institutional_ownership",
+                "ticker": ticker,
+                "asof_date": str(payload.get("as_of") or asof)[:10],
+                "query_asof_date": asof,
+                "status": "ok",
+                "provider": "local_sec13f_holdings_summary",
+                "source_snapshot": _repo_rel(path),
+                "rule_version": payload.get("rule_version"),
+                "window_label": payload.get("window_label"),
+                "report_period": holding.get("report_period"),
+                "holder_count": _int_or_none(holding.get("holder_count")),
+                "position_row_count": _int_or_none(holding.get("position_row_count")),
+                "total_value_usd": _float_or_none(holding.get("total_value_usd")),
+                "total_shares": _float_or_none(holding.get("total_shares")),
+                "ticker_mapping_status": "sec13f_ingest_universe_name_match",
+                "known_at": "local SEC 13F holdings summary with payload as_of <= query_asof_date",
+                "alters_orders": False,
+            }
+        )
+
+    ok_rows = sum(1 for row in rows if row.get("status") == "ok")
+    return (
+        sorted(rows, key=lambda row: str(row.get("ticker") or "")),
+        {
+            "source": "local_sec13f_holdings_summary",
+            **summary,
+            "status": "ok" if ok_rows else "empty_after_ticker_filter",
+            "source_rows": len(holdings),
+            "rows_written": len(rows),
+            "ok_rows": ok_rows,
+            "skipped_rows": len(rows) - ok_rows,
+        },
+    )
+
+
 def fetch_sec13f_quarter_zip(
     year: int,
     quarter: int,
@@ -964,6 +1099,7 @@ def persist_kova_data_snapshot(
     }
 
     sec13f_rows: list[dict[str, Any]] = []
+    sec13f_summary: dict[str, Any] = {"source": "none"}
     mapping = load_cusip_ticker_map(cusip_map)
     if sec13f_zip or (sec13f_year and sec13f_quarter):
         zip_path = (
@@ -977,29 +1113,42 @@ def persist_kova_data_snapshot(
             )
         )
         sec13f_rows = parse_sec13f_zip(zip_path, asof_date=asof, cusip_ticker_map=mapping)
+        sec13f_summary = {
+            "source": "sec_13f_data_set_zip",
+            "source_snapshot": _repo_rel(zip_path),
+            "rows_parsed": len(sec13f_rows),
+        }
         ticker_filter = set(ticker_list)
         if ticker_filter:
             sec13f_rows = [
                 row for row in sec13f_rows if not row.get("ticker") or row.get("ticker") in ticker_filter
             ]
     else:
-        sec13f_rows = [
-            {
-                "schema_version": 1,
-                "surface": "sec13f_institutional_ownership",
-                "ticker": ticker,
-                "asof_date": asof,
-                "status": "skipped",
-                "reason": "no_sec13f_zip_or_year_quarter_supplied",
-                "provider": "sec_13f_data_set",
-                "alters_orders": False,
-            }
-            for ticker in ticker_list
-        ]
+        sec13f_rows, sec13f_summary = load_sec13f_holdings_summary_rows(
+            non_ohlcv_dir=non_ohlcv_dir,
+            asof_date=asof,
+            tickers=ticker_list,
+        )
+        if not sec13f_rows:
+            sec13f_rows = [
+                {
+                    "schema_version": 1,
+                    "surface": "sec13f_institutional_ownership",
+                    "ticker": ticker,
+                    "asof_date": asof,
+                    "status": "skipped",
+                    "reason": "no_sec13f_zip_year_quarter_or_local_holdings_summary",
+                    "provider": "sec_13f_data_set",
+                    "local_summary_reason": sec13f_summary.get("reason"),
+                    "alters_orders": False,
+                }
+                for ticker in ticker_list
+            ]
     snapshot["institutional_ownership"] = {
         "status": "ok" if any(row.get("surface") == "sec13f_institutional_ownership" and row.get("status") != "skipped" for row in sec13f_rows) else "skipped_or_empty",
         "rows_written": _write_jsonl(paths["institutional_ownership"], sec13f_rows),
         "cusip_map_rows": len(mapping),
+        "source_summary": sec13f_summary,
     }
 
     statuses = [

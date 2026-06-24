@@ -203,6 +203,64 @@ def test_parse_sec13f_zip_joins_with_optional_cusip_map(tmp_path: Path) -> None:
     assert rows[0]["manager_name"] == "Manager A"
 
 
+def test_sec13f_holdings_summary_rows_use_latest_nonfuture_payload(tmp_path: Path) -> None:
+    root = tmp_path / "sec13f_institutional"
+    sidecar._write_json(
+        root / "holdings_01mar2026-31may2026.json",
+        {
+            "status": "ingested",
+            "rule_version": "sec13f_universe_name_match_v1",
+            "as_of": "2026-06-11",
+            "window_label": "01mar2026-31may2026",
+            "universe_covered_count": 1,
+            "universe_coverage_pct": 50.0,
+            "holdings": [
+                {
+                    "ticker": "AAPL",
+                    "holder_count": 7,
+                    "position_row_count": 11,
+                    "total_value_usd": 12345.0,
+                    "total_shares": 678.0,
+                    "report_period": "31-MAR-2026",
+                }
+            ],
+        },
+    )
+    sidecar._write_json(
+        root / "holdings_01jun2026-31aug2026.json",
+        {
+            "status": "ingested",
+            "rule_version": "sec13f_universe_name_match_v1",
+            "as_of": "2026-09-11",
+            "window_label": "01jun2026-31aug2026",
+            "holdings": [{"ticker": "AAPL", "holder_count": 999}],
+        },
+    )
+
+    rows, summary = sidecar.load_sec13f_holdings_summary_rows(
+        non_ohlcv_dir=tmp_path,
+        asof_date="2026-06-23",
+        tickers=["aapl", "msft"],
+    )
+
+    by_ticker = {row["ticker"]: row for row in rows}
+    assert summary["status"] == "ok"
+    assert summary["source_asof_date"] == "2026-06-11"
+    assert by_ticker["AAPL"]["status"] == "ok"
+    assert by_ticker["AAPL"]["holder_count"] == 7
+    assert by_ticker["AAPL"]["alters_orders"] is False
+    assert by_ticker["MSFT"]["status"] == "skipped"
+    assert by_ticker["MSFT"]["reason"] == "ticker_missing_from_local_sec13f_holdings_summary"
+
+    old_rows, old_summary = sidecar.load_sec13f_holdings_summary_rows(
+        non_ohlcv_dir=tmp_path,
+        asof_date="2026-06-01",
+        tickers=["AAPL"],
+    )
+    assert old_rows == []
+    assert old_summary["reason"] == "no_local_sec13f_holdings_summary_at_or_before_asof"
+
+
 def test_load_kova_context_selects_latest_nonfuture_surface(tmp_path: Path) -> None:
     path = tmp_path / "fundamentals" / "companyfacts_growth_20260501.jsonl"
     sidecar._write_jsonl(
@@ -284,6 +342,46 @@ def test_persist_kova_snapshot_writes_default_off_sidecars(tmp_path: Path) -> No
     assert snapshot["rs_proxy"]["rows_written"] == 1
     assert snapshot["institutional_ownership"]["rows_written"] == 1
     assert Path(tmp_path / "kova" / "snapshots" / "kova_data_snapshot_20260125.json").exists()
+
+
+def test_persist_kova_snapshot_uses_local_sec13f_holdings_summary(tmp_path: Path) -> None:
+    non_ohlcv = tmp_path / "non_ohlcv"
+    sidecar._write_json(
+        non_ohlcv / "sec13f_institutional" / "holdings_01mar2026-31may2026.json",
+        {
+            "status": "ingested",
+            "rule_version": "sec13f_universe_name_match_v1",
+            "as_of": "2026-06-11",
+            "window_label": "01mar2026-31may2026",
+            "universe_covered_count": 1,
+            "universe_coverage_pct": 100.0,
+            "holdings": [
+                {
+                    "ticker": "ABC",
+                    "holder_count": 3,
+                    "position_row_count": 4,
+                    "total_value_usd": 2500.0,
+                    "total_shares": 90.0,
+                    "report_period": "31-MAR-2026",
+                }
+            ],
+        },
+    )
+
+    snapshot = sidecar.persist_kova_data_snapshot(
+        asof_date="2026-06-23",
+        tickers=["ABC"],
+        data_dir=tmp_path / "kova",
+        non_ohlcv_dir=non_ohlcv,
+    )
+
+    assert snapshot["institutional_ownership"]["status"] == "ok"
+    assert snapshot["institutional_ownership"]["source_summary"]["source"] == "local_sec13f_holdings_summary"
+    rows = sidecar._read_jsonl(tmp_path / "kova" / "institutional" / "sec13f_ownership_20260623.jsonl")
+    assert rows[0]["ticker"] == "ABC"
+    assert rows[0]["status"] == "ok"
+    assert rows[0]["holder_count"] == 3
+    assert rows[0]["alters_orders"] is False
 
 
 def test_normalize_ohlcv_mapping_accepts_dataframes() -> None:

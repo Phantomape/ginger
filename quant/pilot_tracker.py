@@ -347,15 +347,45 @@ def _cross_pilot_overlap(recs: list[dict[str, Any]]) -> list[dict[str, Any]]:
     by_ticker: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for r in recs:
         for a in r["actionable"]:
-            by_ticker[a["ticker"]].append({"pilot": r["label"], "status": a["status"]})
+            by_ticker[a["ticker"]].append({
+                "pilot": r["label"],
+                "pilot_key": r["pilot"],
+                "label": r["label"],
+                "sleeve": r["sleeve"],
+                "pilot_verdict": r.get("pilot_verdict"),
+                "pilot_verdict_note": r.get("pilot_verdict_note"),
+                "new_entries_blocked": bool(r.get("new_entries_blocked")),
+                "status": a["status"],
+                "actionable_status": a["status"],
+                "stop_status": a.get("stop_status"),
+                "entry_date": a.get("entry_date"),
+                "days_held": a.get("days_held"),
+                "days_remaining": a.get("days_remaining"),
+                "unrealized_pct": a.get("unrealized_pct"),
+                "pilot_notional_usd": a.get("pilot_notional_usd") or PILOT_NOTIONAL_USD,
+            })
     overlaps = []
     for ticker, entries in sorted(by_ticker.items()):
         if len({e["pilot"] for e in entries}) > 1:
+            pilot_statuses: dict[str, list[str]] = defaultdict(list)
+            for entry in entries:
+                pilot_statuses[str(entry["pilot_key"])].append(str(entry["status"]))
             overlaps.append({
                 "ticker": ticker,
                 "pilots": [e["pilot"] for e in entries],
+                "participant_context": entries,
+                "pilot_verdicts": {
+                    str(e["pilot_key"]): e.get("pilot_verdict") for e in entries
+                },
+                "pilot_statuses": dict(pilot_statuses),
+                "new_entries_blocked_by_pilot": {
+                    str(e["pilot_key"]): bool(e.get("new_entries_blocked")) for e in entries
+                },
                 "positions": len(entries),
-                "total_exposure_usd": round(len(entries) * PILOT_NOTIONAL_USD, 2),
+                "total_exposure_usd": round(
+                    sum(float(e.get("pilot_notional_usd") or 0.0) for e in entries),
+                    2,
+                ),
             })
     return overlaps
 
@@ -404,6 +434,14 @@ def _render_md(recs: list[dict[str, Any]], cards: list[dict[str, Any]],
             L.append("- **{tk}**: held by {n} pilots ({pl}) -> {ex} real exposure".format(
                 tk=o["ticker"], n=o["positions"], pl=", ".join(o["pilots"]),
                 ex=_fmt_usd(o["total_exposure_usd"])))
+            for p in o.get("participant_context") or []:
+                blocked = ", new entries blocked" if p.get("new_entries_blocked") else ""
+                L.append("  - {pilot}: {status}, verdict {verdict}{blocked}".format(
+                    pilot=p.get("pilot"),
+                    status=p.get("actionable_status") or p.get("status"),
+                    verdict=p.get("pilot_verdict") or "UNKNOWN",
+                    blocked=blocked,
+                ))
         L.append("")
     L += ["## Scorecard", "",
          "| pilot | closed | hit | realized $ | rv_cash | rv_SPY | rv_QQQ | book DD | verdict |",

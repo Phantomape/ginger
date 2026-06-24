@@ -404,3 +404,46 @@ def test_daily_snapshot_preserves_turn_of_month_scaled_pending_notional() -> Non
     assert candidate["paper_notional_usd"] == 5000.0
     assert pending["paper_notional_usd"] == 5000.0
     assert pending["trade_enabled"] is False
+
+
+def test_daily_snapshot_marks_open_allocator_position_with_last_price() -> None:
+    ohlcv = _ohlcv()
+    state = empty_accepted_helper_source_priority_allocator_state()
+    entry_date = ohlcv["TOP"][5]["date"]
+    as_of = ohlcv["TOP"][7]["date"]
+    state["open_positions"] = [
+        {
+            "decision_id": f"{RULE_VERSION}:synthetic-open-price",
+            "ticker": "TOP",
+            "signal_date": ohlcv["TOP"][4]["date"],
+            "entry_date": entry_date,
+            "entry_price": 100.0,
+            "notional_usd": 5000.0,
+            "paper_notional_usd": 5000.0,
+            "hold_days": 10,
+            "observed_trading_days": 2,
+            "last_observed_date": ohlcv["TOP"][6]["date"],
+            "paper_status": "open",
+            "trade_enabled": False,
+        }
+    ]
+
+    snapshot = build_accepted_helper_source_priority_allocator_snapshot(
+        as_of=as_of,
+        source_snapshots={},
+        ohlcv_by_ticker=ohlcv,
+        state=state,
+        config={"hold_days": 10},
+        persist=False,
+    )
+
+    assert snapshot["open_position_count"] == 1
+    assert snapshot["closed_count_today"] == 0
+    position = snapshot["open_positions"][0]
+    expected_last = ohlcv["TOP"][7]["close"]
+    assert position["last_price"] == expected_last
+    assert position["last_price_asof"] == as_of
+    assert position["observed_trading_days"] == 3
+    assert position["paper_status"] == "open"
+    assert position["unrealized_return_pct"] == round((expected_last / 100.0) - 1.0, 6)
+    assert position["unrealized_pnl"] == round(5000.0 * ((expected_last / 100.0) - 1.0), 2)

@@ -124,3 +124,70 @@ def test_recommendations_block_new_entries_when_scorecard_kills_pilot() -> None:
     assert {row["status"] for row in rec["actionable"]} == {"HOLD"}
     assert rec["skipped"][0]["ticker"] == "BUYME"
     assert rec["skipped"][0]["status"] == "SKIP_pilot_kill_verdict"
+
+
+def test_cross_pilot_overlap_includes_verdict_and_status_context() -> None:
+    recs = [
+        {
+            "pilot": "allocator_top1",
+            "label": "Source-priority allocator (TOP-1 only)",
+            "sleeve": "accepted_helper_source_priority_allocator",
+            "pilot_verdict": "COLLECTING",
+            "pilot_verdict_note": "0/20 closed trades; keep tracking",
+            "new_entries_blocked": False,
+            "actionable": [
+                {
+                    "ticker": "DDOG",
+                    "status": "HOLD",
+                    "entry_date": "2026-06-18",
+                    "days_held": 3,
+                    "days_remaining": 7,
+                    "stop_status": "no_price",
+                    "unrealized_pct": None,
+                    "pilot_notional_usd": 10000.0,
+                }
+            ],
+        },
+        {
+            "pilot": "fundamental_growth_rs",
+            "label": "Fundamental growth + RS",
+            "sleeve": "fundamental_growth_rs",
+            "pilot_verdict": "KILL",
+            "pilot_verdict_note": "book drawdown 24.3% breaches 15% ceiling -> stop pilot",
+            "new_entries_blocked": True,
+            "actionable": [
+                {
+                    "ticker": "DDOG",
+                    "status": "HOLD",
+                    "entry_date": "2026-06-17",
+                    "days_held": 7,
+                    "days_remaining": 3,
+                    "stop_status": "OK",
+                    "unrealized_pct": -0.0418,
+                    "pilot_notional_usd": 10000.0,
+                }
+            ],
+        },
+    ]
+
+    overlaps = pilot_tracker._cross_pilot_overlap(recs)
+
+    assert len(overlaps) == 1
+    overlap = overlaps[0]
+    assert overlap["ticker"] == "DDOG"
+    assert overlap["total_exposure_usd"] == 20000.0
+    assert overlap["pilot_verdicts"] == {
+        "allocator_top1": "COLLECTING",
+        "fundamental_growth_rs": "KILL",
+    }
+    assert overlap["pilot_statuses"] == {
+        "allocator_top1": ["HOLD"],
+        "fundamental_growth_rs": ["HOLD"],
+    }
+    assert overlap["new_entries_blocked_by_pilot"] == {
+        "allocator_top1": False,
+        "fundamental_growth_rs": True,
+    }
+    assert [
+        row["pilot_key"] for row in overlap["participant_context"]
+    ] == ["allocator_top1", "fundamental_growth_rs"]

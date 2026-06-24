@@ -716,12 +716,19 @@ def _advance_open_positions(
         if str(working.get("last_observed_date") or "") != as_of:
             working["observed_trading_days"] = int(working.get("observed_trading_days") or 0) + 1
             working["last_observed_date"] = as_of
-        if int(working.get("observed_trading_days") or 0) < int(config["hold_days"]):
-            still_open.append(working)
-            continue
         close_price = _positive_float(rows[idx].get("close"))
         entry_price = _positive_float(working.get("entry_price"))
         notional = _positive_float(working.get("notional_usd") or working.get("paper_notional_usd"))
+        if close_price is not None:
+            working["last_price"] = _round(close_price, 4)
+            working["last_price_asof"] = as_of
+            if entry_price is not None and notional is not None:
+                unrealized_pct = (close_price / entry_price) - 1.0
+                working["unrealized_return_pct"] = _round(unrealized_pct, 6)
+                working["unrealized_pnl"] = _round(notional * unrealized_pct, 2)
+        if int(working.get("observed_trading_days") or 0) < int(config["hold_days"]):
+            still_open.append(working)
+            continue
         if close_price is None or entry_price is None or notional is None:
             still_open.append(working)
             continue
