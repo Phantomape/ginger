@@ -1,0 +1,530 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "aggregate_expected_value_delta": 0.1409,
+  "aggregate_strategy_total_pnl_delta": 2344.59,
+  "alpha_hypothesis": "A point-in-time moomoo short_volume_ratio clean-flow exclusion gate -- dropping daily top-1 momentum/breakout candidates whose informed daily short-sale flow sits in the toxic top quintile and taking the next clean candidate -- adds after-cost replacement value over the identical ungated pool across the canonical windows.",
+  "anti_js": {
+    "evidence": "Python runner only.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260625-019/exp_20260625_019_short_volume_clean_flow_gate_scout.json",
+  "baseline_metrics": {
+    "late_strong": {
+      "expected_value_score": 5.1628,
+      "max_consecutive_losses": 2,
+      "max_drawdown_pct": 0.0665,
+      "sharpe_daily": 4.41,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "strategy_total_return_pct": 1.1707,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5146,
+      "total_pnl": 117072.92,
+      "trade_count": 18,
+      "win_rate": 0.8333,
+      "worst_trade_pct": -0.0397
+    },
+    "mid_weak": {
+      "expected_value_score": 2.1402,
+      "max_consecutive_losses": 6,
+      "max_drawdown_pct": 0.1119,
+      "sharpe_daily": 2.74,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "strategy_total_return_pct": 0.7811,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.5493,
+      "total_pnl": 78110.11,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "worst_trade_pct": -0.0897
+    },
+    "old_thin": {
+      "expected_value_score": 0.5911,
+      "max_consecutive_losses": 4,
+      "max_drawdown_pct": 0.1001,
+      "sharpe_daily": 1.49,
+      "signals_generated": 60,
+      "signals_survived": 52,
+      "strategy_total_return_pct": 0.3967,
+      "survival_rate": 0.8667,
+      "tail_loss_share": 0.5193,
+      "total_pnl": 39667.96,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "worst_trade_pct": -0.0635
+    }
+  },
+  "calibration": {
+    "actual_passed": false,
+    "brier_score": 0.0784,
+    "failure_modes_observed": [
+      "old_thin_gate_worsens_drawdown"
+    ],
+    "predicted_success_probability": 0.28
+  },
+  "causal_components": [
+    "fixed liquid SPY-relative momentum/breakout candidate pool",
+    "point-in-time short_volume_ratio toxic-top-quintile exclusion gate",
+    "daily top-1 next-open 10-day paper replay, ungated vs gated",
+    "core baseline overlay and gate-effect delta"
+  ],
+  "change_type": "candidate_pool_private_replay_scout",
+  "changed_variable": "short_volume_clean_flow_quality_gate_v1",
+  "decision": "rejected_short_volume_clean_flow_gate_no_replacement_value",
+  "delta_metrics": {
+    "aggregate": {
+      "after_expected_value_score_sum": 9.02,
+      "after_total_pnl_sum": 258557.97,
+      "baseline_expected_value_score_sum": 8.8791,
+      "baseline_total_pnl_sum": 256213.38,
+      "expected_value_score_delta_pct": 0.015869,
+      "expected_value_score_delta_sum": 0.1409,
+      "max_drawdown_delta_max": 0.0053,
+      "target_trade_count_sum": 320,
+      "total_pnl_delta_pct": 0.009151,
+      "total_pnl_delta_sum": 2344.59,
+      "windows_ev_improved": 3,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 2,
+      "windows_pnl_regressed": 1
+    },
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": 0.0887,
+        "max_drawdown_pct": -0.0049,
+        "sharpe_daily": 0.05,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.0071,
+        "survival_rate": 0.0,
+        "total_pnl": 714.65,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0079,
+        "max_drawdown_pct": -0.0007,
+        "sharpe_daily": 0.02,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": -0.0033,
+        "survival_rate": 0.0,
+        "total_pnl": -332.72,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.0443,
+        "max_drawdown_pct": 0.0053,
+        "sharpe_daily": 0.02,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.0197,
+        "survival_rate": 0.0,
+        "total_pnl": 1962.66,
+        "trade_count": 0,
+        "win_rate": 0.0
+      }
+    }
+  },
+  "detail_by_window": {
+    "late_strong": {
+      "candidate_reject_reasons": {
+        "below_min_adv20": 109,
+        "below_min_price": 14,
+        "not_near_20d_high": 2635,
+        "ret20_not_spy_leading": 843,
+        "ret60_spy_lag": 266
+      },
+      "changed_days_sample": [
+        "2025-10-28",
+        "2025-11-07",
+        "2025-11-10",
+        "2025-11-12",
+        "2025-11-19",
+        "2025-11-21",
+        "2025-11-25",
+        "2025-11-26",
+        "2025-11-28",
+        "2025-12-01",
+        "2025-12-02",
+        "2025-12-04",
+        "2025-12-08",
+        "2025-12-09",
+        "2025-12-10",
+        "2025-12-11",
+        "2025-12-19",
+        "2025-12-26",
+        "2025-12-29",
+        "2025-12-30",
+        "2026-01-06",
+        "2026-01-08",
+        "2026-01-09",
+        "2026-01-12",
+        "2026-01-16"
+      ],
+      "changed_selection_days": 45,
+      "gated_trade_count": 90,
+      "gated_vs_baseline_delta": {
+        "expected_value_score": -0.1084,
+        "max_drawdown_pct": 0.0018,
+        "sharpe_daily": -0.07,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": -0.0061,
+        "survival_rate": 0.0,
+        "total_pnl": -609.13,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "raw_candidate_count": 807,
+      "toxic_candidate_count": 138,
+      "ungated_trade_count": 96,
+      "ungated_vs_baseline_delta": {
+        "expected_value_score": -0.1971,
+        "max_drawdown_pct": 0.0067,
+        "sharpe_daily": -0.12,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": -0.0132,
+        "survival_rate": 0.0,
+        "total_pnl": -1323.78,
+        "trade_count": 0,
+        "win_rate": 0.0
+      }
+    },
+    "mid_weak": {
+      "candidate_reject_reasons": {
+        "below_min_adv20": 76,
+        "not_near_20d_high": 1640,
+        "ret20_not_spy_leading": 1508,
+        "ret60_spy_lag": 367
+      },
+      "changed_days_sample": [
+        "2025-04-25",
+        "2025-04-29",
+        "2025-05-01",
+        "2025-05-02",
+        "2025-05-09",
+        "2025-05-12",
+        "2025-05-14",
+        "2025-05-15",
+        "2025-05-16",
+        "2025-05-19",
+        "2025-05-21",
+        "2025-05-23",
+        "2025-05-29",
+        "2025-06-04",
+        "2025-06-05",
+        "2025-06-06",
+        "2025-06-09",
+        "2025-06-10",
+        "2025-06-17",
+        "2025-06-18",
+        "2025-06-20",
+        "2025-06-23",
+        "2025-06-24",
+        "2025-06-25",
+        "2025-06-26"
+      ],
+      "changed_selection_days": 71,
+      "gated_trade_count": 113,
+      "gated_vs_baseline_delta": {
+        "expected_value_score": 0.9669,
+        "max_drawdown_pct": -0.0065,
+        "sharpe_daily": 0.57,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.1576,
+        "survival_rate": 0.0,
+        "total_pnl": 15757.28,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "raw_candidate_count": 1235,
+      "toxic_candidate_count": 382,
+      "ungated_trade_count": 116,
+      "ungated_vs_baseline_delta": {
+        "expected_value_score": 0.959,
+        "max_drawdown_pct": -0.0058,
+        "sharpe_daily": 0.55,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.1609,
+        "survival_rate": 0.0,
+        "total_pnl": 16090.0,
+        "trade_count": 0,
+        "win_rate": 0.0
+      }
+    },
+    "old_thin": {
+      "candidate_reject_reasons": {
+        "below_min_adv20": 134,
+        "not_near_20d_high": 2817,
+        "ret20_not_spy_leading": 897,
+        "ret60_spy_lag": 177
+      },
+      "changed_days_sample": [
+        "2024-10-03",
+        "2024-10-04",
+        "2024-10-07",
+        "2024-10-09",
+        "2024-10-10",
+        "2024-10-11",
+        "2024-10-15",
+        "2024-10-16",
+        "2024-10-23",
+        "2024-10-28",
+        "2024-10-30",
+        "2024-11-05",
+        "2024-11-08",
+        "2024-11-15",
+        "2024-11-20",
+        "2024-11-21",
+        "2024-11-25",
+        "2024-11-26",
+        "2024-12-03",
+        "2024-12-04",
+        "2024-12-05",
+        "2024-12-06",
+        "2024-12-09",
+        "2024-12-10",
+        "2024-12-11"
+      ],
+      "changed_selection_days": 71,
+      "gated_trade_count": 117,
+      "gated_vs_baseline_delta": {
+        "expected_value_score": 0.2674,
+        "max_drawdown_pct": 0.0246,
+        "sharpe_daily": 0.29,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.0856,
+        "survival_rate": 0.0,
+        "total_pnl": 8558.83,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "raw_candidate_count": 1219,
+      "toxic_candidate_count": 268,
+      "ungated_trade_count": 118,
+      "ungated_vs_baseline_delta": {
+        "expected_value_score": 0.2231,
+        "max_drawdown_pct": 0.0193,
+        "sharpe_daily": 0.27,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.0659,
+        "survival_rate": 0.0,
+        "total_pnl": 6596.17,
+        "trade_count": 0,
+        "win_rate": 0.0
+      }
+    }
+  },
+  "experiment_id": "exp-20260625-019",
+  "gate1": {
+    "passed": true
+  },
+  "gate2": {
+    "passed": true,
+    "short_volume_audit": {
+      "artifact_not_mutated": true,
+      "min_trailing_obs_for_percentile": 30,
+      "raw_rows": 25152,
+      "source_artifact": "data/non_ohlcv/moomoo_daily_short_volume_broad/rows.jsonl",
+      "tickers": 51,
+      "toxic_percentile_threshold": 0.8,
+      "usable_percentile_points": 23646
+    }
+  },
+  "gate3": {
+    "minimum_core_survival_rate": 0.7925,
+    "new_core_filter_added": false,
+    "note": "Additive private replay overlay; no new core filter or entry rule.",
+    "passed": true
+  },
+  "gate4": {
+    "acceptance_rule": "Private replay scout lead requires the GATE EFFECT (gated minus ungated) to show positive aggregate EV and PnL, EV improved in >= 2 of 3 windows with no window EV regression beyond 0.05, >= 12 changed selections, no window drawdown worse than 0.005, >= 20 gated trades across 3 windows, and clean concentration. A positive lead is NOT accepted alpha; it requires a shared default-off helper plus daily snapshot and parity before promotion.",
+    "changed_selections_total": 187,
+    "concentration": {
+      "max_single_positive_pnl_share": 0.248543,
+      "positive_pnl_hhi": 0.111028
+    },
+    "decision": "rejected_short_volume_clean_flow_gate_no_replacement_value",
+    "drawdown_drift_by_window": {
+      "late_strong": -0.0049,
+      "mid_weak": -0.0007,
+      "old_thin": 0.0053
+    },
+    "ev_improved_windows": 3,
+    "failed_reasons": [
+      "old_thin_gate_worsens_drawdown"
+    ],
+    "gate_effect_aggregate_ev_delta": 0.1409,
+    "gate_effect_aggregate_pnl_delta": 2344.59,
+    "gated_trade_count": 320,
+    "passed": false
+  },
+  "gate4_passed": false,
+  "gated_metrics": {
+    "late_strong": {
+      "expected_value_score": 5.0544,
+      "max_consecutive_losses": 2,
+      "max_drawdown_pct": 0.0683,
+      "sharpe_daily": 4.34,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "strategy_total_return_pct": 1.1646,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5146,
+      "total_pnl": 116463.79,
+      "trade_count": 18,
+      "win_rate": 0.8333,
+      "worst_trade_pct": -0.0397
+    },
+    "mid_weak": {
+      "expected_value_score": 3.1071,
+      "max_consecutive_losses": 6,
+      "max_drawdown_pct": 0.1054,
+      "sharpe_daily": 3.31,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "strategy_total_return_pct": 0.9387,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.5493,
+      "total_pnl": 93867.39,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "worst_trade_pct": -0.0897
+    },
+    "old_thin": {
+      "expected_value_score": 0.8585,
+      "max_consecutive_losses": 4,
+      "max_drawdown_pct": 0.1247,
+      "sharpe_daily": 1.78,
+      "signals_generated": 60,
+      "signals_survived": 52,
+      "strategy_total_return_pct": 0.4823,
+      "survival_rate": 0.8667,
+      "tail_loss_share": 0.5193,
+      "total_pnl": 48226.79,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "worst_trade_pct": -0.0635
+    }
+  },
+  "hypothesis": "A point-in-time moomoo short_volume_ratio clean-flow exclusion gate -- dropping daily top-1 momentum/breakout candidates whose informed daily short-sale flow sits in the toxic top quintile and taking the next clean candidate -- adds after-cost replacement value over the identical ungated pool across the canonical windows.",
+  "implementation_mode": "private_replay_scout_no_shared_helper",
+  "lane": "alpha_search",
+  "mechanism_family": "production_visible_informed_short_flow_quality_gate",
+  "multiple_testing_risk_bucket": "low_new_source_new_gate_shape",
+  "nearby_prior_experiments": [
+    "exp-20260625-018",
+    "exp-20260622-010",
+    "exp-20260623-008"
+  ],
+  "new_evidence_axis": "New gate shape on a non-saturated source: an informed-flow EXCLUSION gate applied at top-1 selection time, promoting exp-20260625-018's sign-correct avoidance read into measured after-cost replacement value. Not the rejected exp-20260622-010 high-short-volume absorption ENTRY, and not a FINRA short-interest, FTD, OHLCV-momentum, top-N, hold, notional, or threshold retune.",
+  "new_evidence_type": "short_volume_ratio_clean_flow_exclusion_gate_replacement_value",
+  "next_evidence_needed": "If positive: a shared default-off clean-flow quality-gate helper over historical replay and a daily snapshot with a parity test, then a full-stack candidate-pool Gate 1-4 overlay versus the closest accepted comparator. If negative: materially more closed forward rows tagged with the entry short_volume_ratio percentile, or PIT borrow fee / utilization.",
+  "observed_only_lead": false,
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry by sweeping the toxic percentile cut, percentile lookback, momentum/proximity thresholds, hold, cooldown, top-N, or notional, and do not re-run the wrong-sign absorption ENTRY family. A retry needs a materially different gate shape or new evidence.",
+    "new_evidence_required": "If positive: a shared default-off clean-flow quality-gate helper over historical replay and a daily snapshot with a parity test, then a full-stack candidate-pool Gate 1-4 overlay versus the closest accepted comparator. If negative: materially more closed forward rows tagged with the entry short_volume_ratio percentile, or PIT borrow fee / utilization.",
+    "why_result_happened": "After top-1 selection and costs the clean-flow gate did not add robust replacement value: too few changed picks, no net improvement, a regressed window, or a concentration/drawdown failure."
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260625-018 showed forward-10d returns fall monotonically with the PIT short_volume_ratio percentile in old_thin and late_strong (negative corr in all 3 windows), and ~19% of accepted selections fall in the toxic Q5 bucket. The open question this scout answers is whether, after top-1 selection and costs, replacing a toxic top pick with the next clean candidate actually improves replacement value. Main disconfirmer: the gate may change too few selections, or the clean replacement may be no better net of costs, especially in the bull window where toxic names still rose.",
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "too_few_changed_selections_after_top1",
+      "replacement_candidate_no_better_after_costs",
+      "bull_window_gate_removes_winners",
+      "concentration_or_drawdown_fail"
+    ],
+    "recorded_at": "2026-06-25T00:00:00+00:00",
+    "success_probability": 0.28
+  },
+  "production_impact": {
+    "adapter_status": "private_replay_only_no_live_adapter",
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "paper_orders_changed": false,
+    "parity_note": "Experiment-owned private replay scout. A positive result requires a shared default-off helper computing the same PIT short_volume_ratio clean-flow gate over both historical replay and a daily snapshot, with a parity test, before any ranking, sizing, watchlist, paper ledger, or order surface could change.",
+    "production_watchlist_changed": false,
+    "ranking_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_helper_promoted": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false,
+    "uses_free_ohlcv": true,
+    "uses_llm": false,
+    "uses_moomoo_short_volume": true
+  },
+  "rejection_reason": "old_thin_gate_worsens_drawdown",
+  "runner": "quant/experiments/exp_20260625_019_short_volume_clean_flow_gate_scout.py",
+  "single_causal_variable": "short_volume_clean_flow_quality_gate_v1",
+  "status": "rejected",
+  "timestamp": "2026-06-25T17:13:33Z",
+  "trial_family": "moomoo_daily_short_volume_clean_flow_quality_gate",
+  "trial_variant_id": "short_volume_ratio_toxic_top_quintile_exclusion_top1_10d_v1",
+  "ungated_metrics": {
+    "late_strong": {
+      "expected_value_score": 4.9657,
+      "max_consecutive_losses": 2,
+      "max_drawdown_pct": 0.0732,
+      "sharpe_daily": 4.29,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "strategy_total_return_pct": 1.1575,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5146,
+      "total_pnl": 115749.14,
+      "trade_count": 18,
+      "win_rate": 0.8333,
+      "worst_trade_pct": -0.0397
+    },
+    "mid_weak": {
+      "expected_value_score": 3.0992,
+      "max_consecutive_losses": 6,
+      "max_drawdown_pct": 0.1061,
+      "sharpe_daily": 3.29,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "strategy_total_return_pct": 0.942,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.5493,
+      "total_pnl": 94200.11,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "worst_trade_pct": -0.0897
+    },
+    "old_thin": {
+      "expected_value_score": 0.8142,
+      "max_consecutive_losses": 4,
+      "max_drawdown_pct": 0.1194,
+      "sharpe_daily": 1.76,
+      "signals_generated": 60,
+      "signals_survived": 52,
+      "strategy_total_return_pct": 0.4626,
+      "survival_rate": 0.8667,
+      "tail_loss_share": 0.5193,
+      "total_pnl": 46264.13,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "worst_trade_pct": -0.0635
+    }
+  },
+  "updated_at": "2026-06-25T17:13:33Z"
+}

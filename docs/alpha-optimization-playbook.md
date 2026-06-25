@@ -656,6 +656,29 @@ field; those are saturated. Caveat: this is an avoidance signal a long-only book
 captures only via filtering, so its value must be proven on the replay overlap,
 not the thin closed-row sample.
 
+`exp-20260625-019` then ran that replay test as a private scout and got an
+informative REJECT. It built one fixed liquid SPY-relative momentum/breakout
+top-1 pool and ran it ungated vs gated, the single variable being a PIT
+`short_volume_ratio` toxic-top-quintile (>= 0.80) exclusion that promotes the
+next clean candidate. The gate effect (gated minus ungated) was directionally
+real and broad: aggregate EV `+0.1409`, PnL `+$2,344.59`, EV improved in all
+three windows (`late_strong` +0.089/`+$715`, `mid_weak` +0.008/`-$333`,
+`old_thin` +0.044/`+$1,963`), 187 changed selections, and drawdown actually
+IMPROVED in two windows (`late_strong` -0.49pp, `mid_weak` -0.07pp). It was
+REJECTED on one predeclared guard: `old_thin` drawdown drifted `+0.53pp`, just
+over the 0.5pp cap. This is the same "high aggregate EV with old_thin drawdown
+drift is a rejected clue, not a retained strategy" pattern seen in accruals,
+inventory, asset-growth, and reinvestment fields: the avoidance signal carries
+genuine after-cost replacement value but is not drawdown-clean at top-1 momentum
+deployment. Do NOT rescue it by nudging the quintile cut, momentum/proximity
+thresholds, hold, cooldown, top-N, or notional -- that is the forbidden retune.
+The admissible next moves are a materially different gate SHAPE (e.g. a
+short-flow NOTIONAL down-weight rather than a hard top-1 exclusion, or scoping
+the gate to the specific sleeves whose selections concentrate in toxic Q5), or
+closed forward rows tagged with the entry `short_volume_ratio` percentile. The
+source itself is now `2/3` tried (018 observed-only lead, 019 rejected); treat
+the hard-exclusion top-1 shape as closed on the frozen windows.
+
 ## Detail Sources
 
 Generated mechanism memory lives in `docs/lessons/*.md`; exact facts live in

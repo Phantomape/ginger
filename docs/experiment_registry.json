@@ -155733,8 +155733,325 @@
       "updated_at": "2026-06-25T16:21:15+00:00",
       "completed_at": "2026-06-25T16:21:15+00:00",
       "ticket_file": "experiments/tickets/exp-20260625-018.json"
+    },
+    {
+      "acceptance_rule": "Private replay scout lead requires the GATE EFFECT (gated minus ungated) to show positive aggregate EV and PnL, EV improved in >= 2 of 3 windows with no window EV regression beyond 0.05, >= 12 changed selections, no window drawdown worse than 0.005, >= 20 gated trades across 3 windows, and clean concentration. A positive lead is NOT accepted alpha; it requires a shared default-off helper plus daily snapshot and parity before promotion.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260625_019_short_volume_clean_flow_gate_scout.py",
+        "data/experiments/exp-20260625-019/exp_20260625_019_short_volume_clean_flow_gate_scout.json",
+        "experiments/cards/exp-20260625-019.md",
+        "experiments/manifests/exp-20260625-019.json",
+        "experiments/tickets/exp-20260625-019.json",
+        "experiments/logs/exp-20260625-019.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "artifact": "data/experiments/exp-20260625-019/exp_20260625_019_short_volume_clean_flow_gate_scout.json",
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260625-019.md",
+      "causal_components": [
+        "fixed liquid SPY-relative momentum/breakout candidate pool",
+        "point-in-time short_volume_ratio toxic-top-quintile exclusion gate",
+        "daily top-1 next-open 10-day paper replay, ungated vs gated",
+        "core baseline overlay and gate-effect delta"
+      ],
+      "change_type": "candidate_pool_private_replay_scout",
+      "changed_variable": "short_volume_clean_flow_quality_gate_v1",
+      "claimed_at": "2026-06-25T17:13:33Z",
+      "completed_at": "2026-06-25T17:14:54+00:00",
+      "created_at": "2026-06-25T17:13:33Z",
+      "decision": "rejected_short_volume_clean_flow_gate_no_replacement_value",
+      "evaluation_windows": [
+        {
+          "end": "2026-04-21",
+          "label": "late_strong",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "start": "2025-10-23"
+        },
+        {
+          "end": "2025-10-22",
+          "label": "mid_weak",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "start": "2025-04-23"
+        },
+        {
+          "end": "2025-04-22",
+          "label": "old_thin",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "start": "2024-10-02"
+        }
+      ],
+      "experiment_id": "exp-20260625-019",
+      "hypothesis": "A point-in-time moomoo short_volume_ratio clean-flow exclusion gate -- dropping daily top-1 momentum/breakout candidates whose informed daily short-sale flow sits in the toxic top quintile and taking the next clean candidate -- adds after-cost replacement value over the identical ungated pool across the canonical windows.",
+      "implementation_mode": "private_replay_scout_no_shared_helper",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "short_volume_clean_flow_quality_gate_v1"
+      ],
+      "log": "experiments/logs/exp-20260625-019.json",
+      "mechanism_family": "production_visible_informed_short_flow_quality_gate",
+      "multiple_testing_risk_bucket": "low_new_source_new_gate_shape",
+      "must_not_touch": [
+        "shared paper-sleeve helpers",
+        "candidate ranking / sizing / exits / orders",
+        "daily snapshots"
+      ],
+      "nearby_prior_experiments": [
+        "exp-20260625-018",
+        "exp-20260622-010",
+        "exp-20260623-008"
+      ],
+      "new_evidence_axis": "New gate shape on a non-saturated source: an informed-flow EXCLUSION gate applied at top-1 selection time, promoting exp-20260625-018's sign-correct avoidance read into measured after-cost replacement value. Not the rejected exp-20260622-010 high-short-volume absorption ENTRY, and not a FINRA short-interest, FTD, OHLCV-momentum, top-N, hold, notional, or threshold retune.",
+      "new_evidence_type": "short_volume_ratio_clean_flow_exclusion_gate_replacement_value",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "nearest_family": "moomoo_daily_short_volume_clean_flow_quality_gate",
+        "verdict": "promotion_of_exp-20260625-018_lead"
+      },
+      "owner": "alpha-explore",
+      "post_run_reflection": {
+        "why_result_happened": "After top-1 selection and costs the clean-flow gate did not add robust replacement value: too few changed picks, no net improvement, a regressed window, or a concentration/drawdown failure.",
+        "forbidden_near_neighbor_retry": "Do not retry by sweeping the toxic percentile cut, percentile lookback, momentum/proximity thresholds, hold, cooldown, top-N, or notional, and do not re-run the wrong-sign absorption ENTRY family. A retry needs a materially different gate shape or new evidence.",
+        "new_evidence_required": "If positive: a shared default-off clean-flow quality-gate helper over historical replay and a daily snapshot with a parity test, then a full-stack candidate-pool Gate 1-4 overlay versus the closest accepted comparator. If negative: materially more closed forward rows tagged with the entry short_volume_ratio percentile, or PIT borrow fee / utilization."
+      },
+      "prediction": {
+        "success_probability": 0.28,
+        "expected_ev_delta": 0.15,
+        "expected_pnl_delta": 2500.0,
+        "main_failure_modes": [
+          "too_few_changed_selections_after_top1",
+          "replacement_candidate_no_better_after_costs",
+          "bull_window_gate_removes_winners",
+          "concentration_or_drawdown_fail"
+        ],
+        "confidence_reason": "exp-20260625-018 showed forward-10d returns fall monotonically with the PIT short_volume_ratio percentile in old_thin and late_strong (negative corr in all 3 windows), and ~19% of accepted selections fall in the toxic Q5 bucket. The open question this scout answers is whether, after top-1 selection and costs, replacing a toxic top pick with the next clean candidate actually improves replacement value. Main disconfirmer: the gate may change too few selections, or the clean replacement may be no better net of costs, especially in the bull window where toxic names still rose.",
+        "recorded_at": "2026-06-25T00:00:00+00:00"
+      },
+      "prior_trial_count": 2,
+      "production_impact": {
+        "trade_enabled": false,
+        "shared_policy_changed": false,
+        "shared_helper_promoted": false,
+        "backtester_adapter_changed": false,
+        "run_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "ranking_changed": false,
+        "sizing_changed": false,
+        "paper_orders_changed": false,
+        "live_orders_changed": false,
+        "production_watchlist_changed": false,
+        "uses_free_ohlcv": true,
+        "uses_moomoo_short_volume": true,
+        "uses_llm": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "replay_only": true,
+        "adapter_status": "private_replay_only_no_live_adapter",
+        "parity_note": "Experiment-owned private replay scout. A positive result requires a shared default-off helper computing the same PIT short_volume_ratio clean-flow gate over both historical replay and a daily snapshot, with a parity test, before any ranking, sizing, watchlist, paper ledger, or order surface could change."
+      },
+      "related_files": [
+        "quant/experiments/exp_20260625_019_short_volume_clean_flow_gate_scout.py",
+        "data/non_ohlcv/moomoo_daily_short_volume_broad/rows.jsonl",
+        "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "quant/experiments/exp_20260625_018_short_volume_informed_flow_attribution.py",
+        "docs/agent_experiment_protocol.md",
+        "docs/backtesting.md",
+        "docs/alpha-optimization-playbook.md"
+      ],
+      "result": {
+        "accepted": false,
+        "accepted_alpha": false,
+        "observed_only_lead": false,
+        "allocation_ready": false,
+        "decision": "rejected_short_volume_clean_flow_gate_no_replacement_value",
+        "artifact": "data/experiments/exp-20260625-019/exp_20260625_019_short_volume_clean_flow_gate_scout.json",
+        "log": "experiments/logs/exp-20260625-019.json",
+        "runner": "quant/experiments/exp_20260625_019_short_volume_clean_flow_gate_scout.py",
+        "gate4": {
+          "passed": false,
+          "decision": "rejected_short_volume_clean_flow_gate_no_replacement_value",
+          "failed_reasons": [
+            "old_thin_gate_worsens_drawdown"
+          ],
+          "gate_effect_aggregate_ev_delta": 0.1409,
+          "gate_effect_aggregate_pnl_delta": 2344.59,
+          "ev_improved_windows": 3,
+          "changed_selections_total": 187,
+          "gated_trade_count": 320,
+          "drawdown_drift_by_window": {
+            "late_strong": -0.0049,
+            "mid_weak": -0.0007,
+            "old_thin": 0.0053
+          },
+          "concentration": {
+            "max_single_positive_pnl_share": 0.248543,
+            "positive_pnl_hhi": 0.111028
+          },
+          "acceptance_rule": "Private replay scout lead requires the GATE EFFECT (gated minus ungated) to show positive aggregate EV and PnL, EV improved in >= 2 of 3 windows with no window EV regression beyond 0.05, >= 12 changed selections, no window drawdown worse than 0.005, >= 20 gated trades across 3 windows, and clean concentration. A positive lead is NOT accepted alpha; it requires a shared default-off helper plus daily snapshot and parity before promotion."
+        },
+        "calibration": {
+          "predicted_success_probability": 0.28,
+          "actual_passed": false,
+          "brier_score": 0.0784,
+          "failure_modes_observed": [
+            "old_thin_gate_worsens_drawdown"
+          ]
+        },
+        "delta_metrics": {
+          "by_window": {
+            "late_strong": {
+              "expected_value_score": 0.0887,
+              "total_pnl": 714.65,
+              "strategy_total_return_pct": 0.0071,
+              "sharpe_daily": 0.05,
+              "max_drawdown_pct": -0.0049,
+              "win_rate": 0.0,
+              "trade_count": 0,
+              "signals_generated": 0,
+              "signals_survived": 0,
+              "survival_rate": 0.0
+            },
+            "mid_weak": {
+              "expected_value_score": 0.0079,
+              "total_pnl": -332.72,
+              "strategy_total_return_pct": -0.0033,
+              "sharpe_daily": 0.02,
+              "max_drawdown_pct": -0.0007,
+              "win_rate": 0.0,
+              "trade_count": 0,
+              "signals_generated": 0,
+              "signals_survived": 0,
+              "survival_rate": 0.0
+            },
+            "old_thin": {
+              "expected_value_score": 0.0443,
+              "total_pnl": 1962.66,
+              "strategy_total_return_pct": 0.0197,
+              "sharpe_daily": 0.02,
+              "max_drawdown_pct": 0.0053,
+              "win_rate": 0.0,
+              "trade_count": 0,
+              "signals_generated": 0,
+              "signals_survived": 0,
+              "survival_rate": 0.0
+            }
+          },
+          "aggregate": {
+            "baseline_expected_value_score_sum": 8.8791,
+            "after_expected_value_score_sum": 9.02,
+            "expected_value_score_delta_sum": 0.1409,
+            "expected_value_score_delta_pct": 0.015869,
+            "baseline_total_pnl_sum": 256213.38,
+            "after_total_pnl_sum": 258557.97,
+            "total_pnl_delta_sum": 2344.59,
+            "total_pnl_delta_pct": 0.009151,
+            "windows_ev_improved": 3,
+            "windows_ev_regressed": 0,
+            "windows_pnl_improved": 2,
+            "windows_pnl_regressed": 1,
+            "max_drawdown_delta_max": 0.0053,
+            "target_trade_count_sum": 320
+          }
+        },
+        "summary": "After top-1 selection and costs the clean-flow gate did not add robust replacement value: too few changed picks, no net improvement, a regressed window, or a concentration/drawdown failure."
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260625-019.json",
+      "single_causal_variable": "short_volume_clean_flow_quality_gate_v1",
+      "status": "rejected",
+      "ticket_file": "experiments/tickets/exp-20260625-019.json",
+      "trial_family": "moomoo_daily_short_volume_clean_flow_quality_gate",
+      "trial_variant_id": "short_volume_ratio_toxic_top_quintile_exclusion_top1_10d_v1",
+      "updated_at": "2026-06-25T17:14:54+00:00",
+      "alpha_hypothesis": "A point-in-time moomoo short_volume_ratio clean-flow exclusion gate -- dropping daily top-1 momentum/breakout candidates whose informed daily short-sale flow sits in the toxic top quintile and taking the next clean candidate -- adds after-cost replacement value over the identical ungated pool across the canonical windows.",
+      "aggregate_expected_value_delta": 0.1409,
+      "aggregate_strategy_total_pnl_delta": 2344.59,
+      "gate1": {
+        "passed": true,
+        "baseline_metrics": {
+          "late_strong": {
+            "expected_value_score": 5.1628,
+            "total_pnl": 117072.92,
+            "strategy_total_return_pct": 1.1707,
+            "sharpe_daily": 4.41,
+            "max_drawdown_pct": 0.0665,
+            "win_rate": 0.8333,
+            "trade_count": 18,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "survival_rate": 0.8039,
+            "worst_trade_pct": -0.0397,
+            "max_consecutive_losses": 2,
+            "tail_loss_share": 0.5146
+          },
+          "mid_weak": {
+            "expected_value_score": 2.1402,
+            "total_pnl": 78110.11,
+            "strategy_total_return_pct": 0.7811,
+            "sharpe_daily": 2.74,
+            "max_drawdown_pct": 0.1119,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "survival_rate": 0.7925,
+            "worst_trade_pct": -0.0897,
+            "max_consecutive_losses": 6,
+            "tail_loss_share": 0.5493
+          },
+          "old_thin": {
+            "expected_value_score": 0.5911,
+            "total_pnl": 39667.96,
+            "strategy_total_return_pct": 0.3967,
+            "sharpe_daily": 1.49,
+            "max_drawdown_pct": 0.1001,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "signals_generated": 60,
+            "signals_survived": 52,
+            "survival_rate": 0.8667,
+            "worst_trade_pct": -0.0635,
+            "max_consecutive_losses": 4,
+            "tail_loss_share": 0.5193
+          }
+        },
+        "canonical_baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+      },
+      "gate2": {
+        "passed": true
+      },
+      "gate3": {
+        "new_core_filter_added": false,
+        "minimum_core_survival_rate": 0.7925,
+        "passed": true,
+        "note": "Additive private replay overlay; no new core filter or entry rule."
+      },
+      "gate4": {
+        "passed": false,
+        "decision": "rejected_short_volume_clean_flow_gate_no_replacement_value",
+        "failed_reasons": [
+          "old_thin_gate_worsens_drawdown"
+        ],
+        "gate_effect_aggregate_ev_delta": 0.1409,
+        "gate_effect_aggregate_pnl_delta": 2344.59,
+        "ev_improved_windows": 3,
+        "changed_selections_total": 187,
+        "gated_trade_count": 320,
+        "drawdown_drift_by_window": {
+          "late_strong": -0.0049,
+          "mid_weak": -0.0007,
+          "old_thin": 0.0053
+        },
+        "concentration": {
+          "max_single_positive_pnl_share": 0.248543,
+          "positive_pnl_hhi": 0.111028
+        },
+        "acceptance_rule": "Private replay scout lead requires the GATE EFFECT (gated minus ungated) to show positive aggregate EV and PnL, EV improved in >= 2 of 3 windows with no window EV regression beyond 0.05, >= 12 changed selections, no window drawdown worse than 0.005, >= 20 gated trades across 3 windows, and clean concentration. A positive lead is NOT accepted alpha; it requires a shared default-off helper plus daily snapshot and parity before promotion."
+      }
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-25T16:21:15+00:00"
+  "updated_at": "2026-06-25T17:14:54+00:00"
 }
