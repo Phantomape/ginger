@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-06-24.
+Last refreshed: 2026-06-25.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -607,6 +607,54 @@ allocator thresholds on the same partial forward ledger. The next admissible
 evidence is enough closed 10d replacement rows, materially richer PIT
 manager/active-flow provenance, borrow/options cross-evidence, or a shared
 default-off helper with historical PIT coverage.
+
+The June 25 batch says the new evidence axis must be genuinely new, not another
+read of the same small forward ledger. OnclickMedia options rows now have a
+settled outcome ledger, but the fixed call-demand / low-put-hedge quality read
+did not separate replacement value. Moomoo borrow availability is still blocked
+because fee, utilization, and loan-availability fields are unpopulated, so it
+cannot reopen FINRA/options squeeze ideas. Kova Companyfacts realized-quality,
+Form 4 conflict context, and SEC FTD forward joins did not produce an
+allocation-ready read on current forward rows. SEC13F active-manager flow was a
+positive short-horizon observed-only Kova lead, but two historical active-flow
+candidate-pool attempts failed, including filing-delay hardening; use active
+manager/flow as context until closed 10d replacement rows or materially richer
+manager provenance exists. SEC 6-K work materialized historical event
+accessions, but the text cache is still the blocker and the Companyfacts-only
+structured-growth scout did not clear the bar. SEC project-finance/capacity
+contract terms and volume-dry-up breakouts were also rejected. The practical
+queue is now: repair missing OHLCV/6-K/borrow surfaces, settle more forward
+replacement rows, and require a new production-visible field before another
+observed-only attribution pass on options, Kova, Form 4, SEC FTD, or 13F.
+Estimate-revision candidate-match work remains blocked because the warehouse
+still stops at `2026-06-15`, and the newly present Kova 2026-06-24 intraday /
+RS-proxy files do not provide entry-open/close OHLCV semantics for selected
+current rows.
+
+The one genuinely new June 25 lead is a sign-correction on a non-saturated
+source. `exp-20260625-018` (observed-only) reopened moomoo daily short volume on
+the broad 51-name archive (`exp-20260623-008`, 25k rows, 2024-06 onward) and
+tested the OPPOSITE sign from the rejected `exp-20260622-010` absorption ENTRY:
+`short_volume_ratio` as informed daily short-sale flow (Diether-Lee-Werner 2009)
+used as an AVOIDANCE / quality signal. A read-only join of the per-ticker
+expanding PIT percentile to next-open forward 10d returns is window-consistent:
+forward returns fall monotonically with the short-flow percentile in `old_thin`
+(Q1 +1.58% -> Q5 -0.45%) and `late_strong` (Q1 +0.35% -> Q5 -1.51%, win 50% ->
+37%), pooled Q1 +1.56% vs Q5 +0.66%, negative correlation in all three windows,
+washing out only in the raging-bull `mid_weak` window. The gate is NOT inert:
+~19% of accepted paper-sleeve selections (n=58 joined) land in the toxic Q5
+bucket, driven by `fundamental_growth_rs` and `volume_breadth_breakout`. This is
+an `observed_only_positive_lead`, not accepted alpha. The next admissible step is
+ONE shared default-off CLEAN-FLOW quality-gate helper (admit liquid candidates
+only when the PIT `short_volume_ratio` percentile is below the toxic quintile)
+wired into historical replay AND a daily default-off snapshot with a parity
+test, then a full-stack candidate-pool Gate 1-4 overlay that must beat the
+closest accepted comparator after costs, concentration, and drawdown. Do NOT
+re-run the wrong-sign absorption family, sweep quintile cutoffs / lookbacks /
+hold / notional, or re-slice this read-only ledger with an adjacent condition
+field; those are saturated. Caveat: this is an avoidance signal a long-only book
+captures only via filtering, so its value must be proven on the replay overlap,
+not the thin closed-row sample.
 
 ## Detail Sources
 
@@ -1407,6 +1455,42 @@ production-visible field:
   materially richer semantic field such as structured earnings tables,
   guidance-revision magnitude, issuer-country/ADR liquidity, translation
   provenance, or closed forward rows;
+- options demand-quality forward attribution retries that only reslice current
+  OnclickMedia call demand, put hedge, liquidity, stale-chain, moneyness,
+  expiry, open-interest, or spread fields on the same settled forward ledger.
+  `exp-20260624-026` built the reusable outcome ledger, but
+  `exp-20260625-001` found no fixed demand-quality edge. Reopen only with
+  materially more closed options rows, historical PIT chain coverage, or a new
+  execution-cost / event-distance field;
+- Moomoo borrow-availability or borrow-squeeze retries while fee, utilization,
+  and loan-availability fields remain unpopulated. `exp-20260625-003` blocks
+  this as data coverage, not alpha. Reopen only after rows contain real PIT
+  borrow economics and can be joined to forward replacement outcomes;
+- SEC13F active-manager or active-flow candidate pools that sweep active-manager
+  definitions, flow deltas, filing-delay caps, holder counts, values, top-N,
+  hold, cooldown, or notional on the frozen windows. `exp-20260625-009` is only
+  an observed-only short-horizon Kova lead, while `exp-20260625-010` and
+  `exp-20260625-012` rejected historical candidate-pool promotion. Reopen only
+  with closed 10d replacement-value rows, non-quarterly flow evidence, or
+  materially richer manager provenance;
+- SEC 6-K structured-growth retries that bypass the historical text/cache
+  blocker by using only form-scoped Companyfacts or adjacent XBRL fields.
+  `exp-20260625-011` materialized event accessions but confirmed text cache
+  coverage is still missing, and `exp-20260625-014` rejected the Companyfacts
+  scout. Reopen after replayable 6-K/6-KA text spans exist, then test one fixed
+  semantic/economic field;
+- SEC project-finance/capacity-contract terms, Kova Companyfacts forward
+  quality, Form 4 forward conflict, SEC FTD forward context, and volume-dry-up
+  breakout retries that only sweep thresholds, liquidity/RS guards, event age,
+  top-N, hold, cooldown, or notional on the same rows. The June 25 runs found
+  no allocation-ready edge; valid retries need a new PIT data field, more
+  closed forward replacement rows, or a shared helper with historical coverage
+  that beats accepted comparators;
+- estimate-revision candidate-match outcome or observed-only condition retries
+  before the selected/current rows have a true PIT 2026-06-24+ daily OHLCV or
+  quote-bar settlement surface. `exp-20260625-017` confirmed that Kova intraday
+  rows were skipped and RS proxy rows are feature rows, not entry-open/close
+  settlement data;
 - missing archive/text availability as an alpha field.
 
 ## Update Discipline
