@@ -17,14 +17,14 @@ Or via scheduling (after run.py completes):
         --batch-size 25
         --batch-sleep-secs 1.5
 
-Concurrency design:
-- tickers are fetched concurrently across a bounded thread pool (network-bound);
-  tune with `--max-workers` / GINGER_EARNINGS_FETCH_WORKERS (default 8)
+Rate-limiting design:
+- tickers are processed serially in batches of `batch_size` (default 25)
+- after each batch a short sleep (`batch_sleep_secs`, default 1.5s) is added to
+  stay under yfinance/Yahoo rate limits (serial keeps the request rate gentle)
 - only get_earnings_dates is fetched per ticker; calendar/info are pulled lazily
-  by get_earnings_data only for the minority that need the fallback
+  by get_earnings_data only for the minority that need the fallback, which cuts
+  request volume (and rate-limit pressure) without changing the output
 - individual ticker failures are caught and logged; they do NOT abort the run
-- `batch_size`/`batch_sleep_secs` are accepted for backward compatibility but no
-  longer used (the pool bounds concurrency instead)
 
 Production safety:
 - trade_enabled: False (this script only writes earnings snapshots)
@@ -37,9 +37,8 @@ from __future__ import annotations
 
 import argparse
 import logging
-import os
 import sys
-from concurrent.futures import ThreadPoolExecutor, as_completed
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -67,10 +66,6 @@ logger = logging.getLogger(__name__)
 EXPERIMENT_ID = "exp-20260607-003"
 DEFAULT_BATCH_SIZE = 25
 DEFAULT_BATCH_SLEEP_SECS = 1.5
-# The fetch is network-I/O-bound (one yfinance call per ticker), so concurrency
-# is the dominant speedup. 8 workers ~= 8x with negligible rate-limit risk on
-# get_earnings_dates; tune via GINGER_EARNINGS_FETCH_WORKERS.
-DEFAULT_MAX_WORKERS = max(1, int(os.environ.get("GINGER_EARNINGS_FETCH_WORKERS", "8")))
 
 
 def _setup_logging(level: int = logging.INFO) -> None:
@@ -136,7 +131,6 @@ def fetch_broad_universe_earnings(
     base_dir: str | None = None,
     batch_size: int = DEFAULT_BATCH_SIZE,
     batch_sleep_secs: float = DEFAULT_BATCH_SLEEP_SECS,
-    max_workers: int = DEFAULT_MAX_WORKERS,
     dry_run: bool = False,
 ) -> dict:
     """Fetch earnings data for a broad universe of tickers and merge into snapshot.
@@ -165,38 +159,45 @@ def fetch_broad_universe_earnings(
     else:
         broad_tickers = get_pead_broad_universe_tickers()
 
-    workers = max(1, int(max_workers))
     logger.info(
-        "%s: Fetching broad-universe earnings for %d tickers (as_of=%s, workers=%d)",
+        "%s: Fetching broad-universe earnings for %d tickers (as_of=%s, batch=%d, sleep=%.1fs)",
         EXPERIMENT_ID,
         len(broad_tickers),
         as_of.date(),
-        workers,
+        batch_size,
+        batch_sleep_secs,
     )
 
     results: dict[str, dict] = {}
     failed: list[str] = []
     skipped_non_earnings: list[str] = []
 
-    # Network-I/O-bound: fan out across a bounded thread pool. Per-ticker errors
-    # are caught inside _fetch_one_ticker (-> empty data), so one bad ticker never
-    # aborts the run and the pool keeps draining.
-    total = len(broad_tickers)
-    done = 0
-    with ThreadPoolExecutor(max_workers=workers) as executor:
-        futures = {executor.submit(_fetch_one_ticker, t, as_of): t for t in broad_tickers}
-        for future in as_completed(futures):
-            ticker, earnings, status = future.result()
-            results[ticker] = earnings
+    # Serial, batched, with a sleep between batches to stay under yfinance rate
+    # limits. Per-ticker errors are caught inside _fetch_one_ticker (-> empty
+    # data), so one bad ticker never aborts the run.
+    for batch_start in range(0, len(broad_tickers), batch_size):
+        batch = broad_tickers[batch_start: batch_start + batch_size]
+        for ticker in batch:
+            tk, earnings, status = _fetch_one_ticker(ticker, as_of)
+            results[tk] = earnings
             if status == "failed":
-                failed.append(ticker)
+                failed.append(tk)
             elif status == "skipped":
-                skipped_non_earnings.append(ticker)
-            done += 1
-            if done % 200 == 0 or done == total:
-                logger.info(
-                    "%s: Fetched %d/%d (failed=%d)", EXPERIMENT_ID, done, total, len(failed)
-                )
+                skipped_non_earnings.append(tk)
+
+        # Rate-limit: sleep between batches (not after the last one)
+        if batch_start + batch_size < len(broad_tickers):
+            time.sleep(batch_sleep_secs)
+
+        batch_end = min(batch_start + batch_size, len(broad_tickers))
+        logger.info(
+            "%s: Fetched batch %d-%d / %d (failed in batch: %d)",
+            EXPERIMENT_ID,
+            batch_start + 1,
+            batch_end,
+            len(broad_tickers),
+            sum(1 for t in batch if t in failed),
+        )
 
     if skipped_non_earnings:
         logger.info(
@@ -326,13 +327,7 @@ def main() -> None:
         "--batch-sleep-secs",
         type=float,
         default=DEFAULT_BATCH_SLEEP_SECS,
-        help="Deprecated/ignored (kept for backward compatibility).",
-    )
-    parser.add_argument(
-        "--max-workers",
-        type=int,
-        default=DEFAULT_MAX_WORKERS,
-        help=f"Concurrent fetch workers (default: {DEFAULT_MAX_WORKERS}).",
+        help=f"Seconds to sleep between batches (default: {DEFAULT_BATCH_SLEEP_SECS})",
     )
     parser.add_argument(
         "--data-dir",
@@ -356,7 +351,6 @@ def main() -> None:
         base_dir=args.data_dir,
         batch_size=args.batch_size,
         batch_sleep_secs=args.batch_sleep_secs,
-        max_workers=args.max_workers,
         dry_run=args.dry_run,
     )
     logger.info("Summary: %s", summary)
