@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-06-24.
+Last refreshed: 2026-06-26.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -271,6 +271,39 @@ Controls:
   accepted non-text comparators.
 
 Source: <https://arxiv.org/abs/2601.06088>
+
+### Adversarial Headline Sanitation Is A Data Contract
+
+A 2026 adversarial-news trading study is a useful production warning because
+the attack is upstream of the model: visually hidden text, Unicode homoglyphs,
+or ticker-name misrouting can change LLM sentiment and then propagate into an
+otherwise deterministic trading system. Ginger's compatible response is not a
+new model. It is to treat every LLM-readable news item as hostile input until
+source, text normalization, ticker mapping, and adversarial markers are logged
+and replayable.
+
+Implementable fields:
+
+- `news_text_normalization_version`
+- `news_unicode_homoglyph_flag`
+- `news_hidden_text_flag`
+- `news_ticker_entity_match_confidence`
+- `news_source_sanitization_status`
+- `news_adversarial_input_risk_bucket`
+- `llm_sentiment_pre_sanitize_hash`
+- `llm_sentiment_post_sanitize_hash`
+- `adversarial_news_replacement_value_bucket`
+
+Controls:
+
+- normalize Unicode and strip or flag hidden/control text before LLM scoring;
+- store pre- and post-sanitization hashes with source URL, publisher, and
+  retrieval timestamp;
+- fail closed when ticker/entity resolution changes after sanitization;
+- run adversarial-source and low-credibility flags as attribution fields before
+  they can affect ranking, sizing, exits, or vetoes.
+
+Source: <https://arxiv.org/abs/2601.13082>
 
 ### Index-To-Equity Transfer Learning
 
@@ -753,8 +786,11 @@ templates. StockBench evaluates multi-month daily buy/sell/hold agents with
 prices, fundamentals, and news, and reports that most models still struggle
 against buy-and-hold. Agent Market Arena adds live multi-market evaluation and
 shows agent architecture and risk style can matter more than model backbone.
-For Ginger, this reinforces deterministic policy ownership: agent outputs are
-evidence rows unless they beat a named displaced candidate after costs.
+PredictionMarketBench adds a stricter execution-replay pattern: build episodes
+from raw orderbooks/trades/lifecycle/settlement, simulate maker/taker fees, and
+log reproducible tool-call trajectories. For Ginger, this reinforces
+deterministic policy ownership: agent outputs are evidence rows unless they beat
+a named displaced candidate after costs and executable market mechanics.
 
 Implementable fields:
 
@@ -766,11 +802,16 @@ Implementable fields:
 - `agent_displaced_candidate_id`
 - `agent_replacement_value_after_cost`
 - `agent_action_turnover_bucket`
+- `agent_execution_replay_protocol_id`
+- `agent_maker_taker_fee_bps`
+- `agent_settlement_risk_bucket`
 
 Controls:
 
 - evaluate against SPY/QQQ, cash, and the exact accepted helper displaced;
 - log invalid actions, abstentions, turnover, drawdown, and cost sensitivity;
+- when orderbook or quote data exists, replay executable actions through the
+  relevant spread/fee/settlement model instead of close-to-close fills;
 - separate model backbone, prompt/scaffold, and agent architecture effects;
 - keep agent decisions default-off until Gate 1-4 and parity evidence exist.
 
@@ -778,6 +819,7 @@ Sources:
 
 - <https://arxiv.org/abs/2510.02209>
 - <https://arxiv.org/abs/2510.11695>
+- <https://arxiv.org/abs/2602.00133>
 
 ### Memory-Controlled LLM Trading Evaluation
 
@@ -1213,6 +1255,40 @@ Controls:
 - keep execution-envelope tests separate from new alpha searches.
 
 Source: <https://arxiv.org/abs/2603.29086>
+
+### Cost-Aware Optimization Is A Capacity Surface
+
+FlashFolio is useful less as a dependency than as an engineering lesson:
+single-period and multi-period portfolio optimization can include factor risk,
+bid-offer costs, and nonlinear market impact at realistic scale. For Ginger,
+the concrete takeaway is to keep alpha discovery separate from capacity
+optimization. Once a helper is accepted, evaluate live eligibility through a
+fixed execution envelope that reports factor exposure, turnover, spread cost,
+impact cost, and displaced-row replacement value.
+
+Implementable fields:
+
+- `portfolio_optimization_solver_version`
+- `factor_risk_model_version`
+- `multi_period_horizon_days`
+- `bid_offer_cost_bps`
+- `nonlinear_impact_cost_bps`
+- `capacity_solver_runtime_bucket`
+- `capacity_constrained_replacement_value`
+- `activation_envelope_feasible_flag`
+
+Controls:
+
+- use optimization only after the alpha source is fixed, not to search across
+  signals and sizing rules simultaneously;
+- compare capacity-constrained output against the accepted one-slot allocator
+  and current paper notional envelope;
+- report whether turnover/impact constraints change the selected rows, not only
+  the final portfolio weights;
+- keep solver changes as activation-envelope evidence unless they alter the
+  underlying alpha decision hypothesis.
+
+Source: <https://arxiv.org/abs/2604.22625>
 
 ### LLM-Guided State And Reward Interfaces
 

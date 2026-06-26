@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-06-25.
+Last refreshed: 2026-06-26.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -608,89 +608,32 @@ evidence is enough closed 10d replacement rows, materially richer PIT
 manager/active-flow provenance, borrow/options cross-evidence, or a shared
 default-off helper with historical PIT coverage.
 
-The June 25 batch says the new evidence axis must be genuinely new, not another
-read of the same small forward ledger. OnclickMedia options rows now have a
-settled outcome ledger, but the fixed call-demand / low-put-hedge quality read
-did not separate replacement value. Moomoo borrow availability is still blocked
-because fee, utilization, and loan-availability fields are unpopulated, so it
-cannot reopen FINRA/options squeeze ideas. Kova Companyfacts realized-quality,
-Form 4 conflict context, and SEC FTD forward joins did not produce an
-allocation-ready read on current forward rows. SEC13F active-manager flow was a
-positive short-horizon observed-only Kova lead, but two historical active-flow
-candidate-pool attempts failed, including filing-delay hardening; use active
-manager/flow as context until closed 10d replacement rows or materially richer
-manager provenance exists. SEC 6-K work materialized historical event
-accessions, but the text cache is still the blocker and the Companyfacts-only
-structured-growth scout did not clear the bar. SEC project-finance/capacity
-contract terms and volume-dry-up breakouts were also rejected. The practical
-queue is now: repair missing OHLCV/6-K/borrow surfaces, settle more forward
-replacement rows, and require a new production-visible field before another
-observed-only attribution pass on options, Kova, Form 4, SEC FTD, or 13F.
-Estimate-revision candidate-match work remains blocked because the warehouse
-still stops at `2026-06-15`, and the newly present Kova 2026-06-24 intraday /
-RS-proxy files do not provide entry-open/close OHLCV semantics for selected
-current rows.
+The June 25-26 readout compresses to a forward-first rule: the current partial
+forward ledgers are useful for blocker discovery, not for endless adjacent
+condition slicing. Options demand quality, Kova realized-quality/SEC13F context,
+Form 4 conflict tags, SEC FTD joins, project-finance text, volume dry-up, and
+estimate-revision match probes did not produce allocation-ready evidence on the
+current rows. A valid retry needs materially more closed 10d replacement-value
+rows, a new production-visible PIT field, or a shared helper with historical
+coverage that can beat the accepted comparator after costs.
 
-The one genuinely new June 25 lead is a sign-correction on a non-saturated
-source. `exp-20260625-018` (observed-only) reopened moomoo daily short volume on
-the broad 51-name archive (`exp-20260623-008`, 25k rows, 2024-06 onward) and
-tested the OPPOSITE sign from the rejected `exp-20260622-010` absorption ENTRY:
-`short_volume_ratio` as informed daily short-sale flow (Diether-Lee-Werner 2009)
-used as an AVOIDANCE / quality signal. A read-only join of the per-ticker
-expanding PIT percentile to next-open forward 10d returns is window-consistent:
-forward returns fall monotonically with the short-flow percentile in `old_thin`
-(Q1 +1.58% -> Q5 -0.45%) and `late_strong` (Q1 +0.35% -> Q5 -1.51%, win 50% ->
-37%), pooled Q1 +1.56% vs Q5 +0.66%, negative correlation in all three windows,
-washing out only in the raging-bull `mid_weak` window. The gate is NOT inert:
-~19% of accepted paper-sleeve selections (n=58 joined) land in the toxic Q5
-bucket, driven by `fundamental_growth_rs` and `volume_breadth_breakout`. This is
-an `observed_only_positive_lead`, not accepted alpha. The next admissible step is
-ONE shared default-off CLEAN-FLOW quality-gate helper (admit liquid candidates
-only when the PIT `short_volume_ratio` percentile is below the toxic quintile)
-wired into historical replay AND a daily default-off snapshot with a parity
-test, then a full-stack candidate-pool Gate 1-4 overlay that must beat the
-closest accepted comparator after costs, concentration, and drawdown. Do NOT
-re-run the wrong-sign absorption family, sweep quintile cutoffs / lookbacks /
-hold / notional, or re-slice this read-only ledger with an adjacent condition
-field; those are saturated. Caveat: this is an avoidance signal a long-only book
-captures only via filtering, so its value must be proven on the replay overlap,
-not the thin closed-row sample.
+Short-volume is the clearest anti-repeat update. Treat Moomoo
+`short_volume_ratio` as a real but non-incremental crowding/quality context:
+the sign-corrected informed-short-flow read was directionally useful versus a
+core momentum pool, but the hard exclusion and notional-downweight shapes both
+failed against the accepted source-priority allocator. Do not retry quintile
+cutoffs, scalars, source scoping, momentum/proximity thresholds, hold, cooldown,
+or top-N on frozen windows. Reopen only with closed forward rows tagged at entry
+by short-volume percentile, or with materially new borrow fee, utilization, or
+loan-availability economics.
 
-`exp-20260625-019` then ran that replay test as a private scout and got an
-informative REJECT. It built one fixed liquid SPY-relative momentum/breakout
-top-1 pool and ran it ungated vs gated, the single variable being a PIT
-`short_volume_ratio` toxic-top-quintile (>= 0.80) exclusion that promotes the
-next clean candidate. The gate effect (gated minus ungated) was directionally
-real and broad: aggregate EV `+0.1409`, PnL `+$2,344.59`, EV improved in all
-three windows (`late_strong` +0.089/`+$715`, `mid_weak` +0.008/`-$333`,
-`old_thin` +0.044/`+$1,963`), 187 changed selections, and drawdown actually
-IMPROVED in two windows (`late_strong` -0.49pp, `mid_weak` -0.07pp). It was
-REJECTED on one predeclared guard: `old_thin` drawdown drifted `+0.53pp`, just
-over the 0.5pp cap. This is the same "high aggregate EV with old_thin drawdown
-drift is a rejected clue, not a retained strategy" pattern seen in accruals,
-inventory, asset-growth, and reinvestment fields: the avoidance signal carries
-genuine after-cost replacement value but is not drawdown-clean at top-1 momentum
-deployment. CRUCIAL CORRECTION: that scout used the CORE baseline, which
-flatters it. Concurrent same-day full-stack and falsification runs settled the
-line against the CORRECT comparator -- the accepted ungated source-priority
-allocator -- and the gate adds NO incremental value there. The exp-019
-full-stack (`..._clean_flow_gate.json`, gate on the accepted allocator rows) was
-rejected: EV/PnL delta not positive vs the ungated allocator, EV regressed in
-windows, concentration worse. `exp-20260625-024` ran the obvious notional
-down-weight reshape against the allocator and was rejected identically (EV/PnL
-not positive vs ungated allocator, lift below the 10% retune bar, < 2 windows
-improved, concentration worse). `exp-20260625-023` placebo-falsification
-confirms the signal is not pure noise but promotion stays blocked by the
-allocator-baseline failure. Net: the short_volume_ratio informed-flow signal is
-REAL but NOT incremental over the accepted allocator, in either the hard-
-exclusion or notional-downweight shape. The whole short-volume gate line is now
-CLOSED on the frozen windows -- do not retry the quintile cut, scalar,
-momentum/proximity thresholds, hold, cooldown, top-N, scoping, or any further
-shape. The only admissible reopen is closed forward rows tagged with the entry
-`short_volume_ratio` percentile (validate a soft tilt out of sample), or a
-materially new PIT field such as borrow fee / utilization. The "real EV vs core"
-framing from the scout alone is misleading; the binding read is null-to-negative
-vs the proper allocator base.
+The June 26 maintenance records confirm that the next high-value work is data
+materialization, not alpha retuning. SEC 6-K and selected 10-K/10-Q rows still
+need local text/cache and parsed cover-page fields keyed by accession and
+accepted timestamp; current Kova intraday/RS-proxy rows are features, not true
+entry-open/close settlement OHLCV; borrow availability lacks fee, utilization,
+and loan-availability economics. Until those surfaces are repaired, missing
+archive/text/borrow/OHLCV availability is a blocker ledger, not an alpha field.
 
 ## Detail Sources
 
