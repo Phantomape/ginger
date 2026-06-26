@@ -59,8 +59,23 @@ except ImportError:  # pragma: no cover - package-style import fallback
 
 RULE_VERSION = "forward_replacement_value_v1"
 ENTRY_REGIME_TAG_RULE_VERSION = "forward_replacement_entry_regime_tag_v1"
+ENTRY_SHORT_VOLUME_TAG_RULE_VERSION = "forward_replacement_entry_short_volume_tag_v1"
 COMPARATOR_TICKERS = ("SPY", "QQQ")
 ARTIFACT_RELPATH = Path("paper_sleeves") / "forward_replacement_value.jsonl"
+
+# Entry-time moomoo daily short_volume_ratio percentile tag (informed-flow
+# avoidance signal, Diether-Lee-Werner 2009). Constants mirror exp-20260625-018
+# exactly so the forward tag is parity-consistent with the attribution that
+# established the lead; do not retune these here. The broad 51-name archive was
+# built by exp-20260623-008. The tag is read-only PIT context: it never creates,
+# ranks, sizes, or exits a position, and the only admissible use is validating a
+# soft short-flow tilt on closed forward rows out of sample (exp-20260625-019).
+SHORT_VOLUME_ARCHIVE_RELPATH = (
+    Path("non_ohlcv") / "moomoo_daily_short_volume_broad" / "rows.jsonl"
+)
+SHORT_VOLUME_MIN_TRAILING_OBS = 30
+SHORT_VOLUME_QUINTILES = 5
+SHORT_VOLUME_TOXIC_QUINTILE_INDEX = 4  # 0-based; Q5 (>= 0.80 percentile) is toxic
 
 # Plausible bounds for a derived paper notional; outside this range the
 # derivation is treated as failed rather than silently recorded.
@@ -151,6 +166,78 @@ def load_regime_spy_bars(warehouse_path=None):
     finally:
         con.close()
     return rows
+
+
+def load_short_volume_percentile_index(archive_path=None):
+    """Build an expanding (strictly-prior) per-ticker percentile index of moomoo
+    daily ``short_volume_ratio`` from the broad archive.
+
+    Returns ``{ticker: (sorted_activity_dates, percentiles)}`` where ``percentiles[i]``
+    is the fraction of strictly-prior observations for that ticker whose
+    ``short_volume_ratio`` was below ``short_volume_ratio[i]`` (or ``None`` until
+    ``SHORT_VOLUME_MIN_TRAILING_OBS`` history exists). This reproduces the PIT
+    percentile construction of exp-20260625-018 so the entry-time tag matches the
+    attribution surface. Returns ``{}`` if the archive is absent.
+    """
+    path = (
+        Path(archive_path)
+        if archive_path
+        else DATA_ROOT / SHORT_VOLUME_ARCHIVE_RELPATH
+    )
+    if not path.exists():
+        return {}
+    by_ticker: dict[str, list[tuple[str, float]]] = {}
+    for line in path.read_text(encoding="utf-8-sig").splitlines():
+        if not line.strip():
+            continue
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        ticker = str(row.get("ticker") or "").upper()
+        svr = _to_float(row.get("short_volume_ratio"))
+        activity_date = str(row.get("activity_date") or "")[:10]
+        if not ticker or svr is None or not activity_date:
+            continue
+        by_ticker.setdefault(ticker, []).append((activity_date, svr))
+
+    index: dict[str, tuple[list[str], list[float | None]]] = {}
+    for ticker, seq in by_ticker.items():
+        seq.sort()
+        dates = [d for d, _ in seq]
+        pcts: list[float | None] = []
+        hist: list[float] = []
+        for _, svr in seq:
+            if len(hist) >= SHORT_VOLUME_MIN_TRAILING_OBS:
+                pcts.append(sum(1 for h in hist if h < svr) / len(hist))
+            else:
+                pcts.append(None)
+            hist.append(svr)
+        index[ticker] = (dates, pcts)
+    return index
+
+
+def _short_volume_percentile_asof(index, ticker, entry_date):
+    """Most recent formed short_volume_ratio percentile from an activity_date
+    STRICTLY before ``entry_date`` (the moomoo activity is published after the US
+    close, so an activity_date equal to the next-open entry date is not yet known).
+    """
+    series = index.get(str(ticker or "").upper())
+    if not series:
+        return None
+    dates, pcts = series
+    i = bisect_left(dates, str(entry_date)) - 1
+    while i >= 0:
+        if pcts[i] is not None:
+            return pcts[i]
+        i -= 1
+    return None
+
+
+def _short_volume_quintile(pct):
+    return min(
+        SHORT_VOLUME_QUINTILES - 1, int(float(pct) * SHORT_VOLUME_QUINTILES)
+    )
 
 
 def _parse_date(value):
@@ -252,6 +339,48 @@ def _apply_entry_regime_tag(row, regime_spy_bars):
     row["entry_regime_p_risk_off_stress"] = tag.get("p_risk_off_stress")
     row["entry_regime_exposure_scalar"] = tag.get("exposure_scalar")
     row["entry_regime_detail"] = tag
+
+
+def _row_needs_short_volume_tag(row):
+    if row.get("entry_short_volume_tag_rule_version") != ENTRY_SHORT_VOLUME_TAG_RULE_VERSION:
+        return True
+    # Refresh rows that previously had no joinable history once the archive grows
+    # coverage (a new ticker or backfilled earlier dates can form a percentile).
+    return row.get("entry_short_volume_status") in {
+        "no_short_volume_history",
+        "missing_index",
+    }
+
+
+def _apply_short_volume_tag(row, sv_percentile_index):
+    entry_date = str(row.get("entry_date") or "")[:10]
+    ticker = str(row.get("ticker") or "")
+    percentile = None
+    quintile = None
+    toxic = None
+    if not entry_date:
+        status = "missing_entry_date"
+    elif not sv_percentile_index:
+        status = "missing_index"
+    else:
+        percentile = _short_volume_percentile_asof(
+            sv_percentile_index, ticker, entry_date
+        )
+        if percentile is None:
+            status = "no_short_volume_history"
+        else:
+            status = "ok"
+            quintile = _short_volume_quintile(percentile) + 1  # 1-based for readers
+            toxic = (quintile - 1) == SHORT_VOLUME_TOXIC_QUINTILE_INDEX
+
+    row["entry_short_volume_tag_rule_version"] = ENTRY_SHORT_VOLUME_TAG_RULE_VERSION
+    row["entry_short_volume_asof_date"] = entry_date or None
+    row["entry_short_volume_status"] = status
+    row["entry_short_volume_ratio_percentile"] = (
+        round(percentile, 6) if percentile is not None else None
+    )
+    row["entry_short_volume_quintile"] = quintile
+    row["entry_short_volume_toxic_flag"] = toxic
 
 
 def _notional_for_row(row):
@@ -395,6 +524,16 @@ def _record_from_state_row(row, sleeve_key):
         "entry_regime_p_risk_off_stress": row.get("entry_regime_p_risk_off_stress"),
         "entry_regime_exposure_scalar": row.get("entry_regime_exposure_scalar"),
         "entry_regime_detail": row.get("entry_regime_detail"),
+        "entry_short_volume_tag_rule_version": row.get(
+            "entry_short_volume_tag_rule_version"
+        ),
+        "entry_short_volume_asof_date": row.get("entry_short_volume_asof_date"),
+        "entry_short_volume_status": row.get("entry_short_volume_status"),
+        "entry_short_volume_ratio_percentile": row.get(
+            "entry_short_volume_ratio_percentile"
+        ),
+        "entry_short_volume_quintile": row.get("entry_short_volume_quintile"),
+        "entry_short_volume_toxic_flag": row.get("entry_short_volume_toxic_flag"),
     }
 
 
@@ -494,6 +633,9 @@ def rebuild_current_state_artifact(
     rows_by_sleeve = {}
     rows_by_entry_regime_label = {}
     rows_with_entry_regime = 0
+    rows_with_entry_short_volume = 0
+    rows_by_entry_short_volume_quintile = {}
+    rows_entry_short_volume_toxic = 0
     for record in current_records:
         status = str(record.get("status") or "unknown")
         sleeve_key = str(record.get("sleeve_key") or "unknown")
@@ -505,6 +647,16 @@ def rebuild_current_state_artifact(
             rows_by_entry_regime_label[str(label)] = (
                 rows_by_entry_regime_label.get(str(label), 0) + 1
             )
+        if record.get("entry_short_volume_status") == "ok":
+            rows_with_entry_short_volume += 1
+            quintile = record.get("entry_short_volume_quintile")
+            if quintile is not None:
+                key = f"Q{quintile}"
+                rows_by_entry_short_volume_quintile[key] = (
+                    rows_by_entry_short_volume_quintile.get(key, 0) + 1
+                )
+            if record.get("entry_short_volume_toxic_flag"):
+                rows_entry_short_volume_toxic += 1
 
     return {
         "status": "ok",
@@ -515,6 +667,9 @@ def rebuild_current_state_artifact(
         "rows_by_sleeve": rows_by_sleeve,
         "rows_with_entry_regime": rows_with_entry_regime,
         "rows_by_entry_regime_label": rows_by_entry_regime_label,
+        "rows_with_entry_short_volume": rows_with_entry_short_volume,
+        "rows_by_entry_short_volume_quintile": rows_by_entry_short_volume_quintile,
+        "rows_entry_short_volume_toxic": rows_entry_short_volume_toxic,
         "previous_rows_not_in_current_state": previous_rows_not_in_current_state,
         "skipped_missing_replacement": skipped_missing_replacement,
     }
@@ -527,12 +682,13 @@ def enrich_state_closed_rows(
     sleeve_key="",
     *,
     regime_spy_bars=None,
+    sv_percentile_index=None,
 ):
     """Add replacement-value fields to closed rows that lack them.
 
     Mutates ``state`` in place and returns one artifact record per newly
-    updated row. Rows already carrying replacement-value and entry-regime tag
-    fields are left untouched, so the pass is idempotent.
+    updated row. Rows already carrying replacement-value, entry-regime, and
+    entry-short-volume tag fields are left untouched, so the pass is idempotent.
     """
     records = []
     for row in _closed_rows(state):
@@ -584,6 +740,10 @@ def enrich_state_closed_rows(
             _apply_entry_regime_tag(row, regime_spy_bars)
             updated = True
 
+        if sv_percentile_index is not None and _row_needs_short_volume_tag(row):
+            _apply_short_volume_tag(row, sv_percentile_index)
+            updated = True
+
         if updated:
             record = _record_from_state_row(row, sleeve_key)
             if record is not None:
@@ -597,6 +757,7 @@ def enrich_all_sleeve_states(
     sleeves_root=None,
     bars_by_ticker=None,
     regime_spy_bars=None,
+    sv_percentile_index=None,
     warehouse_path=None,
     artifact_path=None,
 ):
@@ -613,14 +774,18 @@ def enrich_all_sleeve_states(
         bars_by_ticker = load_comparator_bars(warehouse_path)
     if regime_spy_bars is None and load_from_warehouse:
         regime_spy_bars = load_regime_spy_bars(warehouse_path)
+    if sv_percentile_index is None and load_from_warehouse:
+        sv_percentile_index = load_short_volume_percentile_index()
 
     summary = {
         "rule_version": RULE_VERSION,
         "entry_regime_tag_rule_version": ENTRY_REGIME_TAG_RULE_VERSION,
+        "entry_short_volume_tag_rule_version": ENTRY_SHORT_VOLUME_TAG_RULE_VERSION,
         "asof_date": asof_date,
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "production_impact": dict(PRODUCTION_IMPACT),
         "entry_regime_tagging_enabled": regime_spy_bars is not None,
+        "entry_short_volume_tagging_enabled": sv_percentile_index is not None,
         "sleeves_scanned": 0,
         "rows_enriched": 0,
         "rows_enriched_by_status": {},
@@ -645,6 +810,7 @@ def enrich_all_sleeve_states(
             asof_date,
             sleeve_key,
             regime_spy_bars=regime_spy_bars,
+            sv_percentile_index=sv_percentile_index,
         )
         if records:
             atomic_write_json(state, state_path)
@@ -670,6 +836,15 @@ def enrich_all_sleeve_states(
     ]
     summary["artifact_rows_by_entry_regime_label"] = artifact_summary[
         "rows_by_entry_regime_label"
+    ]
+    summary["artifact_rows_with_entry_short_volume"] = artifact_summary[
+        "rows_with_entry_short_volume"
+    ]
+    summary["artifact_rows_by_entry_short_volume_quintile"] = artifact_summary[
+        "rows_by_entry_short_volume_quintile"
+    ]
+    summary["artifact_rows_entry_short_volume_toxic"] = artifact_summary[
+        "rows_entry_short_volume_toxic"
     ]
     summary["artifact_previous_rows_not_in_current_state"] = len(
         artifact_summary["previous_rows_not_in_current_state"]
