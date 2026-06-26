@@ -43,6 +43,15 @@ LLM 可以承担新闻理解、事件分类、语义强弱判断和风险解释�
    合规的 alpha 假设应转向 forward 行成熟、缺失数据/字段构建，或一个尚未饱和的新源；
    override 仅在你能命名一条机器可查的全新证据轴（新数据源 / 无前例字段 / 新 gate shape /
    forward 替换行）时才用，不能用自由文本绕过。
+   **饱和源例外（硬规则）**：当 novelty 闸门对某个 `(gate_shape, data_source)` 单元报告
+   `saturated=True`（默认 ≥12 trials 且 accept_rate ≤5%，如 `companyfacts_ratio` 3/87、
+   `sec_text_event` 0/43）时，同一单元内的"无前例字段"**不再**构成合法证据轴——XBRL/标签
+   枚举可被无限满足，基准率不随之改变。此时 `saturated_source_override` 只在以下三者之一
+   成立时才允许：(a) 真正的新数据源，(b) 新 gate shape，(c) 实质增加的已结算 forward 行；
+   仅在同源同 gate_shape 下换一个新 tag/字段不算，也不得用自由文本 `--new-evidence-axis` 绕过。
+   **响应曲线 retune（硬规则）**：对一个已被拒绝的信号，仅改变响应函数
+   （hard exclusion → 降权 → tilt / notional 缩放）**不构成**"新 gate shape"，与阈值扫描同等
+   冻结；合规重试需换新信号、新源或新的已结算 forward 行。
 3. 禁止连续多轮只做日志、replay、parity、目录整理或文档，而不提出新的 alpha 假设。
    但 **forward 行埋点（入场期 regime / 替换价值标签）、缺失候选匹配面构建、饱和源以外的
    新数据源接入，都算 alpha-enabling 工作，不受本条限制**——尤其当 frozen-window 面已饱和、
