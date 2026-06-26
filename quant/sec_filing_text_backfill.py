@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 import html
 import json
 import re
@@ -20,7 +21,7 @@ DEFAULT_OUTPUT = DATA_DIR / "non_ohlcv" / "sec_filing_text_20241002_20260421.jso
 DEFAULT_SUMMARY = DATA_DIR / "non_ohlcv" / "sec_filing_text_backfill_summary_20241002_20260421.json"
 DEFAULT_CACHE_DIR = DATA_DIR / "cache" / "sec" / "filing_text"
 DEFAULT_USER_AGENT = "ginger-research/1.0 contact: research@example.com"
-DEFAULT_FORMS = ("8-K", "6-K")
+DEFAULT_FORMS = ("8-K", "6-K", "10-K", "10-Q")
 DEFAULT_ITEM_CODES = ("2.02",)
 
 
@@ -186,6 +187,10 @@ def _document_priority(name: str, primary_document: str | None) -> tuple[int, st
     return (-score, lowered)
 
 
+def _event_form_base(row: dict[str, Any]) -> str:
+    return str(row.get("form_base") or row.get("form_type") or "").upper().replace("/A", "")
+
+
 def candidate_documents(
     index_payload: dict[str, Any],
     *,
@@ -212,7 +217,7 @@ def _cache_path(cache_dir: Path, accession: str) -> Path:
 
 
 def _event_matches(row: dict[str, Any], forms: set[str], item_codes: set[str] | None) -> bool:
-    form_base = str(row.get("form_base") or row.get("form_type") or "").upper().replace("/A", "")
+    form_base = _event_form_base(row)
     if form_base not in forms:
         return False
     if item_codes is None:
@@ -319,12 +324,14 @@ def build_rows(args: argparse.Namespace) -> tuple[list[dict[str, Any]], dict[str
     cache_dir = repo_path(args.cache_dir)
     forms = {form.strip().upper().replace("/A", "") for form in args.forms if form.strip()}
     item_codes = None if args.item_codes == ["all"] else {code.strip() for code in args.item_codes if code.strip()}
-    events = [
-        row for row in load_jsonl(events_path)
-        if _event_matches(row, forms, item_codes)
-    ]
+    all_events = load_jsonl(events_path)
+    matched_events = [row for row in all_events if _event_matches(row, forms, item_codes)]
+    events = matched_events
     if args.limit:
         events = events[: args.limit]
+    source_form_counts = Counter(_event_form_base(row) or "UNKNOWN" for row in all_events)
+    matched_form_counts = Counter(_event_form_base(row) or "UNKNOWN" for row in matched_events)
+    selected_form_counts = Counter(_event_form_base(row) or "UNKNOWN" for row in events)
 
     rows: list[dict[str, Any]] = []
     for idx, event in enumerate(events, start=1):
@@ -342,7 +349,9 @@ def build_rows(args: argparse.Namespace) -> tuple[list[dict[str, Any]], dict[str
             print(f"fetched {idx}/{len(events)} filings")
 
     summary = {
+        "source_events_input": len(all_events),
         "events_input": len(events),
+        "matched_events_input": len(matched_events),
         "rows_written": len(rows),
         "status_counts": {},
         "tickers": len({row.get("ticker") for row in rows if row.get("ticker")}),
@@ -350,6 +359,15 @@ def build_rows(args: argparse.Namespace) -> tuple[list[dict[str, Any]], dict[str
         "documents_fetched": sum(int(row.get("documents_fetched") or 0) for row in rows),
         "text_char_count": sum(int(row.get("text_char_count") or 0) for row in rows),
         "forms": sorted(forms),
+        "source_form_counts": dict(sorted(source_form_counts.items())),
+        "matched_form_counts": dict(sorted(matched_form_counts.items())),
+        "selected_form_counts": dict(sorted(selected_form_counts.items())),
+        "selected_periodic_rows": sum(
+            int(count)
+            for form, count in selected_form_counts.items()
+            if form in {"10-K", "10-Q"}
+        ),
+        "limit": args.limit,
         "item_codes": sorted(item_codes) if item_codes is not None else ["all"],
         "source_events": str(events_path),
         "cache_dir": str(cache_dir),

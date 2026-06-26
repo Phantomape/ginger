@@ -12,7 +12,9 @@ Quote resolution chain, per ticker (each step independently guarded):
 
 from __future__ import annotations
 
+from datetime import datetime
 import logging
+from zoneinfo import ZoneInfo
 
 import yfinance as yf
 
@@ -24,6 +26,11 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 logger = logging.getLogger(__name__)
 
 configure_yfinance_runtime()
+
+
+def current_capture_time_et() -> str:
+    """Return the observation time for an intraday quote snapshot."""
+    return datetime.now(ZoneInfo("America/New_York")).strftime("%Y-%m-%d %H:%M ET")
 
 
 def _safe_float(value) -> float | None:
@@ -38,7 +45,7 @@ def _safe_float(value) -> float | None:
     return result
 
 
-def _quote_from_fast_info(ticker: str) -> dict | None:
+def _quote_from_fast_info(ticker: str, capture_time_et: str) -> dict | None:
     info = yf.Ticker(ticker).fast_info
     # fast_info fields are lazy properties — any single field access can raise.
     price = day_high = day_low = None
@@ -62,11 +69,12 @@ def _quote_from_fast_info(ticker: str) -> dict | None:
         "day_low": day_low,
         "source": "fast_info",
         "quote_time_et": None,
+        "capture_time_et": capture_time_et,
         "is_stale": False,
     }
 
 
-def _quote_from_intraday_bars(ticker: str) -> dict | None:
+def _quote_from_intraday_bars(ticker: str, capture_time_et: str) -> dict | None:
     bars = yf.Ticker(ticker).history(
         period="1d", interval="1m", auto_adjust=False
     )
@@ -89,28 +97,34 @@ def _quote_from_intraday_bars(ticker: str) -> dict | None:
         "day_low": _safe_float(bars["Low"].min()),
         "source": "intraday_1m",
         "quote_time_et": quote_time_et,
+        "capture_time_et": capture_time_et,
         "is_stale": False,
     }
 
 
-def get_intraday_quote(ticker: str, daily_close_fallback: float | None = None) -> dict:
+def get_intraday_quote(
+    ticker: str,
+    daily_close_fallback: float | None = None,
+    capture_time_et: str | None = None,
+) -> dict:
     """Best-effort intraday quote with explicit source labeling.
 
     Returns dict with keys: ticker, price, day_high, day_low, source,
-    quote_time_et, is_stale. ``price`` is None only when every source failed
+    quote_time_et, capture_time_et, is_stale. ``price`` is None only when every source failed
     (source="unavailable") — callers must flag those for manual checking.
     """
     ticker = str(ticker).upper()
+    capture_time_et = capture_time_et or current_capture_time_et()
 
     try:
-        quote = _quote_from_fast_info(ticker)
+        quote = _quote_from_fast_info(ticker, capture_time_et)
     except Exception as e:
         logger.warning("%s: fast_info quote failed - %s", ticker, e)
         quote = None
 
     if quote is None:
         try:
-            quote = _quote_from_intraday_bars(ticker)
+            quote = _quote_from_intraday_bars(ticker, capture_time_et)
         except Exception as e:
             logger.warning("%s: 1m intraday quote failed - %s", ticker, e)
             quote = None
@@ -124,6 +138,7 @@ def get_intraday_quote(ticker: str, daily_close_fallback: float | None = None) -
                 "day_low": None,
                 "source": "eod_close_fallback",
                 "quote_time_et": None,
+                "capture_time_et": capture_time_et,
                 "is_stale": True,
             }
         else:
@@ -133,6 +148,7 @@ def get_intraday_quote(ticker: str, daily_close_fallback: float | None = None) -
                 "day_low": None,
                 "source": "unavailable",
                 "quote_time_et": None,
+                "capture_time_et": capture_time_et,
                 "is_stale": True,
             }
 
@@ -140,12 +156,21 @@ def get_intraday_quote(ticker: str, daily_close_fallback: float | None = None) -
     return quote
 
 
-def get_intraday_quotes(tickers, daily_closes: dict | None = None) -> dict[str, dict]:
+def get_intraday_quotes(
+    tickers,
+    daily_closes: dict | None = None,
+    capture_time_et: str | None = None,
+) -> dict[str, dict]:
     """Fetch quotes for a small ticker set (held positions + SPY/QQQ), serially."""
     daily_closes = daily_closes or {}
+    capture_time_et = capture_time_et or current_capture_time_et()
     quotes: dict[str, dict] = {}
     for raw in dict.fromkeys(str(t).upper() for t in tickers if t):
-        quotes[raw] = get_intraday_quote(raw, daily_closes.get(raw))
+        quotes[raw] = get_intraday_quote(
+            raw,
+            daily_closes.get(raw),
+            capture_time_et=capture_time_et,
+        )
     return quotes
 
 

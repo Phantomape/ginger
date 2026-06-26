@@ -15,6 +15,7 @@ from intraday_review import (
 )
 
 ASOF = date(2026, 6, 10)
+CAPTURE_TIME_ET = "2026-06-10 13:00 ET"
 
 
 def _ohlcv(end="2026-06-09", days=30, base=100.0, spread=0.5, last_close=None):
@@ -47,7 +48,7 @@ def _open_positions(**overrides):
     return {"portfolio_value_usd": 100_000, "cash_usd": 50_000, "positions": [pos]}
 
 
-def _quote(price, day_high=None, source="fast_info"):
+def _quote(price, day_high=None, source="fast_info", capture_time_et=CAPTURE_TIME_ET):
     return {
         "ticker": "NVDA",
         "price": price,
@@ -55,6 +56,7 @@ def _quote(price, day_high=None, source="fast_info"):
         "day_low": None,
         "source": source,
         "quote_time_et": None,
+        "capture_time_et": capture_time_et,
         "is_stale": False,
     }
 
@@ -111,6 +113,7 @@ def test_price_well_above_stops_is_ok_with_session_return():
     )
     (review,) = reviews
     assert review["status"] == "OK"
+    assert review["quote"]["capture_time_et"] == CAPTURE_TIME_ET
     assert review["proximity_flags"] == []
     # prev_close comes from the last COMPLETED session (100.0), not the quote.
     assert review["context"]["prev_close"] == 100.0
@@ -153,8 +156,16 @@ def _index_frames():
 
 def test_regime_flip_intraday_flagged():
     quotes = {
-        "SPY": {"price": 95.0, "source": "fast_info"},   # below MA intraday
-        "QQQ": {"price": 105.0, "source": "fast_info"},  # still above
+        "SPY": {
+            "price": 95.0,
+            "source": "fast_info",
+            "capture_time_et": CAPTURE_TIME_ET,
+        },   # below MA intraday
+        "QQQ": {
+            "price": 105.0,
+            "source": "fast_info",
+            "capture_time_et": CAPTURE_TIME_ET,
+        },  # still above
     }
     regime = build_intraday_market_regime(_index_frames(), quotes, ASOF, ma_period=5)
     assert regime["eod_basis_regime"] == "BULL"
@@ -162,6 +173,7 @@ def test_regime_flip_intraday_flagged():
     assert regime["regime_flip_intraday"] is True
     assert regime["indices"]["SPY"]["eod_above_ma"] is True
     assert regime["indices"]["SPY"]["above_ma"] is False
+    assert regime["indices"]["SPY"]["capture_time_et"] == CAPTURE_TIME_ET
 
 
 def test_regime_no_flip_when_intraday_agrees():
@@ -218,9 +230,15 @@ def test_quote_uses_fast_info_when_available(monkeypatch):
     }
     _FakeTicker.history_frame = None
     monkeypatch.setattr(intraday_quotes.yf, "Ticker", _FakeTicker)
-    quote = intraday_quotes.get_intraday_quote("NVDA", daily_close_fallback=42.0)
+    quote = intraday_quotes.get_intraday_quote(
+        "NVDA",
+        daily_close_fallback=42.0,
+        capture_time_et=CAPTURE_TIME_ET,
+    )
     assert quote["source"] == "fast_info"
     assert quote["price"] == 50.0
+    assert quote["quote_time_et"] is None
+    assert quote["capture_time_et"] == CAPTURE_TIME_ET
     assert quote["is_stale"] is False
 
 
@@ -233,11 +251,16 @@ def test_quote_falls_back_to_1m_bars(monkeypatch):
         index=idx,
     )
     monkeypatch.setattr(intraday_quotes.yf, "Ticker", _FakeTicker)
-    quote = intraday_quotes.get_intraday_quote("NVDA", daily_close_fallback=42.0)
+    quote = intraday_quotes.get_intraday_quote(
+        "NVDA",
+        daily_close_fallback=42.0,
+        capture_time_et=CAPTURE_TIME_ET,
+    )
     assert quote["source"] == "intraday_1m"
     assert quote["price"] == 50.5
     assert quote["day_high"] == 52.0
     assert quote["quote_time_et"] is not None
+    assert quote["capture_time_et"] == CAPTURE_TIME_ET
 
 
 def test_quote_falls_back_to_eod_close_then_unavailable(monkeypatch):
@@ -245,14 +268,35 @@ def test_quote_falls_back_to_eod_close_then_unavailable(monkeypatch):
     _FakeTicker.history_frame = None
     monkeypatch.setattr(intraday_quotes.yf, "Ticker", _FakeTicker)
 
-    quote = intraday_quotes.get_intraday_quote("NVDA", daily_close_fallback=42.0)
+    quote = intraday_quotes.get_intraday_quote(
+        "NVDA",
+        daily_close_fallback=42.0,
+        capture_time_et=CAPTURE_TIME_ET,
+    )
     assert quote["source"] == "eod_close_fallback"
     assert quote["price"] == 42.0
+    assert quote["capture_time_et"] == CAPTURE_TIME_ET
     assert quote["is_stale"] is True
 
-    quote = intraday_quotes.get_intraday_quote("NVDA", daily_close_fallback=None)
+    quote = intraday_quotes.get_intraday_quote(
+        "NVDA",
+        daily_close_fallback=None,
+        capture_time_et=CAPTURE_TIME_ET,
+    )
     assert quote["source"] == "unavailable"
     assert quote["price"] is None
+    assert quote["capture_time_et"] == CAPTURE_TIME_ET
+
+
+def test_batch_quotes_share_one_capture_time(monkeypatch):
+    _FakeTicker.fast_info_values = {"last_price": 50.0}
+    _FakeTicker.history_frame = None
+    monkeypatch.setattr(intraday_quotes.yf, "Ticker", _FakeTicker)
+    quotes = intraday_quotes.get_intraday_quotes(
+        ["NVDA", "MSFT"],
+        capture_time_et=CAPTURE_TIME_ET,
+    )
+    assert {q["capture_time_et"] for q in quotes.values()} == {CAPTURE_TIME_ET}
 
 
 # ── report / output isolation ────────────────────────────────────────────────

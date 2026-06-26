@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+FORWARD_REPLACEMENT_JSONL = REPO_ROOT / "data" / "paper_sleeves" / "forward_replacement_value.jsonl"
 
 
 def _f(value: Any) -> float | None:
@@ -32,6 +33,87 @@ def _f(value: Any) -> float | None:
         return None
     import math
     return out if math.isfinite(out) else None
+
+
+def _regime_from_row(row: dict[str, Any]) -> dict[str, Any] | None:
+    label = row.get("entry_regime_label") or row.get("regime_label")
+    if label in (None, "", "unknown"):
+        return None
+    return {
+        "regime_label": label,
+        "p_choppy_range": _f(row.get("entry_regime_p_choppy_range") or row.get("p_choppy_range")),
+        "exposure_scalar": _f(row.get("entry_regime_exposure_scalar") or row.get("exposure_scalar")),
+        "fidelity": (
+            row.get("entry_regime_tag_rule_version")
+            or row.get("entry_regime_rule_version")
+            or row.get("regime_fidelity")
+            or row.get("entry_regime_status")
+        ),
+    }
+
+
+def _forward_row_key(row: dict[str, Any]) -> tuple[Any, ...]:
+    decision_id = row.get("decision_id")
+    if decision_id:
+        return ("decision_id", str(decision_id))
+    return (
+        "fallback",
+        str(row.get("sleeve") or row.get("sleeve_key") or ""),
+        str(row.get("ticker") or ""),
+        str(row.get("entry_date") or "")[:10],
+        str(row.get("exit_date") or "")[:10],
+    )
+
+
+def _normalise_forward_replacement_row(row: dict[str, Any]) -> dict[str, Any] | None:
+    entry = str(row.get("entry_date") or row.get("signal_date") or "")[:10]
+    if not entry:
+        return None
+    return {
+        "source": "forward_replacement_value",
+        "decision_id": row.get("decision_id"),
+        "sleeve": row.get("sleeve") or row.get("sleeve_key"),
+        "ticker": row.get("ticker"),
+        "entry_date": entry,
+        "exit_date": str(row.get("exit_date") or "")[:10] or None,
+        "replacement_value_vs_cash_usd": row.get("replacement_value_vs_cash_usd"),
+        "replacement_value_vs_spy_usd": row.get("replacement_value_vs_spy_usd"),
+        "replacement_value_vs_qqq_usd": row.get("replacement_value_vs_qqq_usd"),
+        "pnl": row.get("pnl") if row.get("pnl") is not None else row.get("pnl_usd"),
+        "entry_regime_status": row.get("entry_regime_status"),
+        "entry_regime_label": row.get("entry_regime_label"),
+        "entry_regime_exposure_scalar": row.get("entry_regime_exposure_scalar"),
+        "entry_regime_p_choppy_range": row.get("entry_regime_p_choppy_range"),
+        "entry_regime_p_risk_on_trend": row.get("entry_regime_p_risk_on_trend"),
+        "entry_regime_p_risk_off_stress": row.get("entry_regime_p_risk_off_stress"),
+        "entry_regime_rule_version": row.get("entry_regime_rule_version"),
+        "entry_regime_tag_rule_version": row.get("entry_regime_tag_rule_version"),
+    }
+
+
+def load_forward_replacement_rows(path: Path | str | None = None) -> list[dict[str, Any]]:
+    artifact = Path(path) if path else FORWARD_REPLACEMENT_JSONL
+    if not artifact.exists():
+        return []
+    deduped: dict[tuple[Any, ...], dict[str, Any]] = {}
+    with artifact.open(encoding="utf-8-sig") as f:
+        for line in f:
+            if not line.strip():
+                continue
+            try:
+                raw = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            row = _normalise_forward_replacement_row(raw)
+            if row is None:
+                continue
+            deduped[_forward_row_key(row)] = row
+    return sorted(deduped.values(), key=lambda r: (
+        str(r.get("entry_date") or ""),
+        str(r.get("sleeve") or ""),
+        str(r.get("ticker") or ""),
+        str(r.get("decision_id") or ""),
+    ))
 
 
 def build_scorecard(
@@ -50,15 +132,20 @@ def build_scorecard(
     untagged = 0
     for row in rows:
         entry = str(row.get("entry_date") or row.get("signal_date") or "")[:10]
-        regime = regime_fn(entry) if entry else None
+        regime = _regime_from_row(row) or (regime_fn(entry) if entry else None)
         if not regime or regime.get("regime_label") in (None, "unknown"):
             untagged += 1
             continue
         tagged.append({
+            "source": row.get("source"),
+            "decision_id": row.get("decision_id"),
             "sleeve": row.get("sleeve"),
             "ticker": row.get("ticker"),
             "entry_date": entry,
+            "exit_date": row.get("exit_date"),
+            "replacement_value_vs_cash_usd": _f(row.get("replacement_value_vs_cash_usd")),
             "replacement_value_vs_spy_usd": _f(row.get(rv_key)),
+            "replacement_value_vs_qqq_usd": _f(row.get("replacement_value_vs_qqq_usd")),
             "pnl": _f(row.get("pnl")),
             "regime_label": regime.get("regime_label"),
             "p_choppy_range": _f(regime.get("p_choppy_range")),
@@ -110,7 +197,16 @@ def build_scorecard(
     }
 
 
-def load_forward_paper_rows(paper_sleeves_dir: Path | str | None = None) -> list[dict[str, Any]]:
+def load_forward_paper_rows(
+    paper_sleeves_dir: Path | str | None = None,
+    *,
+    prefer_forward_replacement_artifact: bool = True,
+    forward_replacement_path: Path | str | None = None,
+) -> list[dict[str, Any]]:
+    if prefer_forward_replacement_artifact and paper_sleeves_dir is None:
+        rows = load_forward_replacement_rows(forward_replacement_path)
+        if rows:
+            return rows
     base = Path(paper_sleeves_dir) if paper_sleeves_dir else (REPO_ROOT / "data" / "paper_sleeves")
     rows: list[dict[str, Any]] = []
     for state_path in sorted(base.glob("*/state.json")):

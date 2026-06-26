@@ -15,6 +15,8 @@ through one audited path.
 from __future__ import annotations
 
 import argparse
+import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -46,6 +48,47 @@ def _sweep_stale_artifacts_quietly():
         module.sweep_quietly()
     except Exception:
         pass
+
+
+def _refresh_derived_memory_quietly():
+    """Best-effort: after an experiment closes, rebuild the derived memory and
+    judgment surfaces so the next agent and the novelty gate read current state.
+
+    These surfaces are pure functions of the committed experiment logs, so they
+    silently drift every time a close adds a record without a rebuild:
+      - ``docs/frozen_families.jsonl``  -- novelty-gate data source; a stale copy
+        makes the gate blind to recently-tried families and lets near-duplicate
+        alpha experiments slip through.
+      - ``docs/alpha_context_pack.md`` / ``docs/current_state_snapshot.md`` /
+        ``docs/lessons/*.md`` -- the short-memory entrypoints agents read first.
+
+    Never raises and never blocks the close: the judgment is already written by
+    the time this runs. Set ``GINGER_SKIP_MEMORY_REFRESH=1`` to skip the rebuild
+    when closing many experiments in a batch (rebuild once at the end instead).
+    """
+    if os.environ.get("GINGER_SKIP_MEMORY_REFRESH"):
+        return
+    scripts_dir = Path(__file__).resolve().parent
+    for script in ("build_frozen_families.py", "build_alpha_memory.py"):
+        try:
+            proc = subprocess.run(
+                [sys.executable, "-B", str(scripts_dir / script)],
+                capture_output=True,
+                text=True,
+                timeout=300,
+            )
+            if proc.returncode != 0:
+                tail = (proc.stderr or proc.stdout or "").strip().splitlines()[-3:]
+                print(
+                    f"[experiment.py] derived-memory refresh: {script} exited "
+                    f"{proc.returncode}; run it manually. " + " | ".join(tail),
+                    file=sys.stderr,
+                )
+        except Exception as exc:  # never block the close on a refresh failure
+            print(
+                f"[experiment.py] derived-memory refresh skipped ({script}): {exc}",
+                file=sys.stderr,
+            )
 
 
 def _run_delegate(program, argv, main_func, *main_args):
@@ -229,7 +272,9 @@ def main():
     if command == "close":
         from judge_experiment import main as judge_main
 
-        return _run_delegate("experiment.py close", remainder, judge_main)
+        result = _run_delegate("experiment.py close", remainder, judge_main)
+        _refresh_derived_memory_quietly()
+        return result
     if command == "audit":
         return _audit(remainder)
 

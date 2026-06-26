@@ -86,7 +86,6 @@ from constants import (
     CLEAN_SPY_CAP_ONLY_RS20_LEADER_MAX_POSITION_PCT,
     TREND_MID_SECTOR_DISPERSION_RISK_MULTIPLIER,
     HARD_STOP_PCT,
-    TRAILING_STOP_PCT,
     ATR_STOP_MULT,
     ROUND_TRIP_COST_PCT,
     EXEC_LAG_PCT,
@@ -256,10 +255,20 @@ def compute_portfolio_heat(open_positions, current_prices, portfolio_value,
     For each position:
         at_risk_usd = shares × max(0, current_price − effective_stop)
 
-    effective_stop = highest of: hard_stop, atr_stop, trailing_stop_from_20d_high.
-    Using the tightest (highest) stop reflects true current risk, not worst-case
-    cost-basis math. This prevents positions with large unrealised gains from
-    inflating heat far beyond their real downside exposure.
+    effective_stop = highest of: hard_stop, atr_stop. Using the tighter (higher)
+    of these static, entry-anchored stops reflects true current risk without
+    inflating heat for positions sitting on large unrealised gains.
+
+    NOTE (exp-20260623-020): the shipped exit is a STATIC entry stop placed as a
+    resting GTC bracket and explicitly never trailed up; ATR-trailing lost in
+    every window. The old trailing-from-20d-high term (high_20d × (1−TRAILING_
+    STOP_PCT)) is therefore NOT part of the live stop and is deliberately
+    excluded here. Including it modelled a stop the system no longer places: when
+    price fell back from a 20d high the trailing level landed ABOVE current price,
+    which both (a) showed a phantom "effective_stop above price" in the report and
+    (b) zeroed at_risk_usd for pulled-back winners, under-reporting portfolio heat
+    that gates new-position sizing. atr_stop (current_price − 1.5×ATR) is bounded
+    below price and shares the live stop's 1.5×ATR basis, so it stays.
 
     Stop logic for hard_stop baseline:
         manual override > auto_rolling (legacy PnL > 100%) > default (avg_cost × 0.88)
@@ -304,25 +313,22 @@ def compute_portfolio_heat(open_positions, current_prices, portfolio_value,
             hard_stop = avg_cost * (1 - HARD_STOP_PCT)
             stop_src  = "default"
 
-        # Tighten to ATR stop or trailing stop if features are available.
-        # effective_stop = max(hard_stop, atr_stop, trailing_stop)
+        # Tighten to the ATR stop if features are available.
+        # effective_stop = max(hard_stop, atr_stop)
         # A higher stop means less at-risk USD — more accurate for big winners.
+        # The 20d-high trailing stop is intentionally NOT applied here: it is not
+        # the live exit (static entry stop, exp-20260623-020) and could land above
+        # current price, faking a breach and zeroing heat for pulled-back winners.
         effective_stop = hard_stop
         effective_src  = stop_src
         f = (features_dict or {}).get(ticker)
         if f:
             atr     = f.get("atr")
-            high_20d = f.get("high_20d")
             if atr and atr > 0:
                 atr_stop = current_price - ATR_STOP_MULT * atr
                 if atr_stop > effective_stop:
                     effective_stop = round(atr_stop, 2)
                     effective_src  = "atr"
-            if high_20d and high_20d > 0:
-                trailing_stop = high_20d * (1 - TRAILING_STOP_PCT)
-                if trailing_stop > effective_stop:
-                    effective_stop = round(trailing_stop, 2)
-                    effective_src  = "trailing"
 
         at_risk_usd    = shares * max(0.0, current_price - effective_stop)
         total_at_risk += at_risk_usd

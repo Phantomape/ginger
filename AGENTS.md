@@ -47,6 +47,17 @@ LLM 可以承担新闻理解、事件分类、语义强弱判断和风险解释�
    但 **forward 行埋点（入场期 regime / 替换价值标签）、缺失候选匹配面构建、饱和源以外的
    新数据源接入，都算 alpha-enabling 工作，不受本条限制**——尤其当 frozen-window 面已饱和、
    新增证据只能来自 forward 行或新数据时。
+   注意：本豁免只覆盖 forward 行的**埋点 / 构建 / 新数据接入**，不覆盖对**同一批 forward 行
+   反复换条件做 observed-only 归因探测**。后者与 scan 源同样受 source-saturation 闸门约束：
+   当同一 forward / non-OHLCV 面已连续 N 次（默认 N=3）以 "no edge / not allocation_ready"
+   收尾，再换一个相邻条件字段（regime / sleeve health / ticker memory / entry-date breadth …）
+   不算新证据，必须命名一条机器可查的全新证据轴或换面，否则视为饱和重复。
+   特别地：在**同一批 forward 行样本**上，仅仅新接一个 join / 条件字段（即使该字段本身在本面
+   无前例）**不构成** §2 第 2 条意义上的"无前例字段"override 轴——这类 observed-only attribution
+   反复以 "no edge / need materially more closed forward rows" 收尾，共同的绑定约束是 closed
+   forward 行**数量**不足，而非字段维度。此处合规的 override 必须 (a) 实质增加 closed forward 行
+   样本（新成熟行 / 换面），或 (b) 换到一个会产生新行的数据源 / 新 gate shape，不能只在同一批
+   partial 行上换条件再切片。
 4. 优先选择高赚钱潜力、高可验证性、低复杂度、可生产执行的候选。
 5. 高潜力、生产可见的 default-off paper alpha 默认走 **shared-paper-first**：第一次严肃实验就实现共享 helper，同时覆盖 historical replay 和 daily default-off snapshot，再跑 Gate 1-4。private replay scout 只适合数据形态不确定或非常早期的低成本探索；正向也只能记为 lead，不能算 accepted alpha。
 

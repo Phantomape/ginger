@@ -99,7 +99,11 @@ def _completed_closes(ohlcv_dict: dict, asof_et_date) -> dict[str, float]:
     return closes
 
 
-def _offline_quotes(tickers, daily_closes: dict[str, float]) -> dict[str, dict]:
+def _offline_quotes(
+    tickers,
+    daily_closes: dict[str, float],
+    capture_time_et: str,
+) -> dict[str, dict]:
     quotes = {}
     for raw in dict.fromkeys(str(t).upper() for t in tickers if t):
         close = daily_closes.get(raw)
@@ -110,6 +114,7 @@ def _offline_quotes(tickers, daily_closes: dict[str, float]) -> dict[str, dict]:
             "day_low": None,
             "source": "eod_close_fallback" if close else "unavailable",
             "quote_time_et": None,
+            "capture_time_et": capture_time_et,
             "is_stale": True,
         }
     return quotes
@@ -168,6 +173,7 @@ def main(no_news: bool = False, offline: bool = False, data_dir=None) -> dict:
     date_str = now_et.strftime("%Y%m%d")
     date_iso = now_et.strftime("%Y-%m-%d")
     time_label = now_et.strftime("%H%M") + "ET"
+    capture_time_et = now_et.strftime("%Y-%m-%d %H:%M ET")
 
     log.info("Intraday review as of %s ET / %s PT",
              now_et.strftime("%Y-%m-%d %H:%M"), now_pt.strftime("%H:%M"))
@@ -193,13 +199,17 @@ def main(no_news: bool = False, offline: bool = False, data_dir=None) -> dict:
     daily_closes = _completed_closes(ohlcv_dict, asof_date)
 
     if offline:
-        quotes = _offline_quotes(tickers, daily_closes)
+        quotes = _offline_quotes(tickers, daily_closes, capture_time_et)
     else:
         try:
-            quotes = get_intraday_quotes(tickers, daily_closes)
+            quotes = get_intraday_quotes(
+                tickers,
+                daily_closes,
+                capture_time_et=capture_time_et,
+            )
         except Exception as e:
             log.error("Quote fetch failed entirely: %s", e)
-            quotes = _offline_quotes(tickers, daily_closes)
+            quotes = _offline_quotes(tickers, daily_closes, capture_time_et)
 
     regime = build_intraday_market_regime(
         {t: ohlcv_dict.get(t) for t in INDEX_TICKERS}, quotes, asof_date
@@ -285,6 +295,7 @@ def main(no_news: bool = False, offline: bool = False, data_dir=None) -> dict:
     review = {
         "generated_at_et": now_et.strftime("%Y-%m-%d %H:%M ET"),
         "generated_at_pt": now_pt.strftime("%H:%M PT"),
+        "capture_time_et": capture_time_et,
         "date": date_str,
         "time_label": time_label,
         "advisory_note": (

@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from regime_tagged_scorecard import build_scorecard
+import json
+
+from regime_tagged_scorecard import build_scorecard, load_forward_paper_rows, load_forward_replacement_rows
 
 
 def _stub_regime(mapping):
@@ -62,3 +64,90 @@ def test_missing_rv_still_tags_but_excluded_from_rv_mean():
     sc = build_scorecard(rows, regime_fn)
     assert sc["tagged_rows"] == 1
     assert sc["by_regime"]["risk_on_trend"]["mean_replacement_value_vs_spy_usd"] is None
+
+
+def test_load_forward_replacement_rows_normalizes_and_dedups(tmp_path):
+    artifact = tmp_path / "forward_replacement_value.jsonl"
+    rows = [
+        {
+            "decision_id": "d1",
+            "sleeve_key": "sleeve_a",
+            "ticker": "ABC",
+            "entry_date": "2026-06-01",
+            "exit_date": "2026-06-10",
+            "pnl_usd": 10,
+            "replacement_value_vs_spy_usd": 5,
+            "entry_regime_label": "risk_on_trend",
+            "entry_regime_exposure_scalar": 0.9,
+        },
+        {
+            "decision_id": "d1",
+            "sleeve_key": "sleeve_a",
+            "ticker": "ABC",
+            "entry_date": "2026-06-01",
+            "exit_date": "2026-06-11",
+            "pnl_usd": 12,
+            "replacement_value_vs_spy_usd": 7,
+            "entry_regime_label": "risk_on_trend",
+            "entry_regime_exposure_scalar": 0.91,
+        },
+    ]
+    artifact.write_text("\n".join(json.dumps(row) for row in rows) + "\n", encoding="utf-8")
+
+    loaded = load_forward_replacement_rows(artifact)
+
+    assert len(loaded) == 1
+    assert loaded[0]["source"] == "forward_replacement_value"
+    assert loaded[0]["sleeve"] == "sleeve_a"
+    assert loaded[0]["exit_date"] == "2026-06-11"
+    assert loaded[0]["pnl"] == 12
+    assert loaded[0]["entry_regime_exposure_scalar"] == 0.91
+
+
+def test_load_forward_paper_rows_prefers_canonical_artifact(tmp_path):
+    artifact = tmp_path / "forward_replacement_value.jsonl"
+    artifact.write_text(json.dumps({
+        "decision_id": "canonical",
+        "sleeve_key": "canonical_sleeve",
+        "ticker": "CAN",
+        "entry_date": "2026-06-02",
+        "replacement_value_vs_spy_usd": 25,
+        "entry_regime_label": "risk_on_trend",
+    }) + "\n", encoding="utf-8")
+
+    loaded = load_forward_paper_rows(forward_replacement_path=artifact)
+
+    assert len(loaded) == 1
+    assert loaded[0]["decision_id"] == "canonical"
+    assert loaded[0]["sleeve"] == "canonical_sleeve"
+
+
+def test_build_scorecard_uses_existing_entry_regime_fields():
+    rows = [
+        {
+            "source": "forward_replacement_value",
+            "decision_id": "d1",
+            "sleeve": "A",
+            "ticker": "X",
+            "entry_date": "2026-06-01",
+            "exit_date": "2026-06-10",
+            "replacement_value_vs_cash_usd": 120.0,
+            "replacement_value_vs_spy_usd": 100.0,
+            "replacement_value_vs_qqq_usd": 80.0,
+            "entry_regime_label": "choppy_range",
+            "entry_regime_p_choppy_range": 0.8,
+            "entry_regime_exposure_scalar": 0.5,
+            "entry_regime_tag_rule_version": "forward_replacement_entry_regime_tag_v1",
+        }
+    ]
+
+    sc = build_scorecard(rows, _stub_regime({}))
+
+    assert sc["tagged_rows"] == 1
+    tagged = sc["rows"][0]
+    assert tagged["source"] == "forward_replacement_value"
+    assert tagged["decision_id"] == "d1"
+    assert tagged["regime_label"] == "choppy_range"
+    assert tagged["regime_fidelity"] == "forward_replacement_entry_regime_tag_v1"
+    assert tagged["replacement_value_vs_cash_usd"] == 120.0
+    assert tagged["replacement_value_vs_qqq_usd"] == 80.0

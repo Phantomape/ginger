@@ -158,6 +158,8 @@ def build_intraday_market_regime(
             "pct_from_ma": intraday_pct,
             "intraday_price": round(price, 2),
             "price_source": quote.get("source", "eod_close_fallback"),
+            "quote_time_et": quote.get("quote_time_et"),
+            "capture_time_et": quote.get("capture_time_et"),
             "eod_above_ma": eod_above,
             "eod_close": info["close"],
         }
@@ -264,6 +266,7 @@ def build_position_reviews(
                 "day_low": quote.get("day_low"),
                 "source": quote.get("source", "unavailable"),
                 "quote_time_et": quote.get("quote_time_et"),
+                "capture_time_et": quote.get("capture_time_et"),
                 "is_stale": quote.get("is_stale", True),
             },
         }
