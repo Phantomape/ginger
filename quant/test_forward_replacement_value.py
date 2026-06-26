@@ -234,6 +234,159 @@ def test_missing_regime_tag_status_refreshes_when_bars_arrive():
     assert row["entry_regime_label"] in {"risk_on_trend", "choppy_range", "risk_off_stress"}
 
 
+def _sv_index():
+    """Synthetic strictly-prior short_volume_ratio percentile index for GS.
+
+    40 observations strictly before the 2026-05-05 entry date with strictly
+    increasing short_volume_ratio, so each formed percentile is 1.0 (the latest
+    value exceeds all prior), landing GS in the toxic top quintile.
+    """
+    dates = [f"2026-03-{d:02d}" for d in range(1, 29)] + [
+        f"2026-04-{d:02d}" for d in range(1, 13)
+    ]
+    pcts = [
+        None if i < frv.SHORT_VOLUME_MIN_TRAILING_OBS else 1.0
+        for i in range(len(dates))
+    ]
+    return {"GS": (dates, pcts)}
+
+
+def test_short_volume_percentile_index_pit_and_asof(tmp_path):
+    archive = tmp_path / "rows.jsonl"
+    # 35 GS rows with strictly increasing ratio; only rows after MIN_TRAILING_OBS
+    # form a percentile, and an activity_date on/after the entry is excluded.
+    lines = []
+    for i in range(35):
+        day = i + 1
+        lines.append(
+            json.dumps(
+                {
+                    "ticker": "GS",
+                    "activity_date": f"2026-04-{day:02d}",
+                    "short_volume_ratio": 0.10 + i * 0.01,
+                }
+            )
+        )
+    # An activity_date AT the entry date must not be used (published post-close).
+    lines.append(
+        json.dumps(
+            {"ticker": "GS", "activity_date": "2026-05-05", "short_volume_ratio": 0.99}
+        )
+    )
+    archive.write_text("\n".join(lines), encoding="utf-8")
+
+    index = frv.load_short_volume_percentile_index(archive)
+    assert "GS" in index
+    dates, pcts = index["GS"]
+    assert pcts[: frv.SHORT_VOLUME_MIN_TRAILING_OBS] == [None] * frv.SHORT_VOLUME_MIN_TRAILING_OBS
+    # strictly increasing ratios -> every formed percentile is 1.0
+    assert pcts[frv.SHORT_VOLUME_MIN_TRAILING_OBS] == 1.0
+    # strictly-prior: the 2026-05-05 same-day row is excluded from the entry tag
+    pct = frv._short_volume_percentile_asof(index, "GS", "2026-05-05")
+    assert pct == 1.0
+    assert frv._short_volume_quintile(pct) == frv.SHORT_VOLUME_TOXIC_QUINTILE_INDEX
+
+
+def test_enrich_row_adds_entry_short_volume_tag_when_index_supplied():
+    state = {"closed_positions": [_row()]}
+
+    records = frv.enrich_state_closed_rows(
+        state,
+        BARS,
+        "2026-06-26",
+        "test_sleeve",
+        sv_percentile_index=_sv_index(),
+    )
+
+    assert len(records) == 1
+    row = state["closed_positions"][0]
+    assert (
+        row["entry_short_volume_tag_rule_version"]
+        == frv.ENTRY_SHORT_VOLUME_TAG_RULE_VERSION
+    )
+    assert row["entry_short_volume_asof_date"] == "2026-05-05"
+    assert row["entry_short_volume_status"] == "ok"
+    assert row["entry_short_volume_ratio_percentile"] == 1.0
+    assert row["entry_short_volume_quintile"] == 5
+    assert row["entry_short_volume_toxic_flag"] is True
+    assert records[0]["entry_short_volume_quintile"] == 5
+
+    # idempotent: a second pass with the same index makes no change
+    assert (
+        frv.enrich_state_closed_rows(
+            state,
+            BARS,
+            "2026-06-27",
+            "test_sleeve",
+            sv_percentile_index=_sv_index(),
+        )
+        == []
+    )
+
+
+def test_short_volume_tag_no_history_then_refresh():
+    state = {"closed_positions": [_row()]}
+    # ticker absent from the index -> no joinable history
+    records = frv.enrich_state_closed_rows(
+        state,
+        BARS,
+        "2026-06-26",
+        "test_sleeve",
+        sv_percentile_index={"OTHER": (["2026-04-01"], [0.5])},
+    )
+    assert len(records) == 1
+    row = state["closed_positions"][0]
+    assert row["entry_short_volume_status"] == "no_short_volume_history"
+    assert row["entry_short_volume_ratio_percentile"] is None
+
+    # coverage arrives for GS -> the row refreshes to a real percentile
+    records = frv.enrich_state_closed_rows(
+        state,
+        BARS,
+        "2026-06-27",
+        "test_sleeve",
+        sv_percentile_index=_sv_index(),
+    )
+    assert len(records) == 1
+    assert row["entry_short_volume_status"] == "ok"
+    assert row["entry_short_volume_quintile"] == 5
+
+
+def test_replacement_only_pass_leaves_short_volume_untagged():
+    """A replacement-value-only pass (no index) must not invent a short-vol tag."""
+    state = {"closed_positions": [_row()]}
+    frv.enrich_state_closed_rows(state, BARS, "2026-06-11", "test_sleeve")
+    row = state["closed_positions"][0]
+    assert row.get("entry_short_volume_tag_rule_version") is None
+    assert "entry_short_volume_status" not in row
+
+
+def test_enrich_all_sleeve_states_short_volume_summary(tmp_path):
+    root = tmp_path / "paper_sleeves"
+    sleeve_dir = root / "demo_sleeve"
+    sleeve_dir.mkdir(parents=True)
+    state_path = sleeve_dir / "state.json"
+    state_path.write_text(json.dumps({"closed_positions": [_row()]}), encoding="utf-8")
+    artifact = tmp_path / "forward_replacement_value.jsonl"
+
+    summary = frv.enrich_all_sleeve_states(
+        "2026-06-26",
+        sleeves_root=root,
+        bars_by_ticker=BARS,
+        regime_spy_bars=_regime_bars(),
+        sv_percentile_index=_sv_index(),
+        artifact_path=artifact,
+    )
+    assert summary["entry_short_volume_tagging_enabled"] is True
+    assert summary["artifact_rows_with_entry_short_volume"] == 1
+    assert summary["artifact_rows_entry_short_volume_toxic"] == 1
+    assert summary["artifact_rows_by_entry_short_volume_quintile"] == {"Q5": 1}
+
+    lines = [json.loads(line) for line in artifact.read_text(encoding="utf-8").splitlines()]
+    assert lines[0]["entry_short_volume_status"] == "ok"
+    assert lines[0]["entry_short_volume_quintile"] == 5
+
+
 def test_enrich_all_sleeve_states_roundtrip(tmp_path):
     root = tmp_path / "paper_sleeves"
     sleeve_dir = root / "demo_sleeve"
