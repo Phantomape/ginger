@@ -1,0 +1,343 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "alpha_hypothesis": "Production-visible non-OHLCV sources may contain useful event/crowding information, but any candidate-pool or attribution edge is unreliable if snapshot files are consumed without a point-in-time as-of boundary.",
+  "alpha_ready": false,
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260625-022/exp_20260625_022_non_ohlcv_snapshot_leakage_audit.json",
+  "calibration": {
+    "actual_gate4_passed": true,
+    "actual_success": 1.0,
+    "brier_score": 0.09,
+    "predicted_failure_modes": [
+      "future-dated snapshots exist",
+      "coverage manifest includes trade_date beyond run asof",
+      "embedded source watermarks are missing",
+      "repository loader patterns need a consumption guard"
+    ],
+    "predicted_success_probability": 0.7,
+    "realized_failure_modes": [],
+    "surprise_note": "Low surprise: the current repo has no future-dated daily snapshots, but the audit confirms that historical generated_at dates are not sufficient PIT evidence by themselves."
+  },
+  "causal_components": [
+    "snapshot filename date audit",
+    "embedded asof/generated_at audit",
+    "coverage manifest date audit",
+    "production consumer pattern audit",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260625_022_non_ohlcv_snapshot_leakage_audit.py",
+    "data/experiments/exp-20260625-022/exp_20260625_022_non_ohlcv_snapshot_leakage_audit.json",
+    "experiments/cards/exp-20260625-022.md",
+    "experiments/manifests/exp-20260625-022.json",
+    "experiments/tickets/exp-20260625-022.json",
+    "experiments/logs/exp-20260625-022.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "non_ohlcv_snapshot_asof_boundary_leakage_audit_v1",
+  "decision": "accepted_measurement_repair_no_non_ohlcv_future_snapshot_leakage_observed",
+  "experiment_id": "exp-20260625-022",
+  "gate1": {
+    "baseline_metrics": {
+      "aggregate": {
+        "aggregate_expected_value_score": 7.8941,
+        "aggregate_total_pnl": 234850.99,
+        "max_window_drawdown_pct": 0.1119,
+        "min_survival_rate": 0.7925,
+        "total_trade_count": 61
+      },
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "windows": {
+        "late_strong": {
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "max_drawdown_pct": 0.0665,
+          "sharpe_daily": 4.41,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "start": "2025-10-23",
+          "survival_rate": 0.8039,
+          "total_pnl": 117072.92,
+          "trade_count": 18
+        },
+        "mid_weak": {
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "max_drawdown_pct": 0.1119,
+          "sharpe_daily": 2.74,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "start": "2025-04-23",
+          "survival_rate": 0.7925,
+          "total_pnl": 78110.11,
+          "trade_count": 21
+        },
+        "old_thin": {
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "max_drawdown_pct": 0.1001,
+          "sharpe_daily": 1.49,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "start": "2024-10-02",
+          "survival_rate": 0.8667,
+          "total_pnl": 39667.96,
+          "trade_count": 22
+        }
+      }
+    },
+    "note": "Measurement audit only; before and after strategy behavior are identical.",
+    "passed": true
+  },
+  "gate2": {
+    "consumer_pattern_audit": {
+      "match_count": 11,
+      "passed": true,
+      "production_match_count": 2,
+      "production_wildcard_without_manifest_count": 0
+    },
+    "failed_reasons": [],
+    "manifest_summary": {
+      "duplicate_trade_date_count": 37,
+      "future_generated_row_count": 0,
+      "future_trade_date_row_count": 0,
+      "latest_complete_trade_date": "2026-06-24",
+      "path_mismatch_row_count": 0,
+      "record_count": 574,
+      "unique_trade_dates": 453
+    },
+    "passed": true,
+    "required_fields_checked": [
+      "daily snapshot filename date",
+      "asof_date",
+      "date_tag",
+      "generated_at",
+      "source_watermarks",
+      "coverage_manifest.trade_date",
+      "coverage_manifest.generated_at",
+      "artifact_status.daily_non_ohlcv_snapshot.path",
+      "production consumer pattern",
+      "entry_date and target_price intentionally unchanged/no strategy rows"
+    ],
+    "snapshot_summary": {
+      "date_inconsistent_count": 0,
+      "future_asof_date_count": 0,
+      "future_file_date_count": 0,
+      "future_generated_date_count": 0,
+      "generated_after_snapshot_date_count": 465,
+      "loaded_snapshot_count": 465,
+      "max_file_date": "2026-06-24",
+      "min_file_date": "2024-10-02",
+      "snapshot_count": 465,
+      "source_watermark_future_after_run_asof_count": 0
+    }
+  },
+  "gate3": {
+    "min_survival_rate": 0.7925,
+    "note": "No filter was added; survival and trade counts are unchanged.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135
+  },
+  "gate4": {
+    "acceptance_rule": "Accept as measurement repair only if no snapshot/manifest date exceeds the run as-of date, filename/asof/date_tag contracts match, manifest daily snapshot paths match trade_date, and production code has no wildcard latest/all snapshot consumer without a manifest/as-of guard.",
+    "after": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "start": "2025-10-23",
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "start": "2025-04-23",
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "start": "2024-10-02",
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22
+      }
+    },
+    "aggregate_after": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "max_window_drawdown_pct": 0.1119,
+      "min_survival_rate": 0.7925,
+      "total_trade_count": 61
+    },
+    "aggregate_before": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "max_window_drawdown_pct": 0.1119,
+      "min_survival_rate": 0.7925,
+      "total_trade_count": 61
+    },
+    "aggregate_delta": {
+      "aggregate_expected_value_score": 0.0,
+      "aggregate_total_pnl": 0.0,
+      "max_window_drawdown_pct": 0.0,
+      "min_survival_rate": 0.0,
+      "total_trade_count": 0
+    },
+    "before": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "start": "2025-10-23",
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "start": "2025-04-23",
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "start": "2024-10-02",
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22
+      }
+    },
+    "failed_reasons": [],
+    "passed": true,
+    "readiness": {
+      "decision": "accepted_measurement_repair_no_non_ohlcv_future_snapshot_leakage_observed",
+      "failed_reasons": [],
+      "non_blocking_caveats": [
+        "Historical backtest/catch-up snapshots are generated after their trade dates; future alpha work must use per-row accepted_at/publication/as-of fields, not file mtime or latest snapshot availability, as the evidence timestamp.",
+        "This audit validates the current repository as-of boundary; it does not make saturated SEC/Form4/Companyfacts/FTD/Kova/options fields novel again."
+      ],
+      "observed": {
+        "future_file_date_count": 0,
+        "generated_after_snapshot_date_count": 465,
+        "loaded_snapshot_count": 465,
+        "manifest_future_trade_date_row_count": 0,
+        "manifest_generated_after_trade_date_row_count": 571,
+        "manifest_latest_complete_trade_date": "2026-06-24",
+        "manifest_record_count": 574,
+        "production_wildcard_without_manifest_count": 0,
+        "snapshot_count": 465,
+        "snapshot_max_file_date": "2026-06-24",
+        "snapshot_min_file_date": "2024-10-02"
+      },
+      "passed": true,
+      "run_asof_date": "2026-06-25"
+    },
+    "status": "measurement_audit_only_no_strategy_delta"
+  },
+  "hypothesis": "Repair the non-OHLCV alpha blocker by auditing whether dated daily_non_ohlcv snapshots and their coverage manifest can expose future/backfilled rows to replay or forward attribution jobs before any new non-OHLCV alpha is trusted.",
+  "implementation_mode": "measurement_audit_only_no_strategy_change",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260625-022.json",
+  "mechanism_family": "non_ohlcv_alpha_measurement_repair",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260625-021",
+    "exp-20260625-017",
+    "exp-20260624-007"
+  ],
+  "new_evidence_axis": "Machine-checkable new evidence axis: repository-wide dated data/non_ohlcv/daily_non_ohlcv_snapshot_YYYYMMDD.json files plus data/non_ohlcv/coverage_manifest.jsonl as an as-of boundary contract, not a reslice of one saturated source field or forward attribution sample.",
+  "new_evidence_type": "cross_source_snapshot_date_contract_audit",
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not use this accepted audit as justification to retry SEC text, Form4, Companyfacts, SEC13F, FTD, Kova, options, borrow, or short volume threshold sweeps. A valid next alpha still needs a new PIT source, materially more closed forward rows, or a shared default-off gate shape not already saturated.",
+    "negative_result_reflection": "Not a negative alpha result. If blocked, the blocker is as-of replayability; if accepted, this only clears the global future-date leak check and does not revive saturated source families.",
+    "next_step_new_evidence": "Use the cleared global as-of audit as plumbing, then pursue a truly new evidence axis: materially more closed forward replacement rows, a new PIT data source, or a shared helper with field-level accepted_at/publication-date guards.",
+    "why_result_happened": "No future-dated daily_non_ohlcv snapshot, embedded as-of date, coverage manifest trade_date, or production wildcard consumer leak path was observed. The main caveat is that historical/catch-up snapshots were generated after their trade dates, so future alpha claims still need field-level PIT evidence and cannot treat file availability as event availability."
+  },
+  "prediction": {
+    "confidence_reason": "The data surface is file-system observable and recent runs already exposed replayability blockers in adjacent surfaces; this should yield a clear accepted audit or blocker without changing trading behavior.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "future-dated snapshots exist",
+      "coverage manifest includes trade_date beyond run asof",
+      "embedded source watermarks are missing",
+      "repository loader patterns need a consumption guard"
+    ],
+    "recorded_at": "2026-06-25T20:05:30+00:00",
+    "success_probability": 0.7
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_changed": false,
+    "live_orders_changed": false,
+    "llm_decision_boundary_changed": false,
+    "parity_note": "No production/backtest inconsistency was introduced because no trading rule or production helper changed. Future non-OHLCV alpha work must keep this date/as-of guard in the shared adapter.",
+    "shared_helper_changed": false,
+    "strategy_code_changed": false,
+    "trade_enabled_changed": false
+  },
+  "runner": "quant/experiments/exp_20260625_022_non_ohlcv_snapshot_leakage_audit.py",
+  "single_causal_variable": "non_ohlcv_snapshot_asof_boundary_leakage_audit_v1",
+  "source_summary": {
+    "non_blocking_caveats": [
+      "Historical backtest/catch-up snapshots are generated after their trade dates; future alpha work must use per-row accepted_at/publication/as-of fields, not file mtime or latest snapshot availability, as the evidence timestamp.",
+      "This audit validates the current repository as-of boundary; it does not make saturated SEC/Form4/Companyfacts/FTD/Kova/options fields novel again."
+    ],
+    "observed": {
+      "future_file_date_count": 0,
+      "generated_after_snapshot_date_count": 465,
+      "loaded_snapshot_count": 465,
+      "manifest_future_trade_date_row_count": 0,
+      "manifest_generated_after_trade_date_row_count": 571,
+      "manifest_latest_complete_trade_date": "2026-06-24",
+      "manifest_record_count": 574,
+      "production_wildcard_without_manifest_count": 0,
+      "snapshot_count": 465,
+      "snapshot_max_file_date": "2026-06-24",
+      "snapshot_min_file_date": "2024-10-02"
+    },
+    "run_asof_date": "2026-06-25"
+  },
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-06-25T20:12:09Z",
+  "trial_family": "non_ohlcv_snapshot_asof_boundary",
+  "trial_variant_id": "snapshot_date_watermark_leakage_audit_v1"
+}

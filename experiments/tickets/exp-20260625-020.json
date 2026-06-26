@@ -1,0 +1,1167 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260625_020_options_earnings_distance_forward_attribution.py",
+    "data/experiments/exp-20260625-020/exp_20260625_020_options_earnings_distance_forward_attribution.json",
+    "experiments/cards/exp-20260625-020.md",
+    "experiments/manifests/exp-20260625-020.json",
+    "experiments/tickets/exp-20260625-020.json",
+    "experiments/logs/exp-20260625-020.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260625-020.md",
+  "causal_components": [
+    "exp026 settled options outcome ledger",
+    "entry-time earnings snapshot join",
+    "near-earnings vs non-near-earnings cash SPY QQQ replacement attribution",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_forward_attribution",
+  "changed_variable": "onclickmedia_options_earnings_distance_forward_attribution_v1",
+  "claimed_at": "2026-06-25T18:04:52+00:00",
+  "completed_at": "2026-06-25T18:11:49+00:00",
+  "created_at": "2026-06-25T18:04:42+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260625-020",
+  "experiment_uid": "expuid-7ad24e6fed4e480e",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260625-020",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-25T18:04:42+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "options_earnings_distance_forward_attribution"
+  },
+  "hypothesis": "Observed-only options alpha hypothesis: OnclickMedia options demand may only carry useful replacement value when the option snapshot is near an upcoming earnings event, because event-implied positioning has a concrete catalyst while generic demand-quality failed.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "onclickmedia_options_earnings_distance_forward_attribution_v1"
+  ],
+  "mechanism_family": "production_visible_forward_options_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260624-026",
+    "exp-20260625-001",
+    "exp-20260623-010"
+  ],
+  "new_evidence_type": "event_distance_join_to_settled_options_forward_rows",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "alpha",
+        "an",
+        "attribution",
+        "because",
+        "carry",
+        "catalyst",
+        "concrete",
+        "demand",
+        "distance",
+        "earnings",
+        "event",
+        "failed",
+        "forward",
+        "generic",
+        "has",
+        "hypothesis",
+        "implied",
+        "is",
+        "may",
+        "near",
+        "observed",
+        "onclickmedia",
+        "only",
+        "option",
+        "options",
+        "positioning",
+        "replacement",
+        "snapshot",
+        "upcoming",
+        "useful",
+        "value",
+        "when",
+        "while"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "observed_only_attribution",
+        "reopen_condition": "Need materially more closed forward rows after sleeve_health has longer history and real degraded/failing variation, or a separate shared-policy Gate 1-4 allocation test with a predeclared health gate.",
+        "score": 0.06,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "market_state_family_replacement_value_attribution",
+        "reopen_condition": null,
+        "score": 0.05,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "onclickmedia_options_demand_quality_forward_attribution",
+        "reopen_condition": "A valid retry needs materially more closed forward rows including the exp020 deltas, PIT vendor-as-of controls, borrow/loan availability context, or historical PIT options-chain coverage across the canonical windows.",
+        "score": 0.05,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "vcp_forward_replacement_value_readiness",
+        "reopen_condition": null,
+        "score": 0.0432,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "onclickmedia_options_closed_forward_skew_attribution",
+        "reopen_condition": "A valid options retry needs materially more closed forward rows with replacement value, PIT vendor/asof controls, borrow or loan-availability context, or historical PIT options chains covering the canonical windows.",
+        "score": 0.04,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New machine-checkable event-distance field: join exp026 settled options rows to PIT daily earnings snapshots at entry time and test near-upcoming-earnings positioning; this is not another put/call, IV skew, liquidity, spread, open-interest, top-N, hold, cooldown, or notional reslice.",
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.16,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "near_earnings_sample_too_thin",
+      "earnings_beta_confound",
+      "no_cash_spy_qqq_median_edge",
+      "forward_only_not_promotable"
+    ],
+    "confidence_reason": "Exp026 created a settled options outcome ledger and exp001 rejected generic demand/liquidity quality, so the only admissible options retry named in the playbook is a materially new event-distance field. The mechanism is plausible around earnings catalysts, but rows are forward-only and concentration/beta confounds are likely.",
+    "recorded_at": "2026-06-25T18:04:26+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected_no_options_earnings_distance_forward_edge",
+    "status": "observed_only_rejected",
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "artifact": "data/experiments/exp-20260625-020/exp_20260625_020_options_earnings_distance_forward_attribution.json",
+    "gate4": {
+      "passed": false,
+      "observed_only_lead": false,
+      "accepted_alpha": false,
+      "decision": "rejected_no_options_earnings_distance_forward_edge",
+      "failed_reasons": [
+        "near_earnings_sample_too_thin",
+        "primary_qqq_median_not_better"
+      ],
+      "primary_horizon": 10,
+      "supporting_horizons_mean_cash_spy_qqq": 3,
+      "acceptance_rule": {
+        "primary_horizon": 10,
+        "near_earnings_window_days_inclusive": [
+          0,
+          10
+        ],
+        "min_near_rows": 80,
+        "min_near_entry_dates": 10,
+        "min_near_tickers": 10,
+        "near_must_beat_non_near_mean_and_median_for": [
+          "cash",
+          "spy",
+          "qqq"
+        ],
+        "min_supporting_horizons_mean_cash_spy_qqq": 2,
+        "supporting_horizons_checked": [
+          3,
+          5,
+          10
+        ],
+        "positive_pnl_hhi_guardrail": 0.35,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "no_post_hoc_window_widening": true
+      },
+      "strategy_rerun_required": false,
+      "before_after_strategy_delta": {
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0,
+        "strategy_behavior_changed": false
+      }
+    },
+    "primary_summary": {
+      "horizon": 10,
+      "settled_rows": 1311,
+      "near_earnings_rows": 73,
+      "non_near_earnings_rows": 1238,
+      "near_earnings": {
+        "n": 73,
+        "ticker_count": 13,
+        "entry_date_count": 20,
+        "entry_date_start": "2026-05-06",
+        "entry_date_end": "2026-06-03",
+        "earnings_distance": {
+          "n": 73,
+          "min": 0.0,
+          "median": 4.0,
+          "max": 10.0
+        },
+        "event_band_counts": {
+          "pre_event_0_10": 73
+        },
+        "source_experiment_counts": {
+          "exp-20260623-009": 73
+        },
+        "top_tickers": [
+          {
+            "ticker": "DE",
+            "rows": 11
+          },
+          {
+            "ticker": "NVDA",
+            "rows": 11
+          },
+          {
+            "ticker": "AVGO",
+            "rows": 10
+          },
+          {
+            "ticker": "CRDO",
+            "rows": 10
+          },
+          {
+            "ticker": "MRVL",
+            "rows": 10
+          },
+          {
+            "ticker": "SNOW",
+            "rows": 10
+          },
+          {
+            "ticker": "COIN",
+            "rows": 2
+          },
+          {
+            "ticker": "DDOG",
+            "rows": 2
+          },
+          {
+            "ticker": "MCD",
+            "rows": 2
+          },
+          {
+            "ticker": "TRIP",
+            "rows": 2
+          }
+        ],
+        "replacement_metrics": {
+          "cash": {
+            "n": 73,
+            "sum": 38147.23,
+            "mean": 522.5648,
+            "median": 92.59,
+            "min": -934.29,
+            "max": 3450.96,
+            "positive_rate": 0.5616
+          },
+          "spy": {
+            "n": 73,
+            "sum": 36886.36,
+            "mean": 505.2926,
+            "median": 76.86,
+            "min": -880.92,
+            "max": 3378.72,
+            "positive_rate": 0.5205
+          },
+          "qqq": {
+            "n": 73,
+            "sum": 33387.87,
+            "mean": 457.3681,
+            "median": -61.96,
+            "min": -848.79,
+            "max": 3280.92,
+            "positive_rate": 0.4932
+          }
+        }
+      },
+      "non_near_earnings": {
+        "n": 1238,
+        "ticker_count": 60,
+        "entry_date_count": 24,
+        "entry_date_start": "2025-01-14",
+        "entry_date_end": "2026-06-08",
+        "earnings_distance": {
+          "n": 1081,
+          "min": 11.0,
+          "median": 48.0,
+          "max": 70.0
+        },
+        "event_band_counts": {
+          "missing_earnings_distance": 157,
+          "pre_event_11_21": 37,
+          "pre_event_22_30": 27,
+          "pre_event_31_plus": 1017
+        },
+        "source_experiment_counts": {
+          "exp-20260623-009": 1238
+        },
+        "top_tickers": [
+          {
+            "ticker": "TSLA",
+            "rows": 24
+          },
+          {
+            "ticker": "AAPL",
+            "rows": 23
+          },
+          {
+            "ticker": "AMD",
+            "rows": 23
+          },
+          {
+            "ticker": "AMZN",
+            "rows": 23
+          },
+          {
+            "ticker": "BE",
+            "rows": 23
+          },
+          {
+            "ticker": "BKNG",
+            "rows": 23
+          },
+          {
+            "ticker": "CAT",
+            "rows": 23
+          },
+          {
+            "ticker": "CVX",
+            "rows": 23
+          },
+          {
+            "ticker": "GE",
+            "rows": 23
+          },
+          {
+            "ticker": "GLD",
+            "rows": 23
+          }
+        ],
+        "replacement_metrics": {
+          "cash": {
+            "n": 1238,
+            "sum": 74324.03,
+            "mean": 60.0356,
+            "median": -10.595,
+            "min": -1210.23,
+            "max": 2871.16,
+            "positive_rate": 0.4871
+          },
+          "spy": {
+            "n": 1238,
+            "sum": 84896.54,
+            "mean": 68.5756,
+            "median": 0.0,
+            "min": -1056.8,
+            "max": 2921.04,
+            "positive_rate": 0.4855
+          },
+          "qqq": {
+            "n": 1238,
+            "sum": 42436.23,
+            "mean": 34.2781,
+            "median": -26.455,
+            "min": -982.88,
+            "max": 2845.97,
+            "positive_rate": 0.4475
+          }
+        }
+      },
+      "all_settled": {
+        "n": 1311,
+        "ticker_count": 60,
+        "entry_date_count": 24,
+        "entry_date_start": "2025-01-14",
+        "entry_date_end": "2026-06-08",
+        "earnings_distance": {
+          "n": 1154,
+          "min": 0.0,
+          "median": 47.0,
+          "max": 70.0
+        },
+        "event_band_counts": {
+          "missing_earnings_distance": 157,
+          "pre_event_0_10": 73,
+          "pre_event_11_21": 37,
+          "pre_event_22_30": 27,
+          "pre_event_31_plus": 1017
+        },
+        "source_experiment_counts": {
+          "exp-20260623-009": 1311
+        },
+        "top_tickers": [
+          {
+            "ticker": "TSLA",
+            "rows": 24
+          },
+          {
+            "ticker": "AAPL",
+            "rows": 23
+          },
+          {
+            "ticker": "AMD",
+            "rows": 23
+          },
+          {
+            "ticker": "AMZN",
+            "rows": 23
+          },
+          {
+            "ticker": "APP",
+            "rows": 23
+          },
+          {
+            "ticker": "AVGO",
+            "rows": 23
+          },
+          {
+            "ticker": "BE",
+            "rows": 23
+          },
+          {
+            "ticker": "BKNG",
+            "rows": 23
+          },
+          {
+            "ticker": "CAT",
+            "rows": 23
+          },
+          {
+            "ticker": "COIN",
+            "rows": 23
+          }
+        ],
+        "replacement_metrics": {
+          "cash": {
+            "n": 1311,
+            "sum": 112471.26,
+            "mean": 85.7904,
+            "median": -8.06,
+            "min": -1210.23,
+            "max": 3450.96,
+            "positive_rate": 0.4912
+          },
+          "spy": {
+            "n": 1311,
+            "sum": 121782.9,
+            "mean": 92.8931,
+            "median": 0.0,
+            "min": -1056.8,
+            "max": 3378.72,
+            "positive_rate": 0.4874
+          },
+          "qqq": {
+            "n": 1311,
+            "sum": 75824.1,
+            "mean": 57.8368,
+            "median": -26.46,
+            "min": -982.88,
+            "max": 3280.92,
+            "positive_rate": 0.45
+          }
+        }
+      },
+      "diagnostic_band_summary": {
+        "pre_event_0_10": {
+          "n": 73,
+          "ticker_count": 13,
+          "entry_date_count": 20,
+          "entry_date_start": "2026-05-06",
+          "entry_date_end": "2026-06-03",
+          "earnings_distance": {
+            "n": 73,
+            "min": 0.0,
+            "median": 4.0,
+            "max": 10.0
+          },
+          "event_band_counts": {
+            "pre_event_0_10": 73
+          },
+          "source_experiment_counts": {
+            "exp-20260623-009": 73
+          },
+          "top_tickers": [
+            {
+              "ticker": "DE",
+              "rows": 11
+            },
+            {
+              "ticker": "NVDA",
+              "rows": 11
+            },
+            {
+              "ticker": "AVGO",
+              "rows": 10
+            },
+            {
+              "ticker": "CRDO",
+              "rows": 10
+            },
+            {
+              "ticker": "MRVL",
+              "rows": 10
+            },
+            {
+              "ticker": "SNOW",
+              "rows": 10
+            },
+            {
+              "ticker": "COIN",
+              "rows": 2
+            },
+            {
+              "ticker": "DDOG",
+              "rows": 2
+            },
+            {
+              "ticker": "MCD",
+              "rows": 2
+            },
+            {
+              "ticker": "TRIP",
+              "rows": 2
+            }
+          ],
+          "replacement_metrics": {
+            "cash": {
+              "n": 73,
+              "sum": 38147.23,
+              "mean": 522.5648,
+              "median": 92.59,
+              "min": -934.29,
+              "max": 3450.96,
+              "positive_rate": 0.5616
+            },
+            "spy": {
+              "n": 73,
+              "sum": 36886.36,
+              "mean": 505.2926,
+              "median": 76.86,
+              "min": -880.92,
+              "max": 3378.72,
+              "positive_rate": 0.5205
+            },
+            "qqq": {
+              "n": 73,
+              "sum": 33387.87,
+              "mean": 457.3681,
+              "median": -61.96,
+              "min": -848.79,
+              "max": 3280.92,
+              "positive_rate": 0.4932
+            }
+          }
+        },
+        "pre_event_11_21": {
+          "n": 37,
+          "ticker_count": 7,
+          "entry_date_count": 21,
+          "entry_date_start": "2025-01-14",
+          "entry_date_end": "2026-06-08",
+          "earnings_distance": {
+            "n": 37,
+            "min": 11.0,
+            "median": 14.0,
+            "max": 21.0
+          },
+          "event_band_counts": {
+            "pre_event_11_21": 37
+          },
+          "source_experiment_counts": {
+            "exp-20260623-009": 37
+          },
+          "top_tickers": [
+            {
+              "ticker": "AVGO",
+              "rows": 10
+            },
+            {
+              "ticker": "MU",
+              "rows": 10
+            },
+            {
+              "ticker": "CRDO",
+              "rows": 8
+            },
+            {
+              "ticker": "SNOW",
+              "rows": 5
+            },
+            {
+              "ticker": "MRVL",
+              "rows": 2
+            },
+            {
+              "ticker": "DE",
+              "rows": 1
+            },
+            {
+              "ticker": "TSLA",
+              "rows": 1
+            }
+          ],
+          "replacement_metrics": {
+            "cash": {
+              "n": 37,
+              "sum": 12140.71,
+              "mean": 328.1273,
+              "median": 297.4,
+              "min": -319.64,
+              "max": 1111.66,
+              "positive_rate": 0.6757
+            },
+            "spy": {
+              "n": 37,
+              "sum": 11360.72,
+              "mean": 307.0465,
+              "median": 312.56,
+              "min": -373.48,
+              "max": 1161.54,
+              "positive_rate": 0.6757
+            },
+            "qqq": {
+              "n": 37,
+              "sum": 9702.86,
+              "mean": 262.2395,
+              "median": 255.88,
+              "min": -449.04,
+              "max": 1086.48,
+              "positive_rate": 0.6486
+            }
+          }
+        },
+        "pre_event_22_30": {
+          "n": 27,
+          "ticker_count": 6,
+          "entry_date_count": 13,
+          "entry_date_start": "2026-05-13",
+          "entry_date_end": "2026-06-08",
+          "earnings_distance": {
+            "n": 27,
+            "min": 23.0,
+            "median": 28.0,
+            "max": 30.0
+          },
+          "event_band_counts": {
+            "pre_event_22_30": 27
+          },
+          "source_experiment_counts": {
+            "exp-20260623-009": 27
+          },
+          "top_tickers": [
+            {
+              "ticker": "MU",
+              "rows": 8
+            },
+            {
+              "ticker": "GS",
+              "rows": 5
+            },
+            {
+              "ticker": "JPM",
+              "rows": 5
+            },
+            {
+              "ticker": "GE",
+              "rows": 3
+            },
+            {
+              "ticker": "NFLX",
+              "rows": 3
+            },
+            {
+              "ticker": "TSM",
+              "rows": 3
+            }
+          ],
+          "replacement_metrics": {
+            "cash": {
+              "n": 27,
+              "sum": 13082.92,
+              "mean": 484.5526,
+              "median": 308.16,
+              "min": -476.67,
+              "max": 2467.51,
+              "positive_rate": 0.8889
+            },
+            "spy": {
+              "n": 27,
+              "sum": 13752.03,
+              "mean": 509.3344,
+              "median": 368.57,
+              "min": -426.79,
+              "max": 2379.68,
+              "positive_rate": 0.8889
+            },
+            "qqq": {
+              "n": 27,
+              "sum": 12626.73,
+              "mean": 467.6567,
+              "median": 301.77,
+              "min": -501.85,
+              "max": 2227.31,
+              "positive_rate": 0.8889
+            }
+          }
+        },
+        "pre_event_31_plus": {
+          "n": 1017,
+          "ticker_count": 53,
+          "entry_date_count": 23,
+          "entry_date_start": "2026-05-06",
+          "entry_date_end": "2026-06-08",
+          "earnings_distance": {
+            "n": 1017,
+            "min": 31.0,
+            "median": 49.0,
+            "max": 70.0
+          },
+          "event_band_counts": {
+            "pre_event_31_plus": 1017
+          },
+          "source_experiment_counts": {
+            "exp-20260623-009": 1017
+          },
+          "top_tickers": [
+            {
+              "ticker": "AAPL",
+              "rows": 23
+            },
+            {
+              "ticker": "AMD",
+              "rows": 23
+            },
+            {
+              "ticker": "AMZN",
+              "rows": 23
+            },
+            {
+              "ticker": "BE",
+              "rows": 23
+            },
+            {
+              "ticker": "BKNG",
+              "rows": 23
+            },
+            {
+              "ticker": "CAT",
+              "rows": 23
+            },
+            {
+              "ticker": "CVX",
+              "rows": 23
+            },
+            {
+              "ticker": "GOOG",
+              "rows": 23
+            },
+            {
+              "ticker": "INTC",
+              "rows": 23
+            },
+            {
+              "ticker": "ISRG",
+              "rows": 23
+            }
+          ],
+          "replacement_metrics": {
+            "cash": {
+              "n": 1017,
+              "sum": 45037.82,
+              "mean": 44.285,
+              "median": -8.22,
+              "min": -1210.23,
+              "max": 2191.24,
+              "positive_rate": 0.4907
+            },
+            "spy": {
+              "n": 1017,
+              "sum": 54700.87,
+              "mean": 53.7865,
+              "median": -7.04,
+              "min": -1056.8,
+              "max": 2212.05,
+              "positive_rate": 0.4926
+            },
+            "qqq": {
+              "n": 1017,
+              "sum": 20572.17,
+              "mean": 20.2283,
+              "median": -26.52,
+              "min": -982.88,
+              "max": 2171.51,
+              "positive_rate": 0.4621
+            }
+          }
+        },
+        "post_event_or_stale_negative": {
+          "n": 0,
+          "ticker_count": 0,
+          "entry_date_count": 0,
+          "entry_date_start": null,
+          "entry_date_end": null,
+          "earnings_distance": {
+            "n": 0,
+            "min": null,
+            "median": null,
+            "max": null
+          },
+          "event_band_counts": {},
+          "source_experiment_counts": {},
+          "top_tickers": [],
+          "replacement_metrics": {
+            "cash": {
+              "n": 0,
+              "sum": 0.0,
+              "mean": null,
+              "median": null,
+              "min": null,
+              "max": null,
+              "positive_rate": null
+            },
+            "spy": {
+              "n": 0,
+              "sum": 0.0,
+              "mean": null,
+              "median": null,
+              "min": null,
+              "max": null,
+              "positive_rate": null
+            },
+            "qqq": {
+              "n": 0,
+              "sum": 0.0,
+              "mean": null,
+              "median": null,
+              "min": null,
+              "max": null,
+              "positive_rate": null
+            }
+          }
+        },
+        "missing_earnings_distance": {
+          "n": 157,
+          "ticker_count": 8,
+          "entry_date_count": 23,
+          "entry_date_start": "2026-05-06",
+          "entry_date_end": "2026-06-08",
+          "earnings_distance": {
+            "n": 0,
+            "min": null,
+            "median": null,
+            "max": null
+          },
+          "event_band_counts": {
+            "missing_earnings_distance": 157
+          },
+          "source_experiment_counts": {
+            "exp-20260623-009": 157
+          },
+          "top_tickers": [
+            {
+              "ticker": "GLD",
+              "rows": 23
+            },
+            {
+              "ticker": "IAU",
+              "rows": 23
+            },
+            {
+              "ticker": "IWM",
+              "rows": 23
+            },
+            {
+              "ticker": "QQQ",
+              "rows": 23
+            },
+            {
+              "ticker": "SLV",
+              "rows": 23
+            },
+            {
+              "ticker": "SPY",
+              "rows": 23
+            },
+            {
+              "ticker": "SNXX",
+              "rows": 18
+            },
+            {
+              "ticker": "RKLB",
+              "rows": 1
+            }
+          ],
+          "replacement_metrics": {
+            "cash": {
+              "n": 157,
+              "sum": 4062.58,
+              "mean": 25.8763,
+              "median": -79.62,
+              "min": -597.54,
+              "max": 2871.16,
+              "positive_rate": 0.3503
+            },
+            "spy": {
+              "n": 157,
+              "sum": 5082.92,
+              "mean": 32.3753,
+              "median": -30.75,
+              "min": -610.53,
+              "max": 2921.04,
+              "positive_rate": 0.3248
+            },
+            "qqq": {
+              "n": 157,
+              "sum": -465.53,
+              "mean": -2.9652,
+              "median": -75.07,
+              "min": -672.11,
+              "max": 2845.97,
+              "positive_rate": 0.2293
+            }
+          }
+        }
+      },
+      "support": {
+        "cash": {
+          "near_mean_gt_non_near": true,
+          "near_median_gt_non_near": true,
+          "mean_delta": 462.5292,
+          "median_delta": 103.185,
+          "near": {
+            "n": 73,
+            "sum": 38147.23,
+            "mean": 522.5648,
+            "median": 92.59,
+            "min": -934.29,
+            "max": 3450.96,
+            "positive_rate": 0.5616
+          },
+          "non_near": {
+            "n": 1238,
+            "sum": 74324.03,
+            "mean": 60.0356,
+            "median": -10.595,
+            "min": -1210.23,
+            "max": 2871.16,
+            "positive_rate": 0.4871
+          }
+        },
+        "spy": {
+          "near_mean_gt_non_near": true,
+          "near_median_gt_non_near": true,
+          "mean_delta": 436.717,
+          "median_delta": 76.86,
+          "near": {
+            "n": 73,
+            "sum": 36886.36,
+            "mean": 505.2926,
+            "median": 76.86,
+            "min": -880.92,
+            "max": 3378.72,
+            "positive_rate": 0.5205
+          },
+          "non_near": {
+            "n": 1238,
+            "sum": 84896.54,
+            "mean": 68.5756,
+            "median": 0.0,
+            "min": -1056.8,
+            "max": 2921.04,
+            "positive_rate": 0.4855
+          }
+        },
+        "qqq": {
+          "near_mean_gt_non_near": true,
+          "near_median_gt_non_near": false,
+          "mean_delta": 423.09,
+          "median_delta": -35.505,
+          "near": {
+            "n": 73,
+            "sum": 33387.87,
+            "mean": 457.3681,
+            "median": -61.96,
+            "min": -848.79,
+            "max": 3280.92,
+            "positive_rate": 0.4932
+          },
+          "non_near": {
+            "n": 1238,
+            "sum": 42436.23,
+            "mean": 34.2781,
+            "median": -26.455,
+            "min": -982.88,
+            "max": 2845.97,
+            "positive_rate": 0.4475
+          }
+        }
+      },
+      "near_earnings_concentration": {
+        "positive_pnl_total": 47756.3,
+        "positive_ticker_count": 8,
+        "positive_pnl_hhi": 0.328684,
+        "positive_pnl_hhi_guardrail": 0.35,
+        "max_single_positive_pnl_share": 0.43989,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "top_positive_tickers": [
+          {
+            "ticker": "SNOW",
+            "positive_pnl": 21007.5,
+            "share": 0.4399
+          },
+          {
+            "ticker": "MRVL",
+            "positive_pnl": 15955.45,
+            "share": 0.3341
+          },
+          {
+            "ticker": "CRDO",
+            "positive_pnl": 6814.14,
+            "share": 0.1427
+          },
+          {
+            "ticker": "DDOG",
+            "positive_pnl": 2507.9,
+            "share": 0.0525
+          },
+          {
+            "ticker": "DE",
+            "positive_pnl": 739.69,
+            "share": 0.0155
+          },
+          {
+            "ticker": "NVDA",
+            "positive_pnl": 674.78,
+            "share": 0.0141
+          },
+          {
+            "ticker": "AVGO",
+            "positive_pnl": 47.47,
+            "share": 0.001
+          },
+          {
+            "ticker": "APP",
+            "positive_pnl": 9.37,
+            "share": 0.0002
+          }
+        ],
+        "passed": true
+      }
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "shared_policy_changed": false,
+      "shared_helper_promoted": false,
+      "daily_snapshot_exposed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "entry_rules_changed": false,
+      "exit_rules_changed": false,
+      "ranking_changed": false,
+      "sizing_changed": false,
+      "paper_orders_changed": false,
+      "live_orders_changed": false,
+      "watchlist_changed": false,
+      "llm_decision_boundary_changed": false,
+      "live_ready": false,
+      "live_realism_evaluated": false,
+      "uses_options_forward_outcome_ledger": true,
+      "uses_entry_time_earnings_snapshot": true,
+      "forward_only_not_fixed_window_pit_coverage": true,
+      "parity_note": "Observed-only attribution on experiment-owned forward rows joined to entry-date earnings snapshots. No shared policy/helper or production adapter behavior changed."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The predeclared 0-10 day near-earnings options bucket did not clear the required row floor and 10d cash/SPY/QQQ mean and median checks, so event distance remains attribution context only.",
+      "forbidden_near_neighbor_retry": "Do not retry options event-distance cutoffs, wider earnings windows, put/call ratio, IV skew, liquidity, spread, zero-bid count, open interest, top-N, hold, cooldown, notional, or threshold variants on this same exp026 forward ledger.",
+      "new_evidence_required": "A valid options retry needs materially more closed forward rows, historical PIT options-chain coverage across canonical windows, or a different production-visible event/cost field that creates new rows rather than reslicing this same small forward sample."
+    },
+    "calibration": {
+      "actual_decision": "observed_only_rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.16,
+      "brier_score": 0.0256,
+      "predicted_failure_modes": [
+        "near_earnings_sample_too_thin",
+        "earnings_beta_confound",
+        "no_cash_spy_qqq_median_edge",
+        "forward_only_not_promotable"
+      ],
+      "realized_failure_modes": [
+        "near_earnings_sample_too_thin",
+        "primary_qqq_median_not_better",
+        "no_cash_spy_qqq_median_edge",
+        "earnings_beta_confound",
+        "forward_only_not_promotable"
+      ],
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "The near-earnings event-distance bucket did not clear the predeclared sample and cash/SPY/QQQ separation checks."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260625-020.json",
+  "single_causal_variable": "onclickmedia_options_earnings_distance_forward_attribution_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260625-020.json",
+  "trial_family": "onclickmedia_options_event_distance_forward_attribution",
+  "trial_variant_id": "near_earnings_window_v1",
+  "result_file": "data/experiments/exp-20260625-020/exp_20260625_020_options_earnings_distance_forward_attribution.json",
+  "artifact": "data/experiments/exp-20260625-020/exp_20260625_020_options_earnings_distance_forward_attribution.json",
+  "log": "experiments/logs/exp-20260625-020.json",
+  "changed_files": [
+    "quant/experiments/exp_20260625_020_options_earnings_distance_forward_attribution.py",
+    "data/experiments/exp-20260625-020/exp_20260625_020_options_earnings_distance_forward_attribution.json",
+    "experiments/logs/exp-20260625-020.json",
+    "experiments/cards/exp-20260625-020.md",
+    "experiments/manifests/exp-20260625-020.json",
+    "experiments/tickets/exp-20260625-020.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260625_020_options_earnings_distance_forward_attribution.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260625_020_options_earnings_distance_forward_attribution.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-06-25T18:11:49+00:00"
+}

@@ -1,0 +1,536 @@
+{
+  "acceptance_rule": "Gate 4 on canonical windows: aggregate EV and PnL positive, no window EV/PnL regression, at least 20 trades across all 3 windows, survival >=5%, drawdown drift <=0.5pp, concentration pass. Positive private replay is only a lead, not accepted alpha.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260625_014_sec_6k_companyfacts_structured_growth_scout.py",
+    "data/experiments/exp-20260625-014/exp_20260625_014_sec_6k_companyfacts_structured_growth_scout.json",
+    "experiments/cards/exp-20260625-014.md",
+    "experiments/manifests/exp-20260625-014.json",
+    "experiments/tickets/exp-20260625-014.json",
+    "experiments/logs/exp-20260625-014.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260625-014.md",
+  "causal_components": [
+    "form-scoped Companyfacts fact surface",
+    "same-accession year-over-year financial growth gate",
+    "one-trading-day filed-date delay",
+    "liquid relative price confirmation",
+    "next-open 10-day paper replay",
+    "accepted core baseline overlay comparison"
+  ],
+  "change_type": "candidate_pool_private_replay_scout",
+  "changed_variable": "sec_6k_companyfacts_structured_financial_growth_candidate_pool_v1",
+  "claimed_at": "2026-06-25T13:06:25+00:00",
+  "completed_at": "2026-06-25T13:25:47+00:00",
+  "created_at": "2026-06-25T13:06:16+00:00",
+  "evaluation_windows": [
+    {
+      "label": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json"
+    },
+    {
+      "label": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json"
+    },
+    {
+      "label": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json"
+    }
+  ],
+  "experiment_id": "exp-20260625-014",
+  "experiment_uid": "expuid-e24453fa9d5940b5",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260625-014",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-25T13:06:16+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_6k_companyfacts_structured_growth_scout"
+  },
+  "hypothesis": "SEC 6-K form-scoped structured Companyfacts XBRL growth facts may identify ADR interim financial-result drift when historical filing text is unavailable, but must first pass a private canonical replay scout.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "sec_6k_companyfacts_structured_financial_growth_candidate_pool_v1"
+  ],
+  "mechanism_family": "candidate_pool_private_replay_scout",
+  "multiple_testing_risk_bucket": "high_source_saturation_but_new_evidence_axis_declared",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260622-016",
+    "exp-20260624-024",
+    "exp-20260625-011",
+    "exp-20260625-006"
+  ],
+  "new_evidence_type": "form_scoped_sec_companyfacts_6k_xbrl_growth_surface",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 1.0,
+        "family_key": "broad_companyfacts_peer_confirmed_filing_drift_candidate_pool",
+        "score": 0.6387,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "broad_companyfacts_fresh_underreaction_filing_candidate_pool",
+        "score": 0.6258,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "broad_companyfacts_growth_acceleration_candidate_pool",
+        "score": 0.6258,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "broad_universe_companyfacts_candidate_pool",
+        "score": 0.6258,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "low_asset_growth_quality_candidate_pool",
+        "score": 0.6258,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "companyfacts_ratio",
+      "field_tags": [
+        "6k",
+        "a",
+        "adr",
+        "but",
+        "canonical",
+        "companyfacts",
+        "drift",
+        "facts",
+        "filing",
+        "financial",
+        "first",
+        "form",
+        "growth",
+        "historical",
+        "identify",
+        "interim",
+        "is",
+        "k",
+        "may",
+        "must",
+        "pass",
+        "private",
+        "result",
+        "scoped",
+        "structured",
+        "text",
+        "unavailable",
+        "when",
+        "xbrl"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "broad_companyfacts_peer_confirmed_filing_drift_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.6387,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "broad_companyfacts_fresh_underreaction_filing_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.6258,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "broad_companyfacts_growth_acceleration_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.6258,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "broad_universe_companyfacts_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.6258,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "low_asset_growth_quality_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT investment discipline evidence such as asset growth relative to industry peers, capex-free-cash-flow coverage, or closed forward replacement rows. Do not sweep asset-growth thresholds, fact age, price guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.6258,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Machine-checkable new evidence axis: form-scoped SEC Companyfacts XBRL facts where fact.form is 6-K/6-KA, tied to filed-date/accession metadata, replacing the missing historical 6-K text surface; not another generic Companyfacts ratio field or threshold sweep.",
+    "override": true,
+    "saturated_source_override": true,
+    "source_saturation": {
+      "accept_rate": 0.0349,
+      "accepts": 3,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": true,
+      "source": "companyfacts_ratio",
+      "trials": 86
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.16,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "companyfacts_source_saturation",
+      "thin_6k_fact_coverage",
+      "window_regression",
+      "accepted_comparator_not_beaten",
+      "foreign_issuer_liquidity_gap"
+    ],
+    "confidence_reason": "The 6-K text alpha is blocked by zero historical text rows, but local SEC Companyfacts cache contains form=6-K XBRL facts with filed-date and accession metadata. This fixed scout uses same-accession XBRL revenue plus profitability growth and conservative next-day price confirmation.",
+    "recorded_at": "2026-06-25T13:06:00+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "gate4_passed": false,
+    "decision": "rejected_sec_6k_companyfacts_structured_growth_candidate_pool",
+    "artifact": "data/experiments/exp-20260625-014/exp_20260625_014_sec_6k_companyfacts_structured_growth_scout.json",
+    "log": "experiments/logs/exp-20260625-014.json",
+    "runner": "quant/experiments/exp_20260625_014_sec_6k_companyfacts_structured_growth_scout.py",
+    "delta_metrics": {
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": -0.0449,
+          "total_pnl": -496.64,
+          "strategy_total_return_pct": -0.0049,
+          "sharpe_daily": -0.02,
+          "max_drawdown_pct": 0.0,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "signals_generated": 0,
+          "signals_survived": 0,
+          "survival_rate": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": 0.003,
+          "total_pnl": 111.4,
+          "strategy_total_return_pct": 0.0011,
+          "sharpe_daily": 0.0,
+          "max_drawdown_pct": 0.0,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "signals_generated": 0,
+          "signals_survived": 0,
+          "survival_rate": 0.0
+        },
+        "old_thin": {
+          "expected_value_score": 0.0,
+          "total_pnl": 0.0,
+          "strategy_total_return_pct": 0.0,
+          "sharpe_daily": 0.0,
+          "max_drawdown_pct": 0.0,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "signals_generated": 0,
+          "signals_survived": 0,
+          "survival_rate": 0.0
+        }
+      },
+      "aggregate": {
+        "baseline_expected_value_score_sum": 7.8941,
+        "after_expected_value_score_sum": 7.8522,
+        "expected_value_score_delta_sum": -0.0419,
+        "expected_value_score_delta_pct": -0.005308,
+        "baseline_total_pnl_sum": 234850.99,
+        "after_total_pnl_sum": 234465.75,
+        "total_pnl_delta_sum": -385.24,
+        "total_pnl_delta_pct": -0.00164,
+        "windows_ev_improved": 1,
+        "windows_ev_regressed": 1,
+        "windows_pnl_improved": 1,
+        "windows_pnl_regressed": 1,
+        "max_drawdown_delta_max": 0.0,
+        "target_trade_count_sum": 5
+      }
+    },
+    "gate2": {
+      "passed": true,
+      "growth_gate_event_rows": 56,
+      "growth_gate_ticker_count": 28,
+      "raw_6k_financial_fact_rows": 2222,
+      "open_positions": {
+        "passed": true,
+        "path": "operator_inputs/open_positions.json",
+        "position_count": 12,
+        "missing_entry_date_tickers": [],
+        "missing_target_price_tickers": []
+      }
+    },
+    "gate3": {
+      "new_core_filter_added": false,
+      "candidate_pool_changed": false,
+      "minimum_core_survival_rate": 0.7925,
+      "passed": true,
+      "note": "No new core filter or entry rule was added. The 6-K Companyfacts source is an additive private replay paper overlay."
+    },
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_sec_6k_companyfacts_structured_growth_candidate_pool",
+      "failed_reasons": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "target_concentration_failed"
+      ],
+      "aggregate_ev_delta": -0.0419,
+      "aggregate_pnl_delta": -385.24,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 1,
+      "windows_pnl_improved": 1,
+      "windows_pnl_regressed": 1,
+      "target_trade_count": 5,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": false,
+        "max_single_positive_pnl_share": 1.0,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 1.0,
+        "positive_pnl_hhi_guardrail": 0.35
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.16,
+      "actual_gate4_passed": false,
+      "failure_modes_observed": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "target_concentration_failed"
+      ],
+      "brier_score": 0.0256
+    },
+    "summary": "The private 6-K Companyfacts structured-growth candidate pool did not clear Gate 4. Do not promote it or retry adjacent Companyfacts 6-K tag/threshold variants on the same frozen windows without a materially new evidence axis."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260625-014.json",
+  "single_causal_variable": "sec_6k_companyfacts_structured_financial_growth_candidate_pool_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260625-014.json",
+  "trial_family": "sec_6k_companyfacts_structured_financial_growth_candidate_pool",
+  "trial_variant_id": "form_scoped_6k_xbrl_growth_top1_10d_v1",
+  "alpha_hypothesis": "candidate-pool alpha: same-accession 6-K/6-KA XBRL facts showing revenue plus profitability growth, delayed one trading day from filed date and confirmed by liquid relative price action, may produce next-open 10-day paper alpha in foreign issuers.",
+  "implementation_mode": "private_replay_scout_no_shared_helper",
+  "new_evidence_axis": "Machine-checkable new evidence axis: form-scoped SEC Companyfacts XBRL facts where fact.form is 6-K/6-KA, tied to filed-date/accession metadata, replacing the missing historical 6-K text surface; not another generic Companyfacts ratio field or threshold sweep.",
+  "decision": "rejected_sec_6k_companyfacts_structured_growth_candidate_pool",
+  "summary": "The private 6-K Companyfacts structured-growth candidate pool did not clear Gate 4. Do not promote it or retry adjacent Companyfacts 6-K tag/threshold variants on the same frozen windows without a materially new evidence axis.",
+  "artifact": "data/experiments/exp-20260625-014/exp_20260625_014_sec_6k_companyfacts_structured_growth_scout.json",
+  "log": "experiments/logs/exp-20260625-014.json",
+  "aggregate_expected_value_delta": -0.0419,
+  "aggregate_strategy_total_pnl_delta": -385.24,
+  "gate1": {
+    "baseline_metrics": {
+      "late_strong": {
+        "expected_value_score": 5.1628,
+        "total_pnl": 117072.92,
+        "strategy_total_return_pct": 1.1707,
+        "sharpe_daily": 4.41,
+        "max_drawdown_pct": 0.0665,
+        "win_rate": 0.8333,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "worst_trade_pct": -0.0397,
+        "max_consecutive_losses": 2,
+        "tail_loss_share": 0.5146
+      },
+      "mid_weak": {
+        "expected_value_score": 2.1402,
+        "total_pnl": 78110.11,
+        "strategy_total_return_pct": 0.7811,
+        "sharpe_daily": 2.74,
+        "max_drawdown_pct": 0.1119,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925,
+        "worst_trade_pct": -0.0897,
+        "max_consecutive_losses": 6,
+        "tail_loss_share": 0.5493
+      },
+      "old_thin": {
+        "expected_value_score": 0.5911,
+        "total_pnl": 39667.96,
+        "strategy_total_return_pct": 0.3967,
+        "sharpe_daily": 1.49,
+        "max_drawdown_pct": 0.1001,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667,
+        "worst_trade_pct": -0.0635,
+        "max_consecutive_losses": 4,
+        "tail_loss_share": 0.5193
+      }
+    },
+    "baseline_artifact": "data/experiments/exp-20260625-014/exp_20260625_014_sec_6k_companyfacts_structured_growth_scout.json#before_metrics",
+    "canonical_baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "passed": true
+  },
+  "gate2": {
+    "passed": true,
+    "growth_gate_event_rows": 56,
+    "growth_gate_ticker_count": 28,
+    "raw_6k_financial_fact_rows": 2222,
+    "open_positions": {
+      "passed": true,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 12,
+      "missing_entry_date_tickers": [],
+      "missing_target_price_tickers": []
+    }
+  },
+  "gate3": {
+    "new_core_filter_added": false,
+    "candidate_pool_changed": false,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": true,
+    "note": "No new core filter or entry rule was added. The 6-K Companyfacts source is an additive private replay paper overlay."
+  },
+  "gate4": {
+    "passed": false,
+    "decision": "rejected_sec_6k_companyfacts_structured_growth_candidate_pool",
+    "failed_reasons": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "target_sample_too_small",
+      "target_window_coverage_too_small",
+      "target_concentration_failed"
+    ],
+    "aggregate_ev_delta": -0.0419,
+    "aggregate_pnl_delta": -385.24,
+    "windows_ev_improved": 1,
+    "windows_ev_regressed": 1,
+    "windows_pnl_improved": 1,
+    "windows_pnl_regressed": 1,
+    "target_trade_count": 5,
+    "target_trade_count_min": 20,
+    "target_windows": [
+      "late_strong",
+      "mid_weak"
+    ],
+    "target_window_count_min": 3,
+    "max_drawdown_worse": 0.0,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "passed": false,
+      "max_single_positive_pnl_share": 1.0,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "positive_pnl_hhi": 1.0,
+      "positive_pnl_hhi_guardrail": 0.35
+    }
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "shared_helper_promoted": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "paper_orders_changed": false,
+    "live_orders_changed": false,
+    "production_watchlist_changed": false,
+    "uses_free_sec_companyfacts": true,
+    "uses_form_scoped_6k_facts": true,
+    "uses_llm": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "replay_only": true,
+    "adapter_status": "private_replay_only_no_live_adapter",
+    "parity_note": "This is an experiment-owned private replay scout. A positive result would require a shared default-off helper that computes the same form-scoped Companyfacts event surface, one-trading-day filing delay, price/liquidity gates, next-open paper entry, 10-trading-day exit, cost model, cooldown, and concentration checks before any daily report, candidate priority, sizing, watchlist, paper ledger, or order surface could change."
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260625_014_sec_6k_companyfacts_structured_growth_scout.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260625_014_sec_6k_companyfacts_structured_growth_scout.py",
+    "data/experiments/exp-20260625-014/exp_20260625_014_sec_6k_companyfacts_structured_growth_scout.json",
+    "experiments/logs/exp-20260625-014.json",
+    "experiments/tickets/exp-20260625-014.json",
+    "experiments/cards/exp-20260625-014.md",
+    "experiments/manifests/exp-20260625-014.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "anti_js": "No JavaScript was used.",
+  "updated_at": "2026-06-25T13:25:47+00:00",
+  "post_run_reflection": {
+    "why_result_happened": "The form-scoped 6-K Companyfacts surface exists, but the fixed same-accession revenue plus profitability rule and liquid price confirmation collapsed to only five target trades across two windows. The late_strong losses overwhelmed the small mid_weak gain, old_thin produced zero selected trades, and all positive PnL came from one ticker/trade cluster, so the result failed both edge and sample/concentration gates.",
+    "realized_failure_mode": "companyfacts_source_saturation_plus_thin_6k_fact_coverage",
+    "forbidden_near_neighbor_retry": "Do not retry adjacent 6-K Companyfacts tags, same-accession growth thresholds, filed-date delay, volume/liquidity guards, relative price confirmation gates, top-N, hold days, cooldown, or notional on these frozen windows. This would be another saturated Companyfacts-ratio candidate-pool retune.",
+    "new_evidence_required": "A valid reopen needs historical 6-K filing text cache population, a new machine-checkable 6-K field unavailable in this Companyfacts surface, or mature forward replacement-value rows that prove this specific form-scoped growth signal adds allocation value."
+  }
+}

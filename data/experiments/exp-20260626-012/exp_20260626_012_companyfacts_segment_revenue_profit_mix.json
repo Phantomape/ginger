@@ -1,0 +1,1291 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "candidate_rows": 0,
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260626_012_companyfacts_segment_revenue_profit_mix.py",
+    "data/experiments/exp-20260626-012/exp_20260626_012_companyfacts_segment_revenue_profit_mix.json",
+    "experiments/logs/exp-20260626-012.json",
+    "experiments/cards/exp-20260626-012.md",
+    "experiments/manifests/exp-20260626-012.json",
+    "experiments/tickets/exp-20260626-012.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "candidate_pool: PIT SEC Companyfacts segment revenue/profit mix, using raw segment revenue and segment profit/loss facts rather than reportable segment count, RPO, purchase obligations, or product/service revenue, may identify firms where profitable segment mix expansion signals durable demand; with liquid SPY-relative price confirmation it should improve next-open 10-day default-off paper replacement value.",
+  "alpha_ready": false,
+  "anti_js": {
+    "node_repl_used": false,
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260626-012/exp_20260626_012_companyfacts_segment_revenue_profit_mix.json",
+  "backtest_protocol": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "companyfacts_source": "data/cache/sec/companyfacts",
+    "execution_model": "Raw SEC Companyfacts segment revenue/profit facts are known by filed date. This runner first requires current standard-window segment revenue and profit/loss coverage before any liquid SPY-relative next-open 10-day paper overlay can run. The coverage gate failed, so no paper orders or target trades were generated.",
+    "source": "docs/backtesting.md canonical three-window core replay plus candidate-pool field coverage gate",
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "label": "late_strong",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "label": "mid_weak",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "label": "old_thin",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "exists": true,
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3,
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "start": "2025-10-23",
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "start": "2025-04-23",
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "start": "2024-10-02",
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22
+      }
+    }
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 0,
+    "brier_score": 0.01,
+    "expected_ev_delta": 0.1,
+    "expected_pnl_delta": 1500.0,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "companyfacts_source_saturation",
+      "segment_tags_deprecated_or_sparse",
+      "insufficient_segment_profit_coverage",
+      "window_regression",
+      "accepted_comparator_not_beaten"
+    ],
+    "predicted_success_probability": 0.1,
+    "realized_failure_modes": [
+      "segment_revenue_profit_tags_deprecated_before_standard_windows",
+      "no_standard_window_segment_revenue_profit_rows",
+      "no_candidate_rows_generated",
+      "target_sample_too_small",
+      "target_window_coverage_too_small"
+    ],
+    "surprise_note": "No surprise: the pre-run scan found segment revenue/profit tags are mostly deprecated, and the runner confirmed zero standard-window rows."
+  },
+  "card": "experiments/cards/exp-20260626-012.md",
+  "causal_components": [
+    "raw Companyfacts segment revenue/profit facts",
+    "filed-date PIT boundary",
+    "liquid SPY-relative price confirmation",
+    "next-open 10-day default-off paper overlay",
+    "no live/default orders"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_files": [
+    "quant/experiments/exp_20260626_012_companyfacts_segment_revenue_profit_mix.py",
+    "data/experiments/exp-20260626-012/exp_20260626_012_companyfacts_segment_revenue_profit_mix.json",
+    "experiments/logs/exp-20260626-012.json",
+    "experiments/cards/exp-20260626-012.md",
+    "experiments/manifests/exp-20260626-012.json",
+    "experiments/tickets/exp-20260626-012.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "companyfacts_segment_revenue_profit_mix_candidate_source_v1",
+  "decision": "rejected_companyfacts_segment_revenue_profit_mix_no_current_tag_coverage",
+  "delta_metrics": {
+    "candidate_rows": 0,
+    "expected_value_score_sum_delta": 0.0,
+    "standard_window_segment_rows": 0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260626-012",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "exists": true,
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3,
+      "windows": {
+        "late_strong": {
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "max_drawdown_pct": 0.0665,
+          "sharpe_daily": 4.41,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "start": "2025-10-23",
+          "survival_rate": 0.8039,
+          "total_pnl": 117072.92,
+          "trade_count": 18
+        },
+        "mid_weak": {
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "max_drawdown_pct": 0.1119,
+          "sharpe_daily": 2.74,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "start": "2025-04-23",
+          "survival_rate": 0.7925,
+          "total_pnl": 78110.11,
+          "trade_count": 21
+        },
+        "old_thin": {
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "max_drawdown_pct": 0.1001,
+          "sharpe_daily": 1.49,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "start": "2024-10-02",
+          "survival_rate": 0.8667,
+          "total_pnl": 39667.96,
+          "trade_count": 22
+        }
+      }
+    },
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_checked": "no candidate rows; no paper entry_date generated",
+    "entry_price_coverage": 0.0,
+    "failed_reasons": [
+      "segment_revenue_profit_tags_deprecated_before_standard_windows",
+      "no_standard_window_segment_revenue_profit_rows",
+      "no_candidate_rows_generated"
+    ],
+    "field_coverage": {
+      "candidate_rows": [],
+      "concept_summary": [
+        {
+          "concept": "SegmentReportingInformationRevenue",
+          "filed_max": "2014-04-24",
+          "filed_min": "2010-07-21",
+          "kind": "segment_revenue",
+          "row_count": 2395,
+          "ticker_count": 113
+        },
+        {
+          "concept": "RevenuesFromExternalCustomers",
+          "filed_max": "2014-04-23",
+          "filed_min": "2011-05-03",
+          "kind": "segment_revenue",
+          "row_count": 814,
+          "ticker_count": 49
+        },
+        {
+          "concept": "SegmentReportingInformationOperatingIncomeLoss",
+          "filed_max": "2012-02-21",
+          "filed_min": "2010-07-21",
+          "kind": "segment_profit",
+          "row_count": 524,
+          "ticker_count": 51
+        },
+        {
+          "concept": "SegmentReportingInformationRevenueFromExternalCustomers",
+          "filed_max": "2012-04-26",
+          "filed_min": "2010-07-23",
+          "kind": "segment_revenue",
+          "row_count": 433,
+          "ticker_count": 39
+        },
+        {
+          "concept": "SegmentReportingSegmentOperatingProfitLoss",
+          "filed_max": "2011-11-04",
+          "filed_min": "2010-07-23",
+          "kind": "segment_profit",
+          "row_count": 334,
+          "ticker_count": 36
+        },
+        {
+          "concept": "SegmentReportingSegmentRevenue",
+          "filed_max": "2011-11-10",
+          "filed_min": "2010-07-23",
+          "kind": "segment_revenue",
+          "row_count": 318,
+          "ticker_count": 34
+        },
+        {
+          "concept": "SegmentReportingInformationProfitLoss",
+          "filed_max": "2012-05-11",
+          "filed_min": "2010-07-22",
+          "kind": "segment_profit",
+          "row_count": 290,
+          "ticker_count": 29
+        },
+        {
+          "concept": "SegmentReportingInformationIncomeLossBeforeIncomeTaxes",
+          "filed_max": "2011-11-04",
+          "filed_min": "2010-07-16",
+          "kind": "segment_profit",
+          "row_count": 237,
+          "ticker_count": 27
+        }
+      ],
+      "coverage": {
+        "companyfacts_dir": "data/cache/sec/companyfacts",
+        "files_decode_error": 0,
+        "files_missing": 6,
+        "files_present": 1440,
+        "latest_segment_fact_filed": "2014-04-24",
+        "segment_profit_row_count": 1385,
+        "segment_revenue_profit_row_count": 5345,
+        "segment_revenue_row_count": 3960,
+        "standard_window_segment_rows": 0,
+        "tickers_with_both_segment_revenue_and_profit": 65,
+        "tickers_with_current_window_both_segment_fields": 0,
+        "tickers_with_current_window_segment_profit": 0,
+        "tickers_with_current_window_segment_revenue": 0,
+        "tickers_with_segment_profit": 121,
+        "tickers_with_segment_revenue": 170,
+        "tickers_with_total_revenue_scaler": 1272
+      },
+      "parameters": {
+        "max_fact_age_days": 540,
+        "max_prior_gap_days": 500,
+        "min_prior_gap_days": 250,
+        "segment_profit_concepts": [
+          "SegmentReportingInformationOperatingIncomeLoss",
+          "SegmentReportingSegmentOperatingProfitLoss",
+          "SegmentReportingInformationProfitLoss",
+          "SegmentReportingInformationIncomeLossBeforeIncomeTaxes"
+        ],
+        "segment_revenue_concepts": [
+          "SegmentReportingInformationRevenue",
+          "SegmentReportingSegmentRevenue",
+          "SegmentReportingInformationRevenueFromExternalCustomers",
+          "RevenuesFromExternalCustomers"
+        ],
+        "total_revenue_concepts": [
+          "RevenueFromContractWithCustomerExcludingAssessedTax",
+          "Revenues",
+          "SalesRevenueNet"
+        ]
+      },
+      "sample_rows": [
+        {
+          "concept": "SegmentReportingInformationRevenue",
+          "description": "Amount of total revenue for the reportable segments, including revenue from external customers, transactions with other operating segments of the same entity, and (gross) interest revenue. All considered to be \"operating revenue\" for purpos",
+          "end": "2010-04-30",
+          "filed": "2011-06-07",
+          "form": "10-Q",
+          "fp": "Q2",
+          "fy": 2011,
+          "kind": "segment_revenue",
+          "label": "Segment Reporting Information, Revenue for Reportable Segment (Deprecated 2013-01-31)",
+          "taxonomy": "us-gaap",
+          "ticker": "A",
+          "unit": "USD",
+          "val": 2484000000.0
+        },
+        {
+          "concept": "SegmentReportingInformationRevenue",
+          "description": "Amount of total revenue for the reportable segments, including revenue from external customers, transactions with other operating segments of the same entity, and (gross) interest revenue. All considered to be \"operating revenue\" for purpos",
+          "end": "2010-04-30",
+          "filed": "2011-06-07",
+          "form": "10-Q",
+          "fp": "Q2",
+          "fy": 2011,
+          "kind": "segment_revenue",
+          "label": "Segment Reporting Information, Revenue for Reportable Segment (Deprecated 2013-01-31)",
+          "taxonomy": "us-gaap",
+          "ticker": "A",
+          "unit": "USD",
+          "val": 1271000000.0
+        },
+        {
+          "concept": "SegmentReportingInformationRevenue",
+          "description": "Amount of total revenue for the reportable segments, including revenue from external customers, transactions with other operating segments of the same entity, and (gross) interest revenue. All considered to be \"operating revenue\" for purpos",
+          "end": "2010-07-31",
+          "filed": "2011-09-07",
+          "form": "10-Q",
+          "fp": "Q3",
+          "fy": 2011,
+          "kind": "segment_revenue",
+          "label": "Segment Reporting Information, Revenue for Reportable Segment (Deprecated 2013-01-31)",
+          "taxonomy": "us-gaap",
+          "ticker": "A",
+          "unit": "USD",
+          "val": 3879000000.0
+        },
+        {
+          "concept": "SegmentReportingInformationRevenue",
+          "description": "Amount of total revenue for the reportable segments, including revenue from external customers, transactions with other operating segments of the same entity, and (gross) interest revenue. All considered to be \"operating revenue\" for purpos",
+          "end": "2010-07-31",
+          "filed": "2010-10-06",
+          "form": "10-Q/A",
+          "fp": "Q3",
+          "fy": 2010,
+          "kind": "segment_revenue",
+          "label": "Segment Reporting Information, Revenue for Reportable Segment (Deprecated 2013-01-31)",
+          "taxonomy": "us-gaap",
+          "ticker": "A",
+          "unit": "USD",
+          "val": 3879000000.0
+        },
+        {
+          "concept": "SegmentReportingInformationRevenue",
+          "description": "Amount of total revenue for the reportable segments, including revenue from external customers, transactions with other operating segments of the same entity, and (gross) interest revenue. All considered to be \"operating revenue\" for purpos",
+          "end": "2010-07-31",
+          "filed": "2011-09-07",
+          "form": "10-Q",
+          "fp": "Q3",
+          "fy": 2011,
+          "kind": "segment_revenue",
+          "label": "Segment Reporting Information, Revenue for Reportable Segment (Deprecated 2013-01-31)",
+          "taxonomy": "us-gaap",
+          "ticker": "A",
+          "unit": "USD",
+          "val": 1395000000.0
+        },
+        {
+          "concept": "SegmentReportingInformationRevenue",
+          "description": "Amount of total revenue for the reportable segments, including revenue from external customers, transactions with other operating segments of the same entity, and (gross) interest revenue. All considered to be \"operating revenue\" for purpos",
+          "end": "2010-07-31",
+          "filed": "2010-10-06",
+          "form": "10-Q/A",
+          "fp": "Q3",
+          "fy": 2010,
+          "kind": "segment_revenue",
+          "label": "Segment Reporting Information, Revenue for Reportable Segment (Deprecated 2013-01-31)",
+          "taxonomy": "us-gaap",
+          "ticker": "A",
+          "unit": "USD",
+          "val": 1395000000.0
+        },
+        {
+          "concept": "SegmentReportingInformationRevenue",
+          "description": "Amount of total revenue for the reportable segments, including revenue from external customers, transactions with other operating segments of the same entity, and (gross) interest revenue. All considered to be \"operating revenue\" for purpos",
+          "end": "2011-01-31",
+          "filed": "2011-03-09",
+          "form": "10-Q",
+          "fp": "Q1",
+          "fy": 2011,
+          "kind": "segment_revenue",
+          "label": "Segment Reporting Information, Revenue for Reportable Segment (Deprecated 2013-01-31)",
+          "taxonomy": "us-gaap",
+          "ticker": "A",
+          "unit": "USD",
+          "val": 1524000000.0
+        },
+        {
+          "concept": "SegmentReportingInformationRevenue",
+          "description": "Amount of total revenue for the reportable segments, including revenue from external customers, transactions with other operating segments of the same entity, and (gross) interest revenue. All considered to be \"operating revenue\" for purpos",
+          "end": "2011-04-30",
+          "filed": "2011-06-07",
+          "form": "10-Q",
+          "fp": "Q2",
+          "fy": 2011,
+          "kind": "segment_revenue",
+          "label": "Segment Reporting Information, Revenue for Reportable Segment (Deprecated 2013-01-31)",
+          "taxonomy": "us-gaap",
+          "ticker": "A",
+          "unit": "USD",
+          "val": 3203000000.0
+        },
+        {
+          "concept": "SegmentReportingInformationRevenue",
+          "description": "Amount of total revenue for the reportable segments, including revenue from external customers, transactions with other operating segments of the same entity, and (gross) interest revenue. All considered to be \"operating revenue\" for purpos",
+          "end": "2011-04-30",
+          "filed": "2011-06-07",
+          "form": "10-Q",
+          "fp": "Q2",
+          "fy": 2011,
+          "kind": "segment_revenue",
+          "label": "Segment Reporting Information, Revenue for Reportable Segment (Deprecated 2013-01-31)",
+          "taxonomy": "us-gaap",
+          "ticker": "A",
+          "unit": "USD",
+          "val": 1679000000.0
+        },
+        {
+          "concept": "SegmentReportingInformationRevenue",
+          "description": "Amount of total revenue for the reportable segments, including revenue from external customers, transactions with other operating segments of the same entity, and (gross) interest revenue. All considered to be \"operating revenue\" for purpos",
+          "end": "2011-07-31",
+          "filed": "2011-09-07",
+          "form": "10-Q",
+          "fp": "Q3",
+          "fy": 2011,
+          "kind": "segment_revenue",
+          "label": "Segment Reporting Information, Revenue for Reportable Segment (Deprecated 2013-01-31)",
+          "taxonomy": "us-gaap",
+          "ticker": "A",
+          "unit": "USD",
+          "val": 4895000000.0
+        },
+        {
+          "concept": "SegmentReportingInformationRevenue",
+          "description": "Amount of total revenue for the reportable segments, including revenue from external customers, transactions with other operating segments of the same entity, and (gross) interest revenue. All considered to be \"operating revenue\" for purpos",
+          "end": "2011-07-31",
+          "filed": "2011-09-07",
+          "form": "10-Q",
+          "fp": "Q3",
+          "fy": 2011,
+          "kind": "segment_revenue",
+          "label": "Segment Reporting Information, Revenue for Reportable Segment (Deprecated 2013-01-31)",
+          "taxonomy": "us-gaap",
+          "ticker": "A",
+          "unit": "USD",
+          "val": 1692000000.0
+        },
+        {
+          "concept": "SegmentReportingInformationOperatingIncomeLoss",
+          "description": "Amount of income or loss for the reportable segment before unusual Items, equity method income or loss, income taxes, and extraordinary items.",
+          "end": "2008-10-31",
+          "filed": "2010-12-20",
+          "form": "10-K",
+          "fp": "FY",
+          "fy": 2010,
+          "kind": "segment_profit",
+          "label": "Segment Reporting Information, Operating Income (Loss) (Deprecated 2011-01-31)",
+          "taxonomy": "us-gaap",
+          "ticker": "A",
+          "unit": "USD",
+          "val": 887000000.0
+        }
+      ],
+      "universe": {
+        "broad_liquid_cik_rows": 1446,
+        "source": "data/warehouse/warehouse_main.sqlite",
+        "warnings": []
+      },
+      "window_counts": {
+        "late_strong": {
+          "all_segment_rows": 0,
+          "candidate_rows": 0,
+          "segment_profit_rows": 0,
+          "segment_revenue_rows": 0
+        },
+        "mid_weak": {
+          "all_segment_rows": 0,
+          "candidate_rows": 0,
+          "segment_profit_rows": 0,
+          "segment_revenue_rows": 0
+        },
+        "old_thin": {
+          "all_segment_rows": 0,
+          "candidate_rows": 0,
+          "segment_profit_rows": 0,
+          "segment_revenue_rows": 0
+        }
+      }
+    },
+    "passed": false,
+    "required_fields_checked": [
+      "ticker",
+      "cik",
+      "raw SEC companyfacts us-gaap segment revenue facts",
+      "raw SEC companyfacts us-gaap segment profit/loss facts",
+      "raw SEC companyfacts filed date and period end",
+      "raw SEC companyfacts total revenue scaler",
+      "entry_date",
+      "target_price"
+    ],
+    "target_price_coverage": 0.0
+  },
+  "gate3": {
+    "note": "No executable filter was added; selected segment revenue/profit fields have no standard-window candidate rows.",
+    "passed": false,
+    "signals_generated_proxy": 0,
+    "signals_survived_proxy": 0,
+    "survival_rate_proxy": 0.0
+  },
+  "gate4": {
+    "accepted_compression_comparator": {
+      "aggregate_expected_value_delta": 0.1608,
+      "aggregate_pnl_delta": 2248.98,
+      "experiment_id": "exp-20260608-013"
+    },
+    "accepted_distribution_comparator": {
+      "aggregate_expected_value_delta": 0.5286,
+      "aggregate_pnl_delta": 10432.91,
+      "experiment_id": "exp-20260611-007"
+    },
+    "before_after_strategy_delta": {
+      "candidate_rows": 0,
+      "expected_value_score_sum_delta": 0.0,
+      "standard_window_segment_rows": 0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "decision": "rejected_companyfacts_segment_revenue_profit_mix_no_current_tag_coverage",
+    "failed_reasons": [
+      "segment_revenue_profit_tags_deprecated_before_standard_windows",
+      "no_standard_window_segment_revenue_profit_rows",
+      "no_candidate_rows_generated",
+      "target_sample_too_small",
+      "target_window_coverage_too_small",
+      "accepted_compression_ev_not_beaten",
+      "accepted_compression_pnl_not_beaten",
+      "accepted_distribution_ev_not_beaten",
+      "accepted_distribution_pnl_not_beaten"
+    ],
+    "observed_only": false,
+    "passed": false,
+    "target_trade_count": 0,
+    "target_trade_count_min": 20,
+    "target_window_count": 0,
+    "target_window_count_min": 3
+  },
+  "hypothesis": "candidate_pool: PIT SEC Companyfacts segment revenue/profit mix, using raw segment revenue and segment profit/loss facts rather than reportable segment count, RPO, purchase obligations, or product/service revenue, may identify firms where profitable segment mix expansion signals durable demand; with liquid SPY-relative price confirmation it should improve next-open 10-day default-off paper replacement value.",
+  "implementation_mode": "replay_field_coverage_rejection_before_candidate_pool_trade_overlay",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "live_realistic_execution_envelope": {
+    "kill_switch": "trade_enabled false",
+    "liquidity": "not reached; field coverage gate failed before OHLCV confirmation",
+    "max_positions": 0,
+    "notional_cap": "none allocated because zero candidate rows",
+    "portfolio_displacement": "none",
+    "required": true,
+    "slippage": "not reached; no next-open paper entries generated",
+    "status": "evaluated_rejected_no_candidates"
+  },
+  "log": "experiments/logs/exp-20260626-012.json",
+  "mechanism_family": "production_visible_sec_companyfacts_segment_mix_candidate_pool",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [
+    "quant/portfolio.py",
+    "quant/signal_engine.py",
+    "quant/run.py",
+    "operator_inputs/open_positions.json"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260626-002",
+    "exp-20260619-012",
+    "exp-20260626-007",
+    "exp-20260626-003",
+    "exp-20260626-004"
+  ],
+  "new_evidence_axis": "Selected PIT Companyfacts segment revenue/profit tag surface explicitly required by exp-20260619-012 and exp-20260626-007 closeouts; this uses raw segment revenue/profit mix fields from exp-20260626-002 inventory, not segment-count thresholds, RPO/deferred-revenue, purchase-obligation, product/service mix, top-N, hold-day, cooldown, or notional retuning.",
+  "new_evidence_type": "selected_pit_companyfacts_segment_revenue_profit_mix_tags",
+  "owner": "alpha-explore",
+  "parameters": {
+    "max_fact_age_days": 540,
+    "max_prior_gap_days": 500,
+    "min_prior_gap_days": 250,
+    "segment_profit_concepts": [
+      "SegmentReportingInformationOperatingIncomeLoss",
+      "SegmentReportingSegmentOperatingProfitLoss",
+      "SegmentReportingInformationProfitLoss",
+      "SegmentReportingInformationIncomeLossBeforeIncomeTaxes"
+    ],
+    "segment_revenue_concepts": [
+      "SegmentReportingInformationRevenue",
+      "SegmentReportingSegmentRevenue",
+      "SegmentReportingInformationRevenueFromExternalCustomers",
+      "RevenuesFromExternalCustomers"
+    ],
+    "total_revenue_concepts": [
+      "RevenueFromContractWithCustomerExcludingAssessedTax",
+      "Revenues",
+      "SalesRevenueNet"
+    ]
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry by sweeping segment revenue/profit concept lists, fact age, prior gap, revenue/profit ratios, RS/close/volume, top-N, hold, cooldown, or notional on frozen windows. The binding blocker is that selected segment revenue/profit XBRL facts are deprecated/stale in the canonical windows.",
+    "new_evidence_required": "A valid retry needs a new current PIT segment taxonomy surface from filings or dimensions, parsed segment revenue/profit text with source spans, or materially more closed forward replacement rows; not adjacent Companyfacts thresholds.",
+    "outcome_summary": "Aggregate EV delta +0.0000; aggregate PnL delta $+0.00; 0 paper trades; 0 standard-window segment revenue/profit rows.",
+    "why_result_happened": "The selected Companyfacts segment revenue/profit mix axis is not replayable in the canonical windows: the raw segment revenue/profit facts are deprecated/stale, with latest filed fact `2014-04-24` and `0` segment revenue/profit rows inside the three standard windows. No paper candidate rows were generated, so the alpha is rejected rather than rescued with adjacent Companyfacts thresholds."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "candidate_pool: PIT SEC Companyfacts segment revenue/profit mix, using raw segment revenue and segment profit/loss facts rather than reportable segment count, RPO, purchase obligations, or product/service revenue, may identify firms where profitable segment mix expansion signals durable demand; with liquid SPY-relative price confirmation it should improve next-open 10-day default-off paper replacement value.",
+    "2_history_check": {
+      "exp-20260619-012": "Rejected reportable segment-count reduction; this run uses segment revenue/profit facts, not segment-count thresholds.",
+      "exp-20260626-002": "Accepted inventory surfaced segment/customer provenance and listed segment revenue/profit mix as a valid future axis.",
+      "exp-20260626-007": "Rejected product/service revenue mix; this run uses reportable segment revenue/profit facts, not product/service tags.",
+      "novelty_gate": "Reservation used novelty and saturated-source overrides with the exact selected segment revenue/profit tag surface as the new evidence axis."
+    },
+    "3_single_decision_hypothesis": "companyfacts_segment_revenue_profit_mix_candidate_source_v1",
+    "4_acceptance_standard": "Use docs/backtesting.md Gate 1-4. Aggregate EV/PnL must be positive, no window EV/PnL regression, at least two EV-improved windows, at least 20 paper trades across all 3 windows, survival >=5%, drawdown drift <=0.5pp, concentration pass, and accepted compression/distribution comparators must be beaten. Replay-only positives are leads until shared daily/backtest parity exists.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260626_012_companyfacts_segment_revenue_profit_mix.py"
+  },
+  "prediction": {
+    "confidence_reason": "Inventory exp-20260626-002 surfaced segment/customer provenance and prior segment-count/product-service rejections explicitly named segment revenue/profit mix as required new evidence, but Companyfacts candidate-pool history is saturated and canonical-window tag coverage may be stale.",
+    "expected_ev_delta": 0.1,
+    "expected_pnl_delta": 1500.0,
+    "main_failure_modes": [
+      "companyfacts_source_saturation",
+      "segment_tags_deprecated_or_sparse",
+      "insufficient_segment_profit_coverage",
+      "window_regression",
+      "accepted_comparator_not_beaten"
+    ],
+    "recorded_at": "2026-06-26T11:09:52+00:00",
+    "success_probability": 0.1
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "adapter_status": "no_shared_adapter_because_field_coverage_gate_failed",
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "execution_envelope": {
+      "daily_entry_slots": 1,
+      "failure_handling": "missing current segment revenue/profit facts rejects the candidate source before paper entry",
+      "hold_days": 10,
+      "kill_switch": "trade_enabled remains false",
+      "liquidity_source": "would require PIT OHLCV price >= $10 and ADV20 >= $50M after field coverage passes",
+      "order_semantics": "no order; coverage gate produced zero paper candidates",
+      "target_notional_per_paper_trade": 4000.0,
+      "trade_enabled": false
+    },
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "paper_orders_changed": false,
+    "parity_note": "No production behavior changed. A future retry would need a shared selected-Companyfacts daily surface with current segment revenue/profit coverage before any helper or daily snapshot is promoted.",
+    "ranking_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "segment_revenue_profit_tags_deprecated_before_standard_windows; no_standard_window_segment_revenue_profit_rows; no_candidate_rows_generated; target_sample_too_small; target_window_coverage_too_small; accepted_compression_ev_not_beaten; accepted_compression_pnl_not_beaten; accepted_distribution_ev_not_beaten; accepted_distribution_pnl_not_beaten",
+  "related_files": [
+    "quant/experiments/exp_20260626_012_companyfacts_segment_revenue_profit_mix.py",
+    "data/experiments/exp-20260626-012/exp_20260626_012_companyfacts_segment_revenue_profit_mix.json",
+    "experiments/logs/exp-20260626-012.json",
+    "experiments/cards/exp-20260626-012.md",
+    "experiments/manifests/exp-20260626-012.json",
+    "experiments/tickets/exp-20260626-012.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/cache/sec/companyfacts"
+  ],
+  "runner": "quant/experiments/exp_20260626_012_companyfacts_segment_revenue_profit_mix.py",
+  "runner_command": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260626_012_companyfacts_segment_revenue_profit_mix.py",
+  "single_causal_variable": "companyfacts_segment_revenue_profit_mix_candidate_source_v1",
+  "source_summary": {
+    "candidate_rows": [],
+    "concept_summary": [
+      {
+        "concept": "SegmentReportingInformationRevenue",
+        "filed_max": "2014-04-24",
+        "filed_min": "2010-07-21",
+        "kind": "segment_revenue",
+        "row_count": 2395,
+        "ticker_count": 113
+      },
+      {
+        "concept": "RevenuesFromExternalCustomers",
+        "filed_max": "2014-04-23",
+        "filed_min": "2011-05-03",
+        "kind": "segment_revenue",
+        "row_count": 814,
+        "ticker_count": 49
+      },
+      {
+        "concept": "SegmentReportingInformationOperatingIncomeLoss",
+        "filed_max": "2012-02-21",
+        "filed_min": "2010-07-21",
+        "kind": "segment_profit",
+        "row_count": 524,
+        "ticker_count": 51
+      },
+      {
+        "concept": "SegmentReportingInformationRevenueFromExternalCustomers",
+        "filed_max": "2012-04-26",
+        "filed_min": "2010-07-23",
+        "kind": "segment_revenue",
+        "row_count": 433,
+        "ticker_count": 39
+      },
+      {
+        "concept": "SegmentReportingSegmentOperatingProfitLoss",
+        "filed_max": "2011-11-04",
+        "filed_min": "2010-07-23",
+        "kind": "segment_profit",
+        "row_count": 334,
+        "ticker_count": 36
+      },
+      {
+        "concept": "SegmentReportingSegmentRevenue",
+        "filed_max": "2011-11-10",
+        "filed_min": "2010-07-23",
+        "kind": "segment_revenue",
+        "row_count": 318,
+        "ticker_count": 34
+      },
+      {
+        "concept": "SegmentReportingInformationProfitLoss",
+        "filed_max": "2012-05-11",
+        "filed_min": "2010-07-22",
+        "kind": "segment_profit",
+        "row_count": 290,
+        "ticker_count": 29
+      },
+      {
+        "concept": "SegmentReportingInformationIncomeLossBeforeIncomeTaxes",
+        "filed_max": "2011-11-04",
+        "filed_min": "2010-07-16",
+        "kind": "segment_profit",
+        "row_count": 237,
+        "ticker_count": 27
+      }
+    ],
+    "coverage": {
+      "companyfacts_dir": "data/cache/sec/companyfacts",
+      "files_decode_error": 0,
+      "files_missing": 6,
+      "files_present": 1440,
+      "latest_segment_fact_filed": "2014-04-24",
+      "segment_profit_row_count": 1385,
+      "segment_revenue_profit_row_count": 5345,
+      "segment_revenue_row_count": 3960,
+      "standard_window_segment_rows": 0,
+      "tickers_with_both_segment_revenue_and_profit": 65,
+      "tickers_with_current_window_both_segment_fields": 0,
+      "tickers_with_current_window_segment_profit": 0,
+      "tickers_with_current_window_segment_revenue": 0,
+      "tickers_with_segment_profit": 121,
+      "tickers_with_segment_revenue": 170,
+      "tickers_with_total_revenue_scaler": 1272
+    },
+    "parameters": {
+      "max_fact_age_days": 540,
+      "max_prior_gap_days": 500,
+      "min_prior_gap_days": 250,
+      "segment_profit_concepts": [
+        "SegmentReportingInformationOperatingIncomeLoss",
+        "SegmentReportingSegmentOperatingProfitLoss",
+        "SegmentReportingInformationProfitLoss",
+        "SegmentReportingInformationIncomeLossBeforeIncomeTaxes"
+      ],
+      "segment_revenue_concepts": [
+        "SegmentReportingInformationRevenue",
+        "SegmentReportingSegmentRevenue",
+        "SegmentReportingInformationRevenueFromExternalCustomers",
+        "RevenuesFromExternalCustomers"
+      ],
+      "total_revenue_concepts": [
+        "RevenueFromContractWithCustomerExcludingAssessedTax",
+        "Revenues",
+        "SalesRevenueNet"
+      ]
+    },
+    "sample_rows": [
+      {
+        "concept": "SegmentReportingInformationRevenue",
+        "description": "Amount of total revenue for the reportable segments, including revenue from external customers, transactions with other operating segments of the same entity, and (gross) interest revenue. All considered to be \"operating revenue\" for purpos",
+        "end": "2010-04-30",
+        "filed": "2011-06-07",
+        "form": "10-Q",
+        "fp": "Q2",
+        "fy": 2011,
+        "kind": "segment_revenue",
+        "label": "Segment Reporting Information, Revenue for Reportable Segment (Deprecated 2013-01-31)",
+        "taxonomy": "us-gaap",
+        "ticker": "A",
+        "unit": "USD",
+        "val": 2484000000.0
+      },
+      {
+        "concept": "SegmentReportingInformationRevenue",
+        "description": "Amount of total revenue for the reportable segments, including revenue from external customers, transactions with other operating segments of the same entity, and (gross) interest revenue. All considered to be \"operating revenue\" for purpos",
+        "end": "2010-04-30",
+        "filed": "2011-06-07",
+        "form": "10-Q",
+        "fp": "Q2",
+        "fy": 2011,
+        "kind": "segment_revenue",
+        "label": "Segment Reporting Information, Revenue for Reportable Segment (Deprecated 2013-01-31)",
+        "taxonomy": "us-gaap",
+        "ticker": "A",
+        "unit": "USD",
+        "val": 1271000000.0
+      },
+      {
+        "concept": "SegmentReportingInformationRevenue",
+        "description": "Amount of total revenue for the reportable segments, including revenue from external customers, transactions with other operating segments of the same entity, and (gross) interest revenue. All considered to be \"operating revenue\" for purpos",
+        "end": "2010-07-31",
+        "filed": "2011-09-07",
+        "form": "10-Q",
+        "fp": "Q3",
+        "fy": 2011,
+        "kind": "segment_revenue",
+        "label": "Segment Reporting Information, Revenue for Reportable Segment (Deprecated 2013-01-31)",
+        "taxonomy": "us-gaap",
+        "ticker": "A",
+        "unit": "USD",
+        "val": 3879000000.0
+      },
+      {
+        "concept": "SegmentReportingInformationRevenue",
+        "description": "Amount of total revenue for the reportable segments, including revenue from external customers, transactions with other operating segments of the same entity, and (gross) interest revenue. All considered to be \"operating revenue\" for purpos",
+        "end": "2010-07-31",
+        "filed": "2010-10-06",
+        "form": "10-Q/A",
+        "fp": "Q3",
+        "fy": 2010,
+        "kind": "segment_revenue",
+        "label": "Segment Reporting Information, Revenue for Reportable Segment (Deprecated 2013-01-31)",
+        "taxonomy": "us-gaap",
+        "ticker": "A",
+        "unit": "USD",
+        "val": 3879000000.0
+      },
+      {
+        "concept": "SegmentReportingInformationRevenue",
+        "description": "Amount of total revenue for the reportable segments, including revenue from external customers, transactions with other operating segments of the same entity, and (gross) interest revenue. All considered to be \"operating revenue\" for purpos",
+        "end": "2010-07-31",
+        "filed": "2011-09-07",
+        "form": "10-Q",
+        "fp": "Q3",
+        "fy": 2011,
+        "kind": "segment_revenue",
+        "label": "Segment Reporting Information, Revenue for Reportable Segment (Deprecated 2013-01-31)",
+        "taxonomy": "us-gaap",
+        "ticker": "A",
+        "unit": "USD",
+        "val": 1395000000.0
+      },
+      {
+        "concept": "SegmentReportingInformationRevenue",
+        "description": "Amount of total revenue for the reportable segments, including revenue from external customers, transactions with other operating segments of the same entity, and (gross) interest revenue. All considered to be \"operating revenue\" for purpos",
+        "end": "2010-07-31",
+        "filed": "2010-10-06",
+        "form": "10-Q/A",
+        "fp": "Q3",
+        "fy": 2010,
+        "kind": "segment_revenue",
+        "label": "Segment Reporting Information, Revenue for Reportable Segment (Deprecated 2013-01-31)",
+        "taxonomy": "us-gaap",
+        "ticker": "A",
+        "unit": "USD",
+        "val": 1395000000.0
+      },
+      {
+        "concept": "SegmentReportingInformationRevenue",
+        "description": "Amount of total revenue for the reportable segments, including revenue from external customers, transactions with other operating segments of the same entity, and (gross) interest revenue. All considered to be \"operating revenue\" for purpos",
+        "end": "2011-01-31",
+        "filed": "2011-03-09",
+        "form": "10-Q",
+        "fp": "Q1",
+        "fy": 2011,
+        "kind": "segment_revenue",
+        "label": "Segment Reporting Information, Revenue for Reportable Segment (Deprecated 2013-01-31)",
+        "taxonomy": "us-gaap",
+        "ticker": "A",
+        "unit": "USD",
+        "val": 1524000000.0
+      },
+      {
+        "concept": "SegmentReportingInformationRevenue",
+        "description": "Amount of total revenue for the reportable segments, including revenue from external customers, transactions with other operating segments of the same entity, and (gross) interest revenue. All considered to be \"operating revenue\" for purpos",
+        "end": "2011-04-30",
+        "filed": "2011-06-07",
+        "form": "10-Q",
+        "fp": "Q2",
+        "fy": 2011,
+        "kind": "segment_revenue",
+        "label": "Segment Reporting Information, Revenue for Reportable Segment (Deprecated 2013-01-31)",
+        "taxonomy": "us-gaap",
+        "ticker": "A",
+        "unit": "USD",
+        "val": 3203000000.0
+      },
+      {
+        "concept": "SegmentReportingInformationRevenue",
+        "description": "Amount of total revenue for the reportable segments, including revenue from external customers, transactions with other operating segments of the same entity, and (gross) interest revenue. All considered to be \"operating revenue\" for purpos",
+        "end": "2011-04-30",
+        "filed": "2011-06-07",
+        "form": "10-Q",
+        "fp": "Q2",
+        "fy": 2011,
+        "kind": "segment_revenue",
+        "label": "Segment Reporting Information, Revenue for Reportable Segment (Deprecated 2013-01-31)",
+        "taxonomy": "us-gaap",
+        "ticker": "A",
+        "unit": "USD",
+        "val": 1679000000.0
+      },
+      {
+        "concept": "SegmentReportingInformationRevenue",
+        "description": "Amount of total revenue for the reportable segments, including revenue from external customers, transactions with other operating segments of the same entity, and (gross) interest revenue. All considered to be \"operating revenue\" for purpos",
+        "end": "2011-07-31",
+        "filed": "2011-09-07",
+        "form": "10-Q",
+        "fp": "Q3",
+        "fy": 2011,
+        "kind": "segment_revenue",
+        "label": "Segment Reporting Information, Revenue for Reportable Segment (Deprecated 2013-01-31)",
+        "taxonomy": "us-gaap",
+        "ticker": "A",
+        "unit": "USD",
+        "val": 4895000000.0
+      },
+      {
+        "concept": "SegmentReportingInformationRevenue",
+        "description": "Amount of total revenue for the reportable segments, including revenue from external customers, transactions with other operating segments of the same entity, and (gross) interest revenue. All considered to be \"operating revenue\" for purpos",
+        "end": "2011-07-31",
+        "filed": "2011-09-07",
+        "form": "10-Q",
+        "fp": "Q3",
+        "fy": 2011,
+        "kind": "segment_revenue",
+        "label": "Segment Reporting Information, Revenue for Reportable Segment (Deprecated 2013-01-31)",
+        "taxonomy": "us-gaap",
+        "ticker": "A",
+        "unit": "USD",
+        "val": 1692000000.0
+      },
+      {
+        "concept": "SegmentReportingInformationOperatingIncomeLoss",
+        "description": "Amount of income or loss for the reportable segment before unusual Items, equity method income or loss, income taxes, and extraordinary items.",
+        "end": "2008-10-31",
+        "filed": "2010-12-20",
+        "form": "10-K",
+        "fp": "FY",
+        "fy": 2010,
+        "kind": "segment_profit",
+        "label": "Segment Reporting Information, Operating Income (Loss) (Deprecated 2011-01-31)",
+        "taxonomy": "us-gaap",
+        "ticker": "A",
+        "unit": "USD",
+        "val": 887000000.0
+      }
+    ],
+    "universe": {
+      "broad_liquid_cik_rows": 1446,
+      "source": "data/warehouse/warehouse_main.sqlite",
+      "warnings": []
+    },
+    "window_counts": {
+      "late_strong": {
+        "all_segment_rows": 0,
+        "candidate_rows": 0,
+        "segment_profit_rows": 0,
+        "segment_revenue_rows": 0
+      },
+      "mid_weak": {
+        "all_segment_rows": 0,
+        "candidate_rows": 0,
+        "segment_profit_rows": 0,
+        "segment_revenue_rows": 0
+      },
+      "old_thin": {
+        "all_segment_rows": 0,
+        "candidate_rows": 0,
+        "segment_profit_rows": 0,
+        "segment_revenue_rows": 0
+      }
+    }
+  },
+  "status": "rejected",
+  "ticket_before": {
+    "acceptance_rule": "Use docs/backtesting.md Gate 1-4. Aggregate EV/PnL must be positive, no window EV/PnL regression, at least two EV-improved windows, at least 20 paper trades across all 3 windows, survival >=5%, drawdown drift <=0.5pp, concentration pass, and accepted compression/distribution comparators must be beaten. Replay-only positives are leads until shared daily/backtest parity exists.",
+    "allowed_write_scope": [
+      "quant/experiments/exp_20260626_012_companyfacts_segment_revenue_profit_mix.py",
+      "data/experiments/exp-20260626-012/exp_20260626_012_companyfacts_segment_revenue_profit_mix.json",
+      "experiments/logs/exp-20260626-012.json",
+      "experiments/cards/exp-20260626-012.md",
+      "experiments/manifests/exp-20260626-012.json",
+      "experiments/tickets/exp-20260626-012.json",
+      "docs/experiment_log.jsonl",
+      "docs/experiment_registry.json"
+    ],
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "card_file": "experiments/cards/exp-20260626-012.md",
+    "causal_components": [
+      "raw Companyfacts segment revenue/profit facts",
+      "filed-date PIT boundary",
+      "liquid SPY-relative price confirmation",
+      "next-open 10-day default-off paper overlay",
+      "no live/default orders"
+    ],
+    "change_type": "candidate_pool_full_stack",
+    "changed_variable": "companyfacts_segment_revenue_profit_mix_candidate_source_v1",
+    "claimed_at": "2026-06-26T11:10:13+00:00",
+    "completed_at": null,
+    "created_at": "2026-06-26T11:10:00+00:00",
+    "evaluation_windows": [
+      {
+        "end": "2026-04-21",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "start": "2024-10-02"
+      }
+    ],
+    "experiment_id": "exp-20260626-012",
+    "experiment_uid": "expuid-fe5f6279d97143c9",
+    "hub_identity": {
+      "namespace": "ginger/experiments",
+      "repo_id": "ginger/experiments/exp-20260626-012",
+      "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+      "reserved_at": "2026-06-26T11:10:00+00:00",
+      "scheme": "hf_hub_local_v1",
+      "slug": "companyfacts_segment_revenue_profit_mix"
+    },
+    "hypothesis": "candidate_pool: PIT SEC Companyfacts segment revenue/profit mix, using raw segment revenue and segment profit/loss facts rather than reportable segment count, RPO, purchase obligations, or product/service revenue, may identify firms where profitable segment mix expansion signals durable demand; with liquid SPY-relative price confirmation it should improve next-open 10-day default-off paper replacement value.",
+    "lane": "alpha_search",
+    "locked_variables": [
+      "entry_exit_sizing_live_orders_accepted_allocator"
+    ],
+    "mechanism_family": "production_visible_sec_companyfacts_segment_mix_candidate_pool",
+    "multiple_testing_risk_bucket": "high",
+    "must_not_touch": [
+      "quant/portfolio.py",
+      "quant/signal_engine.py",
+      "quant/run.py",
+      "operator_inputs/open_positions.json"
+    ],
+    "nearby_prior_experiments": [
+      "exp-20260626-002",
+      "exp-20260619-012",
+      "exp-20260626-007",
+      "exp-20260626-003",
+      "exp-20260626-004"
+    ],
+    "new_evidence_type": "selected_pit_companyfacts_segment_revenue_profit_mix_tags",
+    "novelty": {
+      "blocking_matches": [
+        {
+          "accept_rate": 0.0,
+          "family_key": "free_sec_submissions_offering_price_absorption_candidate_pool",
+          "score": 0.6095,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "family_key": "sbc_grant_value_backlog_relief_candidate_pool",
+          "score": 0.6093,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "family_key": "sec_guidance_outlook_raise_price_aligned_candidate_pool",
+          "score": 0.6093,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "family_key": "sec_text_price_alignment_issuer_continuation_candidate_pool",
+          "score": 0.6093,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "family_key": "sec_order_backlog_demand_evidence_span_candidate_pool",
+          "score": 0.6091,
+          "status": "single_attempt",
+          "trials": 1
+        }
+      ],
+      "enforced": true,
+      "fingerprint": {
+        "data_source": "sec_text_event",
+        "field_tags": [
+          "companyfacts",
+          "confirmation",
+          "count",
+          "demand",
+          "durable",
+          "expansion",
+          "facts",
+          "firms",
+          "identify",
+          "improve",
+          "it",
+          "liquid",
+          "loss",
+          "may",
+          "mix",
+          "obligations",
+          "or",
+          "pit",
+          "price",
+          "product",
+          "profit",
+          "profitable",
+          "purchase",
+          "rather",
+          "raw",
+          "relative",
+          "replacement",
+          "reportable",
+          "revenue",
+          "rpo",
+          "segment",
+          "service",
+          "should",
+          "signals",
+          "spy",
+          "than",
+          "using",
+          "value",
+          "where"
+        ],
+        "gate_shape": "candidate_pool_top1_10d"
+      },
+      "nearest": [
+        {
+          "accept_rate": 0.0,
+          "data_source": "sec_text_event",
+          "family_key": "free_sec_submissions_offering_price_absorption_candidate_pool",
+          "reopen_condition": "If this fixed offering-absorption bundle fails, do not retry by sweeping offering form lists, signal excess, close-location, volume, volatility, ret20, price/ADV, event-age, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs materially richer PIT financing economics such as offering amount normalized by market cap, use-of-proceeds, debt vs equity classification, A",
+          "score": 0.6095,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "sec_text_event",
+          "family_key": "sbc_grant_value_backlog_relief_candidate_pool",
+          "reopen_condition": "A retry needs materially different PIT grant-value evidence such as closed forward replacement-value rows, option-exercise/vesting context joined to the same issuers, or a production-shared daily snapshot of grant backlog maturation. Do not sweep grant backlog tags, freshness, ratio thresholds, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows.",
+          "score": 0.6093,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "sec_text_event",
+          "family_key": "sec_guidance_outlook_raise_price_aligned_candidate_pool",
+          "reopen_condition": "Retry only with forward SEC replacement rows, a richer PIT semantic relation parser with audited source spans, or a different free-data edge that expands the candidate pool without adding noise tickers.",
+          "score": 0.6093,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "sec_text_event",
+          "family_key": "sec_text_price_alignment_issuer_continuation_candidate_pool",
+          "reopen_condition": null,
+          "score": 0.6093,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "sec_text_event",
+          "family_key": "sec_order_backlog_demand_evidence_span_candidate_pool",
+          "reopen_condition": "A valid retry needs materially richer PIT semantic provenance, such as extracted backlog growth rate, book-to-bill magnitude, contract duration/funding certainty, named customer importance, or forward replacement-value rows from a shared daily helper.",
+          "score": 0.6091,
+          "status": "single_attempt",
+          "trials": 1
+        }
+      ],
+      "new_evidence_axis": "Selected PIT Companyfacts segment revenue/profit tag surface explicitly required by exp-20260619-012 and exp-20260626-007 closeouts; this uses raw segment revenue/profit mix fields from exp-20260626-002 inventory, not segment-count thresholds, RPO/deferred-revenue, purchase-obligation, product/service mix, top-N, hold-day, cooldown, or notional retuning.",
+      "override": true,
+      "saturated_source_override": true,
+      "source_saturation": {
+        "accept_rate": 0.0,
+        "accepts": 0,
+        "applicable": true,
+        "gate_shape": "candidate_pool_top1_10d",
+        "max_accept_rate": 0.05,
+        "min_trials": 12,
+        "saturated": true,
+        "source": "sec_text_event",
+        "trials": 43
+      },
+      "warn": true,
+      "warn_threshold": 0.55
+    },
+    "owner": "alpha-explore",
+    "prediction": {
+      "confidence_reason": "Inventory exp-20260626-002 surfaced segment/customer provenance and prior segment-count/product-service rejections explicitly named segment revenue/profit mix as required new evidence, but Companyfacts candidate-pool history is saturated and canonical-window tag coverage may be stale.",
+      "expected_ev_delta": 0.1,
+      "expected_pnl_delta": 1500.0,
+      "main_failure_modes": [
+        "companyfacts_source_saturation",
+        "segment_tags_deprecated_or_sparse",
+        "insufficient_segment_profit_coverage",
+        "window_regression",
+        "accepted_comparator_not_beaten"
+      ],
+      "recorded_at": "2026-06-26T11:09:52+00:00",
+      "success_probability": 0.1
+    },
+    "prior_trial_count": 0,
+    "result": null,
+    "revision_manifest_file": "experiments/manifests/exp-20260626-012.json",
+    "single_causal_variable": "companyfacts_segment_revenue_profit_mix_candidate_source_v1",
+    "status": "claimed",
+    "ticket_file": "experiments/tickets/exp-20260626-012.json",
+    "trial_family": "companyfacts_segment_revenue_profit_mix_candidate_pool",
+    "trial_variant_id": "segment_revenue_profit_mix_top1_next_open_10d_v1"
+  },
+  "timestamp": "2026-06-26T11:16:38Z",
+  "trial_family": "companyfacts_segment_revenue_profit_mix_candidate_pool",
+  "trial_variant_id": "segment_revenue_profit_mix_top1_next_open_10d_v1"
+}

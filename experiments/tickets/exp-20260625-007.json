@@ -1,0 +1,337 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260625_007_pilot_scorecard_20260625_graduation_readiness.py",
+    "data/experiments/exp-20260625-007/exp_20260625_007_pilot_scorecard_20260625_graduation_readiness.json",
+    "experiments/cards/exp-20260625-007.md",
+    "experiments/manifests/exp-20260625-007.json",
+    "experiments/tickets/exp-20260625-007.json",
+    "experiments/logs/exp-20260625-007.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260625-007.md",
+  "causal_components": [
+    "current pilot scorecard",
+    "current pilot recommendations",
+    "closed-trade and replacement-value readiness gates",
+    "no strategy behavior change"
+  ],
+  "change_type": "pilot_forward_readiness_audit",
+  "changed_variable": "pilot_scorecard_20260625_graduation_readiness_v1",
+  "claimed_at": "2026-06-25T06:06:35+00:00",
+  "completed_at": "2026-06-25T06:13:30+00:00",
+  "created_at": "2026-06-25T06:06:26+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260625-007",
+  "experiment_uid": "expuid-814bcd59535f4d9d",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260625-007",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-25T06:06:26+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "pilot_scorecard_20260625_graduation_readiness"
+  },
+  "hypothesis": "Observed-only alpha/risk allocation: the 2026-06-25 live pilot scorecard may identify a default-off pilot sleeve ready to graduate only if it has enough closed trades, positive replacement value versus SPY, and book drawdown below the precommitted envelope.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "pilot_scorecard_20260625_graduation_readiness_v1"
+  ],
+  "mechanism_family": "pilot_or_sleeve",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260623-006",
+    "exp-20260624-010",
+    "exp-20260624-014"
+  ],
+  "new_evidence_type": "current_forward_pilot_scorecard_rows",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "allocation",
+        "alpha",
+        "below",
+        "book",
+        "closed",
+        "drawdown",
+        "enough",
+        "envelope",
+        "forward",
+        "graduate",
+        "graduation",
+        "has",
+        "identify",
+        "if",
+        "it",
+        "live",
+        "may",
+        "observed",
+        "only",
+        "or",
+        "pilot",
+        "positive",
+        "precommitted",
+        "readiness",
+        "ready",
+        "replacement",
+        "risk",
+        "scorecard",
+        "sleeve",
+        "spy",
+        "to",
+        "trades",
+        "value",
+        "versus"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "observed_only_attribution",
+        "reopen_condition": "Need materially more closed forward rows after sleeve_health has longer history and real degraded/failing variation, or a separate shared-policy Gate 1-4 allocation test with a predeclared health gate.",
+        "score": 0.0585,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.0549,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "live_held_book_cluster_concentration_attribution",
+        "reopen_condition": "A retry needs a shared risk-allocation policy with canonical Gate 1-4 before/after windows, or forward/live risk outcomes under a predeclared cluster envelope.",
+        "score": 0.0476,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "vcp_forward_replacement_value_readiness",
+        "reopen_condition": null,
+        "score": 0.0421,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "pilot_or_sleeve",
+        "reopen_condition": "A fundamentally different portfolio-level risk mechanism (e.g. regime-based position count cap, not notional scaling) or a much higher-frequency trade universe where sizing changes affect hundreds of entries, not single digits.",
+        "score": 0.0417,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New 2026-06-25 generated pilot_scorecard and pilot_recommendations rows after exp-20260624-010, including updated fundamental_growth_rs closed rows and current cross-pilot DDOG overlap context; this is not a frozen-window threshold or source retune.",
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.12,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "closed_rows_too_few",
+      "negative_replacement_value",
+      "drawdown_kill_breach",
+      "cross_pilot_overlap_risk"
+    ],
+    "confidence_reason": "The 2026-06-25 generated pilot scorecard is a new forward observation surface after the participant-context repair, but current pilots are likely immature: allocator and distribution have zero closed trades and fundamental_growth_rs already breached the 15% book-drawdown kill envelope.",
+    "recorded_at": "2026-06-25T06:06:03+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "rejected_no_current_pilot_graduation_ready",
+    "artifact": "data/experiments/exp-20260625-007/exp_20260625_007_pilot_scorecard_20260625_graduation_readiness.json",
+    "log": "experiments/logs/exp-20260625-007.json",
+    "runner": "quant/experiments/exp_20260625_007_pilot_scorecard_20260625_graduation_readiness.py",
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_no_current_pilot_graduation_ready",
+      "checks": {
+        "at_least_one_graduation_ready_pilot": false,
+        "no_killed_pilot_enter_next_open": true,
+        "overlap_context_auditable": true,
+        "no_cross_pilot_overlap_with_kill": false
+      },
+      "failed_reasons": [
+        "no_graduation_ready_pilot",
+        "cross_pilot_overlap_with_kill_verdict",
+        "book_drawdown_ceiling_breached",
+        "closed_rows_too_few",
+        "pilot_verdict_kill",
+        "replacement_value_vs_spy_not_positive"
+      ],
+      "ready_pilots": [],
+      "before_after_policy_delta": "none",
+      "expected_value_score_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "survival_rate_delta": 0.0,
+      "status": "observed_only_rejected"
+    },
+    "calibration": {
+      "predicted_success_probability": 0.12,
+      "actual_success": false,
+      "brier_score": 0.0144,
+      "predicted_failure_modes": [
+        "closed_rows_too_few",
+        "negative_replacement_value",
+        "drawdown_kill_breach",
+        "cross_pilot_overlap_risk"
+      ],
+      "realized_failure_modes": [
+        "closed_rows_too_few",
+        "negative_replacement_value",
+        "drawdown_kill_breach",
+        "cross_pilot_overlap_risk"
+      ]
+    },
+    "summary": "No pilot met the graduation rule. Allocator and distribution have zero closed trades. fundamental_growth_rs has only six closed trades, negative replacement value versus SPY, and a 24.29% book drawdown that breaches the 15% envelope."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260625-007.json",
+  "single_causal_variable": "pilot_scorecard_20260625_graduation_readiness_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260625-007.json",
+  "trial_family": "pilot_scorecard_forward_graduation_readiness",
+  "trial_variant_id": "current_pilot_scorecard_20260625_v1",
+  "implementation_mode": "observed_only_attribution",
+  "new_evidence_axis": "New 2026-06-25 generated pilot_scorecard and pilot_recommendations rows after exp-20260624-010, including updated fundamental_growth_rs closed rows and current cross-pilot DDOG overlap context; this is not a frozen-window threshold or source retune.",
+  "decision": "rejected_no_current_pilot_graduation_ready",
+  "artifact": "data/experiments/exp-20260625-007/exp_20260625_007_pilot_scorecard_20260625_graduation_readiness.json",
+  "log": "experiments/logs/exp-20260625-007.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_expected_value_score_sum": 7.8941,
+    "baseline_total_pnl": 234850.99,
+    "baseline_trade_count": 61
+  },
+  "gate2": {
+    "passed": true,
+    "required_fields": [
+      "scorecards.closed_trades",
+      "scorecards.rv_vs_spy_usd",
+      "scorecards.book_max_drawdown_pct",
+      "scorecards.verdict",
+      "recommendations.actionable",
+      "cross_pilot_overlap.participant_context",
+      "cross_pilot_overlap.participant_context.entry_date"
+    ],
+    "entry_date_present_in_overlap_context": true,
+    "target_price_required": false,
+    "target_price_note": "This observed-only current pilot scorecard audit does not create historical entry rows or target_price-derived trade signals."
+  },
+  "gate3": {
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "filter_added": false,
+    "note": "No strategy filter was added; baseline survival remains unchanged."
+  },
+  "gate4": {
+    "passed": false,
+    "decision": "rejected_no_current_pilot_graduation_ready",
+    "checks": {
+      "at_least_one_graduation_ready_pilot": false,
+      "no_killed_pilot_enter_next_open": true,
+      "overlap_context_auditable": true,
+      "no_cross_pilot_overlap_with_kill": false
+    },
+    "failed_reasons": [
+      "no_graduation_ready_pilot",
+      "cross_pilot_overlap_with_kill_verdict",
+      "book_drawdown_ceiling_breached",
+      "closed_rows_too_few",
+      "pilot_verdict_kill",
+      "replacement_value_vs_spy_not_positive"
+    ],
+    "ready_pilots": [],
+    "before_after_policy_delta": "none",
+    "expected_value_score_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "survival_rate_delta": 0.0,
+    "status": "observed_only_rejected"
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "pilot_state_changed": false,
+    "pilot_recommendations_changed": false,
+    "daily_snapshot_exposed": true,
+    "live_ready": false,
+    "replay_only": false,
+    "parity_note": "Observed-only audit of already generated scorecard and recommendation files. No production or paper behavior changed."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "No pilot met the graduation rule. Allocator and distribution have zero closed trades. fundamental_growth_rs has only six closed trades, negative replacement value versus SPY, and a 24.29% book drawdown that breaches the 15% envelope.",
+    "forbidden_near_neighbor_retry": "Do not rerun current pilot graduation readiness by only changing min_closed, RV, drawdown, verdict, overlap, or recommendation thresholds on the same 2026-06-25 scorecard. Reopen only with materially more closed forward rows or a different shared allocation policy tested through Gate 1-4.",
+    "new_evidence_required": "Wait for additional closed pilot trades, or move to a new production-visible data surface with PIT coverage instead of retuning current pilot readiness gates.",
+    "reproducibility": "The runner reads the baseline, pilot scorecard, and 2026-06-25 recommendation snapshot, then writes artifact, log, card, manifest, JSONL row, and closes the ticket through persist_self_registered_result."
+  },
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/pilots/pilot_scorecard.json",
+    "data/pilots/pilot_recommendations_2026-06-25.json",
+    "data/pilots/pilot_tracker.md",
+    "experiments/tickets/exp-20260625-007.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260625_007_pilot_scorecard_20260625_graduation_readiness.py",
+    "data/experiments/exp-20260625-007/exp_20260625_007_pilot_scorecard_20260625_graduation_readiness.json",
+    "experiments/logs/exp-20260625-007.json",
+    "experiments/cards/exp-20260625-007.md",
+    "experiments/manifests/exp-20260625-007.json",
+    "experiments/tickets/exp-20260625-007.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-06-25T06:13:30+00:00"
+}

@@ -1,0 +1,210 @@
+{
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "recovered_candidate_rows": 6,
+    "settled_replacement_value_rows": 0,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "valid_session_candidate_rows": 0,
+    "window_count": 3
+  },
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260626_006_recovered_quant_signals_forward_readiness.py",
+    "data/experiments/exp-20260626-006/exp_20260626_006_recovered_quant_signals_forward_readiness.json",
+    "experiments/cards/exp-20260626-006.md",
+    "experiments/manifests/exp-20260626-006.json",
+    "experiments/tickets/exp-20260626-006.json",
+    "experiments/logs/exp-20260626-006.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "artifact": "data/experiments/exp-20260626-006/exp_20260626_006_recovered_quant_signals_forward_readiness.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_decision": "observed_only_rejected",
+    "actual_success": 0,
+    "brier_score": 0.0625,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "too_few_recovered_candidates",
+      "no_local_settlement_prices",
+      "pending_forward_close"
+    ],
+    "predicted_success_probability": 0.25,
+    "realized_failure_modes": [
+      "too_few_recovered_candidates",
+      "all_candidate_rows_on_non_session_dates",
+      "no_valid_session_entry_candidates",
+      "no_settled_replacement_values"
+    ],
+    "surprise_note": "The settlement blocker occurred as expected, with the sharper finding that every extracted CAT/TSM candidate row came from a holiday/weekend quant_signals artifact."
+  },
+  "causal_components": [
+    "recovered quant_signals rows",
+    "entry candidate extraction",
+    "local settlement availability audit",
+    "pending forward ledger",
+    "no strategy behavior change"
+  ],
+  "change_summary": "Observed-only audit of recovered June quant_signals entry candidates; all extracted candidates were on non-session dates and no settlement prices were available.",
+  "change_type": "observed_only_forward_attribution",
+  "changed_files": [
+    "quant/experiments/exp_20260626_006_recovered_quant_signals_forward_readiness.py",
+    "data/experiments/exp-20260626-006/exp_20260626_006_recovered_quant_signals_forward_readiness.json",
+    "experiments/logs/exp-20260626-006.json",
+    "experiments/cards/exp-20260626-006.md",
+    "experiments/manifests/exp-20260626-006.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "recovered_quant_signals_entry_candidate_forward_readiness_v1",
+  "decision": "rejected_recovered_quant_signals_forward_readiness_non_session_blocked",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "recovered_candidate_rows": 6,
+    "settled_replacement_value_rows": 0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "valid_session_candidate_rows": 0
+  },
+  "experiment_id": "exp-20260626-006",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "passed": true
+  },
+  "gate2": {
+    "candidate_rows": 6,
+    "entry_date_checked": "planned next session derived but blocked for non-session source dates",
+    "entry_price_coverage": 1.0,
+    "passed": true,
+    "required_fields_checked": [
+      "signal_date",
+      "ticker",
+      "entry_price",
+      "target_price",
+      "signal_is_us_equity_session"
+    ],
+    "target_price_coverage": 1.0
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No executable filter was added; valid-session forward rows are zero.",
+    "passed": false,
+    "signals_generated_proxy": 6,
+    "signals_survived_proxy": 0,
+    "survival_rate_proxy": 0.0
+  },
+  "gate4": {
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "strategy_behavior_changed": false,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "decision": "rejected_recovered_quant_signals_forward_readiness_non_session_blocked",
+    "failed_reasons": [
+      "too_few_recovered_candidates",
+      "all_candidate_rows_on_non_session_dates",
+      "no_valid_session_entry_candidates",
+      "no_settled_replacement_values"
+    ],
+    "observed_only": true,
+    "passed": false,
+    "settled_replacement_value_rows": 0
+  },
+  "hypothesis": "Recovered June quant_signals final artifacts contain production-visible entry candidate rows that were previously hidden by missing finals; if local settlement data can resolve their next-open and forward closes, those rows may create a new forward replacement-value evidence axis for candidate allocation without retuning frozen historical windows.",
+  "implementation_mode": "observed_only_forward_readiness",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "mechanism_family": "production_candidate_artifact_forward_maturation",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260626-005",
+    "exp-20260625-002",
+    "exp-20260625-004",
+    "exp-20260625-017",
+    "exp-20260622-013"
+  ],
+  "new_evidence_type": "recovered_daily_quant_signals_candidate_rows",
+  "next_retry_requires": [
+    "session-date recovered or newly generated quant_signals candidates",
+    "local PIT next-open and 1d/3d/5d forward-close settlement bars",
+    "at least 20 valid-session candidate rows before any attribution slice"
+  ],
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not promote or reslice these recovered 2026-06-19/20/21 CAT/TSM rows as alpha. A retry needs session-date candidate rows and real local next-open/forward-close settlement data.",
+    "new_evidence_required": "Generate or recover session-date quant_signals artifacts with candidate rows, then settle them against PIT local OHLCV/quote bars before testing allocation value.",
+    "why_result_happened": "The recovered files did expose six CAT/TSM candidate rows, but all six were generated on non-session dates (Juneteenth Friday and the following weekend), so they cannot be treated as clean next-open forward evidence. Local OHLCV settlement data was also unavailable."
+  },
+  "prediction": {
+    "confidence_reason": "This builds directly on exp-20260626-005 recovered artifacts and tests replayability of newly visible candidate rows, but local post-2026 OHLCV settlement is likely incomplete and should block promotion rather than force a frozen-window reslice.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "too_few_recovered_candidates",
+      "no_local_settlement_prices",
+      "pending_forward_close"
+    ],
+    "recorded_at": "2026-06-26T05:07:57+00:00",
+    "success_probability": 0.25
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "paper_orders_changed": false,
+    "parity_note": "Read-only artifact audit; no strategy or adapter behavior changed.",
+    "ranking_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "Recovered candidate rows were all non-session artifacts and had no settled replacement-value prices.",
+  "related_files": [
+    "quant/experiments/exp_20260626_006_recovered_quant_signals_forward_readiness.py",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/experiments/exp-20260626-005/exp_20260626_005_orphan_quant_signals_temp_recovery.json",
+    "data/daily/signals/quant/quant_signals_20260616.json",
+    "data/daily/signals/quant/quant_signals_20260619.json",
+    "data/daily/signals/quant/quant_signals_20260620.json",
+    "data/daily/signals/quant/quant_signals_20260621.json",
+    "data/daily/signals/quant/quant_signals_20260625.json"
+  ],
+  "runner": "quant/experiments/exp_20260626_006_recovered_quant_signals_forward_readiness.py",
+  "status": "observed_only_rejected",
+  "timestamp": "2026-06-26T05:13:11Z",
+  "trial_family": "recovered_quant_signals_entry_candidate_forward_readiness",
+  "trial_variant_id": "june_2026_recovered_candidates_settlement_audit_v1"
+}

@@ -1,0 +1,201 @@
+{
+  "accepted": false,
+  "aggregate_expected_value_delta": 0.1073,
+  "aggregate_expected_value_delta_pct": 0.013592,
+  "aggregate_strategy_total_pnl_delta": 2693.59,
+  "alpha_hypothesis": "candidate-pool alpha: pre-signal average volume contraction (avg_volume_20d_prior / avg_volume_60d_prior <= 0.72), followed by a high-location close above the prior 20-day high and SPY-relative trend, may add next-open 10-day paper alpha on liquid common stocks.",
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260625-015/exp_20260625_015_volume_dryup_breakout_scout.json",
+  "backtest_protocol": {
+    "REGIME_AWARE_EXIT": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "candidate_ohlcv_source": "data/warehouse/warehouse_main.sqlite",
+    "execution_model": "The candidate is known after signal-day close. Paper entry is the next open; exit is close 10 trading days after the signal with the existing sleeve cost/slippage model.",
+    "replay_llm": false,
+    "replay_news": false,
+    "source": "docs/backtesting.md canonical three-window core replay plus experiment-owned private replay overlay",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "calibration": {
+    "actual_gate4_passed": false,
+    "brier_score": 0.0144,
+    "failure_modes_observed": [
+      "accepted_comparator_ev_floor_not_beaten",
+      "accepted_comparator_pnl_floor_not_beaten",
+      "too_few_target_trades"
+    ],
+    "predicted_success_probability": 0.12
+  },
+  "changed_variable": "volume_dryup_breakout_candidate_pool_v1",
+  "decision": "rejected_volume_dryup_breakout_candidate_pool",
+  "experiment_id": "exp-20260625-015",
+  "gate2": {
+    "open_positions": {
+      "missing_entry_date_tickers": [],
+      "missing_target_price_tickers": [],
+      "passed": true,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 12
+    },
+    "passed": true,
+    "raw_candidate_counts": {
+      "late_strong": 3,
+      "mid_weak": 19,
+      "old_thin": 6
+    }
+  },
+  "gate3": {
+    "candidate_pool_changed": false,
+    "minimum_core_survival_rate": 0.7925,
+    "new_core_filter_added": false,
+    "note": "No new core filter or entry rule was added. The volume dry-up breakout source is an additive private replay paper overlay.",
+    "passed": true
+  },
+  "gate4": {
+    "accepted_comparators": {
+      "distribution_day_absorption": {
+        "expected_value_delta_sum": 0.5286,
+        "experiment_id": "exp-20260611-007",
+        "target_trade_count": 113,
+        "total_pnl_delta_sum": 10432.91
+      },
+      "narrow_range_compression_breakout": {
+        "expected_value_delta_sum": 0.1608,
+        "experiment_id": "exp-20260608-013",
+        "target_trade_count": 44,
+        "total_pnl_delta_sum": 2248.98
+      }
+    },
+    "aggregate_expected_value_delta": 0.1073,
+    "aggregate_total_pnl_delta": 2693.59,
+    "comparator_ev_floor": 0.5286,
+    "comparator_pnl_floor": 10432.91,
+    "concentration": {
+      "max_single_positive_pnl_share": 0.383749,
+      "positive_pnl_hhi": 0.225422
+    },
+    "decision": "rejected_volume_dryup_breakout_candidate_pool",
+    "ev_improved_windows": 3,
+    "failed_reasons": [
+      "accepted_comparator_ev_floor_not_beaten",
+      "accepted_comparator_pnl_floor_not_beaten",
+      "too_few_target_trades"
+    ],
+    "max_drawdown_drift_by_window": {
+      "late_strong": -0.0003,
+      "mid_weak": -0.0004,
+      "old_thin": -0.0005
+    },
+    "passed": false,
+    "pnl_improved_windows": 3,
+    "target_trade_count": 16,
+    "warnings": [],
+    "windows_with_target_trades": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ]
+  },
+  "gate4_passed": false,
+  "hypothesis": "Liquid stocks with a point-in-time 20-vs-60 day volume dry-up before a close above the prior 20-day high may identify supply-exhaustion breakouts distinct from prior narrow-range compression families.",
+  "lane": "alpha_search",
+  "log": "experiments/logs/exp-20260625-015.json",
+  "mechanism_family": "production_visible_free_ohlcv_candidate_pool",
+  "new_evidence_axis": "Machine-checkable new gate shape: pre-breakout volume_dryup_ratio_20v60 computed from point-in-time OHLCV before signal; no prior accepted or rejected family used this field as the independent evidence axis, and this does not retune narrow-range compression thresholds.",
+  "new_evidence_type": "point_in_time_pre_breakout_volume_dryup_20v60_ohlcv_field",
+  "next_evidence_needed": "If rejected, avoid adjacent volume-dry-up breakout retunes. A valid retry needs a new non-OHLCV confirmation field, a new data source, or mature forward replacement-value rows. If positive, next step is a shared default-off helper plus daily snapshot before acceptance.",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry adjacent 20/60 volume dry-up thresholds, prior-high lookbacks, close-location cutoffs, signal-volume guards, relative strength cutoffs, top-N, hold days, cooldown, or notional on these frozen windows unless there is a new machine-checkable evidence axis outside this OHLCV relation surface.",
+    "new_evidence_required": "A valid reopen needs a new non-OHLCV confirmation field, a true forward replacement row showing allocation value, or a distinct data source. Another adjacent volume-dry-up breakout retune is not new evidence.",
+    "realized_failure_mode": "ohlcv_relation_saturation_or_accepted_comparator_not_beaten",
+    "why_result_happened": "The volume dry-up breakout surface produced a replayable candidate pool, but the fixed rule must beat both the canonical core baseline and accepted OHLCV candidate-pool comparators. Any failure on aggregate EV/PnL, window regression, sample size, or comparator floor rejects this near-saturation OHLCV family."
+  },
+  "prediction": {
+    "confidence_reason": "OHLCV candidate-pool families are near source saturation and prior breakout/compression tests are hard comparators. The only reason to run this scout is that pre-breakout 20-vs-60 volume dry-up is a machine-checkable field not previously used as the independent axis.",
+    "expected_ev_delta": 0.2,
+    "expected_pnl_delta": 3500.0,
+    "main_failure_modes": [
+      "ohlcv_relation_source_saturation",
+      "near_neighbor_compression_family",
+      "window_regression",
+      "accepted_comparator_not_beaten",
+      "thin_trade_count_after_breakout_gate"
+    ],
+    "recorded_at": "2026-06-25T13:20:00+00:00",
+    "success_probability": 0.12
+  },
+  "production_impact": {
+    "adapter_status": "private_replay_only_no_live_adapter",
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "paper_orders_changed": false,
+    "parity_note": "This is an experiment-owned private replay scout. A positive result would require a shared default-off helper that computes the same pre-breakout volume dry-up, breakout, liquidity, relative-strength, next-open paper entry, 10-trading-day exit, cost model, cooldown, and concentration checks before any daily report, candidate priority, sizing, watchlist, paper ledger, or order surface could change.",
+    "production_watchlist_changed": false,
+    "ranking_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_helper_promoted": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false,
+    "uses_free_ohlcv": true,
+    "uses_llm": false
+  },
+  "rejection_reason": "accepted_comparator_ev_floor_not_beaten; accepted_comparator_pnl_floor_not_beaten; too_few_target_trades",
+  "single_causal_variable": "volume_dryup_breakout_candidate_pool_v1",
+  "status": "rejected",
+  "timestamp": "2026-06-25T14:14:41Z",
+  "trial_family": "volume_dryup_breakout_candidate_pool",
+  "trial_variant_id": "volume_dryup_20v60_breakout_top1_10d_v1",
+  "windows": [
+    {
+      "expected_value_after": 5.1776,
+      "expected_value_before": 5.1628,
+      "expected_value_delta": 0.0148,
+      "label": "late_strong",
+      "raw_candidate_count": 3,
+      "strategy_total_pnl_delta": 63.27,
+      "target_trade_count": 3
+    },
+    {
+      "expected_value_after": 2.1927,
+      "expected_value_before": 2.1402,
+      "expected_value_delta": 0.0525,
+      "label": "mid_weak",
+      "raw_candidate_count": 19,
+      "strategy_total_pnl_delta": 1047.28,
+      "target_trade_count": 9
+    },
+    {
+      "expected_value_after": 0.6311,
+      "expected_value_before": 0.5911,
+      "expected_value_delta": 0.04,
+      "label": "old_thin",
+      "raw_candidate_count": 6,
+      "strategy_total_pnl_delta": 1583.04,
+      "target_trade_count": 4
+    }
+  ]
+}

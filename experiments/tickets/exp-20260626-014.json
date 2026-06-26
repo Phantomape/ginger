@@ -1,0 +1,620 @@
+{
+  "acceptance_rule": "observed-only accepted lead only if at least one sleeve/source has >=20 closed rows, positive total replacement value versus cash/SPY/QQQ, >=50% win rate versus each comparator, entry span >=20 days, and max single-ticker positive contribution <=50%; activation-ready still requires >=60 closed rows overall.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260626_014_forward_replacement_activation_readiness_20260626.py",
+    "data/experiments/exp-20260626-014/",
+    "experiments/logs/exp-20260626-014.json",
+    "experiments/cards/exp-20260626-014.md",
+    "experiments/manifests/exp-20260626-014.json",
+    "experiments/tickets/exp-20260626-014.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260626-014.md",
+  "causal_components": [
+    "forward replacement ledger audit",
+    "source-family readiness gates",
+    "new closed-row maturity delta",
+    "no strategy behavior change"
+  ],
+  "change_type": "default_off_forward_readiness_audit",
+  "changed_variable": "updated_forward_replacement_activation_readiness_20260626_v1",
+  "claimed_at": "2026-06-26T13:10:25+00:00",
+  "completed_at": "2026-06-26T13:15:06+00:00",
+  "created_at": "2026-06-26T13:10:16+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260626-014",
+  "experiment_uid": "expuid-2f47a211e64d4c1c",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260626-014",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-26T13:10:16+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "forward_replacement_activation_readiness_20260626"
+  },
+  "hypothesis": "Updated enriched forward replacement-value rows through 2026-06-25 may reveal whether any accepted default-off sleeve/source family is now activation- or watchlist-ready without retuning the envelope.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "baseline strategy stack",
+    "entry/exit/ranking/sizing",
+    "candidate generation",
+    "readiness thresholds from exp-20260622-013"
+  ],
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [
+    "quant/strategies",
+    "quant/backtest.py",
+    "quant/signal_pipeline.py",
+    "production runners"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260622-013"
+  ],
+  "new_evidence_type": "new_closed_forward_rows",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "accepted",
+        "activation",
+        "alpha",
+        "any",
+        "enriched",
+        "envelope",
+        "family",
+        "forward",
+        "is",
+        "may",
+        "now",
+        "or",
+        "readiness",
+        "ready",
+        "replacement",
+        "retuning",
+        "reveal",
+        "rows",
+        "sleeve",
+        "through",
+        "updated",
+        "value",
+        "watchlist",
+        "whether",
+        "without"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "allocator",
+        "family_key": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+        "reopen_condition": "Collect forward paper rows with replacement value versus cash and same-day core candidates; do not enable live/default orders or retune source-overlap parameters until forward evidence passes a separate activation gate.",
+        "score": 0.1808,
+        "status": "has_accepted",
+        "trials": 3
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "platform_rs20_missed_candidate_replacement_value",
+        "reopen_condition": null,
+        "score": 0.1786,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "sma20_reclaim_missed_candidate_replacement_value",
+        "reopen_condition": null,
+        "score": 0.1786,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "kova_multisource_candidate_pool_readiness",
+        "reopen_condition": null,
+        "score": 0.1776,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "nonrepeat_alpha_candidate_readiness",
+        "reopen_condition": "A valid alpha retry needs a daily and historical structured-event helper that writes actor/object/relation/magnitude/provenance rows before decision time, covers all three canonical windows, and can be called by both backtest and production default-off snapshots.",
+        "score": 0.1767,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.12,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "closed_rows_too_few",
+      "source_family_immature",
+      "negative_replacement_vs_etfs",
+      "no_20_row_watchlist_candidate"
+    ],
+    "confidence_reason": "exp-20260622-013 had 33 enriched rows and no ready family; current ledger has 40 rows with seven rows at or after the 2026-06-22 exit date boundary, a true forward maturation axis but probably still too thin.",
+    "recorded_at": "2026-06-26T13:09:58+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "decision": "observed_only_rejected_no_forward_activation_ready_20260626_update",
+    "artifact": "data/experiments/exp-20260626-014/exp_20260626_014_forward_replacement_activation_readiness_20260626.json",
+    "log": "experiments/logs/exp-20260626-014.json",
+    "runner": "quant/experiments/exp_20260626_014_forward_replacement_activation_readiness_20260626.py",
+    "delta_metrics": {
+      "aggregate_expected_value_score": 0.0,
+      "aggregate_total_pnl": 0.0,
+      "artifact_rows": 7,
+      "activation_ready_groups": 0,
+      "watchlist_ready_groups": 0
+    },
+    "gate4": {
+      "passed": false,
+      "decision": "observed_only_rejected_no_forward_activation_ready_20260626_update",
+      "failed_reasons": [
+        "no_activation_ready_sleeve_or_source_family",
+        "closed_rows_too_few",
+        "no_20_row_watchlist_candidate"
+      ],
+      "activation_thresholds": {
+        "min_activation_closed_rows": 60,
+        "min_watchlist_closed_rows": 20,
+        "min_win_rate": 0.5,
+        "max_single_positive_share": 0.5,
+        "min_entry_span_days": 20
+      },
+      "activation_candidates": [],
+      "watchlist_candidates": [],
+      "artifact_all_enriched": true,
+      "total_forward_rows": 40,
+      "freshness": {
+        "prior_artifact": "data/experiments/exp-20260622-013/exp_20260622_013_forward_replacement_activation_readiness_20260622.json",
+        "prior_experiment_id": "exp-20260622-013",
+        "prior_total_forward_rows": 33,
+        "current_total_forward_rows": 40,
+        "row_delta_vs_prior": 7,
+        "entry_date_min": "2026-05-05",
+        "entry_date_max": "2026-06-17",
+        "exit_date_min": "2026-05-12",
+        "exit_date_max": "2026-06-25",
+        "rows_with_exit_date_ge_prior_experiment_date": 7,
+        "rows_with_exit_date_after_prior_experiment_date": 5,
+        "newer_exit_rows": [
+          {
+            "ticker": "AMD",
+            "sleeve_key": "fundamental_growth_rs",
+            "entry_date": "2026-06-09",
+            "exit_date": "2026-06-22",
+            "replacement_value_vs_cash_usd": 1160.25,
+            "replacement_value_vs_spy_usd": 1171.74,
+            "replacement_value_vs_qqq_usd": 954.14
+          },
+          {
+            "ticker": "CRDO",
+            "sleeve_key": "free_data_cross_source_consensus",
+            "entry_date": "2026-06-12",
+            "exit_date": "2026-06-22",
+            "replacement_value_vs_cash_usd": 463.3,
+            "replacement_value_vs_spy_usd": 451.1,
+            "replacement_value_vs_qqq_usd": 368.03
+          },
+          {
+            "ticker": "CRDO",
+            "sleeve_key": "fundamental_growth_rs",
+            "entry_date": "2026-06-12",
+            "exit_date": "2026-06-23",
+            "replacement_value_vs_cash_usd": 35.71,
+            "replacement_value_vs_spy_usd": 176.32,
+            "replacement_value_vs_qqq_usd": 157.42
+          },
+          {
+            "ticker": "MU",
+            "sleeve_key": "fundamental_growth_rs",
+            "entry_date": "2026-06-16",
+            "exit_date": "2026-06-24",
+            "replacement_value_vs_cash_usd": -712.13,
+            "replacement_value_vs_spy_usd": -287.98,
+            "replacement_value_vs_qqq_usd": -51.3
+          },
+          {
+            "ticker": "WDC",
+            "sleeve_key": "free_data_cross_source_consensus",
+            "entry_date": "2026-06-16",
+            "exit_date": "2026-06-24",
+            "replacement_value_vs_cash_usd": -267.87,
+            "replacement_value_vs_spy_usd": -147.02,
+            "replacement_value_vs_qqq_usd": -79.59
+          },
+          {
+            "ticker": "DDOG",
+            "sleeve_key": "free_data_cross_source_consensus",
+            "entry_date": "2026-06-17",
+            "exit_date": "2026-06-25",
+            "replacement_value_vs_cash_usd": -176.74,
+            "replacement_value_vs_spy_usd": -78.44,
+            "replacement_value_vs_qqq_usd": -56.5
+          },
+          {
+            "ticker": "DDOG",
+            "sleeve_key": "fundamental_growth_rs",
+            "entry_date": "2026-06-17",
+            "exit_date": "2026-06-25",
+            "replacement_value_vs_cash_usd": -590.78,
+            "replacement_value_vs_spy_usd": -262.19,
+            "replacement_value_vs_qqq_usd": -188.87
+          }
+        ]
+      }
+    },
+    "calibration": {
+      "actual_decision": "observed_only_rejected_no_forward_activation_ready_20260626_update",
+      "actual_success": 0,
+      "predicted_success_probability": 0.12,
+      "brier_score": 0.0144,
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": 0.0,
+      "ev_prediction_error": 0.0,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "pnl_prediction_error": 0.0,
+      "predicted_failure_modes": [
+        "closed_rows_too_few",
+        "source_family_immature",
+        "negative_replacement_vs_etfs",
+        "no_20_row_watchlist_candidate"
+      ],
+      "failure_modes_observed": [
+        "no_activation_ready_sleeve_or_source_family",
+        "closed_rows_too_few",
+        "no_20_row_watchlist_candidate"
+      ],
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Low surprise. The forward ledger gained rows, but the largest sleeve is still below the 20-row watchlist tier and far below the 60-row activation tier."
+    },
+    "summary": "The current forward artifact has 40 enriched rows, up from 33 in exp-20260622-013. The extra maturity did not change the readiness conclusion: low_deployment_etf is still only 17 rows, fundamental_growth_rs is 7 rows, and no sleeve/source family has 20 diversified rows, let alone 60 activation rows."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260626-014.json",
+  "single_causal_variable": "updated_forward_replacement_activation_readiness_20260626_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260626-014.json",
+  "trial_family": "default_off_forward_replacement_value_activation_readiness",
+  "trial_variant_id": "current_artifact_20260626_update_v1",
+  "decision": "observed_only_rejected_no_forward_activation_ready_20260626_update",
+  "artifact": "data/experiments/exp-20260626-014/exp_20260626_014_forward_replacement_activation_readiness_20260626.json",
+  "log": "experiments/logs/exp-20260626-014.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "passed": true,
+    "baseline_artifact": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_metrics": {
+      "path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "windows": [
+        {
+          "label": "late_strong",
+          "expected_value_score": 5.1628,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "expected_value_score": 2.1402,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "expected_value_score": 0.5911,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ],
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "min_survival_rate": 0.7925,
+      "total_trade_count": 61
+    },
+    "note": "Strategy baseline is recorded for context; no before/after strategy replay changed."
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields_checked": [
+      "entry_date",
+      "exit_date",
+      "notional_usd",
+      "pnl_usd",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd"
+    ],
+    "target_price_scope": "Not required for this closed forward replacement artifact; activation readiness is based on realized entry/exit rows and does not create a new executable policy.",
+    "artifact_audit": {
+      "artifact_rows": 40,
+      "state_replacement_rows": 40,
+      "rows_by_status": {
+        "enriched": 40
+      },
+      "rows_by_sleeve": {
+        "free_data_cross_source_consensus": 3,
+        "fundamental_growth_rs": 7,
+        "low_deployment_etf": 17,
+        "sec_governance": 2,
+        "sec_leadership": 1,
+        "sec_negative": 2,
+        "state_surface": 3,
+        "volatility_contraction": 2,
+        "volume_breadth_breakout": 3
+      },
+      "missing_comparator_bar_rows": 0,
+      "skipped_closed_rows_missing_replacement": 0,
+      "rows_not_in_current_state": [],
+      "state_rows_missing_artifact": []
+    },
+    "data_freshness": {
+      "prior_artifact": "data/experiments/exp-20260622-013/exp_20260622_013_forward_replacement_activation_readiness_20260622.json",
+      "prior_experiment_id": "exp-20260622-013",
+      "prior_total_forward_rows": 33,
+      "current_total_forward_rows": 40,
+      "row_delta_vs_prior": 7,
+      "entry_date_min": "2026-05-05",
+      "entry_date_max": "2026-06-17",
+      "exit_date_min": "2026-05-12",
+      "exit_date_max": "2026-06-25",
+      "rows_with_exit_date_ge_prior_experiment_date": 7,
+      "rows_with_exit_date_after_prior_experiment_date": 5,
+      "newer_exit_rows": [
+        {
+          "ticker": "AMD",
+          "sleeve_key": "fundamental_growth_rs",
+          "entry_date": "2026-06-09",
+          "exit_date": "2026-06-22",
+          "replacement_value_vs_cash_usd": 1160.25,
+          "replacement_value_vs_spy_usd": 1171.74,
+          "replacement_value_vs_qqq_usd": 954.14
+        },
+        {
+          "ticker": "CRDO",
+          "sleeve_key": "free_data_cross_source_consensus",
+          "entry_date": "2026-06-12",
+          "exit_date": "2026-06-22",
+          "replacement_value_vs_cash_usd": 463.3,
+          "replacement_value_vs_spy_usd": 451.1,
+          "replacement_value_vs_qqq_usd": 368.03
+        },
+        {
+          "ticker": "CRDO",
+          "sleeve_key": "fundamental_growth_rs",
+          "entry_date": "2026-06-12",
+          "exit_date": "2026-06-23",
+          "replacement_value_vs_cash_usd": 35.71,
+          "replacement_value_vs_spy_usd": 176.32,
+          "replacement_value_vs_qqq_usd": 157.42
+        },
+        {
+          "ticker": "MU",
+          "sleeve_key": "fundamental_growth_rs",
+          "entry_date": "2026-06-16",
+          "exit_date": "2026-06-24",
+          "replacement_value_vs_cash_usd": -712.13,
+          "replacement_value_vs_spy_usd": -287.98,
+          "replacement_value_vs_qqq_usd": -51.3
+        },
+        {
+          "ticker": "WDC",
+          "sleeve_key": "free_data_cross_source_consensus",
+          "entry_date": "2026-06-16",
+          "exit_date": "2026-06-24",
+          "replacement_value_vs_cash_usd": -267.87,
+          "replacement_value_vs_spy_usd": -147.02,
+          "replacement_value_vs_qqq_usd": -79.59
+        },
+        {
+          "ticker": "DDOG",
+          "sleeve_key": "free_data_cross_source_consensus",
+          "entry_date": "2026-06-17",
+          "exit_date": "2026-06-25",
+          "replacement_value_vs_cash_usd": -176.74,
+          "replacement_value_vs_spy_usd": -78.44,
+          "replacement_value_vs_qqq_usd": -56.5
+        },
+        {
+          "ticker": "DDOG",
+          "sleeve_key": "fundamental_growth_rs",
+          "entry_date": "2026-06-17",
+          "exit_date": "2026-06-25",
+          "replacement_value_vs_cash_usd": -590.78,
+          "replacement_value_vs_spy_usd": -262.19,
+          "replacement_value_vs_qqq_usd": -188.87
+        }
+      ]
+    }
+  },
+  "gate3": {
+    "passed": true,
+    "baseline_min_survival_rate": 0.7925,
+    "new_core_filter_added": false,
+    "note": "No filter, entry rule, ranking, or core candidate pool changed."
+  },
+  "gate4": {
+    "passed": false,
+    "decision": "observed_only_rejected_no_forward_activation_ready_20260626_update",
+    "failed_reasons": [
+      "no_activation_ready_sleeve_or_source_family",
+      "closed_rows_too_few",
+      "no_20_row_watchlist_candidate"
+    ],
+    "activation_thresholds": {
+      "min_activation_closed_rows": 60,
+      "min_watchlist_closed_rows": 20,
+      "min_win_rate": 0.5,
+      "max_single_positive_share": 0.5,
+      "min_entry_span_days": 20
+    },
+    "activation_candidates": [],
+    "watchlist_candidates": [],
+    "artifact_all_enriched": true,
+    "total_forward_rows": 40,
+    "freshness": {
+      "prior_artifact": "data/experiments/exp-20260622-013/exp_20260622_013_forward_replacement_activation_readiness_20260622.json",
+      "prior_experiment_id": "exp-20260622-013",
+      "prior_total_forward_rows": 33,
+      "current_total_forward_rows": 40,
+      "row_delta_vs_prior": 7,
+      "entry_date_min": "2026-05-05",
+      "entry_date_max": "2026-06-17",
+      "exit_date_min": "2026-05-12",
+      "exit_date_max": "2026-06-25",
+      "rows_with_exit_date_ge_prior_experiment_date": 7,
+      "rows_with_exit_date_after_prior_experiment_date": 5,
+      "newer_exit_rows": [
+        {
+          "ticker": "AMD",
+          "sleeve_key": "fundamental_growth_rs",
+          "entry_date": "2026-06-09",
+          "exit_date": "2026-06-22",
+          "replacement_value_vs_cash_usd": 1160.25,
+          "replacement_value_vs_spy_usd": 1171.74,
+          "replacement_value_vs_qqq_usd": 954.14
+        },
+        {
+          "ticker": "CRDO",
+          "sleeve_key": "free_data_cross_source_consensus",
+          "entry_date": "2026-06-12",
+          "exit_date": "2026-06-22",
+          "replacement_value_vs_cash_usd": 463.3,
+          "replacement_value_vs_spy_usd": 451.1,
+          "replacement_value_vs_qqq_usd": 368.03
+        },
+        {
+          "ticker": "CRDO",
+          "sleeve_key": "fundamental_growth_rs",
+          "entry_date": "2026-06-12",
+          "exit_date": "2026-06-23",
+          "replacement_value_vs_cash_usd": 35.71,
+          "replacement_value_vs_spy_usd": 176.32,
+          "replacement_value_vs_qqq_usd": 157.42
+        },
+        {
+          "ticker": "MU",
+          "sleeve_key": "fundamental_growth_rs",
+          "entry_date": "2026-06-16",
+          "exit_date": "2026-06-24",
+          "replacement_value_vs_cash_usd": -712.13,
+          "replacement_value_vs_spy_usd": -287.98,
+          "replacement_value_vs_qqq_usd": -51.3
+        },
+        {
+          "ticker": "WDC",
+          "sleeve_key": "free_data_cross_source_consensus",
+          "entry_date": "2026-06-16",
+          "exit_date": "2026-06-24",
+          "replacement_value_vs_cash_usd": -267.87,
+          "replacement_value_vs_spy_usd": -147.02,
+          "replacement_value_vs_qqq_usd": -79.59
+        },
+        {
+          "ticker": "DDOG",
+          "sleeve_key": "free_data_cross_source_consensus",
+          "entry_date": "2026-06-17",
+          "exit_date": "2026-06-25",
+          "replacement_value_vs_cash_usd": -176.74,
+          "replacement_value_vs_spy_usd": -78.44,
+          "replacement_value_vs_qqq_usd": -56.5
+        },
+        {
+          "ticker": "DDOG",
+          "sleeve_key": "fundamental_growth_rs",
+          "entry_date": "2026-06-17",
+          "exit_date": "2026-06-25",
+          "replacement_value_vs_cash_usd": -590.78,
+          "replacement_value_vs_spy_usd": -262.19,
+          "replacement_value_vs_qqq_usd": -188.87
+        }
+      ]
+    }
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "trade_enabled": false,
+    "daily_snapshot_exposed": false,
+    "parity_test_added": false,
+    "production_signal_path_changed": false,
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "uses_llm": false,
+    "live_realism_evaluated": false,
+    "live_ready": false,
+    "parity_note": "Read-only forward readiness refresh. It consumes the current replacement artifact and does not change helper logic, snapshots, orders, ranking, sizing, exits, LLM/news, or live/default behavior."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The current forward artifact has 40 enriched rows, up from 33 in exp-20260622-013. The extra maturity did not change the readiness conclusion: low_deployment_etf is still only 17 rows, fundamental_growth_rs is 7 rows, and no sleeve/source family has 20 diversified rows, let alone 60 activation rows.",
+    "forbidden_near_neighbor_retry": "Do not rerun forward activation readiness, relax the 20/60-row minimums, or retune low_deployment/state_surface/fundamental thresholds until materially more closed replacement-value rows arrive. A useful retry needs new rows, not another adjacent condition on the same 40-row surface.",
+    "new_evidence_required": "At least 20 closed rows for one diversified helper/source family to justify a watchlist lead, and at least 60 closed rows with positive replacement value versus cash, SPY, and QQQ for an activation-envelope experiment."
+  },
+  "lean_quality_passed": true,
+  "related_files": [
+    "quant/experiments/exp_20260626_014_forward_replacement_activation_readiness_20260626.py",
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "data/experiments/exp-20260626-014/exp_20260626_014_forward_replacement_activation_readiness_20260626.json",
+    "experiments/logs/exp-20260626-014.json",
+    "experiments/cards/exp-20260626-014.md",
+    "experiments/manifests/exp-20260626-014.json",
+    "experiments/tickets/exp-20260626-014.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "updated_at": "2026-06-26T13:15:06+00:00"
+}

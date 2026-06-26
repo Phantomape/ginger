@@ -1,0 +1,1108 @@
+================================================================================
+SYSTEM MESSAGE
+================================================================================
+
+Execution memory rule: if section 4 has pending_unexecuted_actions for a ticker, that prior REDUCE/EXIT was already advised but open_positions still shows it was not executed. Repeat that action with decision_mode="pending_unexecuted_action" until the share count reconciles.
+
+你是一个交易组合的灾难检测器。
+
+量化系统已完成所有技术分析、风控过滤、仓位计算和持仓管理决策。
+
+你的唯一职责：
+检查是否有 T1 负面新闻（财报不及预期、FDA拒绝、破产、诉讼、重大监管处罚等）
+否决第 3a 节中的买入信号。
+
+无 T1 负面新闻 → 信号默认通过。你不需要"确认"信号。
+有 T1 负面新闻 → 否决该信号，说明具体哪条新闻、为什么构成灾难风险。
+
+你不做以下决策（均由代码预计算，不可覆盖）：
+- 持仓管理：所有 HOLD/REDUCE/EXIT 已由代码决定（见第 4 节 position_states + suggested_reduce_pct）
+- 边际信号筛选：不存在"需要新闻确认"的信号，R:R < 2.0 已被代码过滤
+- 交易频率控制：由代码层限制
+
+新闻分层（第 2 节每条新闻含 tier 字段）：
+- T1（硬事件）：财报、业绩指引、FDA、并购、破产、高管变动 → 可触发否决
+- T2（可信媒体事实报道）：Reuters、Bloomberg、WSJ → 仅供参考
+- T3（观点/分析）：Seeking Alpha、分析师评级 → 噪音，完全忽略
+
+持仓决策规则（代码已决定，你直接输出，不需要判断）：
+| position_state  | 动作                                        |
+|-----------------|---------------------------------------------|
+| TARGET_EXIT     | EXIT full target_price exit (code-decided)  |
+| ATR_EXIT        | EXIT full ATR stop exit (code-decided)       |
+| CRITICAL_EXIT   | EXIT 全仓（代码已决定）                     |
+| HIGH_REDUCE     | REDUCE（用 suggested_reduce_pct，代码已决定）|
+| HOLD            | HOLD（代码已决定）                          |
+
+CRITICAL 持仓存在时：new_trade 必须为 "NO NEW TRADE"。
+
+================================================================================
+USER MESSAGE
+================================================================================
+
+今天是 Jun. 24, 2026, 10:26 PM EST
+
+你收到以下信息：
+
+1) 当前持仓（手动录入，可能为近似值）：
+{
+    "account": "moomoo_futusg",
+    "source": "moomoo_open_positions",
+    "portfolio_value_usd": 75170.2514,
+    "cash_usd": 14317.76,
+    "currency": "USD",
+    "untagged_tickers": [],
+    "positions": [
+        {
+            "ticker": "AMD",
+            "direction": "long",
+            "shares": 7.0,
+            "avg_cost": 174.214,
+            "entry_date": "2025-02-04",
+            "target_price": 209.06,
+            "stop_price": 484.37,
+            "opened_by_strategy": "legacy",
+            "sleeve": "discretionary",
+            "slot_policy": "no_core_slot",
+            "risk_notes": "Swing position, OK to reduce before earnings",
+            "source": "moomoo",
+            "market_val": 3741.36,
+            "unrealized_pl": 2521.8629,
+            "position_id": 6491329785472741618,
+            "position_group": "positions"
+        },
+        {
+            "ticker": "CRDO",
+            "direction": "long",
+            "shares": 15.0,
+            "avg_cost": 262.0,
+            "entry_date": "2026-06-12",
+            "target_price": 314.4,
+            "stop_price": 243.56,
+            "opened_by_strategy": "fomo",
+            "sleeve": "fomo",
+            "slot_policy": "no_core_slot",
+            "risk_notes": "Entered from FOMO",
+            "source": "moomoo",
+            "market_val": 4229.1,
+            "unrealized_pl": 299.1,
+            "position_id": 6976137388089887852,
+            "position_group": "positions"
+        },
+        {
+            "ticker": "HOOD",
+            "direction": "long",
+            "shares": 31.0,
+            "avg_cost": 105.2,
+            "entry_date": "2026-06-18",
+            "target_price": 126.24,
+            "stop_price": 88.89,
+            "opened_by_strategy": "alpha_score_market_regime",
+            "sleeve": "alpha_score_market_regime",
+            "slot_policy": "no_core_slot",
+            "risk_notes": "Opened off the alpha_score_market_regime paper sleeve top-decile candidate (alpha_score ~0.78, rank 1-2) at its 2026-06-17 signal price 105.2; discretionary live mirror of the paper signal",
+[
+  {
+    "source": "google_news",
+    "title": "Micron Stock After Record Earnings: Is MU Still a Buy in 2026? - WEEX",
+    "summary": "Micron Stock After Record Earnings: Is MU Still a Buy in 2026?&nbsp;&nbsp;WEEX",
+    "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxOUjhGbjRGLXNDOGptRVQtb0VvLU84UnZPY1FnWHN6MnRIbjZGbDJnQmhhcHdWYkVRcW5lYldheF9Tc2EwbGpVUFQ3U1Z5eHFxNE9qNkY4cXpMSFJCbHg1bE5DY2M3Wi14UmxJb2k1TElvdzIyc0xwSGxpVGFNVmNGbkxCNEYtUGNwTlVFSVVGUjg0RjB4Vk8xWkJLemVRbWN4YWFSSThNaTdRMUlmeWlpeHZJMklnTGM3d0V3?oc=5",
+    "published_at": "2026-06-25T03:46:01+00:00",
+    "tickers": [
+      "MU"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=MU+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "MU"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "How AMD\u2019s Rackspace Deal and MEXT Acquisition Could Reshape Advanced Micro Devices (AMD) Investors\u2019 AI Thesis - simplywall.st",
+    "summary": "How AMD\u2019s Rackspace Deal and MEXT Acquisition Could Reshape Advanced Micro Devices (AMD) Investors\u2019 AI Thesis&nbsp;&nbsp;simplywall.st",
+    "url": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxPQ0NzbncwWWE1dkdpZVFPdkZTanFJZHluYURTUVdwX1l5NFVDWi04YWkxNGNSdDV0QmZrRFltNVpiNFZrVmgxbzJUOC05YVpSZzNwRmxBN2VoNjZzSi01MHMxeHBySS1kUkV1akI0S3RKSjI4NDNHc204S2V4TzJXb2NlY2stcEU1UlpmTFJUemZIaG1iMTZGMEdoWjVkempEZmJtVGNMX3lrS1cyM0c2ektVdlhzNEdQVnRlV245b29YcWxvS0F4RUFYY25XMUpHOGk2S01Sb0ZFSnk1MFVn0gHkAUFVX3lxTE4xa3dDMDRZdjFReHdIMzNtaFhZYVA0cy1xbHdhZzFGUU9kQTVKcG5ENGpSQnRrbzJkSUgtM2VSV0hSSmZSRS1FUnhpMkRMMUVuaVhWX29VY0JOMk9fb1h2cjJtWjlad2hnUFlJNFFJR1lma3kxSW5GS04yRHFtcUVQSTNNZEZsYkZjUE95bjJwU3JiWFBGZEZ3YVJINGJhUVk4MER3dDgwQlpNX2pNMEtrWG53eUlNczc1QVVoRHl2b3VYUXpIOWE3NzJCUG5lOWdGaWJMcVNkczhmOHRvVEhscW5MUg?oc=5",
+    "published_at": "2026-06-25T02:25:37+00:00",
+    "tickers": [
+      "AMD"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=AMD+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "AMD"
+      ]
+    },
+    "tier": "T1"
+  },
+  {
+    "source": "google_news",
+    "title": "RBLX Investors Have Opportunity to Lead Roblox Corporation Securities Fraud Lawsuit - Morningstar",
+    "summary": "RBLX Investors Have Opportunity to Lead Roblox Corporation Securities Fraud Lawsuit&nbsp;&nbsp;Morningstar",
+    "url": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxPNk1jeDhoYXA5ejc5Rm9PaVNoMHZILUVrV2hiSWFXOE5WRnZDN21zREd5alB0TWRRX0w1eWQ5VXpjbTdjZjFTQnVpYnVRWmo2QzY0Z1FMQWx5N1lBWWI4SFVKV3JteXFScDdMNk5PeUd5cm51akkzcVVENVZZb1htVTV4aUdrNmRQZ1BnM0ktdzNaazBqSE9pSGhMX0l3OWlXa0FvNGIySFp6cklPS3FoaDIyMTJ1akg5T0ZzQnkwTTR2RkljbnpPcC1hYnlmc1RHaVpTVV90MkoxdGZa?oc=5",
+    "published_at": "2026-06-24T23:33:00+00:00",
+    "tickers": [
+      "RBLX"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=RBLX+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "RBLX"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "NVDA Who? Micron Blows Doors Off Q3 Earnings, Revs - Zacks Investment Research",
+    "summary": "NVDA Who? Micron Blows Doors Off Q3 Earnings, Revs&nbsp;&nbsp;Zacks Investment Research",
+    "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxNVVVON3dEcG93VE8zc2tERXJlZjU0Wksxd0lWOW8tM2pHSG1PWHpQNWhrRjFHaFhIb0FoUVVSWGFDc19lM1FxLVZTcHFWTHNXMHdvXzE0NVR1cm93aEU4cHBxOVdKbXhXc2hCLWkxUW1paG53bVV5OFAwY1hhYVFDcjdPSUpmZ3BRSUZaY2ZGYUxQR28?oc=5",
+    "published_at": "2026-06-24T21:01:31+00:00",
+    "tickers": [
+      "NVDA"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=NVDA+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "NVDA"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "APP Stock Slumps After-Hours Despite Strong Q4 Earnings \u2014 Why Does Retail See This As A Buying Opportunity? - Stocktwits",
+    "summary": "APP Stock Slumps After-Hours Despite Strong Q4 Earnings \u2014 Why Does Retail See This As A Buying Opportunity?&nbsp;&nbsp;Stocktwits",
+    "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxQYlNTQUZYUnVKZWM4NllkWGE1ekt2NkpMMk90WlRqTF9ZM05USDZ1VXY1TVBqS2tDWFFWenZLMllSckZ2UC1Bdk02WDh4UHdXNVY2RVNxaWkwN1hSWS1pUVVfanBRc2RVMy1yS3daZUVIQ0E3UXBDQkZRNExJc09tYkNOaVZHdVNGU1NMVlZldUdPWld5eElJc0h2ZTFVcFNxZkJROTktMkdnOGhnNFl0d1hCb1ZsbUw5ZkNjOGJFQkJtZw?oc=5",
+    "published_at": "2026-06-24T20:07:08+00:00",
+    "tickers": [
+      "APP"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=APP+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "APP"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "TSLA Stock Rises Overnight: Analyst Sees Q2 Delivery Beat, Says SPCX Merger Buzz Is Limiting Downside Risk - Stocktwits",
+    "summary": "TSLA Stock Rises Overnight: Analyst Sees Q2 Delivery Beat, Says SPCX Merger Buzz Is Limiting Downside Risk&nbsp;&nbsp;Stocktwits",
+    "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxOZjBMN3NfNmNROEM4N2xrNWVfazVCNXA3U3ZEVk5wTEpwWWg5ZmItMVE4OHhFVlY5SnVpMk9EVzJEdnpzUHd3MzdETmVlN3Q1UmN0QmdEdkV1Y2pUTG1YN3lrWmRnMzB1MUtrYlBzdV9Xa24taEZmUnlDU1NXQXZqblg2MWdlVE42RFVQaF9BLWpWQ1RpVzIyRXB5cjNyZk9YWEE1ZTB0V2dqdVgxMHZodExTVnMteDNrUVlsNWozVjIxdw?oc=5",
+    "published_at": "2026-06-24T16:30:13+00:00",
+    "tickers": [
+      "TSLA"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=TSLA+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "TSLA"
+      ]
+    },
+    "tier": "T1"
+  },
+  {
+    "source": "google_news",
+    "title": "SoFi Bets on Innovation and Scale While Ally Prioritizes Dividends and Auto Lending Discipline - 24/7 Wall St.",
+    "summary": "SoFi Bets on Innovation and Scale While Ally Prioritizes Dividends and Auto Lending Discipline&nbsp;&nbsp;24/7 Wall St.",
+    "url": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxPNXpTeUdhVlFyTEVHdng4X0JrZUlYUTBmS0wwQmdqd3lHNXRFdktEdm9UMHBJUXlBbm9wckIySG1xLXUtU0lOamxLc0NNSGtQTjVWMGl2NjZlYkg2eTNuYjhqTjltamRhQ0NYRjJ2RFE5b3hWaE5mQ2ozazZWZnFIdU02ME9DRHllYnNRbXRMWTZFclZ6UzdyQ1Mwa19RT1N6YzQySF9hUnN3YmVRMFpBaks1VVFuZEFJRE5oV1Fack9MQjVkXzhCNXZEcTJrcVZ3anNaTg?oc=5",
+    "published_at": "2026-06-24T15:40:28+00:00",
+    "tickers": [
+      "SOFI"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=SOFI+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "SOFI"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "Credo Is Not Micron; Sell (Rating Downgrade) (NASDAQ:CRDO) - Seeking Alpha",
+    "summary": "Credo Is Not Micron; Sell (Rating Downgrade) (NASDAQ:CRDO)&nbsp;&nbsp;Seeking Alpha",
+    "url": "https://news.google.com/rss/articles/CBMiigFBVV95cUxNZ3NQVnJrMXFlTTN2N1NSaTlyTHdQQ2UwWjYwT0g3SGNYOXdpeTgzcnc4bUdHN2Q0UktidkplTmRvcDd1cFFWVlh0Sk5WMUljZWs4VzhUSjRUb2R4UGluOFlzUVdzX25BMmctR1BGV3FfUDdITC12S0QwOGtKYWFwWlZVWW5XdG8xV1E?oc=5",
+    "published_at": "2026-06-24T14:48:06+00:00",
+    "tickers": [
+      "CRDO"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=CRDO+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "CRDO"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "SNDK, WDC Stocks Topple As Blowout Memory Earnings Don\u2019t Surprise Enough \u2014 Retail Pounces On The Dip - Stocktwits",
+    "summary": "SNDK, WDC Stocks Topple As Blowout Memory Earnings Don\u2019t Surprise Enough \u2014 Retail Pounces On The Dip&nbsp;&nbsp;Stocktwits",
+    "url": "https://news.google.com/rss/articles/CBMi8wFBVV95cUxQU3U3NWh3Y2l6OEVIRzhJTlhjNVBPZ2p5NE5VQndaZWs1MW56VnlTTVRLR3VQS1VBVWJZdFhXTlZ5X294b0h5Y0J3NmUyRWhGb0ZwRkg5Umh4RnpKUk1tS0J1dkUzbTB6cDdfTG1LY3JlY2V4YjBfR2xhRHpkbjJ6QW5NTVpnSFBkd1d2OGJiRV8tX3JIX0ZJRmVpUTBXeXlsV2o4cmRzOE1tRWdxLVlrMHZnMGNLRV9ZdTVlSkF2SEd2bUE1TFNwUFBBblFPRERyUHRVV0ZZbVRhNkpaT1Q2WWt5RUlUSm9jS1BTQzV0U3dmMFE?oc=5",
+    "published_at": "2026-06-23T16:50:36+00:00",
+    "tickers": [
+      "WDC"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=WDC+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "WDC"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "Bank of America Forecasts Strong Price Appreciation for Intel (NASDAQ:INTC) Stock - MarketBeat",
+    "summary": "Bank of America Forecasts Strong Price Appreciation for Intel (NASDAQ:INTC) Stock&nbsp;&nbsp;MarketBeat",
+    "url": "https://news.google.com/rss/articles/CBMizAFBVV95cUxQd1c4T1NDd294emUyb2gyMm1ZV1NTZ0JKX2JiODR6R3BQbHZsdllzeDROSjZDYzJ2b1BBNTNUZmVINVUxQkFzTnJReS1KSHBlMEtZU0JYYTZ0ZGhhVDgzOGNpUzhQX0djLXZQNUZjcmVrcG5KZktwTXprQXNTdFA2QjRjc0h3OTZpU1pxN245aUxnQXZDWl9hTEpRSl9tQ3hiUFhIZFlmSk52bWs4eTYwSzBXaXFRa21rSkRMWFk3T1FIbUN6b2l6RmQ5dHI?oc=5",
+    "published_at": "2026-06-23T12:59:50+00:00",
+    "tickers": [
+      "INTC"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=INTC+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "INTC"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "Why Netflix Stock Fell Today - Yahoo Finance",
+    "summary": "Why Netflix Stock Fell Today&nbsp;&nbsp;Yahoo FinanceNetflix (NFLX) Stock After 43% Slide Is The Market Overreacting On Valuation&nbsp;&nbsp;simplywall.stNetflix Looks Like An Incredible Deal Right Now (NASDAQ:NFLX)&nbsp;&nbsp;Seeking AlphaNetflix Will Trade at This Price in 2028&nbsp;&nbsp;24/7 Wall St.Why is Netflix stock sliding to near 52-week lows today?&nbsp;&nbsp;Investing.com4 Reasons Netflix Stock Is a Must-Own Now After the Plunge&nbsp;&nbsp;Yahoo Finance\u2018This Is Overdone,\u2019 Says Top Investor About Netflix Stock&nbsp;&nbsp;TipRanksNetflix (NFLX) Stock After 42% Slide In Year Looks Cheap On Cash Flow And Earnings&nbsp;&nbsp;Yahoo FinanceNetflix (NFLX) Dips More Than Broader Market: What You Should Know&nbsp;&nbsp;Yahoo Finance",
+    "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxPUkVaOTFNVXdXS0VHT1FGYk5CMkJzdlhpc2t3enBBV25ZcXdnbGxzbWdIVWZqN0wxVkcwWndsLVhYdDRDdDlfU0Y2d1p0VVZEajRsYW5UbTdRS3AxTjhNYURxUTBoeVpwaE1XdnoyQ2VGQWVkNmowNTlibGZwWk5FckZvX3NWY054b1hDU21CdDBwN2dMcjczVg?oc=5",
+    "published_at": "2026-06-23T00:56:00+00:00",
+    "tickers": [
+      "NFLX"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=NFLX+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "NFLX"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "U.S. Market Close | Tech stocks dragged the Nasdaq down more than 1%; optical communication stocks gained, with LITE rising over 5% and Corning up over 7%; biotech firm APGE surged 46% after AbbVie announced a significant premium acquisition. - \u5bcc\u9014\u725b\u725b",
+    "summary": "U.S. Market Close | Tech stocks dragged the Nasdaq down more than 1%; optical communication stocks gained, with LITE rising over 5% and Corning up over 7%; biotech firm APGE surged 46% after AbbVie announced a significant premium acquisition.&nbsp;&nbsp;\u5bcc\u9014\u725b\u725b",
+    "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxPY2pNVXkyOE0tSGtDQ2hiUXdlcktxS0tOQkxJV1NRVVVpRnZJbGVCOGhQZXhjaHl3d2RjZlBnTHBrTFl0akxSY3lxZXZra19ZSmFnYmwzQ3JkQ2dWU0hDZm1MU0psdERaZERFUXNCZGRDTTlVOFlOanN0Yl9DaWlidEhOTnkxWVJzaTVydkxUY3hlR04xRF9Ka3NnSjFXdw?oc=5",
+    "published_at": "2026-06-22T22:42:24+00:00",
+    "tickers": [
+      "LITE"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=LITE+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "LITE"
+      ]
+    },
+    "tier": "T1"
+  },
+  {
+    "source": "google_news",
+    "title": "Unpacking Q1 Earnings: GE Vernova (NYSE:GEV) In The Context Of Other Electrical Systems Stocks - Yahoo Finance",
+    "summary": "Unpacking Q1 Earnings: GE Vernova (NYSE:GEV) In The Context Of Other Electrical Systems Stocks&nbsp;&nbsp;Yahoo Finance",
+    "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxOWTV6R0toekdMUEs1dWN5cUxQQ0xPVVRIN2ZLTTlVNkhYZzM0LWhDYzhPV20tMGhGYjFsQ0lROW5WV0ZvX2lYd2g2a2k0Zmd6TmdqMlltc3kyQWF5YmlJQjZRbjNsR19CWDZRX01aUklFdlBqMVhMaHpjejROQXd3ZzNRWmxra0RoTkxXVmZvV19MUFd4QTFENjRNWlRydw?oc=5",
+    "published_at": "2026-06-22T17:23:19+00:00",
+    "tickers": [
+      "GE",
+      "GEV"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=GEV+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "GEV"
+      ]
+    },
+    "tier": "T3"
+  }
+]
+
+news_quality_summary: {"T1": 3, "T2": 0, "T3": 10, "has_actionable_news": true, "note": ""}
+
+--------------------------------------------------------------------------------
+
+
+
+3a) 量化信号 QUANT SIGNALS：今日无满足条件的量化信号。
+
+
+3b) 技术背景 TECHNICAL CONTEXT（仅含有信号或需关注的标的）：
+{
+  "NFLX": {
+    "close": 71.84,
+    "daily_high": 73.45,
+    "20d_high": 88.73,
+    "20d_low": 71.81,
+    "breakout": false,
+    "breakdown": false,
+    "atr": 2.3393,
+    "above_200ma": false,
+    "momentum_10d_pct": -0.1176,
+    "volume_spike": false,
+    "trend_score": 0.0,
+    "days_to_earnings": 16,
+    "position": {
+      "shares": 35.0,
+      "avg_cost": 105.55,
+      "market_value_usd": 2514.4,
+      "unrealized_pnl_pct": -0.3194,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "breach_status": "HISTORIC_BREACH",
+      "exit_levels": {
+        "hard_stop_price": 92.88,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 126.66,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "signal_target_price": 126.66,
+        "signal_target_pct": 0.2,
+        "atr_stop_price": 102.04,
+        "atr_stop_pct": -0.0332
+      },
+      "exit_signals": {
+        "any_triggered": true,
+        "critical_exit": true,
+        "high_urgency": true,
+        "triggered_rules": [
+          {
+            "rule": "HARD_STOP",
+            "urgency": "CRITICAL",
+            "message": "Price 71.84 <= hard stop 92.88"
+          },
+          {
+            "rule": "ATR_STOP",
+            "urgency": "HIGH",
+            "message": "Price 71.84 <= ATR stop 102.04"
+          },
+          {
+            "rule": "TIME_STOP",
+            "urgency": "REVIEW",
+            "message": "Position held ~59 trading days with insufficient progress below halfway to diagnostic profit target 126.66"
+          }
+        ]
+      },
+      "daily_high": 73.45,
+      "prev_close": 72.82,
+      "daily_return_pct": -0.0135,
+      "trailing_stop_from_20d_high": 100.23,
+      "drawdown_from_20d_high_pct": -0.3406,
+      "high_water_mark_source": "entry_date_high"
+    }
+  },
+  "APP": {
+    "close": 464.96,
+    "daily_high": 474.51,
+    "20d_high": 622.0,
+    "20d_low": 447.35,
+    "breakout": false,
+    "breakdown": false,
+    "atr": 31.1612,
+    "above_200ma": false,
+    "momentum_10d_pct": -0.1073,
+    "volume_spike": false,
+    "trend_score": 0.0,
+    "days_to_earnings": 31,
+    "position": {
+      "shares": 8.0,
+      "avg_cost": 508.07,
+      "market_value_usd": 3719.68,
+      "unrealized_pnl_pct": -0.0849,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "breach_status": "OK",
+      "exit_levels": {
+        "hard_stop_price": 447.1,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 609.69,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "signal_target_price": 609.69,
+        "signal_target_pct": 0.2,
+        "atr_stop_price": 461.33,
+        "atr_stop_pct": -0.092
+      },
+      "exit_signals": {
+        "any_triggered": true,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": [
+          {
+            "rule": "TIME_STOP",
+            "urgency": "REVIEW",
+            "message": "Position held ~334 trading days with insufficient progress below halfway to diagnostic profit target 609.69"
+          }
+        ]
+      },
+      "daily_high": 474.51,
+      "prev_close": 467.02,
+      "daily_return_pct": -0.0044,
+      "trailing_stop_from_20d_high": 685.96,
+      "drawdown_from_20d_high_pct": -0.3764,
+      "high_water_mark_source": "entry_date_high"
+    }
+  },
+  "TSLA": {
+    "close": 375.53,
+    "daily_high": 384.58,
+    "20d_high": 445.6,
+    "20d_low": 379.06,
+    "breakout": false,
+    "breakdown": true,
+    "atr": 17.2666,
+    "above_200ma": false,
+    "momentum_10d_pct": -0.0533,
+    "volume_spike": false,
+    "trend_score": 0.0,
+    "days_to_earnings": 20,
+    "position": {
+      "shares": 5.0,
+      "avg_cost": 395.05,
+      "market_value_usd": 1877.65,
+      "unrealized_pnl_pct": -0.0494,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "breach_status": "OK",
+      "exit_levels": {
+        "hard_stop_price": 347.65,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 474.06,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "signal_target_price": 474.06,
+        "signal_target_pct": 0.2,
+        "atr_stop_price": 369.15,
+        "atr_stop_pct": -0.0656
+      },
+      "exit_signals": {
+        "any_triggered": true,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": [
+          {
+            "rule": "TIME_STOP",
+            "urgency": "REVIEW",
+            "message": "Position held ~434 trading days with insufficient progress below halfway to diagnostic profit target 474.06"
+          }
+        ]
+      },
+      "daily_high": 384.58,
+      "prev_close": 381.61,
+      "daily_return_pct": -0.0159,
+      "trailing_stop_from_20d_high": 458.92,
+      "drawdown_from_20d_high_pct": -0.2472,
+      "high_water_mark_source": "entry_date_high"
+    }
+  },
+  "AMD": {
+    "close": 519.74,
+    "daily_high": 524.96,
+    "20d_high": 562.99,
+    "20d_low": 437.23,
+    "breakout": false,
+    "breakdown": false,
+    "atr": 32.5627,
+    "above_200ma": true,
+    "momentum_10d_pct": 0.093,
+    "volume_spike": false,
+    "trend_score": 0.6,
+    "days_to_earnings": 29,
+    "position": {
+      "shares": 7.0,
+      "avg_cost": 174.21,
+      "market_value_usd": 3638.18,
+      "unrealized_pnl_pct": 1.9833,
+      "legacy_basis": true,
+      "stop_source": "auto_rolling",
+      "breach_status": "OK",
+      "exit_levels": {
+        "hard_stop_price": 457.37,
+        "hard_stop_pct": 1.6253,
+        "profit_target_price": 209.06,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "override_stop_active": true,
+        "signal_target_price": 209.06,
+        "signal_target_pct": 0.2,
+        "atr_stop_price": 470.9,
+        "atr_stop_pct": 1.703
+      },
+      "exit_signals": {
+        "any_triggered": true,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": [
+          {
+            "rule": "LEGACY_TARGET_REVIEW",
+            "urgency": "REVIEW",
+            "message": "daily_high 524.96 >= signal target 209.06; legacy basis position requires manual target review, not automatic target exit",
+            "target_price": 209.06,
+            "price_source": "daily_high",
+            "trigger_price": 524.96,
+            "target_vs_trigger_pct": -0.6018,
+            "stale_target_10pct_below_trigger": true
+          }
+        ]
+      },
+      "daily_high": 524.96,
+      "prev_close": 519.85,
+      "daily_return_pct": -0.0002,
+      "trailing_stop_from_20d_high": 517.95,
+      "drawdown_from_20d_high_pct": -0.0768,
+      "high_water_mark_source": "20d_high",
+      "effective_stop_price": 457.37
+    }
+  },
+  "META": {
+    "close": 557.67,
+    "daily_high": 569.04,
+    "20d_high": 642.4,
+    "20d_low": 556.49,
+    "breakout": false,
+    "breakdown": false,
+    "atr": 18.8822,
+    "above_200ma": false,
+    "momentum_10d_pct": -0.0452,
+    "volume_spike": false,
+    "trend_score": 0.0,
+    "days_to_earnings": 25,
+    "position": {
+      "shares": 9.0,
+      "avg_cost": 677.17,
+      "market_value_usd": 5019.03,
+      "unrealized_pnl_pct": -0.1765,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "breach_status": "DELAYED_BREACH",
+      "exit_levels": {
+        "hard_stop_price": 595.91,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 812.6,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "signal_target_price": 812.6,
+        "signal_target_pct": 0.2,
+        "atr_stop_price": 648.84,
+        "atr_stop_pct": -0.0418
+      },
+      "exit_signals": {
+        "any_triggered": true,
+        "critical_exit": true,
+        "high_urgency": true,
+        "triggered_rules": [
+          {
+            "rule": "HARD_STOP",
+            "urgency": "CRITICAL",
+            "message": "Price 557.67 <= hard stop 595.91"
+          },
+          {
+            "rule": "ATR_STOP",
+            "urgency": "HIGH",
+            "message": "Price 557.67 <= ATR stop 648.84"
+          },
+          {
+            "rule": "TIME_STOP",
+            "urgency": "REVIEW",
+            "message": "Position held ~363 trading days with insufficient progress below halfway to diagnostic profit target 812.60"
+          }
+        ]
+      },
+      "daily_high": 569.04,
+      "prev_close": 562.2,
+      "daily_return_pct": -0.0081,
+      "trailing_stop_from_20d_high": 730.16,
+      "drawdown_from_20d_high_pct": -0.2973,
+      "high_water_mark_source": "entry_date_high"
+    }
+  }
+}
+
+
+
+4) POSITION MANAGEMENT (pre-computed - use these directly):
+{
+  "account_state": "NORMAL",
+  "new_trade_locked": false,
+  "lock_reason": "",
+  "position_states": {
+    "AMD": "HOLD",
+    "APP": "HOLD",
+    "COHR": "HOLD",
+    "CRDO": "HOLD",
+    "HOOD": "HOLD",
+    "META": "CRITICAL_EXIT",
+    "MRVL": "HOLD",
+    "MUU": "HOLD",
+    "NBIS": "HOLD",
+    "NFLX": "CRITICAL_EXIT",
+    "NVDA": "HOLD",
+    "TRIP": "HOLD",
+    "TSLA": "HOLD"
+  },
+  "pending_unexecuted_actions": [],
+  "entry_intent_audit": {
+    "purpose": "conservative_entry_top_up_readiness",
+    "accepted_intended_share_fields": [
+      "original_shares",
+      "intended_shares",
+      "target_shares",
+      "signal_suggested_shares",
+      "planned_entry_shares"
+    ],
+    "non_legacy_positions": 8,
+    "positions_with_intended_shares": 0,
+    "coverage_pct": 0.0,
+    "missing_intended_share_tickers": [
+      "CRDO",
+      "HOOD",
+      "MUU",
+      "NBIS",
+      "SPCX",
+      "TRIP",
+      "COHR",
+      "MRVL"
+    ],
+    "invalid_intended_share_fields": [],
+    "underfilled_positions": []
+  },
+  "suggested_reduce_pct": {},
+  "bear_emergency_stops": {},
+  "current_prices": {
+    "AMD": 519.74,
+    "APP": 464.96,
+    "COHR": 392.5,
+    "CRDO": 268.99,
+    "HOOD": 97.19,
+    "META": 557.67,
+    "MRVL": 276.7,
+    "MUU": 902.1,
+    "NBIS": 259.66,
+    "NFLX": 71.84,
+    "NVDA": 199.0,
+    "TRIP": 12.98,
+    "TSLA": 375.53
+  },
+  "accounting": {
+    "portfolio_value_usd": 71918.4,
+    "equity_market_value_usd": 57600.64,
+    "cash_usd": 14317.76,
+    "cash_source": "explicit_cash_usd",
+    "cash_is_inferred": false,
+    "warnings": []
+  },
+  "market_regime": {
+    "regime": "BULL",
+    "note": "Both SPY and QQQ are above their 200-day MA. Trend is bullish. New long positions are permitted.",
+    "indices": {
+      "SPY": {
+        "ticker": "SPY",
+        "close": 733.24,
+        "ma200": 685.95,
+        "above_ma": true,
+        "pct_from_ma": 0.0689,
+        "momentum_10d_pct": -0.0026
+      },
+      "QQQ": {
+        "ticker": "QQQ",
+        "close": 710.62,
+        "ma200": 629.31,
+        "above_ma": true,
+        "pct_from_ma": 0.1292,
+        "momentum_10d_pct": 0.005
+      }
+    }
+  },
+  "portfolio_heat": {
+    "portfolio_value_usd": 71918.4,
+    "total_at_risk_usd": 224.06,
+    "portfolio_heat_pct": 0.0031,
+    "max_heat_pct": 0.08,
+    "can_add_new_positions": true,
+    "heat_note": "Heat 0.3% < 8% cap \u2014 new positions permitted",
+    "position_breakdown": [
+      {
+        "ticker": "AMD",
+        "shares": 7.0,
+        "current_price": 519.74,
+        "hard_stop": 457.37,
+        "effective_stop": 517.95,
+        "effective_stop_source": "trailing",
+        "at_risk_usd": 12.53,
+        "at_risk_pct": 0.0002
+      },
+      {
+        "ticker": "CRDO",
+        "shares": 15.0,
+        "current_price": 268.99,
+        "hard_stop": 230.56,
+        "effective_stop": 283.98,
+        "effective_stop_source": "trailing",
+        "at_risk_usd": 0.0,
+        "at_risk_pct": 0.0
+      },
+      {
+        "ticker": "HOOD",
+        "shares": 31.0,
+        "current_price": 97.19,
+        "hard_stop": 92.58,
+        "effective_stop": 103.5,
+        "effective_stop_source": "trailing",
+        "at_risk_usd": 0.0,
+        "at_risk_pct": 0.0
+      },
+      {
+        "ticker": "MUU",
+        "shares": 7.0,
+        "current_price": 902.1,
+        "hard_stop": 732.14,
+        "effective_stop": 1134.31,
+        "effective_stop_source": "trailing",
+        "at_risk_usd": 0.0,
+        "at_risk_pct": 0.0
+      },
+      {
+        "ticker": "NBIS",
+        "shares": 10.0,
+        "current_price": 259.66,
+        "hard_stop": 219.43,
+        "effective_stop": 275.87,
+        "effective_stop_source": "trailing",
+        "at_risk_usd": 0.0,
+        "at_risk_pct": 0.0
+      },
+      {
+        "ticker": "NVDA",
+        "shares": 31.0,
+        "current_price": 199.0,
+        "hard_stop": 155.97,
+        "effective_stop": 213.45,
+        "effective_stop_source": "trailing",
+        "at_risk_usd": 0.0,
+        "at_risk_pct": 0.0
+      },
+      {
+        "ticker": "SPCX",
+        "shares": 10.0,
+        "current_price": 176.27,
+        "hard_stop": 155.12,
+        "effective_stop": 155.12,
+        "effective_stop_source": "default",
+        "at_risk_usd": 211.53,
+        "at_risk_pct": 0.0029
+      },
+      {
+        "ticker": "TRIP",
+        "shares": 219.0,
+        "current_price": 12.98,
+        "hard_stop": 10.35,
+        "effective_stop": 13.06,
+        "effective_stop_source": "trailing",
+        "at_risk_usd": 0.0,
+        "at_risk_pct": 0.0
+      },
+      {
+        "ticker": "TSLA",
+        "shares": 5.0,
+        "current_price": 375.53,
+        "hard_stop": 347.65,
+        "effective_stop": 409.95,
+        "effective_stop_source": "trailing",
+        "at_risk_usd": 0.0,
+        "at_risk_pct": 0.0
+      },
+      {
+        "ticker": "COHR",
+        "shares": 19.0,
+        "current_price": 392.5,
+        "hard_stop": 332.13,
+        "effective_stop": 404.8,
+        "effective_stop_source": "trailing",
+        "at_risk_usd": 0.0,
+        "at_risk_pct": 0.0
+      },
+      {
+        "ticker": "MRVL",
+        "shares": 24.0,
+        "current_price": 276.7,
+        "hard_stop": 262.5,
+        "effective_stop": 303.49,
+        "effective_stop_source": "trailing",
+        "at_risk_usd": 0.0,
+        "at_risk_pct": 0.0
+      },
+      {
+        "ticker": "APP",
+        "shares": 8.0,
+        "current_price": 464.96,
+        "hard_stop": 447.1,
+        "effective_stop": 572.24,
+        "effective_stop_source": "trailing",
+        "at_risk_usd": 0.0,
+        "at_risk_pct": 0.0
+      },
+      {
+        "ticker": "META",
+        "shares": 9.0,
+        "current_price": 557.67,
+        "hard_stop": 595.91,
+        "effective_stop": 595.91,
+        "effective_stop_source": "default",
+        "at_risk_usd": 0.0,
+        "at_risk_pct": 0.0
+      },
+      {
+        "ticker": "NFLX",
+        "shares": 35.0,
+        "current_price": 71.84,
+        "hard_stop": 92.88,
+        "effective_stop": 92.88,
+        "effective_stop_source": "default",
+        "at_risk_usd": 0.0,
+        "at_risk_pct": 0.0
+      }
+    ]
+  },
+  "sector_concentration": {
+    "Unknown": 0.386,
+    "Technology": 0.314,
+    "Consumer Discretionary": 0.066,
+    "Communication Services": 0.035
+  },
+  "sizing_note": "shares = floor(portfolio_value_usd * 0.01 / (entry_price - stop_price))",
+  "data_warnings": [
+    "META: DELAYED_BREACH \u2014 hard_stop 595.91 is above current price 557.67. Forced liquidation \u2014 do not treat as a new stop trigger.",
+    "NFLX: HISTORIC_BREACH \u2014 hard_stop 92.88 is >20% above current price 71.84. Position should have been exited much earlier.",
+    "ENTRY_TOP_UP blind for ['CRDO', 'HOOD', 'MUU', 'NBIS', 'SPCX', 'TRIP', 'COHR', 'MRVL']: add one intended-share field (original_shares, intended_shares, target_shares, signal_suggested_shares, planned_entry_shares) to open_positions.json so conservative initial buys can be audited against the original signal size."
+  ],
+  "positions_requiring_attention": [
+    {
+      "ticker": "AMD",
+      "current_price": 519.74,
+      "daily_high": 524.96,
+      "urgency": "REVIEW",
+      "triggered_rules": [
+        {
+          "rule": "LEGACY_TARGET_REVIEW",
+          "urgency": "REVIEW",
+          "message": "daily_high 524.96 >= signal target 209.06; legacy basis position requires manual target review, not automatic target exit",
+          "target_price": 209.06,
+          "price_source": "daily_high",
+          "trigger_price": 524.96,
+          "target_vs_trigger_pct": -0.6018,
+          "stale_target_10pct_below_trigger": true
+        }
+      ],
+      "shares": 7.0,
+      "avg_cost": 174.21,
+      "unrealized_pnl_pct": 1.9833,
+      "legacy_basis": true,
+      "exit_levels": {
+        "hard_stop_price": 457.37,
+        "hard_stop_pct": 1.6253,
+        "profit_target_price": 209.06,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "override_stop_active": true,
+        "signal_target_price": 209.06,
+        "signal_target_pct": 0.2,
+        "atr_stop_price": 470.9,
+        "atr_stop_pct": 1.703
+      },
+      "trailing_stop_from_20d_high": 517.95,
+      "drawdown_from_20d_high_pct": -0.0768,
+      "daily_return_pct": -0.0002,
+      "prev_close": 519.85,
+      "days_to_earnings": 29
+    },
+    {
+      "ticker": "META",
+      "current_price": 557.67,
+      "daily_high": 569.04,
+      "urgency": "CRITICAL",
+      "triggered_rules": [
+        {
+          "rule": "HARD_STOP",
+          "urgency": "CRITICAL",
+          "message": "Price 557.67 <= hard stop 595.91"
+        },
+        {
+          "rule": "ATR_STOP",
+          "urgency": "HIGH",
+          "message": "Price 557.67 <= ATR stop 648.84"
+        },
+        {
+          "rule": "TIME_STOP",
+          "urgency": "REVIEW",
+          "message": "Position held ~363 trading days with insufficient progress below halfway to diagnostic profit target 812.60"
+        }
+      ],
+      "shares": 9.0,
+      "avg_cost": 677.17,
+      "unrealized_pnl_pct": -0.1765,
+      "legacy_basis": false,
+      "exit_levels": {
+        "hard_stop_price": 595.91,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 812.6,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "signal_target_price": 812.6,
+        "signal_target_pct": 0.2,
+        "atr_stop_price": 648.84,
+        "atr_stop_pct": -0.0418
+      },
+      "trailing_stop_from_20d_high": 730.16,
+      "drawdown_from_20d_high_pct": -0.2973,
+      "daily_return_pct": -0.0081,
+      "prev_close": 562.2,
+      "days_to_earnings": 25
+    },
+    {
+      "ticker": "NFLX",
+      "current_price": 71.84,
+      "daily_high": 73.45,
+      "urgency": "CRITICAL",
+      "triggered_rules": [
+        {
+          "rule": "HARD_STOP",
+          "urgency": "CRITICAL",
+          "message": "Price 71.84 <= hard stop 92.88"
+        },
+        {
+          "rule": "ATR_STOP",
+          "urgency": "HIGH",
+          "message": "Price 71.84 <= ATR stop 102.04"
+        },
+        {
+          "rule": "TIME_STOP",
+          "urgency": "REVIEW",
+          "message": "Position held ~59 trading days with insufficient progress below halfway to diagnostic profit target 126.66"
+        }
+      ],
+      "shares": 35.0,
+      "avg_cost": 105.55,
+      "unrealized_pnl_pct": -0.3194,
+      "legacy_basis": false,
+      "exit_levels": {
+        "hard_stop_price": 92.88,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 126.66,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "signal_target_price": 126.66,
+        "signal_target_pct": 0.2,
+        "atr_stop_price": 102.04,
+        "atr_stop_pct": -0.0332
+      },
+      "trailing_stop_from_20d_high": 100.23,
+      "drawdown_from_20d_high_pct": -0.3406,
+      "daily_return_pct": -0.0135,
+      "prev_close": 72.82,
+      "days_to_earnings": 16
+    }
+  ]
+}
+
+任务 A — 新仓位：
+- 先读第 4 节 new_trade_locked 字段。若为 true → "NO NEW TRADE"，跳至任务 B
+- 从第 3a 节读取量化信号（已通过所有代码层门控）
+- 若无信号 → "NO NEW TRADE"
+- 检查第 2 节新闻：是否有 T1 负面新闻否决该信号？
+  - 有 T1 负面 → "NO NEW TRADE"，在 veto_check 中说明具体新闻
+  - 无 T1 负面 → 信号通过，生成交易（所有数值直接使用第 3a 节预计算值）
+- 生成交易时必须 echo 第 3a 节的 strategy 字段（trend_long / breakout_long / earnings_event_long）
+
+任务 A2 — 加仓动作：
+- 读取第 3a-add 节 add-on actions（若存在）
+- 这不是新开仓，不受 new_trade_locked 影响；它是代码层 follow-through 加仓
+- 若无 T1 灾难新闻否决该 ticker → 原样输出到 add_on_trades
+- 若有 T1 灾难新闻 → 不输出该加仓，并在 add_on_vetoes 写明新闻和理由
+
+任务 B — 现有持仓审查（全部照搬代码决策）：
+- 读第 4 节 position_states 和 suggested_reduce_pct
+- CRITICAL_EXIT → EXIT，shares_to_sell = null，decision_mode = "forced_rule"
+- TARGET_EXIT → EXIT，shares_to_sell = null，decision_mode = "forced_rule"
+- ATR_EXIT → EXIT，shares_to_sell = null，decision_mode = "forced_rule"
+- HIGH_REDUCE → REDUCE，shares_to_sell = 总股数 × suggested_reduce_pct / 100（向下取整），decision_mode = "forced_rule"
+- HOLD → HOLD，shares_to_sell = null，decision_mode = "forced_rule"
+- pending_unexecuted_actions overrides HOLD: repeat the prior REDUCE/EXIT with decision_mode = "pending_unexecuted_action"
+- position_actions 必须包含所有持仓
+
+输出格式（仅输出合法 JSON，前后不要有任何文字）：
+
+{
+  "new_trade":
+    "NO NEW TRADE"
+    OR
+    {
+      "ticker": "string",
+      "signal_source": "quant",
+      "veto_check": "PASS — 无T1负面新闻" 或 "VETO — [具体新闻和理由]",
+      "direction": "long",
+      "confidence": 0到1之间的数字,
+      "entry_price": 数字（直接使用第 3a 节值）,
+      "stop_price": 数字（直接使用第 3a 节值）,
+      "target_price": 数字（直接使用第 3a 节值）,
+      "shares_to_buy": 整数（直接使用第 3a 节 sizing.shares_to_buy）,
+      "strategy": "string（照搬第3a节值：trend_long / breakout_long / earnings_event_long）",
+      "invalid_if": "使逻辑无效的具体条件"
+    },
+
+  "add_on_trades": [
+    {
+      "ticker": "string",
+      "action": "ADD",
+      "shares_to_buy": 整数,
+      "fill_timing": "next_session_open",
+      "decision_mode": "code_followthrough_addon",
+      "reason": "照搬第3a-add节代码理由"
+    }
+  ],
+
+  "add_on_vetoes": [
+    {
+      "ticker": "string",
+      "reason": "T1灾难新闻否决理由"
+    }
+  ],
+
+  "position_actions": [
+    {
+      "ticker": "string",
+      "current_position": "long",
+      "action": "HOLD | REDUCE | EXIT",
+      "reason": "照搬第4节代码决策理由",
+      "exit_rule_triggered": "NONE | HARD_STOP | ATR_STOP | TRAILING_STOP | SIGNAL_TARGET | PROFIT_TARGET | PROFIT_LADDER_50 | PROFIT_LADDER_30 | TIME_STOP | APPROACHING_HARD_STOP",
+      "shares_to_sell": 整数或null,
+      "decision_mode": "forced_rule | pending_unexecuted_action",
+      "suggested_new_stop": 数字或null
+    }
+  ]
+}
+
+重要说明：
+- 只输出 JSON，不要 markdown 代码块
+- action=REDUCE 时 shares_to_sell 为必填（= 总股数 × suggested_reduce_pct / 100，向下取整）
+- action=HOLD 或 EXIT 时 shares_to_sell 必须为 null
+- 若无新交易，new_trade 设为字符串 "NO NEW TRADE"
+- 若无加仓动作，add_on_trades 设为空数组 []
+- 若无加仓否决，add_on_vetoes 设为空数组 []
+- position_actions 必须包含所有持仓——即使操作为 HOLD
+

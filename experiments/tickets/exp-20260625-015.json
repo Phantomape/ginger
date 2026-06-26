@@ -1,0 +1,551 @@
+{
+  "acceptance_rule": "Gate 4 on canonical windows: aggregate EV and PnL positive, no window EV/PnL regression, at least two EV-improved windows, at least 20 trades across all 3 windows, survival >=5%, drawdown drift <=0.5pp, concentration pass, and accepted compression/distribution comparator EV/PnL floors beaten. Positive private replay is only a lead, not accepted alpha.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260625_015_volume_dryup_breakout_scout.py",
+    "data/experiments/exp-20260625-015/exp_20260625_015_volume_dryup_breakout_scout.json",
+    "experiments/cards/exp-20260625-015.md",
+    "experiments/manifests/exp-20260625-015.json",
+    "experiments/tickets/exp-20260625-015.json",
+    "experiments/logs/exp-20260625-015.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260625-015.md",
+  "causal_components": [
+    "pre-signal avg_volume_20d_prior / avg_volume_60d_prior dry-up gate",
+    "close above prior 20-day high breakout gate",
+    "liquidity and high-close-location confirmation",
+    "SPY-relative 20/60-day trend guard",
+    "daily top-1 next-open 10-day paper replay",
+    "accepted core baseline overlay comparison"
+  ],
+  "change_type": "candidate_pool_private_replay_scout",
+  "changed_variable": "volume_dryup_breakout_candidate_pool_v1",
+  "claimed_at": "2026-06-25T14:06:07+00:00",
+  "completed_at": "2026-06-25T14:16:05+00:00",
+  "created_at": "2026-06-25T14:05:56+00:00",
+  "evaluation_windows": [
+    {
+      "label": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json"
+    },
+    {
+      "label": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json"
+    },
+    {
+      "label": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json"
+    }
+  ],
+  "experiment_id": "exp-20260625-015",
+  "experiment_uid": "expuid-fef047d017b44065",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260625-015",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-25T14:05:56+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "volume_dryup_breakout_scout"
+  },
+  "hypothesis": "Liquid stocks with a point-in-time 20-vs-60 day volume dry-up before a close above the prior 20-day high may identify supply-exhaustion breakouts distinct from prior narrow-range compression families.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "volume_dryup_breakout_candidate_pool_v1"
+  ],
+  "mechanism_family": "production_visible_free_ohlcv_candidate_pool",
+  "multiple_testing_risk_bucket": "high_ohlcv_relation_near_saturation_but_new_gate_shape_declared",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260608-013",
+    "exp-20260610-017",
+    "exp-20260613-018",
+    "exp-20260615-005",
+    "exp-20260623-008"
+  ],
+  "new_evidence_type": "point_in_time_pre_breakout_volume_dryup_20v60_ohlcv_field",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 1.0,
+        "family_key": "narrow_range_compression_breakout_candidate_pool",
+        "score": 0.6516,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "gap_up_hold_high_close_candidate_pool",
+        "score": 0.6471,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "spy_residual_compression_breakout_candidate_pool",
+        "score": 0.6375,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "broad_full_liquid_reversal_candidate_pool",
+        "score": 0.6343,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "fiftytwo_week_high_pre_breakout_range_contraction_candidate_pool",
+        "score": 0.6333,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_relation",
+      "field_tags": [
+        "above",
+        "baseline",
+        "breakout",
+        "breakouts",
+        "close",
+        "compression",
+        "distinct",
+        "dried",
+        "dryup",
+        "exhaustion",
+        "from",
+        "has",
+        "high",
+        "identify",
+        "liquid",
+        "location",
+        "may",
+        "narrow",
+        "prior",
+        "private",
+        "range",
+        "relative",
+        "spy",
+        "stocks",
+        "supply",
+        "then",
+        "trend",
+        "up",
+        "versus",
+        "volume",
+        "whose"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "narrow_range_compression_breakout_candidate_pool",
+        "reopen_condition": "Next useful evidence is a shared default-off helper that reproduces this exact historical replay and daily snapshot semantics, plus closed forward replacement-value rows. A production/live activation would need a separate activation-envelope Gate 1-4 with capital caps, liquidity and slippage assumptions, exposure limits, displacement, and kill switch rules.",
+        "score": 0.6516,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "gap_up_hold_high_close_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.6471,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "spy_residual_compression_breakout_candidate_pool",
+        "reopen_condition": "A retry needs materially new PIT evidence, such as borrow/ETF flow, options-implied idiosyncratic pressure, or forward replacement-value rows from a shared helper.",
+        "score": 0.6375,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "broad_full_liquid_reversal_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.6343,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "fiftytwo_week_high_pre_breakout_range_contraction_candidate_pool",
+        "reopen_condition": "A retry needs materially different evidence separating durable from exhausted 52-week-high leaders, such as PIT ownership, borrow/availability, options-implied pressure, or validated forward daily replacement rows. Do not sweep the contraction thresholds, 52-week geometry, hold, cooldown, top-N, or notional.",
+        "score": 0.6333,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Machine-checkable new gate shape: pre-breakout volume_dryup_ratio_20v60 computed from point-in-time OHLCV before signal; no prior accepted/rejected family used this field as the independent evidence axis, and this does not retune narrow-range compression thresholds.",
+    "override": true,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0526,
+      "accepts": 5,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_relation",
+      "trials": 95
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.12,
+    "expected_ev_delta": 0.2,
+    "expected_pnl_delta": 3500.0,
+    "main_failure_modes": [
+      "ohlcv_relation_source_saturation",
+      "near_neighbor_compression_family",
+      "window_regression",
+      "accepted_comparator_not_beaten",
+      "thin_trade_count_after_breakout_gate"
+    ],
+    "confidence_reason": "OHLCV candidate-pool families are near source saturation and prior breakout/compression tests are hard comparators. The only reason to run this scout is that pre-breakout 20-vs-60 volume dry-up is a machine-checkable field not previously used as the independent axis.",
+    "recorded_at": "2026-06-25T13:20:00+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "gate4_passed": false,
+    "decision": "rejected_volume_dryup_breakout_candidate_pool",
+    "artifact": "data/experiments/exp-20260625-015/exp_20260625_015_volume_dryup_breakout_scout.json",
+    "log": "experiments/logs/exp-20260625-015.json",
+    "runner": "quant/experiments/exp_20260625_015_volume_dryup_breakout_scout.py",
+    "delta_metrics": {
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": 0.0148,
+          "total_pnl": 63.27,
+          "strategy_total_return_pct": 0.0007,
+          "sharpe_daily": 0.01,
+          "max_drawdown_pct": -0.0003,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "signals_generated": 0,
+          "signals_survived": 0,
+          "survival_rate": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": 0.0525,
+          "total_pnl": 1047.28,
+          "strategy_total_return_pct": 0.0105,
+          "sharpe_daily": 0.03,
+          "max_drawdown_pct": -0.0004,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "signals_generated": 0,
+          "signals_survived": 0,
+          "survival_rate": 0.0
+        },
+        "old_thin": {
+          "expected_value_score": 0.04,
+          "total_pnl": 1583.04,
+          "strategy_total_return_pct": 0.0158,
+          "sharpe_daily": 0.04,
+          "max_drawdown_pct": -0.0005,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "signals_generated": 0,
+          "signals_survived": 0,
+          "survival_rate": 0.0
+        }
+      },
+      "aggregate": {
+        "baseline_expected_value_score_sum": 7.8941,
+        "after_expected_value_score_sum": 8.0014,
+        "expected_value_score_delta_sum": 0.1073,
+        "expected_value_score_delta_pct": 0.013592,
+        "baseline_total_pnl_sum": 234850.99,
+        "after_total_pnl_sum": 237544.58,
+        "total_pnl_delta_sum": 2693.59,
+        "total_pnl_delta_pct": 0.011469,
+        "windows_ev_improved": 3,
+        "windows_ev_regressed": 0,
+        "windows_pnl_improved": 3,
+        "windows_pnl_regressed": 0,
+        "max_drawdown_delta_max": -0.0003,
+        "target_trade_count_sum": 16
+      }
+    },
+    "gate2": {
+      "passed": true,
+      "raw_candidate_counts": {
+        "late_strong": 3,
+        "mid_weak": 19,
+        "old_thin": 6
+      },
+      "open_positions": {
+        "passed": true,
+        "path": "operator_inputs/open_positions.json",
+        "position_count": 12,
+        "missing_entry_date_tickers": [],
+        "missing_target_price_tickers": []
+      }
+    },
+    "gate3": {
+      "new_core_filter_added": false,
+      "candidate_pool_changed": false,
+      "minimum_core_survival_rate": 0.7925,
+      "passed": true,
+      "note": "No new core filter or entry rule was added. The volume dry-up breakout source is an additive private replay paper overlay."
+    },
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_volume_dryup_breakout_candidate_pool",
+      "failed_reasons": [
+        "accepted_comparator_ev_floor_not_beaten",
+        "accepted_comparator_pnl_floor_not_beaten",
+        "too_few_target_trades"
+      ],
+      "warnings": [],
+      "target_trade_count": 16,
+      "windows_with_target_trades": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "ev_improved_windows": 3,
+      "pnl_improved_windows": 3,
+      "aggregate_expected_value_delta": 0.1073,
+      "aggregate_total_pnl_delta": 2693.59,
+      "accepted_comparators": {
+        "narrow_range_compression_breakout": {
+          "experiment_id": "exp-20260608-013",
+          "expected_value_delta_sum": 0.1608,
+          "total_pnl_delta_sum": 2248.98,
+          "target_trade_count": 44
+        },
+        "distribution_day_absorption": {
+          "experiment_id": "exp-20260611-007",
+          "expected_value_delta_sum": 0.5286,
+          "total_pnl_delta_sum": 10432.91,
+          "target_trade_count": 113
+        }
+      },
+      "comparator_ev_floor": 0.5286,
+      "comparator_pnl_floor": 10432.91,
+      "max_drawdown_drift_by_window": {
+        "late_strong": -0.0003,
+        "mid_weak": -0.0004,
+        "old_thin": -0.0005
+      },
+      "concentration": {
+        "max_single_positive_pnl_share": 0.383749,
+        "positive_pnl_hhi": 0.225422
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.12,
+      "actual_gate4_passed": false,
+      "failure_modes_observed": [
+        "accepted_comparator_ev_floor_not_beaten",
+        "accepted_comparator_pnl_floor_not_beaten",
+        "too_few_target_trades"
+      ],
+      "brier_score": 0.0144
+    },
+    "summary": "The private volume dry-up breakout candidate pool did not clear Gate 4. Do not promote it or retry adjacent OHLCV dry-up/breakout thresholds on the same frozen windows without a materially new evidence axis."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260625-015.json",
+  "single_causal_variable": "volume_dryup_breakout_candidate_pool_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260625-015.json",
+  "trial_family": "volume_dryup_breakout_candidate_pool",
+  "trial_variant_id": "volume_dryup_20v60_breakout_top1_10d_v1",
+  "alpha_hypothesis": "candidate-pool alpha: pre-signal average volume contraction (avg_volume_20d_prior / avg_volume_60d_prior <= 0.72), followed by a high-location close above the prior 20-day high and SPY-relative trend, may add next-open 10-day paper alpha on liquid common stocks.",
+  "implementation_mode": "private_replay_scout_no_shared_helper",
+  "new_evidence_axis": "Machine-checkable new gate shape: pre-breakout volume_dryup_ratio_20v60 computed from point-in-time OHLCV before signal; no prior accepted or rejected family used this field as the independent evidence axis, and this does not retune narrow-range compression thresholds.",
+  "decision": "rejected_volume_dryup_breakout_candidate_pool",
+  "summary": "The private volume dry-up breakout candidate pool did not clear Gate 4. Do not promote it or retry adjacent OHLCV dry-up/breakout thresholds on the same frozen windows without a materially new evidence axis.",
+  "artifact": "data/experiments/exp-20260625-015/exp_20260625_015_volume_dryup_breakout_scout.json",
+  "log": "experiments/logs/exp-20260625-015.json",
+  "aggregate_expected_value_delta": 0.1073,
+  "aggregate_strategy_total_pnl_delta": 2693.59,
+  "gate1": {
+    "baseline_metrics": {
+      "late_strong": {
+        "expected_value_score": 5.1628,
+        "total_pnl": 117072.92,
+        "strategy_total_return_pct": 1.1707,
+        "sharpe_daily": 4.41,
+        "max_drawdown_pct": 0.0665,
+        "win_rate": 0.8333,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "worst_trade_pct": -0.0397,
+        "max_consecutive_losses": 2,
+        "tail_loss_share": 0.5146
+      },
+      "mid_weak": {
+        "expected_value_score": 2.1402,
+        "total_pnl": 78110.11,
+        "strategy_total_return_pct": 0.7811,
+        "sharpe_daily": 2.74,
+        "max_drawdown_pct": 0.1119,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925,
+        "worst_trade_pct": -0.0897,
+        "max_consecutive_losses": 6,
+        "tail_loss_share": 0.5493
+      },
+      "old_thin": {
+        "expected_value_score": 0.5911,
+        "total_pnl": 39667.96,
+        "strategy_total_return_pct": 0.3967,
+        "sharpe_daily": 1.49,
+        "max_drawdown_pct": 0.1001,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667,
+        "worst_trade_pct": -0.0635,
+        "max_consecutive_losses": 4,
+        "tail_loss_share": 0.5193
+      }
+    },
+    "baseline_artifact": "data/experiments/exp-20260625-015/exp_20260625_015_volume_dryup_breakout_scout.json#before_metrics",
+    "canonical_baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "passed": true
+  },
+  "gate2": {
+    "passed": true,
+    "raw_candidate_counts": {
+      "late_strong": 3,
+      "mid_weak": 19,
+      "old_thin": 6
+    },
+    "open_positions": {
+      "passed": true,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 12,
+      "missing_entry_date_tickers": [],
+      "missing_target_price_tickers": []
+    }
+  },
+  "gate3": {
+    "new_core_filter_added": false,
+    "candidate_pool_changed": false,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": true,
+    "note": "No new core filter or entry rule was added. The volume dry-up breakout source is an additive private replay paper overlay."
+  },
+  "gate4": {
+    "passed": false,
+    "decision": "rejected_volume_dryup_breakout_candidate_pool",
+    "failed_reasons": [
+      "accepted_comparator_ev_floor_not_beaten",
+      "accepted_comparator_pnl_floor_not_beaten",
+      "too_few_target_trades"
+    ],
+    "warnings": [],
+    "target_trade_count": 16,
+    "windows_with_target_trades": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "ev_improved_windows": 3,
+    "pnl_improved_windows": 3,
+    "aggregate_expected_value_delta": 0.1073,
+    "aggregate_total_pnl_delta": 2693.59,
+    "accepted_comparators": {
+      "narrow_range_compression_breakout": {
+        "experiment_id": "exp-20260608-013",
+        "expected_value_delta_sum": 0.1608,
+        "total_pnl_delta_sum": 2248.98,
+        "target_trade_count": 44
+      },
+      "distribution_day_absorption": {
+        "experiment_id": "exp-20260611-007",
+        "expected_value_delta_sum": 0.5286,
+        "total_pnl_delta_sum": 10432.91,
+        "target_trade_count": 113
+      }
+    },
+    "comparator_ev_floor": 0.5286,
+    "comparator_pnl_floor": 10432.91,
+    "max_drawdown_drift_by_window": {
+      "late_strong": -0.0003,
+      "mid_weak": -0.0004,
+      "old_thin": -0.0005
+    },
+    "concentration": {
+      "max_single_positive_pnl_share": 0.383749,
+      "positive_pnl_hhi": 0.225422
+    }
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The volume dry-up breakout surface produced a replayable candidate pool, but the fixed rule must beat both the canonical core baseline and accepted OHLCV candidate-pool comparators. Any failure on aggregate EV/PnL, window regression, sample size, or comparator floor rejects this near-saturation OHLCV family.",
+    "realized_failure_mode": "ohlcv_relation_saturation_or_accepted_comparator_not_beaten",
+    "forbidden_near_neighbor_retry": "Do not retry adjacent 20/60 volume dry-up thresholds, prior-high lookbacks, close-location cutoffs, signal-volume guards, relative strength cutoffs, top-N, hold days, cooldown, or notional on these frozen windows unless there is a new machine-checkable evidence axis outside this OHLCV relation surface.",
+    "new_evidence_required": "A valid reopen needs a new non-OHLCV confirmation field, a true forward replacement row showing allocation value, or a distinct data source. Another adjacent volume-dry-up breakout retune is not new evidence."
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "shared_helper_promoted": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "paper_orders_changed": false,
+    "live_orders_changed": false,
+    "production_watchlist_changed": false,
+    "uses_free_ohlcv": true,
+    "uses_llm": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "replay_only": true,
+    "adapter_status": "private_replay_only_no_live_adapter",
+    "parity_note": "This is an experiment-owned private replay scout. A positive result would require a shared default-off helper that computes the same pre-breakout volume dry-up, breakout, liquidity, relative-strength, next-open paper entry, 10-trading-day exit, cost model, cooldown, and concentration checks before any daily report, candidate priority, sizing, watchlist, paper ledger, or order surface could change."
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260625_015_volume_dryup_breakout_scout.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260625_015_volume_dryup_breakout_scout.py",
+    "data/experiments/exp-20260625-015/exp_20260625_015_volume_dryup_breakout_scout.json",
+    "experiments/logs/exp-20260625-015.json",
+    "experiments/tickets/exp-20260625-015.json",
+    "experiments/cards/exp-20260625-015.md",
+    "experiments/manifests/exp-20260625-015.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "anti_js": "No JavaScript was used.",
+  "updated_at": "2026-06-25T14:16:05+00:00"
+}

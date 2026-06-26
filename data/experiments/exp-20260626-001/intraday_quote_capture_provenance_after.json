@@ -1,0 +1,37 @@
+{
+  "experiment_id": "exp-20260626-001",
+  "artifact_type": "measurement_repair_after",
+  "expected_value_score": 0,
+  "sharpe_daily": 0,
+  "total_pnl": 0,
+  "total_trades": 0,
+  "survival_rate": null,
+  "benchmarks": {
+    "strategy_total_return_pct": 0
+  },
+  "implemented_contract": {
+    "quote_time_et_semantics": "Unchanged: source-provided quote or intraday bar timestamp when available; remains null for fast_info, eod_close_fallback, and unavailable rows.",
+    "capture_time_et_semantics": "New: local snapshot observation time shared across all quotes in one run and propagated to position reviews and index regime rows.",
+    "online_path": "quant/intraday_quotes.py get_intraday_quotes(..., capture_time_et=...) and quant/run_intraday.py pass generated_at_et-derived capture time.",
+    "offline_path": "quant/run_intraday.py _offline_quotes writes capture_time_et for eod_close_fallback and unavailable rows.",
+    "review_path": "quant/intraday_review.py propagates capture_time_et into positions[].quote and market_regime_intraday.indices[]."
+  },
+  "verification": {
+    "command": ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_intraday_review.py -q",
+    "result": "17 passed in 0.80s",
+    "covered_cases": [
+      "fast_info keeps quote_time_et null and writes capture_time_et",
+      "intraday_1m keeps source bar quote_time_et and writes capture_time_et",
+      "eod_close_fallback/unavailable write capture_time_et",
+      "batch quote fetch shares one capture_time_et",
+      "position review and index regime propagate capture_time_et"
+    ]
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "eod_pipeline_changed": false,
+    "backtester_changed": false,
+    "orders_changed": false,
+    "scope": "Advisory intraday JSON/report inputs only; no new exit, entry, sizing, or allocation rule."
+  }
+}

@@ -1,0 +1,957 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/;data/experiments/;experiments/cards/;experiments/manifests/;experiments/tickets/;experiments/logs/;docs/experiment_log.jsonl;docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260625-013.md",
+  "causal_components": [
+    "daily Form4 transaction XML fields",
+    "canonical forward_replacement_value closed rows",
+    "ticker/date-window attribution",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "form4_daily_sale_pressure_forward_replacement_context_v1",
+  "claimed_at": "2026-06-25T12:07:50+00:00",
+  "completed_at": "2026-06-25T12:13:37+00:00",
+  "created_at": "2026-06-25T12:07:33+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260625-013",
+  "experiment_uid": "expuid-dc428576cf2c4b5a",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260625-013",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-25T12:07:33+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "form4_forward_conflict_readiness"
+  },
+  "hypothesis": "Observed-only alpha hypothesis: current PIT Form 4 sale pressure and post-sale retention context can identify accepted/default-off paper rows whose forward replacement value is weaker; first test whether daily Form 4 transactions join to canonical closed forward replacement rows with enough sample and direction.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "strategy ranking",
+    "sizing",
+    "entry",
+    "exit",
+    "live orders",
+    "paper orders"
+  ],
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/runners/;quant/live/;quant/paper_trading/;data/paper_sleeves/"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260616-012",
+    "exp-20260616-013",
+    "exp-20260623-024",
+    "exp-20260624-008"
+  ],
+  "new_evidence_type": "daily_form4_forward_replacement_join",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "form4_post_sale_retention_absorption_candidate_pool",
+        "score": 0.641,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "form4_multiyear_equity_retention_candidate_pool",
+        "score": 0.62,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "form4_sale_absorption_leadership_candidate_pool",
+        "score": 0.62,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "form4_option_exercise_retention_absorption_candidate_pool",
+        "score": 0.6195,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "form4_ftd_overlap_candidate_pool",
+        "score": 0.6186,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "form4_insider",
+      "field_tags": [
+        "accepted",
+        "alpha",
+        "attribution",
+        "can",
+        "canonical",
+        "closed",
+        "conflict",
+        "context",
+        "current",
+        "daily",
+        "direction",
+        "enough",
+        "first",
+        "form",
+        "form4",
+        "forward",
+        "hypothesis",
+        "identify",
+        "is",
+        "join",
+        "observed",
+        "only",
+        "pit",
+        "post",
+        "pressure",
+        "readiness",
+        "replacement",
+        "retention",
+        "rows",
+        "sale",
+        "sample",
+        "test",
+        "to",
+        "transactions",
+        "value",
+        "weaker",
+        "whether",
+        "whose"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "form4_insider",
+        "family_key": "form4_post_sale_retention_absorption_candidate_pool",
+        "reopen_condition": "A retry needs materially new PIT evidence beyond retained ownership, such as daily forward replacement value for sale clusters, parsed Form 144 float/sale-plan context, or a shared default-off daily Form 4 sale-retention adapter with closed forward observations. Pure threshold, role, 10b5-1, or liquidity retunes stay frozen.",
+        "score": 0.641,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "form4_insider",
+        "family_key": "form4_multiyear_equity_retention_candidate_pool",
+        "reopen_condition": "A retry needs materially richer executive-compensation provenance, such as grant fair value from proxy data, vesting/lockup terms tied to actual retention outcomes, executive ownership percentage, or closed forward replacement-value rows from a shared daily Form 4 retention helper. Do not sweep Form 4 transaction-code lists, role filters, 10b5-1 handling, vesting-year threshold, RS/close/volume gu",
+        "score": 0.62,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "form4_insider",
+        "family_key": "form4_sale_absorption_leadership_candidate_pool",
+        "reopen_condition": "A retry needs materially new PIT evidence, such as forward daily replacement value on sale clusters, explicit post-sale ownership-retention context, or a shared default-off daily Form 4 sale-absorption adapter with non-replay observations. Pure threshold, role, 10b5-1, or liquidity retunes stay frozen.",
+        "score": 0.62,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "form4_insider",
+        "family_key": "form4_option_exercise_retention_absorption_candidate_pool",
+        "reopen_condition": "A retry needs materially new PIT evidence beyond raw Form 4 exercise-and-hold rows, such as closed daily forward replacement-value observations from a shared default-off adapter, parsed executive compensation/holdings context, or relation evidence that the exercise-retention source conflicts with accepted source candidates. Pure threshold, role, 10b5-1, option-exercise, or liquidity retunes stay f",
+        "score": 0.6195,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "form4_insider",
+        "family_key": "form4_ftd_overlap_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.6186,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Non-scan forward replacement join: current 2026-06-24 daily Form4 transaction XML fields are joined to canonical closed forward_replacement_value rows with PIT ticker/date windows; not a frozen-window Form4 candidate pool, threshold, hold-day, source-rank, or notional sweep.",
+    "override": true,
+    "saturated_source_override": true,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": true,
+      "source": "form4_insider",
+      "trials": 14
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "form4_forward_overlap_too_thin",
+      "source_family_saturation",
+      "no_replacement_separation",
+      "compensation_plumbing_dominates"
+    ],
+    "confidence_reason": "Standalone Form4 candidate pools are saturated, but current daily Form4 transaction XML joined to canonical closed forward replacement rows is the machine-checkable new evidence axis required before any future Form4 context rule.",
+    "recorded_at": "2026-06-25T12:07:16+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "allocation_ready": false,
+    "decision": "rejected_form4_forward_context_not_allocation_ready",
+    "artifact": "data/experiments/exp-20260625-013/exp_20260625_013_form4_forward_conflict_readiness.json",
+    "log": "experiments/logs/exp-20260625-013.json",
+    "runner": "quant/experiments/exp_20260625_013_form4_forward_conflict_readiness.py",
+    "gate4": {
+      "passed": false,
+      "observed_only_lead": false,
+      "allocation_ready": false,
+      "decision": "rejected_form4_forward_context_not_allocation_ready",
+      "failed_reasons": [
+        "form4_forward_overlap_too_thin",
+        "sale_pressure_rows_below_min",
+        "sale_pressure_ticker_concentration_too_high",
+        "sale_pressure_not_weaker_on_enough_mean_fields",
+        "sale_pressure_not_weaker_on_enough_median_fields"
+      ],
+      "acceptance_rule": "Observed-only positive lead only if sale-pressure rows have enough sample, two tickers, acceptable concentration, and weaker replacement value than no-Form4 rows on at least two mean and median comparators.",
+      "source_saturation_context": {
+        "form4_candidate_pool_source_saturated": true,
+        "override_basis": "Non-scan forward replacement join: current 2026-06-24 daily Form4 transaction XML fields are joined to canonical closed forward_replacement_value rows with PIT ticker/date windows; not a frozen-window Form4 candidate pool, threshold, hold-day, source-rank, or notional sweep.",
+        "promotion_allowed": false
+      },
+      "aggregate_expected_value_delta": 0.0,
+      "aggregate_strategy_total_pnl_delta": 0.0
+    },
+    "calibration": {
+      "predicted_success_probability": 0.18,
+      "outcome_success": false,
+      "failure_modes_observed": [
+        "form4_forward_overlap_too_thin",
+        "no_replacement_separation",
+        "single_ticker_concentration"
+      ],
+      "predicted_failure_modes": [
+        "form4_forward_overlap_too_thin",
+        "source_family_saturation",
+        "no_replacement_separation",
+        "compensation_plumbing_dominates"
+      ],
+      "predicted_failure_mode_hit": true
+    },
+    "attribution": {
+      "source_audit": {
+        "forward_replacement": {
+          "source_artifact": "data/paper_sleeves/forward_replacement_value.jsonl",
+          "raw_rows": 38,
+          "deduped_rows": 38,
+          "usable_rows": 38,
+          "missing_required_rows": 0,
+          "entry_date_min": "2026-05-05",
+          "entry_date_max": "2026-06-16",
+          "exit_date_min": "2026-05-12",
+          "exit_date_max": "2026-06-24",
+          "distinct_tickers": 17,
+          "artifact_not_mutated": true
+        },
+        "form4_transactions": {
+          "source_artifact": "data/non_ohlcv/form4_transactions_20260624.jsonl",
+          "raw_rows": 767,
+          "deduped_rows": 726,
+          "usable_rows": 726,
+          "missing_required_rows": 0,
+          "pit_safe_rows": 726,
+          "distinct_tickers": 28,
+          "usable_trade_date_min": "2026-06-16",
+          "usable_trade_date_max": "2026-06-26",
+          "transaction_code_counts": {
+            "S": 366,
+            "J": 120,
+            "M": 57,
+            "F": 50,
+            "A": 47,
+            "C": 43,
+            "E": 35,
+            "G": 5,
+            "P": 3
+          },
+          "sale_rows": 366,
+          "sale_10b5_rows": 329,
+          "sale_non_10b5_rows": 37,
+          "withholding_rows": 50,
+          "purchase_rows": 3,
+          "artifact_not_mutated": true
+        }
+      },
+      "all_rows": {
+        "n": 38,
+        "bucket_counts": {
+          "no_form4_context": 34,
+          "sale_pressure": 3,
+          "purchase_support": 1
+        },
+        "matched_rows": 4,
+        "matched_tickers": 3,
+        "sale_pressure_rows": 3,
+        "sale_pressure_tickers": 2
+      },
+      "cohorts": {
+        "all_forward_rows": {
+          "n": 38,
+          "distinct_tickers": 17,
+          "ticker_counts": {
+            "QQQ": 17,
+            "CRDO": 4,
+            "AMD": 2,
+            "MU": 2,
+            "GS": 1,
+            "LITE": 1,
+            "SNXX": 1,
+            "GE": 1,
+            "DE": 1,
+            "SNOW": 1,
+            "DDOG": 1,
+            "HOOD": 1,
+            "NOW": 1,
+            "AAPL": 1,
+            "AVGO": 1,
+            "BKNG": 1,
+            "WDC": 1
+          },
+          "max_ticker_share": 0.4474,
+          "sleeve_counts": {
+            "low_deployment_etf": 17,
+            "fundamental_growth_rs": 6,
+            "state_surface": 3,
+            "volume_breadth_breakout": 3,
+            "sec_governance": 2,
+            "sec_negative": 2,
+            "volatility_contraction": 2,
+            "free_data_cross_source_consensus": 2,
+            "sec_leadership": 1
+          },
+          "replacement_value_vs_cash_usd": {
+            "n": 38,
+            "sum": 6493.05,
+            "mean": 170.87,
+            "median": 99.0,
+            "positive_rate": 0.5526,
+            "min": -2811.78,
+            "max": 2772.28
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 38,
+            "sum": 13264.65,
+            "mean": 349.07,
+            "median": 444.06,
+            "positive_rate": 0.7105,
+            "min": -2640.41,
+            "max": 2788.46
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 38,
+            "sum": 11726.71,
+            "mean": 308.6,
+            "median": 449.67,
+            "positive_rate": 0.7105,
+            "min": -2489.65,
+            "max": 2704.37
+          }
+        },
+        "no_form4_context": {
+          "n": 34,
+          "distinct_tickers": 16,
+          "ticker_counts": {
+            "QQQ": 17,
+            "CRDO": 2,
+            "MU": 2,
+            "GS": 1,
+            "LITE": 1,
+            "AMD": 1,
+            "SNXX": 1,
+            "GE": 1,
+            "DE": 1,
+            "SNOW": 1,
+            "DDOG": 1,
+            "HOOD": 1,
+            "NOW": 1,
+            "AAPL": 1,
+            "BKNG": 1,
+            "WDC": 1
+          },
+          "max_ticker_share": 0.5,
+          "sleeve_counts": {
+            "low_deployment_etf": 17,
+            "state_surface": 3,
+            "volume_breadth_breakout": 3,
+            "fundamental_growth_rs": 3,
+            "sec_governance": 2,
+            "sec_negative": 2,
+            "volatility_contraction": 2,
+            "sec_leadership": 1,
+            "free_data_cross_source_consensus": 1
+          },
+          "replacement_value_vs_cash_usd": {
+            "n": 34,
+            "sum": 7645.57,
+            "mean": 224.87,
+            "median": 99.0,
+            "positive_rate": 0.5294,
+            "min": -2088.74,
+            "max": 2772.28
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 34,
+            "sum": 14105.9,
+            "mean": 414.88,
+            "median": 446.74,
+            "positive_rate": 0.7059,
+            "min": -1732.24,
+            "max": 2788.46
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 34,
+            "sum": 12736.77,
+            "mean": 374.61,
+            "median": 449.78,
+            "positive_rate": 0.7059,
+            "min": -1499.48,
+            "max": 2704.37
+          }
+        },
+        "any_form4_context": {
+          "n": 4,
+          "distinct_tickers": 3,
+          "ticker_counts": {
+            "CRDO": 2,
+            "AVGO": 1,
+            "AMD": 1
+          },
+          "max_ticker_share": 0.5,
+          "sleeve_counts": {
+            "fundamental_growth_rs": 3,
+            "free_data_cross_source_consensus": 1
+          },
+          "replacement_value_vs_cash_usd": {
+            "n": 4,
+            "sum": -1152.52,
+            "mean": -288.13,
+            "median": 249.5,
+            "positive_rate": 0.75,
+            "min": -2811.78,
+            "max": 1160.25
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 4,
+            "sum": -841.25,
+            "mean": -210.31,
+            "median": 313.71,
+            "positive_rate": 0.75,
+            "min": -2640.41,
+            "max": 1171.74
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 4,
+            "sum": -1010.06,
+            "mean": -252.52,
+            "median": 262.72,
+            "positive_rate": 0.75,
+            "min": -2489.65,
+            "max": 954.14
+          }
+        },
+        "sale_pressure": {
+          "n": 3,
+          "distinct_tickers": 2,
+          "ticker_counts": {
+            "CRDO": 2,
+            "AMD": 1
+          },
+          "max_ticker_share": 0.6667,
+          "sleeve_counts": {
+            "fundamental_growth_rs": 2,
+            "free_data_cross_source_consensus": 1
+          },
+          "replacement_value_vs_cash_usd": {
+            "n": 3,
+            "sum": 1659.26,
+            "mean": 553.09,
+            "median": 463.3,
+            "positive_rate": 1.0,
+            "min": 35.71,
+            "max": 1160.25
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 3,
+            "sum": 1799.16,
+            "mean": 599.72,
+            "median": 451.1,
+            "positive_rate": 1.0,
+            "min": 176.32,
+            "max": 1171.74
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 3,
+            "sum": 1479.59,
+            "mean": 493.2,
+            "median": 368.03,
+            "positive_rate": 1.0,
+            "min": 157.42,
+            "max": 954.14
+          }
+        },
+        "non_10b5_sale_pressure": {
+          "n": 2,
+          "distinct_tickers": 1,
+          "ticker_counts": {
+            "CRDO": 2
+          },
+          "max_ticker_share": 1.0,
+          "sleeve_counts": {
+            "free_data_cross_source_consensus": 1,
+            "fundamental_growth_rs": 1
+          },
+          "replacement_value_vs_cash_usd": {
+            "n": 2,
+            "sum": 499.01,
+            "mean": 249.5,
+            "median": 249.5,
+            "positive_rate": 1.0,
+            "min": 35.71,
+            "max": 463.3
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 2,
+            "sum": 627.42,
+            "mean": 313.71,
+            "median": 313.71,
+            "positive_rate": 1.0,
+            "min": 176.32,
+            "max": 451.1
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 2,
+            "sum": 525.45,
+            "mean": 262.72,
+            "median": 262.72,
+            "positive_rate": 1.0,
+            "min": 157.42,
+            "max": 368.03
+          }
+        },
+        "purchase_support": {
+          "n": 1,
+          "distinct_tickers": 1,
+          "ticker_counts": {
+            "AVGO": 1
+          },
+          "max_ticker_share": 1.0,
+          "sleeve_counts": {
+            "fundamental_growth_rs": 1
+          },
+          "replacement_value_vs_cash_usd": {
+            "n": 1,
+            "sum": -2811.78,
+            "mean": -2811.78,
+            "median": -2811.78,
+            "positive_rate": 0.0,
+            "min": -2811.78,
+            "max": -2811.78
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 1,
+            "sum": -2640.41,
+            "mean": -2640.41,
+            "median": -2640.41,
+            "positive_rate": 0.0,
+            "min": -2640.41,
+            "max": -2640.41
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 1,
+            "sum": -2489.65,
+            "mean": -2489.65,
+            "median": -2489.65,
+            "positive_rate": 0.0,
+            "min": -2489.65,
+            "max": -2489.65
+          }
+        },
+        "compensation_plumbing_only": {
+          "n": 0,
+          "distinct_tickers": 0,
+          "ticker_counts": {},
+          "max_ticker_share": null,
+          "sleeve_counts": {},
+          "replacement_value_vs_cash_usd": {
+            "n": 0,
+            "sum": null,
+            "mean": null,
+            "median": null,
+            "positive_rate": null,
+            "min": null,
+            "max": null
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 0,
+            "sum": null,
+            "mean": null,
+            "median": null,
+            "positive_rate": null,
+            "min": null,
+            "max": null
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 0,
+            "sum": null,
+            "mean": null,
+            "median": null,
+            "positive_rate": null,
+            "min": null,
+            "max": null
+          }
+        },
+        "pre_entry_or_entry_context": {
+          "n": 0,
+          "distinct_tickers": 0,
+          "ticker_counts": {},
+          "max_ticker_share": null,
+          "sleeve_counts": {},
+          "replacement_value_vs_cash_usd": {
+            "n": 0,
+            "sum": null,
+            "mean": null,
+            "median": null,
+            "positive_rate": null,
+            "min": null,
+            "max": null
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 0,
+            "sum": null,
+            "mean": null,
+            "median": null,
+            "positive_rate": null,
+            "min": null,
+            "max": null
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 0,
+            "sum": null,
+            "mean": null,
+            "median": null,
+            "positive_rate": null,
+            "min": null,
+            "max": null
+          }
+        },
+        "in_hold_after_entry_context": {
+          "n": 4,
+          "distinct_tickers": 3,
+          "ticker_counts": {
+            "CRDO": 2,
+            "AVGO": 1,
+            "AMD": 1
+          },
+          "max_ticker_share": 0.5,
+          "sleeve_counts": {
+            "fundamental_growth_rs": 3,
+            "free_data_cross_source_consensus": 1
+          },
+          "replacement_value_vs_cash_usd": {
+            "n": 4,
+            "sum": -1152.52,
+            "mean": -288.13,
+            "median": 249.5,
+            "positive_rate": 0.75,
+            "min": -2811.78,
+            "max": 1160.25
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 4,
+            "sum": -841.25,
+            "mean": -210.31,
+            "median": 313.71,
+            "positive_rate": 0.75,
+            "min": -2640.41,
+            "max": 1171.74
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 4,
+            "sum": -1010.06,
+            "mean": -252.52,
+            "median": 262.72,
+            "positive_rate": 0.75,
+            "min": -2489.65,
+            "max": 954.14
+          }
+        }
+      },
+      "sale_pressure_vs_no_form4_context": {
+        "target": "sale_pressure",
+        "comparator": "no_form4_context",
+        "by_field": {
+          "replacement_value_vs_cash_usd": {
+            "target_mean": 553.09,
+            "comparator_mean": 224.87,
+            "target_minus_comparator_mean": 328.22,
+            "target_median": 463.3,
+            "comparator_median": 99.0,
+            "target_minus_comparator_median": 364.3,
+            "target_weaker_on_mean": false,
+            "target_weaker_on_median": false
+          },
+          "replacement_value_vs_spy_usd": {
+            "target_mean": 599.72,
+            "comparator_mean": 414.88,
+            "target_minus_comparator_mean": 184.84,
+            "target_median": 451.1,
+            "comparator_median": 446.74,
+            "target_minus_comparator_median": 4.36,
+            "target_weaker_on_mean": false,
+            "target_weaker_on_median": false
+          },
+          "replacement_value_vs_qqq_usd": {
+            "target_mean": 493.2,
+            "comparator_mean": 374.61,
+            "target_minus_comparator_mean": 118.59,
+            "target_median": 368.03,
+            "comparator_median": 449.78,
+            "target_minus_comparator_median": -81.75,
+            "target_weaker_on_mean": false,
+            "target_weaker_on_median": true
+          }
+        },
+        "mean_underperform_fields": 0,
+        "median_underperform_fields": 1
+      }
+    },
+    "summary": "Current daily Form4 context did not clear the fixed observed-only screen; the source remains saturated and the closed forward ledger is too small or not directionally weaker enough to justify a retry."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260625-013.json",
+  "single_causal_variable": "form4_daily_sale_pressure_forward_replacement_context_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260625-013.json",
+  "trial_family": "form4_forward_replacement_context_attribution",
+  "trial_variant_id": "current_20260624_transaction_join_v1",
+  "implementation_mode": "observed_only_read_only_runner",
+  "new_evidence_axis": "Non-scan forward replacement join: current 2026-06-24 daily Form4 transaction XML fields are joined to canonical closed forward_replacement_value rows with PIT ticker/date windows; not a frozen-window Form4 candidate pool, threshold, hold-day, source-rank, or notional sweep.",
+  "decision": "rejected_form4_forward_context_not_allocation_ready",
+  "artifact": "data/experiments/exp-20260625-013/exp_20260625_013_form4_forward_conflict_readiness.json",
+  "log": "experiments/logs/exp-20260625-013.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_summary": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    },
+    "note": "Observed-only attribution; before and after strategy policy are identical."
+  },
+  "gate2": {
+    "passed": true,
+    "source_audit": {
+      "forward_replacement": {
+        "source_artifact": "data/paper_sleeves/forward_replacement_value.jsonl",
+        "raw_rows": 38,
+        "deduped_rows": 38,
+        "usable_rows": 38,
+        "missing_required_rows": 0,
+        "entry_date_min": "2026-05-05",
+        "entry_date_max": "2026-06-16",
+        "exit_date_min": "2026-05-12",
+        "exit_date_max": "2026-06-24",
+        "distinct_tickers": 17,
+        "artifact_not_mutated": true
+      },
+      "form4_transactions": {
+        "source_artifact": "data/non_ohlcv/form4_transactions_20260624.jsonl",
+        "raw_rows": 767,
+        "deduped_rows": 726,
+        "usable_rows": 726,
+        "missing_required_rows": 0,
+        "pit_safe_rows": 726,
+        "distinct_tickers": 28,
+        "usable_trade_date_min": "2026-06-16",
+        "usable_trade_date_max": "2026-06-26",
+        "transaction_code_counts": {
+          "S": 366,
+          "J": 120,
+          "M": 57,
+          "F": 50,
+          "A": 47,
+          "C": 43,
+          "E": 35,
+          "G": 5,
+          "P": 3
+        },
+        "sale_rows": 366,
+        "sale_10b5_rows": 329,
+        "sale_non_10b5_rows": 37,
+        "withholding_rows": 50,
+        "purchase_rows": 3,
+        "artifact_not_mutated": true
+      }
+    },
+    "required_fields": [
+      "entry_date",
+      "exit_date",
+      "ticker",
+      "usable_trade_date",
+      "transaction_code",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd"
+    ],
+    "entry_date_present": true,
+    "target_price": {
+      "available": false,
+      "source": "not_applicable_observed_only_forward_replacement_rows",
+      "reason": "No executable target, entry, exit, order, or paper ledger mutation is scheduled."
+    }
+  },
+  "gate3": {
+    "strategy_filter_added": false,
+    "signals_generated": 38,
+    "signals_survived": 38,
+    "survival_rate": 1.0,
+    "context_match_rows": 4,
+    "context_match_rate": 0.1053,
+    "baseline_survival_rate": 0.8232,
+    "passed": true,
+    "note": "No executable filter was added; context match rate is diagnostic only."
+  },
+  "gate4": {
+    "passed": false,
+    "observed_only_lead": false,
+    "allocation_ready": false,
+    "decision": "rejected_form4_forward_context_not_allocation_ready",
+    "failed_reasons": [
+      "form4_forward_overlap_too_thin",
+      "sale_pressure_rows_below_min",
+      "sale_pressure_ticker_concentration_too_high",
+      "sale_pressure_not_weaker_on_enough_mean_fields",
+      "sale_pressure_not_weaker_on_enough_median_fields"
+    ],
+    "acceptance_rule": "Observed-only positive lead only if sale-pressure rows have enough sample, two tickers, acceptable concentration, and weaker replacement value than no-Form4 rows on at least two mean and median comparators.",
+    "source_saturation_context": {
+      "form4_candidate_pool_source_saturated": true,
+      "override_basis": "Non-scan forward replacement join: current 2026-06-24 daily Form4 transaction XML fields are joined to canonical closed forward_replacement_value rows with PIT ticker/date windows; not a frozen-window Form4 candidate pool, threshold, hold-day, source-rank, or notional sweep.",
+      "promotion_allowed": false
+    },
+    "aggregate_expected_value_delta": 0.0,
+    "aggregate_strategy_total_pnl_delta": 0.0
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "trade_enabled": false,
+    "daily_snapshot_exposed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "production_orders_changed": false,
+    "parity_note": "Read-only attribution over existing Form4 and forward replacement artifacts."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "Current daily Form4 context did not clear the fixed observed-only screen; the source remains saturated and the closed forward ledger is too small or not directionally weaker enough to justify a retry.",
+    "forbidden_near_neighbor_retry": "Do not retry by changing Form4 transaction-code lists, role filters, 10b5-1 handling, retention thresholds, date windows, hold days, top-N selection, or notional sizing on the same current forward rows.",
+    "new_evidence_required": "Need materially more closed forward replacement rows from the shared daily Form4 helper, explicit Form 144 plan/float context, or executive ownership and compensation provenance before another Form4 conflict alpha attempt."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260625_013_form4_forward_conflict_readiness.py",
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "data/non_ohlcv/form4_transactions_20260624.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260616-012.json",
+    "experiments/logs/exp-20260616-013.json",
+    "experiments/logs/exp-20260623-024.json",
+    "experiments/logs/exp-20260624-008.json",
+    "docs/backtesting.md",
+    "docs/production_backtest_parity.md"
+  ],
+  "updated_at": "2026-06-25T12:13:37+00:00"
+}

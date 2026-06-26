@@ -1,0 +1,847 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260625_017_kova_price_surface_recovery_audit.py",
+    "data/experiments/exp-20260625-017/exp_20260625_017_kova_price_surface_recovery_audit.json",
+    "experiments/cards/exp-20260625-017.md",
+    "experiments/manifests/exp-20260625-017.json",
+    "experiments/tickets/exp-20260625-017.json",
+    "experiments/logs/exp-20260625-017.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260625-017.md",
+  "causal_components": [
+    "exp002 estimate-revision selected/current rows",
+    "warehouse freshness check",
+    "kova intraday 20260624 row status audit",
+    "kova rs proxy 20260624 price-semantics audit",
+    "local operational price surface audit"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "post_20260624_kova_price_surface_recovery_audit_v1",
+  "claimed_at": "2026-06-25T16:06:55+00:00",
+  "completed_at": "2026-06-25T16:11:26+00:00",
+  "created_at": "2026-06-25T16:06:40+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260625-017",
+  "experiment_uid": "expuid-70e2a3820cb24408",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260625-017",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-25T16:06:40+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "kova_price_surface_recovery_audit"
+  },
+  "hypothesis": "Repair the estimate-revision candidate-match outcome blocker by auditing newly present 2026-06-24 Kova intraday and RS proxy price surfaces for PIT-safe selected/current entry-day settlement without changing strategy behavior.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "post_20260624_kova_price_surface_recovery_audit_v1"
+  ],
+  "mechanism_family": "estimate_revision_candidate_match_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260624-012",
+    "exp-20260625-002",
+    "exp-20260625-004"
+  ],
+  "new_evidence_type": "new_local_kova_price_surface_presence_audit",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "estimate_revision_candidate_match_outcome_ledger",
+        "score": 0.6706,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "estimate_revision_daily_candidate_match_surface",
+        "score": 0.6645,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "earnings_snapshot_date_revision_readiness",
+        "score": 0.6235,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "earnings_snapshot_pre_earnings_surprise_revision_rs_candidate_pool",
+        "score": 0.6235,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "estimate_revision_persistence_underreaction_candidate_pool",
+        "score": 0.6235,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "revision_expectation",
+      "field_tags": [
+        "audit",
+        "auditing",
+        "behavior",
+        "blocker",
+        "by",
+        "changing",
+        "current",
+        "entry",
+        "estimate",
+        "intraday",
+        "kova",
+        "match",
+        "newly",
+        "outcome",
+        "pit",
+        "post",
+        "present",
+        "price",
+        "proxy",
+        "recovery",
+        "repair",
+        "revision",
+        "rs",
+        "safe",
+        "selected",
+        "settlement",
+        "strategy",
+        "surface",
+        "surfaces",
+        "without"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "estimate_revision_candidate_match_outcome_ledger",
+        "reopen_condition": "A valid alpha retry needs materially more selected/current non-flat matches with closed 1/3/5/10d replacement values, another settled month of production revision rows, or a different unsaturated PIT expectation source.",
+        "score": 0.6706,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "revision_expectation",
+        "family_key": "estimate_revision_daily_candidate_match_surface",
+        "reopen_condition": "Next alpha-compliant revision work needs closed forward outcomes for selected/current overlaps or a different unsaturated data source.",
+        "score": 0.6645,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "earnings_snapshot_date_revision_readiness",
+        "reopen_condition": null,
+        "score": 0.6235,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "earnings_snapshot_pre_earnings_surprise_revision_rs_candidate_pool",
+        "reopen_condition": "If revisited, use closed forward replacement-value rows or a richer production-visible expectation field such as current surprise, guidance, or estimate dispersion; do not threshold-mine this frozen sample.",
+        "score": 0.6235,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "estimate_revision_persistence_underreaction_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.6235,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0769,
+      "accepts": 2,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "revision_expectation",
+      "trials": 26
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.2,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "kova_intraday_rows_skipped",
+      "rs_proxy_not_ohlcv",
+      "warehouse_still_stale",
+      "no_candidate_level_price_coverage"
+    ],
+    "confidence_reason": "exp004 already found no local daily OHLCV equivalent when the Kova 20260624 intraday file was missing. The file now exists, but Kova surfaces often carry skipped or feature-only rows, so success is low.",
+    "recorded_at": "2026-06-25T16:06:40+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "decision": "blocked_kova_20260624_surface_not_daily_ohlcv",
+    "artifact": "data/experiments/exp-20260625-017/exp_20260625_017_kova_price_surface_recovery_audit.json",
+    "log": "experiments/logs/exp-20260625-017.json",
+    "runner": "quant/experiments/exp_20260625_017_kova_price_surface_recovery_audit.py",
+    "gate4": {
+      "passed": false,
+      "decision": "blocked_kova_20260624_surface_not_daily_ohlcv",
+      "failed_reasons": [
+        "warehouse_latest_date_before_required_entry_date",
+        "no_local_daily_ohlcv_equivalent_for_20260624_selected_current_rows",
+        "cannot_settle_minimum_selected_current_rows"
+      ],
+      "expected_value_score_sum_before": 7.8941,
+      "expected_value_score_sum_after": 7.8941,
+      "aggregate_ev_delta": 0.0,
+      "total_pnl_before": 234850.99,
+      "total_pnl_after": 234850.99,
+      "aggregate_pnl_delta": 0.0,
+      "trade_count_before": 61,
+      "trade_count_after": 61,
+      "strategy_behavior_changed": false,
+      "minimum_selected_current_settled_rows": 20,
+      "max_selected_current_daily_ohlcv_coverage": 0
+    },
+    "summary": "The newly present Kova intraday file does not repair the exp002 blocker: its 2026-06-24 rows are skipped because Alpha Vantage refresh/API access was unavailable. The Kova RS proxy file is populated, but its price semantics are relative-strength features as of 2026-06-23, not 2026-06-24 entry open/close OHLCV. No audited local surface can settle the selected/current estimate-revision rows."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260625-017.json",
+  "single_causal_variable": "post_20260624_kova_price_surface_recovery_audit_v1",
+  "status": "blocked",
+  "ticket_file": "experiments/tickets/exp-20260625-017.json",
+  "trial_family": "kova_price_surface_recovery_audit",
+  "trial_variant_id": "post_20260624_kova_intraday_rs_proxy_recovery_audit_v1",
+  "alpha_hypothesis": "Estimate-revision candidate matches may contain replacement value, but that alpha is only testable if selected/current rows can be settled with PIT-safe 2026-06-24 daily prices versus cash, SPY, and QQQ.",
+  "implementation_mode": "measurement_audit_only_no_strategy_change",
+  "new_evidence_axis": "Newly present data/kova/intraday/intraday_ohlcv_20260624.jsonl and data/kova/rs_proxy/rs_proxy_20260624.jsonl after exp-20260625-004 had reported the Kova 20260624 intraday file missing; this is a data recovery audit, not a revision threshold or condition reslice.",
+  "decision": "blocked_kova_20260624_surface_not_daily_ohlcv",
+  "artifact": "data/experiments/exp-20260625-017/exp_20260625_017_kova_price_surface_recovery_audit.json",
+  "log": "experiments/logs/exp-20260625-017.json",
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "baseline_exists": true,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119,
+      "window_count": 3,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    }
+  },
+  "gate2": {
+    "passed": false,
+    "required_fields": [
+      "entry_date",
+      "target_price",
+      "ticker",
+      "date",
+      "open",
+      "high",
+      "low",
+      "close",
+      "volume"
+    ],
+    "target_price_scope": "Not applicable: measurement repair settles fixed entry-day outcomes, not target exits.",
+    "required_entry_date": "2026-06-24",
+    "minimum_selected_current_settled_rows": 20,
+    "failed_reasons": [
+      "warehouse_latest_date_before_required_entry_date",
+      "no_local_daily_ohlcv_equivalent_for_20260624_selected_current_rows"
+    ],
+    "exp002_surface": {
+      "source_artifact": "data/experiments/exp-20260625-002/exp_20260625_002_estimate_revision_candidate_match_outcome_ledger.json",
+      "exists": true,
+      "exp002_decision": "blocked_missing_recent_warehouse_ohlcv_for_estimate_revision_outcomes",
+      "matched_rows": 606,
+      "selected_current_rows": 163,
+      "selected_current_unique_tickers": 64,
+      "selected_current_tickers": [
+        "AAPL",
+        "ADI",
+        "AEIS",
+        "ALAB",
+        "AMD",
+        "AMZN",
+        "APP",
+        "ASND",
+        "ASTS",
+        "AVGO",
+        "BE",
+        "BKNG",
+        "CAT",
+        "COHR",
+        "COIN",
+        "CRDO",
+        "CSCO",
+        "CVX",
+        "DDOG",
+        "DE",
+        "DIS",
+        "GE",
+        "GLD",
+        "GOOG",
+        "GS",
+        "HOOD",
+        "IAU",
+        "INTC",
+        "IRDM",
+        "ISRG",
+        "JPM",
+        "LLY",
+        "LUNR",
+        "MA",
+        "MCD",
+        "META",
+        "MRVL",
+        "MSFT",
+        "MU",
+        "MUU",
+        "NBIS",
+        "NFLX",
+        "NOW",
+        "NVDA",
+        "NVMI",
+        "NVO",
+        "PLTR",
+        "RBRK",
+        "RKLB",
+        "RKLZ",
+        "RTX",
+        "SATS",
+        "SBUX",
+        "SITM",
+        "SLV",
+        "SNOW",
+        "SPOT",
+        "TRIP",
+        "TSLA",
+        "TSM",
+        "UNH",
+        "V",
+        "WDC",
+        "XOM"
+      ],
+      "selected_current_sample_tickers": [
+        "AAPL",
+        "ADI",
+        "AEIS",
+        "ALAB",
+        "AMD",
+        "AMZN",
+        "APP",
+        "ASND",
+        "ASTS",
+        "AVGO",
+        "BE",
+        "BKNG",
+        "CAT",
+        "COHR",
+        "COIN",
+        "CRDO",
+        "CSCO",
+        "CVX",
+        "DDOG",
+        "DE",
+        "DIS",
+        "GE",
+        "GLD",
+        "GOOG",
+        "GS",
+        "HOOD",
+        "IAU",
+        "INTC",
+        "IRDM",
+        "ISRG"
+      ],
+      "selected_current_entry_date_counts": {
+        "2026-06-24": 163
+      },
+      "exp002_warehouse_date_range": {
+        "max_date": "2026-06-15",
+        "min_date": "2023-08-29",
+        "rows": 5015715
+      }
+    },
+    "warehouse": {
+      "path": "data/warehouse/warehouse_main.sqlite",
+      "exists": true,
+      "min_date": "2023-08-29",
+      "max_date": "2026-06-15",
+      "rows": 5015715,
+      "required_entry_date": "2026-06-24",
+      "can_settle_required_entry_date": false,
+      "reason": "warehouse_stale"
+    },
+    "price_surfaces": [
+      {
+        "path": "data/kova/intraday/intraday_ohlcv_20260624.jsonl",
+        "exists": true,
+        "surface_type": "jsonl",
+        "row_count": 1247,
+        "top_level_keys": [],
+        "status_counts": {
+          "skipped": 1247
+        },
+        "top_reason_counts": {
+          "refresh_intraday_false_or_missing_ALPHA_VANTAGE_API_KEY": 1247
+        },
+        "record_count_with_ticker": 1247,
+        "daily_ohlcv_equivalent_rows_required_date": 0,
+        "daily_ohlcv_selected_current_ticker_coverage": 0,
+        "current_price_rows": 0,
+        "current_price_selected_current_ticker_coverage": 0,
+        "rs_proxy_rows": 0,
+        "rs_proxy_asof_price_date_counts": {},
+        "skipped_rows": 1247,
+        "sample_daily_ohlcv_rows": [],
+        "sample_current_price_rows": [],
+        "usable_for_entry_day_settlement": false,
+        "reason": "rows_skipped_no_ohlcv_payload"
+      },
+      {
+        "path": "data/kova/rs_proxy/rs_proxy_20260624.jsonl",
+        "exists": true,
+        "surface_type": "jsonl",
+        "row_count": 1246,
+        "top_level_keys": [],
+        "status_counts": {
+          "insufficient_history": 1,
+          "ok": 1245
+        },
+        "top_reason_counts": {
+          "missing": 1246
+        },
+        "record_count_with_ticker": 1246,
+        "daily_ohlcv_equivalent_rows_required_date": 0,
+        "daily_ohlcv_selected_current_ticker_coverage": 0,
+        "current_price_rows": 0,
+        "current_price_selected_current_ticker_coverage": 0,
+        "rs_proxy_rows": 1246,
+        "rs_proxy_asof_price_date_counts": {
+          "2026-06-18": 3,
+          "2026-06-23": 1183,
+          "2026-06-24": 60
+        },
+        "skipped_rows": 0,
+        "sample_daily_ohlcv_rows": [],
+        "sample_current_price_rows": [],
+        "usable_for_entry_day_settlement": false,
+        "reason": "rs_proxy_only_no_entry_open_close"
+      },
+      {
+        "path": "data/daily/universe/universe_state_20260624.json",
+        "exists": true,
+        "surface_type": "json",
+        "row_count": 46,
+        "top_level_keys": [
+          "as_of",
+          "core_trade_universe",
+          "event_count",
+          "event_ledger_hash",
+          "governance_tradeable_universe",
+          "mode",
+          "observation_universe",
+          "pilot_trade_universe",
+          "production_impact",
+          "protocol_version",
+          "records",
+          "registry_hash",
+          "schema_version",
+          "segments",
+          "space_catalyst_shadow"
+        ],
+        "status_counts": {
+          "pilot": 13,
+          "quarantine": 4,
+          "research": 21,
+          "specialist": 8
+        },
+        "top_reason_counts": {
+          "missing": 46
+        },
+        "record_count_with_ticker": 46,
+        "daily_ohlcv_equivalent_rows_required_date": 0,
+        "daily_ohlcv_selected_current_ticker_coverage": 0,
+        "current_price_rows": 0,
+        "current_price_selected_current_ticker_coverage": 0,
+        "rs_proxy_rows": 0,
+        "rs_proxy_asof_price_date_counts": {},
+        "skipped_rows": 0,
+        "sample_daily_ohlcv_rows": [],
+        "sample_current_price_rows": [],
+        "usable_for_entry_day_settlement": false,
+        "reason": "no_candidate_level_daily_ohlcv"
+      },
+      {
+        "path": "data/daily/intraday/snapshots/intraday_review_20260624_1302ET.json",
+        "exists": true,
+        "surface_type": "json",
+        "row_count": 32,
+        "top_level_keys": [
+          "accounting",
+          "advisory_note",
+          "data_quality",
+          "date",
+          "generated_at_et",
+          "generated_at_pt",
+          "heat_quote_coverage",
+          "macro",
+          "market_regime_intraday",
+          "news",
+          "pending_actions",
+          "portfolio_heat",
+          "positions",
+          "time_label"
+        ],
+        "status_counts": {
+          "APPROACHING": 1,
+          "BREACHED": 7,
+          "OK": 7,
+          "missing": 17
+        },
+        "top_reason_counts": {
+          "missing": 32
+        },
+        "record_count_with_ticker": 32,
+        "daily_ohlcv_equivalent_rows_required_date": 0,
+        "daily_ohlcv_selected_current_ticker_coverage": 0,
+        "current_price_rows": 17,
+        "current_price_selected_current_ticker_coverage": 14,
+        "rs_proxy_rows": 0,
+        "rs_proxy_asof_price_date_counts": {},
+        "skipped_rows": 0,
+        "sample_daily_ohlcv_rows": [],
+        "sample_current_price_rows": [
+          {
+            "ticker": "NFLX",
+            "date": "",
+            "path": "$.portfolio_heat.position_breakdown[14]",
+            "price_fields": [
+              "current_price"
+            ]
+          },
+          {
+            "ticker": "META",
+            "date": "",
+            "path": "$.portfolio_heat.position_breakdown[13]",
+            "price_fields": [
+              "current_price"
+            ]
+          },
+          {
+            "ticker": "APP",
+            "date": "",
+            "path": "$.portfolio_heat.position_breakdown[12]",
+            "price_fields": [
+              "current_price"
+            ]
+          },
+          {
+            "ticker": "MRVL",
+            "date": "",
+            "path": "$.portfolio_heat.position_breakdown[11]",
+            "price_fields": [
+              "current_price"
+            ]
+          },
+          {
+            "ticker": "COHR",
+            "date": "",
+            "path": "$.portfolio_heat.position_breakdown[10]",
+            "price_fields": [
+              "current_price"
+            ]
+          },
+          {
+            "ticker": "TSLA",
+            "date": "",
+            "path": "$.portfolio_heat.position_breakdown[9]",
+            "price_fields": [
+              "current_price"
+            ]
+          },
+          {
+            "ticker": "TRIP",
+            "date": "",
+            "path": "$.portfolio_heat.position_breakdown[8]",
+            "price_fields": [
+              "current_price"
+            ]
+          },
+          {
+            "ticker": "SPCX",
+            "date": "",
+            "path": "$.portfolio_heat.position_breakdown[7]",
+            "price_fields": [
+              "current_price"
+            ]
+          }
+        ],
+        "usable_for_entry_day_settlement": false,
+        "reason": "no_candidate_level_daily_ohlcv"
+      },
+      {
+        "path": "data/daily/orders/bracket_orders_20260624.json",
+        "exists": true,
+        "surface_type": "json",
+        "row_count": 27,
+        "top_level_keys": [
+          "asof_date",
+          "orders",
+          "policy",
+          "positions_stale",
+          "sleeve",
+          "summary",
+          "warnings"
+        ],
+        "status_counts": {
+          "missing": 27
+        },
+        "top_reason_counts": {
+          "missing": 27
+        },
+        "record_count_with_ticker": 27,
+        "daily_ohlcv_equivalent_rows_required_date": 0,
+        "daily_ohlcv_selected_current_ticker_coverage": 0,
+        "current_price_rows": 27,
+        "current_price_selected_current_ticker_coverage": 13,
+        "rs_proxy_rows": 0,
+        "rs_proxy_asof_price_date_counts": {},
+        "skipped_rows": 0,
+        "sample_daily_ohlcv_rows": [],
+        "sample_current_price_rows": [
+          {
+            "ticker": "NFLX",
+            "date": "",
+            "path": "$.orders[26]",
+            "price_fields": [
+              "current_price",
+              "price"
+            ]
+          },
+          {
+            "ticker": "NFLX",
+            "date": "",
+            "path": "$.orders[25]",
+            "price_fields": [
+              "current_price",
+              "price"
+            ]
+          },
+          {
+            "ticker": "META",
+            "date": "",
+            "path": "$.orders[24]",
+            "price_fields": [
+              "current_price",
+              "price"
+            ]
+          },
+          {
+            "ticker": "META",
+            "date": "",
+            "path": "$.orders[23]",
+            "price_fields": [
+              "current_price",
+              "price"
+            ]
+          },
+          {
+            "ticker": "APP",
+            "date": "",
+            "path": "$.orders[22]",
+            "price_fields": [
+              "current_price",
+              "price"
+            ]
+          },
+          {
+            "ticker": "APP",
+            "date": "",
+            "path": "$.orders[21]",
+            "price_fields": [
+              "current_price",
+              "price"
+            ]
+          },
+          {
+            "ticker": "MRVL",
+            "date": "",
+            "path": "$.orders[20]",
+            "price_fields": [
+              "current_price",
+              "price"
+            ]
+          },
+          {
+            "ticker": "MRVL",
+            "date": "",
+            "path": "$.orders[19]",
+            "price_fields": [
+              "current_price",
+              "price"
+            ]
+          }
+        ],
+        "usable_for_entry_day_settlement": false,
+        "reason": "no_candidate_level_daily_ohlcv"
+      }
+    ]
+  },
+  "gate3": {
+    "passed": true,
+    "signals_generated_proxy": 163,
+    "signals_survived_proxy": 0,
+    "survival_rate_proxy": 0.0,
+    "note": "Coverage is measurement-only; no executable filter was added."
+  },
+  "gate4": {
+    "passed": false,
+    "decision": "blocked_kova_20260624_surface_not_daily_ohlcv",
+    "failed_reasons": [
+      "warehouse_latest_date_before_required_entry_date",
+      "no_local_daily_ohlcv_equivalent_for_20260624_selected_current_rows",
+      "cannot_settle_minimum_selected_current_rows"
+    ],
+    "expected_value_score_sum_before": 7.8941,
+    "expected_value_score_sum_after": 7.8941,
+    "aggregate_ev_delta": 0.0,
+    "total_pnl_before": 234850.99,
+    "total_pnl_after": 234850.99,
+    "aggregate_pnl_delta": 0.0,
+    "trade_count_before": 61,
+    "trade_count_after": 61,
+    "strategy_behavior_changed": false,
+    "minimum_selected_current_settled_rows": 20,
+    "max_selected_current_daily_ohlcv_coverage": 0
+  },
+  "production_impact": {
+    "adapter_status": "none",
+    "default_off_paper_only": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "trade_enabled": false,
+    "parity_note": "Read-only measurement artifact; no production or replay behavior changed."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The newly present Kova intraday file does not repair the exp002 blocker: its 2026-06-24 rows are skipped because Alpha Vantage refresh/API access was unavailable. The Kova RS proxy file is populated, but its price semantics are relative-strength features as of 2026-06-23, not 2026-06-24 entry open/close OHLCV. No audited local surface can settle the selected/current estimate-revision rows.",
+    "outcome_summary": "Warehouse latest date 2026-06-15; max selected/current daily-OHLCV coverage across audited surfaces 0/163.",
+    "forbidden_near_neighbor_retry": "Do not retry estimate-revision thresholds, direction gates, top-N, hold days, notional, rank, or observed-only condition slices until a true 2026-06-24+ daily OHLCV/quote-bars source exists.",
+    "new_evidence_required": "Refresh warehouse/daily OHLCV through at least 2026-06-24 for the selected/current candidate universe, or collect a validated PIT quote/bars archive with entry-open and close semantics for cash, SPY, and QQQ replacement values."
+  },
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/warehouse/warehouse_main.sqlite",
+    "data/experiments/exp-20260625-002/exp_20260625_002_estimate_revision_candidate_match_outcome_ledger.json",
+    "data/kova/intraday/intraday_ohlcv_20260624.jsonl",
+    "data/kova/rs_proxy/rs_proxy_20260624.jsonl",
+    "data/daily/universe/universe_state_20260624.json",
+    "data/daily/intraday/snapshots/intraday_review_20260624_1302ET.json",
+    "data/daily/orders/bracket_orders_20260624.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260625_017_kova_price_surface_recovery_audit.py",
+    "data/experiments/exp-20260625-017/exp_20260625_017_kova_price_surface_recovery_audit.json",
+    "experiments/cards/exp-20260625-017.md",
+    "experiments/manifests/exp-20260625-017.json",
+    "experiments/tickets/exp-20260625-017.json",
+    "experiments/logs/exp-20260625-017.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-06-25T16:11:26+00:00"
+}

@@ -1,0 +1,253 @@
+{
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "total_pnl": 234850.99,
+    "trade_count": 61
+  },
+  "artifact": "data/experiments/exp-20260624-024/exp_20260624_024_sec_6k_historical_text_materialization_readiness.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "total_pnl": 234850.99,
+    "trade_count": 61
+  },
+  "calibration": {
+    "actual_decision": "blocked_missing_historical_6k_text_materialization",
+    "actual_success": 0.0,
+    "brier_score": 0.4225,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "local_primary_text_missing",
+      "structured_numeric_coverage_too_sparse",
+      "no_tradeable_adr_overlap",
+      "sec_text_surface_saturation"
+    ],
+    "predicted_success_probability": 0.65,
+    "realized_failure_modes": [
+      "historical_generated_6k_text_rows_missing",
+      "local_target_6k_text_cache_missing_or_sparse"
+    ],
+    "surprise_note": "The local submissions event surface exists, but local generated historical 6-K text materialization is still missing."
+  },
+  "causal_components": [
+    "local SEC submissions 6-K event surface",
+    "historical filing-text coverage audit",
+    "structured financial-result phrase/numeric readiness",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "sec_6k_historical_text_materialization_readiness_v1",
+  "decision": "blocked_missing_historical_6k_text_materialization",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260624-024",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_exists": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "baseline_sha256": "33966aafb7816653089b27d4bb19508f64cafa1522de7aa3e19a16718160959e",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3,
+      "windows": [
+        {
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "label": "late_strong",
+          "max_drawdown_pct": 0.0665,
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "sharpe_daily": 4.41,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "start": "2025-10-23",
+          "survival_rate": 0.8039,
+          "total_pnl": 117072.92,
+          "trade_count": 18,
+          "win_rate": 0.8333
+        },
+        {
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "label": "mid_weak",
+          "max_drawdown_pct": 0.1119,
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "sharpe_daily": 2.74,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "start": "2025-04-23",
+          "survival_rate": 0.7925,
+          "total_pnl": 78110.11,
+          "trade_count": 21,
+          "win_rate": 0.5238
+        },
+        {
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "label": "old_thin",
+          "max_drawdown_pct": 0.1001,
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "sharpe_daily": 1.49,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "start": "2024-10-02",
+          "survival_rate": 0.8667,
+          "total_pnl": 39667.96,
+          "trade_count": 22,
+          "win_rate": 0.4091
+        }
+      ]
+    },
+    "passed": true
+  },
+  "gate2": {
+    "daily_current_six_k_text_rows": 2,
+    "failed_reasons": [
+      "historical_generated_6k_text_rows_missing",
+      "local_target_6k_text_cache_missing_or_sparse"
+    ],
+    "historical_event_six_k_rows": 0,
+    "historical_text_six_k_rows": 0,
+    "passed": false,
+    "submissions_six_k_event_rows": 8010,
+    "target_accessions_with_cache_file": 0,
+    "warehouse_overlap_tickers": 106
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "Signals_generated is the alpha-enabling 6-K event surface. Signals_survived is generated historical 6-K text coverage, not an executable trading filter.",
+    "passed": false,
+    "signals_generated": 8010,
+    "signals_survived": 0,
+    "survival_rate": 0.0
+  },
+  "gate4": {
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "strategy_behavior_changed": false,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "decision": "blocked_missing_historical_6k_text_materialization",
+    "failed_reasons": [
+      "historical_generated_6k_text_rows_missing",
+      "local_target_6k_text_cache_missing_or_sparse"
+    ],
+    "passed": false,
+    "ran_after_strategy": false,
+    "reason_after_not_run": "Measurement repair only. No buy, sell, ranking, sizing, risk, exit, LLM, watchlist, paper-order, or live-order policy changed.",
+    "strategy_rerun_required": false
+  },
+  "hypothesis": "Repair the blocker for a 6-K alpha hypothesis: determine whether replayable historical SEC 6-K/6-KA filing text can be materialized from the existing local submissions/event surface so structured financial-result growth can later be tested without changing trading behavior.",
+  "implementation_mode": "measurement_repair",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260624-024.json",
+  "mechanism_family": "production_visible_free_sec_6k_foreign_issuer_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260622-014",
+    "exp-20260622-015",
+    "exp-20260622-016"
+  ],
+  "new_evidence_type": "historical_6k_text_materialization_readiness",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry 6-K phrase lists, numeric regex terms, item/form lists, RS/close/volume gates, top-N, hold, cooldown, or notional on the frozen windows while historical 6-K text coverage is missing.",
+    "new_evidence_required": "Run a controlled historical SEC archive text backfill for the standard-window 6-K/6-KA accessions, or provide another replayable PIT primary-document cache. Then test one fixed structured financial-result growth helper through shared-paper-first.",
+    "why_result_happened": "The local submissions cache still exposes a broad 6-K event surface, 8010 rows across the standard windows, but the generated historical event/text surfaces contain 0 and 0 replayable 6-K text rows respectively. The per-accession filing-text cache covers 0 of those historical 6-K accessions. The structured 6-K alpha remains blocked until a historical text backfill materializes those rows."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Structured financial-result growth in PIT 6-K/6-KA foreign-issuer text may identify ADR post-report drift, but exp-20260622-016 made the alpha untrustworthy until historical 6-K text rows exist.",
+    "2_history_check": {
+      "exp-20260622-014": "Accepted measurement repair: local submissions held 8010 standard-window 6-K/6-KA events and daily defaults were updated.",
+      "exp-20260622-015": "Rejected generic positive-operating-update 6-K helper; this run does not retry phrases or trading thresholds.",
+      "exp-20260622-016": "Blocked structured 6-K financial-result alpha because generated historical text/event/cache rows for 6-K were zero.",
+      "novelty_gate": "Reserved as measurement_repair after alpha_search was blocked by SEC text-event saturation. The new evidence axis is text materialization readiness, not a SEC text alpha scan."
+    },
+    "3_single_policy_bundle": "One measurement decision: compare local submissions 6-K events, generated historical SEC event/text rows, per-accession filing-text cache, and current daily text rows to determine whether historical 6-K text can be replayed now.",
+    "4_success_failure_standard": "Measurement repair passes only if historical generated 6-K text rows exist, at least 20 rows have nonempty text, at least 10 have fixed structured financial-result term/growth/numeric evidence, and strategy metrics remain unchanged. Otherwise the alpha remains blocked.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260624_024_sec_6k_historical_text_materialization_readiness.py"
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260622-014 found 8010 standard-window 6-K events in local SEC submissions, while exp-20260622-016 was blocked because generated historical 6-K text/cache rows were zero. This measurement repair tests the specific blocker before any semantic alpha retry.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "local_primary_text_missing",
+      "structured_numeric_coverage_too_sparse",
+      "no_tradeable_adr_overlap",
+      "sec_text_surface_saturation"
+    ],
+    "recorded_at": "2026-06-24T21:05:38+00:00",
+    "success_probability": 0.65
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "paper_orders_changed": false,
+    "parity_note": "This experiment audits historical SEC 6-K text materialization only. It does not create a shared alpha helper or change any trading path.",
+    "production_watchlist_changed": false,
+    "ranking_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_helper_promoted": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false,
+    "uses_free_sec_filing_text": true,
+    "uses_llm": false
+  },
+  "related_files": [
+    "quant/experiments/exp_20260624_024_sec_6k_historical_text_materialization_readiness.py",
+    "data/non_ohlcv/sec_filing_events_20241002_20260421.jsonl",
+    "data/non_ohlcv/sec_filing_text_20241002_20260421.jsonl",
+    "data/cache/sec/submissions",
+    "data/cache/sec/filing_text",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260624-024.json",
+    "experiments/cards/exp-20260624-024.md",
+    "experiments/manifests/exp-20260624-024.json",
+    "experiments/tickets/exp-20260624-024.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260624_024_sec_6k_historical_text_materialization_readiness.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260624_024_sec_6k_historical_text_materialization_readiness.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "sec_6k_historical_text_materialization_readiness_v1",
+  "status": "blocked",
+  "timestamp": "2026-06-24T21:12:38Z",
+  "trial_family": "sec_6k_historical_text_materialization_readiness",
+  "trial_variant_id": "sec_6k_local_cache_text_backfill_coverage_v1"
+}

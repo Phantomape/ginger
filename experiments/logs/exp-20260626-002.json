@@ -1,0 +1,324 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "alpha_hypothesis": "A future alpha may use richer PIT segment mix, customer concentration, or contract-economics provenance to avoid fragile demand and favor durable growth, but only if the local Companyfacts cache exposes enough machine-checkable fields across tickers and windows.",
+  "alpha_ready": false,
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260626-002/exp_20260626_002_companyfacts_segment_customer_taxonomy_inventory.json",
+  "calibration": {
+    "prediction_outcome": "accepted_measurement_repair",
+    "surprise_note": "Novelty and source-saturation warnings were expected and honored by producing only a data-edge inventory, not an alpha rescan."
+  },
+  "causal_components": [
+    "broad liquid warehouse CIK universe",
+    "SEC Companyfacts taxonomy/tag keyword inventory",
+    "generic customer-contract revenue separation",
+    "standard-window filed-date coverage counts",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260626_002_companyfacts_segment_customer_taxonomy_inventory.py",
+    "data/experiments/exp-20260626-002/exp_20260626_002_companyfacts_segment_customer_taxonomy_inventory.json",
+    "experiments/logs/exp-20260626-002.json",
+    "experiments/cards/exp-20260626-002.md",
+    "experiments/manifests/exp-20260626-002.json",
+    "experiments/tickets/exp-20260626-002.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "sec_companyfacts_segment_customer_taxonomy_inventory_v1",
+  "decision": "accepted_measurement_repair_inventory",
+  "experiment_id": "exp-20260626-002",
+  "gate1": {
+    "baseline_metrics": {
+      "aggregate_expected_value_score": null,
+      "aggregate_total_pnl": null,
+      "exists": true,
+      "path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "windows": {
+        "late_strong": {
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "max_drawdown_pct": 0.0665,
+          "sharpe_daily": 4.41,
+          "start": "2025-10-23",
+          "strategy_total_return_pct": null,
+          "total_pnl": 117072.92,
+          "trades": 18
+        },
+        "mid_weak": {
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "max_drawdown_pct": 0.1119,
+          "sharpe_daily": 2.74,
+          "start": "2025-04-23",
+          "strategy_total_return_pct": null,
+          "total_pnl": 78110.11,
+          "trades": 21
+        },
+        "old_thin": {
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "max_drawdown_pct": 0.1001,
+          "sharpe_daily": 1.49,
+          "start": "2024-10-02",
+          "strategy_total_return_pct": null,
+          "total_pnl": 39667.96,
+          "trades": 22
+        }
+      }
+    },
+    "baseline_result": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "note": "Strategy baseline is unchanged; this measurement repair does not run before/after trades.",
+    "passed": true
+  },
+  "gate2": {
+    "failed_reasons": [],
+    "inventory_summary": {
+      "candidate_surface_assessment": {
+        "minimum_high_signal_rows_in_standard_window": 1342,
+        "minimum_specific_rows_in_standard_window": 6718,
+        "readiness_reason": "conditional_data_edge_ready: high-signal provenance-like tags have enough ticker/window coverage for one future strictly PIT alpha scout.",
+        "ready_for_future_alpha": true,
+        "required_for_next_alpha": [
+          "use filed date as PIT as-of boundary",
+          "select one concrete provenance axis before candidate-pool testing",
+          "do not sweep adjacent Companyfacts thresholds/top-N/hold days",
+          "avoid treating generic revenue-from-contract tags as customer identity"
+        ]
+      },
+      "category_counts": {
+        "backlog_orders": {
+          "row_count": 39546,
+          "tag_count": 39
+        },
+        "concentration": {
+          "row_count": 5225,
+          "tag_count": 22
+        },
+        "counterparty_contract": {
+          "row_count": 237674,
+          "tag_count": 89
+        },
+        "customer": {
+          "row_count": 755180,
+          "tag_count": 313
+        },
+        "geographic": {
+          "row_count": 2669,
+          "tag_count": 16
+        },
+        "product_service": {
+          "row_count": 10386,
+          "tag_count": 22
+        },
+        "segment": {
+          "row_count": 94922,
+          "tag_count": 86
+        }
+      },
+      "coverage": {
+        "companyfacts_dir": "data/cache/sec/companyfacts",
+        "decode_error_sample": [],
+        "files_decode_error": 0,
+        "files_missing": 6,
+        "files_present": 1440,
+        "generic_customer_contract_row_count": 556752,
+        "generic_customer_contract_tag_count": 88,
+        "high_signal_provenance_row_count": 30711,
+        "high_signal_provenance_tag_count": 39,
+        "low_information_provenance_row_count": 250333,
+        "low_information_provenance_tag_count": 139,
+        "matched_row_count": 1011759,
+        "matched_tag_count": 539,
+        "missing_files_sample": [
+          "DIA:CIK0001041130.json",
+          "IBN:CIK0001103838.json",
+          "MDY:CIK0000936958.json",
+          "OZK:CIK0001569650.json",
+          "QQQ:CIK0001067839.json",
+          "SPY:CIK0000884394.json"
+        ],
+        "specific_provenance_row_count": 204674,
+        "specific_provenance_tag_count": 312,
+        "tickers_with_any_match": 1415,
+        "tickers_with_high_signal_provenance": 868,
+        "tickers_with_specific_provenance": 1360,
+        "total_fact_tags_scanned": 715967
+      },
+      "taxonomy_row_counts": {
+        "fnd": 4,
+        "ifrs-full": 5113,
+        "srt": 855,
+        "us-gaap": 1005787
+      },
+      "universe": {
+        "broad_liquid_cik_rows": 1446,
+        "source": "data/warehouse/warehouse_main.sqlite",
+        "warnings": []
+      },
+      "window_counts": {
+        "all_matched_rows": {
+          "late_strong": 49502,
+          "mid_weak": 41821,
+          "old_thin": 47191
+        },
+        "high_signal_provenance_rows": {
+          "late_strong": 1740,
+          "mid_weak": 1342,
+          "old_thin": 1771
+        },
+        "specific_provenance_rows": {
+          "late_strong": 8370,
+          "mid_weak": 6718,
+          "old_thin": 7822
+        }
+      }
+    },
+    "passed": true,
+    "required_fields_checked": [
+      "ticker",
+      "cik",
+      "taxonomy",
+      "tag",
+      "label",
+      "description",
+      "units",
+      "filed",
+      "form",
+      "end",
+      "val"
+    ]
+  },
+  "gate3": {
+    "note": "Not a filtering experiment; row counts describe inventory observations only.",
+    "passed": true,
+    "signals_generated": 1011759,
+    "signals_survived": 1011759,
+    "survival_rate": 1.0
+  },
+  "gate4": {
+    "aggregate_expected_value_delta": 0.0,
+    "aggregate_strategy_total_pnl_delta": 0.0,
+    "candidate_surface_assessment": {
+      "minimum_high_signal_rows_in_standard_window": 1342,
+      "minimum_specific_rows_in_standard_window": 6718,
+      "readiness_reason": "conditional_data_edge_ready: high-signal provenance-like tags have enough ticker/window coverage for one future strictly PIT alpha scout.",
+      "ready_for_future_alpha": true,
+      "required_for_next_alpha": [
+        "use filed date as PIT as-of boundary",
+        "select one concrete provenance axis before candidate-pool testing",
+        "do not sweep adjacent Companyfacts thresholds/top-N/hold days",
+        "avoid treating generic revenue-from-contract tags as customer identity"
+      ]
+    },
+    "decision_basis": "measurement_repair_artifact_completeness",
+    "expected_value_score_after": null,
+    "expected_value_score_before": null,
+    "failed_reasons": [],
+    "note": "No Gate 4 strategy metric improvement is required or claimed.",
+    "passed": true
+  },
+  "hypothesis": "Alpha-enabling measurement repair: a future segment/customer/counterparty provenance candidate pool may be a valid non-frozen Companyfacts axis, but it is not testable until the local SEC Companyfacts cache has a PIT taxonomy/tag inventory for segment/customer fields across the broad liquid warehouse universe.",
+  "implementation_mode": "self_registered_measurement_repair_runner",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "live_realistic_execution_envelope": {
+    "reason": "No executable alpha, order, notional, or ranking policy was introduced.",
+    "required": false
+  },
+  "log": "experiments/logs/exp-20260626-002.json",
+  "mechanism_family": "companyfacts_segment_customer_data_edge",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260617-012",
+    "exp-20260617-020",
+    "exp-20260617-022",
+    "exp-20260622-004",
+    "exp-20260625-005"
+  ],
+  "new_evidence_axis": "Machine-checkable data-edge construction for extension/dei/us-gaap tags whose tag/label/description indicate segment, customer, counterparty, concentration, product, geographic, backlog, or contract provenance; no candidate-pool threshold, ranking, top-N, hold-day, or notional policy is tested.",
+  "new_evidence_type": "machine_checkable_companyfacts_taxonomy_tag_inventory",
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not use this inventory as permission to sweep Companyfacts thresholds, top-N, hold days, freshness, liquidity guards, or generic revenue-from-contract/customer tags on frozen windows.",
+    "new_evidence_required": "A valid next alpha needs one machine-checkable new evidence axis: parsed customer identity, contract duration/funding certainty, segment revenue/profit mix, a selected PIT tag surface with a new gate shape, or materially more closed forward rows.",
+    "next_step": "Choose one concrete axis from tag_inventory_top, such as segment mix or backlog/order provenance, then reserve a shared-paper-first alpha with fixed PIT filed-date boundaries.",
+    "why_result_happened": "The run built a replayable Companyfacts taxonomy inventory and found non-generic provenance-like tags with enough cross-window coverage to justify one future PIT alpha scout. This is not an accepted alpha because no entry, ranking, sizing, or exit rule was tested."
+  },
+  "prediction": {
+    "confidence_reason": "Novelty gate did not block; playbook requires richer segment/customer/counterparty provenance before more Companyfacts candidate-pool tests.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "no_structured_segment_customer_tags",
+      "coverage_too_sparse",
+      "fields_are_generic_revenue_not_provenance",
+      "source_too_extension_specific"
+    ],
+    "recorded_at": "2026-06-26T01:12:50+00:00",
+    "success_probability": 0.55
+  },
+  "production_impact": {
+    "changes_exits": false,
+    "changes_live_orders": false,
+    "changes_llm_decision_boundary": false,
+    "changes_ranking": false,
+    "changes_sizing": false,
+    "changes_trade_enabled": false,
+    "changes_watchlist": false,
+    "summary": "No production behavior changed; this is an offline SEC taxonomy inventory."
+  },
+  "runner": "quant/experiments/exp_20260626_002_companyfacts_segment_customer_taxonomy_inventory.py",
+  "single_causal_variable": "sec_companyfacts_segment_customer_taxonomy_inventory_v1",
+  "source_summary": {
+    "candidate_surface_assessment": {
+      "minimum_high_signal_rows_in_standard_window": 1342,
+      "minimum_specific_rows_in_standard_window": 6718,
+      "readiness_reason": "conditional_data_edge_ready: high-signal provenance-like tags have enough ticker/window coverage for one future strictly PIT alpha scout.",
+      "ready_for_future_alpha": true,
+      "required_for_next_alpha": [
+        "use filed date as PIT as-of boundary",
+        "select one concrete provenance axis before candidate-pool testing",
+        "do not sweep adjacent Companyfacts thresholds/top-N/hold days",
+        "avoid treating generic revenue-from-contract tags as customer identity"
+      ]
+    },
+    "coverage": {
+      "companyfacts_dir": "data/cache/sec/companyfacts",
+      "decode_error_sample": [],
+      "files_decode_error": 0,
+      "files_missing": 6,
+      "files_present": 1440,
+      "generic_customer_contract_row_count": 556752,
+      "generic_customer_contract_tag_count": 88,
+      "high_signal_provenance_row_count": 30711,
+      "high_signal_provenance_tag_count": 39,
+      "low_information_provenance_row_count": 250333,
+      "low_information_provenance_tag_count": 139,
+      "matched_row_count": 1011759,
+      "matched_tag_count": 539,
+      "missing_files_sample": [
+        "DIA:CIK0001041130.json",
+        "IBN:CIK0001103838.json",
+        "MDY:CIK0000936958.json",
+        "OZK:CIK0001569650.json",
+        "QQQ:CIK0001067839.json",
+        "SPY:CIK0000884394.json"
+      ],
+      "specific_provenance_row_count": 204674,
+      "specific_provenance_tag_count": 312,
+      "tickers_with_any_match": 1415,
+      "tickers_with_high_signal_provenance": 868,
+      "tickers_with_specific_provenance": 1360,
+      "total_fact_tags_scanned": 715967
+    }
+  },
+  "status": "accepted",
+  "timestamp": "2026-06-26T01:24:59Z",
+  "trial_family": "companyfacts_segment_customer_taxonomy_inventory",
+  "trial_variant_id": "broad_liquid_companyfacts_tag_coverage_v1"
+}

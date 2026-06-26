@@ -1,0 +1,1144 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260625_022_non_ohlcv_snapshot_leakage_audit.py",
+    "data/experiments/exp-20260625-022/exp_20260625_022_non_ohlcv_snapshot_leakage_audit.json",
+    "experiments/cards/exp-20260625-022.md",
+    "experiments/manifests/exp-20260625-022.json",
+    "experiments/tickets/exp-20260625-022.json",
+    "experiments/logs/exp-20260625-022.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260625-022.md",
+  "causal_components": [
+    "snapshot filename date audit",
+    "embedded asof/generated_at audit",
+    "coverage manifest date audit",
+    "production consumer pattern audit",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "non_ohlcv_snapshot_asof_boundary_leakage_audit_v1",
+  "claimed_at": "2026-06-25T20:06:05+00:00",
+  "completed_at": "2026-06-25T20:12:09+00:00",
+  "created_at": "2026-06-25T20:05:46+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260625-022",
+  "experiment_uid": "expuid-834a45f63fb046cf",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260625-022",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-25T20:05:46+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "non_ohlcv_snapshot_leakage_audit"
+  },
+  "hypothesis": "Repair the non-OHLCV alpha blocker by auditing whether dated daily_non_ohlcv snapshots and their coverage manifest can expose future/backfilled rows to replay or forward attribution jobs before any new non-OHLCV alpha is trusted.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "non_ohlcv_snapshot_asof_boundary_leakage_audit_v1"
+  ],
+  "mechanism_family": "non_ohlcv_alpha_measurement_repair",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260625-021",
+    "exp-20260625-017",
+    "exp-20260624-007"
+  ],
+  "new_evidence_type": "cross_source_snapshot_date_contract_audit",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "alpha",
+        "any",
+        "asof",
+        "attribution",
+        "audit",
+        "auditing",
+        "backfilled",
+        "before",
+        "blocker",
+        "boundary",
+        "by",
+        "can",
+        "coverage",
+        "daily",
+        "dated",
+        "expose",
+        "forward",
+        "future",
+        "is",
+        "jobs",
+        "leakage",
+        "manifest",
+        "measurement",
+        "new",
+        "non",
+        "or",
+        "repair",
+        "rows",
+        "snapshot",
+        "snapshots",
+        "their",
+        "to",
+        "trusted",
+        "whether"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.9333,
+        "data_source": "other",
+        "family_key": "identity_or_measurement_repair",
+        "reopen_condition": "Wait for these rows to close with replacement value versus cash, SPY, and QQQ, add PIT borrow/loan-availability context, or backfill historical PIT options chains with vendor/as-of controls before another options alpha claim.",
+        "score": 0.04,
+        "status": "has_accepted",
+        "trials": 15
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "kova_multisource_candidate_pool_readiness",
+        "reopen_condition": null,
+        "score": 0.0324,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "kova_forward_observation_ledger",
+        "reopen_condition": "Close 20-30 Kova forward observation rows under a predeclared shared default-off observer, or add PIT historical coverage across the canonical windows, before any Kova alpha claim.",
+        "score": 0.0316,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "moomoo_capital_flow_forward_readiness",
+        "reopen_condition": null,
+        "score": 0.0316,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "sec_offering_richer_financing_terms_measurement_repair",
+        "reopen_condition": "A valid alpha retry needs a fixed shared helper using these richer fields plus closed forward replacement-value rows or a specific new field such as closed deal outcome, actual shelf drawdown history, or verified lockup/hedging economics.",
+        "score": 0.0308,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Machine-checkable new evidence axis: repository-wide dated data/non_ohlcv/daily_non_ohlcv_snapshot_YYYYMMDD.json files plus data/non_ohlcv/coverage_manifest.jsonl as an as-of boundary contract, not a reslice of one saturated source field or forward attribution sample.",
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.7,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "future-dated snapshots exist",
+      "coverage manifest includes trade_date beyond run asof",
+      "embedded source watermarks are missing",
+      "repository loader patterns need a consumption guard"
+    ],
+    "confidence_reason": "The data surface is file-system observable and recent runs already exposed replayability blockers in adjacent surfaces; this should yield a clear accepted audit or blocker without changing trading behavior.",
+    "recorded_at": "2026-06-25T20:05:30+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_no_non_ohlcv_future_snapshot_leakage_observed",
+    "artifact": "data/experiments/exp-20260625-022/exp_20260625_022_non_ohlcv_snapshot_leakage_audit.json",
+    "log": "experiments/logs/exp-20260625-022.json",
+    "runner": "quant/experiments/exp_20260625_022_non_ohlcv_snapshot_leakage_audit.py",
+    "gate4": {
+      "passed": true,
+      "status": "measurement_audit_only_no_strategy_delta",
+      "before": {
+        "late_strong": {
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        "mid_weak": {
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        "old_thin": {
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      },
+      "after": {
+        "late_strong": {
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        "mid_weak": {
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        "old_thin": {
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      },
+      "aggregate_before": {
+        "aggregate_expected_value_score": 7.8941,
+        "aggregate_total_pnl": 234850.99,
+        "max_window_drawdown_pct": 0.1119,
+        "min_survival_rate": 0.7925,
+        "total_trade_count": 61
+      },
+      "aggregate_after": {
+        "aggregate_expected_value_score": 7.8941,
+        "aggregate_total_pnl": 234850.99,
+        "max_window_drawdown_pct": 0.1119,
+        "min_survival_rate": 0.7925,
+        "total_trade_count": 61
+      },
+      "aggregate_delta": {
+        "aggregate_expected_value_score": 0.0,
+        "aggregate_total_pnl": 0.0,
+        "max_window_drawdown_pct": 0.0,
+        "min_survival_rate": 0.0,
+        "total_trade_count": 0
+      },
+      "readiness": {
+        "passed": true,
+        "decision": "accepted_measurement_repair_no_non_ohlcv_future_snapshot_leakage_observed",
+        "failed_reasons": [],
+        "run_asof_date": "2026-06-25",
+        "observed": {
+          "snapshot_count": 465,
+          "loaded_snapshot_count": 465,
+          "snapshot_min_file_date": "2024-10-02",
+          "snapshot_max_file_date": "2026-06-24",
+          "future_file_date_count": 0,
+          "manifest_record_count": 574,
+          "manifest_future_trade_date_row_count": 0,
+          "manifest_latest_complete_trade_date": "2026-06-24",
+          "production_wildcard_without_manifest_count": 0,
+          "generated_after_snapshot_date_count": 465,
+          "manifest_generated_after_trade_date_row_count": 571
+        },
+        "non_blocking_caveats": [
+          "Historical backtest/catch-up snapshots are generated after their trade dates; future alpha work must use per-row accepted_at/publication/as-of fields, not file mtime or latest snapshot availability, as the evidence timestamp.",
+          "This audit validates the current repository as-of boundary; it does not make saturated SEC/Form4/Companyfacts/FTD/Kova/options fields novel again."
+        ]
+      },
+      "failed_reasons": [],
+      "acceptance_rule": "Accept as measurement repair only if no snapshot/manifest date exceeds the run as-of date, filename/asof/date_tag contracts match, manifest daily snapshot paths match trade_date, and production code has no wildcard latest/all snapshot consumer without a manifest/as-of guard."
+    },
+    "summary": "No future-dated daily_non_ohlcv snapshot, embedded as-of date, coverage manifest trade_date, or production wildcard consumer leak path was observed. The main caveat is that historical/catch-up snapshots were generated after their trade dates, so future alpha claims still need field-level PIT evidence and cannot treat file availability as event availability."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260625-022.json",
+  "single_causal_variable": "non_ohlcv_snapshot_asof_boundary_leakage_audit_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260625-022.json",
+  "trial_family": "non_ohlcv_snapshot_asof_boundary",
+  "trial_variant_id": "snapshot_date_watermark_leakage_audit_v1",
+  "alpha_hypothesis": "Production-visible non-OHLCV sources may contain useful event/crowding information, but any candidate-pool or attribution edge is unreliable if snapshot files are consumed without a point-in-time as-of boundary.",
+  "implementation_mode": "measurement_audit_only_no_strategy_change",
+  "new_evidence_axis": "Machine-checkable new evidence axis: repository-wide dated data/non_ohlcv/daily_non_ohlcv_snapshot_YYYYMMDD.json files plus data/non_ohlcv/coverage_manifest.jsonl as an as-of boundary contract, not a reslice of one saturated source field or forward attribution sample.",
+  "decision": "accepted_measurement_repair_no_non_ohlcv_future_snapshot_leakage_observed",
+  "artifact": "data/experiments/exp-20260625-022/exp_20260625_022_non_ohlcv_snapshot_leakage_audit.json",
+  "log": "experiments/logs/exp-20260625-022.json",
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "windows": {
+        "late_strong": {
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        "mid_weak": {
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        "old_thin": {
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      },
+      "aggregate": {
+        "aggregate_expected_value_score": 7.8941,
+        "aggregate_total_pnl": 234850.99,
+        "max_window_drawdown_pct": 0.1119,
+        "min_survival_rate": 0.7925,
+        "total_trade_count": 61
+      }
+    },
+    "note": "Measurement audit only; before and after strategy behavior are identical."
+  },
+  "gate2": {
+    "passed": true,
+    "required_fields_checked": [
+      "daily snapshot filename date",
+      "asof_date",
+      "date_tag",
+      "generated_at",
+      "source_watermarks",
+      "coverage_manifest.trade_date",
+      "coverage_manifest.generated_at",
+      "artifact_status.daily_non_ohlcv_snapshot.path",
+      "production consumer pattern",
+      "entry_date and target_price intentionally unchanged/no strategy rows"
+    ],
+    "snapshot_summary": {
+      "snapshot_count": 465,
+      "loaded_snapshot_count": 465,
+      "min_file_date": "2024-10-02",
+      "max_file_date": "2026-06-24",
+      "future_file_date_count": 0,
+      "future_asof_date_count": 0,
+      "future_generated_date_count": 0,
+      "date_inconsistent_count": 0,
+      "generated_after_snapshot_date_count": 465,
+      "missing_contract_fields": {
+        "source_watermarks": 465
+      },
+      "status_counts": {
+        "ok": 457,
+        "partial": 8
+      },
+      "source_watermark_future_after_run_asof_count": 0,
+      "source_watermark_future_after_run_asof_examples": [],
+      "source_watermark_after_snapshot_asof_count": 0,
+      "source_watermark_after_snapshot_asof_examples": [],
+      "sample_first": [
+        {
+          "path": "data/non_ohlcv/daily_non_ohlcv_snapshot_20241002.json",
+          "loaded": true,
+          "file_date": "2024-10-02",
+          "asof_date": "2024-10-02",
+          "date_tag": "20241002",
+          "date_tag_date": "2024-10-02",
+          "generated_at": "2026-05-06T22:37:15+00:00",
+          "generated_at_utc": "2026-05-06T22:37:15+00:00",
+          "file_mtime_utc": "2026-05-18T01:20:27.319028+00:00",
+          "status": "ok",
+          "schema_version": 1,
+          "top_level_keys": [
+            "asof_date",
+            "date_range",
+            "date_tag",
+            "form4_transactions",
+            "generated_at",
+            "lookback_days",
+            "options_onclickmedia",
+            "paths",
+            "production_impact",
+            "schema_version",
+            "sec_filing_events",
+            "sec_filing_text",
+            "status"
+          ],
+          "row_counts": {},
+          "top_level_counts": {
+            "form4_transactions": null,
+            "sec_filing_events": 10,
+            "sec_filing_text": 10
+          },
+          "date_consistent": true,
+          "future_file_date": false,
+          "future_asof_date": false,
+          "future_generated_date": false,
+          "generated_after_snapshot_date": true,
+          "missing_contract_fields": [
+            "source_watermarks"
+          ],
+          "source_watermarks": {
+            "parsed": {},
+            "unparseable_fields": [],
+            "after_snapshot_asof_fields": [],
+            "future_after_run_asof_fields": []
+          }
+        },
+        {
+          "path": "data/non_ohlcv/daily_non_ohlcv_snapshot_20241003.json",
+          "loaded": true,
+          "file_date": "2024-10-03",
+          "asof_date": "2024-10-03",
+          "date_tag": "20241003",
+          "date_tag_date": "2024-10-03",
+          "generated_at": "2026-05-06T22:38:32+00:00",
+          "generated_at_utc": "2026-05-06T22:38:32+00:00",
+          "file_mtime_utc": "2026-05-18T01:20:27.320115+00:00",
+          "status": "ok",
+          "schema_version": 1,
+          "top_level_keys": [
+            "asof_date",
+            "date_range",
+            "date_tag",
+            "form4_transactions",
+            "generated_at",
+            "lookback_days",
+            "options_onclickmedia",
+            "paths",
+            "production_impact",
+            "schema_version",
+            "sec_filing_events",
+            "sec_filing_text",
+            "status"
+          ],
+          "row_counts": {},
+          "top_level_counts": {
+            "form4_transactions": null,
+            "sec_filing_events": 13,
+            "sec_filing_text": 13
+          },
+          "date_consistent": true,
+          "future_file_date": false,
+          "future_asof_date": false,
+          "future_generated_date": false,
+          "generated_after_snapshot_date": true,
+          "missing_contract_fields": [
+            "source_watermarks"
+          ],
+          "source_watermarks": {
+            "parsed": {},
+            "unparseable_fields": [],
+            "after_snapshot_asof_fields": [],
+            "future_after_run_asof_fields": []
+          }
+        },
+        {
+          "path": "data/non_ohlcv/daily_non_ohlcv_snapshot_20241004.json",
+          "loaded": true,
+          "file_date": "2024-10-04",
+          "asof_date": "2024-10-04",
+          "date_tag": "20241004",
+          "date_tag_date": "2024-10-04",
+          "generated_at": "2026-05-06T22:39:20+00:00",
+          "generated_at_utc": "2026-05-06T22:39:20+00:00",
+          "file_mtime_utc": "2026-05-18T01:20:27.321651+00:00",
+          "status": "ok",
+          "schema_version": 1,
+          "top_level_keys": [
+            "asof_date",
+            "date_range",
+            "date_tag",
+            "form4_transactions",
+            "generated_at",
+            "lookback_days",
+            "options_onclickmedia",
+            "paths",
+            "production_impact",
+            "schema_version",
+            "sec_filing_events",
+            "sec_filing_text",
+            "status"
+          ],
+          "row_counts": {},
+          "top_level_counts": {
+            "form4_transactions": null,
+            "sec_filing_events": 14,
+            "sec_filing_text": 13
+          },
+          "date_consistent": true,
+          "future_file_date": false,
+          "future_asof_date": false,
+          "future_generated_date": false,
+          "generated_after_snapshot_date": true,
+          "missing_contract_fields": [
+            "source_watermarks"
+          ],
+          "source_watermarks": {
+            "parsed": {},
+            "unparseable_fields": [],
+            "after_snapshot_asof_fields": [],
+            "future_after_run_asof_fields": []
+          }
+        }
+      ],
+      "sample_last": [
+        {
+          "path": "data/non_ohlcv/daily_non_ohlcv_snapshot_20260622.json",
+          "loaded": true,
+          "file_date": "2026-06-22",
+          "asof_date": "2026-06-22",
+          "date_tag": "20260622",
+          "date_tag_date": "2026-06-22",
+          "generated_at": "2026-06-23T05:24:40+00:00",
+          "generated_at_utc": "2026-06-23T05:24:40+00:00",
+          "file_mtime_utc": "2026-06-23T05:25:19.375410+00:00",
+          "status": "ok",
+          "schema_version": 1,
+          "top_level_keys": [
+            "asof_date",
+            "date_range",
+            "date_tag",
+            "form4_transactions",
+            "generated_at",
+            "lookback_days",
+            "options_onclickmedia",
+            "paths",
+            "production_impact",
+            "schema_version",
+            "sec_filing_events",
+            "sec_filing_text",
+            "status"
+          ],
+          "row_counts": {},
+          "top_level_counts": {
+            "form4_transactions": null,
+            "sec_filing_events": 17,
+            "sec_filing_text": 16
+          },
+          "date_consistent": true,
+          "future_file_date": false,
+          "future_asof_date": false,
+          "future_generated_date": false,
+          "generated_after_snapshot_date": true,
+          "missing_contract_fields": [
+            "source_watermarks"
+          ],
+          "source_watermarks": {
+            "parsed": {},
+            "unparseable_fields": [],
+            "after_snapshot_asof_fields": [],
+            "future_after_run_asof_fields": []
+          }
+        },
+        {
+          "path": "data/non_ohlcv/daily_non_ohlcv_snapshot_20260623.json",
+          "loaded": true,
+          "file_date": "2026-06-23",
+          "asof_date": "2026-06-23",
+          "date_tag": "20260623",
+          "date_tag_date": "2026-06-23",
+          "generated_at": "2026-06-24T06:19:36+00:00",
+          "generated_at_utc": "2026-06-24T06:19:36+00:00",
+          "file_mtime_utc": "2026-06-24T06:20:14.517030+00:00",
+          "status": "ok",
+          "schema_version": 1,
+          "top_level_keys": [
+            "asof_date",
+            "date_range",
+            "date_tag",
+            "form4_transactions",
+            "generated_at",
+            "lookback_days",
+            "options_onclickmedia",
+            "paths",
+            "production_impact",
+            "schema_version",
+            "sec_filing_events",
+            "sec_filing_text",
+            "status"
+          ],
+          "row_counts": {},
+          "top_level_counts": {
+            "form4_transactions": null,
+            "sec_filing_events": 16,
+            "sec_filing_text": 15
+          },
+          "date_consistent": true,
+          "future_file_date": false,
+          "future_asof_date": false,
+          "future_generated_date": false,
+          "generated_after_snapshot_date": true,
+          "missing_contract_fields": [
+            "source_watermarks"
+          ],
+          "source_watermarks": {
+            "parsed": {},
+            "unparseable_fields": [],
+            "after_snapshot_asof_fields": [],
+            "future_after_run_asof_fields": []
+          }
+        },
+        {
+          "path": "data/non_ohlcv/daily_non_ohlcv_snapshot_20260624.json",
+          "loaded": true,
+          "file_date": "2026-06-24",
+          "asof_date": "2026-06-24",
+          "date_tag": "20260624",
+          "date_tag_date": "2026-06-24",
+          "generated_at": "2026-06-25T05:25:03+00:00",
+          "generated_at_utc": "2026-06-25T05:25:03+00:00",
+          "file_mtime_utc": "2026-06-25T05:25:43.179625+00:00",
+          "status": "ok",
+          "schema_version": 1,
+          "top_level_keys": [
+            "asof_date",
+            "date_range",
+            "date_tag",
+            "form4_transactions",
+            "generated_at",
+            "lookback_days",
+            "options_onclickmedia",
+            "paths",
+            "production_impact",
+            "schema_version",
+            "sec_filing_events",
+            "sec_filing_text",
+            "status"
+          ],
+          "row_counts": {},
+          "top_level_counts": {
+            "form4_transactions": null,
+            "sec_filing_events": 21,
+            "sec_filing_text": 20
+          },
+          "date_consistent": true,
+          "future_file_date": false,
+          "future_asof_date": false,
+          "future_generated_date": false,
+          "generated_after_snapshot_date": true,
+          "missing_contract_fields": [
+            "source_watermarks"
+          ],
+          "source_watermarks": {
+            "parsed": {},
+            "unparseable_fields": [],
+            "after_snapshot_asof_fields": [],
+            "future_after_run_asof_fields": []
+          }
+        }
+      ]
+    },
+    "manifest_summary": {
+      "path": "data/non_ohlcv/coverage_manifest.jsonl",
+      "exists": true,
+      "record_count": 574,
+      "invalid_rows": [],
+      "unique_trade_dates": 453,
+      "coverage_trade_dates": 451,
+      "duplicate_trade_date_count": 37,
+      "max_duplicate_rows_for_trade_date": 16,
+      "record_type_counts": {
+        "coverage": 557,
+        "data_source_coverage": 17
+      },
+      "mode_counts": {
+        "backtest": 422,
+        "catchup": 73,
+        "daily": 77,
+        "measurement_repair": 2
+      },
+      "status_counts": {
+        "complete": 501,
+        "partial": 73
+      },
+      "required_missing_counts": {
+        "earnings_snapshot": 10,
+        "event_snapshot": 60
+      },
+      "future_trade_date_rows": [],
+      "future_trade_date_row_count": 0,
+      "future_generated_rows": [],
+      "future_generated_row_count": 0,
+      "path_mismatch_rows": [],
+      "path_mismatch_row_count": 0,
+      "generated_after_trade_date_row_count": 571,
+      "generated_after_trade_date_examples": [
+        {
+          "trade_date": "2026-04-27",
+          "generated_at": "2026-05-06T06:09:47+00:00",
+          "mode": "catchup",
+          "status": "complete"
+        },
+        {
+          "trade_date": "2026-04-28",
+          "generated_at": "2026-05-06T06:11:11+00:00",
+          "mode": "catchup",
+          "status": "complete"
+        },
+        {
+          "trade_date": "2026-04-29",
+          "generated_at": "2026-05-06T06:12:34+00:00",
+          "mode": "catchup",
+          "status": "complete"
+        },
+        {
+          "trade_date": "2026-04-30",
+          "generated_at": "2026-05-06T06:13:58+00:00",
+          "mode": "catchup",
+          "status": "complete"
+        },
+        {
+          "trade_date": "2026-05-01",
+          "generated_at": "2026-05-06T06:15:24+00:00",
+          "mode": "catchup",
+          "status": "complete"
+        },
+        {
+          "trade_date": "2026-05-04",
+          "generated_at": "2026-05-06T06:16:46+00:00",
+          "mode": "catchup",
+          "status": "complete"
+        },
+        {
+          "trade_date": "2026-05-05",
+          "generated_at": "2026-05-06T06:18:13+00:00",
+          "mode": "daily",
+          "status": "complete"
+        },
+        {
+          "trade_date": "2026-04-27",
+          "generated_at": "2026-05-06T17:51:31+00:00",
+          "mode": "backtest",
+          "status": "complete"
+        },
+        {
+          "trade_date": "2026-04-28",
+          "generated_at": "2026-05-06T17:51:31+00:00",
+          "mode": "backtest",
+          "status": "complete"
+        },
+        {
+          "trade_date": "2026-04-29",
+          "generated_at": "2026-05-06T17:51:31+00:00",
+          "mode": "backtest",
+          "status": "complete"
+        },
+        {
+          "trade_date": "2026-04-30",
+          "generated_at": "2026-05-06T17:51:31+00:00",
+          "mode": "backtest",
+          "status": "complete"
+        },
+        {
+          "trade_date": "2026-05-01",
+          "generated_at": "2026-05-06T17:51:31+00:00",
+          "mode": "backtest",
+          "status": "complete"
+        },
+        {
+          "trade_date": "2026-05-04",
+          "generated_at": "2026-05-06T17:51:31+00:00",
+          "mode": "backtest",
+          "status": "complete"
+        },
+        {
+          "trade_date": "2026-05-05",
+          "generated_at": "2026-05-06T17:51:31+00:00",
+          "mode": "backtest",
+          "status": "complete"
+        },
+        {
+          "trade_date": "2025-10-23",
+          "generated_at": "2026-05-06T17:53:57+00:00",
+          "mode": "backtest",
+          "status": "complete"
+        },
+        {
+          "trade_date": "2025-10-24",
+          "generated_at": "2026-05-06T17:55:21+00:00",
+          "mode": "backtest",
+          "status": "complete"
+        },
+        {
+          "trade_date": "2025-10-27",
+          "generated_at": "2026-05-06T17:56:47+00:00",
+          "mode": "backtest",
+          "status": "complete"
+        },
+        {
+          "trade_date": "2025-10-28",
+          "generated_at": "2026-05-06T17:58:12+00:00",
+          "mode": "backtest",
+          "status": "complete"
+        },
+        {
+          "trade_date": "2025-10-29",
+          "generated_at": "2026-05-06T17:59:41+00:00",
+          "mode": "backtest",
+          "status": "complete"
+        },
+        {
+          "trade_date": "2025-10-30",
+          "generated_at": "2026-05-06T18:01:14+00:00",
+          "mode": "backtest",
+          "status": "complete"
+        }
+      ],
+      "latest_complete_trade_date": "2026-06-24"
+    },
+    "consumer_pattern_audit": {
+      "production_scan_dirs": [
+        "quant",
+        "scripts"
+      ],
+      "matches": [
+        {
+          "path": "quant/daily_non_ohlcv_snapshot.py",
+          "production_code": true,
+          "experiment_code": false,
+          "test_code": false,
+          "has_wildcard_glob": false,
+          "has_exact_tag_path": true,
+          "has_manifest_reader": false
+        },
+        {
+          "path": "quant/experiments/exp_20260508_030_llm_event_readiness_manifest.py",
+          "production_code": false,
+          "experiment_code": true,
+          "test_code": false,
+          "has_wildcard_glob": false,
+          "has_exact_tag_path": false,
+          "has_manifest_reader": false
+        },
+        {
+          "path": "quant/experiments/exp_20260526_030_expectation_direction_untried_ideas_suite.py",
+          "production_code": false,
+          "experiment_code": true,
+          "test_code": false,
+          "has_wildcard_glob": false,
+          "has_exact_tag_path": false,
+          "has_manifest_reader": false
+        },
+        {
+          "path": "quant/experiments/exp_20260617_003_post_ccc_nonrepeat_alpha_surface.py",
+          "production_code": false,
+          "experiment_code": true,
+          "test_code": false,
+          "has_wildcard_glob": false,
+          "has_exact_tag_path": true,
+          "has_manifest_reader": false
+        },
+        {
+          "path": "quant/experiments/exp_20260617_004_options_chain_skew_readiness.py",
+          "production_code": false,
+          "experiment_code": true,
+          "test_code": false,
+          "has_wildcard_glob": true,
+          "has_exact_tag_path": false,
+          "has_manifest_reader": false
+        },
+        {
+          "path": "quant/experiments/exp_20260621_010_post_scalar_current_surface_readiness.py",
+          "production_code": false,
+          "experiment_code": true,
+          "test_code": false,
+          "has_wildcard_glob": false,
+          "has_exact_tag_path": false,
+          "has_manifest_reader": false
+        },
+        {
+          "path": "quant/experiments/exp_20260625_022_non_ohlcv_snapshot_leakage_audit.py",
+          "production_code": false,
+          "experiment_code": true,
+          "test_code": false,
+          "has_wildcard_glob": true,
+          "has_exact_tag_path": true,
+          "has_manifest_reader": true
+        },
+        {
+          "path": "quant/non_ohlcv_coverage.py",
+          "production_code": true,
+          "experiment_code": false,
+          "test_code": false,
+          "has_wildcard_glob": false,
+          "has_exact_tag_path": true,
+          "has_manifest_reader": true
+        },
+        {
+          "path": "quant/test_backfill_non_ohlcv.py",
+          "production_code": false,
+          "experiment_code": false,
+          "test_code": true,
+          "has_wildcard_glob": false,
+          "has_exact_tag_path": true,
+          "has_manifest_reader": false
+        },
+        {
+          "path": "quant/test_daily_non_ohlcv_snapshot.py",
+          "production_code": false,
+          "experiment_code": false,
+          "test_code": true,
+          "has_wildcard_glob": false,
+          "has_exact_tag_path": false,
+          "has_manifest_reader": false
+        },
+        {
+          "path": "quant/test_non_ohlcv_coverage.py",
+          "production_code": false,
+          "experiment_code": false,
+          "test_code": true,
+          "has_wildcard_glob": false,
+          "has_exact_tag_path": true,
+          "has_manifest_reader": true
+        }
+      ],
+      "match_count": 11,
+      "production_match_count": 2,
+      "production_wildcard_without_manifest_count": 0,
+      "production_wildcard_without_manifest_examples": [],
+      "passed": true
+    },
+    "failed_reasons": []
+  },
+  "gate3": {
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "min_survival_rate": 0.7925,
+    "note": "No filter was added; survival and trade counts are unchanged."
+  },
+  "gate4": {
+    "passed": true,
+    "status": "measurement_audit_only_no_strategy_delta",
+    "before": {
+      "late_strong": {
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "sharpe_daily": 4.41,
+        "total_pnl": 117072.92,
+        "max_drawdown_pct": 0.0665,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      "mid_weak": {
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "sharpe_daily": 2.74,
+        "total_pnl": 78110.11,
+        "max_drawdown_pct": 0.1119,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      "old_thin": {
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "sharpe_daily": 1.49,
+        "total_pnl": 39667.96,
+        "max_drawdown_pct": 0.1001,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    },
+    "after": {
+      "late_strong": {
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "sharpe_daily": 4.41,
+        "total_pnl": 117072.92,
+        "max_drawdown_pct": 0.0665,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      "mid_weak": {
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "sharpe_daily": 2.74,
+        "total_pnl": 78110.11,
+        "max_drawdown_pct": 0.1119,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      "old_thin": {
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "sharpe_daily": 1.49,
+        "total_pnl": 39667.96,
+        "max_drawdown_pct": 0.1001,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    },
+    "aggregate_before": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "max_window_drawdown_pct": 0.1119,
+      "min_survival_rate": 0.7925,
+      "total_trade_count": 61
+    },
+    "aggregate_after": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "max_window_drawdown_pct": 0.1119,
+      "min_survival_rate": 0.7925,
+      "total_trade_count": 61
+    },
+    "aggregate_delta": {
+      "aggregate_expected_value_score": 0.0,
+      "aggregate_total_pnl": 0.0,
+      "max_window_drawdown_pct": 0.0,
+      "min_survival_rate": 0.0,
+      "total_trade_count": 0
+    },
+    "readiness": {
+      "passed": true,
+      "decision": "accepted_measurement_repair_no_non_ohlcv_future_snapshot_leakage_observed",
+      "failed_reasons": [],
+      "run_asof_date": "2026-06-25",
+      "observed": {
+        "snapshot_count": 465,
+        "loaded_snapshot_count": 465,
+        "snapshot_min_file_date": "2024-10-02",
+        "snapshot_max_file_date": "2026-06-24",
+        "future_file_date_count": 0,
+        "manifest_record_count": 574,
+        "manifest_future_trade_date_row_count": 0,
+        "manifest_latest_complete_trade_date": "2026-06-24",
+        "production_wildcard_without_manifest_count": 0,
+        "generated_after_snapshot_date_count": 465,
+        "manifest_generated_after_trade_date_row_count": 571
+      },
+      "non_blocking_caveats": [
+        "Historical backtest/catch-up snapshots are generated after their trade dates; future alpha work must use per-row accepted_at/publication/as-of fields, not file mtime or latest snapshot availability, as the evidence timestamp.",
+        "This audit validates the current repository as-of boundary; it does not make saturated SEC/Form4/Companyfacts/FTD/Kova/options fields novel again."
+      ]
+    },
+    "failed_reasons": [],
+    "acceptance_rule": "Accept as measurement repair only if no snapshot/manifest date exceeds the run as-of date, filename/asof/date_tag contracts match, manifest daily snapshot paths match trade_date, and production code has no wildcard latest/all snapshot consumer without a manifest/as-of guard."
+  },
+  "production_impact": {
+    "strategy_code_changed": false,
+    "shared_helper_changed": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_changed": false,
+    "live_orders_changed": false,
+    "trade_enabled_changed": false,
+    "llm_decision_boundary_changed": false,
+    "parity_note": "No production/backtest inconsistency was introduced because no trading rule or production helper changed. Future non-OHLCV alpha work must keep this date/as-of guard in the shared adapter."
+  },
+  "live_realistic_execution_envelope": {
+    "required_for_live_ready": false,
+    "reason": "Measurement repair only; no tradable alpha or order path changed."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "No future-dated daily_non_ohlcv snapshot, embedded as-of date, coverage manifest trade_date, or production wildcard consumer leak path was observed. The main caveat is that historical/catch-up snapshots were generated after their trade dates, so future alpha claims still need field-level PIT evidence and cannot treat file availability as event availability.",
+    "negative_result_reflection": "Not a negative alpha result. If blocked, the blocker is as-of replayability; if accepted, this only clears the global future-date leak check and does not revive saturated source families.",
+    "forbidden_near_neighbor_retry": "Do not use this accepted audit as justification to retry SEC text, Form4, Companyfacts, SEC13F, FTD, Kova, options, borrow, or short volume threshold sweeps. A valid next alpha still needs a new PIT source, materially more closed forward rows, or a shared default-off gate shape not already saturated.",
+    "next_step_new_evidence": "Use the cleared global as-of audit as plumbing, then pursue a truly new evidence axis: materially more closed forward replacement rows, a new PIT data source, or a shared helper with field-level accepted_at/publication-date guards."
+  },
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/non_ohlcv",
+    "data/non_ohlcv/coverage_manifest.jsonl"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260625_022_non_ohlcv_snapshot_leakage_audit.py",
+    "data/experiments/exp-20260625-022/exp_20260625_022_non_ohlcv_snapshot_leakage_audit.json",
+    "experiments/cards/exp-20260625-022.md",
+    "experiments/manifests/exp-20260625-022.json",
+    "experiments/tickets/exp-20260625-022.json",
+    "experiments/logs/exp-20260625-022.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-06-25T20:12:09+00:00"
+}

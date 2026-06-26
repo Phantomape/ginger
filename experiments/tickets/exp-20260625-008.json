@@ -1,0 +1,240 @@
+{
+  "acceptance_rule": "Accepted measurement repair only if tests prove canonical JSONL loader preserves forward replacement/regime fields and current scorecard row count aligns to the canonical artifact without changing strategy metrics.",
+  "allowed_write_scope": [
+    "quant/regime_tagged_scorecard.py",
+    "quant/test_regime_tagged_scorecard.py",
+    "quant/experiments/exp_20260625_008_regime_scorecard_forward_source_alignment.py",
+    "data/regime_scorecard/regime_tagged_scorecard_latest.json",
+    "data/experiments/exp-20260625-008",
+    "experiments/logs/exp-20260625-008.json",
+    "experiments/cards/exp-20260625-008.md",
+    "experiments/manifests/exp-20260625-008.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260625-008.md",
+  "causal_components": [
+    "forward_replacement_jsonl_loader",
+    "stable_dedup_key",
+    "scorecard_runner_source_summary",
+    "unit_coverage"
+  ],
+  "change_type": "forward_regime_scorecard_source_alignment_measurement_repair",
+  "changed_variable": "regime_tagged_scorecard_canonical_forward_replacement_source_v1",
+  "claimed_at": "2026-06-25T07:08:36+00:00",
+  "completed_at": "2026-06-25T07:14:55+00:00",
+  "created_at": "2026-06-25T07:08:27+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260625-008",
+  "experiment_uid": "expuid-765510e5b9ca4ab7",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260625-008",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-25T07:08:27+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "regime_tagged_scorecard_canonical_forward_replacement_source_v1"
+  },
+  "hypothesis": "measurement_repair/alpha_blocker: regime soft-tilt forward validation needs regime_tagged_scorecard to read the canonical forward_replacement_value artifact, because the existing state.json-only scorecard is stale/incomplete versus the 38-row comparator/regime-tagged surface and would make future Gate 1-4 evidence drift.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "no order/ranking/sizing/entry/exit changes; no regime threshold changes; no repeated regime scalar attribution on same rows"
+  ],
+  "mechanism_family": "regime_router_measurement_repair",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "quant/regime_chop_state.py",
+    "quant/pilot_sleeve.py",
+    "live/default orders"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260615-030",
+    "exp-20260623-002",
+    "exp-20260623-027"
+  ],
+  "new_evidence_type": "canonical_forward_replacement_artifact_source_alignment",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "regime_state",
+      "field_tags": [
+        "alignment",
+        "alpha",
+        "artifact",
+        "because",
+        "blocker",
+        "canonical",
+        "comparator",
+        "drift",
+        "evidence",
+        "existing",
+        "forward",
+        "future",
+        "gate",
+        "incomplete",
+        "is",
+        "json",
+        "make",
+        "measurement",
+        "needs",
+        "only",
+        "read",
+        "regime",
+        "repair",
+        "replacement",
+        "router",
+        "row",
+        "scorecard",
+        "soft",
+        "stale",
+        "state",
+        "surface",
+        "tagged",
+        "tilt",
+        "to",
+        "validation",
+        "value",
+        "versus",
+        "would"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "regime_tagged_forward_scorecard",
+        "reopen_condition": "Accumulate closed forward / live-pilot rows across more regimes (especially choppy_range), then a separate Gate 1-4 can test whether the exposure_scalar soft tilt improves cost-adjusted replacement value out-of-sample. Re-run this scorecard to refresh tags.",
+        "score": 0.5026,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "market_state_family_replacement_value_attribution",
+        "reopen_condition": null,
+        "score": 0.4856,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "event_state_surface_stack_participation_gate",
+        "reopen_condition": null,
+        "score": 0.4793,
+        "status": "frozen_rejected",
+        "trials": 3
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "market_state_sleeve_replacement_value_attribution",
+        "reopen_condition": null,
+        "score": 0.4786,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "regime_state",
+        "family_key": "default_off_forward_regime_tagging",
+        "reopen_condition": "Next alpha work needs closed forward replacement rows carrying these entry_regime fields, then a fixed regime-conditioned sleeve/router policy evaluated against replacement value and concentration guards.",
+        "score": 0.4779,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "regime_state",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.72,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "duplicate historical rows",
+      "missing canonical artifact",
+      "scorecard schema mismatch",
+      "dirty state conflict"
+    ],
+    "confidence_reason": "The canonical forward replacement JSONL already carries entry_regime and comparator fields; the repair is source alignment plus tests, not a strategy behavior change.",
+    "recorded_at": "2026-06-25T07:08:18+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "accepted_measurement_repair_regime_scorecard_forward_source_alignment",
+    "accepted": true,
+    "artifact": "data/experiments/exp-20260625-008/exp_20260625_008_regime_scorecard_forward_source_alignment.json",
+    "scorecard_artifact": "data/regime_scorecard/regime_tagged_scorecard_latest.json",
+    "canonical_rows": 38,
+    "state_rows": 38,
+    "row_delta_vs_state_loader": 0,
+    "production_impact": {
+      "replay_only": false,
+      "default_off_attribution_only": true,
+      "shared_policy_changed": false,
+      "run_adapter_changed": false,
+      "backtester_adapter_changed": false,
+      "production_orders_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "trade_enabled": false,
+      "live_ready": false,
+      "parity_note": "Pure measurement repair: the regime scorecard now reads the canonical closed forward replacement-value artifact. It changes no executable signal, order, rank, sizing, or exit behavior."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260625-008.json",
+  "single_causal_variable": "regime_tagged_scorecard_canonical_forward_replacement_source_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260625-008.json",
+  "trial_family": "regime_tagged_forward_scorecard_source_alignment",
+  "trial_variant_id": "canonical_forward_replacement_jsonl_v1",
+  "decision": "accepted_measurement_repair_regime_scorecard_forward_source_alignment",
+  "summary": "accepted_measurement_repair_regime_scorecard_forward_source_alignment",
+  "artifact": "data/experiments/exp-20260625-008/exp_20260625_008_regime_scorecard_forward_source_alignment.json",
+  "log": "experiments/logs/exp-20260625-008.json",
+  "changed_files": [
+    "quant/regime_tagged_scorecard.py",
+    "quant/test_regime_tagged_scorecard.py",
+    "quant/experiments/exp_20260625_008_regime_scorecard_forward_source_alignment.py",
+    "data/regime_scorecard/regime_tagged_scorecard_latest.json",
+    "data/experiments/exp-20260625-008/exp_20260625_008_regime_scorecard_forward_source_alignment.json",
+    "experiments/logs/exp-20260625-008.json",
+    "experiments/cards/exp-20260625-008.md",
+    "experiments/manifests/exp-20260625-008.json",
+    "experiments/tickets/exp-20260625-008.json",
+    "docs/experiment_registry.json"
+  ],
+  "related_files": [
+    "quant/regime_tagged_scorecard.py",
+    "quant/test_regime_tagged_scorecard.py",
+    "quant/experiments/exp_20260625_008_regime_scorecard_forward_source_alignment.py",
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "data/regime_scorecard/regime_tagged_scorecard_latest.json",
+    "data/experiments/exp-20260625-008/exp_20260625_008_regime_scorecard_forward_source_alignment.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-06-25T07:14:55+00:00"
+}

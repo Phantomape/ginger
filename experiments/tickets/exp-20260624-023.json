@@ -1,0 +1,499 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260624_023_kova_sec13f_options_cross_evidence_forward_attribution.py",
+    "data/experiments/exp-20260624-023/exp_20260624_023_kova_sec13f_options_cross_evidence_forward_attribution.json",
+    "experiments/cards/exp-20260624-023.md",
+    "experiments/manifests/exp-20260624-023.json",
+    "experiments/tickets/exp-20260624-023.json",
+    "experiments/logs/exp-20260624-023.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260624-023.md",
+  "causal_components": [
+    "exp017 settled forward Kova rows",
+    "SEC13F sponsorship score",
+    "options forward observation cross-evidence",
+    "cash SPY QQQ replacement-value attribution",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "kova_sec13f_options_cross_evidence_forward_attribution_v1",
+  "claimed_at": "2026-06-24T20:04:42+00:00",
+  "completed_at": "2026-06-24T20:10:48+00:00",
+  "created_at": "2026-06-24T20:04:34+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260624-023",
+  "experiment_uid": "expuid-f573505298504fa5",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260624-023",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-24T20:04:34+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "kova_sec13f_options_cross_evidence_forward_attribution"
+  },
+  "hypothesis": "Observed-only attribution: Kova forward rows with high PIT SEC13F sponsorship plus same-date options bullish-pressure cross-evidence should show better settled 1d/3d/5d cash/SPY/QQQ replacement value than high-sponsorship rows without options confirmation.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "kova_sec13f_options_cross_evidence_forward_attribution_v1"
+  ],
+  "mechanism_family": "kova_multisource_forward_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260624-018",
+    "exp-20260624-019",
+    "exp-20260624-020",
+    "exp-20260623-010"
+  ],
+  "new_evidence_type": "partial_closed_forward_replacement_value_rows_plus_options_cross_evidence",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "sec13f_ownership",
+      "field_tags": [
+        "1d",
+        "3d",
+        "5d",
+        "attribution",
+        "better",
+        "bullish",
+        "cash",
+        "confirmation",
+        "cross",
+        "date",
+        "evidence",
+        "forward",
+        "high",
+        "kova",
+        "multisource",
+        "observed",
+        "only",
+        "options",
+        "pit",
+        "plus",
+        "pressure",
+        "qqq",
+        "replacement",
+        "rows",
+        "same",
+        "sec13f",
+        "settled",
+        "should",
+        "show",
+        "sponsorship",
+        "spy",
+        "than",
+        "value",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_active_manager_concentration",
+        "reopen_condition": "A valid retry needs independent active-manager quality or manager alpha attribution, non-quarterly ownership/flow data, borrow/options cross-evidence, or closed forward rows from a shared default-off helper.",
+        "score": 0.5026,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "kova_sec13f_forward_sponsorship_attribution",
+        "reopen_condition": "A valid retry needs enough closed 10d replacement-value rows, materially richer PIT manager/flow provenance, borrow/options cross-evidence, or a shared default-off helper with canonical fixed-window PIT coverage.",
+        "score": 0.5013,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "kova_forward_sec13f_sponsorship_ledger",
+        "reopen_condition": "Close Kova 2026-06-13+ rows with cash/SPY/QQQ replacement value, then test a predeclared sponsorship monotonicity or interaction hypothesis. Historical canonical-window promotion requires a separate shared helper with PIT 13F coverage.",
+        "score": 0.5,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "kova_sec13f_coownership_network_forward_attribution",
+        "reopen_condition": "A valid retry needs enough closed 10d replacement-value rows, materially richer PIT manager identity/active-flow provenance, borrow/options cross-evidence, or canonical fixed-window PIT coverage through a shared default-off helper.",
+        "score": 0.49,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "kova_sec13f_forward_outcome_settlement",
+        "reopen_condition": "Next alpha work must wait for enough closed 10d replacement-value rows or predeclare a separate observed-only sponsorship attribution. Promotion still requires a shared default-off helper and canonical Gate 1-4 evidence.",
+        "score": 0.4786,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New cross-source join between exp-20260624-017 partial closed Kova replacement rows and exp-20260623-009/20260624-020 options observation ledgers; this is not a SEC13F holder/value, coownership, RS, Companyfacts, top-N, hold, cooldown, notional, or allocator threshold retry.",
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "sec13f_ownership",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.17,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "no_options_overlap",
+      "no_cross_evidence_separation",
+      "qqq_beta_confound",
+      "options_rows_pending_or_lagged",
+      "forward_window_too_short"
+    ],
+    "confidence_reason": "exp018 found a forward-only SEC13F sponsorship lead and its recorded valid retry path names options cross-evidence; exp020 provides a PIT options forward ledger, but confidence is low because options rows are pending/short horizon and may simply proxy QQQ beta or liquidity.",
+    "recorded_at": "2026-06-24T20:04:18+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "rejected_no_kova_sec13f_options_cross_evidence_forward_edge",
+    "artifact": "data/experiments/exp-20260624-023/exp_20260624_023_kova_sec13f_options_cross_evidence_forward_attribution.json",
+    "log": "experiments/logs/exp-20260624-023.json",
+    "runner": "quant/experiments/exp_20260624_023_kova_sec13f_options_cross_evidence_forward_attribution.py",
+    "gate4": {
+      "observed_only_lead": false,
+      "decision": "rejected_no_kova_sec13f_options_cross_evidence_forward_edge",
+      "acceptance_checks": {
+        "primary_confirmed_sample_min_passed": false,
+        "primary_matched_not_confirmed_sample_min_passed": true,
+        "primary_missing_options_sample_min_passed": true,
+        "primary_confirmed_asof_dates_min_passed": false,
+        "concentration_hhi_passed": false,
+        "concentration_max_share_passed": false,
+        "confirmed_mean_cash_beats_matched_not_confirmed": false,
+        "confirmed_median_cash_beats_matched_not_confirmed": false,
+        "confirmed_mean_cash_beats_missing_options": false,
+        "multi_horizon_mean_cash_support": false,
+        "confirmed_mean_spy_beats_matched_not_confirmed": false,
+        "confirmed_median_spy_beats_matched_not_confirmed": false,
+        "confirmed_mean_spy_beats_missing_options": false,
+        "multi_horizon_mean_spy_support": false,
+        "confirmed_mean_qqq_beats_matched_not_confirmed": false,
+        "confirmed_median_qqq_beats_matched_not_confirmed": false,
+        "confirmed_mean_qqq_beats_missing_options": false,
+        "multi_horizon_mean_qqq_support": false
+      },
+      "failed_reasons": [
+        "primary_confirmed_sample_min_passed",
+        "primary_confirmed_asof_dates_min_passed",
+        "concentration_hhi_passed",
+        "concentration_max_share_passed",
+        "confirmed_mean_cash_beats_matched_not_confirmed",
+        "confirmed_median_cash_beats_matched_not_confirmed",
+        "confirmed_mean_cash_beats_missing_options",
+        "multi_horizon_mean_cash_support",
+        "confirmed_mean_spy_beats_matched_not_confirmed",
+        "confirmed_median_spy_beats_matched_not_confirmed",
+        "confirmed_mean_spy_beats_missing_options",
+        "multi_horizon_mean_spy_support",
+        "confirmed_mean_qqq_beats_matched_not_confirmed",
+        "confirmed_median_qqq_beats_matched_not_confirmed",
+        "confirmed_mean_qqq_beats_missing_options",
+        "multi_horizon_mean_qqq_support"
+      ],
+      "support_counts": {
+        "mean_cash_confirmed_beats_matched_horizon_count": 0,
+        "mean_spy_confirmed_beats_matched_horizon_count": 0,
+        "mean_qqq_confirmed_beats_matched_horizon_count": 0
+      },
+      "lead_limitations": [
+        "Forward-only post-2026-06-13 observations, not canonical fixed-window PIT coverage.",
+        "10d outcomes remain pending and are excluded from the decision.",
+        "Options rows are forward-observation context with vendor-asof and open-interest lag caveats.",
+        "No shared helper, daily adapter, ranking rule, sizing rule, or live behavior was promoted."
+      ],
+      "before_after_strategy_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "max_drawdown_pct": 0.0,
+        "trade_count": 0
+      },
+      "strategy_rerun_required": false
+    },
+    "summary": "The fixed options bullish-pressure cross-evidence did not improve the high-SEC13F-sponsorship Kova forward rows across the predeclared 5d cash/SPY/QQQ checks. This remains forward-only attribution and did not promote any trading behavior."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260624-023.json",
+  "single_causal_variable": "kova_sec13f_options_cross_evidence_forward_attribution_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260624-023.json",
+  "trial_family": "kova_sec13f_options_cross_evidence_forward_attribution",
+  "trial_variant_id": "post_exp017_partial_forward_1d3d5_options_x_sec13f_v1",
+  "implementation_mode": "observed_only_attribution_runner",
+  "new_evidence_axis": "New cross-source join between exp-20260624-017 partial closed Kova replacement rows and exp-20260623-009/20260624-020 options observation ledgers; this is not a SEC13F holder/value, coownership, RS, Companyfacts, top-N, hold, cooldown, notional, or allocator threshold retry.",
+  "decision": "rejected_no_kova_sec13f_options_cross_evidence_forward_edge",
+  "artifact": "data/experiments/exp-20260624-023/exp_20260624_023_kova_sec13f_options_cross_evidence_forward_attribution.json",
+  "log": "experiments/logs/exp-20260624-023.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119,
+      "window_count": 3,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    },
+    "note": "Observed-only attribution; before and after policy are identical."
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "fields_checked": [
+      "observation_id",
+      "asof_date",
+      "ticker",
+      "entry_date",
+      "target_price",
+      "sec13f_status",
+      "sec13f_holder_count",
+      "sec13f_total_value_usd",
+      "sec13f_position_row_count",
+      "options usable_trade_date",
+      "put_call_volume_ratio",
+      "put_minus_call_volume_weighted_iv",
+      "liquid_contract_rate",
+      "median_spread_pct",
+      "forward_1d_status",
+      "forward_3d_status",
+      "forward_5d_status",
+      "replacement_value_1d_vs_cash_usd",
+      "replacement_value_3d_vs_spy_usd",
+      "replacement_value_5d_vs_qqq_usd"
+    ],
+    "source_summary": {
+      "source_outcome_ledger": "data/experiments/exp-20260624-017/kova_sec13f_forward_outcome_settlement_ledger.jsonl",
+      "source_exists": true,
+      "source_rows": 13716,
+      "duplicate_observation_ids": 0,
+      "ticker_count": 1249,
+      "asof_date_start": "2026-06-13",
+      "asof_date_end": "2026-06-23",
+      "asof_date_count": 11,
+      "option_matched_rows": 305,
+      "option_matched_ticker_count": 60,
+      "sec13f_status_counts": {
+        "ok": 10675,
+        "skipped": 3041
+      },
+      "outcome_status_counts": {
+        "pending_forward_close": 1274,
+        "settled_partial": 12442
+      },
+      "options_summary": {
+        "options_ledgers": {
+          "data/experiments/exp-20260623-009/options_forward_observation_ledger.jsonl": 1846,
+          "data/experiments/exp-20260624-020/options_forward_observation_ledger_delta_20260623.jsonl": 60
+        },
+        "raw_option_rows": 1906,
+        "deduped_ticker_date_rows": 1906,
+        "duplicate_ticker_date_rows": 0,
+        "usable_date_start": "2025-01-14",
+        "usable_date_end": "2026-06-24",
+        "usable_date_count": 35,
+        "bullish_score_cutoff_top_tertile": 0.58069295
+      }
+    },
+    "target_price_relevance": "Not applicable: this is observed-only fixed-horizon outcome attribution and does not schedule target exits or orders."
+  },
+  "gate3": {
+    "filter_added": false,
+    "signals_generated": 13716,
+    "signals_survived": 3725,
+    "survival_rate": 0.2716,
+    "baseline_survival_rate": 0.8232,
+    "note": "No executable filter was added; rows are attributed only."
+  },
+  "gate4": {
+    "observed_only_lead": false,
+    "decision": "rejected_no_kova_sec13f_options_cross_evidence_forward_edge",
+    "acceptance_checks": {
+      "primary_confirmed_sample_min_passed": false,
+      "primary_matched_not_confirmed_sample_min_passed": true,
+      "primary_missing_options_sample_min_passed": true,
+      "primary_confirmed_asof_dates_min_passed": false,
+      "concentration_hhi_passed": false,
+      "concentration_max_share_passed": false,
+      "confirmed_mean_cash_beats_matched_not_confirmed": false,
+      "confirmed_median_cash_beats_matched_not_confirmed": false,
+      "confirmed_mean_cash_beats_missing_options": false,
+      "multi_horizon_mean_cash_support": false,
+      "confirmed_mean_spy_beats_matched_not_confirmed": false,
+      "confirmed_median_spy_beats_matched_not_confirmed": false,
+      "confirmed_mean_spy_beats_missing_options": false,
+      "multi_horizon_mean_spy_support": false,
+      "confirmed_mean_qqq_beats_matched_not_confirmed": false,
+      "confirmed_median_qqq_beats_matched_not_confirmed": false,
+      "confirmed_mean_qqq_beats_missing_options": false,
+      "multi_horizon_mean_qqq_support": false
+    },
+    "failed_reasons": [
+      "primary_confirmed_sample_min_passed",
+      "primary_confirmed_asof_dates_min_passed",
+      "concentration_hhi_passed",
+      "concentration_max_share_passed",
+      "confirmed_mean_cash_beats_matched_not_confirmed",
+      "confirmed_median_cash_beats_matched_not_confirmed",
+      "confirmed_mean_cash_beats_missing_options",
+      "multi_horizon_mean_cash_support",
+      "confirmed_mean_spy_beats_matched_not_confirmed",
+      "confirmed_median_spy_beats_matched_not_confirmed",
+      "confirmed_mean_spy_beats_missing_options",
+      "multi_horizon_mean_spy_support",
+      "confirmed_mean_qqq_beats_matched_not_confirmed",
+      "confirmed_median_qqq_beats_matched_not_confirmed",
+      "confirmed_mean_qqq_beats_missing_options",
+      "multi_horizon_mean_qqq_support"
+    ],
+    "support_counts": {
+      "mean_cash_confirmed_beats_matched_horizon_count": 0,
+      "mean_spy_confirmed_beats_matched_horizon_count": 0,
+      "mean_qqq_confirmed_beats_matched_horizon_count": 0
+    },
+    "lead_limitations": [
+      "Forward-only post-2026-06-13 observations, not canonical fixed-window PIT coverage.",
+      "10d outcomes remain pending and are excluded from the decision.",
+      "Options rows are forward-observation context with vendor-asof and open-interest lag caveats.",
+      "No shared helper, daily adapter, ranking rule, sizing rule, or live behavior was promoted."
+    ],
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "max_drawdown_pct": 0.0,
+      "trade_count": 0
+    },
+    "strategy_rerun_required": false
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "shared_helper_promoted": false,
+    "daily_snapshot_exposed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "paper_orders_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "uses_kova_forward_snapshots": true,
+    "uses_sec13f_forward_context": true,
+    "uses_options_forward_context": true,
+    "forward_only_not_fixed_window_pit_coverage": true,
+    "live_realistic_execution_envelope": "Not evaluated for live use; this is observed-only attribution and cannot become live-ready."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The fixed options bullish-pressure cross-evidence did not improve the high-SEC13F-sponsorship Kova forward rows across the predeclared 5d cash/SPY/QQQ checks. This remains forward-only attribution and did not promote any trading behavior.",
+    "forbidden_near_neighbor_retry": "Do not retry this by sweeping Kova SEC13F sponsorship score, options put/call volume, IV skew, liquidity, spread, open interest, option-score threshold, top-N, hold, cooldown, or notional on the same partial forward rows.",
+    "new_evidence_required": "A valid retry needs enough closed 10d replacement-value rows, materially richer PIT manager/active-flow provenance, true borrow-fee/utilization/loan-availability evidence, or historical PIT options-chain coverage with vendor-as-of controls."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260624_023_kova_sec13f_options_cross_evidence_forward_attribution.py",
+    "data/experiments/exp-20260624-017/kova_sec13f_forward_outcome_settlement_ledger.jsonl",
+    "data/experiments/exp-20260623-009/options_forward_observation_ledger.jsonl",
+    "data/experiments/exp-20260624-020/options_forward_observation_ledger_delta_20260623.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260624-018.json",
+    "experiments/logs/exp-20260624-019.json",
+    "experiments/logs/exp-20260624-020.json",
+    "experiments/logs/exp-20260623-010.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260624_023_kova_sec13f_options_cross_evidence_forward_attribution.py",
+    "data/experiments/exp-20260624-023/exp_20260624_023_kova_sec13f_options_cross_evidence_forward_attribution.json",
+    "experiments/logs/exp-20260624-023.json",
+    "experiments/cards/exp-20260624-023.md",
+    "experiments/manifests/exp-20260624-023.json",
+    "experiments/tickets/exp-20260624-023.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-06-24T20:10:48+00:00"
+}

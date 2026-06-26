@@ -1,0 +1,1182 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "aggregate_expected_value_score": 7.8941,
+    "aggregate_total_pnl": 234850.99,
+    "blocked_or_closed_surface_count": 7,
+    "blocker_ledger_surface_count": 7,
+    "survival_rate_min": 0.7925,
+    "total_trade_count": 61
+  },
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260626_015_alpha_evidence_gap_ledger_20260626.py",
+    "data/experiments/exp-20260626-015/",
+    "experiments/logs/exp-20260626-015.json",
+    "experiments/cards/exp-20260626-015.md",
+    "experiments/manifests/exp-20260626-015.json",
+    "experiments/tickets/exp-20260626-015.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "No executable alpha is promoted in this run. The alpha-enabling hypothesis is that the next valid search must add closed forward replacement rows, real 10-K/10-Q text/cache, populated borrow economics, or a genuinely new candidate source rather than re-slicing the same observed-only surfaces.",
+  "anti_js": {
+    "evidence": "Python read-only runner only.",
+    "used_javascript": false
+  },
+  "before_metrics": {
+    "aggregate_expected_value_score": 7.8941,
+    "aggregate_total_pnl": 234850.99,
+    "blocker_ledger_surface_count": 0,
+    "survival_rate_min": 0.7925,
+    "total_trade_count": 61
+  },
+  "blocker_ledger": [
+    {
+      "blocker": "no 20-row watchlist or 60-row activation-ready diversified family",
+      "current_evidence": {
+        "activation_candidates": 0,
+        "row_delta_vs_prior": 7,
+        "rows": 40,
+        "rows_by_sleeve": {
+          "free_data_cross_source_consensus": 3,
+          "fundamental_growth_rs": 7,
+          "low_deployment_etf": 17,
+          "sec_governance": 2,
+          "sec_leadership": 1,
+          "sec_negative": 2,
+          "state_surface": 3,
+          "volatility_contraction": 2,
+          "volume_breadth_breakout": 3
+        },
+        "watchlist_candidates": 0
+      },
+      "do_not_retry": "Do not re-slice the same 40 closed rows by adjacent observed-only fields.",
+      "next_legal_evidence_axis": "Materially more closed forward replacement rows; at least one diversified family with 20 closed rows for watchlist, 60 for activation.",
+      "state": "blocked",
+      "surface": "forward_replacement_activation"
+    },
+    {
+      "blocker": "forward gates are blocked by too few closed/diversified rows",
+      "current_evidence": {
+        "distribution_day_absorption": {
+          "candidate_count": 1,
+          "closed": 0,
+          "gate_reasons": [
+            "min_closed_trades",
+            "positive_net_pnl",
+            "min_win_rate",
+            "max_single_ticker_positive_share",
+            "max_positive_hhi"
+          ],
+          "open": 2,
+          "pending": 2
+        },
+        "fundamental_growth_rs": {
+          "closed": 7,
+          "gate_reasons": [
+            "min_closed_trades",
+            "positive_net_pnl",
+            "min_win_rate",
+            "max_single_ticker_positive_share",
+            "max_positive_hhi"
+          ],
+          "open": 3,
+          "pending": 1,
+          "realized_pnl": -2632.13
+        },
+        "low_deployment_etf": {
+          "closed": 17,
+          "gate_metrics": {
+            "closed_trades": 17,
+            "realized_pnl": 4690.01,
+            "single_ticker_positive_share": 1.0,
+            "win_rate": 0.6471
+          },
+          "gate_reasons": [
+            "min_closed_trades",
+            "max_single_ticker_positive_share"
+          ],
+          "realized_pnl": 4690.01
+        }
+      },
+      "do_not_retry": "Do not activate or tune paper sleeves from open/pending rows.",
+      "next_legal_evidence_axis": "Closed forward rows reaching the sleeve gate thresholds.",
+      "state": "blocked",
+      "surface": "paper_sleeve_forward_gates"
+    },
+    {
+      "blocker": "daily event selection can see periodic rows, but current text artifact has zero 10-K/10-Q text rows",
+      "current_evidence": {
+        "prior_repairs": [
+          "accepted_measurement_repair_sec_10k_10q_text_default_coverage",
+          "blocked_sec_10k_10q_cover_page_materialization_not_available",
+          "accepted_measurement_repair_sec_daily_periodic_text_selection_provenance"
+        ],
+        "source_periodic_rows": 2,
+        "summary_forms": [
+          "6-K",
+          "8-K"
+        ],
+        "text_periodic_rows": 0
+      },
+      "do_not_retry": "Do not run filer-status, filing-timeliness, or phrase-list alpha from dry-run selection only.",
+      "next_legal_evidence_axis": "Real 10-K/10-Q text/cache with parser-ready cover-page status by accession and accepted_at.",
+      "state": "blocked",
+      "surface": "sec_10k_10q_cover_page_alpha"
+    },
+    {
+      "blocker": "borrow economics are unpopulated; current snapshot-only fields are not usable alpha evidence",
+      "current_evidence": {
+        "borrow_populated_pct": 0.0,
+        "borrow_populated_this_run": 0,
+        "cumulative_rows_total": 45,
+        "fields_piloted": [
+          "enable_short_sell",
+          "short_sell_rate",
+          "short_available_volume",
+          "short_margin_initial_ratio"
+        ]
+      },
+      "do_not_retry": "Do not reopen FINRA/borrow pressure gates using null availability fields.",
+      "next_legal_evidence_axis": "Populated PIT borrow-cost or loan-availability history with non-null rows.",
+      "state": "blocked",
+      "surface": "borrow_availability"
+    },
+    {
+      "blocker": "clean-flow and notional variants failed against the accepted allocator comparator",
+      "current_evidence": {
+        "gate_rejection": "rejected_moomoo_short_volume_clean_flow_gate",
+        "notional_rejection": "rejected_moomoo_short_volume_notional_downweight",
+        "positive_lead": "observed_only_positive_short_volume_informed_flow_lead_not_promoted"
+      },
+      "do_not_retry": "Do not sweep short-volume ratios, notional scalars, or neighboring clean-flow gates.",
+      "next_legal_evidence_axis": "Materially more closed forward rows tagged with entry short-volume percentile or real borrow economics.",
+      "state": "closed_pending_new_evidence",
+      "surface": "moomoo_short_volume_clean_flow"
+    },
+    {
+      "blocker": "theme and event-profile retunes are already frozen on the historical surface",
+      "current_evidence": {
+        "event_seeds": 6,
+        "event_state_shadow_ledger": 810,
+        "observation_slot_ledger": 0,
+        "prior_rejections": [
+          null,
+          null,
+          null
+        ]
+      },
+      "do_not_retry": "Do not retune attention/theme-beta or delayed-confirmed space gates.",
+      "next_legal_evidence_axis": "A genuinely new event source/profile or new closed forward replacement rows.",
+      "state": "saturated",
+      "surface": "space_catalyst_theme"
+    },
+    {
+      "blocker": "no current local forward-observation files to mature the prior lead",
+      "current_evidence": {
+        "exists": false,
+        "file_count": 0,
+        "files": [],
+        "path": "data/experiments/core_risk_intensity_forward_observation"
+      },
+      "do_not_retry": "Do not run deployability attribution without new rows.",
+      "next_legal_evidence_axis": "New closed forward core-risk rows with replacement value.",
+      "state": "blocked",
+      "surface": "core_risk_intensity_forward_observation"
+    }
+  ],
+  "calibration": {
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "brier_score": 0.0225,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "failure_modes_observed": [],
+    "predicted_success_probability": 0.85,
+    "surprise_note": "Novelty warned on FINRA/borrow neighbors, which reinforces the ledger boundary: borrow/FINRA retries require populated borrow economics or materially more closed forward rows."
+  },
+  "causal_components": [
+    "current local candidate surface scan",
+    "novelty warning capture",
+    "reopen evidence-axis ledger",
+    "no strategy behavior change"
+  ],
+  "change_summary": "Create a machine-readable no-repeat evidence-gap ledger for current alpha blockers.",
+  "change_type": "read_only_blocker_audit",
+  "changed_files": [
+    "quant/experiments/exp_20260626_015_alpha_evidence_gap_ledger_20260626.py",
+    "data/experiments/exp-20260626-015/exp_20260626_015_alpha_evidence_gap_ledger_20260626.json",
+    "experiments/logs/exp-20260626-015.json",
+    "experiments/cards/exp-20260626-015.md",
+    "experiments/manifests/exp-20260626-015.json",
+    "experiments/tickets/exp-20260626-015.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "current_nonrepeat_alpha_evidence_gap_ledger_20260626_v1",
+  "decision": "accepted_measurement_repair_current_alpha_evidence_gap_ledger",
+  "delta_metrics": {
+    "aggregate_expected_value_score": 0.0,
+    "aggregate_total_pnl": 0.0,
+    "blocked_or_closed_surface_count": 7,
+    "blocker_ledger_surface_count": 7,
+    "signals_generated": 0,
+    "signals_survived": 0,
+    "survival_rate_delta": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260626-015",
+  "gate1": {
+    "baseline_artifact": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_metrics": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "min_survival_rate": 0.7925,
+      "path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "total_trade_count": 61,
+      "windows": [
+        {
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "label": "late_strong",
+          "max_drawdown_pct": 0.0665,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "start": "2025-10-23",
+          "survival_rate": 0.8039,
+          "total_pnl": 117072.92,
+          "trade_count": 18
+        },
+        {
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "label": "mid_weak",
+          "max_drawdown_pct": 0.1119,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "start": "2025-04-23",
+          "survival_rate": 0.7925,
+          "total_pnl": 78110.11,
+          "trade_count": 21
+        },
+        {
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "label": "old_thin",
+          "max_drawdown_pct": 0.1001,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "start": "2024-10-02",
+          "survival_rate": 0.8667,
+          "total_pnl": 39667.96,
+          "trade_count": 22
+        }
+      ]
+    },
+    "note": "Baseline recorded for context; this run does not change strategy replay.",
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_present": true,
+    "passed": true,
+    "runtime_fields_checked": [
+      "forward_replacement.entry_date",
+      "forward_replacement.exit_date",
+      "forward_replacement.replacement_value_vs_cash_usd",
+      "forward_replacement.replacement_value_vs_spy_usd",
+      "forward_replacement.replacement_value_vs_qqq_usd",
+      "sec_filing_events.accepted_at",
+      "sec_filing_events.accession_number",
+      "sec_filing_events.form_type",
+      "borrow_availability.short_sell_rate",
+      "borrow_availability.short_available_volume"
+    ],
+    "target_price_scope": "No executable candidate or target_price field is consumed. This is a read-only blocker ledger; target generation remains unchanged."
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No filter, entry rule, ranking rule, capital allocation, exit, or live path changed.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate_min": 0.7925
+  },
+  "gate4": {
+    "accepted_basis": "Accepted as measurement repair only. It records current alpha blockers and legal reopen evidence axes while preserving all strategy metrics.",
+    "alpha_gate4_ready": false,
+    "before_after_strategy_delta": {
+      "aggregate_expected_value_score": 0.0,
+      "aggregate_total_pnl": 0.0,
+      "signals_generated": 0,
+      "signals_survived": 0,
+      "survival_rate_delta": 0.0,
+      "trade_count": 0
+    },
+    "blocked_or_closed_surfaces": [
+      "forward_replacement_activation",
+      "paper_sleeve_forward_gates",
+      "sec_10k_10q_cover_page_alpha",
+      "borrow_availability",
+      "moomoo_short_volume_clean_flow",
+      "space_catalyst_theme",
+      "core_risk_intensity_forward_observation"
+    ],
+    "decision": "accepted_measurement_repair_current_alpha_evidence_gap_ledger",
+    "failed_reasons_for_new_alpha": [
+      "no_activation_ready_forward_family",
+      "stale_or_missing_periodic_sec_text",
+      "borrow_fields_unpopulated",
+      "moomoo_clean_flow_rejected_vs_allocator",
+      "space_theme_saturated",
+      "core_risk_forward_rows_absent"
+    ],
+    "passed": true
+  },
+  "hypothesis": "alpha_blocker: the current local candidate surfaces after exp-20260626-014 need a machine-readable non-repeat evidence-gap ledger so Alpha Explore does not rerun saturated forward rows, stale SEC periodic text, null borrow fields, or rejected moomoo/space gates before new rows or data arrive.",
+  "implementation_mode": "measurement_repair_no_strategy_change",
+  "input_summaries": {
+    "baseline": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "min_survival_rate": 0.7925,
+      "path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "total_trade_count": 61,
+      "windows": [
+        {
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "label": "late_strong",
+          "max_drawdown_pct": 0.0665,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "start": "2025-10-23",
+          "survival_rate": 0.8039,
+          "total_pnl": 117072.92,
+          "trade_count": 18
+        },
+        {
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "label": "mid_weak",
+          "max_drawdown_pct": 0.1119,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "start": "2025-04-23",
+          "survival_rate": 0.7925,
+          "total_pnl": 78110.11,
+          "trade_count": 21
+        },
+        {
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "label": "old_thin",
+          "max_drawdown_pct": 0.1001,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "start": "2024-10-02",
+          "survival_rate": 0.8667,
+          "total_pnl": 39667.96,
+          "trade_count": 22
+        }
+      ]
+    },
+    "borrow_availability": {
+      "borrow_populated_pct": 0.0,
+      "borrow_populated_this_run": 0,
+      "cumulative_rows_total": 45,
+      "entitlement_caveat": "borrow fields (short_sell_rate/short_available_volume/enable_short_sell/short_margin_initial_ratio) returned NaN for US+HK on 2026-06-24; this archive is a readiness probe until borrow_populated_this_run is reliably > 0.",
+      "fields_piloted": [
+        "enable_short_sell",
+        "short_sell_rate",
+        "short_available_volume",
+        "short_margin_initial_ratio"
+      ],
+      "last_collected_as_of": "2026-06-24",
+      "manifest": "data/non_ohlcv/borrow_availability/manifest.json",
+      "rows_path": "data/non_ohlcv/borrow_availability/rows.jsonl"
+    },
+    "core_risk": {
+      "exists": false,
+      "file_count": 0,
+      "files": [],
+      "path": "data/experiments/core_risk_intensity_forward_observation"
+    },
+    "forward_replacement": {
+      "activation_candidates": 0,
+      "artifact": "data/paper_sleeves/forward_replacement_value.jsonl",
+      "entry_date_max": "2026-06-17",
+      "entry_date_min": "2026-05-05",
+      "exit_date_max": "2026-06-25",
+      "exit_date_min": "2026-05-12",
+      "exp014_artifact": "data/experiments/exp-20260626-014/exp_20260626_014_forward_replacement_activation_readiness_20260626.json",
+      "exp014_decision": "observed_only_rejected_no_forward_activation_ready_20260626_update",
+      "failed_reasons": [
+        "no_activation_ready_sleeve_or_source_family",
+        "closed_rows_too_few",
+        "no_20_row_watchlist_candidate"
+      ],
+      "row_count": 40,
+      "row_delta_vs_prior": 7,
+      "rows_by_sleeve": {
+        "free_data_cross_source_consensus": 3,
+        "fundamental_growth_rs": 7,
+        "low_deployment_etf": 17,
+        "sec_governance": 2,
+        "sec_leadership": 1,
+        "sec_negative": 2,
+        "state_surface": 3,
+        "volatility_contraction": 2,
+        "volume_breadth_breakout": 3
+      },
+      "rows_by_status": {
+        "enriched": 40
+      },
+      "rows_with_exit_date_ge_prior_experiment_date": 7,
+      "watchlist_candidates": 0
+    },
+    "paper_sleeves": {
+      "selected": [
+        {
+          "asof_date": "2026-06-25",
+          "candidate_count": 0,
+          "candidate_tickers": [],
+          "closed_position_count": 17,
+          "filled_count": 0,
+          "forward_gate_metrics": {
+            "closed_trades": 17,
+            "realized_pnl": 4690.01,
+            "single_ticker_positive_share": 1.0,
+            "win_rate": 0.6471
+          },
+          "forward_gate_passed": false,
+          "forward_gate_reasons": [
+            "min_closed_trades",
+            "max_single_ticker_positive_share"
+          ],
+          "forward_gate_status": "blocked",
+          "generated_at": "2026-06-26T05:12:06+00:00",
+          "new_pending_count": 0,
+          "open_position_count": 0,
+          "pending_count": 0,
+          "realized_pnl_to_date": 4690.01,
+          "sleeve": "low_deployment_etf",
+          "snapshot_exists": true,
+          "summary_exists": false,
+          "trade_enabled": false,
+          "unrealized_pnl": 0.0
+        },
+        {
+          "asof_date": "2026-06-25",
+          "candidate_count": 0,
+          "candidate_tickers": [],
+          "closed_position_count": 7,
+          "filled_count": 0,
+          "forward_gate_metrics": {
+            "closed_trades": 7,
+            "positive_pnl_hhi": 0.500145,
+            "realized_pnl": -2632.13,
+            "single_ticker_positive_share": 0.50852,
+            "win_rate": 0.4286
+          },
+          "forward_gate_passed": false,
+          "forward_gate_reasons": [
+            "min_closed_trades",
+            "positive_net_pnl",
+            "min_win_rate",
+            "max_single_ticker_positive_share",
+            "max_positive_hhi"
+          ],
+          "forward_gate_status": "blocked",
+          "generated_at": "2026-06-26T05:12:38+00:00",
+          "new_pending_count": 0,
+          "open_position_count": 3,
+          "pending_count": 1,
+          "realized_pnl_to_date": -2632.13,
+          "sleeve": "fundamental_growth_rs",
+          "snapshot_exists": true,
+          "summary_exists": false,
+          "trade_enabled": false,
+          "unrealized_pnl": -750.0
+        },
+        {
+          "asof_date": "2026-06-25",
+          "candidate_count": 1,
+          "candidate_tickers": [
+            "MOH"
+          ],
+          "closed_position_count": 0,
+          "filled_count": 1,
+          "forward_gate_metrics": {
+            "closed_trades": 0,
+            "positive_pnl_hhi": null,
+            "realized_pnl": 0.0,
+            "single_ticker_positive_share": null,
+            "win_rate": null
+          },
+          "forward_gate_passed": false,
+          "forward_gate_reasons": [
+            "min_closed_trades",
+            "positive_net_pnl",
+            "min_win_rate",
+            "max_single_ticker_positive_share",
+            "max_positive_hhi"
+          ],
+          "forward_gate_status": "blocked",
+          "generated_at": "2026-06-26T05:17:13+00:00",
+          "new_pending_count": 1,
+          "open_position_count": 2,
+          "pending_count": 2,
+          "realized_pnl_to_date": 0.0,
+          "sleeve": "distribution_day_absorption_leadership",
+          "snapshot_exists": true,
+          "summary_exists": false,
+          "trade_enabled": false,
+          "unrealized_pnl": 54.7
+        },
+        {
+          "asof_date": "2026-06-25",
+          "candidate_count": 0,
+          "candidate_tickers": [],
+          "closed_position_count": 3,
+          "filled_count": 0,
+          "forward_gate_metrics": {
+            "closed_trades": 3,
+            "realized_pnl": 7240.23,
+            "win_rate": 1.0
+          },
+          "forward_gate_passed": false,
+          "forward_gate_reasons": [
+            "min_closed_trades"
+          ],
+          "forward_gate_status": "blocked",
+          "generated_at": "2026-06-26T05:12:08+00:00",
+          "new_pending_count": 0,
+          "open_position_count": 3,
+          "pending_count": 0,
+          "realized_pnl_to_date": 7240.23,
+          "sleeve": "state_surface",
+          "snapshot_exists": true,
+          "summary_exists": false,
+          "trade_enabled": false,
+          "unrealized_pnl": -270.13
+        },
+        {
+          "asof_date": "2026-06-25",
+          "candidate_count": 18,
+          "candidate_tickers": [],
+          "closed_position_count": 0,
+          "filled_count": null,
+          "forward_gate_metrics": {},
+          "forward_gate_passed": null,
+          "forward_gate_reasons": [],
+          "forward_gate_status": null,
+          "generated_at": "2026-06-26T05:12:07+00:00",
+          "new_pending_count": null,
+          "open_position_count": 0,
+          "pending_count": 18,
+          "realized_pnl_to_date": null,
+          "sleeve": "space_catalyst",
+          "snapshot_exists": true,
+          "summary_exists": false,
+          "trade_enabled": false,
+          "unrealized_pnl": null
+        },
+        {
+          "asof_date": "2026-06-25",
+          "candidate_count": 0,
+          "candidate_tickers": [],
+          "closed_position_count": 0,
+          "filled_count": null,
+          "forward_gate_metrics": {},
+          "forward_gate_passed": null,
+          "forward_gate_reasons": [],
+          "forward_gate_status": null,
+          "generated_at": "2026-06-26T04:47:23+00:00",
+          "new_pending_count": null,
+          "open_position_count": 0,
+          "pending_count": 0,
+          "realized_pnl_to_date": null,
+          "sleeve": "platform_rs20_no_gap",
+          "snapshot_exists": true,
+          "summary_exists": true,
+          "trade_enabled": false,
+          "unrealized_pnl": null
+        },
+        {
+          "asof_date": "2026-06-25",
+          "candidate_count": 0,
+          "candidate_tickers": [],
+          "closed_position_count": 0,
+          "filled_count": null,
+          "forward_gate_metrics": {},
+          "forward_gate_passed": null,
+          "forward_gate_reasons": [],
+          "forward_gate_status": null,
+          "generated_at": "2026-06-26T05:12:07+00:00",
+          "new_pending_count": null,
+          "open_position_count": 0,
+          "pending_count": 0,
+          "realized_pnl_to_date": null,
+          "sleeve": "sec_10k_liquidity",
+          "snapshot_exists": true,
+          "summary_exists": true,
+          "trade_enabled": false,
+          "unrealized_pnl": null
+        }
+      ],
+      "space_catalyst_line_counts": {
+        "event_seeds": 6,
+        "event_state_shadow_ledger": 810,
+        "observation_slot_ledger": 0
+      }
+    },
+    "sec_periodic_text": {
+      "blocker": "existing_daily_text_artifact_has_zero_periodic_rows",
+      "source_events": "data/non_ohlcv/sec_filing_events_20260625.jsonl",
+      "source_form_counts": {
+        "10-K": 1,
+        "10-Q": 1,
+        "6-K": 3,
+        "8-K": 19,
+        "8-K/A": 2
+      },
+      "source_periodic_rows": 2,
+      "summary_documents_fetched": 93,
+      "summary_forms": [
+        "6-K",
+        "8-K"
+      ],
+      "summary_path": "data/non_ohlcv/sec_filing_text_backfill_summary_20260625.json",
+      "summary_rows_written": 24,
+      "text_form_counts": {
+        "6-K": 3,
+        "8-K": 19,
+        "8-K/A": 2
+      },
+      "text_path": "data/non_ohlcv/sec_filing_text_20260625.jsonl",
+      "text_periodic_rows": 0
+    },
+    "watched_experiment_log_rows": {
+      "exp-20260623-005": {
+        "accepted": false,
+        "accepted_alpha": false,
+        "changed_variable": "core_risk_intensity_exit_outcome_attribution_v1",
+        "decision": "rejected_core_risk_intensity_exit_outcome_not_deployable",
+        "new_evidence_type": "risk_intensity_exit_outcome_interaction_attribution",
+        "post_run_reflection": {
+          "forbidden_near_neighbor_retry": "Do not convert exp-20260622-019/020/005 into historical risk scalar, top-up, cap, rank, target-trim, stop-loosening, or exit-retune sweeps on the same windows. The valid next evidence is closed forward rows from the existing risk-intensity ledger, not a frozen-window parameter change.",
+          "new_evidence_required": "Closed forward observations with selected/sliced status, pre-execution risk-intensity rank, realized PnL, exit outcome, and replacement value before any sizing/ranking promotion.",
+          "why_result_happened": "The risk-intensity lead did not survive the exit-outcome interaction screen strongly enough: it is not a deployable sizing rule from the frozen windows, and stop-loss rows expose negative convexity risk."
+        },
+        "status": "observed_only_rejected"
+      },
+      "exp-20260625-018": {
+        "accepted": false,
+        "accepted_alpha": false,
+        "changed_variable": "moomoo_daily_short_volume_informed_flow_attribution_v1",
+        "decision": "observed_only_positive_short_volume_informed_flow_lead_not_promoted",
+        "new_evidence_type": "point_in_time_per_ticker_short_volume_ratio_percentile_joined_to_forward_10d_returns",
+        "post_run_reflection": {
+          "forbidden_near_neighbor_retry": "Do not retry by re-running high-short-volume ABSORPTION entries (the rejected exp-20260622-010 wrong-sign family), nor by sweeping short_volume_ratio quintile cutoffs, percentile lookbacks, hold days, top-N, notional, or by re-probing the same observed-only ledger with an adjacent condition field. The next admissible step is a single shared clean-flow quality-gate helper, not another read-only re-slice.",
+          "new_evidence_required": "Promotion needs a shared default-off clean-flow quality-gate helper (admit liquid candidates only when the PIT short_volume_ratio percentile is below the toxic quintile) wired into historical replay AND a daily default-off snapshot with a parity test, then a full-stack candidate-pool Gate 1-4 overlay that must beat the closest accepted comparator after costs, concentration, and drawdown -- or materially more closed forward rows tagged with the entry-time short_volume_ratio percentile.",
+          "why_result_happened": "Informed daily short flow (short_volume_ratio) is sign-correct: high informed shorting precedes weaker forward 10d returns, monotone across most windows and washing out only in the strong bull window where everything rose. Accepted momentum sleeves (fundamental_growth_rs, volume_breadth_breakout) do select toxic high-short-flow names, so a clean-flow quality gate is not inert."
+        },
+        "status": "observed_only_positive_lead"
+      },
+      "exp-20260625-019": {
+        "accepted": false,
+        "accepted_alpha": false,
+        "changed_variable": "moomoo_daily_short_volume_clean_flow_gate_over_accepted_allocator_v1",
+        "decision": "rejected_moomoo_short_volume_clean_flow_gate",
+        "new_evidence_type": "new_pit_data_source_and_negative_quality_gate",
+        "post_run_reflection": {
+          "forbidden_near_neighbor_retry": "Do not sweep short_volume_ratio quintile cutoffs, percentile lookback length, allocator source rank, daily slot count, notional, hold days, or cooldown on these frozen windows.",
+          "new_evidence_required": "A retry needs materially more closed forward accepted-allocator rows tagged with entry-time short_volume_ratio percentile, true PIT borrow fee/utilization/loan-availability economics, or a materially different non-OHLCV flow field.",
+          "why_result_happened": "The clean-flow gate did not produce robust incremental value over the already accepted allocator after next-open execution, costs, window checks, drawdown, and concentration controls."
+        },
+        "status": "rejected"
+      },
+      "exp-20260625-024": {
+        "accepted": false,
+        "accepted_alpha": false,
+        "changed_variable": "moomoo_daily_short_volume_toxic_q5_notional_downweight_over_accepted_allocator_v1",
+        "decision": "rejected_moomoo_short_volume_notional_downweight",
+        "new_evidence_type": "new_gate_shape",
+        "post_run_reflection": {
+          "forbidden_near_neighbor_retry": "Do not rescue this by sweeping the scalar, quintile cutoff, lookback length, allocator source rank, daily slot count, hold days, or cooldown on these frozen windows.",
+          "new_evidence_required": "A retry needs materially more closed forward accepted-allocator rows tagged with entry-time short_volume_ratio percentile, true PIT borrow fee/utilization/loan-availability economics, or a different non-OHLCV flow field.",
+          "why_result_happened": "The toxic-Q5 rows were not costly enough in the accepted allocator replay for a 50% notional haircut to beat the ungated policy after EV, PnL, window, drawdown, and concentration checks."
+        },
+        "status": "rejected"
+      },
+      "exp-20260626-009": {
+        "accepted": true,
+        "accepted_alpha": false,
+        "changed_variable": "sec_filing_text_backfill_10k_10q_default_text_coverage_v1",
+        "decision": "accepted_measurement_repair_sec_10k_10q_text_default_coverage",
+        "new_evidence_type": "alpha_blocker_measurement_repair",
+        "post_run_reflection": {
+          "forbidden_near_neighbor_retry": "Do not treat this as accepted filer-status alpha. Do not retry accelerated-filer-status, filing-timeliness, raw SEC item-code, or SEC phrase-list alpha until 10-K/10-Q text rows are actually materialized and parsed across the canonical windows.",
+          "new_evidence_required": "Run SEC filing-text materialization with the repaired defaults for historical 10-K/10-Q events, parse cover-page filer-status booleans by accession/accepted_at, then rerun one fixed shared-paper-first filer-status transition rule.",
+          "why_result_happened": "The SEC event backfill already collected periodic reports, but the filing-text materializer defaulted to 8-K/6-K only. That made cover-page filer status look absent even when accession metadata existed. The repair moves the blocker to actual text fetch/cache materialization and parser coverage."
+        },
+        "status": "accepted_measurement_repair"
+      },
+      "exp-20260626-010": {
+        "accepted": false,
+        "accepted_alpha": false,
+        "changed_variable": "sec_10k_10q_cover_page_text_materialization_v1",
+        "decision": "blocked_sec_10k_10q_cover_page_materialization_not_available",
+        "new_evidence_type": "alpha_blocker_materialization_probe",
+        "post_run_reflection": {
+          "forbidden_near_neighbor_retry": "Do not run filer-status alpha, filing-timeliness, raw SEC item, or SEC phrase-list candidate-pool replays until full historical 10-K/10-Q text rows or XBRL status rows are materialized across the canonical windows.",
+          "new_evidence_required": "Materialize all canonical-window 10-K/10-Q primary-document rows or a compact XBRL-derived cover-page status sidecar keyed by accession_number, accepted_at, usable_trade_date, ticker, form, and parsed filer-status booleans; then run exactly one fixed shared-paper-first status-upgrade rule.",
+          "why_result_happened": "The repository has canonical 10-K/10-Q event rows, but no local periodic sec_filing_text rows or periodic text cache. The probe therefore tests only whether primary SEC documents can be fetched and parsed under the repaired scope."
+        },
+        "status": "blocked"
+      },
+      "exp-20260626-011": {
+        "accepted": true,
+        "accepted_alpha": false,
+        "changed_variable": "sec_submissions_current_category_pit_leakage_boundary_v1",
+        "decision": "accepted_measurement_repair_sec_submissions_category_current_only_boundary",
+        "new_evidence_type": "alpha_blocker_leakage_boundary",
+        "post_run_reflection": {
+          "forbidden_near_neighbor_retry": "Do not run filer-status alpha, filing-timeliness, raw SEC metadata, or SEC phrase-list candidate-pool replays using submissions top-level category. It is current company metadata, not historical cover-page status.",
+          "new_evidence_required": "A valid filer-status retry needs accession-level 10-K/10-Q cover-page or XBRL status rows keyed by accession_number, accepted_at, usable_trade_date, ticker, form, and parsed large_accelerated/accelerated/non_accelerated/smaller_reporting/EGC booleans.",
+          "why_result_happened": "Local SEC submissions have a company-level top-level `category` on submission files, but the accession rows in `filings.recent` and `submissions/files` do not carry filer-status/category booleans. Canonical 10-K/10-Q events can be joined to the current company category, which proves the tempting field exists, but that joined value would be current-category leakage rather than accepted_at-bounded cover-page status."
+        },
+        "status": "accepted_measurement_repair"
+      },
+      "exp-20260626-013": {
+        "accepted": true,
+        "accepted_alpha": false,
+        "changed_variable": "sec_10k_10q_daily_text_materialization_envelope_v1",
+        "decision": "accepted_measurement_repair_sec_daily_periodic_text_selection_provenance",
+        "new_evidence_type": "production_visible_daily_artifact_audit",
+        "post_run_reflection": {
+          "forbidden_near_neighbor_retry": "Do not run filer-status alpha, filing-timeliness, raw SEC metadata, or SEC phrase-list replays from this dry-run surface. It proves selection and provenance only, not parseable cover-page text content.",
+          "new_evidence_required": "Regenerate daily or canonical-window sec_filing_text with real 10-K/10-Q primary-document fetch/cache, confirm ok periodic text rows plus parsed cover-page statuses, then run one fixed shared-paper-first filer-status transition rule.",
+          "why_result_happened": "The latest daily SEC events include periodic reports, but the existing text artifact was generated before form-count provenance and still has zero periodic text rows. Current code defaults and daily imports now select those rows; real text content remains a separate fetch/cache materialization blocker."
+        },
+        "status": "accepted_measurement_repair"
+      },
+      "exp-20260626-014": {
+        "accepted": false,
+        "accepted_alpha": false,
+        "changed_variable": "updated_forward_replacement_activation_readiness_20260626_v1",
+        "decision": "observed_only_rejected_no_forward_activation_ready_20260626_update",
+        "new_evidence_type": "new_closed_forward_rows",
+        "post_run_reflection": {
+          "forbidden_near_neighbor_retry": "Do not rerun forward activation readiness, relax the 20/60-row minimums, or retune low_deployment/state_surface/fundamental thresholds until materially more closed replacement-value rows arrive. A useful retry needs new rows, not another adjacent condition on the same 40-row surface.",
+          "new_evidence_required": "At least 20 closed rows for one diversified helper/source family to justify a watchlist lead, and at least 60 closed rows with positive replacement value versus cash, SPY, and QQQ for an activation-envelope experiment.",
+          "why_result_happened": "The current forward artifact has 40 enriched rows, up from 33 in exp-20260622-013. The extra maturity did not change the readiness conclusion: low_deployment_etf is still only 17 rows, fundamental_growth_rs is 7 rows, and no sleeve/source family has 20 diversified rows, let alone 60 activation rows."
+        },
+        "status": "observed_only_rejected"
+      }
+    }
+  },
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "mechanism_family": "alpha_search_blocker_evidence_ledger",
+  "multiple_testing_risk_bucket": "minimal_measurement_repair",
+  "nearby_prior_experiments": [
+    "exp-20260625-018",
+    "exp-20260625-019",
+    "exp-20260625-024",
+    "exp-20260626-009",
+    "exp-20260626-010",
+    "exp-20260626-011",
+    "exp-20260626-013",
+    "exp-20260626-014",
+    "exp-20260605-012",
+    "exp-20260604-018",
+    "exp-20260616-002",
+    "exp-20260623-005"
+  ],
+  "new_evidence_axis": "Current post-exp-20260626-014 multi-surface blocker ledger across forward rows, paper sleeve ledgers, SEC periodic text materialization, borrow availability, moomoo short-volume evidence, and saturated space/core-risk surfaces; no strategy retune or same-row attribution slice.",
+  "new_evidence_type": "post_exp_20260626_014_current_local_state_scan",
+  "next_retry_requires": [
+    "materially more closed forward replacement rows",
+    "real 10-K/10-Q sec_filing_text rows with parser-ready cover-page status",
+    "non-null PIT borrow-cost or availability fields",
+    "new external event/data source instead of space/moomoo/FINRA threshold retunes"
+  ],
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "finra_borrow_pressure_broad_universe",
+        "score": 0.6083,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "form4_finra_borrow_pressure_cross_source_overlap",
+        "score": 0.6083,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "fiftytwo_week_high_finra_borrow_pressure_candidate_pool",
+        "score": 0.608,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "sec_ftd_finra_confirmed_candidate_pool",
+        "score": 0.608,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "finra_borrow_pressure_candidate_pool",
+        "score": 0.6077,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "finra_short_interest",
+      "field_tags": [
+        "a",
+        "after",
+        "alpha",
+        "arrive",
+        "before",
+        "blocker",
+        "borrow",
+        "current",
+        "data",
+        "does",
+        "evidence",
+        "exp",
+        "explore",
+        "fields",
+        "forward",
+        "gap",
+        "gates",
+        "ledger",
+        "local",
+        "machine",
+        "moomoo",
+        "need",
+        "new",
+        "non",
+        "nonrepeat",
+        "not",
+        "null",
+        "or",
+        "periodic",
+        "readable",
+        "readiness",
+        "rejected",
+        "repeat",
+        "rerun",
+        "rows",
+        "saturated",
+        "search",
+        "so",
+        "space",
+        "stale",
+        "surface",
+        "surfaces",
+        "text"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_borrow_pressure_broad_universe",
+        "reopen_condition": "If positive, promote a shared-paper-first BROAD FINRA helper with historical replay + daily snapshot + parity test, and collect closed forward replacement-value rows. If negative, FINRA short interest is not standalone entry alpha even broadly; use it as crowding/risk context and require a materially different PIT borrow-cost / availability field before any retry. Do not threshold-sweep the frozen",
+        "score": 0.6083,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "form4_finra_borrow_pressure_cross_source_overlap",
+        "reopen_condition": "If rejected, do not retry nearby Form4/FINRA overlap unless forward replacement rows or a materially richer borrow-cost or loan-availability field appears. If accepted, implement only through shared default-off parity-covered adapters.",
+        "score": 0.6083,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "fiftytwo_week_high_finra_borrow_pressure_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT evidence separating durable and exhausted 52-week-high leaders, such as borrow-cost or availability history, institutional ownership changes, options-implied move/skew, or closed forward replacement-value rows. Pure FINRA or 52-week threshold retunes stay frozen.",
+        "score": 0.608,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "finra_short_interest",
+        "family_key": "sec_ftd_finra_confirmed_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.608,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_borrow_pressure_candidate_pool",
+        "reopen_condition": "If accepted, build a shared default-off adapter plus parity tests. If rejected, move away from FINRA threshold/support variants unless new borrow-cost, loan-availability, or forward replacement evidence arrives.",
+        "score": 0.6077,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Current post-exp-20260626-014 multi-surface blocker ledger across forward rows, paper sleeve ledgers, SEC periodic text materialization, borrow availability, moomoo short-volume evidence, and saturated space/core-risk surfaces; no strategy retune or same-row attribution slice.",
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.2353,
+      "accepts": 4,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "finra_short_interest",
+      "trials": 17
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not rerun same-row forward attribution slices, FINRA/borrow threshold sweeps, moomoo clean-flow variants, space theme-beta retunes, or SEC filer-status alpha from dry-run periodic selection.",
+    "new_evidence_required": "A retry needs materially more closed forward replacement rows, real 10-K/10-Q text/cache with parsed cover-page status, populated PIT borrow economics, or a genuinely new data source/gate shape.",
+    "why_result_happened": "The current local surfaces do not expose a lawful, non-repeat Gate 4 alpha path: forward rows remain below activation and watchlist thresholds; SEC periodic text is still not materialized; borrow fields are null; moomoo and space neighbor gates are closed."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "No executable alpha is promoted in this run. The alpha-enabling hypothesis is that the next valid search must add closed forward replacement rows, real 10-K/10-Q text/cache, populated borrow economics, or a genuinely new candidate source rather than re-slicing the same observed-only surfaces.",
+    "2_history_check": {
+      "exp-20260625-019/024": "moomoo clean-flow and notional variants rejected versus accepted allocator.",
+      "exp-20260626-013": "SEC periodic selection provenance accepted, but real periodic text remains stale/missing.",
+      "exp-20260626-014": "40 enriched forward rows, no 20-row watchlist or 60-row activation family.",
+      "novelty_gate": {
+        "blocking_matches": [
+          {
+            "accept_rate": 0.0,
+            "family_key": "finra_borrow_pressure_broad_universe",
+            "score": 0.6083,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "form4_finra_borrow_pressure_cross_source_overlap",
+            "score": 0.6083,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "fiftytwo_week_high_finra_borrow_pressure_candidate_pool",
+            "score": 0.608,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "family_key": "sec_ftd_finra_confirmed_candidate_pool",
+            "score": 0.608,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "family_key": "finra_borrow_pressure_candidate_pool",
+            "score": 0.6077,
+            "status": "has_accepted",
+            "trials": 1
+          }
+        ],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "finra_short_interest",
+          "field_tags": [
+            "a",
+            "after",
+            "alpha",
+            "arrive",
+            "before",
+            "blocker",
+            "borrow",
+            "current",
+            "data",
+            "does",
+            "evidence",
+            "exp",
+            "explore",
+            "fields",
+            "forward",
+            "gap",
+            "gates",
+            "ledger",
+            "local",
+            "machine",
+            "moomoo",
+            "need",
+            "new",
+            "non",
+            "nonrepeat",
+            "not",
+            "null",
+            "or",
+            "periodic",
+            "readable",
+            "readiness",
+            "rejected",
+            "repeat",
+            "rerun",
+            "rows",
+            "saturated",
+            "search",
+            "so",
+            "space",
+            "stale",
+            "surface",
+            "surfaces",
+            "text"
+          ],
+          "gate_shape": "candidate_pool_top1_10d"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "finra_short_interest",
+            "family_key": "finra_borrow_pressure_broad_universe",
+            "reopen_condition": "If positive, promote a shared-paper-first BROAD FINRA helper with historical replay + daily snapshot + parity test, and collect closed forward replacement-value rows. If negative, FINRA short interest is not standalone entry alpha even broadly; use it as crowding/risk context and require a materially different PIT borrow-cost / availability field before any retry. Do not threshold-sweep the frozen",
+            "score": 0.6083,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "finra_short_interest",
+            "family_key": "form4_finra_borrow_pressure_cross_source_overlap",
+            "reopen_condition": "If rejected, do not retry nearby Form4/FINRA overlap unless forward replacement rows or a materially richer borrow-cost or loan-availability field appears. If accepted, implement only through shared default-off parity-covered adapters.",
+            "score": 0.6083,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "finra_short_interest",
+            "family_key": "fiftytwo_week_high_finra_borrow_pressure_candidate_pool",
+            "reopen_condition": "A retry needs materially different PIT evidence separating durable and exhausted 52-week-high leaders, such as borrow-cost or availability history, institutional ownership changes, options-implied move/skew, or closed forward replacement-value rows. Pure FINRA or 52-week threshold retunes stay frozen.",
+            "score": 0.608,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "finra_short_interest",
+            "family_key": "sec_ftd_finra_confirmed_candidate_pool",
+            "reopen_condition": null,
+            "score": 0.608,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "finra_short_interest",
+            "family_key": "finra_borrow_pressure_candidate_pool",
+            "reopen_condition": "If accepted, build a shared default-off adapter plus parity tests. If rejected, move away from FINRA threshold/support variants unless new borrow-cost, loan-availability, or forward replacement evidence arrives.",
+            "score": 0.6077,
+            "status": "has_accepted",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": "Current post-exp-20260626-014 multi-surface blocker ledger across forward rows, paper sleeve ledgers, SEC periodic text materialization, borrow availability, moomoo short-volume evidence, and saturated space/core-risk surfaces; no strategy retune or same-row attribution slice.",
+        "override": false,
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.2353,
+          "accepts": 4,
+          "applicable": true,
+          "gate_shape": "candidate_pool_top1_10d",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "finra_short_interest",
+          "trials": 17
+        },
+        "warn": true,
+        "warn_threshold": 0.55
+      }
+    },
+    "3_single_decision_hypothesis": "current_nonrepeat_alpha_evidence_gap_ledger_20260626_v1",
+    "4_acceptance_standard": "Accept only as measurement repair if strategy metrics stay unchanged and the output names current blockers plus machine-checkable reopen axes.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260626_015_alpha_evidence_gap_ledger_20260626.py"
+  },
+  "prediction": {
+    "confidence_reason": "This is measurement repair only: it should preserve strategy metrics and make the current no-go state explicit after exp-20260626-014, SEC text materialization blockers, moomoo allocator rejection, null borrow fields, and saturated space experiments.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "candidate_surface_scan_itself_duplicates_prior_readiness_audits",
+      "untracked_dirty_worktree_masks_state"
+    ],
+    "recorded_at": "2026-06-26T14:11:30+00:00",
+    "success_probability": 0.85
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "parity_note": "Read-only ledger; no helper, snapshot, order, ranking, sizing, exit, or LLM behavior changes.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_llm": false
+  },
+  "related_files": [
+    "quant/experiments/exp_20260626_015_alpha_evidence_gap_ledger_20260626.py",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "data/experiments/exp-20260626-014/exp_20260626_014_forward_replacement_activation_readiness_20260626.json",
+    "data/non_ohlcv/borrow_availability/manifest.json",
+    "data/non_ohlcv/sec_filing_text_backfill_summary_20260625.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260626_015_alpha_evidence_gap_ledger_20260626.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "current_nonrepeat_alpha_evidence_gap_ledger_20260626_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-06-26T14:17:14Z",
+  "trial_family": "nonrepeat_alpha_surface_readiness",
+  "trial_variant_id": "post_exp_20260626_014_local_state_v1"
+}

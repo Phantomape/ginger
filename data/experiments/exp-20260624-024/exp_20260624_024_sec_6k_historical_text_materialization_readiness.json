@@ -1,0 +1,740 @@
+{
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "total_pnl": 234850.99,
+    "trade_count": 61
+  },
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260624-024/exp_20260624_024_sec_6k_historical_text_materialization_readiness.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "total_pnl": 234850.99,
+    "trade_count": 61
+  },
+  "calibration": {
+    "actual_decision": "blocked_missing_historical_6k_text_materialization",
+    "actual_success": 0.0,
+    "brier_score": 0.4225,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "local_primary_text_missing",
+      "structured_numeric_coverage_too_sparse",
+      "no_tradeable_adr_overlap",
+      "sec_text_surface_saturation"
+    ],
+    "predicted_success_probability": 0.65,
+    "realized_failure_modes": [
+      "historical_generated_6k_text_rows_missing",
+      "local_target_6k_text_cache_missing_or_sparse"
+    ],
+    "surprise_note": "The local submissions event surface exists, but local generated historical 6-K text materialization is still missing."
+  },
+  "causal_components": [
+    "local SEC submissions 6-K event surface",
+    "historical filing-text coverage audit",
+    "structured financial-result phrase/numeric readiness",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "sec_6k_historical_text_materialization_readiness_v1",
+  "completed_at": "2026-06-24T21:12:38Z",
+  "decision": "blocked_missing_historical_6k_text_materialization",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260624-024",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_exists": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "baseline_sha256": "33966aafb7816653089b27d4bb19508f64cafa1522de7aa3e19a16718160959e",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3,
+      "windows": [
+        {
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "label": "late_strong",
+          "max_drawdown_pct": 0.0665,
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "sharpe_daily": 4.41,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "start": "2025-10-23",
+          "survival_rate": 0.8039,
+          "total_pnl": 117072.92,
+          "trade_count": 18,
+          "win_rate": 0.8333
+        },
+        {
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "label": "mid_weak",
+          "max_drawdown_pct": 0.1119,
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "sharpe_daily": 2.74,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "start": "2025-04-23",
+          "survival_rate": 0.7925,
+          "total_pnl": 78110.11,
+          "trade_count": 21,
+          "win_rate": 0.5238
+        },
+        {
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "label": "old_thin",
+          "max_drawdown_pct": 0.1001,
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "sharpe_daily": 1.49,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "start": "2024-10-02",
+          "survival_rate": 0.8667,
+          "total_pnl": 39667.96,
+          "trade_count": 22,
+          "win_rate": 0.4091
+        }
+      ]
+    },
+    "passed": true
+  },
+  "gate2": {
+    "daily_text_surface_current": {
+      "file_count": 23,
+      "files_with_six_k": [
+        {
+          "path": "data/non_ohlcv/sec_filing_text_20260622.jsonl",
+          "rows_total": 16,
+          "sample": [
+            {
+              "accession_number": "0001171843-26-004116",
+              "form_type": "6-K",
+              "text_char_count": 81935,
+              "ticker": "NVO",
+              "usable_trade_date": "2026-06-16"
+            }
+          ],
+          "six_k_nonempty_text_rows": 1,
+          "six_k_rows": 1,
+          "six_k_structured_financial_result_hits": 0
+        },
+        {
+          "path": "data/non_ohlcv/sec_filing_text_20260623.jsonl",
+          "rows_total": 15,
+          "sample": [
+            {
+              "accession_number": "0001171843-26-004116",
+              "form_type": "6-K",
+              "text_char_count": 81935,
+              "ticker": "NVO",
+              "usable_trade_date": "2026-06-16"
+            }
+          ],
+          "six_k_nonempty_text_rows": 1,
+          "six_k_rows": 1,
+          "six_k_structured_financial_result_hits": 0
+        }
+      ],
+      "rows_total": 511,
+      "six_k_nonempty_text_rows": 2,
+      "six_k_rows": 2,
+      "six_k_structured_financial_result_hits": 0
+    },
+    "dependencies_checked": [
+      "data/cache/sec/submissions",
+      "data/non_ohlcv/sec_filing_events_20241002_20260421.jsonl",
+      "data/non_ohlcv/sec_filing_text_20241002_20260421.jsonl",
+      "data/cache/sec/filing_text",
+      "data/warehouse/warehouse_main.sqlite"
+    ],
+    "entry_date_target_price_note": "No entries or target exits are scheduled. This repair only checks whether 6-K text rows can exist before a later helper creates candidate rows with entry_date and target_price semantics.",
+    "failed_reasons": [
+      "historical_generated_6k_text_rows_missing",
+      "local_target_6k_text_cache_missing_or_sparse"
+    ],
+    "filing_text_cache": {
+      "all_cache_six_k_rows": 1,
+      "cache_dir": "data/cache/sec/filing_text",
+      "cache_dir_exists": true,
+      "cache_files": 91,
+      "invalid_json_files": 0,
+      "sample_all_cache_six_k_rows": [
+        {
+          "accession_number": "0001171843-26-004116",
+          "form_type": "6-K",
+          "text_char_count": 81935,
+          "ticker": "NVO",
+          "usable_trade_date": "2026-06-16"
+        }
+      ],
+      "sample_target_cache_rows": [],
+      "target_accessions_with_cache_file": 0,
+      "target_cache_coverage_rate": 0.0,
+      "target_six_k_accessions": 8010,
+      "target_six_k_cache_rows": 0,
+      "target_six_k_nonempty_text_rows": 0,
+      "target_six_k_structured_financial_result_hits": 0
+    },
+    "historical_event_surface": {
+      "exists": true,
+      "path": "data/non_ohlcv/sec_filing_events_20241002_20260421.jsonl",
+      "rows_total": 1286,
+      "sample_six_k_rows": [],
+      "sha256": "70f6529b1b0ff665cd0923dd7e8c60bd9fe9518fd5a9a25b828074a67c58da2e",
+      "six_k_accessions": 0,
+      "six_k_by_form": {},
+      "six_k_by_window": {
+        "late_strong": 0,
+        "mid_weak": 0,
+        "old_thin": 0
+      },
+      "six_k_nonempty_text_rows": 0,
+      "six_k_outside_windows": 0,
+      "six_k_rows": 0,
+      "six_k_structured_financial_result_hits": 0,
+      "six_k_tickers": 0
+    },
+    "historical_text_surface": {
+      "exists": true,
+      "path": "data/non_ohlcv/sec_filing_text_20241002_20260421.jsonl",
+      "rows_total": 306,
+      "sample_six_k_rows": [],
+      "sha256": "33e6a76c2512fae1cf195f645b1104ab07f93c0ac70ab8596bca293ab41f8e43",
+      "six_k_accessions": 0,
+      "six_k_by_form": {},
+      "six_k_by_window": {
+        "late_strong": 0,
+        "mid_weak": 0,
+        "old_thin": 0
+      },
+      "six_k_nonempty_text_rows": 0,
+      "six_k_outside_windows": 0,
+      "six_k_rows": 0,
+      "six_k_structured_financial_result_hits": 0,
+      "six_k_tickers": 0
+    },
+    "minimum_trade_fields": [
+      "entry_date",
+      "target_price"
+    ],
+    "passed": false,
+    "submissions_surface": {
+      "all_form_counts_top": [
+        [
+          "8-K",
+          20346
+        ],
+        [
+          "6-K",
+          7975
+        ],
+        [
+          "10-Q",
+          4523
+        ],
+        [
+          "10-K",
+          2085
+        ],
+        [
+          "8-K/A",
+          407
+        ],
+        [
+          "10-K/A",
+          67
+        ],
+        [
+          "6-K/A",
+          35
+        ],
+        [
+          "10-Q/A",
+          30
+        ]
+      ],
+      "cache_dir": "data/cache/sec/submissions",
+      "cache_files_mapped_to_ticker": 1235,
+      "cache_files_scanned": 1235,
+      "default_forms": [
+        "10-K",
+        "10-K/A",
+        "10-Q",
+        "10-Q/A",
+        "6-K",
+        "6-K/A",
+        "8-K",
+        "8-K/A"
+      ],
+      "invalid_json_files": 0,
+      "sample_six_k_events": [
+        {
+          "accepted_at": "2026-04-21T20:12:37",
+          "accession_number": "0001104659-26-046008",
+          "cik": "0000002809",
+          "filing_date": "2026-04-21",
+          "form_type": "6-K",
+          "primary_document": "tm2612277d1_6k.htm",
+          "ticker": "AEM",
+          "usable_trade_date": "2026-04-22"
+        },
+        {
+          "accepted_at": "2026-03-30T20:04:42",
+          "accession_number": "0001104659-26-036785",
+          "cik": "0000002809",
+          "filing_date": "2026-03-30",
+          "form_type": "6-K",
+          "primary_document": "tm2610614d1_6k.htm",
+          "ticker": "AEM",
+          "usable_trade_date": "2026-03-31"
+        },
+        {
+          "accepted_at": "2026-03-30T20:04:14",
+          "accession_number": "0001104659-26-036782",
+          "cik": "0000002809",
+          "filing_date": "2026-03-30",
+          "form_type": "6-K",
+          "primary_document": "tm2610614d2_6k.htm",
+          "ticker": "AEM",
+          "usable_trade_date": "2026-03-31"
+        },
+        {
+          "accepted_at": "2026-03-20T21:21:11",
+          "accession_number": "0001104659-26-032797",
+          "cik": "0000002809",
+          "filing_date": "2026-03-20",
+          "form_type": "6-K",
+          "primary_document": "tm261283d2_6k.htm",
+          "ticker": "AEM",
+          "usable_trade_date": "2026-03-23"
+        },
+        {
+          "accepted_at": "2026-03-20T21:19:34",
+          "accession_number": "0001104659-26-032795",
+          "cik": "0000002809",
+          "filing_date": "2026-03-20",
+          "form_type": "6-K",
+          "primary_document": "tm261123d6_6k.htm",
+          "ticker": "AEM",
+          "usable_trade_date": "2026-03-23"
+        },
+        {
+          "accepted_at": "2026-02-19T16:19:40",
+          "accession_number": "0001104659-26-017386",
+          "cik": "0000002809",
+          "filing_date": "2026-02-19",
+          "form_type": "6-K",
+          "primary_document": "tm266736d1_6k.htm",
+          "ticker": "AEM",
+          "usable_trade_date": "2026-02-20"
+        },
+        {
+          "accepted_at": "2026-02-12T22:40:07",
+          "accession_number": "0001104659-26-014451",
+          "cik": "0000002809",
+          "filing_date": "2026-02-13",
+          "form_type": "6-K",
+          "primary_document": "aem-20251231x6k.htm",
+          "ticker": "AEM",
+          "usable_trade_date": "2026-02-13"
+        },
+        {
+          "accepted_at": "2026-01-29T12:12:24",
+          "accession_number": "0001104659-26-007695",
+          "cik": "0000002809",
+          "filing_date": "2026-01-29",
+          "form_type": "6-K",
+          "primary_document": "tm264350d1_6k.htm",
+          "ticker": "AEM",
+          "usable_trade_date": "2026-01-30"
+        },
+        {
+          "accepted_at": "2026-01-08T21:05:13",
+          "accession_number": "0001104659-26-002122",
+          "cik": "0000002809",
+          "filing_date": "2026-01-08",
+          "form_type": "6-K",
+          "primary_document": "tm262656d1_6k.htm",
+          "ticker": "AEM",
+          "usable_trade_date": "2026-01-09"
+        },
+        {
+          "accepted_at": "2025-12-17T21:44:27",
+          "accession_number": "0001104659-25-122074",
+          "cik": "0000002809",
+          "filing_date": "2025-12-17",
+          "form_type": "6-K",
+          "primary_document": "tm2533769d1_6k.htm",
+          "ticker": "AEM",
+          "usable_trade_date": "2025-12-18"
+        },
+        {
+          "accepted_at": "2025-10-31T14:26:01",
+          "accession_number": "0001104659-25-104746",
+          "cik": "0000002809",
+          "filing_date": "2025-10-31",
+          "form_type": "6-K",
+          "primary_document": "tm2525021d3_6k.htm",
+          "ticker": "AEM",
+          "usable_trade_date": "2025-11-03"
+        },
+        {
+          "accepted_at": "2025-10-29T21:00:14",
+          "accession_number": "0001104659-25-103776",
+          "cik": "0000002809",
+          "filing_date": "2025-10-29",
+          "form_type": "6-K",
+          "primary_document": "tm2525021d1_6k.htm",
+          "ticker": "AEM",
+          "usable_trade_date": "2025-10-30"
+        },
+        {
+          "accepted_at": "2025-10-09T21:07:12",
+          "accession_number": "0001104659-25-098403",
+          "cik": "0000002809",
+          "filing_date": "2025-10-09",
+          "form_type": "6-K",
+          "primary_document": "tm2528463d1_6k.htm",
+          "ticker": "AEM",
+          "usable_trade_date": "2025-10-10"
+        },
+        {
+          "accepted_at": "2025-09-30T18:37:39",
+          "accession_number": "0001104659-25-094938",
+          "cik": "0000002809",
+          "filing_date": "2025-09-30",
+          "form_type": "6-K",
+          "primary_document": "tm2525021d4_6k.htm",
+          "ticker": "AEM",
+          "usable_trade_date": "2025-10-01"
+        },
+        {
+          "accepted_at": "2025-09-30T12:46:52",
+          "accession_number": "0001104659-25-094771",
+          "cik": "0000002809",
+          "filing_date": "2025-09-30",
+          "form_type": "6-K",
+          "primary_document": "tm2527461d1_6k.htm",
+          "ticker": "AEM",
+          "usable_trade_date": "2025-10-01"
+        },
+        {
+          "accepted_at": "2025-09-10T16:41:05",
+          "accession_number": "0001104659-25-088991",
+          "cik": "0000002809",
+          "filing_date": "2025-09-10",
+          "form_type": "6-K",
+          "primary_document": "tm2525772d1_6k.htm",
+          "ticker": "AEM",
+          "usable_trade_date": "2025-09-11"
+        },
+        {
+          "accepted_at": "2025-09-09T16:46:23",
+          "accession_number": "0001104659-25-088530",
+          "cik": "0000002809",
+          "filing_date": "2025-09-09",
+          "form_type": "6-K",
+          "primary_document": "tm2525658d1_6k.htm",
+          "ticker": "AEM",
+          "usable_trade_date": "2025-09-10"
+        },
+        {
+          "accepted_at": "2025-07-31T18:15:47",
+          "accession_number": "0001104659-25-072613",
+          "cik": "0000002809",
+          "filing_date": "2025-07-31",
+          "form_type": "6-K",
+          "primary_document": "tm2519744d3_6k.htm",
+          "ticker": "AEM",
+          "usable_trade_date": "2025-08-01"
+        },
+        {
+          "accepted_at": "2025-07-30T21:00:28",
+          "accession_number": "0001104659-25-072219",
+          "cik": "0000002809",
+          "filing_date": "2025-07-30",
+          "form_type": "6-K",
+          "primary_document": "tm2519744d1_6k.htm",
+          "ticker": "AEM",
+          "usable_trade_date": "2025-07-31"
+        },
+        {
+          "accepted_at": "2025-06-27T18:33:47",
+          "accession_number": "0001104659-25-063555",
+          "cik": "0000002809",
+          "filing_date": "2025-06-27",
+          "form_type": "6-K",
+          "primary_document": "tm2519341d1_6k.htm",
+          "ticker": "AEM",
+          "usable_trade_date": "2025-06-30"
+        }
+      ],
+      "six_k_accessions": 8010,
+      "six_k_by_form": {
+        "6-K": 7975,
+        "6-K/A": 35
+      },
+      "six_k_by_window": {
+        "late_strong": 2492,
+        "mid_weak": 2703,
+        "old_thin": 2798
+      },
+      "six_k_event_rows": 8010,
+      "six_k_outside_windows": 17,
+      "six_k_tickers": 137
+    },
+    "warehouse_overlap": {
+      "exists": true,
+      "overlap_rate": 0.773723,
+      "overlap_tickers": 106,
+      "sample_missing_tickers": [
+        "BBAAY",
+        "BPPFF",
+        "BXDIF",
+        "GDHLF",
+        "GFIOF",
+        "GLAXF",
+        "HBCYF",
+        "HGMCF",
+        "HLNCF",
+        "HNDAF",
+        "HSIGF",
+        "INGVF",
+        "JDCMF",
+        "KGCRF",
+        "LAAOF",
+        "MBFJF",
+        "MNUFF",
+        "NCSYF",
+        "NETTF",
+        "NVSEF"
+      ],
+      "sample_overlap": [
+        [
+          "AEFC",
+          388
+        ],
+        [
+          "AEM",
+          388
+        ],
+        [
+          "AER",
+          388
+        ],
+        [
+          "AG",
+          388
+        ],
+        [
+          "AGI",
+          388
+        ],
+        [
+          "ALC",
+          388
+        ],
+        [
+          "ARCXF",
+          388
+        ],
+        [
+          "ARGX",
+          388
+        ],
+        [
+          "ARM",
+          388
+        ],
+        [
+          "AS",
+          388
+        ],
+        [
+          "ASMLF",
+          388
+        ],
+        [
+          "ASND",
+          388
+        ],
+        [
+          "ASX",
+          388
+        ],
+        [
+          "ATAT",
+          388
+        ],
+        [
+          "AU",
+          388
+        ],
+        [
+          "AZN",
+          388
+        ],
+        [
+          "B",
+          388
+        ],
+        [
+          "BAIDF",
+          388
+        ],
+        [
+          "BAM",
+          388
+        ],
+        [
+          "BAP",
+          388
+        ]
+      ],
+      "source_six_k_tickers": 137,
+      "warehouse": "data/warehouse/warehouse_main.sqlite"
+    }
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "Signals_generated is the alpha-enabling 6-K event surface. Signals_survived is generated historical 6-K text coverage, not an executable trading filter.",
+    "passed": false,
+    "signals_generated": 8010,
+    "signals_survived": 0,
+    "survival_rate": 0.0
+  },
+  "gate4": {
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "strategy_behavior_changed": false,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "decision": "blocked_missing_historical_6k_text_materialization",
+    "failed_reasons": [
+      "historical_generated_6k_text_rows_missing",
+      "local_target_6k_text_cache_missing_or_sparse"
+    ],
+    "passed": false,
+    "ran_after_strategy": false,
+    "reason_after_not_run": "Measurement repair only. No buy, sell, ranking, sizing, risk, exit, LLM, watchlist, paper-order, or live-order policy changed.",
+    "strategy_rerun_required": false
+  },
+  "hypothesis": "Repair the blocker for a 6-K alpha hypothesis: determine whether replayable historical SEC 6-K/6-KA filing text can be materialized from the existing local submissions/event surface so structured financial-result growth can later be tested without changing trading behavior.",
+  "implementation_mode": "measurement_repair",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260624-024.json",
+  "mechanism_family": "production_visible_free_sec_6k_foreign_issuer_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260622-014",
+    "exp-20260622-015",
+    "exp-20260622-016"
+  ],
+  "new_evidence_type": "historical_6k_text_materialization_readiness",
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry 6-K phrase lists, numeric regex terms, item/form lists, RS/close/volume gates, top-N, hold, cooldown, or notional on the frozen windows while historical 6-K text coverage is missing.",
+    "new_evidence_required": "Run a controlled historical SEC archive text backfill for the standard-window 6-K/6-KA accessions, or provide another replayable PIT primary-document cache. Then test one fixed structured financial-result growth helper through shared-paper-first.",
+    "why_result_happened": "The local submissions cache still exposes a broad 6-K event surface, 8010 rows across the standard windows, but the generated historical event/text surfaces contain 0 and 0 replayable 6-K text rows respectively. The per-accession filing-text cache covers 0 of those historical 6-K accessions. The structured 6-K alpha remains blocked until a historical text backfill materializes those rows."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Structured financial-result growth in PIT 6-K/6-KA foreign-issuer text may identify ADR post-report drift, but exp-20260622-016 made the alpha untrustworthy until historical 6-K text rows exist.",
+    "2_history_check": {
+      "exp-20260622-014": "Accepted measurement repair: local submissions held 8010 standard-window 6-K/6-KA events and daily defaults were updated.",
+      "exp-20260622-015": "Rejected generic positive-operating-update 6-K helper; this run does not retry phrases or trading thresholds.",
+      "exp-20260622-016": "Blocked structured 6-K financial-result alpha because generated historical text/event/cache rows for 6-K were zero.",
+      "novelty_gate": "Reserved as measurement_repair after alpha_search was blocked by SEC text-event saturation. The new evidence axis is text materialization readiness, not a SEC text alpha scan."
+    },
+    "3_single_policy_bundle": "One measurement decision: compare local submissions 6-K events, generated historical SEC event/text rows, per-accession filing-text cache, and current daily text rows to determine whether historical 6-K text can be replayed now.",
+    "4_success_failure_standard": "Measurement repair passes only if historical generated 6-K text rows exist, at least 20 rows have nonempty text, at least 10 have fixed structured financial-result term/growth/numeric evidence, and strategy metrics remain unchanged. Otherwise the alpha remains blocked.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260624_024_sec_6k_historical_text_materialization_readiness.py"
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260622-014 found 8010 standard-window 6-K events in local SEC submissions, while exp-20260622-016 was blocked because generated historical 6-K text/cache rows were zero. This measurement repair tests the specific blocker before any semantic alpha retry.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "local_primary_text_missing",
+      "structured_numeric_coverage_too_sparse",
+      "no_tradeable_adr_overlap",
+      "sec_text_surface_saturation"
+    ],
+    "recorded_at": "2026-06-24T21:05:38+00:00",
+    "success_probability": 0.65
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "paper_orders_changed": false,
+    "parity_note": "This experiment audits historical SEC 6-K text materialization only. It does not create a shared alpha helper or change any trading path.",
+    "production_watchlist_changed": false,
+    "ranking_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_helper_promoted": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false,
+    "uses_free_sec_filing_text": true,
+    "uses_llm": false
+  },
+  "related_files": [
+    "quant/experiments/exp_20260624_024_sec_6k_historical_text_materialization_readiness.py",
+    "data/non_ohlcv/sec_filing_events_20241002_20260421.jsonl",
+    "data/non_ohlcv/sec_filing_text_20241002_20260421.jsonl",
+    "data/cache/sec/submissions",
+    "data/cache/sec/filing_text",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260624-024.json",
+    "experiments/cards/exp-20260624-024.md",
+    "experiments/manifests/exp-20260624-024.json",
+    "experiments/tickets/exp-20260624-024.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260624_024_sec_6k_historical_text_materialization_readiness.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260624_024_sec_6k_historical_text_materialization_readiness.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "sec_6k_historical_text_materialization_readiness_v1",
+  "status": "blocked",
+  "timestamp": "2026-06-24T21:12:38Z",
+  "trial_family": "sec_6k_historical_text_materialization_readiness",
+  "trial_variant_id": "sec_6k_local_cache_text_backfill_coverage_v1"
+}

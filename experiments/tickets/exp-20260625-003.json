@@ -1,0 +1,555 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260625_003_moomoo_borrow_availability_readiness.py",
+    "data/experiments/exp-20260625-003/",
+    "experiments/cards/exp-20260625-003.md",
+    "experiments/manifests/exp-20260625-003.json",
+    "experiments/tickets/exp-20260625-003.json",
+    "experiments/logs/exp-20260625-003.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260625-003.md",
+  "causal_components": [
+    "borrow sidecar manifest audit",
+    "JSONL field coverage audit",
+    "baseline identity check",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "moomoo_borrow_availability_readiness_gate_v1",
+  "claimed_at": "2026-06-25T02:06:13+00:00",
+  "completed_at": "2026-06-25T02:09:43+00:00",
+  "created_at": "2026-06-25T02:05:34+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260625-003",
+  "experiment_uid": "expuid-88cb1c1647f44629",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260625-003",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-25T02:05:34+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "moomoo_borrow_availability_readiness"
+  },
+  "hypothesis": "Real PIT borrow fee / loan-availability fields could reopen FINRA/options squeeze families, but this run first audits whether the new Moomoo borrow-availability sidecar has populated decision-time fields and enough PIT readiness to support future alpha attribution.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "moomoo_borrow_availability_readiness_gate_v1"
+  ],
+  "mechanism_family": "production_visible_moomoo_borrow_availability_readiness",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260621-017",
+    "exp-20260622-010",
+    "exp-20260623-010",
+    "exp-20260625-001"
+  ],
+  "new_evidence_type": "new_pit_borrow_availability_source",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 1.0,
+        "family_key": "finra_iwm_cost_liquidity_support",
+        "score": 0.6178,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "finra_short_interest",
+      "field_tags": [
+        "alpha",
+        "attribution",
+        "audits",
+        "availability",
+        "borrow",
+        "but",
+        "could",
+        "decision",
+        "enough",
+        "families",
+        "fee",
+        "fields",
+        "finra",
+        "first",
+        "future",
+        "gate",
+        "has",
+        "loan",
+        "moomoo",
+        "new",
+        "options",
+        "pit",
+        "populated",
+        "readiness",
+        "real",
+        "reopen",
+        "run",
+        "sidecar",
+        "squeeze",
+        "support",
+        "this",
+        "time",
+        "to",
+        "whether"
+      ],
+      "gate_shape": "notional_scalar"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_iwm_cost_liquidity_support",
+        "reopen_condition": null,
+        "score": 0.6178,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_borrow_pressure_candidate_pool",
+        "reopen_condition": "If accepted, build a shared default-off adapter plus parity tests. If rejected, move away from FINRA threshold/support variants unless new borrow-cost, loan-availability, or forward replacement evidence arrives.",
+        "score": 0.4793,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "accepted_free_data_cross_source_consensus_source_presence",
+        "reopen_condition": null,
+        "score": 0.4786,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_borrow_pressure_broad_universe",
+        "reopen_condition": "If positive, promote a shared-paper-first BROAD FINRA helper with historical replay + daily snapshot + parity test, and collect closed forward replacement-value rows. If negative, FINRA short interest is not standalone entry alpha even broadly; use it as crowding/risk context and require a materially different PIT borrow-cost / availability field before any retry. Do not threshold-sweep the frozen",
+        "score": 0.4711,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "form4_finra_borrow_pressure_cross_source_overlap",
+        "reopen_condition": "If rejected, do not retry nearby Form4/FINRA overlap unless forward replacement rows or a materially richer borrow-cost or loan-availability field appears. If accepted, implement only through shared default-off parity-covered adapters.",
+        "score": 0.4711,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "notional_scalar",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "finra_short_interest",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.08,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "borrow_fields_unpopulated",
+      "current_snapshot_only",
+      "no_forward_outcomes",
+      "not_wired_to_daily"
+    ],
+    "confidence_reason": "Playbook repeatedly names borrow fee/utilization/loan availability as the valid reopen axis for FINRA/options squeeze work, but the existing Moomoo sidecar manifest already reports zero populated borrow fields, so readiness is unlikely until entitlement changes.",
+    "recorded_at": "2026-06-25T02:05:20+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "observed_only_lead": false,
+    "decision": "blocked_borrow_availability_fields_unpopulated",
+    "artifact": "data/experiments/exp-20260625-003/exp_20260625_003_moomoo_borrow_availability_readiness.json",
+    "log": "experiments/logs/exp-20260625-003.json",
+    "runner": "quant/experiments/exp_20260625_003_moomoo_borrow_availability_readiness.py",
+    "gate4": {
+      "passed": false,
+      "accepted_alpha": false,
+      "alpha_ready": false,
+      "measurement_repair_only": true,
+      "strategy_rerun_required": false,
+      "decision": "blocked_borrow_availability_fields_unpopulated",
+      "failed_reasons": [
+        "borrow_fields_unpopulated",
+        "forward_observation_dates_below_20",
+        "current_snapshot_only",
+        "entry_date_absent_no_trade_surface",
+        "target_price_absent_no_trade_surface",
+        "not_wired_to_daily",
+        "no_forward_outcomes"
+      ],
+      "before_after_strategy_delta": {
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0,
+        "strategy_behavior_changed": false
+      },
+      "readiness_rule": {
+        "min_borrow_populated_rows": 1,
+        "min_forward_observation_dates": 20,
+        "requires_closed_forward_replacement_value_rows": true
+      }
+    },
+    "summary": "The Moomoo snapshot endpoint returned normal prices but zero populated borrow fields across all 45 rows, so the account or endpoint entitlement does not currently expose the named borrow fee / availability axis."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260625-003.json",
+  "single_causal_variable": "moomoo_borrow_availability_readiness_gate_v1",
+  "status": "blocked",
+  "ticket_file": "experiments/tickets/exp-20260625-003.json",
+  "trial_family": "moomoo_borrow_availability_readiness_gate",
+  "trial_variant_id": "initial_entitlement_and_pit_coverage_audit_v1",
+  "alpha_hypothesis": "If hard-to-borrow pressure is a true distinct risk/reward signal, point-in-time short_sell_rate and short_available_volume should eventually separate squeeze-prone candidates from crowded false positives better than raw FINRA short-interest shares.",
+  "implementation_mode": "measurement_repair_readiness_audit",
+  "decision": "blocked_borrow_availability_fields_unpopulated",
+  "artifact": "data/experiments/exp-20260625-003/exp_20260625_003_moomoo_borrow_availability_readiness.json",
+  "log": "experiments/logs/exp-20260625-003.json",
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    }
+  },
+  "gate2": {
+    "passed": false,
+    "dependencies_validated": true,
+    "dependency_fields_checked": [
+      "as_of_date",
+      "ticker",
+      "collected_at_utc",
+      "enable_short_sell",
+      "short_sell_rate_pct",
+      "short_available_volume",
+      "short_margin_initial_ratio_pct",
+      "entry_date",
+      "target_price"
+    ],
+    "dependency_presence": {
+      "as_of_date": {
+        "present_rows": 45,
+        "scanned_rows": 45,
+        "present_rate": 1.0
+      },
+      "collected_at_utc": {
+        "present_rows": 45,
+        "scanned_rows": 45,
+        "present_rate": 1.0
+      },
+      "ticker": {
+        "present_rows": 45,
+        "scanned_rows": 45,
+        "present_rate": 1.0
+      },
+      "last_price": {
+        "present_rows": 45,
+        "scanned_rows": 45,
+        "present_rate": 1.0
+      },
+      "borrow_populated": {
+        "present_rows": 45,
+        "scanned_rows": 45,
+        "present_rate": 1.0
+      },
+      "enable_short_sell": {
+        "present_rows": 0,
+        "scanned_rows": 45,
+        "present_rate": 0.0
+      },
+      "short_sell_rate_pct": {
+        "present_rows": 0,
+        "scanned_rows": 45,
+        "present_rate": 0.0
+      },
+      "short_available_volume": {
+        "present_rows": 0,
+        "scanned_rows": 45,
+        "present_rate": 0.0
+      },
+      "short_margin_initial_ratio_pct": {
+        "present_rows": 0,
+        "scanned_rows": 45,
+        "present_rate": 0.0
+      },
+      "entry_date": {
+        "present_rows": 0,
+        "scanned_rows": 45,
+        "present_rate": 0.0
+      },
+      "target_price": {
+        "present_rows": 0,
+        "scanned_rows": 45,
+        "present_rate": 0.0
+      },
+      "trade_enabled": {
+        "present_rows": 45,
+        "scanned_rows": 45,
+        "present_rate": 1.0
+      }
+    },
+    "blocking_reason": "Moomoo snapshot rows loaded, but all borrow-specific fields are null under the current account entitlement; entry_date and target_price are absent because this is not a trade surface."
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "note": "No executable filter, candidate source, or strategy rule was added."
+  },
+  "gate4": {
+    "passed": false,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "measurement_repair_only": true,
+    "strategy_rerun_required": false,
+    "decision": "blocked_borrow_availability_fields_unpopulated",
+    "failed_reasons": [
+      "borrow_fields_unpopulated",
+      "forward_observation_dates_below_20",
+      "current_snapshot_only",
+      "entry_date_absent_no_trade_surface",
+      "target_price_absent_no_trade_surface",
+      "not_wired_to_daily",
+      "no_forward_outcomes"
+    ],
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "strategy_behavior_changed": false
+    },
+    "readiness_rule": {
+      "min_borrow_populated_rows": 1,
+      "min_forward_observation_dates": 20,
+      "requires_closed_forward_replacement_value_rows": true
+    }
+  },
+  "borrow_surface": {
+    "manifest_exists": true,
+    "rows_path_exists": true,
+    "row_count": 45,
+    "unique_tickers": 45,
+    "as_of_date_count": 1,
+    "as_of_dates": [
+      "2026-06-24"
+    ],
+    "latest_as_of_date": "2026-06-24",
+    "last_collected_at_utc": "2026-06-25T01:47:42+00:00",
+    "manifest_schema": "observe_only_forward_accumulation_v1",
+    "manifest_pit_boundary": "current_snapshot_only; forward-only; never backfillable; observe-only; not wired to run.py or any decision",
+    "manifest_trade_enabled": false,
+    "manifest_borrow_populated_this_run": 0,
+    "manifest_borrow_populated_pct": 0.0,
+    "borrow_populated_rows": 0,
+    "borrow_populated_rate": 0.0,
+    "field_coverage": {
+      "as_of_date": {
+        "present_rows": 45,
+        "scanned_rows": 45,
+        "present_rate": 1.0
+      },
+      "collected_at_utc": {
+        "present_rows": 45,
+        "scanned_rows": 45,
+        "present_rate": 1.0
+      },
+      "ticker": {
+        "present_rows": 45,
+        "scanned_rows": 45,
+        "present_rate": 1.0
+      },
+      "last_price": {
+        "present_rows": 45,
+        "scanned_rows": 45,
+        "present_rate": 1.0
+      },
+      "borrow_populated": {
+        "present_rows": 45,
+        "scanned_rows": 45,
+        "present_rate": 1.0
+      },
+      "enable_short_sell": {
+        "present_rows": 0,
+        "scanned_rows": 45,
+        "present_rate": 0.0
+      },
+      "short_sell_rate_pct": {
+        "present_rows": 0,
+        "scanned_rows": 45,
+        "present_rate": 0.0
+      },
+      "short_available_volume": {
+        "present_rows": 0,
+        "scanned_rows": 45,
+        "present_rate": 0.0
+      },
+      "short_margin_initial_ratio_pct": {
+        "present_rows": 0,
+        "scanned_rows": 45,
+        "present_rate": 0.0
+      },
+      "entry_date": {
+        "present_rows": 0,
+        "scanned_rows": 45,
+        "present_rate": 0.0
+      },
+      "target_price": {
+        "present_rows": 0,
+        "scanned_rows": 45,
+        "present_rate": 0.0
+      },
+      "trade_enabled": {
+        "present_rows": 45,
+        "scanned_rows": 45,
+        "present_rate": 1.0
+      }
+    },
+    "source_counts": {
+      "moomoo_openapi_market_snapshot": 45
+    },
+    "duplicate_ticker_date_rows": 0,
+    "short_sell_rate": {
+      "n": 0,
+      "min": null,
+      "max": null,
+      "mean": null,
+      "median": null
+    },
+    "short_available_volume": {
+      "n": 0,
+      "min": null,
+      "max": null,
+      "mean": null,
+      "median": null
+    }
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "watchlist_changed": false,
+    "llm_decision_boundary_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "parity_note": "Experiment-owned readiness artifact only. It reads the existing borrow sidecar and writes no shared helper, daily adapter, order, rank, size, exit, watchlist, or LLM changes."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The Moomoo snapshot endpoint returned normal prices but zero populated borrow fields across all 45 rows, so the account or endpoint entitlement does not currently expose the named borrow fee / availability axis.",
+    "forbidden_near_neighbor_retry": "Do not retry FINRA short-interest, daily short-volume, options skew, or Moomoo borrow threshold rules until the sidecar has nonzero borrow_populated rows across multiple dates.",
+    "new_evidence_required": "A valid retry needs populated short_sell_rate_pct and/or short_available_volume rows over at least 20 forward dates, then closed forward replacement-value attribution versus cash, SPY, QQQ, and accepted comparators."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260625_003_moomoo_borrow_availability_readiness.py",
+    "data/non_ohlcv/borrow_availability/manifest.json",
+    "data/non_ohlcv/borrow_availability/rows.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "quant/moomoo_borrow_availability_sidecar.py",
+    "experiments/logs/exp-20260621-017.json",
+    "experiments/logs/exp-20260622-010.json",
+    "experiments/logs/exp-20260623-010.json",
+    "experiments/logs/exp-20260625-001.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260625_003_moomoo_borrow_availability_readiness.py",
+    "data/experiments/exp-20260625-003/exp_20260625_003_moomoo_borrow_availability_readiness.json",
+    "experiments/logs/exp-20260625-003.json",
+    "experiments/cards/exp-20260625-003.md",
+    "experiments/manifests/exp-20260625-003.json",
+    "experiments/tickets/exp-20260625-003.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-06-25T02:09:43+00:00"
+}

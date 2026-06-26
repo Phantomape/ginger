@@ -1,0 +1,988 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_compression_comparator": {
+    "aggregate_expected_value_delta": 0.1608,
+    "aggregate_pnl_delta": 2248.98,
+    "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+    "experiment_id": "exp-20260608-013"
+  },
+  "accepted_distribution_comparator": {
+    "aggregate_expected_value_delta": 0.5286,
+    "aggregate_pnl_delta": 10432.91,
+    "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+    "experiment_id": "exp-20260611-007"
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 5.1628,
+      "max_consecutive_losses": 2,
+      "max_drawdown_pct": 0.0665,
+      "sharpe_daily": 4.41,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "strategy_total_return_pct": 1.1707,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5146,
+      "total_pnl": 117072.92,
+      "trade_count": 18,
+      "win_rate": 0.8333,
+      "worst_trade_pct": -0.0397
+    },
+    "mid_weak": {
+      "expected_value_score": 2.1402,
+      "max_consecutive_losses": 6,
+      "max_drawdown_pct": 0.1119,
+      "sharpe_daily": 2.74,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "strategy_total_return_pct": 0.7811,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.5493,
+      "total_pnl": 78110.11,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "worst_trade_pct": -0.0897
+    },
+    "old_thin": {
+      "expected_value_score": 0.5918,
+      "max_consecutive_losses": 4,
+      "max_drawdown_pct": 0.1001,
+      "sharpe_daily": 1.49,
+      "signals_generated": 60,
+      "signals_survived": 52,
+      "strategy_total_return_pct": 0.3972,
+      "survival_rate": 0.8667,
+      "tail_loss_share": 0.5193,
+      "total_pnl": 39724.74,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "worst_trade_pct": -0.0635
+    }
+  },
+  "anti_js": "No JavaScript was used.",
+  "backtest_protocol": {
+    "REGIME_AWARE_EXIT": true,
+    "candidate_ohlcv_source": "data/warehouse/warehouse_main.sqlite",
+    "companyfacts_source": "data/non_ohlcv/sec_companyfacts_selected_*.jsonl",
+    "execution_model": "Richer SEC offering terms are keyed by accepted_at/usable_trade_date. The fixed bundle admits only completed/priced debt or convertible financings with top-tier underwriting, non-excessive actual takedown versus shelf capacity when present, float dilution <=6% when measured, constructive use or extra quality context, and signal-day OHLCV price absorption. Paper entry is next available open; exit is the close 10 trading days after the signal with existing costs.",
+    "replay_llm": false,
+    "replay_news": false,
+    "sec_filing_text_source": "data/non_ohlcv",
+    "source": "docs/backtesting.md canonical three-window core replay plus replay-only broad warehouse default-off paper overlay",
+    "source_measurement_repair": "exp-20260624-021",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 5.1628,
+      "max_consecutive_losses": 2,
+      "max_drawdown_pct": 0.0665,
+      "sharpe_daily": 4.41,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "strategy_total_return_pct": 1.1707,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5146,
+      "total_pnl": 117072.92,
+      "trade_count": 18,
+      "win_rate": 0.8333,
+      "worst_trade_pct": -0.0397
+    },
+    "mid_weak": {
+      "expected_value_score": 2.1402,
+      "max_consecutive_losses": 6,
+      "max_drawdown_pct": 0.1119,
+      "sharpe_daily": 2.74,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "strategy_total_return_pct": 0.7811,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.5493,
+      "total_pnl": 78110.11,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "worst_trade_pct": -0.0897
+    },
+    "old_thin": {
+      "expected_value_score": 0.5911,
+      "max_consecutive_losses": 4,
+      "max_drawdown_pct": 0.1001,
+      "sharpe_daily": 1.49,
+      "signals_generated": 60,
+      "signals_survived": 52,
+      "strategy_total_return_pct": 0.3967,
+      "survival_rate": 0.8667,
+      "tail_loss_share": 0.5193,
+      "total_pnl": 39667.96,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "worst_trade_pct": -0.0635
+    }
+  },
+  "calibration": {
+    "actual_ev_delta": 0.0007,
+    "actual_gate4_passed": false,
+    "actual_pnl_delta": 56.78,
+    "actual_success": 0,
+    "brier_score": 0.0676,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "failure_modes_observed": [
+      "fewer_than_two_ev_improved_windows",
+      "target_sample_too_small",
+      "target_window_coverage_too_small",
+      "target_concentration_failed",
+      "accepted_compression_ev_not_beaten",
+      "accepted_compression_pnl_not_beaten",
+      "accepted_distribution_ev_not_beaten",
+      "accepted_distribution_pnl_not_beaten"
+    ],
+    "predicted_failure_mode_hit": false,
+    "predicted_success_probability": 0.26
+  },
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "sec_offering_richer_terms_constructive_financing_candidate_pool_v1",
+  "context_scan_by_window": {
+    "late_strong": {
+      "allowed_security_types": [
+        "convertible_debt",
+        "debt_notes"
+      ],
+      "allowed_statuses": [
+        "completed_or_issued",
+        "priced"
+      ],
+      "candidate_signal_days": 0,
+      "candidate_tickers": 0,
+      "constructive_uses": [
+        "debt_refinancing",
+        "growth_project_or_capacity"
+      ],
+      "deduped_candidate_rows": 0,
+      "event_rows_in_window": 32,
+      "failed_actual_takedown_too_large": 4,
+      "failed_actual_to_shelf_ratio_outside_quality_band": 1,
+      "failed_constructive_terms": 27,
+      "failed_convertible_without_hedge_or_dilution_measure": 3,
+      "failed_no_constructive_use_or_extra_quality_context": 9,
+      "failed_no_top_tier_underwriter": 11,
+      "failed_price_confirmation": 5,
+      "failed_security_not_debt_or_convertible": 13,
+      "failed_status_not_completed_or_priced": 10,
+      "max_actual_to_shelf_ratio": 1.35,
+      "max_amount_to_market_cap": 0.7,
+      "max_float_dilution_pct": 0.06,
+      "max_takedown_usd": 30000000000.0,
+      "min_takedown_usd": 50000000.0,
+      "rule_version": "sec_offering_richer_terms_constructive_financing_candidate_pool_v1"
+    },
+    "mid_weak": {
+      "allowed_security_types": [
+        "convertible_debt",
+        "debt_notes"
+      ],
+      "allowed_statuses": [
+        "completed_or_issued",
+        "priced"
+      ],
+      "candidate_signal_days": 0,
+      "candidate_tickers": 0,
+      "constructive_uses": [
+        "debt_refinancing",
+        "growth_project_or_capacity"
+      ],
+      "deduped_candidate_rows": 0,
+      "event_rows_in_window": 29,
+      "failed_actual_takedown_too_large": 2,
+      "failed_actual_to_shelf_ratio_outside_quality_band": 1,
+      "failed_constructive_terms": 25,
+      "failed_convertible_without_hedge_or_dilution_measure": 2,
+      "failed_float_dilution_too_high": 1,
+      "failed_no_constructive_use_or_extra_quality_context": 7,
+      "failed_no_top_tier_underwriter": 15,
+      "failed_price_confirmation": 4,
+      "failed_security_not_debt_or_convertible": 8,
+      "failed_status_not_completed_or_priced": 10,
+      "max_actual_to_shelf_ratio": 1.35,
+      "max_amount_to_market_cap": 0.7,
+      "max_float_dilution_pct": 0.06,
+      "max_takedown_usd": 30000000000.0,
+      "min_takedown_usd": 50000000.0,
+      "rule_version": "sec_offering_richer_terms_constructive_financing_candidate_pool_v1"
+    },
+    "old_thin": {
+      "allowed_security_types": [
+        "convertible_debt",
+        "debt_notes"
+      ],
+      "allowed_statuses": [
+        "completed_or_issued",
+        "priced"
+      ],
+      "candidate_signal_days": 1,
+      "candidate_tickers": 1,
+      "constructive_uses": [
+        "debt_refinancing",
+        "growth_project_or_capacity"
+      ],
+      "deduped_candidate_rows": 1,
+      "event_rows_in_window": 27,
+      "failed_actual_to_shelf_ratio_outside_quality_band": 4,
+      "failed_constructive_terms": 24,
+      "failed_convertible_without_hedge_or_dilution_measure": 3,
+      "failed_no_constructive_use_or_extra_quality_context": 6,
+      "failed_no_top_tier_underwriter": 10,
+      "failed_price_confirmation": 1,
+      "failed_security_not_debt_or_convertible": 9,
+      "failed_status_not_completed_or_priced": 13,
+      "max_actual_to_shelf_ratio": 1.35,
+      "max_amount_to_market_cap": 0.7,
+      "max_float_dilution_pct": 0.06,
+      "max_takedown_usd": 30000000000.0,
+      "min_takedown_usd": 50000000.0,
+      "missing_pit_shares_outstanding": 1,
+      "qualified_candidate_rows": 1,
+      "qualified_security_debt_notes": 1,
+      "qualified_underwriter_multiple_top_tier": 1,
+      "qualified_use_use_unspecified": 1,
+      "rule_version": "sec_offering_richer_terms_constructive_financing_candidate_pool_v1"
+    }
+  },
+  "decision": "rejected_sec_offering_richer_terms_constructive_financing_candidate_pool",
+  "delta_metrics": {
+    "aggregate": {
+      "after_expected_value_score_sum": 7.8948,
+      "after_total_pnl_sum": 234907.77,
+      "baseline_expected_value_score_sum": 7.8941,
+      "baseline_total_pnl_sum": 234850.99,
+      "expected_value_score_delta_pct": 8.9e-05,
+      "expected_value_score_delta_sum": 0.0007,
+      "max_drawdown_delta_max": 0.0,
+      "target_trade_count_sum": 1,
+      "total_pnl_delta_pct": 0.000242,
+      "total_pnl_delta_sum": 56.78,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 1,
+      "windows_pnl_regressed": 0
+    },
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.0007,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.0005,
+        "survival_rate": 0.0,
+        "total_pnl": 56.78,
+        "trade_count": 0,
+        "win_rate": 0.0
+      }
+    }
+  },
+  "expected_value_score_delta": 0.0007,
+  "experiment_id": "exp-20260624-022",
+  "filtered_candidates_sample_by_window": {
+    "late_strong": [],
+    "mid_weak": [],
+    "old_thin": []
+  },
+  "full_stack": {
+    "anti_js": "No JavaScript was used.",
+    "contract_completeness": {
+      "daily_snapshot_exposed": false,
+      "note": "This run records the full-stack envelope and replay verdict, but does not promote shared daily production code. Positive numeric results would remain a lead until shared helper/parity work exists.",
+      "parity_test_added": false,
+      "run_adapter_changed": false,
+      "shared_helper_promoted": false
+    },
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "complete": true,
+      "kill_switch_drawdown_pct": 0.05,
+      "max_capital_pct": 0.08,
+      "max_concurrent": 10,
+      "max_displacement": 0,
+      "min_dollar_volume": 50000000.0,
+      "missing": [],
+      "notes": "Default-off paper only; no live orders or core displacement.",
+      "order_semantics": "next_open_paper_entry_close_after_10_trading_days",
+      "sleeve_drawdown_stop_pct": 0.08,
+      "slippage_bps": 85.0
+    },
+    "gate4": {
+      "hard_failures": [
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "target_concentration_failed",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "passed": false,
+      "source_gate4": {
+        "accepted_compression_comparator": {
+          "aggregate_expected_value_delta": 0.1608,
+          "aggregate_pnl_delta": 2248.98,
+          "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+          "experiment_id": "exp-20260608-013"
+        },
+        "accepted_distribution_comparator": {
+          "aggregate_expected_value_delta": 0.5286,
+          "aggregate_pnl_delta": 10432.91,
+          "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+          "experiment_id": "exp-20260611-007"
+        },
+        "aggregate_ev_delta": 0.0007,
+        "aggregate_pnl_delta": 56.78,
+        "decision": "rejected_sec_offering_richer_terms_constructive_financing_candidate_pool",
+        "failed_reasons": [
+          "fewer_than_two_ev_improved_windows",
+          "target_sample_too_small",
+          "target_window_coverage_too_small",
+          "target_concentration_failed",
+          "accepted_compression_ev_not_beaten",
+          "accepted_compression_pnl_not_beaten",
+          "accepted_distribution_ev_not_beaten",
+          "accepted_distribution_pnl_not_beaten"
+        ],
+        "max_drawdown_worse": 0.0,
+        "max_drawdown_worse_guardrail": 0.005,
+        "minimum_core_survival_rate": 0.7925,
+        "passed": false,
+        "survival_guard_passed": true,
+        "target_concentration": {
+          "max_single_positive_pnl_share": 1.0,
+          "max_single_positive_pnl_share_guardrail": 0.5,
+          "passed": false,
+          "positive_pnl_hhi": 1.0,
+          "positive_pnl_hhi_guardrail": 0.35
+        },
+        "target_trade_count": 1,
+        "target_trade_count_min": 20,
+        "target_window_count_min": 3,
+        "target_windows": [
+          "old_thin"
+        ],
+        "windows_ev_improved": 1,
+        "windows_ev_regressed": 0,
+        "windows_pnl_improved": 1,
+        "windows_pnl_regressed": 0
+      },
+      "status": "blocked"
+    },
+    "gate4_passed": false,
+    "live_readiness": {
+      "blockers": [
+        "forward_rows_immature:0/30",
+        "forward_pnl_not_positive",
+        "replacement_value_not_passed",
+        "kill_switch_parity_not_passed"
+      ],
+      "closed_forward_trades": 0,
+      "envelope_missing": [],
+      "forward_pnl": null,
+      "kill_switch_parity_passed": false,
+      "min_closed_forward_trades": 30,
+      "ready": false,
+      "replacement_value_passed": false
+    },
+    "live_ready": false,
+    "next_step": "Roll back the sleeve change and log the failure. Gate 4 did not pass; do not retune on the frozen sample.",
+    "verdict": "reject"
+  },
+  "gate1": {
+    "baseline_artifact": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_metrics": {
+      "late_strong": {
+        "expected_value_score": 5.1628,
+        "max_consecutive_losses": 2,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "strategy_total_return_pct": 1.1707,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.5146,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "win_rate": 0.8333,
+        "worst_trade_pct": -0.0397
+      },
+      "mid_weak": {
+        "expected_value_score": 2.1402,
+        "max_consecutive_losses": 6,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "strategy_total_return_pct": 0.7811,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.5493,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "win_rate": 0.5238,
+        "worst_trade_pct": -0.0897
+      },
+      "old_thin": {
+        "expected_value_score": 0.5911,
+        "max_consecutive_losses": 4,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "strategy_total_return_pct": 0.3967,
+        "survival_rate": 0.8667,
+        "tail_loss_share": 0.5193,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "win_rate": 0.4091,
+        "worst_trade_pct": -0.0635
+      }
+    },
+    "passed": true
+  },
+  "gate2": {
+    "open_positions": {
+      "missing_entry_date_tickers": [],
+      "missing_target_price_tickers": [],
+      "passed": true,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 13
+    },
+    "passed": true,
+    "runtime_fields": [
+      "SEC filing text accepted_at and usable_trade_date",
+      "SEC accession_number and primary_document",
+      "actual_takedown_amount_usd",
+      "shelf_capacity_amount_usd and actual_to_shelf_ratio",
+      "underwriter_quality_bucket and top_tier_underwriter_count",
+      "lockup_or_hedging_terms_present",
+      "shares_offered, shares_outstanding, and float_dilution_pct",
+      "warehouse OHLCV Date/Open/High/Low/Close/Volume",
+      "SPY OHLCV for relative strength",
+      "operator_inputs/open_positions.json entry_date",
+      "operator_inputs/open_positions.json target_price"
+    ]
+  },
+  "gate3": {
+    "candidate_pool_changed": false,
+    "minimum_core_survival_rate": 0.7925,
+    "new_core_filter_added": false,
+    "note": "No new core filter or entry rule was added. The candidate source is additive default-off paper, so core signals generated/survived are unchanged from baseline.",
+    "passed": true,
+    "survival_rate_by_window": {
+      "late_strong": 0.8039,
+      "mid_weak": 0.7925,
+      "old_thin": 0.8667
+    }
+  },
+  "gate4": {
+    "accepted_compression_comparator": {
+      "aggregate_expected_value_delta": 0.1608,
+      "aggregate_pnl_delta": 2248.98,
+      "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+      "experiment_id": "exp-20260608-013"
+    },
+    "accepted_distribution_comparator": {
+      "aggregate_expected_value_delta": 0.5286,
+      "aggregate_pnl_delta": 10432.91,
+      "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+      "experiment_id": "exp-20260611-007"
+    },
+    "aggregate_ev_delta": 0.0007,
+    "aggregate_pnl_delta": 56.78,
+    "decision": "rejected_sec_offering_richer_terms_constructive_financing_candidate_pool",
+    "failed_reasons": [
+      "fewer_than_two_ev_improved_windows",
+      "target_sample_too_small",
+      "target_window_coverage_too_small",
+      "target_concentration_failed",
+      "accepted_compression_ev_not_beaten",
+      "accepted_compression_pnl_not_beaten",
+      "accepted_distribution_ev_not_beaten",
+      "accepted_distribution_pnl_not_beaten"
+    ],
+    "max_drawdown_worse": 0.0,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": false,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 1.0,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": false,
+      "positive_pnl_hhi": 1.0,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 1,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "old_thin"
+    ],
+    "windows_ev_improved": 1,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 1,
+    "windows_pnl_regressed": 0
+  },
+  "hypothesis": "candidate_pool: richer SEC offering/prospectus terms may distinguish constructive financing from raw dilution events when completed/priced debt or convertible offerings have top-tier underwriting, non-excessive actual takedown versus shelf capacity, low measured float dilution, constructive use/hedging context, and signal-day price absorption.",
+  "implementation_mode": "experiment_owned_full_stack_replay_attempt",
+  "interpretation": "The richer SEC offering constructive-financing bundle did not clear Gate 4 (failed: fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too_small, target_concentration_failed, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). It is not retained or promoted.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "mechanism_family": "production_visible_sec_offering_primary_text_economics_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260617-023",
+    "exp-20260620-018",
+    "exp-20260624-021"
+  ],
+  "new_evidence_type": "richer_pit_offering_terms_field_build",
+  "next_evidence_needed": "A retry needs closed forward replacement-value rows under this exact richer-term envelope, verified deal-close/lockup economics, or a different PIT field such as actual shelf drawdown history. Do not sweep offering regexes, amount/market-cap thresholds, security/use weights, underwriter buckets, float-dilution cuts, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows.",
+  "numeric_gate4_passed": false,
+  "parameters": {
+    "allowed_security_types": [
+      "convertible_debt",
+      "debt_notes"
+    ],
+    "allowed_statuses": [
+      "completed_or_issued",
+      "priced"
+    ],
+    "constructive_uses": [
+      "debt_refinancing",
+      "growth_project_or_capacity"
+    ],
+    "hold_days": 10,
+    "max_actual_to_shelf_ratio": 1.35,
+    "max_amount_to_market_cap": 0.7,
+    "max_float_dilution_pct": 0.06,
+    "max_paper_trades_per_day": 1,
+    "max_realized_vol_20d": 0.1,
+    "max_signal_return": 0.06,
+    "max_takedown_usd": 30000000000.0,
+    "min_avg_dollar_volume_20d": 50000000.0,
+    "min_close_location": 0.4,
+    "min_price": 10.0,
+    "min_ret20_excess_spy": 0.0,
+    "min_ret60_excess_spy": -0.05,
+    "min_signal_return": -0.03,
+    "min_takedown_usd": 50000000.0,
+    "paper_notional_usd": 4000.0,
+    "same_ticker_cooldown_days": 10,
+    "single_causal_variable": "sec_offering_richer_terms_constructive_financing_candidate_pool_v1",
+    "top_underwriter_buckets": [
+      "multiple_top_tier",
+      "single_top_tier"
+    ]
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry by sweeping the same richer offering-term thresholds, regexes, security/use labels, underwriter buckets, float-dilution limits, RS/close/volume/volatility guards, top-N, hold days, cooldown, or notional on these frozen windows.",
+    "new_evidence_required": "A retry needs closed forward replacement-value rows under this exact richer-term envelope, verified deal-close/lockup economics, or a different PIT field such as actual shelf drawdown history. Do not sweep offering regexes, amount/market-cap thresholds, security/use weights, underwriter buckets, float-dilution cuts, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows.",
+    "outcome_summary": "Aggregate EV delta +0.0007; aggregate PnL delta $+56.78; max drawdown drift +0.0000; 1 paper trades.",
+    "why_result_happened": "The richer SEC offering constructive-financing bundle did not clear Gate 4 (failed: fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too_small, target_concentration_failed, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). It is not retained or promoted."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "candidate_pool: richer SEC offering/prospectus terms may distinguish constructive financing from raw dilution events when completed/priced debt or convertible offerings have top-tier underwriting, non-excessive actual takedown versus shelf capacity, low measured float dilution, constructive use/hedging context, and signal-day price absorption.",
+    "2_history_check": {
+      "exp-20260617-023": "Rejected raw offering/prospectus form price absorption. This run does not sweep form lists or price thresholds.",
+      "exp-20260620-018": "Rejected primary-text amount/security/use economics and required actual takedown vs shelf capacity, dilution, underwriter quality, lockup/hedging, closed deal outcome, or forward rows before retry.",
+      "exp-20260624-021": "Accepted measurement repair that materialized the richer financing terms used here.",
+      "novelty_gate": "Gate classified the text-ledger idea as companyfacts_ratio; novelty and saturated-source overrides were recorded because Companyfacts is only the PIT shares denominator, not the scanned alpha source."
+    },
+    "3_single_policy_bundle": "sec_offering_richer_terms_constructive_financing_candidate_pool_v1",
+    "4_acceptance_standard": "Use docs/backtesting.md canonical windows. Aggregate EV/PnL must be positive, no window EV/PnL regression, at least two EV-improved windows, sufficient target trades across all three windows, survival >=5%, drawdown drift <=0.5pp, concentration pass, and accepted compression/distribution comparators must be beaten.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260624_022_sec_offering_richer_terms_constructive_financing.py"
+  },
+  "prediction": {
+    "confidence_reason": "Raw offering form absorption and primary-text economics were rejected, but exp-20260624-021 materialized a materially richer PIT SEC financing ledger with actual takedown, shelf ratio, underwriter quality, lockup/hedging, and float-dilution fields across all three windows. The mechanism is constructive capital access after price absorption; the main disconfirmer is that offering events remain dilution or capital-structure noise and fail accepted comparators.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "window_regression",
+      "thin_sample",
+      "accepted_distribution_comparator_not_beaten",
+      "offering_terms_still_dilution_noise",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-24T19:04:20+00:00",
+    "success_probability": 0.26
+  },
+  "prior_trial_count": 2,
+  "production_impact": {
+    "adapter_status": "experiment_owned_replay_no_live_adapter",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "default_off_paper_only": true,
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "capital_cap": "8% paper sleeve cap; no live capital enabled",
+      "failure_handling": "missing richer SEC term, stale/missing shares denominator, missing OHLCV/next open/10d exit, high float dilution, non-top-tier underwriter, unsupported security type, or failed price confirmation rejects the paper candidate",
+      "kill_switch": "paper-only; proposed 5% sleeve drawdown review before live consideration",
+      "liquidity_slippage_model": "ADV20 >= $50M; existing next-open/slippage/cost model",
+      "max_concurrent": 10,
+      "order_semantics": "next available open paper entry, close after 10 trading days",
+      "portfolio_displacement": "default-off additive paper overlay; no core displacement"
+    },
+    "implementation_mode": "candidate_pool_full_stack_replay_attempt",
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "parity_note": "This experiment reuses a single candidate builder for replay and an artifact-level daily snapshot semantics block, but does not wire a daily production adapter. A positive result would remain a lead until a shared default-off helper and parity test are promoted.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_free_ohlcv": true,
+    "uses_free_sec_companyfacts": true,
+    "uses_free_sec_filing_text": true,
+    "uses_llm": false,
+    "uses_raw_companyfacts_cache": true,
+    "uses_richer_sec_offering_terms": true
+  },
+  "quality_index_summary_by_window": {
+    "late_strong": {
+      "offering_status_counts": {
+        "announced_or_proposed": 2,
+        "completed_or_issued": 56,
+        "shelf_or_registration": 12,
+        "status_unspecified": 19
+      },
+      "richer_field_counts": {
+        "actual_takedown_amount_usd": 89,
+        "actual_to_shelf_ratio": 59,
+        "float_dilution_pct": 4,
+        "hedging_terms_present": 15,
+        "lockup_terms_present": 3,
+        "shares_offered": 7,
+        "shelf_capacity_amount_usd": 59,
+        "underwriter_names": 52
+      },
+      "rule_version": "sec_offering_richer_terms_constructive_financing_candidate_pool_v1",
+      "sec_richer_term_rows_loaded": 89,
+      "security_type_counts": {
+        "atm_equity": 1,
+        "convertible_debt": 19,
+        "debt_notes": 40,
+        "equity_or_warrants": 5,
+        "financing_unspecified": 24
+      },
+      "source_measurement_repair": "exp-20260624-021",
+      "text_source": "data/non_ohlcv",
+      "tickers_with_richer_terms": 30,
+      "total_actual_takedown_amount_usd": 681337202230.5,
+      "underwriter_quality_counts": {
+        "multiple_top_tier": 33,
+        "no_named_underwriter": 37,
+        "single_top_tier": 19
+      },
+      "use_of_proceeds_counts": {
+        "general_corporate_or_working_capital": 3,
+        "growth_project_or_capacity": 29,
+        "use_unspecified": 57
+      }
+    },
+    "mid_weak": {
+      "offering_status_counts": {
+        "announced_or_proposed": 1,
+        "completed_or_issued": 34,
+        "shelf_or_registration": 9,
+        "status_unspecified": 13
+      },
+      "richer_field_counts": {
+        "actual_takedown_amount_usd": 57,
+        "actual_to_shelf_ratio": 37,
+        "float_dilution_pct": 3,
+        "hedging_terms_present": 11,
+        "shares_offered": 6,
+        "shelf_capacity_amount_usd": 37,
+        "underwriter_names": 31
+      },
+      "rule_version": "sec_offering_richer_terms_constructive_financing_candidate_pool_v1",
+      "sec_richer_term_rows_loaded": 57,
+      "security_type_counts": {
+        "atm_equity": 1,
+        "convertible_debt": 14,
+        "debt_notes": 26,
+        "equity_or_warrants": 3,
+        "financing_unspecified": 13
+      },
+      "source_measurement_repair": "exp-20260624-021",
+      "text_source": "data/non_ohlcv",
+      "tickers_with_richer_terms": 27,
+      "total_actual_takedown_amount_usd": 316246337230.5,
+      "underwriter_quality_counts": {
+        "multiple_top_tier": 21,
+        "no_named_underwriter": 26,
+        "single_top_tier": 10
+      },
+      "use_of_proceeds_counts": {
+        "general_corporate_or_working_capital": 3,
+        "growth_project_or_capacity": 19,
+        "use_unspecified": 35
+      }
+    },
+    "old_thin": {
+      "offering_status_counts": {
+        "announced_or_proposed": 1,
+        "completed_or_issued": 15,
+        "shelf_or_registration": 5,
+        "status_unspecified": 7
+      },
+      "richer_field_counts": {
+        "actual_takedown_amount_usd": 28,
+        "actual_to_shelf_ratio": 18,
+        "float_dilution_pct": 2,
+        "hedging_terms_present": 4,
+        "shares_offered": 3,
+        "shelf_capacity_amount_usd": 18,
+        "underwriter_names": 17
+      },
+      "rule_version": "sec_offering_richer_terms_constructive_financing_candidate_pool_v1",
+      "sec_richer_term_rows_loaded": 28,
+      "security_type_counts": {
+        "convertible_debt": 7,
+        "debt_notes": 12,
+        "equity_or_warrants": 1,
+        "financing_unspecified": 8
+      },
+      "source_measurement_repair": "exp-20260624-021",
+      "text_source": "data/non_ohlcv",
+      "tickers_with_richer_terms": 17,
+      "total_actual_takedown_amount_usd": 127565390230.5,
+      "underwriter_quality_counts": {
+        "multiple_top_tier": 11,
+        "no_named_underwriter": 11,
+        "single_top_tier": 6
+      },
+      "use_of_proceeds_counts": {
+        "general_corporate_or_working_capital": 1,
+        "growth_project_or_capacity": 10,
+        "use_unspecified": 17
+      }
+    }
+  },
+  "raw_candidate_counts": {
+    "late_strong": 0,
+    "mid_weak": 0,
+    "old_thin": 1
+  },
+  "rejection_reason": "fewer_than_two_ev_improved_windows; target_sample_too_small; target_window_coverage_too_small; target_concentration_failed; accepted_compression_ev_not_beaten; accepted_compression_pnl_not_beaten; accepted_distribution_ev_not_beaten; accepted_distribution_pnl_not_beaten",
+  "related_files": [
+    "quant/experiments/exp_20260624_022_sec_offering_richer_terms_constructive_financing.py",
+    "data/experiments/exp-20260624-022/exp_20260624_022_sec_offering_richer_terms_constructive_financing.json",
+    "experiments/logs/exp-20260624-022.json",
+    "experiments/tickets/exp-20260624-022.json",
+    "experiments/cards/exp-20260624-022.md",
+    "experiments/manifests/exp-20260624-022.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "quant/experiments/exp_20260624_021_sec_offering_richer_financing_terms.py",
+    "data/experiments/exp-20260624-021/exp_20260624_021_sec_offering_richer_financing_terms.json"
+  ],
+  "single_causal_variable": "sec_offering_richer_terms_constructive_financing_candidate_pool_v1",
+  "status": "rejected",
+  "target_trade_summary": {
+    "by_ticker_count": {
+      "DE": 1
+    },
+    "by_ticker_pnl": {
+      "DE": 56.78
+    },
+    "by_window_pnl": {
+      "late_strong": 0,
+      "mid_weak": 0,
+      "old_thin": 56.78
+    },
+    "max_single_positive_pnl_share": 1.0,
+    "positive_by_ticker_pnl": {
+      "DE": 56.78
+    },
+    "positive_pnl_hhi": 1.0,
+    "total_pnl": 56.78,
+    "total_trade_count": 1,
+    "windows_with_target_trades": [
+      "old_thin"
+    ]
+  },
+  "target_trades_by_window": {
+    "late_strong": [],
+    "mid_weak": [],
+    "old_thin": [
+      {
+        "candidate_avg_dollar_volume_20d": 520509070.76,
+        "candidate_close_location": 0.868925,
+        "candidate_realized_vol_20d": 0.019092,
+        "candidate_ret20": 0.030646,
+        "candidate_ret20_excess_spy": 0.038421,
+        "candidate_ret60_excess_spy": 0.096065,
+        "candidate_score": 2.897292,
+        "candidate_signal_return": 0.037189,
+        "candidate_volume_ratio_20d": 1.946412,
+        "date": "2025-01-17",
+        "entry_date": "2025-01-21",
+        "entry_price": 451.189,
+        "entry_raw_open": 450.9635,
+        "exit_date": "2025-02-03",
+        "exit_price": 459.1733,
+        "exit_raw_close": 459.403,
+        "financing_accepted_at": "2025-01-16T21:10:41",
+        "financing_accession_number": "0001558370-25-000246",
+        "financing_actual_takedown_amount_usd": 1250000000.0,
+        "financing_actual_to_shelf_ratio": 1.0,
+        "financing_amount_mentions": 40,
+        "financing_amount_to_market_cap": 0.010274,
+        "financing_eight_k_item_codes": [
+          "8.01",
+          "9.01"
+        ],
+        "financing_evidence_excerpt": "Soliciting material pursuant to Rule 14a-12 under the Exchange Act (17 CFR 240.14a-12)  Pre-commencement communications pursuant to Rule 14d-2(b) under the Exchange Act (17 CFR 240.14d-2(b))  Pre-commencement communications pursuant to Rule 13e-4(c) under the Exchange Act (17 CFR 240.13e-4(c)) SECURITIES REGISTERED PURSUANT TO SECTION 12(b) OF THE ACT:      Title of each class  Trading symbol  Name of each exchange on which registered Common stock, $1 par value  DE  New York Stock Exchange 6.55% Debentures Due 2028  DE28  New York Stock Exchange  Indicate by check mark whether the registrant is an emerging growth company as defined in Rule 405 of the Securities Act of 1933 (230.405 of this chapter) or Rule 12b-2 of the Securities Exchange Act of 1934 (240.12b-2 of this chapter). Emerging growth company  If an emerging growth company, indicate by check mark if the registr",
+        "financing_evidence_span_count": 36,
+        "financing_filing_date": "2025-01-16",
+        "financing_financing_amount_usd": 1250000000.0,
+        "financing_float_dilution_pct": null,
+        "financing_form_base": "8-K",
+        "financing_form_type": "8-K",
+        "financing_hedging_terms_present": false,
+        "financing_lockup_or_hedging_terms_present": false,
+        "financing_lockup_terms_present": false,
+        "financing_market_cap_usd": 121661134883.78,
+        "financing_offering_status": "completed_or_issued",
+        "financing_pit_caveat": "SEC public archive text fetched after the fact and keyed by accepted_at/usable_trade_date; it is a replayable public-PIT proxy, not proof the production pipeline observed the document.",
+        "financing_pit_source": "sec_archive_public_filing_text",
+        "financing_primary_document": "de-20250113x8k.htm",
+        "financing_richer_field_count": 4,
+        "financing_richer_fields_materialized": [
+          "actual_takedown_amount_usd",
+          "shelf_capacity_amount_usd",
+          "actual_to_shelf_ratio",
+          "underwriter_names"
+        ],
+        "financing_security_type": "debt_notes",
+        "financing_share_mentions": 0,
+        "financing_shares_offered": null,
+        "financing_shares_outstanding": 271575282.0,
+        "financing_shares_outstanding_end": "2024-11-29",
+        "financing_shares_outstanding_fact_age_days": 36,
+        "financing_shares_outstanding_filed": "2024-12-12",
+        "financing_shelf_capacity_amount_usd": 1250000000.0,
+        "financing_signal_day_close_for_market_cap": 447.9831,
+        "financing_source_file": "data/non_ohlcv/sec_filing_text_20250116.jsonl",
+        "financing_text_char_count": 87020,
+        "financing_text_word_count": 13801,
+        "financing_text_word_count_scanned": 13801,
+        "financing_top_tier_underwriter_count": 7,
+        "financing_underwriter_names": [
+          "Barclays",
+          "BofA",
+          "Citigroup",
+          "Deutsche Bank",
+          "Goldman Sachs",
+          "J.P. Morgan",
+          "RBC",
+          "TD Securities",
+          "Truist",
+          "Wells Fargo"
+        ],
+        "financing_underwriter_quality_bucket": "multiple_top_tier",
+        "financing_usable_trade_date": "2025-01-17",
+        "financing_use_of_proceeds": "use_unspecified",
+        "financing_window_label": "old_thin",
+        "hold_days": 10,
+        "industry": "Farm & Heavy Construction Machinery",
+        "known_at": "sec_filing_text_usable_trade_date_and_signal_close_before_next_open_paper_entry",
+        "paper_notional_usd": 4000.0,
+        "pnl": 56.78,
+        "pnl_pct_net": 0.014196,
+        "rule_version": "sec_offering_richer_terms_constructive_financing_candidate_pool_v1",
+        "sector": "Industrials",
+        "signal_date": "2025-01-17",
+        "source": "SEC_OFFERING_RICHER_TERMS_CONSTRUCTIVE_FINANCING_PAPER",
+        "source_rule_version": "sec_offering_richer_terms_constructive_financing_candidate_pool_v1",
+        "ticker": "DE",
+        "trade_enabled": false,
+        "uses_free_ohlcv": true,
+        "uses_free_sec_companyfacts": true,
+        "uses_free_sec_filing_text": true,
+        "uses_llm": false
+      }
+    ]
+  },
+  "timestamp": "2026-06-24T19:16:34Z",
+  "total_pnl_delta": 56.78,
+  "trial_family": "sec_offering_richer_terms_constructive_financing_candidate_pool",
+  "trial_variant_id": "top1_next_open_10d_v1",
+  "warehouse_coverage_by_window": {
+    "late_strong": {
+      "loaded_ticker_count": 49,
+      "sector_known_ticker_count": 35,
+      "source": "data/warehouse/warehouse_main.sqlite"
+    },
+    "mid_weak": {
+      "loaded_ticker_count": 49,
+      "sector_known_ticker_count": 35,
+      "source": "data/warehouse/warehouse_main.sqlite"
+    },
+    "old_thin": {
+      "loaded_ticker_count": 49,
+      "sector_known_ticker_count": 35,
+      "source": "data/warehouse/warehouse_main.sqlite"
+    }
+  }
+}

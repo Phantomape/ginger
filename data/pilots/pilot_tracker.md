@@ -1,14 +1,8 @@
-# Pilot tracker - as of 2026-06-24T10:15:37+00:00
+# Pilot tracker - as of 2026-06-26T05:21:14+00:00
 
 Per-position book: $10,000. Read-only; manual execution.
 Graduate/kill rule (pre-committed): >= 20 closed AND sum rv_vs_SPY > 0 AND book DD < 15%.
 Manual stop overlay: cut a held position at -15% from entry (does not change the sleeve).
-
-## [!] Cross-pilot overlap (stacked exposure on one name)
-
-- **DDOG**: held by 2 pilots (Source-priority allocator (TOP-1 only), Fundamental growth + RS) -> $20,000 real exposure
-  - Source-priority allocator (TOP-1 only): HOLD, verdict COLLECTING
-  - Fundamental growth + RS: HOLD, verdict KILL, new entries blocked
 
 ## Scorecard
 
@@ -16,12 +10,12 @@ Manual stop overlay: cut a held position at -15% from entry (does not change the
 |---|--:|--:|--:|--:|--:|--:|--:|---|
 | Source-priority allocator (TOP-1 only) | 0 | - | $0 | $0 | $0 | $0 | 0.0% | **COLLECTING** |
 | Distribution-day absorption leadership | 0 | - | $0 | $0 | $0 | $0 | 0.0% | **COLLECTING** |
-| Fundamental growth + RS | 5 | 60% | $-1,228 | $-1,228 | $-230 | $-54 | 24.3% | **KILL** |
+| Fundamental growth + RS | 7 | 43% | $-2,178 | $-2,178 | $-631 | $-232 | 24.4% | **KILL** |
 
 ## Today's signals (BUY / HOLD / SELL)
 
 ### Source-priority allocator (TOP-1 only)  (`accepted_helper_source_priority_allocator`, max_concurrent=1)
-- hold DDOG: day 3/10 (7 left); entry 224.15, last 220.57 (-1.6%)
+- hold DDOG: day 5/10 (5 left); entry 224.15, last 220.94 (-1.4%)
 - _skip_ INTC (SKIP_concurrency_cap)
 - _skip_ MU (SKIP_concurrency_cap)
 - _skip_ CRDO (SKIP_concurrency_cap)
@@ -31,11 +25,15 @@ Manual stop overlay: cut a held position at -15% from entry (does not change the
 - _skip_ WDC (SKIP_concurrency_cap)
 
 ### Distribution-day absorption leadership  (`distribution_day_absorption_leadership`, max_concurrent=None)
-- _no position / no signal today_
+- **BUY (next open)** CAT (signal 2026-06-25); time exit after 10 trading days held; rank=None score=1.790624
+- **BUY (next open)** MOH (signal 2026-06-25); time exit after 10 trading days held; rank=None score=1.899196
+- hold GE: day 1/10 (9 left); entry 367.83, last 371.36 (+1.0%)
+- hold AAL: day 1/10 (9 left); entry 17.50, last 17.57 (+0.4%)
 
 ### Fundamental growth + RS  (`fundamental_growth_rs`, max_concurrent=None)
 - _new entries blocked: KILL verdict_
-- hold MU: day 8/10 (2 left); entry 1099.93, last 1051.77 (-4.4%)
-- hold DDOG: day 7/10 (3 left); entry 230.19, last 220.57 (-4.2%)
-- hold AMD: day 2/10 (8 left); entry 508.83, last 519.85 (+2.2%)
+- hold AMD: day 6/10 (4 left); entry 508.83, last 532.57 (+4.7%)
+- hold CRDO: day 1/10 (9 left); entry 290.11, last 268.03 (-7.6%)
+- hold MU: day 1/10 (9 left); entry 1233.97, last 1213.56 (-1.7%)
+- _skip_ DDOG (SKIP_pilot_kill_verdict)
 

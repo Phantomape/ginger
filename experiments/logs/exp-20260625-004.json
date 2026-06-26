@@ -1,0 +1,273 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "after": "data/experiments/exp-20260625-004/exp_20260625_004_local_ohlcv_recovery_surface_audit_after.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "alpha_hypothesis": "Estimate-revision candidate matches may contain replacement value, but that alpha is only testable if selected/current rows can be settled with PIT-safe 2026-06-24 daily prices versus cash, SPY, and QQQ.",
+  "alpha_ready": false,
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260625-004/exp_20260625_004_local_ohlcv_recovery_surface_audit.json",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "before": "data/experiments/exp-20260625-004/exp_20260625_004_local_ohlcv_recovery_surface_audit_before.json",
+  "calibration": {
+    "actual_gate4_passed": false,
+    "actual_success": 0.0,
+    "brier_score": 0.04,
+    "predicted_failure_modes": [
+      "no_local_20260624_ohlcv",
+      "only_intraday_positions_prices",
+      "no_candidate_level_price_coverage",
+      "warehouse_still_stale"
+    ],
+    "realized_failure_modes": [
+      "warehouse_latest_date_before_required_entry_date",
+      "no_local_daily_ohlcv_equivalent_for_20260624_selected_current_rows",
+      "cannot_settle_minimum_selected_current_rows"
+    ],
+    "surprise_note": "Low surprise. Local operational price files are not PIT-safe daily OHLCV and cannot substitute for the stale warehouse."
+  },
+  "causal_components": [
+    "warehouse_date_range",
+    "daily_universe_shape",
+    "intraday_review_price_scope",
+    "order_snapshot_price_scope",
+    "local_price_file_search"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260625_004_local_ohlcv_recovery_surface_audit.py",
+    "data/experiments/exp-20260625-004/",
+    "experiments/logs/exp-20260625-004.json",
+    "experiments/cards/exp-20260625-004.md",
+    "experiments/manifests/exp-20260625-004.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "local_post_20260615_ohlcv_recovery_surface_audit_v1",
+  "decision": "blocked_no_local_20260624_daily_ohlcv_recovery_surface",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260625-004",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_exists": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "windows": [
+        {
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "label": "late_strong",
+          "max_drawdown_pct": 0.0665,
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "sharpe_daily": 4.41,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "start": "2025-10-23",
+          "survival_rate": 0.8039,
+          "total_pnl": 117072.92,
+          "trade_count": 18,
+          "win_rate": 0.8333
+        },
+        {
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "label": "mid_weak",
+          "max_drawdown_pct": 0.1119,
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "sharpe_daily": 2.74,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "start": "2025-04-23",
+          "survival_rate": 0.7925,
+          "total_pnl": 78110.11,
+          "trade_count": 21,
+          "win_rate": 0.5238
+        },
+        {
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "label": "old_thin",
+          "max_drawdown_pct": 0.1001,
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "sharpe_daily": 1.49,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "start": "2024-10-02",
+          "survival_rate": 0.8667,
+          "total_pnl": 39667.96,
+          "trade_count": 22,
+          "win_rate": 0.4091
+        }
+      ]
+    },
+    "passed": true
+  },
+  "gate2": {
+    "failed_reasons": [
+      "warehouse_latest_date_before_required_entry_date",
+      "no_local_daily_ohlcv_equivalent_for_20260624_selected_current_rows"
+    ],
+    "passed": false,
+    "price_like_surface_summary": [
+      {
+        "current_price_rows": 0,
+        "daily_ohlcv_selected_current_ticker_coverage": 0,
+        "exists": true,
+        "path": "data/daily/universe/universe_state_20260624.json",
+        "reason": "no_candidate_level_daily_ohlcv",
+        "usable_for_entry_day_settlement": false
+      },
+      {
+        "current_price_rows": 17,
+        "daily_ohlcv_selected_current_ticker_coverage": 0,
+        "exists": true,
+        "path": "data/daily/intraday/snapshots/intraday_review_20260624_1302ET.json",
+        "reason": "no_candidate_level_daily_ohlcv",
+        "usable_for_entry_day_settlement": false
+      },
+      {
+        "current_price_rows": 29,
+        "daily_ohlcv_selected_current_ticker_coverage": 0,
+        "exists": true,
+        "path": "data/daily/orders/bracket_orders_20260623.json",
+        "reason": "no_candidate_level_daily_ohlcv",
+        "usable_for_entry_day_settlement": false
+      },
+      {
+        "current_price_rows": 0,
+        "daily_ohlcv_selected_current_ticker_coverage": 0,
+        "exists": true,
+        "path": "data/backtests/backtest_results_20260623.json",
+        "reason": "no_candidate_level_daily_ohlcv",
+        "usable_for_entry_day_settlement": false
+      },
+      {
+        "current_price_rows": 0,
+        "daily_ohlcv_selected_current_ticker_coverage": 0,
+        "exists": true,
+        "path": "data/kova/intraday/intraday_ohlcv_20260623.jsonl",
+        "reason": "no_candidate_level_daily_ohlcv",
+        "usable_for_entry_day_settlement": false
+      },
+      {
+        "current_price_rows": 0,
+        "daily_ohlcv_selected_current_ticker_coverage": 0,
+        "exists": false,
+        "path": "data/kova/intraday/intraday_ohlcv_20260624.jsonl",
+        "reason": "file_missing",
+        "usable_for_entry_day_settlement": false
+      }
+    ],
+    "required_entry_date": "2026-06-24",
+    "warehouse": {
+      "can_settle_required_entry_date": false,
+      "exists": true,
+      "max_date": "2026-06-15",
+      "min_date": "2023-08-29",
+      "path": "data/warehouse/warehouse_main.sqlite",
+      "reason": "warehouse_stale",
+      "required_entry_date": "2026-06-24",
+      "rows": 5015715
+    }
+  },
+  "gate3": {
+    "note": "Signals_generated_proxy is selected/current rows needing settlement; signals_survived_proxy is local daily OHLCV-equivalent coverage, not an executable trading filter.",
+    "passed": true,
+    "signals_generated_proxy": 163,
+    "signals_survived_proxy": 0,
+    "survival_rate_proxy": 0.0
+  },
+  "gate4": {
+    "aggregate_ev_delta": 0.0,
+    "aggregate_pnl_delta": 0.0,
+    "decision": "blocked_no_local_20260624_daily_ohlcv_recovery_surface",
+    "expected_value_score_sum_after": 7.8941,
+    "expected_value_score_sum_before": 7.8941,
+    "failed_reasons": [
+      "warehouse_latest_date_before_required_entry_date",
+      "no_local_daily_ohlcv_equivalent_for_20260624_selected_current_rows",
+      "cannot_settle_minimum_selected_current_rows"
+    ],
+    "max_selected_current_daily_ohlcv_coverage": 0,
+    "minimum_selected_current_settled_rows": 20,
+    "passed": false,
+    "strategy_behavior_changed": false,
+    "total_pnl_after": 234850.99,
+    "total_pnl_before": 234850.99,
+    "trade_count_after": 61,
+    "trade_count_before": 61
+  },
+  "hypothesis": "measurement_repair: estimate-revision candidate-match replacement value may become testable once the post-2026-06-15 OHLCV freshness blocker is audited across every local price-like surface; do not retest revision thresholds unless a true 2026-06-24 daily price source exists.",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260625-004.json",
+  "mechanism_family": "estimate_revision_candidate_match_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260625-002",
+    "exp-20260624-012",
+    "exp-20260624-002"
+  ],
+  "new_evidence_axis": "Local price-like surface audit after exp-20260625-002, covering intraday review, orders, universe, backtest artifacts, and file inventory; not a revision threshold or observed-only forward condition reslice.",
+  "new_evidence_type": "local_price_surface_recovery_audit",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry revision thresholds, direction gates, top-N, hold days, notional, rank, or observed-only condition slices on the same 2026-06-23/2026-06-24 surface. Do not treat intraday review current prices or bracket-order current prices as settled entry-day outcomes.",
+    "new_evidence_required": "Refresh or materialize PIT-safe daily OHLCV through at least 2026-06-24 for the selected/current candidate universe, or add a validated quote/bars archive with entry and close semantics for cash/SPY/QQQ replacement values.",
+    "outcome_summary": "Warehouse latest date 2026-06-15; max selected/current daily-OHLCV coverage across local side surfaces 0/163.",
+    "why_result_happened": "No local price-like surface can safely settle the exp-20260625-002 selected/current estimate-revision rows for 2026-06-24. The warehouse max date is 2026-06-15; intraday review and bracket orders expose current prices only for held/order tickers, Kova intraday is missing or skipped, and universe/backtest artifacts do not provide candidate-level daily open/high/low/close/volume for the required date."
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260625-002 already showed the warehouse stops at 2026-06-15; this run checks whether other local surfaces can repair that specific blocker before any alpha retry.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "no_local_20260624_ohlcv",
+      "only_intraday_positions_prices",
+      "no_candidate_level_price_coverage",
+      "warehouse_still_stale"
+    ],
+    "recorded_at": "2026-06-25T03:08:21+00:00",
+    "success_probability": 0.2
+  },
+  "production_impact": {
+    "adapter_status": "none",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "parity_note": "Measurement artifact only. This run audits local data availability and writes no shared helper, backtester adapter, daily adapter, order, rank, size, exit, watchlist, or LLM changes.",
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "runner": "quant/experiments/exp_20260625_004_local_ohlcv_recovery_surface_audit.py",
+  "single_causal_variable": "local_post_20260615_ohlcv_recovery_surface_audit_v1",
+  "status": "blocked",
+  "timestamp": "2026-06-25T03:13:07Z",
+  "trial_family": "local_ohlcv_recovery_surface_audit",
+  "trial_variant_id": "local_post_20260615_ohlcv_recovery_surface_audit_v1"
+}

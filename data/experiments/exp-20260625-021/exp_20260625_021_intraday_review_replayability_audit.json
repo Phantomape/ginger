@@ -1,0 +1,2044 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260625_021_intraday_review_replayability_audit.py",
+    "data/experiments/exp-20260625-021/exp_20260625_021_intraday_review_replayability_audit.json",
+    "experiments/cards/exp-20260625-021.md",
+    "experiments/manifests/exp-20260625-021.json",
+    "experiments/tickets/exp-20260625-021.json",
+    "experiments/logs/exp-20260625-021.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "Intraday 13:00 ET risk-state changes may carry exit/risk timing value because they re-evaluate live positions against current intraday prices before the EOD pipeline; this is only alpha-testable if the saved surface has real-time quote timestamps, stable position/action fields, entry/target context, and enough closed forward outcomes.",
+  "alpha_ready": false,
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260625-021/exp_20260625_021_intraday_review_replayability_audit.json",
+  "calibration": {
+    "actual_gate4_passed": false,
+    "actual_success": 0.0,
+    "brier_score": 0.0576,
+    "predicted_failure_modes": [
+      "posthoc_backfilled_files",
+      "quote_time_missing",
+      "no_action_rows",
+      "warehouse_too_stale_for_recent_intraday_rows",
+      "duplicate_exit_lifecycle_surface"
+    ],
+    "predicted_failure_modes_hit": [
+      "posthoc_backfilled_files",
+      "quote_time_missing",
+      "no_action_rows",
+      "warehouse_too_stale_for_recent_intraday_rows"
+    ],
+    "predicted_success_probability": 0.24,
+    "realized_failure_modes": [
+      "posthoc_backfilled_snapshot_files",
+      "quote_time_missing_for_intraday_quotes",
+      "entry_date_missing_for_position_rows",
+      "no_executable_pending_action_rows",
+      "insufficient_5d_outcome_settlement",
+      "surface_declares_advisory_only_not_eod_or_backtest_consumed"
+    ],
+    "surprise_note": "Low surprise: the surface exists and is schema-stable, but the PIT/action/outcome contracts are not strong enough for alpha replay."
+  },
+  "causal_components": [
+    "intraday snapshot schema audit",
+    "file timestamp PIT audit",
+    "position/action extraction",
+    "outcome settlement coverage",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260625_021_intraday_review_replayability_audit.py",
+    "data/experiments/exp-20260625-021/exp_20260625_021_intraday_review_replayability_audit.json",
+    "experiments/cards/exp-20260625-021.md",
+    "experiments/manifests/exp-20260625-021.json",
+    "experiments/tickets/exp-20260625-021.json",
+    "experiments/logs/exp-20260625-021.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "intraday_review_replayability_and_outcome_readiness_v1",
+  "decision": "blocked_intraday_review_not_alpha_replay_ready",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260625-021",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_exists": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3,
+      "windows": [
+        {
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "label": "late_strong",
+          "max_drawdown_pct": 0.0665,
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "sharpe_daily": 4.41,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "start": "2025-10-23",
+          "survival_rate": 0.8039,
+          "total_pnl": 117072.92,
+          "trade_count": 18,
+          "win_rate": 0.8333
+        },
+        {
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "label": "mid_weak",
+          "max_drawdown_pct": 0.1119,
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "sharpe_daily": 2.74,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "start": "2025-04-23",
+          "survival_rate": 0.7925,
+          "total_pnl": 78110.11,
+          "trade_count": 21,
+          "win_rate": 0.5238
+        },
+        {
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "label": "old_thin",
+          "max_drawdown_pct": 0.1001,
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "sharpe_daily": 1.49,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "start": "2024-10-02",
+          "survival_rate": 0.8667,
+          "total_pnl": 39667.96,
+          "trade_count": 22,
+          "win_rate": 0.4091
+        }
+      ]
+    },
+    "note": "Measurement audit only; before and after strategy behavior are identical.",
+    "passed": true
+  },
+  "gate2": {
+    "failed_reasons": [
+      "posthoc_backfilled_snapshot_files",
+      "quote_time_missing_for_intraday_quotes",
+      "entry_date_missing_for_position_rows",
+      "no_executable_pending_action_rows",
+      "surface_declares_advisory_only_not_eod_or_backtest_consumed"
+    ],
+    "field_coverage": {
+      "entry_date": {
+        "coverage": 0.0,
+        "position_rows": 232,
+        "present_rows": 0
+      },
+      "hard_stop_price": {
+        "coverage": 1.0,
+        "position_rows": 232,
+        "present_rows": 232
+      },
+      "market_value_usd": {
+        "coverage": 0.943966,
+        "position_rows": 232,
+        "present_rows": 219
+      },
+      "quote_price": {
+        "coverage": 0.943966,
+        "position_rows": 232,
+        "present_rows": 219
+      },
+      "quote_source": {
+        "coverage": 1.0,
+        "position_rows": 232,
+        "present_rows": 232
+      },
+      "quote_time_et": {
+        "coverage": 0.0,
+        "position_rows": 232,
+        "present_rows": 0
+      },
+      "shares": {
+        "coverage": 1.0,
+        "position_rows": 232,
+        "present_rows": 232
+      },
+      "snapshot_date": {
+        "coverage": 1.0,
+        "position_rows": 232,
+        "present_rows": 232
+      },
+      "target_price": {
+        "coverage": 1.0,
+        "position_rows": 232,
+        "present_rows": 232
+      },
+      "ticker": {
+        "coverage": 1.0,
+        "position_rows": 232,
+        "present_rows": 232
+      },
+      "triggered_rules": {
+        "coverage": 0.405172,
+        "position_rows": 232,
+        "present_rows": 94
+      }
+    },
+    "passed": false,
+    "required_fields_checked": [
+      "snapshot_date",
+      "ticker",
+      "quote_price",
+      "quote_source",
+      "quote_time_et",
+      "entry_date",
+      "target_price",
+      "hard_stop_price",
+      "shares",
+      "market_value_usd",
+      "triggered_rules"
+    ],
+    "snapshot_dir": "data/daily/intraday/snapshots",
+    "snapshot_file_count": 16,
+    "target_price_scope": "Checked via context.exit_levels.signal_target_price/profit_target_price. No target exit, order, or strategy behavior is scheduled.",
+    "warehouse": {
+      "exists": true,
+      "max_date": "2026-06-15",
+      "min_date": "2023-08-29",
+      "path": "data/warehouse/warehouse_main.sqlite",
+      "rows": 5015715
+    }
+  },
+  "gate3": {
+    "baseline_survival_rate": 0.823171,
+    "filter_added": false,
+    "note": "Coverage is measurement-only. Survival here means rows with triggered advisory rules, not an executable entry/exit filter.",
+    "passed": true,
+    "signals_generated_proxy": 232,
+    "signals_survived_proxy": 94,
+    "survival_rate_proxy": 0.405172
+  },
+  "gate4": {
+    "aggregate_ev_delta": 0.0,
+    "aggregate_pnl_delta": 0.0,
+    "decision": "blocked_intraday_review_not_alpha_replay_ready",
+    "expected_value_score_sum_after": 7.8941,
+    "expected_value_score_sum_before": 7.8941,
+    "failed_reasons": [
+      "posthoc_backfilled_snapshot_files",
+      "quote_time_missing_for_intraday_quotes",
+      "entry_date_missing_for_position_rows",
+      "no_executable_pending_action_rows",
+      "insufficient_5d_outcome_settlement",
+      "surface_declares_advisory_only_not_eod_or_backtest_consumed"
+    ],
+    "passed": false,
+    "readiness": {
+      "decision": "blocked_intraday_review_not_alpha_replay_ready",
+      "failed_reasons": [
+        "posthoc_backfilled_snapshot_files",
+        "quote_time_missing_for_intraday_quotes",
+        "entry_date_missing_for_position_rows",
+        "no_executable_pending_action_rows",
+        "insufficient_5d_outcome_settlement",
+        "surface_declares_advisory_only_not_eod_or_backtest_consumed"
+      ],
+      "observed": {
+        "advisory_only_snapshots": 16,
+        "entry_date_coverage": 0.0,
+        "pending_actions_count": 0,
+        "position_rows": 232,
+        "posthoc_backfilled_files": 5,
+        "quote_time_coverage": 0.0,
+        "settled_5d_rows": 0,
+        "settled_5d_snapshot_date_count": 0,
+        "snapshot_count": 16,
+        "target_context_coverage": 1.0,
+        "unique_snapshot_dates": 14
+      },
+      "passed": false,
+      "thresholds": {
+        "backfill_lag_hours": 2.0,
+        "min_entry_date_coverage": 0.8,
+        "min_pending_action_rows": 1,
+        "min_position_rows": 100,
+        "min_quote_time_coverage": 0.8,
+        "min_settled_5d_rows": 50,
+        "min_snapshot_count": 8,
+        "min_target_context_coverage": 0.8
+      }
+    },
+    "strategy_behavior_changed": false,
+    "total_pnl_after": 234850.99,
+    "total_pnl_before": 234850.99,
+    "trade_count_after": 61,
+    "trade_count_before": 61
+  },
+  "hypothesis": "Repair/audit the intraday risk-review alpha blocker by checking whether data/daily/intraday snapshots are PIT-valid, schema-stable, and outcome-ready enough to support a future 13:00 ET exit/risk timing alpha without changing strategy behavior.",
+  "implementation_mode": "measurement_audit_only_no_strategy_change",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260625-021.json",
+  "mechanism_family": "intraday_review_alpha_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260613-022",
+    "exp-20260623-011",
+    "exp-20260623-012",
+    "exp-20260625-004",
+    "exp-20260625-017"
+  ],
+  "new_evidence_axis": "Machine-checkable new data surface: timestamped data/daily/intraday/snapshots/intraday_review_YYYYMMDD_HHMMET.json files across 2026-06-11..2026-06-25; this audits PIT timestamp/schema/outcome readiness rather than retuning exit lifecycle or LLM state thresholds.",
+  "new_evidence_type": "intraday_timestamped_snapshot_replayability_audit",
+  "observed_only_lead": false,
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not convert intraday BREACHED/APPROACHING/status labels, hard-stop, ATR-stop, target, time-stop, trailing-stop, or LLM state overlaps into exits/risk rules on these same snapshots. Do not retry by changing severity thresholds or hold horizons until the replay contract is repaired.",
+    "new_evidence_required": "A valid intraday retry needs real quote timestamps or broker bar IDs, entry_date and target context on position rows, explicit pending action/order semantics, a daily/default-off shared helper if promoted, and materially more closed warehouse outcome rows past 2026-06-15.",
+    "outcome_summary": "16 intraday snapshot files and 232 position rows were audited; 5d settled rows=0 with warehouse max date 2026-06-15.",
+    "why_result_happened": "The surface is useful as an operator risk review but not yet an alpha replay surface: quote_time_et is missing on position quotes, entry_date is absent from position rows, every snapshot declares advisory-only/non-backtest consumption, no pending action rows are recorded, several files were written well after their embedded generated_at timestamp, and the warehouse only supports minimal one-day outcome coverage."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Intraday 13:00 ET risk-state changes may carry exit/risk timing value because they re-evaluate live positions against current intraday prices before the EOD pipeline; this is only alpha-testable if the saved surface has real-time quote timestamps, stable position/action fields, entry/target context, and enough closed forward outcomes.",
+    "2_history_check": {
+      "exp-20260613-022": "Repaired intraday artifact writes and tests; did not test alpha replayability.",
+      "exp-20260623-011": "Observed-only exit-lifecycle lead; no promotion without more closed rows/helper.",
+      "exp-20260623-012": "Observed-only daily LLM position-state lead; no shared rule promoted.",
+      "exp-20260625-004": "Audited local OHLCV recovery and found intraday snapshot was not daily OHLCV settlement.",
+      "exp-20260625-017": "Confirmed 20260624 intraday/Kova surfaces did not repair recent OHLCV blocker.",
+      "novelty_gate": "Reservation passed without override; this audits timestamp/schema readiness on the intraday snapshot surface."
+    },
+    "3_single_policy_bundle": "intraday_review_replayability_and_outcome_readiness_v1",
+    "4_success_failure_standard": {
+      "backfill_lag_hours": 2.0,
+      "min_entry_date_coverage": 0.8,
+      "min_pending_action_rows": 1,
+      "min_position_rows": 100,
+      "min_quote_time_coverage": 0.8,
+      "min_settled_5d_rows": 50,
+      "min_snapshot_count": 8,
+      "min_target_context_coverage": 0.8
+    },
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260625_021_intraday_review_replayability_audit.py"
+  },
+  "prediction": {
+    "confidence_reason": "The intraday surface has more than one saved date and a distinct 13:00 ET timestamp, but prior exit/LLM attribution work already consumed daily labels and the warehouse is stale after 2026-06-15, so alpha-ready replayability is unlikely.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "posthoc_backfilled_files",
+      "quote_time_missing",
+      "no_action_rows",
+      "warehouse_too_stale_for_recent_intraday_rows",
+      "duplicate_exit_lifecycle_surface"
+    ],
+    "recorded_at": "2026-06-25T19:09:14+00:00",
+    "success_probability": 0.24
+  },
+  "production_impact": {
+    "adapter_status": "none",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "parity_note": "Read-only measurement audit; no production or replay behavior changed.",
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/warehouse/warehouse_main.sqlite",
+    "data/daily/intraday/snapshots",
+    "quant/intraday_review.py",
+    "docs/intraday_risk_review.md",
+    "experiments/logs/exp-20260613-022.json",
+    "experiments/logs/exp-20260623-011.json",
+    "experiments/logs/exp-20260623-012.json",
+    "experiments/logs/exp-20260625-004.json",
+    "experiments/logs/exp-20260625-017.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260625_021_intraday_review_replayability_audit.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260625_021_intraday_review_replayability_audit.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_intraday_review.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "runner": "quant/experiments/exp_20260625_021_intraday_review_replayability_audit.py",
+  "single_causal_variable": "intraday_review_replayability_and_outcome_readiness_v1",
+  "source_summary": {
+    "field_coverage": {
+      "entry_date": {
+        "coverage": 0.0,
+        "position_rows": 232,
+        "present_rows": 0
+      },
+      "hard_stop_price": {
+        "coverage": 1.0,
+        "position_rows": 232,
+        "present_rows": 232
+      },
+      "market_value_usd": {
+        "coverage": 0.943966,
+        "position_rows": 232,
+        "present_rows": 219
+      },
+      "quote_price": {
+        "coverage": 0.943966,
+        "position_rows": 232,
+        "present_rows": 219
+      },
+      "quote_source": {
+        "coverage": 1.0,
+        "position_rows": 232,
+        "present_rows": 232
+      },
+      "quote_time_et": {
+        "coverage": 0.0,
+        "position_rows": 232,
+        "present_rows": 0
+      },
+      "shares": {
+        "coverage": 1.0,
+        "position_rows": 232,
+        "present_rows": 232
+      },
+      "snapshot_date": {
+        "coverage": 1.0,
+        "position_rows": 232,
+        "present_rows": 232
+      },
+      "target_price": {
+        "coverage": 1.0,
+        "position_rows": 232,
+        "present_rows": 232
+      },
+      "ticker": {
+        "coverage": 1.0,
+        "position_rows": 232,
+        "present_rows": 232
+      },
+      "triggered_rules": {
+        "coverage": 0.405172,
+        "position_rows": 232,
+        "present_rows": 94
+      }
+    },
+    "outcome_coverage": {
+      "1": {
+        "horizon_days": 1,
+        "missing_reasons": {
+          "missing_ticker_or_comparator_prices": 26,
+          "warehouse_calendar_horizon_missing": 167
+        },
+        "position_rows": 232,
+        "sample_missing": [
+          {
+            "entry_date": "2026-06-15",
+            "exit_date": "2026-06-15",
+            "horizon": 1,
+            "missing": [
+              "AMD:2026-06-15",
+              "SPY:2026-06-15"
+            ],
+            "snapshot_date": "2026-06-13",
+            "ticker": "AMD"
+          },
+          {
+            "entry_date": "2026-06-15",
+            "exit_date": "2026-06-15",
+            "horizon": 1,
+            "missing": [
+              "AMZN:2026-06-15",
+              "SPY:2026-06-15"
+            ],
+            "snapshot_date": "2026-06-13",
+            "ticker": "AMZN"
+          },
+          {
+            "entry_date": "2026-06-15",
+            "exit_date": "2026-06-15",
+            "horizon": 1,
+            "missing": [
+              "SPY:2026-06-15"
+            ],
+            "snapshot_date": "2026-06-13",
+            "ticker": "APP"
+          },
+          {
+            "entry_date": "2026-06-15",
+            "exit_date": "2026-06-15",
+            "horizon": 1,
+            "missing": [
+              "COHR:2026-06-15",
+              "SPY:2026-06-15"
+            ],
+            "snapshot_date": "2026-06-13",
+            "ticker": "COHR"
+          },
+          {
+            "entry_date": "2026-06-15",
+            "exit_date": "2026-06-15",
+            "horizon": 1,
+            "missing": [
+              "SPY:2026-06-15"
+            ],
+            "snapshot_date": "2026-06-13",
+            "ticker": "GOOG"
+          },
+          {
+            "entry_date": "2026-06-15",
+            "exit_date": "2026-06-15",
+            "horizon": 1,
+            "missing": [
+              "SPY:2026-06-15"
+            ],
+            "snapshot_date": "2026-06-13",
+            "ticker": "META"
+          },
+          {
+            "entry_date": "2026-06-15",
+            "exit_date": "2026-06-15",
+            "horizon": 1,
+            "missing": [
+              "MRVL:2026-06-15",
+              "SPY:2026-06-15"
+            ],
+            "snapshot_date": "2026-06-13",
+            "ticker": "MRVL"
+          },
+          {
+            "entry_date": "2026-06-15",
+            "exit_date": "2026-06-15",
+            "horizon": 1,
+            "missing": [
+              "NBIS:2026-06-15",
+              "SPY:2026-06-15"
+            ],
+            "snapshot_date": "2026-06-13",
+            "ticker": "NBIS"
+          }
+        ],
+        "settled_rate": 0.168103,
+        "settled_rows": 39,
+        "settled_rows_by_snapshot_date": {
+          "2026-06-11": 39
+        },
+        "settled_snapshot_date_count": 1
+      },
+      "3": {
+        "horizon_days": 3,
+        "missing_reasons": {
+          "warehouse_calendar_horizon_missing": 232
+        },
+        "position_rows": 232,
+        "sample_missing": [
+          {
+            "horizon": 3,
+            "reason": "warehouse_calendar_horizon_missing",
+            "snapshot_date": "2026-06-11",
+            "ticker": "AMD"
+          },
+          {
+            "horizon": 3,
+            "reason": "warehouse_calendar_horizon_missing",
+            "snapshot_date": "2026-06-11",
+            "ticker": "AMZN"
+          },
+          {
+            "horizon": 3,
+            "reason": "warehouse_calendar_horizon_missing",
+            "snapshot_date": "2026-06-11",
+            "ticker": "APP"
+          },
+          {
+            "horizon": 3,
+            "reason": "warehouse_calendar_horizon_missing",
+            "snapshot_date": "2026-06-11",
+            "ticker": "COHR"
+          },
+          {
+            "horizon": 3,
+            "reason": "warehouse_calendar_horizon_missing",
+            "snapshot_date": "2026-06-11",
+            "ticker": "GOOG"
+          },
+          {
+            "horizon": 3,
+            "reason": "warehouse_calendar_horizon_missing",
+            "snapshot_date": "2026-06-11",
+            "ticker": "META"
+          },
+          {
+            "horizon": 3,
+            "reason": "warehouse_calendar_horizon_missing",
+            "snapshot_date": "2026-06-11",
+            "ticker": "MRVL"
+          },
+          {
+            "horizon": 3,
+            "reason": "warehouse_calendar_horizon_missing",
+            "snapshot_date": "2026-06-11",
+            "ticker": "NBIS"
+          }
+        ],
+        "settled_rate": 0.0,
+        "settled_rows": 0,
+        "settled_rows_by_snapshot_date": {},
+        "settled_snapshot_date_count": 0
+      },
+      "5": {
+        "horizon_days": 5,
+        "missing_reasons": {
+          "warehouse_calendar_horizon_missing": 232
+        },
+        "position_rows": 232,
+        "sample_missing": [
+          {
+            "horizon": 5,
+            "reason": "warehouse_calendar_horizon_missing",
+            "snapshot_date": "2026-06-11",
+            "ticker": "AMD"
+          },
+          {
+            "horizon": 5,
+            "reason": "warehouse_calendar_horizon_missing",
+            "snapshot_date": "2026-06-11",
+            "ticker": "AMZN"
+          },
+          {
+            "horizon": 5,
+            "reason": "warehouse_calendar_horizon_missing",
+            "snapshot_date": "2026-06-11",
+            "ticker": "APP"
+          },
+          {
+            "horizon": 5,
+            "reason": "warehouse_calendar_horizon_missing",
+            "snapshot_date": "2026-06-11",
+            "ticker": "COHR"
+          },
+          {
+            "horizon": 5,
+            "reason": "warehouse_calendar_horizon_missing",
+            "snapshot_date": "2026-06-11",
+            "ticker": "GOOG"
+          },
+          {
+            "horizon": 5,
+            "reason": "warehouse_calendar_horizon_missing",
+            "snapshot_date": "2026-06-11",
+            "ticker": "META"
+          },
+          {
+            "horizon": 5,
+            "reason": "warehouse_calendar_horizon_missing",
+            "snapshot_date": "2026-06-11",
+            "ticker": "MRVL"
+          },
+          {
+            "horizon": 5,
+            "reason": "warehouse_calendar_horizon_missing",
+            "snapshot_date": "2026-06-11",
+            "ticker": "NBIS"
+          }
+        ],
+        "settled_rate": 0.0,
+        "settled_rows": 0,
+        "settled_rows_by_snapshot_date": {},
+        "settled_snapshot_date_count": 0
+      }
+    },
+    "row_summary": {
+      "critical_exit_rows": 33,
+      "high_urgency_rows": 61,
+      "position_rows": 232,
+      "quote_source_counts": {
+        "eod_close_fallback": 13,
+        "fast_info": 219
+      },
+      "snapshot_date_counts": {
+        "2026-06-11": 39,
+        "2026-06-13": 13,
+        "2026-06-14": 13,
+        "2026-06-15": 13,
+        "2026-06-16": 16,
+        "2026-06-17": 16,
+        "2026-06-18": 16,
+        "2026-06-19": 15,
+        "2026-06-20": 15,
+        "2026-06-21": 15,
+        "2026-06-22": 15,
+        "2026-06-23": 17,
+        "2026-06-24": 15,
+        "2026-06-25": 14
+      },
+      "status_counts": {
+        "APPROACHING": 20,
+        "BREACHED": 94,
+        "OK": 118
+      },
+      "ticker_count": 18,
+      "time_label_counts": {
+        "0214ET": 13,
+        "0215ET": 13,
+        "1301ET": 91,
+        "1302ET": 76,
+        "1303ET": 26,
+        "1307ET": 13
+      },
+      "top_tickers": [
+        {
+          "rows": 16,
+          "ticker": "AMD"
+        },
+        {
+          "rows": 16,
+          "ticker": "APP"
+        },
+        {
+          "rows": 16,
+          "ticker": "COHR"
+        },
+        {
+          "rows": 16,
+          "ticker": "META"
+        },
+        {
+          "rows": 16,
+          "ticker": "MRVL"
+        },
+        {
+          "rows": 16,
+          "ticker": "NBIS"
+        },
+        {
+          "rows": 16,
+          "ticker": "NFLX"
+        },
+        {
+          "rows": 16,
+          "ticker": "NVDA"
+        },
+        {
+          "rows": 16,
+          "ticker": "TRIP"
+        },
+        {
+          "rows": 16,
+          "ticker": "TSLA"
+        },
+        {
+          "rows": 14,
+          "ticker": "AMZN"
+        },
+        {
+          "rows": 14,
+          "ticker": "GOOG"
+        }
+      ],
+      "triggered_position_rows": 94,
+      "triggered_rule_counts": {
+        "ATR_STOP": 40,
+        "HARD_STOP": 33,
+        "LEGACY_TARGET_REVIEW": 19,
+        "SIGNAL_TARGET": 20,
+        "TIME_STOP": 48
+      },
+      "triggered_urgency_counts": {
+        "CRITICAL": 33,
+        "HIGH": 60,
+        "REVIEW": 67
+      }
+    },
+    "snapshots": [
+      {
+        "advisory_note": "ADVISORY ONLY: existing-rule re-check at intraday prices. Not consumed by the EOD pipeline or backtests.",
+        "advisory_only": true,
+        "critical_exit_rows": 0,
+        "date": "2026-06-11",
+        "entry_date_present_rows": 0,
+        "file_mtime_utc": "2026-06-11T06:14:23.617935+00:00",
+        "generated_at_et": "2026-06-11 02:14 ET",
+        "generated_at_utc": "2026-06-11T06:14:00+00:00",
+        "high_urgency_rows": 0,
+        "loaded": true,
+        "mtime_minus_generated_hours": 0.0066,
+        "news_trade_items_count": 0,
+        "path": "data/daily/intraday/snapshots/intraday_review_20260611_0214ET.json",
+        "pending_actions_count": 0,
+        "positions_count": 13,
+        "posthoc_backfilled": false,
+        "quote_sources": {
+          "eod_close_fallback": 13
+        },
+        "quote_time_present_rows": 0,
+        "status_counts": {
+          "OK": 13
+        },
+        "target_context_present_rows": 13,
+        "time_label": "0214ET",
+        "top_level_keys": [
+          "accounting",
+          "advisory_note",
+          "data_quality",
+          "date",
+          "generated_at_et",
+          "generated_at_pt",
+          "heat_quote_coverage",
+          "macro",
+          "market_regime_intraday",
+          "news",
+          "pending_actions",
+          "portfolio_heat",
+          "positions",
+          "time_label"
+        ],
+        "triggered_position_rows": 0
+      },
+      {
+        "advisory_note": "ADVISORY ONLY: existing-rule re-check at intraday prices. Not consumed by the EOD pipeline or backtests.",
+        "advisory_only": true,
+        "critical_exit_rows": 3,
+        "date": "2026-06-11",
+        "entry_date_present_rows": 0,
+        "file_mtime_utc": "2026-06-11T06:15:58.181123+00:00",
+        "generated_at_et": "2026-06-11 02:15 ET",
+        "generated_at_utc": "2026-06-11T06:15:00+00:00",
+        "high_urgency_rows": 3,
+        "loaded": true,
+        "mtime_minus_generated_hours": 0.0162,
+        "news_trade_items_count": 9,
+        "path": "data/daily/intraday/snapshots/intraday_review_20260611_0215ET.json",
+        "pending_actions_count": 0,
+        "positions_count": 13,
+        "posthoc_backfilled": false,
+        "quote_sources": {
+          "fast_info": 13
+        },
+        "quote_time_present_rows": 0,
+        "status_counts": {
+          "APPROACHING": 3,
+          "BREACHED": 5,
+          "OK": 5
+        },
+        "target_context_present_rows": 13,
+        "time_label": "0215ET",
+        "top_level_keys": [
+          "accounting",
+          "advisory_note",
+          "data_quality",
+          "date",
+          "generated_at_et",
+          "generated_at_pt",
+          "heat_quote_coverage",
+          "macro",
+          "market_regime_intraday",
+          "news",
+          "pending_actions",
+          "portfolio_heat",
+          "positions",
+          "time_label"
+        ],
+        "triggered_position_rows": 5
+      },
+      {
+        "advisory_note": "ADVISORY ONLY: existing-rule re-check at intraday prices. Not consumed by the EOD pipeline or backtests.",
+        "advisory_only": true,
+        "critical_exit_rows": 2,
+        "date": "2026-06-11",
+        "entry_date_present_rows": 0,
+        "file_mtime_utc": "2026-06-11T17:03:52.615086+00:00",
+        "generated_at_et": "2026-06-11 13:03 ET",
+        "generated_at_utc": "2026-06-11T17:03:00+00:00",
+        "high_urgency_rows": 3,
+        "loaded": true,
+        "mtime_minus_generated_hours": 0.0146,
+        "news_trade_items_count": 10,
+        "path": "data/daily/intraday/snapshots/intraday_review_20260611_1303ET.json",
+        "pending_actions_count": 0,
+        "positions_count": 13,
+        "posthoc_backfilled": false,
+        "quote_sources": {
+          "fast_info": 13
+        },
+        "quote_time_present_rows": 0,
+        "status_counts": {
+          "APPROACHING": 3,
+          "BREACHED": 4,
+          "OK": 6
+        },
+        "target_context_present_rows": 13,
+        "time_label": "1303ET",
+        "top_level_keys": [
+          "accounting",
+          "advisory_note",
+          "data_quality",
+          "date",
+          "generated_at_et",
+          "generated_at_pt",
+          "heat_quote_coverage",
+          "macro",
+          "market_regime_intraday",
+          "news",
+          "pending_actions",
+          "portfolio_heat",
+          "positions",
+          "time_label"
+        ],
+        "triggered_position_rows": 4
+      },
+      {
+        "advisory_note": "ADVISORY ONLY: existing-rule re-check at intraday prices. Not consumed by the EOD pipeline or backtests.",
+        "advisory_only": true,
+        "critical_exit_rows": 2,
+        "date": "2026-06-13",
+        "entry_date_present_rows": 0,
+        "file_mtime_utc": "2026-06-13T17:07:41.420940+00:00",
+        "generated_at_et": "2026-06-13 13:07 ET",
+        "generated_at_utc": "2026-06-13T17:07:00+00:00",
+        "high_urgency_rows": 4,
+        "loaded": true,
+        "mtime_minus_generated_hours": 0.0115,
+        "news_trade_items_count": 8,
+        "path": "data/daily/intraday/snapshots/intraday_review_20260613_1307ET.json",
+        "pending_actions_count": 0,
+        "positions_count": 13,
+        "posthoc_backfilled": false,
+        "quote_sources": {
+          "fast_info": 13
+        },
+        "quote_time_present_rows": 0,
+        "status_counts": {
+          "APPROACHING": 2,
+          "BREACHED": 5,
+          "OK": 6
+        },
+        "target_context_present_rows": 13,
+        "time_label": "1307ET",
+        "top_level_keys": [
+          "accounting",
+          "advisory_note",
+          "data_quality",
+          "date",
+          "generated_at_et",
+          "generated_at_pt",
+          "heat_quote_coverage",
+          "macro",
+          "market_regime_intraday",
+          "news",
+          "pending_actions",
+          "portfolio_heat",
+          "positions",
+          "time_label"
+        ],
+        "triggered_position_rows": 5
+      },
+      {
+        "advisory_note": "ADVISORY ONLY: existing-rule re-check at intraday prices. Not consumed by the EOD pipeline or backtests.",
+        "advisory_only": true,
+        "critical_exit_rows": 2,
+        "date": "2026-06-14",
+        "entry_date_present_rows": 0,
+        "file_mtime_utc": "2026-06-14T17:03:07.610974+00:00",
+        "generated_at_et": "2026-06-14 13:02 ET",
+        "generated_at_utc": "2026-06-14T17:02:00+00:00",
+        "high_urgency_rows": 4,
+        "loaded": true,
+        "mtime_minus_generated_hours": 0.0188,
+        "news_trade_items_count": 8,
+        "path": "data/daily/intraday/snapshots/intraday_review_20260614_1302ET.json",
+        "pending_actions_count": 0,
+        "positions_count": 13,
+        "posthoc_backfilled": false,
+        "quote_sources": {
+          "fast_info": 13
+        },
+        "quote_time_present_rows": 0,
+        "status_counts": {
+          "APPROACHING": 2,
+          "BREACHED": 5,
+          "OK": 6
+        },
+        "target_context_present_rows": 13,
+        "time_label": "1302ET",
+        "top_level_keys": [
+          "accounting",
+          "advisory_note",
+          "data_quality",
+          "date",
+          "generated_at_et",
+          "generated_at_pt",
+          "heat_quote_coverage",
+          "macro",
+          "market_regime_intraday",
+          "news",
+          "pending_actions",
+          "portfolio_heat",
+          "positions",
+          "time_label"
+        ],
+        "triggered_position_rows": 5
+      },
+      {
+        "advisory_note": "ADVISORY ONLY: existing-rule re-check at intraday prices. Not consumed by the EOD pipeline or backtests.",
+        "advisory_only": true,
+        "critical_exit_rows": 2,
+        "date": "2026-06-15",
+        "entry_date_present_rows": 0,
+        "file_mtime_utc": "2026-06-15T17:03:51.799066+00:00",
+        "generated_at_et": "2026-06-15 13:03 ET",
+        "generated_at_utc": "2026-06-15T17:03:00+00:00",
+        "high_urgency_rows": 3,
+        "loaded": true,
+        "mtime_minus_generated_hours": 0.0144,
+        "news_trade_items_count": 8,
+        "path": "data/daily/intraday/snapshots/intraday_review_20260615_1303ET.json",
+        "pending_actions_count": 0,
+        "positions_count": 13,
+        "posthoc_backfilled": false,
+        "quote_sources": {
+          "fast_info": 13
+        },
+        "quote_time_present_rows": 0,
+        "status_counts": {
+          "APPROACHING": 4,
+          "BREACHED": 5,
+          "OK": 4
+        },
+        "target_context_present_rows": 13,
+        "time_label": "1303ET",
+        "top_level_keys": [
+          "accounting",
+          "advisory_note",
+          "data_quality",
+          "date",
+          "generated_at_et",
+          "generated_at_pt",
+          "heat_quote_coverage",
+          "macro",
+          "market_regime_intraday",
+          "news",
+          "pending_actions",
+          "portfolio_heat",
+          "positions",
+          "time_label"
+        ],
+        "triggered_position_rows": 5
+      },
+      {
+        "advisory_note": "ADVISORY ONLY: existing-rule re-check at intraday prices. Not consumed by the EOD pipeline or backtests.",
+        "advisory_only": true,
+        "critical_exit_rows": 2,
+        "date": "2026-06-16",
+        "entry_date_present_rows": 0,
+        "file_mtime_utc": "2026-06-21T19:06:39.293732+00:00",
+        "generated_at_et": "2026-06-16 13:02 ET",
+        "generated_at_utc": "2026-06-16T17:02:00+00:00",
+        "high_urgency_rows": 4,
+        "loaded": true,
+        "mtime_minus_generated_hours": 122.0776,
+        "news_trade_items_count": 11,
+        "path": "data/daily/intraday/snapshots/intraday_review_20260616_1302ET.json",
+        "pending_actions_count": 0,
+        "positions_count": 16,
+        "posthoc_backfilled": true,
+        "quote_sources": {
+          "fast_info": 16
+        },
+        "quote_time_present_rows": 0,
+        "status_counts": {
+          "APPROACHING": 1,
+          "BREACHED": 6,
+          "OK": 9
+        },
+        "target_context_present_rows": 16,
+        "time_label": "1302ET",
+        "top_level_keys": [
+          "accounting",
+          "advisory_note",
+          "data_quality",
+          "date",
+          "generated_at_et",
+          "generated_at_pt",
+          "heat_quote_coverage",
+          "macro",
+          "market_regime_intraday",
+          "news",
+          "pending_actions",
+          "portfolio_heat",
+          "positions",
+          "time_label"
+        ],
+        "triggered_position_rows": 6
+      },
+      {
+        "advisory_note": "ADVISORY ONLY: existing-rule re-check at intraday prices. Not consumed by the EOD pipeline or backtests.",
+        "advisory_only": true,
+        "critical_exit_rows": 2,
+        "date": "2026-06-17",
+        "entry_date_present_rows": 0,
+        "file_mtime_utc": "2026-06-21T19:07:22.845228+00:00",
+        "generated_at_et": "2026-06-17 13:01 ET",
+        "generated_at_utc": "2026-06-17T17:01:00+00:00",
+        "high_urgency_rows": 5,
+        "loaded": true,
+        "mtime_minus_generated_hours": 98.1063,
+        "news_trade_items_count": 10,
+        "path": "data/daily/intraday/snapshots/intraday_review_20260617_1301ET.json",
+        "pending_actions_count": 0,
+        "positions_count": 16,
+        "posthoc_backfilled": true,
+        "quote_sources": {
+          "fast_info": 16
+        },
+        "quote_time_present_rows": 0,
+        "status_counts": {
+          "BREACHED": 8,
+          "OK": 8
+        },
+        "target_context_present_rows": 16,
+        "time_label": "1301ET",
+        "top_level_keys": [
+          "accounting",
+          "advisory_note",
+          "data_quality",
+          "date",
+          "generated_at_et",
+          "generated_at_pt",
+          "heat_quote_coverage",
+          "macro",
+          "market_regime_intraday",
+          "news",
+          "pending_actions",
+          "portfolio_heat",
+          "positions",
+          "time_label"
+        ],
+        "triggered_position_rows": 8
+      },
+      {
+        "advisory_note": "ADVISORY ONLY: existing-rule re-check at intraday prices. Not consumed by the EOD pipeline or backtests.",
+        "advisory_only": true,
+        "critical_exit_rows": 2,
+        "date": "2026-06-18",
+        "entry_date_present_rows": 0,
+        "file_mtime_utc": "2026-06-21T19:07:57.425478+00:00",
+        "generated_at_et": "2026-06-18 13:01 ET",
+        "generated_at_utc": "2026-06-18T17:01:00+00:00",
+        "high_urgency_rows": 4,
+        "loaded": true,
+        "mtime_minus_generated_hours": 74.116,
+        "news_trade_items_count": 9,
+        "path": "data/daily/intraday/snapshots/intraday_review_20260618_1301ET.json",
+        "pending_actions_count": 0,
+        "positions_count": 16,
+        "posthoc_backfilled": true,
+        "quote_sources": {
+          "fast_info": 16
+        },
+        "quote_time_present_rows": 0,
+        "status_counts": {
+          "BREACHED": 6,
+          "OK": 10
+        },
+        "target_context_present_rows": 16,
+        "time_label": "1301ET",
+        "top_level_keys": [
+          "accounting",
+          "advisory_note",
+          "data_quality",
+          "date",
+          "generated_at_et",
+          "generated_at_pt",
+          "heat_quote_coverage",
+          "macro",
+          "market_regime_intraday",
+          "news",
+          "pending_actions",
+          "portfolio_heat",
+          "positions",
+          "time_label"
+        ],
+        "triggered_position_rows": 6
+      },
+      {
+        "advisory_note": "ADVISORY ONLY: existing-rule re-check at intraday prices. Not consumed by the EOD pipeline or backtests.",
+        "advisory_only": true,
+        "critical_exit_rows": 2,
+        "date": "2026-06-19",
+        "entry_date_present_rows": 0,
+        "file_mtime_utc": "2026-06-21T19:07:57.426475+00:00",
+        "generated_at_et": "2026-06-19 13:01 ET",
+        "generated_at_utc": "2026-06-19T17:01:00+00:00",
+        "high_urgency_rows": 4,
+        "loaded": true,
+        "mtime_minus_generated_hours": 50.116,
+        "news_trade_items_count": 8,
+        "path": "data/daily/intraday/snapshots/intraday_review_20260619_1301ET.json",
+        "pending_actions_count": 0,
+        "positions_count": 15,
+        "posthoc_backfilled": true,
+        "quote_sources": {
+          "fast_info": 15
+        },
+        "quote_time_present_rows": 0,
+        "status_counts": {
+          "BREACHED": 6,
+          "OK": 9
+        },
+        "target_context_present_rows": 15,
+        "time_label": "1301ET",
+        "top_level_keys": [
+          "accounting",
+          "advisory_note",
+          "data_quality",
+          "date",
+          "generated_at_et",
+          "generated_at_pt",
+          "heat_quote_coverage",
+          "macro",
+          "market_regime_intraday",
+          "news",
+          "pending_actions",
+          "portfolio_heat",
+          "positions",
+          "time_label"
+        ],
+        "triggered_position_rows": 6
+      },
+      {
+        "advisory_note": "ADVISORY ONLY: existing-rule re-check at intraday prices. Not consumed by the EOD pipeline or backtests.",
+        "advisory_only": true,
+        "critical_exit_rows": 2,
+        "date": "2026-06-20",
+        "entry_date_present_rows": 0,
+        "file_mtime_utc": "2026-06-21T19:07:57.426475+00:00",
+        "generated_at_et": "2026-06-20 13:01 ET",
+        "generated_at_utc": "2026-06-20T17:01:00+00:00",
+        "high_urgency_rows": 4,
+        "loaded": true,
+        "mtime_minus_generated_hours": 26.116,
+        "news_trade_items_count": 11,
+        "path": "data/daily/intraday/snapshots/intraday_review_20260620_1301ET.json",
+        "pending_actions_count": 0,
+        "positions_count": 15,
+        "posthoc_backfilled": true,
+        "quote_sources": {
+          "fast_info": 15
+        },
+        "quote_time_present_rows": 0,
+        "status_counts": {
+          "BREACHED": 6,
+          "OK": 9
+        },
+        "target_context_present_rows": 15,
+        "time_label": "1301ET",
+        "top_level_keys": [
+          "accounting",
+          "advisory_note",
+          "data_quality",
+          "date",
+          "generated_at_et",
+          "generated_at_pt",
+          "heat_quote_coverage",
+          "macro",
+          "market_regime_intraday",
+          "news",
+          "pending_actions",
+          "portfolio_heat",
+          "positions",
+          "time_label"
+        ],
+        "triggered_position_rows": 6
+      },
+      {
+        "advisory_note": "ADVISORY ONLY: existing-rule re-check at intraday prices. Not consumed by the EOD pipeline or backtests.",
+        "advisory_only": true,
+        "critical_exit_rows": 2,
+        "date": "2026-06-21",
+        "entry_date_present_rows": 0,
+        "file_mtime_utc": "2026-06-21T17:01:58.734428+00:00",
+        "generated_at_et": "2026-06-21 13:01 ET",
+        "generated_at_utc": "2026-06-21T17:01:00+00:00",
+        "high_urgency_rows": 4,
+        "loaded": true,
+        "mtime_minus_generated_hours": 0.0163,
+        "news_trade_items_count": 11,
+        "path": "data/daily/intraday/snapshots/intraday_review_20260621_1301ET.json",
+        "pending_actions_count": 0,
+        "positions_count": 15,
+        "posthoc_backfilled": false,
+        "quote_sources": {
+          "fast_info": 15
+        },
+        "quote_time_present_rows": 0,
+        "status_counts": {
+          "BREACHED": 6,
+          "OK": 9
+        },
+        "target_context_present_rows": 15,
+        "time_label": "1301ET",
+        "top_level_keys": [
+          "accounting",
+          "advisory_note",
+          "data_quality",
+          "date",
+          "generated_at_et",
+          "generated_at_pt",
+          "heat_quote_coverage",
+          "macro",
+          "market_regime_intraday",
+          "news",
+          "pending_actions",
+          "portfolio_heat",
+          "positions",
+          "time_label"
+        ],
+        "triggered_position_rows": 6
+      },
+      {
+        "advisory_note": "ADVISORY ONLY: existing-rule re-check at intraday prices. Not consumed by the EOD pipeline or backtests.",
+        "advisory_only": true,
+        "critical_exit_rows": 2,
+        "date": "2026-06-22",
+        "entry_date_present_rows": 0,
+        "file_mtime_utc": "2026-06-22T17:02:58.397789+00:00",
+        "generated_at_et": "2026-06-22 13:02 ET",
+        "generated_at_utc": "2026-06-22T17:02:00+00:00",
+        "high_urgency_rows": 5,
+        "loaded": true,
+        "mtime_minus_generated_hours": 0.0162,
+        "news_trade_items_count": 10,
+        "path": "data/daily/intraday/snapshots/intraday_review_20260622_1302ET.json",
+        "pending_actions_count": 0,
+        "positions_count": 15,
+        "posthoc_backfilled": false,
+        "quote_sources": {
+          "fast_info": 15
+        },
+        "quote_time_present_rows": 0,
+        "status_counts": {
+          "APPROACHING": 2,
+          "BREACHED": 6,
+          "OK": 7
+        },
+        "target_context_present_rows": 15,
+        "time_label": "1302ET",
+        "top_level_keys": [
+          "accounting",
+          "advisory_note",
+          "data_quality",
+          "date",
+          "generated_at_et",
+          "generated_at_pt",
+          "heat_quote_coverage",
+          "macro",
+          "market_regime_intraday",
+          "news",
+          "pending_actions",
+          "portfolio_heat",
+          "positions",
+          "time_label"
+        ],
+        "triggered_position_rows": 6
+      },
+      {
+        "advisory_note": "ADVISORY ONLY: existing-rule re-check at intraday prices. Not consumed by the EOD pipeline or backtests.",
+        "advisory_only": true,
+        "critical_exit_rows": 2,
+        "date": "2026-06-23",
+        "entry_date_present_rows": 0,
+        "file_mtime_utc": "2026-06-23T17:02:25.917975+00:00",
+        "generated_at_et": "2026-06-23 13:02 ET",
+        "generated_at_utc": "2026-06-23T17:02:00+00:00",
+        "high_urgency_rows": 5,
+        "loaded": true,
+        "mtime_minus_generated_hours": 0.0072,
+        "news_trade_items_count": 9,
+        "path": "data/daily/intraday/snapshots/intraday_review_20260623_1302ET.json",
+        "pending_actions_count": 0,
+        "positions_count": 17,
+        "posthoc_backfilled": false,
+        "quote_sources": {
+          "fast_info": 17
+        },
+        "quote_time_present_rows": 0,
+        "status_counts": {
+          "APPROACHING": 2,
+          "BREACHED": 9,
+          "OK": 6
+        },
+        "target_context_present_rows": 17,
+        "time_label": "1302ET",
+        "top_level_keys": [
+          "accounting",
+          "advisory_note",
+          "data_quality",
+          "date",
+          "generated_at_et",
+          "generated_at_pt",
+          "heat_quote_coverage",
+          "macro",
+          "market_regime_intraday",
+          "news",
+          "pending_actions",
+          "portfolio_heat",
+          "positions",
+          "time_label"
+        ],
+        "triggered_position_rows": 9
+      },
+      {
+        "advisory_note": "ADVISORY ONLY: existing-rule re-check at intraday prices. Not consumed by the EOD pipeline or backtests.",
+        "advisory_only": true,
+        "critical_exit_rows": 2,
+        "date": "2026-06-24",
+        "entry_date_present_rows": 0,
+        "file_mtime_utc": "2026-06-24T17:02:31.721895+00:00",
+        "generated_at_et": "2026-06-24 13:02 ET",
+        "generated_at_utc": "2026-06-24T17:02:00+00:00",
+        "high_urgency_rows": 3,
+        "loaded": true,
+        "mtime_minus_generated_hours": 0.0088,
+        "news_trade_items_count": 5,
+        "path": "data/daily/intraday/snapshots/intraday_review_20260624_1302ET.json",
+        "pending_actions_count": 0,
+        "positions_count": 15,
+        "posthoc_backfilled": false,
+        "quote_sources": {
+          "fast_info": 15
+        },
+        "quote_time_present_rows": 0,
+        "status_counts": {
+          "APPROACHING": 1,
+          "BREACHED": 7,
+          "OK": 7
+        },
+        "target_context_present_rows": 15,
+        "time_label": "1302ET",
+        "top_level_keys": [
+          "accounting",
+          "advisory_note",
+          "data_quality",
+          "date",
+          "generated_at_et",
+          "generated_at_pt",
+          "heat_quote_coverage",
+          "macro",
+          "market_regime_intraday",
+          "news",
+          "pending_actions",
+          "portfolio_heat",
+          "positions",
+          "time_label"
+        ],
+        "triggered_position_rows": 7
+      },
+      {
+        "advisory_note": "ADVISORY ONLY: existing-rule re-check at intraday prices. Not consumed by the EOD pipeline or backtests.",
+        "advisory_only": true,
+        "critical_exit_rows": 4,
+        "date": "2026-06-25",
+        "entry_date_present_rows": 0,
+        "file_mtime_utc": "2026-06-25T17:02:20.821307+00:00",
+        "generated_at_et": "2026-06-25 13:01 ET",
+        "generated_at_utc": "2026-06-25T17:01:00+00:00",
+        "high_urgency_rows": 6,
+        "loaded": true,
+        "mtime_minus_generated_hours": 0.0225,
+        "news_trade_items_count": 7,
+        "path": "data/daily/intraday/snapshots/intraday_review_20260625_1301ET.json",
+        "pending_actions_count": 0,
+        "positions_count": 14,
+        "posthoc_backfilled": false,
+        "quote_sources": {
+          "fast_info": 14
+        },
+        "quote_time_present_rows": 0,
+        "status_counts": {
+          "BREACHED": 10,
+          "OK": 4
+        },
+        "target_context_present_rows": 14,
+        "time_label": "1301ET",
+        "top_level_keys": [
+          "accounting",
+          "advisory_note",
+          "data_quality",
+          "date",
+          "generated_at_et",
+          "generated_at_pt",
+          "heat_quote_coverage",
+          "macro",
+          "market_regime_intraday",
+          "news",
+          "pending_actions",
+          "portfolio_heat",
+          "positions",
+          "time_label"
+        ],
+        "triggered_position_rows": 10
+      }
+    ]
+  },
+  "status": "blocked",
+  "ticket_before": {
+    "acceptance_rule": "Use AGENTS.md Gate 4.",
+    "allowed_write_scope": [
+      "quant/experiments/exp_20260625_021_intraday_review_replayability_audit.py",
+      "data/experiments/exp-20260625-021/exp_20260625_021_intraday_review_replayability_audit.json",
+      "experiments/cards/exp-20260625-021.md",
+      "experiments/manifests/exp-20260625-021.json",
+      "experiments/tickets/exp-20260625-021.json",
+      "experiments/logs/exp-20260625-021.json",
+      "docs/experiment_log.jsonl",
+      "docs/experiment_registry.json"
+    ],
+    "alpha_hypothesis": "Intraday 13:00 ET risk-state changes may carry exit/risk timing value because they re-evaluate live positions against current intraday prices before the EOD pipeline; this is only alpha-testable if the saved surface has real-time quote timestamps, stable position/action fields, entry/target context, and enough closed forward outcomes.",
+    "artifact": "data/experiments/exp-20260625-021/exp_20260625_021_intraday_review_replayability_audit.json",
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "card_file": "experiments/cards/exp-20260625-021.md",
+    "causal_components": [
+      "intraday snapshot schema audit",
+      "file timestamp PIT audit",
+      "position/action extraction",
+      "outcome settlement coverage",
+      "no strategy behavior change"
+    ],
+    "change_type": "identity_or_measurement_repair",
+    "changed_files": [
+      "quant/experiments/exp_20260625_021_intraday_review_replayability_audit.py",
+      "data/experiments/exp-20260625-021/exp_20260625_021_intraday_review_replayability_audit.json",
+      "experiments/cards/exp-20260625-021.md",
+      "experiments/manifests/exp-20260625-021.json",
+      "experiments/tickets/exp-20260625-021.json",
+      "experiments/logs/exp-20260625-021.json",
+      "docs/experiment_log.jsonl",
+      "docs/experiment_registry.json"
+    ],
+    "changed_variable": "intraday_review_replayability_and_outcome_readiness_v1",
+    "claimed_at": "2026-06-25T19:09:30+00:00",
+    "completed_at": "2026-06-25T19:14:13+00:00",
+    "created_at": "2026-06-25T19:09:22+00:00",
+    "decision": "blocked_intraday_review_not_alpha_replay_ready",
+    "evaluation_windows": [],
+    "experiment_id": "exp-20260625-021",
+    "experiment_uid": "expuid-2817a720af6646b6",
+    "gate1": {
+      "baseline_metrics": {
+        "baseline_exists": true,
+        "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "expected_value_score_sum": 7.8941,
+        "max_drawdown_pct_worst": 0.1119,
+        "signals_generated": 164,
+        "signals_survived": 135,
+        "survival_rate": 0.823171,
+        "total_pnl": 234850.99,
+        "trade_count": 61,
+        "window_count": 3,
+        "windows": [
+          {
+            "end": "2026-04-21",
+            "expected_value_score": 5.1628,
+            "label": "late_strong",
+            "max_drawdown_pct": 0.0665,
+            "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+            "sharpe_daily": 4.41,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+            "start": "2025-10-23",
+            "survival_rate": 0.8039,
+            "total_pnl": 117072.92,
+            "trade_count": 18,
+            "win_rate": 0.8333
+          },
+          {
+            "end": "2025-10-22",
+            "expected_value_score": 2.1402,
+            "label": "mid_weak",
+            "max_drawdown_pct": 0.1119,
+            "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+            "sharpe_daily": 2.74,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+            "start": "2025-04-23",
+            "survival_rate": 0.7925,
+            "total_pnl": 78110.11,
+            "trade_count": 21,
+            "win_rate": 0.5238
+          },
+          {
+            "end": "2025-04-22",
+            "expected_value_score": 0.5911,
+            "label": "old_thin",
+            "max_drawdown_pct": 0.1001,
+            "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+            "sharpe_daily": 1.49,
+            "signals_generated": 60,
+            "signals_survived": 52,
+            "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+            "start": "2024-10-02",
+            "survival_rate": 0.8667,
+            "total_pnl": 39667.96,
+            "trade_count": 22,
+            "win_rate": 0.4091
+          }
+        ]
+      },
+      "note": "Measurement audit only; before and after strategy behavior are identical.",
+      "passed": true
+    },
+    "gate2": {
+      "failed_reasons": [
+        "posthoc_backfilled_snapshot_files",
+        "quote_time_missing_for_intraday_quotes",
+        "entry_date_missing_for_position_rows",
+        "no_executable_pending_action_rows",
+        "surface_declares_advisory_only_not_eod_or_backtest_consumed"
+      ],
+      "field_coverage": {
+        "entry_date": {
+          "coverage": 0.0,
+          "position_rows": 232,
+          "present_rows": 0
+        },
+        "hard_stop_price": {
+          "coverage": 1.0,
+          "position_rows": 232,
+          "present_rows": 232
+        },
+        "market_value_usd": {
+          "coverage": 0.943966,
+          "position_rows": 232,
+          "present_rows": 219
+        },
+        "quote_price": {
+          "coverage": 0.943966,
+          "position_rows": 232,
+          "present_rows": 219
+        },
+        "quote_source": {
+          "coverage": 1.0,
+          "position_rows": 232,
+          "present_rows": 232
+        },
+        "quote_time_et": {
+          "coverage": 0.0,
+          "position_rows": 232,
+          "present_rows": 0
+        },
+        "shares": {
+          "coverage": 1.0,
+          "position_rows": 232,
+          "present_rows": 232
+        },
+        "snapshot_date": {
+          "coverage": 1.0,
+          "position_rows": 232,
+          "present_rows": 232
+        },
+        "target_price": {
+          "coverage": 1.0,
+          "position_rows": 232,
+          "present_rows": 232
+        },
+        "ticker": {
+          "coverage": 1.0,
+          "position_rows": 232,
+          "present_rows": 232
+        },
+        "triggered_rules": {
+          "coverage": 0.405172,
+          "position_rows": 232,
+          "present_rows": 94
+        }
+      },
+      "passed": false,
+      "required_fields_checked": [
+        "snapshot_date",
+        "ticker",
+        "quote_price",
+        "quote_source",
+        "quote_time_et",
+        "entry_date",
+        "target_price",
+        "hard_stop_price",
+        "shares",
+        "market_value_usd",
+        "triggered_rules"
+      ],
+      "snapshot_dir": "data/daily/intraday/snapshots",
+      "snapshot_file_count": 16,
+      "target_price_scope": "Checked via context.exit_levels.signal_target_price/profit_target_price. No target exit, order, or strategy behavior is scheduled.",
+      "warehouse": {
+        "exists": true,
+        "max_date": "2026-06-15",
+        "min_date": "2023-08-29",
+        "path": "data/warehouse/warehouse_main.sqlite",
+        "rows": 5015715
+      }
+    },
+    "gate3": {
+      "baseline_survival_rate": 0.823171,
+      "filter_added": false,
+      "note": "Coverage is measurement-only. Survival here means rows with triggered advisory rules, not an executable entry/exit filter.",
+      "passed": true,
+      "signals_generated_proxy": 232,
+      "signals_survived_proxy": 94,
+      "survival_rate_proxy": 0.405172
+    },
+    "gate4": {
+      "aggregate_ev_delta": 0.0,
+      "aggregate_pnl_delta": 0.0,
+      "decision": "blocked_intraday_review_not_alpha_replay_ready",
+      "expected_value_score_sum_after": 7.8941,
+      "expected_value_score_sum_before": 7.8941,
+      "failed_reasons": [
+        "posthoc_backfilled_snapshot_files",
+        "quote_time_missing_for_intraday_quotes",
+        "entry_date_missing_for_position_rows",
+        "no_executable_pending_action_rows",
+        "insufficient_5d_outcome_settlement",
+        "surface_declares_advisory_only_not_eod_or_backtest_consumed"
+      ],
+      "passed": false,
+      "readiness": {
+        "decision": "blocked_intraday_review_not_alpha_replay_ready",
+        "failed_reasons": [
+          "posthoc_backfilled_snapshot_files",
+          "quote_time_missing_for_intraday_quotes",
+          "entry_date_missing_for_position_rows",
+          "no_executable_pending_action_rows",
+          "insufficient_5d_outcome_settlement",
+          "surface_declares_advisory_only_not_eod_or_backtest_consumed"
+        ],
+        "observed": {
+          "advisory_only_snapshots": 16,
+          "entry_date_coverage": 0.0,
+          "pending_actions_count": 0,
+          "position_rows": 232,
+          "posthoc_backfilled_files": 5,
+          "quote_time_coverage": 0.0,
+          "settled_5d_rows": 0,
+          "settled_5d_snapshot_date_count": 0,
+          "snapshot_count": 16,
+          "target_context_coverage": 1.0,
+          "unique_snapshot_dates": 14
+        },
+        "passed": false,
+        "thresholds": {
+          "backfill_lag_hours": 2.0,
+          "min_entry_date_coverage": 0.8,
+          "min_pending_action_rows": 1,
+          "min_position_rows": 100,
+          "min_quote_time_coverage": 0.8,
+          "min_settled_5d_rows": 50,
+          "min_snapshot_count": 8,
+          "min_target_context_coverage": 0.8
+        }
+      },
+      "strategy_behavior_changed": false,
+      "total_pnl_after": 234850.99,
+      "total_pnl_before": 234850.99,
+      "trade_count_after": 61,
+      "trade_count_before": 61
+    },
+    "hub_identity": {
+      "namespace": "ginger/experiments",
+      "repo_id": "ginger/experiments/exp-20260625-021",
+      "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+      "reserved_at": "2026-06-25T19:09:22+00:00",
+      "scheme": "hf_hub_local_v1",
+      "slug": "intraday_review_replayability_audit"
+    },
+    "hypothesis": "Repair/audit the intraday risk-review alpha blocker by checking whether data/daily/intraday snapshots are PIT-valid, schema-stable, and outcome-ready enough to support a future 13:00 ET exit/risk timing alpha without changing strategy behavior.",
+    "implementation_mode": "measurement_audit_only_no_strategy_change",
+    "lane": "measurement_repair",
+    "lean_quality_passed": true,
+    "locked_variables": [
+      "intraday_review_replayability_and_outcome_readiness_v1"
+    ],
+    "log": "experiments/logs/exp-20260625-021.json",
+    "mechanism_family": "intraday_review_alpha_measurement_repair",
+    "multiple_testing_risk_bucket": "minimal",
+    "must_not_touch": [],
+    "nearby_prior_experiments": [
+      "exp-20260613-022",
+      "exp-20260623-011",
+      "exp-20260623-012",
+      "exp-20260625-004",
+      "exp-20260625-017"
+    ],
+    "new_evidence_axis": "Machine-checkable new data surface: timestamped data/daily/intraday/snapshots/intraday_review_YYYYMMDD_HHMMET.json files across 2026-06-11..2026-06-25; this audits PIT timestamp/schema/outcome readiness rather than retuning exit lifecycle or LLM state thresholds.",
+    "new_evidence_type": "intraday_timestamped_snapshot_replayability_audit",
+    "novelty": {
+      "blocking_matches": [],
+      "enforced": true,
+      "fingerprint": {
+        "data_source": "other",
+        "field_tags": [
+          "a",
+          "alpha",
+          "are",
+          "audit",
+          "behavior",
+          "blocker",
+          "by",
+          "changing",
+          "checking",
+          "daily",
+          "data",
+          "enough",
+          "et",
+          "exit",
+          "future",
+          "intraday",
+          "measurement",
+          "outcome",
+          "pit",
+          "readiness",
+          "ready",
+          "repair",
+          "replayability",
+          "review",
+          "risk",
+          "schema",
+          "snapshots",
+          "stable",
+          "strategy",
+          "support",
+          "timing",
+          "to",
+          "valid",
+          "whether",
+          "without"
+        ],
+        "gate_shape": "notional_scalar"
+      },
+      "nearest": [
+        {
+          "accept_rate": 0.0,
+          "data_source": "other",
+          "family_key": "post_scalar_direction_gate",
+          "reopen_condition": null,
+          "score": 0.1796,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "companyfacts_ratio",
+          "family_key": "accepted_free_data_cross_source_consensus_source_timing_quality_support",
+          "reopen_condition": null,
+          "score": 0.1773,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "ohlcv_momentum",
+          "family_key": "post_earnings_continuation_risk_support",
+          "reopen_condition": null,
+          "score": 0.17,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "allocator",
+          "family_key": "alpha_score_market_regime_source_consensus_support",
+          "reopen_condition": "If positive, add a shared default-off source-consensus adapter and collect forward replacement-value rows. If rejected, do not retune the scalar on these frozen windows.",
+          "score": 0.1695,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "other",
+          "family_key": "post_accepted_scalar_stack_current_surface_readiness",
+          "reopen_condition": null,
+          "score": 0.1695,
+          "status": "single_attempt",
+          "trials": 1
+        }
+      ],
+      "new_evidence_axis": "Machine-checkable new data surface: timestamped data/daily/intraday/snapshots/intraday_review_YYYYMMDD_HHMMET.json files across 2026-06-11..2026-06-25; this audits PIT timestamp/schema/outcome readiness rather than retuning exit lifecycle or LLM state thresholds.",
+      "override": false,
+      "saturated_source_override": false,
+      "source_saturation": {
+        "accept_rate": 0.0,
+        "accepts": 0,
+        "applicable": false,
+        "gate_shape": "notional_scalar",
+        "max_accept_rate": 0.05,
+        "min_trials": 12,
+        "saturated": false,
+        "source": "other",
+        "trials": 0
+      },
+      "warn": false,
+      "warn_threshold": 0.55
+    },
+    "owner": "alpha-explore",
+    "post_run_reflection": {
+      "forbidden_near_neighbor_retry": "Do not convert intraday BREACHED/APPROACHING/status labels, hard-stop, ATR-stop, target, time-stop, trailing-stop, or LLM state overlaps into exits/risk rules on these same snapshots. Do not retry by changing severity thresholds or hold horizons until the replay contract is repaired.",
+      "new_evidence_required": "A valid intraday retry needs real quote timestamps or broker bar IDs, entry_date and target context on position rows, explicit pending action/order semantics, a daily/default-off shared helper if promoted, and materially more closed warehouse outcome rows past 2026-06-15.",
+      "outcome_summary": "16 intraday snapshot files and 232 position rows were audited; 5d settled rows=0 with warehouse max date 2026-06-15.",
+      "why_result_happened": "The surface is useful as an operator risk review but not yet an alpha replay surface: quote_time_et is missing on position quotes, entry_date is absent from position rows, every snapshot declares advisory-only/non-backtest consumption, no pending action rows are recorded, several files were written well after their embedded generated_at timestamp, and the warehouse only supports minimal one-day outcome coverage."
+    },
+    "prediction": {
+      "confidence_reason": "The intraday surface has more than one saved date and a distinct 13:00 ET timestamp, but prior exit/LLM attribution work already consumed daily labels and the warehouse is stale after 2026-06-15, so alpha-ready replayability is unlikely.",
+      "expected_ev_delta": 0.0,
+      "expected_pnl_delta": 0.0,
+      "main_failure_modes": [
+        "posthoc_backfilled_files",
+        "quote_time_missing",
+        "no_action_rows",
+        "warehouse_too_stale_for_recent_intraday_rows",
+        "duplicate_exit_lifecycle_surface"
+      ],
+      "recorded_at": "2026-06-25T19:09:14+00:00",
+      "success_probability": 0.24
+    },
+    "prior_trial_count": 0,
+    "production_impact": {
+      "adapter_status": "none",
+      "alters_candidate_ranking": false,
+      "alters_exits": false,
+      "alters_orders": false,
+      "alters_signal_generation": false,
+      "alters_sizing": false,
+      "backtester_adapter_changed": false,
+      "default_off_paper_only": false,
+      "live_ready": false,
+      "live_realism_evaluated": false,
+      "llm_decision_boundary_changed": false,
+      "parity_note": "Read-only measurement audit; no production or replay behavior changed.",
+      "production_orders_changed": false,
+      "production_signal_path_changed": false,
+      "production_watchlist_changed": false,
+      "run_adapter_changed": false,
+      "shared_policy_changed": false,
+      "trade_enabled": false
+    },
+    "related_files": [
+      "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "data/warehouse/warehouse_main.sqlite",
+      "data/daily/intraday/snapshots",
+      "quant/intraday_review.py",
+      "docs/intraday_risk_review.md",
+      "experiments/logs/exp-20260613-022.json",
+      "experiments/logs/exp-20260623-011.json",
+      "experiments/logs/exp-20260623-012.json",
+      "experiments/logs/exp-20260625-004.json",
+      "experiments/logs/exp-20260625-017.json"
+    ],
+    "result": {
+      "accepted": false,
+      "accepted_alpha": false,
+      "alpha_ready": false,
+      "artifact": "data/experiments/exp-20260625-021/exp_20260625_021_intraday_review_replayability_audit.json",
+      "decision": "blocked_intraday_review_not_alpha_replay_ready",
+      "gate4": {
+        "aggregate_ev_delta": 0.0,
+        "aggregate_pnl_delta": 0.0,
+        "decision": "blocked_intraday_review_not_alpha_replay_ready",
+        "expected_value_score_sum_after": 7.8941,
+        "expected_value_score_sum_before": 7.8941,
+        "failed_reasons": [
+          "posthoc_backfilled_snapshot_files",
+          "quote_time_missing_for_intraday_quotes",
+          "entry_date_missing_for_position_rows",
+          "no_executable_pending_action_rows",
+          "insufficient_5d_outcome_settlement",
+          "surface_declares_advisory_only_not_eod_or_backtest_consumed"
+        ],
+        "passed": false,
+        "readiness": {
+          "decision": "blocked_intraday_review_not_alpha_replay_ready",
+          "failed_reasons": [
+            "posthoc_backfilled_snapshot_files",
+            "quote_time_missing_for_intraday_quotes",
+            "entry_date_missing_for_position_rows",
+            "no_executable_pending_action_rows",
+            "insufficient_5d_outcome_settlement",
+            "surface_declares_advisory_only_not_eod_or_backtest_consumed"
+          ],
+          "observed": {
+            "advisory_only_snapshots": 16,
+            "entry_date_coverage": 0.0,
+            "pending_actions_count": 0,
+            "position_rows": 232,
+            "posthoc_backfilled_files": 5,
+            "quote_time_coverage": 0.0,
+            "settled_5d_rows": 0,
+            "settled_5d_snapshot_date_count": 0,
+            "snapshot_count": 16,
+            "target_context_coverage": 1.0,
+            "unique_snapshot_dates": 14
+          },
+          "passed": false,
+          "thresholds": {
+            "backfill_lag_hours": 2.0,
+            "min_entry_date_coverage": 0.8,
+            "min_pending_action_rows": 1,
+            "min_position_rows": 100,
+            "min_quote_time_coverage": 0.8,
+            "min_settled_5d_rows": 50,
+            "min_snapshot_count": 8,
+            "min_target_context_coverage": 0.8
+          }
+        },
+        "strategy_behavior_changed": false,
+        "total_pnl_after": 234850.99,
+        "total_pnl_before": 234850.99,
+        "trade_count_after": 61,
+        "trade_count_before": 61
+      },
+      "log": "experiments/logs/exp-20260625-021.json",
+      "runner": "quant/experiments/exp_20260625_021_intraday_review_replayability_audit.py",
+      "summary": "The surface is useful as an operator risk review but not yet an alpha replay surface: quote_time_et is missing on position quotes, entry_date is absent from position rows, every snapshot declares advisory-only/non-backtest consumption, no pending action rows are recorded, several files were written well after their embedded generated_at timestamp, and the warehouse only supports minimal one-day outcome coverage."
+    },
+    "revision_manifest_file": "experiments/manifests/exp-20260625-021.json",
+    "single_causal_variable": "intraday_review_replayability_and_outcome_readiness_v1",
+    "status": "blocked",
+    "ticket_file": "experiments/tickets/exp-20260625-021.json",
+    "trial_family": "intraday_review_replayability_audit",
+    "trial_variant_id": "timestamped_snapshot_outcome_readiness_v1",
+    "updated_at": "2026-06-25T19:14:13+00:00"
+  },
+  "timestamp": "2026-06-25T19:14:47Z",
+  "trial_family": "intraday_review_replayability_audit",
+  "trial_variant_id": "timestamped_snapshot_outcome_readiness_v1"
+}

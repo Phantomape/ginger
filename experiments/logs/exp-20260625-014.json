@@ -1,0 +1,199 @@
+{
+  "accepted": false,
+  "aggregate_expected_value_delta": -0.0419,
+  "aggregate_expected_value_delta_pct": -0.005308,
+  "aggregate_strategy_total_pnl_delta": -385.24,
+  "alpha_hypothesis": "candidate-pool alpha: same-accession 6-K/6-KA XBRL facts showing revenue plus profitability growth, delayed one trading day from filed date and confirmed by liquid relative price action, may produce next-open 10-day paper alpha in foreign issuers.",
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260625-014/exp_20260625_014_sec_6k_companyfacts_structured_growth_scout.json",
+  "backtest_protocol": {
+    "REGIME_AWARE_EXIT": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "candidate_ohlcv_source": "data/warehouse/warehouse_main.sqlite",
+    "companyfacts_source": "data/cache/sec/companyfacts",
+    "execution_model": "SEC Companyfacts rows provide filed date but not accepted_at, so signal date is conservatively delayed to the first trading day strictly after filed date. Paper entry is the next open after that signal day; exit is close 10 trading days after the signal with the existing sleeve cost/slippage model.",
+    "replay_llm": false,
+    "replay_news": false,
+    "source": "docs/backtesting.md canonical three-window core replay plus experiment-owned private replay overlay",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "calibration": {
+    "actual_gate4_passed": false,
+    "brier_score": 0.0256,
+    "failure_modes_observed": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "target_sample_too_small",
+      "target_window_coverage_too_small",
+      "target_concentration_failed"
+    ],
+    "predicted_success_probability": 0.16
+  },
+  "changed_variable": "sec_6k_companyfacts_structured_financial_growth_candidate_pool_v1",
+  "decision": "rejected_sec_6k_companyfacts_structured_growth_candidate_pool",
+  "experiment_id": "exp-20260625-014",
+  "gate2": {
+    "growth_gate_event_rows": 56,
+    "growth_gate_ticker_count": 28,
+    "open_positions": {
+      "missing_entry_date_tickers": [],
+      "missing_target_price_tickers": [],
+      "passed": true,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 12
+    },
+    "passed": true,
+    "raw_6k_financial_fact_rows": 2222
+  },
+  "gate3": {
+    "candidate_pool_changed": false,
+    "minimum_core_survival_rate": 0.7925,
+    "new_core_filter_added": false,
+    "note": "No new core filter or entry rule was added. The 6-K Companyfacts source is an additive private replay paper overlay.",
+    "passed": true
+  },
+  "gate4": {
+    "aggregate_ev_delta": -0.0419,
+    "aggregate_pnl_delta": -385.24,
+    "decision": "rejected_sec_6k_companyfacts_structured_growth_candidate_pool",
+    "failed_reasons": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "target_sample_too_small",
+      "target_window_coverage_too_small",
+      "target_concentration_failed"
+    ],
+    "max_drawdown_worse": 0.0,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": false,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 1.0,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": false,
+      "positive_pnl_hhi": 1.0,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 5,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak"
+    ],
+    "windows_ev_improved": 1,
+    "windows_ev_regressed": 1,
+    "windows_pnl_improved": 1,
+    "windows_pnl_regressed": 1
+  },
+  "gate4_passed": false,
+  "hypothesis": "SEC 6-K form-scoped structured Companyfacts XBRL growth facts may identify ADR interim financial-result drift when historical filing text is unavailable, but must first pass a private canonical replay scout.",
+  "lane": "alpha_search",
+  "log": "experiments/logs/exp-20260625-014.json",
+  "mechanism_family": "candidate_pool_private_replay_scout",
+  "new_evidence_axis": "Machine-checkable new evidence axis: form-scoped SEC Companyfacts XBRL facts where fact.form is 6-K/6-KA, tied to filed-date/accession metadata, replacing the missing historical 6-K text surface; not another generic Companyfacts ratio field or threshold sweep.",
+  "new_evidence_type": "form_scoped_sec_companyfacts_6k_xbrl_growth_surface",
+  "next_evidence_needed": "If rejected, avoid adjacent Companyfacts 6-K threshold/tag retunes. A valid retry needs historical filing text backfill, a new machine-checkable 6-K field unavailable here, or mature forward replacement-value rows. If positive, next step is a shared default-off helper plus daily snapshot before acceptance.",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry adjacent 6-K Companyfacts tags, same-accession growth thresholds, filed-date delay, volume/liquidity guards, relative price confirmation gates, top-N, hold days, cooldown, or notional on these frozen windows. This would be another saturated Companyfacts-ratio candidate-pool retune.",
+    "new_evidence_required": "A valid reopen needs historical 6-K filing text cache population, a new machine-checkable 6-K field unavailable in this Companyfacts surface, or mature forward replacement-value rows that prove this specific form-scoped growth signal adds allocation value.",
+    "realized_failure_mode": "companyfacts_source_saturation_plus_thin_6k_fact_coverage",
+    "why_result_happened": "The form-scoped 6-K Companyfacts surface exists, but the fixed same-accession revenue plus profitability rule and liquid price confirmation collapsed to only five target trades across two windows. The late_strong losses overwhelmed the small mid_weak gain, old_thin produced zero selected trades, and all positive PnL came from one ticker/trade cluster, so the result failed both edge and sample/concentration gates."
+  },
+  "prediction": {
+    "confidence_reason": "The 6-K text alpha is blocked by zero historical text rows, but local SEC Companyfacts cache contains form=6-K XBRL facts with filed-date and accession metadata. This fixed scout uses same-accession XBRL revenue plus profitability growth and conservative next-day price confirmation.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "companyfacts_source_saturation",
+      "thin_6k_fact_coverage",
+      "window_regression",
+      "accepted_comparator_not_beaten",
+      "foreign_issuer_liquidity_gap"
+    ],
+    "recorded_at": "2026-06-25T13:06:00+00:00",
+    "success_probability": 0.16
+  },
+  "production_impact": {
+    "adapter_status": "private_replay_only_no_live_adapter",
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "paper_orders_changed": false,
+    "parity_note": "This is an experiment-owned private replay scout. A positive result would require a shared default-off helper that computes the same form-scoped Companyfacts event surface, one-trading-day filing delay, price/liquidity gates, next-open paper entry, 10-trading-day exit, cost model, cooldown, and concentration checks before any daily report, candidate priority, sizing, watchlist, paper ledger, or order surface could change.",
+    "production_watchlist_changed": false,
+    "ranking_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_helper_promoted": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false,
+    "uses_form_scoped_6k_facts": true,
+    "uses_free_sec_companyfacts": true,
+    "uses_llm": false
+  },
+  "rejection_reason": "aggregate_ev_not_positive; aggregate_pnl_not_positive; window_ev_regression; window_pnl_regression; fewer_than_two_ev_improved_windows; target_sample_too_small; target_window_coverage_too_small; target_concentration_failed",
+  "single_causal_variable": "sec_6k_companyfacts_structured_financial_growth_candidate_pool_v1",
+  "status": "rejected",
+  "timestamp": "2026-06-25T13:23:47Z",
+  "trial_family": "sec_6k_companyfacts_structured_financial_growth_candidate_pool",
+  "trial_variant_id": "form_scoped_6k_xbrl_growth_top1_10d_v1",
+  "windows": [
+    {
+      "expected_value_after": 5.1179,
+      "expected_value_before": 5.1628,
+      "expected_value_delta": -0.0449,
+      "label": "late_strong",
+      "raw_candidate_count": 4,
+      "strategy_total_pnl_delta": -496.64,
+      "target_trade_count": 3
+    },
+    {
+      "expected_value_after": 2.1432,
+      "expected_value_before": 2.1402,
+      "expected_value_delta": 0.003,
+      "label": "mid_weak",
+      "raw_candidate_count": 3,
+      "strategy_total_pnl_delta": 111.4,
+      "target_trade_count": 2
+    },
+    {
+      "expected_value_after": 0.5911,
+      "expected_value_before": 0.5911,
+      "expected_value_delta": 0.0,
+      "label": "old_thin",
+      "raw_candidate_count": 0,
+      "strategy_total_pnl_delta": 0.0,
+      "target_trade_count": 0
+    }
+  ]
+}

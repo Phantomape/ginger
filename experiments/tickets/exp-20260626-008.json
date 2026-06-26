@@ -1,0 +1,623 @@
+{
+  "acceptance_rule": "Gate 2 must find parseable 10-K/10-Q cover-page status rows. Only then may a candidate replay attempt Gate 3/4 under docs/backtesting.md with accepted comparator checks.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260626_008_sec_cover_page_filer_status_upgrade.py",
+    "data/experiments/exp-20260626-008/exp_20260626_008_sec_cover_page_filer_status_upgrade.json",
+    "experiments/cards/exp-20260626-008.md",
+    "experiments/manifests/exp-20260626-008.json",
+    "experiments/tickets/exp-20260626-008.json",
+    "experiments/logs/exp-20260626-008.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260626-008.md",
+  "causal_components": [
+    "SEC filing event coverage audit",
+    "SEC filing text cover-page parser availability audit",
+    "no strategy behavior change"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "sec_cover_page_filer_status_upgrade_candidate_source_v1",
+  "claimed_at": "2026-06-26T07:05:14+00:00",
+  "completed_at": "2026-06-26T07:10:27+00:00",
+  "created_at": "2026-06-26T07:05:03+00:00",
+  "evaluation_windows": [
+    {
+      "label": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "label": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "label": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "experiment_id": "exp-20260626-008",
+  "experiment_uid": "expuid-3ca4fc10a6904f53",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260626-008",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-26T07:05:03+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_cover_page_filer_status_upgrade"
+  },
+  "hypothesis": "candidate_pool: PIT SEC 10-K/10-Q cover-page filer-status upgrades from smaller/non-accelerated/EGC toward accelerated or large-accelerated status may identify improving institutional eligibility whose next-open 10-day default-off paper continuation beats accepted comparators when paired with liquid SPY-relative confirmation.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "sec_cover_page_filer_status_upgrade_candidate_source_v1"
+  ],
+  "mechanism_family": "production_visible_sec_cover_page_filer_status_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate_sec_structured_data_saturation",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260617-020",
+    "exp-20260617-022",
+    "exp-20260618-016",
+    "exp-20260625-005",
+    "exp-20260626-007"
+  ],
+  "new_evidence_type": "sec_cover_page_filer_status_field_availability",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "broad_full_liquid_5d_winner_continuation_candidate_pool",
+        "score": 0.6432,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "opening_range_continuation_macro_confirmed_paper_sleeve",
+        "score": 0.62,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "broad_full_liquid_5d_winner_low_deployment_continuation_candidate_pool",
+        "score": 0.619,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "broad_full_liquid_5d_winner_market_confirmed_continuation_candidate_pool",
+        "score": 0.619,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "post_news_continuation_candidate_pool_extension",
+        "score": 0.6111,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_momentum",
+      "field_tags": [
+        "accelerated",
+        "accepted",
+        "beats",
+        "comparators",
+        "confirmation",
+        "continuation",
+        "cover",
+        "egc",
+        "eligibility",
+        "filer",
+        "from",
+        "identify",
+        "improving",
+        "institutional",
+        "k",
+        "large",
+        "liquid",
+        "may",
+        "non",
+        "or",
+        "page",
+        "paired",
+        "pit",
+        "q",
+        "relative",
+        "smaller",
+        "spy",
+        "status",
+        "toward",
+        "upgrade",
+        "upgrades",
+        "when",
+        "whose"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "broad_full_liquid_5d_winner_continuation_candidate_pool",
+        "reopen_condition": "A retry needs a materially new PIT state field, such as real-time breadth/changepoint persistence or cost-adjusted replacement rows; do not simply retune pressure thresholds, hold days, cooldown, or paper notional on this frozen sample.",
+        "score": 0.6432,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "opening_range_continuation_macro_confirmed_paper_sleeve",
+        "reopen_condition": "Forward opening-range paper rows or a genuinely new non-price source confirmation.",
+        "score": 0.62,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "broad_full_liquid_5d_winner_low_deployment_continuation_candidate_pool",
+        "reopen_condition": "A retry needs a materially new PIT data edge or forward replacement-value rows. Local broad OHLCV continuation retunes should stay frozen after exp-20260606-004/005/006.",
+        "score": 0.619,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "broad_full_liquid_5d_winner_market_confirmed_continuation_candidate_pool",
+        "reopen_condition": "A retry needs a materially new PIT state field such as breadth/changepoint persistence, cost-adjusted replacement rows, or forward replacement-value evidence; do not simply retune broad OHLCV momentum thresholds on these windows.",
+        "score": 0.619,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "post_news_continuation_candidate_pool_extension",
+        "reopen_condition": null,
+        "score": 0.6111,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Machine-checkable new PIT field: parsed 10-K/10-Q cover-page filer-status upgrade keyed by accession/accepted_at, distinct from filing earliness, raw SEC item codes, 13D/13G holder metadata, Companyfacts ratios, and SEC text phrase lists.",
+    "override": true,
+    "saturated_source_override": true,
+    "source_saturation": {
+      "accept_rate": 0.125,
+      "accepts": 3,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_momentum",
+      "trials": 24
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.16,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "thin_upgrade_sample",
+      "old_thin_text_coverage_gap",
+      "filing_status_not_incremental",
+      "accepted_comparator_not_beaten"
+    ],
+    "confidence_reason": "Playbook explicitly lists historical 10-K/10-Q cover-page filer status keyed by accession and accelerated-filer-status change as a remaining structured-data edge after filing-timeliness and raw SEC item-code failures. Confidence is low because SEC text/event families are saturated and upgrades may be sparse, but the field is machine-checkable and not a threshold sweep.",
+    "recorded_at": "2026-06-26T07:04:46+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "decision": "blocked_sec_cover_page_filer_status_text_surface_missing",
+    "artifact": "data/experiments/exp-20260626-008/exp_20260626_008_sec_cover_page_filer_status_upgrade.json",
+    "log": "experiments/logs/exp-20260626-008.json",
+    "runner": "quant/experiments/exp_20260626_008_sec_cover_page_filer_status_upgrade.py",
+    "gate1": {
+      "passed": true,
+      "baseline_metrics": {
+        "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "window_count": 3,
+        "expected_value_score_sum": 7.8941,
+        "total_pnl": 234850.99,
+        "max_drawdown_pct_worst": 0.1119,
+        "trade_count": 61,
+        "signals_generated": 164,
+        "signals_survived": 135,
+        "survival_rate": 0.8232,
+        "windows": [
+          {
+            "label": "late_strong",
+            "start": "2025-10-23",
+            "end": "2026-04-21",
+            "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+            "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+            "expected_value_score": 5.1628,
+            "sharpe_daily": 4.41,
+            "total_pnl": 117072.92,
+            "max_drawdown_pct": 0.0665,
+            "win_rate": 0.8333,
+            "trade_count": 18,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "survival_rate": 0.8039
+          },
+          {
+            "label": "mid_weak",
+            "start": "2025-04-23",
+            "end": "2025-10-22",
+            "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+            "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+            "expected_value_score": 2.1402,
+            "sharpe_daily": 2.74,
+            "total_pnl": 78110.11,
+            "max_drawdown_pct": 0.1119,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "survival_rate": 0.7925
+          },
+          {
+            "label": "old_thin",
+            "start": "2024-10-02",
+            "end": "2025-04-22",
+            "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+            "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+            "expected_value_score": 0.5911,
+            "sharpe_daily": 1.49,
+            "total_pnl": 39667.96,
+            "max_drawdown_pct": 0.1001,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "signals_generated": 60,
+            "signals_survived": 52,
+            "survival_rate": 0.8667
+          }
+        ]
+      }
+    },
+    "gate2": {
+      "passed": false,
+      "required_fields_checked": [
+        "sec_filing_events accepted_at",
+        "sec_filing_events usable_trade_date",
+        "sec_filing_text combined_text for 10-K/10-Q",
+        "cover-page filer status fields",
+        "entry_date",
+        "target_price"
+      ],
+      "coverage": {
+        "event_coverage": {
+          "late_strong": {
+            "10k_10q_event_rows": 887,
+            "parse_errors": 0,
+            "forms": {
+              "10-Q": 510,
+              "10-K": 377
+            },
+            "ticker_count": 48
+          },
+          "mid_weak": {
+            "10k_10q_event_rows": 848,
+            "parse_errors": 0,
+            "forms": {
+              "10-Q": 762,
+              "10-K": 86
+            },
+            "ticker_count": 48
+          },
+          "old_thin": {
+            "10k_10q_event_rows": 799,
+            "parse_errors": 0,
+            "forms": {
+              "10-K": 329,
+              "10-Q": 470
+            },
+            "ticker_count": 46
+          }
+        },
+        "text_coverage": {
+          "late_strong": {
+            "10k_10q_text_rows": 0,
+            "parse_errors": 0,
+            "parseable_cover_status_rows": 0,
+            "forms": {},
+            "ticker_count": 0
+          },
+          "mid_weak": {
+            "10k_10q_text_rows": 0,
+            "parse_errors": 0,
+            "parseable_cover_status_rows": 0,
+            "forms": {},
+            "ticker_count": 0
+          },
+          "old_thin": {
+            "10k_10q_text_rows": 0,
+            "parse_errors": 0,
+            "parseable_cover_status_rows": 0,
+            "forms": {},
+            "ticker_count": 0
+          }
+        },
+        "parseable_status_rows_sample": [],
+        "total_10k_10q_event_rows": 2534,
+        "total_10k_10q_text_rows": 0,
+        "total_parseable_cover_status_rows": 0
+      },
+      "blocking_reason": "no_10k_10q_text_rows_in_replay_text_surface; no_parseable_cover_page_filer_status_rows"
+    },
+    "gate3": {
+      "passed": false,
+      "filter_added": false,
+      "signals_generated_proxy": 2534,
+      "signals_survived_proxy": 0,
+      "survival_rate_proxy": 0.0,
+      "note": "No executable filter was added; the candidate field is unavailable."
+    },
+    "gate4": {
+      "passed": false,
+      "decision": "blocked_sec_cover_page_filer_status_text_surface_missing",
+      "failed_reasons": [
+        "no_10k_10q_text_rows_in_replay_text_surface",
+        "no_parseable_cover_page_filer_status_rows"
+      ],
+      "strategy_behavior_changed": false,
+      "before_after_strategy_delta": {
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0
+      }
+    },
+    "delta_metrics": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "parseable_cover_status_rows": 0
+    },
+    "calibration": {
+      "predicted_success_probability": 0.16,
+      "actual_success": 0,
+      "brier_score": 0.0256,
+      "predicted_failure_modes": [
+        "thin_upgrade_sample",
+        "old_thin_text_coverage_gap",
+        "filing_status_not_incremental",
+        "accepted_comparator_not_beaten"
+      ],
+      "realized_failure_mode": "field_availability_blocked",
+      "predicted_failure_mode_hit": true
+    },
+    "summary": "The event archive contains 10-K/10-Q filing metadata, but the local SEC filing text replay surface did not provide parseable 10-K/10-Q cover-page rows for the canonical windows, so the status-upgrade field cannot be tested without creating ghost inputs."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260626-008.json",
+  "single_causal_variable": "sec_cover_page_filer_status_upgrade_candidate_source_v1",
+  "status": "blocked",
+  "ticket_file": "experiments/tickets/exp-20260626-008.json",
+  "trial_family": "sec_cover_page_filer_status_upgrade_candidate_pool",
+  "trial_variant_id": "cover_page_filer_status_upgrade_text_coverage_v1",
+  "alpha_hypothesis": "candidate_pool: PIT SEC 10-K/10-Q cover-page filer-status upgrades from smaller/non-accelerated/EGC toward accelerated or large-accelerated status may identify improving institutional eligibility whose next-open 10-day default-off paper continuation beats accepted comparators when paired with liquid SPY-relative confirmation.",
+  "implementation_mode": "gate2_field_availability_audit",
+  "new_evidence_axis": "Machine-checkable new PIT field: parsed 10-K/10-Q cover-page filer-status upgrade keyed by accession/accepted_at, distinct from filing earliness, raw SEC item codes, 13D/13G holder metadata, Companyfacts ratios, and SEC text phrase lists.",
+  "decision": "blocked_sec_cover_page_filer_status_text_surface_missing",
+  "summary": "The event archive contains 10-K/10-Q filing metadata, but the local SEC filing text replay surface did not provide parseable 10-K/10-Q cover-page rows for the canonical windows, so the status-upgrade field cannot be tested without creating ghost inputs.",
+  "artifact": "data/experiments/exp-20260626-008/exp_20260626_008_sec_cover_page_filer_status_upgrade.json",
+  "log": "experiments/logs/exp-20260626-008.json",
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "max_drawdown_pct_worst": 0.1119,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    }
+  },
+  "gate2": {
+    "passed": false,
+    "required_fields_checked": [
+      "sec_filing_events accepted_at",
+      "sec_filing_events usable_trade_date",
+      "sec_filing_text combined_text for 10-K/10-Q",
+      "cover-page filer status fields",
+      "entry_date",
+      "target_price"
+    ],
+    "coverage": {
+      "event_coverage": {
+        "late_strong": {
+          "10k_10q_event_rows": 887,
+          "parse_errors": 0,
+          "forms": {
+            "10-Q": 510,
+            "10-K": 377
+          },
+          "ticker_count": 48
+        },
+        "mid_weak": {
+          "10k_10q_event_rows": 848,
+          "parse_errors": 0,
+          "forms": {
+            "10-Q": 762,
+            "10-K": 86
+          },
+          "ticker_count": 48
+        },
+        "old_thin": {
+          "10k_10q_event_rows": 799,
+          "parse_errors": 0,
+          "forms": {
+            "10-K": 329,
+            "10-Q": 470
+          },
+          "ticker_count": 46
+        }
+      },
+      "text_coverage": {
+        "late_strong": {
+          "10k_10q_text_rows": 0,
+          "parse_errors": 0,
+          "parseable_cover_status_rows": 0,
+          "forms": {},
+          "ticker_count": 0
+        },
+        "mid_weak": {
+          "10k_10q_text_rows": 0,
+          "parse_errors": 0,
+          "parseable_cover_status_rows": 0,
+          "forms": {},
+          "ticker_count": 0
+        },
+        "old_thin": {
+          "10k_10q_text_rows": 0,
+          "parse_errors": 0,
+          "parseable_cover_status_rows": 0,
+          "forms": {},
+          "ticker_count": 0
+        }
+      },
+      "parseable_status_rows_sample": [],
+      "total_10k_10q_event_rows": 2534,
+      "total_10k_10q_text_rows": 0,
+      "total_parseable_cover_status_rows": 0
+    },
+    "blocking_reason": "no_10k_10q_text_rows_in_replay_text_surface; no_parseable_cover_page_filer_status_rows"
+  },
+  "gate3": {
+    "passed": false,
+    "filter_added": false,
+    "signals_generated_proxy": 2534,
+    "signals_survived_proxy": 0,
+    "survival_rate_proxy": 0.0,
+    "note": "No executable filter was added; the candidate field is unavailable."
+  },
+  "gate4": {
+    "passed": false,
+    "decision": "blocked_sec_cover_page_filer_status_text_surface_missing",
+    "failed_reasons": [
+      "no_10k_10q_text_rows_in_replay_text_surface",
+      "no_parseable_cover_page_filer_status_rows"
+    ],
+    "strategy_behavior_changed": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    }
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The event archive contains 10-K/10-Q filing metadata, but the local SEC filing text replay surface did not provide parseable 10-K/10-Q cover-page rows for the canonical windows, so the status-upgrade field cannot be tested without creating ghost inputs.",
+    "forbidden_near_neighbor_retry": "Do not retry accelerated-filer-status alpha, filing-timeliness, raw form/item metadata, or SEC phrase-list variants until 10-K/10-Q cover-page text is materialized with accession and accepted_at provenance.",
+    "new_evidence_required": "Materialize historical 10-K/10-Q cover-page XBRL/text rows keyed by accession_number, accepted_at, usable_trade_date, ticker, and parsed filer-status booleans; then rerun one fixed upgrade/downgrade candidate rule through shared-paper-first."
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "paper_orders_changed": false,
+    "live_orders_changed": false,
+    "production_watchlist_changed": false,
+    "uses_free_sec_filing_events": true,
+    "uses_free_sec_filing_text": true,
+    "uses_llm": false,
+    "replay_only": false,
+    "live_realism_evaluated": false,
+    "live_ready": false,
+    "parity_note": "Coverage audit only. A future positive alpha requires a shared historical/daily parser for the same cover-page status fields, a default-off paper helper, parity test, and full Gate 1-4 replay."
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260626_008_sec_cover_page_filer_status_upgrade.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260626_008_sec_cover_page_filer_status_upgrade.py",
+    "data/experiments/exp-20260626-008/exp_20260626_008_sec_cover_page_filer_status_upgrade.json",
+    "experiments/logs/exp-20260626-008.json",
+    "experiments/tickets/exp-20260626-008.json",
+    "experiments/cards/exp-20260626-008.md",
+    "experiments/manifests/exp-20260626-008.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "anti_js": {
+    "used_javascript": false,
+    "evidence": "Python runner only."
+  },
+  "updated_at": "2026-06-26T07:10:27+00:00"
+}
