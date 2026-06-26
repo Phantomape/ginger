@@ -627,6 +627,25 @@ or top-N on frozen windows. Reopen only with closed forward rows tagged at entry
 by short-volume percentile, or with materially new borrow fee, utilization, or
 loan-availability economics.
 
+`exp-20260626-018` (measurement_repair) built the first half of that reopen
+condition: the shared forward replacement-value enricher
+(`quant/forward_replacement_value.py`) now writes a read-only entry-time PIT
+`short_volume_ratio` percentile tag on closed forward rows
+(`entry_short_volume_ratio_percentile / _quintile / _toxic_flag / _status`),
+reusing the exp-018 expanding strictly-prior per-ticker percentile over the
+broad 51-name archive (exp-20260623-008) so the forward tag is
+parity-consistent with the attribution. The daily `run.py` enrich call
+auto-loads the archive, so new closed rows are tagged going forward. Coverage is
+already usable: 37/40 current closed rows carry a real percentile across all
+five quintiles (toxic Q5 n=7 ≈ 19%, matching the exp-018 selection overlap), and
+a read-only forward diagnostic is directionally consistent with the
+informed-flow sign (clean Q1-Q2 mean replacement-value-vs-cash +$225 n=21 vs
+toxic Q5 −$204 n=7). Per-quintile N is single digits and NOT significance-tested:
+this is the validation SURFACE, not an alpha verdict. Do not read the tag as
+permission to re-run any frozen-window short-volume gate; the only sanctioned
+next step is a SOFT short-flow tilt validated once materially more closed
+forward rows accumulate per quintile.
+
 The June 26 maintenance records confirm that the next high-value work is data
 materialization, not alpha retuning. SEC 6-K and selected 10-K/10-Q rows still
 need local text/cache and parsed cover-page fields keyed by accession and

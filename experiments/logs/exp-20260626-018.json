@@ -1,0 +1,331 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "aggregate_expected_value_score": 7.8941,
+    "aggregate_signals_generated": 164,
+    "aggregate_signals_survived": 135,
+    "aggregate_total_pnl": 234850.99,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "min_survival_rate": 0.7925,
+    "total_trade_count": 61
+  },
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260626-018/exp_20260626_018_forward_replacement_entry_short_volume_tag.json",
+  "before_metrics": {
+    "aggregate_expected_value_score": 7.8941,
+    "aggregate_signals_generated": 164,
+    "aggregate_signals_survived": 135,
+    "aggregate_total_pnl": 234850.99,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "min_survival_rate": 0.7925,
+    "total_trade_count": 61
+  },
+  "calibration": {
+    "actual_ev_delta": 0.0,
+    "actual_gate4_passed": true,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "confidence_reason": "The shared forward replacement enrichment path already owns the closed row surface and successfully added entry-regime tags (exp-20260623-002). The broad 51-name short-volume archive (exp-20260623-008) overlaps 14 of the 17 forward-row tickers, so most rows should receive a real percentile. The repair only adds read-only entry-date tags and tests idempotent rebuild; the main disconfirmer is thin per-ticker history forming no percentile.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "failure_modes_observed": [],
+    "main_failure_modes": [
+      "short_volume_archive_missing_or_thin",
+      "forward_row_tickers_not_in_archive",
+      "dirty_state_write_conflict",
+      "artifact_rebuild_mismatch"
+    ],
+    "recorded_at": "2026-06-26T00:00:00+00:00",
+    "success_probability": 0.75,
+    "surprise_note": "No surprise; 14/17 forward-row tickers overlap the broad short-volume archive, so most rows received a real percentile."
+  },
+  "card_file": "experiments/cards/exp-20260626-018.md",
+  "change_type": "forward_replacement_value_short_volume_tag_measurement_repair",
+  "changed_files": [
+    "quant/forward_replacement_value.py",
+    "quant/test_forward_replacement_value.py",
+    "quant/experiments/exp_20260626_018_forward_replacement_entry_short_volume_tag.py",
+    "data/experiments/exp-20260626-018/exp_20260626_018_forward_replacement_entry_short_volume_tag.json",
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "experiments/logs/exp-20260626-018.json",
+    "experiments/cards/exp-20260626-018.md",
+    "experiments/manifests/exp-20260626-018.json",
+    "experiments/tickets/exp-20260626-018.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "forward_replacement_rows_entry_short_volume_percentile_tag_v1",
+  "decision": "accepted_measurement_repair_forward_replacement_entry_short_volume_tag",
+  "delta_metrics": {
+    "aggregate_expected_value_score": 0.0,
+    "aggregate_total_pnl": 0.0,
+    "max_window_drawdown_pct": 0.0,
+    "min_survival_rate": 0.0,
+    "total_trade_count": 0
+  },
+  "experiment_id": "exp-20260626-018",
+  "gate1": {
+    "baseline_metrics": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_signals_generated": 164,
+      "aggregate_signals_survived": 135,
+      "aggregate_total_pnl": 234850.99,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "min_survival_rate": 0.7925,
+      "total_trade_count": 61
+    },
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "passed": true
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields_checked": [
+      "entry_date",
+      "replacement_value_*",
+      "entry_short_volume_tag_rule_version",
+      "entry_short_volume_ratio_percentile",
+      "entry_short_volume_quintile",
+      "entry_short_volume_toxic_flag"
+    ],
+    "short_volume_archive": "data/non_ohlcv/moomoo_daily_short_volume_broad/rows.jsonl",
+    "short_volume_archive_rows": 25152,
+    "temp_validation": {
+      "artifact_row_has_short_volume_tag": true,
+      "entry_short_volume_quintile": 5,
+      "entry_short_volume_status": "ok",
+      "entry_short_volume_toxic_flag": true,
+      "idempotent_second_run": true,
+      "state_row_has_short_volume_tag": true,
+      "summary": {
+        "artifact_path": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\ginger-exp-20260626-018-ywbrlq7o\\forward_replacement_value.jsonl",
+        "artifact_previous_rows_not_in_current_state": 0,
+        "artifact_rows": 1,
+        "artifact_rows_by_entry_regime_label": {},
+        "artifact_rows_by_entry_short_volume_quintile": {
+          "Q5": 1
+        },
+        "artifact_rows_by_status": {
+          "enriched": 1
+        },
+        "artifact_rows_entry_short_volume_toxic": 1,
+        "artifact_rows_with_entry_regime": 0,
+        "artifact_rows_with_entry_short_volume": 1,
+        "asof_date": "2026-06-26",
+        "entry_regime_tag_rule_version": "forward_replacement_entry_regime_tag_v1",
+        "entry_regime_tagging_enabled": false,
+        "entry_short_volume_tag_rule_version": "forward_replacement_entry_short_volume_tag_v1",
+        "entry_short_volume_tagging_enabled": true,
+        "generated_at": "2026-06-26T16:19:30+00:00",
+        "production_impact": {
+          "alters_candidate_ranking": false,
+          "alters_exits": false,
+          "alters_orders": false,
+          "alters_signal_generation": false,
+          "alters_sizing": false,
+          "backtester_adapter_changed": false,
+          "default_off_attribution_only": true,
+          "entry_regime_tagging_only": true,
+          "replay_only": false,
+          "run_adapter_changed": true,
+          "shared_policy_changed": false,
+          "trade_enabled": false
+        },
+        "rows_enriched": 1,
+        "rows_enriched_by_status": {
+          "enriched": 1
+        },
+        "rule_version": "forward_replacement_value_v1",
+        "sleeves": {
+          "demo_sleeve": {
+            "rows_enriched": 1,
+            "statuses": [
+              "enriched"
+            ]
+          }
+        },
+        "sleeves_scanned": 1,
+        "status": "ok"
+      }
+    }
+  },
+  "gate3": {
+    "baseline_min_survival_rate": 0.7925,
+    "new_filter_added": false,
+    "passed": true
+  },
+  "gate4": {
+    "decision": "accepted_measurement_repair_forward_replacement_entry_short_volume_tag",
+    "measurement_repair_only": true,
+    "passed": true,
+    "strategy_replay_changed": false
+  },
+  "hypothesis": "measurement_repair/alpha_blocker: out-of-sample validation of the short_volume_ratio informed-flow soft tilt (the only admissible reopen per exp-20260625-019) is blocked because closed forward replacement rows do not carry the entry-time PIT short_volume_ratio percentile.",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "log_file": "experiments/logs/exp-20260626-018.json",
+  "mechanism_family": "short_volume_informed_flow_measurement_repair",
+  "nearby_prior_experiments": [
+    "exp-20260623-002",
+    "exp-20260625-018",
+    "exp-20260625-019",
+    "exp-20260623-008"
+  ],
+  "new_evidence_type": "shared_forward_entry_short_volume_percentile_observation_field",
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not use this tag to re-run a frozen-window short-volume gate, notional down-weight, or quintile/threshold/lookback/top-N/hold/cooldown sweep -- that whole line is CLOSED (exp-20260625-019/-023/-024). The tag exists only to validate a SOFT short-flow tilt on closed forward rows once enough accumulate.",
+    "new_evidence_required": "Materially more closed forward replacement rows per short-volume quintile (the current per-quintile N is single digits and not significance-tested), or a PIT borrow fee / utilization / loan-availability field, before any soft-tilt activation test.",
+    "why_result_happened": "The repair succeeded because forward replacement enrichment already owns the closed-row observation surface and the broad 51-name short-volume archive covers 14 of 17 forward-row tickers, so the per-ticker expanding PIT percentile joined to most rows. 37/40 rows received a real percentile spanning all five quintiles."
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_attribution_only": true,
+    "live_ready": false,
+    "parity_note": "The shared forward replacement-value enrichment helper now records entry-time short_volume_ratio percentile tags. The daily run.py path already calls enrich_all_sleeve_states and now auto-loads the broad short-volume archive, so new closed rows are tagged going forward. It does not alter any paper or live decision surface.",
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": true,
+    "trade_enabled": false
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_forward_replacement_value.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260626_018_forward_replacement_entry_short_volume_tag.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "revision_manifest_file": "experiments/manifests/exp-20260626-018.json",
+  "single_causal_variable": "forward_replacement_rows_entry_short_volume_percentile_tag_v1",
+  "status": "accepted",
+  "timestamp": "2026-06-26T16:19:31Z",
+  "trial_family": "default_off_forward_short_volume_tagging",
+  "trial_variant_id": "forward_replacement_entry_short_volume_percentile_tag_v1",
+  "validation": {
+    "real_forward_enrichment": {
+      "clean_q1q2_mean_rv_cash": 225.23,
+      "clean_q1q2_n": 21,
+      "diagnostic_caveat": "Forward-row N is tiny and not significance-tested; this is the validation SURFACE, not an alpha verdict. A soft short-flow tilt cannot be accepted until materially more closed forward rows accumulate per quintile.",
+      "enrichment_summary": {
+        "artifact_rows": 40,
+        "artifact_rows_by_entry_short_volume_quintile": {
+          "Q1": 11,
+          "Q2": 10,
+          "Q3": 4,
+          "Q4": 5,
+          "Q5": 7
+        },
+        "artifact_rows_entry_short_volume_toxic": 7,
+        "artifact_rows_with_entry_short_volume": 37,
+        "entry_short_volume_tagging_enabled": true,
+        "rows_enriched": 3,
+        "status": "ok"
+      },
+      "forward_rows_short_volume_ok": 37,
+      "forward_rows_total": 40,
+      "quintile_forward_replacement_value_diagnostic": {
+        "Q1": {
+          "mean_rv_cash": 107.04,
+          "mean_rv_spy": 386.21,
+          "median_rv_cash": 63.7,
+          "n": 11,
+          "win_rate_vs_cash": 0.5455
+        },
+        "Q2": {
+          "mean_rv_cash": 355.23,
+          "mean_rv_spy": 542.73,
+          "median_rv_cash": 448.67,
+          "n": 10,
+          "win_rate_vs_cash": 0.7
+        },
+        "Q3": {
+          "mean_rv_cash": 68.27,
+          "mean_rv_spy": 231.99,
+          "median_rv_cash": -125.27,
+          "n": 4,
+          "win_rate_vs_cash": 0.25
+        },
+        "Q4": {
+          "mean_rv_cash": 1.36,
+          "mean_rv_spy": 56.62,
+          "median_rv_cash": -634.83,
+          "n": 5,
+          "win_rate_vs_cash": 0.4
+        },
+        "Q5": {
+          "mean_rv_cash": -204.15,
+          "mean_rv_spy": -34.39,
+          "median_rv_cash": 35.71,
+          "n": 7,
+          "win_rate_vs_cash": 0.5714
+        }
+      },
+      "toxic_q5_mean_rv_cash": -204.15,
+      "toxic_q5_n": 7
+    },
+    "short_volume_archive_rows": 25152,
+    "temp_validation": {
+      "artifact_row_has_short_volume_tag": true,
+      "entry_short_volume_quintile": 5,
+      "entry_short_volume_status": "ok",
+      "entry_short_volume_toxic_flag": true,
+      "idempotent_second_run": true,
+      "state_row_has_short_volume_tag": true,
+      "summary": {
+        "artifact_path": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\ginger-exp-20260626-018-ywbrlq7o\\forward_replacement_value.jsonl",
+        "artifact_previous_rows_not_in_current_state": 0,
+        "artifact_rows": 1,
+        "artifact_rows_by_entry_regime_label": {},
+        "artifact_rows_by_entry_short_volume_quintile": {
+          "Q5": 1
+        },
+        "artifact_rows_by_status": {
+          "enriched": 1
+        },
+        "artifact_rows_entry_short_volume_toxic": 1,
+        "artifact_rows_with_entry_regime": 0,
+        "artifact_rows_with_entry_short_volume": 1,
+        "asof_date": "2026-06-26",
+        "entry_regime_tag_rule_version": "forward_replacement_entry_regime_tag_v1",
+        "entry_regime_tagging_enabled": false,
+        "entry_short_volume_tag_rule_version": "forward_replacement_entry_short_volume_tag_v1",
+        "entry_short_volume_tagging_enabled": true,
+        "generated_at": "2026-06-26T16:19:30+00:00",
+        "production_impact": {
+          "alters_candidate_ranking": false,
+          "alters_exits": false,
+          "alters_orders": false,
+          "alters_signal_generation": false,
+          "alters_sizing": false,
+          "backtester_adapter_changed": false,
+          "default_off_attribution_only": true,
+          "entry_regime_tagging_only": true,
+          "replay_only": false,
+          "run_adapter_changed": true,
+          "shared_policy_changed": false,
+          "trade_enabled": false
+        },
+        "rows_enriched": 1,
+        "rows_enriched_by_status": {
+          "enriched": 1
+        },
+        "rule_version": "forward_replacement_value_v1",
+        "sleeves": {
+          "demo_sleeve": {
+            "rows_enriched": 1,
+            "statuses": [
+              "enriched"
+            ]
+          }
+        },
+        "sleeves_scanned": 1,
+        "status": "ok"
+      }
+    }
+  }
+}

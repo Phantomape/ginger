@@ -8,15 +8,18 @@
     "experiments/tickets/exp-20260626-018.json",
     "experiments/logs/exp-20260626-018.json",
     "docs/experiment_log.jsonl",
-    "docs/experiment_registry.json"
+    "docs/experiment_registry.json",
+    "quant/forward_replacement_value.py",
+    "quant/test_forward_replacement_value.py",
+    "data/paper_sleeves/forward_replacement_value.jsonl"
   ],
   "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
   "card_file": "experiments/cards/exp-20260626-018.md",
   "causal_components": [],
-  "change_type": "identity_or_measurement_repair",
+  "change_type": "forward_replacement_value_short_volume_tag_measurement_repair",
   "changed_variable": "forward_replacement_rows_entry_short_volume_percentile_tag_v1",
   "claimed_at": "2026-06-26T16:14:34+00:00",
-  "completed_at": null,
+  "completed_at": "2026-06-26T16:19:31+00:00",
   "created_at": "2026-06-26T16:14:15+00:00",
   "evaluation_windows": [],
   "experiment_id": "exp-20260626-018",
@@ -34,11 +37,16 @@
   "locked_variables": [
     "forward_replacement_rows_entry_short_volume_percentile_tag_v1"
   ],
-  "mechanism_family": "identity_or_measurement_repair",
+  "mechanism_family": "short_volume_informed_flow_measurement_repair",
   "multiple_testing_risk_bucket": "minimal",
   "must_not_touch": [],
-  "nearby_prior_experiments": [],
-  "new_evidence_type": "not_declared",
+  "nearby_prior_experiments": [
+    "exp-20260623-002",
+    "exp-20260625-018",
+    "exp-20260625-019",
+    "exp-20260623-008"
+  ],
+  "new_evidence_type": "shared_forward_entry_short_volume_percentile_observation_field",
   "novelty": {
     "blocking_matches": [],
     "enforced": true,
@@ -148,13 +156,46 @@
     "warn_threshold": 0.55
   },
   "owner": "alpha-explore",
-  "prediction": null,
+  "prediction": {
+    "success_probability": 0.75,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "short_volume_archive_missing_or_thin",
+      "forward_row_tickers_not_in_archive",
+      "dirty_state_write_conflict",
+      "artifact_rebuild_mismatch"
+    ],
+    "confidence_reason": "The shared forward replacement enrichment path already owns the closed row surface and successfully added entry-regime tags (exp-20260623-002). The broad 51-name short-volume archive (exp-20260623-008) overlaps 14 of the 17 forward-row tickers, so most rows should receive a real percentile. The repair only adds read-only entry-date tags and tests idempotent rebuild; the main disconfirmer is thin per-ticker history forming no percentile.",
+    "recorded_at": "2026-06-26T00:00:00+00:00"
+  },
   "prior_trial_count": 0,
-  "result": null,
+  "result": {
+    "decision": "accepted_measurement_repair_forward_replacement_entry_short_volume_tag",
+    "artifact": "data/experiments/exp-20260626-018/exp_20260626_018_forward_replacement_entry_short_volume_tag.json",
+    "log_file": "experiments/logs/exp-20260626-018.json",
+    "lean_quality_passed": true
+  },
   "revision_manifest_file": "experiments/manifests/exp-20260626-018.json",
   "single_causal_variable": "forward_replacement_rows_entry_short_volume_percentile_tag_v1",
-  "status": "claimed",
+  "status": "accepted",
   "ticket_file": "experiments/tickets/exp-20260626-018.json",
-  "trial_family": "identity_or_measurement_repair",
-  "trial_variant_id": "exp-20260626-018"
+  "trial_family": "default_off_forward_short_volume_tagging",
+  "trial_variant_id": "forward_replacement_entry_short_volume_percentile_tag_v1",
+  "artifact_file": "data/experiments/exp-20260626-018/exp_20260626_018_forward_replacement_entry_short_volume_tag.json",
+  "log_file": "experiments/logs/exp-20260626-018.json",
+  "changed_files": [
+    "quant/forward_replacement_value.py",
+    "quant/test_forward_replacement_value.py",
+    "quant/experiments/exp_20260626_018_forward_replacement_entry_short_volume_tag.py",
+    "data/experiments/exp-20260626-018/exp_20260626_018_forward_replacement_entry_short_volume_tag.json",
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "experiments/logs/exp-20260626-018.json",
+    "experiments/cards/exp-20260626-018.md",
+    "experiments/manifests/exp-20260626-018.json",
+    "experiments/tickets/exp-20260626-018.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "updated_at": "2026-06-26T16:19:31+00:00"
 }
