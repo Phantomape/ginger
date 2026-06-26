@@ -670,14 +670,27 @@ over the 0.5pp cap. This is the same "high aggregate EV with old_thin drawdown
 drift is a rejected clue, not a retained strategy" pattern seen in accruals,
 inventory, asset-growth, and reinvestment fields: the avoidance signal carries
 genuine after-cost replacement value but is not drawdown-clean at top-1 momentum
-deployment. Do NOT rescue it by nudging the quintile cut, momentum/proximity
-thresholds, hold, cooldown, top-N, or notional -- that is the forbidden retune.
-The admissible next moves are a materially different gate SHAPE (e.g. a
-short-flow NOTIONAL down-weight rather than a hard top-1 exclusion, or scoping
-the gate to the specific sleeves whose selections concentrate in toxic Q5), or
-closed forward rows tagged with the entry `short_volume_ratio` percentile. The
-source itself is now `2/3` tried (018 observed-only lead, 019 rejected); treat
-the hard-exclusion top-1 shape as closed on the frozen windows.
+deployment. CRUCIAL CORRECTION: that scout used the CORE baseline, which
+flatters it. Concurrent same-day full-stack and falsification runs settled the
+line against the CORRECT comparator -- the accepted ungated source-priority
+allocator -- and the gate adds NO incremental value there. The exp-019
+full-stack (`..._clean_flow_gate.json`, gate on the accepted allocator rows) was
+rejected: EV/PnL delta not positive vs the ungated allocator, EV regressed in
+windows, concentration worse. `exp-20260625-024` ran the obvious notional
+down-weight reshape against the allocator and was rejected identically (EV/PnL
+not positive vs ungated allocator, lift below the 10% retune bar, < 2 windows
+improved, concentration worse). `exp-20260625-023` placebo-falsification
+confirms the signal is not pure noise but promotion stays blocked by the
+allocator-baseline failure. Net: the short_volume_ratio informed-flow signal is
+REAL but NOT incremental over the accepted allocator, in either the hard-
+exclusion or notional-downweight shape. The whole short-volume gate line is now
+CLOSED on the frozen windows -- do not retry the quintile cut, scalar,
+momentum/proximity thresholds, hold, cooldown, top-N, scoping, or any further
+shape. The only admissible reopen is closed forward rows tagged with the entry
+`short_volume_ratio` percentile (validate a soft tilt out of sample), or a
+materially new PIT field such as borrow fee / utilization. The "real EV vs core"
+framing from the scout alone is misleading; the binding read is null-to-negative
+vs the proper allocator base.
 
 ## Detail Sources
 
