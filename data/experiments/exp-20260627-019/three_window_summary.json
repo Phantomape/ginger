@@ -1,0 +1,102 @@
+{
+  "experiment_id": "exp-20260627-019",
+  "decision": "rejected",
+  "north_star": "expected_value_score = total_return_pct * sharpe_daily",
+  "method": "core(43) vs union(core, ADV-ranked liquid top300/top500) on warehouse broad OHLCV; earnings gate disabled uniformly; oracle off; 3 standard windows",
+  "caveat": "earnings dte<=3 gate disabled (no network) inflates all tiers uniformly; comparison apples-to-apples but absolute EV not canonical. before/after files are late_strong representative full backtests.",
+  "windows": {
+    "old_thin": {
+      "core": {
+        "EV": 0.37,
+        "sharpe": 1.23,
+        "pnl": 30095,
+        "maxDD_pct": 11.97,
+        "win": 0.36,
+        "trades": 25,
+        "surv_pct": 90.9
+      },
+      "top300": {
+        "EV": 1.317,
+        "sharpe": 1.77,
+        "pnl": 74380,
+        "maxDD_pct": 26.29,
+        "win": 0.42,
+        "trades": 24,
+        "surv_pct": 18.0
+      },
+      "top500": {
+        "EV": 0.038,
+        "sharpe": -0.28,
+        "pnl": -13579,
+        "maxDD_pct": 32.46,
+        "win": 0.25,
+        "trades": 40,
+        "surv_pct": 16.9
+      }
+    },
+    "mid_weak": {
+      "core": {
+        "EV": 1.204,
+        "sharpe": 2.11,
+        "pnl": 57063,
+        "maxDD_pct": 11.19,
+        "win": 0.45,
+        "trades": 22,
+        "surv_pct": 78.8
+      },
+      "top300": {
+        "EV": 0.564,
+        "sharpe": 1.35,
+        "pnl": 41792,
+        "maxDD_pct": 18.6,
+        "win": 0.42,
+        "trades": 31,
+        "surv_pct": 21.2
+      },
+      "top500": {
+        "EV": 0.331,
+        "sharpe": 1.13,
+        "pnl": 29282,
+        "maxDD_pct": 16.21,
+        "win": 0.37,
+        "trades": 35,
+        "surv_pct": 17.8
+      }
+    },
+    "late_strong": {
+      "core": {
+        "EV": 4.567,
+        "sharpe": 4.27,
+        "pnl": 106964,
+        "maxDD_pct": 6.9,
+        "win": 0.71,
+        "trades": 21,
+        "surv_pct": 80.4
+      },
+      "top300": {
+        "EV": 1.527,
+        "sharpe": 1.96,
+        "pnl": 77910,
+        "maxDD_pct": 17.93,
+        "win": 0.47,
+        "trades": 45,
+        "surv_pct": 37.5
+      },
+      "top500": {
+        "EV": 0.361,
+        "sharpe": 1.37,
+        "pnl": 26360,
+        "maxDD_pct": 19.11,
+        "win": 0.37,
+        "trades": 38,
+        "surv_pct": 9.8
+      }
+    }
+  },
+  "aggregate_EV": {
+    "core": 6.141,
+    "top300": 3.408,
+    "top500": 0.73
+  },
+  "verdict": "core wins Sharpe(3/3), maxDD(3/3), survival(3/3), aggregate EV. Naive liquid expansion destroys risk-adjusted return; survival collapses ~80%->10-21%. One unstable nuance: old_thin top300 raw EV higher but 2.2x drawdown and top500 negative -> belongs to universe-aware ranking/risk retune, not naive expansion."
+}

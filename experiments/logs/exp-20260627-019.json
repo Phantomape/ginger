@@ -1,0 +1,112 @@
+{
+  "after_metrics": {
+    "expected_value_score": 0.3611,
+    "max_drawdown_pct": 0.1911,
+    "sharpe": 0.75,
+    "sharpe_daily": 1.37,
+    "survival_rate": 0.0976,
+    "total_pnl": 26360.03,
+    "total_return_pct": 0.2636,
+    "trade_count": 38,
+    "win_rate": 0.3684
+  },
+  "before_metrics": {
+    "expected_value_score": 4.5672,
+    "max_drawdown_pct": 0.069,
+    "sharpe": 5.12,
+    "sharpe_daily": 4.27,
+    "survival_rate": 0.8039,
+    "total_pnl": 106964.21,
+    "total_return_pct": 1.0696,
+    "trade_count": 21,
+    "win_rate": 0.7143
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": -4.2061,
+    "actual_pnl_delta": -80604.18,
+    "actual_success": 0,
+    "brier_score": 0.04,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -3.7061,
+    "expected_ev_delta": -0.5,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": -80604.18,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "low-quality signal flooding -> survival/Sharpe collapse",
+      "drawdown blowup"
+    ],
+    "predicted_success_probability": 0.2,
+    "realized_failure_mode": "low-quality signal flooding -> survival/Sharpe collapse, drawdown blowup",
+    "surprise_level": "very_low",
+    "surprise_note": "old_thin top300 raw EV higher than core (1.32 vs 0.37) but 2.2x drawdown and top500 negative; weak-tape nuance is a universe-aware retune problem, not naive expansion"
+  },
+  "causal_components": [],
+  "change_summary": "Universe expansion scout: core(43) vs liquidity top300/500, 3 windows. REJECTED. core wins Sharpe/maxDD/survival 3/3 and aggregate EV (6.14 vs 3.41 vs 0.73). Artifacts: three_window_summary.json + before/after late_strong full backtests + runner.",
+  "change_type": "candidate_pool",
+  "changed_variable": "universe membership: core vs liquidity-ranked top-N broad universe (all else fixed)",
+  "component": "quant/experiments/exp_20260627_019_universe_membership_core_vs_liquidity_ranked_top_n_broad_universe_all_else_fixed.py, data/experiments/exp-20260627-019/exp_20260627_019_universe_membership_core_vs_liquidity_ranked_top_n_broad_universe_all_else_fixed.json, experiments/cards/exp-20260627-019.md, experiments/manifests/exp-20260627-019.json, experiments/tickets/exp-20260627-019.json, experiments/logs/exp-20260627-019.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": -4.2061,
+    "max_drawdown_pct": 0.1221,
+    "sharpe": -4.37,
+    "sharpe_daily": -2.9,
+    "survival_rate": -0.7063,
+    "total_pnl": -80604.18,
+    "total_return_pct": -0.806,
+    "trade_count": 17,
+    "win_rate": -0.3459
+  },
+  "experiment_id": "exp-20260627-019",
+  "hypothesis": "Expanding the trading universe beyond the ~43 core megacaps to a broader liquidity-ranked universe (union of core with ADV-ranked top300/top500 liquid names from the warehouse) raises portfolio EV by letting breakout/trend harvest more opportunities.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Confirms (via real backtest, not units-bug oracle reasoning) candidate-pool expansion is not headroom. See three_window_summary.json. Anti-repeat: do not re-run naive expand-universe; only live thread is universe-aware ranking/risk retune in weak tape (separate big hypothesis).",
+  "parameters": {
+    "locked_variables": [
+      "universe membership: core vs liquidity-ranked top-N broad universe (all else fixed)"
+    ],
+    "single_causal_variable": "universe membership: core vs liquidity-ranked top-N broad universe (all else fixed)"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do NOT re-run naive universe/candidate-pool expansion (this + volume_breadth_breakout_rank + universe_scout family are explored/rejected). No threshold/tier reshape counts as new.",
+    "new_evidence_required": "Only a universe-AWARE ranking+risk retune (per-name strategy-fit selected out-of-sample, validated on a later non-overlapping window) with stable OOS persistence would reopen; or a genuinely new data source. Naive add-names is frozen.",
+    "realized_failure_mode": "low-quality signal flooding -> survival/Sharpe collapse, drawdown blowup",
+    "why_result_happened": "old_thin top300 raw EV higher than core (1.32 vs 0.37) but 2.2x drawdown and top500 negative; weak-tape nuance is a universe-aware retune problem, not naive expansion"
+  },
+  "prediction": {
+    "confidence_reason": "oracle suggested pool not headroom; strategy tuned for megacaps; prior is expansion dilutes",
+    "expected_ev_delta": -0.5,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "low-quality signal flooding -> survival/Sharpe collapse",
+      "drawdown blowup"
+    ],
+    "recorded_at": "2026-06-27T16:20:28+00:00",
+    "success_probability": 0.2
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "No AGENTS.md Gate 4 acceptance condition was met.",
+  "related_files": [
+    "data/experiments/exp-20260627-019/before_core_late_strong.json",
+    "data/experiments/exp-20260627-019/after_top500_late_strong.json"
+  ],
+  "secondary_windows": [],
+  "status": "rejected",
+  "timestamp": "2026-06-27T16:22:34+00:00",
+  "trial_family": "candidate_pool",
+  "trial_variant_id": "exp-20260627-019"
+}

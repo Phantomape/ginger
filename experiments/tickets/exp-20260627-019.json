@@ -1,0 +1,189 @@
+{
+  "acceptance_rule": "aggregate EV across 3 windows must rise >10% vs core with no material drawdown/survival degradation",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260627_019_universe_membership_core_vs_liquidity_ranked_top_n_broad_universe_all_else_fixed.py",
+    "data/experiments/exp-20260627-019/exp_20260627_019_universe_membership_core_vs_liquidity_ranked_top_n_broad_universe_all_else_fixed.json",
+    "experiments/cards/exp-20260627-019.md",
+    "experiments/manifests/exp-20260627-019.json",
+    "experiments/tickets/exp-20260627-019.json",
+    "experiments/logs/exp-20260627-019.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260627-019.md",
+  "causal_components": [],
+  "change_type": "candidate_pool",
+  "changed_variable": "universe membership: core vs liquidity-ranked top-N broad universe (all else fixed)",
+  "claimed_at": null,
+  "completed_at": null,
+  "created_at": "2026-06-27T16:20:50+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260627-019",
+  "experiment_uid": "expuid-4c66181f25d949a5",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260627-019",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-27T16:20:50+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "universe_membership_core_vs_liquidity_ranked_top_n_broad_universe_all_else_fixed"
+  },
+  "hypothesis": "Expanding the trading universe beyond the ~43 core megacaps to a broader liquidity-ranked universe (union of core with ADV-ranked top300/top500 liquid names from the warehouse) raises portfolio EV by letting breakout/trend harvest more opportunities.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "universe membership: core vs liquidity-ranked top-N broad universe (all else fixed)"
+  ],
+  "mechanism_family": "candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "volume_breadth_breakout_rank_monotonic_attribution",
+        "score": 0.6093,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "vbb_rank2_strong_rs_candidate_extension",
+        "score": 0.6,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_relation",
+      "field_tags": [
+        "a",
+        "adv",
+        "all",
+        "beyond",
+        "breakout",
+        "broader",
+        "by",
+        "core",
+        "else",
+        "ev",
+        "expanding",
+        "from",
+        "harvest",
+        "letting",
+        "liquid",
+        "liquidity",
+        "megacaps",
+        "membership",
+        "more",
+        "n",
+        "names",
+        "of",
+        "opportunities",
+        "portfolio",
+        "raises",
+        "ranked",
+        "to",
+        "top",
+        "top300",
+        "top500",
+        "trading",
+        "trend",
+        "union",
+        "warehouse"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "volume_breadth_breakout_rank_monotonic_attribution",
+        "reopen_condition": null,
+        "score": 0.6093,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "vbb_rank2_strong_rs_candidate_extension",
+        "reopen_condition": null,
+        "score": 0.6,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "turn_of_month_liquid_leadership_candidate_pool",
+        "reopen_condition": "A retry needs materially new evidence that identifies real month-flow beneficiaries, such as point-in-time ETF rebalance constituent deltas, ownership/flow proxies, or forward daily-snapshot replacement value. Pure threshold retunes stay frozen.",
+        "score": 0.4716,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "turn_of_month_liquid_leadership_shared_default_off_adapter",
+        "reopen_condition": "Next useful evidence is closed forward replacement-value rows from the shared default-off ledger or a genuinely new point-in-time flow beneficiary field, not another threshold retune.",
+        "score": 0.4716,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.5,
+        "data_source": "ohlcv_relation",
+        "family_key": "fiftytwo_week_high_proximity_breakout_candidate_pool",
+        "reopen_condition": "Next useful evidence is closed forward replacement-value rows from the shared default-off ledger, or a genuinely new point-in-time field separating durable 52-week-high leaders from exhausted ones (fundamental quality, options/borrow structure), not another threshold retune.",
+        "score": 0.4705,
+        "status": "has_accepted",
+        "trials": 2
+      }
+    ],
+    "new_evidence_axis": "Direct core-vs-liquidity-top300/500 3-window full backtest with settled EV/Sharpe/maxDD/survival deltas; prior neighbors were rank-monotonic/attribution scouts, none ran the direct core-vs-topN liquid backtest. Recording REJECTED to freeze the naive-expansion axis with real numbers.",
+    "override": true,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_relation",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "agent-oracle-followup",
+  "prediction": {
+    "confidence_reason": "oracle suggested pool not headroom; strategy tuned for megacaps; prior is expansion dilutes",
+    "expected_ev_delta": -0.5,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "low-quality signal flooding -> survival/Sharpe collapse",
+      "drawdown blowup"
+    ],
+    "recorded_at": "2026-06-27T16:20:28+00:00",
+    "success_probability": 0.2
+  },
+  "prior_trial_count": 0,
+  "result": null,
+  "revision_manifest_file": "experiments/manifests/exp-20260627-019.json",
+  "single_causal_variable": "universe membership: core vs liquidity-ranked top-N broad universe (all else fixed)",
+  "status": "proposed",
+  "ticket_file": "experiments/tickets/exp-20260627-019.json",
+  "trial_family": "candidate_pool",
+  "trial_variant_id": "exp-20260627-019"
+}
