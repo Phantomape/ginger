@@ -84,3 +84,14 @@ docs/experiment_log.jsonl
 # run.py singleton lock (runtime)
 data/run.lock
 data/run.lock.pid
+
+# Secrets / API keys: NEVER commit plaintext credentials. The repo reads keys from
+# OS environment variables (preferred) or a local, gitignored .env file. Only the
+# committed-safe .env.example documents the variable names.
+.env
+.env.*
+!.env.example
+secrets.local.*
+*.secret
+# Decrypted output of an encrypted secrets file (SOPS/age/git-crypt), if used.
+secrets.dec.*
