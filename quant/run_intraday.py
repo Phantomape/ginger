@@ -32,6 +32,7 @@ try:
     from intraday_quotes import get_intraday_quotes, quote_source_summary
     from intraday_review import (
         INDEX_TICKERS,
+        build_advisory_shadow_actions,
         build_intraday_llm_prompt,
         build_intraday_market_regime,
         build_macro_context,
@@ -51,6 +52,7 @@ except ImportError:  # pragma: no cover - package-style imports in tests
     from quant.intraday_quotes import get_intraday_quotes, quote_source_summary
     from quant.intraday_review import (
         INDEX_TICKERS,
+        build_advisory_shadow_actions,
         build_intraday_llm_prompt,
         build_intraday_market_regime,
         build_macro_context,
@@ -308,6 +310,7 @@ def main(no_news: bool = False, offline: bool = False, data_dir=None) -> dict:
         "heat_quote_coverage": heat_coverage,
         "accounting": accounting,
         "positions": positions,
+        "advisory_shadow_actions": build_advisory_shadow_actions(positions),
         "pending_actions": pending,
         "news": news,
         "data_quality": {

@@ -687,6 +687,8 @@ def _build_daily_non_ohlcv_snapshot(
     from backfill_non_ohlcv import ensure_non_ohlcv_coverage
     from daily_non_ohlcv_snapshot import persist_daily_non_ohlcv_snapshots
 
+    refresh_borrow_availability = _env_flag("REFRESH_BORROW_AVAILABILITY", False)
+    borrow_availability_broad = _env_flag("BORROW_AVAILABILITY_BROAD", False)
     try:
         non_ohlcv_daily_summary = ensure_non_ohlcv_coverage(
             start=today_iso,
@@ -701,6 +703,8 @@ def _build_daily_non_ohlcv_snapshot(
             options_max_expirations=2,
             options_max_strikes_per_side=12,
             options_max_tickers=OPTIONS_MAX_TICKERS,
+            refresh_borrow_availability=refresh_borrow_availability,
+            borrow_availability_broad=borrow_availability_broad,
             logger_obj=log,
         )
         non_ohlcv_snapshot = (
@@ -710,6 +714,8 @@ def _build_daily_non_ohlcv_snapshot(
                 logger=log,
                 refresh_sec_submissions=False,
                 refresh_form4_submissions=False,
+                refresh_borrow_availability=refresh_borrow_availability,
+                borrow_availability_broad=borrow_availability_broad,
             )
         )
         non_ohlcv_snapshot["coverage_manifest"] = {

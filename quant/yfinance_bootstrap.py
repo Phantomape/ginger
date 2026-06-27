@@ -30,4 +30,13 @@ def configure_yfinance_runtime():
     except Exception:
         pass
 
+    # Observe yfinance's own "no fundamentals / delisted" log lines so we can stop
+    # re-requesting those symbols on subsequent runs (self-healing negative cache).
+    try:
+        from yf_negative_cache import install_yf_log_filter
+
+        install_yf_log_filter()
+    except Exception:
+        pass
+
     return cache_dir

@@ -47,10 +47,28 @@ def _summarize_window(window: str) -> dict:
     snapshot_path = oracle_diagnostics.infer_snapshot_path(backtest)
     if not snapshot_path:
         raise RuntimeError(f"{window}: no OHLCV snapshot path in known_biases")
-    with Path(snapshot_path).open(encoding="utf-8") as f:
+    sp = Path(snapshot_path)
+    if not sp.exists():
+        # Snapshots now live under data/ohlcv/; older backtests recorded the
+        # legacy data/ path.
+        alt = REPO / "data" / "ohlcv" / sp.name
+        if alt.exists():
+            sp = alt
+    with sp.open(encoding="utf-8") as f:
         snapshot = json.load(f)
 
     bt_with_pool = _inject_candidate_pool(backtest)
+
+    # Join the matching entry_skip_oracle so no-trade days resolve to real skip
+    # reasons (gap_cancel / no_shares / slot_sliced / ...) instead of falling
+    # through to the generic ``needs_entry_skip_logging`` label. The skip oracle
+    # is derived from the same backtest result + snapshot, so it is always
+    # available alongside the backtest artifact.
+    skip_oracle_path = BACKTEST_DIR / f"{window}_entry_skip_oracle.json"
+    entry_skip_oracle_data = None
+    if skip_oracle_path.exists():
+        with skip_oracle_path.open(encoding="utf-8") as f:
+            entry_skip_oracle_data = json.load(f)
 
     perfect_exit = oracle_diagnostics.build_perfect_exit_oracle(
         bt_with_pool, snapshot
@@ -62,7 +80,8 @@ def _summarize_window(window: str) -> dict:
         bt_with_pool, snapshot, horizon_days=20
     )
     no_trade_attr = oracle_diagnostics.build_no_trade_attribution_oracle(
-        bt_with_pool, snapshot, horizon_days=20
+        bt_with_pool, snapshot, horizon_days=20,
+        entry_skip_oracle_data=entry_skip_oracle_data,
     )
 
     out = {

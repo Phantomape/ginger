@@ -52,6 +52,7 @@ import yfinance as yf
 from data_paths import daily_artifact_path
 from earnings_assets import empty_earnings_data, is_non_earnings_asset
 from earnings_snapshot import merge_earnings_into_snapshot
+from yf_negative_cache import is_blocked as is_no_fundamentals_cached
 from pead_broad_universe_tickers import get_pead_broad_universe_tickers
 from yfinance_bootstrap import configure_yfinance_runtime
 
@@ -102,6 +103,9 @@ def _prefetch_ticker(ticker: str) -> dict:
 def _fetch_one_ticker(ticker: str, as_of: datetime) -> tuple[str, dict, str]:
     """Full per-ticker work (network-bound); returns (ticker, earnings, status)."""
     if is_non_earnings_asset(ticker):
+        return ticker, empty_earnings_data(), "skipped"
+    if is_no_fundamentals_cached(ticker):
+        # Recently 404'd on fundamentals; skip the network prefetch until TTL elapses.
         return ticker, empty_earnings_data(), "skipped"
     try:
         prefetched = _prefetch_ticker(ticker)

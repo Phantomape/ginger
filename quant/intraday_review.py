@@ -160,6 +160,8 @@ def build_intraday_market_regime(
             "price_source": quote.get("source", "eod_close_fallback"),
             "quote_time_et": quote.get("quote_time_et"),
             "capture_time_et": quote.get("capture_time_et"),
+            "decision_time_et": _quote_decision_time_et(quote),
+            "quote_time_basis": _quote_time_basis(quote),
             "eod_above_ma": eod_above,
             "eod_close": info["close"],
         }
@@ -201,6 +203,25 @@ def _distance_pct(price: float, level) -> float | None:
     return round((price - level) / price, 4)
 
 
+def _quote_decision_time_et(quote: dict) -> str | None:
+    return quote.get("decision_time_et") or quote.get("capture_time_et")
+
+
+def _quote_time_basis(quote: dict) -> str | None:
+    if quote.get("quote_time_basis"):
+        return quote.get("quote_time_basis")
+    if quote.get("quote_time_et"):
+        return "source_quote_time"
+    source = quote.get("source")
+    if source == "eod_close_fallback":
+        return "capture_time_eod_close_fallback_stale"
+    if source == "unavailable":
+        return "capture_time_quote_unavailable"
+    if quote.get("capture_time_et"):
+        return f"capture_time_{source or 'unknown'}_no_source_timestamp"
+    return None
+
+
 def _proximity_fields(price: float, ctx: dict) -> dict:
     levels = ctx.get("exit_levels", {})
     triggered_rules = {
@@ -237,6 +258,137 @@ def _proximity_fields(price: float, ctx: dict) -> dict:
     return fields
 
 
+def _rule_shadow_action(rule_name: str) -> str:
+    """Map existing exit-signal rules to advisory-only shadow actions."""
+    if rule_name in {"HARD_STOP", "ATR_STOP", "TRAILING_STOP", "SIGNAL_TARGET"}:
+        return "EXIT"
+    if rule_name in {"TIME_STOP", "LEGACY_TARGET_REVIEW"}:
+        return "REVIEW"
+    return "REVIEW"
+
+
+_SHADOW_ACTION_PRIORITY = {
+    "EXIT": 0,
+    "REVIEW": 1,
+}
+
+_SHADOW_URGENCY_PRIORITY = {
+    "CRITICAL": 0,
+    "HIGH": 1,
+    "MEDIUM": 2,
+    "LOW": 3,
+    "REVIEW": 4,
+}
+
+_SHADOW_RULE_PRIORITY = {
+    "HARD_STOP": 0,
+    "ATR_STOP": 1,
+    "TRAILING_STOP": 2,
+    "SIGNAL_TARGET": 3,
+    "TIME_STOP": 4,
+    "LEGACY_TARGET_REVIEW": 5,
+}
+
+
+def _shadow_action_priority_key(action: dict) -> tuple[int, int, int, int]:
+    """Stable position-level priority for advisory-only shadow attribution."""
+    return (
+        _SHADOW_ACTION_PRIORITY.get(str(action.get("shadow_action") or "").upper(), 9),
+        _SHADOW_URGENCY_PRIORITY.get(str(action.get("urgency") or "").upper(), 9),
+        _SHADOW_RULE_PRIORITY.get(str(action.get("rule") or "").upper(), 9),
+        int(action.get("triggered_rule_index") or 0),
+    )
+
+
+def select_primary_advisory_shadow_action(actions: list[dict]) -> dict | None:
+    """Return the deterministic primary row for one position's shadow actions."""
+    valid = [row for row in actions or [] if isinstance(row, dict)]
+    if not valid:
+        return None
+    return min(valid, key=_shadow_action_priority_key)
+
+
+def _annotate_primary_advisory_shadow_actions(actions: list[dict]) -> list[dict]:
+    valid = [row for row in actions or [] if isinstance(row, dict)]
+    primary = select_primary_advisory_shadow_action(valid)
+    primary_index = primary.get("triggered_rule_index") if primary else None
+    count = len(valid)
+    annotated: list[dict] = []
+    for row in valid:
+        copied = dict(row)
+        copied["shadow_action_count"] = count
+        copied["is_primary_shadow_action"] = (
+            primary is not None
+            and copied.get("triggered_rule_index") == primary_index
+            and copied.get("rule") == primary.get("rule")
+        )
+        annotated.append(copied)
+    return annotated
+
+
+def _advisory_shadow_actions_for_position(review: dict) -> list[dict]:
+    """Project triggered existing rules into machine-readable shadow rows.
+
+    These are not orders and not pending_actions. They make intraday attribution
+    replayable without relying on report text or inventing a new exit rule.
+    """
+    ctx = review.get("context")
+    if not isinstance(ctx, dict):
+        return []
+    exit_signals = ctx.get("exit_signals")
+    if not isinstance(exit_signals, dict):
+        return []
+    triggered = exit_signals.get("triggered_rules")
+    if not isinstance(triggered, list):
+        return []
+
+    quote = review.get("quote") if isinstance(review.get("quote"), dict) else {}
+    shares = ctx.get("shares")
+    actions: list[dict] = []
+    for index, rule in enumerate(triggered):
+        if not isinstance(rule, dict):
+            continue
+        rule_name = str(rule.get("rule") or "UNKNOWN").upper()
+        shadow_action = _rule_shadow_action(rule_name)
+        actions.append({
+            "ticker": review.get("ticker"),
+            "status": review.get("status"),
+            "rule": rule_name,
+            "urgency": rule.get("urgency"),
+            "shadow_action": shadow_action,
+            "shares_to_sell": shares if shadow_action == "EXIT" else None,
+            "message": rule.get("message"),
+            "triggered_rule_index": index,
+            "quote_price": quote.get("price"),
+            "quote_source": quote.get("source"),
+            "quote_time_et": quote.get("quote_time_et"),
+            "capture_time_et": quote.get("capture_time_et"),
+            "decision_time_et": _quote_decision_time_et(quote),
+            "quote_time_basis": _quote_time_basis(quote),
+            "source_quote_time_available": bool(quote.get("quote_time_et")),
+            "trade_enabled": False,
+            "creates_order": False,
+            "pending_action": False,
+            "advisory_only": True,
+            "order_semantics": "none_shadow_only",
+        })
+    return _annotate_primary_advisory_shadow_actions(actions)
+
+
+def build_advisory_shadow_actions(positions: list[dict]) -> list[dict]:
+    """Flatten per-position advisory shadow rows for snapshot consumers."""
+    actions: list[dict] = []
+    for position in positions or []:
+        if not isinstance(position, dict):
+            continue
+        existing = position.get("advisory_shadow_actions")
+        if isinstance(existing, list):
+            actions.extend(_annotate_primary_advisory_shadow_actions(existing))
+        else:
+            actions.extend(_advisory_shadow_actions_for_position(position))
+    return actions
+
+
 def build_position_reviews(
     open_positions: dict,
     ohlcv_dict: dict,
@@ -267,6 +419,8 @@ def build_position_reviews(
                 "source": quote.get("source", "unavailable"),
                 "quote_time_et": quote.get("quote_time_et"),
                 "capture_time_et": quote.get("capture_time_et"),
+                "decision_time_et": _quote_decision_time_et(quote),
+                "quote_time_basis": _quote_time_basis(quote),
                 "is_stale": quote.get("is_stale", True),
             },
         }
@@ -334,6 +488,12 @@ def build_position_reviews(
             review["status"] = "APPROACHING"
         else:
             review["status"] = "OK"
+        review["advisory_shadow_actions"] = _advisory_shadow_actions_for_position(review)
+        primary_shadow_action = select_primary_advisory_shadow_action(
+            review["advisory_shadow_actions"]
+        )
+        if primary_shadow_action is not None:
+            review["primary_advisory_shadow_action"] = dict(primary_shadow_action)
         reviews.append(review)
 
     return reviews
@@ -550,6 +710,24 @@ def render_intraday_report(review: dict) -> str:
             lines.extend(_position_lines(p))
         lines.append("")
 
+    shadow_actions = review.get("advisory_shadow_actions", [])
+    if shadow_actions:
+        lines.append(thin)
+        lines.append("ADVISORY SHADOW ACTIONS (existing-rule projection, no orders)")
+        lines.append(thin)
+        for action in shadow_actions:
+            shares = action.get("shares_to_sell")
+            shares_txt = (
+                f" shares={shares:g}" if isinstance(shares, (int, float)) else ""
+            )
+            lines.append(
+                f"  {action.get('ticker', '?'):<6} "
+                f"{action.get('shadow_action', 'REVIEW')} "
+                f"{action.get('rule', 'UNKNOWN')} "
+                f"{action.get('urgency', 'n/a')}{shares_txt}"
+            )
+        lines.append("")
+
     pending = review.get("pending_actions", [])
     if pending:
         lines.append(thin)
@@ -660,6 +838,9 @@ def build_intraday_llm_prompt(review: dict) -> str:
         "",
         "HELD POSITIONS (existing-rule re-check at intraday prices):",
         json.dumps(payload_positions, indent=2, ensure_ascii=False),
+        "",
+        "ADVISORY SHADOW ACTIONS (existing-rule projection; no orders):",
+        json.dumps(review.get("advisory_shadow_actions", []), indent=2, ensure_ascii=False),
         "",
         "OPEN PENDING ACTIONS (unexecuted prior advice):",
         json.dumps(review.get("pending_actions", []), indent=2, ensure_ascii=False),

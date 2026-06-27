@@ -34,6 +34,11 @@ try:
         write_jsonl as write_sec_filing_text_jsonl,
     )
     from options_onclickmedia import persist_daily_options_snapshot
+    from moomoo_borrow_availability_sidecar import (
+        MANIFEST_PATH as BORROW_AVAILABILITY_MANIFEST_PATH,
+        ROWS_PATH as BORROW_AVAILABILITY_ROWS_PATH,
+        main as run_borrow_availability_sidecar,
+    )
 except ImportError:  # pragma: no cover - package-style imports in tests
     from quant.form4_backfill import (
         DEFAULT_USER_AGENT as FORM4_USER_AGENT,
@@ -54,6 +59,11 @@ except ImportError:  # pragma: no cover - package-style imports in tests
         write_jsonl as write_sec_filing_text_jsonl,
     )
     from quant.options_onclickmedia import persist_daily_options_snapshot
+    from quant.moomoo_borrow_availability_sidecar import (
+        MANIFEST_PATH as BORROW_AVAILABILITY_MANIFEST_PATH,
+        ROWS_PATH as BORROW_AVAILABILITY_ROWS_PATH,
+        main as run_borrow_availability_sidecar,
+    )
 
 
 DEFAULT_DATA_DIR = Path("data/non_ohlcv")
@@ -81,6 +91,8 @@ def persist_daily_non_ohlcv_snapshots(
     options_max_strikes_per_side: int | None = 12,
     options_max_tickers: int | None = None,
     refresh_options_cache: bool = False,
+    refresh_borrow_availability: bool = False,
+    borrow_availability_broad: bool = False,
 ) -> dict[str, Any]:
     """Write date-stamped SEC and Form 4 inputs for today's forward queues.
 
@@ -104,6 +116,8 @@ def persist_daily_non_ohlcv_snapshots(
         "form4_summary": root / f"form4_backfill_summary_{tag}.json",
         "options_onclickmedia_chain": root / f"options_onclickmedia_chain_{tag}.jsonl",
         "options_onclickmedia_summary": root / f"options_onclickmedia_summary_{tag}.json",
+        "borrow_availability_rows": Path(BORROW_AVAILABILITY_ROWS_PATH),
+        "borrow_availability_manifest": Path(BORROW_AVAILABILITY_MANIFEST_PATH),
         "summary": root / f"daily_non_ohlcv_snapshot_{tag}.json",
     }
 
@@ -191,6 +205,29 @@ def persist_daily_non_ohlcv_snapshots(
             },
         }
 
+    if refresh_borrow_availability:
+        snapshot["borrow_availability"] = _run_borrow_availability(
+            broad=borrow_availability_broad,
+        )
+    else:
+        snapshot["borrow_availability"] = {
+            "status": "skipped",
+            "reason": "refresh_borrow_availability_false",
+            "manifest_path": _path_text(Path(BORROW_AVAILABILITY_MANIFEST_PATH)),
+            "rows_path": _path_text(Path(BORROW_AVAILABILITY_ROWS_PATH)),
+            "production_impact": {
+                "shared_policy_changed": False,
+                "backtester_adapter_changed": False,
+                "run_adapter_changed": True,
+                "replay_only": False,
+                "alters_signal_generation": False,
+                "alters_candidate_ranking": False,
+                "alters_sizing": False,
+                "alters_orders": False,
+                "scope": "borrow_availability_data_collection_skipped",
+            },
+        }
+
     statuses = [
         snapshot["sec_filing_events"].get("status"),
         snapshot["sec_filing_text"].get("status"),
@@ -198,6 +235,8 @@ def persist_daily_non_ohlcv_snapshots(
     ]
     if snapshot["options_onclickmedia"].get("status") != "skipped":
         statuses.append(snapshot["options_onclickmedia"].get("status"))
+    if snapshot["borrow_availability"].get("status") != "skipped":
+        statuses.append(snapshot["borrow_availability"].get("status"))
     if all(status == "ok" for status in statuses):
         snapshot["status"] = "ok"
     elif any(status == "ok" for status in statuses):
@@ -208,11 +247,13 @@ def persist_daily_non_ohlcv_snapshots(
     _write_json(paths["summary"], snapshot)
     if logger:
         logger.info(
-            "Daily non-OHLCV snapshot: status=%s sec_rows=%s sec_text_rows=%s form4_rows=%s",
+            "Daily non-OHLCV snapshot: status=%s sec_rows=%s sec_text_rows=%s form4_rows=%s borrow_status=%s borrow_populated=%s",
             snapshot["status"],
             snapshot["sec_filing_events"].get("rows_written"),
             snapshot["sec_filing_text"].get("rows_written"),
             snapshot["form4_transactions"].get("rows_written"),
+            snapshot["borrow_availability"].get("status"),
+            snapshot["borrow_availability"].get("borrow_populated_this_run"),
         )
     return snapshot
 
@@ -376,6 +417,51 @@ def _run_options_onclickmedia(
         }
 
 
+def _run_borrow_availability(*, broad: bool) -> dict[str, Any]:
+    manifest_path = Path(BORROW_AVAILABILITY_MANIFEST_PATH)
+    rows_path = Path(BORROW_AVAILABILITY_ROWS_PATH)
+    impact = {
+        "shared_policy_changed": False,
+        "backtester_adapter_changed": False,
+        "run_adapter_changed": True,
+        "replay_only": False,
+        "alters_signal_generation": False,
+        "alters_candidate_ranking": False,
+        "alters_sizing": False,
+        "alters_orders": False,
+        "scope": "borrow_availability_forward_data_collection_only",
+    }
+    try:
+        return_code = run_borrow_availability_sidecar(broad=broad)
+        manifest = _read_json(manifest_path)
+        status = "ok" if return_code == 0 else "failed"
+        return {
+            **manifest,
+            "status": status,
+            "return_code": return_code,
+            "broad": bool(broad),
+            "manifest_path": _path_text(manifest_path),
+            "rows_path": _path_text(rows_path),
+            "trade_enabled": False,
+            "daily_snapshot_wired": True,
+            "production_impact": impact,
+        }
+    except Exception as exc:
+        return {
+            "status": "failed",
+            "error": str(exc),
+            "broad": bool(broad),
+            "manifest_path": _path_text(manifest_path),
+            "rows_path": _path_text(rows_path),
+            "trade_enabled": False,
+            "daily_snapshot_wired": True,
+            "production_impact": {
+                **impact,
+                "scope": "borrow_availability_data_collection_failed_only",
+            },
+        }
+
+
 def _parse_as_of(value: str | date | datetime) -> date:
     if isinstance(value, datetime):
         return value.date()
@@ -390,6 +476,16 @@ def _write_json(path: Path, payload: dict[str, Any]) -> None:
         json.dumps(payload, indent=2, ensure_ascii=False, sort_keys=True) + "\n",
         encoding="utf-8",
     )
+
+
+def _read_json(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8-sig"))
+    except json.JSONDecodeError:
+        return {}
+    return payload if isinstance(payload, dict) else {}
 
 
 def _path_text(path: Path) -> str:

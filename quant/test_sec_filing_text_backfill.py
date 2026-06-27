@@ -4,7 +4,12 @@ import argparse
 import json
 
 import sec_filing_text_backfill as text_backfill
-from sec_filing_text_backfill import candidate_documents, html_to_text, normalize_text
+from sec_filing_text_backfill import (
+    candidate_documents,
+    html_to_text,
+    normalize_text,
+    parse_dei_cover_status,
+)
 
 
 def test_html_to_text_drops_script_and_decodes_entities() -> None:
@@ -40,8 +45,99 @@ def test_candidate_documents_prioritizes_exhibit_99_and_primary() -> None:
     assert "picture.jpg" not in names
 
 
+def test_candidate_documents_keeps_periodic_cover_xbrl_before_exhibits() -> None:
+    index_payload = {
+        "directory": {
+            "item": [
+                {"name": "0000723125-26-000015-index-headers.html"},
+                {"name": "mu-20260528.htm"},
+                {"name": "ex101-amendmentno3tothedir.htm"},
+                {"name": "ex102-amendmentno3tothedir.htm"},
+                {"name": "R1.htm"},
+                {"name": "mu-20260528_htm.xml"},
+                {"name": "mu-20260528_cal.xml"},
+                {"name": "FilingSummary.xml"},
+            ]
+        }
+    }
+
+    names = candidate_documents(index_payload, primary_document="mu-20260528.htm", max_documents=4)
+
+    assert names[0] == "mu-20260528.htm"
+    assert "R1.htm" in names
+    assert "mu-20260528_htm.xml" in names
+    assert "mu-20260528_cal.xml" not in names
+    assert "FilingSummary.xml" not in names
+
+
 def test_normalize_text_collapses_whitespace() -> None:
     assert normalize_text("  a\n\n b\t c  ") == "a b c"
+
+
+def test_parse_dei_cover_status_from_inline_xbrl_facts() -> None:
+    raw = """
+    <ix:nonNumeric name="dei:EntityFilerCategory">Large Accelerated Filer</ix:nonNumeric>
+    <ix:nonNumeric name="dei:EntityEmergingGrowthCompany">false</ix:nonNumeric>
+    <ix:nonNumeric name="dei:EntityShellCompany">false</ix:nonNumeric>
+    """
+
+    status = parse_dei_cover_status(raw)
+
+    assert status["parse_status"] == "parsed_machine_readable_dei_fact"
+    assert status["filer_category"] == "large_accelerated_filer"
+    assert status["status_booleans"]["large_accelerated_filer"] is True
+    assert status["status_booleans"]["accelerated_filer"] is False
+    assert status["status_booleans"]["emerging_growth_company"] is False
+    assert status["status_booleans"]["shell_company"] is False
+
+
+def test_parse_dei_cover_status_from_clear_checkbox_text() -> None:
+    text = (
+        "\u2610 Large accelerated filer "
+        "\u2612 Accelerated filer "
+        "\u2610 Non-accelerated filer "
+        "\u2610 Smaller reporting company"
+    )
+
+    status = parse_dei_cover_status(text)
+
+    assert status["parse_status"] == "parsed_cover_page_checkbox_text"
+    assert status["status_booleans"]["large_accelerated_filer"] is False
+    assert status["status_booleans"]["accelerated_filer"] is True
+    assert status["status_booleans"]["non_accelerated_filer"] is False
+    assert status["status_booleans"]["smaller_reporting_company"] is False
+
+
+def test_parse_dei_cover_status_from_column_header_checkbox_table() -> None:
+    text = (
+        "Indicate by check mark whether the registrant is a large accelerated filer, "
+        "an accelerated filer, a non-accelerated filer, a smaller reporting company, "
+        "or an emerging growth company. Large Accelerated Filer Accelerated Filer "
+        "Non-Accelerated Filer Smaller Reporting Company Emerging Growth Company "
+        "\u2612 \u2610 \u2610 \u2610 \u2610 "
+        "Indicate by check mark whether the registrant is a shell company "
+        "(as defined in Rule 12b-2 of the Exchange Act). Yes \u2610 No \u2612"
+    )
+
+    status = parse_dei_cover_status(text)
+
+    assert status["parse_status"] == "parsed_cover_page_checkbox_text"
+    assert status["status_booleans"]["large_accelerated_filer"] is True
+    assert status["status_booleans"]["accelerated_filer"] is False
+    assert status["status_booleans"]["non_accelerated_filer"] is False
+    assert status["status_booleans"]["smaller_reporting_company"] is False
+    assert status["status_booleans"]["emerging_growth_company"] is False
+    assert status["status_booleans"]["shell_company"] is False
+    assert status["status_field_count"] == 6
+    diagnostics = status["checkbox_diagnostics"]
+    assert diagnostics["column_layout_fields"] == [
+        "large_accelerated_filer",
+        "accelerated_filer",
+        "non_accelerated_filer",
+        "smaller_reporting_company",
+        "emerging_growth_company",
+    ]
+    assert diagnostics["shell_yes_no_parsed"] is True
 
 
 def test_default_form_scope_admits_periodic_reports_without_8k_item_codes() -> None:
@@ -124,3 +220,49 @@ def test_build_rows_summary_tracks_periodic_selection(tmp_path, monkeypatch) -> 
     assert summary["selected_form_counts"]["10-K"] == 1
     assert summary["selected_form_counts"]["10-Q"] == 1
     assert summary["selected_periodic_rows"] == 2
+
+
+def test_fetch_filing_text_attaches_dei_cover_status(tmp_path, monkeypatch) -> None:
+    index_payload = {
+        "directory": {
+            "item": [
+                {"name": "acme-20260630.htm"},
+                {"name": "acme-20260630_htm.xml"},
+            ]
+        }
+    }
+    raw_documents = {
+        "https://www.sec.gov/Archives/edgar/data/1/000000000126000001/acme-20260630.htm": (
+            "<html><body>10-Q cover page</body></html>"
+        ),
+        "https://www.sec.gov/Archives/edgar/data/1/000000000126000001/acme-20260630_htm.xml": (
+            "<dei:EntityFilerCategory>Non-accelerated Filer</dei:EntityFilerCategory>"
+            "<dei:EntityEmergingGrowthCompany>true</dei:EntityEmergingGrowthCompany>"
+        ),
+    }
+
+    monkeypatch.setattr(text_backfill, "request_json", lambda *_args, **_kwargs: index_payload)
+    monkeypatch.setattr(text_backfill, "request_text", lambda url, *_args, **_kwargs: raw_documents[url])
+    monkeypatch.setattr(text_backfill.time, "sleep", lambda *_args, **_kwargs: None)
+
+    payload = text_backfill.fetch_filing_text(
+        {
+            "ticker": "ACME",
+            "cik": "0000000001",
+            "accession_number": "0000000001-26-000001",
+            "form_type": "10-Q",
+            "form_base": "10-Q",
+            "primary_document": "acme-20260630.htm",
+        },
+        cache_dir=tmp_path,
+        user_agent="test",
+        max_documents=2,
+        max_chars_per_doc=10000,
+        request_delay_sec=0.0,
+    )
+
+    status = payload["dei_cover_status"]
+    assert status["parse_status"] == "parsed_machine_readable_dei_fact"
+    assert status["filer_category"] == "non_accelerated_filer"
+    assert status["status_booleans"]["non_accelerated_filer"] is True
+    assert status["status_booleans"]["emerging_growth_company"] is True

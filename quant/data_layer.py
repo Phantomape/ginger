@@ -20,6 +20,8 @@ from yfinance_bootstrap import configure_yfinance_runtime
 from operator_input_paths import open_positions_path
 from open_position_schema import account_position_tickers
 from earnings_assets import empty_earnings_data, is_non_earnings_asset
+from yf_negative_cache import clear as clear_no_fundamentals
+from yf_negative_cache import is_blocked as is_no_fundamentals_cached
 
 logger = logging.getLogger(__name__)
 
@@ -342,6 +344,13 @@ def get_earnings_data(
         logger.debug("%s: earnings data skipped for non-earnings asset", ticker)
         return result
 
+    # Skip symbols yfinance recently reported as delisted / lacking fundamentals,
+    # unless the caller already prefetched the data for us (no request to save then).
+    prefetched = (ticker_obj is not None) or (dates_df is not None)
+    if not prefetched and current_mode and is_no_fundamentals_cached(ticker):
+        logger.debug("%s: earnings request skipped (cached no-fundamentals)", ticker)
+        return result
+
     try:
         ticker_obj = ticker_obj or yf.Ticker(ticker)
         if dates_df is None:
@@ -361,6 +370,15 @@ def get_earnings_data(
                 _populate_from_info(result, info)
             except Exception as e:
                 logger.debug("%s: EPS estimate unavailable - %s", ticker, e)
+
+        # Self-heal: a symbol that now returns real data should not stay suppressed.
+        # Recording is left to the yfinance log filter, which keys off yfinance's own
+        # explicit "no fundamentals / delisted" signal (precise; no false positives on
+        # a valid stock that merely has no upcoming earnings date this week).
+        if current_mode and not prefetched and (
+            result["next_earnings_date"] or result["eps_estimate"]
+        ):
+            clear_no_fundamentals(ticker)
 
     except Exception as e:
         logger.error("%s: earnings data collection failed - %s", ticker, e)

@@ -8,11 +8,17 @@ tradable date; PIT eligibility comes only from accepted_at/usable_trade_date.
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 import json
 import math
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
+try:  # pragma: no cover - exercised by both script and package import styles.
+    from sec_filing_text_backfill import parse_dei_cover_status
+except ImportError:  # pragma: no cover
+    from quant.sec_filing_text_backfill import parse_dei_cover_status
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -83,6 +89,12 @@ def build_filing_feature_file(
             1 for row in rows
             if row.get("field_availability", {}).get("same_accession_facts") == "derived"
         ),
+        "rows_with_filer_status": sum(
+            1 for row in rows if int(row.get("filer_status_field_count") or 0) > 0
+        ),
+        "filer_status_parse_counts": dict(
+            Counter(str(row.get("filer_status_parse_status") or "missing") for row in rows)
+        ),
         "field_counts": _field_counts(rows),
         "pit_caveat": (
             "accepted_at/usable_trade_date gate event tradability; Companyfacts filed date "
@@ -140,6 +152,9 @@ def build_filing_feature_rows(
             volume_ratio=volume_ratio,
         )
         low_volume_predictability_bucket = _low_volume_predictability_bucket(volume_ratio)
+        filer_status = _filing_dei_cover_status(filing)
+        filer_status_field_count = int(filer_status.get("status_field_count") or 0)
+        filer_status_booleans = filer_status.get("status_booleans") or {}
 
         row = {
             "schema_version": 1,
@@ -165,6 +180,12 @@ def build_filing_feature_rows(
             # --- Read-only attribution sidecars (exp-20260531-028) ---
             "predictability_mosaic_bucket": predictability_mosaic_bucket,
             "low_volume_predictability_bucket": low_volume_predictability_bucket,
+            # --- Read-only DEI cover-page status sidecar (exp-20260627-012) ---
+            "filer_status_category": filer_status.get("filer_category"),
+            "filer_status_booleans": filer_status_booleans,
+            "filer_status_parse_status": filer_status.get("parse_status"),
+            "filer_status_field_count": filer_status_field_count,
+            # -----------------------------------------------------------------
             # --------------------------------------------------------
             "data_source": "sec_filing_text_plus_companyfacts",
             "pit_safe": pit_safe,
@@ -183,11 +204,13 @@ def build_filing_feature_rows(
                 "text_direction_vs_price_bucket": "derived" if text_direction_vs_price_bucket else "missing",
                 "predictability_mosaic_bucket": "derived" if predictability_mosaic_bucket else "missing",
                 "low_volume_predictability_bucket": "derived" if low_volume_predictability_bucket else "missing",
+                "filer_status": "derived" if filer_status_field_count > 0 else "missing",
             },
             "gap_reasons": _gap_reasons(
                 accepted_at=accepted_at,
                 usable_trade_date=usable_trade_date,
                 accession_facts=accession_facts,
+                filer_status_field_count=filer_status_field_count,
             ),
             "production_impact": {
                 "shared_policy_changed": False,
@@ -344,6 +367,13 @@ def _state(value: Any) -> str:
     return "derived" if value is not None else "missing"
 
 
+def _filing_dei_cover_status(filing: dict[str, Any]) -> dict[str, Any]:
+    existing = filing.get("dei_cover_status")
+    if isinstance(existing, dict):
+        return existing
+    return parse_dei_cover_status(str(filing.get("combined_text") or ""))
+
+
 def _predictability_mosaic_bucket(
     *,
     eps_surprise: Any,
@@ -484,6 +514,7 @@ def _gap_reasons(
     accepted_at: Any,
     usable_trade_date: Any,
     accession_facts: list[dict[str, Any]],
+    filer_status_field_count: int = 0,
 ) -> list[str]:
     reasons = []
     if not accepted_at:
@@ -492,6 +523,8 @@ def _gap_reasons(
         reasons.append("missing_usable_trade_date")
     if not accession_facts:
         reasons.append("missing_same_accession_companyfacts")
+    if filer_status_field_count <= 0:
+        reasons.append("missing_dei_cover_status")
     reasons.append("eps_and_revenue_surprise_require_pit_consensus_vendor")
     reasons.append("guidance_raise_cut_requires_structured_guidance_source")
     return reasons
@@ -507,6 +540,7 @@ def _field_counts(rows: list[dict[str, Any]]) -> dict[str, int]:
         "text_direction_vs_price_bucket",
         "predictability_mosaic_bucket",
         "low_volume_predictability_bucket",
+        "filer_status_category",
     )
     return {
         field: sum(1 for row in rows if row.get(field) is not None)

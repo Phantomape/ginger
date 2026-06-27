@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import daily_non_ohlcv_snapshot as daily_snapshot
@@ -38,6 +39,7 @@ def test_daily_snapshot_writes_dated_artifacts_and_all_sec_text_items(tmp_path, 
     )
 
     assert snapshot["status"] == "ok"
+    assert snapshot["borrow_availability"]["status"] == "skipped"
     assert calls["sec_events"].start == "2026-05-01"
     assert calls["sec_events"].end == "2026-05-04"
     assert calls["sec_events"].refresh_submissions is True
@@ -132,4 +134,111 @@ def test_daily_snapshot_can_collect_options_as_data_only(tmp_path, monkeypatch):
     assert impact["alters_signal_generation"] is False
     assert impact["alters_candidate_ranking"] is False
     assert impact["alters_sizing"] is False
+    assert impact["alters_orders"] is False
+
+
+def test_daily_snapshot_can_collect_borrow_availability_as_data_only(tmp_path, monkeypatch):
+    borrow_manifest = tmp_path / "borrow_availability" / "manifest.json"
+    borrow_rows = tmp_path / "borrow_availability" / "rows.jsonl"
+
+    def fake_sec_events(args):
+        Path(args.output).write_text("", encoding="utf-8")
+        Path(args.summary_output).write_text("{}\n", encoding="utf-8")
+        return {"rows_written": 0, "pit_safe_rows": 0}
+
+    def fake_sec_text(args):
+        return ([], {"rows_written": 0, "item_codes": args.item_codes})
+
+    def fake_form4(args):
+        Path(args.output).write_text("", encoding="utf-8")
+        Path(args.summary_output).write_text("{}\n", encoding="utf-8")
+        return {"rows_written": 0, "pit_safe_count": 0}
+
+    def fake_borrow(*, broad):
+        assert broad is True
+        borrow_manifest.parent.mkdir(parents=True, exist_ok=True)
+        borrow_rows.write_text('{"ticker":"TSLA","borrow_populated":true}\n', encoding="utf-8")
+        borrow_manifest.write_text(
+            json.dumps(
+                {
+                    "source": "moomoo_openapi_market_snapshot",
+                    "rows_appended_this_run": 1,
+                    "borrow_populated_this_run": 1,
+                    "borrow_populated_pct": 100.0,
+                    "trade_enabled": False,
+                },
+                sort_keys=True,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        return 0
+
+    monkeypatch.setattr(daily_snapshot, "backfill_sec_filing_events", fake_sec_events)
+    monkeypatch.setattr(daily_snapshot, "build_sec_filing_text_rows", fake_sec_text)
+    monkeypatch.setattr(daily_snapshot, "backfill_form4_transactions", fake_form4)
+    monkeypatch.setattr(daily_snapshot, "run_borrow_availability_sidecar", fake_borrow)
+    monkeypatch.setattr(daily_snapshot, "BORROW_AVAILABILITY_MANIFEST_PATH", borrow_manifest)
+    monkeypatch.setattr(daily_snapshot, "BORROW_AVAILABILITY_ROWS_PATH", borrow_rows)
+
+    snapshot = daily_snapshot.persist_daily_non_ohlcv_snapshots(
+        as_of="2026-05-04",
+        data_dir=tmp_path,
+        refresh_borrow_availability=True,
+        borrow_availability_broad=True,
+    )
+
+    assert snapshot["status"] == "ok"
+    assert snapshot["borrow_availability"]["status"] == "ok"
+    assert snapshot["borrow_availability"]["rows_appended_this_run"] == 1
+    assert snapshot["borrow_availability"]["borrow_populated_this_run"] == 1
+    assert snapshot["borrow_availability"]["trade_enabled"] is False
+    assert snapshot["borrow_availability"]["daily_snapshot_wired"] is True
+    impact = snapshot["borrow_availability"]["production_impact"]
+    assert impact["alters_signal_generation"] is False
+    assert impact["alters_candidate_ranking"] is False
+    assert impact["alters_sizing"] is False
+    assert impact["alters_orders"] is False
+
+
+def test_daily_snapshot_borrow_availability_failure_is_fail_soft(tmp_path, monkeypatch):
+    borrow_manifest = tmp_path / "borrow_availability" / "manifest.json"
+    borrow_rows = tmp_path / "borrow_availability" / "rows.jsonl"
+
+    def fake_sec_events(args):
+        Path(args.output).write_text("", encoding="utf-8")
+        Path(args.summary_output).write_text("{}\n", encoding="utf-8")
+        return {"rows_written": 0, "pit_safe_rows": 0}
+
+    def fake_sec_text(args):
+        return ([], {"rows_written": 0, "item_codes": args.item_codes})
+
+    def fake_form4(args):
+        Path(args.output).write_text("", encoding="utf-8")
+        Path(args.summary_output).write_text("{}\n", encoding="utf-8")
+        return {"rows_written": 0, "pit_safe_count": 0}
+
+    def failing_borrow(*, broad):
+        raise RuntimeError("moomoo OpenD unavailable")
+
+    monkeypatch.setattr(daily_snapshot, "backfill_sec_filing_events", fake_sec_events)
+    monkeypatch.setattr(daily_snapshot, "build_sec_filing_text_rows", fake_sec_text)
+    monkeypatch.setattr(daily_snapshot, "backfill_form4_transactions", fake_form4)
+    monkeypatch.setattr(daily_snapshot, "run_borrow_availability_sidecar", failing_borrow)
+    monkeypatch.setattr(daily_snapshot, "BORROW_AVAILABILITY_MANIFEST_PATH", borrow_manifest)
+    monkeypatch.setattr(daily_snapshot, "BORROW_AVAILABILITY_ROWS_PATH", borrow_rows)
+
+    snapshot = daily_snapshot.persist_daily_non_ohlcv_snapshots(
+        as_of="2026-05-04",
+        data_dir=tmp_path,
+        refresh_borrow_availability=True,
+    )
+
+    assert snapshot["status"] == "partial"
+    assert snapshot["borrow_availability"]["status"] == "failed"
+    assert "moomoo OpenD unavailable" in snapshot["borrow_availability"]["error"]
+    assert (tmp_path / "daily_non_ohlcv_snapshot_20260504.json").exists()
+    impact = snapshot["borrow_availability"]["production_impact"]
+    assert impact["scope"] == "borrow_availability_data_collection_failed_only"
+    assert impact["alters_signal_generation"] is False
     assert impact["alters_orders"] is False

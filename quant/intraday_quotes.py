@@ -70,6 +70,8 @@ def _quote_from_fast_info(ticker: str, capture_time_et: str) -> dict | None:
         "source": "fast_info",
         "quote_time_et": None,
         "capture_time_et": capture_time_et,
+        "decision_time_et": capture_time_et,
+        "quote_time_basis": "capture_time_fast_info_no_source_timestamp",
         "is_stale": False,
     }
 
@@ -98,6 +100,8 @@ def _quote_from_intraday_bars(ticker: str, capture_time_et: str) -> dict | None:
         "source": "intraday_1m",
         "quote_time_et": quote_time_et,
         "capture_time_et": capture_time_et,
+        "decision_time_et": capture_time_et,
+        "quote_time_basis": "source_intraday_1m_bar_time",
         "is_stale": False,
     }
 
@@ -139,6 +143,8 @@ def get_intraday_quote(
                 "source": "eod_close_fallback",
                 "quote_time_et": None,
                 "capture_time_et": capture_time_et,
+                "decision_time_et": capture_time_et,
+                "quote_time_basis": "capture_time_eod_close_fallback_stale",
                 "is_stale": True,
             }
         else:
@@ -149,6 +155,8 @@ def get_intraday_quote(
                 "source": "unavailable",
                 "quote_time_et": None,
                 "capture_time_et": capture_time_et,
+                "decision_time_et": capture_time_et,
+                "quote_time_basis": "capture_time_quote_unavailable",
                 "is_stale": True,
             }
 

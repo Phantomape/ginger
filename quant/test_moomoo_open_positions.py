@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+
 import moomoo_open_positions as M
 
 
@@ -151,6 +153,19 @@ def test_generate_falls_back_fast_when_opend_unreachable(tmp_path, monkeypatch):
 def test_opend_reachable_false_on_closed_port():
     # An almost-certainly-closed port returns False quickly rather than raising.
     assert M._opend_reachable("127.0.0.1", 1, timeout=0.5) is False
+
+
+def test_redirect_moomoo_sdk_appdata_restores_env(tmp_path, monkeypatch):
+    target = tmp_path / "sdk_appdata"
+    monkeypatch.setenv("GINGER_MOOMOO_SDK_APPDATA", str(target))
+    monkeypatch.setenv("APPDATA", "old-appdata")
+
+    previous = M._redirect_moomoo_sdk_appdata()
+    assert os.environ["APPDATA"] == str(target)
+    assert target.exists()
+
+    M._restore_moomoo_sdk_appdata(previous)
+    assert os.environ["APPDATA"] == "old-appdata"
 
 
 def test_compute_target_stop_guards():

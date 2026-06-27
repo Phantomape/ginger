@@ -1194,6 +1194,7 @@ class BacktestEngine:
                 build_no_trade_attribution_oracle,
                 build_perfect_exit_oracle,
             )
+            from entry_skip_oracle import build_entry_skip_oracle
 
             all_dates = [
                 pd.Timestamp(idx)
@@ -1215,6 +1216,19 @@ class BacktestEngine:
                 or self.save_ohlcv_snapshot_path
                 or "in_memory_ohlcv"
             )
+            # Build the entry-skip oracle inline so no_trade_attribution can
+            # resolve no-trade days to real skip reasons (gap_cancel / no_shares
+            # / slot_sliced) instead of the generic needs_entry_skip_logging
+            # label. Guard it independently so a skip-oracle failure still leaves
+            # the rest of the oracle metrics intact.
+            try:
+                entry_skip_oracle = {
+                    "entry_skip_oracle": build_entry_skip_oracle(
+                        result, snapshot, horizon_days=horizon,
+                    )
+                }
+            except Exception:
+                entry_skip_oracle = None
             return {
                 "diagnostic_only": True,
                 "source_backtest": "in_memory_backtest_result",
@@ -1241,6 +1255,11 @@ class BacktestEngine:
                         result,
                         snapshot,
                         horizon_days=horizon,
+                        entry_skip_oracle_data=entry_skip_oracle,
+                    ),
+                    "entry_skip": (
+                        entry_skip_oracle["entry_skip_oracle"]
+                        if entry_skip_oracle else None
                     ),
                     "entry_state": build_entry_state_oracle(
                         result,

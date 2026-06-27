@@ -7,10 +7,12 @@ import pandas as pd
 import intraday_quotes
 import intraday_review
 from intraday_review import (
+    build_advisory_shadow_actions,
     build_intraday_market_regime,
     build_position_reviews,
     intraday_output_path,
     render_intraday_report,
+    select_primary_advisory_shadow_action,
     split_completed_sessions,
 )
 
@@ -57,6 +59,8 @@ def _quote(price, day_high=None, source="fast_info", capture_time_et=CAPTURE_TIM
         "source": source,
         "quote_time_et": None,
         "capture_time_et": capture_time_et,
+        "decision_time_et": capture_time_et,
+        "quote_time_basis": "capture_time_fast_info_no_source_timestamp",
         "is_stale": False,
     }
 
@@ -95,6 +99,83 @@ def test_intraday_price_below_override_stop_reports_hard_stop_breach():
     assert "HARD_STOP" in [r["rule"] for r in signals["triggered_rules"]]
 
 
+def test_hard_stop_breach_creates_advisory_shadow_exit_not_order():
+    reviews = build_position_reviews(
+        _open_positions(), {"NVDA": _ohlcv()}, {"NVDA": _quote(94.5)}, ASOF
+    )
+    (review,) = reviews
+    actions = build_advisory_shadow_actions(reviews)
+
+    assert review["advisory_shadow_actions"] == actions
+    assert len(actions) == 1
+    action = actions[0]
+    assert action["ticker"] == "NVDA"
+    assert action["rule"] == "HARD_STOP"
+    assert action["shadow_action"] == "EXIT"
+    assert action["shares_to_sell"] == 10
+    assert action["trade_enabled"] is False
+    assert action["creates_order"] is False
+    assert action["pending_action"] is False
+    assert action["decision_time_et"] == CAPTURE_TIME_ET
+    assert action["quote_time_et"] is None
+    assert action["quote_time_basis"] == "capture_time_fast_info_no_source_timestamp"
+    assert action["source_quote_time_available"] is False
+    assert action["is_primary_shadow_action"] is True
+    assert action["shadow_action_count"] == 1
+    assert review["primary_advisory_shadow_action"] == action
+
+
+def test_primary_shadow_action_collapses_duplicate_position_rules():
+    actions = intraday_review._advisory_shadow_actions_for_position({
+        "ticker": "NVDA",
+        "status": "BREACHED",
+        "quote": _quote(94.5),
+        "context": {
+            "shares": 10,
+            "exit_signals": {
+                "triggered_rules": [
+                    {
+                        "rule": "TIME_STOP",
+                        "urgency": "REVIEW",
+                        "message": "review stale progress",
+                    },
+                    {
+                        "rule": "HARD_STOP",
+                        "urgency": "HIGH",
+                        "message": "stop breached",
+                    },
+                ]
+            },
+        },
+    })
+
+    primary = select_primary_advisory_shadow_action(actions)
+    assert len(actions) == 2
+    assert primary["rule"] == "HARD_STOP"
+    assert primary["shadow_action"] == "EXIT"
+    assert [row["is_primary_shadow_action"] for row in actions] == [False, True]
+    assert {row["shadow_action_count"] for row in actions} == {2}
+
+
+def test_legacy_target_review_creates_review_shadow_action_not_exit():
+    positions = _open_positions(avg_cost=40.0, target_price=48.0)
+    reviews = build_position_reviews(
+        positions,
+        {"NVDA": _ohlcv(base=100.0, spread=1.0)},
+        {"NVDA": _quote(101.0, day_high=101.0)},
+        ASOF,
+    )
+    (review,) = reviews
+    actions = build_advisory_shadow_actions(reviews)
+
+    assert review["status"] == "BREACHED"
+    assert actions
+    assert actions[0]["rule"] == "LEGACY_TARGET_REVIEW"
+    assert actions[0]["shadow_action"] == "REVIEW"
+    assert actions[0]["shares_to_sell"] is None
+    assert actions[0]["creates_order"] is False
+
+
 def test_price_near_stop_sets_proximity_flag_without_triggering_rule():
     # 96.5 vs override stop 95.0 -> ~1.55% away: display flag only.
     reviews = build_position_reviews(
@@ -104,6 +185,7 @@ def test_price_near_stop_sets_proximity_flag_without_triggering_rule():
     assert review["status"] == "APPROACHING"
     assert "NEAR_HARD_STOP" in review["proximity_flags"]
     assert review["context"]["exit_signals"]["any_triggered"] is False
+    assert build_advisory_shadow_actions(reviews) == []
     assert 0 < review["distance_to_hard_stop_pct"] < intraday_review.PROXIMITY_PCT
 
 
@@ -174,6 +256,7 @@ def test_regime_flip_intraday_flagged():
     assert regime["indices"]["SPY"]["eod_above_ma"] is True
     assert regime["indices"]["SPY"]["above_ma"] is False
     assert regime["indices"]["SPY"]["capture_time_et"] == CAPTURE_TIME_ET
+    assert regime["indices"]["SPY"]["decision_time_et"] == CAPTURE_TIME_ET
 
 
 def test_regime_no_flip_when_intraday_agrees():
@@ -239,6 +322,8 @@ def test_quote_uses_fast_info_when_available(monkeypatch):
     assert quote["price"] == 50.0
     assert quote["quote_time_et"] is None
     assert quote["capture_time_et"] == CAPTURE_TIME_ET
+    assert quote["decision_time_et"] == CAPTURE_TIME_ET
+    assert quote["quote_time_basis"] == "capture_time_fast_info_no_source_timestamp"
     assert quote["is_stale"] is False
 
 
@@ -261,6 +346,8 @@ def test_quote_falls_back_to_1m_bars(monkeypatch):
     assert quote["day_high"] == 52.0
     assert quote["quote_time_et"] is not None
     assert quote["capture_time_et"] == CAPTURE_TIME_ET
+    assert quote["decision_time_et"] == CAPTURE_TIME_ET
+    assert quote["quote_time_basis"] == "source_intraday_1m_bar_time"
 
 
 def test_quote_falls_back_to_eod_close_then_unavailable(monkeypatch):
@@ -276,6 +363,8 @@ def test_quote_falls_back_to_eod_close_then_unavailable(monkeypatch):
     assert quote["source"] == "eod_close_fallback"
     assert quote["price"] == 42.0
     assert quote["capture_time_et"] == CAPTURE_TIME_ET
+    assert quote["decision_time_et"] == CAPTURE_TIME_ET
+    assert quote["quote_time_basis"] == "capture_time_eod_close_fallback_stale"
     assert quote["is_stale"] is True
 
     quote = intraday_quotes.get_intraday_quote(
@@ -286,6 +375,8 @@ def test_quote_falls_back_to_eod_close_then_unavailable(monkeypatch):
     assert quote["source"] == "unavailable"
     assert quote["price"] is None
     assert quote["capture_time_et"] == CAPTURE_TIME_ET
+    assert quote["decision_time_et"] == CAPTURE_TIME_ET
+    assert quote["quote_time_basis"] == "capture_time_quote_unavailable"
 
 
 def test_batch_quotes_share_one_capture_time(monkeypatch):
@@ -302,6 +393,7 @@ def test_batch_quotes_share_one_capture_time(monkeypatch):
 # ── report / output isolation ────────────────────────────────────────────────
 
 def _review_stub(positions=()):
+    position_rows = list(positions)
     return {
         "generated_at_et": "2026-06-10 13:00 ET",
         "generated_at_pt": "10:00 PT",
@@ -311,7 +403,8 @@ def _review_stub(positions=()):
         "market_regime_intraday": {"regime": "BULL", "eod_basis_regime": "BULL",
                                    "regime_flip_intraday": False, "indices": {}},
         "portfolio_heat": None,
-        "positions": list(positions),
+        "positions": position_rows,
+        "advisory_shadow_actions": build_advisory_shadow_actions(position_rows),
         "pending_actions": [],
         "news": None,
         "data_quality": {"quote_sources": {}},
@@ -324,6 +417,22 @@ def test_report_carries_advisory_banner_and_macro_day():
     assert "Does not modify EOD artifacts" in report
     # 2026-06-10 is an official CPI release day in the shared calendar.
     assert "MACRO EVENT DAY: *** CPI" in report
+
+
+def test_report_and_prompt_surface_advisory_shadow_actions():
+    reviews = build_position_reviews(
+        _open_positions(), {"NVDA": _ohlcv()}, {"NVDA": _quote(94.5)}, ASOF
+    )
+    review = _review_stub(positions=reviews)
+
+    report = render_intraday_report(review)
+    prompt = intraday_review.build_intraday_llm_prompt(review)
+
+    assert "ADVISORY SHADOW ACTIONS" in report
+    assert "NVDA" in report
+    assert "HARD_STOP" in report
+    assert "ADVISORY SHADOW ACTIONS" in prompt
+    assert '"shadow_action": "EXIT"' in prompt
 
 
 def test_output_paths_stay_inside_intraday_subtree(tmp_path):

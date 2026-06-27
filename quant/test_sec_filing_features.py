@@ -22,6 +22,7 @@ def test_filing_features_do_not_treat_period_end_as_tradable_date() -> None:
     assert rows[0]["event_date"] is None
     assert "missing_accepted_datetime" in rows[0]["gap_reasons"]
     assert "missing_usable_trade_date" in rows[0]["gap_reasons"]
+    assert "missing_dei_cover_status" in rows[0]["gap_reasons"]
 
 
 def test_filing_features_derive_same_accession_financial_shock_fields() -> None:
@@ -105,6 +106,35 @@ def test_daily_filing_features_auto_discovers_selected_companyfacts(tmp_path) ->
     assert summary["rows_with_same_accession_facts"] == 1
     assert rows[0]["field_availability"]["same_accession_facts"] == "derived"
     assert rows[0]["gross_margin_delta"] == 0.1
+
+
+def test_filing_features_expose_shared_dei_cover_status_fields() -> None:
+    rows = build_filing_feature_rows(
+        [
+            {
+                "ticker": "ACME",
+                "form_type": "10-Q",
+                "accession_number": "0001-26-000010",
+                "accepted_at": "2026-04-20T17:05:00",
+                "usable_trade_date": "2026-04-21",
+                "combined_text": (
+                    "<dei:EntityFilerCategory>Accelerated Filer</dei:EntityFilerCategory>"
+                    "<dei:EntityEmergingGrowthCompany>false</dei:EntityEmergingGrowthCompany>"
+                ),
+            }
+        ],
+        [],
+    )
+
+    row = rows[0]
+
+    assert row["filer_status_category"] == "accelerated_filer"
+    assert row["filer_status_booleans"]["accelerated_filer"] is True
+    assert row["filer_status_booleans"]["large_accelerated_filer"] is False
+    assert row["filer_status_booleans"]["emerging_growth_company"] is False
+    assert row["filer_status_field_count"] == 5
+    assert row["field_availability"]["filer_status"] == "derived"
+    assert "missing_dei_cover_status" not in row["gap_reasons"]
 
 
 def _fact(ticker: str, accession: str, canonical: str, value: float, end: str, filed: str) -> dict:

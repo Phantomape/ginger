@@ -42,6 +42,7 @@ DEFAULT_ACCOUNT_ID = int(os.environ.get("FUTU_ACC_ID", "283726803957104546"))
 DEFAULT_SECURITY_FIRM = os.environ.get("FUTU_SECURITY_FIRM", "FUTUSG")
 DEFAULT_HOST = os.environ.get("FUTU_OPEND_HOST", "127.0.0.1")
 DEFAULT_PORT = int(os.environ.get("FUTU_OPEND_PORT", "11111"))
+DEFAULT_SDK_APPDATA = REPO_ROOT / "data" / "runtime" / "moomoo_sdk_appdata"
 FILLS_LOOKBACK_DAYS = 730  # ~2 years for entry-date reconstruction
 
 # type -> (section, slot_policy, default sleeve)
@@ -258,6 +259,31 @@ def _opend_reachable(host: str, port: int, timeout: float = 2.0) -> bool:
         return False
 
 
+def _redirect_moomoo_sdk_appdata() -> str | None:
+    """Point the moomoo SDK log file at a repo-local directory during import.
+
+    The SDK creates ``%APPDATA%/com.moomoo.OpenD/Log/py_YYYY_MM_DD.log`` at
+    import time. On Windows that file can be held open by another Python
+    process, which prevents a fresh daily run from importing the SDK even when
+    OpenD itself is reachable. Redirect only for the import; the file handler
+    keeps the repo-local path after the environment is restored.
+    """
+    if os.environ.get("GINGER_MOOMOO_USE_SYSTEM_APPDATA"):
+        return None
+    target = Path(os.environ.get("GINGER_MOOMOO_SDK_APPDATA") or DEFAULT_SDK_APPDATA)
+    target.mkdir(parents=True, exist_ok=True)
+    previous = os.environ.get("APPDATA")
+    os.environ["APPDATA"] = str(target)
+    return previous
+
+
+def _restore_moomoo_sdk_appdata(previous: str | None) -> None:
+    if previous is None:
+        os.environ.pop("APPDATA", None)
+        return
+    os.environ["APPDATA"] = previous
+
+
 def fetch_moomoo_state(
     *,
     acc_id: int = DEFAULT_ACCOUNT_ID,
@@ -270,6 +296,7 @@ def fetch_moomoo_state(
     if not _opend_reachable(host, port):
         print(f"[moomoo_open_positions] OpenD not reachable at {host}:{port} -> fallback.")
         return None
+    appdata_env = _redirect_moomoo_sdk_appdata()
     try:
         from moomoo import (
             OpenSecTradeContext, TrdMarket, TrdEnv, SecurityFirm, Currency, RET_OK,
@@ -277,6 +304,8 @@ def fetch_moomoo_state(
     except ImportError as exc:  # pragma: no cover
         print(f"[moomoo_open_positions] moomoo SDK unavailable: {exc}")
         return None
+    finally:
+        _restore_moomoo_sdk_appdata(appdata_env)
 
     firm = getattr(SecurityFirm, str(security_firm), SecurityFirm.FUTUSG)
     ctx = OpenSecTradeContext(

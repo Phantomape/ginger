@@ -87,6 +87,8 @@ def ensure_non_ohlcv_coverage(
     options_max_expirations: int | None = 2,
     options_max_strikes_per_side: int | None = 12,
     options_max_tickers: int | None = None,
+    refresh_borrow_availability: bool = False,
+    borrow_availability_broad: bool = False,
     build_filing_features: bool = True,
     companyfacts_path: str | Path | None = None,
     record_existing: bool = True,
@@ -180,6 +182,8 @@ def ensure_non_ohlcv_coverage(
                 options_max_expirations=options_max_expirations,
                 options_max_strikes_per_side=options_max_strikes_per_side,
                 options_max_tickers=options_max_tickers,
+                refresh_borrow_availability=refresh_borrow_availability,
+                borrow_availability_broad=borrow_availability_broad,
                 max_ciks=max_ciks,
             )
             summary["daily_snapshots"][day_iso] = snapshot
@@ -333,6 +337,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--refresh-sec-text", action=argparse.BooleanOptionalAction, default=False)
     parser.add_argument("--refresh-form4-submissions", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--refresh-form4-xml", action=argparse.BooleanOptionalAction, default=False)
+    parser.add_argument("--refresh-borrow-availability", action=argparse.BooleanOptionalAction, default=False)
+    parser.add_argument("--borrow-availability-broad", action=argparse.BooleanOptionalAction, default=False)
     parser.add_argument("--build-filing-features", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--companyfacts-path", default=None)
     parser.add_argument("--max-ciks", type=int, default=None)
@@ -358,6 +364,8 @@ def main(argv: list[str] | None = None) -> int:
         refresh_sec_text=args.refresh_sec_text,
         refresh_form4_submissions=args.refresh_form4_submissions,
         refresh_form4_xml=args.refresh_form4_xml,
+        refresh_borrow_availability=args.refresh_borrow_availability,
+        borrow_availability_broad=args.borrow_availability_broad,
         build_filing_features=args.build_filing_features,
         companyfacts_path=args.companyfacts_path,
         record_existing=args.record_existing,
