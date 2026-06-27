@@ -60,6 +60,20 @@ except ImportError:  # pragma: no cover - package-style import fallback
 RULE_VERSION = "forward_replacement_value_v1"
 ENTRY_REGIME_TAG_RULE_VERSION = "forward_replacement_entry_regime_tag_v1"
 ENTRY_SHORT_VOLUME_TAG_RULE_VERSION = "forward_replacement_entry_short_volume_tag_v1"
+# Entry-time NAME-LEVEL price-exhaustion tag (exp-20260627-022). Read-only PIT
+# context for the oracle-regret-compass section-3 "weak-tape low-MFE failed-
+# followthrough" cohort, which the n=22 frozen-window entry diagnostic showed is
+# NOT separable by the already-tagged market regime / short-volume axes. Computed
+# purely from warehouse OHLCV strictly prior to entry (no lookahead, no missing
+# data dependency). Records raw continuous fields so a discriminator can be tested
+# OUT OF SAMPLE once enough closed forward rows accumulate; the stretched bucket is
+# a provisional readability flag, NOT a tuned gate / threshold / top-N retune.
+ENTRY_EXHAUSTION_TAG_RULE_VERSION = "forward_replacement_entry_exhaustion_tag_v1"
+ENTRY_EXHAUSTION_MIN_BARS = 21
+ENTRY_EXHAUSTION_ATR_PERIOD = 14
+ENTRY_EXHAUSTION_MA_PERIOD = 20
+ENTRY_EXHAUSTION_HIGH_LOOKBACK = 252
+ENTRY_EXHAUSTION_STRETCHED_ATR_MULT = 4.0  # provisional readability bucket only
 COMPARATOR_TICKERS = ("SPY", "QQQ")
 ARTIFACT_RELPATH = Path("paper_sleeves") / "forward_replacement_value.jsonl"
 
@@ -166,6 +180,125 @@ def load_regime_spy_bars(warehouse_path=None):
     finally:
         con.close()
     return rows
+
+
+def load_entry_exhaustion_bars(tickers, warehouse_path=None):
+    """Load daily high/low/close bars for ``tickers`` from the OHLCV warehouse,
+    used only for entry-time name-level exhaustion attribution.
+
+    Returns ``{ticker: [(date, high, low, close), ...]}`` sorted ascending by
+    date. Returns ``{}`` when the warehouse is absent. Mirrors the overlay-aware
+    read of ``load_comparator_bars``.
+    """
+    tickers = sorted({str(t).upper() for t in (tickers or []) if t})
+    if not tickers:
+        return {}
+    path = Path(warehouse_path) if warehouse_path else Path(DEFAULT_WAREHOUSE_PATH)
+    if not path.exists() and not hot_path_for(path).exists():
+        return {}
+    bars: dict[str, list[tuple[str, float, float, float]]] = {t: [] for t in tickers}
+    con = connect_overlay_reader(path)
+    try:
+        cur = con.cursor()
+        marks = ",".join("?" for _ in tickers)
+        cur.execute(
+            "SELECT ticker, date, high, low, close FROM ohlcv_overlay "
+            "WHERE ticker IN (" + marks + ") ORDER BY ticker, date",
+            tickers,
+        )
+        for ticker, bar_date, high_px, low_px, close_px in cur.fetchall():
+            close_f = _to_float(close_px)
+            if close_f is None:
+                continue
+            high_f = _to_float(high_px)
+            low_f = _to_float(low_px)
+            bars[str(ticker).upper()].append(
+                (
+                    str(bar_date)[:10],
+                    high_f if high_f is not None else close_f,
+                    low_f if low_f is not None else close_f,
+                    close_f,
+                )
+            )
+    finally:
+        con.close()
+    return bars
+
+
+def _entry_exhaustion_asof(bars, ticker, entry_date):
+    """Name-level price-exhaustion features from bars STRICTLY PRIOR to entry.
+
+    Returns ``(status, detail)``. ``detail`` carries ATR-normalized extension
+    above the 20d MA, percent from the 20d MA, and percent from the trailing
+    252d high. All inputs use only bars dated before ``entry_date`` so the tag is
+    point-in-time with no lookahead.
+    """
+    seq = bars.get(str(ticker).upper()) if bars else None
+    if not seq:
+        return "no_exhaustion_bars", None
+    prior = [b for b in seq if b[0] < entry_date]
+    if len(prior) < ENTRY_EXHAUSTION_MIN_BARS:
+        return "insufficient_history", None
+    closes = [b[3] for b in prior]
+    close0 = closes[-1]
+    ma20 = sum(closes[-ENTRY_EXHAUSTION_MA_PERIOD:]) / ENTRY_EXHAUSTION_MA_PERIOD
+    trs = []
+    for i in range(1, len(prior)):
+        high, low, prev_close = prior[i][1], prior[i][2], prior[i - 1][3]
+        trs.append(max(high - low, abs(high - prev_close), abs(low - prev_close)))
+    if len(trs) < ENTRY_EXHAUSTION_ATR_PERIOD:
+        return "insufficient_history", None
+    atr = sum(trs[-ENTRY_EXHAUSTION_ATR_PERIOD:]) / ENTRY_EXHAUSTION_ATR_PERIOD
+    if not atr or atr <= 0 or not ma20:
+        return "degenerate_atr_or_ma", None
+    high252 = max(b[1] for b in prior[-ENTRY_EXHAUSTION_HIGH_LOOKBACK:])
+    detail = {
+        "extension_atr_mult": round((close0 - ma20) / atr, 6),
+        "pct_from_20ma": round(close0 / ma20 - 1.0, 6),
+        "pct_from_252w_high": round(close0 / high252 - 1.0, 6) if high252 else None,
+        "bars_used": len(prior),
+    }
+    return "ok", detail
+
+
+def _row_needs_entry_exhaustion_tag(row):
+    if row.get("entry_exhaustion_tag_rule_version") != ENTRY_EXHAUSTION_TAG_RULE_VERSION:
+        return True
+    # Refresh rows whose bars were not yet present so a later warehouse backfill
+    # can form the tag.
+    return row.get("entry_exhaustion_status") in {
+        "no_exhaustion_bars",
+        "insufficient_history",
+        "missing_bars_index",
+    }
+
+
+def _apply_entry_exhaustion_tag(row, exhaustion_bars):
+    entry_date = str(row.get("entry_date") or "")[:10]
+    ticker = str(row.get("ticker") or "")
+    detail = None
+    stretched = None
+    if not entry_date:
+        status = "missing_entry_date"
+    elif exhaustion_bars is None:
+        status = "missing_bars_index"
+    else:
+        status, detail = _entry_exhaustion_asof(exhaustion_bars, ticker, entry_date)
+        if status == "ok" and detail is not None:
+            stretched = detail["extension_atr_mult"] >= ENTRY_EXHAUSTION_STRETCHED_ATR_MULT
+
+    row["entry_exhaustion_tag_rule_version"] = ENTRY_EXHAUSTION_TAG_RULE_VERSION
+    row["entry_exhaustion_asof_date"] = entry_date or None
+    row["entry_exhaustion_status"] = status
+    row["entry_exhaustion_extension_atr_mult"] = (
+        detail["extension_atr_mult"] if detail else None
+    )
+    row["entry_exhaustion_pct_from_20ma"] = detail["pct_from_20ma"] if detail else None
+    row["entry_exhaustion_pct_from_252w_high"] = (
+        detail["pct_from_252w_high"] if detail else None
+    )
+    row["entry_exhaustion_stretched_flag"] = stretched
+    row["entry_exhaustion_detail"] = detail
 
 
 def load_short_volume_percentile_index(archive_path=None):
@@ -471,6 +604,25 @@ def _closed_rows(state):
     return []
 
 
+def _collect_closed_row_tickers(sleeves_root):
+    """Scan every sleeve state once for the tickers of closed rows, so the
+    entry-exhaustion warehouse bars can be loaded for just those names."""
+    tickers: set[str] = set()
+    root = Path(sleeves_root)
+    if not root.is_dir():
+        return tickers
+    for state_path in sorted(root.glob("*/state.json")):
+        try:
+            state = json.loads(state_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        for row in _closed_rows(state):
+            ticker = str(row.get("ticker") or "").upper()
+            if ticker:
+                tickers.add(ticker)
+    return tickers
+
+
 def replacement_artifact_key(record):
     """Stable identity for one closed forward replacement-value row."""
     return (
@@ -534,6 +686,19 @@ def _record_from_state_row(row, sleeve_key):
         ),
         "entry_short_volume_quintile": row.get("entry_short_volume_quintile"),
         "entry_short_volume_toxic_flag": row.get("entry_short_volume_toxic_flag"),
+        "entry_exhaustion_tag_rule_version": row.get(
+            "entry_exhaustion_tag_rule_version"
+        ),
+        "entry_exhaustion_asof_date": row.get("entry_exhaustion_asof_date"),
+        "entry_exhaustion_status": row.get("entry_exhaustion_status"),
+        "entry_exhaustion_extension_atr_mult": row.get(
+            "entry_exhaustion_extension_atr_mult"
+        ),
+        "entry_exhaustion_pct_from_20ma": row.get("entry_exhaustion_pct_from_20ma"),
+        "entry_exhaustion_pct_from_252w_high": row.get(
+            "entry_exhaustion_pct_from_252w_high"
+        ),
+        "entry_exhaustion_stretched_flag": row.get("entry_exhaustion_stretched_flag"),
     }
 
 
@@ -683,6 +848,7 @@ def enrich_state_closed_rows(
     *,
     regime_spy_bars=None,
     sv_percentile_index=None,
+    exhaustion_bars=None,
 ):
     """Add replacement-value fields to closed rows that lack them.
 
@@ -744,6 +910,10 @@ def enrich_state_closed_rows(
             _apply_short_volume_tag(row, sv_percentile_index)
             updated = True
 
+        if exhaustion_bars is not None and _row_needs_entry_exhaustion_tag(row):
+            _apply_entry_exhaustion_tag(row, exhaustion_bars)
+            updated = True
+
         if updated:
             record = _record_from_state_row(row, sleeve_key)
             if record is not None:
@@ -758,6 +928,7 @@ def enrich_all_sleeve_states(
     bars_by_ticker=None,
     regime_spy_bars=None,
     sv_percentile_index=None,
+    exhaustion_bars=None,
     warehouse_path=None,
     artifact_path=None,
 ):
@@ -776,16 +947,22 @@ def enrich_all_sleeve_states(
         regime_spy_bars = load_regime_spy_bars(warehouse_path)
     if sv_percentile_index is None and load_from_warehouse:
         sv_percentile_index = load_short_volume_percentile_index()
+    if exhaustion_bars is None and load_from_warehouse:
+        exhaustion_bars = load_entry_exhaustion_bars(
+            _collect_closed_row_tickers(root), warehouse_path
+        )
 
     summary = {
         "rule_version": RULE_VERSION,
         "entry_regime_tag_rule_version": ENTRY_REGIME_TAG_RULE_VERSION,
         "entry_short_volume_tag_rule_version": ENTRY_SHORT_VOLUME_TAG_RULE_VERSION,
+        "entry_exhaustion_tag_rule_version": ENTRY_EXHAUSTION_TAG_RULE_VERSION,
         "asof_date": asof_date,
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "production_impact": dict(PRODUCTION_IMPACT),
         "entry_regime_tagging_enabled": regime_spy_bars is not None,
         "entry_short_volume_tagging_enabled": sv_percentile_index is not None,
+        "entry_exhaustion_tagging_enabled": exhaustion_bars is not None,
         "sleeves_scanned": 0,
         "rows_enriched": 0,
         "rows_enriched_by_status": {},
@@ -811,6 +988,7 @@ def enrich_all_sleeve_states(
             sleeve_key,
             regime_spy_bars=regime_spy_bars,
             sv_percentile_index=sv_percentile_index,
+            exhaustion_bars=exhaustion_bars,
         )
         if records:
             atomic_write_json(state, state_path)

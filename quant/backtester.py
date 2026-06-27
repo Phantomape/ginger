@@ -32,6 +32,7 @@ import math
 import os
 import sys
 import tempfile
+import time
 from datetime import datetime, timezone
 
 import pandas as pd
@@ -73,7 +74,7 @@ def _atomic_write_json(path, payload, *, default=None, trailing_newline=False):
                 handle.write("\n")
             handle.flush()
             os.fsync(handle.fileno())
-        os.replace(tmp_path, path)
+        _replace_with_retry(tmp_path, path)
         tmp_path = None
     finally:
         if tmp_path and os.path.exists(tmp_path):
@@ -81,6 +82,22 @@ def _atomic_write_json(path, payload, *, default=None, trailing_newline=False):
                 os.remove(tmp_path)
             except OSError:
                 logger.warning("Could not remove temporary JSON file: %s", tmp_path)
+
+
+def _replace_with_retry(tmp_path, path, *, attempts=6, base_delay=0.25):
+    """Retry transient Windows replace locks without changing write semantics."""
+    last_exc = None
+    for attempt in range(max(1, attempts)):
+        try:
+            os.replace(tmp_path, path)
+            return
+        except PermissionError as exc:
+            last_exc = exc
+            if attempt == max(1, attempts) - 1:
+                break
+            time.sleep(base_delay * (2 ** attempt))
+    if last_exc is not None:
+        raise last_exc
 
 # ── Defaults ────────────────────────────────────────────────────────────────
 

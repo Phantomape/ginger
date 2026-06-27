@@ -479,3 +479,96 @@ def test_production_impact_is_observe_only():
     assert impact["alters_exits"] is False
     assert impact["alters_candidate_ranking"] is False
     assert impact["trade_enabled"] is False
+
+
+def _exhaustion_bars(ticker="GS"):
+    """Strictly-prior daily bars for GS: 25 rising sessions before 2026-05-05,
+    so close sits well above the 20d MA in ATR units (a 'stretched' entry)."""
+    rows = []
+    start = date(2026, 3, 28)
+    for i in range(25):
+        d = start + timedelta(days=i)
+        close = 800.0 + i * 5.0
+        rows.append((d.isoformat(), close + 2.0, close - 2.0, close))
+    return {ticker: rows}
+
+
+def test_entry_exhaustion_asof_pit_and_features():
+    bars = _exhaustion_bars()
+    status, detail = frv._entry_exhaustion_asof(bars, "GS", "2026-05-05")
+    assert status == "ok"
+    # rising series -> close above 20d MA, positive ATR-extension
+    assert detail["extension_atr_mult"] > 0
+    assert detail["pct_from_20ma"] > 0
+    # close is at/below trailing high -> non-positive distance from 252w high
+    assert detail["pct_from_252w_high"] <= 0
+    # strictly prior: a same-day or future bar must not be used
+    only_future = {"GS": [("2026-05-05", 900.0, 880.0, 890.0)]}
+    s2, _ = frv._entry_exhaustion_asof(only_future, "GS", "2026-05-05")
+    assert s2 == "insufficient_history"
+
+
+def test_enrich_row_adds_entry_exhaustion_tag_when_bars_supplied():
+    state = {"closed_positions": [_row()]}
+    records = frv.enrich_state_closed_rows(
+        state,
+        BARS,
+        "2026-06-27",
+        "test_sleeve",
+        exhaustion_bars=_exhaustion_bars(),
+    )
+    assert len(records) == 1
+    row = state["closed_positions"][0]
+    assert (
+        row["entry_exhaustion_tag_rule_version"]
+        == frv.ENTRY_EXHAUSTION_TAG_RULE_VERSION
+    )
+    assert row["entry_exhaustion_status"] == "ok"
+    assert row["entry_exhaustion_extension_atr_mult"] is not None
+    assert isinstance(row["entry_exhaustion_stretched_flag"], bool)
+    assert records[0]["entry_exhaustion_status"] == "ok"
+
+    # idempotent: a second pass makes no change
+    assert (
+        frv.enrich_state_closed_rows(
+            state,
+            BARS,
+            "2026-06-28",
+            "test_sleeve",
+            exhaustion_bars=_exhaustion_bars(),
+        )
+        == []
+    )
+
+
+def test_entry_exhaustion_insufficient_history_then_refresh():
+    state = {"closed_positions": [_row()]}
+    # thin history -> insufficient
+    records = frv.enrich_state_closed_rows(
+        state,
+        BARS,
+        "2026-06-27",
+        "test_sleeve",
+        exhaustion_bars={"GS": [("2026-05-01", 10.0, 9.0, 9.5)]},
+    )
+    assert len(records) == 1
+    row = state["closed_positions"][0]
+    assert row["entry_exhaustion_status"] == "insufficient_history"
+    # bars backfill -> refreshes to ok
+    records = frv.enrich_state_closed_rows(
+        state,
+        BARS,
+        "2026-06-28",
+        "test_sleeve",
+        exhaustion_bars=_exhaustion_bars(),
+    )
+    assert len(records) == 1
+    assert row["entry_exhaustion_status"] == "ok"
+
+
+def test_replacement_only_pass_leaves_exhaustion_untagged():
+    state = {"closed_positions": [_row()]}
+    frv.enrich_state_closed_rows(state, BARS, "2026-06-11", "test_sleeve")
+    row = state["closed_positions"][0]
+    assert row.get("entry_exhaustion_tag_rule_version") is None
+    assert "entry_exhaustion_status" not in row
