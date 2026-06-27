@@ -1,0 +1,915 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260626_019_intraday_advisory_forward_outcome_ledger.py",
+    "data/experiments/exp-20260626-019/**",
+    "experiments/logs/exp-20260626-019.json",
+    "experiments/cards/exp-20260626-019.md",
+    "experiments/manifests/exp-20260626-019.json",
+    "experiments/tickets/exp-20260626-019.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260626-019.md",
+  "causal_components": [
+    "intraday snapshot position/status extraction",
+    "hot warehouse next-open outcome settlement",
+    "cash SPY QQQ comparator returns",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_forward_outcome_ledger",
+  "changed_variable": "intraday_advisory_state_forward_outcome_settlement_v1",
+  "claimed_at": "2026-06-26T17:09:44+00:00",
+  "completed_at": "2026-06-26T17:15:44+00:00",
+  "created_at": "2026-06-26T17:09:34+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260626-019",
+  "experiment_uid": "expuid-634f34541f73482f",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260626-019",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-26T17:09:34+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "intraday_advisory_forward_outcome_ledger"
+  },
+  "hypothesis": "Intraday advisory BREACHED/APPROACHING position states may have exit/risk-allocation value if they underperform OK states or SPY/QQQ after the 13:00 ET snapshot; first settle the newly closeable rows with hot warehouse OHLCV as an observed-only forward ledger without changing strategy behavior.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "intraday_advisory_state_forward_outcome_settlement_v1"
+  ],
+  "mechanism_family": "intraday_review_alpha_measurement_repair",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260625-021",
+    "exp-20260626-001"
+  ],
+  "new_evidence_type": "closed_forward_outcome_rows",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "advisory",
+        "after",
+        "allocation",
+        "alpha",
+        "an",
+        "approaching",
+        "as",
+        "behavior",
+        "breached",
+        "changing",
+        "closeable",
+        "et",
+        "exit",
+        "first",
+        "forward",
+        "have",
+        "hot",
+        "if",
+        "intraday",
+        "ledger",
+        "may",
+        "measurement",
+        "newly",
+        "observed",
+        "ok",
+        "only",
+        "or",
+        "outcome",
+        "position",
+        "qqq",
+        "repair",
+        "review",
+        "risk",
+        "rows",
+        "settle",
+        "settlement",
+        "snapshot",
+        "spy",
+        "state",
+        "states",
+        "strategy",
+        "they",
+        "underperform",
+        "value",
+        "warehouse",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "kova_sec13f_forward_outcome_settlement",
+        "reopen_condition": "Next alpha work must wait for enough closed 10d replacement-value rows or predeclare a separate observed-only sponsorship attribution. Promotion still requires a shared default-off helper and canonical Gate 1-4 evidence.",
+        "score": 0.0471,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "core_risk_intensity_forward_observation_ledger",
+        "reopen_condition": "Closed forward rows with selected/sliced status, risk-intensity rank, realized PnL, and replacement value before any sizing promotion.",
+        "score": 0.0392,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.9333,
+        "data_source": "other",
+        "family_key": "identity_or_measurement_repair",
+        "reopen_condition": "Wait for these rows to close with replacement value versus cash, SPY, and QQQ, add PIT borrow/loan-availability context, or backfill historical PIT options chains with vendor/as-of controls before another options alpha claim.",
+        "score": 0.0392,
+        "status": "has_accepted",
+        "trials": 15
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "market_state_family_replacement_value_attribution",
+        "reopen_condition": null,
+        "score": 0.0385,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.0381,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Hot warehouse OHLCV through 2026-06-25 gives materially more closed forward outcome rows past the 2026-06-15 blocker, and exp-20260626-001 added capture_time_et provenance for newly generated intraday snapshots; this run settles outcomes only and does not retune status, stop, target, hold, or urgency thresholds.",
+    "override": true,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.22,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "hot_warehouse_still_too_short_for_5d",
+      "advisory_labels_not_monotonic",
+      "missing_pending_action_semantics",
+      "thin_snapshot_count",
+      "posthoc_backfill_bias"
+    ],
+    "confidence_reason": "The hot warehouse now covers OHLCV through 2026-06-25, directly addressing one exp-20260625-021 blocker, but the surface still lacks entry_date and pending action semantics, so this is observed-only alpha evidence at best.",
+    "recorded_at": "2026-06-26T17:09:25+00:00"
+  },
+  "prior_trial_count": 2,
+  "result": {
+    "experiment_id": "exp-20260626-019",
+    "timestamp": "2026-06-26T17:15:44Z",
+    "lane": "alpha_search",
+    "status": "observed_only_intraday_advisory_forward_outcome_ledger_not_allocation_ready",
+    "accepted": false,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "decision": "observed_only_intraday_advisory_forward_outcome_ledger_not_allocation_ready",
+    "hypothesis": "Intraday advisory BREACHED/APPROACHING position states may have exit/risk-allocation value if they underperform OK states or SPY/QQQ after the 13:00 ET snapshot; first settle the newly closeable rows with hot warehouse OHLCV as an observed-only forward ledger without changing strategy behavior.",
+    "alpha_hypothesis": "Intraday advisory BREACHED/APPROACHING position states may have exit/risk-allocation value if they underperform OK states or SPY/QQQ after the 13:00 ET snapshot.",
+    "change_type": "observed_only_forward_outcome_ledger",
+    "implementation_mode": "observed_only_forward_outcome_ledger_no_strategy_change",
+    "mechanism_family": "intraday_review_alpha_measurement_repair",
+    "trial_family": "intraday_advisory_state_forward_outcome_settlement",
+    "trial_variant_id": "hot_warehouse_through_20260625_v1",
+    "single_causal_variable": "intraday_advisory_state_forward_outcome_settlement_v1",
+    "changed_variable": "intraday_advisory_state_forward_outcome_settlement_v1",
+    "causal_components": [
+      "intraday snapshot position/status extraction",
+      "hot warehouse next-open outcome settlement",
+      "cash SPY QQQ comparator returns",
+      "no strategy behavior change"
+    ],
+    "nearby_prior_experiments": [
+      "exp-20260625-021",
+      "exp-20260626-001"
+    ],
+    "new_evidence_type": "closed_forward_outcome_rows",
+    "new_evidence_axis": "Hot warehouse OHLCV through 2026-06-25 gives materially more closed forward outcome rows past the 2026-06-15 blocker, and exp-20260626-001 added capture_time_et provenance for newly generated intraday snapshots; this run settles outcomes only and does not retune status, stop, target, hold, or urgency thresholds.",
+    "prediction": {
+      "confidence_reason": "The hot warehouse now covers OHLCV through 2026-06-25, directly addressing one exp-20260625-021 blocker, but the surface still lacks entry_date and pending action semantics, so this is observed-only alpha evidence at best.",
+      "expected_ev_delta": 0.0,
+      "expected_pnl_delta": 0.0,
+      "main_failure_modes": [
+        "hot_warehouse_still_too_short_for_5d",
+        "advisory_labels_not_monotonic",
+        "missing_pending_action_semantics",
+        "thin_snapshot_count",
+        "posthoc_backfill_bias"
+      ],
+      "recorded_at": "2026-06-26T17:09:25+00:00",
+      "success_probability": 0.22
+    },
+    "calibration": {
+      "predicted_success_probability": 0.22,
+      "actual_success": 0,
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": 0.0,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "predicted_failure_modes": [
+        "hot_warehouse_still_too_short_for_5d",
+        "advisory_labels_not_monotonic",
+        "missing_pending_action_semantics",
+        "thin_snapshot_count",
+        "posthoc_backfill_bias"
+      ],
+      "realized_failure_modes": [
+        "quote_time_et_still_missing",
+        "missing_pending_action_semantics",
+        "surface_declares_advisory_only"
+      ],
+      "predicted_failure_modes_hit": [
+        "missing_pending_action_semantics"
+      ],
+      "surprise_note": "Medium-low surprise: hot warehouse settlement now works, but contract/action semantics are still not sufficient for a rule."
+    },
+    "gate1": {
+      "passed": true,
+      "baseline_metrics": {
+        "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "baseline_exists": true,
+        "window_count": 3,
+        "expected_value_score_sum": 7.8941,
+        "total_pnl": 234850.99,
+        "trade_count": 61,
+        "signals_generated": 164,
+        "signals_survived": 135,
+        "survival_rate": 0.823171,
+        "max_drawdown_pct_worst": 0.1119,
+        "windows": [
+          {
+            "label": "late_strong",
+            "start": "2025-10-23",
+            "end": "2026-04-21",
+            "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+            "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+            "expected_value_score": 5.1628,
+            "sharpe_daily": 4.41,
+            "total_pnl": 117072.92,
+            "max_drawdown_pct": 0.0665,
+            "win_rate": 0.8333,
+            "trade_count": 18,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "survival_rate": 0.8039
+          },
+          {
+            "label": "mid_weak",
+            "start": "2025-04-23",
+            "end": "2025-10-22",
+            "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+            "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+            "expected_value_score": 2.1402,
+            "sharpe_daily": 2.74,
+            "total_pnl": 78110.11,
+            "max_drawdown_pct": 0.1119,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "survival_rate": 0.7925
+          },
+          {
+            "label": "old_thin",
+            "start": "2024-10-02",
+            "end": "2025-04-22",
+            "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+            "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+            "expected_value_score": 0.5911,
+            "sharpe_daily": 1.49,
+            "total_pnl": 39667.96,
+            "max_drawdown_pct": 0.1001,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "signals_generated": 60,
+            "signals_survived": 52,
+            "survival_rate": 0.8667
+          }
+        ]
+      },
+      "note": "Observed-only ledger; before and after strategy behavior are identical."
+    },
+    "gate2": {
+      "passed": true,
+      "hot_warehouse": {
+        "path": "data/warehouse/warehouse_main_hot.sqlite",
+        "exists": true,
+        "min_date": "2024-09-20",
+        "max_date": "2026-06-25",
+        "row_count": 57299,
+        "ticker_count": 1346,
+        "requested_ticker_count": 21,
+        "price_ticker_count": 21,
+        "missing_requested_ticker_count": 0,
+        "missing_requested_ticker_sample": [],
+        "benchmark_ranges": {
+          "SPY": {
+            "start": "2025-05-19",
+            "end": "2026-06-25",
+            "rows": 277
+          },
+          "QQQ": {
+            "start": "2025-05-19",
+            "end": "2026-06-25",
+            "rows": 277
+          }
+        }
+      },
+      "execution_blockers_for_promotion": [
+        "quote_time_et_still_missing",
+        "missing_pending_action_semantics",
+        "surface_declares_advisory_only",
+        "no shared default-off helper or action contract"
+      ]
+    },
+    "gate3": {
+      "passed": true,
+      "filter_added": false,
+      "signals_generated_proxy": 244,
+      "signals_survived_proxy": 120,
+      "survival_rate_proxy": 0.491803,
+      "baseline_survival_rate": 0.823171,
+      "note": "Coverage is measurement-only. Survival here means rows in BREACHED/APPROACHING advisory state, not an executable filter."
+    },
+    "gate4": {
+      "passed": false,
+      "decision": "observed_only_intraday_advisory_forward_outcome_ledger_not_allocation_ready",
+      "failed_reasons": [
+        "quote_time_et_still_missing",
+        "missing_pending_action_semantics",
+        "surface_declares_advisory_only"
+      ],
+      "readiness": {
+        "decision": "observed_only_intraday_advisory_forward_outcome_ledger_not_allocation_ready",
+        "passed": false,
+        "failed_reasons": [
+          "quote_time_et_still_missing",
+          "missing_pending_action_semantics",
+          "surface_declares_advisory_only"
+        ],
+        "thresholds": {
+          "min_settled_1d_rows": 100,
+          "min_settled_3d_rows": 50,
+          "min_settled_5d_rows": 50,
+          "min_settled_snapshot_dates": 5,
+          "min_risk_and_ok_rows": 20,
+          "requires_quote_time_et": true,
+          "requires_pending_action_semantics": true
+        },
+        "observed": {
+          "position_rows": 244,
+          "settled_1d_rows": 217,
+          "settled_3d_rows": 186,
+          "settled_5d_rows": 110,
+          "settled_1d_snapshot_dates": 13,
+          "risk_1d_settled_rows": 103,
+          "ok_1d_settled_rows": 114,
+          "risk_minus_ok_1d": {
+            "avg_return_pct": -1.0061,
+            "avg_excess_spy_pct": -1.0156,
+            "avg_excess_qqq_pct": -0.933,
+            "underperform_spy_rate": 0.042753,
+            "underperform_qqq_rate": 0.014563
+          }
+        }
+      },
+      "expected_value_score_sum_before": 7.8941,
+      "expected_value_score_sum_after": 7.8941,
+      "aggregate_ev_delta": 0.0,
+      "total_pnl_before": 234850.99,
+      "total_pnl_after": 234850.99,
+      "aggregate_pnl_delta": 0.0,
+      "trade_count_before": 61,
+      "trade_count_after": 61,
+      "strategy_behavior_changed": false,
+      "observed_only_note": "Outcome rows are useful for the next predeclared forward hypothesis, but not accepted alpha and not allocation-ready."
+    },
+    "delta_metrics": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "strategy_behavior_changed": false
+    },
+    "source_summary": {
+      "snapshot_count": 17,
+      "row_summary": {
+        "position_rows": 244,
+        "snapshot_date_count": 15,
+        "ticker_count": 19,
+        "status_counts": {
+          "APPROACHING": 21,
+          "BREACHED": 99,
+          "OK": 124
+        },
+        "risk_state_counts": {
+          "OK_OR_OTHER": 124,
+          "RISK": 120
+        },
+        "quote_source_counts": {
+          "eod_close_fallback": 13,
+          "fast_info": 231
+        },
+        "capture_time_rows": 12,
+        "pending_action_rows": 0,
+        "advisory_only_rows": 244,
+        "top_tickers": [
+          {
+            "ticker": "AMD",
+            "rows": 17
+          },
+          {
+            "ticker": "APP",
+            "rows": 17
+          },
+          {
+            "ticker": "COHR",
+            "rows": 17
+          },
+          {
+            "ticker": "MRVL",
+            "rows": 17
+          },
+          {
+            "ticker": "NBIS",
+            "rows": 17
+          },
+          {
+            "ticker": "NVDA",
+            "rows": 17
+          },
+          {
+            "ticker": "TRIP",
+            "rows": 17
+          },
+          {
+            "ticker": "TSLA",
+            "rows": 17
+          },
+          {
+            "ticker": "META",
+            "rows": 16
+          },
+          {
+            "ticker": "NFLX",
+            "rows": 16
+          },
+          {
+            "ticker": "AMZN",
+            "rows": 14
+          },
+          {
+            "ticker": "GOOG",
+            "rows": 14
+          }
+        ]
+      },
+      "outcome_summary": {
+        "1": {
+          "position_rows": 244,
+          "settled_rows": 217,
+          "settled_rate": 0.889344,
+          "settled_snapshot_date_count": 13,
+          "settled_ticker_count": 18,
+          "settlement_status_counts": {
+            "entry_date_unavailable_after_snapshot": 27,
+            "settled": 217
+          },
+          "by_status": {
+            "APPROACHING": {
+              "settled_rows": 20,
+              "snapshot_date_count": 8,
+              "ticker_count": 9,
+              "avg_return_pct": -1.0862,
+              "median_return_pct": -0.7602,
+              "win_rate": 0.35,
+              "avg_excess_spy_pct": -0.5166,
+              "avg_excess_qqq_pct": -0.3711,
+              "underperform_spy_rate": 0.45,
+              "underperform_qqq_rate": 0.5,
+              "total_pnl_10k": -2172.38
+            },
+            "BREACHED": {
+              "settled_rows": 83,
+              "snapshot_date_count": 13,
+              "ticker_count": 12,
+              "avg_return_pct": -1.3787,
+              "median_return_pct": -1.4909,
+              "win_rate": 0.373494,
+              "avg_excess_spy_pct": -0.6419,
+              "avg_excess_qqq_pct": -0.5547,
+              "underperform_spy_rate": 0.554217,
+              "underperform_qqq_rate": 0.518072,
+              "total_pnl_10k": -11442.82
+            },
+            "OK": {
+              "settled_rows": 114,
+              "snapshot_date_count": 13,
+              "ticker_count": 18,
+              "avg_return_pct": -0.3158,
+              "median_return_pct": -0.6827,
+              "win_rate": 0.429825,
+              "avg_excess_spy_pct": 0.398,
+              "avg_excess_qqq_pct": 0.4139,
+              "underperform_spy_rate": 0.491228,
+              "underperform_qqq_rate": 0.5,
+              "total_pnl_10k": -3600.73
+            }
+          },
+          "risk_state_bucket": {
+            "settled_rows": 103,
+            "snapshot_date_count": 13,
+            "ticker_count": 15,
+            "avg_return_pct": -1.3219,
+            "median_return_pct": -1.2003,
+            "win_rate": 0.368932,
+            "avg_excess_spy_pct": -0.6176,
+            "avg_excess_qqq_pct": -0.5191,
+            "underperform_spy_rate": 0.533981,
+            "underperform_qqq_rate": 0.514563,
+            "total_pnl_10k": -13615.2
+          },
+          "ok_or_other_bucket": {
+            "settled_rows": 114,
+            "snapshot_date_count": 13,
+            "ticker_count": 18,
+            "avg_return_pct": -0.3158,
+            "median_return_pct": -0.6827,
+            "win_rate": 0.429825,
+            "avg_excess_spy_pct": 0.398,
+            "avg_excess_qqq_pct": 0.4139,
+            "underperform_spy_rate": 0.491228,
+            "underperform_qqq_rate": 0.5,
+            "total_pnl_10k": -3600.73
+          },
+          "risk_minus_ok": {
+            "avg_return_pct": -1.0061,
+            "avg_excess_spy_pct": -1.0156,
+            "avg_excess_qqq_pct": -0.933,
+            "underperform_spy_rate": 0.042753,
+            "underperform_qqq_rate": 0.014563
+          }
+        },
+        "3": {
+          "position_rows": 244,
+          "settled_rows": 186,
+          "settled_rate": 0.762295,
+          "settled_snapshot_date_count": 11,
+          "settled_ticker_count": 16,
+          "settlement_status_counts": {
+            "entry_date_unavailable_after_snapshot": 27,
+            "horizon_unavailable_after_entry": 31,
+            "settled": 186
+          },
+          "by_status": {
+            "APPROACHING": {
+              "settled_rows": 17,
+              "snapshot_date_count": 6,
+              "ticker_count": 7,
+              "avg_return_pct": -0.4844,
+              "median_return_pct": -1.3534,
+              "win_rate": 0.411765,
+              "avg_excess_spy_pct": 0.0626,
+              "avg_excess_qqq_pct": -0.1208,
+              "underperform_spy_rate": 0.647059,
+              "underperform_qqq_rate": 0.647059,
+              "total_pnl_10k": -823.43
+            },
+            "BREACHED": {
+              "settled_rows": 68,
+              "snapshot_date_count": 11,
+              "ticker_count": 10,
+              "avg_return_pct": -3.753,
+              "median_return_pct": -2.9561,
+              "win_rate": 0.235294,
+              "avg_excess_spy_pct": -2.2474,
+              "avg_excess_qqq_pct": -1.3758,
+              "underperform_spy_rate": 0.720588,
+              "underperform_qqq_rate": 0.558824,
+              "total_pnl_10k": -25520.54
+            },
+            "OK": {
+              "settled_rows": 101,
+              "snapshot_date_count": 11,
+              "ticker_count": 16,
+              "avg_return_pct": -1.9343,
+              "median_return_pct": -2.4918,
+              "win_rate": 0.376238,
+              "avg_excess_spy_pct": -0.6776,
+              "avg_excess_qqq_pct": 0.1317,
+              "underperform_spy_rate": 0.60396,
+              "underperform_qqq_rate": 0.574257,
+              "total_pnl_10k": -19536.0
+            }
+          },
+          "risk_state_bucket": {
+            "settled_rows": 85,
+            "snapshot_date_count": 11,
+            "ticker_count": 12,
+            "avg_return_pct": -3.0993,
+            "median_return_pct": -2.9561,
+            "win_rate": 0.270588,
+            "avg_excess_spy_pct": -1.7854,
+            "avg_excess_qqq_pct": -1.1248,
+            "underperform_spy_rate": 0.705882,
+            "underperform_qqq_rate": 0.576471,
+            "total_pnl_10k": -26343.97
+          },
+          "ok_or_other_bucket": {
+            "settled_rows": 101,
+            "snapshot_date_count": 11,
+            "ticker_count": 16,
+            "avg_return_pct": -1.9343,
+            "median_return_pct": -2.4918,
+            "win_rate": 0.376238,
+            "avg_excess_spy_pct": -0.6776,
+            "avg_excess_qqq_pct": 0.1317,
+            "underperform_spy_rate": 0.60396,
+            "underperform_qqq_rate": 0.574257,
+            "total_pnl_10k": -19536.0
+          },
+          "risk_minus_ok": {
+            "avg_return_pct": -1.165,
+            "avg_excess_spy_pct": -1.1078,
+            "avg_excess_qqq_pct": -1.2565,
+            "underperform_spy_rate": 0.101922,
+            "underperform_qqq_rate": 0.002214
+          }
+        },
+        "5": {
+          "position_rows": 244,
+          "settled_rows": 110,
+          "settled_rate": 0.45082,
+          "settled_snapshot_date_count": 6,
+          "settled_ticker_count": 16,
+          "settlement_status_counts": {
+            "entry_date_unavailable_after_snapshot": 27,
+            "horizon_unavailable_after_entry": 107,
+            "settled": 110
+          },
+          "by_status": {
+            "APPROACHING": {
+              "settled_rows": 15,
+              "snapshot_date_count": 5,
+              "ticker_count": 7,
+              "avg_return_pct": -1.6537,
+              "median_return_pct": -4.4418,
+              "win_rate": 0.333333,
+              "avg_excess_spy_pct": -0.6196,
+              "avg_excess_qqq_pct": -1.2306,
+              "underperform_spy_rate": 0.733333,
+              "underperform_qqq_rate": 0.733333,
+              "total_pnl_10k": -2480.64
+            },
+            "BREACHED": {
+              "settled_rows": 38,
+              "snapshot_date_count": 6,
+              "ticker_count": 9,
+              "avg_return_pct": -4.4878,
+              "median_return_pct": -4.9722,
+              "win_rate": 0.263158,
+              "avg_excess_spy_pct": -3.0479,
+              "avg_excess_qqq_pct": -3.1636,
+              "underperform_spy_rate": 0.736842,
+              "underperform_qqq_rate": 0.710526,
+              "total_pnl_10k": -17053.79
+            },
+            "OK": {
+              "settled_rows": 57,
+              "snapshot_date_count": 6,
+              "ticker_count": 15,
+              "avg_return_pct": 0.9048,
+              "median_return_pct": -0.1999,
+              "win_rate": 0.491228,
+              "avg_excess_spy_pct": 1.8271,
+              "avg_excess_qqq_pct": 1.2035,
+              "underperform_spy_rate": 0.508772,
+              "underperform_qqq_rate": 0.631579,
+              "total_pnl_10k": 5157.22
+            }
+          },
+          "risk_state_bucket": {
+            "settled_rows": 53,
+            "snapshot_date_count": 6,
+            "ticker_count": 11,
+            "avg_return_pct": -3.6857,
+            "median_return_pct": -4.555,
+            "win_rate": 0.283019,
+            "avg_excess_spy_pct": -2.3606,
+            "avg_excess_qqq_pct": -2.6165,
+            "underperform_spy_rate": 0.735849,
+            "underperform_qqq_rate": 0.716981,
+            "total_pnl_10k": -19534.43
+          },
+          "ok_or_other_bucket": {
+            "settled_rows": 57,
+            "snapshot_date_count": 6,
+            "ticker_count": 15,
+            "avg_return_pct": 0.9048,
+            "median_return_pct": -0.1999,
+            "win_rate": 0.491228,
+            "avg_excess_spy_pct": 1.8271,
+            "avg_excess_qqq_pct": 1.2035,
+            "underperform_spy_rate": 0.508772,
+            "underperform_qqq_rate": 0.631579,
+            "total_pnl_10k": 5157.22
+          },
+          "risk_minus_ok": {
+            "avg_return_pct": -4.5905,
+            "avg_excess_spy_pct": -4.1877,
+            "avg_excess_qqq_pct": -3.82,
+            "underperform_spy_rate": 0.227077,
+            "underperform_qqq_rate": 0.085402
+          }
+        },
+        "10": {
+          "position_rows": 244,
+          "settled_rows": 0,
+          "settled_rate": 0.0,
+          "settled_snapshot_date_count": 0,
+          "settled_ticker_count": 0,
+          "settlement_status_counts": {
+            "entry_date_unavailable_after_snapshot": 27,
+            "horizon_unavailable_after_entry": 217
+          },
+          "by_status": {
+            "APPROACHING": {
+              "settled_rows": 0,
+              "snapshot_date_count": 0,
+              "ticker_count": 0,
+              "avg_return_pct": null,
+              "median_return_pct": null,
+              "win_rate": null,
+              "avg_excess_spy_pct": null,
+              "avg_excess_qqq_pct": null,
+              "underperform_spy_rate": null,
+              "underperform_qqq_rate": null,
+              "total_pnl_10k": 0
+            },
+            "BREACHED": {
+              "settled_rows": 0,
+              "snapshot_date_count": 0,
+              "ticker_count": 0,
+              "avg_return_pct": null,
+              "median_return_pct": null,
+              "win_rate": null,
+              "avg_excess_spy_pct": null,
+              "avg_excess_qqq_pct": null,
+              "underperform_spy_rate": null,
+              "underperform_qqq_rate": null,
+              "total_pnl_10k": 0
+            },
+            "OK": {
+              "settled_rows": 0,
+              "snapshot_date_count": 0,
+              "ticker_count": 0,
+              "avg_return_pct": null,
+              "median_return_pct": null,
+              "win_rate": null,
+              "avg_excess_spy_pct": null,
+              "avg_excess_qqq_pct": null,
+              "underperform_spy_rate": null,
+              "underperform_qqq_rate": null,
+              "total_pnl_10k": 0
+            }
+          },
+          "risk_state_bucket": {
+            "settled_rows": 0,
+            "snapshot_date_count": 0,
+            "ticker_count": 0,
+            "avg_return_pct": null,
+            "median_return_pct": null,
+            "win_rate": null,
+            "avg_excess_spy_pct": null,
+            "avg_excess_qqq_pct": null,
+            "underperform_spy_rate": null,
+            "underperform_qqq_rate": null,
+            "total_pnl_10k": 0
+          },
+          "ok_or_other_bucket": {
+            "settled_rows": 0,
+            "snapshot_date_count": 0,
+            "ticker_count": 0,
+            "avg_return_pct": null,
+            "median_return_pct": null,
+            "win_rate": null,
+            "avg_excess_spy_pct": null,
+            "avg_excess_qqq_pct": null,
+            "underperform_spy_rate": null,
+            "underperform_qqq_rate": null,
+            "total_pnl_10k": 0
+          },
+          "risk_minus_ok": {
+            "avg_return_pct": null,
+            "avg_excess_spy_pct": null,
+            "avg_excess_qqq_pct": null,
+            "underperform_spy_rate": null,
+            "underperform_qqq_rate": null
+          }
+        }
+      }
+    },
+    "production_impact": {
+      "adapter_status": "none",
+      "default_off_paper_only": false,
+      "production_orders_changed": false,
+      "production_signal_path_changed": false,
+      "production_watchlist_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "shared_policy_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "alters_orders": false,
+      "llm_decision_boundary_changed": false,
+      "live_ready": false,
+      "live_realism_evaluated": false,
+      "trade_enabled": false,
+      "parity_note": "Read-only observed-only settlement artifact; no production or replay behavior changed."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The hot warehouse repaired much of the outcome-settlement blocker, but this remains observed-only. The rows are advisory, quote_time_et is still missing on the quotes, pending_actions are absent, and no shared default-off or executable action helper was tested.",
+      "outcome_summary": "17 intraday snapshot files and 244 position rows produced 217 settled 1d rows, 186 settled 3d rows, and 110 settled 5d rows using hot warehouse max date 2026-06-25.",
+      "forbidden_near_neighbor_retry": "Do not convert BREACHED/APPROACHING, hard-stop, ATR-stop, target, time-stop, trailing-stop, urgency, or hold-horizon variants into rules on this same ledger. A retry must predeclare a rule using newly closed rows or add explicit pending action semantics.",
+      "new_evidence_required": "Future promotion needs more closed forward rows, real quote timestamps or broker bar IDs, explicit pending action/order semantics, and a shared default-off helper with daily parity."
+    },
+    "artifact": "data/experiments/exp-20260626-019/exp_20260626_019_intraday_advisory_forward_outcome_ledger.json",
+    "ledger": "data/experiments/exp-20260626-019/intraday_advisory_forward_outcome_ledger.jsonl",
+    "log": "experiments/logs/exp-20260626-019.json",
+    "runner": "quant/experiments/exp_20260626_019_intraday_advisory_forward_outcome_ledger.py",
+    "reproduction_commands": [
+      ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260626_019_intraday_advisory_forward_outcome_ledger.py",
+      ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260626_019_intraday_advisory_forward_outcome_ledger.py",
+      ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+    ],
+    "changed_files": [
+      "quant/experiments/exp_20260626_019_intraday_advisory_forward_outcome_ledger.py",
+      "data/experiments/exp-20260626-019/**",
+      "experiments/logs/exp-20260626-019.json",
+      "experiments/cards/exp-20260626-019.md",
+      "experiments/manifests/exp-20260626-019.json",
+      "experiments/tickets/exp-20260626-019.json",
+      "docs/experiment_log.jsonl",
+      "docs/experiment_registry.json"
+    ],
+    "anti_js": "No JavaScript was used.",
+    "lean_quality_passed": true
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260626-019.json",
+  "single_causal_variable": "intraday_advisory_state_forward_outcome_settlement_v1",
+  "status": "observed_only_intraday_advisory_forward_outcome_ledger_not_allocation_ready",
+  "ticket_file": "experiments/tickets/exp-20260626-019.json",
+  "trial_family": "intraday_advisory_state_forward_outcome_settlement",
+  "trial_variant_id": "hot_warehouse_through_20260625_v1",
+  "accepted": false,
+  "accepted_alpha": false,
+  "alpha_ready": false,
+  "decision": "observed_only_intraday_advisory_forward_outcome_ledger_not_allocation_ready",
+  "new_evidence_axis": "Hot warehouse OHLCV through 2026-06-25 gives materially more closed forward outcome rows past the 2026-06-15 blocker, and exp-20260626-001 added capture_time_et provenance for newly generated intraday snapshots; this run settles outcomes only and does not retune status, stop, target, hold, or urgency thresholds.",
+  "artifact": "data/experiments/exp-20260626-019/exp_20260626_019_intraday_advisory_forward_outcome_ledger.json",
+  "ledger": "data/experiments/exp-20260626-019/intraday_advisory_forward_outcome_ledger.jsonl",
+  "log": "experiments/logs/exp-20260626-019.json",
+  "runner": "quant/experiments/exp_20260626_019_intraday_advisory_forward_outcome_ledger.py",
+  "changed_files": [
+    "quant/experiments/exp_20260626_019_intraday_advisory_forward_outcome_ledger.py",
+    "data/experiments/exp-20260626-019/**",
+    "experiments/logs/exp-20260626-019.json",
+    "experiments/cards/exp-20260626-019.md",
+    "experiments/manifests/exp-20260626-019.json",
+    "experiments/tickets/exp-20260626-019.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-06-26T17:15:44+00:00"
+}

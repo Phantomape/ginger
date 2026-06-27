@@ -1,0 +1,530 @@
+{
+  "acceptance_rule": "Accept as measurement repair if current MU header names include R1.htm and htm.xml, the old top-four selection excludes them, and the patched top-four selection includes them with zero strategy metric delta.",
+  "allowed_write_scope": [
+    "quant/sec_filing_text_backfill.py",
+    "quant/test_sec_filing_text_backfill.py",
+    "quant/experiments/exp_20260627_011_sec_periodic_cover_xbrl_doc_priority.py",
+    "data/experiments/exp-20260627-011/",
+    "experiments/logs/exp-20260627-011.json",
+    "experiments/cards/exp-20260627-011.md",
+    "experiments/manifests/exp-20260627-011.json",
+    "experiments/tickets/exp-20260627-011.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260627-011.md",
+  "causal_components": [
+    "allow inline cover htm.xml as text materialization input",
+    "prioritize R1.htm and htm.xml ahead of ordinary exhibits",
+    "network-free current MU 10-Q before-after selection proof",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "sec_periodic_cover_xbrl_document_priority_v1",
+  "claimed_at": "2026-06-27T10:09:13+00:00",
+  "completed_at": "2026-06-27T10:13:40+00:00",
+  "created_at": "2026-06-27T10:08:48+00:00",
+  "evaluation_windows": [
+    {
+      "label": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "label": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "label": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "experiment_id": "exp-20260627-011",
+  "experiment_uid": "expuid-69ba80345b6e4920",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260627-011",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-27T10:08:48+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_periodic_cover_xbrl_doc_priority"
+  },
+  "hypothesis": "Alpha blocker: SEC 10-K/10-Q filer-status upgrade alpha remains untestable while the text materializer lets exhibits crowd out accession-level cover XBRL/IDEA documents; prioritize cover XBRL text documents so future daily/replay rows can preserve machine-readable DEI status fields without changing strategy behavior.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "sec_periodic_cover_xbrl_document_priority_v1"
+  ],
+  "mechanism_family": "sec_periodic_filer_status_materialization",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260626-010",
+    "exp-20260626-016",
+    "exp-20260627-004",
+    "exp-20260627-005",
+    "exp-20260627-010"
+  ],
+  "new_evidence_type": "measurement_repair_current_periodic_sec_row",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "accession",
+        "alpha",
+        "behavior",
+        "blocker",
+        "can",
+        "changing",
+        "cover",
+        "crowd",
+        "daily",
+        "dei",
+        "doc",
+        "document",
+        "documents",
+        "exhibits",
+        "fields",
+        "filer",
+        "future",
+        "idea",
+        "k",
+        "lets",
+        "level",
+        "machine",
+        "materialization",
+        "materializer",
+        "out",
+        "periodic",
+        "preserve",
+        "prioritize",
+        "priority",
+        "q",
+        "readable",
+        "remains",
+        "rows",
+        "so",
+        "status",
+        "strategy",
+        "text",
+        "untestable",
+        "upgrade",
+        "while",
+        "without",
+        "xbrl"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "sec_cover_page_filer_status_upgrade_candidate_pool",
+        "reopen_condition": "Materialize historical 10-K/10-Q cover-page XBRL/text rows keyed by accession_number, accepted_at, usable_trade_date, ticker, and parsed filer-status booleans; then rerun one fixed upgrade/downgrade candidate rule through shared-paper-first.",
+        "score": 0.0455,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "sec_cover_page_status_current_text_parser",
+        "reopen_condition": "Preserve raw inline XBRL/DEI cover-page facts or distinguishable checked/unchecked tokens for historical and daily 10-K/10-Q accessions, then build one shared default-off status-transition helper before any alpha test.",
+        "score": 0.0435,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "sec_periodic_text_materialization",
+        "reopen_condition": "Fetch or otherwise materialize ok SEC filing text/cache rows for the listed accessions, parse cover-page filer-status fields by accession and accepted_at, then test one fixed shared-paper-first status-transition policy.",
+        "score": 0.0364,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "sec_10k_10q_cover_page_materialization_probe",
+        "reopen_condition": "Materialize all canonical-window 10-K/10-Q primary-document rows or a compact XBRL-derived cover-page status sidecar keyed by accession_number, accepted_at, usable_trade_date, ticker, form, and parsed filer-status booleans; then run exactly one fixed shared-paper-first status-upgrade rule.",
+        "score": 0.0327,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "post_leadlag_nonrepeat_surface_readiness",
+        "reopen_condition": "Build or acquire historical 10-K/10-Q cover-page text/XBRL by filing acceptance date, extract filer status into a PIT field, then expose it through a shared default-off helper used by both historical replay and daily snapshots.",
+        "score": 0.0255,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.8,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "SEC index names do not expose cover XBRL",
+      "inline XML parsing remains insufficient",
+      "current cache must be refreshed before status fields appear"
+    ],
+    "confidence_reason": "Current MU periodic cache has only primary/header/exhibit docs while its index header references R1 and htm.xml cover artifacts; candidate selection can be repaired without strategy changes.",
+    "recorded_at": "2026-06-27T10:08:28+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "decision": "accepted_measurement_repair_sec_periodic_cover_xbrl_doc_priority",
+    "artifact": "data/experiments/exp-20260627-011/exp_20260627_011_sec_periodic_cover_xbrl_doc_priority.json",
+    "log": "experiments/logs/exp-20260627-011.json",
+    "runner": "quant/experiments/exp_20260627_011_sec_periodic_cover_xbrl_doc_priority.py",
+    "gate1": {
+      "passed": true,
+      "strategy_behavior_changed": false,
+      "baseline_metrics": {
+        "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "window_count": 3,
+        "expected_value_score_sum": 7.8941,
+        "total_pnl": 234850.99,
+        "max_drawdown_pct_worst": 0.1119,
+        "trade_count": 61,
+        "signals_generated": 164,
+        "signals_survived": 135,
+        "survival_rate": 0.8232,
+        "windows": [
+          {
+            "label": "late_strong",
+            "start": "2025-10-23",
+            "end": "2026-04-21",
+            "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+            "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+            "expected_value_score": 5.1628,
+            "sharpe_daily": 4.41,
+            "total_pnl": 117072.92,
+            "max_drawdown_pct": 0.0665,
+            "win_rate": 0.8333,
+            "trade_count": 18,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "survival_rate": 0.8039
+          },
+          {
+            "label": "mid_weak",
+            "start": "2025-04-23",
+            "end": "2025-10-22",
+            "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+            "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+            "expected_value_score": 2.1402,
+            "sharpe_daily": 2.74,
+            "total_pnl": 78110.11,
+            "max_drawdown_pct": 0.1119,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "survival_rate": 0.7925
+          },
+          {
+            "label": "old_thin",
+            "start": "2024-10-02",
+            "end": "2025-04-22",
+            "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+            "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+            "expected_value_score": 0.5911,
+            "sharpe_daily": 1.49,
+            "total_pnl": 39667.96,
+            "max_drawdown_pct": 0.1001,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "signals_generated": 60,
+            "signals_survived": 52,
+            "survival_rate": 0.8667
+          }
+        ]
+      }
+    },
+    "gate2": {
+      "passed": true,
+      "dependency_fields": [
+        "accession_number",
+        "primary_document",
+        "combined_text header <FILENAME> entries",
+        "documents[].name"
+      ],
+      "minimum_strategy_fields": {
+        "entry_date": "not_applicable_no_strategy_signal_or_filter_added",
+        "target_price": "not_applicable_no_strategy_signal_or_filter_added"
+      },
+      "source_cache": "data/cache/sec/filing_text/0000723125-26-000015.json",
+      "header_document_count": 80,
+      "fetched_document_names": [
+        "mu-20260528.htm",
+        "0000723125-26-000015-index-headers.html",
+        "ex101-amendmentno3tothedir.htm",
+        "ex102-amendmentno3tothedir.htm"
+      ]
+    },
+    "gate3": {
+      "passed": true,
+      "filter_added": false,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "note": "No executable filter was added; survival is unchanged."
+    },
+    "gate4": {
+      "passed": true,
+      "strategy_behavior_changed": false,
+      "after_same_as_before": true,
+      "accepted_alpha": false,
+      "decision_basis": "The current MU 10-Q cache proves the selected accession exposes R1.htm and the inline htm.xml cover artifact in the SEC header, but the old four-document selection spent its budget on the primary/header/exhibits. The patched selector keeps both cover XBRL documents in the first four documents, creating the missing materialization path for future parsed DEI status fields."
+    },
+    "delta_metrics": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "survival_rate_delta": 0.0,
+      "cover_docs_excluded_by_old_selection": 2,
+      "cover_docs_included_by_after_selection": 2,
+      "cover_docs_missing_from_current_cache_fetch": 2
+    },
+    "selection_audit": {
+      "primary_document": "mu-20260528.htm",
+      "cover_docs_required": [
+        "R1.htm",
+        "mu-20260528_htm.xml"
+      ],
+      "header_names_contain_cover_docs": {
+        "R1.htm": true,
+        "mu-20260528_htm.xml": true
+      },
+      "current_cache_fetched_documents": [
+        "mu-20260528.htm",
+        "0000723125-26-000015-index-headers.html",
+        "ex101-amendmentno3tothedir.htm",
+        "ex102-amendmentno3tothedir.htm"
+      ],
+      "current_cache_missing_cover_docs": [
+        "R1.htm",
+        "mu-20260528_htm.xml"
+      ],
+      "old_top4_selection": [
+        "mu-20260528.htm",
+        "ex101-amendmentno3tothedir.htm",
+        "ex102-amendmentno3tothedir.htm",
+        "ex311-ceocertq3x26.htm"
+      ],
+      "old_top4_missing_cover_docs": [
+        "R1.htm",
+        "mu-20260528_htm.xml"
+      ],
+      "patched_top4_selection": [
+        "mu-20260528.htm",
+        "mu-20260528_htm.xml",
+        "R1.htm",
+        "ex101-amendmentno3tothedir.htm"
+      ],
+      "patched_top4_cover_docs": [
+        "R1.htm",
+        "mu-20260528_htm.xml"
+      ],
+      "patched_top4_excluded_linkbases": [
+        "mu-20260528_cal.xml",
+        "mu-20260528_def.xml",
+        "mu-20260528_lab.xml",
+        "mu-20260528_pre.xml"
+      ]
+    },
+    "calibration": {
+      "predicted_success_probability": 0.8,
+      "actual_success": 1,
+      "brier_score": 0.04,
+      "predicted_failure_modes": [
+        "SEC index names do not expose cover XBRL",
+        "inline XML parsing remains insufficient",
+        "current cache must be refreshed before status fields appear"
+      ],
+      "realized_failure_mode": null,
+      "surprise_note": "The current MU 10-Q cache proves the selected accession exposes R1.htm and the inline htm.xml cover artifact in the SEC header, but the old four-document selection spent its budget on the primary/header/exhibits. The patched selector keeps both cover XBRL documents in the first four documents, creating the missing materialization path for future parsed DEI status fields."
+    },
+    "summary": "The current MU 10-Q cache proves the selected accession exposes R1.htm and the inline htm.xml cover artifact in the SEC header, but the old four-document selection spent its budget on the primary/header/exhibits. The patched selector keeps both cover XBRL documents in the first four documents, creating the missing materialization path for future parsed DEI status fields."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260627-011.json",
+  "single_causal_variable": "sec_periodic_cover_xbrl_document_priority_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260627-011.json",
+  "trial_family": "sec_periodic_cover_xbrl_doc_priority",
+  "trial_variant_id": "current_mu_10q_cover_xbrl_fetch_budget_v1",
+  "alpha_hypothesis": "candidate_pool: point-in-time SEC 10-K/10-Q filer-status upgrades may identify improving institutional eligibility, but the alpha remains blocked until cover-page status facts are materialized by accession and accepted_at.",
+  "implementation_mode": "shared_materializer_document_selection_repair",
+  "new_evidence_axis": "Current MU 10-Q cache header exposes cover XBRL files that the old fetch budget skipped; this repairs materialization, not an alpha scan.",
+  "decision": "accepted_measurement_repair_sec_periodic_cover_xbrl_doc_priority",
+  "summary": "The current MU 10-Q cache proves the selected accession exposes R1.htm and the inline htm.xml cover artifact in the SEC header, but the old four-document selection spent its budget on the primary/header/exhibits. The patched selector keeps both cover XBRL documents in the first four documents, creating the missing materialization path for future parsed DEI status fields.",
+  "artifact": "data/experiments/exp-20260627-011/exp_20260627_011_sec_periodic_cover_xbrl_doc_priority.json",
+  "log": "experiments/logs/exp-20260627-011.json",
+  "gate1": {
+    "passed": true,
+    "strategy_behavior_changed": false,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "max_drawdown_pct_worst": 0.1119,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "dependency_fields": [
+      "accession_number",
+      "primary_document",
+      "combined_text header <FILENAME> entries",
+      "documents[].name"
+    ],
+    "minimum_strategy_fields": {
+      "entry_date": "not_applicable_no_strategy_signal_or_filter_added",
+      "target_price": "not_applicable_no_strategy_signal_or_filter_added"
+    },
+    "source_cache": "data/cache/sec/filing_text/0000723125-26-000015.json",
+    "header_document_count": 80,
+    "fetched_document_names": [
+      "mu-20260528.htm",
+      "0000723125-26-000015-index-headers.html",
+      "ex101-amendmentno3tothedir.htm",
+      "ex102-amendmentno3tothedir.htm"
+    ]
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "note": "No executable filter was added; survival is unchanged."
+  },
+  "gate4": {
+    "passed": true,
+    "strategy_behavior_changed": false,
+    "after_same_as_before": true,
+    "accepted_alpha": false,
+    "decision_basis": "The current MU 10-Q cache proves the selected accession exposes R1.htm and the inline htm.xml cover artifact in the SEC header, but the old four-document selection spent its budget on the primary/header/exhibits. The patched selector keeps both cover XBRL documents in the first four documents, creating the missing materialization path for future parsed DEI status fields."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The current MU 10-Q cache proves the selected accession exposes R1.htm and the inline htm.xml cover artifact in the SEC header, but the old four-document selection spent its budget on the primary/header/exhibits. The patched selector keeps both cover XBRL documents in the first four documents, creating the missing materialization path for future parsed DEI status fields.",
+    "forbidden_near_neighbor_retry": "Do not run a filer-status alpha or same-row phrase retune from this repair. It only makes future cover XBRL/status materialization possible.",
+    "new_evidence_required": "Refresh or backfill SEC periodic text after this selector repair, parse R1/inline htm.xml DEI status facts by accession and accepted_at, then build one shared default-off status-transition helper before any alpha replay."
+  },
+  "production_impact": {
+    "trade_enabled_changed": false,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "daily_snapshot_changed": true,
+    "daily_snapshot_impact": "Only future SEC filing text document fetch composition changes.",
+    "live_ready": false,
+    "reason": "This preserves cover XBRL documents for future parsing; no shared alpha helper or live trading decision consumes it yet."
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\sec_filing_text_backfill.py quant\\test_sec_filing_text_backfill.py quant\\experiments\\exp_20260627_011_sec_periodic_cover_xbrl_doc_priority.py",
+    ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_sec_filing_text_backfill.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260627_011_sec_periodic_cover_xbrl_doc_priority.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "changed_files": [
+    "quant/sec_filing_text_backfill.py",
+    "quant/test_sec_filing_text_backfill.py",
+    "quant/experiments/exp_20260627_011_sec_periodic_cover_xbrl_doc_priority.py",
+    "data/experiments/exp-20260627-011/exp_20260627_011_sec_periodic_cover_xbrl_doc_priority.json",
+    "experiments/logs/exp-20260627-011.json",
+    "experiments/cards/exp-20260627-011.md",
+    "experiments/manifests/exp-20260627-011.json",
+    "experiments/tickets/exp-20260627-011.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "anti_js": {
+    "used_javascript": false,
+    "evidence": "Python runner only."
+  },
+  "updated_at": "2026-06-27T10:13:40+00:00"
+}

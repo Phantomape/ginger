@@ -1,0 +1,342 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260627_010_sec_6k_current_semantic_forward_ledger.py",
+    "data/experiments/exp-20260627-010/exp_20260627_010_sec_6k_current_semantic_forward_ledger.json",
+    "experiments/cards/exp-20260627-010.md",
+    "experiments/manifests/exp-20260627-010.json",
+    "experiments/tickets/exp-20260627-010.json",
+    "experiments/logs/exp-20260627-010.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "Foreign issuer 6-K operating updates may contain guidance revisions, ADR liquidity context, capital-capacity changes, or issuer-country shocks that are absent from domestic 8-K pools; this run only records whether the current daily 6-K text rows expose fixed semantic evidence.",
+  "alpha_ready": false,
+  "anti_js": {
+    "evidence": "Python runner only.",
+    "used_javascript": false
+  },
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_success": 1,
+    "brier_score": 0.1024,
+    "predicted_failure_modes": [
+      "daily_6k_rows_too_thin",
+      "semantic_terms_are_routine_buyback_or_monthly_reporting",
+      "no_guidance_or_operating_update_terms",
+      "audit_dirty_worktree_conflict"
+    ],
+    "predicted_failure_modes_hit": [
+      "daily_6k_rows_too_thin",
+      "semantic_terms_are_routine_buyback_or_monthly_reporting",
+      "no_guidance_or_operating_update_terms"
+    ],
+    "predicted_success_probability": 0.68,
+    "realized_failure_mode": "current_6k_rows_too_thin_no_guidance_direction",
+    "surprise_note": "The runner produced a replayable current 6-K semantic ledger, but the sample is only two rows and contains no guidance-direction hit; the rows are routine repurchase/monthly administrative or capital context, so 6-K alpha remains blocked pending more forward rows or historical text coverage."
+  },
+  "causal_components": [
+    "current daily 6-K text audit",
+    "fixed semantic parser",
+    "forward readiness ledger",
+    "no strategy behavior change"
+  ],
+  "change_summary": "Created an experiment-scoped current SEC 6-K semantic forward ledger. No strategy behavior or production path changed.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260627_010_sec_6k_current_semantic_forward_ledger.py",
+    "data/experiments/exp-20260627-010/exp_20260627_010_sec_6k_current_semantic_forward_ledger.json",
+    "experiments/logs/exp-20260627-010.json",
+    "experiments/cards/exp-20260627-010.md",
+    "experiments/manifests/exp-20260627-010.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "experiments/tickets/exp-20260627-010.json"
+  ],
+  "changed_variable": "sec_6k_current_operating_guidance_semantic_ledger_v1",
+  "decision": "accepted_measurement_repair_sec_6k_current_semantic_forward_ledger",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "max_drawdown_pct_worst_delta": 0.0,
+    "rows_with_guidance_direction": 0,
+    "rows_with_operating_or_capacity_terms": 1,
+    "sec_6k_text_rows": 2,
+    "strategy_behavior_changed": false,
+    "survival_rate_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "usable_for_future_6k_alpha_rows": 1
+  },
+  "experiment_id": "exp-20260627-010",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "passed": true
+  },
+  "gate2": {
+    "dependency_fields": [
+      "ticker",
+      "form_type",
+      "accession_number",
+      "accepted_at",
+      "usable_trade_date",
+      "primary_document",
+      "combined_text"
+    ],
+    "entry_date_target_price_note": "This is a forward semantic observation ledger, not an executable candidate helper. It validates accepted_at and usable_trade_date; target_price is intentionally absent.",
+    "feature_jsonl_parse_errors": 0,
+    "features_exists": true,
+    "features_file": "data/non_ohlcv/sec_filing_features_20260626.jsonl",
+    "jsonl_parse_errors": 0,
+    "passed": true,
+    "runtime_6k_text_rows": 2,
+    "runtime_text_rows": 23,
+    "source_exists": true,
+    "source_file": "data/non_ohlcv/sec_filing_text_20260626.jsonl"
+  },
+  "gate3": {
+    "note": "No executable filter was added; survival is unchanged.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "strategy_changed": false,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "after_same_as_before": true,
+    "alpha_blockers": [
+      "current_6k_forward_sample_too_thin",
+      "no_guidance_direction_hit",
+      "historical_standard_window_6k_text_missing"
+    ],
+    "alpha_ready": false,
+    "decision_basis": "The runner produced a replayable current 6-K semantic ledger, but the sample is only two rows and contains no guidance-direction hit; the rows are routine repurchase/monthly administrative or capital context, so 6-K alpha remains blocked pending more forward rows or historical text coverage.",
+    "measurement_repair_only": true,
+    "passed": true,
+    "strategy_changed": false
+  },
+  "hypothesis": "alpha_blocker: current daily SEC 6-K text rows need a fixed operating/guidance semantic forward ledger before any 6-K candidate-pool alpha can be tested, because standard-window historical 6-K text is still missing and current feature rows only report missing structured guidance.",
+  "implementation_mode": "experiment_scoped_forward_readiness_ledger",
+  "lane": "measurement_repair",
+  "ledger_summary": {
+    "blocked_reason_if_not_alpha_ready": "current_sample_too_thin_and_no_guidance_direction",
+    "daily_features_file": "data/non_ohlcv/sec_filing_features_20260626.jsonl",
+    "daily_text_file": "data/non_ohlcv/sec_filing_text_20260626.jsonl",
+    "feature_parse_errors": 0,
+    "feature_rows_total": 23,
+    "features_source_exists": true,
+    "primary_semantic_bucket_counts": {
+      "capital_capacity": 1,
+      "share_repurchase": 1
+    },
+    "routine_context_only_rows": 1,
+    "rows_with_guidance_direction": 0,
+    "rows_with_operating_or_capacity_terms": 1,
+    "sec_6k_text_rows": 2,
+    "sec_6k_tickers": [
+      "NVO",
+      "TSM"
+    ],
+    "sec_6k_unique_accessions": 2,
+    "text_parse_errors": 0,
+    "text_rows_total": 23,
+    "text_source_exists": true,
+    "usable_for_future_6k_alpha_accessions": [
+      "0001046179-26-000377"
+    ],
+    "usable_for_future_6k_alpha_rows": 1
+  },
+  "mechanism_family": "production_visible_free_sec_6k_foreign_issuer_candidate_pool",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260627-004",
+    "exp-20260627-005",
+    "exp-20260625-014",
+    "exp-20260622-015"
+  ],
+  "new_evidence_axis": "The 20260626 daily SEC text artifact contains two actual 6-K text bodies, whereas exp-20260627-004 found zero historical standard-window 6-K text bodies. This run only builds a current forward semantic ledger and does not scan a candidate-pool rule.",
+  "new_evidence_type": "current_daily_6k_text_forward_rows",
+  "next_retry_requires": [
+    "historical_6k_text_bodies_by_accession",
+    "materially_more_current_6k_forward_rows",
+    "closed_forward_replacement_value_for_6k_semantic_rows",
+    "shared_default_off_6k_semantic_helper_before_alpha_claim"
+  ],
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not run 6-K phrase, semantic, RS, top-N, hold-day, cooldown, notional, or candidate-pool scans from these two current rows or from historical windows while 6-K text bodies remain missing.",
+    "new_evidence_required": "Populate historical 6-K/6-KA text bodies or accumulate materially more current daily 6-K rows with closed forward replacement values, then build one shared default-off helper using fixed semantic fields.",
+    "why_result_happened": "The runner produced a replayable current 6-K semantic ledger, but the sample is only two rows and contains no guidance-direction hit; the rows are routine repurchase/monthly administrative or capital context, so 6-K alpha remains blocked pending more forward rows or historical text coverage."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Foreign issuer 6-K operating updates may contain guidance revisions, ADR liquidity context, capital-capacity changes, or issuer-country shocks that are absent from domestic 8-K pools; this run only records whether the current daily 6-K text rows expose fixed semantic evidence.",
+    "2_prior_near_neighbors": "Novelty flagged saturated sec_text_event candidate-pool neighbors, but this claimed lane is measurement_repair and does not run a candidate-pool scan or use an override.",
+    "3_single_policy_bundle": "sec_6k_current_operating_guidance_semantic_ledger_v1",
+    "4_success_failure_standard": "Accept only as measurement repair if current 6-K text rows parse into an accession-keyed semantic ledger and strategy metrics remain unchanged. Alpha readiness requires materially more rows and guidance/operating evidence.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260627_010_sec_6k_current_semantic_forward_ledger.py"
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260627-004 showed historical 6-K body text is absent, but the 20260626 daily text artifact now has two 6-K bodies. A fixed parser can record whether those forward rows contain operating/guidance semantics without changing any strategy behavior.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "daily_6k_rows_too_thin",
+      "semantic_terms_are_routine_buyback_or_monthly_reporting",
+      "no_guidance_or_operating_update_terms",
+      "audit_dirty_worktree_conflict"
+    ],
+    "recorded_at": "2026-06-27T09:05:08+00:00",
+    "success_probability": 0.68
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "reason": "Experiment-scoped measurement ledger only; fixed semantics are not wired into shared helpers, daily orders, ranking, sizing, exits, watchlists, or LLM hard decisions.",
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false,
+    "watchlist_changed": false
+  },
+  "related_files": [
+    "data/non_ohlcv/sec_filing_text_20260626.jsonl",
+    "data/non_ohlcv/sec_filing_features_20260626.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260627-004.json",
+    "experiments/logs/exp-20260627-005.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260627_010_sec_6k_current_semantic_forward_ledger.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260627_010_sec_6k_current_semantic_forward_ledger.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "semantic_ledger_rows": [
+    {
+      "accepted_at": "2026-06-24T06:00:12",
+      "accession_number": "0001171843-26-004275",
+      "documents_fetched": 3,
+      "feature_gap_reasons": [
+        "missing_same_accession_companyfacts",
+        "eps_and_revenue_surprise_require_pit_consensus_vendor",
+        "guidance_raise_cut_requires_structured_guidance_source"
+      ],
+      "feature_guidance_availability": "missing_no_structured_guidance_source",
+      "feature_same_accession_fact_status": "missing",
+      "filing_date": "2026-06-24",
+      "form_base": "6-K",
+      "form_type": "6-K",
+      "has_guidance_direction": false,
+      "has_operating_or_capacity_terms": false,
+      "nonroutine_semantic_buckets": [],
+      "pit_caveat": "SEC public archive text fetched after the fact and keyed by accepted_at/usable_trade_date; it is a replayable public-PIT proxy, not proof the production pipeline observed the document.",
+      "pit_source": "sec_archive_public_filing_text",
+      "primary_document": "f6k_062226.htm",
+      "primary_semantic_bucket": "share_repurchase",
+      "routine_context_only": true,
+      "semantic_hit_counts": {
+        "adr_liquidity_context": 12,
+        "capital_capacity": 0,
+        "guidance_cut": 0,
+        "guidance_raise": 0,
+        "monthly_admin_report": 0,
+        "operating_update": 0,
+        "share_repurchase": 21
+      },
+      "semantic_hit_total": 33,
+      "text_char_count": 81939,
+      "text_sha256_16": "14338e25ac8a29b5",
+      "text_word_count": 5137,
+      "ticker": "NVO",
+      "usable_for_future_6k_alpha": false,
+      "usable_trade_date": "2026-06-25"
+    },
+    {
+      "accepted_at": "2026-06-25T06:52:39",
+      "accession_number": "0001046179-26-000377",
+      "documents_fetched": 3,
+      "feature_gap_reasons": [
+        "missing_same_accession_companyfacts",
+        "eps_and_revenue_surprise_require_pit_consensus_vendor",
+        "guidance_raise_cut_requires_structured_guidance_source"
+      ],
+      "feature_guidance_availability": "missing_no_structured_guidance_source",
+      "feature_same_accession_fact_status": "missing",
+      "filing_date": "2026-06-25",
+      "form_base": "6-K",
+      "form_type": "6-K",
+      "has_guidance_direction": false,
+      "has_operating_or_capacity_terms": true,
+      "nonroutine_semantic_buckets": [
+        "capital_capacity"
+      ],
+      "pit_caveat": "SEC public archive text fetched after the fact and keyed by accepted_at/usable_trade_date; it is a replayable public-PIT proxy, not proof the production pipeline observed the document.",
+      "pit_source": "sec_archive_public_filing_text",
+      "primary_document": "tsm-monthend6kx20260625.htm",
+      "primary_semantic_bucket": "capital_capacity",
+      "routine_context_only": false,
+      "semantic_hit_counts": {
+        "adr_liquidity_context": 10,
+        "capital_capacity": 9,
+        "guidance_cut": 0,
+        "guidance_raise": 0,
+        "monthly_admin_report": 10,
+        "operating_update": 0,
+        "share_repurchase": 0
+      },
+      "semantic_hit_total": 29,
+      "text_char_count": 9859,
+      "text_sha256_16": "5b71ab7107b22eda",
+      "text_word_count": 1432,
+      "ticker": "TSM",
+      "usable_for_future_6k_alpha": true,
+      "usable_trade_date": "2026-06-26"
+    }
+  ],
+  "single_causal_variable": "sec_6k_current_operating_guidance_semantic_ledger_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-06-27T09:09:27Z",
+  "trial_family": "sec_6k_current_operating_guidance_semantic_ledger",
+  "trial_variant_id": "current_daily_6k_semantic_forward_ledger_v1"
+}

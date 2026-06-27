@@ -1,0 +1,707 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_exists": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260626_025_post_latest_alpha_surface_readiness_audit.py",
+    "data/experiments/exp-20260626-025/exp_20260626_025_post_latest_alpha_surface_readiness_audit.json",
+    "experiments/cards/exp-20260626-025.md",
+    "experiments/manifests/exp-20260626-025.json",
+    "experiments/tickets/exp-20260626-025.json",
+    "experiments/logs/exp-20260626-025.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "New post-exp023/024 measurement surfaces could reopen alpha only if they add materially closed replacement rows, post-contract intraday outcomes, or populated borrow/options/SEC fields. Otherwise the legal alpha action is to wait for new rows or a genuinely new source.",
+  "alpha_ready": false,
+  "anti_js": {
+    "evidence": "Python runner only; no node/js tooling invoked.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260626-025/exp_20260626_025_post_latest_alpha_surface_readiness_audit.json",
+  "before_metrics": {
+    "baseline_exists": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "predicted_failure_modes": [
+      "no_new_closed_forward_rows",
+      "intraday_post_contract_rows_absent",
+      "estimate_revision_3_5_10d_unmatured",
+      "options_borrow_sec_surfaces_blocked"
+    ],
+    "predicted_failure_modes_hit": [
+      "no_new_closed_forward_rows",
+      "intraday_post_contract_rows_absent",
+      "estimate_revision_3_5_10d_unmatured",
+      "options_borrow_sec_surfaces_blocked"
+    ],
+    "predicted_success_probability": 0.86,
+    "realized_failure_modes": [
+      "allocator_retry_boundary_still_frozen",
+      "borrow_fields_unpopulated",
+      "closed_forward_rows_below_activation_floor_60",
+      "estimate_revision_forward_10d_outcomes_not_mature",
+      "estimate_revision_forward_3d_outcomes_not_mature",
+      "estimate_revision_forward_5d_outcomes_not_mature",
+      "estimate_revision_selected_current_nonflat_sample_too_thin",
+      "intraday_post_contract_closed_outcome_rows_absent_or_too_thin",
+      "intraday_true_source_quote_time_still_absent",
+      "options_surface_blocked",
+      "sec_periodic_fields_missing"
+    ],
+    "surprise_note": "No surprise: post-exp023/024 surfaces improved measurement contracts but did not add enough closed or populated alpha evidence."
+  },
+  "causal_components": [
+    "estimate_revision_hot_outcome_readiness",
+    "intraday_post_contract_closed_row_readiness",
+    "forward_replacement_tag_readiness",
+    "allocator_source_retry_boundary",
+    "options_borrow_sec_blocker_boundary"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260626_025_post_latest_alpha_surface_readiness_audit.py",
+    "data/experiments/exp-20260626-025/exp_20260626_025_post_latest_alpha_surface_readiness_audit.json",
+    "experiments/logs/exp-20260626-025.json",
+    "experiments/cards/exp-20260626-025.md",
+    "experiments/manifests/exp-20260626-025.json",
+    "experiments/tickets/exp-20260626-025.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "post_latest_alpha_surface_readiness_audit_v1",
+  "decision": "accepted_measurement_repair_post_latest_alpha_surface_readiness_audit",
+  "delta_metrics": {
+    "alpha_ready_surface_count": 0,
+    "expected_value_score_sum_delta": 0.0,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "surface_count": 7,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260626-025",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_exists": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "entry_date_target_price_note": "This is a readiness ledger, not a trading surface. Entry-date fields are checked where replacement value exists; target_price is not used to schedule exits or orders.",
+    "fields_checked": [
+      "forward_replacement.entry_date",
+      "forward_replacement.replacement_value_vs_cash_usd",
+      "forward_replacement.entry_regime_label",
+      "forward_replacement.entry_short_volume_ratio_percentile",
+      "estimate_revision.selected_current_nonflat_usable_rows",
+      "estimate_revision.closed_3d_5d_10d_rows",
+      "intraday.primary_advisory_shadow_action",
+      "intraday.decision_time_et",
+      "borrow_availability.short_sell_rate",
+      "borrow_availability.short_available_volume",
+      "sec_filing_features.rows_with_same_accession_facts"
+    ],
+    "missing_required_surface_files": [],
+    "passed": true,
+    "required_surface_files": [
+      "data/paper_sleeves/forward_replacement_value.jsonl",
+      "experiments/logs/exp-20260626-023.json",
+      "experiments/logs/exp-20260626-024.json",
+      "data/experiments/exp-20260626-019/intraday_advisory_forward_outcome_ledger.jsonl",
+      "data/non_ohlcv/borrow_availability/manifest.json",
+      "data/non_ohlcv/sec_filing_features_summary_20260625.json"
+    ]
+  },
+  "gate3": {
+    "baseline_signals_generated": 164,
+    "baseline_signals_survived": 135,
+    "baseline_survival_rate": 0.823171,
+    "filter_added": false,
+    "note": "No executable entry, exit, filter, ranking, or sizing rule was added.",
+    "passed": true
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "alpha_blockers": [
+      "allocator_retry_boundary_still_frozen",
+      "borrow_fields_unpopulated",
+      "closed_forward_rows_below_activation_floor_60",
+      "estimate_revision_forward_10d_outcomes_not_mature",
+      "estimate_revision_forward_3d_outcomes_not_mature",
+      "estimate_revision_forward_5d_outcomes_not_mature",
+      "estimate_revision_selected_current_nonflat_sample_too_thin",
+      "intraday_post_contract_closed_outcome_rows_absent_or_too_thin",
+      "intraday_true_source_quote_time_still_absent",
+      "options_surface_blocked",
+      "sec_periodic_fields_missing"
+    ],
+    "alpha_ready": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "strategy_behavior_changed": false,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "decision": "accepted_measurement_repair_post_latest_alpha_surface_readiness_audit",
+    "measurement_blockers": [],
+    "measurement_repair_only": true,
+    "passed": true,
+    "strategy_rerun_required": false
+  },
+  "hypothesis": "alpha_blocker: after the latest Alpha Explore run, newly added estimate-revision hot outcomes, intraday provenance, and forward replacement tags must be checked as a single post-run readiness surface before any legal alpha retry; if none is ready, the blocker must be recorded so the next run does not reslice saturated forward rows.",
+  "implementation_mode": "post_latest_alpha_surface_readiness_audit",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260626-025.json",
+  "mechanism_family": "alpha_enabling_nonrepeat_readiness",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260626-015",
+    "exp-20260626-023",
+    "exp-20260626-024",
+    "exp-20260626-014",
+    "exp-20260626-018"
+  ],
+  "new_evidence_axis": "Post-exp-20260626-023 and post-exp-20260626-024 state: includes estimate-revision hot warehouse outcomes and intraday action provenance created after the prior alpha evidence-gap ledger, plus verification of forward replacement entry-regime/short-volume tag coverage. This is not a strategy retune or same-row alpha slice.",
+  "new_evidence_type": "post_latest_forward_and_provenance_surface_audit",
+  "observed_only_lead": false,
+  "owner": "alpha-explore",
+  "parameters": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "missing_required_surface_files": [],
+    "post_latest_scope": [
+      "exp-20260626-023 estimate-revision hot outcome ledger",
+      "exp-20260626-024 intraday shadow-action provenance contract",
+      "forward replacement entry-regime and short-volume tags",
+      "options/borrow/SEC/allocator frozen boundary checks"
+    ],
+    "required_surface_files": [
+      "data/paper_sleeves/forward_replacement_value.jsonl",
+      "experiments/logs/exp-20260626-023.json",
+      "experiments/logs/exp-20260626-024.json",
+      "data/experiments/exp-20260626-019/intraday_advisory_forward_outcome_ledger.jsonl",
+      "data/non_ohlcv/borrow_availability/manifest.json",
+      "data/non_ohlcv/sec_filing_features_summary_20260625.json"
+    ]
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry same-row forward attribution slices, intraday thresholds on pre-contract rows, estimate-revision cutoffs, options demand/event-distance/spread/expiry reslices, borrow/FINRA sweeps, SEC periodic text fields without real text/cache, or accepted allocator source/scalar retunes.",
+    "new_evidence_required": "Next legal alpha evidence needs materially more closed forward replacement rows, post-exp024 intraday rows with settled outcomes, estimate-revision 3/5/10d selected/current replacement values, populated PIT borrow economics, historical PIT options chains, real 10-K/10-Q text/cache, or a genuinely new production-visible source.",
+    "why_result_happened": "The latest repairs improved measurement contracts, but no surface added enough new closed or populated evidence for legal alpha: forward replacement remains at 40 rows, estimate revision lacks mature 3/5/10d selected/current rows, intraday has no post-contract closed outcomes, borrow fields are still null, options event/demand attribution is rejected, SEC periodic fields remain missing, and allocator source/scalar retries remain frozen."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "New post-exp023/024 measurement surfaces could reopen alpha only if they add materially closed replacement rows, post-contract intraday outcomes, or populated borrow/options/SEC fields. Otherwise the legal alpha action is to wait for new rows or a genuinely new source.",
+    "2_history_check": {
+      "exp-20260626-015": "Accepted current evidence-gap ledger before exp023/024 matured new measurement surfaces.",
+      "exp-20260626-023": "Accepted estimate-revision hot-warehouse outcome ledger; alpha still blocked by thin non-flat sample and unmatured 3/5/10d rows.",
+      "exp-20260626-024": "Accepted intraday shadow-action provenance contract; alpha needs new post-contract closed rows.",
+      "novelty_gate": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "revision_expectation",
+          "field_tags": [
+            "a",
+            "added",
+            "after",
+            "alpha",
+            "any",
+            "as",
+            "audit",
+            "be",
+            "before",
+            "blocker",
+            "checked",
+            "does",
+            "enabling",
+            "estimate",
+            "explore",
+            "forward",
+            "hot",
+            "if",
+            "intraday",
+            "is",
+            "latest",
+            "legal",
+            "must",
+            "newly",
+            "none",
+            "nonrepeat",
+            "not",
+            "outcomes",
+            "post",
+            "provenance",
+            "readiness",
+            "ready",
+            "recorded",
+            "replacement",
+            "reslice",
+            "retry",
+            "revision",
+            "rows",
+            "run",
+            "saturated",
+            "single",
+            "so",
+            "surface",
+            "tags"
+          ],
+          "gate_shape": "other"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "revision_expectation",
+            "family_key": "form144_revision_data_readiness",
+            "reopen_condition": "Required new evidence is PIT parsed Form 144 planned-sale shares or value, holder role, relationship-to-issuer, public float and sale_pct_float, or historical/forward analyst-count, revenue-estimate, dispersion, vendor_asof, and fiscal-period coverage with closed candidate outcomes.",
+            "score": 0.5011,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "revision_expectation",
+            "family_key": "estimate_revision_daily_candidate_match_surface",
+            "reopen_condition": "Next alpha-compliant revision work needs closed forward outcomes for selected/current overlaps or a different unsaturated data source.",
+            "score": 0.4848,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "revision_expectation",
+            "family_key": "earnings_snapshot_date_revision_readiness",
+            "reopen_condition": null,
+            "score": 0.4755,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "revision_expectation",
+            "family_key": "estimate_revision_ledger_direction_outcome",
+            "reopen_condition": "A retry needs materially new evidence: at least another settled month of production estimate_revision_ledger rows, a distinct PIT revision field not used here, or a shared default-off helper that passes canonical Gate 1-4 rather than this gross proxy warehouse attribution.",
+            "score": 0.4755,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "revision_expectation",
+            "family_key": "estimate_revision_candidate_match_outcome_ledger",
+            "reopen_condition": "A valid alpha retry needs materially more selected/current non-flat matches with closed 1/3/5/10d replacement values, another settled month of production revision rows, or a different unsaturated PIT expectation source.",
+            "score": 0.4735,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": "Post-exp-20260626-023 and post-exp-20260626-024 state: includes estimate-revision hot warehouse outcomes and intraday action provenance created after the prior alpha evidence-gap ledger, plus verification of forward replacement entry-regime/short-volume tag coverage. This is not a strategy retune or same-row alpha slice.",
+        "override": false,
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "other",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "revision_expectation",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      }
+    },
+    "3_single_policy_bundle": "One measurement bundle: read current readiness surfaces and record whether any post-latest-run axis legally reopens alpha.",
+    "4_success_failure_standard": "Accept only as measurement repair if baseline strategy metrics remain unchanged, required surfaces load, and the next legal evidence axes are explicit.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260626_025_post_latest_alpha_surface_readiness_audit.py"
+  },
+  "prediction": {
+    "confidence_reason": "Recent logs show exp023 and exp024 added useful measurement surfaces, but not enough closed forward rows or populated borrow/options/SEC fields for a legal alpha promotion; this run should succeed as blocker/readiness accounting only.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "no_new_closed_forward_rows",
+      "intraday_post_contract_rows_absent",
+      "estimate_revision_3_5_10d_unmatured",
+      "options_borrow_sec_surfaces_blocked"
+    ],
+    "recorded_at": "2026-06-26T23:09:09+00:00",
+    "success_probability": 0.86
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "paper_orders_changed": false,
+    "parity_note": "Experiment-owned readiness artifact only; reads existing ledgers and writes no shared helper, daily adapter, order, rank, size, exit, watchlist, or LLM changes.",
+    "ranking_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false,
+    "watchlist_changed": false
+  },
+  "related_files": [
+    "quant/experiments/exp_20260626_025_post_latest_alpha_surface_readiness_audit.py",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "data/experiments/exp-20260626-014/exp_20260626_014_forward_replacement_activation_readiness_20260626.json",
+    "experiments/logs/exp-20260626-023.json",
+    "experiments/logs/exp-20260626-024.json",
+    "data/experiments/exp-20260626-019/intraday_advisory_forward_outcome_ledger.jsonl",
+    "experiments/logs/exp-20260625-001.json",
+    "experiments/logs/exp-20260625-020.json",
+    "data/non_ohlcv/borrow_availability/manifest.json",
+    "data/non_ohlcv/sec_filing_features_summary_20260625.json",
+    "experiments/logs/exp-20260621-009.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260626_025_post_latest_alpha_surface_readiness_audit.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260626_025_post_latest_alpha_surface_readiness_audit.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "post_latest_alpha_surface_readiness_audit_v1",
+  "status": "accepted_measurement_repair",
+  "surface_readiness": {
+    "allocator_boundary": {
+      "alpha_ready": false,
+      "blockers": [
+        "fiftytwo_week_allocator_source_extension_rejected",
+        "distribution_absorption_allocator_source_rejected",
+        "source_scalar_stack_frozen_without_forward_rows"
+      ],
+      "boundary_log": "experiments/logs/exp-20260621-009.json",
+      "boundary_log_exists": true,
+      "decision": "blocked_no_gate4_ready_nonrepeat_alpha_after_scalar_stack",
+      "next_evidence": "Closed forward source-family replacement rows or a materially new production-visible discriminator; not source rank, scalar, top-N, hold, or cooldown retunes.",
+      "surface": "accepted_helper_allocator_retry_boundary"
+    },
+    "borrow": {
+      "alpha_ready": false,
+      "blockers": [
+        "borrow_fields_unpopulated"
+      ],
+      "borrow_populated_pct": 0.0,
+      "borrow_populated_this_run": 0,
+      "cumulative_rows_total": 45,
+      "manifest": "data/non_ohlcv/borrow_availability/manifest.json",
+      "manifest_exists": true,
+      "next_evidence": "Non-null PIT borrow fee, utilization, or loan-availability rows across multiple dates, then closed forward replacement attribution.",
+      "short_sell_rate_max": null,
+      "short_sell_rate_min": null,
+      "surface": "moomoo_borrow_availability"
+    },
+    "estimate_revision": {
+      "alpha_ready": false,
+      "blockers": [
+        "selected_current_nonflat_sample_too_thin",
+        "forward_3d_outcomes_not_mature",
+        "forward_5d_outcomes_not_mature",
+        "forward_10d_outcomes_not_mature"
+      ],
+      "decision": "accepted_measurement_repair_estimate_revision_hot_warehouse_outcome_ledger",
+      "log": "experiments/logs/exp-20260626-023.json",
+      "log_exists": true,
+      "matched_rows": 652,
+      "next_evidence": "More selected/current non-flat matches with closed 3/5/10d replacement values, another settled month, or a different unsaturated PIT expectation source.",
+      "selected_current_closed_10d_rows": 0,
+      "selected_current_closed_1d_rows": 157,
+      "selected_current_closed_3d_rows": 0,
+      "selected_current_closed_5d_rows": 0,
+      "selected_current_closed_entry_day_rows": 177,
+      "selected_current_nonflat_usable_rows": 18,
+      "selected_current_rows": 177,
+      "surface": "estimate_revision_hot_warehouse_outcomes"
+    },
+    "forward_replacement": {
+      "alpha_ready": false,
+      "artifact": "data/paper_sleeves/forward_replacement_value.jsonl",
+      "blockers": [
+        "closed_forward_rows_below_activation_floor_60",
+        "entry_short_volume_tag_sample_still_thin"
+      ],
+      "closed_cash_rows": 40,
+      "max_entry_date": "2026-06-17",
+      "min_entry_date": "2026-05-05",
+      "next_evidence": "Materially more closed replacement rows per source family and per short-volume/regime bucket before any activation, tilt, or allocation retry.",
+      "prior_readiness_decision": "observed_only_rejected_no_forward_activation_ready_20260626_update",
+      "prior_readiness_status": "observed_only_rejected",
+      "readiness_artifact": "data/experiments/exp-20260626-014/exp_20260626_014_forward_replacement_activation_readiness_20260626.json",
+      "readiness_artifact_exists": true,
+      "rows": 40,
+      "rows_by_entry_regime_label": {
+        "risk_on_trend": 40
+      },
+      "rows_by_entry_short_volume_quintile": {
+        "1": 11,
+        "2": 10,
+        "3": 4,
+        "4": 5,
+        "5": 7,
+        "missing": 3
+      },
+      "rows_by_sleeve": {
+        "free_data_cross_source_consensus": 3,
+        "fundamental_growth_rs": 7,
+        "low_deployment_etf": 17,
+        "sec_governance": 2,
+        "sec_leadership": 1,
+        "sec_negative": 2,
+        "state_surface": 3,
+        "volatility_contraction": 2,
+        "volume_breadth_breakout": 3
+      },
+      "rows_with_entry_regime": 40,
+      "rows_with_short_volume_percentile": 37,
+      "surface": "forward_replacement_value"
+    },
+    "intraday": {
+      "alpha_ready": false,
+      "blockers": [
+        "post_contract_closed_outcome_rows_absent_or_too_thin",
+        "true_source_quote_time_still_absent"
+      ],
+      "contract_decision": "accepted_measurement_repair_intraday_shadow_position_provenance_contract",
+      "contract_log": "experiments/logs/exp-20260626-024.json",
+      "latest_snapshot_date": "20260626",
+      "latest_snapshot_primary_action_count": 5,
+      "latest_snapshot_quote_time_basis": {
+        "capture_time_fast_info_no_source_timestamp": 5
+      },
+      "latest_snapshot_shadow_actions": {
+        "EXIT": 1,
+        "REVIEW": 4
+      },
+      "latest_snapshot_source_quote_time_rows": 0,
+      "next_evidence": "More snapshots generated after the exp024 contract, then h1/h3/h5/h10 settled replacement-value outcomes by primary action.",
+      "outcome_ledger": "data/experiments/exp-20260626-019/intraday_advisory_forward_outcome_ledger.jsonl",
+      "outcome_rows": 976,
+      "post_contract_outcome_rows": 0,
+      "rows_by_horizon": {
+        "1": 244,
+        "10": 244,
+        "3": 244,
+        "5": 244
+      },
+      "surface": "intraday_shadow_action_provenance"
+    },
+    "options": {
+      "alpha_ready": false,
+      "blockers": [
+        "demand_quality_rejected",
+        "earnings_event_distance_rejected",
+        "historical_pit_chain_coverage_absent"
+      ],
+      "demand_decision": "rejected_no_options_demand_quality_forward_edge",
+      "demand_log": "experiments/logs/exp-20260625-001.json",
+      "event_distance_decision": "rejected_no_options_earnings_distance_forward_edge",
+      "event_distance_log": "experiments/logs/exp-20260625-020.json",
+      "next_evidence": "Materially more closed options rows, historical PIT chain coverage, or a different production-visible event/cost field that creates new rows rather than reslicing the same ledger.",
+      "settlement_decision": "accepted_measurement_repair_options_forward_outcomes_settled",
+      "settlement_log": "experiments/logs/exp-20260624-026.json",
+      "surface": "onclickmedia_options_forward"
+    },
+    "sec_periodic": {
+      "alpha_ready": false,
+      "blockers": [
+        "same_accession_companyfacts_absent",
+        "periodic_numeric_fields_absent"
+      ],
+      "feature_summary": "data/non_ohlcv/sec_filing_features_summary_20260625.json",
+      "field_counts": {
+        "fcf_to_net_income_gap": 0,
+        "gross_margin_delta": 0,
+        "inventory_growth": 0,
+        "low_volume_predictability_bucket": 24,
+        "predictability_mosaic_bucket": 24,
+        "receivables_growth": 0,
+        "source_credibility_bucket": 24,
+        "text_direction_vs_price_bucket": 24
+      },
+      "next_evidence": "Real 10-K/10-Q text/cache with parsed cover-page status and same-accession numeric fields before filer-status or periodic-report alpha.",
+      "periodic_decision": "accepted_measurement_repair_sec_periodic_pending_materialization_ledger",
+      "periodic_log": "experiments/logs/exp-20260626-016.json",
+      "rows_with_same_accession_facts": 0,
+      "rows_written": 24,
+      "surface": "sec_periodic_text_and_features"
+    }
+  },
+  "ticket_before": {
+    "claimed_at": "2026-06-26T23:09:38+00:00",
+    "created_at": "2026-06-26T23:09:26+00:00",
+    "hub_identity": {
+      "namespace": "ginger/experiments",
+      "repo_id": "ginger/experiments/exp-20260626-025",
+      "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+      "reserved_at": "2026-06-26T23:09:26+00:00",
+      "scheme": "hf_hub_local_v1",
+      "slug": "post_latest_alpha_surface_readiness_audit"
+    },
+    "novelty": {
+      "blocking_matches": [],
+      "enforced": true,
+      "fingerprint": {
+        "data_source": "revision_expectation",
+        "field_tags": [
+          "a",
+          "added",
+          "after",
+          "alpha",
+          "any",
+          "as",
+          "audit",
+          "be",
+          "before",
+          "blocker",
+          "checked",
+          "does",
+          "enabling",
+          "estimate",
+          "explore",
+          "forward",
+          "hot",
+          "if",
+          "intraday",
+          "is",
+          "latest",
+          "legal",
+          "must",
+          "newly",
+          "none",
+          "nonrepeat",
+          "not",
+          "outcomes",
+          "post",
+          "provenance",
+          "readiness",
+          "ready",
+          "recorded",
+          "replacement",
+          "reslice",
+          "retry",
+          "revision",
+          "rows",
+          "run",
+          "saturated",
+          "single",
+          "so",
+          "surface",
+          "tags"
+        ],
+        "gate_shape": "other"
+      },
+      "nearest": [
+        {
+          "accept_rate": 0.0,
+          "data_source": "revision_expectation",
+          "family_key": "form144_revision_data_readiness",
+          "reopen_condition": "Required new evidence is PIT parsed Form 144 planned-sale shares or value, holder role, relationship-to-issuer, public float and sale_pct_float, or historical/forward analyst-count, revenue-estimate, dispersion, vendor_asof, and fiscal-period coverage with closed candidate outcomes.",
+          "score": 0.5011,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 1.0,
+          "data_source": "revision_expectation",
+          "family_key": "estimate_revision_daily_candidate_match_surface",
+          "reopen_condition": "Next alpha-compliant revision work needs closed forward outcomes for selected/current overlaps or a different unsaturated data source.",
+          "score": 0.4848,
+          "status": "has_accepted",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "revision_expectation",
+          "family_key": "earnings_snapshot_date_revision_readiness",
+          "reopen_condition": null,
+          "score": 0.4755,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "revision_expectation",
+          "family_key": "estimate_revision_ledger_direction_outcome",
+          "reopen_condition": "A retry needs materially new evidence: at least another settled month of production estimate_revision_ledger rows, a distinct PIT revision field not used here, or a shared default-off helper that passes canonical Gate 1-4 rather than this gross proxy warehouse attribution.",
+          "score": 0.4755,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "revision_expectation",
+          "family_key": "estimate_revision_candidate_match_outcome_ledger",
+          "reopen_condition": "A valid alpha retry needs materially more selected/current non-flat matches with closed 1/3/5/10d replacement values, another settled month of production revision rows, or a different unsaturated PIT expectation source.",
+          "score": 0.4735,
+          "status": "single_attempt",
+          "trials": 1
+        }
+      ],
+      "new_evidence_axis": "Post-exp-20260626-023 and post-exp-20260626-024 state: includes estimate-revision hot warehouse outcomes and intraday action provenance created after the prior alpha evidence-gap ledger, plus verification of forward replacement entry-regime/short-volume tag coverage. This is not a strategy retune or same-row alpha slice.",
+      "override": false,
+      "saturated_source_override": false,
+      "source_saturation": {
+        "accept_rate": 0.0,
+        "accepts": 0,
+        "applicable": false,
+        "gate_shape": "other",
+        "max_accept_rate": 0.05,
+        "min_trials": 12,
+        "saturated": false,
+        "source": "revision_expectation",
+        "trials": 0
+      },
+      "warn": false,
+      "warn_threshold": 0.55
+    }
+  },
+  "timestamp": "2026-06-26T23:14:19Z",
+  "trial_family": "post_latest_alpha_surface_readiness_audit",
+  "trial_variant_id": "post_exp023_exp024_surface_readiness_v1"
+}

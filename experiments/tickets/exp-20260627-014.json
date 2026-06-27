@@ -1,0 +1,650 @@
+{
+  "acceptance_rule": "Accept only as measurement repair if the MU cache parses as cover_page_checkbox_text, the 20260626 feature builder yields at least one periodic filer-status row, and canonical strategy metrics remain identical.",
+  "allowed_write_scope": [
+    "quant/sec_filing_text_backfill.py",
+    "quant/test_sec_filing_text_backfill.py",
+    "quant/experiments/exp_20260627_014_sec_dei_cover_status_checkbox_table_parser.py",
+    "data/experiments/exp-20260627-014/",
+    "experiments/cards/exp-20260627-014.md",
+    "experiments/manifests/exp-20260627-014.json",
+    "experiments/tickets/exp-20260627-014.json",
+    "experiments/logs/exp-20260627-014.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260627-014.md",
+  "causal_components": [
+    "shared sec_filing_text_backfill checkbox-table parser",
+    "shell-company yes/no checkbox parser",
+    "focused unit test for column-header layout",
+    "current 20260626 feature-row materialization proof",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "sec_dei_cover_status_checkbox_table_parser_v1",
+  "claimed_at": "2026-06-27T13:07:07+00:00",
+  "completed_at": "2026-06-27T13:13:05+00:00",
+  "created_at": "2026-06-27T13:06:52+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260627-014",
+  "experiment_uid": "expuid-39ae6968049e40e4",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260627-014",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-27T13:06:52+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_dei_cover_status_checkbox_table_parser"
+  },
+  "hypothesis": "Alpha blocker: PIT SEC 10-K/10-Q filer-status transition alpha cannot be evaluated while the shared DEI cover-status parser misses cover-page checkbox tables where labels are column headers and checkbox tokens appear after the label row; repair that parser so existing accepted_at-keyed filing text/cache rows can expose status facts without changing strategy behavior.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "sec_dei_cover_status_checkbox_table_parser_v1"
+  ],
+  "mechanism_family": "sec_periodic_filer_status_materialization",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260626-008",
+    "exp-20260627-005",
+    "exp-20260627-011",
+    "exp-20260627-012",
+    "exp-20260627-013"
+  ],
+  "new_evidence_type": "measurement_repair_existing_current_periodic_sec_cache_row",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "accepted",
+        "after",
+        "alpha",
+        "appear",
+        "are",
+        "at",
+        "be",
+        "behavior",
+        "blocker",
+        "cache",
+        "can",
+        "cannot",
+        "changing",
+        "checkbox",
+        "column",
+        "cover",
+        "dei",
+        "evaluated",
+        "existing",
+        "expose",
+        "facts",
+        "filer",
+        "filing",
+        "headers",
+        "k",
+        "keyed",
+        "label",
+        "labels",
+        "misses",
+        "page",
+        "parser",
+        "pit",
+        "q",
+        "repair",
+        "row",
+        "rows",
+        "so",
+        "status",
+        "strategy",
+        "table",
+        "tables",
+        "text",
+        "that",
+        "tokens",
+        "transition",
+        "where",
+        "while",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "sec_cover_page_filer_status_upgrade_candidate_pool",
+        "reopen_condition": "Materialize historical 10-K/10-Q cover-page XBRL/text rows keyed by accession_number, accepted_at, usable_trade_date, ticker, and parsed filer-status booleans; then rerun one fixed upgrade/downgrade candidate rule through shared-paper-first.",
+        "score": 0.04,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "sec_cover_page_status_current_text_parser",
+        "reopen_condition": "Preserve raw inline XBRL/DEI cover-page facts or distinguishable checked/unchecked tokens for historical and daily 10-K/10-Q accessions, then build one shared default-off status-transition helper before any alpha test.",
+        "score": 0.0385,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "post_leadlag_nonrepeat_surface_readiness",
+        "reopen_condition": "Build or acquire historical 10-K/10-Q cover-page text/XBRL by filing acceptance date, extract filer status into a PIT field, then expose it through a shared default-off helper used by both historical replay and daily snapshots.",
+        "score": 0.0226,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_10k_10q_text_default_coverage_repair",
+        "reopen_condition": "Run SEC filing-text materialization with the repaired defaults for historical 10-K/10-Q events, parse cover-page filer-status booleans by accession/accepted_at, then rerun one fixed shared-paper-first filer-status transition rule.",
+        "score": 0.0222,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "sec_10k_10q_cover_page_materialization_probe",
+        "reopen_condition": "Materialize all canonical-window 10-K/10-Q primary-document rows or a compact XBRL-derived cover-page status sidecar keyed by accession_number, accepted_at, usable_trade_date, ticker, form, and parsed filer-status booleans; then run exactly one fixed shared-paper-first status-upgrade rule.",
+        "score": 0.0214,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.78,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "checkbox_table_mapping_misorders_statuses",
+      "current_mu_cache_still_not_parseable",
+      "feature_builder_still_yields_zero_periodic_status_rows"
+    ],
+    "confidence_reason": "exp-20260627-012 proved the shared parser path but current rows stayed at zero; the MU cache has labels_found plus checkbox tokens, so this is a narrow parser-layout repair with a concrete local failing row.",
+    "recorded_at": "2026-06-27T13:06:52+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "decision": "accepted_measurement_repair_sec_dei_cover_status_checkbox_table_parser",
+    "artifact": "data/experiments/exp-20260627-014/exp_20260627_014_sec_dei_cover_status_checkbox_table_parser.json",
+    "log": "experiments/logs/exp-20260627-014.json",
+    "runner": "quant/experiments/exp_20260627_014_sec_dei_cover_status_checkbox_table_parser.py",
+    "gate1": {
+      "passed": true,
+      "baseline_metrics": {
+        "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "window_count": 3,
+        "expected_value_score_sum": 7.8941,
+        "total_pnl": 234850.99,
+        "max_drawdown_pct_worst": 0.1119,
+        "trade_count": 61,
+        "signals_generated": 164,
+        "signals_survived": 135,
+        "survival_rate": 0.8232,
+        "windows": [
+          {
+            "label": "late_strong",
+            "start": "2025-10-23",
+            "end": "2026-04-21",
+            "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+            "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+            "expected_value_score": 5.1628,
+            "sharpe_daily": 4.41,
+            "total_pnl": 117072.92,
+            "max_drawdown_pct": 0.0665,
+            "win_rate": 0.8333,
+            "trade_count": 18,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "survival_rate": 0.8039
+          },
+          {
+            "label": "mid_weak",
+            "start": "2025-04-23",
+            "end": "2025-10-22",
+            "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+            "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+            "expected_value_score": 2.1402,
+            "sharpe_daily": 2.74,
+            "total_pnl": 78110.11,
+            "max_drawdown_pct": 0.1119,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "survival_rate": 0.7925
+          },
+          {
+            "label": "old_thin",
+            "start": "2024-10-02",
+            "end": "2025-04-22",
+            "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+            "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+            "expected_value_score": 0.5911,
+            "sharpe_daily": 1.49,
+            "total_pnl": 39667.96,
+            "max_drawdown_pct": 0.1001,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "signals_generated": 60,
+            "signals_survived": 52,
+            "survival_rate": 0.8667
+          }
+        ]
+      }
+    },
+    "gate2": {
+      "passed": true,
+      "dependency_fields": [
+        "combined_text",
+        "cover-page checkbox status labels",
+        "checked/unchecked checkbox tokens",
+        "accepted_at",
+        "usable_trade_date"
+      ],
+      "prior_blocker_context": {
+        "prior_experiment": "exp-20260627-012",
+        "prior_log": "experiments/logs/exp-20260627-012.json",
+        "prior_current_rows_with_filer_status": 0,
+        "prior_periodic_rows_with_filer_status": 0,
+        "prior_decision": "accepted_measurement_repair_sec_dei_cover_status_shared_parser"
+      },
+      "mu_cache_parse": {
+        "cache_path": "data/cache/sec/filing_text/0000723125-26-000015.json",
+        "exists": true,
+        "ticker": "MU",
+        "form_type": "10-Q",
+        "accession_number": "0000723125-26-000015",
+        "accepted_at": "2026-06-24T22:59:46",
+        "usable_trade_date": "2026-06-25",
+        "documents": [
+          "mu-20260528.htm",
+          "0000723125-26-000015-index-headers.html",
+          "ex101-amendmentno3tothedir.htm",
+          "ex102-amendmentno3tothedir.htm"
+        ],
+        "parse_status": {
+          "parse_status": "parsed_cover_page_checkbox_text",
+          "source": "cover_page_checkbox_text",
+          "filer_category": null,
+          "status_field_count": 6,
+          "machine_readable_status_fields": [
+            "large_accelerated_filer",
+            "accelerated_filer",
+            "non_accelerated_filer",
+            "smaller_reporting_company",
+            "emerging_growth_company",
+            "shell_company"
+          ],
+          "status_booleans": {
+            "large_accelerated_filer": true,
+            "accelerated_filer": false,
+            "non_accelerated_filer": false,
+            "smaller_reporting_company": false,
+            "emerging_growth_company": false,
+            "shell_company": false
+          },
+          "checkbox_diagnostics": {
+            "labels_found": 6,
+            "checked_token_count": 5,
+            "unchecked_token_count": 9,
+            "parsed_checkbox_fields": 6,
+            "shell_yes_no_parsed": true,
+            "column_layout_token_groups": 7,
+            "column_layout_fields": [
+              "large_accelerated_filer",
+              "accelerated_filer",
+              "non_accelerated_filer",
+              "smaller_reporting_company",
+              "emerging_growth_company"
+            ],
+            "column_layout_parsed_fields": 5
+          }
+        }
+      },
+      "current_daily_status_coverage": {
+        "source_file": "data/non_ohlcv/sec_filing_text_20260626.jsonl",
+        "facts_file": "data/non_ohlcv/sec_companyfacts_selected_kova_20260626.jsonl",
+        "source_rows": 23,
+        "feature_rows": 23,
+        "periodic_feature_rows": 1,
+        "rows_with_filer_status": 1,
+        "periodic_rows_with_filer_status": 1,
+        "filer_status_parse_counts": {
+          "blocked_cover_terms_without_parseable_status": 20,
+          "blocked_no_cover_page_status_terms": 2,
+          "parsed_cover_page_checkbox_text": 1
+        },
+        "status_rows_sample": [
+          {
+            "ticker": "MU",
+            "form_type": "10-Q",
+            "source_accession": "0000723125-26-000015",
+            "usable_trade_date": "2026-06-25",
+            "filer_status_parse_status": "parsed_cover_page_checkbox_text",
+            "filer_status_field_count": 6,
+            "filer_status_booleans": {
+              "large_accelerated_filer": true,
+              "accelerated_filer": false,
+              "non_accelerated_filer": false,
+              "smaller_reporting_company": false,
+              "emerging_growth_company": false,
+              "shell_company": false
+            }
+          }
+        ]
+      },
+      "minimum_strategy_fields": {
+        "entry_date": "not_applicable_no_strategy_signal_or_filter_added",
+        "target_price": "not_applicable_no_strategy_signal_or_filter_added"
+      }
+    },
+    "gate3": {
+      "passed": true,
+      "filter_added": false,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "note": "No executable filter was added; survival is unchanged."
+    },
+    "gate4": {
+      "passed": true,
+      "strategy_behavior_changed": false,
+      "after_same_as_before": true,
+      "accepted_alpha": false,
+      "decision_basis": "The shared parser now handles cover-page checkbox tables where labels are column headers and checkbox tokens follow the label row. On the same 20260626 SEC text artifact that exp-20260627-012 counted as zero status rows, the feature builder now exposes one periodic MU 10-Q row with six filer-status fields. No strategy behavior changed."
+    },
+    "delta_metrics": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "survival_rate_delta": 0.0,
+      "prior_current_rows_with_filer_status": 0,
+      "after_current_rows_with_filer_status": 1,
+      "prior_periodic_rows_with_filer_status": 0,
+      "after_periodic_rows_with_filer_status": 1,
+      "mu_status_field_count": 6
+    },
+    "calibration": {
+      "predicted_success_probability": 0.78,
+      "actual_success": 1,
+      "brier_score": 0.0484,
+      "predicted_failure_modes": [
+        "checkbox_table_mapping_misorders_statuses",
+        "current_mu_cache_still_not_parseable",
+        "feature_builder_still_yields_zero_periodic_status_rows"
+      ],
+      "realized_failure_mode": null,
+      "surprise_note": "The shared parser now handles cover-page checkbox tables where labels are column headers and checkbox tokens follow the label row. On the same 20260626 SEC text artifact that exp-20260627-012 counted as zero status rows, the feature builder now exposes one periodic MU 10-Q row with six filer-status fields. No strategy behavior changed."
+    },
+    "summary": "The shared parser now handles cover-page checkbox tables where labels are column headers and checkbox tokens follow the label row. On the same 20260626 SEC text artifact that exp-20260627-012 counted as zero status rows, the feature builder now exposes one periodic MU 10-Q row with six filer-status fields. No strategy behavior changed."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260627-014.json",
+  "single_causal_variable": "sec_dei_cover_status_checkbox_table_parser_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260627-014.json",
+  "trial_family": "sec_dei_cover_status_checkbox_table_parser",
+  "trial_variant_id": "current_mu_10q_checkbox_table_v1",
+  "alpha_hypothesis": "candidate_pool: PIT SEC 10-K/10-Q filer-status upgrades from smaller/non-accelerated/EGC toward accelerated or large-accelerated status may identify improving institutional eligibility, but only after accepted_at-keyed historical/current DEI status facts exist in shared replayable artifacts.",
+  "implementation_mode": "shared_data_parser_contract_repair",
+  "new_evidence_axis": "Concrete local MU 10-Q row with labels_found plus checkbox tokens that the existing parser could not map; this repairs parser layout, not an alpha scan or threshold retune.",
+  "decision": "accepted_measurement_repair_sec_dei_cover_status_checkbox_table_parser",
+  "summary": "The shared parser now handles cover-page checkbox tables where labels are column headers and checkbox tokens follow the label row. On the same 20260626 SEC text artifact that exp-20260627-012 counted as zero status rows, the feature builder now exposes one periodic MU 10-Q row with six filer-status fields. No strategy behavior changed.",
+  "artifact": "data/experiments/exp-20260627-014/exp_20260627_014_sec_dei_cover_status_checkbox_table_parser.json",
+  "log": "experiments/logs/exp-20260627-014.json",
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "max_drawdown_pct_worst": 0.1119,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "dependency_fields": [
+      "combined_text",
+      "cover-page checkbox status labels",
+      "checked/unchecked checkbox tokens",
+      "accepted_at",
+      "usable_trade_date"
+    ],
+    "prior_blocker_context": {
+      "prior_experiment": "exp-20260627-012",
+      "prior_log": "experiments/logs/exp-20260627-012.json",
+      "prior_current_rows_with_filer_status": 0,
+      "prior_periodic_rows_with_filer_status": 0,
+      "prior_decision": "accepted_measurement_repair_sec_dei_cover_status_shared_parser"
+    },
+    "mu_cache_parse": {
+      "cache_path": "data/cache/sec/filing_text/0000723125-26-000015.json",
+      "exists": true,
+      "ticker": "MU",
+      "form_type": "10-Q",
+      "accession_number": "0000723125-26-000015",
+      "accepted_at": "2026-06-24T22:59:46",
+      "usable_trade_date": "2026-06-25",
+      "documents": [
+        "mu-20260528.htm",
+        "0000723125-26-000015-index-headers.html",
+        "ex101-amendmentno3tothedir.htm",
+        "ex102-amendmentno3tothedir.htm"
+      ],
+      "parse_status": {
+        "parse_status": "parsed_cover_page_checkbox_text",
+        "source": "cover_page_checkbox_text",
+        "filer_category": null,
+        "status_field_count": 6,
+        "machine_readable_status_fields": [
+          "large_accelerated_filer",
+          "accelerated_filer",
+          "non_accelerated_filer",
+          "smaller_reporting_company",
+          "emerging_growth_company",
+          "shell_company"
+        ],
+        "status_booleans": {
+          "large_accelerated_filer": true,
+          "accelerated_filer": false,
+          "non_accelerated_filer": false,
+          "smaller_reporting_company": false,
+          "emerging_growth_company": false,
+          "shell_company": false
+        },
+        "checkbox_diagnostics": {
+          "labels_found": 6,
+          "checked_token_count": 5,
+          "unchecked_token_count": 9,
+          "parsed_checkbox_fields": 6,
+          "shell_yes_no_parsed": true,
+          "column_layout_token_groups": 7,
+          "column_layout_fields": [
+            "large_accelerated_filer",
+            "accelerated_filer",
+            "non_accelerated_filer",
+            "smaller_reporting_company",
+            "emerging_growth_company"
+          ],
+          "column_layout_parsed_fields": 5
+        }
+      }
+    },
+    "current_daily_status_coverage": {
+      "source_file": "data/non_ohlcv/sec_filing_text_20260626.jsonl",
+      "facts_file": "data/non_ohlcv/sec_companyfacts_selected_kova_20260626.jsonl",
+      "source_rows": 23,
+      "feature_rows": 23,
+      "periodic_feature_rows": 1,
+      "rows_with_filer_status": 1,
+      "periodic_rows_with_filer_status": 1,
+      "filer_status_parse_counts": {
+        "blocked_cover_terms_without_parseable_status": 20,
+        "blocked_no_cover_page_status_terms": 2,
+        "parsed_cover_page_checkbox_text": 1
+      },
+      "status_rows_sample": [
+        {
+          "ticker": "MU",
+          "form_type": "10-Q",
+          "source_accession": "0000723125-26-000015",
+          "usable_trade_date": "2026-06-25",
+          "filer_status_parse_status": "parsed_cover_page_checkbox_text",
+          "filer_status_field_count": 6,
+          "filer_status_booleans": {
+            "large_accelerated_filer": true,
+            "accelerated_filer": false,
+            "non_accelerated_filer": false,
+            "smaller_reporting_company": false,
+            "emerging_growth_company": false,
+            "shell_company": false
+          }
+        }
+      ]
+    },
+    "minimum_strategy_fields": {
+      "entry_date": "not_applicable_no_strategy_signal_or_filter_added",
+      "target_price": "not_applicable_no_strategy_signal_or_filter_added"
+    }
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "note": "No executable filter was added; survival is unchanged."
+  },
+  "gate4": {
+    "passed": true,
+    "strategy_behavior_changed": false,
+    "after_same_as_before": true,
+    "accepted_alpha": false,
+    "decision_basis": "The shared parser now handles cover-page checkbox tables where labels are column headers and checkbox tokens follow the label row. On the same 20260626 SEC text artifact that exp-20260627-012 counted as zero status rows, the feature builder now exposes one periodic MU 10-Q row with six filer-status fields. No strategy behavior changed."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The shared parser now handles cover-page checkbox tables where labels are column headers and checkbox tokens follow the label row. On the same 20260626 SEC text artifact that exp-20260627-012 counted as zero status rows, the feature builder now exposes one periodic MU 10-Q row with six filer-status fields. No strategy behavior changed.",
+    "forbidden_near_neighbor_retry": "Do not run filer-status alpha, same-row phrase scans, form threshold scans, or current-category approximations from this one-row repair. It only fixes parser coverage.",
+    "new_evidence_required": "Backfill or refresh historical 10-K/10-Q text/cache rows so the shared parser produces accepted_at-keyed DEI status rows across canonical windows, then build one fixed shared default-off status-transition helper before alpha replay."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_schema_changed": false,
+    "daily_snapshot_exposed": true,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "orders_changed": false,
+    "trade_enabled": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "reason": "Only read-only SEC text/feature artifacts gain parser coverage when source documents contain checkbox-table cover status facts."
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\sec_filing_text_backfill.py quant\\test_sec_filing_text_backfill.py quant\\experiments\\exp_20260627_014_sec_dei_cover_status_checkbox_table_parser.py",
+    ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_sec_filing_text_backfill.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260627_014_sec_dei_cover_status_checkbox_table_parser.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "changed_files": [
+    "quant/sec_filing_text_backfill.py",
+    "quant/test_sec_filing_text_backfill.py",
+    "quant/experiments/exp_20260627_014_sec_dei_cover_status_checkbox_table_parser.py",
+    "data/experiments/exp-20260627-014/exp_20260627_014_sec_dei_cover_status_checkbox_table_parser.json",
+    "experiments/logs/exp-20260627-014.json",
+    "experiments/cards/exp-20260627-014.md",
+    "experiments/manifests/exp-20260627-014.json",
+    "experiments/tickets/exp-20260627-014.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "anti_js": {
+    "used_javascript": false,
+    "evidence": "Python runner only."
+  },
+  "updated_at": "2026-06-27T13:13:05+00:00"
+}

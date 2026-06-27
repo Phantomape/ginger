@@ -1,0 +1,394 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260627_016_supplier_financing_debt_relief_forward_maturation.py",
+    "data/experiments/exp-20260627-016/exp_20260627_016_supplier_financing_debt_relief_forward_maturation.json",
+    "experiments/cards/exp-20260627-016.md",
+    "experiments/manifests/exp-20260627-016.json",
+    "experiments/tickets/exp-20260627-016.json",
+    "experiments/logs/exp-20260627-016.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260627-016.md",
+  "causal_components": [
+    "shared default-off state audit",
+    "closed forward outcome readiness",
+    "activation blocker ledger",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_forward_maturation_audit",
+  "changed_variable": "supplier_financing_debt_relief_forward_maturation_readiness_v1",
+  "claimed_at": "2026-06-27T15:09:32+00:00",
+  "completed_at": "2026-06-27T15:13:58+00:00",
+  "created_at": "2026-06-27T15:09:14+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260627-016",
+  "experiment_uid": "expuid-50e4ddb00965406b",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260627-016",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-27T15:09:14+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "supplier_financing_debt_relief_forward_maturation"
+  },
+  "hypothesis": "Accepted shared default-off supplier-financing/debt-relief rows may now have enough closed forward replacement-value outcomes to judge activation-envelope readiness without retuning the frozen Companyfacts signal.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "supplier_financing_debt_relief_forward_maturation_readiness_v1"
+  ],
+  "mechanism_family": "observed_only_forward_maturation_audit",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260620-005",
+    "exp-20260620-007",
+    "exp-20260627-013"
+  ],
+  "new_evidence_type": "post_shared_helper_forward_state_maturation",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "companyfacts_ratio",
+      "field_tags": [
+        "accepted",
+        "activation",
+        "closed",
+        "companyfacts",
+        "debt",
+        "enough",
+        "envelope",
+        "financing",
+        "forward",
+        "frozen",
+        "have",
+        "judge",
+        "maturation",
+        "may",
+        "now",
+        "outcomes",
+        "readiness",
+        "replacement",
+        "retuning",
+        "rows",
+        "signal",
+        "supplier",
+        "to",
+        "value",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "supplier_financing_debt_relief_intersection_candidate_pool",
+        "reopen_condition": "Need supplier/payment-term provenance, covenant/refinancing context, or closed forward replacement-value rows before revisiting this Companyfacts cross-statement family.",
+        "score": 0.5093,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "supplier_financing_debt_relief_shared_risk_scaled_adapter",
+        "reopen_condition": "Next useful evidence is closed forward replacement-value rows from the shared default-off ledger, supplier/payment-term provenance, covenant/refinancing context, or kill-switch parity.",
+        "score": 0.4944,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "supplier_financing_debt_relief_shared_4k_risk_scaled_adapter",
+        "reopen_condition": "Next useful evidence is closed forward replacement-value rows from the shared default-off ledger, supplier/payment-term provenance, covenant/refinancing context, or kill-switch parity.",
+        "score": 0.4929,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "supplier_financing_debt_relief_risk_allocation",
+        "reopen_condition": "Need supplier/payment-term provenance, covenant/refinancing context, or closed forward replacement-value rows before revisiting this Companyfacts cross-statement/risk family.",
+        "score": 0.4887,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "companyfacts_inventory_discipline_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.4786,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "companyfacts_ratio",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "no_closed_positions",
+      "forward_rows_too_thin",
+      "single_ticker_concentration",
+      "replacement_value_missing"
+    ],
+    "confidence_reason": "The shared helper is production-visible and not included in the latest readiness audit, but state inspection shows only open/pending rows; the useful outcome is a precise blocker rather than retuning DPO/debt thresholds.",
+    "recorded_at": "2026-06-27T15:08:54+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "observed_only_lead": false,
+    "decision": "rejected_no_closed_supplier_financing_debt_relief_forward_rows",
+    "artifact": "data/experiments/exp-20260627-016/exp_20260627_016_supplier_financing_debt_relief_forward_maturation.json",
+    "log": "experiments/logs/exp-20260627-016.json",
+    "runner": "quant/experiments/exp_20260627_016_supplier_financing_debt_relief_forward_maturation.py",
+    "gate4": {
+      "passed": false,
+      "accepted_alpha": false,
+      "alpha_ready": false,
+      "decision": "rejected_no_closed_supplier_financing_debt_relief_forward_rows",
+      "failed_reasons": [
+        "closed_positions_below_min:0/30",
+        "supplier_replacement_rows_below_min:0/30",
+        "shared_forward_paper_gate_not_passed"
+      ],
+      "strategy_behavior_changed": false,
+      "before_after_strategy_delta": {
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0,
+        "signals_generated_delta": 0,
+        "signals_survived_delta": 0
+      },
+      "forward_activation_requirements": {
+        "min_closed_trades": 30,
+        "closed_positions": 0,
+        "enriched_replacement_rows": 0,
+        "shared_forward_paper_gate": {
+          "passed": false,
+          "status": "blocked",
+          "closed_trade_count": 0,
+          "min_closed_trades": 30,
+          "net_pnl": 0,
+          "win_rate": 0.0,
+          "max_single_positive_pnl_share": null,
+          "positive_pnl_hhi": null,
+          "reasons": [
+            "closed_trades_below_min:0/30",
+            "net_pnl_not_positive"
+          ]
+        }
+      }
+    },
+    "summary": "The supplier-financing/debt-relief helper is production-visible and still default-off, but the forward paper state has 0 closed positions, 6 open positions, 1 pending entry, and 0 enriched replacement-value rows for this sleeve. The shared forward paper gate therefore remains blocked on maturity, not on a new threshold hypothesis."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260627-016.json",
+  "single_causal_variable": "supplier_financing_debt_relief_forward_maturation_readiness_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260627-016.json",
+  "trial_family": "supplier_financing_debt_relief_forward_maturation",
+  "trial_variant_id": "supplier_financing_debt_relief_forward_maturation_readiness_v1",
+  "change_summary": "Audited the accepted default-off supplier-financing/debt-relief paper sleeve for closed forward maturity; no strategy behavior changed.",
+  "implementation_mode": "observed_only_forward_maturation_audit",
+  "new_evidence_axis": "Machine-checkable post-shared-helper forward paper state for the accepted supplier-financing/debt-relief sleeve: closed positions, replacement-value ledger matches, forward-paper gate, and activation blockers. This is not a DPO/debt threshold scan or Companyfacts tag retune.",
+  "decision": "rejected_no_closed_supplier_financing_debt_relief_forward_rows",
+  "artifact": "data/experiments/exp-20260627-016/exp_20260627_016_supplier_financing_debt_relief_forward_maturation.json",
+  "log": "experiments/logs/exp-20260627-016.json",
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_exists": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823170731707317,
+      "windows": [
+        {
+          "label": "late_strong",
+          "expected_value_score": 5.1628,
+          "total_pnl": 117072.92,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039,
+          "max_drawdown_pct": 0.0665
+        },
+        {
+          "label": "mid_weak",
+          "expected_value_score": 2.1402,
+          "total_pnl": 78110.11,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925,
+          "max_drawdown_pct": 0.1119
+        },
+        {
+          "label": "old_thin",
+          "expected_value_score": 0.5911,
+          "total_pnl": 39667.96,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667,
+          "max_drawdown_pct": 0.1001
+        }
+      ]
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "dependencies_validated": true,
+    "fields_checked": [
+      "open_positions.entry_date",
+      "positions.decision_id",
+      "positions.ticker",
+      "positions.signal_date",
+      "positions.hold_days",
+      "forward_replacement_value.decision_id",
+      "forward_replacement_value.replacement_value_vs_cash_usd",
+      "snapshot.forward_paper_gate"
+    ],
+    "entry_date_target_price_note": "Open paper entries expose entry_date. target_price is not used because this run schedules no executable exit or order.",
+    "missing_or_invalid_fields": {
+      "open_missing_entry_date": [],
+      "missing_decision_id": []
+    }
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823170731707317,
+    "note": "No executable filter, entry, exit, ranking, sizing, or order rule was added."
+  },
+  "gate4": {
+    "passed": false,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "decision": "rejected_no_closed_supplier_financing_debt_relief_forward_rows",
+    "failed_reasons": [
+      "closed_positions_below_min:0/30",
+      "supplier_replacement_rows_below_min:0/30",
+      "shared_forward_paper_gate_not_passed"
+    ],
+    "strategy_behavior_changed": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0
+    },
+    "forward_activation_requirements": {
+      "min_closed_trades": 30,
+      "closed_positions": 0,
+      "enriched_replacement_rows": 0,
+      "shared_forward_paper_gate": {
+        "passed": false,
+        "status": "blocked",
+        "closed_trade_count": 0,
+        "min_closed_trades": 30,
+        "net_pnl": 0,
+        "win_rate": 0.0,
+        "max_single_positive_pnl_share": null,
+        "positive_pnl_hhi": null,
+        "reasons": [
+          "closed_trades_below_min:0/30",
+          "net_pnl_not_positive"
+        ]
+      }
+    }
+  },
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "closed_position_count": 0,
+    "open_position_count": 6,
+    "pending_entry_count": 1,
+    "enriched_replacement_rows": 0,
+    "replacement_rows_needed": 30
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "watchlist_changed": false,
+    "llm_decision_boundary_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "parity_note": "Experiment-owned readiness artifact only; reads existing default-off state and forward ledger. No shared helper, daily adapter, order, rank, size, exit, watchlist, or LLM behavior changed."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The supplier-financing/debt-relief helper is production-visible and still default-off, but the forward paper state has 0 closed positions, 6 open positions, 1 pending entry, and 0 enriched replacement-value rows for this sleeve. The shared forward paper gate therefore remains blocked on maturity, not on a new threshold hypothesis.",
+    "forbidden_near_neighbor_retry": "Do not retry adjacent DPO/debt thresholds, notional scalars, or hard-exclusion/tilt variants for this Companyfacts family from the same rows. That would be a saturated response-curve retune.",
+    "new_evidence_required": "Wait for materially more closed default-off paper rows, or bring in a genuinely new supplier/payment-term, covenant/refinancing, or other production-visible source before revisiting activation."
+  },
+  "rejection_reason": "closed_positions_below_min:0/30;supplier_replacement_rows_below_min:0/30;shared_forward_paper_gate_not_passed",
+  "next_retry_requires": "At least 30 closed supplier-financing/debt-relief paper trades with enriched replacement values, or a new machine-checkable non-Companyfacts evidence source.",
+  "related_files": [
+    "data/paper_sleeves/supplier_financing_debt_relief/state.json",
+    "data/paper_sleeves/supplier_financing_debt_relief/snapshots.jsonl",
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "quant/supplier_financing_debt_relief_paper_sleeve.py",
+    "quant/run.py",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260627_016_supplier_financing_debt_relief_forward_maturation.py",
+    "data/experiments/exp-20260627-016/exp_20260627_016_supplier_financing_debt_relief_forward_maturation.json",
+    "experiments/logs/exp-20260627-016.json",
+    "experiments/cards/exp-20260627-016.md",
+    "experiments/manifests/exp-20260627-016.json",
+    "experiments/tickets/exp-20260627-016.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-06-27T15:13:58+00:00"
+}

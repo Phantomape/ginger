@@ -1,0 +1,1577 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "action_diagnostic_ledger": "data/experiments/exp-20260626-022/action_rule_outcome_diagnostics.jsonl",
+  "alpha_hypothesis": "Accepted intraday advisory shadow actions may have exit/risk-allocation value if EXIT/REVIEW rules underperform no-action/OK positions and SPY/QQQ over the next 1-5 sessions after the 13:00 ET snapshot.",
+  "alpha_ready": false,
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260626-022/exp_20260626_022_intraday_shadow_action_outcome_scout.json",
+  "calibration": {
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 0,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "predicted_failure_modes": [
+      "too_few_settled_shadow_actions",
+      "rule_buckets_not_monotonic",
+      "duplicate_actions_per_position",
+      "quote_time_missing_blocks_causality"
+    ],
+    "predicted_failure_modes_hit": [
+      "duplicate_actions_per_position",
+      "quote_time_missing_blocks_causality"
+    ],
+    "predicted_success_probability": 0.24,
+    "realized_failure_modes": [
+      "quote_time_et_still_missing",
+      "duplicate_actions_per_position_require_position_level_policy",
+      "shadow_actions_are_advisory_only",
+      "no_shared_exit_policy_or_slot_reuse_gate4_tested"
+    ],
+    "surprise_note": "Low surprise: the shadow-action contract produced many rows, but the field is still advisory-only, duplicate rule actions occur on the same position, and no shared exit policy was Gate-4 tested."
+  },
+  "causal_components": [
+    "accepted shadow action contract",
+    "hot warehouse next-session settlement",
+    "SPY QQQ cash comparators",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_forward_attribution",
+  "changed_files": [
+    "quant/experiments/exp_20260626_022_intraday_shadow_action_outcome_scout.py",
+    "data/experiments/exp-20260626-022/**",
+    "experiments/logs/exp-20260626-022.json",
+    "experiments/cards/exp-20260626-022.md",
+    "experiments/manifests/exp-20260626-022.json",
+    "experiments/tickets/exp-20260626-022.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "intraday_shadow_action_forward_outcome_rule_value_v1",
+  "decision": "observed_only_rejected_intraday_shadow_action_outcome_not_allocation_ready",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "h1_shadow_action_positions": 99,
+    "raw_shadow_action_rows": 165,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260626-022",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_exists": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "note": "Observed-only attribution; before and after strategy behavior are identical.",
+    "passed": true
+  },
+  "gate2": {
+    "field_coverage": {
+      "entry_date": {
+        "base_rows": 244,
+        "coverage": 0.889344,
+        "present_rows": 217
+      },
+      "observation_base_id": {
+        "base_rows": 244,
+        "coverage": 1.0,
+        "present_rows": 244
+      },
+      "primary_shadow_action": {
+        "base_rows": 244,
+        "coverage": 1.0,
+        "present_rows": 244
+      },
+      "primary_shadow_rule": {
+        "base_rows": 244,
+        "coverage": 0.405738,
+        "present_rows": 99
+      },
+      "quote_capture_time_et": {
+        "base_rows": 244,
+        "coverage": 0.04918,
+        "present_rows": 12
+      },
+      "quote_time_et": {
+        "base_rows": 244,
+        "coverage": 0.0,
+        "present_rows": 0
+      },
+      "shadow_action_count": {
+        "base_rows": 244,
+        "coverage": 1.0,
+        "present_rows": 244
+      },
+      "snapshot_date": {
+        "base_rows": 244,
+        "coverage": 1.0,
+        "present_rows": 244
+      },
+      "target_price": {
+        "base_rows": 244,
+        "coverage": 1.0,
+        "present_rows": 244
+      },
+      "ticker": {
+        "base_rows": 244,
+        "coverage": 1.0,
+        "present_rows": 244
+      }
+    },
+    "passed": true,
+    "prior_position_ledger": "data/experiments/exp-20260626-019/intraday_advisory_forward_outcome_ledger.jsonl",
+    "raw_shadow_action_rows": 165,
+    "required_fields_checked": [
+      "observation_base_id",
+      "snapshot_date",
+      "ticker",
+      "entry_date",
+      "target_price",
+      "settlement_status",
+      "net_return",
+      "excess_spy_return",
+      "excess_qqq_return",
+      "primary_shadow_action",
+      "primary_shadow_rule"
+    ],
+    "shadow_position_count": 244,
+    "snapshot_dir": "data/daily/intraday/snapshots",
+    "snapshot_file_count": 17
+  },
+  "gate3": {
+    "baseline_survival_rate": 0.823171,
+    "filter_added": false,
+    "note": "Survival is a measurement proxy: positions with at least one advisory shadow action among settled h1 rows.",
+    "passed": true,
+    "signals_generated_proxy": 244,
+    "signals_survived_proxy": 99,
+    "survival_rate_proxy": 0.405738
+  },
+  "gate4": {
+    "aggregate_ev_delta": 0.0,
+    "aggregate_pnl_delta": 0.0,
+    "decision": "observed_only_rejected_intraday_shadow_action_outcome_not_allocation_ready",
+    "expected_value_score_sum_after": 7.8941,
+    "expected_value_score_sum_before": 7.8941,
+    "failed_reasons": [
+      "quote_time_et_still_missing",
+      "duplicate_actions_per_position_require_position_level_policy",
+      "shadow_actions_are_advisory_only",
+      "no_shared_exit_policy_or_slot_reuse_gate4_tested"
+    ],
+    "observed_only_note": "This is not accepted alpha. A promotion would need a predeclared shared default-off exit advisory helper, slot-reuse accounting, quote-time provenance, and Gate 1-4 before/after replay.",
+    "passed": false,
+    "readiness": {
+      "decision": "observed_only_rejected_intraday_shadow_action_outcome_not_allocation_ready",
+      "failed_reasons": [
+        "quote_time_et_still_missing",
+        "duplicate_actions_per_position_require_position_level_policy",
+        "shadow_actions_are_advisory_only",
+        "no_shared_exit_policy_or_slot_reuse_gate4_tested"
+      ],
+      "observed": {
+        "action_rows": 165,
+        "monotonic_underperformance_horizons": [
+          1,
+          3,
+          5
+        ],
+        "no_action_1d_bucket": {
+          "avg_excess_qqq_pct": 0.2967,
+          "avg_excess_spy_pct": 0.2615,
+          "avg_return_pct": -0.4308,
+          "median_return_pct": -0.6827,
+          "settled_rows": 134,
+          "snapshot_date_count": 13,
+          "ticker_count": 18,
+          "total_pnl_10k": -5773.11,
+          "underperform_qqq_rate": 0.5,
+          "underperform_spy_rate": 0.485075,
+          "win_rate": 0.41791
+        },
+        "position_h1_rows": 244,
+        "shadow_1d_bucket": {
+          "avg_excess_qqq_pct": -0.5547,
+          "avg_excess_spy_pct": -0.6419,
+          "avg_return_pct": -1.3787,
+          "median_return_pct": -1.4909,
+          "settled_rows": 83,
+          "snapshot_date_count": 13,
+          "ticker_count": 12,
+          "total_pnl_10k": -11442.82,
+          "underperform_qqq_rate": 0.518072,
+          "underperform_spy_rate": 0.554217,
+          "win_rate": 0.373494
+        },
+        "shadow_5d_bucket": {
+          "avg_excess_qqq_pct": -3.1636,
+          "avg_excess_spy_pct": -3.0479,
+          "avg_return_pct": -4.4878,
+          "median_return_pct": -4.9722,
+          "settled_rows": 38,
+          "snapshot_date_count": 6,
+          "ticker_count": 9,
+          "total_pnl_10k": -17053.79,
+          "underperform_qqq_rate": 0.710526,
+          "underperform_spy_rate": 0.736842,
+          "win_rate": 0.263158
+        },
+        "shadow_minus_no_action": {
+          "1": {
+            "avg_excess_qqq_pct": -0.8514,
+            "avg_excess_spy_pct": -0.9034,
+            "avg_return_pct": -0.9479,
+            "left": "SHADOW_ACTION",
+            "left_settled_rows": 83,
+            "right": "NO_ACTION",
+            "right_settled_rows": 134,
+            "underperform_qqq_rate": 0.018072,
+            "underperform_spy_rate": 0.069142
+          },
+          "10": {
+            "avg_excess_qqq_pct": null,
+            "avg_excess_spy_pct": null,
+            "avg_return_pct": null,
+            "left": "SHADOW_ACTION",
+            "left_settled_rows": null,
+            "right": "NO_ACTION",
+            "right_settled_rows": null,
+            "underperform_qqq_rate": null,
+            "underperform_spy_rate": null
+          },
+          "3": {
+            "avg_excess_qqq_pct": -1.4711,
+            "avg_excess_spy_pct": -1.6764,
+            "avg_return_pct": -2.0276,
+            "left": "SHADOW_ACTION",
+            "left_settled_rows": 68,
+            "right": "NO_ACTION",
+            "right_settled_rows": 118,
+            "underperform_qqq_rate": -0.025922,
+            "underperform_spy_rate": 0.110419
+          },
+          "5": {
+            "avg_excess_qqq_pct": -3.86,
+            "avg_excess_spy_pct": -4.3652,
+            "avg_return_pct": -4.8596,
+            "left": "SHADOW_ACTION",
+            "left_settled_rows": 38,
+            "right": "NO_ACTION",
+            "right_settled_rows": 72,
+            "underperform_qqq_rate": 0.057748,
+            "underperform_spy_rate": 0.181286
+          }
+        }
+      },
+      "passed": false,
+      "thresholds": {
+        "min_action_positions_1d": 50,
+        "min_action_positions_5d": 25,
+        "min_no_action_positions_1d": 50,
+        "min_snapshot_dates": 5,
+        "requires_quote_time_et": true,
+        "requires_shadow_underperformance_vs_no_action_on_spy_and_qqq_1d_3d_5d": true,
+        "requires_shared_exit_policy_gate4_before_promotion": true
+      }
+    },
+    "strategy_behavior_changed": false,
+    "total_pnl_after": 234850.99,
+    "total_pnl_before": 234850.99,
+    "trade_count_after": 61,
+    "trade_count_before": 61
+  },
+  "hypothesis": "Accepted intraday advisory shadow actions may have exit/risk-allocation value if EXIT/REVIEW rules underperform no-action/OK positions and SPY/QQQ over the next 1-5 sessions after the 13:00 ET snapshot.",
+  "implementation_mode": "observed_only_shadow_action_forward_outcome_no_strategy_change",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260626-022.json",
+  "mechanism_family": "intraday_review_exit_risk_allocation",
+  "nearby_prior_experiments": [
+    "exp-20260626-019",
+    "exp-20260626-020"
+  ],
+  "new_evidence_axis": "exp-20260626-020 accepted a new advisory-only shadow action contract mapping existing intraday triggered rules to machine-readable EXIT/REVIEW rows; this run tests that new field against exp-20260626-019 settled forward outcomes without retuning status, stop, target, urgency, or hold thresholds.",
+  "new_evidence_type": "accepted_intraday_shadow_action_contract_rows",
+  "position_ledger": "data/experiments/exp-20260626-022/position_shadow_action_outcome_ledger.jsonl",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry hard-stop, ATR-stop, target, time-stop, urgency, or shadow-action threshold variants on this same settled ledger. The next valid retry needs more closed post-contract rows or a shared default-off exit helper with Gate 1-4.",
+    "new_evidence_required": "More closed intraday snapshots after exp-20260626-020, quote_time_et or broker bar IDs, and a predeclared shared default-off exit advisory policy with slot-reuse/winner-collateral accounting.",
+    "why_result_happened": "The accepted shadow action contract made rule/action attribution possible, but the current data still cannot support an exit policy: quote timestamps remain missing, some positions emit multiple rule rows, and no before/after strategy replay measured slot reuse."
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260626-020 created advisory-only shadow action rows, but sample is still short and rows are position-review observations rather than executable orders.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "too_few_settled_shadow_actions",
+      "rule_buckets_not_monotonic",
+      "duplicate_actions_per_position",
+      "quote_time_missing_blocks_causality"
+    ],
+    "recorded_at": "2026-06-26T20:08:51+00:00",
+    "success_probability": 0.24
+  },
+  "production_impact": {
+    "adapter_status": "none",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "parity_note": "Read-only observed-only attribution; no production/replay behavior changed.",
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260626_022_intraday_shadow_action_outcome_scout.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260626_022_intraday_shadow_action_outcome_scout.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "runner": "quant/experiments/exp_20260626_022_intraday_shadow_action_outcome_scout.py",
+  "single_causal_variable": "intraday_shadow_action_forward_outcome_rule_value_v1",
+  "source_summary": {
+    "evidence": {
+      "action_level_diagnostics": {
+        "by_rule": {
+          "1": {
+            "by_group": {
+              "ATR_STOP": {
+                "avg_excess_qqq_pct": -0.6021,
+                "avg_excess_spy_pct": -0.6226,
+                "avg_return_pct": -1.2716,
+                "median_return_pct": -1.4909,
+                "settled_rows": 36,
+                "snapshot_date_count": 13,
+                "ticker_count": 5,
+                "total_pnl_10k": -4577.63,
+                "underperform_qqq_rate": 0.583333,
+                "underperform_spy_rate": 0.611111,
+                "win_rate": 0.305556
+              },
+              "HARD_STOP": {
+                "avg_excess_qqq_pct": -0.7078,
+                "avg_excess_spy_pct": -0.7683,
+                "avg_return_pct": -1.4673,
+                "median_return_pct": -1.618,
+                "settled_rows": 29,
+                "snapshot_date_count": 13,
+                "ticker_count": 3,
+                "total_pnl_10k": -4255.25,
+                "underperform_qqq_rate": 0.62069,
+                "underperform_spy_rate": 0.655172,
+                "win_rate": 0.275862
+              },
+              "LEGACY_TARGET_REVIEW": {
+                "avg_excess_qqq_pct": 0.2392,
+                "avg_excess_spy_pct": 0.1533,
+                "avg_return_pct": -0.6083,
+                "median_return_pct": 0.6727,
+                "settled_rows": 18,
+                "snapshot_date_count": 13,
+                "ticker_count": 2,
+                "total_pnl_10k": -1094.98,
+                "underperform_qqq_rate": 0.277778,
+                "underperform_spy_rate": 0.333333,
+                "win_rate": 0.611111
+              },
+              "SIGNAL_TARGET": {
+                "avg_excess_qqq_pct": -1.5779,
+                "avg_excess_spy_pct": -1.6816,
+                "avg_return_pct": -2.4909,
+                "median_return_pct": -2.7245,
+                "settled_rows": 18,
+                "snapshot_date_count": 11,
+                "ticker_count": 4,
+                "total_pnl_10k": -4483.67,
+                "underperform_qqq_rate": 0.611111,
+                "underperform_spy_rate": 0.611111,
+                "win_rate": 0.333333
+              },
+              "TIME_STOP": {
+                "avg_excess_qqq_pct": -0.4892,
+                "avg_excess_spy_pct": -0.6375,
+                "avg_return_pct": -1.4111,
+                "median_return_pct": -1.5922,
+                "settled_rows": 42,
+                "snapshot_date_count": 13,
+                "ticker_count": 6,
+                "total_pnl_10k": -5926.74,
+                "underperform_qqq_rate": 0.571429,
+                "underperform_spy_rate": 0.619048,
+                "win_rate": 0.261905
+              }
+            },
+            "field": "rule",
+            "position_or_action_rows": 165,
+            "settled_rows": 143
+          },
+          "10": {
+            "by_group": {},
+            "field": "rule",
+            "position_or_action_rows": 165,
+            "settled_rows": 0
+          },
+          "3": {
+            "by_group": {
+              "ATR_STOP": {
+                "avg_excess_qqq_pct": -0.9915,
+                "avg_excess_spy_pct": -1.7275,
+                "avg_return_pct": -3.0372,
+                "median_return_pct": -3.2148,
+                "settled_rows": 31,
+                "snapshot_date_count": 11,
+                "ticker_count": 5,
+                "total_pnl_10k": -9415.38,
+                "underperform_qqq_rate": 0.612903,
+                "underperform_spy_rate": 0.774194,
+                "win_rate": 0.129032
+              },
+              "HARD_STOP": {
+                "avg_excess_qqq_pct": -1.3585,
+                "avg_excess_spy_pct": -2.0917,
+                "avg_return_pct": -3.3934,
+                "median_return_pct": -3.8934,
+                "settled_rows": 25,
+                "snapshot_date_count": 11,
+                "ticker_count": 3,
+                "total_pnl_10k": -8483.58,
+                "underperform_qqq_rate": 0.68,
+                "underperform_spy_rate": 0.84,
+                "win_rate": 0.12
+              },
+              "LEGACY_TARGET_REVIEW": {
+                "avg_excess_qqq_pct": -0.7435,
+                "avg_excess_spy_pct": -1.2848,
+                "avg_return_pct": -2.5682,
+                "median_return_pct": -4.1025,
+                "settled_rows": 16,
+                "snapshot_date_count": 11,
+                "ticker_count": 2,
+                "total_pnl_10k": -4109.2,
+                "underperform_qqq_rate": 0.6875,
+                "underperform_spy_rate": 0.6875,
+                "win_rate": 0.3125
+              },
+              "SIGNAL_TARGET": {
+                "avg_excess_qqq_pct": -3.6784,
+                "avg_excess_spy_pct": -4.7602,
+                "avg_return_pct": -6.5962,
+                "median_return_pct": -2.7755,
+                "settled_rows": 16,
+                "snapshot_date_count": 10,
+                "ticker_count": 3,
+                "total_pnl_10k": -10553.92,
+                "underperform_qqq_rate": 0.5,
+                "underperform_spy_rate": 0.5625,
+                "win_rate": 0.4375
+              },
+              "TIME_STOP": {
+                "avg_excess_qqq_pct": -1.0505,
+                "avg_excess_spy_pct": -1.9587,
+                "avg_return_pct": -3.4671,
+                "median_return_pct": -2.9561,
+                "settled_rows": 31,
+                "snapshot_date_count": 11,
+                "ticker_count": 4,
+                "total_pnl_10k": -10748.03,
+                "underperform_qqq_rate": 0.612903,
+                "underperform_spy_rate": 0.903226,
+                "win_rate": 0.064516
+              }
+            },
+            "field": "rule",
+            "position_or_action_rows": 165,
+            "settled_rows": 119
+          },
+          "5": {
+            "by_group": {
+              "ATR_STOP": {
+                "avg_excess_qqq_pct": -3.5782,
+                "avg_excess_spy_pct": -3.1053,
+                "avg_return_pct": -4.2251,
+                "median_return_pct": -5.5931,
+                "settled_rows": 19,
+                "snapshot_date_count": 6,
+                "ticker_count": 5,
+                "total_pnl_10k": -8027.68,
+                "underperform_qqq_rate": 0.894737,
+                "underperform_spy_rate": 0.947368,
+                "win_rate": 0.210526
+              },
+              "HARD_STOP": {
+                "avg_excess_qqq_pct": -3.8318,
+                "avg_excess_spy_pct": -3.4021,
+                "avg_return_pct": -4.554,
+                "median_return_pct": -5.6732,
+                "settled_rows": 15,
+                "snapshot_date_count": 6,
+                "ticker_count": 3,
+                "total_pnl_10k": -6830.93,
+                "underperform_qqq_rate": 0.933333,
+                "underperform_spy_rate": 0.933333,
+                "win_rate": 0.2
+              },
+              "LEGACY_TARGET_REVIEW": {
+                "avg_excess_qqq_pct": -0.4199,
+                "avg_excess_spy_pct": -0.3516,
+                "avg_return_pct": -1.8198,
+                "median_return_pct": -2.321,
+                "settled_rows": 11,
+                "snapshot_date_count": 6,
+                "ticker_count": 2,
+                "total_pnl_10k": -2001.8,
+                "underperform_qqq_rate": 0.454545,
+                "underperform_spy_rate": 0.454545,
+                "win_rate": 0.363636
+              },
+              "SIGNAL_TARGET": {
+                "avg_excess_qqq_pct": -6.4256,
+                "avg_excess_spy_pct": -7.0423,
+                "avg_return_pct": -9.1913,
+                "median_return_pct": -9.5586,
+                "settled_rows": 7,
+                "snapshot_date_count": 5,
+                "ticker_count": 2,
+                "total_pnl_10k": -6433.88,
+                "underperform_qqq_rate": 0.571429,
+                "underperform_spy_rate": 0.571429,
+                "win_rate": 0.285714
+              },
+              "TIME_STOP": {
+                "avg_excess_qqq_pct": -4.1166,
+                "avg_excess_spy_pct": -3.9852,
+                "avg_return_pct": -5.4069,
+                "median_return_pct": -5.7078,
+                "settled_rows": 16,
+                "snapshot_date_count": 6,
+                "ticker_count": 4,
+                "total_pnl_10k": -8651.12,
+                "underperform_qqq_rate": 0.9375,
+                "underperform_spy_rate": 0.9375,
+                "win_rate": 0.1875
+              }
+            },
+            "field": "rule",
+            "position_or_action_rows": 165,
+            "settled_rows": 68
+          }
+        },
+        "duplicate_warning": "A single position can emit multiple action rows. Rule diagnostics are not independent trades and are not allocation-ready."
+      },
+      "position_level": {
+        "exit_minus_no_action": {
+          "1": {
+            "avg_excess_qqq_pct": -1.2241,
+            "avg_excess_spy_pct": -1.2371,
+            "avg_return_pct": -1.2472,
+            "left": "EXIT",
+            "left_settled_rows": 54,
+            "right": "NO_ACTION",
+            "right_settled_rows": 134,
+            "underperform_qqq_rate": 0.092593,
+            "underperform_spy_rate": 0.126036
+          },
+          "10": {
+            "avg_excess_qqq_pct": null,
+            "avg_excess_spy_pct": null,
+            "avg_return_pct": null,
+            "left": "EXIT",
+            "left_settled_rows": null,
+            "right": "NO_ACTION",
+            "right_settled_rows": null,
+            "underperform_qqq_rate": null,
+            "underperform_spy_rate": null
+          },
+          "3": {
+            "avg_excess_qqq_pct": -2.0015,
+            "avg_excess_spy_pct": -2.1889,
+            "avg_return_pct": -2.5234,
+            "left": "EXIT",
+            "left_settled_rows": 47,
+            "right": "NO_ACTION",
+            "right_settled_rows": 118,
+            "underperform_qqq_rate": -0.010278,
+            "underperform_spy_rate": 0.091959
+          },
+          "5": {
+            "avg_excess_qqq_pct": -5.0412,
+            "avg_excess_spy_pct": -5.4826,
+            "avg_return_pct": -5.9339,
+            "left": "EXIT",
+            "left_settled_rows": 26,
+            "right": "NO_ACTION",
+            "right_settled_rows": 72,
+            "underperform_qqq_rate": 0.154914,
+            "underperform_spy_rate": 0.290598
+          }
+        },
+        "primary_shadow_action": {
+          "1": {
+            "by_group": {
+              "EXIT": {
+                "avg_excess_qqq_pct": -0.9274,
+                "avg_excess_spy_pct": -0.9756,
+                "avg_return_pct": -1.678,
+                "median_return_pct": -1.5611,
+                "settled_rows": 54,
+                "snapshot_date_count": 13,
+                "ticker_count": 9,
+                "total_pnl_10k": -9061.3,
+                "underperform_qqq_rate": 0.592593,
+                "underperform_spy_rate": 0.611111,
+                "win_rate": 0.314815
+              },
+              "NO_ACTION": {
+                "avg_excess_qqq_pct": 0.2967,
+                "avg_excess_spy_pct": 0.2615,
+                "avg_return_pct": -0.4308,
+                "median_return_pct": -0.6827,
+                "settled_rows": 134,
+                "snapshot_date_count": 13,
+                "ticker_count": 18,
+                "total_pnl_10k": -5773.11,
+                "underperform_qqq_rate": 0.5,
+                "underperform_spy_rate": 0.485075,
+                "win_rate": 0.41791
+              },
+              "REVIEW": {
+                "avg_excess_qqq_pct": 0.1393,
+                "avg_excess_spy_pct": -0.0205,
+                "avg_return_pct": -0.8212,
+                "median_return_pct": -0.4899,
+                "settled_rows": 29,
+                "snapshot_date_count": 13,
+                "ticker_count": 5,
+                "total_pnl_10k": -2381.52,
+                "underperform_qqq_rate": 0.37931,
+                "underperform_spy_rate": 0.448276,
+                "win_rate": 0.482759
+              }
+            },
+            "field": "primary_shadow_action",
+            "position_or_action_rows": 244,
+            "settled_rows": 217
+          },
+          "10": {
+            "by_group": {},
+            "field": "primary_shadow_action",
+            "position_or_action_rows": 244,
+            "settled_rows": 0
+          },
+          "3": {
+            "by_group": {
+              "EXIT": {
+                "avg_excess_qqq_pct": -1.9062,
+                "avg_excess_spy_pct": -2.7599,
+                "avg_return_pct": -4.2488,
+                "median_return_pct": -2.9561,
+                "settled_rows": 47,
+                "snapshot_date_count": 11,
+                "ticker_count": 8,
+                "total_pnl_10k": -19969.3,
+                "underperform_qqq_rate": 0.574468,
+                "underperform_spy_rate": 0.702128,
+                "win_rate": 0.234043
+              },
+              "NO_ACTION": {
+                "avg_excess_qqq_pct": 0.0953,
+                "avg_excess_spy_pct": -0.571,
+                "avg_return_pct": -1.7254,
+                "median_return_pct": -1.7079,
+                "settled_rows": 118,
+                "snapshot_date_count": 11,
+                "ticker_count": 16,
+                "total_pnl_10k": -20359.43,
+                "underperform_qqq_rate": 0.584746,
+                "underperform_spy_rate": 0.610169,
+                "win_rate": 0.381356
+              },
+              "REVIEW": {
+                "avg_excess_qqq_pct": -0.1889,
+                "avg_excess_spy_pct": -1.1003,
+                "avg_return_pct": -2.6434,
+                "median_return_pct": -2.8675,
+                "settled_rows": 21,
+                "snapshot_date_count": 11,
+                "ticker_count": 3,
+                "total_pnl_10k": -5551.24,
+                "underperform_qqq_rate": 0.52381,
+                "underperform_spy_rate": 0.761905,
+                "win_rate": 0.238095
+              }
+            },
+            "field": "primary_shadow_action",
+            "position_or_action_rows": 244,
+            "settled_rows": 186
+          },
+          "5": {
+            "by_group": {
+              "EXIT": {
+                "avg_excess_qqq_pct": -4.3448,
+                "avg_excess_spy_pct": -4.1653,
+                "avg_return_pct": -5.5621,
+                "median_return_pct": -5.5931,
+                "settled_rows": 26,
+                "snapshot_date_count": 6,
+                "ticker_count": 7,
+                "total_pnl_10k": -14461.56,
+                "underperform_qqq_rate": 0.807692,
+                "underperform_spy_rate": 0.846154,
+                "win_rate": 0.230769
+              },
+              "NO_ACTION": {
+                "avg_excess_qqq_pct": 0.6964,
+                "avg_excess_spy_pct": 1.3173,
+                "avg_return_pct": 0.3718,
+                "median_return_pct": -0.3895,
+                "settled_rows": 72,
+                "snapshot_date_count": 6,
+                "ticker_count": 15,
+                "total_pnl_10k": 2676.58,
+                "underperform_qqq_rate": 0.652778,
+                "underperform_spy_rate": 0.555556,
+                "win_rate": 0.458333
+              },
+              "REVIEW": {
+                "avg_excess_qqq_pct": -0.6043,
+                "avg_excess_spy_pct": -0.6269,
+                "avg_return_pct": -2.1602,
+                "median_return_pct": -2.3563,
+                "settled_rows": 12,
+                "snapshot_date_count": 6,
+                "ticker_count": 3,
+                "total_pnl_10k": -2592.23,
+                "underperform_qqq_rate": 0.5,
+                "underperform_spy_rate": 0.5,
+                "win_rate": 0.333333
+              }
+            },
+            "field": "primary_shadow_action",
+            "position_or_action_rows": 244,
+            "settled_rows": 110
+          }
+        },
+        "primary_shadow_rule": {
+          "1": {
+            "by_group": {
+              "ATR_STOP": {
+                "avg_excess_qqq_pct": -0.1644,
+                "avg_excess_spy_pct": -0.0192,
+                "avg_return_pct": -0.4605,
+                "median_return_pct": -0.2705,
+                "settled_rows": 7,
+                "snapshot_date_count": 7,
+                "ticker_count": 2,
+                "total_pnl_10k": -322.38,
+                "underperform_qqq_rate": 0.428571,
+                "underperform_spy_rate": 0.428571,
+                "win_rate": 0.428571
+              },
+              "HARD_STOP": {
+                "avg_excess_qqq_pct": -0.7078,
+                "avg_excess_spy_pct": -0.7683,
+                "avg_return_pct": -1.4673,
+                "median_return_pct": -1.618,
+                "settled_rows": 29,
+                "snapshot_date_count": 13,
+                "ticker_count": 3,
+                "total_pnl_10k": -4255.25,
+                "underperform_qqq_rate": 0.62069,
+                "underperform_spy_rate": 0.655172,
+                "win_rate": 0.275862
+              },
+              "LEGACY_TARGET_REVIEW": {
+                "avg_excess_qqq_pct": 0.2392,
+                "avg_excess_spy_pct": 0.1533,
+                "avg_return_pct": -0.6083,
+                "median_return_pct": 0.6727,
+                "settled_rows": 18,
+                "snapshot_date_count": 13,
+                "ticker_count": 2,
+                "total_pnl_10k": -1094.98,
+                "underperform_qqq_rate": 0.277778,
+                "underperform_spy_rate": 0.333333,
+                "win_rate": 0.611111
+              },
+              "NO_RULE": {
+                "avg_excess_qqq_pct": 0.2967,
+                "avg_excess_spy_pct": 0.2615,
+                "avg_return_pct": -0.4308,
+                "median_return_pct": -0.6827,
+                "settled_rows": 134,
+                "snapshot_date_count": 13,
+                "ticker_count": 18,
+                "total_pnl_10k": -5773.11,
+                "underperform_qqq_rate": 0.5,
+                "underperform_spy_rate": 0.485075,
+                "win_rate": 0.41791
+              },
+              "SIGNAL_TARGET": {
+                "avg_excess_qqq_pct": -1.5779,
+                "avg_excess_spy_pct": -1.6816,
+                "avg_return_pct": -2.4909,
+                "median_return_pct": -2.7245,
+                "settled_rows": 18,
+                "snapshot_date_count": 11,
+                "ticker_count": 4,
+                "total_pnl_10k": -4483.67,
+                "underperform_qqq_rate": 0.611111,
+                "underperform_spy_rate": 0.611111,
+                "win_rate": 0.333333
+              },
+              "TIME_STOP": {
+                "avg_excess_qqq_pct": -0.0243,
+                "avg_excess_spy_pct": -0.3049,
+                "avg_return_pct": -1.1696,
+                "median_return_pct": -1.6459,
+                "settled_rows": 11,
+                "snapshot_date_count": 7,
+                "ticker_count": 4,
+                "total_pnl_10k": -1286.54,
+                "underperform_qqq_rate": 0.545455,
+                "underperform_spy_rate": 0.636364,
+                "win_rate": 0.272727
+              }
+            },
+            "field": "shadow_rule_bucket",
+            "position_or_action_rows": 244,
+            "settled_rows": 217
+          },
+          "10": {
+            "by_group": {},
+            "field": "shadow_rule_bucket",
+            "position_or_action_rows": 244,
+            "settled_rows": 0
+          },
+          "3": {
+            "by_group": {
+              "ATR_STOP": {
+                "avg_excess_qqq_pct": 0.5377,
+                "avg_excess_spy_pct": -0.2103,
+                "avg_return_pct": -1.553,
+                "median_return_pct": -1.3284,
+                "settled_rows": 6,
+                "snapshot_date_count": 6,
+                "ticker_count": 2,
+                "total_pnl_10k": -931.8,
+                "underperform_qqq_rate": 0.333333,
+                "underperform_spy_rate": 0.5,
+                "win_rate": 0.166667
+              },
+              "HARD_STOP": {
+                "avg_excess_qqq_pct": -1.3585,
+                "avg_excess_spy_pct": -2.0917,
+                "avg_return_pct": -3.3934,
+                "median_return_pct": -3.8934,
+                "settled_rows": 25,
+                "snapshot_date_count": 11,
+                "ticker_count": 3,
+                "total_pnl_10k": -8483.58,
+                "underperform_qqq_rate": 0.68,
+                "underperform_spy_rate": 0.84,
+                "win_rate": 0.12
+              },
+              "LEGACY_TARGET_REVIEW": {
+                "avg_excess_qqq_pct": -0.7435,
+                "avg_excess_spy_pct": -1.2848,
+                "avg_return_pct": -2.5682,
+                "median_return_pct": -4.1025,
+                "settled_rows": 16,
+                "snapshot_date_count": 11,
+                "ticker_count": 2,
+                "total_pnl_10k": -4109.2,
+                "underperform_qqq_rate": 0.6875,
+                "underperform_spy_rate": 0.6875,
+                "win_rate": 0.3125
+              },
+              "NO_RULE": {
+                "avg_excess_qqq_pct": 0.0953,
+                "avg_excess_spy_pct": -0.571,
+                "avg_return_pct": -1.7254,
+                "median_return_pct": -1.7079,
+                "settled_rows": 118,
+                "snapshot_date_count": 11,
+                "ticker_count": 16,
+                "total_pnl_10k": -20359.43,
+                "underperform_qqq_rate": 0.584746,
+                "underperform_spy_rate": 0.610169,
+                "win_rate": 0.381356
+              },
+              "SIGNAL_TARGET": {
+                "avg_excess_qqq_pct": -3.6784,
+                "avg_excess_spy_pct": -4.7602,
+                "avg_return_pct": -6.5962,
+                "median_return_pct": -2.7755,
+                "settled_rows": 16,
+                "snapshot_date_count": 10,
+                "ticker_count": 3,
+                "total_pnl_10k": -10553.92,
+                "underperform_qqq_rate": 0.5,
+                "underperform_spy_rate": 0.5625,
+                "win_rate": 0.4375
+              },
+              "TIME_STOP": {
+                "avg_excess_qqq_pct": 1.5861,
+                "avg_excess_spy_pct": -0.5097,
+                "avg_return_pct": -2.8841,
+                "median_return_pct": -2.8675,
+                "settled_rows": 5,
+                "snapshot_date_count": 5,
+                "ticker_count": 1,
+                "total_pnl_10k": -1442.04,
+                "underperform_qqq_rate": 0.0,
+                "underperform_spy_rate": 1.0,
+                "win_rate": 0.0
+              }
+            },
+            "field": "shadow_rule_bucket",
+            "position_or_action_rows": 244,
+            "settled_rows": 186
+          },
+          "5": {
+            "by_group": {
+              "ATR_STOP": {
+                "avg_excess_qqq_pct": -2.6273,
+                "avg_excess_spy_pct": -1.9923,
+                "avg_return_pct": -2.9919,
+                "median_return_pct": -3.7236,
+                "settled_rows": 4,
+                "snapshot_date_count": 4,
+                "ticker_count": 2,
+                "total_pnl_10k": -1196.75,
+                "underperform_qqq_rate": 0.75,
+                "underperform_spy_rate": 1.0,
+                "win_rate": 0.25
+              },
+              "HARD_STOP": {
+                "avg_excess_qqq_pct": -3.8318,
+                "avg_excess_spy_pct": -3.4021,
+                "avg_return_pct": -4.554,
+                "median_return_pct": -5.6732,
+                "settled_rows": 15,
+                "snapshot_date_count": 6,
+                "ticker_count": 3,
+                "total_pnl_10k": -6830.93,
+                "underperform_qqq_rate": 0.933333,
+                "underperform_spy_rate": 0.933333,
+                "win_rate": 0.2
+              },
+              "LEGACY_TARGET_REVIEW": {
+                "avg_excess_qqq_pct": -0.4199,
+                "avg_excess_spy_pct": -0.3516,
+                "avg_return_pct": -1.8198,
+                "median_return_pct": -2.321,
+                "settled_rows": 11,
+                "snapshot_date_count": 6,
+                "ticker_count": 2,
+                "total_pnl_10k": -2001.8,
+                "underperform_qqq_rate": 0.454545,
+                "underperform_spy_rate": 0.454545,
+                "win_rate": 0.363636
+              },
+              "NO_RULE": {
+                "avg_excess_qqq_pct": 0.6964,
+                "avg_excess_spy_pct": 1.3173,
+                "avg_return_pct": 0.3718,
+                "median_return_pct": -0.3895,
+                "settled_rows": 72,
+                "snapshot_date_count": 6,
+                "ticker_count": 15,
+                "total_pnl_10k": 2676.58,
+                "underperform_qqq_rate": 0.652778,
+                "underperform_spy_rate": 0.555556,
+                "win_rate": 0.458333
+              },
+              "SIGNAL_TARGET": {
+                "avg_excess_qqq_pct": -6.4256,
+                "avg_excess_spy_pct": -7.0423,
+                "avg_return_pct": -9.1913,
+                "median_return_pct": -9.5586,
+                "settled_rows": 7,
+                "snapshot_date_count": 5,
+                "ticker_count": 2,
+                "total_pnl_10k": -6433.88,
+                "underperform_qqq_rate": 0.571429,
+                "underperform_spy_rate": 0.571429,
+                "win_rate": 0.285714
+              }
+            },
+            "field": "shadow_rule_bucket",
+            "position_or_action_rows": 244,
+            "settled_rows": 109
+          }
+        },
+        "prior_risk_state": {
+          "1": {
+            "by_group": {
+              "OK_OR_OTHER": {
+                "avg_excess_qqq_pct": 0.4139,
+                "avg_excess_spy_pct": 0.398,
+                "avg_return_pct": -0.3158,
+                "median_return_pct": -0.6827,
+                "settled_rows": 114,
+                "snapshot_date_count": 13,
+                "ticker_count": 18,
+                "total_pnl_10k": -3600.73,
+                "underperform_qqq_rate": 0.5,
+                "underperform_spy_rate": 0.491228,
+                "win_rate": 0.429825
+              },
+              "RISK": {
+                "avg_excess_qqq_pct": -0.5191,
+                "avg_excess_spy_pct": -0.6176,
+                "avg_return_pct": -1.3219,
+                "median_return_pct": -1.2003,
+                "settled_rows": 103,
+                "snapshot_date_count": 13,
+                "ticker_count": 15,
+                "total_pnl_10k": -13615.2,
+                "underperform_qqq_rate": 0.514563,
+                "underperform_spy_rate": 0.533981,
+                "win_rate": 0.368932
+              }
+            },
+            "field": "risk_state",
+            "position_or_action_rows": 244,
+            "settled_rows": 217
+          },
+          "10": {
+            "by_group": {},
+            "field": "risk_state",
+            "position_or_action_rows": 244,
+            "settled_rows": 0
+          },
+          "3": {
+            "by_group": {
+              "OK_OR_OTHER": {
+                "avg_excess_qqq_pct": 0.1317,
+                "avg_excess_spy_pct": -0.6776,
+                "avg_return_pct": -1.9343,
+                "median_return_pct": -2.4918,
+                "settled_rows": 101,
+                "snapshot_date_count": 11,
+                "ticker_count": 16,
+                "total_pnl_10k": -19536.0,
+                "underperform_qqq_rate": 0.574257,
+                "underperform_spy_rate": 0.60396,
+                "win_rate": 0.376238
+              },
+              "RISK": {
+                "avg_excess_qqq_pct": -1.1248,
+                "avg_excess_spy_pct": -1.7854,
+                "avg_return_pct": -3.0993,
+                "median_return_pct": -2.9561,
+                "settled_rows": 85,
+                "snapshot_date_count": 11,
+                "ticker_count": 12,
+                "total_pnl_10k": -26343.97,
+                "underperform_qqq_rate": 0.576471,
+                "underperform_spy_rate": 0.705882,
+                "win_rate": 0.270588
+              }
+            },
+            "field": "risk_state",
+            "position_or_action_rows": 244,
+            "settled_rows": 186
+          },
+          "5": {
+            "by_group": {
+              "OK_OR_OTHER": {
+                "avg_excess_qqq_pct": 1.2035,
+                "avg_excess_spy_pct": 1.8271,
+                "avg_return_pct": 0.9048,
+                "median_return_pct": -0.1999,
+                "settled_rows": 57,
+                "snapshot_date_count": 6,
+                "ticker_count": 15,
+                "total_pnl_10k": 5157.22,
+                "underperform_qqq_rate": 0.631579,
+                "underperform_spy_rate": 0.508772,
+                "win_rate": 0.491228
+              },
+              "RISK": {
+                "avg_excess_qqq_pct": -2.6165,
+                "avg_excess_spy_pct": -2.3606,
+                "avg_return_pct": -3.6857,
+                "median_return_pct": -4.555,
+                "settled_rows": 53,
+                "snapshot_date_count": 6,
+                "ticker_count": 11,
+                "total_pnl_10k": -19534.43,
+                "underperform_qqq_rate": 0.716981,
+                "underperform_spy_rate": 0.735849,
+                "win_rate": 0.283019
+              }
+            },
+            "field": "risk_state",
+            "position_or_action_rows": 244,
+            "settled_rows": 110
+          }
+        },
+        "review_minus_no_action": {
+          "1": {
+            "avg_excess_qqq_pct": -0.1574,
+            "avg_excess_spy_pct": -0.282,
+            "avg_return_pct": -0.3904,
+            "left": "REVIEW",
+            "left_settled_rows": 29,
+            "right": "NO_ACTION",
+            "right_settled_rows": 134,
+            "underperform_qqq_rate": -0.12069,
+            "underperform_spy_rate": -0.036799
+          },
+          "10": {
+            "avg_excess_qqq_pct": null,
+            "avg_excess_spy_pct": null,
+            "avg_return_pct": null,
+            "left": "REVIEW",
+            "left_settled_rows": null,
+            "right": "NO_ACTION",
+            "right_settled_rows": null,
+            "underperform_qqq_rate": null,
+            "underperform_spy_rate": null
+          },
+          "3": {
+            "avg_excess_qqq_pct": -0.2842,
+            "avg_excess_spy_pct": -0.5293,
+            "avg_return_pct": -0.918,
+            "left": "REVIEW",
+            "left_settled_rows": 21,
+            "right": "NO_ACTION",
+            "right_settled_rows": 118,
+            "underperform_qqq_rate": -0.060936,
+            "underperform_spy_rate": 0.151736
+          },
+          "5": {
+            "avg_excess_qqq_pct": -1.3007,
+            "avg_excess_spy_pct": -1.9442,
+            "avg_return_pct": -2.532,
+            "left": "REVIEW",
+            "left_settled_rows": 12,
+            "right": "NO_ACTION",
+            "right_settled_rows": 72,
+            "underperform_qqq_rate": -0.152778,
+            "underperform_spy_rate": -0.055556
+          }
+        },
+        "shadow_minus_no_action": {
+          "1": {
+            "avg_excess_qqq_pct": -0.8514,
+            "avg_excess_spy_pct": -0.9034,
+            "avg_return_pct": -0.9479,
+            "left": "SHADOW_ACTION",
+            "left_settled_rows": 83,
+            "right": "NO_ACTION",
+            "right_settled_rows": 134,
+            "underperform_qqq_rate": 0.018072,
+            "underperform_spy_rate": 0.069142
+          },
+          "10": {
+            "avg_excess_qqq_pct": null,
+            "avg_excess_spy_pct": null,
+            "avg_return_pct": null,
+            "left": "SHADOW_ACTION",
+            "left_settled_rows": null,
+            "right": "NO_ACTION",
+            "right_settled_rows": null,
+            "underperform_qqq_rate": null,
+            "underperform_spy_rate": null
+          },
+          "3": {
+            "avg_excess_qqq_pct": -1.4711,
+            "avg_excess_spy_pct": -1.6764,
+            "avg_return_pct": -2.0276,
+            "left": "SHADOW_ACTION",
+            "left_settled_rows": 68,
+            "right": "NO_ACTION",
+            "right_settled_rows": 118,
+            "underperform_qqq_rate": -0.025922,
+            "underperform_spy_rate": 0.110419
+          },
+          "5": {
+            "avg_excess_qqq_pct": -3.86,
+            "avg_excess_spy_pct": -4.3652,
+            "avg_return_pct": -4.8596,
+            "left": "SHADOW_ACTION",
+            "left_settled_rows": 38,
+            "right": "NO_ACTION",
+            "right_settled_rows": 72,
+            "underperform_qqq_rate": 0.057748,
+            "underperform_spy_rate": 0.181286
+          }
+        },
+        "shadow_presence": {
+          "1": {
+            "by_group": {
+              "NO_ACTION": {
+                "avg_excess_qqq_pct": 0.2967,
+                "avg_excess_spy_pct": 0.2615,
+                "avg_return_pct": -0.4308,
+                "median_return_pct": -0.6827,
+                "settled_rows": 134,
+                "snapshot_date_count": 13,
+                "ticker_count": 18,
+                "total_pnl_10k": -5773.11,
+                "underperform_qqq_rate": 0.5,
+                "underperform_spy_rate": 0.485075,
+                "win_rate": 0.41791
+              },
+              "SHADOW_ACTION": {
+                "avg_excess_qqq_pct": -0.5547,
+                "avg_excess_spy_pct": -0.6419,
+                "avg_return_pct": -1.3787,
+                "median_return_pct": -1.4909,
+                "settled_rows": 83,
+                "snapshot_date_count": 13,
+                "ticker_count": 12,
+                "total_pnl_10k": -11442.82,
+                "underperform_qqq_rate": 0.518072,
+                "underperform_spy_rate": 0.554217,
+                "win_rate": 0.373494
+              }
+            },
+            "field": "shadow_presence_bucket",
+            "position_or_action_rows": 244,
+            "settled_rows": 217
+          },
+          "10": {
+            "by_group": {},
+            "field": "shadow_presence_bucket",
+            "position_or_action_rows": 244,
+            "settled_rows": 0
+          },
+          "3": {
+            "by_group": {
+              "NO_ACTION": {
+                "avg_excess_qqq_pct": 0.0953,
+                "avg_excess_spy_pct": -0.571,
+                "avg_return_pct": -1.7254,
+                "median_return_pct": -1.7079,
+                "settled_rows": 118,
+                "snapshot_date_count": 11,
+                "ticker_count": 16,
+                "total_pnl_10k": -20359.43,
+                "underperform_qqq_rate": 0.584746,
+                "underperform_spy_rate": 0.610169,
+                "win_rate": 0.381356
+              },
+              "SHADOW_ACTION": {
+                "avg_excess_qqq_pct": -1.3758,
+                "avg_excess_spy_pct": -2.2474,
+                "avg_return_pct": -3.753,
+                "median_return_pct": -2.9561,
+                "settled_rows": 68,
+                "snapshot_date_count": 11,
+                "ticker_count": 10,
+                "total_pnl_10k": -25520.54,
+                "underperform_qqq_rate": 0.558824,
+                "underperform_spy_rate": 0.720588,
+                "win_rate": 0.235294
+              }
+            },
+            "field": "shadow_presence_bucket",
+            "position_or_action_rows": 244,
+            "settled_rows": 186
+          },
+          "5": {
+            "by_group": {
+              "NO_ACTION": {
+                "avg_excess_qqq_pct": 0.6964,
+                "avg_excess_spy_pct": 1.3173,
+                "avg_return_pct": 0.3718,
+                "median_return_pct": -0.3895,
+                "settled_rows": 72,
+                "snapshot_date_count": 6,
+                "ticker_count": 15,
+                "total_pnl_10k": 2676.58,
+                "underperform_qqq_rate": 0.652778,
+                "underperform_spy_rate": 0.555556,
+                "win_rate": 0.458333
+              },
+              "SHADOW_ACTION": {
+                "avg_excess_qqq_pct": -3.1636,
+                "avg_excess_spy_pct": -3.0479,
+                "avg_return_pct": -4.4878,
+                "median_return_pct": -4.9722,
+                "settled_rows": 38,
+                "snapshot_date_count": 6,
+                "ticker_count": 9,
+                "total_pnl_10k": -17053.79,
+                "underperform_qqq_rate": 0.710526,
+                "underperform_spy_rate": 0.736842,
+                "win_rate": 0.263158
+              }
+            },
+            "field": "shadow_presence_bucket",
+            "position_or_action_rows": 244,
+            "settled_rows": 110
+          }
+        }
+      }
+    },
+    "field_coverage": {
+      "entry_date": {
+        "base_rows": 244,
+        "coverage": 0.889344,
+        "present_rows": 217
+      },
+      "observation_base_id": {
+        "base_rows": 244,
+        "coverage": 1.0,
+        "present_rows": 244
+      },
+      "primary_shadow_action": {
+        "base_rows": 244,
+        "coverage": 1.0,
+        "present_rows": 244
+      },
+      "primary_shadow_rule": {
+        "base_rows": 244,
+        "coverage": 0.405738,
+        "present_rows": 99
+      },
+      "quote_capture_time_et": {
+        "base_rows": 244,
+        "coverage": 0.04918,
+        "present_rows": 12
+      },
+      "quote_time_et": {
+        "base_rows": 244,
+        "coverage": 0.0,
+        "present_rows": 0
+      },
+      "shadow_action_count": {
+        "base_rows": 244,
+        "coverage": 1.0,
+        "present_rows": 244
+      },
+      "snapshot_date": {
+        "base_rows": 244,
+        "coverage": 1.0,
+        "present_rows": 244
+      },
+      "target_price": {
+        "base_rows": 244,
+        "coverage": 1.0,
+        "present_rows": 244
+      },
+      "ticker": {
+        "base_rows": 244,
+        "coverage": 1.0,
+        "present_rows": 244
+      }
+    },
+    "row_summary": {
+      "h1_no_action_positions": 145,
+      "h1_position_rows": 244,
+      "h1_settled_rows": 217,
+      "h1_shadow_action_positions": 99,
+      "primary_shadow_action_counts": {
+        "EXIT": 62,
+        "NO_ACTION": 145,
+        "REVIEW": 37
+      },
+      "primary_shadow_rule_counts": {
+        "ATR_STOP": 8,
+        "HARD_STOP": 33,
+        "LEGACY_TARGET_REVIEW": 20,
+        "NO_RULE": 145,
+        "SIGNAL_TARGET": 21,
+        "TIME_STOP": 17
+      },
+      "prior_position_ledger_rows": 976,
+      "raw_shadow_action_rows": 165,
+      "shadow_action_count_distribution": {
+        "0": 145,
+        "1": 64,
+        "2": 4,
+        "3": 31
+      },
+      "snapshot_date_count": 15,
+      "status_counts": {
+        "APPROACHING": 21,
+        "BREACHED": 99,
+        "OK": 124
+      },
+      "ticker_count": 19,
+      "top_shadow_tickers": [
+        {
+          "positions": 16,
+          "ticker": "AMD"
+        },
+        {
+          "positions": 15,
+          "ticker": "META"
+        },
+        {
+          "positions": 15,
+          "ticker": "NFLX"
+        },
+        {
+          "positions": 13,
+          "ticker": "TRIP"
+        },
+        {
+          "positions": 8,
+          "ticker": "APP"
+        },
+        {
+          "positions": 8,
+          "ticker": "AMZN"
+        },
+        {
+          "positions": 7,
+          "ticker": "MUU"
+        },
+        {
+          "positions": 4,
+          "ticker": "SNOW"
+        },
+        {
+          "positions": 4,
+          "ticker": "TSLA"
+        },
+        {
+          "positions": 3,
+          "ticker": "SPCX"
+        },
+        {
+          "positions": 2,
+          "ticker": "NVDA"
+        },
+        {
+          "positions": 1,
+          "ticker": "MRVL"
+        }
+      ]
+    },
+    "snapshots": [
+      {
+        "position_count": 13,
+        "snapshot_date": "2026-06-11",
+        "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260611_0214ET.json",
+        "time_label": "0214ET"
+      },
+      {
+        "position_count": 13,
+        "snapshot_date": "2026-06-11",
+        "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260611_0215ET.json",
+        "time_label": "0215ET"
+      },
+      {
+        "position_count": 13,
+        "snapshot_date": "2026-06-11",
+        "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260611_1303ET.json",
+        "time_label": "1303ET"
+      },
+      {
+        "position_count": 13,
+        "snapshot_date": "2026-06-13",
+        "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260613_1307ET.json",
+        "time_label": "1307ET"
+      },
+      {
+        "position_count": 13,
+        "snapshot_date": "2026-06-14",
+        "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260614_1302ET.json",
+        "time_label": "1302ET"
+      },
+      {
+        "position_count": 13,
+        "snapshot_date": "2026-06-15",
+        "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260615_1303ET.json",
+        "time_label": "1303ET"
+      },
+      {
+        "position_count": 16,
+        "snapshot_date": "2026-06-16",
+        "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260616_1302ET.json",
+        "time_label": "1302ET"
+      },
+      {
+        "position_count": 16,
+        "snapshot_date": "2026-06-17",
+        "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260617_1301ET.json",
+        "time_label": "1301ET"
+      },
+      {
+        "position_count": 16,
+        "snapshot_date": "2026-06-18",
+        "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260618_1301ET.json",
+        "time_label": "1301ET"
+      },
+      {
+        "position_count": 15,
+        "snapshot_date": "2026-06-19",
+        "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260619_1301ET.json",
+        "time_label": "1301ET"
+      },
+      {
+        "position_count": 15,
+        "snapshot_date": "2026-06-20",
+        "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260620_1301ET.json",
+        "time_label": "1301ET"
+      },
+      {
+        "position_count": 15,
+        "snapshot_date": "2026-06-21",
+        "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260621_1301ET.json",
+        "time_label": "1301ET"
+      },
+      {
+        "position_count": 15,
+        "snapshot_date": "2026-06-22",
+        "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260622_1302ET.json",
+        "time_label": "1302ET"
+      },
+      {
+        "position_count": 17,
+        "snapshot_date": "2026-06-23",
+        "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260623_1302ET.json",
+        "time_label": "1302ET"
+      },
+      {
+        "position_count": 15,
+        "snapshot_date": "2026-06-24",
+        "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260624_1302ET.json",
+        "time_label": "1302ET"
+      },
+      {
+        "position_count": 14,
+        "snapshot_date": "2026-06-25",
+        "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260625_1301ET.json",
+        "time_label": "1301ET"
+      },
+      {
+        "position_count": 12,
+        "snapshot_date": "2026-06-26",
+        "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260626_1301ET.json",
+        "time_label": "1301ET"
+      }
+    ]
+  },
+  "status": "observed_only_rejected_intraday_shadow_action_outcome_not_allocation_ready",
+  "timestamp": "2026-06-26T20:14:50Z",
+  "trial_family": "intraday_shadow_action_forward_outcome",
+  "trial_variant_id": "shadow_action_rule_outcome_v1"
+}

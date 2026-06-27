@@ -1,0 +1,227 @@
+{
+  "acceptance_rule": "Observed-only lead only: no production or backtest rule changes; pass as research lead only if most actual trend_long trades have an earlier production-visible precursor and earlier next-open 10d/20d replacement returns beat actual entry without concentrated window-only evidence.",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "data/experiments",
+    "experiments/logs",
+    "experiments/artifacts",
+    "experiments/tickets",
+    "docs/experiment_log.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260627-006.md",
+  "causal_components": [],
+  "change_type": "observed_only_entry_timing_attribution",
+  "changed_variable": "trend_long_pre_signal_latency_replacement_value_v1",
+  "claimed_at": "2026-06-27T04:23:29+00:00",
+  "completed_at": "2026-06-27T04:33:53Z",
+  "created_at": "2026-06-27T04:22:56+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260627-006",
+  "experiment_uid": "expuid-05bf453bc6194ef2",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260627-006",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-27T04:22:56+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "trend_long_entry_latency_attribution"
+  },
+  "hypothesis": "Observed-only: current trend_long may enter too late because it waits for prior-20d-high close breakout plus >2x volume confirmation; for actual accepted trend_long trades, production-visible near-breakout precursor rows 1-5 sessions earlier may have better next-open 10d/20d replacement value.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "trend_long_pre_signal_latency_replacement_value_v1"
+  ],
+  "mechanism_family": "entry",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "production_visible_ohlcv_precursor_rows_on_actual_trend_long_trades",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_relation",
+      "field_tags": [
+        "20d",
+        "2x",
+        "accepted",
+        "actual",
+        "attribution",
+        "because",
+        "better",
+        "breakout",
+        "close",
+        "confirmation",
+        "current",
+        "earlier",
+        "enter",
+        "entry",
+        "have",
+        "high",
+        "it",
+        "late",
+        "latency",
+        "long",
+        "may",
+        "near",
+        "observed",
+        "only",
+        "plus",
+        "pre",
+        "precursor",
+        "prior",
+        "replacement",
+        "rows",
+        "sessions",
+        "signal",
+        "too",
+        "trades",
+        "trend",
+        "value",
+        "volume",
+        "waits"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "vcp_kova_signal_day_breakout_quality_attribution",
+        "reopen_condition": null,
+        "score": 0.4988,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "volume_breadth_breakout_signal_day_high_close_support",
+        "reopen_condition": null,
+        "score": 0.4908,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "governed_space_high_close_thrust_with_space_etf_relative_breakout_complement",
+        "reopen_condition": "Expose the ARKX/UFO breakout-complement bucket in the shared default-off Space observation helper and collect forward replacement-value rows before any live/default behavior changes.",
+        "score": 0.4833,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "low_vol_20d_high_breakout_candidate_pool",
+        "reopen_condition": "A retry needs materially new evidence such as forward replacement-value rows, a real-time breadth persistence field, or a production-visible catalyst/flow provenance layer. Pure OHLCV threshold retunes should stay frozen.",
+        "score": 0.48,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "gap_up_hold_high_close_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.4786,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Direct forward replacement-value attribution on the actual accepted trend_long trades' own 1-5 session pre-signal rows; this is not a broad prebreakout candidate-pool replay, threshold retune, or production entry change.",
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_relation",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-trend-entry-latency",
+  "prediction": {
+    "confidence_reason": "Prior OHLCV-only and catalyst-qualified prebreakout entries both failed Gate 4, so broad early-entry success was unlikely. This run had a better but still risky prior because it measured only named actual trend_long trades, where false positives are lower; the main risk was that the apparent benefit would concentrate in one window or disappear once next-open execution and pre-entry MAE were counted.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "prior_prebreakout_failures",
+      "precursors_absent",
+      "earlier_entries_worse",
+      "window_concentration",
+      "needs_non_ohlcv_evidence"
+    ],
+    "recorded_at": "2026-06-27T04:22:22+00:00",
+    "success_probability": 0.35
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "artifact": "data/experiments/exp-20260627-006/exp_20260627_006_trend_long_entry_latency_attribution.json",
+    "calibration": {
+      "actual_decision": "observed_entry_latency_lead",
+      "actual_ev_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "actual_success": 1,
+      "brier_score": 0.4225,
+      "calibration_direction": "underconfident",
+      "ev_prediction_error": 0.0,
+      "expected_ev_delta": 0.0,
+      "expected_pnl_delta": 0.0,
+      "pnl_prediction_error": 0.0,
+      "predicted_failure_mode_hit": false,
+      "predicted_failure_modes": [
+        "prior_prebreakout_failures",
+        "precursors_absent",
+        "earlier_entries_worse",
+        "window_concentration",
+        "needs_non_ohlcv_evidence"
+      ],
+      "predicted_success_probability": 0.35,
+      "realized_failure_mode": null,
+      "surprise_level": "medium",
+      "surprise_note": "The prior was too cautious: broad prebreakout entries failed, but actual-trade-only breakout-without-2x-volume precursor rows showed enough replacement value to pass the read-only gate."
+    },
+    "decision": "observed_entry_latency_lead",
+    "observed_gate": {
+      "failed_reasons": [],
+      "latest_precursor_coverage": 0.6154,
+      "median_forward_10d_delta_pct": 0.024586,
+      "median_forward_20d_delta_pct": 0.006724,
+      "median_pre_entry_mae_until_actual_entry_pct": -0.009378,
+      "passed": true,
+      "positive_10d_windows": 3,
+      "positive_20d_delta_share": 0.6522,
+      "positive_20d_windows": 2,
+      "rule": "Coverage >=55pct, median 10d/20d latest-precursor deltas >0, at least two windows with positive median 20d delta, positive 20d delta share >=55pct, and median pre-entry MAE >= -4pct."
+    },
+    "summary": "The edge appeared because the diagnostic conditioned on actual trend_long trades instead of replaying a broad prebreakout candidate pool. Most useful rows were already above the prior 20-day high but had volume between 1.0x and 2.0x, so the official 2x volume confirmation often delayed entry by one session without much added pre-entry drawdown. The late_strong window stayed mixed, which is why this is a lead rather than an entry rule."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260627-006.json",
+  "single_causal_variable": "trend_long_pre_signal_latency_replacement_value_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260627-006.json",
+  "trial_family": "trend_long_entry_latency_attribution",
+  "trial_variant_id": "trend_long_actual_trade_precursor_lookback_1_5d_v1"
+}

@@ -1,0 +1,573 @@
+{
+  "acceptance_rule": "Canonical three windows must improve aggregate EV/PnL, have no EV/PnL-regressed windows, enough target trades across all windows, drawdown drift <=0.5pp, concentration within guard, and beat accepted compression/distribution comparator floors.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260627_007_trend_long_precursor_default_off_candidate_source.py",
+    "data/experiments/exp-20260627-007/exp_20260627_007_trend_long_precursor_default_off_candidate_source.json",
+    "experiments/cards/exp-20260627-007.md",
+    "experiments/manifests/exp-20260627-007.json",
+    "experiments/tickets/exp-20260627-007.json",
+    "experiments/logs/exp-20260627-007.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260627-007.md",
+  "causal_components": [
+    "fixed precursor gate",
+    "historical replay",
+    "daily snapshot schema declaration",
+    "execution envelope declaration",
+    "full-stack verdict"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "trend_long_precursor_default_off_candidate_source_v1",
+  "claimed_at": "2026-06-27T05:04:57+00:00",
+  "completed_at": "2026-06-27T05:26:34+00:00",
+  "created_at": "2026-06-27T05:04:47+00:00",
+  "evaluation_windows": [
+    {
+      "label": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json"
+    },
+    {
+      "label": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json"
+    },
+    {
+      "label": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json"
+    }
+  ],
+  "experiment_id": "exp-20260627-007",
+  "experiment_uid": "expuid-1e253528c2ae4134",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260627-007",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-27T05:04:47+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "trend_long_precursor_default_off_candidate_source"
+  },
+  "hypothesis": "A fixed default-off trend-long precursor paper source can monetize production-visible near-breakout rows that appear before accepted trend_long entries, adding replacement value without changing core live entries.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "trend_long_precursor_default_off_candidate_source_v1"
+  ],
+  "mechanism_family": "production_visible_free_ohlcv_candidate_pool",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260627-006",
+    "exp-20260530-013",
+    "exp-20260530-016",
+    "exp-20260608-013",
+    "exp-20260611-007"
+  ],
+  "new_evidence_type": "observed_trend_long_entry_latency_lead",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.5,
+        "family_key": "fiftytwo_week_high_proximity_breakout_candidate_pool",
+        "score": 0.6308,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "sec_ftd_pressure_breakout_candidate_pool",
+        "score": 0.6174,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "ticker_accumulation_quality_breakout_candidate_pool",
+        "score": 0.6174,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "narrow_range_compression_breakout_candidate_pool",
+        "score": 0.6167,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "spy_residual_compression_breakout_candidate_pool",
+        "score": 0.6167,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_relation",
+      "field_tags": [
+        "a",
+        "accepted",
+        "adding",
+        "appear",
+        "before",
+        "breakout",
+        "can",
+        "changing",
+        "core",
+        "entries",
+        "live",
+        "long",
+        "monetize",
+        "near",
+        "precursor",
+        "replacement",
+        "rows",
+        "that",
+        "trend",
+        "value",
+        "without"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.5,
+        "data_source": "ohlcv_relation",
+        "family_key": "fiftytwo_week_high_proximity_breakout_candidate_pool",
+        "reopen_condition": "Next useful evidence is closed forward replacement-value rows from the shared default-off ledger, or a genuinely new point-in-time field separating durable 52-week-high leaders from exhausted ones (fundamental quality, options/borrow structure), not another threshold retune.",
+        "score": 0.6308,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "sec_ftd_pressure_breakout_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.6174,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "ticker_accumulation_quality_breakout_candidate_pool",
+        "reopen_condition": "If revisited, use forward replacement-value rows or a materially new free-data source such as official short-interest/ownership context; do not just retune OBV or close-location thresholds.",
+        "score": 0.6174,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "narrow_range_compression_breakout_candidate_pool",
+        "reopen_condition": "Next useful evidence is a shared default-off helper that reproduces this exact historical replay and daily snapshot semantics, plus closed forward replacement-value rows. A production/live activation would need a separate activation-envelope Gate 1-4 with capital caps, liquidity and slippage assumptions, exposure limits, displacement, and kill switch rules.",
+        "score": 0.6167,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "spy_residual_compression_breakout_candidate_pool",
+        "reopen_condition": "A retry needs materially new PIT evidence, such as borrow/ETF flow, options-implied idiosyncratic pressure, or forward replacement-value rows from a shared helper.",
+        "score": 0.6167,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "exp-20260627-006 created a new observed-only actual-trend-long entry-latency evidence axis; this run fixes that named follow-through latency gate as a default-off paper source rather than sweeping broad prebreakout thresholds.",
+    "override": true,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0521,
+      "accepts": 5,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_relation",
+      "trials": 96
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-explore",
+  "prediction": {
+    "success_probability": 0.28,
+    "expected_ev_delta": 0.2,
+    "expected_pnl_delta": 3000.0,
+    "main_failure_modes": [
+      "prior_prebreakout_failures",
+      "window_regression",
+      "drawdown_drift",
+      "not_incremental",
+      "concentration"
+    ],
+    "confidence_reason": "exp-20260627-006 found positive 10d/20d replacement deltas on actual trend_long precursor rows, but exp-20260530-013 and exp-20260530-016 showed that broad prebreakout rules are fragile. The key risk is that conditioning on actual future trend_long trades created the observed edge, so the unconditional default-off source may regress.",
+    "recorded_at": "2026-06-27T05:04:26+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "gate4_passed": false,
+    "decision": "rejected_trend_long_precursor_default_off_candidate_source",
+    "artifact": "data/experiments/exp-20260627-007/exp_20260627_007_trend_long_precursor_default_off_candidate_source.json",
+    "log": "experiments/logs/exp-20260627-007.json",
+    "runner": "quant/experiments/exp_20260627_007_trend_long_precursor_default_off_candidate_source.py",
+    "delta_metrics": {
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": -0.0436,
+          "total_pnl": -462.72,
+          "strategy_total_return_pct": -0.0046,
+          "sharpe_daily": -0.02,
+          "max_drawdown_pct": 0.0007,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "signals_generated": 0,
+          "signals_survived": 0,
+          "survival_rate": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": 0.2284,
+          "total_pnl": 3849.2,
+          "strategy_total_return_pct": 0.0385,
+          "sharpe_daily": 0.15,
+          "max_drawdown_pct": -0.0035,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "signals_generated": 0,
+          "signals_survived": 0,
+          "survival_rate": 0.0
+        },
+        "old_thin": {
+          "expected_value_score": 0.0393,
+          "total_pnl": 738.14,
+          "strategy_total_return_pct": 0.0074,
+          "sharpe_daily": 0.07,
+          "max_drawdown_pct": 0.0101,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "signals_generated": 0,
+          "signals_survived": 0,
+          "survival_rate": 0.0
+        }
+      },
+      "aggregate": {
+        "baseline_expected_value_score_sum": 7.8941,
+        "after_expected_value_score_sum": 8.1182,
+        "expected_value_score_delta_sum": 0.2241,
+        "expected_value_score_delta_pct": 0.028388,
+        "baseline_total_pnl_sum": 234850.99,
+        "after_total_pnl_sum": 238975.61,
+        "total_pnl_delta_sum": 4124.62,
+        "total_pnl_delta_pct": 0.017563,
+        "windows_ev_improved": 2,
+        "windows_ev_regressed": 1,
+        "windows_pnl_improved": 2,
+        "windows_pnl_regressed": 1,
+        "max_drawdown_delta_max": 0.0101,
+        "target_trade_count_sum": 291
+      }
+    },
+    "gate1": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "baseline_identity": {
+        "documented_baseline": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "current_baseline_source": {
+          "engine": "BacktestEngine",
+          "ohlcv_warehouse_path": "data/warehouse/warehouse_main.sqlite",
+          "ohlcv_warehouse_snapshot_source": "per-window canonical snapshot",
+          "universe": "data_layer.get_universe via legacy shadow module"
+        },
+        "deltas_by_window": {
+          "late_strong": {
+            "expected_value_score_delta_vs_doc": 0.0,
+            "total_pnl_delta_vs_doc": 0.0,
+            "trade_count_delta_vs_doc": 0
+          },
+          "mid_weak": {
+            "expected_value_score_delta_vs_doc": 0.0,
+            "total_pnl_delta_vs_doc": 0.0,
+            "trade_count_delta_vs_doc": 0
+          },
+          "old_thin": {
+            "expected_value_score_delta_vs_doc": 0.0,
+            "total_pnl_delta_vs_doc": 0.0,
+            "trade_count_delta_vs_doc": 0
+          }
+        },
+        "matches_documented": true
+      },
+      "passed": true
+    },
+    "gate2": {
+      "open_positions": {
+        "passed": true,
+        "path": "operator_inputs/open_positions.json",
+        "position_count": 10,
+        "missing_entry_date_tickers": [],
+        "missing_target_price_tickers": []
+      },
+      "runtime_fields": [
+        "Date/Open/High/Low/Close/Volume",
+        "entry_date",
+        "target_price",
+        "feature_layer.compute_trend_features fields"
+      ],
+      "passed": true
+    },
+    "gate3": {
+      "new_core_filter_added": false,
+      "core_survival_unchanged": true,
+      "minimum_core_survival_rate": 0.7925,
+      "passed": true
+    },
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_trend_long_precursor_default_off_candidate_source",
+      "failed_reasons": [
+        "accepted_comparator_ev_floor_not_beaten",
+        "accepted_comparator_pnl_floor_not_beaten",
+        "late_strong_expected_value_regressed",
+        "late_strong_total_pnl_regressed",
+        "old_thin_max_drawdown_worse_gt_0.005"
+      ],
+      "warnings": [],
+      "target_trade_count": 291,
+      "windows_with_target_trades": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "ev_improved_windows": 2,
+      "pnl_improved_windows": 2,
+      "aggregate_expected_value_delta": 0.2241,
+      "aggregate_total_pnl_delta": 4124.62,
+      "accepted_comparators": {
+        "narrow_range_compression_breakout": {
+          "experiment_id": "exp-20260608-013",
+          "expected_value_delta_sum": 0.1608,
+          "total_pnl_delta_sum": 2248.98,
+          "target_trade_count": 44
+        },
+        "distribution_day_absorption": {
+          "experiment_id": "exp-20260611-007",
+          "expected_value_delta_sum": 0.5286,
+          "total_pnl_delta_sum": 10432.91,
+          "target_trade_count": 113
+        }
+      },
+      "comparator_ev_floor": 0.5286,
+      "comparator_pnl_floor": 10432.91,
+      "max_drawdown_drift_by_window": {
+        "late_strong": 0.0007,
+        "mid_weak": -0.0035,
+        "old_thin": 0.0101
+      },
+      "concentration": {
+        "max_single_positive_pnl_share": 0.199436,
+        "positive_pnl_hhi": 0.082194
+      }
+    },
+    "calibration": {
+      "actual_decision": "rejected_trend_long_precursor_default_off_candidate_source",
+      "actual_success": 0,
+      "predicted_success_probability": 0.28,
+      "brier_score": 0.0784,
+      "expected_ev_delta": 0.2,
+      "actual_ev_delta": 0.2241,
+      "ev_prediction_error": 0.0241,
+      "expected_pnl_delta": 3000.0,
+      "actual_pnl_delta": 4124.62,
+      "pnl_prediction_error": 1124.62,
+      "predicted_failure_modes": [
+        "prior_prebreakout_failures",
+        "window_regression",
+        "drawdown_drift",
+        "not_incremental",
+        "concentration"
+      ],
+      "realized_failure_mode": "accepted_comparator_ev_floor_not_beaten; accepted_comparator_pnl_floor_not_beaten; late_strong_expected_value_regressed; late_strong_total_pnl_regressed; old_thin_max_drawdown_worse_gt_0.005",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "The replay outcome matched the high-risk prior."
+    },
+    "summary": "The fixed precursor source failed because the exp-20260627-006 edge was conditional on actual future trend_long trades. Once replayed unconditionally as a default-off top-1 paper source, false starts, window instability, comparator weakness, or concentration erased the latency benefit."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260627-007.json",
+  "single_causal_variable": "trend_long_precursor_default_off_candidate_source_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260627-007.json",
+  "trial_family": "trend_long_entry_latency_default_off_candidate_source",
+  "trial_variant_id": "trend_long_precursor_top1_next_open_10d_v1",
+  "alpha_hypothesis": "candidate_pool: current trend_long may wait too long for >2x volume. Rows already above the 200-day moving average, near or above the prior 20-day high, with positive short momentum, non-breakdown state, and 1.0x-2.0x volume may be useful default-off paper entries.",
+  "implementation_mode": "candidate_pool_full_stack_replay_attempt",
+  "new_evidence_axis": "exp-20260627-006 created actual-trend-long entry-latency evidence. This run freezes that precursor shape as an unconditional default-off paper source instead of sweeping broad prebreakout thresholds.",
+  "decision": "rejected_trend_long_precursor_default_off_candidate_source",
+  "summary": "The fixed precursor source failed because the exp-20260627-006 edge was conditional on actual future trend_long trades. Once replayed unconditionally as a default-off top-1 paper source, false starts, window instability, comparator weakness, or concentration erased the latency benefit.",
+  "artifact": "data/experiments/exp-20260627-007/exp_20260627_007_trend_long_precursor_default_off_candidate_source.json",
+  "log": "experiments/logs/exp-20260627-007.json",
+  "aggregate_expected_value_delta": 0.2241,
+  "aggregate_strategy_total_pnl_delta": 4124.62,
+  "gate1": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_identity": {
+      "documented_baseline": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "current_baseline_source": {
+        "engine": "BacktestEngine",
+        "ohlcv_warehouse_path": "data/warehouse/warehouse_main.sqlite",
+        "ohlcv_warehouse_snapshot_source": "per-window canonical snapshot",
+        "universe": "data_layer.get_universe via legacy shadow module"
+      },
+      "deltas_by_window": {
+        "late_strong": {
+          "expected_value_score_delta_vs_doc": 0.0,
+          "total_pnl_delta_vs_doc": 0.0,
+          "trade_count_delta_vs_doc": 0
+        },
+        "mid_weak": {
+          "expected_value_score_delta_vs_doc": 0.0,
+          "total_pnl_delta_vs_doc": 0.0,
+          "trade_count_delta_vs_doc": 0
+        },
+        "old_thin": {
+          "expected_value_score_delta_vs_doc": 0.0,
+          "total_pnl_delta_vs_doc": 0.0,
+          "trade_count_delta_vs_doc": 0
+        }
+      },
+      "matches_documented": true
+    },
+    "passed": true
+  },
+  "gate2": {
+    "open_positions": {
+      "passed": true,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 10,
+      "missing_entry_date_tickers": [],
+      "missing_target_price_tickers": []
+    },
+    "runtime_fields": [
+      "Date/Open/High/Low/Close/Volume",
+      "entry_date",
+      "target_price",
+      "feature_layer.compute_trend_features fields"
+    ],
+    "passed": true
+  },
+  "gate3": {
+    "new_core_filter_added": false,
+    "core_survival_unchanged": true,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": true
+  },
+  "gate4": {
+    "passed": false,
+    "decision": "rejected_trend_long_precursor_default_off_candidate_source",
+    "failed_reasons": [
+      "accepted_comparator_ev_floor_not_beaten",
+      "accepted_comparator_pnl_floor_not_beaten",
+      "late_strong_expected_value_regressed",
+      "late_strong_total_pnl_regressed",
+      "old_thin_max_drawdown_worse_gt_0.005"
+    ],
+    "warnings": [],
+    "target_trade_count": 291,
+    "windows_with_target_trades": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "ev_improved_windows": 2,
+    "pnl_improved_windows": 2,
+    "aggregate_expected_value_delta": 0.2241,
+    "aggregate_total_pnl_delta": 4124.62,
+    "accepted_comparators": {
+      "narrow_range_compression_breakout": {
+        "experiment_id": "exp-20260608-013",
+        "expected_value_delta_sum": 0.1608,
+        "total_pnl_delta_sum": 2248.98,
+        "target_trade_count": 44
+      },
+      "distribution_day_absorption": {
+        "experiment_id": "exp-20260611-007",
+        "expected_value_delta_sum": 0.5286,
+        "total_pnl_delta_sum": 10432.91,
+        "target_trade_count": 113
+      }
+    },
+    "comparator_ev_floor": 0.5286,
+    "comparator_pnl_floor": 10432.91,
+    "max_drawdown_drift_by_window": {
+      "late_strong": 0.0007,
+      "mid_weak": -0.0035,
+      "old_thin": 0.0101
+    },
+    "concentration": {
+      "max_single_positive_pnl_share": 0.199436,
+      "positive_pnl_hhi": 0.082194
+    }
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The fixed precursor source failed because the exp-20260627-006 edge was conditional on actual future trend_long trades. Once replayed unconditionally as a default-off top-1 paper source, false starts, window instability, comparator weakness, or concentration erased the latency benefit.",
+    "forbidden_near_neighbor_retry": "No broad OHLCV prebreakout threshold, volume-ratio, lookback, hold-day, top-N, cooldown, or notional sweeps.",
+    "new_evidence_required": "Forward replacement-value rows from a shared logger, or a new catalyst/flow/ownership/borrow field joined before signal."
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "shared_helper_promoted": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "paper_orders_changed": false,
+    "live_orders_changed": false,
+    "production_watchlist_changed": false,
+    "uses_free_ohlcv": true,
+    "uses_llm": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "replay_only": true,
+    "adapter_status": "experiment_owned_replay_only",
+    "activation_envelope": {
+      "intended_notional": "default-off paper only at fixed $4,000 notional",
+      "capital_cap": "no live capital; future activation requires a cap",
+      "liquidity_slippage_model": "price >= $10, ADV20 >= $25M, next-open entry, 10-session close exit, target-side sell slippage, and round-trip cost",
+      "portfolio_displacement": "paper overlay versus accepted core baseline",
+      "kill_switch": "not live-ready; future shared helper would require forward replacement-value and drawdown/concentration kill switch",
+      "order_semantics": "no orders emitted"
+    }
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\ohlcv_warehouse.py seed-snapshot-versions",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260627_007_trend_long_precursor_default_off_candidate_source.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260627_007_trend_long_precursor_default_off_candidate_source.py",
+    "data/experiments/exp-20260627-007/exp_20260627_007_trend_long_precursor_default_off_candidate_source.json",
+    "experiments/logs/exp-20260627-007.json",
+    "experiments/cards/exp-20260627-007.md",
+    "experiments/manifests/exp-20260627-007.json",
+    "experiments/tickets/exp-20260627-007.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "anti_js": "No JavaScript was used.",
+  "updated_at": "2026-06-27T05:26:34+00:00"
+}

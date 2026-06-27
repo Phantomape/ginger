@@ -18,9 +18,9 @@ Observed-only alpha search. No entries, exits, ranking, sizing, LLM/news, or ord
   },
   "candidates_with_eps_estimate_delta_7d": 17,
   "closed_forward_outcomes": {
-    "10d": 30,
+    "10d": 31,
     "20d": 30,
-    "5d": 39
+    "5d": 42
   },
   "expectation_join_status_counts": {
     "ledger_row_not_usable": 12,
@@ -51,9 +51,9 @@ Observed-only alpha search. No entries, exits, ranking, sizing, LLM/news, or ord
 
 | Bucket | Candidates | 5d Closed | 5d Avg Return | 10d Closed | 10d Avg Return |
 |---|---:|---:|---:|---:|---:|
-| A_positive_expectation_and_residual_leader | 7 | 5 | 1.4369% | 0 |  |
+| A_positive_expectation_and_residual_leader | 7 | 7 | 1.2193% | 1 | -0.8354% |
 | B_positive_expectation_only | 0 | 0 |  | 0 |  |
-| C_residual_leader_only | 18 | 17 | -4.7090% | 13 | -6.5487% |
+| C_residual_leader_only | 18 | 18 | -4.9747% | 13 | -6.5487% |
 | D_neither | 17 | 17 | 0.0331% | 17 | -1.7556% |
 
 ## Reconstructed Scout
@@ -62,7 +62,7 @@ Non-PIT reconstructed rows are shown only for research triage. They cannot pass 
 
 ```json
 {
-  "bucket_a_closed_5d_outcomes": 5,
+  "bucket_a_closed_5d_outcomes": 7,
   "can_promote": false,
   "decision": "observed_only_data_gap",
   "not_gate4_evidence": true,
@@ -77,22 +77,22 @@ Non-PIT reconstructed rows are shown only for research triage. They cannot pass 
     "non_pit_reconstructed": 12,
     "pit_usable": 28
   },
-  "total_usable_candidates": 39
+  "total_usable_candidates": 42
 }
 ```
 
 | Scout Bucket | Candidates | 5d Closed | 5d Avg Return | 10d Closed | 10d Avg Return |
 |---|---:|---:|---:|---:|---:|
-| A_positive_expectation_and_residual_leader | 7 | 5 | 1.4369% | 0 |  |
+| A_positive_expectation_and_residual_leader | 7 | 7 | 1.2193% | 1 | -0.8354% |
 | B_positive_expectation_only | 0 | 0 |  | 0 |  |
-| C_residual_leader_only | 18 | 17 | -4.7090% | 13 | -6.5487% |
+| C_residual_leader_only | 18 | 18 | -4.9747% | 13 | -6.5487% |
 | D_neither | 17 | 17 | 0.0331% | 17 | -1.7556% |
 
 ## Gate
 
 ```json
 {
-  "bucket_a_closed_5d_outcomes": 5,
+  "bucket_a_closed_5d_outcomes": 7,
   "data_gap_reasons": [
     "bucket_a_closed_5d_outcomes"
   ],
@@ -101,7 +101,7 @@ Non-PIT reconstructed rows are shown only for research triage. They cannot pass 
   "minimum_total_usable_candidates": 30,
   "passed": false,
   "reason": "insufficient_bucket_or_total_sample",
-  "total_usable_candidates": 39
+  "total_usable_candidates": 42
 }
 ```
 

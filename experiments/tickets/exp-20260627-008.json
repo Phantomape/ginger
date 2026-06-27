@@ -1,0 +1,365 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260627_008_short_volume_oracle_low_mfe_stopout_attribution.py",
+    "data/experiments/exp-20260627-008/exp_20260627_008_short_volume_oracle_low_mfe_stopout_attribution.json",
+    "experiments/cards/exp-20260627-008.md",
+    "experiments/manifests/exp-20260627-008.json",
+    "experiments/tickets/exp-20260627-008.json",
+    "experiments/logs/exp-20260627-008.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "artifact": "data/experiments/exp-20260627-008/exp_20260627_008_short_volume_oracle_low_mfe_stopout_attribution.json",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260627-008.md",
+  "causal_components": [
+    "fixed-entry exit oracle rows",
+    "accepted-stack loss taxonomy rows",
+    "PIT short_volume_ratio percentile join",
+    "loss-cluster enrichment test",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "moomoo_short_volume_oracle_low_mfe_stopout_attribution_v1",
+  "claimed_at": "2026-06-27T07:14:54+00:00",
+  "completed_at": "2026-06-27T07:20:19+00:00",
+  "created_at": "2026-06-27T07:14:44+00:00",
+  "decision": "observed_only_rejected_no_oracle_short_volume_loss_enrichment",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260627-008",
+  "experiment_uid": "expuid-65db27249dda4d6b",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260627-008",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-27T07:14:44+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "short_volume_oracle_low_mfe_stopout_attribution"
+  },
+  "hypothesis": "Observed-only attribution: PIT moomoo short_volume_ratio should be higher on fixed-entry oracle low-MFE stopout and failed-followthrough loss rows than on other accepted-stack trades, explaining weak-tape immediate entry-quality regret without changing strategy behavior.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "moomoo_short_volume_oracle_low_mfe_stopout_attribution_v1"
+  ],
+  "log": "experiments/logs/exp-20260627-008.json",
+  "mechanism_family": "oracle_entry_quality_regret_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260623-003",
+    "exp-20260511-102",
+    "exp-20260625-018",
+    "exp-20260625-019",
+    "exp-20260625-023"
+  ],
+  "new_evidence_type": "new_gate_shape_oracle_loss_cluster_attribution",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "accepted",
+        "attribution",
+        "be",
+        "behavior",
+        "changing",
+        "entry",
+        "explaining",
+        "failed",
+        "followthrough",
+        "higher",
+        "immediate",
+        "loss",
+        "low",
+        "mfe",
+        "moomoo",
+        "observed",
+        "on",
+        "only",
+        "oracle",
+        "other",
+        "pit",
+        "ratio",
+        "regret",
+        "rows",
+        "short",
+        "should",
+        "stack",
+        "stopout",
+        "strategy",
+        "tape",
+        "than",
+        "trades",
+        "volume",
+        "weak",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "moomoo_daily_short_volume_informed_flow_attribution",
+        "reopen_condition": "Promotion needs a shared default-off clean-flow quality-gate helper (admit liquid candidates only when the PIT short_volume_ratio percentile is below the toxic quintile) wired into historical replay AND a daily default-off snapshot with a parity test, then a full-stack candidate-pool Gate 1-4 overlay that must beat the closest accepted comparator after costs, concentration, and drawdown -- or mate",
+        "score": 0.0585,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_daily_short_volume_broad_universe_candidate_pool",
+        "reopen_condition": "With the broad-universe coverage gap closed, a valid retry needs a materially DIFFERENT signal axis - PIT borrow fee/utilization or loan-availability, options-implied move/skew, or closed forward replacement-value rows from a shared default-off helper - not another threshold or universe-size retune.",
+        "score": 0.05,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_daily_short_volume_imbalance_candidate_pool",
+        "reopen_condition": "A valid retry needs a materially broader archived Moomoo coverage set, PIT borrow fee/utilization or loan-availability data, options/flow confirmation, or closed forward replacement-value rows from a shared default-off helper.",
+        "score": 0.0488,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "default_off_forward_short_volume_tagging",
+        "reopen_condition": "Materially more closed forward replacement rows per short-volume quintile (the current per-quintile N is single digits and not significance-tested), or a PIT borrow fee / utilization / loan-availability field, before any soft-tilt activation test.",
+        "score": 0.04,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "fixed_entry_exit_oracle_regret_cluster_attribution",
+        "reopen_condition": "A valid exit-lifecycle retry needs closed forward paper rows from a shared default-off advisory helper, PIT intratrade path features available before exit, or a live-realistic slot-reuse and winner-collateral envelope measured before promotion.",
+        "score": 0.04,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape: oracle/loss-taxonomy cluster enrichment attribution on fixed accepted-stack trades, not a short-volume threshold, clean-flow candidate-pool gate, forward-row reslice, top-N, hold-day, notional, or allocator retry.",
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "why_result_happened": "PIT short-volume did not robustly enrich in the exact oracle low-MFE / failed-followthrough loss cohort, so the remaining oracle regret likely needs another ex-ante state, news, sector-cluster, borrow, or flow field.",
+    "forbidden_near_neighbor_retry": "Do not retune short_volume_ratio thresholds, quintiles, lookbacks, top-N, hold days, notional, or allocator rank on these frozen windows; exp019 remains the binding clean-flow promotion failure.",
+    "new_evidence_required": "Valid next evidence needs PIT borrow fee/utilization/loan availability, a non-short-volume ex-ante event/state/sector label for the same oracle loss cluster, or materially more closed forward rows tagged at entry."
+  },
+  "prediction": {
+    "success_probability": 0.32,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "oracle_rows_do_not_join_to_short_volume",
+      "short_volume_not_enriched_in_loss_cluster",
+      "signal_already_untradable_after_exp019",
+      "old_thin_only_effect"
+    ],
+    "confidence_reason": "Oracle compass isolated remaining regret to weak-tape immediate entry-quality failures, and prior PIT short-volume attribution was sign-correct plus placebo-clean; the main risk is that the specific oracle low-MFE stopout cluster is too small or not enriched, and exp019 already blocks direct promotion.",
+    "recorded_at": "2026-06-27T07:14:21+00:00"
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "trade_enabled": false,
+    "daily_snapshot_exposed": false,
+    "parity_test_added": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "parity_note": "Read-only attribution over existing oracle/loss/short-volume artifacts."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260627_008_short_volume_oracle_low_mfe_stopout_attribution.py",
+    "data/experiments/exp-20260623-003/exp_20260623_003_fixed_entry_exit_oracle_regret_cluster.json",
+    "data/experiments/exp-20260511-102/exp_20260511_102_accepted_stack_oracle_loss_taxonomy.json",
+    "data/non_ohlcv/moomoo_daily_short_volume_broad/rows.jsonl",
+    "experiments/logs/exp-20260625-019.json",
+    "docs/oracle_regret_compass.md",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "observed_only_rejected_no_oracle_short_volume_loss_enrichment",
+    "artifact": "data/experiments/exp-20260627-008/exp_20260627_008_short_volume_oracle_low_mfe_stopout_attribution.json",
+    "log": "experiments/logs/exp-20260627-008.json",
+    "runner": "quant/experiments/exp_20260627_008_short_volume_oracle_low_mfe_stopout_attribution.py",
+    "gate4": {
+      "acceptance_rule": "Observed-only lead requires >=30 joined oracle rows, >=6 joined target low-MFE/failed-followthrough rows, target mean PIT short-volume percentile at least 15pp above other fixed-entry trades, target Q4/Q5 share at least 20pp above other trades, and target-higher direction in at least two windows with target n>=2. Passing this does not promote a strategy because exp-20260625-019 already rejected the tradable clean-flow gate.",
+      "observed_only_lead": false,
+      "passed": false,
+      "decision": "observed_only_rejected_no_oracle_short_volume_loss_enrichment",
+      "failed_reasons": [
+        "target_mean_short_volume_percentile_not_enriched",
+        "target_q4_q5_share_not_enriched",
+        "window_direction_not_robust"
+      ],
+      "promotion_blockers": [
+        "exp-20260625-019 rejected the shared clean-flow candidate-pool gate",
+        "no strategy, paper helper, daily snapshot, order, ranking, sizing, or exit changed",
+        "future work needs borrow/utilization/loan-availability evidence or new forward rows"
+      ],
+      "exp019_decision": "rejected_moomoo_short_volume_clean_flow_gate",
+      "pooled_target_minus_other_mean_percentile": -0.041352,
+      "pooled_target_minus_other_q4_q5_share": -0.1429,
+      "directional_windows_with_target_n_ge_2": 1
+    },
+    "calibration": {
+      "actual_decision": "observed_only_rejected_no_oracle_short_volume_loss_enrichment",
+      "actual_success": 0,
+      "predicted_success_probability": 0.32,
+      "brier_score": 0.1024,
+      "predicted_failure_modes": [
+        "oracle_rows_do_not_join_to_short_volume",
+        "short_volume_not_enriched_in_loss_cluster",
+        "signal_already_untradable_after_exp019",
+        "old_thin_only_effect"
+      ],
+      "realized_failure_mode": "target_mean_short_volume_percentile_not_enriched; target_q4_q5_share_not_enriched; window_direction_not_robust",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "The oracle target cohort did not show robust short-volume enrichment, so short_volume_ratio does not explain this fixed entry-quality regret cluster."
+    },
+    "summary": "PIT short-volume did not robustly enrich in the exact oracle low-MFE / failed-followthrough loss cohort, so the remaining oracle regret likely needs another ex-ante state, news, sector-cluster, borrow, or flow field."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260627-008.json",
+  "single_causal_variable": "moomoo_short_volume_oracle_low_mfe_stopout_attribution_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260627-008.json",
+  "trial_family": "moomoo_short_volume_oracle_low_mfe_stopout_attribution",
+  "trial_variant_id": "oracle_low_mfe_stopout_short_volume_percentile_v1",
+  "updated_at": "2026-06-27T07:20:19+00:00",
+  "implementation_mode": "observed_only_oracle_loss_cluster_attribution",
+  "new_evidence_axis": "New gate shape: oracle/loss-taxonomy cluster enrichment attribution on fixed accepted-stack trades, not a short-volume threshold, clean-flow candidate-pool gate, forward-row reslice, top-N, hold-day, notional, or allocator retry.",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "window_count": 3,
+      "source_windows_found": 3
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields": [
+      "oracle sample_rows ticker/entry_date/window",
+      "loss taxonomy oracle_labels",
+      "moomoo short_volume_ratio",
+      "activity_date strictly before entry_date"
+    ],
+    "target_price": {
+      "available": false,
+      "reason": "Observed-only attribution; no executable target or order is scheduled."
+    },
+    "source_audit": {
+      "oracle": {
+        "source": "data/experiments/exp-20260623-003/exp_20260623_003_fixed_entry_exit_oracle_regret_cluster.json",
+        "exists": true,
+        "n_rows_reported": 60,
+        "rows_loaded": 60,
+        "decision": "rejected_exit_oracle_regret_cluster_not_promotable",
+        "status": "observed_only_rejected"
+      },
+      "loss_taxonomy": {
+        "source": "data/experiments/exp-20260511-102/exp_20260511_102_accepted_stack_oracle_loss_taxonomy.json",
+        "exists": true,
+        "bad_rows_loaded": 27,
+        "label_counts": {
+          "addon_exposed": 2,
+          "early_adverse_no_reclaim": 13,
+          "large_mfe_giveback": 18,
+          "oracle_low_mfe_stopout": 9,
+          "oracle_winner_to_loser_giveback": 10,
+          "overnight_gap_damage": 3,
+          "risk_amplified_2pct_plus": 9,
+          "risk_on_entry": 25,
+          "rs20_leader_sized": 10,
+          "same_day_sector_cluster": 2,
+          "same_day_sector_loss_cluster": 2,
+          "weak_initial_follow_through": 16
+        },
+        "decision": "observed_only",
+        "status": "observed_only"
+      },
+      "short_volume": {
+        "source_artifact": "data/non_ohlcv/moomoo_daily_short_volume_broad/rows.jsonl",
+        "raw_rows": 25152,
+        "usable_rows": 25152,
+        "distinct_tickers": 51,
+        "activity_date_min": "2024-06-03",
+        "activity_date_max": "2026-06-22",
+        "artifact_not_mutated": true
+      },
+      "oracle_rows_missing_short_volume_percentile": 0,
+      "joined_rows": 60
+    }
+  },
+  "gate3": {
+    "passed": true,
+    "note": "No executable filter was added; survival is unchanged.",
+    "signals_generated": 60,
+    "signals_survived": 60,
+    "strategy_filter_added": false,
+    "survival_rate": 1.0
+  },
+  "gate4": {
+    "acceptance_rule": "Observed-only lead requires >=30 joined oracle rows, >=6 joined target low-MFE/failed-followthrough rows, target mean PIT short-volume percentile at least 15pp above other fixed-entry trades, target Q4/Q5 share at least 20pp above other trades, and target-higher direction in at least two windows with target n>=2. Passing this does not promote a strategy because exp-20260625-019 already rejected the tradable clean-flow gate.",
+    "observed_only_lead": false,
+    "passed": false,
+    "decision": "observed_only_rejected_no_oracle_short_volume_loss_enrichment",
+    "failed_reasons": [
+      "target_mean_short_volume_percentile_not_enriched",
+      "target_q4_q5_share_not_enriched",
+      "window_direction_not_robust"
+    ],
+    "promotion_blockers": [
+      "exp-20260625-019 rejected the shared clean-flow candidate-pool gate",
+      "no strategy, paper helper, daily snapshot, order, ranking, sizing, or exit changed",
+      "future work needs borrow/utilization/loan-availability evidence or new forward rows"
+    ],
+    "exp019_decision": "rejected_moomoo_short_volume_clean_flow_gate",
+    "pooled_target_minus_other_mean_percentile": -0.041352,
+    "pooled_target_minus_other_q4_q5_share": -0.1429,
+    "directional_windows_with_target_n_ge_2": 1
+  }
+}

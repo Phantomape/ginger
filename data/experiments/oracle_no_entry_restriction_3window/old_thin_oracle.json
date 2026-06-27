@@ -560,13 +560,22 @@
   "no_trade_attribution_oracle": {
     "oracle_type": "candidate_no_trade_attribution",
     "is_tradable": false,
-    "lookahead_warning": "This is a conservative reconstruction from saved candidates and closed trades. Rows marked needs_entry_skip_logging require explicit backtester skip-reason logs.",
+    "lookahead_warning": "This is a conservative reconstruction from saved candidates and closed trades. Rows marked needs_entry_skip_logging require explicit backtester skip-reason logs. entry_skip_oracle_source was joined: 7 row(s) resolved, 3 row(s) still unresolved.",
     "horizon_days": 20,
+    "entry_skip_oracle_source": "D:\\Github\\ginger\\data\\experiments\\oracle_standard_3window_20260501_220042\\old_thin_backtest.json",
+    "skip_resolution": {
+      "resolved_count": 7,
+      "unresolved_count": 3,
+      "note": "resolved = attribution came from entry_skip_oracle; unresolved = still needs_entry_skip_logging"
+    },
     "candidate_days": 34,
     "no_actual_selection_days": 14,
     "missing_candidate_count": 0,
     "reason_counts": {
-      "needs_entry_skip_logging": 10,
+      "gap_cancel": 2,
+      "needs_entry_skip_logging": 3,
+      "no_shares": 3,
+      "scarce_slot_breakout_deferred": 2,
       "slot_competition_possible": 4
     },
     "avg_missed_top_candidate_return_pct": 0.141363,
@@ -579,7 +588,14 @@
         "active_position_count_on_signal_date": 4,
         "slots_available_on_signal_date": 1,
         "already_holding_candidate_tickers": [],
-        "attribution": "needs_entry_skip_logging"
+        "attribution": "scarce_slot_breakout_deferred",
+        "skip_details": [
+          {
+            "decision": "scarce_slot_breakout_deferred",
+            "candidate_rank": null,
+            "strategy": "breakout_long"
+          }
+        ]
       },
       {
         "signal_date": "2024-11-06",
@@ -599,7 +615,14 @@
         "active_position_count_on_signal_date": 4,
         "slots_available_on_signal_date": 1,
         "already_holding_candidate_tickers": [],
-        "attribution": "needs_entry_skip_logging"
+        "attribution": "scarce_slot_breakout_deferred",
+        "skip_details": [
+          {
+            "decision": "scarce_slot_breakout_deferred",
+            "candidate_rank": null,
+            "strategy": "breakout_long"
+          }
+        ]
       },
       {
         "signal_date": "2025-02-06",
@@ -629,7 +652,17 @@
         "active_position_count_on_signal_date": 4,
         "slots_available_on_signal_date": 1,
         "already_holding_candidate_tickers": [],
-        "attribution": "needs_entry_skip_logging"
+        "attribution": "gap_cancel",
+        "skip_details": [
+          {
+            "decision": "gap_cancel",
+            "candidate_rank": 1,
+            "strategy": "trend_long",
+            "gap_pct": 0.0201,
+            "signal_entry": 70.69,
+            "cancel_gap_pct_threshold": 0.015
+          }
+        ]
       },
       {
         "signal_date": "2024-12-13",
@@ -639,7 +672,17 @@
         "active_position_count_on_signal_date": 3,
         "slots_available_on_signal_date": 2,
         "already_holding_candidate_tickers": [],
-        "attribution": "needs_entry_skip_logging"
+        "attribution": "gap_cancel",
+        "skip_details": [
+          {
+            "decision": "gap_cancel",
+            "candidate_rank": 1,
+            "strategy": "trend_long",
+            "gap_pct": 0.0311,
+            "signal_entry": 221.73,
+            "cancel_gap_pct_threshold": 0.015
+          }
+        ]
       },
       {
         "signal_date": "2024-12-04",
@@ -649,7 +692,18 @@
         "active_position_count_on_signal_date": 2,
         "slots_available_on_signal_date": 3,
         "already_holding_candidate_tickers": [],
-        "attribution": "needs_entry_skip_logging"
+        "attribution": "no_shares",
+        "skip_details": [
+          {
+            "decision": "no_shares",
+            "candidate_rank": 1,
+            "strategy": "breakout_long",
+            "zero_multiplier": [
+              "breakout_tech_dte_risk_multiplier_applied"
+            ],
+            "shares_to_buy": 0
+          }
+        ]
       },
       {
         "signal_date": "2025-02-18",

@@ -1,0 +1,302 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "allowed_write_scope": [
+    "quant/sec_filing_text_backfill.py",
+    "quant/sec_filing_features.py",
+    "quant/test_sec_filing_text_backfill.py",
+    "quant/test_sec_filing_features.py",
+    "quant/experiments/exp_20260627_012_sec_dei_cover_status_shared_parser.py",
+    "data/experiments/exp-20260627-012/exp_20260627_012_sec_dei_cover_status_shared_parser.json",
+    "experiments/cards/exp-20260627-012.md",
+    "experiments/manifests/exp-20260627-012.json",
+    "experiments/tickets/exp-20260627-012.json",
+    "experiments/logs/exp-20260627-012.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "candidate_pool: PIT SEC 10-K/10-Q filer-status upgrades from smaller/non-accelerated/EGC toward accelerated or large-accelerated status may identify improving institutional eligibility, but only once accepted_at-keyed DEI status facts exist in shared replayable artifacts.",
+  "alpha_ready": false,
+  "anti_js": {
+    "evidence": "Python runner only.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260627-012/exp_20260627_012_sec_dei_cover_status_shared_parser.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_success": 1,
+    "brier_score": 0.0324,
+    "predicted_failure_modes": [
+      "shared_parser_misses_inline_xbrl",
+      "feature_builder_does_not_expose_status_fields",
+      "existing_daily_rows_still_have_zero_machine_status"
+    ],
+    "predicted_success_probability": 0.82,
+    "realized_failure_mode": null,
+    "surprise_note": "The shared text backfill and filing-feature path can now parse and expose DEI cover-page status fields from raw iXBRL or clear checkbox text. Existing 20260626 rows still have no periodic machine-readable status rows, so this is measurement repair only and not an alpha."
+  },
+  "causal_components": [
+    "shared sec_filing_text_backfill DEI cover-status parser",
+    "future text payload dei_cover_status output",
+    "shared sec_filing_features filer_status read-only fields",
+    "focused parser and feature tests",
+    "no strategy behavior change"
+  ],
+  "change_summary": "Moved SEC DEI cover-page filer-status parsing into the shared text backfill and filing-feature path. No strategy behavior changed.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/sec_filing_text_backfill.py",
+    "quant/sec_filing_features.py",
+    "quant/test_sec_filing_text_backfill.py",
+    "quant/test_sec_filing_features.py",
+    "quant/experiments/exp_20260627_012_sec_dei_cover_status_shared_parser.py",
+    "data/experiments/exp-20260627-012/exp_20260627_012_sec_dei_cover_status_shared_parser.json",
+    "experiments/logs/exp-20260627-012.json",
+    "experiments/cards/exp-20260627-012.md",
+    "experiments/manifests/exp-20260627-012.json",
+    "experiments/tickets/exp-20260627-012.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "sec_dei_cover_status_shared_parser_v1",
+  "decision": "accepted_measurement_repair_sec_dei_cover_status_shared_parser",
+  "delta_metrics": {
+    "current_daily_periodic_rows_with_filer_status": 0,
+    "current_daily_rows_with_filer_status": 0,
+    "expected_value_score_sum_delta": 0.0,
+    "shared_parser_contract_passed": true,
+    "survival_rate_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260627-012",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "current_daily_status_coverage": {
+      "feature_rows": 23,
+      "jsonl_parse_errors": 0,
+      "parse_status_counts": {
+        "blocked_cover_terms_without_parseable_status": 21,
+        "blocked_no_cover_page_status_terms": 2
+      },
+      "periodic_feature_rows": 1,
+      "periodic_rows_with_filer_status": 0,
+      "rows_with_filer_status": 0,
+      "source_exists": true,
+      "source_file": "data/non_ohlcv/sec_filing_text_20260626.jsonl",
+      "source_rows": 23
+    },
+    "dependency_fields": [
+      "combined_text or raw SEC document text",
+      "dei EntityFilerCategory",
+      "dei EntityEmergingGrowthCompany",
+      "dei EntityShellCompany",
+      "sec_filing_features filer_status_* fields"
+    ],
+    "minimum_strategy_fields": {
+      "entry_date": "not_applicable_no_strategy_signal_or_filter_added",
+      "target_price": "not_applicable_no_strategy_signal_or_filter_added"
+    },
+    "passed": true,
+    "shared_parser_contract": {
+      "checkbox_parse_status": {
+        "boolean_facts": {},
+        "checkbox_diagnostics": {
+          "checked_token_count": 1,
+          "labels_found": 4,
+          "parsed_checkbox_fields": 4,
+          "unchecked_token_count": 3
+        },
+        "cover_terms_present": true,
+        "filer_category": null,
+        "machine_readable_status_fields": [
+          "large_accelerated_filer",
+          "accelerated_filer",
+          "non_accelerated_filer",
+          "smaller_reporting_company"
+        ],
+        "parse_status": "parsed_cover_page_checkbox_text",
+        "schema_version": 1,
+        "source": "cover_page_checkbox_text",
+        "status_booleans": {
+          "accelerated_filer": true,
+          "emerging_growth_company": null,
+          "large_accelerated_filer": false,
+          "non_accelerated_filer": false,
+          "shell_company": null,
+          "smaller_reporting_company": false
+        },
+        "status_field_count": 4
+      },
+      "feature_row_status": {
+        "field_availability": "derived",
+        "filer_status_booleans": {
+          "accelerated_filer": false,
+          "emerging_growth_company": false,
+          "large_accelerated_filer": true,
+          "non_accelerated_filer": false,
+          "shell_company": false,
+          "smaller_reporting_company": false
+        },
+        "filer_status_category": "large_accelerated_filer",
+        "filer_status_field_count": 6,
+        "filer_status_parse_status": "parsed_machine_readable_dei_fact",
+        "gap_has_missing_dei_cover_status": false
+      },
+      "ixbrl_parse_status": {
+        "boolean_facts": {
+          "emerging_growth_company": false,
+          "shell_company": false
+        },
+        "checkbox_diagnostics": {
+          "checked_token_count": 0,
+          "labels_found": 1,
+          "parsed_checkbox_fields": 0,
+          "unchecked_token_count": 0
+        },
+        "cover_terms_present": true,
+        "filer_category": "large_accelerated_filer",
+        "machine_readable_status_fields": [
+          "large_accelerated_filer",
+          "accelerated_filer",
+          "non_accelerated_filer",
+          "smaller_reporting_company",
+          "emerging_growth_company",
+          "shell_company"
+        ],
+        "parse_status": "parsed_machine_readable_dei_fact",
+        "schema_version": 1,
+        "source": "dei_machine_readable_fact",
+        "status_booleans": {
+          "accelerated_filer": false,
+          "emerging_growth_company": false,
+          "large_accelerated_filer": true,
+          "non_accelerated_filer": false,
+          "shell_company": false,
+          "smaller_reporting_company": false
+        },
+        "status_field_count": 6
+      },
+      "passed": true
+    }
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No executable filter was added; survival is unchanged.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "after_same_as_before": true,
+    "decision_basis": "The shared text backfill and filing-feature path can now parse and expose DEI cover-page status fields from raw iXBRL or clear checkbox text. Existing 20260626 rows still have no periodic machine-readable status rows, so this is measurement repair only and not an alpha.",
+    "passed": true,
+    "strategy_behavior_changed": false
+  },
+  "hypothesis": "Alpha blocker: PIT SEC 10-K/10-Q cover-page filer-status upgrade alpha remains untestable until DEI cover-status facts are parsed by a shared daily/backfill path instead of experiment-local probes.",
+  "implementation_mode": "shared_data_parser_contract_repair",
+  "lane": "measurement_repair",
+  "log": "experiments/logs/exp-20260627-012.json",
+  "mechanism_family": "sec_periodic_filer_status_materialization",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260626-008",
+    "exp-20260627-005",
+    "exp-20260627-011"
+  ],
+  "new_evidence_axis": "Shared parser/data-contract repair after current and document-priority probes; this does not run filer-status alpha or a SEC text scan.",
+  "new_evidence_type": "measurement_repair_shared_parser_contract",
+  "next_retry_requires": [
+    "historical_10k_10q_text_or_ixbrl_rows_with_dei_cover_status",
+    "accepted_at_keyed_status_transition_ledger",
+    "one_shared_default_off_status_transition_helper"
+  ],
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not run filer-status alpha, phrase scans, form-threshold scans, or current-category approximations from this parser repair. It only creates the shared field contract.",
+    "new_evidence_required": "Refresh or backfill historical/current 10-K/10-Q text after the cover-document priority repair so rows actually contain R1/inline htm.xml DEI facts, then build one fixed shared default-off status-transition helper before any alpha replay.",
+    "why_result_happened": "The shared text backfill and filing-feature path can now parse and expose DEI cover-page status fields from raw iXBRL or clear checkbox text. Existing 20260626 rows still have no periodic machine-readable status rows, so this is measurement repair only and not an alpha."
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260627-005 proved the parser existed only in an experiment; exp-20260627-011 repaired document selection for future cover XBRL. Moving the parser into shared text/feature materialization is a narrow measurement repair with synthetic iXBRL and checkbox fixtures.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "shared_parser_misses_inline_xbrl",
+      "feature_builder_does_not_expose_status_fields",
+      "existing_daily_rows_still_have_zero_machine_status"
+    ],
+    "recorded_at": "2026-06-27T11:06:00+00:00",
+    "success_probability": 0.82
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": true,
+    "daily_snapshot_schema_changed": true,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "reason": "Only non-OHLCV SEC text/feature artifacts gain read-only filer-status fields when source documents contain parseable DEI facts.",
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "quant/sec_filing_text_backfill.py",
+    "quant/sec_filing_features.py",
+    "quant/test_sec_filing_text_backfill.py",
+    "quant/test_sec_filing_features.py",
+    "data/non_ohlcv/sec_filing_text_20260626.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\sec_filing_text_backfill.py quant\\sec_filing_features.py quant\\test_sec_filing_text_backfill.py quant\\test_sec_filing_features.py",
+    ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_sec_filing_text_backfill.py quant\\test_sec_filing_features.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260627_012_sec_dei_cover_status_shared_parser.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "sec_dei_cover_status_shared_parser_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-06-27T11:12:31Z",
+  "trial_family": "sec_dei_cover_status_shared_parser",
+  "trial_variant_id": "shared_dei_status_parser_v1"
+}
