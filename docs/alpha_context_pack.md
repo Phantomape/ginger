@@ -87,7 +87,7 @@ facts before changing strategy behavior.
 - `exp-20260627-017` `rejected_bare_broad_liquid_topn_universe_expansion`: EV `+0.0000`, PnL `$0.00`, family `candidate_pool_universe_expansion`, trial `broad_liquid_topn_universe_expansion_scout`.
   Lesson: The documented 2026-06-27 scout shows the curated core universe beating bare liquid top300/top500 on aggregate EV (6.14 vs 3.41 vs 0.73) while topN survival fell to roughly 10-21%. The old_thin top300 raw-EV nuance is...
 - `exp-20260627-019` `rejected`: EV `-4.2061`, PnL `$-80,604.18`, family `candidate_pool`, trial `candidate_pool`.
-  Lesson: old_thin top300 raw EV higher than core (1.32 vs 0.37) but 2.2x drawdown and top500 negative; weak-tape nuance is a universe-aware retune problem, not naive expansion TODO TODO
+  Lesson: old_thin top300 raw EV higher than core (1.32 vs 0.37) but 2.2x drawdown and top500 negative; weak-tape nuance is a universe-aware retune problem, not naive expansion Do NOT re-run naive universe/candidate-pool expans...
 
 ## Highest-Signal Historical Records
 
