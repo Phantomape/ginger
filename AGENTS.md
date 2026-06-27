@@ -67,6 +67,14 @@ LLM 可以承担新闻理解、事件分类、语义强弱判断和风险解释�
    forward 行**数量**不足，而非字段维度。此处合规的 override 必须 (a) 实质增加 closed forward 行
    样本（新成熟行 / 换面），或 (b) 换到一个会产生新行的数据源 / 新 gate shape，不能只在同一批
    partial 行上换条件再切片。
+   **测量修复治程（硬规则）**：§2 第 3 条对"缺失面构建 / 新数据源接入"的豁免**不是无上限**的。
+   当同一 `(alpha 假设, 数据面)` 已连续 K 次（默认 K=3）以 `accepted_measurement_repair` 或
+   `blocked` 收尾，且**没有产出任何 gate-ready 候选行 / 已结算 forward 行**（即底层历史数据本身
+   无法物化，如 `sec_periodic_historical_dei_status_not_materialized`、`sec_*_text_cache_missing`），
+   必须把该面 **park**：记 `blocked` + 明确 `reopen_condition`（缺哪一份数据、何时/如何回来），
+   不得再开新一轮做增量解析 / 物化 plumbing。豁免覆盖的是**会真正产出新行**的构建，不是反复
+   plumbing 一个永不成熟的面——后者与 scan 源、forward 归因同属饱和重复，只是落在 measurement
+   -repair 通道上，novelty / source-saturation 闸门看不到它。
 4. 优先选择高赚钱潜力、高可验证性、低复杂度、可生产执行的候选。
 5. 高潜力、生产可见的 default-off paper alpha 默认走 **shared-paper-first**：第一次严肃实验就实现共享 helper，同时覆盖 historical replay 和 daily default-off snapshot，再跑 Gate 1-4。private replay scout 只适合数据形态不确定或非常早期的低成本探索；正向也只能记为 lead，不能算 accepted alpha。
 

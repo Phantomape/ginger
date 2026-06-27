@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-06-26.
+Last refreshed: 2026-06-27.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -653,6 +653,24 @@ accepted timestamp; current Kova intraday/RS-proxy rows are features, not true
 entry-open/close settlement OHLCV; borrow availability lacks fee, utilization,
 and loan-availability economics. Until those surfaces are repaired, missing
 archive/text/borrow/OHLCV availability is a blocker ledger, not an alpha field.
+
+The June 27 readout keeps the same boundary but adds sharper data surfaces.
+Borrow availability wiring, current 6-K semantic forward ledgers, SEC periodic
+cover-page parser variants, and DEI checkbox parsing were accepted as
+measurement repairs or forward-enabling surfaces; they do not change live
+orders, ranks, sizing, or exits. The alpha attempts and diagnostics stayed
+negative or blocked: pilot graduation was not ready, factor-residual leadership
+and unconditional trend-long precursors failed accepted-comparator or window
+checks, short-volume and sector-crowding oracle slices did not explain enough
+loss, historical 6-K text/cache is still missing for standard-window replay,
+historical DEI filer-status materialization is not yet complete, and the
+supplier-financing/debt-relief helper has zero closed forward rows. The next
+alpha hypothesis is still attractive but gated: periodic cover-page filer
+status upgrades/downgrades may become a candidate-pool or allocation-quality
+field only after historical DEI status is accession-keyed across canonical
+windows and daily snapshots share the same parser. Until then, do not retry by
+text-cache availability, current-only parser fields, trend-long latency,
+factor-residual proxy lists, or supplier-financing activation slices.
 
 ## Detail Sources
 
@@ -1489,6 +1507,24 @@ production-visible field:
   quote-bar settlement surface. `exp-20260625-017` confirmed that Kova intraday
   rows were skipped and RS proxy rows are feature rows, not entry-open/close
   settlement data;
+- SEC 10-K/10-Q cover-page filer-status-upgrade candidate pools, and any further
+  network materialization of historical cover-page TEXT for that line.
+  `exp-20260627-018` (measurement_repair) showed the DEI filer-status surface is
+  materializable OFFLINE as a PIT proxy from local `dei:EntityPublicFloat`
+  threshold crossings (Rule 12b-2: $700M large-accelerated, $75M accelerated) —
+  no network needed, resolving the exp-20260626-008..exp-20260627-015 fetch
+  blocker — but the line is STRUCTURALLY UNTRADEABLE in the core warehouse: of
+  297 canonical 10-K/10-Q events (48 tickers, 38 in-warehouse), there are 27
+  full-history filer-status transitions and only 4 inside the canonical windows,
+  all UP-crossings to large-accelerated in float-explosion names (CIFR, CORZ,
+  WULF, APLD) that are NOT in the tradeable warehouse, while all 38 warehouse
+  filers are permanently large-accelerated (0 in-window tradeable transitions).
+  The signal and the tradeable universe are disjoint; the transitions are also
+  momentum-confounded (float crosses $700M because the stock already rallied
+  multi-x) and stale-dated (Q2 float reported on a later 10-K). Reopen only with
+  an expansion-approved universe containing pre-graduation float-explosion names,
+  a PIT field separating the eligibility transition from coincident momentum, and
+  closed forward replacement-value rows;
 - missing archive/text availability as an alpha field.
 
 ## Update Discipline

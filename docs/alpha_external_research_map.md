@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-06-26.
+Last refreshed: 2026-06-27.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -538,6 +538,37 @@ Controls:
   coverage is missing.
 
 Source: <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6597694>
+
+### Explainable Zero-Shot News Is Reliability Context
+
+A June 2026 zero-shot financial-news NLP study is a useful brake on raw
+headline enthusiasm. Its key local lesson is that zero-shot news models can
+fail simple baselines on short-horizon direction, especially negative moves,
+while explanation signals can still separate more trustworthy from unreliable
+predictions. For Ginger, explainability is therefore a reliability and
+uncertainty field, not an entry signal by itself.
+
+Implementable fields:
+
+- `news_zero_shot_model_id`
+- `news_prediction_horizon_bucket`
+- `news_temporal_aggregation_version`
+- `news_explanation_token_support_score`
+- `news_article_level_evidence_score`
+- `news_aggregate_evidence_consistency_bucket`
+- `news_prediction_reliability_bucket`
+- `news_explainability_replacement_value_bucket`
+
+Controls:
+
+- benchmark any zero-shot news field against simple recency, market, and
+  sentiment baselines before paper use;
+- score positive and negative movement predictions separately;
+- store token/article/aggregate evidence with source timestamps and model id;
+- use explanation quality first as an uncertainty and veto-attribution surface,
+  not as a direct buy/sell rule.
+
+Source: <https://arxiv.org/abs/2606.12210>
 
 ### Hedge-Fund LLM Forecasting Pitfall Checklist
 

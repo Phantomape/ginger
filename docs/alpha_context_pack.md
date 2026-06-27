@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1480`
-- Raw records loaded by meta report: `2427`
-- History fingerprint: `091bf3bcb7babacf`
+- Strategy records counted: `1484`
+- Raw records loaded by meta report: `2477`
+- History fingerprint: `8713647df8f25b37`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -30,22 +30,22 @@ facts before changing strategy behavior.
 
 - `production_visible_default_off_paper_adapter_for_candidate_pool_alpha` priority `0.8479`: experiments `2`, accept `100.00%`, sum EV `+1.2856`, sum PnL `$25,160.29`.
   Reason: 2/2 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
-- `default_off_paper_adapter` priority `0.8171`: experiments `7`, accept `85.71%`, sum EV `+4.8031`, sum PnL `$81,956.93`.
+- `default_off_paper_adapter` priority `0.8172`: experiments `7`, accept `85.71%`, sum EV `+4.8031`, sum PnL `$81,956.93`.
   Reason: 1/7 records have sample >= 10; 7/7 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive...
 - `default_off_paper_shared_adapter` priority `0.7477`: experiments `3`, accept `100.00%`, sum EV `+0.7145`, sum PnL `$13,745.66`.
   Reason: 3/3 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; still has ro...
 - `paper_notional_support_scout` priority `0.7009`: experiments `3`, accept `66.67%`, sum EV `+0.0804`, sum PnL `$1,393.64`.
   Reason: 3/3 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
-- `pilot_or_sleeve` priority `0.6325`: experiments `175`, accept `26.86%`, sum EV `+66.2321`, sum PnL `$1,149,056.08`.
+- `pilot_or_sleeve` priority `0.6332`: experiments `175`, accept `26.86%`, sum EV `+66.2321`, sum PnL `$1,149,056.08`.
   Reason: 174/175 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually changes sizing/allocation rather than...
   Guardrail: heavily explored family; diminishing-return risk; many prior rejections in this family
-- `slot_or_ranking` priority `0.5734`: experiments `168`, accept `25.60%`, sum EV `+42.8157`, sum PnL `$765,969.87`.
+- `slot_or_ranking` priority `0.5738`: experiments `168`, accept `25.60%`, sum EV `+42.8157`, sum PnL `$765,969.87`.
   Reason: 159/168 records show multi-window evidence; 8/168 records have sample >= 10; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
   Guardrail: can change survival, trade count, or exit distribution broadly; heavily explored family; diminishing-return risk; many prior rejections in this family
 - `default_off_paper_allocation` priority `0.5641`: experiments `12`, accept `33.33%`, sum EV `+0.0285`, sum PnL `$456.30`.
   Reason: 12/12 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs
   Guardrail: heavily explored family; diminishing-return risk
-- `fundamental_growth_rs_default_off_candidate_pool` priority `0.5440`: experiments `1`, accept `0.00%`, sum EV `+5.2015`, sum PnL `$92,488.83`.
+- `fundamental_growth_rs_default_off_candidate_pool` priority `0.5441`: experiments `1`, accept `0.00%`, sum EV `+5.2015`, sum PnL `$92,488.83`.
   Reason: 1/1 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
   Guardrail: many prior rejections in this family
 
@@ -64,14 +64,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260624-022` `rejected_sec_offering_richer_terms_constructive_financing_candidate_pool`: EV `+0.0007`, PnL `$56.78`, family `production_visible_sec_offering_primary_text_economics_candidate_pool`, trial `sec_offering_richer_terms_constructive_financing_candidate_pool`.
-  Lesson: The richer SEC offering constructive-financing bundle did not clear Gate 4 (failed: fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_coverage_too_small, target_concentration_failed, accepted_...
-- `exp-20260625-005` `rejected_sec_project_finance_capacity_contract_terms_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `production_visible_sec_project_finance_capacity_contract_candidate_pool`, trial `sec_project_finance_capacity_contract_terms_candidate_pool`.
-  Lesson: The project-finance capacity-contract terms bundle did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, fewer_than_two_ev_improved_windows, target_sample_too_small, target_window_covera...
-- `exp-20260625-010` `rejected_sec13f_active_manager_flow_candidate_pool`: EV `+0.9099`, PnL `$14,815.82`, family `production_visible_free_sec_13f_active_manager_flow_candidate_pool`, trial `sec13f_active_manager_flow_historical_candidate_pool`.
-  Lesson: The SEC13F active-manager active-flow candidate pool failed Gate 4 (failed: window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, drawdown_drift_too_high). Do not sweep adjacent active-flow,...
-- `exp-20260625-012` `rejected_sec13f_active_flow_filing_delay_hardened_candidate_pool`: EV `+1.3417`, PnL `$17,561.28`, family `production_visible_free_sec_13f_active_manager_flow_candidate_pool`, trial `sec13f_active_manager_flow_filing_delay_pit_hardening`.
-  Lesson: The SEC13F filing-delay-hardened active-manager active-flow candidate pool failed Gate 4 (failed: window_ev_regression, window_pnl_regression, drawdown_drift_too_high). Do not sweep adjacent active-flow, leadership, t...
 - `exp-20260625-014` `rejected_sec_6k_companyfacts_structured_growth_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `candidate_pool_private_replay_scout`, trial `sec_6k_companyfacts_structured_financial_growth_candidate_pool`.
   Lesson: The form-scoped 6-K Companyfacts surface exists, but the fixed same-accession revenue plus profitability rule and liquid price confirmation collapsed to only five target trades across two windows. The late_strong loss...
 - `exp-20260625-015` `rejected_volume_dryup_breakout_candidate_pool`: EV `+0.0000`, PnL `$0.00`, family `production_visible_free_ohlcv_candidate_pool`, trial `volume_dryup_breakout_candidate_pool`.
@@ -88,6 +80,14 @@ facts before changing strategy behavior.
   Lesson: The product/service revenue mix source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, target_sampl...
 - `exp-20260626-008` `blocked_sec_cover_page_filer_status_text_surface_missing`: EV `+0.0000`, PnL `$0.00`, family `production_visible_sec_cover_page_filer_status_candidate_pool`, trial `sec_cover_page_filer_status_upgrade_candidate_pool`.
   Lesson: The event archive contains 10-K/10-Q filing metadata, but the local SEC filing text replay surface did not provide parseable 10-K/10-Q cover-page rows for the canonical windows, so the status-upgrade field cannot be t...
+- `exp-20260627-003` `rejected_factor_residual_idiosyncratic_leadership_candidate_pool`: EV `+0.7818`, PnL `$7,049.14`, family `production_visible_free_factor_residual_ohlcv_candidate_pool`, trial `factor_residual_repaired_factor_warehouse_rerun`.
+  Lesson: Rejected. Factor-residual leadership did not add robust replacement value versus accepted compression/distribution candidate-pool comparators after next-open execution, costs, cooldown, and concentration checks (faile...
+- `exp-20260627-007` `rejected_trend_long_precursor_default_off_candidate_source`: EV `+0.0000`, PnL `$0.00`, family `production_visible_free_ohlcv_candidate_pool`, trial `trend_long_entry_latency_default_off_candidate_source`.
+  Lesson: The fixed precursor source failed because the exp-20260627-006 edge was conditional on actual future trend_long trades. Once replayed unconditionally as a default-off top-1 paper source, false starts, window instabili...
+- `exp-20260627-017` `rejected_bare_broad_liquid_topn_universe_expansion`: EV `+0.0000`, PnL `$0.00`, family `candidate_pool_universe_expansion`, trial `broad_liquid_topn_universe_expansion_scout`.
+  Lesson: The documented 2026-06-27 scout shows the curated core universe beating bare liquid top300/top500 on aggregate EV (6.14 vs 3.41 vs 0.73) while topN survival fell to roughly 10-21%. The old_thin top300 raw-EV nuance is...
+- `exp-20260627-019` `rejected`: EV `-4.2061`, PnL `$-80,604.18`, family `candidate_pool`, trial `candidate_pool`.
+  Lesson: old_thin top300 raw EV higher than core (1.32 vs 0.37) but 2.2x drawdown and top500 negative; weak-tape nuance is a universe-aware retune problem, not naive expansion TODO TODO
 
 ## Highest-Signal Historical Records
 
