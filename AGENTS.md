@@ -119,6 +119,7 @@ data/backtests/backtest_results_*.json
 - production/backtest parity 核心合同：`docs/production_backtest_parity.md`
 - adapter / sleeve parity 表：`docs/production_backtest_parity_matrix.md`（按需深读）
 - JSON/JSONL 记录格式：`docs/experiment_log_format.md`
+- 同机 agent 间文件对话（信箱协议、参与方式、无死锁轮次）：`docs/agent_mailbox.md`
 
 常用工具：
 
@@ -129,6 +130,7 @@ data/backtests/backtest_results_*.json
 - `scripts/check_experiment_novelty.py`：自由文本假设的近邻 / 防重复检查；`experiment.py new` 已自动调用，alpha 通道默认阻断；
 - `scripts/build_frozen_families.py`：从历史实验重建 `docs/frozen_families.jsonl`（novelty gate 的数据源，需定期刷新）；
 - `quant/meta_research_engine.py`：研究历史、冻结方向和优先队列。
+- `scripts/agent_mailbox.py send|recv|transcript|list`：同机并发 agent 间文件对话（本地、未跟踪；参与方式见 `docs/agent_mailbox.md`）。
 
 ---
 
