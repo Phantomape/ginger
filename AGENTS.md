@@ -75,6 +75,14 @@ LLM 可以承担新闻理解、事件分类、语义强弱判断和风险解释�
    不得再开新一轮做增量解析 / 物化 plumbing。豁免覆盖的是**会真正产出新行**的构建，不是反复
    plumbing 一个永不成熟的面——后者与 scan 源、forward 归因同属饱和重复，只是落在 measurement
    -repair 通道上，novelty / source-saturation 闸门看不到它。
+   **reopen 条件推进闸门（硬规则）**：当一个面已按上述规则 park 并记下定量 `reopen_condition`
+   （已结算 forward 行数 / ticker 覆盖 / session 数等可计数阈值），在该计数相对 park 时**实际推进**
+   之前，**不得再 reserve 新实验去"审计 / 确认该面是否成熟"**。"仍未达阈值"是日历或覆盖绑定、
+   机械可知的结论，应在启动前历史读取里一行核对（对比当前计数与 park 时计数），不占实验 ID，
+   也不记新的 `blocked` / `observed_only`。只有当计数已朝阈值推进（新成熟行 / 新覆盖到位），或
+   出现 §2.3 意义上会真正产出新行的新源 / 新 gate shape 时，才允许重开。反复每日重开同一 park
+   面复述 "wait for more closed rows / not mature yet" 与 scan 源、forward 归因、measurement
+   plumbing 同属饱和重复，只是换了一身"readiness audit"的外衣。
 4. 优先选择高赚钱潜力、高可验证性、低复杂度、可生产执行的候选。
 5. 高潜力、生产可见的 default-off paper alpha 默认走 **shared-paper-first**：第一次严肃实验就实现共享 helper，同时覆盖 historical replay 和 daily default-off snapshot，再跑 Gate 1-4。private replay scout 只适合数据形态不确定或非常早期的低成本探索；正向也只能记为 lead，不能算 accepted alpha。
 

@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-06-27.
+Last refreshed: 2026-06-28.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -782,6 +782,37 @@ Controls:
 
 Source: <https://arxiv.org/abs/2605.19337>
 
+### Trading-R1 Style Reasoning Traces Need Action-Level Attribution
+
+Trading-R1 is useful as an LLM-agent engineering pattern because it trains and
+evaluates long-chain trading reasoning over a decision history, but its local
+translation is narrow: keep the reasoning trace as auditable evidence attached
+to a frozen action schema. Do not let a richer chain-of-thought substitute for
+PIT data, costs, universe controls, or a displaced-candidate comparator.
+
+Implementable fields:
+
+- `trading_rationale_trace_hash`
+- `reasoning_step_count_bucket`
+- `action_schema_violation_count`
+- `position_state_memory_hash`
+- `counterfactual_hold_cash_delta`
+- `rationale_to_action_consistency_bucket`
+- `reasoning_trace_costed_replacement_value`
+
+Controls:
+
+- freeze the observation set, action schema, and portfolio state before the
+  model sees them;
+- log every tool call, rationale summary, action, invalid action, and
+  abstention as replayable rows;
+- compare against cash, buy-and-hold, SPY/QQQ, and the exact default-off helper
+  displaced by the action;
+- treat the trace as diagnosis until the deterministic helper using derived
+  fields passes Gate 1-4.
+
+Source: <https://arxiv.org/abs/2509.11420>
+
 ### Live Prediction-Market LLM Benchmark Discipline
 
 PolyBench is not an equity-alpha paper, but its benchmark design is useful for
@@ -1264,6 +1295,13 @@ paper adapters currently use small default-off notionals, but any live-eligible
 activation envelope should treat liquidity, participation, and nonlinear cost
 as first-class fields rather than a post-hoc haircut.
 
+A June 2026 AAPL market-impact micro-study is a useful calibration warning:
+the square-root law can fit aggregated impact well, but estimation depends on
+trade signing, horizon, volatility normalization, and liquidity regime. Ginger
+should therefore log the calibration window and participation bucket used by
+any live activation envelope instead of treating one impact coefficient as a
+constant.
+
 Implementable fields:
 
 - `market_impact_model_version`
@@ -1272,6 +1310,8 @@ Implementable fields:
 - `permanent_impact_decay_bucket`
 - `turnover_constraint_bucket`
 - `cost_model_sensitivity_bucket`
+- `impact_calibration_window_id`
+- `impact_trade_signing_method`
 - `capacity_adjusted_replacement_value`
 - `live_activation_notional_capacity_bucket`
 
@@ -1285,7 +1325,10 @@ Controls:
   disappears under realistic impact;
 - keep execution-envelope tests separate from new alpha searches.
 
-Source: <https://arxiv.org/abs/2603.29086>
+Sources:
+
+- <https://arxiv.org/abs/2603.29086>
+- <https://arxiv.org/abs/2606.24019>
 
 ### Cost-Aware Optimization Is A Capacity Surface
 
@@ -1480,6 +1523,12 @@ Ginger should not map these papers to daily close-only entry rules. The usable
 near-term form is a data-quality and execution-envelope surface around spread,
 order-flow imbalance, and stale-price risk.
 
+The June 2026 FastBiNLOB result adds an engineering angle: low-latency binary
+network designs may preserve useful short-horizon LOB classification while
+reducing inference cost. For Ginger this is only relevant after timestamped LOB
+coverage exists; then model latency and stale-quote risk become execution
+fields, not new daily ranking features.
+
 Implementable fields:
 
 - `lob_feature_source_id`
@@ -1489,6 +1538,8 @@ Implementable fields:
 - `microstructure_horizon_bucket`
 - `microstructure_predictability_decay_bucket`
 - `execution_queue_model_version`
+- `microstructure_model_latency_bucket`
+- `lob_snapshot_staleness_bucket`
 - `microstructure_cost_adjusted_signal_flag`
 
 Controls:
@@ -1505,6 +1556,7 @@ Sources:
 - <https://arxiv.org/abs/2502.15757>
 - <https://arxiv.org/abs/2505.22678>
 - <https://arxiv.org/abs/2504.13521>
+- <https://arxiv.org/abs/2606.25986>
 
 ### Dynamic Relation Graphs Need Edge Provenance
 

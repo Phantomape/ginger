@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-06-27.
+Last refreshed: 2026-06-28.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -671,6 +671,26 @@ field only after historical DEI status is accession-keyed across canonical
 windows and daily snapshots share the same parser. Until then, do not retry by
 text-cache availability, current-only parser fields, trend-long latency,
 factor-residual proxy lists, or supplier-financing activation slices.
+
+The June 28 readout confirms that the current constraint is still maturity and
+tradeable coverage, not another frozen-window retune. The day produced no new
+accepted alpha. Useful work was mostly blocker classification: Kova SEC13F
+settlement can read the hot warehouse through immutable SQLite mode but lacks
+10d mature rows; ORTEX borrow fees are real new economics but only for one AAPL
+sidecar without usable publication-date/daily-ledger parity; the forward regime
+scorecard has 41 tagged rows but zero non-risk-on coverage; consumer-platform
+and allocator-current surfaces are still open-row marks rather than settled
+replacement value; the pilot scorecard confirmed one hard KILL on
+fundamental_growth_rs but no graduate candidate. The negative alpha tests also
+closed tempting escapes: weak-tape top300 expansion still buys unacceptable
+drawdown/survival damage, ex-ante cost-adjusted stop-risk buckets did not
+explain the loss tail, and SBC allocator admission was a duplicate stale
+near-neighbor. Next alpha work should wait for materially more closed forward
+rows or a genuinely new PIT data surface, especially borrow economics with
+publication timing and replacement outcomes. `exp-20260628-011` retained this
+as measurement repair by turning those blockers into machine-checkable reopen
+conditions. Do not answer these blockers by re-slicing the same partial rows or
+daily "still not mature" readiness audits.
 
 ## Detail Sources
 
@@ -1525,6 +1545,27 @@ production-visible field:
   an expansion-approved universe containing pre-graduation float-explosion names,
   a PIT field separating the eligibility transition from coincident momentum, and
   closed forward replacement-value rows;
+- weak-tape top300 / broad liquid universe expansion retries that only condition
+  on the same old_thin weakness, breadth state, market regime, liquidity, top-N,
+  hold, cooldown, notional, or drawdown cap. `exp-20260628-005` confirmed that
+  the old_thin raw-EV nuance is not deployable because the remaining expanded
+  window still pays with unacceptable drawdown and survival damage. Reopen only
+  with a new PIT universe membership edge or settled forward replacement rows
+  from an expansion-approved surface;
+- Kova SEC13F, allocator-current concurrency, consumer-platform pilot, regime
+  scorecard, or pilot-scorecard activation retries that only reslice the same
+  partial/open 2026-06-28 rows. `exp-20260628-002`, `007`, `008`, `009`, and
+  `010` all ended on the same binding issue: insufficient settled 10d or closed
+  replacement-value rows, all-risk-on regime coverage, zero closed rows for the
+  active surface, missing target_price, or no graduate candidate. Reopen only
+  after materially more closed rows exist under the unchanged rule, or after a
+  new production-visible data surface creates new rows;
+- ORTEX / borrow-fee alpha retries while the local sidecar has only one ticker,
+  no provider publication or usable-trade-date field, no append-only daily
+  snapshot ledger, and no joined forward replacement outcomes. `exp-20260628-004`
+  makes this a real data source lead, not an alpha-ready field. Reopen after
+  PIT borrow economics have ticker/date breadth, publication timing, daily
+  parity, and settled outcome joins;
 - missing archive/text availability as an alpha field.
 
 ## Update Discipline

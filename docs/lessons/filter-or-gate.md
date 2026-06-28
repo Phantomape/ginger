@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `43`
+- Experiments: `42`
 - Accepted / rejected: `8` / `33`
-- Accept rate: `18.60%`
+- Accept rate: `19.05%`
 - Sum EV delta: `+8.8150`
 - Sum PnL delta: `$232,309.91`
-- Latest: `exp-20260620-013` `blocked_post_exp012_no_gate4_ready_free_data_edge` with EV `+0.0000` and PnL `$0.00`.
+- Latest: `exp-20260524-022` `rejected_broad_market_score_gap_crowding_notional` with EV `+0.0000` and PnL `$0.00`.
 
 ## Retained Or Positive Evidence
 
@@ -49,7 +49,6 @@ records before making strategy changes.
 
 ## Retry Discipline
 
-- `filter_or_gate` / `post_exp012_free_data_edge_gate4_readiness_v1`: risk `moderate`, guidance `require_new_evidence_type_before_more_parameter_search`, recent `exp-20260620-013`.
 - `filter_or_gate` / `signal_day_ticker_green_candle_risk_scalar`: risk `low`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260513-003, exp-20260513-004, exp-20260513-007`.
   Latest failure: `exp-20260513-004` Own green-candle signal-day risk allocation did not clear the canonical three-window gate; do not promote this state scalar without a stronger production-visible discriminator.
 - `filter_or_gate` / `allocation_rule`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260421-010, exp-20260421-015`.
@@ -63,12 +62,14 @@ records before making strategy changes.
   Latest failure: `exp-20260428-021` The current 1.5% upside gap cancel remains the best tested production setting. Nearby tightening, loosening, and disabling do not pass Gate 4 and mostly damage the weaker windows.
 - `filter_or_gate` / `alpha_search_entry_execution_state_exception`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260428-022`.
   Latest failure: `exp-20260428-022` The best cohort exception improved late_strong EV but reduced aggregate PnL and regressed old_thin EV; Commodity exceptions damaged late_strong. No variant passed multi-window Gate 4.
+- `filter_or_gate` / `broad_market_score_gap_crowding_support_notional_scalar`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260524-022`.
+  Latest failure: `exp-20260524-022` Score-gap crowding support did not clear the strict broad-market materiality and three-window gate.
 
 ## Recent Raw Records
 
+- `exp-20260516-024` source `experiments/logs/exp-20260516-024.json`.
 - `exp-20260516-032` source `experiments/logs/exp-20260516-032.json`.
 - `exp-20260518-019` source `experiments/logs/exp-20260518-019.json`.
 - `exp-20260520-019` source `experiments/logs/exp-20260520-019.json`.
 - `exp-20260520-020` source `experiments/logs/exp-20260520-020.json`.
 - `exp-20260524-022` source `experiments/logs/exp-20260524-022.json`.
-- `exp-20260620-013` source `docs/experiment_log.jsonl`.

@@ -58,10 +58,9 @@ records before making strategy changes.
   Latest failure: `exp-20260515-041` Unreduced exec-lag R:R leadership did not clear the canonical three-window gate; do not promote this allocation state on the frozen windows.
 - `risk_scalar_or_topup` / `extra_non_data_vendor_space_breakout_long_risk_scalar`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260511-022`.
   Latest failure: `exp-20260511-022` No tested non-data-vendor breakout scalar cleared the refinement gate versus the accepted Space sleeve plus PL/BKSY breakout haircut and RKLB/ASTS trend top-up.
-- `risk_scalar_or_topup` / `held_book_pit_risk_contribution_cap_vol_target_overlay_v1`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260623-026`.
-  Latest failure: `exp-20260623-026` 
 - `risk_scalar_or_topup` / `initial_entry_fraction_with_original_shares_preserved_for_day_2_top_up`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260508-034`.
   Latest failure: `exp-20260508-034` Gate 4 failed. Staging initial entries reduced exposure to winners more than it helped avoid losers; do not retry nearby 50%-75% staged-entry fractions without a new discriminator for which entries should be staged.
+- `risk_scalar_or_topup` / `recent_ticker_repeat_60d_notional_scalar`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260519-002`.
 
 ## Recent Raw Records
 
