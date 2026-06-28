@@ -183,6 +183,14 @@ def _cmd_list(a):
 
 
 def main(argv=None):
+    # Messages are UTF-8; force UTF-8 on the console streams so non-ASCII text
+    # (e.g. Chinese) round-trips through recv/transcript even when the Windows
+    # console code page is cp936/GBK. The stored files are always UTF-8.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8")
+        except (AttributeError, ValueError):
+            pass
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--mailbox-root", dest="root", default=MAILBOX_ROOT,
                     type=Path, help="Override the mailbox root (for tests).")
