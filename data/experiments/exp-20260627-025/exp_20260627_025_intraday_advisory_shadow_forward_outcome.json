@@ -1,0 +1,3898 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.7925,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260627_025_intraday_advisory_shadow_forward_outcome.py",
+    "data/experiments/exp-20260627-025/exp_20260627_025_intraday_advisory_shadow_forward_outcome.json",
+    "experiments/cards/exp-20260627-025.md",
+    "experiments/manifests/exp-20260627-025.json",
+    "experiments/tickets/exp-20260627-025.json",
+    "experiments/logs/exp-20260627-025.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "artifact": "data/experiments/exp-20260627-025/exp_20260627_025_intraday_advisory_shadow_forward_outcome.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.7925,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_success": 0,
+    "brier_score": 0.0484,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "mature_forward_rows_too_thin",
+      "weekend_or_unsettled_rows_filtered",
+      "review_actions_legacy_target_noise",
+      "no_directional_separation"
+    ],
+    "predicted_success_probability": 0.22,
+    "realized_failure_modes": [
+      "h3_action_underperformance_not_met"
+    ],
+    "surprise_note": "The sample stayed early and did not produce a stable h1/h3 underperformance edge."
+  },
+  "causal_components": [
+    "intraday_review snapshots",
+    "primary advisory shadow action extraction",
+    "next-1d and next-3d OHLCV settlement",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_forward_attribution",
+  "changed_files": [
+    "quant/experiments/exp_20260627_025_intraday_advisory_shadow_forward_outcome.py",
+    "data/experiments/exp-20260627-025/exp_20260627_025_intraday_advisory_shadow_forward_outcome.json",
+    "experiments/logs/exp-20260627-025.json",
+    "experiments/cards/exp-20260627-025.md",
+    "experiments/manifests/exp-20260627-025.json",
+    "experiments/tickets/exp-20260627-025.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "intraday_advisory_shadow_action_forward_outcome_v1",
+  "decision": "observed_only_rejected_no_stable_intraday_shadow_action_edge",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260627-025",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.7925,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "note": "Observed-only attribution; before and after strategy behavior are identical.",
+    "passed": true
+  },
+  "gate2": {
+    "fields_checked": [
+      "intraday_review.date",
+      "positions[].ticker",
+      "positions[].status",
+      "positions[].quote.price",
+      "positions[].context.exit_signals.triggered_rules",
+      "positions[].primary_advisory_shadow_action",
+      "ohlcv_overlay.entry_close",
+      "ohlcv_overlay.future_close",
+      "entry_date",
+      "target_price"
+    ],
+    "passed": true,
+    "source_diagnostics": {
+      "calendar_max": "2026-06-25",
+      "calendar_min": "2023-08-29",
+      "native_primary_advisory_shadow_action_count": 0,
+      "observation_count": 61,
+      "shadow_source_counts": {
+        "derived_from_context_exit_signals": 32,
+        "derived_no_triggered_rule": 29
+      },
+      "skipped_counts": {
+        "snapshot_non_trading_or_no_spy_bar": 2
+      },
+      "snapshot_count": 6,
+      "trading_snapshot_count": 4
+    },
+    "target_price_relevance": "No target exits are scheduled. target_price is represented only inside existing intraday exit-level context for attribution."
+  },
+  "gate3": {
+    "baseline_survival_rate": 0.7925,
+    "filter_added": false,
+    "note": "No executable filter was added; rows are only attributed.",
+    "passed": true,
+    "signals_generated": 61,
+    "signals_survived": 46,
+    "survival_rate": 0.754098
+  },
+  "gate4": {
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "strategy_behavior_changed": false,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "bucket_summary": {
+      "h1": {
+        "by_shadow_action": {
+          "EXIT": {
+            "qqq_excess_pct": {
+              "max": 3.859942,
+              "mean": -1.322519,
+              "median": -0.046182,
+              "min": -22.991351,
+              "n": 12,
+              "positive_rate": 0.5
+            },
+            "return_pct": {
+              "max": 0.567038,
+              "mean": -2.736378,
+              "median": -0.470764,
+              "min": -26.284256,
+              "n": 12,
+              "positive_rate": 0.25
+            },
+            "row_count": 12,
+            "spy_excess_pct": {
+              "max": 2.019233,
+              "mean": -2.136077,
+              "median": -0.424413,
+              "min": -24.83206,
+              "n": 12,
+              "positive_rate": 0.416667
+            },
+            "ticker_counts": {
+              "AMZN": 2,
+              "GOOG": 1,
+              "META": 3,
+              "MUU": 2,
+              "NFLX": 3,
+              "TRIP": 1
+            }
+          },
+          "NONE": {
+            "qqq_excess_pct": {
+              "max": 30.261388,
+              "mean": 0.830488,
+              "median": -0.683859,
+              "min": -7.109467,
+              "n": 25,
+              "positive_rate": 0.36
+            },
+            "return_pct": {
+              "max": 31.071949,
+              "mean": -0.231444,
+              "median": -1.005706,
+              "min": -10.402371,
+              "n": 25,
+              "positive_rate": 0.24
+            },
+            "row_count": 25,
+            "spy_excess_pct": {
+              "max": 30.927386,
+              "mean": 0.259919,
+              "median": -1.062089,
+              "min": -8.950176,
+              "n": 25,
+              "positive_rate": 0.32
+            },
+            "ticker_counts": {
+              "APP": 1,
+              "COHR": 3,
+              "CRDO": 3,
+              "GOOG": 1,
+              "HOOD": 2,
+              "MRVL": 3,
+              "NBIS": 3,
+              "NVDA": 3,
+              "SPCX": 3,
+              "TSLA": 1
+            }
+          },
+          "REVIEW": {
+            "qqq_excess_pct": {
+              "max": 5.18648,
+              "mean": -0.49177,
+              "median": -0.919741,
+              "min": -4.903386,
+              "n": 9,
+              "positive_rate": 0.333333
+            },
+            "return_pct": {
+              "max": 4.761898,
+              "mean": -0.686102,
+              "median": -0.441094,
+              "min": -5.761113,
+              "n": 9,
+              "positive_rate": 0.222222
+            },
+            "row_count": 9,
+            "spy_excess_pct": {
+              "max": 4.80825,
+              "mean": -0.568396,
+              "median": -0.394742,
+              "min": -4.308918,
+              "n": 9,
+              "positive_rate": 0.333333
+            },
+            "ticker_counts": {
+              "AMD": 3,
+              "APP": 2,
+              "TRIP": 2,
+              "TSLA": 2
+            }
+          }
+        },
+        "by_shadow_rule": {
+          "ATR_STOP": {
+            "qqq_excess_pct": {
+              "max": 3.859942,
+              "mean": 2.176435,
+              "median": 2.176435,
+              "min": 0.492927,
+              "n": 2,
+              "positive_rate": 1.0
+            },
+            "return_pct": {
+              "max": 0.567038,
+              "mean": 0.317692,
+              "median": 0.317692,
+              "min": 0.068346,
+              "n": 2,
+              "positive_rate": 1.0
+            },
+            "row_count": 2,
+            "spy_excess_pct": {
+              "max": 2.019233,
+              "mean": 1.066965,
+              "median": 1.066965,
+              "min": 0.114697,
+              "n": 2,
+              "positive_rate": 1.0
+            },
+            "ticker_counts": {
+              "AMZN": 2
+            }
+          },
+          "HARD_STOP": {
+            "qqq_excess_pct": {
+              "max": 3.210581,
+              "mean": -0.112501,
+              "median": -0.651196,
+              "min": -3.464458,
+              "n": 6,
+              "positive_rate": 0.333333
+            },
+            "return_pct": {
+              "max": -0.082324,
+              "mean": -1.081476,
+              "median": -1.057112,
+              "min": -2.653897,
+              "n": 6,
+              "positive_rate": 0.0
+            },
+            "row_count": 6,
+            "spy_excess_pct": {
+              "max": 1.369872,
+              "mean": -0.630149,
+              "median": -1.029427,
+              "min": -2.798461,
+              "n": 6,
+              "positive_rate": 0.333333
+            },
+            "ticker_counts": {
+              "META": 3,
+              "NFLX": 3
+            }
+          },
+          "LEGACY_TARGET_REVIEW": {
+            "qqq_excess_pct": {
+              "max": 1.657984,
+              "mean": -0.1356,
+              "median": 0.403425,
+              "min": -2.468209,
+              "n": 3,
+              "positive_rate": 0.666667
+            },
+            "return_pct": {
+              "max": 2.468545,
+              "mean": -1.104575,
+              "median": -0.021157,
+              "min": -5.761113,
+              "n": 3,
+              "positive_rate": 0.333333
+            },
+            "row_count": 3,
+            "spy_excess_pct": {
+              "max": 2.323982,
+              "mean": -0.653247,
+              "median": 0.025195,
+              "min": -4.308918,
+              "n": 3,
+              "positive_rate": 0.666667
+            },
+            "ticker_counts": {
+              "AMD": 3
+            }
+          },
+          "SIGNAL_TARGET": {
+            "qqq_excess_pct": {
+              "max": 3.535628,
+              "mean": -4.887022,
+              "median": -0.046182,
+              "min": -22.991351,
+              "n": 4,
+              "positive_rate": 0.5
+            },
+            "return_pct": {
+              "max": 0.242724,
+              "mean": -6.745765,
+              "median": -0.470764,
+              "min": -26.284256,
+              "n": 4,
+              "positive_rate": 0.25
+            },
+            "row_count": 4,
+            "spy_excess_pct": {
+              "max": 1.694919,
+              "mean": -5.996492,
+              "median": -0.424413,
+              "min": -24.83206,
+              "n": 4,
+              "positive_rate": 0.25
+            },
+            "ticker_counts": {
+              "GOOG": 1,
+              "MUU": 2,
+              "TRIP": 1
+            }
+          },
+          "TIME_STOP": {
+            "qqq_excess_pct": {
+              "max": 5.18648,
+              "mean": -0.669855,
+              "median": -1.044202,
+              "min": -4.903386,
+              "n": 6,
+              "positive_rate": 0.166667
+            },
+            "return_pct": {
+              "max": 4.761898,
+              "mean": -0.476865,
+              "median": -0.913919,
+              "min": -4.092825,
+              "n": 6,
+              "positive_rate": 0.166667
+            },
+            "row_count": 6,
+            "spy_excess_pct": {
+              "max": 4.80825,
+              "mean": -0.525971,
+              "median": -0.963024,
+              "min": -4.237389,
+              "n": 6,
+              "positive_rate": 0.166667
+            },
+            "ticker_counts": {
+              "APP": 2,
+              "TRIP": 2,
+              "TSLA": 2
+            }
+          },
+          "UNKNOWN": {
+            "qqq_excess_pct": {
+              "max": 30.261388,
+              "mean": 0.830488,
+              "median": -0.683859,
+              "min": -7.109467,
+              "n": 25,
+              "positive_rate": 0.36
+            },
+            "return_pct": {
+              "max": 31.071949,
+              "mean": -0.231444,
+              "median": -1.005706,
+              "min": -10.402371,
+              "n": 25,
+              "positive_rate": 0.24
+            },
+            "row_count": 25,
+            "spy_excess_pct": {
+              "max": 30.927386,
+              "mean": 0.259919,
+              "median": -1.062089,
+              "min": -8.950176,
+              "n": 25,
+              "positive_rate": 0.32
+            },
+            "ticker_counts": {
+              "APP": 1,
+              "COHR": 3,
+              "CRDO": 3,
+              "GOOG": 1,
+              "HOOD": 2,
+              "MRVL": 3,
+              "NBIS": 3,
+              "NVDA": 3,
+              "SPCX": 3,
+              "TSLA": 1
+            }
+          }
+        },
+        "by_status_bucket": {
+          "APPROACHING": {
+            "qqq_excess_pct": {
+              "max": 0.345199,
+              "mean": -3.642875,
+              "median": -5.239359,
+              "min": -6.068487,
+              "n": 5,
+              "positive_rate": 0.2
+            },
+            "return_pct": {
+              "max": -0.996501,
+              "mean": -4.967757,
+              "median": -5.663941,
+              "min": -9.361391,
+              "n": 5,
+              "positive_rate": 0.0
+            },
+            "row_count": 5,
+            "spy_excess_pct": {
+              "max": -1.141065,
+              "mean": -4.397251,
+              "median": -5.617589,
+              "min": -7.909196,
+              "n": 5,
+              "positive_rate": 0.0
+            },
+            "ticker_counts": {
+              "HOOD": 1,
+              "MRVL": 1,
+              "NBIS": 2,
+              "SPCX": 1
+            }
+          },
+          "BREACHED": {
+            "qqq_excess_pct": {
+              "max": 5.18648,
+              "mean": -0.966483,
+              "median": -0.216444,
+              "min": -22.991351,
+              "n": 21,
+              "positive_rate": 0.428571
+            },
+            "return_pct": {
+              "max": 4.761898,
+              "mean": -1.857688,
+              "median": -0.441094,
+              "min": -26.284256,
+              "n": 21,
+              "positive_rate": 0.238095
+            },
+            "row_count": 21,
+            "spy_excess_pct": {
+              "max": 4.80825,
+              "mean": -1.464214,
+              "median": -0.394742,
+              "min": -24.83206,
+              "n": 21,
+              "positive_rate": 0.380952
+            },
+            "ticker_counts": {
+              "AMD": 3,
+              "AMZN": 2,
+              "APP": 2,
+              "GOOG": 1,
+              "META": 3,
+              "MUU": 2,
+              "NFLX": 3,
+              "TRIP": 3,
+              "TSLA": 2
+            }
+          },
+          "OK": {
+            "qqq_excess_pct": {
+              "max": 30.261388,
+              "mean": 1.948829,
+              "median": -0.497565,
+              "min": -7.109467,
+              "n": 20,
+              "positive_rate": 0.4
+            },
+            "return_pct": {
+              "max": 31.071949,
+              "mean": 0.952635,
+              "median": -0.806359,
+              "min": -10.402371,
+              "n": 20,
+              "positive_rate": 0.3
+            },
+            "row_count": 20,
+            "spy_excess_pct": {
+              "max": 30.927386,
+              "mean": 1.424211,
+              "median": -0.646844,
+              "min": -8.950176,
+              "n": 20,
+              "positive_rate": 0.4
+            },
+            "ticker_counts": {
+              "APP": 1,
+              "COHR": 3,
+              "CRDO": 3,
+              "GOOG": 1,
+              "HOOD": 1,
+              "MRVL": 2,
+              "NVDA": 3,
+              "RKLZ": 1,
+              "SPCX": 2,
+              "TSLA": 1
+            }
+          }
+        }
+      },
+      "h3": {
+        "by_shadow_action": {
+          "EXIT": {
+            "qqq_excess_pct": {
+              "max": 6.482838,
+              "mean": 1.051086,
+              "median": 0.206174,
+              "min": -1.075738,
+              "n": 5,
+              "positive_rate": 0.6
+            },
+            "return_pct": {
+              "max": 3.559875,
+              "mean": -1.871877,
+              "median": -2.716789,
+              "min": -3.998701,
+              "n": 5,
+              "positive_rate": 0.2
+            },
+            "row_count": 5,
+            "spy_excess_pct": {
+              "max": 4.915351,
+              "mean": -0.516401,
+              "median": -1.361313,
+              "min": -2.643225,
+              "n": 5,
+              "positive_rate": 0.2
+            },
+            "ticker_counts": {
+              "AMZN": 1,
+              "META": 1,
+              "MUU": 1,
+              "NFLX": 1,
+              "TRIP": 1
+            }
+          },
+          "NONE": {
+            "qqq_excess_pct": {
+              "max": 1.88803,
+              "mean": -3.225678,
+              "median": -3.264427,
+              "min": -8.477933,
+              "n": 9,
+              "positive_rate": 0.222222
+            },
+            "return_pct": {
+              "max": -1.034933,
+              "mean": -6.148641,
+              "median": -6.18739,
+              "min": -11.400896,
+              "n": 9,
+              "positive_rate": 0.0
+            },
+            "row_count": 9,
+            "spy_excess_pct": {
+              "max": 0.320543,
+              "mean": -4.793165,
+              "median": -4.831914,
+              "min": -10.04542,
+              "n": 9,
+              "positive_rate": 0.111111
+            },
+            "ticker_counts": {
+              "APP": 1,
+              "COHR": 1,
+              "CRDO": 1,
+              "GOOG": 1,
+              "MRVL": 1,
+              "NBIS": 1,
+              "NVDA": 1,
+              "SPCX": 1,
+              "TSLA": 1
+            }
+          },
+          "REVIEW": {
+            "qqq_excess_pct": {
+              "max": -0.532251,
+              "mean": -0.532251,
+              "median": -0.532251,
+              "min": -0.532251,
+              "n": 1,
+              "positive_rate": 0.0
+            },
+            "return_pct": {
+              "max": -3.455214,
+              "mean": -3.455214,
+              "median": -3.455214,
+              "min": -3.455214,
+              "n": 1,
+              "positive_rate": 0.0
+            },
+            "row_count": 1,
+            "spy_excess_pct": {
+              "max": -2.099738,
+              "mean": -2.099738,
+              "median": -2.099738,
+              "min": -2.099738,
+              "n": 1,
+              "positive_rate": 0.0
+            },
+            "ticker_counts": {
+              "AMD": 1
+            }
+          }
+        },
+        "by_shadow_rule": {
+          "ATR_STOP": {
+            "qqq_excess_pct": {
+              "max": 0.440039,
+              "mean": 0.440039,
+              "median": 0.440039,
+              "min": 0.440039,
+              "n": 1,
+              "positive_rate": 1.0
+            },
+            "return_pct": {
+              "max": -2.482924,
+              "mean": -2.482924,
+              "median": -2.482924,
+              "min": -2.482924,
+              "n": 1,
+              "positive_rate": 0.0
+            },
+            "row_count": 1,
+            "spy_excess_pct": {
+              "max": -1.127448,
+              "mean": -1.127448,
+              "median": -1.127448,
+              "min": -1.127448,
+              "n": 1,
+              "positive_rate": 0.0
+            },
+            "ticker_counts": {
+              "AMZN": 1
+            }
+          },
+          "HARD_STOP": {
+            "qqq_excess_pct": {
+              "max": 0.206174,
+              "mean": -0.295853,
+              "median": -0.295853,
+              "min": -0.797881,
+              "n": 2,
+              "positive_rate": 0.5
+            },
+            "return_pct": {
+              "max": -2.716789,
+              "mean": -3.218816,
+              "median": -3.218816,
+              "min": -3.720844,
+              "n": 2,
+              "positive_rate": 0.0
+            },
+            "row_count": 2,
+            "spy_excess_pct": {
+              "max": -1.361313,
+              "mean": -1.863341,
+              "median": -1.863341,
+              "min": -2.365369,
+              "n": 2,
+              "positive_rate": 0.0
+            },
+            "ticker_counts": {
+              "META": 1,
+              "NFLX": 1
+            }
+          },
+          "LEGACY_TARGET_REVIEW": {
+            "qqq_excess_pct": {
+              "max": -0.532251,
+              "mean": -0.532251,
+              "median": -0.532251,
+              "min": -0.532251,
+              "n": 1,
+              "positive_rate": 0.0
+            },
+            "return_pct": {
+              "max": -3.455214,
+              "mean": -3.455214,
+              "median": -3.455214,
+              "min": -3.455214,
+              "n": 1,
+              "positive_rate": 0.0
+            },
+            "row_count": 1,
+            "spy_excess_pct": {
+              "max": -2.099738,
+              "mean": -2.099738,
+              "median": -2.099738,
+              "min": -2.099738,
+              "n": 1,
+              "positive_rate": 0.0
+            },
+            "ticker_counts": {
+              "AMD": 1
+            }
+          },
+          "SIGNAL_TARGET": {
+            "qqq_excess_pct": {
+              "max": 6.482838,
+              "mean": 2.70355,
+              "median": 2.70355,
+              "min": -1.075738,
+              "n": 2,
+              "positive_rate": 0.5
+            },
+            "return_pct": {
+              "max": 3.559875,
+              "mean": -0.219413,
+              "median": -0.219413,
+              "min": -3.998701,
+              "n": 2,
+              "positive_rate": 0.5
+            },
+            "row_count": 2,
+            "spy_excess_pct": {
+              "max": 4.915351,
+              "mean": 1.136063,
+              "median": 1.136063,
+              "min": -2.643225,
+              "n": 2,
+              "positive_rate": 0.5
+            },
+            "ticker_counts": {
+              "MUU": 1,
+              "TRIP": 1
+            }
+          },
+          "UNKNOWN": {
+            "qqq_excess_pct": {
+              "max": 1.88803,
+              "mean": -3.225678,
+              "median": -3.264427,
+              "min": -8.477933,
+              "n": 9,
+              "positive_rate": 0.222222
+            },
+            "return_pct": {
+              "max": -1.034933,
+              "mean": -6.148641,
+              "median": -6.18739,
+              "min": -11.400896,
+              "n": 9,
+              "positive_rate": 0.0
+            },
+            "row_count": 9,
+            "spy_excess_pct": {
+              "max": 0.320543,
+              "mean": -4.793165,
+              "median": -4.831914,
+              "min": -10.04542,
+              "n": 9,
+              "positive_rate": 0.111111
+            },
+            "ticker_counts": {
+              "APP": 1,
+              "COHR": 1,
+              "CRDO": 1,
+              "GOOG": 1,
+              "MRVL": 1,
+              "NBIS": 1,
+              "NVDA": 1,
+              "SPCX": 1,
+              "TSLA": 1
+            }
+          }
+        },
+        "by_status_bucket": {
+          "APPROACHING": {
+            "qqq_excess_pct": {
+              "max": -5.71732,
+              "mean": -6.153707,
+              "median": -6.153707,
+              "min": -6.590094,
+              "n": 2,
+              "positive_rate": 0.0
+            },
+            "return_pct": {
+              "max": -8.640284,
+              "mean": -9.07667,
+              "median": -9.07667,
+              "min": -9.513057,
+              "n": 2,
+              "positive_rate": 0.0
+            },
+            "row_count": 2,
+            "spy_excess_pct": {
+              "max": -7.284808,
+              "mean": -7.721195,
+              "median": -7.721195,
+              "min": -8.157581,
+              "n": 2,
+              "positive_rate": 0.0
+            },
+            "ticker_counts": {
+              "MRVL": 1,
+              "NBIS": 1
+            }
+          },
+          "BREACHED": {
+            "qqq_excess_pct": {
+              "max": 6.482838,
+              "mean": 0.787197,
+              "median": -0.163039,
+              "min": -1.075738,
+              "n": 6,
+              "positive_rate": 0.5
+            },
+            "return_pct": {
+              "max": 3.559875,
+              "mean": -2.135766,
+              "median": -3.086002,
+              "min": -3.998701,
+              "n": 6,
+              "positive_rate": 0.166667
+            },
+            "row_count": 6,
+            "spy_excess_pct": {
+              "max": 4.915351,
+              "mean": -0.78029,
+              "median": -1.730525,
+              "min": -2.643225,
+              "n": 6,
+              "positive_rate": 0.166667
+            },
+            "ticker_counts": {
+              "AMD": 1,
+              "AMZN": 1,
+              "META": 1,
+              "MUU": 1,
+              "NFLX": 1,
+              "TRIP": 1
+            }
+          },
+          "OK": {
+            "qqq_excess_pct": {
+              "max": 1.88803,
+              "mean": -2.389098,
+              "median": -2.075017,
+              "min": -8.477933,
+              "n": 7,
+              "positive_rate": 0.285714
+            },
+            "return_pct": {
+              "max": -1.034933,
+              "mean": -5.312061,
+              "median": -4.997981,
+              "min": -11.400896,
+              "n": 7,
+              "positive_rate": 0.0
+            },
+            "row_count": 7,
+            "spy_excess_pct": {
+              "max": 0.320543,
+              "mean": -3.956585,
+              "median": -3.642505,
+              "min": -10.04542,
+              "n": 7,
+              "positive_rate": 0.142857
+            },
+            "ticker_counts": {
+              "APP": 1,
+              "COHR": 1,
+              "CRDO": 1,
+              "GOOG": 1,
+              "NVDA": 1,
+              "SPCX": 1,
+              "TSLA": 1
+            }
+          }
+        }
+      }
+    },
+    "comparisons": {
+      "h1": {
+        "action_minus_ok_return_mean_pp": -2.810323,
+        "action_minus_ok_spy_excess_mean_pp": -2.888425,
+        "action_return_pct": {
+          "max": 4.761898,
+          "mean": -1.857688,
+          "median": -0.441094,
+          "min": -26.284256,
+          "n": 21,
+          "positive_rate": 0.238095
+        },
+        "action_rows": 21,
+        "action_spy_excess_pct": {
+          "max": 4.80825,
+          "mean": -1.464214,
+          "median": -0.394742,
+          "min": -24.83206,
+          "n": 21,
+          "positive_rate": 0.380952
+        },
+        "horizon": 1,
+        "ok_no_action_return_pct": {
+          "max": 31.071949,
+          "mean": 0.952635,
+          "median": -0.806359,
+          "min": -10.402371,
+          "n": 20,
+          "positive_rate": 0.3
+        },
+        "ok_no_action_rows": 20,
+        "ok_no_action_spy_excess_pct": {
+          "max": 30.927386,
+          "mean": 1.424211,
+          "median": -0.646844,
+          "min": -8.950176,
+          "n": 20,
+          "positive_rate": 0.4
+        },
+        "settled_rows": 46
+      },
+      "h3": {
+        "action_minus_ok_return_mean_pp": 3.176295,
+        "action_minus_ok_spy_excess_mean_pp": 3.176295,
+        "action_return_pct": {
+          "max": 3.559875,
+          "mean": -2.135766,
+          "median": -3.086002,
+          "min": -3.998701,
+          "n": 6,
+          "positive_rate": 0.166667
+        },
+        "action_rows": 6,
+        "action_spy_excess_pct": {
+          "max": 4.915351,
+          "mean": -0.78029,
+          "median": -1.730525,
+          "min": -2.643225,
+          "n": 6,
+          "positive_rate": 0.166667
+        },
+        "horizon": 3,
+        "ok_no_action_return_pct": {
+          "max": -1.034933,
+          "mean": -5.312061,
+          "median": -4.997981,
+          "min": -11.400896,
+          "n": 7,
+          "positive_rate": 0.0
+        },
+        "ok_no_action_rows": 7,
+        "ok_no_action_spy_excess_pct": {
+          "max": 0.320543,
+          "mean": -3.956585,
+          "median": -3.642505,
+          "min": -10.04542,
+          "n": 7,
+          "positive_rate": 0.142857
+        },
+        "settled_rows": 15
+      }
+    },
+    "decision": "observed_only_rejected_no_stable_intraday_shadow_action_edge",
+    "failed_reasons": [
+      "h3_action_underperformance_not_met"
+    ],
+    "observed_only": true,
+    "passed": false
+  },
+  "hypothesis": "Observed-only attribution: production-visible intraday advisory shadow actions on existing positions should identify held names with worse next-1d/3d forward close returns than OK positions, creating a future shared exit-lifecycle evidence lead without changing strategy behavior.",
+  "implementation_mode": "observed_only_intraday_exit_advisory_attribution",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "mechanism_family": "intraday_exit_advisory_forward_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260627-013",
+    "exp-20260627-024",
+    "exp-20260429-032",
+    "exp-20260623-003"
+  ],
+  "new_evidence_axis": "New forward rows from production-visible intraday_review snapshots carrying primary or derivable advisory shadow actions; this is not a target-trim replay, threshold sweep, or frozen candidate-pool retune.",
+  "new_evidence_type": "post_exp024_intraday_primary_action_closed_forward_rows",
+  "observations": [
+    {
+      "daily_return_pct": 0.0125,
+      "date": "2026-06-22",
+      "distance_to_atr_stop_pct": 0.0908,
+      "distance_to_hard_stop_pct": 0.12,
+      "distance_to_target_pct": -0.2458,
+      "distance_to_trailing_stop_pct": 0.0481,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-22:AMD:intraday_review_20260622_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 551.630005,
+          "future_close": 519.849976,
+          "future_date": "2026-06-23",
+          "qqq_excess_pct": -2.468209,
+          "qqq_return_pct": -3.292904,
+          "return_pct": -5.761113,
+          "spy_excess_pct": -4.308918,
+          "spy_return_pct": -1.452195,
+          "status": "settled"
+        },
+        "h3": {
+          "entry_close": 551.630005,
+          "future_close": 532.570007,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": -0.532251,
+          "qqq_return_pct": -2.922963,
+          "return_pct": -3.455214,
+          "spy_excess_pct": -2.099738,
+          "spy_return_pct": -1.355476,
+          "status": "settled"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 544.0999755859375,
+      "shadow_action": "REVIEW",
+      "shadow_rule": "LEGACY_TARGET_REVIEW",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "REVIEW",
+      "sleeve": "legacy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260622_1302ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "AMD",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.0461,
+      "date": "2026-06-22",
+      "distance_to_atr_stop_pct": -0.0154,
+      "distance_to_hard_stop_pct": 0.063,
+      "distance_to_target_pct": 0.2458,
+      "distance_to_trailing_stop_pct": -0.0994,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-22:AMZN:intraday_review_20260622_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 232.789993,
+          "future_close": 234.110001,
+          "future_date": "2026-06-23",
+          "qqq_excess_pct": 3.859942,
+          "qqq_return_pct": -3.292904,
+          "return_pct": 0.567038,
+          "spy_excess_pct": 2.019233,
+          "spy_return_pct": -1.452195,
+          "status": "settled"
+        },
+        "h3": {
+          "entry_close": 232.789993,
+          "future_close": 227.009995,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": 0.440039,
+          "qqq_return_pct": -2.922963,
+          "return_pct": -2.482924,
+          "spy_excess_pct": -1.127448,
+          "spy_return_pct": -1.355476,
+          "status": "settled"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 233.11500549316406,
+      "shadow_action": "EXIT",
+      "shadow_rule": "ATR_STOP",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "HIGH",
+      "sleeve": "core_strategy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260622_1302ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "AMZN",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.0145,
+      "date": "2026-06-22",
+      "distance_to_atr_stop_pct": 0.108,
+      "distance_to_hard_stop_pct": 0.12,
+      "distance_to_target_pct": 0.0801,
+      "distance_to_trailing_stop_pct": -0.4818,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-22:APP:intraday_review_20260622_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 469.390015,
+          "future_close": 467.019989,
+          "future_date": "2026-06-23",
+          "qqq_excess_pct": 2.787988,
+          "qqq_return_pct": -3.292904,
+          "return_pct": -0.504916,
+          "spy_excess_pct": 0.947279,
+          "spy_return_pct": -1.452195,
+          "status": "settled"
+        },
+        "h3": {
+          "entry_close": 469.390015,
+          "future_close": 445.929993,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": -2.075017,
+          "qqq_return_pct": -2.922963,
+          "return_pct": -4.997981,
+          "spy_excess_pct": -3.642505,
+          "spy_return_pct": -1.355476,
+          "status": "settled"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 462.9200134277344,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "legacy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260622_1302ET.json",
+      "status_bucket": "OK",
+      "ticker": "APP",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": 0.0658,
+      "date": "2026-06-22",
+      "distance_to_atr_stop_pct": 0.2117,
+      "distance_to_hard_stop_pct": 0.2001,
+      "distance_to_target_pct": 0.1886,
+      "distance_to_trailing_stop_pct": 0.025,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-22:COHR:intraday_review_20260622_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 425.480011,
+          "future_close": 381.220001,
+          "future_date": "2026-06-23",
+          "qqq_excess_pct": -7.109467,
+          "qqq_return_pct": -3.292904,
+          "return_pct": -10.402371,
+          "spy_excess_pct": -8.950176,
+          "spy_return_pct": -1.452195,
+          "status": "settled"
+        },
+        "h3": {
+          "entry_close": 425.480011,
+          "future_close": 407.25,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": -1.361612,
+          "qqq_return_pct": -2.922963,
+          "return_pct": -4.284575,
+          "spy_excess_pct": -2.929099,
+          "spy_return_pct": -1.355476,
+          "status": "settled"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 415.20001220703125,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "core_strategy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260622_1302ET.json",
+      "status_bucket": "OK",
+      "ticker": "COHR",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": 0.087,
+      "date": "2026-06-22",
+      "distance_to_atr_stop_pct": 0.2341,
+      "distance_to_hard_stop_pct": 0.2197,
+      "distance_to_target_pct": 0.1845,
+      "distance_to_trailing_stop_pct": 0.039,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-22:CRDO:intraday_review_20260622_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 302.519989,
+          "future_close": 272.005005,
+          "future_date": "2026-06-23",
+          "qqq_excess_pct": -6.794027,
+          "qqq_return_pct": -3.292904,
+          "return_pct": -10.086932,
+          "spy_excess_pct": -8.634736,
+          "spy_return_pct": -1.452195,
+          "status": "settled"
+        },
+        "h3": {
+          "entry_close": 302.519989,
+          "future_close": 268.029999,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": -8.477933,
+          "qqq_return_pct": -2.922963,
+          "return_pct": -11.400896,
+          "spy_excess_pct": -10.04542,
+          "spy_return_pct": -1.355476,
+          "status": "settled"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 295.489990234375,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "fomo",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260622_1302ET.json",
+      "status_bucket": "OK",
+      "ticker": "CRDO",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.0603,
+      "date": "2026-06-22",
+      "distance_to_atr_stop_pct": 0.0468,
+      "distance_to_hard_stop_pct": 0.12,
+      "distance_to_target_pct": 0.2059,
+      "distance_to_trailing_stop_pct": -0.077,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-22:GOOG:intraday_review_20260622_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 348.779999,
+          "future_close": 346.079987,
+          "future_date": "2026-06-23",
+          "qqq_excess_pct": 2.518774,
+          "qqq_return_pct": -3.292904,
+          "return_pct": -0.77413,
+          "spy_excess_pct": 0.678065,
+          "spy_return_pct": -1.452195,
+          "status": "settled"
+        },
+        "h3": {
+          "entry_close": 348.779999,
+          "future_close": 342.190002,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": 1.033521,
+          "qqq_return_pct": -2.922963,
+          "return_pct": -1.889442,
+          "spy_excess_pct": -0.533966,
+          "spy_return_pct": -1.355476,
+          "status": "settled"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 345.2900085449219,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "legacy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260622_1302ET.json",
+      "status_bucket": "OK",
+      "ticker": "GOOG",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.026,
+      "date": "2026-06-22",
+      "distance_to_atr_stop_pct": -0.1936,
+      "distance_to_hard_stop_pct": -0.0976,
+      "distance_to_target_pct": 0.3364,
+      "distance_to_trailing_stop_pct": -0.2987,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-22:META:intraday_review_20260622_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 563.849976,
+          "future_close": 562.200012,
+          "future_date": "2026-06-23",
+          "qqq_excess_pct": 3.00028,
+          "qqq_return_pct": -3.292904,
+          "return_pct": -0.292625,
+          "spy_excess_pct": 1.159571,
+          "spy_return_pct": -1.452195,
+          "status": "settled"
+        },
+        "h3": {
+          "entry_close": 563.849976,
+          "future_close": 542.869995,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": -0.797881,
+          "qqq_return_pct": -2.922963,
+          "return_pct": -3.720844,
+          "spy_excess_pct": -2.365369,
+          "spy_return_pct": -1.355476,
+          "status": "settled"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 562.22998046875,
+      "shadow_action": "EXIT",
+      "shadow_rule": "HARD_STOP",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "CRITICAL",
+      "sleeve": "legacy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260622_1302ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "META",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.0199,
+      "date": "2026-06-22",
+      "distance_to_atr_stop_pct": 0.1705,
+      "distance_to_hard_stop_pct": 0.1463,
+      "distance_to_target_pct": 0.3141,
+      "distance_to_trailing_stop_pct": 0.003,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-22:MRVL:intraday_review_20260622_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 307.859985,
+          "future_close": 279.040009,
+          "future_date": "2026-06-23",
+          "qqq_excess_pct": -6.068487,
+          "qqq_return_pct": -3.292904,
+          "return_pct": -9.361391,
+          "spy_excess_pct": -7.909196,
+          "spy_return_pct": -1.452195,
+          "status": "settled"
+        },
+        "h3": {
+          "entry_close": 307.859985,
+          "future_close": 281.26001,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": -5.71732,
+          "qqq_return_pct": -2.922963,
+          "return_pct": -8.640284,
+          "spy_excess_pct": -7.284808,
+          "spy_return_pct": -1.355476,
+          "status": "settled"
+        }
+      },
+      "proximity_flags": [
+        "NEAR_TRAILING_STOP"
+      ],
+      "quote_price": 304.3999938964844,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "core_strategy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260622_1302ET.json",
+      "status_bucket": "APPROACHING",
+      "ticker": "MRVL",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": 0.1064,
+      "date": "2026-06-22",
+      "distance_to_atr_stop_pct": 0.4915,
+      "distance_to_hard_stop_pct": 0.4074,
+      "distance_to_target_pct": -0.0795,
+      "distance_to_trailing_stop_pct": 0.0616,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-22:MUU:intraday_review_20260622_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 1231.650024,
+          "future_close": 907.919983,
+          "future_date": "2026-06-23",
+          "qqq_excess_pct": -22.991351,
+          "qqq_return_pct": -3.292904,
+          "return_pct": -26.284256,
+          "spy_excess_pct": -24.83206,
+          "spy_return_pct": -1.452195,
+          "status": "settled"
+        },
+        "h3": {
+          "entry_close": 1231.650024,
+          "future_close": 1182.400024,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": -1.075738,
+          "qqq_return_pct": -2.922963,
+          "return_pct": -3.998701,
+          "spy_excess_pct": -2.643225,
+          "spy_return_pct": -1.355476,
+          "status": "settled"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 1195.0,
+      "shadow_action": "EXIT",
+      "shadow_rule": "SIGNAL_TARGET",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "HIGH",
+      "sleeve": "fomo",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260622_1302ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "MUU",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.0251,
+      "date": "2026-06-22",
+      "distance_to_atr_stop_pct": 0.3081,
+      "distance_to_hard_stop_pct": 0.2768,
+      "distance_to_target_pct": 0.0734,
+      "distance_to_trailing_stop_pct": 0.013,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-22:NBIS:intraday_review_20260622_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 283.609985,
+          "future_close": 275.25,
+          "future_date": "2026-06-23",
+          "qqq_excess_pct": 0.345199,
+          "qqq_return_pct": -3.292904,
+          "return_pct": -2.947705,
+          "spy_excess_pct": -1.495509,
+          "spy_return_pct": -1.452195,
+          "status": "settled"
+        },
+        "h3": {
+          "entry_close": 283.609985,
+          "future_close": 256.630005,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": -6.590094,
+          "qqq_return_pct": -2.922963,
+          "return_pct": -9.513057,
+          "spy_excess_pct": -8.157581,
+          "spy_return_pct": -1.355476,
+          "status": "settled"
+        }
+      },
+      "proximity_flags": [
+        "NEAR_TRAILING_STOP"
+      ],
+      "quote_price": 279.489990234375,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "fomo",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260622_1302ET.json",
+      "status_bucket": "APPROACHING",
+      "ticker": "NBIS",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.066,
+      "date": "2026-06-22",
+      "distance_to_atr_stop_pct": -0.3595,
+      "distance_to_hard_stop_pct": -0.2369,
+      "distance_to_target_pct": 0.4367,
+      "distance_to_trailing_stop_pct": -0.3868,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-22:NFLX:intraday_review_20260622_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 72.879997,
+          "future_close": 72.82,
+          "future_date": "2026-06-23",
+          "qqq_excess_pct": 3.210581,
+          "qqq_return_pct": -3.292904,
+          "return_pct": -0.082324,
+          "spy_excess_pct": 1.369872,
+          "spy_return_pct": -1.452195,
+          "status": "settled"
+        },
+        "h3": {
+          "entry_close": 72.879997,
+          "future_close": 70.900002,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": 0.206174,
+          "qqq_return_pct": -2.922963,
+          "return_pct": -2.716789,
+          "spy_excess_pct": -1.361313,
+          "spy_return_pct": -1.355476,
+          "status": "settled"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 72.2750015258789,
+      "shadow_action": "EXIT",
+      "shadow_rule": "HARD_STOP",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "CRITICAL",
+      "sleeve": "legacy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260622_1302ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "NFLX",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.0064,
+      "date": "2026-06-22",
+      "distance_to_atr_stop_pct": 0.0545,
+      "distance_to_hard_stop_pct": 0.12,
+      "distance_to_target_pct": 0.0588,
+      "distance_to_trailing_stop_pct": -0.0383,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-22:NVDA:intraday_review_20260622_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 208.649994,
+          "future_close": 200.039993,
+          "future_date": "2026-06-23",
+          "qqq_excess_pct": -0.833624,
+          "qqq_return_pct": -3.292904,
+          "return_pct": -4.126528,
+          "spy_excess_pct": -2.674333,
+          "spy_return_pct": -1.452195,
+          "status": "settled"
+        },
+        "h3": {
+          "entry_close": 208.649994,
+          "future_close": 195.740005,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": -3.264427,
+          "qqq_return_pct": -2.922963,
+          "return_pct": -6.18739,
+          "spy_excess_pct": -4.831914,
+          "spy_return_pct": -1.355476,
+          "status": "settled"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 209.35000610351562,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "legacy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260622_1302ET.json",
+      "status_bucket": "OK",
+      "ticker": "NVDA",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.1047,
+      "date": "2026-06-22",
+      "distance_to_atr_stop_pct": null,
+      "distance_to_hard_stop_pct": 0.0703,
+      "distance_to_target_pct": 0.2075,
+      "distance_to_trailing_stop_pct": -0.2534,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-22:SPCX:intraday_review_20260622_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 154.600006,
+          "future_close": 156.110001,
+          "future_date": "2026-06-23",
+          "qqq_excess_pct": 4.269615,
+          "qqq_return_pct": -3.292904,
+          "return_pct": 0.976711,
+          "spy_excess_pct": 2.428906,
+          "spy_return_pct": -1.452195,
+          "status": "settled"
+        },
+        "h3": {
+          "entry_close": 154.600006,
+          "future_close": 153.0,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": 1.88803,
+          "qqq_return_pct": -2.922963,
+          "return_pct": -1.034933,
+          "spy_excess_pct": 0.320543,
+          "spy_return_pct": -1.355476,
+          "status": "settled"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 165.62759399414062,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "fomo",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260622_1302ET.json",
+      "status_bucket": "OK",
+      "ticker": "SPCX",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.0135,
+      "date": "2026-06-22",
+      "distance_to_atr_stop_pct": 0.1801,
+      "distance_to_hard_stop_pct": 0.213,
+      "distance_to_target_pct": -0.0012,
+      "distance_to_trailing_stop_pct": -0.0207,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-22:TRIP:intraday_review_20260622_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 12.36,
+          "future_close": 12.39,
+          "future_date": "2026-06-23",
+          "qqq_excess_pct": 3.535628,
+          "qqq_return_pct": -3.292904,
+          "return_pct": 0.242724,
+          "spy_excess_pct": 1.694919,
+          "spy_return_pct": -1.452195,
+          "status": "settled"
+        },
+        "h3": {
+          "entry_close": 12.36,
+          "future_close": 12.8,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": 6.482838,
+          "qqq_return_pct": -2.922963,
+          "return_pct": 3.559875,
+          "spy_excess_pct": 4.915351,
+          "spy_return_pct": -1.355476,
+          "status": "settled"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 12.795000076293945,
+      "shadow_action": "EXIT",
+      "shadow_rule": "SIGNAL_TARGET",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "HIGH",
+      "sleeve": "mom",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260622_1302ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "TRIP",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": 0.0189,
+      "date": "2026-06-22",
+      "distance_to_atr_stop_pct": 0.0618,
+      "distance_to_hard_stop_pct": 0.12,
+      "distance_to_target_pct": 0.0576,
+      "distance_to_trailing_stop_pct": -0.1247,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-22:TSLA:intraday_review_20260622_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 405.049988,
+          "future_close": 381.609985,
+          "future_date": "2026-06-23",
+          "qqq_excess_pct": -2.494036,
+          "qqq_return_pct": -3.292904,
+          "return_pct": -5.786941,
+          "spy_excess_pct": -4.334745,
+          "spy_return_pct": -1.452195,
+          "status": "settled"
+        },
+        "h3": {
+          "entry_close": 405.049988,
+          "future_close": 375.119995,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": -4.466246,
+          "qqq_return_pct": -2.922963,
+          "return_pct": -7.38921,
+          "spy_excess_pct": -6.033734,
+          "spy_return_pct": -1.355476,
+          "status": "settled"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 408.04998779296875,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "legacy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260622_1302ET.json",
+      "status_bucket": "OK",
+      "ticker": "TSLA",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.0539,
+      "date": "2026-06-23",
+      "distance_to_atr_stop_pct": 0.0935,
+      "distance_to_hard_stop_pct": 0.12,
+      "distance_to_target_pct": -0.5994,
+      "distance_to_trailing_stop_pct": 0.0075,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-23:AMD:intraday_review_20260623_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 519.849976,
+          "future_close": 519.73999,
+          "future_date": "2026-06-24",
+          "qqq_excess_pct": 0.403425,
+          "qqq_return_pct": -0.424582,
+          "return_pct": -0.021157,
+          "spy_excess_pct": 0.025195,
+          "spy_return_pct": -0.046352,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [
+        "NEAR_TRAILING_STOP"
+      ],
+      "quote_price": 521.8699951171875,
+      "shadow_action": "REVIEW",
+      "shadow_rule": "LEGACY_TARGET_REVIEW",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "REVIEW",
+      "sleeve": "discretionary",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260623_1302ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "AMD",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": 0.0072,
+      "date": "2026-06-23",
+      "distance_to_atr_stop_pct": -0.0075,
+      "distance_to_hard_stop_pct": 0.0683,
+      "distance_to_target_pct": 0.2704,
+      "distance_to_trailing_stop_pct": -0.093,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-23:AMZN:intraday_review_20260623_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 234.110001,
+          "future_close": 234.270004,
+          "future_date": "2026-06-24",
+          "qqq_excess_pct": 0.492927,
+          "qqq_return_pct": -0.424582,
+          "return_pct": 0.068346,
+          "spy_excess_pct": 0.114697,
+          "spy_return_pct": -0.046352,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 234.46499633789062,
+      "shadow_action": "EXIT",
+      "shadow_rule": "ATR_STOP",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "HIGH",
+      "sleeve": "core_strategy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260623_1302ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "AMZN",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": 0.0075,
+      "date": "2026-06-23",
+      "distance_to_atr_stop_pct": 0.0317,
+      "distance_to_hard_stop_pct": 0.0545,
+      "distance_to_target_pct": 0.2893,
+      "distance_to_trailing_stop_pct": -0.4506,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-23:APP:intraday_review_20260623_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 467.019989,
+          "future_close": 464.959991,
+          "future_date": "2026-06-24",
+          "qqq_excess_pct": -0.016512,
+          "qqq_return_pct": -0.424582,
+          "return_pct": -0.441094,
+          "spy_excess_pct": -0.394742,
+          "spy_return_pct": -0.046352,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 472.8905029296875,
+      "shadow_action": "REVIEW",
+      "shadow_rule": "TIME_STOP",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "REVIEW",
+      "sleeve": "legacy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260623_1302ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "APP",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.0803,
+      "date": "2026-06-23",
+      "distance_to_atr_stop_pct": 0.1708,
+      "distance_to_hard_stop_pct": 0.1513,
+      "distance_to_target_pct": 0.1574,
+      "distance_to_trailing_stop_pct": -0.0344,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-23:COHR:intraday_review_20260623_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 381.220001,
+          "future_close": 392.5,
+          "future_date": "2026-06-24",
+          "qqq_excess_pct": 3.383503,
+          "qqq_return_pct": -0.424582,
+          "return_pct": 2.958921,
+          "spy_excess_pct": 3.005273,
+          "spy_return_pct": -0.046352,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 391.32000732421875,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "core_strategy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260623_1302ET.json",
+      "status_bucket": "OK",
+      "ticker": "COHR",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.1075,
+      "date": "2026-06-23",
+      "distance_to_atr_stop_pct": 0.1669,
+      "distance_to_hard_stop_pct": 0.1461,
+      "distance_to_target_pct": 0.1644,
+      "distance_to_trailing_stop_pct": -0.0518,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-23:CRDO:intraday_review_20260623_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 272.005005,
+          "future_close": 268.98999,
+          "future_date": "2026-06-24",
+          "qqq_excess_pct": -0.683859,
+          "qqq_return_pct": -0.424582,
+          "return_pct": -1.108441,
+          "spy_excess_pct": -1.062089,
+          "spy_return_pct": -0.046352,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 270.0,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "fomo",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260623_1302ET.json",
+      "status_bucket": "OK",
+      "ticker": "CRDO",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.0046,
+      "date": "2026-06-23",
+      "distance_to_atr_stop_pct": 0.215,
+      "distance_to_hard_stop_pct": 0.2639,
+      "distance_to_target_pct": 0.0037,
+      "distance_to_trailing_stop_pct": -0.0711,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-23:GOOG:intraday_review_20260623_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 346.079987,
+          "future_close": 345.040009,
+          "future_date": "2026-06-24",
+          "qqq_excess_pct": 0.12408,
+          "qqq_return_pct": -0.424582,
+          "return_pct": -0.300502,
+          "spy_excess_pct": -0.254151,
+          "spy_return_pct": -0.046352,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 347.19000244140625,
+      "shadow_action": "EXIT",
+      "shadow_rule": "SIGNAL_TARGET",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "HIGH",
+      "sleeve": "discretionary",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260623_1302ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "GOOG",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.0136,
+      "date": "2026-06-23",
+      "distance_to_atr_stop_pct": 0.0875,
+      "distance_to_hard_stop_pct": 0.1121,
+      "distance_to_target_pct": 0.2107,
+      "distance_to_trailing_stop_pct": 0.0074,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-23:HOOD:intraday_review_20260623_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 103.25,
+          "future_close": 97.190002,
+          "future_date": "2026-06-24",
+          "qqq_excess_pct": -5.444665,
+          "qqq_return_pct": -0.424582,
+          "return_pct": -5.869247,
+          "spy_excess_pct": -5.822895,
+          "spy_return_pct": -0.046352,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [
+        "NEAR_TRAILING_STOP"
+      ],
+      "quote_price": 104.2699966430664,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "alpha_score_market_regime",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260623_1302ET.json",
+      "status_bucket": "APPROACHING",
+      "ticker": "HOOD",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": 0.0032,
+      "date": "2026-06-23",
+      "distance_to_atr_stop_pct": -0.1443,
+      "distance_to_hard_stop_pct": -0.0535,
+      "distance_to_target_pct": 0.4365,
+      "distance_to_trailing_stop_pct": -0.2908,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-23:META:intraday_review_20260623_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 562.200012,
+          "future_close": 557.669983,
+          "future_date": "2026-06-24",
+          "qqq_excess_pct": -0.381186,
+          "qqq_return_pct": -0.424582,
+          "return_pct": -0.805768,
+          "spy_excess_pct": -0.759417,
+          "spy_return_pct": -0.046352,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 565.6699829101562,
+      "shadow_action": "EXIT",
+      "shadow_rule": "HARD_STOP",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "CRITICAL",
+      "sleeve": "legacy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260623_1302ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "META",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.0886,
+      "date": "2026-06-23",
+      "distance_to_atr_stop_pct": 0.0847,
+      "distance_to_hard_stop_pct": 0.0645,
+      "distance_to_target_pct": 0.2757,
+      "distance_to_trailing_stop_pct": -0.0816,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-23:MRVL:intraday_review_20260623_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 279.040009,
+          "future_close": 276.700012,
+          "future_date": "2026-06-24",
+          "qqq_excess_pct": -0.414006,
+          "qqq_return_pct": -0.424582,
+          "return_pct": -0.838588,
+          "spy_excess_pct": -0.792236,
+          "spy_return_pct": -0.046352,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 280.5950012207031,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "core_strategy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260623_1302ET.json",
+      "status_bucket": "OK",
+      "ticker": "MRVL",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.2208,
+      "date": "2026-06-23",
+      "distance_to_atr_stop_pct": 0.3411,
+      "distance_to_hard_stop_pct": 0.2371,
+      "distance_to_target_pct": 0.0403,
+      "distance_to_trailing_stop_pct": -0.1839,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-23:MUU:intraday_review_20260623_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 907.919983,
+          "future_close": 902.099976,
+          "future_date": "2026-06-24",
+          "qqq_excess_pct": -0.216444,
+          "qqq_return_pct": -0.424582,
+          "return_pct": -0.641026,
+          "spy_excess_pct": -0.594675,
+          "spy_return_pct": -0.046352,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 959.6699829101562,
+      "shadow_action": "EXIT",
+      "shadow_rule": "SIGNAL_TARGET",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "HIGH",
+      "sleeve": "fomo",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260623_1302ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "MUU",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.0178,
+      "date": "2026-06-23",
+      "distance_to_atr_stop_pct": 0.2343,
+      "distance_to_hard_stop_pct": 0.2122,
+      "distance_to_target_pct": 0.0742,
+      "distance_to_trailing_stop_pct": 0.0096,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-23:NBIS:intraday_review_20260623_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 275.25,
+          "future_close": 259.660004,
+          "future_date": "2026-06-24",
+          "qqq_excess_pct": -5.239359,
+          "qqq_return_pct": -0.424582,
+          "return_pct": -5.663941,
+          "spy_excess_pct": -5.617589,
+          "spy_return_pct": -0.046352,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [
+        "NEAR_TRAILING_STOP"
+      ],
+      "quote_price": 278.54998779296875,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "fomo",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260623_1302ET.json",
+      "status_bucket": "APPROACHING",
+      "ticker": "NBIS",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": 0.0039,
+      "date": "2026-06-23",
+      "distance_to_atr_stop_pct": -0.3922,
+      "distance_to_hard_stop_pct": -0.2695,
+      "distance_to_target_pct": 0.7312,
+      "distance_to_trailing_stop_pct": -0.3699,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-23:NFLX:intraday_review_20260623_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 72.82,
+          "future_close": 71.839996,
+          "future_date": "2026-06-24",
+          "qqq_excess_pct": -0.921207,
+          "qqq_return_pct": -0.424582,
+          "return_pct": -1.345789,
+          "spy_excess_pct": -1.299437,
+          "spy_return_pct": -0.046352,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 73.16500091552734,
+      "shadow_action": "EXIT",
+      "shadow_rule": "HARD_STOP",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "CRITICAL",
+      "sleeve": "legacy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260623_1302ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "NFLX",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.031,
+      "date": "2026-06-23",
+      "distance_to_atr_stop_pct": 0.1791,
+      "distance_to_hard_stop_pct": 0.2286,
+      "distance_to_target_pct": 0.0519,
+      "distance_to_trailing_stop_pct": -0.075,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-23:NVDA:intraday_review_20260623_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 200.039993,
+          "future_close": 199.0,
+          "future_date": "2026-06-24",
+          "qqq_excess_pct": -0.095311,
+          "qqq_return_pct": -0.424582,
+          "return_pct": -0.519893,
+          "spy_excess_pct": -0.473541,
+          "spy_return_pct": -0.046352,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 202.1898956298828,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "discretionary",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260623_1302ET.json",
+      "status_bucket": "OK",
+      "ticker": "NVDA",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": 0.0529,
+      "date": "2026-06-23",
+      "distance_to_atr_stop_pct": 0.4371,
+      "distance_to_hard_stop_pct": 0.1855,
+      "distance_to_target_pct": 0.1102,
+      "distance_to_trailing_stop_pct": 0.0471,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-23:RKLZ:intraday_review_20260623_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 3.32,
+          "future_close": 4.01,
+          "future_date": "2026-06-24",
+          "qqq_excess_pct": 21.207724,
+          "qqq_return_pct": -0.424582,
+          "return_pct": 20.783142,
+          "spy_excess_pct": 20.829494,
+          "spy_return_pct": -0.046352,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 3.1796998977661133,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "lottery",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260623_1302ET.json",
+      "status_bucket": "OK",
+      "ticker": "RKLZ",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": 0.0599,
+      "date": "2026-06-23",
+      "distance_to_atr_stop_pct": null,
+      "distance_to_hard_stop_pct": 0.0533,
+      "distance_to_target_pct": 0.2909,
+      "distance_to_trailing_stop_pct": -0.2669,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-23:SPCX:intraday_review_20260623_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 156.110001,
+          "future_close": 154.539993,
+          "future_date": "2026-06-24",
+          "qqq_excess_pct": -0.581124,
+          "qqq_return_pct": -0.424582,
+          "return_pct": -1.005706,
+          "spy_excess_pct": -0.959354,
+          "spy_return_pct": -0.046352,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 163.85940551757812,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "fomo",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260623_1302ET.json",
+      "status_bucket": "OK",
+      "ticker": "SPCX",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": 0.0222,
+      "date": "2026-06-23",
+      "distance_to_atr_stop_pct": 0.1452,
+      "distance_to_hard_stop_pct": 0.1808,
+      "distance_to_target_pct": 0.1167,
+      "distance_to_trailing_stop_pct": -0.0336,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-23:TRIP:intraday_review_20260623_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 12.39,
+          "future_close": 12.98,
+          "future_date": "2026-06-24",
+          "qqq_excess_pct": 5.18648,
+          "qqq_return_pct": -0.424582,
+          "return_pct": 4.761898,
+          "spy_excess_pct": 4.80825,
+          "spy_return_pct": -0.046352,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 12.635000228881836,
+      "shadow_action": "REVIEW",
+      "shadow_rule": "TIME_STOP",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "REVIEW",
+      "sleeve": "mom",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260623_1302ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "TRIP",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.0503,
+      "date": "2026-06-23",
+      "distance_to_atr_stop_pct": 0.0395,
+      "distance_to_hard_stop_pct": 0.0962,
+      "distance_to_target_pct": 0.2324,
+      "distance_to_trailing_stop_pct": -0.1931,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-23:TSLA:intraday_review_20260623_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 381.609985,
+          "future_close": 375.529999,
+          "future_date": "2026-06-24",
+          "qqq_excess_pct": -1.168664,
+          "qqq_return_pct": -0.424582,
+          "return_pct": -1.593246,
+          "spy_excess_pct": -1.546894,
+          "spy_return_pct": -0.046352,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 384.6600036621094,
+      "shadow_action": "REVIEW",
+      "shadow_rule": "TIME_STOP",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "REVIEW",
+      "sleeve": "discretionary",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260623_1302ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "TSLA",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.0071,
+      "date": "2026-06-24",
+      "distance_to_atr_stop_pct": 0.0971,
+      "distance_to_hard_stop_pct": 0.12,
+      "distance_to_target_pct": -0.595,
+      "distance_to_trailing_stop_pct": -0.0034,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-24:AMD:intraday_review_20260624_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 519.73999,
+          "future_close": 532.570007,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": 1.657984,
+          "qqq_return_pct": 0.810561,
+          "return_pct": 2.468545,
+          "spy_excess_pct": 2.323982,
+          "spy_return_pct": 0.144564,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 516.1749877929688,
+      "shadow_action": "REVIEW",
+      "shadow_rule": "LEGACY_TARGET_REVIEW",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "REVIEW",
+      "sleeve": "discretionary",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260624_1302ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "AMD",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": 0.0019,
+      "date": "2026-06-24",
+      "distance_to_atr_stop_pct": 0.0174,
+      "distance_to_hard_stop_pct": 0.0445,
+      "distance_to_target_pct": 0.303,
+      "distance_to_trailing_stop_pct": -0.4659,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-24:APP:intraday_review_20260624_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 464.959991,
+          "future_close": 445.929993,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": -4.903386,
+          "qqq_return_pct": 0.810561,
+          "return_pct": -4.092825,
+          "spy_excess_pct": -4.237389,
+          "spy_return_pct": 0.144564,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [
+        "NEAR_ATR_STOP"
+      ],
+      "quote_price": 467.92999267578125,
+      "shadow_action": "REVIEW",
+      "shadow_rule": "TIME_STOP",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "REVIEW",
+      "sleeve": "legacy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260624_1302ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "APP",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": 0.019,
+      "date": "2026-06-24",
+      "distance_to_atr_stop_pct": 0.1677,
+      "distance_to_hard_stop_pct": 0.145,
+      "distance_to_target_pct": 0.1658,
+      "distance_to_trailing_stop_pct": -0.042,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-24:COHR:intraday_review_20260624_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 392.5,
+          "future_close": 407.25,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": 2.947401,
+          "qqq_return_pct": 0.810561,
+          "return_pct": 3.757962,
+          "spy_excess_pct": 3.613398,
+          "spy_return_pct": 0.144564,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 388.4750061035156,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "core_strategy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260624_1302ET.json",
+      "status_bucket": "OK",
+      "ticker": "COHR",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.0179,
+      "date": "2026-06-24",
+      "distance_to_atr_stop_pct": 0.1629,
+      "distance_to_hard_stop_pct": 0.1369,
+      "distance_to_target_pct": 0.1769,
+      "distance_to_trailing_stop_pct": -0.063,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-24:CRDO:intraday_review_20260624_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 268.98999,
+          "future_close": 268.029999,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": -1.167449,
+          "qqq_return_pct": 0.810561,
+          "return_pct": -0.356887,
+          "spy_excess_pct": -0.501451,
+          "spy_return_pct": 0.144564,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 267.1400146484375,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "fomo",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260624_1302ET.json",
+      "status_bucket": "OK",
+      "ticker": "CRDO",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.0441,
+      "date": "2026-06-24",
+      "distance_to_atr_stop_pct": 0.0341,
+      "distance_to_hard_stop_pct": 0.062,
+      "distance_to_target_pct": 0.279,
+      "distance_to_trailing_stop_pct": -0.0486,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-24:HOOD:intraday_review_20260624_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 97.190002,
+          "future_close": 93.470001,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": -4.638117,
+          "qqq_return_pct": 0.810561,
+          "return_pct": -3.827555,
+          "spy_excess_pct": -3.972119,
+          "spy_return_pct": 0.144564,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 98.69999694824219,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "alpha_score_market_regime",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260624_1302ET.json",
+      "status_bucket": "OK",
+      "ticker": "HOOD",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.005,
+      "date": "2026-06-24",
+      "distance_to_atr_stop_pct": -0.1588,
+      "distance_to_hard_stop_pct": -0.0652,
+      "distance_to_target_pct": 0.4526,
+      "distance_to_trailing_stop_pct": -0.3052,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-24:META:intraday_review_20260624_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 557.669983,
+          "future_close": 542.869995,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": -3.464458,
+          "qqq_return_pct": 0.810561,
+          "return_pct": -2.653897,
+          "spy_excess_pct": -2.798461,
+          "spy_return_pct": 0.144564,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 559.4099731445312,
+      "shadow_action": "EXIT",
+      "shadow_rule": "HARD_STOP",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "CRITICAL",
+      "sleeve": "legacy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260624_1302ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "META",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.0314,
+      "date": "2026-06-24",
+      "distance_to_atr_stop_pct": 0.0513,
+      "distance_to_hard_stop_pct": 0.0287,
+      "distance_to_target_pct": 0.3244,
+      "distance_to_trailing_stop_pct": -0.1229,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-24:MRVL:intraday_review_20260624_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 276.700012,
+          "future_close": 281.26001,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": 0.837432,
+          "qqq_return_pct": 0.810561,
+          "return_pct": 1.647993,
+          "spy_excess_pct": 1.50343,
+          "spy_return_pct": 0.144564,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 270.2699890136719,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "core_strategy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260624_1302ET.json",
+      "status_bucket": "OK",
+      "ticker": "MRVL",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.0322,
+      "date": "2026-06-24",
+      "distance_to_atr_stop_pct": 0.3063,
+      "distance_to_hard_stop_pct": 0.1668,
+      "distance_to_target_pct": 0.1362,
+      "distance_to_trailing_stop_pct": -0.2909,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-24:MUU:intraday_review_20260624_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 902.099976,
+          "future_close": 1182.400024,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": 30.261388,
+          "qqq_return_pct": 0.810561,
+          "return_pct": 31.071949,
+          "spy_excess_pct": 30.927386,
+          "spy_return_pct": 0.144564,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 878.69921875,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "fomo",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260624_1302ET.json",
+      "status_bucket": "OK",
+      "ticker": "MUU",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.0715,
+      "date": "2026-06-24",
+      "distance_to_atr_stop_pct": 0.174,
+      "distance_to_hard_stop_pct": 0.1414,
+      "distance_to_target_pct": 0.1707,
+      "distance_to_trailing_stop_pct": -0.0794,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-24:NBIS:intraday_review_20260624_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 259.660004,
+          "future_close": 256.630005,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": -1.977471,
+          "qqq_return_pct": 0.810561,
+          "return_pct": -1.16691,
+          "spy_excess_pct": -1.311474,
+          "spy_return_pct": 0.144564,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 255.5800018310547,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "fomo",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260624_1302ET.json",
+      "status_bucket": "OK",
+      "ticker": "NBIS",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.0146,
+      "date": "2026-06-24",
+      "distance_to_atr_stop_pct": -0.4211,
+      "distance_to_hard_stop_pct": -0.2943,
+      "distance_to_target_pct": 0.7651,
+      "distance_to_trailing_stop_pct": -0.3967,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-24:NFLX:intraday_review_20260624_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 71.839996,
+          "future_close": 70.900002,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": -2.119017,
+          "qqq_return_pct": 0.810561,
+          "return_pct": -1.308456,
+          "spy_excess_pct": -1.45302,
+          "spy_return_pct": 0.144564,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 71.76000213623047,
+      "shadow_action": "EXIT",
+      "shadow_rule": "HARD_STOP",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "CRITICAL",
+      "sleeve": "legacy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260624_1302ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "NFLX",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.0039,
+      "date": "2026-06-24",
+      "distance_to_atr_stop_pct": 0.1676,
+      "distance_to_hard_stop_pct": 0.2172,
+      "distance_to_target_pct": 0.0675,
+      "distance_to_trailing_stop_pct": -0.0909,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-24:NVDA:intraday_review_20260624_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 199.0,
+          "future_close": 195.740005,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": -2.448749,
+          "qqq_return_pct": 0.810561,
+          "return_pct": -1.638188,
+          "spy_excess_pct": -1.782752,
+          "spy_return_pct": 0.144564,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 199.25,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "discretionary",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260624_1302ET.json",
+      "status_bucket": "OK",
+      "ticker": "NVDA",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": 0.1867,
+      "date": "2026-06-24",
+      "distance_to_atr_stop_pct": 0.5381,
+      "distance_to_hard_stop_pct": 0.3426,
+      "distance_to_target_pct": -0.1041,
+      "distance_to_trailing_stop_pct": 0.0736,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-24:RKLZ:intraday_review_20260624_1302ET",
+      "outcomes": {
+        "h1": {
+          "future_date": "2026-06-25",
+          "status": "unsettled_missing_ticker_future_bar"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 3.940000057220459,
+      "shadow_action": "EXIT",
+      "shadow_rule": "SIGNAL_TARGET",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "HIGH",
+      "sleeve": "lottery",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260624_1302ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "RKLZ",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": 0.0011,
+      "date": "2026-06-24",
+      "distance_to_atr_stop_pct": null,
+      "distance_to_hard_stop_pct": 0.0074,
+      "distance_to_target_pct": 0.3535,
+      "distance_to_trailing_stop_pct": -0.3283,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-24:SPCX:intraday_review_20260624_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 154.539993,
+          "future_close": 153.0,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": -1.807063,
+          "qqq_return_pct": 0.810561,
+          "return_pct": -0.996501,
+          "spy_excess_pct": -1.141065,
+          "spy_return_pct": 0.144564,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [
+        "NEAR_HARD_STOP"
+      ],
+      "quote_price": 156.27999877929688,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "fomo",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260624_1302ET.json",
+      "status_bucket": "APPROACHING",
+      "ticker": "SPCX",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": 0.0395,
+      "date": "2026-06-24",
+      "distance_to_atr_stop_pct": 0.1615,
+      "distance_to_hard_stop_pct": 0.1964,
+      "distance_to_target_pct": 0.0955,
+      "distance_to_trailing_stop_pct": -0.014,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-24:TRIP:intraday_review_20260624_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 12.98,
+          "future_close": 12.8,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": -2.197305,
+          "qqq_return_pct": 0.810561,
+          "return_pct": -1.386744,
+          "spy_excess_pct": -1.531307,
+          "spy_return_pct": 0.144564,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 12.880000114440918,
+      "shadow_action": "REVIEW",
+      "shadow_rule": "TIME_STOP",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "REVIEW",
+      "sleeve": "mom",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260624_1302ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "TRIP",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": -0.0073,
+      "date": "2026-06-24",
+      "distance_to_atr_stop_pct": 0.0273,
+      "distance_to_hard_stop_pct": 0.0823,
+      "distance_to_target_pct": 0.2514,
+      "distance_to_trailing_stop_pct": -0.2114,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-24:TSLA:intraday_review_20260624_1302ET",
+      "outcomes": {
+        "h1": {
+          "entry_close": 375.529999,
+          "future_close": 375.119995,
+          "future_date": "2026-06-25",
+          "qqq_excess_pct": -0.919741,
+          "qqq_return_pct": 0.810561,
+          "return_pct": -0.10918,
+          "spy_excess_pct": -0.253744,
+          "spy_return_pct": 0.144564,
+          "status": "settled"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 378.8299865722656,
+      "shadow_action": "REVIEW",
+      "shadow_rule": "TIME_STOP",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "REVIEW",
+      "sleeve": "discretionary",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260624_1302ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "TSLA",
+      "time_label": "1302ET"
+    },
+    {
+      "daily_return_pct": 0.0084,
+      "date": "2026-06-25",
+      "distance_to_atr_stop_pct": 0.0932,
+      "distance_to_hard_stop_pct": 0.12,
+      "distance_to_target_pct": -0.6011,
+      "distance_to_trailing_stop_pct": 0.0117,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-25:AMD:intraday_review_20260625_1301ET",
+      "outcomes": {
+        "h1": {
+          "status": "unsettled_missing_calendar_date"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [
+        "NEAR_TRAILING_STOP"
+      ],
+      "quote_price": 524.0850219726562,
+      "shadow_action": "REVIEW",
+      "shadow_rule": "LEGACY_TARGET_REVIEW",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "REVIEW",
+      "sleeve": "discretionary",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260625_1301ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "AMD",
+      "time_label": "1301ET"
+    },
+    {
+      "daily_return_pct": -0.0391,
+      "date": "2026-06-25",
+      "distance_to_atr_stop_pct": -0.0326,
+      "distance_to_hard_stop_pct": -0.0007,
+      "distance_to_target_pct": 0.3647,
+      "distance_to_trailing_stop_pct": -0.5354,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-25:APP:intraday_review_20260625_1301ET",
+      "outcomes": {
+        "h1": {
+          "status": "unsettled_missing_calendar_date"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 446.7698974609375,
+      "shadow_action": "EXIT",
+      "shadow_rule": "HARD_STOP",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "CRITICAL",
+      "sleeve": "legacy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260625_1301ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "APP",
+      "time_label": "1301ET"
+    },
+    {
+      "daily_return_pct": 0.0232,
+      "date": "2026-06-25",
+      "distance_to_atr_stop_pct": 0.1938,
+      "distance_to_hard_stop_pct": 0.173,
+      "distance_to_target_pct": 0.1277,
+      "distance_to_trailing_stop_pct": -0.0079,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-25:COHR:intraday_review_20260625_1301ET",
+      "outcomes": {
+        "h1": {
+          "status": "unsettled_missing_calendar_date"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 401.614990234375,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "core_strategy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260625_1301ET.json",
+      "status_bucket": "OK",
+      "ticker": "COHR",
+      "time_label": "1301ET"
+    },
+    {
+      "daily_return_pct": 0.0052,
+      "date": "2026-06-25",
+      "distance_to_atr_stop_pct": 0.1725,
+      "distance_to_hard_stop_pct": 0.1473,
+      "distance_to_target_pct": 0.1628,
+      "distance_to_trailing_stop_pct": -0.0503,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-25:CRDO:intraday_review_20260625_1301ET",
+      "outcomes": {
+        "h1": {
+          "status": "unsettled_missing_calendar_date"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 270.3900146484375,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "fomo",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260625_1301ET.json",
+      "status_bucket": "OK",
+      "ticker": "CRDO",
+      "time_label": "1301ET"
+    },
+    {
+      "daily_return_pct": -0.0287,
+      "date": "2026-06-25",
+      "distance_to_atr_stop_pct": -0.0083,
+      "distance_to_hard_stop_pct": 0.0193,
+      "distance_to_target_pct": 0.3373,
+      "distance_to_trailing_stop_pct": -0.0964,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-25:HOOD:intraday_review_20260625_1301ET",
+      "outcomes": {
+        "h1": {
+          "status": "unsettled_missing_calendar_date"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [
+        "NEAR_HARD_STOP"
+      ],
+      "quote_price": 94.4000015258789,
+      "shadow_action": "EXIT",
+      "shadow_rule": "ATR_STOP",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "HIGH",
+      "sleeve": "alpha_score_market_regime",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260625_1301ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "HOOD",
+      "time_label": "1301ET"
+    },
+    {
+      "daily_return_pct": -0.0209,
+      "date": "2026-06-25",
+      "distance_to_atr_stop_pct": -0.1883,
+      "distance_to_hard_stop_pct": -0.0913,
+      "distance_to_target_pct": 0.4882,
+      "distance_to_trailing_stop_pct": -0.3372,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-25:META:intraday_review_20260625_1301ET",
+      "outcomes": {
+        "h1": {
+          "status": "unsettled_missing_calendar_date"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 546.0399780273438,
+      "shadow_action": "EXIT",
+      "shadow_rule": "HARD_STOP",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "CRITICAL",
+      "sleeve": "legacy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260625_1301ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "META",
+      "time_label": "1301ET"
+    },
+    {
+      "daily_return_pct": 0.0035,
+      "date": "2026-06-25",
+      "distance_to_atr_stop_pct": 0.0729,
+      "distance_to_hard_stop_pct": 0.0547,
+      "distance_to_target_pct": 0.2891,
+      "distance_to_trailing_stop_pct": -0.093,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-25:MRVL:intraday_review_20260625_1301ET",
+      "outcomes": {
+        "h1": {
+          "status": "unsettled_missing_calendar_date"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 277.67498779296875,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "core_strategy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260625_1301ET.json",
+      "status_bucket": "OK",
+      "ticker": "MRVL",
+      "time_label": "1301ET"
+    },
+    {
+      "daily_return_pct": 0.3142,
+      "date": "2026-06-25",
+      "distance_to_atr_stop_pct": 0.4866,
+      "distance_to_hard_stop_pct": 0.3825,
+      "distance_to_target_pct": -0.1579,
+      "distance_to_trailing_stop_pct": 0.0278,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-25:MUU:intraday_review_20260625_1301ET",
+      "outcomes": {
+        "h1": {
+          "status": "unsettled_missing_calendar_date"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 1185.5699462890625,
+      "shadow_action": "EXIT",
+      "shadow_rule": "SIGNAL_TARGET",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "HIGH",
+      "sleeve": "fomo",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260625_1301ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "MUU",
+      "time_label": "1301ET"
+    },
+    {
+      "daily_return_pct": -0.0066,
+      "date": "2026-06-25",
+      "distance_to_atr_stop_pct": 0.1821,
+      "distance_to_hard_stop_pct": 0.1493,
+      "distance_to_target_pct": 0.16,
+      "distance_to_trailing_stop_pct": -0.0695,
+      "has_shadow_action": false,
+      "observation_id": "2026-06-25:NBIS:intraday_review_20260625_1301ET",
+      "outcomes": {
+        "h1": {
+          "status": "unsettled_missing_calendar_date"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 257.95001220703125,
+      "shadow_action": "NONE",
+      "shadow_rule": null,
+      "shadow_source": "derived_no_triggered_rule",
+      "shadow_urgency": null,
+      "sleeve": "fomo",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260625_1301ET.json",
+      "status_bucket": "OK",
+      "ticker": "NBIS",
+      "time_label": "1301ET"
+    },
+    {
+      "daily_return_pct": -0.0001,
+      "date": "2026-06-25",
+      "distance_to_atr_stop_pct": -0.4206,
+      "distance_to_hard_stop_pct": -0.2931,
+      "distance_to_target_pct": 0.7633,
+      "distance_to_trailing_stop_pct": -0.3954,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-25:NFLX:intraday_review_20260625_1301ET",
+      "outcomes": {
+        "h1": {
+          "status": "unsettled_missing_calendar_date"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 71.83000183105469,
+      "shadow_action": "EXIT",
+      "shadow_rule": "HARD_STOP",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "CRITICAL",
+      "sleeve": "legacy",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260625_1301ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "NFLX",
+      "time_label": "1301ET"
+    },
+    {
+      "daily_return_pct": -0.0208,
+      "date": "2026-06-25",
+      "distance_to_atr_stop_pct": 0.1475,
+      "distance_to_hard_stop_pct": 0.1996,
+      "distance_to_target_pct": 0.0914,
+      "distance_to_trailing_stop_pct": -0.1154,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-25:NVDA:intraday_review_20260625_1301ET",
+      "outcomes": {
+        "h1": {
+          "status": "unsettled_missing_calendar_date"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 194.8699951171875,
+      "shadow_action": "REVIEW",
+      "shadow_rule": "TIME_STOP",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "REVIEW",
+      "sleeve": "discretionary",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260625_1301ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "NVDA",
+      "time_label": "1301ET"
+    },
+    {
+      "daily_return_pct": -0.0187,
+      "date": "2026-06-25",
+      "distance_to_atr_stop_pct": null,
+      "distance_to_hard_stop_pct": -0.0229,
+      "distance_to_target_pct": 0.3949,
+      "distance_to_trailing_stop_pct": -0.3689,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-25:SPCX:intraday_review_20260625_1301ET",
+      "outcomes": {
+        "h1": {
+          "status": "unsettled_missing_calendar_date"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 151.64999389648438,
+      "shadow_action": "EXIT",
+      "shadow_rule": "HARD_STOP",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "CRITICAL",
+      "sleeve": "fomo",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260625_1301ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "SPCX",
+      "time_label": "1301ET"
+    },
+    {
+      "daily_return_pct": -0.0212,
+      "date": "2026-06-25",
+      "distance_to_atr_stop_pct": 0.1507,
+      "distance_to_hard_stop_pct": 0.1854,
+      "distance_to_target_pct": 0.1106,
+      "distance_to_trailing_stop_pct": -0.0279,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-25:TRIP:intraday_review_20260625_1301ET",
+      "outcomes": {
+        "h1": {
+          "status": "unsettled_missing_calendar_date"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [],
+      "quote_price": 12.704999923706055,
+      "shadow_action": "REVIEW",
+      "shadow_rule": "TIME_STOP",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "REVIEW",
+      "sleeve": "mom",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260625_1301ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "TRIP",
+      "time_label": "1301ET"
+    },
+    {
+      "daily_return_pct": -0.0045,
+      "date": "2026-06-25",
+      "distance_to_atr_stop_pct": 0.0125,
+      "distance_to_hard_stop_pct": 0.0701,
+      "distance_to_target_pct": 0.2681,
+      "distance_to_trailing_stop_pct": -0.2276,
+      "has_shadow_action": true,
+      "observation_id": "2026-06-25:TSLA:intraday_review_20260625_1301ET",
+      "outcomes": {
+        "h1": {
+          "status": "unsettled_missing_calendar_date"
+        },
+        "h3": {
+          "status": "unsettled_missing_calendar_date"
+        }
+      },
+      "proximity_flags": [
+        "NEAR_ATR_STOP"
+      ],
+      "quote_price": 373.8399963378906,
+      "shadow_action": "REVIEW",
+      "shadow_rule": "TIME_STOP",
+      "shadow_source": "derived_from_context_exit_signals",
+      "shadow_urgency": "REVIEW",
+      "sleeve": "discretionary",
+      "snapshot_file": "data/daily/intraday/snapshots/intraday_review_20260625_1301ET.json",
+      "status_bucket": "BREACHED",
+      "ticker": "TSLA",
+      "time_label": "1301ET"
+    }
+  ],
+  "observed_only_lead": false,
+  "owner": "alpha-explore",
+  "parameters": {
+    "config": {
+      "asof_max_date": "2026-06-27",
+      "asof_min_date": "2026-06-22",
+      "horizons": [
+        1,
+        3
+      ],
+      "min_h3_action_rows": 3,
+      "min_h3_ok_rows": 3,
+      "min_primary_h1_action_rows": 8,
+      "min_primary_h1_ok_rows": 8,
+      "min_primary_h1_rows": 20,
+      "required_action_underperformance_pp": 1.0
+    },
+    "settlement_source": "ohlcv_warehouse.ohlcv_overlay",
+    "snapshot_glob": "data/daily/intraday/snapshots/intraday_review_*.json"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune SIGNAL_TARGET, TIME_STOP, stop-distance, target distance, or REVIEW/EXIT buckets on the same 2026-06-22..26 snapshots. Do not convert this into a target-trim replay.",
+    "new_evidence_required": "More intraday snapshots with native primary_advisory_shadow_action, settled h3/h5/h10 outcomes, true quote timestamps or broker bar IDs, and slot-reuse/replacement-value accounting before Gate 1-4 exit promotion.",
+    "why_result_happened": "The current intraday sample is too young for a stable exit advisory signal: h1 rows are available, but h3 support and action-vs-OK separation are not strong enough to justify a shared exit-lifecycle policy."
+  },
+  "prediction": {
+    "confidence_reason": "The intraday review surface now emits primary advisory shadow actions and exp-20260627-013 explicitly named post-exp024 intraday closed rows with primary actions as a legal new evidence axis. The evidence is early and likely thin, but it is production-visible and tests exit-lifecycle attribution without touching orders.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "mature_forward_rows_too_thin",
+      "weekend_or_unsettled_rows_filtered",
+      "review_actions_legacy_target_noise",
+      "no_directional_separation"
+    ],
+    "recorded_at": "2026-06-27T21:04:59+00:00",
+    "success_probability": 0.22
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "paper_orders_changed": false,
+    "parity_note": "Read-only attribution over existing intraday snapshots and OHLCV settlement. No order, exit, or daily adapter behavior changed.",
+    "ranking_changed": false,
+    "risk_budget_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false,
+    "watchlist_changed": false
+  },
+  "rejection_reason": "h3_action_underperformance_not_met",
+  "related_files": [
+    "quant/experiments/exp_20260627_025_intraday_advisory_shadow_forward_outcome.py",
+    "data/experiments/exp-20260627-025/exp_20260627_025_intraday_advisory_shadow_forward_outcome.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/daily/intraday/snapshots",
+    "data/warehouse/warehouse_main.sqlite",
+    "data/warehouse/warehouse_main_hot.sqlite"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260627_025_intraday_advisory_shadow_forward_outcome.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260627_025_intraday_advisory_shadow_forward_outcome.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "runner": "quant/experiments/exp_20260627_025_intraday_advisory_shadow_forward_outcome.py",
+  "runner_command": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260627_025_intraday_advisory_shadow_forward_outcome.py",
+  "single_causal_variable": "intraday_advisory_shadow_action_forward_outcome_v1",
+  "status": "observed_only_rejected",
+  "summary": {
+    "h1_settled_rows": 46,
+    "h3_settled_rows": 15,
+    "observation_count": 61,
+    "shadow_action_counts": {
+      "EXIT": 19,
+      "NONE": 29,
+      "REVIEW": 13
+    },
+    "status_bucket_counts": {
+      "APPROACHING": 5,
+      "BREACHED": 32,
+      "OK": 24
+    }
+  },
+  "ticket_before": {
+    "acceptance_rule": "Use AGENTS.md Gate 4.",
+    "allowed_write_scope": [
+      "quant/experiments/exp_20260627_025_intraday_advisory_shadow_forward_outcome.py",
+      "data/experiments/exp-20260627-025/exp_20260627_025_intraday_advisory_shadow_forward_outcome.json",
+      "experiments/cards/exp-20260627-025.md",
+      "experiments/manifests/exp-20260627-025.json",
+      "experiments/tickets/exp-20260627-025.json",
+      "experiments/logs/exp-20260627-025.json",
+      "docs/experiment_log.jsonl",
+      "docs/experiment_registry.json"
+    ],
+    "artifact": "data/experiments/exp-20260627-025/exp_20260627_025_intraday_advisory_shadow_forward_outcome.json",
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "card_file": "experiments/cards/exp-20260627-025.md",
+    "causal_components": [
+      "intraday_review snapshots",
+      "primary advisory shadow action extraction",
+      "next-1d and next-3d OHLCV settlement",
+      "no strategy behavior change"
+    ],
+    "change_type": "observed_only_forward_attribution",
+    "changed_files": [
+      "quant/experiments/exp_20260627_025_intraday_advisory_shadow_forward_outcome.py",
+      "data/experiments/exp-20260627-025/exp_20260627_025_intraday_advisory_shadow_forward_outcome.json",
+      "experiments/logs/exp-20260627-025.json",
+      "experiments/cards/exp-20260627-025.md",
+      "experiments/manifests/exp-20260627-025.json",
+      "experiments/tickets/exp-20260627-025.json",
+      "docs/experiment_log.jsonl",
+      "docs/experiment_registry.json"
+    ],
+    "changed_variable": "intraday_advisory_shadow_action_forward_outcome_v1",
+    "claimed_at": "2026-06-27T21:05:41+00:00",
+    "completed_at": "2026-06-27T21:11:56+00:00",
+    "created_at": "2026-06-27T21:05:18+00:00",
+    "decision": "observed_only_rejected_no_stable_intraday_shadow_action_edge",
+    "evaluation_windows": [],
+    "experiment_id": "exp-20260627-025",
+    "experiment_uid": "expuid-a9f76e70ad804de9",
+    "gate1": {
+      "baseline_metrics": {
+        "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "expected_value_score_sum": 7.8941,
+        "max_drawdown_pct_worst": 0.1119,
+        "signals_generated": 164,
+        "signals_survived": 135,
+        "survival_rate": 0.7925,
+        "total_pnl": 234850.99,
+        "trade_count": 61,
+        "window_count": 3
+      },
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "note": "Observed-only attribution; before and after strategy behavior are identical.",
+      "passed": true
+    },
+    "gate2": {
+      "fields_checked": [
+        "intraday_review.date",
+        "positions[].ticker",
+        "positions[].status",
+        "positions[].quote.price",
+        "positions[].context.exit_signals.triggered_rules",
+        "positions[].primary_advisory_shadow_action",
+        "ohlcv_overlay.entry_close",
+        "ohlcv_overlay.future_close",
+        "entry_date",
+        "target_price"
+      ],
+      "passed": false,
+      "source_diagnostics": {
+        "calendar_max": "2026-06-25",
+        "calendar_min": "2023-08-29",
+        "native_primary_advisory_shadow_action_count": 0,
+        "observation_count": 0,
+        "shadow_source_counts": {},
+        "skipped_counts": {},
+        "snapshot_count": 0,
+        "trading_snapshot_count": 0
+      },
+      "target_price_relevance": "No target exits are scheduled. target_price is represented only inside existing intraday exit-level context for attribution."
+    },
+    "gate3": {
+      "baseline_survival_rate": 0.7925,
+      "filter_added": false,
+      "note": "No executable filter was added; rows are only attributed.",
+      "passed": true,
+      "signals_generated": 0,
+      "signals_survived": 0,
+      "survival_rate": 0.0
+    },
+    "gate4": {
+      "before_after_strategy_delta": {
+        "expected_value_score_sum_delta": 0.0,
+        "strategy_behavior_changed": false,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0
+      },
+      "bucket_summary": {
+        "h1": {
+          "by_shadow_action": {},
+          "by_shadow_rule": {},
+          "by_status_bucket": {}
+        },
+        "h3": {
+          "by_shadow_action": {},
+          "by_shadow_rule": {},
+          "by_status_bucket": {}
+        }
+      },
+      "comparisons": {
+        "h1": {
+          "action_minus_ok_return_mean_pp": null,
+          "action_minus_ok_spy_excess_mean_pp": null,
+          "action_return_pct": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "positive_rate": null
+          },
+          "action_rows": 0,
+          "action_spy_excess_pct": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "positive_rate": null
+          },
+          "horizon": 1,
+          "ok_no_action_return_pct": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "positive_rate": null
+          },
+          "ok_no_action_rows": 0,
+          "ok_no_action_spy_excess_pct": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "positive_rate": null
+          },
+          "settled_rows": 0
+        },
+        "h3": {
+          "action_minus_ok_return_mean_pp": null,
+          "action_minus_ok_spy_excess_mean_pp": null,
+          "action_return_pct": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "positive_rate": null
+          },
+          "action_rows": 0,
+          "action_spy_excess_pct": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "positive_rate": null
+          },
+          "horizon": 3,
+          "ok_no_action_return_pct": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "positive_rate": null
+          },
+          "ok_no_action_rows": 0,
+          "ok_no_action_spy_excess_pct": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "positive_rate": null
+          },
+          "settled_rows": 0
+        }
+      },
+      "decision": "observed_only_rejected_no_stable_intraday_shadow_action_edge",
+      "failed_reasons": [
+        "h1_settled_rows_below_min",
+        "h1_action_rows_below_min",
+        "h1_ok_rows_below_min",
+        "h3_action_rows_below_min",
+        "h3_ok_rows_below_min",
+        "h1_action_underperformance_not_met",
+        "h3_action_underperformance_not_met"
+      ],
+      "observed_only": true,
+      "passed": false
+    },
+    "hub_identity": {
+      "namespace": "ginger/experiments",
+      "repo_id": "ginger/experiments/exp-20260627-025",
+      "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+      "reserved_at": "2026-06-27T21:05:18+00:00",
+      "scheme": "hf_hub_local_v1",
+      "slug": "intraday_advisory_shadow_forward_outcome"
+    },
+    "hypothesis": "Observed-only attribution: production-visible intraday advisory shadow actions on existing positions should identify held names with worse next-1d/3d forward close returns than OK positions, creating a future shared exit-lifecycle evidence lead without changing strategy behavior.",
+    "implementation_mode": "observed_only_intraday_exit_advisory_attribution",
+    "lane": "alpha_search",
+    "lean_quality_passed": true,
+    "locked_variables": [
+      "intraday_advisory_shadow_action_forward_outcome_v1"
+    ],
+    "log": "experiments/logs/exp-20260627-025.json",
+    "mechanism_family": "intraday_exit_advisory_forward_attribution",
+    "multiple_testing_risk_bucket": "moderate",
+    "must_not_touch": [],
+    "nearby_prior_experiments": [
+      "exp-20260627-013",
+      "exp-20260627-024",
+      "exp-20260429-032",
+      "exp-20260623-003"
+    ],
+    "new_evidence_axis": "New forward rows from production-visible intraday_review snapshots carrying primary or derivable advisory shadow actions; this is not a target-trim replay, threshold sweep, or frozen candidate-pool retune.",
+    "new_evidence_type": "post_exp024_intraday_primary_action_closed_forward_rows",
+    "novelty": {
+      "blocking_matches": [],
+      "enforced": true,
+      "fingerprint": {
+        "data_source": "other",
+        "field_tags": [
+          "1d",
+          "3d",
+          "a",
+          "action",
+          "actions",
+          "advisory",
+          "attribution",
+          "behavior",
+          "changing",
+          "close",
+          "creating",
+          "evidence",
+          "existing",
+          "exit",
+          "forward",
+          "future",
+          "held",
+          "identify",
+          "intraday",
+          "lead",
+          "lifecycle",
+          "names",
+          "observed",
+          "ok",
+          "on",
+          "only",
+          "outcome",
+          "positions",
+          "returns",
+          "shadow",
+          "should",
+          "strategy",
+          "than",
+          "without",
+          "worse"
+        ],
+        "gate_shape": "other"
+      },
+      "nearest": [
+        {
+          "accept_rate": 0.0,
+          "data_source": "other",
+          "family_key": "exit_lifecycle_forward_advisory_outcome_attribution",
+          "reopen_condition": "More closed production exit-lifecycle rows with next-open settlement, slot-reuse/winner-collateral accounting, and a shared default-off advisory lifecycle helper before any Gate 1-4 exit-policy promotion.",
+          "score": 0.06,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 1.0,
+          "data_source": "other",
+          "family_key": "intraday_advisory_shadow_action_contract",
+          "reopen_condition": "New snapshots generated with advisory_shadow_actions and later closed forward outcomes/replacement value; quote_time_et or broker bar IDs remain useful before any executable action contract.",
+          "score": 0.0556,
+          "status": "has_accepted",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "other",
+          "family_key": "exit_lifecycle_above_cost_forward_loss_attribution",
+          "reopen_condition": "More closed production exit-lifecycle rows with next-open settlement, explicit slot-reuse/winner-collateral accounting, and a shared default-off advisory lifecycle helper before any Gate 1-4 exit-policy promotion.",
+          "score": 0.0513,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.5,
+          "data_source": "other",
+          "family_key": "intraday_shadow_action_forward_outcome",
+          "reopen_condition": "More snapshots generated after this contract, with h1/h3/h5/h10 settled outcomes and replacement-value accounting. Broker bar IDs or true quote_time_et would further strengthen causality.",
+          "score": 0.0513,
+          "status": "has_accepted",
+          "trials": 2
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "other",
+          "family_key": "intraday_advisory_state_forward_outcome_settlement",
+          "reopen_condition": "Future promotion needs more closed forward rows, real quote timestamps or broker bar IDs, explicit pending action/order semantics, and a shared default-off helper with daily parity.",
+          "score": 0.04,
+          "status": "single_attempt",
+          "trials": 1
+        }
+      ],
+      "new_evidence_axis": "New forward rows from production-visible intraday_review snapshots carrying primary_advisory_shadow_action after the 2026-06-27 intraday shadow-action surface appeared; this is not a target-trim replay, threshold sweep, or frozen candidate-pool retune.",
+      "override": false,
+      "saturated_source_override": false,
+      "source_saturation": {
+        "accept_rate": 0.0,
+        "accepts": 0,
+        "applicable": false,
+        "gate_shape": "other",
+        "max_accept_rate": 0.05,
+        "min_trials": 12,
+        "saturated": false,
+        "source": "other",
+        "trials": 0
+      },
+      "warn": false,
+      "warn_threshold": 0.55
+    },
+    "owner": "alpha-explore",
+    "post_run_reflection": {
+      "forbidden_near_neighbor_retry": "Do not retune SIGNAL_TARGET, TIME_STOP, stop-distance, target distance, or REVIEW/EXIT buckets on the same 2026-06-22..26 snapshots. Do not convert this into a target-trim replay.",
+      "new_evidence_required": "More intraday snapshots with native primary_advisory_shadow_action, settled h3/h5/h10 outcomes, true quote timestamps or broker bar IDs, and slot-reuse/replacement-value accounting before Gate 1-4 exit promotion.",
+      "why_result_happened": "The current intraday sample is too young for a stable exit advisory signal: h1 rows are available, but h3 support and action-vs-OK separation are not strong enough to justify a shared exit-lifecycle policy."
+    },
+    "prediction": {
+      "confidence_reason": "The intraday review surface now emits primary advisory shadow actions and exp-20260627-013 explicitly named post-exp024 intraday closed rows with primary actions as a legal new evidence axis. The evidence is early and likely thin, but it is production-visible and tests exit-lifecycle attribution without touching orders.",
+      "expected_ev_delta": 0.0,
+      "expected_pnl_delta": 0.0,
+      "main_failure_modes": [
+        "mature_forward_rows_too_thin",
+        "weekend_or_unsettled_rows_filtered",
+        "review_actions_legacy_target_noise",
+        "no_directional_separation"
+      ],
+      "recorded_at": "2026-06-27T21:04:59+00:00",
+      "success_probability": 0.22
+    },
+    "prior_trial_count": 0,
+    "production_impact": {
+      "backtester_adapter_changed": false,
+      "daily_snapshot_exposed": false,
+      "entry_rules_changed": false,
+      "exit_rules_changed": false,
+      "live_orders_changed": false,
+      "live_ready": false,
+      "live_realism_evaluated": false,
+      "llm_decision_boundary_changed": false,
+      "paper_orders_changed": false,
+      "parity_note": "Read-only attribution over existing intraday snapshots and OHLCV settlement. No order, exit, or daily adapter behavior changed.",
+      "ranking_changed": false,
+      "risk_budget_changed": false,
+      "run_adapter_changed": false,
+      "shared_policy_changed": false,
+      "sizing_changed": false,
+      "trade_enabled": false,
+      "watchlist_changed": false
+    },
+    "related_files": [
+      "quant/experiments/exp_20260627_025_intraday_advisory_shadow_forward_outcome.py",
+      "data/experiments/exp-20260627-025/exp_20260627_025_intraday_advisory_shadow_forward_outcome.json",
+      "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "data/daily/intraday/snapshots",
+      "data/warehouse/warehouse_main.sqlite",
+      "data/warehouse/warehouse_main_hot.sqlite"
+    ],
+    "result": {
+      "accepted": false,
+      "accepted_alpha": false,
+      "artifact": "data/experiments/exp-20260627-025/exp_20260627_025_intraday_advisory_shadow_forward_outcome.json",
+      "decision": "observed_only_rejected_no_stable_intraday_shadow_action_edge",
+      "gate4": {
+        "before_after_strategy_delta": {
+          "expected_value_score_sum_delta": 0.0,
+          "strategy_behavior_changed": false,
+          "total_pnl_delta": 0.0,
+          "trade_count_delta": 0
+        },
+        "bucket_summary": {
+          "h1": {
+            "by_shadow_action": {},
+            "by_shadow_rule": {},
+            "by_status_bucket": {}
+          },
+          "h3": {
+            "by_shadow_action": {},
+            "by_shadow_rule": {},
+            "by_status_bucket": {}
+          }
+        },
+        "comparisons": {
+          "h1": {
+            "action_minus_ok_return_mean_pp": null,
+            "action_minus_ok_spy_excess_mean_pp": null,
+            "action_return_pct": {
+              "mean": null,
+              "median": null,
+              "n": 0,
+              "positive_rate": null
+            },
+            "action_rows": 0,
+            "action_spy_excess_pct": {
+              "mean": null,
+              "median": null,
+              "n": 0,
+              "positive_rate": null
+            },
+            "horizon": 1,
+            "ok_no_action_return_pct": {
+              "mean": null,
+              "median": null,
+              "n": 0,
+              "positive_rate": null
+            },
+            "ok_no_action_rows": 0,
+            "ok_no_action_spy_excess_pct": {
+              "mean": null,
+              "median": null,
+              "n": 0,
+              "positive_rate": null
+            },
+            "settled_rows": 0
+          },
+          "h3": {
+            "action_minus_ok_return_mean_pp": null,
+            "action_minus_ok_spy_excess_mean_pp": null,
+            "action_return_pct": {
+              "mean": null,
+              "median": null,
+              "n": 0,
+              "positive_rate": null
+            },
+            "action_rows": 0,
+            "action_spy_excess_pct": {
+              "mean": null,
+              "median": null,
+              "n": 0,
+              "positive_rate": null
+            },
+            "horizon": 3,
+            "ok_no_action_return_pct": {
+              "mean": null,
+              "median": null,
+              "n": 0,
+              "positive_rate": null
+            },
+            "ok_no_action_rows": 0,
+            "ok_no_action_spy_excess_pct": {
+              "mean": null,
+              "median": null,
+              "n": 0,
+              "positive_rate": null
+            },
+            "settled_rows": 0
+          }
+        },
+        "decision": "observed_only_rejected_no_stable_intraday_shadow_action_edge",
+        "failed_reasons": [
+          "h1_settled_rows_below_min",
+          "h1_action_rows_below_min",
+          "h1_ok_rows_below_min",
+          "h3_action_rows_below_min",
+          "h3_ok_rows_below_min",
+          "h1_action_underperformance_not_met",
+          "h3_action_underperformance_not_met"
+        ],
+        "observed_only": true,
+        "passed": false
+      },
+      "log": "experiments/logs/exp-20260627-025.json",
+      "observed_only_lead": false,
+      "runner": "quant/experiments/exp_20260627_025_intraday_advisory_shadow_forward_outcome.py",
+      "summary": "The current intraday sample is too young for a stable exit advisory signal: h1 rows are available, but h3 support and action-vs-OK separation are not strong enough to justify a shared exit-lifecycle policy."
+    },
+    "revision_manifest_file": "experiments/manifests/exp-20260627-025.json",
+    "single_causal_variable": "intraday_advisory_shadow_action_forward_outcome_v1",
+    "status": "observed_only_rejected",
+    "ticket_file": "experiments/tickets/exp-20260627-025.json",
+    "trial_family": "intraday_advisory_shadow_action_forward_outcome",
+    "trial_variant_id": "primary_shadow_action_vs_ok_next_1d_3d_v1",
+    "updated_at": "2026-06-27T21:11:56+00:00"
+  },
+  "timestamp": "2026-06-27T21:12:57Z",
+  "trial_family": "intraday_advisory_shadow_action_forward_outcome",
+  "trial_variant_id": "primary_shadow_action_vs_ok_next_1d_3d_v1"
+}

@@ -1,0 +1,204 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260627_026_forward_entry_exhaustion_attribution.py",
+    "data/experiments/exp-20260627-026/exp_20260627_026_forward_entry_exhaustion_attribution.json",
+    "experiments/cards/exp-20260627-026.md",
+    "experiments/manifests/exp-20260627-026.json",
+    "experiments/tickets/exp-20260627-026.json",
+    "experiments/logs/exp-20260627-026.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260627-026.md",
+  "causal_components": [
+    "accepted exp-20260627-022 forward exhaustion tag",
+    "closed forward replacement rows",
+    "cash SPY QQQ replacement-value attribution",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_forward_attribution",
+  "changed_variable": "forward_entry_exhaustion_stretched_flag_replacement_value_attribution_v1",
+  "claimed_at": "2026-06-27T22:05:38+00:00",
+  "completed_at": "2026-06-27T22:09:20+00:00",
+  "created_at": "2026-06-27T22:05:25+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260627-026",
+  "experiment_uid": "expuid-ff34ccbbe584417c",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260627-026",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-27T22:05:25+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "forward_entry_exhaustion_attribution"
+  },
+  "hypothesis": "Closed forward replacement rows carrying the newly shared PIT entry_exhaustion_stretched_flag should show worse cash/SPY/QQQ replacement value and loss-tail than non-stretched rows, testing whether entry-day name-level overextension is a real future allocation risk signal without changing strategy behavior.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "forward_entry_exhaustion_stretched_flag_replacement_value_attribution_v1"
+  ],
+  "mechanism_family": "entry_name_level_exhaustion_forward_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260627-022",
+    "exp-20260626-018",
+    "exp-20260623-002"
+  ],
+  "new_evidence_type": "shared_forward_entry_name_level_exhaustion_observation_field",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_momentum",
+      "field_tags": [
+        "a",
+        "allocation",
+        "attribution",
+        "behavior",
+        "carrying",
+        "cash",
+        "changing",
+        "closed",
+        "entry",
+        "exhaustion",
+        "flag",
+        "forward",
+        "future",
+        "is",
+        "level",
+        "loss",
+        "name",
+        "newly",
+        "non",
+        "overextension",
+        "pit",
+        "qqq",
+        "real",
+        "replacement",
+        "risk",
+        "rows",
+        "should",
+        "show",
+        "signal",
+        "spy",
+        "strategy",
+        "stretched",
+        "tail",
+        "testing",
+        "than",
+        "value",
+        "whether",
+        "without",
+        "worse"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "platform_rs20_missed_candidate_replacement_value",
+        "reopen_condition": null,
+        "score": 0.469,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "rs20_entry_state_lifecycle_allocation",
+        "reopen_condition": null,
+        "score": 0.469,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "rs20_entry_state_shared_sizing",
+        "reopen_condition": "Forward/paper monitoring of rs20_entry_state attribution, especially mid_weak-like drawdown and concentration behavior.",
+        "score": 0.4686,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "low_deployment_dynamic_etf_overlay_allocation",
+        "reopen_condition": null,
+        "score": 0.4663,
+        "status": "frozen_rejected",
+        "trials": 8
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "cross_sectional_ranking_component_attribution",
+        "reopen_condition": null,
+        "score": 0.466,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_momentum",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "stretched_rows_too_thin",
+      "no_cash_spy_qqq_separation",
+      "source_family_confound",
+      "forward_rows_not_out_of_sample"
+    ],
+    "confidence_reason": "The measurement repair created a genuine new PIT name-level exhaustion field on closed forward rows and current memory says regime/short-volume tags were non-separating; confidence is low because the current closed row count and stretched bucket are small and this is only attribution.",
+    "recorded_at": "2026-06-27T22:05:02+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "observed_only_directional_entry_exhaustion_lead_too_thin",
+    "artifact": "data/experiments/exp-20260627-026/exp_20260627_026_forward_entry_exhaustion_attribution.json",
+    "log_file": "experiments/logs/exp-20260627-026.json",
+    "lean_quality_passed": true
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260627-026.json",
+  "single_causal_variable": "forward_entry_exhaustion_stretched_flag_replacement_value_attribution_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260627-026.json",
+  "trial_family": "forward_entry_exhaustion_replacement_value_attribution",
+  "trial_variant_id": "stretched_flag_vs_non_stretched_v1",
+  "implementation_mode": "observed_only_forward_attribution",
+  "artifact_file": "data/experiments/exp-20260627-026/exp_20260627_026_forward_entry_exhaustion_attribution.json",
+  "log_file": "experiments/logs/exp-20260627-026.json",
+  "changed_files": [
+    "quant/experiments/exp_20260627_026_forward_entry_exhaustion_attribution.py",
+    "data/experiments/exp-20260627-026/exp_20260627_026_forward_entry_exhaustion_attribution.json",
+    "experiments/cards/exp-20260627-026.md",
+    "experiments/manifests/exp-20260627-026.json",
+    "experiments/tickets/exp-20260627-026.json",
+    "experiments/logs/exp-20260627-026.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "updated_at": "2026-06-27T22:09:20+00:00"
+}

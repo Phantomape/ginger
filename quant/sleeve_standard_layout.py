@@ -55,6 +55,22 @@ def _last_snapshot_asof(snapshot_path: Path) -> str | None:
     return last
 
 
+def _snapshot_rows(snapshot_path: Path) -> list[str]:
+    if not snapshot_path.exists():
+        return []
+    try:
+        return snapshot_path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return []
+
+
+def _same_snapshot_payload(left: dict[str, Any], right: dict[str, Any]) -> bool:
+    ignored = {"generated_at"}
+    return {
+        key: value for key, value in left.items() if key not in ignored
+    } == {key: value for key, value in right.items() if key not in ignored}
+
+
 def write_standard_sleeve_surfaces(
     *,
     sleeve_dir: Path | str,
@@ -93,33 +109,56 @@ def write_standard_sleeve_surfaces(
         "closed_positions": [],
         "skipped_entries": [],
     }
-    atomic_write_json(state, state_path)
+    try:
+        atomic_write_json(state, state_path)
+    except PermissionError:
+        state_path.write_text(
+            json.dumps(state, indent=2, sort_keys=True, default=str) + "\n",
+            encoding="utf-8",
+        )
+
+    row = {
+        "schema_version": STANDARD_SURFACE_SCHEMA_VERSION,
+        "sleeve": sleeve_name,
+        "rule_version": rule_version,
+        "surface_kind": SURFACE_KIND_OBSERVE_ONLY,
+        "asof_date": date10,
+        "generated_at": now,
+        "trade_enabled": False,
+        "candidate_count": len(pending),
+        "pending_count": len(pending),
+        "open_position_count": 0,
+        "closed_position_count": 0,
+        "closed_count_today": 0,
+    }
+    for key, value in (extra_snapshot_fields or {}).items():
+        row.setdefault(key, value)
 
     appended = False
+    updated = False
     if _last_snapshot_asof(snapshots_path) != date10:
-        row = {
-            "schema_version": STANDARD_SURFACE_SCHEMA_VERSION,
-            "sleeve": sleeve_name,
-            "rule_version": rule_version,
-            "surface_kind": SURFACE_KIND_OBSERVE_ONLY,
-            "asof_date": date10,
-            "generated_at": now,
-            "trade_enabled": False,
-            "candidate_count": len(pending),
-            "pending_count": len(pending),
-            "open_position_count": 0,
-            "closed_position_count": 0,
-            "closed_count_today": 0,
-        }
-        for key, value in (extra_snapshot_fields or {}).items():
-            row.setdefault(key, value)
         with snapshots_path.open("a", encoding="utf-8") as handle:
             handle.write(json.dumps(row, sort_keys=True, default=str) + "\n")
         appended = True
+    else:
+        lines = _snapshot_rows(snapshots_path)
+        for index in range(len(lines) - 1, -1, -1):
+            try:
+                existing = json.loads(lines[index])
+            except json.JSONDecodeError:
+                continue
+            if not isinstance(existing, dict) or str(existing.get("asof_date"))[:10] != date10:
+                continue
+            if not _same_snapshot_payload(existing, row):
+                lines[index] = json.dumps(row, sort_keys=True, default=str)
+                snapshots_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+                updated = True
+            break
 
     return {
         "written": True,
         "appended_snapshot": appended,
+        "updated_snapshot": updated,
         "state_path": str(state_path),
         "snapshots_path": str(snapshots_path),
         "asof_date": date10,

@@ -3446,6 +3446,75 @@ def test_space_catalyst_event_ledger_persistence_dedupes_daily_rows(tmp_path):
     assert first["persistence"]["appended_count"] == 1
     assert second["persistence"]["appended_count"] == 0
     assert second["persistence"]["ledger_row_count"] == 1
+    state = json.loads((tmp_path / "state.json").read_text(encoding="utf-8"))
+    assert len(state["pending_entries"]) == 1
+    assert state["pending_entries"][0]["outcome_status"] == "pending"
+    rows = [
+        json.loads(line)
+        for line in (tmp_path / "snapshots.jsonl").read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    assert rows[0]["pending_count"] == 1
+    assert rows[0]["closed_decision_count"] == 0
+
+
+def test_space_catalyst_standard_surface_excludes_closed_decisions_from_pending(
+    tmp_path,
+):
+    dates = [
+        "2026-05-01",
+        "2026-05-04",
+        "2026-05-05",
+        "2026-05-06",
+        "2026-05-07",
+        "2026-05-08",
+        "2026-05-11",
+        "2026-05-12",
+        "2026-05-13",
+        "2026-05-14",
+        "2026-05-15",
+        "2026-05-18",
+    ]
+    snapshot = build_space_catalyst_event_ledger_snapshot(
+        as_of="2026-05-18",
+        events=[
+            {
+                "event_id": "unit_space_contract",
+                "event_date": "2026-05-01",
+                "tickers": ["LUNR"],
+                "semantic_bucket": "fundamental_contract_regulatory",
+                "event_fields": ["government_space_contract"],
+            }
+        ],
+        ohlcv_by_ticker={
+            "LUNR": [
+                {"Date": date, "Close": close}
+                for date, close in zip(dates, range(20, 32))
+            ]
+        },
+    )
+    assert snapshot["closed_decision_count"] == 1
+
+    result = persist_space_catalyst_event_ledger(
+        snapshot,
+        ledger_path=tmp_path / "ledger.jsonl",
+        summary_path=tmp_path / "summary.json",
+    )
+
+    state = json.loads((tmp_path / "state.json").read_text(encoding="utf-8"))
+    rows = [
+        json.loads(line)
+        for line in (tmp_path / "snapshots.jsonl").read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    assert result["persistence"]["standard_surfaces"]["pending_count"] == 0
+    assert state["pending_entries"] == []
+    assert state["open_positions"] == []
+    assert state["closed_positions"] == []
+    assert rows[0]["candidate_count"] == 0
+    assert rows[0]["pending_count"] == 0
+    assert rows[0]["closed_decision_count"] == 1
+    assert rows[0]["pending_decision_count"] == 0
 
 
 def test_report_generator_renders_space_catalyst_without_orders():

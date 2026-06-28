@@ -1,0 +1,163 @@
+{
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "after_metrics": {
+    "expected_value_score": 0.3691,
+    "max_drawdown_pct": 0.0543,
+    "sharpe": null,
+    "sharpe_daily": 3.71,
+    "survival_rate": 0.8824,
+    "total_pnl": 9949.74,
+    "total_return_pct": null,
+    "trade_count": 6,
+    "win_rate": 0.5
+  },
+  "artifact_repair": {
+    "canonical_json_equal_to_temp": true,
+    "canonical_path": "data/backtests/backtest_results_20260627.json",
+    "canonical_sha256": "b6f793ee95b9ea8bfe4462112c82b9c8e939e8698f57b12f0965c51e4a794c42",
+    "post_repair_canonical_exists": true,
+    "pre_repair_canonical_exists": false,
+    "source_temp": "data/backtests/.backtest_results_20260627.json.z9lf6_av.tmp"
+  },
+  "before_metrics": {
+    "expected_value_score": 0.3691,
+    "max_drawdown_pct": 0.0543,
+    "sharpe": null,
+    "sharpe_daily": 3.71,
+    "survival_rate": 0.8824,
+    "total_pnl": 9949.74,
+    "total_return_pct": null,
+    "trade_count": 6,
+    "win_rate": 0.5
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "brier_score": 0.0225,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": 0.0,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": 0.0,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "retry_does_not_handle_windows_lock",
+      "temp_cleanup_regresses",
+      "canonical_artifact_mismatch"
+    ],
+    "predicted_success_probability": 0.85,
+    "realized_failure_mode": "canonical_artifact_mismatch",
+    "surprise_level": "very_low",
+    "surprise_note": "The repair behaved as predicted: exp-20260627-020 had a complete same-directory temp JSON, so bounded retry plus canonical promotion removed the reproducibility blocker without altering metrics."
+  },
+  "causal_components": [
+    "retry transient PermissionError during os.replace",
+    "preserve same-directory temp write with fsync",
+    "no strategy behavior changes"
+  ],
+  "change_summary": "Added bounded retry around backtester atomic JSON replace on transient Windows PermissionError and promoted the complete exp-20260627-020 temp replay artifact to canonical backtest_results_20260627.json with identical SHA-256.",
+  "change_type": "backtest_artifact_persistence_repair",
+  "changed_files": [
+    "quant/backtester.py",
+    "quant/test_backtester_atomic_write.py",
+    "data/backtests/backtest_results_20260627.json",
+    "data/experiments/exp-20260627-021/before_backtest_artifact_persistence_repair.json",
+    "data/experiments/exp-20260627-021/after_backtest_artifact_persistence_repair.json",
+    "experiments/logs/exp-20260627-021.json",
+    "experiments/cards/exp-20260627-021.md",
+    "experiments/tickets/exp-20260627-021.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "windows_atomic_backtest_json_replace_retry_v1",
+  "component": "quant/backtester.py, quant/test_backtester_atomic_write.py, data/backtests/backtest_results_20260627.json, data/experiments/exp-20260627-021/, experiments/logs/exp-20260627-021.json, experiments/cards/exp-20260627-021.md, experiments/manifests/exp-20260627-021.json, experiments/tickets/exp-20260627-021.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "trade_count": 0,
+    "win_rate": 0.0
+  },
+  "experiment_id": "exp-20260627-021",
+  "hypothesis": "Backtester canonical JSON persistence should survive transient Windows target locks so post-activation and recent-observe replays leave canonical reproducible artifacts instead of orphaned same-directory temp files; without this, alpha readiness audits can only cite a temp path and are not reliably replayable.",
+  "lean_quality_passed": true,
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "reproducibility_blocker_from_exp_20260627_020",
+  "next_retry_requires": [
+    "A fresh canonical backtest artifact save failure after the bounded retry helper, or a different writer path showing the same reproducibility blocker. Alpha retests still require new closed forward evidence, not another save-path repair."
+  ],
+  "notes": "Accepted measurement repair only: no entry, exit, ranking, sizing, risk-budget, or live-order behavior changed. Unit tests cover transient replace retry and permanent failure temp cleanup; canonicalized artifact keeps post-activation replay EV 0.3691, PnL 9949.74, and 6 total trades unchanged.",
+  "parameters": {
+    "locked_variables": [
+      "entry",
+      "exit",
+      "ranking",
+      "sizing",
+      "risk_budget",
+      "live_orders"
+    ],
+    "single_causal_variable": "windows_atomic_backtest_json_replace_retry_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reopen this by re-copying the same exp-20260627-020 temp file, increasing retry counts without a fresh failure, or reclassifying the AI_INFRA promotion result. exp-20260627-020 remains observed-only rejected.",
+    "new_evidence_required": "A valid retry needs a new post-repair save failure from backtester or another canonical artifact writer, with the failing path and complete/incomplete temp state captured. For AI_INFRA alpha work, the needed evidence is materially more closed pilot replacement-value rows.",
+    "realized_failure_mode": "canonical_artifact_mismatch",
+    "why_result_happened": "The repair behaved as predicted: exp-20260627-020 had a complete same-directory temp JSON, so bounded retry plus canonical promotion removed the reproducibility blocker without altering metrics."
+  },
+  "prediction": {
+    "confidence_reason": "A prior accepted universe-feed helper already uses bounded retry for transient Windows replace locks, and exp-20260627-020 produced a complete temp JSON.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "retry_does_not_handle_windows_lock",
+      "temp_cleanup_regresses",
+      "canonical_artifact_mismatch"
+    ],
+    "recorded_at": "2026-06-27T18:07:32+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "backtester_metrics_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "parity_note": "Backtester persistence helper only; replay metrics and strategy behavior unchanged.",
+    "ranking_changed": false,
+    "risk_budget_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260627-021/before_backtest_artifact_persistence_repair.json",
+    "data/experiments/exp-20260627-021/after_backtest_artifact_persistence_repair.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_backtester_atomic_write.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\backtester.py quant\\test_backtester_atomic_write.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py close --experiment-id exp-20260627-021 --before data\\experiments\\exp-20260627-021\\before_backtest_artifact_persistence_repair.json --after data\\experiments\\exp-20260627-021\\after_backtest_artifact_persistence_repair.json --write-registry --status-override accepted --append-log",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-06-27T18:11:21+00:00",
+  "trial_family": "backtest_artifact_persistence",
+  "trial_variant_id": "windows_replace_retry_v1"
+}

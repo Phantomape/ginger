@@ -1,4 +1,4 @@
-# Pilot tracker - as of 2026-06-27T04:43:26+00:00
+# Pilot tracker - as of 2026-06-28T03:43:57+00:00
 
 Per-position book: $10,000. Read-only; manual execution.
 Graduate/kill rule (pre-committed): >= 20 closed AND sum rv_vs_SPY > 0 AND book DD < 15%.

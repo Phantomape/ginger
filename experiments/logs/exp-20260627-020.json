@@ -1,0 +1,630 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "pilot_closed_trades": 1,
+    "pilot_direct_pnl": -658.54,
+    "pilot_entries": 1,
+    "pilot_replacement_value": -658.54,
+    "post_activation_replay_expected_value_score": 0.3691,
+    "post_activation_replay_max_drawdown_pct": 0.0543,
+    "post_activation_replay_survival_rate": 0.8824,
+    "post_activation_replay_total_pnl": 9949.74,
+    "post_activation_replay_trade_count": 6,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3,
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "label": "late_strong",
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "start": "2025-10-23",
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18
+      },
+      {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "label": "mid_weak",
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "start": "2025-04-23",
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21
+      },
+      {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "label": "old_thin",
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "start": "2024-10-02",
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22
+      }
+    ]
+  },
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260627_020_ai_infra_post_activation_pilot_replay_readiness.py",
+    "data/experiments/exp-20260627-020/exp_20260627_020_ai_infra_post_activation_pilot_replay_readiness.json",
+    "experiments/cards/exp-20260627-020.md",
+    "experiments/manifests/exp-20260627-020.json",
+    "experiments/tickets/exp-20260627-020.json",
+    "experiments/logs/exp-20260627-020.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "anti_js": {
+    "evidence": "Python runner only; no node/js tooling invoked.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260627-020/exp_20260627_020_ai_infra_post_activation_pilot_replay_readiness.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3,
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "label": "late_strong",
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "start": "2025-10-23",
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18
+      },
+      {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "label": "mid_weak",
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "start": "2025-04-23",
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21
+      },
+      {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "label": "old_thin",
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "start": "2024-10-02",
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22
+      }
+    ]
+  },
+  "calibration": {
+    "actual_success": false,
+    "brier_score": 0.0324,
+    "failed_reasons": [
+      "thin_replay_entries",
+      "too_few_entered_pilot_trades",
+      "negative_replacement_value",
+      "risk_adjusted_replacement_unavailable",
+      "core_primary_not_converged",
+      "primary_trade_count_below_15"
+    ],
+    "predicted_failure_modes": [
+      "thin_replay_entries",
+      "negative_replacement_value",
+      "drawdown_or_concentration_failed",
+      "no_closed_replacement_rows"
+    ],
+    "predicted_success_probability": 0.18,
+    "realized_failure_modes": [
+      "thin_replay_entries",
+      "negative_replacement_value",
+      "risk_adjusted_replacement_unavailable"
+    ]
+  },
+  "causal_components": [
+    "shared include-pilot-sleeve replay",
+    "current warehouse OHLCV",
+    "read-only promotion gates",
+    "no order changes"
+  ],
+  "change_type": "pilot_activation_replay_readiness",
+  "changed_files": [
+    "quant/experiments/exp_20260627_020_ai_infra_post_activation_pilot_replay_readiness.py",
+    "data/experiments/exp-20260627-020/exp_20260627_020_ai_infra_post_activation_pilot_replay_readiness.json",
+    "experiments/logs/exp-20260627-020.json",
+    "experiments/cards/exp-20260627-020.md",
+    "experiments/manifests/exp-20260627-020.json",
+    "experiments/tickets/exp-20260627-020.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "post_activation_ai_infra_include_pilot_sleeve_replay_readiness_v1",
+  "decision": "rejected_ai_infra_post_activation_promotion_not_ready",
+  "delta_metrics": {
+    "aggregate_expected_value_score": 0.0,
+    "aggregate_total_pnl": 0.0,
+    "expected_value_score_delta": 0.0,
+    "pilot_closed_trades": 1,
+    "pilot_replacement_value": -658.54,
+    "strategy_behavior_delta": 0.0,
+    "survival_rate_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260627-020",
+  "gate1": {
+    "baseline_expected_value_score_sum": 7.8941,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_total_pnl": 234850.99,
+    "baseline_trade_count": 61,
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_present": true,
+    "passed": true,
+    "required_fields": [
+      "pilot_sleeve_replay.entries",
+      "pilot_sleeve_replay.closed_trades",
+      "pilot_sleeve_replay.replacement_value",
+      "pilot_sleeve_replay.decisions.date",
+      "pilot_sleeve_replay.decisions.ticker",
+      "trades.entry_date"
+    ],
+    "target_price_note": "This audit reads backtester replay output and does not introduce a new target-price rule. Saved trade rows expose entry_date, entry_price, stop_price, target_mult_used, exit_price, and exit_reason; target_price is not serialized as a separate field.",
+    "target_price_present_in_saved_trade_rows": false,
+    "target_price_required": false
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No filter was added; this is a read-only pilot replay audit.",
+    "passed": true,
+    "pilot_signals_generated": 7,
+    "pilot_signals_survived": 7,
+    "pilot_survival_rate": 1.0,
+    "signals_generated": 17,
+    "signals_survived": 15,
+    "survival_rate": 0.8824
+  },
+  "gate4": {
+    "before_after_policy_delta": "none",
+    "checks": {
+      "beats_spy_and_qqq": true,
+      "core_drawdown_under_20pct": true,
+      "core_primary_converged": false,
+      "core_trade_count_min_15": false,
+      "has_post_activation_eligible_days": true,
+      "no_pending_counterfactuals": true,
+      "pilot_closed_rows_min_20": false,
+      "pilot_entries_min_5": false,
+      "pilot_replay_enabled": true,
+      "replacement_value_positive": false,
+      "risk_adjusted_replacement_available": false
+    },
+    "decision": "rejected_ai_infra_post_activation_promotion_not_ready",
+    "expected_value_score_delta": 0.0,
+    "failed_reasons": [
+      "thin_replay_entries",
+      "too_few_entered_pilot_trades",
+      "negative_replacement_value",
+      "risk_adjusted_replacement_unavailable",
+      "core_primary_not_converged",
+      "primary_trade_count_below_15"
+    ],
+    "passed": false,
+    "status": "observed_only_rejected",
+    "survival_rate_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "hypothesis": "Post-activation AI_INFRA_AGGRESSIVE pilot replay from 2026-05-01 through 2026-06-26 may now provide enough PIT direct and replacement-value evidence to justify continued promotion readiness without changing core orders; if replay entries, replacement value, or drawdown fail, no allocation change is justified.",
+  "implementation_mode": "observed_only_attribution",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260627-020.json",
+  "mechanism_family": "pilot_or_sleeve",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260519-014",
+    "exp-20260524-001",
+    "exp-20260623-017",
+    "exp-20260627-001"
+  ],
+  "new_evidence_axis": "Post-activation 2026-05-01..2026-06-26 PIT --include-pilot-sleeve replay rows after pilot activation are a new forward evidence axis required by docs/backtesting.md; this is not a fixed-window threshold or response retune.",
+  "new_evidence_type": "post_activation_pilot_replay_rows",
+  "observed_only_lead": false,
+  "owner": "alpha-explore",
+  "parameters": {
+    "activation_window_end_requested": "2026-06-26",
+    "activation_window_end_simulated": "2026-06-25",
+    "activation_window_start": "2026-05-01",
+    "current_warehouse": "data/warehouse/warehouse_main.sqlite",
+    "current_warehouse_command": ".\\.venv\\Scripts\\python.exe -B quant\\backtester.py --start 2026-05-01 --end 2026-06-26 --ohlcv-warehouse data\\warehouse\\warehouse_main.sqlite --include-pilot-sleeve",
+    "current_warehouse_save_caveat": "Backtester printed complete results and left a complete temp JSON, but os.replace to data/backtests/backtest_results_20260627.json raised Windows PermissionError.",
+    "legacy_warehouse": "data/experiments/exp-20260519-030/warehouse_main.sqlite",
+    "legacy_warehouse_attempt": {
+      "command": ".\\.venv\\Scripts\\python.exe -B quant\\backtester.py --start 2026-05-01 --end 2026-06-26 --ohlcv-warehouse data\\experiments\\exp-20260519-030\\warehouse_main.sqlite --include-pilot-sleeve",
+      "reason": "Loaded 0/60 requested tickers for May-June 2026 and exited with No data downloaded.",
+      "result": "failed_before_simulation"
+    },
+    "replay_source": "data/backtests/.backtest_results_20260627.json.z9lf6_av.tmp",
+    "replay_source_is_backtester_temp": true
+  },
+  "pilot_replay_summary": {
+    "ai_infra_candidate_tickers": [
+      "COHR",
+      "INTC",
+      "MRVL",
+      "WDC"
+    ],
+    "by_ticker": {
+      "COHR": {
+        "cash_relative_pnl": -658.54,
+        "closed_trades": 1,
+        "complete_replacement_outcomes": 1,
+        "direct_pilot_pnl": -658.54,
+        "entries": 1,
+        "pending_counterfactual_outcomes": 0,
+        "replacement_value": -658.54,
+        "risk_adjusted_replacement_value_avg": null,
+        "risk_adjusted_replacement_value_count": 0
+      }
+    },
+    "cash_relative_pnl": -658.54,
+    "closed_tickers": [
+      "COHR"
+    ],
+    "closed_trades": 1,
+    "decision_status_counts": {
+      "adverse_gap_down_cancel": 1,
+      "candidate_snapshot": 7,
+      "closed": 1,
+      "entered": 1,
+      "gap_cancel": 5
+    },
+    "decisions": [
+      {
+        "counterfactuals": [
+          {
+            "shadow_weight": 1.0,
+            "ticker": "CASH",
+            "type": "cash_baseline"
+          }
+        ],
+        "date": "2026-05-08",
+        "decision_id": "2026-05-08-AI_INFRA_AGGRESSIVE-INTC-breakout_long-1",
+        "status": "candidate_snapshot",
+        "ticker": "INTC"
+      },
+      {
+        "date": "2026-05-08",
+        "decision_id": "2026-05-08-AI_INFRA_AGGRESSIVE-INTC-breakout_long-1",
+        "fill_date": "2026-05-11",
+        "fill_price": 130.88,
+        "status": "gap_cancel",
+        "ticker": "INTC"
+      },
+      {
+        "counterfactuals": [
+          {
+            "shadow_weight": 1.0,
+            "ticker": "CASH",
+            "type": "cash_baseline"
+          }
+        ],
+        "date": "2026-05-11",
+        "decision_id": "2026-05-11-AI_INFRA_AGGRESSIVE-COHR-breakout_long-1",
+        "status": "candidate_snapshot",
+        "ticker": "COHR"
+      },
+      {
+        "date": "2026-05-11",
+        "decision_id": "2026-05-11-AI_INFRA_AGGRESSIVE-COHR-breakout_long-1",
+        "fill_date": "2026-05-12",
+        "fill_price": 372.96,
+        "shares": 20,
+        "status": "entered",
+        "ticker": "COHR"
+      },
+      {
+        "date": "2026-05-19",
+        "decision_id": "2026-05-11-AI_INFRA_AGGRESSIVE-COHR-breakout_long-1",
+        "pilot_pnl": -658.54,
+        "replacement_value": -658.54,
+        "replacement_value_status": "complete",
+        "status": "closed",
+        "ticker": "COHR"
+      },
+      {
+        "counterfactuals": [
+          {
+            "shadow_weight": 1.0,
+            "ticker": "CASH",
+            "type": "cash_baseline"
+          }
+        ],
+        "date": "2026-06-02",
+        "decision_id": "2026-06-02-AI_INFRA_AGGRESSIVE-MRVL-trend_long-1",
+        "status": "candidate_snapshot",
+        "ticker": "MRVL"
+      },
+      {
+        "date": "2026-06-02",
+        "decision_id": "2026-06-02-AI_INFRA_AGGRESSIVE-MRVL-trend_long-1",
+        "fill_date": "2026-06-03",
+        "fill_price": 317.63,
+        "status": "gap_cancel",
+        "ticker": "MRVL"
+      },
+      {
+        "counterfactuals": [
+          {
+            "shadow_weight": 1.0,
+            "ticker": "CASH",
+            "type": "cash_baseline"
+          }
+        ],
+        "date": "2026-06-03",
+        "decision_id": "2026-06-03-AI_INFRA_AGGRESSIVE-MRVL-breakout_long-1",
+        "status": "candidate_snapshot",
+        "ticker": "MRVL"
+      },
+      {
+        "date": "2026-06-03",
+        "decision_id": "2026-06-03-AI_INFRA_AGGRESSIVE-MRVL-breakout_long-1",
+        "fill_date": "2026-06-04",
+        "fill_price": 282.95,
+        "status": "adverse_gap_down_cancel",
+        "ticker": "MRVL"
+      },
+      {
+        "counterfactuals": [
+          {
+            "shadow_weight": 1.0,
+            "ticker": "CASH",
+            "type": "cash_baseline"
+          }
+        ],
+        "date": "2026-06-16",
+        "decision_id": "2026-06-16-AI_INFRA_AGGRESSIVE-WDC-trend_long-1",
+        "status": "candidate_snapshot",
+        "ticker": "WDC"
+      },
+      {
+        "date": "2026-06-16",
+        "decision_id": "2026-06-16-AI_INFRA_AGGRESSIVE-WDC-trend_long-1",
+        "fill_date": "2026-06-17",
+        "fill_price": 695.48,
+        "status": "gap_cancel",
+        "ticker": "WDC"
+      },
+      {
+        "counterfactuals": [
+          {
+            "shadow_weight": 1.0,
+            "ticker": "CASH",
+            "type": "cash_baseline"
+          }
+        ],
+        "date": "2026-06-17",
+        "decision_id": "2026-06-17-CONSUMER_PLATFORM_PILOT-HOOD-trend_long-1",
+        "status": "candidate_snapshot",
+        "ticker": "HOOD"
+      },
+      {
+        "date": "2026-06-17",
+        "decision_id": "2026-06-17-CONSUMER_PLATFORM_PILOT-HOOD-trend_long-1",
+        "fill_date": "2026-06-18",
+        "fill_price": 107.825,
+        "status": "gap_cancel",
+        "ticker": "HOOD"
+      },
+      {
+        "counterfactuals": [
+          {
+            "shadow_weight": 1.0,
+            "ticker": "CASH",
+            "type": "cash_baseline"
+          }
+        ],
+        "date": "2026-06-18",
+        "decision_id": "2026-06-18-AI_INFRA_AGGRESSIVE-WDC-trend_long-1",
+        "status": "candidate_snapshot",
+        "ticker": "WDC"
+      },
+      {
+        "date": "2026-06-18",
+        "decision_id": "2026-06-18-AI_INFRA_AGGRESSIVE-WDC-trend_long-1",
+        "fill_date": "2026-06-22",
+        "fill_price": 772.75,
+        "status": "gap_cancel",
+        "ticker": "WDC"
+      }
+    ],
+    "direct_pilot_pnl": -658.54,
+    "eligible_days": 38,
+    "eligible_tickers": [
+      "APLD",
+      "BE",
+      "COHR",
+      "GEV",
+      "HOOD",
+      "INTC",
+      "LITE",
+      "MRVL",
+      "MTSI",
+      "RBLX",
+      "SOFI",
+      "VRT",
+      "WDC"
+    ],
+    "eligible_tickers_by_sleeve": {
+      "AI_INFRA_AGGRESSIVE": [
+        "APLD",
+        "BE",
+        "COHR",
+        "GEV",
+        "INTC",
+        "LITE",
+        "MRVL",
+        "MTSI",
+        "VRT",
+        "WDC"
+      ],
+      "CONSUMER_PLATFORM_PILOT": [
+        "HOOD",
+        "RBLX",
+        "SOFI"
+      ]
+    },
+    "enabled": true,
+    "entered_tickers": [
+      "COHR"
+    ],
+    "entries": 1,
+    "notes": [
+      "PIT pilot replay is enabled only with --include-pilot-sleeve.",
+      "Replay is in-memory and does not write data/ledgers/pilot_competition_decisions.jsonl."
+    ],
+    "pending_counterfactual_outcomes": 0,
+    "primary_sleeve": "AI_INFRA_AGGRESSIVE",
+    "replacement_value": -658.54,
+    "risk_adjusted_replacement_value_avg": null,
+    "signals_generated": 7,
+    "signals_survived": 7,
+    "sleeve": "multi_pilot_sleeve",
+    "survival_rate": 1.0
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not rerun AI_INFRA post-activation promotion readiness by only changing min_closed, notional, RV, risk-adjusted RV, or drawdown gates on the same 2026-05-01..2026-06-26 replay. Reopen only with materially more closed post-activation pilot rows, a different shared allocation policy through Gate 1-4, or a new production-visible evidence source.",
+    "new_evidence_required": "Need at least materially more closed AI_INFRA pilot rows with positive replacement value versus cash/SPY/QQQ, or a separate shared-policy allocation experiment that changes actual selection/sizing and passes Gate 1-4.",
+    "reproducibility": "Run the current warehouse backtester command, then run this runner. On this Windows run the backtester left a complete temp JSON because atomic replace failed with PermissionError; the runner records that caveat and summarizes the temp JSON.",
+    "why_result_happened": "The current warehouse post-activation replay produced a good core short-window result, but it was not converged because only six core trades closed. The pilot sleeve generated seven surviving pilot signals but only one entered/closed trade (COHR), and that row lost 658.54 USD versus cash replacement. Risk-adjusted replacement value is unavailable, so the sleeve still lacks material closed evidence for promotion."
+  },
+  "pre_run_questions": {
+    "alpha_hypothesis": "Post-activation AI_INFRA_AGGRESSIVE pilot replay from 2026-05-01 through 2026-06-26 may now provide enough PIT direct and replacement-value evidence to justify continued promotion readiness without changing core orders; if replay entries, replacement value, or drawdown fail, no allocation change is justified.",
+    "history_check": "Novelty gate allowed the ticket without override. Nearby priors were AI_INFRA segment shadow, AI_INFRA promotion-readiness blocker surfacing, live pilot scalar attribution, and current pilot scorecard graduation readiness.",
+    "reproduction": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260627_020_ai_infra_post_activation_pilot_replay_readiness.py",
+    "single_policy_bundle": "One read-only post-activation include-pilot-sleeve replay readiness audit; no strategy behavior changed.",
+    "success_standard": "Promotion work requires materially closed pilot rows, positive replacement value, available risk-adjusted replacement evidence, no pending counterfactuals, primary replay convergence, and no drawdown or benchmark failure."
+  },
+  "prediction": {
+    "confidence_reason": "AI_INFRA has older positive-but-unstable segment evidence and is a sanctioned pilot lane, but current pilot scorecards remain thin and prior work requires closed replacement-value evidence before promotion.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "thin_replay_entries",
+      "negative_replacement_value",
+      "drawdown_or_concentration_failed",
+      "no_closed_replacement_rows"
+    ],
+    "recorded_at": "2026-06-27T17:09:06+00:00",
+    "success_probability": 0.18
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "paper_orders_changed": false,
+    "parity_note": "Uses the shared backtester --include-pilot-sleeve replay path. Replay is in-memory and explicitly does not write production pilot competition ledgers.",
+    "pilot_recommendations_changed": false,
+    "pilot_state_changed": false,
+    "ranking_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/backtests/.backtest_results_20260627.json.z9lf6_av.tmp",
+    "experiments/tickets/exp-20260627-020.json",
+    "data/warehouse/warehouse_main.sqlite",
+    "data/experiments/exp-20260519-030/warehouse_main.sqlite"
+  ],
+  "replay_metrics": {
+    "beats_qqq": true,
+    "beats_spy": true,
+    "converged": false,
+    "expected_value_score": 0.3691,
+    "failed_convergence": [
+      "trade_count_above_min"
+    ],
+    "max_drawdown_pct": 0.0543,
+    "secondary": {
+      "expected_value_score": 6.7732,
+      "max_drawdown_pct": 0.067,
+      "period": "2025-10-30 \u2192 2026-04-30",
+      "pilot_entries": 0,
+      "sharpe_daily": 4.72,
+      "total_pnl": 143504.65,
+      "total_trades": 24
+    },
+    "sharpe_daily": 3.71,
+    "signals_generated": 17,
+    "signals_survived": 15,
+    "source_period": "2026-05-01 \u2192 2026-06-25",
+    "strategy_vs_qqq_pct": 0.0357,
+    "strategy_vs_spy_pct": 0.0779,
+    "survival_rate": 0.8824,
+    "total_pnl": 9949.74,
+    "total_trades": 6,
+    "trade_tickers": [
+      "COHR",
+      "COHR",
+      "DDOG",
+      "AMD",
+      "GS",
+      "SNOW"
+    ],
+    "trading_days": 38,
+    "win_rate": 0.5
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\backtester.py --start 2026-05-01 --end 2026-06-26 --ohlcv-warehouse data\\experiments\\exp-20260519-030\\warehouse_main.sqlite --include-pilot-sleeve",
+    ".\\.venv\\Scripts\\python.exe -B quant\\backtester.py --start 2026-05-01 --end 2026-06-26 --ohlcv-warehouse data\\warehouse\\warehouse_main.sqlite --include-pilot-sleeve",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260627_020_ai_infra_post_activation_pilot_replay_readiness.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260627_020_ai_infra_post_activation_pilot_replay_readiness.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "post_activation_ai_infra_include_pilot_sleeve_replay_readiness_v1",
+  "status": "observed_only_rejected",
+  "timestamp": "2026-06-27T17:18:33Z",
+  "trial_family": "ai_infra_post_activation_pilot_replay_readiness",
+  "trial_variant_id": "post_activation_20260501_20260626_v1"
+}

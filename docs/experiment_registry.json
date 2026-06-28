@@ -185446,8 +185446,4100 @@
       "card_file": "experiments/cards/exp-20260627-019.md",
       "revision_manifest_file": "experiments/manifests/exp-20260627-019.json",
       "updated_at": "2026-06-27T16:20:50+00:00"
+    },
+    {
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260627_020_ai_infra_post_activation_pilot_replay_readiness.py",
+        "data/experiments/exp-20260627-020/exp_20260627_020_ai_infra_post_activation_pilot_replay_readiness.json",
+        "experiments/cards/exp-20260627-020.md",
+        "experiments/manifests/exp-20260627-020.json",
+        "experiments/tickets/exp-20260627-020.json",
+        "experiments/logs/exp-20260627-020.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260627-020.md",
+      "causal_components": [
+        "shared include-pilot-sleeve replay",
+        "current warehouse OHLCV",
+        "read-only promotion gates",
+        "no order changes"
+      ],
+      "change_type": "pilot_activation_replay_readiness",
+      "changed_variable": "post_activation_ai_infra_include_pilot_sleeve_replay_readiness_v1",
+      "claimed_at": "2026-06-27T17:09:39+00:00",
+      "completed_at": "2026-06-27T17:18:33+00:00",
+      "created_at": "2026-06-27T17:09:18+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260627-020",
+      "experiment_uid": "expuid-e57658817a014be7",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260627-020",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-27T17:09:18+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "ai_infra_post_activation_pilot_replay_readiness"
+      },
+      "hypothesis": "Post-activation AI_INFRA_AGGRESSIVE pilot replay from 2026-05-01 through 2026-06-26 may now provide enough PIT direct and replacement-value evidence to justify continued promotion readiness without changing core orders; if replay entries, replacement value, or drawdown fail, no allocation change is justified.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "post_activation_ai_infra_include_pilot_sleeve_replay_readiness_v1"
+      ],
+      "mechanism_family": "pilot_or_sleeve",
+      "multiple_testing_risk_bucket": "moderate",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260519-014",
+        "exp-20260524-001",
+        "exp-20260623-017",
+        "exp-20260627-001"
+      ],
+      "new_evidence_type": "post_activation_pilot_replay_rows",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "other",
+          "field_tags": [
+            "activation",
+            "aggressive",
+            "ai",
+            "allocation",
+            "change",
+            "changing",
+            "continued",
+            "core",
+            "direct",
+            "drawdown",
+            "enough",
+            "entries",
+            "evidence",
+            "fail",
+            "from",
+            "if",
+            "include",
+            "infra",
+            "is",
+            "justified",
+            "justify",
+            "may",
+            "no",
+            "now",
+            "or",
+            "orders",
+            "pilot",
+            "pit",
+            "post",
+            "promotion",
+            "provide",
+            "readiness",
+            "replacement",
+            "sleeve",
+            "through",
+            "to",
+            "value",
+            "without"
+          ],
+          "gate_shape": "other"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "pilot_or_sleeve",
+            "reopen_condition": "A fundamentally different portfolio-level risk mechanism (e.g. regime-based position count cap, not notional scaling) or a much higher-frequency trade universe where sizing changes affect hundreds of entries, not single digits.",
+            "score": 0.048,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "other",
+            "family_key": "ai_infra_aggressive_forward_sleeve",
+            "reopen_condition": null,
+            "score": 0.041,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.375,
+            "data_source": "other",
+            "family_key": "default_off_forward_replacement_value_activation_readiness",
+            "reopen_condition": "At least 20 closed rows for one diversified helper/source family to justify a watchlist lead, and at least 60 closed rows with positive replacement value versus cash, SPY, and QQQ for an activation-envelope experiment.",
+            "score": 0.0372,
+            "status": "has_accepted",
+            "trials": 8
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "default_off_to_activation_envelope",
+            "reopen_condition": "Genuine production-forward closed rows from the shared default-off helper, not replay-only OOS rows.",
+            "score": 0.0364,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "forward_replacement_stock_vs_etf_diversification",
+            "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+            "score": 0.0357,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": "Post-activation 2026-05-01..2026-06-26 PIT --include-pilot-sleeve replay rows after pilot activation are a new forward evidence axis required by docs/backtesting.md; this is not a fixed-window threshold or response retune.",
+        "override": false,
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "other",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "other",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": {
+        "success_probability": 0.18,
+        "expected_ev_delta": 0.0,
+        "expected_pnl_delta": 0.0,
+        "main_failure_modes": [
+          "thin_replay_entries",
+          "negative_replacement_value",
+          "drawdown_or_concentration_failed",
+          "no_closed_replacement_rows"
+        ],
+        "confidence_reason": "AI_INFRA has older positive-but-unstable segment evidence and is a sanctioned pilot lane, but current pilot scorecards remain thin and prior work requires closed replacement-value evidence before promotion.",
+        "recorded_at": "2026-06-27T17:09:06+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "accepted": false,
+        "accepted_alpha": false,
+        "observed_only_lead": false,
+        "decision": "rejected_ai_infra_post_activation_promotion_not_ready",
+        "artifact": "data/experiments/exp-20260627-020/exp_20260627_020_ai_infra_post_activation_pilot_replay_readiness.json",
+        "log": "experiments/logs/exp-20260627-020.json",
+        "runner": "quant/experiments/exp_20260627_020_ai_infra_post_activation_pilot_replay_readiness.py",
+        "gate4": {
+          "passed": false,
+          "decision": "rejected_ai_infra_post_activation_promotion_not_ready",
+          "checks": {
+            "pilot_replay_enabled": true,
+            "has_post_activation_eligible_days": true,
+            "pilot_closed_rows_min_20": false,
+            "pilot_entries_min_5": false,
+            "replacement_value_positive": false,
+            "risk_adjusted_replacement_available": false,
+            "no_pending_counterfactuals": true,
+            "core_primary_converged": false,
+            "core_trade_count_min_15": false,
+            "core_drawdown_under_20pct": true,
+            "beats_spy_and_qqq": true
+          },
+          "failed_reasons": [
+            "thin_replay_entries",
+            "too_few_entered_pilot_trades",
+            "negative_replacement_value",
+            "risk_adjusted_replacement_unavailable",
+            "core_primary_not_converged",
+            "primary_trade_count_below_15"
+          ],
+          "before_after_policy_delta": "none",
+          "expected_value_score_delta": 0.0,
+          "total_pnl_delta": 0.0,
+          "trade_count_delta": 0,
+          "survival_rate_delta": 0.0,
+          "status": "observed_only_rejected"
+        },
+        "calibration": {
+          "predicted_success_probability": 0.18,
+          "actual_success": false,
+          "brier_score": 0.0324,
+          "predicted_failure_modes": [
+            "thin_replay_entries",
+            "negative_replacement_value",
+            "drawdown_or_concentration_failed",
+            "no_closed_replacement_rows"
+          ],
+          "realized_failure_modes": [
+            "thin_replay_entries",
+            "negative_replacement_value",
+            "risk_adjusted_replacement_unavailable"
+          ],
+          "failed_reasons": [
+            "thin_replay_entries",
+            "too_few_entered_pilot_trades",
+            "negative_replacement_value",
+            "risk_adjusted_replacement_unavailable",
+            "core_primary_not_converged",
+            "primary_trade_count_below_15"
+          ]
+        },
+        "summary": "The current warehouse post-activation replay produced a good core short-window result, but it was not converged because only six core trades closed. The pilot sleeve generated seven surviving pilot signals but only one entered/closed trade (COHR), and that row lost 658.54 USD versus cash replacement. Risk-adjusted replacement value is unavailable, so the sleeve still lacks material closed evidence for promotion."
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260627-020.json",
+      "single_causal_variable": "post_activation_ai_infra_include_pilot_sleeve_replay_readiness_v1",
+      "status": "observed_only_rejected",
+      "ticket_file": "experiments/tickets/exp-20260627-020.json",
+      "trial_family": "ai_infra_post_activation_pilot_replay_readiness",
+      "trial_variant_id": "post_activation_20260501_20260626_v1",
+      "implementation_mode": "observed_only_attribution",
+      "new_evidence_axis": "Post-activation 2026-05-01..2026-06-26 PIT --include-pilot-sleeve replay rows after pilot activation are a new forward evidence axis required by docs/backtesting.md; this is not a fixed-window threshold or response retune.",
+      "decision": "rejected_ai_infra_post_activation_promotion_not_ready",
+      "artifact": "data/experiments/exp-20260627-020/exp_20260627_020_ai_infra_post_activation_pilot_replay_readiness.json",
+      "log": "experiments/logs/exp-20260627-020.json",
+      "aggregate_expected_value_delta": 0.0,
+      "aggregate_strategy_total_pnl_delta": 0.0,
+      "gate1": {
+        "passed": true,
+        "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "baseline_expected_value_score_sum": 7.8941,
+        "baseline_total_pnl": 234850.99,
+        "baseline_trade_count": 61
+      },
+      "gate2": {
+        "passed": true,
+        "required_fields": [
+          "pilot_sleeve_replay.entries",
+          "pilot_sleeve_replay.closed_trades",
+          "pilot_sleeve_replay.replacement_value",
+          "pilot_sleeve_replay.decisions.date",
+          "pilot_sleeve_replay.decisions.ticker",
+          "trades.entry_date"
+        ],
+        "entry_date_present": true,
+        "target_price_present_in_saved_trade_rows": false,
+        "target_price_required": false,
+        "target_price_note": "This audit reads backtester replay output and does not introduce a new target-price rule. Saved trade rows expose entry_date, entry_price, stop_price, target_mult_used, exit_price, and exit_reason; target_price is not serialized as a separate field."
+      },
+      "gate3": {
+        "passed": true,
+        "signals_generated": 17,
+        "signals_survived": 15,
+        "survival_rate": 0.8824,
+        "pilot_signals_generated": 7,
+        "pilot_signals_survived": 7,
+        "pilot_survival_rate": 1.0,
+        "filter_added": false,
+        "note": "No filter was added; this is a read-only pilot replay audit."
+      },
+      "gate4": {
+        "passed": false,
+        "decision": "rejected_ai_infra_post_activation_promotion_not_ready",
+        "checks": {
+          "pilot_replay_enabled": true,
+          "has_post_activation_eligible_days": true,
+          "pilot_closed_rows_min_20": false,
+          "pilot_entries_min_5": false,
+          "replacement_value_positive": false,
+          "risk_adjusted_replacement_available": false,
+          "no_pending_counterfactuals": true,
+          "core_primary_converged": false,
+          "core_trade_count_min_15": false,
+          "core_drawdown_under_20pct": true,
+          "beats_spy_and_qqq": true
+        },
+        "failed_reasons": [
+          "thin_replay_entries",
+          "too_few_entered_pilot_trades",
+          "negative_replacement_value",
+          "risk_adjusted_replacement_unavailable",
+          "core_primary_not_converged",
+          "primary_trade_count_below_15"
+        ],
+        "before_after_policy_delta": "none",
+        "expected_value_score_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0,
+        "survival_rate_delta": 0.0,
+        "status": "observed_only_rejected"
+      },
+      "production_impact": {
+        "trade_enabled": false,
+        "shared_policy_changed": false,
+        "backtester_adapter_changed": false,
+        "run_adapter_changed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "ranking_changed": false,
+        "sizing_changed": false,
+        "live_orders_changed": false,
+        "paper_orders_changed": false,
+        "pilot_state_changed": false,
+        "pilot_recommendations_changed": false,
+        "daily_snapshot_exposed": false,
+        "live_ready": false,
+        "replay_only": true,
+        "parity_note": "Uses the shared backtester --include-pilot-sleeve replay path. Replay is in-memory and explicitly does not write production pilot competition ledgers."
+      },
+      "post_run_reflection": {
+        "why_result_happened": "The current warehouse post-activation replay produced a good core short-window result, but it was not converged because only six core trades closed. The pilot sleeve generated seven surviving pilot signals but only one entered/closed trade (COHR), and that row lost 658.54 USD versus cash replacement. Risk-adjusted replacement value is unavailable, so the sleeve still lacks material closed evidence for promotion.",
+        "forbidden_near_neighbor_retry": "Do not rerun AI_INFRA post-activation promotion readiness by only changing min_closed, notional, RV, risk-adjusted RV, or drawdown gates on the same 2026-05-01..2026-06-26 replay. Reopen only with materially more closed post-activation pilot rows, a different shared allocation policy through Gate 1-4, or a new production-visible evidence source.",
+        "new_evidence_required": "Need at least materially more closed AI_INFRA pilot rows with positive replacement value versus cash/SPY/QQQ, or a separate shared-policy allocation experiment that changes actual selection/sizing and passes Gate 1-4.",
+        "reproducibility": "Run the current warehouse backtester command, then run this runner. On this Windows run the backtester left a complete temp JSON because atomic replace failed with PermissionError; the runner records that caveat and summarizes the temp JSON."
+      },
+      "related_files": [
+        "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "data/backtests/.backtest_results_20260627.json.z9lf6_av.tmp",
+        "experiments/tickets/exp-20260627-020.json",
+        "data/warehouse/warehouse_main.sqlite",
+        "data/experiments/exp-20260519-030/warehouse_main.sqlite"
+      ],
+      "changed_files": [
+        "quant/experiments/exp_20260627_020_ai_infra_post_activation_pilot_replay_readiness.py",
+        "data/experiments/exp-20260627-020/exp_20260627_020_ai_infra_post_activation_pilot_replay_readiness.json",
+        "experiments/logs/exp-20260627-020.json",
+        "experiments/cards/exp-20260627-020.md",
+        "experiments/manifests/exp-20260627-020.json",
+        "experiments/tickets/exp-20260627-020.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "lean_quality_passed": true,
+      "updated_at": "2026-06-27T17:18:33+00:00"
+    },
+    {
+      "experiment_id": "exp-20260627-021",
+      "status": "accepted",
+      "lane": "measurement_repair",
+      "owner": "alpha-explore",
+      "hypothesis": "Backtester canonical JSON persistence should survive transient Windows target locks so post-activation and recent-observe replays leave canonical reproducible artifacts instead of orphaned same-directory temp files; without this, alpha readiness audits can only cite a temp path and are not reliably replayable.",
+      "ticket_file": "experiments/tickets/exp-20260627-021.json",
+      "card_file": "experiments/cards/exp-20260627-021.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260627-021.json",
+      "updated_at": "2026-06-27T18:11:21+00:00"
+    },
+    {
+      "acceptance_rule": "measurement_repair: tag writes idempotently on real+fixture closed rows, daily run path enriches going forward, no strategy/order/ranking/sizing/exit change",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260627_022_forward_replacement_rows_entry_exhaustion_tag_v1_read_only_pit_name_level_entry.py",
+        "data/experiments/exp-20260627-022/exp_20260627_022_forward_replacement_rows_entry_exhaustion_tag_v1_read_only_pit_name_level_entry.json",
+        "experiments/cards/exp-20260627-022.md",
+        "experiments/manifests/exp-20260627-022.json",
+        "experiments/tickets/exp-20260627-022.json",
+        "experiments/logs/exp-20260627-022.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260627-022.md",
+      "causal_components": [],
+      "change_type": "forward_replacement_value_entry_exhaustion_tag_measurement_repair",
+      "changed_variable": "forward_replacement_rows_entry_exhaustion_tag_v1",
+      "claimed_at": null,
+      "completed_at": "2026-06-27T18:19:40+00:00",
+      "created_at": "2026-06-27T18:12:56+00:00",
+      "evaluation_windows": [
+        {
+          "end": "2026-04-21",
+          "start": "2025-10-23"
+        }
+      ],
+      "experiment_id": "exp-20260627-022",
+      "experiment_uid": "expuid-df156ec931164b76",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260627-022",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-27T18:12:56+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "forward_replacement_rows_entry_exhaustion_tag_v1_read_only_pit_name_level_entry"
+      },
+      "hypothesis": "measurement_repair/alpha_blocker: out-of-sample validation of an entry name-level price-exhaustion discriminator for the weak-tape low-MFE failed-followthrough cohort (oracle_regret_compass section 3) is blocked because closed forward replacement rows do not carry a PIT entry-day exhaustion tag; the already-tagged regime and short-volume axes were shown non-separating.",
+      "lane": "measurement_repair",
+      "locked_variables": [
+        "forward_replacement_rows_entry_exhaustion_tag_v1 (read-only PIT name-level entry-exhaustion fields on closed forward rows)"
+      ],
+      "mechanism_family": "entry_name_level_exhaustion_measurement_repair",
+      "multiple_testing_risk_bucket": "minimal",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260623-002",
+        "exp-20260626-018",
+        "exp-20260627-019"
+      ],
+      "new_evidence_type": "shared_forward_entry_name_level_exhaustion_observation_field",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "ohlcv_momentum",
+          "field_tags": [
+            "20ma",
+            "252w",
+            "above",
+            "an",
+            "atr",
+            "because",
+            "blocked",
+            "carry",
+            "closed",
+            "cohort",
+            "compass",
+            "discriminator",
+            "do",
+            "entry",
+            "exhaustion",
+            "extension",
+            "failed",
+            "fields",
+            "followthrough",
+            "forward",
+            "from",
+            "high",
+            "is",
+            "level",
+            "low",
+            "mfe",
+            "name",
+            "not",
+            "of",
+            "on",
+            "only",
+            "oracle",
+            "out",
+            "pct",
+            "pit",
+            "read",
+            "regret",
+            "replacement",
+            "rows",
+            "sample",
+            "section",
+            "tag",
+            "tags",
+            "tape",
+            "validation",
+            "weak"
+          ],
+          "gate_shape": "other"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_momentum",
+            "family_key": "core_alpha_score_monotonicity_audit",
+            "reopen_condition": "Use component-level or vector-level attribution to find a more durable leadership/expectation/theme interaction; do not promote raw alpha_score without new forward rows or stronger monotonic evidence.",
+            "score": 0.4648,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_momentum",
+            "family_key": "event_short_term_extension_context",
+            "reopen_condition": null,
+            "score": 0.4645,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_momentum",
+            "family_key": "candidate_pool_extension_stack",
+            "reopen_condition": null,
+            "score": 0.4585,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.375,
+            "data_source": "ohlcv_momentum",
+            "family_key": "state_aware_candidate_pool_extension",
+            "reopen_condition": "Observe forward paper outcomes with the shared ret20_excess_spy gate before enabling any live trade adapter.",
+            "score": 0.4583,
+            "status": "has_accepted",
+            "trials": 8
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_momentum",
+            "family_key": "post_news_continuation_candidate_pool_extension",
+            "reopen_condition": null,
+            "score": 0.4582,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": null,
+        "override": false,
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "other",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "ohlcv_momentum",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "agent-oracle-followup",
+      "prediction": {
+        "success_probability": 0.8,
+        "expected_ev_delta": 0.0,
+        "expected_pnl_delta": 0.0,
+        "main_failure_modes": [
+          "warehouse_bars_missing_for_forward_ticker_at_entry",
+          "thin_history_under_21_bars_forms_no_extension",
+          "dirty_state_write_conflict",
+          "non_idempotent_rebuild"
+        ],
+        "confidence_reason": "The shared forward replacement enrichment path already owns the closed row surface and added entry-regime and entry-short-volume tags the same way. Extension is pure-OHLCV from the warehouse, which covers all forward-row tickers with deep history, so nearly every closed row should receive a real extension. The repair only adds read-only entry-date tags and tests idempotent rebuild; the main disconfirmer is a forward-row ticker missing from the warehouse.",
+        "recorded_at": "2026-06-27T00:00:00+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "decision": "accepted_measurement_repair_forward_replacement_entry_exhaustion_tag",
+        "artifact": "data/experiments/exp-20260627-022/exp_20260627_022_forward_replacement_entry_exhaustion_tag.json",
+        "log_file": "experiments/logs/exp-20260627-022.json",
+        "lean_quality_passed": true
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260627-022.json",
+      "single_causal_variable": "forward_replacement_rows_entry_exhaustion_tag_v1",
+      "status": "accepted",
+      "ticket_file": "experiments/tickets/exp-20260627-022.json",
+      "trial_family": "default_off_forward_entry_exhaustion_tagging",
+      "trial_variant_id": "forward_replacement_entry_exhaustion_tag_v1",
+      "artifact_file": "data/experiments/exp-20260627-022/exp_20260627_022_forward_replacement_entry_exhaustion_tag.json",
+      "log_file": "experiments/logs/exp-20260627-022.json",
+      "changed_files": [
+        "quant/forward_replacement_value.py",
+        "quant/test_forward_replacement_value.py",
+        "quant/experiments/exp_20260627_022_forward_replacement_entry_exhaustion_tag.py",
+        "data/experiments/exp-20260627-022/exp_20260627_022_forward_replacement_entry_exhaustion_tag.json",
+        "data/paper_sleeves/forward_replacement_value.jsonl",
+        "experiments/logs/exp-20260627-022.json",
+        "experiments/cards/exp-20260627-022.md",
+        "experiments/manifests/exp-20260627-022.json",
+        "experiments/tickets/exp-20260627-022.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "updated_at": "2026-06-27T18:19:40+00:00"
+    },
+    {
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260627_023_ortex_short_interest_sidecar_readiness.py",
+        "data/experiments/exp-20260627-023/exp_20260627_023_ortex_short_interest_sidecar_readiness.json",
+        "experiments/cards/exp-20260627-023.md",
+        "experiments/manifests/exp-20260627-023.json",
+        "experiments/tickets/exp-20260627-023.json",
+        "experiments/logs/exp-20260627-023.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260627-023.md",
+      "causal_components": [
+        "local ORTEX JSON payload audit",
+        "PIT publication/usable-trade-date coverage audit",
+        "borrow economics field coverage audit",
+        "baseline identity check",
+        "no strategy behavior change"
+      ],
+      "change_type": "identity_or_measurement_repair",
+      "changed_variable": "ortex_short_interest_sidecar_readiness_gate_v1",
+      "claimed_at": "2026-06-27T19:05:31+00:00",
+      "completed_at": "2026-06-27T19:09:30+00:00",
+      "created_at": "2026-06-27T19:05:20+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260627-023",
+      "experiment_uid": "expuid-ef5746b9dc7448ac",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260627-023",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-27T19:05:20+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "ortex_short_interest_sidecar_readiness"
+      },
+      "hypothesis": "Alpha blocker: true PIT borrow/short-crowding alpha needs an ORTEX short-interest sidecar with decision-time publication/usable_trade dates and borrow-economics fields; audit the current local ORTEX rows before any FINRA/options/short-flow retry.",
+      "lane": "measurement_repair",
+      "locked_variables": [
+        "ortex_short_interest_sidecar_readiness_gate_v1"
+      ],
+      "mechanism_family": "production_visible_ortex_short_interest_readiness",
+      "multiple_testing_risk_bucket": "low_new_source_but_thin_payload",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260625-003",
+        "exp-20260625-019",
+        "exp-20260625-024",
+        "exp-20260627-002"
+      ],
+      "new_evidence_type": "new_ortex_short_interest_source_readiness_audit",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "finra_short_interest",
+          "field_tags": [
+            "alpha",
+            "an",
+            "any",
+            "audit",
+            "before",
+            "blocker",
+            "borrow",
+            "crowding",
+            "current",
+            "dates",
+            "decision",
+            "economics",
+            "fields",
+            "finra",
+            "flow",
+            "gate",
+            "interest",
+            "local",
+            "needs",
+            "options",
+            "ortex",
+            "pit",
+            "publication",
+            "readiness",
+            "retry",
+            "rows",
+            "short",
+            "sidecar",
+            "time",
+            "trade",
+            "true",
+            "usable"
+          ],
+          "gate_shape": "other"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "finra_short_interest",
+            "family_key": "moomoo_borrow_availability_readiness_gate",
+            "reopen_condition": "A valid retry needs populated short_sell_rate_pct and/or short_available_volume rows over at least 20 forward dates, then closed forward replacement-value attribution versus cash, SPY, QQQ, and accepted comparators.",
+            "score": 0.5041,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "finra_short_interest",
+            "family_key": "short_interest_borrow_pressure_overlay",
+            "reopen_condition": null,
+            "score": 0.4853,
+            "status": "frozen_rejected",
+            "trials": 12
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "finra_short_interest",
+            "family_key": "finra_borrow_pressure_broad_universe",
+            "reopen_condition": "If positive, promote a shared-paper-first BROAD FINRA helper with historical replay + daily snapshot + parity test, and collect closed forward replacement-value rows. If negative, FINRA short interest is not standalone entry alpha even broadly; use it as crowding/risk context and require a materially different PIT borrow-cost / availability field before any retry. Do not threshold-sweep the frozen",
+            "score": 0.4843,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "finra_short_interest",
+            "family_key": "fiftytwo_week_high_finra_borrow_pressure_candidate_pool",
+            "reopen_condition": "A retry needs materially different PIT evidence separating durable and exhausted 52-week-high leaders, such as borrow-cost or availability history, institutional ownership changes, options-implied move/skew, or closed forward replacement-value rows. Pure FINRA or 52-week threshold retunes stay frozen.",
+            "score": 0.4824,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "finra_short_interest",
+            "family_key": "finra_borrow_pressure_candidate_pool",
+            "reopen_condition": "If accepted, build a shared default-off adapter plus parity tests. If rejected, move away from FINRA threshold/support variants unless new borrow-cost, loan-availability, or forward replacement evidence arrives.",
+            "score": 0.4808,
+            "status": "has_accepted",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": null,
+        "override": false,
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "other",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "finra_short_interest",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": {
+        "success_probability": 0.12,
+        "expected_ev_delta": 0.0,
+        "expected_pnl_delta": 0.0,
+        "main_failure_modes": [
+          "only_demo_tickers",
+          "publication_date_absent",
+          "usable_trade_date_absent",
+          "borrow_economics_absent",
+          "not_append_only_daily_ledger"
+        ],
+        "confidence_reason": "ORTEX is a genuinely new source for the named borrow/short-crowding axis, but current local files appear to be two sample short-interest payloads rather than an append-only PIT daily ledger with borrow fee, utilization, or loan availability.",
+        "recorded_at": "2026-06-27T19:05:20+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "accepted": false,
+        "accepted_alpha": false,
+        "accepted_measurement_repair": false,
+        "alpha_ready": false,
+        "observed_only_lead": false,
+        "decision": "blocked_ortex_short_interest_sidecar_not_alpha_ready",
+        "artifact": "data/experiments/exp-20260627-023/exp_20260627_023_ortex_short_interest_sidecar_readiness.json",
+        "log": "experiments/logs/exp-20260627-023.json",
+        "runner": "quant/experiments/exp_20260627_023_ortex_short_interest_sidecar_readiness.py",
+        "gate4": {
+          "passed": false,
+          "decision": "blocked_ortex_short_interest_sidecar_not_alpha_ready",
+          "accepted_alpha": false,
+          "alpha_ready": false,
+          "measurement_repair_only": true,
+          "strategy_rerun_required": false,
+          "before_after_strategy_delta": {
+            "expected_value_score_sum_delta": 0.0,
+            "total_pnl_delta": 0.0,
+            "trade_count_delta": 0,
+            "strategy_behavior_changed": false
+          },
+          "readiness_rule": {
+            "min_tickers": 20,
+            "min_data_dates": 20,
+            "requires_publication_or_usable_trade_date": true,
+            "requires_borrow_economics": true,
+            "requires_append_only_daily_ledger": true,
+            "requires_closed_forward_replacement_value_rows": true
+          },
+          "failed_reasons": [
+            "ticker_count_below_20",
+            "data_date_count_below_20",
+            "publication_or_usable_trade_date_absent",
+            "borrow_fee_utilization_loan_availability_absent",
+            "not_append_only_daily_snapshot_ledger",
+            "no_closed_forward_replacement_rows_joined"
+          ]
+        },
+        "summary": "The local ORTEX files are useful proof that the fetcher can produce short-interest payloads, but they only cover AAPL/MSFT over two dates and do not include publication/usable-trade dates or borrow fee, utilization, loan availability, shares available, or days-to-cover."
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260627-023.json",
+      "single_causal_variable": "ortex_short_interest_sidecar_readiness_gate_v1",
+      "status": "blocked",
+      "ticket_file": "experiments/tickets/exp-20260627-023.json",
+      "trial_family": "ortex_short_interest_sidecar_readiness_gate",
+      "trial_variant_id": "initial_local_ortex_payload_audit_v1",
+      "alpha_hypothesis": "If short-crowding is a real long-alpha context rather than a stale FINRA proxy, ORTEX short-interest plus borrow-cost/utilization/loan-availability fields should eventually separate durable squeeze candidates from crowded false positives when joined to accepted allocator or forward rows.",
+      "implementation_mode": "measurement_repair_readiness_audit",
+      "decision": "blocked_ortex_short_interest_sidecar_not_alpha_ready",
+      "artifact": "data/experiments/exp-20260627-023/exp_20260627_023_ortex_short_interest_sidecar_readiness.json",
+      "log": "experiments/logs/exp-20260627-023.json",
+      "gate1": {
+        "passed": true,
+        "baseline_metrics": {
+          "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+          "expected_value_score_sum": 7.8941,
+          "total_pnl": 234850.99,
+          "trade_count": 61,
+          "signals_generated": 164,
+          "signals_survived": 135,
+          "survival_rate": 0.823171,
+          "max_drawdown_pct_worst": 0.1119,
+          "window_count": 3,
+          "windows": [
+            {
+              "label": "late_strong",
+              "start": "2025-10-23",
+              "end": "2026-04-21",
+              "expected_value_score": 5.1628,
+              "total_pnl": 117072.92,
+              "trade_count": 18,
+              "survival_rate": 0.8039,
+              "max_drawdown_pct": 0.0665
+            },
+            {
+              "label": "mid_weak",
+              "start": "2025-04-23",
+              "end": "2025-10-22",
+              "expected_value_score": 2.1402,
+              "total_pnl": 78110.11,
+              "trade_count": 21,
+              "survival_rate": 0.7925,
+              "max_drawdown_pct": 0.1119
+            },
+            {
+              "label": "old_thin",
+              "start": "2024-10-02",
+              "end": "2025-04-22",
+              "expected_value_score": 0.5911,
+              "total_pnl": 39667.96,
+              "trade_count": 22,
+              "survival_rate": 0.8667,
+              "max_drawdown_pct": 0.1001
+            }
+          ]
+        }
+      },
+      "gate2": {
+        "passed": true,
+        "dependencies_validated": true,
+        "dependency_fields_checked": [
+          "ticker_from_filename",
+          "exchange_from_filename",
+          "date",
+          "shortInterestShares",
+          "shortInterestPcFreeFloat",
+          "shortInterestUsd",
+          "publication_date",
+          "publicationDate",
+          "published_at",
+          "publishedAt",
+          "usable_trade_date",
+          "usableTradeDate",
+          "as_of_date",
+          "asOfDate",
+          "borrowFee",
+          "borrow_fee",
+          "costToBorrow",
+          "ctb",
+          "utilization",
+          "loanAvailability",
+          "loan_availability",
+          "sharesAvailable",
+          "shares_available",
+          "daysToCover",
+          "days_to_cover",
+          "entry_date",
+          "target_price"
+        ],
+        "blocking_reason": "Source rows load and short-interest fields are present, but publication/usable_trade_date and borrow-economics fields are absent.",
+        "entry_date_present": false,
+        "target_price_present": false,
+        "entry_date_target_price_note": "ORTEX sidecar rows are source observations, not trade rows; any future alpha must join them to candidate/forward rows with explicit entry_date and target_price elsewhere."
+      },
+      "gate3": {
+        "passed": true,
+        "filter_added": false,
+        "signals_generated": 164,
+        "signals_survived": 135,
+        "survival_rate": 0.823171,
+        "note": "No executable filter, source allocator, ranking, sizing, or order rule was added."
+      },
+      "gate4": {
+        "passed": false,
+        "decision": "blocked_ortex_short_interest_sidecar_not_alpha_ready",
+        "accepted_alpha": false,
+        "alpha_ready": false,
+        "measurement_repair_only": true,
+        "strategy_rerun_required": false,
+        "before_after_strategy_delta": {
+          "expected_value_score_sum_delta": 0.0,
+          "total_pnl_delta": 0.0,
+          "trade_count_delta": 0,
+          "strategy_behavior_changed": false
+        },
+        "readiness_rule": {
+          "min_tickers": 20,
+          "min_data_dates": 20,
+          "requires_publication_or_usable_trade_date": true,
+          "requires_borrow_economics": true,
+          "requires_append_only_daily_ledger": true,
+          "requires_closed_forward_replacement_value_rows": true
+        },
+        "failed_reasons": [
+          "ticker_count_below_20",
+          "data_date_count_below_20",
+          "publication_or_usable_trade_date_absent",
+          "borrow_fee_utilization_loan_availability_absent",
+          "not_append_only_daily_snapshot_ledger",
+          "no_closed_forward_replacement_rows_joined"
+        ]
+      },
+      "ortex_surface": {
+        "source_dir": "data/non_ohlcv/ortex",
+        "source_dir_exists": true,
+        "file_count": 2,
+        "row_count": 4,
+        "unique_tickers": 2,
+        "tickers": [
+          "AAPL",
+          "MSFT"
+        ],
+        "row_count_by_ticker": {
+          "AAPL": 2,
+          "MSFT": 2
+        },
+        "data_date_count": 2,
+        "data_date_min": "2026-06-04",
+        "data_date_max": "2026-06-05",
+        "row_count_by_data_date": {
+          "2026-06-04": 2,
+          "2026-06-05": 2
+        },
+        "short_interest_complete_rows": 4,
+        "pit_publication_or_usable_date_rows": 0,
+        "borrow_economics_populated_rows": 0,
+        "field_coverage": {
+          "short_interest": {
+            "shortInterestShares": {
+              "present_rows": 4,
+              "scanned_rows": 4,
+              "present_rate": 1.0
+            },
+            "shortInterestPcFreeFloat": {
+              "present_rows": 4,
+              "scanned_rows": 4,
+              "present_rate": 1.0
+            },
+            "shortInterestUsd": {
+              "present_rows": 4,
+              "scanned_rows": 4,
+              "present_rate": 1.0
+            }
+          },
+          "pit_dates": {
+            "publication_date": {
+              "present_rows": 0,
+              "scanned_rows": 4,
+              "present_rate": 0.0
+            },
+            "publicationDate": {
+              "present_rows": 0,
+              "scanned_rows": 4,
+              "present_rate": 0.0
+            },
+            "published_at": {
+              "present_rows": 0,
+              "scanned_rows": 4,
+              "present_rate": 0.0
+            },
+            "publishedAt": {
+              "present_rows": 0,
+              "scanned_rows": 4,
+              "present_rate": 0.0
+            },
+            "usable_trade_date": {
+              "present_rows": 0,
+              "scanned_rows": 4,
+              "present_rate": 0.0
+            },
+            "usableTradeDate": {
+              "present_rows": 0,
+              "scanned_rows": 4,
+              "present_rate": 0.0
+            },
+            "as_of_date": {
+              "present_rows": 0,
+              "scanned_rows": 4,
+              "present_rate": 0.0
+            },
+            "asOfDate": {
+              "present_rows": 0,
+              "scanned_rows": 4,
+              "present_rate": 0.0
+            }
+          },
+          "borrow_economics": {
+            "borrowFee": {
+              "present_rows": 0,
+              "scanned_rows": 4,
+              "present_rate": 0.0
+            },
+            "borrow_fee": {
+              "present_rows": 0,
+              "scanned_rows": 4,
+              "present_rate": 0.0
+            },
+            "costToBorrow": {
+              "present_rows": 0,
+              "scanned_rows": 4,
+              "present_rate": 0.0
+            },
+            "ctb": {
+              "present_rows": 0,
+              "scanned_rows": 4,
+              "present_rate": 0.0
+            },
+            "utilization": {
+              "present_rows": 0,
+              "scanned_rows": 4,
+              "present_rate": 0.0
+            },
+            "loanAvailability": {
+              "present_rows": 0,
+              "scanned_rows": 4,
+              "present_rate": 0.0
+            },
+            "loan_availability": {
+              "present_rows": 0,
+              "scanned_rows": 4,
+              "present_rate": 0.0
+            },
+            "sharesAvailable": {
+              "present_rows": 0,
+              "scanned_rows": 4,
+              "present_rate": 0.0
+            },
+            "shares_available": {
+              "present_rows": 0,
+              "scanned_rows": 4,
+              "present_rate": 0.0
+            },
+            "daysToCover": {
+              "present_rows": 0,
+              "scanned_rows": 4,
+              "present_rate": 0.0
+            },
+            "days_to_cover": {
+              "present_rows": 0,
+              "scanned_rows": 4,
+              "present_rate": 0.0
+            }
+          }
+        },
+        "short_interest_pct_free_float": {
+          "n": 4,
+          "min": 1.059187,
+          "median": 1.06031,
+          "mean": 1.064128,
+          "max": 1.076703
+        },
+        "short_interest_shares": {
+          "n": 4,
+          "min": 78565037.0,
+          "median": 117085799.5,
+          "mean": 117652146.5,
+          "max": 157871950.0
+        },
+        "short_interest_usd": {
+          "n": 4,
+          "min": 32735693970.0,
+          "median": 40728572961.0,
+          "mean": 40831831701.75,
+          "max": 49134486915.0
+        },
+        "pit_boundary": "Rows have provider data dates and local file mtimes, but no provider publication_date or usable_trade_date. Treat as fetched sample payloads, not append-only PIT decision rows."
+      },
+      "production_impact": {
+        "shared_policy_changed": false,
+        "backtester_adapter_changed": false,
+        "run_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "ranking_changed": false,
+        "sizing_changed": false,
+        "risk_budget_changed": false,
+        "live_orders_changed": false,
+        "paper_orders_changed": false,
+        "watchlist_changed": false,
+        "llm_decision_boundary_changed": false,
+        "trade_enabled": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "parity_note": "Experiment-owned readiness artifact only. It reads local ORTEX files and writes no shared helper, daily adapter, order, rank, size, exit, watchlist, or LLM changes."
+      },
+      "post_run_reflection": {
+        "why_result_happened": "The local ORTEX files are useful proof that the fetcher can produce short-interest payloads, but they only cover AAPL/MSFT over two dates and do not include publication/usable-trade dates or borrow fee, utilization, loan availability, shares available, or days-to-cover.",
+        "forbidden_near_neighbor_retry": "Do not run ORTEX/FINRA/options/short-flow alpha gates, notional haircuts, or threshold scans from these two sample ORTEX files. Do not treat local file mtime as publication-date PIT evidence.",
+        "new_evidence_required": "A valid retry needs an append-only ORTEX daily sidecar with provider publication_date or usable_trade_date, at least 20 tickers over 20 decision dates, populated borrow fee/utilization/loan availability or days-to-cover fields, then closed forward replacement-value rows."
+      },
+      "related_files": [
+        "quant/experiments/exp_20260627_023_ortex_short_interest_sidecar_readiness.py",
+        "quant/ortex_data_sidecar.py",
+        "data/non_ohlcv/ortex",
+        "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "experiments/logs/exp-20260625-003.json",
+        "experiments/logs/exp-20260625-019.json",
+        "experiments/logs/exp-20260625-024.json",
+        "experiments/logs/exp-20260627-002.json"
+      ],
+      "changed_files": [
+        "quant/experiments/exp_20260627_023_ortex_short_interest_sidecar_readiness.py",
+        "data/experiments/exp-20260627-023/exp_20260627_023_ortex_short_interest_sidecar_readiness.json",
+        "experiments/logs/exp-20260627-023.json",
+        "experiments/cards/exp-20260627-023.md",
+        "experiments/manifests/exp-20260627-023.json",
+        "experiments/tickets/exp-20260627-023.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "lean_quality_passed": true,
+      "updated_at": "2026-06-27T19:09:31+00:00"
+    },
+    {
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "quant/sleeve_standard_layout.py",
+        "quant/space_catalyst_sleeve.py",
+        "quant/test_sleeve_standard_layout.py",
+        "quant/test_space_catalyst_sleeve.py",
+        "quant/experiments/exp_20260627_024_space_catalyst_standard_surface_pending_repair.py",
+        "data/experiments/exp-20260627-024/exp_20260627_024_space_catalyst_standard_surface_pending_repair.json",
+        "data/paper_sleeves/space_catalyst/state.json",
+        "data/paper_sleeves/space_catalyst/snapshots.jsonl",
+        "experiments/cards/exp-20260627-024.md",
+        "experiments/manifests/exp-20260627-024.json",
+        "experiments/tickets/exp-20260627-024.json",
+        "experiments/logs/exp-20260627-024.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260627-024.md",
+      "causal_components": [
+        "closed_decision_filter",
+        "standard_surface_snapshot_counts",
+        "tests",
+        "no_trading_change"
+      ],
+      "change_type": "observe_only_state_contract_repair",
+      "changed_variable": "space_catalyst_standard_surface_pending_closed_decision_filter_v1",
+      "claimed_at": "2026-06-27T20:10:56+00:00",
+      "completed_at": "2026-06-27T20:24:23+00:00",
+      "created_at": "2026-06-27T20:10:43+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260627-024",
+      "experiment_uid": "expuid-42cfe1b3d0b444fc",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260627-024",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-27T20:10:43+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "space_catalyst_standard_surface_pending_repair"
+      },
+      "hypothesis": "alpha_blocker/measurement_repair: space catalyst event evidence may be useful only if forward candidate matching can distinguish current pending event rows from already-closed observe-only decisions; the standard state currently maps closed_decision=True rows into pending_entries when status is null, polluting current candidate surfaces.",
+      "lane": "measurement_repair",
+      "locked_variables": [
+        "space_catalyst_standard_surface_pending_closed_decision_filter_v1"
+      ],
+      "mechanism_family": "production_visible_space_catalyst_measurement_repair",
+      "multiple_testing_risk_bucket": "minimal",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260612-017",
+        "exp-20260624-012"
+      ],
+      "new_evidence_type": "measurement_contract_bug_closed_decision_rows_mislabeled_pending",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "other",
+          "field_tags": [
+            "alpha",
+            "already",
+            "be",
+            "blocker",
+            "can",
+            "catalyst",
+            "closed",
+            "contract",
+            "current",
+            "currently",
+            "decision",
+            "decisions",
+            "distinguish",
+            "entries",
+            "event",
+            "evidence",
+            "filter",
+            "forward",
+            "from",
+            "if",
+            "into",
+            "is",
+            "maps",
+            "matching",
+            "may",
+            "measurement",
+            "null",
+            "observe",
+            "only",
+            "pending",
+            "polluting",
+            "repair",
+            "rows",
+            "space",
+            "standard",
+            "state",
+            "status",
+            "surface",
+            "surfaces",
+            "true",
+            "useful",
+            "when"
+          ],
+          "gate_shape": "candidate_pool_top1_10d"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "regime_state",
+            "family_key": "event_rotation_plus_state_surface_candidate_pool_allocation",
+            "reopen_condition": null,
+            "score": 0.1767,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "nonrepeat_alpha_candidate_readiness",
+            "reopen_condition": "A valid alpha retry needs a daily and historical structured-event helper that writes actor/object/relation/magnitude/provenance rows before decision time, covers all three canonical windows, and can be called by both backtest and production default-off snapshots.",
+            "score": 0.1761,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "full_quant_signals_entry_candidate_forward_readiness",
+            "reopen_condition": "At least 20 valid-session production entry_candidate_review rows with PIT next-open and forward-close settlement, or a genuinely new production-visible candidate source with replayable coverage.",
+            "score": 0.175,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.5,
+            "data_source": "other",
+            "family_key": "sec_6k_foreign_issuer_event_candidate_pool",
+            "reopen_condition": null,
+            "score": 0.1745,
+            "status": "has_accepted",
+            "trials": 2
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "alpha_direction_triage",
+            "reopen_condition": "Build a new free PIT data edge first: analyst-count/revenue/dispersion/provenance rows matched to historical candidates, structured customer/supplier contract economics, usable 13F holdings, closed options outcomes, or enough true-trigger forward replacement rows.",
+            "score": 0.1726,
+            "status": "frozen_rejected",
+            "trials": 3
+          }
+        ],
+        "new_evidence_axis": null,
+        "override": false,
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "candidate_pool_top1_10d",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "other",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": {
+        "success_probability": 0.85,
+        "expected_ev_delta": 0.0,
+        "expected_pnl_delta": 0.0,
+        "main_failure_modes": [
+          "helper_intentionally_uses_pending_entries_for_all_candidates",
+          "test_contract_requires_old_behavior",
+          "downstream_candidate_surface_depends_on_stale_space_rows"
+        ],
+        "confidence_reason": "The event ledger already records closed_decision_count=18 and pending_decision_count=0 while state.json exposes 18 pending_entries; the fix is a narrow contract repair and should not touch orders, rankings, sizing, or exits.",
+        "recorded_at": "2026-06-27T20:10:19+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "accepted": true,
+        "accepted_alpha": false,
+        "accepted_measurement_repair": true,
+        "alpha_ready": false,
+        "decision": "accepted_measurement_repair_space_catalyst_standard_surface_pending_filter",
+        "artifact": "data/experiments/exp-20260627-024/exp_20260627_024_space_catalyst_standard_surface_pending_repair.json",
+        "log": "experiments/logs/exp-20260627-024.json",
+        "runner": "quant/experiments/exp_20260627_024_space_catalyst_standard_surface_pending_repair.py",
+        "gate4": {
+          "passed": true,
+          "observed_only": false,
+          "measurement_repair": true,
+          "decision": "accepted_measurement_repair_space_catalyst_standard_surface_pending_filter",
+          "failed_reasons": [],
+          "before_after_strategy_delta": {
+            "strategy_behavior_changed": false,
+            "expected_value_score_sum_delta": 0.0,
+            "total_pnl_delta": 0.0,
+            "trade_count_delta": 0
+          },
+          "before_pending_entries": 18,
+          "after_pending_entries": 0,
+          "before_stale_closed_pending_rows": 18,
+          "after_stale_closed_pending_rows": 0,
+          "snapshot_updated": true
+        },
+        "summary": "The Space event ledger used closed_decision=True to mark mature event outcomes, but the standard-surface adapter filtered pending rows by a mostly-null status field. Regenerating the current surface removed stale closed event decisions from pending_entries and refreshed the same-date snapshot counts."
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260627-024.json",
+      "single_causal_variable": "space_catalyst_standard_surface_pending_closed_decision_filter_v1",
+      "status": "accepted_measurement_repair",
+      "ticket_file": "experiments/tickets/exp-20260627-024.json",
+      "trial_family": "space_catalyst_standard_surface_contract",
+      "trial_variant_id": "closed_decision_not_pending_entries_v1",
+      "decision": "accepted_measurement_repair_space_catalyst_standard_surface_pending_filter",
+      "artifact": "data/experiments/exp-20260627-024/exp_20260627_024_space_catalyst_standard_surface_pending_repair.json",
+      "log": "experiments/logs/exp-20260627-024.json",
+      "gate1": {
+        "passed": true,
+        "baseline_metrics": {
+          "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+          "expected_value_score_sum": 7.8941,
+          "total_pnl": 234850.99,
+          "trade_count": 61,
+          "signals_generated": 164,
+          "signals_survived": 135,
+          "survival_rate": 0.7925,
+          "max_drawdown_pct_worst": 0.1119,
+          "window_count": 3
+        },
+        "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+      },
+      "gate2": {
+        "passed": true,
+        "required_fields_checked": [
+          "space_event_row.closed_decision",
+          "space_event_row.outcome_status",
+          "standard_state.pending_entries",
+          "standard_snapshot.pending_count",
+          "standard_snapshot.closed_decision_count"
+        ],
+        "event_rows": 18,
+        "closed_decision_count": 18,
+        "pending_decision_count": 0
+      },
+      "gate3": {
+        "passed": true,
+        "filter_added": false,
+        "note": "No executable filter was added; stale observe-only closed decisions were removed from standard pending_entries.",
+        "signals_generated": 164,
+        "signals_survived": 135,
+        "survival_rate": 0.7925
+      },
+      "gate4": {
+        "passed": true,
+        "observed_only": false,
+        "measurement_repair": true,
+        "decision": "accepted_measurement_repair_space_catalyst_standard_surface_pending_filter",
+        "failed_reasons": [],
+        "before_after_strategy_delta": {
+          "strategy_behavior_changed": false,
+          "expected_value_score_sum_delta": 0.0,
+          "total_pnl_delta": 0.0,
+          "trade_count_delta": 0
+        },
+        "before_pending_entries": 18,
+        "after_pending_entries": 0,
+        "before_stale_closed_pending_rows": 18,
+        "after_stale_closed_pending_rows": 0,
+        "snapshot_updated": true
+      },
+      "production_impact": {
+        "trade_enabled": false,
+        "live_orders_changed": false,
+        "paper_orders_changed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "ranking_changed": false,
+        "sizing_changed": false,
+        "shared_policy_changed": false,
+        "daily_snapshot_exposed": true,
+        "parity_note": "Repair only changes observe-only standard surface classification for closed Space event decisions.",
+        "live_ready": false
+      },
+      "post_run_reflection": {
+        "why_result_happened": "The Space event ledger used closed_decision=True to mark mature event outcomes, but the standard-surface adapter filtered pending rows by a mostly-null status field. Regenerating the current surface removed stale closed event decisions from pending_entries and refreshed the same-date snapshot counts.",
+        "forbidden_near_neighbor_retry": "Do not turn this into a Space catalyst alpha retune or threshold scan. The repair only prevents closed observe-only events from polluting current candidate matching.",
+        "new_evidence_required": "A future Space alpha attempt still needs materially new closed forward replacement-value rows, richer event provenance, or a shared default-off helper that beats accepted comparators."
+      },
+      "changed_files": [
+        "quant/space_catalyst_sleeve.py",
+        "quant/sleeve_standard_layout.py",
+        "quant/test_space_catalyst_sleeve.py",
+        "quant/test_sleeve_standard_layout.py",
+        "quant/experiments/exp_20260627_024_space_catalyst_standard_surface_pending_repair.py",
+        "data/experiments/exp-20260627-024/exp_20260627_024_space_catalyst_standard_surface_pending_repair.json",
+        "data/paper_sleeves/space_catalyst/state.json",
+        "data/paper_sleeves/space_catalyst/snapshots.jsonl",
+        "experiments/logs/exp-20260627-024.json",
+        "experiments/cards/exp-20260627-024.md",
+        "experiments/manifests/exp-20260627-024.json",
+        "experiments/tickets/exp-20260627-024.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "related_files": [
+        "quant/experiments/exp_20260627_024_space_catalyst_standard_surface_pending_repair.py",
+        "quant/space_catalyst_sleeve.py",
+        "quant/sleeve_standard_layout.py",
+        "quant/test_space_catalyst_sleeve.py",
+        "quant/test_sleeve_standard_layout.py",
+        "data/paper_sleeves/space_catalyst/state.json",
+        "data/paper_sleeves/space_catalyst/snapshots.jsonl",
+        "data/paper_sleeves/space_catalyst/event_state_shadow_summary.json",
+        "data/paper_sleeves/space_catalyst/event_state_shadow_ledger.jsonl"
+      ],
+      "lean_quality_passed": true,
+      "updated_at": "2026-06-27T20:24:23+00:00"
+    },
+    {
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260627_025_intraday_advisory_shadow_forward_outcome.py",
+        "data/experiments/exp-20260627-025/exp_20260627_025_intraday_advisory_shadow_forward_outcome.json",
+        "experiments/cards/exp-20260627-025.md",
+        "experiments/manifests/exp-20260627-025.json",
+        "experiments/tickets/exp-20260627-025.json",
+        "experiments/logs/exp-20260627-025.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260627-025.md",
+      "causal_components": [
+        "intraday_review snapshots",
+        "primary advisory shadow action extraction",
+        "next-1d and next-3d OHLCV settlement",
+        "no strategy behavior change"
+      ],
+      "change_type": "observed_only_forward_attribution",
+      "changed_variable": "intraday_advisory_shadow_action_forward_outcome_v1",
+      "claimed_at": "2026-06-27T21:05:41+00:00",
+      "completed_at": "2026-06-27T21:12:57+00:00",
+      "created_at": "2026-06-27T21:05:18+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260627-025",
+      "experiment_uid": "expuid-a9f76e70ad804de9",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260627-025",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-27T21:05:18+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "intraday_advisory_shadow_forward_outcome"
+      },
+      "hypothesis": "Observed-only attribution: production-visible intraday advisory shadow actions on existing positions should identify held names with worse next-1d/3d forward close returns than OK positions, creating a future shared exit-lifecycle evidence lead without changing strategy behavior.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "intraday_advisory_shadow_action_forward_outcome_v1"
+      ],
+      "mechanism_family": "intraday_exit_advisory_forward_attribution",
+      "multiple_testing_risk_bucket": "moderate",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260627-013",
+        "exp-20260627-024",
+        "exp-20260429-032",
+        "exp-20260623-003"
+      ],
+      "new_evidence_type": "post_exp024_intraday_primary_action_closed_forward_rows",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "other",
+          "field_tags": [
+            "1d",
+            "3d",
+            "a",
+            "action",
+            "actions",
+            "advisory",
+            "attribution",
+            "behavior",
+            "changing",
+            "close",
+            "creating",
+            "evidence",
+            "existing",
+            "exit",
+            "forward",
+            "future",
+            "held",
+            "identify",
+            "intraday",
+            "lead",
+            "lifecycle",
+            "names",
+            "observed",
+            "ok",
+            "on",
+            "only",
+            "outcome",
+            "positions",
+            "returns",
+            "shadow",
+            "should",
+            "strategy",
+            "than",
+            "without",
+            "worse"
+          ],
+          "gate_shape": "other"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "exit_lifecycle_forward_advisory_outcome_attribution",
+            "reopen_condition": "More closed production exit-lifecycle rows with next-open settlement, slot-reuse/winner-collateral accounting, and a shared default-off advisory lifecycle helper before any Gate 1-4 exit-policy promotion.",
+            "score": 0.06,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "other",
+            "family_key": "intraday_advisory_shadow_action_contract",
+            "reopen_condition": "New snapshots generated with advisory_shadow_actions and later closed forward outcomes/replacement value; quote_time_et or broker bar IDs remain useful before any executable action contract.",
+            "score": 0.0556,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "exit_lifecycle_above_cost_forward_loss_attribution",
+            "reopen_condition": "More closed production exit-lifecycle rows with next-open settlement, explicit slot-reuse/winner-collateral accounting, and a shared default-off advisory lifecycle helper before any Gate 1-4 exit-policy promotion.",
+            "score": 0.0513,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.5,
+            "data_source": "other",
+            "family_key": "intraday_shadow_action_forward_outcome",
+            "reopen_condition": "More snapshots generated after this contract, with h1/h3/h5/h10 settled outcomes and replacement-value accounting. Broker bar IDs or true quote_time_et would further strengthen causality.",
+            "score": 0.0513,
+            "status": "has_accepted",
+            "trials": 2
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "intraday_advisory_state_forward_outcome_settlement",
+            "reopen_condition": "Future promotion needs more closed forward rows, real quote timestamps or broker bar IDs, explicit pending action/order semantics, and a shared default-off helper with daily parity.",
+            "score": 0.04,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": "New forward rows from production-visible intraday_review snapshots carrying primary_advisory_shadow_action after the 2026-06-27 intraday shadow-action surface appeared; this is not a target-trim replay, threshold sweep, or frozen candidate-pool retune.",
+        "override": false,
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "other",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "other",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": {
+        "success_probability": 0.22,
+        "expected_ev_delta": 0.0,
+        "expected_pnl_delta": 0.0,
+        "main_failure_modes": [
+          "mature_forward_rows_too_thin",
+          "weekend_or_unsettled_rows_filtered",
+          "review_actions_legacy_target_noise",
+          "no_directional_separation"
+        ],
+        "confidence_reason": "The intraday review surface now emits primary advisory shadow actions and exp-20260627-013 explicitly named post-exp024 intraday closed rows with primary actions as a legal new evidence axis. The evidence is early and likely thin, but it is production-visible and tests exit-lifecycle attribution without touching orders.",
+        "recorded_at": "2026-06-27T21:04:59+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "accepted": false,
+        "accepted_alpha": false,
+        "observed_only_lead": false,
+        "decision": "observed_only_rejected_no_stable_intraday_shadow_action_edge",
+        "artifact": "data/experiments/exp-20260627-025/exp_20260627_025_intraday_advisory_shadow_forward_outcome.json",
+        "log": "experiments/logs/exp-20260627-025.json",
+        "runner": "quant/experiments/exp_20260627_025_intraday_advisory_shadow_forward_outcome.py",
+        "gate4": {
+          "observed_only": true,
+          "passed": false,
+          "decision": "observed_only_rejected_no_stable_intraday_shadow_action_edge",
+          "failed_reasons": [
+            "h3_action_underperformance_not_met"
+          ],
+          "comparisons": {
+            "h1": {
+              "horizon": 1,
+              "settled_rows": 46,
+              "action_rows": 21,
+              "ok_no_action_rows": 20,
+              "action_return_pct": {
+                "n": 21,
+                "mean": -1.857688,
+                "median": -0.441094,
+                "positive_rate": 0.238095,
+                "min": -26.284256,
+                "max": 4.761898
+              },
+              "ok_no_action_return_pct": {
+                "n": 20,
+                "mean": 0.952635,
+                "median": -0.806359,
+                "positive_rate": 0.3,
+                "min": -10.402371,
+                "max": 31.071949
+              },
+              "action_spy_excess_pct": {
+                "n": 21,
+                "mean": -1.464214,
+                "median": -0.394742,
+                "positive_rate": 0.380952,
+                "min": -24.83206,
+                "max": 4.80825
+              },
+              "ok_no_action_spy_excess_pct": {
+                "n": 20,
+                "mean": 1.424211,
+                "median": -0.646844,
+                "positive_rate": 0.4,
+                "min": -8.950176,
+                "max": 30.927386
+              },
+              "action_minus_ok_return_mean_pp": -2.810323,
+              "action_minus_ok_spy_excess_mean_pp": -2.888425
+            },
+            "h3": {
+              "horizon": 3,
+              "settled_rows": 15,
+              "action_rows": 6,
+              "ok_no_action_rows": 7,
+              "action_return_pct": {
+                "n": 6,
+                "mean": -2.135766,
+                "median": -3.086002,
+                "positive_rate": 0.166667,
+                "min": -3.998701,
+                "max": 3.559875
+              },
+              "ok_no_action_return_pct": {
+                "n": 7,
+                "mean": -5.312061,
+                "median": -4.997981,
+                "positive_rate": 0.0,
+                "min": -11.400896,
+                "max": -1.034933
+              },
+              "action_spy_excess_pct": {
+                "n": 6,
+                "mean": -0.78029,
+                "median": -1.730525,
+                "positive_rate": 0.166667,
+                "min": -2.643225,
+                "max": 4.915351
+              },
+              "ok_no_action_spy_excess_pct": {
+                "n": 7,
+                "mean": -3.956585,
+                "median": -3.642505,
+                "positive_rate": 0.142857,
+                "min": -10.04542,
+                "max": 0.320543
+              },
+              "action_minus_ok_return_mean_pp": 3.176295,
+              "action_minus_ok_spy_excess_mean_pp": 3.176295
+            }
+          },
+          "bucket_summary": {
+            "h1": {
+              "by_shadow_action": {
+                "EXIT": {
+                  "row_count": 12,
+                  "return_pct": {
+                    "n": 12,
+                    "mean": -2.736378,
+                    "median": -0.470764,
+                    "positive_rate": 0.25,
+                    "min": -26.284256,
+                    "max": 0.567038
+                  },
+                  "spy_excess_pct": {
+                    "n": 12,
+                    "mean": -2.136077,
+                    "median": -0.424413,
+                    "positive_rate": 0.416667,
+                    "min": -24.83206,
+                    "max": 2.019233
+                  },
+                  "qqq_excess_pct": {
+                    "n": 12,
+                    "mean": -1.322519,
+                    "median": -0.046182,
+                    "positive_rate": 0.5,
+                    "min": -22.991351,
+                    "max": 3.859942
+                  },
+                  "ticker_counts": {
+                    "META": 3,
+                    "NFLX": 3,
+                    "AMZN": 2,
+                    "MUU": 2,
+                    "TRIP": 1,
+                    "GOOG": 1
+                  }
+                },
+                "NONE": {
+                  "row_count": 25,
+                  "return_pct": {
+                    "n": 25,
+                    "mean": -0.231444,
+                    "median": -1.005706,
+                    "positive_rate": 0.24,
+                    "min": -10.402371,
+                    "max": 31.071949
+                  },
+                  "spy_excess_pct": {
+                    "n": 25,
+                    "mean": 0.259919,
+                    "median": -1.062089,
+                    "positive_rate": 0.32,
+                    "min": -8.950176,
+                    "max": 30.927386
+                  },
+                  "qqq_excess_pct": {
+                    "n": 25,
+                    "mean": 0.830488,
+                    "median": -0.683859,
+                    "positive_rate": 0.36,
+                    "min": -7.109467,
+                    "max": 30.261388
+                  },
+                  "ticker_counts": {
+                    "COHR": 3,
+                    "CRDO": 3,
+                    "MRVL": 3,
+                    "NBIS": 3,
+                    "NVDA": 3,
+                    "SPCX": 3,
+                    "HOOD": 2,
+                    "APP": 1,
+                    "GOOG": 1,
+                    "TSLA": 1
+                  }
+                },
+                "REVIEW": {
+                  "row_count": 9,
+                  "return_pct": {
+                    "n": 9,
+                    "mean": -0.686102,
+                    "median": -0.441094,
+                    "positive_rate": 0.222222,
+                    "min": -5.761113,
+                    "max": 4.761898
+                  },
+                  "spy_excess_pct": {
+                    "n": 9,
+                    "mean": -0.568396,
+                    "median": -0.394742,
+                    "positive_rate": 0.333333,
+                    "min": -4.308918,
+                    "max": 4.80825
+                  },
+                  "qqq_excess_pct": {
+                    "n": 9,
+                    "mean": -0.49177,
+                    "median": -0.919741,
+                    "positive_rate": 0.333333,
+                    "min": -4.903386,
+                    "max": 5.18648
+                  },
+                  "ticker_counts": {
+                    "AMD": 3,
+                    "APP": 2,
+                    "TRIP": 2,
+                    "TSLA": 2
+                  }
+                }
+              },
+              "by_status_bucket": {
+                "APPROACHING": {
+                  "row_count": 5,
+                  "return_pct": {
+                    "n": 5,
+                    "mean": -4.967757,
+                    "median": -5.663941,
+                    "positive_rate": 0.0,
+                    "min": -9.361391,
+                    "max": -0.996501
+                  },
+                  "spy_excess_pct": {
+                    "n": 5,
+                    "mean": -4.397251,
+                    "median": -5.617589,
+                    "positive_rate": 0.0,
+                    "min": -7.909196,
+                    "max": -1.141065
+                  },
+                  "qqq_excess_pct": {
+                    "n": 5,
+                    "mean": -3.642875,
+                    "median": -5.239359,
+                    "positive_rate": 0.2,
+                    "min": -6.068487,
+                    "max": 0.345199
+                  },
+                  "ticker_counts": {
+                    "NBIS": 2,
+                    "MRVL": 1,
+                    "HOOD": 1,
+                    "SPCX": 1
+                  }
+                },
+                "BREACHED": {
+                  "row_count": 21,
+                  "return_pct": {
+                    "n": 21,
+                    "mean": -1.857688,
+                    "median": -0.441094,
+                    "positive_rate": 0.238095,
+                    "min": -26.284256,
+                    "max": 4.761898
+                  },
+                  "spy_excess_pct": {
+                    "n": 21,
+                    "mean": -1.464214,
+                    "median": -0.394742,
+                    "positive_rate": 0.380952,
+                    "min": -24.83206,
+                    "max": 4.80825
+                  },
+                  "qqq_excess_pct": {
+                    "n": 21,
+                    "mean": -0.966483,
+                    "median": -0.216444,
+                    "positive_rate": 0.428571,
+                    "min": -22.991351,
+                    "max": 5.18648
+                  },
+                  "ticker_counts": {
+                    "AMD": 3,
+                    "META": 3,
+                    "NFLX": 3,
+                    "TRIP": 3,
+                    "AMZN": 2,
+                    "MUU": 2,
+                    "APP": 2,
+                    "TSLA": 2,
+                    "GOOG": 1
+                  }
+                },
+                "OK": {
+                  "row_count": 20,
+                  "return_pct": {
+                    "n": 20,
+                    "mean": 0.952635,
+                    "median": -0.806359,
+                    "positive_rate": 0.3,
+                    "min": -10.402371,
+                    "max": 31.071949
+                  },
+                  "spy_excess_pct": {
+                    "n": 20,
+                    "mean": 1.424211,
+                    "median": -0.646844,
+                    "positive_rate": 0.4,
+                    "min": -8.950176,
+                    "max": 30.927386
+                  },
+                  "qqq_excess_pct": {
+                    "n": 20,
+                    "mean": 1.948829,
+                    "median": -0.497565,
+                    "positive_rate": 0.4,
+                    "min": -7.109467,
+                    "max": 30.261388
+                  },
+                  "ticker_counts": {
+                    "COHR": 3,
+                    "CRDO": 3,
+                    "NVDA": 3,
+                    "SPCX": 2,
+                    "MRVL": 2,
+                    "APP": 1,
+                    "GOOG": 1,
+                    "TSLA": 1,
+                    "RKLZ": 1,
+                    "HOOD": 1
+                  }
+                }
+              },
+              "by_shadow_rule": {
+                "ATR_STOP": {
+                  "row_count": 2,
+                  "return_pct": {
+                    "n": 2,
+                    "mean": 0.317692,
+                    "median": 0.317692,
+                    "positive_rate": 1.0,
+                    "min": 0.068346,
+                    "max": 0.567038
+                  },
+                  "spy_excess_pct": {
+                    "n": 2,
+                    "mean": 1.066965,
+                    "median": 1.066965,
+                    "positive_rate": 1.0,
+                    "min": 0.114697,
+                    "max": 2.019233
+                  },
+                  "qqq_excess_pct": {
+                    "n": 2,
+                    "mean": 2.176435,
+                    "median": 2.176435,
+                    "positive_rate": 1.0,
+                    "min": 0.492927,
+                    "max": 3.859942
+                  },
+                  "ticker_counts": {
+                    "AMZN": 2
+                  }
+                },
+                "HARD_STOP": {
+                  "row_count": 6,
+                  "return_pct": {
+                    "n": 6,
+                    "mean": -1.081476,
+                    "median": -1.057112,
+                    "positive_rate": 0.0,
+                    "min": -2.653897,
+                    "max": -0.082324
+                  },
+                  "spy_excess_pct": {
+                    "n": 6,
+                    "mean": -0.630149,
+                    "median": -1.029427,
+                    "positive_rate": 0.333333,
+                    "min": -2.798461,
+                    "max": 1.369872
+                  },
+                  "qqq_excess_pct": {
+                    "n": 6,
+                    "mean": -0.112501,
+                    "median": -0.651196,
+                    "positive_rate": 0.333333,
+                    "min": -3.464458,
+                    "max": 3.210581
+                  },
+                  "ticker_counts": {
+                    "META": 3,
+                    "NFLX": 3
+                  }
+                },
+                "LEGACY_TARGET_REVIEW": {
+                  "row_count": 3,
+                  "return_pct": {
+                    "n": 3,
+                    "mean": -1.104575,
+                    "median": -0.021157,
+                    "positive_rate": 0.333333,
+                    "min": -5.761113,
+                    "max": 2.468545
+                  },
+                  "spy_excess_pct": {
+                    "n": 3,
+                    "mean": -0.653247,
+                    "median": 0.025195,
+                    "positive_rate": 0.666667,
+                    "min": -4.308918,
+                    "max": 2.323982
+                  },
+                  "qqq_excess_pct": {
+                    "n": 3,
+                    "mean": -0.1356,
+                    "median": 0.403425,
+                    "positive_rate": 0.666667,
+                    "min": -2.468209,
+                    "max": 1.657984
+                  },
+                  "ticker_counts": {
+                    "AMD": 3
+                  }
+                },
+                "SIGNAL_TARGET": {
+                  "row_count": 4,
+                  "return_pct": {
+                    "n": 4,
+                    "mean": -6.745765,
+                    "median": -0.470764,
+                    "positive_rate": 0.25,
+                    "min": -26.284256,
+                    "max": 0.242724
+                  },
+                  "spy_excess_pct": {
+                    "n": 4,
+                    "mean": -5.996492,
+                    "median": -0.424413,
+                    "positive_rate": 0.25,
+                    "min": -24.83206,
+                    "max": 1.694919
+                  },
+                  "qqq_excess_pct": {
+                    "n": 4,
+                    "mean": -4.887022,
+                    "median": -0.046182,
+                    "positive_rate": 0.5,
+                    "min": -22.991351,
+                    "max": 3.535628
+                  },
+                  "ticker_counts": {
+                    "MUU": 2,
+                    "TRIP": 1,
+                    "GOOG": 1
+                  }
+                },
+                "TIME_STOP": {
+                  "row_count": 6,
+                  "return_pct": {
+                    "n": 6,
+                    "mean": -0.476865,
+                    "median": -0.913919,
+                    "positive_rate": 0.166667,
+                    "min": -4.092825,
+                    "max": 4.761898
+                  },
+                  "spy_excess_pct": {
+                    "n": 6,
+                    "mean": -0.525971,
+                    "median": -0.963024,
+                    "positive_rate": 0.166667,
+                    "min": -4.237389,
+                    "max": 4.80825
+                  },
+                  "qqq_excess_pct": {
+                    "n": 6,
+                    "mean": -0.669855,
+                    "median": -1.044202,
+                    "positive_rate": 0.166667,
+                    "min": -4.903386,
+                    "max": 5.18648
+                  },
+                  "ticker_counts": {
+                    "APP": 2,
+                    "TRIP": 2,
+                    "TSLA": 2
+                  }
+                },
+                "UNKNOWN": {
+                  "row_count": 25,
+                  "return_pct": {
+                    "n": 25,
+                    "mean": -0.231444,
+                    "median": -1.005706,
+                    "positive_rate": 0.24,
+                    "min": -10.402371,
+                    "max": 31.071949
+                  },
+                  "spy_excess_pct": {
+                    "n": 25,
+                    "mean": 0.259919,
+                    "median": -1.062089,
+                    "positive_rate": 0.32,
+                    "min": -8.950176,
+                    "max": 30.927386
+                  },
+                  "qqq_excess_pct": {
+                    "n": 25,
+                    "mean": 0.830488,
+                    "median": -0.683859,
+                    "positive_rate": 0.36,
+                    "min": -7.109467,
+                    "max": 30.261388
+                  },
+                  "ticker_counts": {
+                    "COHR": 3,
+                    "CRDO": 3,
+                    "MRVL": 3,
+                    "NBIS": 3,
+                    "NVDA": 3,
+                    "SPCX": 3,
+                    "HOOD": 2,
+                    "APP": 1,
+                    "GOOG": 1,
+                    "TSLA": 1
+                  }
+                }
+              }
+            },
+            "h3": {
+              "by_shadow_action": {
+                "EXIT": {
+                  "row_count": 5,
+                  "return_pct": {
+                    "n": 5,
+                    "mean": -1.871877,
+                    "median": -2.716789,
+                    "positive_rate": 0.2,
+                    "min": -3.998701,
+                    "max": 3.559875
+                  },
+                  "spy_excess_pct": {
+                    "n": 5,
+                    "mean": -0.516401,
+                    "median": -1.361313,
+                    "positive_rate": 0.2,
+                    "min": -2.643225,
+                    "max": 4.915351
+                  },
+                  "qqq_excess_pct": {
+                    "n": 5,
+                    "mean": 1.051086,
+                    "median": 0.206174,
+                    "positive_rate": 0.6,
+                    "min": -1.075738,
+                    "max": 6.482838
+                  },
+                  "ticker_counts": {
+                    "AMZN": 1,
+                    "META": 1,
+                    "MUU": 1,
+                    "NFLX": 1,
+                    "TRIP": 1
+                  }
+                },
+                "NONE": {
+                  "row_count": 9,
+                  "return_pct": {
+                    "n": 9,
+                    "mean": -6.148641,
+                    "median": -6.18739,
+                    "positive_rate": 0.0,
+                    "min": -11.400896,
+                    "max": -1.034933
+                  },
+                  "spy_excess_pct": {
+                    "n": 9,
+                    "mean": -4.793165,
+                    "median": -4.831914,
+                    "positive_rate": 0.111111,
+                    "min": -10.04542,
+                    "max": 0.320543
+                  },
+                  "qqq_excess_pct": {
+                    "n": 9,
+                    "mean": -3.225678,
+                    "median": -3.264427,
+                    "positive_rate": 0.222222,
+                    "min": -8.477933,
+                    "max": 1.88803
+                  },
+                  "ticker_counts": {
+                    "APP": 1,
+                    "COHR": 1,
+                    "CRDO": 1,
+                    "GOOG": 1,
+                    "MRVL": 1,
+                    "NBIS": 1,
+                    "NVDA": 1,
+                    "SPCX": 1,
+                    "TSLA": 1
+                  }
+                },
+                "REVIEW": {
+                  "row_count": 1,
+                  "return_pct": {
+                    "n": 1,
+                    "mean": -3.455214,
+                    "median": -3.455214,
+                    "positive_rate": 0.0,
+                    "min": -3.455214,
+                    "max": -3.455214
+                  },
+                  "spy_excess_pct": {
+                    "n": 1,
+                    "mean": -2.099738,
+                    "median": -2.099738,
+                    "positive_rate": 0.0,
+                    "min": -2.099738,
+                    "max": -2.099738
+                  },
+                  "qqq_excess_pct": {
+                    "n": 1,
+                    "mean": -0.532251,
+                    "median": -0.532251,
+                    "positive_rate": 0.0,
+                    "min": -0.532251,
+                    "max": -0.532251
+                  },
+                  "ticker_counts": {
+                    "AMD": 1
+                  }
+                }
+              },
+              "by_status_bucket": {
+                "APPROACHING": {
+                  "row_count": 2,
+                  "return_pct": {
+                    "n": 2,
+                    "mean": -9.07667,
+                    "median": -9.07667,
+                    "positive_rate": 0.0,
+                    "min": -9.513057,
+                    "max": -8.640284
+                  },
+                  "spy_excess_pct": {
+                    "n": 2,
+                    "mean": -7.721195,
+                    "median": -7.721195,
+                    "positive_rate": 0.0,
+                    "min": -8.157581,
+                    "max": -7.284808
+                  },
+                  "qqq_excess_pct": {
+                    "n": 2,
+                    "mean": -6.153707,
+                    "median": -6.153707,
+                    "positive_rate": 0.0,
+                    "min": -6.590094,
+                    "max": -5.71732
+                  },
+                  "ticker_counts": {
+                    "MRVL": 1,
+                    "NBIS": 1
+                  }
+                },
+                "BREACHED": {
+                  "row_count": 6,
+                  "return_pct": {
+                    "n": 6,
+                    "mean": -2.135766,
+                    "median": -3.086002,
+                    "positive_rate": 0.166667,
+                    "min": -3.998701,
+                    "max": 3.559875
+                  },
+                  "spy_excess_pct": {
+                    "n": 6,
+                    "mean": -0.78029,
+                    "median": -1.730525,
+                    "positive_rate": 0.166667,
+                    "min": -2.643225,
+                    "max": 4.915351
+                  },
+                  "qqq_excess_pct": {
+                    "n": 6,
+                    "mean": 0.787197,
+                    "median": -0.163039,
+                    "positive_rate": 0.5,
+                    "min": -1.075738,
+                    "max": 6.482838
+                  },
+                  "ticker_counts": {
+                    "AMD": 1,
+                    "AMZN": 1,
+                    "META": 1,
+                    "MUU": 1,
+                    "NFLX": 1,
+                    "TRIP": 1
+                  }
+                },
+                "OK": {
+                  "row_count": 7,
+                  "return_pct": {
+                    "n": 7,
+                    "mean": -5.312061,
+                    "median": -4.997981,
+                    "positive_rate": 0.0,
+                    "min": -11.400896,
+                    "max": -1.034933
+                  },
+                  "spy_excess_pct": {
+                    "n": 7,
+                    "mean": -3.956585,
+                    "median": -3.642505,
+                    "positive_rate": 0.142857,
+                    "min": -10.04542,
+                    "max": 0.320543
+                  },
+                  "qqq_excess_pct": {
+                    "n": 7,
+                    "mean": -2.389098,
+                    "median": -2.075017,
+                    "positive_rate": 0.285714,
+                    "min": -8.477933,
+                    "max": 1.88803
+                  },
+                  "ticker_counts": {
+                    "APP": 1,
+                    "COHR": 1,
+                    "CRDO": 1,
+                    "GOOG": 1,
+                    "NVDA": 1,
+                    "SPCX": 1,
+                    "TSLA": 1
+                  }
+                }
+              },
+              "by_shadow_rule": {
+                "ATR_STOP": {
+                  "row_count": 1,
+                  "return_pct": {
+                    "n": 1,
+                    "mean": -2.482924,
+                    "median": -2.482924,
+                    "positive_rate": 0.0,
+                    "min": -2.482924,
+                    "max": -2.482924
+                  },
+                  "spy_excess_pct": {
+                    "n": 1,
+                    "mean": -1.127448,
+                    "median": -1.127448,
+                    "positive_rate": 0.0,
+                    "min": -1.127448,
+                    "max": -1.127448
+                  },
+                  "qqq_excess_pct": {
+                    "n": 1,
+                    "mean": 0.440039,
+                    "median": 0.440039,
+                    "positive_rate": 1.0,
+                    "min": 0.440039,
+                    "max": 0.440039
+                  },
+                  "ticker_counts": {
+                    "AMZN": 1
+                  }
+                },
+                "HARD_STOP": {
+                  "row_count": 2,
+                  "return_pct": {
+                    "n": 2,
+                    "mean": -3.218816,
+                    "median": -3.218816,
+                    "positive_rate": 0.0,
+                    "min": -3.720844,
+                    "max": -2.716789
+                  },
+                  "spy_excess_pct": {
+                    "n": 2,
+                    "mean": -1.863341,
+                    "median": -1.863341,
+                    "positive_rate": 0.0,
+                    "min": -2.365369,
+                    "max": -1.361313
+                  },
+                  "qqq_excess_pct": {
+                    "n": 2,
+                    "mean": -0.295853,
+                    "median": -0.295853,
+                    "positive_rate": 0.5,
+                    "min": -0.797881,
+                    "max": 0.206174
+                  },
+                  "ticker_counts": {
+                    "META": 1,
+                    "NFLX": 1
+                  }
+                },
+                "LEGACY_TARGET_REVIEW": {
+                  "row_count": 1,
+                  "return_pct": {
+                    "n": 1,
+                    "mean": -3.455214,
+                    "median": -3.455214,
+                    "positive_rate": 0.0,
+                    "min": -3.455214,
+                    "max": -3.455214
+                  },
+                  "spy_excess_pct": {
+                    "n": 1,
+                    "mean": -2.099738,
+                    "median": -2.099738,
+                    "positive_rate": 0.0,
+                    "min": -2.099738,
+                    "max": -2.099738
+                  },
+                  "qqq_excess_pct": {
+                    "n": 1,
+                    "mean": -0.532251,
+                    "median": -0.532251,
+                    "positive_rate": 0.0,
+                    "min": -0.532251,
+                    "max": -0.532251
+                  },
+                  "ticker_counts": {
+                    "AMD": 1
+                  }
+                },
+                "SIGNAL_TARGET": {
+                  "row_count": 2,
+                  "return_pct": {
+                    "n": 2,
+                    "mean": -0.219413,
+                    "median": -0.219413,
+                    "positive_rate": 0.5,
+                    "min": -3.998701,
+                    "max": 3.559875
+                  },
+                  "spy_excess_pct": {
+                    "n": 2,
+                    "mean": 1.136063,
+                    "median": 1.136063,
+                    "positive_rate": 0.5,
+                    "min": -2.643225,
+                    "max": 4.915351
+                  },
+                  "qqq_excess_pct": {
+                    "n": 2,
+                    "mean": 2.70355,
+                    "median": 2.70355,
+                    "positive_rate": 0.5,
+                    "min": -1.075738,
+                    "max": 6.482838
+                  },
+                  "ticker_counts": {
+                    "MUU": 1,
+                    "TRIP": 1
+                  }
+                },
+                "UNKNOWN": {
+                  "row_count": 9,
+                  "return_pct": {
+                    "n": 9,
+                    "mean": -6.148641,
+                    "median": -6.18739,
+                    "positive_rate": 0.0,
+                    "min": -11.400896,
+                    "max": -1.034933
+                  },
+                  "spy_excess_pct": {
+                    "n": 9,
+                    "mean": -4.793165,
+                    "median": -4.831914,
+                    "positive_rate": 0.111111,
+                    "min": -10.04542,
+                    "max": 0.320543
+                  },
+                  "qqq_excess_pct": {
+                    "n": 9,
+                    "mean": -3.225678,
+                    "median": -3.264427,
+                    "positive_rate": 0.222222,
+                    "min": -8.477933,
+                    "max": 1.88803
+                  },
+                  "ticker_counts": {
+                    "APP": 1,
+                    "COHR": 1,
+                    "CRDO": 1,
+                    "GOOG": 1,
+                    "MRVL": 1,
+                    "NBIS": 1,
+                    "NVDA": 1,
+                    "SPCX": 1,
+                    "TSLA": 1
+                  }
+                }
+              }
+            }
+          },
+          "before_after_strategy_delta": {
+            "expected_value_score_sum_delta": 0.0,
+            "total_pnl_delta": 0.0,
+            "trade_count_delta": 0,
+            "strategy_behavior_changed": false
+          }
+        },
+        "summary": "The current intraday sample is too young for a stable exit advisory signal: h1 rows are available, but h3 support and action-vs-OK separation are not strong enough to justify a shared exit-lifecycle policy."
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260627-025.json",
+      "single_causal_variable": "intraday_advisory_shadow_action_forward_outcome_v1",
+      "status": "observed_only_rejected",
+      "ticket_file": "experiments/tickets/exp-20260627-025.json",
+      "trial_family": "intraday_advisory_shadow_action_forward_outcome",
+      "trial_variant_id": "primary_shadow_action_vs_ok_next_1d_3d_v1",
+      "implementation_mode": "observed_only_intraday_exit_advisory_attribution",
+      "new_evidence_axis": "New forward rows from production-visible intraday_review snapshots carrying primary or derivable advisory shadow actions; this is not a target-trim replay, threshold sweep, or frozen candidate-pool retune.",
+      "decision": "observed_only_rejected_no_stable_intraday_shadow_action_edge",
+      "artifact": "data/experiments/exp-20260627-025/exp_20260627_025_intraday_advisory_shadow_forward_outcome.json",
+      "log": "experiments/logs/exp-20260627-025.json",
+      "gate1": {
+        "passed": true,
+        "baseline_metrics": {
+          "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+          "expected_value_score_sum": 7.8941,
+          "total_pnl": 234850.99,
+          "trade_count": 61,
+          "signals_generated": 164,
+          "signals_survived": 135,
+          "survival_rate": 0.7925,
+          "max_drawdown_pct_worst": 0.1119,
+          "window_count": 3
+        },
+        "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "note": "Observed-only attribution; before and after strategy behavior are identical."
+      },
+      "gate2": {
+        "passed": true,
+        "fields_checked": [
+          "intraday_review.date",
+          "positions[].ticker",
+          "positions[].status",
+          "positions[].quote.price",
+          "positions[].context.exit_signals.triggered_rules",
+          "positions[].primary_advisory_shadow_action",
+          "ohlcv_overlay.entry_close",
+          "ohlcv_overlay.future_close",
+          "entry_date",
+          "target_price"
+        ],
+        "source_diagnostics": {
+          "snapshot_count": 6,
+          "trading_snapshot_count": 4,
+          "observation_count": 61,
+          "skipped_counts": {
+            "snapshot_non_trading_or_no_spy_bar": 2
+          },
+          "shadow_source_counts": {
+            "derived_from_context_exit_signals": 32,
+            "derived_no_triggered_rule": 29
+          },
+          "native_primary_advisory_shadow_action_count": 0,
+          "calendar_min": "2023-08-29",
+          "calendar_max": "2026-06-25"
+        },
+        "target_price_relevance": "No target exits are scheduled. target_price is represented only inside existing intraday exit-level context for attribution."
+      },
+      "gate3": {
+        "passed": true,
+        "filter_added": false,
+        "baseline_survival_rate": 0.7925,
+        "signals_generated": 61,
+        "signals_survived": 46,
+        "survival_rate": 0.754098,
+        "note": "No executable filter was added; rows are only attributed."
+      },
+      "gate4": {
+        "observed_only": true,
+        "passed": false,
+        "decision": "observed_only_rejected_no_stable_intraday_shadow_action_edge",
+        "failed_reasons": [
+          "h3_action_underperformance_not_met"
+        ],
+        "comparisons": {
+          "h1": {
+            "horizon": 1,
+            "settled_rows": 46,
+            "action_rows": 21,
+            "ok_no_action_rows": 20,
+            "action_return_pct": {
+              "n": 21,
+              "mean": -1.857688,
+              "median": -0.441094,
+              "positive_rate": 0.238095,
+              "min": -26.284256,
+              "max": 4.761898
+            },
+            "ok_no_action_return_pct": {
+              "n": 20,
+              "mean": 0.952635,
+              "median": -0.806359,
+              "positive_rate": 0.3,
+              "min": -10.402371,
+              "max": 31.071949
+            },
+            "action_spy_excess_pct": {
+              "n": 21,
+              "mean": -1.464214,
+              "median": -0.394742,
+              "positive_rate": 0.380952,
+              "min": -24.83206,
+              "max": 4.80825
+            },
+            "ok_no_action_spy_excess_pct": {
+              "n": 20,
+              "mean": 1.424211,
+              "median": -0.646844,
+              "positive_rate": 0.4,
+              "min": -8.950176,
+              "max": 30.927386
+            },
+            "action_minus_ok_return_mean_pp": -2.810323,
+            "action_minus_ok_spy_excess_mean_pp": -2.888425
+          },
+          "h3": {
+            "horizon": 3,
+            "settled_rows": 15,
+            "action_rows": 6,
+            "ok_no_action_rows": 7,
+            "action_return_pct": {
+              "n": 6,
+              "mean": -2.135766,
+              "median": -3.086002,
+              "positive_rate": 0.166667,
+              "min": -3.998701,
+              "max": 3.559875
+            },
+            "ok_no_action_return_pct": {
+              "n": 7,
+              "mean": -5.312061,
+              "median": -4.997981,
+              "positive_rate": 0.0,
+              "min": -11.400896,
+              "max": -1.034933
+            },
+            "action_spy_excess_pct": {
+              "n": 6,
+              "mean": -0.78029,
+              "median": -1.730525,
+              "positive_rate": 0.166667,
+              "min": -2.643225,
+              "max": 4.915351
+            },
+            "ok_no_action_spy_excess_pct": {
+              "n": 7,
+              "mean": -3.956585,
+              "median": -3.642505,
+              "positive_rate": 0.142857,
+              "min": -10.04542,
+              "max": 0.320543
+            },
+            "action_minus_ok_return_mean_pp": 3.176295,
+            "action_minus_ok_spy_excess_mean_pp": 3.176295
+          }
+        },
+        "bucket_summary": {
+          "h1": {
+            "by_shadow_action": {
+              "EXIT": {
+                "row_count": 12,
+                "return_pct": {
+                  "n": 12,
+                  "mean": -2.736378,
+                  "median": -0.470764,
+                  "positive_rate": 0.25,
+                  "min": -26.284256,
+                  "max": 0.567038
+                },
+                "spy_excess_pct": {
+                  "n": 12,
+                  "mean": -2.136077,
+                  "median": -0.424413,
+                  "positive_rate": 0.416667,
+                  "min": -24.83206,
+                  "max": 2.019233
+                },
+                "qqq_excess_pct": {
+                  "n": 12,
+                  "mean": -1.322519,
+                  "median": -0.046182,
+                  "positive_rate": 0.5,
+                  "min": -22.991351,
+                  "max": 3.859942
+                },
+                "ticker_counts": {
+                  "META": 3,
+                  "NFLX": 3,
+                  "AMZN": 2,
+                  "MUU": 2,
+                  "TRIP": 1,
+                  "GOOG": 1
+                }
+              },
+              "NONE": {
+                "row_count": 25,
+                "return_pct": {
+                  "n": 25,
+                  "mean": -0.231444,
+                  "median": -1.005706,
+                  "positive_rate": 0.24,
+                  "min": -10.402371,
+                  "max": 31.071949
+                },
+                "spy_excess_pct": {
+                  "n": 25,
+                  "mean": 0.259919,
+                  "median": -1.062089,
+                  "positive_rate": 0.32,
+                  "min": -8.950176,
+                  "max": 30.927386
+                },
+                "qqq_excess_pct": {
+                  "n": 25,
+                  "mean": 0.830488,
+                  "median": -0.683859,
+                  "positive_rate": 0.36,
+                  "min": -7.109467,
+                  "max": 30.261388
+                },
+                "ticker_counts": {
+                  "COHR": 3,
+                  "CRDO": 3,
+                  "MRVL": 3,
+                  "NBIS": 3,
+                  "NVDA": 3,
+                  "SPCX": 3,
+                  "HOOD": 2,
+                  "APP": 1,
+                  "GOOG": 1,
+                  "TSLA": 1
+                }
+              },
+              "REVIEW": {
+                "row_count": 9,
+                "return_pct": {
+                  "n": 9,
+                  "mean": -0.686102,
+                  "median": -0.441094,
+                  "positive_rate": 0.222222,
+                  "min": -5.761113,
+                  "max": 4.761898
+                },
+                "spy_excess_pct": {
+                  "n": 9,
+                  "mean": -0.568396,
+                  "median": -0.394742,
+                  "positive_rate": 0.333333,
+                  "min": -4.308918,
+                  "max": 4.80825
+                },
+                "qqq_excess_pct": {
+                  "n": 9,
+                  "mean": -0.49177,
+                  "median": -0.919741,
+                  "positive_rate": 0.333333,
+                  "min": -4.903386,
+                  "max": 5.18648
+                },
+                "ticker_counts": {
+                  "AMD": 3,
+                  "APP": 2,
+                  "TRIP": 2,
+                  "TSLA": 2
+                }
+              }
+            },
+            "by_status_bucket": {
+              "APPROACHING": {
+                "row_count": 5,
+                "return_pct": {
+                  "n": 5,
+                  "mean": -4.967757,
+                  "median": -5.663941,
+                  "positive_rate": 0.0,
+                  "min": -9.361391,
+                  "max": -0.996501
+                },
+                "spy_excess_pct": {
+                  "n": 5,
+                  "mean": -4.397251,
+                  "median": -5.617589,
+                  "positive_rate": 0.0,
+                  "min": -7.909196,
+                  "max": -1.141065
+                },
+                "qqq_excess_pct": {
+                  "n": 5,
+                  "mean": -3.642875,
+                  "median": -5.239359,
+                  "positive_rate": 0.2,
+                  "min": -6.068487,
+                  "max": 0.345199
+                },
+                "ticker_counts": {
+                  "NBIS": 2,
+                  "MRVL": 1,
+                  "HOOD": 1,
+                  "SPCX": 1
+                }
+              },
+              "BREACHED": {
+                "row_count": 21,
+                "return_pct": {
+                  "n": 21,
+                  "mean": -1.857688,
+                  "median": -0.441094,
+                  "positive_rate": 0.238095,
+                  "min": -26.284256,
+                  "max": 4.761898
+                },
+                "spy_excess_pct": {
+                  "n": 21,
+                  "mean": -1.464214,
+                  "median": -0.394742,
+                  "positive_rate": 0.380952,
+                  "min": -24.83206,
+                  "max": 4.80825
+                },
+                "qqq_excess_pct": {
+                  "n": 21,
+                  "mean": -0.966483,
+                  "median": -0.216444,
+                  "positive_rate": 0.428571,
+                  "min": -22.991351,
+                  "max": 5.18648
+                },
+                "ticker_counts": {
+                  "AMD": 3,
+                  "META": 3,
+                  "NFLX": 3,
+                  "TRIP": 3,
+                  "AMZN": 2,
+                  "MUU": 2,
+                  "APP": 2,
+                  "TSLA": 2,
+                  "GOOG": 1
+                }
+              },
+              "OK": {
+                "row_count": 20,
+                "return_pct": {
+                  "n": 20,
+                  "mean": 0.952635,
+                  "median": -0.806359,
+                  "positive_rate": 0.3,
+                  "min": -10.402371,
+                  "max": 31.071949
+                },
+                "spy_excess_pct": {
+                  "n": 20,
+                  "mean": 1.424211,
+                  "median": -0.646844,
+                  "positive_rate": 0.4,
+                  "min": -8.950176,
+                  "max": 30.927386
+                },
+                "qqq_excess_pct": {
+                  "n": 20,
+                  "mean": 1.948829,
+                  "median": -0.497565,
+                  "positive_rate": 0.4,
+                  "min": -7.109467,
+                  "max": 30.261388
+                },
+                "ticker_counts": {
+                  "COHR": 3,
+                  "CRDO": 3,
+                  "NVDA": 3,
+                  "SPCX": 2,
+                  "MRVL": 2,
+                  "APP": 1,
+                  "GOOG": 1,
+                  "TSLA": 1,
+                  "RKLZ": 1,
+                  "HOOD": 1
+                }
+              }
+            },
+            "by_shadow_rule": {
+              "ATR_STOP": {
+                "row_count": 2,
+                "return_pct": {
+                  "n": 2,
+                  "mean": 0.317692,
+                  "median": 0.317692,
+                  "positive_rate": 1.0,
+                  "min": 0.068346,
+                  "max": 0.567038
+                },
+                "spy_excess_pct": {
+                  "n": 2,
+                  "mean": 1.066965,
+                  "median": 1.066965,
+                  "positive_rate": 1.0,
+                  "min": 0.114697,
+                  "max": 2.019233
+                },
+                "qqq_excess_pct": {
+                  "n": 2,
+                  "mean": 2.176435,
+                  "median": 2.176435,
+                  "positive_rate": 1.0,
+                  "min": 0.492927,
+                  "max": 3.859942
+                },
+                "ticker_counts": {
+                  "AMZN": 2
+                }
+              },
+              "HARD_STOP": {
+                "row_count": 6,
+                "return_pct": {
+                  "n": 6,
+                  "mean": -1.081476,
+                  "median": -1.057112,
+                  "positive_rate": 0.0,
+                  "min": -2.653897,
+                  "max": -0.082324
+                },
+                "spy_excess_pct": {
+                  "n": 6,
+                  "mean": -0.630149,
+                  "median": -1.029427,
+                  "positive_rate": 0.333333,
+                  "min": -2.798461,
+                  "max": 1.369872
+                },
+                "qqq_excess_pct": {
+                  "n": 6,
+                  "mean": -0.112501,
+                  "median": -0.651196,
+                  "positive_rate": 0.333333,
+                  "min": -3.464458,
+                  "max": 3.210581
+                },
+                "ticker_counts": {
+                  "META": 3,
+                  "NFLX": 3
+                }
+              },
+              "LEGACY_TARGET_REVIEW": {
+                "row_count": 3,
+                "return_pct": {
+                  "n": 3,
+                  "mean": -1.104575,
+                  "median": -0.021157,
+                  "positive_rate": 0.333333,
+                  "min": -5.761113,
+                  "max": 2.468545
+                },
+                "spy_excess_pct": {
+                  "n": 3,
+                  "mean": -0.653247,
+                  "median": 0.025195,
+                  "positive_rate": 0.666667,
+                  "min": -4.308918,
+                  "max": 2.323982
+                },
+                "qqq_excess_pct": {
+                  "n": 3,
+                  "mean": -0.1356,
+                  "median": 0.403425,
+                  "positive_rate": 0.666667,
+                  "min": -2.468209,
+                  "max": 1.657984
+                },
+                "ticker_counts": {
+                  "AMD": 3
+                }
+              },
+              "SIGNAL_TARGET": {
+                "row_count": 4,
+                "return_pct": {
+                  "n": 4,
+                  "mean": -6.745765,
+                  "median": -0.470764,
+                  "positive_rate": 0.25,
+                  "min": -26.284256,
+                  "max": 0.242724
+                },
+                "spy_excess_pct": {
+                  "n": 4,
+                  "mean": -5.996492,
+                  "median": -0.424413,
+                  "positive_rate": 0.25,
+                  "min": -24.83206,
+                  "max": 1.694919
+                },
+                "qqq_excess_pct": {
+                  "n": 4,
+                  "mean": -4.887022,
+                  "median": -0.046182,
+                  "positive_rate": 0.5,
+                  "min": -22.991351,
+                  "max": 3.535628
+                },
+                "ticker_counts": {
+                  "MUU": 2,
+                  "TRIP": 1,
+                  "GOOG": 1
+                }
+              },
+              "TIME_STOP": {
+                "row_count": 6,
+                "return_pct": {
+                  "n": 6,
+                  "mean": -0.476865,
+                  "median": -0.913919,
+                  "positive_rate": 0.166667,
+                  "min": -4.092825,
+                  "max": 4.761898
+                },
+                "spy_excess_pct": {
+                  "n": 6,
+                  "mean": -0.525971,
+                  "median": -0.963024,
+                  "positive_rate": 0.166667,
+                  "min": -4.237389,
+                  "max": 4.80825
+                },
+                "qqq_excess_pct": {
+                  "n": 6,
+                  "mean": -0.669855,
+                  "median": -1.044202,
+                  "positive_rate": 0.166667,
+                  "min": -4.903386,
+                  "max": 5.18648
+                },
+                "ticker_counts": {
+                  "APP": 2,
+                  "TRIP": 2,
+                  "TSLA": 2
+                }
+              },
+              "UNKNOWN": {
+                "row_count": 25,
+                "return_pct": {
+                  "n": 25,
+                  "mean": -0.231444,
+                  "median": -1.005706,
+                  "positive_rate": 0.24,
+                  "min": -10.402371,
+                  "max": 31.071949
+                },
+                "spy_excess_pct": {
+                  "n": 25,
+                  "mean": 0.259919,
+                  "median": -1.062089,
+                  "positive_rate": 0.32,
+                  "min": -8.950176,
+                  "max": 30.927386
+                },
+                "qqq_excess_pct": {
+                  "n": 25,
+                  "mean": 0.830488,
+                  "median": -0.683859,
+                  "positive_rate": 0.36,
+                  "min": -7.109467,
+                  "max": 30.261388
+                },
+                "ticker_counts": {
+                  "COHR": 3,
+                  "CRDO": 3,
+                  "MRVL": 3,
+                  "NBIS": 3,
+                  "NVDA": 3,
+                  "SPCX": 3,
+                  "HOOD": 2,
+                  "APP": 1,
+                  "GOOG": 1,
+                  "TSLA": 1
+                }
+              }
+            }
+          },
+          "h3": {
+            "by_shadow_action": {
+              "EXIT": {
+                "row_count": 5,
+                "return_pct": {
+                  "n": 5,
+                  "mean": -1.871877,
+                  "median": -2.716789,
+                  "positive_rate": 0.2,
+                  "min": -3.998701,
+                  "max": 3.559875
+                },
+                "spy_excess_pct": {
+                  "n": 5,
+                  "mean": -0.516401,
+                  "median": -1.361313,
+                  "positive_rate": 0.2,
+                  "min": -2.643225,
+                  "max": 4.915351
+                },
+                "qqq_excess_pct": {
+                  "n": 5,
+                  "mean": 1.051086,
+                  "median": 0.206174,
+                  "positive_rate": 0.6,
+                  "min": -1.075738,
+                  "max": 6.482838
+                },
+                "ticker_counts": {
+                  "AMZN": 1,
+                  "META": 1,
+                  "MUU": 1,
+                  "NFLX": 1,
+                  "TRIP": 1
+                }
+              },
+              "NONE": {
+                "row_count": 9,
+                "return_pct": {
+                  "n": 9,
+                  "mean": -6.148641,
+                  "median": -6.18739,
+                  "positive_rate": 0.0,
+                  "min": -11.400896,
+                  "max": -1.034933
+                },
+                "spy_excess_pct": {
+                  "n": 9,
+                  "mean": -4.793165,
+                  "median": -4.831914,
+                  "positive_rate": 0.111111,
+                  "min": -10.04542,
+                  "max": 0.320543
+                },
+                "qqq_excess_pct": {
+                  "n": 9,
+                  "mean": -3.225678,
+                  "median": -3.264427,
+                  "positive_rate": 0.222222,
+                  "min": -8.477933,
+                  "max": 1.88803
+                },
+                "ticker_counts": {
+                  "APP": 1,
+                  "COHR": 1,
+                  "CRDO": 1,
+                  "GOOG": 1,
+                  "MRVL": 1,
+                  "NBIS": 1,
+                  "NVDA": 1,
+                  "SPCX": 1,
+                  "TSLA": 1
+                }
+              },
+              "REVIEW": {
+                "row_count": 1,
+                "return_pct": {
+                  "n": 1,
+                  "mean": -3.455214,
+                  "median": -3.455214,
+                  "positive_rate": 0.0,
+                  "min": -3.455214,
+                  "max": -3.455214
+                },
+                "spy_excess_pct": {
+                  "n": 1,
+                  "mean": -2.099738,
+                  "median": -2.099738,
+                  "positive_rate": 0.0,
+                  "min": -2.099738,
+                  "max": -2.099738
+                },
+                "qqq_excess_pct": {
+                  "n": 1,
+                  "mean": -0.532251,
+                  "median": -0.532251,
+                  "positive_rate": 0.0,
+                  "min": -0.532251,
+                  "max": -0.532251
+                },
+                "ticker_counts": {
+                  "AMD": 1
+                }
+              }
+            },
+            "by_status_bucket": {
+              "APPROACHING": {
+                "row_count": 2,
+                "return_pct": {
+                  "n": 2,
+                  "mean": -9.07667,
+                  "median": -9.07667,
+                  "positive_rate": 0.0,
+                  "min": -9.513057,
+                  "max": -8.640284
+                },
+                "spy_excess_pct": {
+                  "n": 2,
+                  "mean": -7.721195,
+                  "median": -7.721195,
+                  "positive_rate": 0.0,
+                  "min": -8.157581,
+                  "max": -7.284808
+                },
+                "qqq_excess_pct": {
+                  "n": 2,
+                  "mean": -6.153707,
+                  "median": -6.153707,
+                  "positive_rate": 0.0,
+                  "min": -6.590094,
+                  "max": -5.71732
+                },
+                "ticker_counts": {
+                  "MRVL": 1,
+                  "NBIS": 1
+                }
+              },
+              "BREACHED": {
+                "row_count": 6,
+                "return_pct": {
+                  "n": 6,
+                  "mean": -2.135766,
+                  "median": -3.086002,
+                  "positive_rate": 0.166667,
+                  "min": -3.998701,
+                  "max": 3.559875
+                },
+                "spy_excess_pct": {
+                  "n": 6,
+                  "mean": -0.78029,
+                  "median": -1.730525,
+                  "positive_rate": 0.166667,
+                  "min": -2.643225,
+                  "max": 4.915351
+                },
+                "qqq_excess_pct": {
+                  "n": 6,
+                  "mean": 0.787197,
+                  "median": -0.163039,
+                  "positive_rate": 0.5,
+                  "min": -1.075738,
+                  "max": 6.482838
+                },
+                "ticker_counts": {
+                  "AMD": 1,
+                  "AMZN": 1,
+                  "META": 1,
+                  "MUU": 1,
+                  "NFLX": 1,
+                  "TRIP": 1
+                }
+              },
+              "OK": {
+                "row_count": 7,
+                "return_pct": {
+                  "n": 7,
+                  "mean": -5.312061,
+                  "median": -4.997981,
+                  "positive_rate": 0.0,
+                  "min": -11.400896,
+                  "max": -1.034933
+                },
+                "spy_excess_pct": {
+                  "n": 7,
+                  "mean": -3.956585,
+                  "median": -3.642505,
+                  "positive_rate": 0.142857,
+                  "min": -10.04542,
+                  "max": 0.320543
+                },
+                "qqq_excess_pct": {
+                  "n": 7,
+                  "mean": -2.389098,
+                  "median": -2.075017,
+                  "positive_rate": 0.285714,
+                  "min": -8.477933,
+                  "max": 1.88803
+                },
+                "ticker_counts": {
+                  "APP": 1,
+                  "COHR": 1,
+                  "CRDO": 1,
+                  "GOOG": 1,
+                  "NVDA": 1,
+                  "SPCX": 1,
+                  "TSLA": 1
+                }
+              }
+            },
+            "by_shadow_rule": {
+              "ATR_STOP": {
+                "row_count": 1,
+                "return_pct": {
+                  "n": 1,
+                  "mean": -2.482924,
+                  "median": -2.482924,
+                  "positive_rate": 0.0,
+                  "min": -2.482924,
+                  "max": -2.482924
+                },
+                "spy_excess_pct": {
+                  "n": 1,
+                  "mean": -1.127448,
+                  "median": -1.127448,
+                  "positive_rate": 0.0,
+                  "min": -1.127448,
+                  "max": -1.127448
+                },
+                "qqq_excess_pct": {
+                  "n": 1,
+                  "mean": 0.440039,
+                  "median": 0.440039,
+                  "positive_rate": 1.0,
+                  "min": 0.440039,
+                  "max": 0.440039
+                },
+                "ticker_counts": {
+                  "AMZN": 1
+                }
+              },
+              "HARD_STOP": {
+                "row_count": 2,
+                "return_pct": {
+                  "n": 2,
+                  "mean": -3.218816,
+                  "median": -3.218816,
+                  "positive_rate": 0.0,
+                  "min": -3.720844,
+                  "max": -2.716789
+                },
+                "spy_excess_pct": {
+                  "n": 2,
+                  "mean": -1.863341,
+                  "median": -1.863341,
+                  "positive_rate": 0.0,
+                  "min": -2.365369,
+                  "max": -1.361313
+                },
+                "qqq_excess_pct": {
+                  "n": 2,
+                  "mean": -0.295853,
+                  "median": -0.295853,
+                  "positive_rate": 0.5,
+                  "min": -0.797881,
+                  "max": 0.206174
+                },
+                "ticker_counts": {
+                  "META": 1,
+                  "NFLX": 1
+                }
+              },
+              "LEGACY_TARGET_REVIEW": {
+                "row_count": 1,
+                "return_pct": {
+                  "n": 1,
+                  "mean": -3.455214,
+                  "median": -3.455214,
+                  "positive_rate": 0.0,
+                  "min": -3.455214,
+                  "max": -3.455214
+                },
+                "spy_excess_pct": {
+                  "n": 1,
+                  "mean": -2.099738,
+                  "median": -2.099738,
+                  "positive_rate": 0.0,
+                  "min": -2.099738,
+                  "max": -2.099738
+                },
+                "qqq_excess_pct": {
+                  "n": 1,
+                  "mean": -0.532251,
+                  "median": -0.532251,
+                  "positive_rate": 0.0,
+                  "min": -0.532251,
+                  "max": -0.532251
+                },
+                "ticker_counts": {
+                  "AMD": 1
+                }
+              },
+              "SIGNAL_TARGET": {
+                "row_count": 2,
+                "return_pct": {
+                  "n": 2,
+                  "mean": -0.219413,
+                  "median": -0.219413,
+                  "positive_rate": 0.5,
+                  "min": -3.998701,
+                  "max": 3.559875
+                },
+                "spy_excess_pct": {
+                  "n": 2,
+                  "mean": 1.136063,
+                  "median": 1.136063,
+                  "positive_rate": 0.5,
+                  "min": -2.643225,
+                  "max": 4.915351
+                },
+                "qqq_excess_pct": {
+                  "n": 2,
+                  "mean": 2.70355,
+                  "median": 2.70355,
+                  "positive_rate": 0.5,
+                  "min": -1.075738,
+                  "max": 6.482838
+                },
+                "ticker_counts": {
+                  "MUU": 1,
+                  "TRIP": 1
+                }
+              },
+              "UNKNOWN": {
+                "row_count": 9,
+                "return_pct": {
+                  "n": 9,
+                  "mean": -6.148641,
+                  "median": -6.18739,
+                  "positive_rate": 0.0,
+                  "min": -11.400896,
+                  "max": -1.034933
+                },
+                "spy_excess_pct": {
+                  "n": 9,
+                  "mean": -4.793165,
+                  "median": -4.831914,
+                  "positive_rate": 0.111111,
+                  "min": -10.04542,
+                  "max": 0.320543
+                },
+                "qqq_excess_pct": {
+                  "n": 9,
+                  "mean": -3.225678,
+                  "median": -3.264427,
+                  "positive_rate": 0.222222,
+                  "min": -8.477933,
+                  "max": 1.88803
+                },
+                "ticker_counts": {
+                  "APP": 1,
+                  "COHR": 1,
+                  "CRDO": 1,
+                  "GOOG": 1,
+                  "MRVL": 1,
+                  "NBIS": 1,
+                  "NVDA": 1,
+                  "SPCX": 1,
+                  "TSLA": 1
+                }
+              }
+            }
+          }
+        },
+        "before_after_strategy_delta": {
+          "expected_value_score_sum_delta": 0.0,
+          "total_pnl_delta": 0.0,
+          "trade_count_delta": 0,
+          "strategy_behavior_changed": false
+        }
+      },
+      "production_impact": {
+        "shared_policy_changed": false,
+        "backtester_adapter_changed": false,
+        "run_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "trade_enabled": false,
+        "live_orders_changed": false,
+        "paper_orders_changed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "ranking_changed": false,
+        "sizing_changed": false,
+        "risk_budget_changed": false,
+        "watchlist_changed": false,
+        "llm_decision_boundary_changed": false,
+        "live_realism_evaluated": false,
+        "live_ready": false,
+        "parity_note": "Read-only attribution over existing intraday snapshots and OHLCV settlement. No order, exit, or daily adapter behavior changed."
+      },
+      "post_run_reflection": {
+        "why_result_happened": "The current intraday sample is too young for a stable exit advisory signal: h1 rows are available, but h3 support and action-vs-OK separation are not strong enough to justify a shared exit-lifecycle policy.",
+        "forbidden_near_neighbor_retry": "Do not retune SIGNAL_TARGET, TIME_STOP, stop-distance, target distance, or REVIEW/EXIT buckets on the same 2026-06-22..26 snapshots. Do not convert this into a target-trim replay.",
+        "new_evidence_required": "More intraday snapshots with native primary_advisory_shadow_action, settled h3/h5/h10 outcomes, true quote timestamps or broker bar IDs, and slot-reuse/replacement-value accounting before Gate 1-4 exit promotion."
+      },
+      "changed_files": [
+        "quant/experiments/exp_20260627_025_intraday_advisory_shadow_forward_outcome.py",
+        "data/experiments/exp-20260627-025/exp_20260627_025_intraday_advisory_shadow_forward_outcome.json",
+        "experiments/logs/exp-20260627-025.json",
+        "experiments/cards/exp-20260627-025.md",
+        "experiments/manifests/exp-20260627-025.json",
+        "experiments/tickets/exp-20260627-025.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "related_files": [
+        "quant/experiments/exp_20260627_025_intraday_advisory_shadow_forward_outcome.py",
+        "data/experiments/exp-20260627-025/exp_20260627_025_intraday_advisory_shadow_forward_outcome.json",
+        "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "data/daily/intraday/snapshots",
+        "data/warehouse/warehouse_main.sqlite",
+        "data/warehouse/warehouse_main_hot.sqlite"
+      ],
+      "lean_quality_passed": true,
+      "updated_at": "2026-06-27T21:12:57+00:00"
+    },
+    {
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260627_026_forward_entry_exhaustion_attribution.py",
+        "data/experiments/exp-20260627-026/exp_20260627_026_forward_entry_exhaustion_attribution.json",
+        "experiments/cards/exp-20260627-026.md",
+        "experiments/manifests/exp-20260627-026.json",
+        "experiments/tickets/exp-20260627-026.json",
+        "experiments/logs/exp-20260627-026.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260627-026.md",
+      "causal_components": [
+        "accepted exp-20260627-022 forward exhaustion tag",
+        "closed forward replacement rows",
+        "cash SPY QQQ replacement-value attribution",
+        "no strategy behavior change"
+      ],
+      "change_type": "observed_only_forward_attribution",
+      "changed_variable": "forward_entry_exhaustion_stretched_flag_replacement_value_attribution_v1",
+      "claimed_at": "2026-06-27T22:05:38+00:00",
+      "completed_at": "2026-06-27T22:09:20+00:00",
+      "created_at": "2026-06-27T22:05:25+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260627-026",
+      "experiment_uid": "expuid-ff34ccbbe584417c",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260627-026",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-27T22:05:25+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "forward_entry_exhaustion_attribution"
+      },
+      "hypothesis": "Closed forward replacement rows carrying the newly shared PIT entry_exhaustion_stretched_flag should show worse cash/SPY/QQQ replacement value and loss-tail than non-stretched rows, testing whether entry-day name-level overextension is a real future allocation risk signal without changing strategy behavior.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "forward_entry_exhaustion_stretched_flag_replacement_value_attribution_v1"
+      ],
+      "mechanism_family": "entry_name_level_exhaustion_forward_attribution",
+      "multiple_testing_risk_bucket": "moderate",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260627-022",
+        "exp-20260626-018",
+        "exp-20260623-002"
+      ],
+      "new_evidence_type": "shared_forward_entry_name_level_exhaustion_observation_field",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "ohlcv_momentum",
+          "field_tags": [
+            "a",
+            "allocation",
+            "attribution",
+            "behavior",
+            "carrying",
+            "cash",
+            "changing",
+            "closed",
+            "entry",
+            "exhaustion",
+            "flag",
+            "forward",
+            "future",
+            "is",
+            "level",
+            "loss",
+            "name",
+            "newly",
+            "non",
+            "overextension",
+            "pit",
+            "qqq",
+            "real",
+            "replacement",
+            "risk",
+            "rows",
+            "should",
+            "show",
+            "signal",
+            "spy",
+            "strategy",
+            "stretched",
+            "tail",
+            "testing",
+            "than",
+            "value",
+            "whether",
+            "without",
+            "worse"
+          ],
+          "gate_shape": "other"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_momentum",
+            "family_key": "platform_rs20_missed_candidate_replacement_value",
+            "reopen_condition": null,
+            "score": 0.469,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_momentum",
+            "family_key": "rs20_entry_state_lifecycle_allocation",
+            "reopen_condition": null,
+            "score": 0.469,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "ohlcv_momentum",
+            "family_key": "rs20_entry_state_shared_sizing",
+            "reopen_condition": "Forward/paper monitoring of rs20_entry_state attribution, especially mid_weak-like drawdown and concentration behavior.",
+            "score": 0.4686,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_momentum",
+            "family_key": "low_deployment_dynamic_etf_overlay_allocation",
+            "reopen_condition": null,
+            "score": 0.4663,
+            "status": "frozen_rejected",
+            "trials": 8
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_momentum",
+            "family_key": "cross_sectional_ranking_component_attribution",
+            "reopen_condition": null,
+            "score": 0.466,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": null,
+        "override": false,
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "other",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "ohlcv_momentum",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": {
+        "success_probability": 0.18,
+        "expected_ev_delta": 0.0,
+        "expected_pnl_delta": 0.0,
+        "main_failure_modes": [
+          "stretched_rows_too_thin",
+          "no_cash_spy_qqq_separation",
+          "source_family_confound",
+          "forward_rows_not_out_of_sample"
+        ],
+        "confidence_reason": "The measurement repair created a genuine new PIT name-level exhaustion field on closed forward rows and current memory says regime/short-volume tags were non-separating; confidence is low because the current closed row count and stretched bucket are small and this is only attribution.",
+        "recorded_at": "2026-06-27T22:05:02+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "decision": "observed_only_directional_entry_exhaustion_lead_too_thin",
+        "artifact": "data/experiments/exp-20260627-026/exp_20260627_026_forward_entry_exhaustion_attribution.json",
+        "log_file": "experiments/logs/exp-20260627-026.json",
+        "lean_quality_passed": true
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260627-026.json",
+      "single_causal_variable": "forward_entry_exhaustion_stretched_flag_replacement_value_attribution_v1",
+      "status": "observed_only_rejected",
+      "ticket_file": "experiments/tickets/exp-20260627-026.json",
+      "trial_family": "forward_entry_exhaustion_replacement_value_attribution",
+      "trial_variant_id": "stretched_flag_vs_non_stretched_v1",
+      "implementation_mode": "observed_only_forward_attribution",
+      "artifact_file": "data/experiments/exp-20260627-026/exp_20260627_026_forward_entry_exhaustion_attribution.json",
+      "log_file": "experiments/logs/exp-20260627-026.json",
+      "changed_files": [
+        "quant/experiments/exp_20260627_026_forward_entry_exhaustion_attribution.py",
+        "data/experiments/exp-20260627-026/exp_20260627_026_forward_entry_exhaustion_attribution.json",
+        "experiments/cards/exp-20260627-026.md",
+        "experiments/manifests/exp-20260627-026.json",
+        "experiments/tickets/exp-20260627-026.json",
+        "experiments/logs/exp-20260627-026.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "updated_at": "2026-06-27T22:09:20+00:00"
+    },
+    {
+      "acceptance_rule": "Accept only if the current allocator plus SBC source beats the current accepted allocator on aggregate EV/PnL, improves all three canonical windows on EV/PnL, keeps survival >=5%, drawdown drift <=0.5pp, target trades >=20, and concentration passes. Otherwise revert allocator code and close rejected.",
+      "allowed_write_scope": [
+        "data/experiments/exp-20260628-001/",
+        "data/experiments/exp-20260628-001/exp_20260628_001_sbc_allocator_source_extension.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json",
+        "experiments/cards/exp-20260628-001.md",
+        "experiments/logs/exp-20260628-001.json",
+        "experiments/manifests/exp-20260628-001.json",
+        "experiments/tickets/exp-20260628-001.json",
+        "quant/accepted_helper_source_priority_allocator_paper_sleeve.py",
+        "quant/experiments/exp_20260628_001_sbc_allocator_source_extension.py",
+        "quant/test_accepted_helper_source_priority_allocator_paper_sleeve.py"
+      ],
+      "artifact": "data/experiments/exp-20260628-001/exp_20260628_001_sbc_allocator_source_extension.json",
+      "baseline_result_file": "data/experiments/exp-20260611-005/exp_20260611_005_lagged_consensus_allocator_extension.json",
+      "card_file": "experiments/cards/exp-20260628-001.md",
+      "causal_components": [
+        "fixed admission of accepted SBC burden-improvement source family",
+        "standalone-EV source rank",
+        "historical replay against current allocator",
+        "daily default-off snapshot parity wiring if accepted",
+        "no helper threshold/rank retune outside inserted source"
+      ],
+      "change_type": "default_off_paper_allocation",
+      "changed_variable": "accepted_allocator_sbc_burden_source_extension_v1",
+      "claimed_at": "2026-06-28T03:07:59+00:00",
+      "completed_at": "2026-06-28T03:28:03+00:00",
+      "created_at": "2026-06-28T03:07:44+00:00",
+      "decision": "rejected_duplicate_sbc_allocator_source_admission_no_new_evidence",
+      "evaluation_windows": [
+        {
+          "end": "2026-04-21",
+          "start": "2025-10-23"
+        },
+        {
+          "end": "2025-10-22",
+          "start": "2025-04-23"
+        },
+        {
+          "end": "2025-04-22",
+          "start": "2024-10-02"
+        }
+      ],
+      "experiment_id": "exp-20260628-001",
+      "experiment_uid": "expuid-869716439e554dee",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260628-001",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-28T03:07:44+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "sbc_allocator_source_extension"
+      },
+      "hypothesis": "candidate_pool/allocation: the accepted SBC burden-improvement shared helper has distinct SEC dilution-quality evidence and stronger standalone three-window EV than most current allocator sources; admitting it as a fixed source-priority family at standalone-EV rank may add replacement value versus the current accepted helper allocator.",
+      "implementation_mode": "no_repeat_closeout_runner",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "accepted_allocator_sbc_burden_source_extension_v1"
+      ],
+      "log": "experiments/logs/exp-20260628-001.json",
+      "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+      "multiple_testing_risk_bucket": "high_duplicate_prior_gate4_failure",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260616-015",
+        "exp-20260616-016",
+        "exp-20260618-021",
+        "exp-20260611-005"
+      ],
+      "new_evidence_type": "none_duplicate_prior_rejected_policy",
+      "novelty": {
+        "blocking_matches": [
+          {
+            "accept_rate": 0.0,
+            "family_key": "fundamental_growth_rs_monotonic_rank_validation",
+            "score": 0.6074,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "companyfacts_ratio",
+          "field_tags": [
+            "a",
+            "accepted",
+            "add",
+            "admitting",
+            "allocation",
+            "allocator",
+            "alpha",
+            "as",
+            "at",
+            "burden",
+            "by",
+            "changing",
+            "cooldown",
+            "current",
+            "dilution",
+            "distinct",
+            "ev",
+            "evidence",
+            "extension",
+            "family",
+            "has",
+            "helper",
+            "hold",
+            "implied",
+            "it",
+            "live",
+            "may",
+            "most",
+            "n",
+            "or",
+            "orders",
+            "priority",
+            "rank",
+            "replacement",
+            "sbc",
+            "sources",
+            "standalone",
+            "stronger",
+            "than",
+            "three",
+            "thresholds",
+            "top",
+            "value",
+            "versus",
+            "window",
+            "without"
+          ],
+          "gate_shape": "allocator_source"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "companyfacts_ratio",
+            "family_key": "fundamental_growth_rs_monotonic_rank_validation",
+            "reopen_condition": null,
+            "score": 0.6074,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "companyfacts_ratio",
+            "family_key": "sbc_burden_improvement_shared_default_off_adapter",
+            "reopen_condition": "Next useful evidence is closed forward replacement-value rows from the shared default-off ledger, per-share SBC burden net of buybacks, or grant-value normalization. Live activation requires forward paper maturation and kill-switch parity, not a new threshold search.",
+            "score": 0.4663,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "companyfacts_ratio",
+            "family_key": "stock_based_compensation_burden_improvement_candidate_pool",
+            "reopen_condition": "A retry needs materially different PIT dilution-quality evidence such as per-share SBC burden net of buybacks, grant-value normalization, or closed forward replacement-value rows. Do not sweep SBC tags, ratio thresholds, annual fact freshness, price guards, top-N, hold, cooldown, or notional on these frozen windows.",
+            "score": 0.4663,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "companyfacts_ratio",
+            "family_key": "sbc_per_share_buyback_adjusted_candidate_pool",
+            "reopen_condition": "A retry needs materially different PIT dilution-quality evidence such as grant-value normalization, option-exercise vesting context, or closed forward replacement-value rows. Do not sweep SBC tags, share tags, buyback tags, per-share thresholds, annual fact freshness, price guards, top-N, hold, cooldown, notional, or allocator rank on these frozen windows.",
+            "score": 0.466,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "companyfacts_ratio",
+            "family_key": "operating_lease_burden_relief_candidate_pool",
+            "reopen_condition": "A retry needs materially different PIT lease or fixed-cost evidence, such as lease maturity cliff relief, store-closure execution context, or closed forward replacement-value rows. Do not sweep lease tags, lease/revenue thresholds, revenue-growth floor, annual fact freshness, price guards, top-N, hold, cooldown, or notional on these frozen windows.",
+            "score": 0.4583,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": "Machine-checkable new allocator evidence axis: accepted shared SBC burden-improvement helper (exp-20260616-015) admitted into the accepted source-priority allocator at standalone-EV rank and compared against the current allocator, distinct from the original SBC signal/helper and from prior lagged-consensus or revision source admissions; no source-rank, threshold, notional, hold, cooldown, or helper retune.",
+        "override": true,
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "allocator_source",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "companyfacts_ratio",
+          "trials": 0
+        },
+        "warn": true,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": {
+        "success_probability": 0.28,
+        "expected_ev_delta": 0.2,
+        "expected_pnl_delta": 3000.0,
+        "main_failure_modes": [
+          "same_day_displacement_hurts_existing_allocator",
+          "old_thin_regression",
+          "drawdown_drift",
+          "concentration",
+          "source_overlap_too_high"
+        ],
+        "confidence_reason": "SBC burden improvement is already a shared default-off helper with distinct SEC Companyfacts dilution-quality evidence and strong standalone Gate-4 numbers; source admission has worked for revision and lagged-consensus, but displacement can still harm the existing allocator.",
+        "recorded_at": "2026-06-28T03:07:26+00:00"
+      },
+      "prior_trial_count": 4,
+      "result": {
+        "decision": "rejected_duplicate_sbc_allocator_source_admission_no_new_evidence",
+        "artifact": "data/experiments/exp-20260628-001/exp_20260628_001_sbc_allocator_source_extension.json",
+        "log_file": "experiments/logs/exp-20260628-001.json",
+        "lean_quality_passed": true,
+        "accepted": false,
+        "gate4": {
+          "passed": false,
+          "decision": "rejected_duplicate_sbc_allocator_source_admission_no_new_evidence",
+          "strategy_rerun_required": false,
+          "reason": "blocked_by_prior_gate4_failure_and_no_new_evidence_axis",
+          "failed_reasons": [
+            "duplicate_prior_rejected_policy",
+            "window_ev_regression",
+            "window_pnl_regression",
+            "drawdown_drift_too_high",
+            "accepted_allocator_ev_comparator_not_beaten",
+            "accepted_allocator_pnl_comparator_not_beaten",
+            "accepted_allocator_window_comparator_regression"
+          ],
+          "prior_experiment_id": "exp-20260616-016",
+          "prior_decision": "rejected_sbc_burden_rank2_allocator_source_extension",
+          "prior_gate4": {
+            "accepted_allocator_comparator": {
+              "aggregate_ev_delta": 2.1849,
+              "aggregate_pnl_delta": 40397.21,
+              "experiment_id": "exp-20260611-005",
+              "window_deltas": {
+                "late_strong": {
+                  "ev": 0.9092,
+                  "pnl": 9431.68
+                },
+                "mid_weak": {
+                  "ev": 0.6352,
+                  "pnl": 11133.95
+                },
+                "old_thin": {
+                  "ev": 0.6405,
+                  "pnl": 19831.58
+                }
+              }
+            },
+            "accepted_sbc_burden_comparator": {
+              "aggregate_ev_delta": 0.9438,
+              "aggregate_pnl_delta": 15748.19,
+              "experiment_id": "exp-20260616-015",
+              "target_trade_count": 108,
+              "window_deltas": {
+                "late_strong": {
+                  "ev": 0.4738,
+                  "pnl": 6269.93
+                },
+                "mid_weak": {
+                  "ev": 0.4375,
+                  "pnl": 8388.43
+                },
+                "old_thin": {
+                  "ev": 0.0325,
+                  "pnl": 1089.83
+                }
+              }
+            },
+            "aggregate_ev_delta": 0.7532,
+            "aggregate_pnl_delta": 23673.34,
+            "comparator_regressions": [
+              "late_strong_ev",
+              "late_strong_pnl",
+              "old_thin_ev",
+              "old_thin_pnl"
+            ],
+            "daily_snapshot_source": "not_retained_shared_candidate_was_rolled_back",
+            "decision": "rejected_sbc_burden_rank2_allocator_source_extension",
+            "failed_reasons": [
+              "window_ev_regression",
+              "window_pnl_regression",
+              "drawdown_drift_too_high",
+              "accepted_allocator_ev_comparator_not_beaten",
+              "accepted_allocator_pnl_comparator_not_beaten",
+              "accepted_allocator_window_comparator_regression"
+            ],
+            "max_drawdown_worse": 0.0223,
+            "max_drawdown_worse_guardrail": 0.005,
+            "minimum_core_survival_rate": 0.7925,
+            "passed": false,
+            "shared_adapter_module": "runner_local_replay_variant",
+            "survival_guard_passed": true,
+            "target_concentration": {
+              "max_single_positive_pnl_share": 0.238425,
+              "max_single_positive_pnl_share_guardrail": 0.5,
+              "passed": true,
+              "positive_pnl_hhi": 0.083331,
+              "positive_pnl_hhi_guardrail": 0.35,
+              "top5_positive_share": 0.507246
+            },
+            "target_trade_count": 378,
+            "target_trade_count_min": 20,
+            "target_window_count_min": 3,
+            "target_windows": [
+              "late_strong",
+              "mid_weak",
+              "old_thin"
+            ],
+            "windows_ev_improved": 2,
+            "windows_ev_regressed": 1,
+            "windows_pnl_improved": 2,
+            "windows_pnl_regressed": 1
+          },
+          "rollback_performed": true
+        },
+        "rollback": {
+          "performed": true,
+          "files": [
+            "quant/accepted_helper_source_priority_allocator_paper_sleeve.py",
+            "quant/test_accepted_helper_source_priority_allocator_paper_sleeve.py"
+          ],
+          "reason": "Rejected strategy-affecting source admission had no legal new evidence axis after exp-20260616-016."
+        }
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260628-001.json",
+      "single_causal_variable": "accepted_allocator_sbc_burden_source_extension_v1",
+      "status": "rejected",
+      "summary": "Rejected as duplicate of exp-20260616-016; strategy edits rolled back.",
+      "ticket_file": "experiments/tickets/exp-20260628-001.json",
+      "trial_family": "accepted_helper_source_priority_allocator_source_extension",
+      "trial_variant_id": "sbc_burden_improvement_source_admission_v1",
+      "updated_at": "2026-06-28T03:28:03+00:00",
+      "aggregate_expected_value_delta": -0.1331,
+      "aggregate_strategy_total_pnl_delta": 7690.0
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-27T16:20:50+00:00"
+  "updated_at": "2026-06-28T03:28:03+00:00"
 }

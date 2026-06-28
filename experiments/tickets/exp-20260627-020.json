@@ -1,0 +1,363 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260627_020_ai_infra_post_activation_pilot_replay_readiness.py",
+    "data/experiments/exp-20260627-020/exp_20260627_020_ai_infra_post_activation_pilot_replay_readiness.json",
+    "experiments/cards/exp-20260627-020.md",
+    "experiments/manifests/exp-20260627-020.json",
+    "experiments/tickets/exp-20260627-020.json",
+    "experiments/logs/exp-20260627-020.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260627-020.md",
+  "causal_components": [
+    "shared include-pilot-sleeve replay",
+    "current warehouse OHLCV",
+    "read-only promotion gates",
+    "no order changes"
+  ],
+  "change_type": "pilot_activation_replay_readiness",
+  "changed_variable": "post_activation_ai_infra_include_pilot_sleeve_replay_readiness_v1",
+  "claimed_at": "2026-06-27T17:09:39+00:00",
+  "completed_at": "2026-06-27T17:18:33+00:00",
+  "created_at": "2026-06-27T17:09:18+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260627-020",
+  "experiment_uid": "expuid-e57658817a014be7",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260627-020",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-27T17:09:18+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "ai_infra_post_activation_pilot_replay_readiness"
+  },
+  "hypothesis": "Post-activation AI_INFRA_AGGRESSIVE pilot replay from 2026-05-01 through 2026-06-26 may now provide enough PIT direct and replacement-value evidence to justify continued promotion readiness without changing core orders; if replay entries, replacement value, or drawdown fail, no allocation change is justified.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "post_activation_ai_infra_include_pilot_sleeve_replay_readiness_v1"
+  ],
+  "mechanism_family": "pilot_or_sleeve",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260519-014",
+    "exp-20260524-001",
+    "exp-20260623-017",
+    "exp-20260627-001"
+  ],
+  "new_evidence_type": "post_activation_pilot_replay_rows",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "activation",
+        "aggressive",
+        "ai",
+        "allocation",
+        "change",
+        "changing",
+        "continued",
+        "core",
+        "direct",
+        "drawdown",
+        "enough",
+        "entries",
+        "evidence",
+        "fail",
+        "from",
+        "if",
+        "include",
+        "infra",
+        "is",
+        "justified",
+        "justify",
+        "may",
+        "no",
+        "now",
+        "or",
+        "orders",
+        "pilot",
+        "pit",
+        "post",
+        "promotion",
+        "provide",
+        "readiness",
+        "replacement",
+        "sleeve",
+        "through",
+        "to",
+        "value",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "pilot_or_sleeve",
+        "reopen_condition": "A fundamentally different portfolio-level risk mechanism (e.g. regime-based position count cap, not notional scaling) or a much higher-frequency trade universe where sizing changes affect hundreds of entries, not single digits.",
+        "score": 0.048,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "ai_infra_aggressive_forward_sleeve",
+        "reopen_condition": null,
+        "score": 0.041,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.375,
+        "data_source": "other",
+        "family_key": "default_off_forward_replacement_value_activation_readiness",
+        "reopen_condition": "At least 20 closed rows for one diversified helper/source family to justify a watchlist lead, and at least 60 closed rows with positive replacement value versus cash, SPY, and QQQ for an activation-envelope experiment.",
+        "score": 0.0372,
+        "status": "has_accepted",
+        "trials": 8
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "default_off_to_activation_envelope",
+        "reopen_condition": "Genuine production-forward closed rows from the shared default-off helper, not replay-only OOS rows.",
+        "score": 0.0364,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.0357,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Post-activation 2026-05-01..2026-06-26 PIT --include-pilot-sleeve replay rows after pilot activation are a new forward evidence axis required by docs/backtesting.md; this is not a fixed-window threshold or response retune.",
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "thin_replay_entries",
+      "negative_replacement_value",
+      "drawdown_or_concentration_failed",
+      "no_closed_replacement_rows"
+    ],
+    "confidence_reason": "AI_INFRA has older positive-but-unstable segment evidence and is a sanctioned pilot lane, but current pilot scorecards remain thin and prior work requires closed replacement-value evidence before promotion.",
+    "recorded_at": "2026-06-27T17:09:06+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "rejected_ai_infra_post_activation_promotion_not_ready",
+    "artifact": "data/experiments/exp-20260627-020/exp_20260627_020_ai_infra_post_activation_pilot_replay_readiness.json",
+    "log": "experiments/logs/exp-20260627-020.json",
+    "runner": "quant/experiments/exp_20260627_020_ai_infra_post_activation_pilot_replay_readiness.py",
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_ai_infra_post_activation_promotion_not_ready",
+      "checks": {
+        "pilot_replay_enabled": true,
+        "has_post_activation_eligible_days": true,
+        "pilot_closed_rows_min_20": false,
+        "pilot_entries_min_5": false,
+        "replacement_value_positive": false,
+        "risk_adjusted_replacement_available": false,
+        "no_pending_counterfactuals": true,
+        "core_primary_converged": false,
+        "core_trade_count_min_15": false,
+        "core_drawdown_under_20pct": true,
+        "beats_spy_and_qqq": true
+      },
+      "failed_reasons": [
+        "thin_replay_entries",
+        "too_few_entered_pilot_trades",
+        "negative_replacement_value",
+        "risk_adjusted_replacement_unavailable",
+        "core_primary_not_converged",
+        "primary_trade_count_below_15"
+      ],
+      "before_after_policy_delta": "none",
+      "expected_value_score_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "survival_rate_delta": 0.0,
+      "status": "observed_only_rejected"
+    },
+    "calibration": {
+      "predicted_success_probability": 0.18,
+      "actual_success": false,
+      "brier_score": 0.0324,
+      "predicted_failure_modes": [
+        "thin_replay_entries",
+        "negative_replacement_value",
+        "drawdown_or_concentration_failed",
+        "no_closed_replacement_rows"
+      ],
+      "realized_failure_modes": [
+        "thin_replay_entries",
+        "negative_replacement_value",
+        "risk_adjusted_replacement_unavailable"
+      ],
+      "failed_reasons": [
+        "thin_replay_entries",
+        "too_few_entered_pilot_trades",
+        "negative_replacement_value",
+        "risk_adjusted_replacement_unavailable",
+        "core_primary_not_converged",
+        "primary_trade_count_below_15"
+      ]
+    },
+    "summary": "The current warehouse post-activation replay produced a good core short-window result, but it was not converged because only six core trades closed. The pilot sleeve generated seven surviving pilot signals but only one entered/closed trade (COHR), and that row lost 658.54 USD versus cash replacement. Risk-adjusted replacement value is unavailable, so the sleeve still lacks material closed evidence for promotion."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260627-020.json",
+  "single_causal_variable": "post_activation_ai_infra_include_pilot_sleeve_replay_readiness_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260627-020.json",
+  "trial_family": "ai_infra_post_activation_pilot_replay_readiness",
+  "trial_variant_id": "post_activation_20260501_20260626_v1",
+  "implementation_mode": "observed_only_attribution",
+  "new_evidence_axis": "Post-activation 2026-05-01..2026-06-26 PIT --include-pilot-sleeve replay rows after pilot activation are a new forward evidence axis required by docs/backtesting.md; this is not a fixed-window threshold or response retune.",
+  "decision": "rejected_ai_infra_post_activation_promotion_not_ready",
+  "artifact": "data/experiments/exp-20260627-020/exp_20260627_020_ai_infra_post_activation_pilot_replay_readiness.json",
+  "log": "experiments/logs/exp-20260627-020.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_expected_value_score_sum": 7.8941,
+    "baseline_total_pnl": 234850.99,
+    "baseline_trade_count": 61
+  },
+  "gate2": {
+    "passed": true,
+    "required_fields": [
+      "pilot_sleeve_replay.entries",
+      "pilot_sleeve_replay.closed_trades",
+      "pilot_sleeve_replay.replacement_value",
+      "pilot_sleeve_replay.decisions.date",
+      "pilot_sleeve_replay.decisions.ticker",
+      "trades.entry_date"
+    ],
+    "entry_date_present": true,
+    "target_price_present_in_saved_trade_rows": false,
+    "target_price_required": false,
+    "target_price_note": "This audit reads backtester replay output and does not introduce a new target-price rule. Saved trade rows expose entry_date, entry_price, stop_price, target_mult_used, exit_price, and exit_reason; target_price is not serialized as a separate field."
+  },
+  "gate3": {
+    "passed": true,
+    "signals_generated": 17,
+    "signals_survived": 15,
+    "survival_rate": 0.8824,
+    "pilot_signals_generated": 7,
+    "pilot_signals_survived": 7,
+    "pilot_survival_rate": 1.0,
+    "filter_added": false,
+    "note": "No filter was added; this is a read-only pilot replay audit."
+  },
+  "gate4": {
+    "passed": false,
+    "decision": "rejected_ai_infra_post_activation_promotion_not_ready",
+    "checks": {
+      "pilot_replay_enabled": true,
+      "has_post_activation_eligible_days": true,
+      "pilot_closed_rows_min_20": false,
+      "pilot_entries_min_5": false,
+      "replacement_value_positive": false,
+      "risk_adjusted_replacement_available": false,
+      "no_pending_counterfactuals": true,
+      "core_primary_converged": false,
+      "core_trade_count_min_15": false,
+      "core_drawdown_under_20pct": true,
+      "beats_spy_and_qqq": true
+    },
+    "failed_reasons": [
+      "thin_replay_entries",
+      "too_few_entered_pilot_trades",
+      "negative_replacement_value",
+      "risk_adjusted_replacement_unavailable",
+      "core_primary_not_converged",
+      "primary_trade_count_below_15"
+    ],
+    "before_after_policy_delta": "none",
+    "expected_value_score_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "survival_rate_delta": 0.0,
+    "status": "observed_only_rejected"
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "pilot_state_changed": false,
+    "pilot_recommendations_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_ready": false,
+    "replay_only": true,
+    "parity_note": "Uses the shared backtester --include-pilot-sleeve replay path. Replay is in-memory and explicitly does not write production pilot competition ledgers."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The current warehouse post-activation replay produced a good core short-window result, but it was not converged because only six core trades closed. The pilot sleeve generated seven surviving pilot signals but only one entered/closed trade (COHR), and that row lost 658.54 USD versus cash replacement. Risk-adjusted replacement value is unavailable, so the sleeve still lacks material closed evidence for promotion.",
+    "forbidden_near_neighbor_retry": "Do not rerun AI_INFRA post-activation promotion readiness by only changing min_closed, notional, RV, risk-adjusted RV, or drawdown gates on the same 2026-05-01..2026-06-26 replay. Reopen only with materially more closed post-activation pilot rows, a different shared allocation policy through Gate 1-4, or a new production-visible evidence source.",
+    "new_evidence_required": "Need at least materially more closed AI_INFRA pilot rows with positive replacement value versus cash/SPY/QQQ, or a separate shared-policy allocation experiment that changes actual selection/sizing and passes Gate 1-4.",
+    "reproducibility": "Run the current warehouse backtester command, then run this runner. On this Windows run the backtester left a complete temp JSON because atomic replace failed with PermissionError; the runner records that caveat and summarizes the temp JSON."
+  },
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/backtests/.backtest_results_20260627.json.z9lf6_av.tmp",
+    "experiments/tickets/exp-20260627-020.json",
+    "data/warehouse/warehouse_main.sqlite",
+    "data/experiments/exp-20260519-030/warehouse_main.sqlite"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260627_020_ai_infra_post_activation_pilot_replay_readiness.py",
+    "data/experiments/exp-20260627-020/exp_20260627_020_ai_infra_post_activation_pilot_replay_readiness.json",
+    "experiments/logs/exp-20260627-020.json",
+    "experiments/cards/exp-20260627-020.md",
+    "experiments/manifests/exp-20260627-020.json",
+    "experiments/tickets/exp-20260627-020.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-06-27T17:18:33+00:00"
+}

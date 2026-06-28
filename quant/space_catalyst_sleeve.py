@@ -2554,18 +2554,20 @@ def persist_space_catalyst_event_ledger(
         handle.write("\n")
     # exp-20260612-017: also publish the standard sleeve surfaces so
     # state.json/snapshots.jsonl tooling does not skip this sleeve. Event rows
-    # are observe-only measurements, not trades, so only compact identifiers go
-    # into pending_entries and the trade lists stay empty.
+    # are observe-only measurements, not trades, so only compact unresolved
+    # identifiers go into pending_entries and the trade lists stay empty.
     pending_rows = [
         {
             "ticker": row.get("ticker"),
             "event_date": row.get("event_date"),
             "event_id": row.get("event_id"),
             "semantic_bucket": row.get("semantic_bucket"),
-            "status": row.get("status"),
+            "outcome_status": row.get("outcome_status"),
+            "pending_reason": row.get("pending_reason"),
+            "entry_date": row.get("entry_date"),
         }
         for row in (snapshot.get("event_rows") or [])
-        if isinstance(row, dict) and str(row.get("status") or "") != "closed"
+        if isinstance(row, dict) and row.get("closed_decision") is not True
     ]
     out["standard_surfaces"] = write_standard_sleeve_surfaces(
         sleeve_dir=summary.parent,

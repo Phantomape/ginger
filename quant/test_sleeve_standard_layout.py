@@ -40,6 +40,7 @@ def test_write_standard_surfaces_idempotent_per_asof(tmp_path) -> None:
     assert state["pending_entries"] == [{"ticker": "ABC"}]
     assert state["open_positions"] == []
     assert state["closed_positions"] == []
+    assert result["updated_snapshot"] is False
 
     rows = _read_jsonl(sleeve_dir / "snapshots.jsonl")
     assert len(rows) == 1
@@ -47,6 +48,22 @@ def test_write_standard_surfaces_idempotent_per_asof(tmp_path) -> None:
     assert rows[0]["candidate_count"] == 1
     assert rows[0]["closed_position_count"] == 0
     assert rows[0]["ledger_row_count"] == 5
+
+    changed = write_standard_sleeve_surfaces(
+        sleeve_dir=sleeve_dir,
+        sleeve_name="SOME_WATCH",
+        rule_version="v1",
+        asof_date="2026-06-11",
+        pending_entries=[{"ticker": "ABC"}, {"ticker": "XYZ"}],
+        extra_snapshot_fields={"ledger_row_count": 6},
+    )
+    assert changed["appended_snapshot"] is False
+    assert changed["updated_snapshot"] is True
+    rows = _read_jsonl(sleeve_dir / "snapshots.jsonl")
+    assert len(rows) == 1
+    assert rows[0]["candidate_count"] == 2
+    assert rows[0]["pending_count"] == 2
+    assert rows[0]["ledger_row_count"] == 6
 
     # A new asof date appends a second row.
     write_standard_sleeve_surfaces(

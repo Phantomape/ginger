@@ -1,0 +1,717 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3,
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "label": "late_strong",
+        "max_drawdown_pct": 0.0665,
+        "start": "2025-10-23",
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18
+      },
+      {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "label": "mid_weak",
+        "max_drawdown_pct": 0.1119,
+        "start": "2025-04-23",
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21
+      },
+      {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "label": "old_thin",
+        "max_drawdown_pct": 0.1001,
+        "start": "2024-10-02",
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22
+      }
+    ]
+  },
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260627_023_ortex_short_interest_sidecar_readiness.py",
+    "data/experiments/exp-20260627-023/exp_20260627_023_ortex_short_interest_sidecar_readiness.json",
+    "experiments/cards/exp-20260627-023.md",
+    "experiments/manifests/exp-20260627-023.json",
+    "experiments/tickets/exp-20260627-023.json",
+    "experiments/logs/exp-20260627-023.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "If short-crowding is a real long-alpha context rather than a stale FINRA proxy, ORTEX short-interest plus borrow-cost/utilization/loan-availability fields should eventually separate durable squeeze candidates from crowded false positives when joined to accepted allocator or forward rows.",
+  "alpha_ready": false,
+  "anti_js": {
+    "evidence": "Python runner only; no node/js tooling invoked.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260627-023/exp_20260627_023_ortex_short_interest_sidecar_readiness.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3,
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "label": "late_strong",
+        "max_drawdown_pct": 0.0665,
+        "start": "2025-10-23",
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18
+      },
+      {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "label": "mid_weak",
+        "max_drawdown_pct": 0.1119,
+        "start": "2025-04-23",
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21
+      },
+      {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "label": "old_thin",
+        "max_drawdown_pct": 0.1001,
+        "start": "2024-10-02",
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22
+      }
+    ]
+  },
+  "calibration": {
+    "actual_decision": "blocked_ortex_short_interest_sidecar_not_alpha_ready",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 0,
+    "brier_score": 0.0144,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "only_demo_tickers",
+      "publication_date_absent",
+      "usable_trade_date_absent",
+      "borrow_economics_absent",
+      "not_append_only_daily_ledger"
+    ],
+    "predicted_success_probability": 0.12,
+    "realized_failure_modes": [
+      "ticker_count_below_20",
+      "data_date_count_below_20",
+      "publication_or_usable_trade_date_absent",
+      "borrow_fee_utilization_loan_availability_absent",
+      "not_append_only_daily_snapshot_ledger",
+      "no_closed_forward_replacement_rows_joined"
+    ],
+    "surprise_note": "No surprise: ORTEX rows exist, but they are a tiny sample of short-interest values without PIT publication/usable dates or borrow-economics fields."
+  },
+  "causal_components": [
+    "local ORTEX JSON payload audit",
+    "PIT publication/usable-trade-date coverage audit",
+    "borrow economics field coverage audit",
+    "baseline identity check",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260627_023_ortex_short_interest_sidecar_readiness.py",
+    "data/experiments/exp-20260627-023/exp_20260627_023_ortex_short_interest_sidecar_readiness.json",
+    "experiments/logs/exp-20260627-023.json",
+    "experiments/cards/exp-20260627-023.md",
+    "experiments/manifests/exp-20260627-023.json",
+    "experiments/tickets/exp-20260627-023.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "ortex_short_interest_sidecar_readiness_gate_v1",
+  "decision": "blocked_ortex_short_interest_sidecar_not_alpha_ready",
+  "delta_metrics": {
+    "borrow_economics_populated_rows": 0,
+    "expected_value_score_sum_delta": 0.0,
+    "ortex_data_date_count": 2,
+    "ortex_file_count": 2,
+    "ortex_row_count": 4,
+    "ortex_unique_tickers": 2,
+    "pit_publication_or_usable_date_rows": 0,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260627-023",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3,
+      "windows": [
+        {
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "label": "late_strong",
+          "max_drawdown_pct": 0.0665,
+          "start": "2025-10-23",
+          "survival_rate": 0.8039,
+          "total_pnl": 117072.92,
+          "trade_count": 18
+        },
+        {
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "label": "mid_weak",
+          "max_drawdown_pct": 0.1119,
+          "start": "2025-04-23",
+          "survival_rate": 0.7925,
+          "total_pnl": 78110.11,
+          "trade_count": 21
+        },
+        {
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "label": "old_thin",
+          "max_drawdown_pct": 0.1001,
+          "start": "2024-10-02",
+          "survival_rate": 0.8667,
+          "total_pnl": 39667.96,
+          "trade_count": 22
+        }
+      ]
+    },
+    "passed": true
+  },
+  "gate2": {
+    "blocking_reason": "Source rows load and short-interest fields are present, but publication/usable_trade_date and borrow-economics fields are absent.",
+    "dependencies_validated": true,
+    "dependency_fields_checked": [
+      "ticker_from_filename",
+      "exchange_from_filename",
+      "date",
+      "shortInterestShares",
+      "shortInterestPcFreeFloat",
+      "shortInterestUsd",
+      "publication_date",
+      "publicationDate",
+      "published_at",
+      "publishedAt",
+      "usable_trade_date",
+      "usableTradeDate",
+      "as_of_date",
+      "asOfDate",
+      "borrowFee",
+      "borrow_fee",
+      "costToBorrow",
+      "ctb",
+      "utilization",
+      "loanAvailability",
+      "loan_availability",
+      "sharesAvailable",
+      "shares_available",
+      "daysToCover",
+      "days_to_cover",
+      "entry_date",
+      "target_price"
+    ],
+    "entry_date_present": false,
+    "entry_date_target_price_note": "ORTEX sidecar rows are source observations, not trade rows; any future alpha must join them to candidate/forward rows with explicit entry_date and target_price elsewhere.",
+    "passed": true,
+    "target_price_present": false
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No executable filter, source allocator, ranking, sizing, or order rule was added.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "strategy_behavior_changed": false,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "decision": "blocked_ortex_short_interest_sidecar_not_alpha_ready",
+    "failed_reasons": [
+      "ticker_count_below_20",
+      "data_date_count_below_20",
+      "publication_or_usable_trade_date_absent",
+      "borrow_fee_utilization_loan_availability_absent",
+      "not_append_only_daily_snapshot_ledger",
+      "no_closed_forward_replacement_rows_joined"
+    ],
+    "measurement_repair_only": true,
+    "passed": false,
+    "readiness_rule": {
+      "min_data_dates": 20,
+      "min_tickers": 20,
+      "requires_append_only_daily_ledger": true,
+      "requires_borrow_economics": true,
+      "requires_closed_forward_replacement_value_rows": true,
+      "requires_publication_or_usable_trade_date": true
+    },
+    "strategy_rerun_required": false
+  },
+  "hypothesis": "Alpha blocker: true PIT borrow/short-crowding alpha needs an ORTEX short-interest sidecar with decision-time publication/usable_trade dates and borrow-economics fields; audit the current local ORTEX rows before any FINRA/options/short-flow retry.",
+  "implementation_mode": "measurement_repair_readiness_audit",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260627-023.json",
+  "mechanism_family": "production_visible_ortex_short_interest_readiness",
+  "multiple_testing_risk_bucket": "low_new_source_but_thin_payload",
+  "nearby_prior_experiments": [
+    "exp-20260625-003",
+    "exp-20260625-019",
+    "exp-20260625-024",
+    "exp-20260627-002"
+  ],
+  "new_evidence_type": "new_ortex_short_interest_source_readiness_audit",
+  "observed_only_lead": false,
+  "ortex_surface": {
+    "borrow_economics_populated_rows": 0,
+    "data_date_count": 2,
+    "data_date_max": "2026-06-05",
+    "data_date_min": "2026-06-04",
+    "field_coverage": {
+      "borrow_economics": {
+        "borrowFee": {
+          "present_rate": 0.0,
+          "present_rows": 0,
+          "scanned_rows": 4
+        },
+        "borrow_fee": {
+          "present_rate": 0.0,
+          "present_rows": 0,
+          "scanned_rows": 4
+        },
+        "costToBorrow": {
+          "present_rate": 0.0,
+          "present_rows": 0,
+          "scanned_rows": 4
+        },
+        "ctb": {
+          "present_rate": 0.0,
+          "present_rows": 0,
+          "scanned_rows": 4
+        },
+        "daysToCover": {
+          "present_rate": 0.0,
+          "present_rows": 0,
+          "scanned_rows": 4
+        },
+        "days_to_cover": {
+          "present_rate": 0.0,
+          "present_rows": 0,
+          "scanned_rows": 4
+        },
+        "loanAvailability": {
+          "present_rate": 0.0,
+          "present_rows": 0,
+          "scanned_rows": 4
+        },
+        "loan_availability": {
+          "present_rate": 0.0,
+          "present_rows": 0,
+          "scanned_rows": 4
+        },
+        "sharesAvailable": {
+          "present_rate": 0.0,
+          "present_rows": 0,
+          "scanned_rows": 4
+        },
+        "shares_available": {
+          "present_rate": 0.0,
+          "present_rows": 0,
+          "scanned_rows": 4
+        },
+        "utilization": {
+          "present_rate": 0.0,
+          "present_rows": 0,
+          "scanned_rows": 4
+        }
+      },
+      "pit_dates": {
+        "asOfDate": {
+          "present_rate": 0.0,
+          "present_rows": 0,
+          "scanned_rows": 4
+        },
+        "as_of_date": {
+          "present_rate": 0.0,
+          "present_rows": 0,
+          "scanned_rows": 4
+        },
+        "publicationDate": {
+          "present_rate": 0.0,
+          "present_rows": 0,
+          "scanned_rows": 4
+        },
+        "publication_date": {
+          "present_rate": 0.0,
+          "present_rows": 0,
+          "scanned_rows": 4
+        },
+        "publishedAt": {
+          "present_rate": 0.0,
+          "present_rows": 0,
+          "scanned_rows": 4
+        },
+        "published_at": {
+          "present_rate": 0.0,
+          "present_rows": 0,
+          "scanned_rows": 4
+        },
+        "usableTradeDate": {
+          "present_rate": 0.0,
+          "present_rows": 0,
+          "scanned_rows": 4
+        },
+        "usable_trade_date": {
+          "present_rate": 0.0,
+          "present_rows": 0,
+          "scanned_rows": 4
+        }
+      },
+      "short_interest": {
+        "shortInterestPcFreeFloat": {
+          "present_rate": 1.0,
+          "present_rows": 4,
+          "scanned_rows": 4
+        },
+        "shortInterestShares": {
+          "present_rate": 1.0,
+          "present_rows": 4,
+          "scanned_rows": 4
+        },
+        "shortInterestUsd": {
+          "present_rate": 1.0,
+          "present_rows": 4,
+          "scanned_rows": 4
+        }
+      }
+    },
+    "file_count": 2,
+    "pit_boundary": "Rows have provider data dates and local file mtimes, but no provider publication_date or usable_trade_date. Treat as fetched sample payloads, not append-only PIT decision rows.",
+    "pit_publication_or_usable_date_rows": 0,
+    "row_count": 4,
+    "row_count_by_data_date": {
+      "2026-06-04": 2,
+      "2026-06-05": 2
+    },
+    "row_count_by_ticker": {
+      "AAPL": 2,
+      "MSFT": 2
+    },
+    "sample_rows": [
+      {
+        "date": "2026-06-04",
+        "exchange": "NASDAQ",
+        "file_mtime_utc": "2026-06-27T18:17:37+00:00",
+        "shortInterestPcFreeFloat": 1.076703,
+        "shortInterestShares": 157871950,
+        "shortInterestUsd": 49134486915,
+        "source_file": "data/non_ohlcv/ortex/ortex_NASDAQ_AAPL_SHORT_INTEREST.json",
+        "ticker": "AAPL"
+      },
+      {
+        "date": "2026-06-05",
+        "exchange": "NASDAQ",
+        "file_mtime_utc": "2026-06-27T18:17:37+00:00",
+        "shortInterestPcFreeFloat": 1.061069,
+        "shortInterestShares": 155579544,
+        "shortInterestUsd": 47815816960,
+        "source_file": "data/non_ohlcv/ortex/ortex_NASDAQ_AAPL_SHORT_INTEREST.json",
+        "ticker": "AAPL"
+      }
+    ],
+    "short_interest_complete_rows": 4,
+    "short_interest_pct_free_float": {
+      "max": 1.076703,
+      "mean": 1.064128,
+      "median": 1.06031,
+      "min": 1.059187,
+      "n": 4
+    },
+    "short_interest_shares": {
+      "max": 157871950.0,
+      "mean": 117652146.5,
+      "median": 117085799.5,
+      "min": 78565037.0,
+      "n": 4
+    },
+    "short_interest_usd": {
+      "max": 49134486915.0,
+      "mean": 40831831701.75,
+      "median": 40728572961.0,
+      "min": 32735693970.0,
+      "n": 4
+    },
+    "source_dir": "data/non_ohlcv/ortex",
+    "source_dir_exists": true,
+    "source_files": [
+      {
+        "credits_left": 999,
+        "credits_used": 1.05,
+        "exchange": "NASDAQ",
+        "label": "short_interest",
+        "mtime_utc": "2026-06-27T18:17:37+00:00",
+        "path": "data/non_ohlcv/ortex/ortex_NASDAQ_AAPL_SHORT_INTEREST.json",
+        "payload_length": 2,
+        "row_count": 2,
+        "sha256": "76f96386c518dc46d491fa5d9b7758a88ab298ec74628aa6a1243c365e11d57e",
+        "ticker": "AAPL"
+      },
+      {
+        "credits_left": 999,
+        "credits_used": 1.05,
+        "exchange": "NASDAQ",
+        "label": "short_interest",
+        "mtime_utc": "2026-06-27T18:18:45+00:00",
+        "path": "data/non_ohlcv/ortex/ortex_NASDAQ_MSFT_SHORT_INTEREST.json",
+        "payload_length": 2,
+        "row_count": 2,
+        "sha256": "21148d68f5386c8b028402f96d90b9036ae2502dad63ba9440c7987e7a47b1a7",
+        "ticker": "MSFT"
+      }
+    ],
+    "tickers": [
+      "AAPL",
+      "MSFT"
+    ],
+    "unique_tickers": 2
+  },
+  "owner": "alpha-explore",
+  "parameters": {
+    "readiness_min_data_dates": 20,
+    "readiness_min_tickers": 20,
+    "requires_append_only_daily_ledger": true,
+    "requires_borrow_fee_or_utilization_or_loan_availability": true,
+    "requires_publication_or_usable_trade_date": true,
+    "source_dir": "data/non_ohlcv/ortex"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not run ORTEX/FINRA/options/short-flow alpha gates, notional haircuts, or threshold scans from these two sample ORTEX files. Do not treat local file mtime as publication-date PIT evidence.",
+    "new_evidence_required": "A valid retry needs an append-only ORTEX daily sidecar with provider publication_date or usable_trade_date, at least 20 tickers over 20 decision dates, populated borrow fee/utilization/loan availability or days-to-cover fields, then closed forward replacement-value rows.",
+    "why_result_happened": "The local ORTEX files are useful proof that the fetcher can produce short-interest payloads, but they only cover AAPL/MSFT over two dates and do not include publication/usable-trade dates or borrow fee, utilization, loan availability, shares available, or days-to-cover."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "If short-crowding is a real long-alpha context rather than a stale FINRA proxy, ORTEX short-interest plus borrow-cost/utilization/loan-availability fields should eventually separate durable squeeze candidates from crowded false positives when joined to accepted allocator or forward rows.",
+    "2_history_check": {
+      "exp-20260625-003": "Moomoo borrow availability sidecar was blocked with zero borrow-populated rows.",
+      "exp-20260625-019": "Moomoo daily short-volume clean-flow gate failed accepted-allocator Gate 4.",
+      "exp-20260625-024": "Toxic short-volume notional downweight also failed.",
+      "exp-20260627-002": "Daily non-OHLCV borrow collection was wired default-off, but still needs populated rows.",
+      "novelty_gate": "Reservation passed with no strong near-neighbor; this is a new ORTEX source readiness audit, not a FINRA or short-volume threshold scan."
+    },
+    "3_single_policy_bundle": "ortex_short_interest_sidecar_readiness_gate_v1",
+    "4_success_failure_standard": "Alpha remains blocked unless ORTEX rows provide enough tickers/dates, publication or usable-trade dates, borrow economics, append-only daily ledger semantics, and closed forward replacement rows.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260627_023_ortex_short_interest_sidecar_readiness.py"
+  },
+  "prediction": {
+    "confidence_reason": "ORTEX is a genuinely new source for the named borrow/short-crowding axis, but current local files appear to be two sample short-interest payloads rather than an append-only PIT daily ledger with borrow fee, utilization, or loan availability.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "only_demo_tickers",
+      "publication_date_absent",
+      "usable_trade_date_absent",
+      "borrow_economics_absent",
+      "not_append_only_daily_ledger"
+    ],
+    "recorded_at": "2026-06-27T19:05:20+00:00",
+    "success_probability": 0.12
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "paper_orders_changed": false,
+    "parity_note": "Experiment-owned readiness artifact only. It reads local ORTEX files and writes no shared helper, daily adapter, order, rank, size, exit, watchlist, or LLM changes.",
+    "ranking_changed": false,
+    "risk_budget_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false,
+    "watchlist_changed": false
+  },
+  "rejection_reason": "ticker_count_below_20;data_date_count_below_20;publication_or_usable_trade_date_absent;borrow_fee_utilization_loan_availability_absent;not_append_only_daily_snapshot_ledger;no_closed_forward_replacement_rows_joined",
+  "related_files": [
+    "quant/experiments/exp_20260627_023_ortex_short_interest_sidecar_readiness.py",
+    "quant/ortex_data_sidecar.py",
+    "data/non_ohlcv/ortex",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260625-003.json",
+    "experiments/logs/exp-20260625-019.json",
+    "experiments/logs/exp-20260625-024.json",
+    "experiments/logs/exp-20260627-002.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260627_023_ortex_short_interest_sidecar_readiness.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260627_023_ortex_short_interest_sidecar_readiness.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "ortex_short_interest_sidecar_readiness_gate_v1",
+  "status": "blocked",
+  "ticket_before": {
+    "claimed_at": "2026-06-27T19:05:31+00:00",
+    "created_at": "2026-06-27T19:05:20+00:00",
+    "hub_identity": {
+      "namespace": "ginger/experiments",
+      "repo_id": "ginger/experiments/exp-20260627-023",
+      "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+      "reserved_at": "2026-06-27T19:05:20+00:00",
+      "scheme": "hf_hub_local_v1",
+      "slug": "ortex_short_interest_sidecar_readiness"
+    },
+    "novelty": {
+      "blocking_matches": [],
+      "enforced": true,
+      "fingerprint": {
+        "data_source": "finra_short_interest",
+        "field_tags": [
+          "alpha",
+          "an",
+          "any",
+          "audit",
+          "before",
+          "blocker",
+          "borrow",
+          "crowding",
+          "current",
+          "dates",
+          "decision",
+          "economics",
+          "fields",
+          "finra",
+          "flow",
+          "gate",
+          "interest",
+          "local",
+          "needs",
+          "options",
+          "ortex",
+          "pit",
+          "publication",
+          "readiness",
+          "retry",
+          "rows",
+          "short",
+          "sidecar",
+          "time",
+          "trade",
+          "true",
+          "usable"
+        ],
+        "gate_shape": "other"
+      },
+      "nearest": [
+        {
+          "accept_rate": 0.0,
+          "data_source": "finra_short_interest",
+          "family_key": "moomoo_borrow_availability_readiness_gate",
+          "reopen_condition": "A valid retry needs populated short_sell_rate_pct and/or short_available_volume rows over at least 20 forward dates, then closed forward replacement-value attribution versus cash, SPY, QQQ, and accepted comparators.",
+          "score": 0.5041,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "finra_short_interest",
+          "family_key": "short_interest_borrow_pressure_overlay",
+          "reopen_condition": null,
+          "score": 0.4853,
+          "status": "frozen_rejected",
+          "trials": 12
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "finra_short_interest",
+          "family_key": "finra_borrow_pressure_broad_universe",
+          "reopen_condition": "If positive, promote a shared-paper-first BROAD FINRA helper with historical replay + daily snapshot + parity test, and collect closed forward replacement-value rows. If negative, FINRA short interest is not standalone entry alpha even broadly; use it as crowding/risk context and require a materially different PIT borrow-cost / availability field before any retry. Do not threshold-sweep the frozen",
+          "score": 0.4843,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "finra_short_interest",
+          "family_key": "fiftytwo_week_high_finra_borrow_pressure_candidate_pool",
+          "reopen_condition": "A retry needs materially different PIT evidence separating durable and exhausted 52-week-high leaders, such as borrow-cost or availability history, institutional ownership changes, options-implied move/skew, or closed forward replacement-value rows. Pure FINRA or 52-week threshold retunes stay frozen.",
+          "score": 0.4824,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 1.0,
+          "data_source": "finra_short_interest",
+          "family_key": "finra_borrow_pressure_candidate_pool",
+          "reopen_condition": "If accepted, build a shared default-off adapter plus parity tests. If rejected, move away from FINRA threshold/support variants unless new borrow-cost, loan-availability, or forward replacement evidence arrives.",
+          "score": 0.4808,
+          "status": "has_accepted",
+          "trials": 1
+        }
+      ],
+      "new_evidence_axis": null,
+      "override": false,
+      "saturated_source_override": false,
+      "source_saturation": {
+        "accept_rate": 0.0,
+        "accepts": 0,
+        "applicable": false,
+        "gate_shape": "other",
+        "max_accept_rate": 0.05,
+        "min_trials": 12,
+        "saturated": false,
+        "source": "finra_short_interest",
+        "trials": 0
+      },
+      "warn": false,
+      "warn_threshold": 0.55
+    }
+  },
+  "timestamp": "2026-06-27T19:09:30Z",
+  "trial_family": "ortex_short_interest_sidecar_readiness_gate",
+  "trial_variant_id": "initial_local_ortex_payload_audit_v1"
+}
