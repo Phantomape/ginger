@@ -384,6 +384,35 @@ def build_fiftytwo_week_high_proximity_snapshot(
     return snapshot
 
 
+def prep_and_build_fiftytwo_week_high_proximity_snapshot(
+    *,
+    as_of: str,
+    broad_market_ohlcv: dict,
+    broad_market_candidate_universe: dict,
+    spy_ohlcv=None,
+    core_entries=None,
+):
+    """Daily production adapter (mirrors the sibling core-flow sleeves).
+
+    Maps the run.py broad-market context into the shared default-off builder.
+    Observe-only: ``build_fiftytwo_week_high_proximity_snapshot`` keeps
+    ``trade_enabled=False`` and never emits live/default orders, ranking, or
+    sizing. Sectors are resolved from the candidate-universe records inside the
+    builder; only SPY is a hard OHLCV requirement (QQQ and other ETFs are
+    excluded from the stock candidate pool, not required as inputs).
+    """
+    if not broad_market_candidate_universe.get("tickers"):
+        return empty_fiftytwo_week_high_proximity_snapshot(
+            as_of, "broad_market_candidate_universe_unavailable")
+    ohlcv = dict(broad_market_ohlcv)
+    if "SPY" not in ohlcv and spy_ohlcv is not None:
+        ohlcv["SPY"] = spy_ohlcv
+    return build_fiftytwo_week_high_proximity_snapshot(
+        as_of=as_of, ohlcv_by_ticker=ohlcv, core_entries=core_entries,
+        candidate_universe=broad_market_candidate_universe,
+    )
+
+
 def build_fiftytwo_week_high_proximity_historical_trades(
     *,
     ohlcv_by_ticker: dict[str, Any],

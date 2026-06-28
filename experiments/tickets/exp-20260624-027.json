@@ -1,0 +1,789 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260624_027_forward_sleeve_health_replacement_attribution.py",
+    "data/experiments/exp-20260624-027/exp_20260624_027_forward_sleeve_health_replacement_attribution.json",
+    "experiments/cards/exp-20260624-027.md",
+    "experiments/manifests/exp-20260624-027.json",
+    "experiments/tickets/exp-20260624-027.json",
+    "experiments/logs/exp-20260624-027.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260624-027.md",
+  "causal_components": [
+    "read-only forward replacement rows",
+    "entry-date sleeve_health join",
+    "health-status cohort attribution",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "entry_date_sleeve_health_status_vs_forward_replacement_value_v1",
+  "claimed_at": "2026-06-24T00:06:25+00:00",
+  "completed_at": "2026-06-24T00:11:38+00:00",
+  "created_at": "2026-06-24T00:06:11+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260624-027",
+  "experiment_uid": "expuid-311278e1eccb468b",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260624-027",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-24T00:06:11+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "forward_sleeve_health_replacement_attribution"
+  },
+  "hypothesis": "risk_allocation/candidate_pool attribution: default-off forward replacement rows whose sleeve had a fresh ok sleeve_health status at entry should show better replacement value than rows with missing, stale, or failing health context; otherwise sleeve_health remains measurement-only and must not gate allocation.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "entry_date_sleeve_health_status_vs_forward_replacement_value_v1"
+  ],
+  "mechanism_family": "observed_only_attribution",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260612-004",
+    "exp-20260612-010",
+    "exp-20260622-013",
+    "exp-20260623-028"
+  ],
+  "new_evidence_type": "production_visible_sleeve_health_forward_attribution",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "allocation",
+        "at",
+        "attribution",
+        "better",
+        "context",
+        "date",
+        "entry",
+        "failing",
+        "forward",
+        "fresh",
+        "gate",
+        "had",
+        "health",
+        "measurement",
+        "missing",
+        "must",
+        "not",
+        "ok",
+        "only",
+        "or",
+        "otherwise",
+        "remains",
+        "replacement",
+        "risk",
+        "rows",
+        "should",
+        "show",
+        "sleeve",
+        "stale",
+        "status",
+        "than",
+        "value",
+        "whose"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "platform_rs20_missed_candidate_replacement_value",
+        "reopen_condition": null,
+        "score": 0.1716,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "sma20_reclaim_missed_candidate_replacement_value",
+        "reopen_condition": null,
+        "score": 0.1716,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "broad_market_research_ok_feed_candidate_pool",
+        "reopen_condition": "Forward broad-market paper replacement-value rows with point-in-time universe_state feed history; do not retry nearby feed-quality subsets on the frozen sample without new forward evidence or a materially different production-visible data edge.",
+        "score": 0.1711,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "broad_market_first_hit_leadership_decay",
+        "reopen_condition": null,
+        "score": 0.1705,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "space_forward_replacement_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.1705,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.22,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "health_rows_too_recent",
+      "no_unhealthy_comparator_rows",
+      "forward_rows_too_few",
+      "health_status_not_predictive"
+    ],
+    "confidence_reason": "Sleeve health is production-visible and daily-generated, but prior repairs treated it as measurement only. Joining it to enriched closed forward replacement rows is a new read-only attribution axis that could identify whether operational freshness has allocation value; main risk is that health history starts too late or has too little variation.",
+    "recorded_at": "2026-06-24T00:05:56+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "rejected_sleeve_health_not_allocation_ready",
+    "artifact": "data/experiments/exp-20260624-027/exp_20260624_027_forward_sleeve_health_replacement_attribution.json",
+    "log": "experiments/logs/exp-20260624-027.json",
+    "runner": "quant/experiments/exp_20260624_027_forward_sleeve_health_replacement_attribution.py",
+    "gate4": {
+      "observed_only_lead": false,
+      "decision": "rejected_sleeve_health_not_allocation_ready",
+      "failed_reasons": [
+        "fresh_ok_rows_below_minimum",
+        "fresh_ok_distinct_sleeves_below_minimum"
+      ],
+      "acceptance_checks": {
+        "fresh_ok_rows_passed": false,
+        "comparator_rows_passed": true,
+        "fresh_ok_distinct_sleeves_passed": false,
+        "fresh_ok_total_positive_all_comparators": true,
+        "fresh_ok_mean_positive_all_comparators": true,
+        "fresh_ok_mean_beats_not_fresh_two_comparators": true
+      },
+      "strategy_rerun_required": false,
+      "before_after_strategy_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "max_drawdown_pct": 0.0
+      },
+      "lead_limitations": [
+        "Forward-only closed paper rows, not canonical fixed-window alpha evidence.",
+        "No shared helper, daily adapter, rank, notional, exit, or order rule changed.",
+        "Any allocation gate requires a separate shared-policy Gate 1-4 experiment."
+      ]
+    },
+    "calibration": {
+      "predicted_success_probability": 0.22,
+      "actual_success": 0,
+      "brier_score": 0.0484,
+      "failed_reasons": [
+        "fresh_ok_rows_below_minimum",
+        "fresh_ok_distinct_sleeves_below_minimum"
+      ],
+      "failure_modes_observed": [
+        "health_rows_too_recent"
+      ],
+      "predicted_failure_modes": [
+        "health_rows_too_recent",
+        "no_unhealthy_comparator_rows",
+        "forward_rows_too_few",
+        "health_status_not_predictive"
+      ],
+      "predicted_failure_mode_hit": true
+    },
+    "attribution": {
+      "cohorts": {
+        "fresh_ok": {
+          "n": 1,
+          "distinct_tickers": 1,
+          "distinct_sleeves": 1,
+          "tickers": [
+            {
+              "key": "CRDO",
+              "n": 1,
+              "row_share": 1.0
+            }
+          ],
+          "sleeves": [
+            {
+              "key": "free_data_cross_source_consensus",
+              "n": 1,
+              "row_share": 1.0
+            }
+          ],
+          "entry_months": [
+            {
+              "key": "2026-06",
+              "n": 1,
+              "row_share": 1.0
+            }
+          ],
+          "disk_statuses": [
+            {
+              "key": "fresh",
+              "n": 1,
+              "row_share": 1.0
+            }
+          ],
+          "replacement_value_vs_cash_usd": {
+            "sum": 463.3,
+            "mean": 463.3,
+            "median": 463.3,
+            "min": 463.3,
+            "max": 463.3,
+            "positive_rate": 1.0
+          },
+          "replacement_value_vs_spy_usd": {
+            "sum": 451.1,
+            "mean": 451.1,
+            "median": 451.1,
+            "min": 451.1,
+            "max": 451.1,
+            "positive_rate": 1.0
+          },
+          "replacement_value_vs_qqq_usd": {
+            "sum": 368.03,
+            "mean": 368.03,
+            "median": 368.03,
+            "min": 368.03,
+            "max": 368.03,
+            "positive_rate": 1.0
+          }
+        },
+        "not_fresh_ok": {
+          "n": 34,
+          "distinct_tickers": 16,
+          "distinct_sleeves": 8,
+          "tickers": [
+            {
+              "key": "QQQ",
+              "n": 17,
+              "row_share": 0.5
+            },
+            {
+              "key": "AMD",
+              "n": 2,
+              "row_share": 0.058824
+            },
+            {
+              "key": "CRDO",
+              "n": 2,
+              "row_share": 0.058824
+            },
+            {
+              "key": "GS",
+              "n": 1,
+              "row_share": 0.029412
+            },
+            {
+              "key": "LITE",
+              "n": 1,
+              "row_share": 0.029412
+            },
+            {
+              "key": "SNXX",
+              "n": 1,
+              "row_share": 0.029412
+            },
+            {
+              "key": "GE",
+              "n": 1,
+              "row_share": 0.029412
+            },
+            {
+              "key": "DE",
+              "n": 1,
+              "row_share": 0.029412
+            },
+            {
+              "key": "MU",
+              "n": 1,
+              "row_share": 0.029412
+            },
+            {
+              "key": "SNOW",
+              "n": 1,
+              "row_share": 0.029412
+            }
+          ],
+          "sleeves": [
+            {
+              "key": "low_deployment_etf",
+              "n": 17,
+              "row_share": 0.5
+            },
+            {
+              "key": "fundamental_growth_rs",
+              "n": 4,
+              "row_share": 0.117647
+            },
+            {
+              "key": "state_surface",
+              "n": 3,
+              "row_share": 0.088235
+            },
+            {
+              "key": "volume_breadth_breakout",
+              "n": 3,
+              "row_share": 0.088235
+            },
+            {
+              "key": "sec_governance",
+              "n": 2,
+              "row_share": 0.058824
+            },
+            {
+              "key": "sec_negative",
+              "n": 2,
+              "row_share": 0.058824
+            },
+            {
+              "key": "volatility_contraction",
+              "n": 2,
+              "row_share": 0.058824
+            },
+            {
+              "key": "sec_leadership",
+              "n": 1,
+              "row_share": 0.029412
+            }
+          ],
+          "entry_months": [
+            {
+              "key": "2026-05",
+              "n": 22,
+              "row_share": 0.647059
+            },
+            {
+              "key": "2026-06",
+              "n": 12,
+              "row_share": 0.352941
+            }
+          ],
+          "disk_statuses": [
+            {
+              "key": "missing_health_row",
+              "n": 34,
+              "row_share": 1.0
+            }
+          ],
+          "replacement_value_vs_cash_usd": {
+            "sum": 6974.04,
+            "mean": 205.1188,
+            "median": 190.055,
+            "min": -2811.78,
+            "max": 2772.28,
+            "positive_rate": 0.558824
+          },
+          "replacement_value_vs_spy_usd": {
+            "sum": 13072.23,
+            "mean": 384.4774,
+            "median": 503.42,
+            "min": -2640.41,
+            "max": 2788.46,
+            "positive_rate": 0.735294
+          },
+          "replacement_value_vs_qqq_usd": {
+            "sum": 11332.15,
+            "mean": 333.2985,
+            "median": 449.83,
+            "min": -2489.65,
+            "max": 2704.37,
+            "positive_rate": 0.735294
+          }
+        },
+        "missing_health": {
+          "n": 34,
+          "distinct_tickers": 16,
+          "distinct_sleeves": 8,
+          "tickers": [
+            {
+              "key": "QQQ",
+              "n": 17,
+              "row_share": 0.5
+            },
+            {
+              "key": "AMD",
+              "n": 2,
+              "row_share": 0.058824
+            },
+            {
+              "key": "CRDO",
+              "n": 2,
+              "row_share": 0.058824
+            },
+            {
+              "key": "GS",
+              "n": 1,
+              "row_share": 0.029412
+            },
+            {
+              "key": "LITE",
+              "n": 1,
+              "row_share": 0.029412
+            },
+            {
+              "key": "SNXX",
+              "n": 1,
+              "row_share": 0.029412
+            },
+            {
+              "key": "GE",
+              "n": 1,
+              "row_share": 0.029412
+            },
+            {
+              "key": "DE",
+              "n": 1,
+              "row_share": 0.029412
+            },
+            {
+              "key": "MU",
+              "n": 1,
+              "row_share": 0.029412
+            },
+            {
+              "key": "SNOW",
+              "n": 1,
+              "row_share": 0.029412
+            }
+          ],
+          "sleeves": [
+            {
+              "key": "low_deployment_etf",
+              "n": 17,
+              "row_share": 0.5
+            },
+            {
+              "key": "fundamental_growth_rs",
+              "n": 4,
+              "row_share": 0.117647
+            },
+            {
+              "key": "state_surface",
+              "n": 3,
+              "row_share": 0.088235
+            },
+            {
+              "key": "volume_breadth_breakout",
+              "n": 3,
+              "row_share": 0.088235
+            },
+            {
+              "key": "sec_governance",
+              "n": 2,
+              "row_share": 0.058824
+            },
+            {
+              "key": "sec_negative",
+              "n": 2,
+              "row_share": 0.058824
+            },
+            {
+              "key": "volatility_contraction",
+              "n": 2,
+              "row_share": 0.058824
+            },
+            {
+              "key": "sec_leadership",
+              "n": 1,
+              "row_share": 0.029412
+            }
+          ],
+          "entry_months": [
+            {
+              "key": "2026-05",
+              "n": 22,
+              "row_share": 0.647059
+            },
+            {
+              "key": "2026-06",
+              "n": 12,
+              "row_share": 0.352941
+            }
+          ],
+          "disk_statuses": [
+            {
+              "key": "missing_health_row",
+              "n": 34,
+              "row_share": 1.0
+            }
+          ],
+          "replacement_value_vs_cash_usd": {
+            "sum": 6974.04,
+            "mean": 205.1188,
+            "median": 190.055,
+            "min": -2811.78,
+            "max": 2772.28,
+            "positive_rate": 0.558824
+          },
+          "replacement_value_vs_spy_usd": {
+            "sum": 13072.23,
+            "mean": 384.4774,
+            "median": 503.42,
+            "min": -2640.41,
+            "max": 2788.46,
+            "positive_rate": 0.735294
+          },
+          "replacement_value_vs_qqq_usd": {
+            "sum": 11332.15,
+            "mean": 333.2985,
+            "median": 449.83,
+            "min": -2489.65,
+            "max": 2704.37,
+            "positive_rate": 0.735294
+          }
+        }
+      },
+      "fresh_ok_vs_not_fresh_ok": {
+        "by_field": {
+          "replacement_value_vs_cash_usd": {
+            "fresh_ok_mean": 463.3,
+            "comparator_mean": 205.1188,
+            "fresh_minus_comparator_mean": 258.1812,
+            "fresh_beats_comparator_mean": true
+          },
+          "replacement_value_vs_spy_usd": {
+            "fresh_ok_mean": 451.1,
+            "comparator_mean": 384.4774,
+            "fresh_minus_comparator_mean": 66.6226,
+            "fresh_beats_comparator_mean": true
+          },
+          "replacement_value_vs_qqq_usd": {
+            "fresh_ok_mean": 368.03,
+            "comparator_mean": 333.2985,
+            "fresh_minus_comparator_mean": 34.7315,
+            "fresh_beats_comparator_mean": true
+          }
+        },
+        "fresh_mean_comparator_wins": 3
+      }
+    },
+    "summary": "Sleeve health did not clear the fixed attribution screen, most likely because the health surface starts late, has too little degraded-row variation, or does not predict replacement value."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260624-027.json",
+  "single_causal_variable": "entry_date_sleeve_health_status_vs_forward_replacement_value_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260624-027.json",
+  "trial_family": "observed_only_attribution",
+  "trial_variant_id": "exp-20260624-027",
+  "implementation_mode": "observed_only_attribution_runner",
+  "new_evidence_axis": "Production daily sleeve_health freshness/status joined point-in-time to closed forward replacement rows. This is not a sleeve activation threshold, source rank, notional, hold-day, or ETF/stock composition retry.",
+  "decision": "rejected_sleeve_health_not_allocation_ready",
+  "artifact": "data/experiments/exp-20260624-027/exp_20260624_027_forward_sleeve_health_replacement_attribution.json",
+  "log": "experiments/logs/exp-20260624-027.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    },
+    "note": "Observed-only attribution; before and after policy are identical."
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "source_audit": {
+      "source_artifact": "data/paper_sleeves/forward_replacement_value.jsonl",
+      "raw_rows": 35,
+      "deduped_rows": 35,
+      "usable_rows": 35,
+      "missing_required_rows": 0,
+      "cohort_counts": {
+        "fresh_ok": 1,
+        "missing_health": 34
+      },
+      "artifact_not_mutated": true
+    },
+    "health_audit": {
+      "source_artifact": "data/paper_sleeves/sleeve_health.jsonl",
+      "raw_rows": 13,
+      "usable_rows": 13,
+      "asof_min": "2026-06-11",
+      "asof_max": "2026-06-22",
+      "rule_versions": [
+        "sleeve_health_report_v1",
+        "sleeve_health_report_v2"
+      ],
+      "artifact_not_mutated": true
+    },
+    "fields_checked": [
+      "entry_date",
+      "exit_date",
+      "ticker",
+      "sleeve_key",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd",
+      "sleeve_health.asof_date",
+      "sleeve_health.disk_status",
+      "sleeve_health.failing_builds"
+    ],
+    "entry_date_present": true,
+    "target_price_relevance": "Not applicable: no executable entry, target, exit, order, or paper ledger mutation is scheduled by this observed-only attribution."
+  },
+  "gate3": {
+    "filter_added": false,
+    "signals_generated": 35,
+    "signals_survived": 35,
+    "survival_rate": 1.0,
+    "baseline_survival_rate": 0.8232,
+    "note": "No executable filter was added; rows are attributed only."
+  },
+  "gate4": {
+    "observed_only_lead": false,
+    "decision": "rejected_sleeve_health_not_allocation_ready",
+    "failed_reasons": [
+      "fresh_ok_rows_below_minimum",
+      "fresh_ok_distinct_sleeves_below_minimum"
+    ],
+    "acceptance_checks": {
+      "fresh_ok_rows_passed": false,
+      "comparator_rows_passed": true,
+      "fresh_ok_distinct_sleeves_passed": false,
+      "fresh_ok_total_positive_all_comparators": true,
+      "fresh_ok_mean_positive_all_comparators": true,
+      "fresh_ok_mean_beats_not_fresh_two_comparators": true
+    },
+    "strategy_rerun_required": false,
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "max_drawdown_pct": 0.0
+    },
+    "lead_limitations": [
+      "Forward-only closed paper rows, not canonical fixed-window alpha evidence.",
+      "No shared helper, daily adapter, rank, notional, exit, or order rule changed.",
+      "Any allocation gate requires a separate shared-policy Gate 1-4 experiment."
+    ]
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "trade_enabled": false,
+    "daily_snapshot_exposed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "production_orders_changed": false,
+    "parity_note": "Read-only attribution over existing forward and sleeve_health artifacts."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "Sleeve health did not clear the fixed attribution screen, most likely because the health surface starts late, has too little degraded-row variation, or does not predict replacement value.",
+    "forbidden_near_neighbor_retry": "Do not retry by changing row-count gates, stale-session thresholds, cohort labels, sleeve inclusion, notional method, hold days, or activation thresholds on the same forward replacement rows.",
+    "new_evidence_required": "Need materially more closed forward rows after sleeve_health has longer history and real degraded/failing variation, or a separate shared-policy Gate 1-4 allocation test with a predeclared health gate."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260624_027_forward_sleeve_health_replacement_attribution.py",
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "data/paper_sleeves/sleeve_health.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260612-004.json",
+    "experiments/logs/exp-20260612-010.json",
+    "experiments/logs/exp-20260622-013.json",
+    "experiments/logs/exp-20260623-028.json",
+    "docs/backtesting.md",
+    "docs/production_backtest_parity.md"
+  ],
+  "updated_at": "2026-06-24T00:11:38+00:00"
+}

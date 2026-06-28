@@ -1,0 +1,350 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "aggregate_expected_value_score": 7.8941,
+    "aggregate_signals_generated": 164,
+    "aggregate_signals_survived": 135,
+    "aggregate_total_pnl": 234850.99,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "max_window_drawdown_pct": 0.1119,
+    "min_survival_rate": 0.7925,
+    "total_trade_count": 61
+  },
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260623-029/exp_20260623_029_forward_replacement_entry_regime_tag.json",
+  "before_metrics": {
+    "aggregate_expected_value_score": 7.8941,
+    "aggregate_signals_generated": 164,
+    "aggregate_signals_survived": 135,
+    "aggregate_total_pnl": 234850.99,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "max_window_drawdown_pct": 0.1119,
+    "min_survival_rate": 0.7925,
+    "total_trade_count": 61
+  },
+  "calibration": {
+    "actual_ev_delta": 0.0,
+    "actual_gate4_passed": true,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "confidence_reason": "The shared regime_chop_state helper and forward replacement enrichment path already exist; the repair only adds read-only entry-date tags and tests idempotent artifact rebuild.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "failure_modes_observed": [],
+    "main_failure_modes": [
+      "warehouse_spy_bars_missing",
+      "regime_helper_insufficient_lookback",
+      "dirty_state_write_conflict",
+      "artifact_rebuild_mismatch"
+    ],
+    "recorded_at": "2026-06-23T01:10:49+00:00",
+    "success_probability": 0.7,
+    "surprise_note": "No surprise; the existing shared helpers supported the tag without changing strategy behavior."
+  },
+  "card_file": "experiments/cards/exp-20260623-029.md",
+  "change_type": "forward_replacement_value_regime_tag_measurement_repair",
+  "changed_files": [
+    "quant/forward_replacement_value.py",
+    "quant/test_forward_replacement_value.py",
+    "quant/experiments/exp_20260623_029_forward_replacement_entry_regime_tag.py",
+    "data/experiments/exp-20260623-029/exp_20260623_029_forward_replacement_entry_regime_tag.json",
+    "experiments/logs/exp-20260623-029.json",
+    "experiments/cards/exp-20260623-029.md",
+    "experiments/manifests/exp-20260623-029.json",
+    "experiments/tickets/exp-20260623-029.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "forward_replacement_rows_entry_regime_chop_tag_v1",
+  "decision": "accepted_measurement_repair_forward_replacement_entry_regime_tag",
+  "delta_metrics": {
+    "aggregate_expected_value_score": 0.0,
+    "aggregate_total_pnl": 0.0,
+    "max_window_drawdown_pct": 0.0,
+    "min_survival_rate": 0.0,
+    "total_trade_count": 0
+  },
+  "experiment_id": "exp-20260623-029",
+  "gate1": {
+    "baseline_metrics": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_signals_generated": 164,
+      "aggregate_signals_survived": 135,
+      "aggregate_total_pnl": 234850.99,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "max_window_drawdown_pct": 0.1119,
+      "min_survival_rate": 0.7925,
+      "total_trade_count": 61
+    },
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "passed": true
+  },
+  "gate2": {
+    "passed": true,
+    "real_spy_regime_bar_count": 704,
+    "runtime_fields_checked": [
+      "entry_date",
+      "replacement_value_*",
+      "entry_regime_tag_rule_version",
+      "entry_regime_label",
+      "entry_regime_exposure_scalar"
+    ],
+    "temp_validation": {
+      "artifact_row_has_entry_regime_tag": true,
+      "entry_regime_label": "risk_on_trend",
+      "entry_regime_status": "ok",
+      "idempotent_second_run": true,
+      "second_summary": {
+        "artifact_path": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\ginger-exp-20260623-029-w3_rt7_l\\forward_replacement_value.jsonl",
+        "artifact_previous_rows_not_in_current_state": 0,
+        "artifact_rows": 1,
+        "artifact_rows_by_entry_regime_label": {
+          "risk_on_trend": 1
+        },
+        "artifact_rows_by_status": {
+          "enriched": 1
+        },
+        "artifact_rows_with_entry_regime": 1,
+        "asof_date": "2026-06-24",
+        "entry_regime_tag_rule_version": "forward_replacement_entry_regime_tag_v1",
+        "entry_regime_tagging_enabled": true,
+        "generated_at": "2026-06-23T01:19:45+00:00",
+        "production_impact": {
+          "alters_candidate_ranking": false,
+          "alters_exits": false,
+          "alters_orders": false,
+          "alters_signal_generation": false,
+          "alters_sizing": false,
+          "backtester_adapter_changed": false,
+          "default_off_attribution_only": true,
+          "entry_regime_tagging_only": true,
+          "replay_only": false,
+          "run_adapter_changed": true,
+          "shared_policy_changed": false,
+          "trade_enabled": false
+        },
+        "rows_enriched": 0,
+        "rows_enriched_by_status": {},
+        "rule_version": "forward_replacement_value_v1",
+        "sleeves": {
+          "demo_sleeve": {
+            "rows_enriched": 0,
+            "statuses": []
+          }
+        },
+        "sleeves_scanned": 1,
+        "status": "ok"
+      },
+      "state_row_has_entry_regime_tag": true,
+      "summary": {
+        "artifact_path": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\ginger-exp-20260623-029-w3_rt7_l\\forward_replacement_value.jsonl",
+        "artifact_previous_rows_not_in_current_state": 0,
+        "artifact_rows": 1,
+        "artifact_rows_by_entry_regime_label": {
+          "risk_on_trend": 1
+        },
+        "artifact_rows_by_status": {
+          "enriched": 1
+        },
+        "artifact_rows_with_entry_regime": 1,
+        "asof_date": "2026-06-23",
+        "entry_regime_tag_rule_version": "forward_replacement_entry_regime_tag_v1",
+        "entry_regime_tagging_enabled": true,
+        "generated_at": "2026-06-23T01:19:45+00:00",
+        "production_impact": {
+          "alters_candidate_ranking": false,
+          "alters_exits": false,
+          "alters_orders": false,
+          "alters_signal_generation": false,
+          "alters_sizing": false,
+          "backtester_adapter_changed": false,
+          "default_off_attribution_only": true,
+          "entry_regime_tagging_only": true,
+          "replay_only": false,
+          "run_adapter_changed": true,
+          "shared_policy_changed": false,
+          "trade_enabled": false
+        },
+        "rows_enriched": 1,
+        "rows_enriched_by_status": {
+          "enriched": 1
+        },
+        "rule_version": "forward_replacement_value_v1",
+        "sleeves": {
+          "demo_sleeve": {
+            "rows_enriched": 1,
+            "statuses": [
+              "enriched"
+            ]
+          }
+        },
+        "sleeves_scanned": 1,
+        "status": "ok"
+      }
+    }
+  },
+  "gate3": {
+    "baseline_min_survival_rate": 0.7925,
+    "new_filter_added": false,
+    "passed": true
+  },
+  "gate4": {
+    "decision": "accepted_measurement_repair_forward_replacement_entry_regime_tag",
+    "measurement_repair_only": true,
+    "passed": true,
+    "strategy_replay_changed": false
+  },
+  "hypothesis": "measurement_repair/alpha_blocker: regime-conditioned default-off sleeve and router alpha is blocked because closed forward replacement rows do not carry entry-time PIT regime_chop_state fields.",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "log_file": "experiments/logs/exp-20260623-029.json",
+  "mechanism_family": "regime_router_measurement_repair",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not use this repair as permission to tune regime constants, chop thresholds, exposure floors, source ranks, notional, hold, or cooldown on frozen windows.",
+    "new_evidence_required": "Next alpha work needs closed forward replacement rows carrying these entry_regime fields, then a fixed regime-conditioned sleeve/router policy evaluated against replacement value and concentration guards.",
+    "why_result_happened": "The repair succeeded because forward replacement-value enrichment already owns the closed-row observation surface and can compute entry-time regime from the existing shared regime_chop_state helper."
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_attribution_only": true,
+    "live_ready": false,
+    "parity_note": "The shared forward replacement-value enrichment helper now records entry-time regime tags. It does not alter any paper or live decision surface.",
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": true,
+    "trade_enabled": false
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_forward_replacement_value.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260623_029_forward_replacement_entry_regime_tag.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "revision_manifest_file": "experiments/manifests/exp-20260623-029.json",
+  "single_causal_variable": "forward_replacement_rows_entry_regime_chop_tag_v1",
+  "status": "accepted",
+  "timestamp": "2026-06-23T01:19:45Z",
+  "trial_family": "default_off_forward_regime_tagging",
+  "trial_variant_id": "forward_replacement_entry_regime_chop_tag_v1",
+  "validation": {
+    "current_forward_artifact_audit": {
+      "path": "data/paper_sleeves/forward_replacement_value.jsonl",
+      "rows": 33,
+      "rows_by_entry_regime_label": {
+        "missing": 33
+      },
+      "rows_by_sleeve": {
+        "fundamental_growth_rs": 3,
+        "low_deployment_etf": 17,
+        "sec_governance": 2,
+        "sec_leadership": 1,
+        "sec_negative": 2,
+        "state_surface": 3,
+        "volatility_contraction": 2,
+        "volume_breadth_breakout": 3
+      },
+      "rows_with_entry_regime_tag": 0
+    },
+    "real_spy_regime_bar_count": 704,
+    "temp_validation": {
+      "artifact_row_has_entry_regime_tag": true,
+      "entry_regime_label": "risk_on_trend",
+      "entry_regime_status": "ok",
+      "idempotent_second_run": true,
+      "second_summary": {
+        "artifact_path": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\ginger-exp-20260623-029-w3_rt7_l\\forward_replacement_value.jsonl",
+        "artifact_previous_rows_not_in_current_state": 0,
+        "artifact_rows": 1,
+        "artifact_rows_by_entry_regime_label": {
+          "risk_on_trend": 1
+        },
+        "artifact_rows_by_status": {
+          "enriched": 1
+        },
+        "artifact_rows_with_entry_regime": 1,
+        "asof_date": "2026-06-24",
+        "entry_regime_tag_rule_version": "forward_replacement_entry_regime_tag_v1",
+        "entry_regime_tagging_enabled": true,
+        "generated_at": "2026-06-23T01:19:45+00:00",
+        "production_impact": {
+          "alters_candidate_ranking": false,
+          "alters_exits": false,
+          "alters_orders": false,
+          "alters_signal_generation": false,
+          "alters_sizing": false,
+          "backtester_adapter_changed": false,
+          "default_off_attribution_only": true,
+          "entry_regime_tagging_only": true,
+          "replay_only": false,
+          "run_adapter_changed": true,
+          "shared_policy_changed": false,
+          "trade_enabled": false
+        },
+        "rows_enriched": 0,
+        "rows_enriched_by_status": {},
+        "rule_version": "forward_replacement_value_v1",
+        "sleeves": {
+          "demo_sleeve": {
+            "rows_enriched": 0,
+            "statuses": []
+          }
+        },
+        "sleeves_scanned": 1,
+        "status": "ok"
+      },
+      "state_row_has_entry_regime_tag": true,
+      "summary": {
+        "artifact_path": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\ginger-exp-20260623-029-w3_rt7_l\\forward_replacement_value.jsonl",
+        "artifact_previous_rows_not_in_current_state": 0,
+        "artifact_rows": 1,
+        "artifact_rows_by_entry_regime_label": {
+          "risk_on_trend": 1
+        },
+        "artifact_rows_by_status": {
+          "enriched": 1
+        },
+        "artifact_rows_with_entry_regime": 1,
+        "asof_date": "2026-06-23",
+        "entry_regime_tag_rule_version": "forward_replacement_entry_regime_tag_v1",
+        "entry_regime_tagging_enabled": true,
+        "generated_at": "2026-06-23T01:19:45+00:00",
+        "production_impact": {
+          "alters_candidate_ranking": false,
+          "alters_exits": false,
+          "alters_orders": false,
+          "alters_signal_generation": false,
+          "alters_sizing": false,
+          "backtester_adapter_changed": false,
+          "default_off_attribution_only": true,
+          "entry_regime_tagging_only": true,
+          "replay_only": false,
+          "run_adapter_changed": true,
+          "shared_policy_changed": false,
+          "trade_enabled": false
+        },
+        "rows_enriched": 1,
+        "rows_enriched_by_status": {
+          "enriched": 1
+        },
+        "rule_version": "forward_replacement_value_v1",
+        "sleeves": {
+          "demo_sleeve": {
+            "rows_enriched": 1,
+            "statuses": [
+              "enriched"
+            ]
+          }
+        },
+        "sleeves_scanned": 1,
+        "status": "ok"
+      }
+    }
+  }
+}

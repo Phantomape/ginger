@@ -1,4 +1,4 @@
-"""exp-20260623-002: entry-regime tags for forward replacement rows.
+"""exp-20260623-029: entry-regime tags for forward replacement rows.
 
 Measurement repair for regime-conditioned default-off alpha. The repair adds a
 read-only PIT regime_chop_state tag to closed forward replacement rows so future
@@ -26,10 +26,10 @@ import forward_replacement_value as frv  # noqa: E402
 from experiment_registry import persist_self_registered_result  # noqa: E402
 
 
-EXPERIMENT_ID = "exp-20260623-002"
+EXPERIMENT_ID = "exp-20260623-029"
 LANE = "measurement_repair"
 SLUG = "forward_replacement_entry_regime_tag"
-RUNNER = f"quant/experiments/exp_20260623_002_{SLUG}.py"
+RUNNER = f"quant/experiments/exp_20260623_029_{SLUG}.py"
 RUNNER_COMMAND = ".\\.venv\\Scripts\\python.exe -B " + RUNNER.replace("/", "\\")
 ASOF_DATE = "2026-06-23"
 
@@ -41,7 +41,7 @@ BASELINE_PATH = (
 )
 FORWARD_ARTIFACT = REPO_ROOT / "data" / "paper_sleeves" / "forward_replacement_value.jsonl"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
-OUT_JSON = OUT_DIR / f"exp_20260623_002_{SLUG}.json"
+OUT_JSON = OUT_DIR / f"exp_20260623_029_{SLUG}.json"
 LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
 CARD_MD = REPO_ROOT / "experiments" / "cards" / f"{EXPERIMENT_ID}.md"
 MANIFEST_JSON = REPO_ROOT / "experiments" / "manifests" / f"{EXPERIMENT_ID}.json"
@@ -76,7 +76,7 @@ CHANGED_FILES = [
     "quant/forward_replacement_value.py",
     "quant/test_forward_replacement_value.py",
     RUNNER,
-    f"data/experiments/{EXPERIMENT_ID}/exp_20260623_002_{SLUG}.json",
+    f"data/experiments/{EXPERIMENT_ID}/exp_20260623_029_{SLUG}.json",
     f"experiments/logs/{EXPERIMENT_ID}.json",
     f"experiments/cards/{EXPERIMENT_ID}.md",
     f"experiments/manifests/{EXPERIMENT_ID}.json",
@@ -199,7 +199,7 @@ def fixture_closed_row() -> dict[str, Any]:
 
 
 def run_temp_validation() -> dict[str, Any]:
-    with tempfile.TemporaryDirectory(prefix="ginger-exp-20260623-002-") as tmp_raw:
+    with tempfile.TemporaryDirectory(prefix="ginger-exp-20260623-029-") as tmp_raw:
         tmp = Path(tmp_raw)
         root = tmp / "paper_sleeves"
         sleeve_dir = root / "demo_sleeve"

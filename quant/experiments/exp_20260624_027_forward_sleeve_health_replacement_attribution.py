@@ -1,4 +1,4 @@
-"""exp-20260624-001: sleeve health versus forward replacement value.
+"""exp-20260624-027: sleeve health versus forward replacement value.
 
 Observed-only alpha attribution. This runner joins enriched closed forward
 replacement rows to the most recent production sleeve_health row known at entry
@@ -28,14 +28,14 @@ for entry in (REPO_ROOT, SCRIPTS_ROOT):
 from experiment_registry import persist_self_registered_result  # noqa: E402
 
 
-EXPERIMENT_ID = "exp-20260624-001"
+EXPERIMENT_ID = "exp-20260624-027"
 OWNER = "alpha-explore"
 SLUG = "forward_sleeve_health_replacement_attribution"
-RUNNER = f"quant/experiments/exp_20260624_001_{SLUG}.py"
+RUNNER = f"quant/experiments/exp_20260624_027_{SLUG}.py"
 RUNNER_COMMAND = ".\\.venv\\Scripts\\python.exe -B " + RUNNER.replace("/", "\\")
 
 DATA_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
-OUT_JSON = DATA_DIR / f"exp_20260624_001_{SLUG}.json"
+OUT_JSON = DATA_DIR / f"exp_20260624_027_{SLUG}.json"
 LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
 CARD_MD = REPO_ROOT / "experiments" / "cards" / f"{EXPERIMENT_ID}.md"
 MANIFEST_JSON = REPO_ROOT / "experiments" / "manifests" / f"{EXPERIMENT_ID}.json"

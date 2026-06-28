@@ -1,0 +1,213 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/forward_replacement_value.py",
+    "quant/test_forward_replacement_value.py",
+    "quant/experiments/",
+    "data/experiments/",
+    "experiments/",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "data/paper_sleeves/forward_replacement_value.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260623-029.md",
+  "causal_components": [
+    "shared_forward_replacement_helper",
+    "entry_regime_tag_backfill",
+    "current_state_artifact_rebuild",
+    "focused_tests",
+    "closeout"
+  ],
+  "change_type": "forward_replacement_value_regime_tag_measurement_repair",
+  "changed_variable": "forward_replacement_rows_entry_regime_chop_tag_v1",
+  "claimed_at": "2026-06-23T01:11:24+00:00",
+  "completed_at": "2026-06-23T01:19:45+00:00",
+  "created_at": "2026-06-23T01:11:04+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260623-029",
+  "experiment_uid": "expuid-53742a8275864f8a",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260623-029",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-23T01:11:04+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "forward_replacement_entry_regime_tag"
+  },
+  "hypothesis": "measurement_repair/alpha_blocker: regime-conditioned default-off sleeve and router alpha is blocked because closed forward replacement rows do not carry entry-time PIT regime_chop_state fields.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "forward_replacement_rows_entry_regime_chop_tag_v1"
+  ],
+  "mechanism_family": "regime_router_measurement_repair",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260615-019",
+    "exp-20260622-017",
+    "exp-20260622-013",
+    "exp-20260613-001"
+  ],
+  "new_evidence_type": "shared_forward_entry_regime_observation_field",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "regime_state",
+      "field_tags": [
+        "a",
+        "adding",
+        "alpha",
+        "an",
+        "because",
+        "blocked",
+        "carry",
+        "changing",
+        "chop",
+        "closed",
+        "conditioned",
+        "currently",
+        "do",
+        "during",
+        "enables",
+        "enrichment",
+        "entries",
+        "entry",
+        "exits",
+        "forward",
+        "future",
+        "is",
+        "live",
+        "measurement",
+        "not",
+        "only",
+        "or",
+        "orders",
+        "pilot",
+        "pit",
+        "ranking",
+        "read",
+        "regime",
+        "repair",
+        "replacement",
+        "router",
+        "rows",
+        "sizing",
+        "sleeve",
+        "state",
+        "tag",
+        "tagging",
+        "time",
+        "validation",
+        "without"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "shared_pit_regime_chop_state_helper",
+        "reopen_condition": "Forward / live-pilot rows tagged with entry-time regime_chop and exposure_scalar. Do not tune the regime constants or exposure floor on the frozen windows.",
+        "score": 0.4833,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.5,
+        "data_source": "regime_state",
+        "family_key": "market_state_conditioned_sleeve_router",
+        "reopen_condition": "Closed forward default-off ISCF rows tagged with entry market state, showing positive mixed|balanced|normal replacement value out of sample.",
+        "score": 0.4808,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "free_ohlcv_intraindustry_liquidity_leader_lead_lag_candidate_pool",
+        "reopen_condition": "Do not retry this same frozen-window regime re-slice by changing risk_off/chop/on labels or probability thresholds. A valid next step needs closed forward replacement-value rows tagged with entry-time regime, a shared default-off daily/backtest adapter for the source, or a materially different relation provenance such as customer/supplier links or a non-OHLCV relation graph.",
+        "score": 0.4802,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "market_state_sleeve_replacement_value_attribution",
+        "reopen_condition": null,
+        "score": 0.4745,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "entry_state_rs20_regime_scoped_allocation",
+        "reopen_condition": "Do not retry nearby RS20 regime-scope variants unless a forward or event/news discriminator shows defensive/non-risk-on RS20 leaders have different replacement value.",
+        "score": 0.474,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "regime_state",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-explore",
+  "prediction": {
+    "success_probability": 0.7,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "warehouse_spy_bars_missing",
+      "regime_helper_insufficient_lookback",
+      "dirty_state_write_conflict",
+      "artifact_rebuild_mismatch"
+    ],
+    "confidence_reason": "The shared regime_chop_state helper and forward replacement enrichment path already exist; the repair only adds read-only entry-date tags and tests idempotent artifact rebuild.",
+    "recorded_at": "2026-06-23T01:10:49+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "accepted_measurement_repair_forward_replacement_entry_regime_tag",
+    "artifact": "data/experiments/exp-20260623-029/exp_20260623_029_forward_replacement_entry_regime_tag.json",
+    "log_file": "experiments/logs/exp-20260623-029.json",
+    "lean_quality_passed": true
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260623-029.json",
+  "single_causal_variable": "forward_replacement_rows_entry_regime_chop_tag_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260623-029.json",
+  "trial_family": "default_off_forward_regime_tagging",
+  "trial_variant_id": "forward_replacement_entry_regime_chop_tag_v1",
+  "artifact_file": "data/experiments/exp-20260623-029/exp_20260623_029_forward_replacement_entry_regime_tag.json",
+  "log_file": "experiments/logs/exp-20260623-029.json",
+  "changed_files": [
+    "quant/forward_replacement_value.py",
+    "quant/test_forward_replacement_value.py",
+    "quant/experiments/exp_20260623_029_forward_replacement_entry_regime_tag.py",
+    "data/experiments/exp-20260623-029/exp_20260623_029_forward_replacement_entry_regime_tag.json",
+    "experiments/logs/exp-20260623-029.json",
+    "experiments/cards/exp-20260623-029.md",
+    "experiments/manifests/exp-20260623-029.json",
+    "experiments/tickets/exp-20260623-029.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "updated_at": "2026-06-23T01:19:45+00:00"
+}
