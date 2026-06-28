@@ -1,0 +1,390 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260628_*;data/experiments/exp-20260628-*;experiments/logs/exp-20260628-*.json;experiments/cards/exp-20260628-*.md;experiments/manifests/exp-20260628-*.json;data/regime_scorecard/regime_tagged_scorecard_latest.json;docs/experiment_log.jsonl;docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260628-007.md",
+  "causal_components": [],
+  "change_type": "forward_regime_scorecard_current_refresh_measurement_repair",
+  "changed_variable": "forward_regime_scorecard_current_refresh_gate_v1",
+  "claimed_at": "2026-06-28T12:09:13+00:00",
+  "completed_at": "2026-06-28T12:15:13+00:00",
+  "created_at": "2026-06-28T12:09:02+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260628-007",
+  "experiment_uid": "expuid-73ff5133faab4974",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260628-007",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-28T12:09:02+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "forward_regime_scorecard_current_refresh"
+  },
+  "hypothesis": "Alpha hypothesis: regime-conditioned exposure/capacity can improve default-off forward replacement value, but this is untrustworthy until the canonical forward scorecard has materially more closed rows and non-risk_on coverage; refresh the current scorecard before any soft-tilt activation test.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "forward_regime_scorecard_current_refresh_gate_v1"
+  ],
+  "mechanism_family": "regime_router_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260623-004",
+    "exp-20260623-027",
+    "exp-20260625-008",
+    "exp-20260626-014"
+  ],
+  "new_evidence_type": "current_forward_replacement_rows_after_exp_20260625_008",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "regime_state",
+      "field_tags": [
+        "activation",
+        "alpha",
+        "any",
+        "before",
+        "but",
+        "can",
+        "canonical",
+        "capacity",
+        "closed",
+        "conditioned",
+        "coverage",
+        "current",
+        "exposure",
+        "forward",
+        "gate",
+        "has",
+        "hypothesis",
+        "improve",
+        "is",
+        "materially",
+        "measurement",
+        "more",
+        "non",
+        "on",
+        "refresh",
+        "regime",
+        "repair",
+        "replacement",
+        "risk",
+        "router",
+        "rows",
+        "scorecard",
+        "soft",
+        "tagged",
+        "test",
+        "this",
+        "tilt",
+        "until",
+        "untrustworthy",
+        "value"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "forward_replacement_entry_regime_activation_attribution",
+        "reopen_condition": "Need materially more closed forward replacement rows carrying entry_regime tags, especially outside QQQ-only low-deployment ETF rows, before any activation-envelope test.",
+        "score": 0.5151,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "regime_state",
+        "family_key": "regime_tagged_forward_scorecard_source_alignment",
+        "reopen_condition": "Need materially more closed forward rows across non-risk_on regimes before any regime soft-tilt activation Gate 1-4.",
+        "score": 0.5071,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "forward_replacement_entry_regime_exposure_scalar",
+        "reopen_condition": "Need materially more closed forward replacement rows carrying entry_regime tags across diversified sleeves and non-risk-on states before any regime soft-tilt activation test.",
+        "score": 0.5045,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "regime_tagged_forward_scorecard",
+        "reopen_condition": "Accumulate closed forward / live-pilot rows across more regimes (especially choppy_range), then a separate Gate 1-4 can test whether the exposure_scalar soft tilt improves cost-adjusted replacement value out-of-sample. Re-run this scorecard to refresh tags.",
+        "score": 0.489,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "regime_state",
+        "family_key": "default_off_forward_regime_tagging",
+        "reopen_condition": "Next alpha work needs closed forward replacement rows carrying these entry_regime fields, then a fixed regime-conditioned sleeve/router policy evaluated against replacement value and concentration guards.",
+        "score": 0.4864,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "regime_state",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.22,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "too_few_incremental_forward_rows",
+      "all_rows_risk_on_trend",
+      "no_non_risk_on_regime_coverage",
+      "min_rows_for_inference_not_met"
+    ],
+    "confidence_reason": "The artifact has a few new closed rows after exp-20260625-008, but preliminary inspection shows only 41 total rows, all risk_on_trend; this likely refreshes the blocker rather than activating alpha.",
+    "recorded_at": "2026-06-28T12:08:25+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "blocked_forward_regime_scorecard_not_activation_ready",
+    "accepted": false,
+    "accepted_alpha": false,
+    "measurement_repair_performed": true,
+    "artifact": "data/experiments/exp-20260628-007/exp_20260628_007_forward_regime_scorecard_current_refresh.json",
+    "scorecard_artifact": "data/regime_scorecard/regime_tagged_scorecard_latest.json",
+    "readiness": {
+      "activation_ready": false,
+      "watchlist_ready": false,
+      "blocked": true,
+      "blockers": [
+        "total_rows_below_min_inference:41/50",
+        "non_risk_on_rows_below_min:0/20",
+        "incremental_rows_below_material_refresh:3/10",
+        "all_rows_risk_on_trend"
+      ],
+      "min_rows_for_inference": 50,
+      "min_non_risk_on_rows": 20,
+      "min_new_rows_for_material_refresh": 10,
+      "total_tagged_rows": 41,
+      "prior_tagged_rows": 38,
+      "row_delta_vs_exp_20260625_008": 3,
+      "non_risk_on_rows": 0,
+      "current_forward_summary": {
+        "rows": 41,
+        "rows_by_entry_regime_label": {
+          "risk_on_trend": 41
+        },
+        "rows_by_sleeve": {
+          "free_data_cross_source_consensus": 3,
+          "fundamental_growth_rs": 7,
+          "low_deployment_etf": 17,
+          "sec_governance": 2,
+          "sec_leadership": 1,
+          "sec_negative": 2,
+          "state_surface": 3,
+          "volatility_contraction": 2,
+          "volume_breadth_breakout": 4
+        },
+        "min_entry_date": "2026-05-05",
+        "max_entry_date": "2026-06-22",
+        "rows_with_entry_date": 41,
+        "rows_with_decision_id": 41,
+        "rows_with_spy_replacement_value": 41
+      },
+      "new_rows_since_prior": {
+        "prior_max_entry_date": "2026-06-16",
+        "new_rows": 3,
+        "new_rows_by_regime": {
+          "risk_on_trend": 3
+        },
+        "new_rows_by_sleeve": {
+          "free_data_cross_source_consensus": 1,
+          "fundamental_growth_rs": 1,
+          "volume_breadth_breakout": 1
+        },
+        "new_rows_sample": [
+          {
+            "entry_date": "2026-06-17",
+            "exit_date": "2026-06-25",
+            "asof_date": null,
+            "sleeve": "free_data_cross_source_consensus",
+            "ticker": "DDOG",
+            "entry_regime_label": "risk_on_trend",
+            "replacement_value_vs_spy_usd": -78.44
+          },
+          {
+            "entry_date": "2026-06-17",
+            "exit_date": "2026-06-25",
+            "asof_date": null,
+            "sleeve": "fundamental_growth_rs",
+            "ticker": "DDOG",
+            "entry_regime_label": "risk_on_trend",
+            "replacement_value_vs_spy_usd": -262.19
+          },
+          {
+            "entry_date": "2026-06-22",
+            "exit_date": "2026-06-26",
+            "asof_date": null,
+            "sleeve": "volume_breadth_breakout",
+            "ticker": "BE",
+            "entry_regime_label": "risk_on_trend",
+            "replacement_value_vs_spy_usd": -2695.38
+          }
+        ]
+      },
+      "sleeve_regime_cells": {
+        "free_data_cross_source_consensus|risk_on_trend": {
+          "count": 3,
+          "rv_rows": 3,
+          "mean_rv_vs_spy_usd": 75.21,
+          "sum_rv_vs_spy_usd": 225.64,
+          "win_rate_vs_spy": 0.333333,
+          "max_single_positive_share": 1.0
+        },
+        "fundamental_growth_rs|risk_on_trend": {
+          "count": 7,
+          "rv_rows": 7,
+          "mean_rv_vs_spy_usd": -108.02,
+          "sum_rv_vs_spy_usd": -756.11,
+          "win_rate_vs_spy": 0.428571,
+          "max_single_positive_share": 0.572351
+        },
+        "low_deployment_etf|risk_on_trend": {
+          "count": 17,
+          "rv_rows": 17,
+          "mean_rv_vs_spy_usd": 526.59,
+          "sum_rv_vs_spy_usd": 8952.04,
+          "win_rate_vs_spy": 0.941176,
+          "max_single_positive_share": 1.0
+        },
+        "sec_governance|risk_on_trend": {
+          "count": 2,
+          "rv_rows": 2,
+          "mean_rv_vs_spy_usd": 209.97,
+          "sum_rv_vs_spy_usd": 419.95,
+          "win_rate_vs_spy": 1.0,
+          "max_single_positive_share": 0.535659
+        },
+        "sec_leadership|risk_on_trend": {
+          "count": 1,
+          "rv_rows": 1,
+          "mean_rv_vs_spy_usd": -216.49,
+          "sum_rv_vs_spy_usd": -216.49,
+          "win_rate_vs_spy": 0.0,
+          "max_single_positive_share": null
+        },
+        "sec_negative|risk_on_trend": {
+          "count": 2,
+          "rv_rows": 2,
+          "mean_rv_vs_spy_usd": 317.24,
+          "sum_rv_vs_spy_usd": 634.48,
+          "win_rate_vs_spy": 0.5,
+          "max_single_positive_share": 1.0
+        },
+        "state_surface|risk_on_trend": {
+          "count": 3,
+          "rv_rows": 3,
+          "mean_rv_vs_spy_usd": 2253.51,
+          "sum_rv_vs_spy_usd": 6760.53,
+          "win_rate_vs_spy": 1.0,
+          "max_single_positive_share": 0.412462
+        },
+        "volatility_contraction|risk_on_trend": {
+          "count": 2,
+          "rv_rows": 2,
+          "mean_rv_vs_spy_usd": -524.27,
+          "sum_rv_vs_spy_usd": -1048.55,
+          "win_rate_vs_spy": 0.0,
+          "max_single_positive_share": null
+        },
+        "volume_breadth_breakout|risk_on_trend": {
+          "count": 4,
+          "rv_rows": 4,
+          "mean_rv_vs_spy_usd": -1185.71,
+          "sum_rv_vs_spy_usd": -4742.85,
+          "win_rate_vs_spy": 0.25,
+          "max_single_positive_share": 1.0
+        }
+      },
+      "reopen_condition": "Reopen regime soft-tilt activation only after at least 50 tagged forward rows and at least 20 non-risk_on rows exist, or after a new forward/live-pilot policy surface creates materially different rows."
+    },
+    "production_impact": {
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": false,
+      "default_off_attribution_only": true,
+      "trade_enabled": false,
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "alters_orders": false,
+      "uses_llm": false,
+      "live_realism_evaluated": false,
+      "live_ready": false,
+      "parity_note": "Read-only forward scorecard refresh. It consumes the current forward replacement artifact, writes the latest scorecard, and does not change helper logic, snapshots, orders, ranking, sizing, exits, LLM/news, or live/default behavior."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260628-007.json",
+  "single_causal_variable": "forward_regime_scorecard_current_refresh_gate_v1",
+  "status": "blocked",
+  "ticket_file": "experiments/tickets/exp-20260628-007.json",
+  "trial_family": "regime_tagged_forward_scorecard_refresh",
+  "trial_variant_id": "current_forward_replacement_rows_20260628_v1",
+  "decision": "blocked_forward_regime_scorecard_not_activation_ready",
+  "summary": "blocked_forward_regime_scorecard_not_activation_ready",
+  "artifact": "data/experiments/exp-20260628-007/exp_20260628_007_forward_regime_scorecard_current_refresh.json",
+  "log": "experiments/logs/exp-20260628-007.json",
+  "changed_files": [
+    "quant/experiments/exp_20260628_007_forward_regime_scorecard_current_refresh.py",
+    "data/regime_scorecard/regime_tagged_scorecard_latest.json",
+    "data/experiments/exp-20260628-007/exp_20260628_007_forward_regime_scorecard_current_refresh.json",
+    "experiments/logs/exp-20260628-007.json",
+    "experiments/cards/exp-20260628-007.md",
+    "experiments/manifests/exp-20260628-007.json",
+    "experiments/tickets/exp-20260628-007.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "related_files": [
+    "quant/experiments/exp_20260628_007_forward_regime_scorecard_current_refresh.py",
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "data/regime_scorecard/regime_tagged_scorecard_latest.json",
+    "data/experiments/exp-20260625-008/exp_20260625_008_regime_scorecard_forward_source_alignment.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "quant/regime_tagged_scorecard.py"
+  ],
+  "lean_quality_passed": true,
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_007_forward_regime_scorecard_current_refresh.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260628_007_forward_regime_scorecard_current_refresh.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "updated_at": "2026-06-28T12:15:13+00:00"
+}

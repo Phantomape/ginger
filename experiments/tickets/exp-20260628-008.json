@@ -1,0 +1,377 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260628_008_consumer_platform_pilot_live_outcome_readiness.py",
+    "data/experiments/exp-20260628-008/exp_20260628_008_consumer_platform_pilot_live_outcome_readiness.json",
+    "experiments/cards/exp-20260628-008.md",
+    "experiments/manifests/exp-20260628-008.json",
+    "experiments/tickets/exp-20260628-008.json",
+    "experiments/logs/exp-20260628-008.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "artifact": "data/experiments/exp-20260628-008/exp_20260628_008_consumer_platform_pilot_live_outcome_readiness.json",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260628-008.md",
+  "causal_components": [
+    "live pilot competition ledger",
+    "hot warehouse forward settlement",
+    "cash SPY QQQ comparators",
+    "read-only readiness verdict"
+  ],
+  "change_type": "pilot_forward_readiness",
+  "changed_variable": "consumer_platform_pilot_live_decision_outcome_readiness_v1",
+  "claimed_at": "2026-06-28T13:08:34+00:00",
+  "completed_at": "2026-06-28T13:18:33+00:00",
+  "created_at": "2026-06-28T13:08:20+00:00",
+  "decision": "blocked_consumer_platform_pilot_live_outcome_not_mature",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260628-008",
+  "experiment_uid": "expuid-a11f458de962400c",
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    },
+    "passed": true
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "passed": true,
+    "fields_checked": [
+      "decision_id",
+      "asof_date",
+      "sleeve",
+      "ticker",
+      "entry_date",
+      "target_price",
+      "planned_notional_usd",
+      "planned_entry_price"
+    ],
+    "entry_date_present": true,
+    "target_price_present": true,
+    "source_audit": {
+      "ledger_path": "data/ledgers/pilot_competition_decisions.jsonl",
+      "raw_jsonl_rows": 7,
+      "bad_json_rows": 0,
+      "target_sleeve": "CONSUMER_PLATFORM_PILOT",
+      "deduped_target_sleeve_decisions": 1,
+      "duplicate_target_decision_ids": {},
+      "skipped": {
+        "other_sleeve": 6
+      },
+      "decision_ids": [
+        "2026-06-17-CONSUMER_PLATFORM_PILOT-HOOD-trend_long-1"
+      ]
+    },
+    "settlement_audit": {
+      "warehouse_path": "data/warehouse/warehouse_main_hot.sqlite",
+      "warehouse_exists": true,
+      "uri_mode": "mode=ro&immutable=1",
+      "ticker_count_requested": 3,
+      "start": "2026-06-17",
+      "end": "2026-12-31",
+      "ticker_count_with_rows": 3,
+      "rows_loaded": 18,
+      "date_ranges": {
+        "HOOD": {
+          "min": "2026-06-17",
+          "max": "2026-06-25",
+          "rows": 6
+        },
+        "QQQ": {
+          "min": "2026-06-17",
+          "max": "2026-06-25",
+          "rows": 6
+        },
+        "SPY": {
+          "min": "2026-06-17",
+          "max": "2026-06-25",
+          "rows": 6
+        }
+      },
+      "decision_rows": 1,
+      "settled_rows": 0,
+      "pending_rows": 1,
+      "skipped": {
+        "missing_10d_exit_bar": 1
+      },
+      "entry_rule": "first tradable open strictly after decision_id date",
+      "exit_rule": "close after 10 trading bars from entry"
+    }
+  },
+  "gate3": {
+    "filter_added": false,
+    "signals_generated": 1,
+    "signals_survived": 1,
+    "survival_rate": 1.0,
+    "passed": true,
+    "note": "No executable filter was added; this only audits live decision outcome maturity."
+  },
+  "gate4": {
+    "passed": false,
+    "decision": "blocked_consumer_platform_pilot_live_outcome_not_mature",
+    "strategy_rerun_required": false,
+    "accepted_alpha": false,
+    "failed_reasons": [
+      "live_decisions_below_floor:1/5",
+      "settled_rows_below_floor:0/5",
+      "all_target_sleeve_rows_pending:missing_10d_exit_bar"
+    ],
+    "readiness_rule": {
+      "hold_days": 10,
+      "min_live_decisions": 5,
+      "min_settled_rows": 5,
+      "max_single_ticker_settled_share": 0.5,
+      "max_gap_from_planned_entry_pct": 0.08
+    },
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "max_drawdown_pct": 0.0
+    }
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260628-008",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-28T13:08:20+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "consumer_platform_pilot_live_outcome_readiness"
+  },
+  "hypothesis": "CONSUMER_PLATFORM_PILOT live competition decisions may have distinct forward replacement value from AI_INFRA and older frozen consumer-platform basket tests; audit the post-activation live decision row outcomes before any pilot promotion or kill decision.",
+  "implementation_mode": "observed_only_forward_readiness",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "locked_variables": [
+    "consumer_platform_pilot_live_decision_outcome_readiness_v1"
+  ],
+  "log": "experiments/logs/exp-20260628-008.json",
+  "mechanism_family": "pilot_forward_readiness",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260627-020",
+    "exp-20260623-017",
+    "exp-20260524-015",
+    "exp-20260525-007"
+  ],
+  "new_evidence_type": "post_activation_consumer_platform_live_decision_row",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "activation",
+        "ai",
+        "any",
+        "audit",
+        "basket",
+        "before",
+        "competition",
+        "consumer",
+        "decision",
+        "decisions",
+        "distinct",
+        "forward",
+        "from",
+        "frozen",
+        "have",
+        "infra",
+        "kill",
+        "live",
+        "may",
+        "older",
+        "or",
+        "outcome",
+        "outcomes",
+        "pilot",
+        "platform",
+        "post",
+        "promotion",
+        "readiness",
+        "replacement",
+        "row",
+        "tests",
+        "value"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "ai_infra_post_activation_pilot_replay_readiness",
+        "reopen_condition": "Need at least materially more closed AI_INFRA pilot rows with positive replacement value versus cash/SPY/QQQ, or a separate shared-policy allocation experiment that changes actual selection/sizing and passes Gate 1-4.",
+        "score": 0.0706,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.375,
+        "data_source": "other",
+        "family_key": "default_off_forward_replacement_value_activation_readiness",
+        "reopen_condition": "At least 20 closed rows for one diversified helper/source family to justify a watchlist lead, and at least 60 closed rows with positive replacement value versus cash, SPY, and QQQ for an activation-envelope experiment.",
+        "score": 0.0556,
+        "status": "has_accepted",
+        "trials": 8
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "live_pilot_competition_scalar_outcome_attribution",
+        "reopen_condition": "At least 10-20 closed unique live pilot competition decisions with less single-ticker concentration and intact replacement-value fields.",
+        "score": 0.0541,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "forward_paper_replacement_maturity",
+        "reopen_condition": "At least 20 closed true-trigger forward rows for one shared default-off helper with replacement value enriched versus cash, SPY, and QQQ, plus a documented shared exit/target contract and daily snapshot parity before any production-facing change.",
+        "score": 0.0457,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "vcp_forward_replacement_value_readiness",
+        "reopen_condition": null,
+        "score": 0.0457,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.16,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "single_live_decision_row",
+      "gap_cancel_no_entry",
+      "negative_replacement_value",
+      "missing_hot_warehouse_prices"
+    ],
+    "confidence_reason": "This uses a distinct post-activation CONSUMER_PLATFORM_PILOT live decision row from the append-only pilot competition ledger, not the frozen consumer-platform basket replays. Success odds are low because only one HOOD row is visible and prior consumer-platform/basket work was rejected or thin.",
+    "recorded_at": "2026-06-28T13:07:40+00:00"
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "trade_enabled_changed": false,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exits_changed": false,
+    "shared_helper_changed": false,
+    "paper_or_live_snapshot_changed": false,
+    "read_only_sources": [
+      "data/ledgers/pilot_competition_decisions.jsonl",
+      "data/warehouse/warehouse_main_hot.sqlite"
+    ]
+  },
+  "result": {
+    "decision": "blocked_consumer_platform_pilot_live_outcome_not_mature",
+    "accepted": false,
+    "accepted_alpha": false,
+    "watchlist_ready": false,
+    "aggregate_expected_value_delta": 0.0,
+    "aggregate_strategy_total_pnl_delta": 0.0,
+    "settled_rows": 0,
+    "pending_rows": 1,
+    "failed_reasons": [
+      "live_decisions_below_floor:1/5",
+      "settled_rows_below_floor:0/5",
+      "all_target_sleeve_rows_pending:missing_10d_exit_bar"
+    ],
+    "summary": "The target sleeve has 1 visible live decision row(s) and 0 settled 10-trading-day outcome row(s); this is below the predeclared readiness floor."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260628-008.json",
+  "single_causal_variable": "consumer_platform_pilot_live_decision_outcome_readiness_v1",
+  "status": "blocked",
+  "ticket_file": "experiments/tickets/exp-20260628-008.json",
+  "trial_family": "consumer_platform_pilot_live_outcome_readiness",
+  "trial_variant_id": "hot_warehouse_10d_live_ledger_v1",
+  "updated_at": "2026-06-28T13:18:33+00:00"
+}

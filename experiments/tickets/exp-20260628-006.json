@@ -1,0 +1,499 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260628_006_cost_adjusted_drawdown_attribution.py",
+    "data/experiments/exp-20260628-006/exp_20260628_006_cost_adjusted_drawdown_attribution.json",
+    "experiments/cards/exp-20260628-006.md",
+    "experiments/manifests/exp-20260628-006.json",
+    "experiments/tickets/exp-20260628-006.json",
+    "experiments/logs/exp-20260628-006.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "card_file": "experiments/cards/exp-20260628-006.md",
+  "causal_components": [
+    "canonical accepted-stack trade replay",
+    "cost-adjusted entry-risk bucket",
+    "three-window monotonic loss-tail attribution",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "cost_adjusted_drawdown_contribution_bucket_v1",
+  "claimed_at": "2026-06-28T11:09:44+00:00",
+  "completed_at": "2026-06-28T11:16:50+00:00",
+  "created_at": "2026-06-28T11:09:01+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260628-006",
+  "experiment_uid": "expuid-a7e28d261ac34c7b",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260628-006",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-28T11:09:01+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "cost_adjusted_drawdown_attribution"
+  },
+  "hypothesis": "Read-only alpha attribution: accepted core entries whose expected execution cost plus initial stop-risk consumes a high share of target opportunity may explain loss-tail and identify a future production-visible risk-allocation candidate without changing current trades.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "cost_adjusted_drawdown_contribution_bucket_v1"
+  ],
+  "mechanism_family": "production_visible_execution_quality_attribution",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260602-003",
+    "exp-20260622-017"
+  ],
+  "new_evidence_type": "production_visible_cost_adjusted_drawdown_field",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "accepted",
+        "adjusted",
+        "allocation",
+        "alpha",
+        "attribution",
+        "bucket",
+        "changing",
+        "consumes",
+        "contribution",
+        "core",
+        "cost",
+        "current",
+        "drawdown",
+        "entries",
+        "execution",
+        "expected",
+        "explain",
+        "future",
+        "high",
+        "identify",
+        "initial",
+        "loss",
+        "may",
+        "of",
+        "only",
+        "opportunity",
+        "plus",
+        "read",
+        "risk",
+        "share",
+        "stop",
+        "tail",
+        "target",
+        "trades",
+        "whose",
+        "without"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "allocator",
+        "family_key": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+        "reopen_condition": "Collect forward paper rows with replacement value versus cash and same-day core candidates; do not enable live/default orders or retune source-overlap parameters until forward evidence passes a separate activation gate.",
+        "score": 0.1711,
+        "status": "has_accepted",
+        "trials": 3
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "event_rotation_plus_state_surface_candidate_pool_allocation",
+        "reopen_condition": null,
+        "score": 0.1695,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "fiftytwo_week_high_companyfacts_quality_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT evidence separating durable and exhausted 52-week-high leaders, such as analyst-count/dispersion, option-implied move, borrow/ownership flow, or closed forward replacement-value rows. Pure threshold retunes stay frozen.",
+        "score": 0.1695,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "rs_line_new_high_accepted_source_consensus_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.1695,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "sbc_per_share_buyback_adjusted_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT dilution-quality evidence such as grant-value normalization, option-exercise vesting context, or closed forward replacement-value rows. Do not sweep SBC tags, share tags, buyback tags, per-share thresholds, annual fact freshness, price guards, top-N, hold, cooldown, notional, or allocator rank on these frozen windows.",
+        "score": 0.1695,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.22,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "no_monotonic_tail_separation",
+      "small_high_risk_sample",
+      "window_reversal",
+      "only_relabels_known_gap_vulnerability"
+    ],
+    "confidence_reason": "Playbook explicitly lists cost_adjusted_drawdown_contribution_bucket as a candidate first-read attribution field; novelty gate reported no strong near-neighbor, but prior gap/risk-shape families make the chance of a deployable edge low.",
+    "recorded_at": "2026-06-28T11:08:20+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "gate4_passed": false,
+    "decision": "rejected_no_ex_ante_cost_adjusted_drawdown_tail_edge",
+    "artifact": "data/experiments/exp-20260628-006/exp_20260628_006_cost_adjusted_drawdown_attribution.json",
+    "log": "experiments/logs/exp-20260628-006.json",
+    "gate1": {
+      "passed": true,
+      "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+      "window_files": {
+        "late_strong": "data/experiments/exp-20260602-003/late_strong_after.json",
+        "mid_weak": "data/experiments/exp-20260602-003/mid_weak_after.json",
+        "old_thin": "data/experiments/exp-20260602-003/old_thin_after.json"
+      }
+    },
+    "gate2": {
+      "passed": true,
+      "dependency_fields_checked": [
+        "entry_date",
+        "entry_price",
+        "entry_open_price",
+        "stop_price",
+        "target_mult_used",
+        "shares",
+        "pnl",
+        "pnl_pct_net"
+      ],
+      "target_price_note": "Closed trade rows omit original target_price; runner reconstructs entry_price + (entry_price - stop_price) * target_mult_used and does not schedule executable orders.",
+      "source_audit": {
+        "late_strong": {
+          "path": "data/experiments/exp-20260602-003/late_strong_after.json",
+          "trade_rows": 18,
+          "rows_with_entry_date": 18,
+          "rows_with_target_price_reconstructed": 18,
+          "rows_with_cost_adjusted_bucket": 18
+        },
+        "mid_weak": {
+          "path": "data/experiments/exp-20260602-003/mid_weak_after.json",
+          "trade_rows": 21,
+          "rows_with_entry_date": 21,
+          "rows_with_target_price_reconstructed": 21,
+          "rows_with_cost_adjusted_bucket": 21
+        },
+        "old_thin": {
+          "path": "data/experiments/exp-20260602-003/old_thin_after.json",
+          "trade_rows": 22,
+          "rows_with_entry_date": 22,
+          "rows_with_target_price_reconstructed": 22,
+          "rows_with_cost_adjusted_bucket": 22
+        }
+      }
+    },
+    "gate3": {
+      "passed": true,
+      "note": "No executable filter was added; core survival is unchanged.",
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "survival_rate_delta": 0.0
+    },
+    "gate4": {
+      "passed": false,
+      "observed_only_lead": false,
+      "decision": "rejected_no_ex_ante_cost_adjusted_drawdown_tail_edge",
+      "acceptance_rule": "Observed-only lead only if total sample >=50, high bucket >=10, pooled high bucket has lower avg PnL, lower win rate, higher 2pct loss-tail rate than low bucket, and all three windows support the same direction. No strategy acceptance is possible in this run.",
+      "failed_reasons": [
+        "high_bucket_avg_pnl_not_worse",
+        "high_bucket_win_rate_not_worse",
+        "high_bucket_loss_tail_not_worse",
+        "insufficient_window_support"
+      ],
+      "supporting_windows": [
+        "late_strong",
+        "old_thin"
+      ],
+      "window_comparisons": {
+        "late_strong": {
+          "available": true,
+          "high_minus_low_avg_pnl": -2980.78,
+          "high_minus_low_median_pnl": -3650.47,
+          "high_minus_low_win_rate": -0.125,
+          "high_minus_low_loss_tail_rate": 0.125
+        },
+        "mid_weak": {
+          "available": true,
+          "high_minus_low_avg_pnl": 4441.76,
+          "high_minus_low_median_pnl": 6406.85,
+          "high_minus_low_win_rate": 0.545455,
+          "high_minus_low_loss_tail_rate": -0.545455
+        },
+        "old_thin": {
+          "available": true,
+          "high_minus_low_avg_pnl": -3038.2,
+          "high_minus_low_median_pnl": -1825.37,
+          "high_minus_low_win_rate": -0.125,
+          "high_minus_low_loss_tail_rate": 0.125
+        }
+      },
+      "pooled_high_low": {
+        "available": true,
+        "high_minus_low_avg_pnl": 1031.07,
+        "high_minus_low_median_pnl": 4060.34,
+        "high_minus_low_win_rate": 0.192547,
+        "high_minus_low_loss_tail_rate": -0.192547
+      },
+      "minimums": {
+        "min_total_rows": 50,
+        "min_high_bucket_rows": 10,
+        "min_supporting_windows": 3
+      }
+    },
+    "calibration": {
+      "actual_decision": "rejected_no_ex_ante_cost_adjusted_drawdown_tail_edge",
+      "actual_success": 0,
+      "predicted_success_probability": 0.22,
+      "brier_score": 0.0484,
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": 0.0,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "predicted_failure_modes": [
+        "no_monotonic_tail_separation",
+        "small_high_risk_sample",
+        "window_reversal",
+        "only_relabels_known_gap_vulnerability"
+      ],
+      "realized_failure_mode": "high_bucket_avg_pnl_not_worse;high_bucket_win_rate_not_worse;high_bucket_loss_tail_not_worse;insufficient_window_support",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "The ex-ante entry-cost/risk field did not separate loss tail; the apparent realized-slippage separation is unusable because it embeds exit-side path information."
+    },
+    "summary": "The ex-ante cost-adjusted entry-risk bucket did not explain loss-tail: the high bucket was not worse on pooled average PnL/win-rate/loss-tail and window support was insufficient. Realized total slippage did show a negative diagnostic split, but that field includes exit-side slippage and is therefore leakage for entry decisions."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260628-006.json",
+  "single_causal_variable": "cost_adjusted_drawdown_contribution_bucket_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260628-006.json",
+  "trial_family": "cost_adjusted_drawdown_contribution_attribution",
+  "trial_variant_id": "core_accepted_stack_cost_drawdown_bucket_v1",
+  "implementation_mode": "read_only_attribution",
+  "parameters": {
+    "bucket_definition": "(entry_slip_pct + initial_risk_pct) / (initial_risk_pct * target_mult_used)",
+    "low_drag_max": 0.18,
+    "high_drag_min": 0.226,
+    "loss_tail_pnl_pct": -0.02,
+    "uses_realized_total_slippage_for_signal": false
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Read-only alpha attribution: accepted core entries whose expected execution cost plus initial stop-risk consumes a high share of target opportunity may explain loss-tail and identify a future production-visible risk-allocation candidate without changing current trades.",
+    "2_history_check": {
+      "novelty_gate": "scripts/check_experiment_novelty.py and experiment.py new reported no strong near-neighbor; source saturation not applicable.",
+      "playbook_anchor": "docs/alpha-optimization-playbook.md lists cost_adjusted_drawdown_contribution_bucket as a candidate field whose first step is read-only attribution.",
+      "nearby_prior_experiments": [
+        "exp-20260602-003",
+        "exp-20260622-017"
+      ]
+    },
+    "3_single_policy_bundle": "cost_adjusted_drawdown_contribution_bucket_v1",
+    "4_success_failure_standard": "Observed-only lead only if total sample >=50, high bucket >=10, pooled high bucket has lower avg PnL, lower win rate, higher 2pct loss-tail rate than low bucket, and all three windows support the same direction. No strategy acceptance is possible in this run.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_006_cost_adjusted_drawdown_attribution.py"
+  },
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "window_files": {
+      "late_strong": "data/experiments/exp-20260602-003/late_strong_after.json",
+      "mid_weak": "data/experiments/exp-20260602-003/mid_weak_after.json",
+      "old_thin": "data/experiments/exp-20260602-003/old_thin_after.json"
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "dependency_fields_checked": [
+      "entry_date",
+      "entry_price",
+      "entry_open_price",
+      "stop_price",
+      "target_mult_used",
+      "shares",
+      "pnl",
+      "pnl_pct_net"
+    ],
+    "target_price_note": "Closed trade rows omit original target_price; runner reconstructs entry_price + (entry_price - stop_price) * target_mult_used and does not schedule executable orders.",
+    "source_audit": {
+      "late_strong": {
+        "path": "data/experiments/exp-20260602-003/late_strong_after.json",
+        "trade_rows": 18,
+        "rows_with_entry_date": 18,
+        "rows_with_target_price_reconstructed": 18,
+        "rows_with_cost_adjusted_bucket": 18
+      },
+      "mid_weak": {
+        "path": "data/experiments/exp-20260602-003/mid_weak_after.json",
+        "trade_rows": 21,
+        "rows_with_entry_date": 21,
+        "rows_with_target_price_reconstructed": 21,
+        "rows_with_cost_adjusted_bucket": 21
+      },
+      "old_thin": {
+        "path": "data/experiments/exp-20260602-003/old_thin_after.json",
+        "trade_rows": 22,
+        "rows_with_entry_date": 22,
+        "rows_with_target_price_reconstructed": 22,
+        "rows_with_cost_adjusted_bucket": 22
+      }
+    }
+  },
+  "gate3": {
+    "passed": true,
+    "note": "No executable filter was added; core survival is unchanged.",
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "survival_rate_delta": 0.0
+  },
+  "gate4": {
+    "passed": false,
+    "observed_only_lead": false,
+    "decision": "rejected_no_ex_ante_cost_adjusted_drawdown_tail_edge",
+    "acceptance_rule": "Observed-only lead only if total sample >=50, high bucket >=10, pooled high bucket has lower avg PnL, lower win rate, higher 2pct loss-tail rate than low bucket, and all three windows support the same direction. No strategy acceptance is possible in this run.",
+    "failed_reasons": [
+      "high_bucket_avg_pnl_not_worse",
+      "high_bucket_win_rate_not_worse",
+      "high_bucket_loss_tail_not_worse",
+      "insufficient_window_support"
+    ],
+    "supporting_windows": [
+      "late_strong",
+      "old_thin"
+    ],
+    "window_comparisons": {
+      "late_strong": {
+        "available": true,
+        "high_minus_low_avg_pnl": -2980.78,
+        "high_minus_low_median_pnl": -3650.47,
+        "high_minus_low_win_rate": -0.125,
+        "high_minus_low_loss_tail_rate": 0.125
+      },
+      "mid_weak": {
+        "available": true,
+        "high_minus_low_avg_pnl": 4441.76,
+        "high_minus_low_median_pnl": 6406.85,
+        "high_minus_low_win_rate": 0.545455,
+        "high_minus_low_loss_tail_rate": -0.545455
+      },
+      "old_thin": {
+        "available": true,
+        "high_minus_low_avg_pnl": -3038.2,
+        "high_minus_low_median_pnl": -1825.37,
+        "high_minus_low_win_rate": -0.125,
+        "high_minus_low_loss_tail_rate": 0.125
+      }
+    },
+    "pooled_high_low": {
+      "available": true,
+      "high_minus_low_avg_pnl": 1031.07,
+      "high_minus_low_median_pnl": 4060.34,
+      "high_minus_low_win_rate": 0.192547,
+      "high_minus_low_loss_tail_rate": -0.192547
+    },
+    "minimums": {
+      "min_total_rows": 50,
+      "min_high_bucket_rows": 10,
+      "min_supporting_windows": 3
+    }
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "trade_enabled": false,
+    "daily_snapshot_exposed": false,
+    "parity_test_added": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "uses_llm": false,
+    "parity_note": "Read-only attribution over accepted backtest trade rows. No production or backtest decision path changed."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The ex-ante cost-adjusted entry-risk bucket did not explain loss-tail: the high bucket was not worse on pooled average PnL/win-rate/loss-tail and window support was insufficient. Realized total slippage did show a negative diagnostic split, but that field includes exit-side slippage and is therefore leakage for entry decisions.",
+    "forbidden_near_neighbor_retry": "Do not retune cost-adjusted drag thresholds, target-multiple cuts, entry-slip bps cuts, high/low bucket boundaries, hold days, or notional on these same accepted-stack trade rows.",
+    "new_evidence_required": "Prospective forward rows tagged at entry with a non-leaky execution-quality field, or a new production-visible context field that separates high-risk entries before exit information exists."
+  },
+  "rejection_reason": "high_bucket_avg_pnl_not_worse;high_bucket_win_rate_not_worse;high_bucket_loss_tail_not_worse;insufficient_window_support",
+  "next_retry_requires": "Do not use realized total slippage, exit-side slippage, or adjacent entry-cost thresholds as a policy signal on frozen windows. A retry needs a true entry-time execution-quality field with prospective forward replacement rows, or a materially different non-OHLCV risk axis such as borrow/options/news context.",
+  "related_files": [
+    "quant/experiments/exp_20260628_006_cost_adjusted_drawdown_attribution.py",
+    "data/experiments/exp-20260628-006/exp_20260628_006_cost_adjusted_drawdown_attribution.json",
+    "experiments/logs/exp-20260628-006.json",
+    "experiments/cards/exp-20260628-006.md",
+    "experiments/manifests/exp-20260628-006.json",
+    "experiments/tickets/exp-20260628-006.json",
+    "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "data/experiments/exp-20260602-003/late_strong_after.json",
+    "data/experiments/exp-20260602-003/mid_weak_after.json",
+    "data/experiments/exp-20260602-003/old_thin_after.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260628_006_cost_adjusted_drawdown_attribution.py",
+    "data/experiments/exp-20260628-006/exp_20260628_006_cost_adjusted_drawdown_attribution.json",
+    "experiments/logs/exp-20260628-006.json",
+    "experiments/cards/exp-20260628-006.md",
+    "experiments/manifests/exp-20260628-006.json",
+    "experiments/tickets/exp-20260628-006.json",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_006_cost_adjusted_drawdown_attribution.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260628_006_cost_adjusted_drawdown_attribution.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "anti_js": {
+    "used_javascript": false,
+    "evidence": "Python runner only; no node/js tooling invoked."
+  },
+  "decision": "rejected_no_ex_ante_cost_adjusted_drawdown_tail_edge",
+  "artifact": "data/experiments/exp-20260628-006/exp_20260628_006_cost_adjusted_drawdown_attribution.json",
+  "log": "experiments/logs/exp-20260628-006.json",
+  "updated_at": "2026-06-28T11:16:50+00:00"
+}

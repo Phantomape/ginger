@@ -1,0 +1,573 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "allocator_surface": {
+    "as_of": "2026-06-28T03:43:57+00:00",
+    "label": "Source-priority allocator (TOP-1 only)",
+    "max_concurrent": 1,
+    "new_entries_blocked": false,
+    "pilot_verdict": "COLLECTING",
+    "pilot_verdict_note": "0/20 closed trades; keep tracking",
+    "sleeve": "accepted_helper_source_priority_allocator"
+  },
+  "anti_js": {
+    "do_not_claim": "Do not claim allocator_top1 capacity retunes from this current-mark-only surface.",
+    "reopen_condition": "Wait for materially more closed allocator_top1 replacement-value rows, or add a daily target_price/closed-outcome ledger that makes Gate 2 and Gate 4 executable."
+  },
+  "calibration": {
+    "actual_success": false,
+    "pre_run_success_probability": 0.22,
+    "prediction_error": 0.22,
+    "realized_failure_modes": [
+      "open_rows_not_settled",
+      "target_price_missing_for_gate2",
+      "small_sample",
+      "skipped_rows_no_price"
+    ],
+    "surprise_level": "low",
+    "surprise_note": "The prior assigned low acceptance odds because the surface was open and incomplete; that was correct even though the current marks were directionally favorable."
+  },
+  "causal_components": [
+    "current pilot recommendations",
+    "selected-vs-skipped allocation marks",
+    "read-only open forward attribution",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_forward_allocation",
+  "changed_files": [
+    "quant/experiments/exp_20260628_009_allocator_top1_current_concurrency_attribution.py",
+    "data/experiments/exp-20260628-009/allocator_top1_current_concurrency_attribution.json",
+    "experiments/logs/exp-20260628-009.json",
+    "experiments/cards/exp-20260628-009.md",
+    "experiments/manifests/exp-20260628-009.json",
+    "experiments/tickets/exp-20260628-009.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "allocator_top1_current_concurrency_cap_selected_vs_skipped_marks_v1",
+  "decision": "observed_only_lead_not_allocation_ready",
+  "decision_basis": {
+    "directional_supports_current_cap": true,
+    "not_allocation_ready_reasons": [
+      "all rows are open/unsettled",
+      "target_price absent on every row",
+      "only one selected row",
+      "one skipped candidate has no current mark"
+    ]
+  },
+  "experiment_id": "exp-20260628-009",
+  "gate1": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_schema_keys": [
+      "generated_at",
+      "warehouse",
+      "windows"
+    ],
+    "note": "Baseline exists for protocol anchoring; this run does not alter or replay strategy policy.",
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_present": 7,
+    "field_coverage": {
+      "entry_date": {
+        "coverage_rate": 0.875,
+        "present": 7,
+        "total": 8
+      },
+      "target_price": {
+        "coverage_rate": 0.0,
+        "present": 0,
+        "total": 8
+      }
+    },
+    "passed": false,
+    "runtime_fields_checked": [
+      "ticker",
+      "status",
+      "signal_date",
+      "entry_date",
+      "entry_price",
+      "last_price",
+      "unrealized_pct",
+      "target_price"
+    ],
+    "target_price_present": 0,
+    "why_partial": "The recommendation surface supports current-mark attribution, but target_price is absent for all rows and one skipped candidate has no entry/current price."
+  },
+  "gate3": {
+    "note": "This is an allocation-cap surface, so skipped rows are deferred by capacity rather than filtered out as invalid signals.",
+    "passed": true,
+    "signals_generated": 8,
+    "signals_survived": 1,
+    "survival_rate": 0.125
+  },
+  "gate4": {
+    "after_artifact": "data/experiments/exp-20260628-009/allocator_top1_current_concurrency_attribution.json",
+    "before_artifact": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "current_mark_result": {
+      "selected_minus_skipped_mean_pct": 0.10155,
+      "selected_vs_skipped_average_current_mark_delta_usd": 1015.5,
+      "skipped_markable_count": 6,
+      "skipped_negative_count": 5
+    },
+    "observed_only": true,
+    "passed": false,
+    "why_no_full_gate4": "No strategy behavior changed and the rows are open/unsettled; current marks cannot be treated as a closed before/after replay."
+  },
+  "generated_at": "2026-06-28T14:13:45+00:00",
+  "hypothesis": "Current allocator_top1 source-priority concurrency cap may be adding allocation value by keeping the selected DDOG row while deferring same-surface open rows whose current marks are worse; audit the 2026-06-28 selected-vs-skipped forward recommendation surface without changing strategy behavior.",
+  "implementation_mode": "read_only_observed_forward_attribution",
+  "input_files": {
+    "baseline": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "recommendations": "data/pilots/pilot_recommendations_2026-06-28.json",
+    "ticket": "experiments/tickets/exp-20260628-009.json"
+  },
+  "lane": "alpha_search",
+  "mechanism_family": "source_priority_allocator",
+  "metrics": {
+    "equal_notional_usd": 10000.0,
+    "rows_without_current_mark": [
+      {
+        "allocation_bucket": "skipped",
+        "status": "SKIP_concurrency_cap",
+        "stop_status": "no_price",
+        "ticker": "WDC"
+      }
+    ],
+    "selected_count": 1,
+    "selected_markable_count": 1,
+    "selected_mean_unrealized_pct": 0.0697,
+    "selected_median_unrealized_pct": 0.0697,
+    "selected_minus_skipped_mean_pct": 0.10155,
+    "selected_minus_skipped_median_pct": 0.08865,
+    "selected_negative_count": 0,
+    "selected_positive_count": 1,
+    "selected_vs_skipped_average_current_mark_delta_usd": 1015.5,
+    "selected_vs_skipped_median_current_mark_delta_usd": 886.5,
+    "selected_worst_unrealized_pct": 0.0697,
+    "skipped_count": 7,
+    "skipped_markable_count": 6,
+    "skipped_mean_unrealized_pct": -0.03185,
+    "skipped_median_unrealized_pct": -0.01895,
+    "skipped_negative_count": 5,
+    "skipped_positive_count": 1,
+    "skipped_worst_unrealized_pct": -0.119,
+    "total_candidate_rows": 8
+  },
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260621-008",
+    "exp-20260624-014",
+    "exp-20260627-001",
+    "exp-20260628-008"
+  ],
+  "new_evidence_type": "current open forward recommendation rows",
+  "next_retry_requires": "Wait for materially more closed allocator_top1 replacement-value rows, or add a daily target_price/closed-outcome ledger that makes Gate 2 and Gate 4 executable.",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "accepted_allocator_forward_activation_readiness",
+        "score": 0.6308,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "accepted_allocator_source_arbitration_attribution",
+        "score": 0.6308,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.3333,
+        "family_key": "accepted_default_off_helper_source_priority_allocation",
+        "score": 0.6308,
+        "status": "has_accepted",
+        "trials": 24
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "accepted_helper_source_priority_allocator_tail_state_routing",
+        "score": 0.6308,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "accepted_helper_source_priority_allocator_tail_state_attribution",
+        "score": 0.63,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "allocator",
+      "field_tags": [
+        "adding",
+        "allocation",
+        "allocator",
+        "are",
+        "attribution",
+        "audit",
+        "be",
+        "behavior",
+        "by",
+        "cap",
+        "changing",
+        "concurrency",
+        "current",
+        "ddog",
+        "deferring",
+        "forward",
+        "keeping",
+        "marks",
+        "may",
+        "priority",
+        "recommendation",
+        "row",
+        "rows",
+        "same",
+        "selected",
+        "skipped",
+        "strategy",
+        "surface",
+        "value",
+        "while",
+        "whose",
+        "without",
+        "worse"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "accepted_allocator_forward_activation_readiness",
+        "reopen_condition": "Wait for closed allocator_top1 forward replacement-value rows under the existing envelope, or add a genuinely new PIT source that is not an allocator/source-arbitration neighbor.",
+        "score": 0.6308,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "accepted_allocator_source_arbitration_attribution",
+        "reopen_condition": "Point-in-time free relation/source-maturity data that explains oracle switches before the next open, implemented through a shared default-off helper if tested.",
+        "score": 0.6308,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.3333,
+        "data_source": "allocator",
+        "family_key": "accepted_default_off_helper_source_priority_allocation",
+        "reopen_condition": "Closed forward replacement-value rows for rejected second-slot candidates, or a materially new PIT field that predicts which second slot should displace idle allocator capacity.",
+        "score": 0.6308,
+        "status": "has_accepted",
+        "trials": 24
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "accepted_helper_source_priority_allocator_tail_state_routing",
+        "reopen_condition": "A retry needs closed forward allocator replacement rows, a shared daily tail-state field collected before routing, or a materially different PIT displacement field.",
+        "score": 0.6308,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "accepted_helper_source_priority_allocator_tail_state_attribution",
+        "reopen_condition": "A retry needs closed forward allocator replacement rows, a predeclared tail-state field collected daily, or a frozen out-of-sample threshold derived before routing.",
+        "score": 0.63,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "2026-06-28 allocator_top1 current selected-vs-skipped open forward recommendation rows, not a retune of a closed backtest parameter",
+    "override": true,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "allocator",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "observed_only_lead": true,
+  "owner": "alpha-explore",
+  "parameters": {
+    "as_of": "2026-06-28T03:43:57+00:00",
+    "max_concurrent": 1,
+    "new_entries_blocked": false,
+    "pilot_key": "allocator_top1",
+    "pilot_verdict": "COLLECTING",
+    "recommendation_file": "data/pilots/pilot_recommendations_2026-06-28.json"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not rerun adjacent allocator selected-vs-skipped slices on the same 2026-06-28 open rows or only swap rank/score buckets.",
+    "new_evidence_required": "Wait for materially more closed allocator_top1 replacement-value rows, or add a daily target_price/closed-outcome ledger that makes Gate 2 and Gate 4 executable.",
+    "why_result_happened": "The latest allocator_top1 marks favor the existing cap because DDOG is positive while five of six markable skipped rows are negative, but every row remains open and the surface lacks target_price, so the evidence is not allocation-ready."
+  },
+  "pre_run_questions": {
+    "alpha_hypothesis": "Current allocator_top1 source-priority concurrency cap may be adding allocation value by keeping the selected DDOG row while deferring same-surface open rows whose current marks are worse; audit the 2026-06-28 selected-vs-skipped forward recommendation surface without changing strategy behavior.",
+    "prior_near_neighbors": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "accepted_allocator_forward_activation_readiness",
+        "reopen_condition": "Wait for closed allocator_top1 forward replacement-value rows under the existing envelope, or add a genuinely new PIT source that is not an allocator/source-arbitration neighbor.",
+        "score": 0.6308,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "accepted_allocator_source_arbitration_attribution",
+        "reopen_condition": "Point-in-time free relation/source-maturity data that explains oracle switches before the next open, implemented through a shared default-off helper if tested.",
+        "score": 0.6308,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.3333,
+        "data_source": "allocator",
+        "family_key": "accepted_default_off_helper_source_priority_allocation",
+        "reopen_condition": "Closed forward replacement-value rows for rejected second-slot candidates, or a materially new PIT field that predicts which second slot should displace idle allocator capacity.",
+        "score": 0.6308,
+        "status": "has_accepted",
+        "trials": 24
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "accepted_helper_source_priority_allocator_tail_state_routing",
+        "reopen_condition": "A retry needs closed forward allocator replacement rows, a shared daily tail-state field collected before routing, or a materially different PIT displacement field.",
+        "score": 0.6308,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "accepted_helper_source_priority_allocator_tail_state_attribution",
+        "reopen_condition": "A retry needs closed forward allocator replacement rows, a predeclared tail-state field collected daily, or a frozen out-of-sample threshold derived before routing.",
+        "score": 0.63,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "reproducibility": "Runner uses a fixed 2026-06-28 recommendation artifact and writes a deterministic JSON/card/log shard.",
+    "single_policy_bundle": "allocator_top1_current_concurrency_cap_selected_vs_skipped_marks_v1",
+    "success_criteria": "Only a closed-row Gate 4 acceptance can preserve behavior; current marks can produce an observed-only lead but not an accepted allocation change."
+  },
+  "prediction": {
+    "confidence_reason": "New 2026-06-28 allocator_top1 recommendation surface has one selected row and seven concurrency-cap skipped rows; current marks favor the cap, but all rows are open/unsettled and target_price is absent.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "open_rows_not_settled",
+      "skipped_rows_no_price",
+      "small_sample",
+      "selected_row_later_reverses",
+      "target_price_missing_for_gate2"
+    ],
+    "recorded_at": "2026-06-28T14:08:28+00:00",
+    "success_probability": 0.22
+  },
+  "production_impact": {
+    "alters_orders": false,
+    "default_off_only": true,
+    "live_orders_changed": false,
+    "notes": "This runner reads daily pilot recommendation artifacts only; it does not alter ranking, sizing, exits, live orders, or paper sleeve state.",
+    "trade_enabled": false
+  },
+  "rejection_reason": "Not rejected as a lead, but rejected for acceptance: current open marks are not a settled Gate 4 replay and Gate 2 target_price coverage is zero.",
+  "related_files": [
+    "data/pilots/pilot_recommendations_2026-06-28.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/tickets/exp-20260628-009.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_009_allocator_top1_current_concurrency_attribution.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "rows": [
+    {
+      "allocation_bucket": "selected",
+      "candidate_score": 1223.0,
+      "current_mark_pnl_usd": 697.0,
+      "days_held": 6,
+      "days_remaining": 4,
+      "entry_date": "2026-06-18",
+      "entry_price": 224.152,
+      "hold_days": 10,
+      "last_price": 239.77,
+      "pilot_notional_usd": 10000.0,
+      "signal_date": "2026-06-16",
+      "source": "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER",
+      "source_priority_rank": 1,
+      "status": "HOLD",
+      "stop_status": "OK",
+      "target_price": null,
+      "ticker": "DDOG",
+      "unrealized_pct": 0.0697
+    },
+    {
+      "allocation_bucket": "skipped",
+      "candidate_score": 1223.0,
+      "current_mark_pnl_usd": -114.0,
+      "days_held": 4,
+      "days_remaining": 6,
+      "entry_date": "2026-06-23",
+      "entry_price": 129.7949,
+      "hold_days": 10,
+      "last_price": 128.32,
+      "pilot_notional_usd": 10000.0,
+      "signal_date": "2026-06-22",
+      "source": "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER",
+      "source_priority_rank": 1,
+      "status": "SKIP_concurrency_cap",
+      "stop_status": "OK",
+      "target_price": null,
+      "ticker": "INTC",
+      "unrealized_pct": -0.0114
+    },
+    {
+      "allocation_bucket": "skipped",
+      "candidate_score": 1222.0,
+      "current_mark_pnl_usd": -539.0,
+      "days_held": 5,
+      "days_remaining": 5,
+      "entry_date": "2026-06-22",
+      "entry_price": 1196.788,
+      "hold_days": 10,
+      "last_price": 1132.33,
+      "pilot_notional_usd": 10000.0,
+      "signal_date": "2026-06-18",
+      "source": "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER",
+      "source_priority_rank": 1,
+      "status": "SKIP_concurrency_cap",
+      "stop_status": "OK",
+      "target_price": null,
+      "ticker": "MU",
+      "unrealized_pct": -0.0539
+    },
+    {
+      "allocation_bucket": "skipped",
+      "candidate_score": 1221.0,
+      "current_mark_pnl_usd": -1190.0,
+      "days_held": 9,
+      "days_remaining": 1,
+      "entry_date": "2026-06-12",
+      "entry_price": 270.135,
+      "hold_days": 10,
+      "last_price": 238.0,
+      "pilot_notional_usd": 10000.0,
+      "signal_date": "2026-06-11",
+      "source": "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER",
+      "source_priority_rank": 1,
+      "status": "SKIP_concurrency_cap",
+      "stop_status": "OK",
+      "target_price": null,
+      "ticker": "CRDO",
+      "unrealized_pct": -0.119
+    },
+    {
+      "allocation_bucket": "skipped",
+      "candidate_score": 200.93847,
+      "current_mark_pnl_usd": -47.0,
+      "days_held": 3,
+      "days_remaining": 7,
+      "entry_date": "2026-06-23",
+      "entry_price": 536.7883,
+      "hold_days": 10,
+      "last_price": 534.24,
+      "pilot_notional_usd": 10000.0,
+      "signal_date": "2026-06-22",
+      "source": "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER",
+      "source_priority_rank": 5,
+      "status": "SKIP_concurrency_cap",
+      "stop_status": "OK",
+      "target_price": null,
+      "ticker": "NVMI",
+      "unrealized_pct": -0.0047
+    },
+    {
+      "allocation_bucket": "skipped",
+      "candidate_score": 200.885764,
+      "current_mark_pnl_usd": -265.0,
+      "days_held": 3,
+      "days_remaining": 7,
+      "entry_date": "2026-06-23",
+      "entry_price": 694.1269,
+      "hold_days": 10,
+      "last_price": 675.7,
+      "pilot_notional_usd": 10000.0,
+      "signal_date": "2026-06-22",
+      "source": "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER",
+      "source_priority_rank": 5,
+      "status": "SKIP_concurrency_cap",
+      "stop_status": "OK",
+      "target_price": null,
+      "ticker": "SITM",
+      "unrealized_pct": -0.0265
+    },
+    {
+      "allocation_bucket": "skipped",
+      "candidate_score": 200.81041,
+      "current_mark_pnl_usd": 244.0,
+      "days_held": 4,
+      "days_remaining": 6,
+      "entry_date": "2026-06-22",
+      "entry_price": 100.7003,
+      "hold_days": 10,
+      "last_price": 103.16,
+      "pilot_notional_usd": 10000.0,
+      "signal_date": "2026-06-11",
+      "source": "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER",
+      "source_priority_rank": 5,
+      "status": "SKIP_concurrency_cap",
+      "stop_status": "OK",
+      "target_price": null,
+      "ticker": "SBUX",
+      "unrealized_pct": 0.0244
+    },
+    {
+      "allocation_bucket": "skipped",
+      "candidate_score": 1231.0,
+      "current_mark_pnl_usd": null,
+      "days_held": null,
+      "days_remaining": null,
+      "entry_date": null,
+      "entry_price": null,
+      "hold_days": 10,
+      "last_price": null,
+      "pilot_notional_usd": 10000.0,
+      "signal_date": "2026-06-15",
+      "source": "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER",
+      "source_priority_rank": 1,
+      "status": "SKIP_concurrency_cap",
+      "stop_status": "no_price",
+      "target_price": null,
+      "ticker": "WDC",
+      "unrealized_pct": null
+    }
+  ],
+  "schema_version": 1,
+  "single_causal_variable": "allocator_top1_current_concurrency_cap_selected_vs_skipped_marks_v1",
+  "status": "observed_only",
+  "trial_family": "allocator_top1_forward_attribution",
+  "trial_variant_id": "current_concurrency_selected_vs_skipped_20260628"
+}

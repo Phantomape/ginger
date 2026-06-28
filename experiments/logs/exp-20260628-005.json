@@ -1,0 +1,1071 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": false,
+  "after_metrics": "<full metrics retained in artifact>",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260628_005_weak_tape_top300_universe_gate.py",
+    "data/experiments/exp-20260628-005/exp_20260628_005_weak_tape_top300_universe_gate.json",
+    "experiments/logs/exp-20260628-005.json",
+    "experiments/cards/exp-20260628-005.md",
+    "experiments/manifests/exp-20260628-005.json",
+    "experiments/tickets/exp-20260628-005.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "If broad liquid breadth is useful only when the core universe is too thin, then a fixed old_thin-only top300 candidate-pool gate should keep the old_thin EV uplift while avoiding mid_weak and late_strong dilution.",
+  "anti_js": {
+    "evidence": "Python runner only; no node/js tooling invoked.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260628-005/exp_20260628_005_weak_tape_top300_universe_gate.json",
+  "before_metrics": "<full metrics retained in artifact>",
+  "calibration": {
+    "actual_decision": "rejected_weak_tape_top300_universe_gate_risk_not_acceptable",
+    "actual_ev_delta": 0.9464,
+    "actual_pnl_delta": 44285.13,
+    "actual_success": 0,
+    "brier_score": 0.0256,
+    "expected_ev_delta": 0.2,
+    "expected_pnl_delta": 0.0,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "old_thin_drawdown_blowup",
+      "survival_collapse",
+      "warehouse_control_not_canonical",
+      "top300_weak_tape_edge_unstable"
+    ],
+    "predicted_success_probability": 0.16,
+    "realized_failure_modes": [
+      "aggregate_ev_below_canonical_baseline",
+      "worst_drawdown_more_than_3pp_above_canonical",
+      "old_thin_drawdown_more_than_5pp_above_broad_core",
+      "old_thin_survival_below_50pct_guardrail"
+    ],
+    "surprise_note": "Regime gating preserved the old_thin raw-PnL uplift but did not repair the survival and drawdown damage enough to accept."
+  },
+  "causal_components": [
+    "old_thin_top300_candidate_pool",
+    "mid_weak_core_candidate_pool",
+    "late_strong_core_candidate_pool",
+    "broad_warehouse_control",
+    "no_shared_strategy_change"
+  ],
+  "change_type": "candidate_pool_regime_gate",
+  "changed_files": [
+    "quant/experiments/exp_20260628_005_weak_tape_top300_universe_gate.py",
+    "data/experiments/exp-20260628-005/exp_20260628_005_weak_tape_top300_universe_gate.json",
+    "experiments/logs/exp-20260628-005.json",
+    "experiments/cards/exp-20260628-005.md",
+    "experiments/manifests/exp-20260628-005.json",
+    "experiments/tickets/exp-20260628-005.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "weak_tape_only_top300_universe_expansion_v1",
+  "decision": "rejected_weak_tape_top300_universe_gate_risk_not_acceptable",
+  "delta_metrics": {
+    "treatment_vs_broad_core": {
+      "expected_value_score_sum_delta": 0.9464,
+      "max_drawdown_pct_worst_delta": 0.1432,
+      "old_thin_ev_delta": 0.9464,
+      "old_thin_max_drawdown_pct_delta": 0.1432,
+      "old_thin_pnl_delta": 44285.13,
+      "old_thin_survival_rate_delta": -0.7293,
+      "survival_rate_delta": -0.51736,
+      "total_pnl_delta": 44285.13,
+      "trade_count_delta": -1
+    },
+    "treatment_vs_canonical_baseline": {
+      "expected_value_score_sum_delta": -0.8081,
+      "max_drawdown_pct_worst_delta": 0.151,
+      "survival_rate_delta": -0.505088,
+      "total_pnl_delta": 3402.31,
+      "trade_count_delta": 6
+    }
+  },
+  "experiment_id": "exp-20260628-005",
+  "gate1": {
+    "broad_warehouse_core_control": {
+      "expected_value_score_sum": 6.1396,
+      "max_drawdown_pct_worst": 0.1197,
+      "signals_generated": 158,
+      "signals_survived": 132,
+      "survival_rate": 0.835443,
+      "total_pnl": 193968.17,
+      "trade_count": 68,
+      "windows": {
+        "late_strong": {
+          "benchmarks": {
+            "qqq_buy_hold_return_pct": 0.058,
+            "spy_buy_hold_return_pct": 0.0541,
+            "strategy_total_return_pct": 1.0702,
+            "strategy_vs_qqq_pct": 1.0122,
+            "strategy_vs_spy_pct": 1.0161
+          },
+          "by_strategy": {
+            "breakout_long": {
+              "avg_R": 2.772,
+              "avg_pnl_pct_net": 0.0732,
+              "losses": 2,
+              "profit_factor": 13.598,
+              "total_pnl_usd": 70873.77,
+              "trade_count": 12,
+              "win_rate": 0.8333,
+              "wins": 10
+            },
+            "trend_long": {
+              "avg_R": 1.978,
+              "avg_pnl_pct_net": 0.0632,
+              "losses": 4,
+              "profit_factor": 4.876,
+              "total_pnl_usd": 36143.69,
+              "trade_count": 9,
+              "win_rate": 0.5556,
+              "wins": 5
+            }
+          },
+          "dependency_summary": {
+            "entered_candidate_events": 21,
+            "entered_candidate_events_with_target_price": 21,
+            "entry_date_present": true,
+            "target_price_present": true,
+            "target_price_source": "entry_candidate_events.signal_snapshot.target_price",
+            "target_price_trade_row_note": "Closed trade rows omit target_price, but the backtester validates target_price before position construction and exposes it on entered candidate snapshots when include_entry_candidate_events is true.",
+            "trade_rows": 21,
+            "trade_rows_with_entry_date": 21
+          },
+          "expected_value_score": 4.5698,
+          "known_biases": {
+            "earnings_event_long_data_quality": {
+              "confidence_cap_when_missing_snapshot": 0.83,
+              "days_to_earnings_source": "daily earnings snapshots when present; yfinance calendar fallback",
+              "eps_estimate": "snapshot-backed when available; None before first snapshot or for uncovered tickers",
+              "exact_snapshot_coverage_fraction": 1.0,
+              "first_snapshot_date": "20241002",
+              "last_snapshot_date": "20260627",
+              "legacy_gap_resolved": true,
+              "note": "Do not describe Strategy C as days_to_earnings-only when snapshot_archive_present is true; use the coverage fields above.",
+              "positive_surprise_history": "derived from avg_historical_surprise_pct when snapshot-backed; None before first snapshot or for uncovered tickers",
+              "remaining_gap": "coverage/ticker-level sparsity, not an always-None field",
+              "snapshot_archive_present": true,
+              "snapshot_count": 469,
+              "snapshot_rows_total": 39501,
+              "snapshot_rows_with_eps_estimate": 35957,
+              "snapshot_rows_with_surprise_history": 24632,
+              "walk_forward_snapshot_coverage_fraction": 1.0
+            },
+            "ohlcv_source": {
+              "snapshot_loaded": false,
+              "snapshot_path": null,
+              "snapshot_write_path": null,
+              "snapshot_written": false,
+              "warehouse_loaded": true,
+              "warehouse_path": "D:\\Github\\ginger\\data\\warehouse\\warehouse_main.sqlite",
+              "warehouse_snapshot_source": null
+            }
+          },
+          "max_drawdown_pct": 0.069,
+          "period": "2025-10-23 \u2192 2026-04-21",
+          "sample_entered_candidate_events": [
+            {
+              "date": "2025-10-30",
+              "decision": "entered",
+              "entry_price": 281.52,
+              "target_price": 324.68,
+              "ticker": "GOOG"
+            },
+            {
+              "date": "2025-11-03",
+              "decision": "entered",
+              "entry_price": 893.72,
+              "target_price": 1000.05,
+              "ticker": "LLY"
+            },
+            {
+              "date": "2025-12-01",
+              "decision": "entered",
+              "entry_price": 52.52,
+              "target_price": 62.91,
+              "ticker": "SLV"
+            },
+            {
+              "date": "2025-12-12",
+              "decision": "entered",
+              "entry_price": 80.99,
+              "target_price": 86.1,
+              "ticker": "IAU"
+            },
+            {
+              "date": "2025-12-12",
+              "decision": "entered",
+              "entry_price": 395.44,
+              "target_price": 420.62,
+              "ticker": "GLD"
+            }
+          ],
+          "sample_trades": [
+            {
+              "entry_date": "2025-11-04",
+              "exit_date": "2025-11-12",
+              "exit_reason": "target",
+              "pnl": 6609.38,
+              "strategy": "breakout_long",
+              "ticker": "LLY"
+            },
+            {
+              "entry_date": "2025-10-31",
+              "exit_date": "2025-11-25",
+              "exit_reason": "target",
+              "pnl": 7450.31,
+              "strategy": "trend_long",
+              "ticker": "GOOG"
+            },
+            {
+              "entry_date": "2025-12-02",
+              "exit_date": "2025-12-23",
+              "exit_reason": "target",
+              "pnl": 10713.35,
+              "strategy": "trend_long",
+              "ticker": "SLV"
+            },
+            {
+              "entry_date": "2026-01-06",
+              "exit_date": "2026-01-06",
+              "exit_reason": "stop",
+              "pnl": -2296.65,
+              "strategy": "trend_long",
+              "ticker": "CVX"
+            },
+            {
+              "entry_date": "2026-01-06",
+              "exit_date": "2026-01-06",
+              "exit_reason": "stop",
+              "pnl": -1867.92,
+              "strategy": "breakout_long",
+              "ticker": "XOM"
+            }
+          ],
+          "sharpe_daily": 4.27,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039,
+          "total_pnl": 107017.46,
+          "total_trades": 21,
+          "universe_label": "late_strong_core",
+          "universe_size": 43,
+          "win_rate": 0.7143
+        },
+        "mid_weak": {
+          "benchmarks": {
+            "qqq_buy_hold_return_pct": 0.3351,
+            "spy_buy_hold_return_pct": 0.2544,
+            "strategy_total_return_pct": 0.5686,
+            "strategy_vs_qqq_pct": 0.2335,
+            "strategy_vs_spy_pct": 0.3142
+          },
+          "by_strategy": {
+            "breakout_long": {
+              "avg_R": 0.205,
+              "avg_pnl_pct_net": -0.003,
+              "losses": 6,
+              "profit_factor": 0.881,
+              "total_pnl_usd": 2987.16,
+              "trade_count": 8,
+              "win_rate": 0.25,
+              "wins": 2
+            },
+            "trend_long": {
+              "avg_R": 1.319,
+              "avg_pnl_pct_net": 0.0723,
+              "losses": 6,
+              "profit_factor": 4.09,
+              "total_pnl_usd": 53868.82,
+              "trade_count": 14,
+              "win_rate": 0.5714,
+              "wins": 8
+            }
+          },
+          "dependency_summary": {
+            "entered_candidate_events": 22,
+            "entered_candidate_events_with_target_price": 22,
+            "entry_date_present": true,
+            "target_price_present": true,
+            "target_price_source": "entry_candidate_events.signal_snapshot.target_price",
+            "target_price_trade_row_note": "Closed trade rows omit target_price, but the backtester validates target_price before position construction and exposes it on entered candidate snapshots when include_entry_candidate_events is true.",
+            "trade_rows": 22,
+            "trade_rows_with_entry_date": 22
+          },
+          "expected_value_score": 1.1997,
+          "known_biases": {
+            "earnings_event_long_data_quality": {
+              "confidence_cap_when_missing_snapshot": 0.83,
+              "days_to_earnings_source": "daily earnings snapshots when present; yfinance calendar fallback",
+              "eps_estimate": "snapshot-backed when available; None before first snapshot or for uncovered tickers",
+              "exact_snapshot_coverage_fraction": 1.0,
+              "first_snapshot_date": "20241002",
+              "last_snapshot_date": "20260627",
+              "legacy_gap_resolved": true,
+              "note": "Do not describe Strategy C as days_to_earnings-only when snapshot_archive_present is true; use the coverage fields above.",
+              "positive_surprise_history": "derived from avg_historical_surprise_pct when snapshot-backed; None before first snapshot or for uncovered tickers",
+              "remaining_gap": "coverage/ticker-level sparsity, not an always-None field",
+              "snapshot_archive_present": true,
+              "snapshot_count": 469,
+              "snapshot_rows_total": 39501,
+              "snapshot_rows_with_eps_estimate": 35957,
+              "snapshot_rows_with_surprise_history": 24632,
+              "walk_forward_snapshot_coverage_fraction": 1.0
+            },
+            "ohlcv_source": {
+              "snapshot_loaded": false,
+              "snapshot_path": null,
+              "snapshot_write_path": null,
+              "snapshot_written": false,
+              "warehouse_loaded": true,
+              "warehouse_path": "D:\\Github\\ginger\\data\\warehouse\\warehouse_main.sqlite",
+              "warehouse_snapshot_source": null
+            }
+          },
+          "max_drawdown_pct": 0.1118,
+          "period": "2025-04-23 \u2192 2025-10-22",
+          "sample_entered_candidate_events": [
+            {
+              "date": "2025-05-13",
+              "decision": "entered",
+              "entry_price": 256.9,
+              "target_price": 321.83,
+              "ticker": "COIN"
+            },
+            {
+              "date": "2025-06-02",
+              "decision": "entered",
+              "entry_price": 31.59,
+              "target_price": 35.81,
+              "ticker": "SLV"
+            },
+            {
+              "date": "2025-06-10",
+              "decision": "entered",
+              "entry_price": 117.43,
+              "target_price": 128.58,
+              "ticker": "DIS"
+            },
+            {
+              "date": "2025-06-16",
+              "decision": "entered",
+              "entry_price": 126.39,
+              "target_price": 154.98,
+              "ticker": "AMD"
+            },
+            {
+              "date": "2025-06-20",
+              "decision": "entered",
+              "entry_price": 630.92,
+              "target_price": 687.9,
+              "ticker": "GS"
+            }
+          ],
+          "sample_trades": [
+            {
+              "entry_date": "2025-05-14",
+              "exit_date": "2025-06-24",
+              "exit_reason": "target",
+              "pnl": 12766.98,
+              "strategy": "trend_long",
+              "ticker": "COIN"
+            },
+            {
+              "entry_date": "2025-06-23",
+              "exit_date": "2025-06-30",
+              "exit_reason": "target",
+              "pnl": 6751.29,
+              "strategy": "trend_long",
+              "ticker": "GS"
+            },
+            {
+              "entry_date": "2025-06-17",
+              "exit_date": "2025-07-15",
+              "exit_reason": "target",
+              "pnl": 896.59,
+              "strategy": "trend_long",
+              "ticker": "AMD"
+            },
+            {
+              "entry_date": "2025-06-26",
+              "exit_date": "2025-07-18",
+              "exit_reason": "target",
+              "pnl": 13936.45,
+              "strategy": "trend_long",
+              "ticker": "COIN"
+            },
+            {
+              "entry_date": "2025-07-18",
+              "exit_date": "2025-07-22",
+              "exit_reason": "stop",
+              "pnl": -111.21,
+              "strategy": "trend_long",
+              "ticker": "TSM"
+            }
+          ],
+          "sharpe_daily": 2.11,
+          "signals_generated": 52,
+          "signals_survived": 41,
+          "survival_rate": 0.7885,
+          "total_pnl": 56855.98,
+          "total_trades": 22,
+          "universe_label": "mid_weak_core",
+          "universe_size": 43,
+          "win_rate": 0.4545
+        },
+        "old_thin": {
+          "benchmarks": {
+            "qqq_buy_hold_return_pct": -0.0749,
+            "spy_buy_hold_return_pct": -0.0672,
+            "strategy_total_return_pct": 0.3009,
+            "strategy_vs_qqq_pct": 0.3758,
+            "strategy_vs_spy_pct": 0.3682
+          },
+          "by_strategy": {
+            "breakout_long": {
+              "avg_R": -0.329,
+              "avg_pnl_pct_net": -0.0087,
+              "losses": 3,
+              "profit_factor": 0.685,
+              "total_pnl_usd": 1645.11,
+              "trade_count": 4,
+              "win_rate": 0.25,
+              "wins": 1
+            },
+            "trend_long": {
+              "avg_R": 0.452,
+              "avg_pnl_pct_net": 0.0244,
+              "losses": 13,
+              "profit_factor": 1.869,
+              "total_pnl_usd": 28449.62,
+              "trade_count": 21,
+              "win_rate": 0.381,
+              "wins": 8
+            }
+          },
+          "dependency_summary": {
+            "entered_candidate_events": 25,
+            "entered_candidate_events_with_target_price": 25,
+            "entry_date_present": true,
+            "target_price_present": true,
+            "target_price_source": "entry_candidate_events.signal_snapshot.target_price",
+            "target_price_trade_row_note": "Closed trade rows omit target_price, but the backtester validates target_price before position construction and exposes it on entered candidate snapshots when include_entry_candidate_events is true.",
+            "trade_rows": 25,
+            "trade_rows_with_entry_date": 25
+          },
+          "expected_value_score": 0.3701,
+          "known_biases": {
+            "earnings_event_long_data_quality": {
+              "confidence_cap_when_missing_snapshot": 0.83,
+              "days_to_earnings_source": "daily earnings snapshots when present; yfinance calendar fallback",
+              "eps_estimate": "snapshot-backed when available; None before first snapshot or for uncovered tickers",
+              "exact_snapshot_coverage_fraction": 1.0,
+              "first_snapshot_date": "20241002",
+              "last_snapshot_date": "20260627",
+              "legacy_gap_resolved": true,
+              "note": "Do not describe Strategy C as days_to_earnings-only when snapshot_archive_present is true; use the coverage fields above.",
+              "positive_surprise_history": "derived from avg_historical_surprise_pct when snapshot-backed; None before first snapshot or for uncovered tickers",
+              "remaining_gap": "coverage/ticker-level sparsity, not an always-None field",
+              "snapshot_archive_present": true,
+              "snapshot_count": 469,
+              "snapshot_rows_total": 39501,
+              "snapshot_rows_with_eps_estimate": 35957,
+              "snapshot_rows_with_surprise_history": 24632,
+              "walk_forward_snapshot_coverage_fraction": 1.0
+            },
+            "ohlcv_source": {
+              "snapshot_loaded": false,
+              "snapshot_path": null,
+              "snapshot_write_path": null,
+              "snapshot_written": false,
+              "warehouse_loaded": true,
+              "warehouse_path": "D:\\Github\\ginger\\data\\warehouse\\warehouse_main.sqlite",
+              "warehouse_snapshot_source": null
+            }
+          },
+          "max_drawdown_pct": 0.1197,
+          "period": "2024-10-02 \u2192 2025-04-22",
+          "sample_entered_candidate_events": [
+            {
+              "date": "2024-10-10",
+              "decision": "entered",
+              "entry_price": 130.09,
+              "target_price": 145.03,
+              "ticker": "DDOG"
+            },
+            {
+              "date": "2024-10-11",
+              "decision": "entered",
+              "entry_price": 215.6,
+              "target_price": 236.01,
+              "ticker": "JPM"
+            },
+            {
+              "date": "2024-10-17",
+              "decision": "entered",
+              "entry_price": 201.89,
+              "target_price": 241.96,
+              "ticker": "TSM"
+            },
+            {
+              "date": "2024-10-18",
+              "decision": "entered",
+              "entry_price": 521.15,
+              "target_price": 575.02,
+              "ticker": "ISRG"
+            },
+            {
+              "date": "2024-10-18",
+              "decision": "entered",
+              "entry_price": 76.39,
+              "target_price": 85.49,
+              "ticker": "NFLX"
+            }
+          ],
+          "sample_trades": [
+            {
+              "entry_date": "2024-10-11",
+              "exit_date": "2024-10-16",
+              "exit_reason": "stop",
+              "pnl": -2177.23,
+              "strategy": "breakout_long",
+              "ticker": "DDOG"
+            },
+            {
+              "entry_date": "2024-10-18",
+              "exit_date": "2024-10-28",
+              "exit_reason": "stop",
+              "pnl": -99.83,
+              "strategy": "trend_long",
+              "ticker": "TSM"
+            },
+            {
+              "entry_date": "2024-10-21",
+              "exit_date": "2024-10-31",
+              "exit_reason": "stop",
+              "pnl": -440.94,
+              "strategy": "trend_long",
+              "ticker": "ISRG"
+            },
+            {
+              "entry_date": "2024-10-14",
+              "exit_date": "2024-11-06",
+              "exit_reason": "target",
+              "pnl": 4711.48,
+              "strategy": "trend_long",
+              "ticker": "JPM"
+            },
+            {
+              "entry_date": "2024-10-21",
+              "exit_date": "2024-11-19",
+              "exit_reason": "target",
+              "pnl": 5737.69,
+              "strategy": "trend_long",
+              "ticker": "NFLX"
+            }
+          ],
+          "sharpe_daily": 1.23,
+          "signals_generated": 55,
+          "signals_survived": 50,
+          "survival_rate": 0.9091,
+          "total_pnl": 30094.73,
+          "total_trades": 25,
+          "universe_label": "old_thin_core",
+          "universe_size": 43,
+          "win_rate": 0.36
+        }
+      }
+    },
+    "canonical_baseline": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3,
+      "windows": [
+        {
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "label": "late_strong",
+          "max_drawdown_pct": 0.0665,
+          "sharpe_daily": 4.41,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "start": "2025-10-23",
+          "survival_rate": 0.8039,
+          "total_pnl": 117072.92,
+          "trade_count": 18
+        },
+        {
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "label": "mid_weak",
+          "max_drawdown_pct": 0.1119,
+          "sharpe_daily": 2.74,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "start": "2025-04-23",
+          "survival_rate": 0.7925,
+          "total_pnl": 78110.11,
+          "trade_count": 21
+        },
+        {
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "label": "old_thin",
+          "max_drawdown_pct": 0.1001,
+          "sharpe_daily": 1.49,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "start": "2024-10-02",
+          "survival_rate": 0.8667,
+          "total_pnl": 39667.96,
+          "trade_count": 22
+        }
+      ]
+    },
+    "passed": true,
+    "prior_broad_scout": {
+      "aggregate_EV": {
+        "core": 6.141,
+        "top300": 3.408,
+        "top500": 0.73
+      },
+      "baseline_result_file": "data/experiments/exp-20260627-019/three_window_summary.json",
+      "decision": "rejected",
+      "old_thin_core": {
+        "EV": 0.37,
+        "maxDD_pct": 11.97,
+        "pnl": 30095,
+        "sharpe": 1.23,
+        "surv_pct": 90.9,
+        "trades": 25,
+        "win": 0.36
+      },
+      "old_thin_top300": {
+        "EV": 1.317,
+        "maxDD_pct": 26.29,
+        "pnl": 74380,
+        "sharpe": 1.77,
+        "surv_pct": 18.0,
+        "trades": 24,
+        "win": 0.42
+      },
+      "verdict": "core wins Sharpe(3/3), maxDD(3/3), survival(3/3), aggregate EV. Naive liquid expansion destroys risk-adjusted return; survival collapses ~80%->10-21%. One unstable nuance: old_thin top300 raw EV higher but 2.2x drawdown and top500 negative -> belongs to universe-aware ranking/risk retune, not naive expansion."
+    }
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "dependency_fields_checked": [
+      "ticker",
+      "date",
+      "close",
+      "volume",
+      "entry_date",
+      "target_price",
+      "signals_generated",
+      "signals_survived"
+    ],
+    "note": "entry_date is validated on closed trades. target_price is validated on entered candidate snapshots because the closed trade schema records target_mult_used but omits target_price.",
+    "passed": true,
+    "per_window_dependency_summary": {
+      "late_strong": {
+        "entered_candidate_events": 21,
+        "entered_candidate_events_with_target_price": 21,
+        "entry_date_present": true,
+        "target_price_present": true,
+        "target_price_source": "entry_candidate_events.signal_snapshot.target_price",
+        "target_price_trade_row_note": "Closed trade rows omit target_price, but the backtester validates target_price before position construction and exposes it on entered candidate snapshots when include_entry_candidate_events is true.",
+        "trade_rows": 21,
+        "trade_rows_with_entry_date": 21
+      },
+      "mid_weak": {
+        "entered_candidate_events": 22,
+        "entered_candidate_events_with_target_price": 22,
+        "entry_date_present": true,
+        "target_price_present": true,
+        "target_price_source": "entry_candidate_events.signal_snapshot.target_price",
+        "target_price_trade_row_note": "Closed trade rows omit target_price, but the backtester validates target_price before position construction and exposes it on entered candidate snapshots when include_entry_candidate_events is true.",
+        "trade_rows": 22,
+        "trade_rows_with_entry_date": 22
+      },
+      "old_thin": {
+        "entered_candidate_events": 24,
+        "entered_candidate_events_with_target_price": 24,
+        "entry_date_present": true,
+        "target_price_present": true,
+        "target_price_source": "entry_candidate_events.signal_snapshot.target_price",
+        "target_price_trade_row_note": "Closed trade rows omit target_price, but the backtester validates target_price before position construction and exposes it on entered candidate snapshots when include_entry_candidate_events is true.",
+        "trade_rows": 24,
+        "trade_rows_with_entry_date": 24
+      }
+    }
+  },
+  "gate3": {
+    "min_window_survival_rate": 0.1798,
+    "note": "Gate 3 minimum survival is above 5%, but Gate 4 still rejects because the old_thin top300 survival is far below the practical risk guardrail.",
+    "passed": true,
+    "signals_generated": 459,
+    "signals_survived": 146,
+    "survival_rate": 0.318083
+  },
+  "gate4": {
+    "acceptance_rule": {
+      "aggregate_ev_delta_vs_broad_core_min": 0.2,
+      "gate3_min_survival_rate": 0.05,
+      "max_old_thin_drawdown_delta_vs_broad_core": 0.05,
+      "max_worst_drawdown_delta_vs_canonical": 0.03,
+      "min_old_thin_survival_rate": 0.5,
+      "must_exceed_canonical_aggregate_ev": true
+    },
+    "accepted_alpha": false,
+    "before_after": {
+      "broad_core_control": {
+        "expected_value_score_sum": 6.1396,
+        "max_drawdown_pct_worst": 0.1197,
+        "survival_rate": 0.835443,
+        "total_pnl": 193968.17
+      },
+      "canonical_baseline": {
+        "expected_value_score_sum": 7.8941,
+        "max_drawdown_pct_worst": 0.1119,
+        "survival_rate": 0.823171,
+        "total_pnl": 234850.99
+      },
+      "deltas": {
+        "treatment_vs_broad_core": {
+          "expected_value_score_sum_delta": 0.9464,
+          "max_drawdown_pct_worst_delta": 0.1432,
+          "old_thin_ev_delta": 0.9464,
+          "old_thin_max_drawdown_pct_delta": 0.1432,
+          "old_thin_pnl_delta": 44285.13,
+          "old_thin_survival_rate_delta": -0.7293,
+          "survival_rate_delta": -0.51736,
+          "total_pnl_delta": 44285.13,
+          "trade_count_delta": -1
+        },
+        "treatment_vs_canonical_baseline": {
+          "expected_value_score_sum_delta": -0.8081,
+          "max_drawdown_pct_worst_delta": 0.151,
+          "survival_rate_delta": -0.505088,
+          "total_pnl_delta": 3402.31,
+          "trade_count_delta": 6
+        }
+      },
+      "treatment": {
+        "expected_value_score_sum": 7.086,
+        "max_drawdown_pct_worst": 0.2629,
+        "survival_rate": 0.318083,
+        "total_pnl": 238253.3
+      }
+    },
+    "decision": "rejected_weak_tape_top300_universe_gate_risk_not_acceptable",
+    "failed_reasons": [
+      "aggregate_ev_below_canonical_baseline",
+      "worst_drawdown_more_than_3pp_above_canonical",
+      "old_thin_drawdown_more_than_5pp_above_broad_core",
+      "old_thin_survival_below_50pct_guardrail"
+    ],
+    "passed": false
+  },
+  "hypothesis": "candidate_pool: the broad liquid top300 universe failed overall because it diluted strong/mid regimes, but old_thin weak-tape breadth had raw EV uplift; a market-state conditional gate that uses top300 only in old_thin and keeps core elsewhere may improve aggregate EV without accepting naive expansion.",
+  "implementation_mode": "self_contained_broad_warehouse_backtest",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260628-005.json",
+  "mechanism_family": "universe_aware_candidate_pool_ranking",
+  "multiple_testing_risk_bucket": "high",
+  "nearby_prior_experiments": [
+    "exp-20260627-019",
+    "exp-20260627-017"
+  ],
+  "new_evidence_type": "new_gate_shape_regime_conditional_universe_admission",
+  "observed_only_lead": false,
+  "owner": "alpha-explore",
+  "parameters": {
+    "canonical_caveat": "Broad warehouse control and treatment are apples-to-apples against each other but not identical to the canonical frozen snapshot baseline.",
+    "config": {
+      "REGIME_AWARE_EXIT": true,
+      "REPLAY_PARTIAL_REDUCES": true
+    },
+    "core_universe_size": 43,
+    "earnings_calendar_download_disabled_uniformly": true,
+    "entry_candidate_events_enabled_for_gate2": true,
+    "late_strong_treatment": "core",
+    "liquid_rank_min_price": 5,
+    "liquid_rank_min_rows": 110,
+    "mid_weak_treatment": "core",
+    "old_thin_treatment": "core union ADV-ranked liquid top300",
+    "oracle_diagnostics_enabled": false,
+    "warehouse": "data/warehouse/warehouse_main.sqlite",
+    "windows": {
+      "late_strong": [
+        "2025-10-23",
+        "2026-04-21"
+      ],
+      "mid_weak": [
+        "2025-04-23",
+        "2025-10-22"
+      ],
+      "old_thin": [
+        "2024-10-02",
+        "2025-04-22"
+      ]
+    }
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry naive broad top300/top500 expansion, old_thin-only topN threshold sweeps, or response-function retunes on this same warehouse window. The binding failure is risk/survival quality, not a missing topN constant.",
+    "new_evidence_required": "A valid retry needs a genuinely different production-visible candidate quality field, a new data source, or materially new closed forward replacement-value rows proving which expanded weak-tape names survive without the drawdown blowup.",
+    "why_result_happened": "The regime gate removed mid_weak and late_strong dilution, but the only expanded window still paid for the raw old_thin uplift with unacceptable drawdown and survival damage."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "If broad liquid breadth is useful only when the core universe is too thin, then a fixed old_thin-only top300 candidate-pool gate should keep the old_thin EV uplift while avoiding mid_weak and late_strong dilution.",
+    "2_history_check": {
+      "exp-20260627-017": "Rejected formal broad liquid top300/top500 scout; old_thin raw EV nuance was not deployable alone.",
+      "exp-20260627-019": "Rejected naive core/top300/top500 broad expansion. It named universe-aware ranking/risk in weak tape as the only valid reopen path.",
+      "novelty_gate": "Reservation passed with no blocking match; source_saturation was not applicable. This is a new old_thin-only universe gate, not naive topN expansion."
+    },
+    "3_single_policy_bundle": "weak_tape_only_top300_universe_expansion_v1",
+    "4_success_failure_standard": "Pass Gate 4 only if regime-gated top300 improves aggregate EV versus broad core, exceeds canonical aggregate EV, and does not materially worsen drawdown or survival.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_005_weak_tape_top300_universe_gate.py"
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260627-019 showed old_thin top300 raw EV uplift but also severe survival and drawdown damage; success requires the regime gate to retain enough EV without violating risk guards.",
+    "expected_ev_delta": 0.2,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "old_thin_drawdown_blowup",
+      "survival_collapse",
+      "warehouse_control_not_canonical",
+      "top300_weak_tape_edge_unstable"
+    ],
+    "recorded_at": "2026-06-28T10:10:39+00:00",
+    "success_probability": 0.16
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "paper_orders_changed": false,
+    "parity_note": "Experiment-owned broad-warehouse replay only. No default-off paper helper or live/paper execution path was changed.",
+    "ranking_changed": false,
+    "risk_budget_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false,
+    "watchlist_changed": false
+  },
+  "rejection_reason": "aggregate_ev_below_canonical_baseline;worst_drawdown_more_than_3pp_above_canonical;old_thin_drawdown_more_than_5pp_above_broad_core;old_thin_survival_below_50pct_guardrail",
+  "related_files": [
+    "quant/experiments/exp_20260628_005_weak_tape_top300_universe_gate.py",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/experiments/exp-20260627-019/three_window_summary.json",
+    "data/experiments/exp-20260627-019/universe_expansion_scout.py",
+    "experiments/logs/exp-20260627-017.json",
+    "experiments/logs/exp-20260627-019.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_005_weak_tape_top300_universe_gate.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260628_005_weak_tape_top300_universe_gate.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "run_metrics": "<full metrics retained in artifact>",
+  "single_causal_variable": "weak_tape_only_top300_universe_expansion_v1",
+  "status": "rejected",
+  "ticket_before": {
+    "claimed_at": "2026-06-28T10:11:27+00:00",
+    "created_at": "2026-06-28T10:11:17+00:00",
+    "hub_identity": {
+      "namespace": "ginger/experiments",
+      "repo_id": "ginger/experiments/exp-20260628-005",
+      "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+      "reserved_at": "2026-06-28T10:11:17+00:00",
+      "scheme": "hf_hub_local_v1",
+      "slug": "weak_tape_top300_universe_gate"
+    },
+    "novelty": {
+      "blocking_matches": [],
+      "enforced": true,
+      "fingerprint": {
+        "data_source": "regime_state",
+        "field_tags": [
+          "a",
+          "accepting",
+          "aggregate",
+          "aware",
+          "because",
+          "breadth",
+          "but",
+          "conditional",
+          "core",
+          "diluted",
+          "elsewhere",
+          "ev",
+          "expansion",
+          "failed",
+          "gate",
+          "had",
+          "improve",
+          "in",
+          "it",
+          "keeps",
+          "liquid",
+          "market",
+          "may",
+          "mid",
+          "naive",
+          "old",
+          "only",
+          "overall",
+          "ranking",
+          "raw",
+          "regimes",
+          "state",
+          "strong",
+          "tape",
+          "that",
+          "thin",
+          "top300",
+          "uplift",
+          "uses",
+          "weak",
+          "without"
+        ],
+        "gate_shape": "allocator_source"
+      },
+      "nearest": [
+        {
+          "accept_rate": 0.0,
+          "data_source": "regime_state",
+          "family_key": "market_state_family_replacement_value_attribution",
+          "reopen_condition": null,
+          "score": 0.4833,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 1.0,
+          "data_source": "regime_state",
+          "family_key": "market_state_attribution_plumbing",
+          "reopen_condition": null,
+          "score": 0.475,
+          "status": "has_accepted",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.5,
+          "data_source": "regime_state",
+          "family_key": "market_state_conditioned_sleeve_router",
+          "reopen_condition": "Closed forward default-off ISCF rows tagged with entry market state, showing positive mixed|balanced|normal replacement value out of sample.",
+          "score": 0.4745,
+          "status": "has_accepted",
+          "trials": 2
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "regime_state",
+          "family_key": "regime_conditional_trailing_stop",
+          "reopen_condition": "A valid retry needs a shared exit lifecycle policy tested through full strategy Gate 1-4, or materially new forward live giveback rows with slot-reuse and winner-collateral accounting.",
+          "score": 0.474,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "regime_state",
+          "family_key": "broad_full_liquid_5d_winner_changepoint_tail_state_candidate_pool",
+          "reopen_condition": "A future retry needs genuinely new PIT evidence such as forward replacement-value rows, external free breadth data with production parity, or a non-OHLCV context layer. Broad 5-day continuation threshold retunes should stay frozen.",
+          "score": 0.4731,
+          "status": "single_attempt",
+          "trials": 1
+        }
+      ],
+      "new_evidence_axis": null,
+      "override": false,
+      "saturated_source_override": false,
+      "source_saturation": {
+        "accept_rate": 0.0,
+        "accepts": 0,
+        "applicable": false,
+        "gate_shape": "allocator_source",
+        "max_accept_rate": 0.05,
+        "min_trials": 12,
+        "saturated": false,
+        "source": "regime_state",
+        "trials": 0
+      },
+      "warn": false,
+      "warn_threshold": 0.55
+    }
+  },
+  "timestamp": "2026-06-28T10:22:30Z",
+  "trial_family": "weak_tape_conditional_broad_universe_expansion",
+  "trial_variant_id": "old_thin_top300_core_other_windows_v1",
+  "universe_summary": {
+    "late_strong": {
+      "core_size": 43,
+      "ranked_liquid_count": 5461,
+      "top300_first_10": [
+        "SPY",
+        "QQQ",
+        "NVDA",
+        "TSLA",
+        "MSFT",
+        "AAPL",
+        "MU",
+        "META",
+        "AMZN",
+        "GOOGL"
+      ],
+      "top300_union_size": 300
+    },
+    "mid_weak": {
+      "core_size": 43,
+      "ranked_liquid_count": 5351,
+      "top300_first_10": [
+        "SPY",
+        "TSLA",
+        "NVDA",
+        "QQQ",
+        "AAPL",
+        "PLTR",
+        "MSFT",
+        "AMZN",
+        "AMD",
+        "META"
+      ],
+      "top300_union_size": 300
+    },
+    "old_thin": {
+      "core_size": 43,
+      "ranked_liquid_count": 5285,
+      "top300_first_10": [
+        "NVDA",
+        "SPY",
+        "TSLA",
+        "QQQ",
+        "AAPL",
+        "MSFT",
+        "META",
+        "AMZN",
+        "MSTR",
+        "PLTR"
+      ],
+      "top300_union_size": 301
+    }
+  }
+}

@@ -1,0 +1,1200 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260628_002_hot_warehouse_kova_settlement_readability.py",
+    "data/experiments/exp-20260628-002/exp_20260628_002_hot_warehouse_kova_settlement_readability.json",
+    "data/experiments/exp-20260628-002/kova_sec13f_forward_outcome_settlement_immutable_ledger.jsonl",
+    "experiments/cards/exp-20260628-002.md",
+    "experiments/manifests/exp-20260628-002.json",
+    "experiments/tickets/exp-20260628-002.json",
+    "experiments/logs/exp-20260628-002.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260628-002.md",
+  "causal_components": [
+    "hot warehouse SQLite read-mode diagnosis",
+    "immutable read-only OHLCV query path for experiment-owned settlement",
+    "exp-20260624-016 Kova SEC13F observation ledger",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "hot_warehouse_sqlite_readability_for_kova_forward_settlement_v1",
+  "claimed_at": "2026-06-28T07:14:13+00:00",
+  "completed_at": "2026-06-28T07:28:06+00:00",
+  "created_at": "2026-06-28T07:14:03+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260628-002",
+  "experiment_uid": "expuid-5035a1614a5c4568",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260628-002",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-28T07:14:03+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "hot_warehouse_kova_settlement_readability"
+  },
+  "hypothesis": "Kova SEC13F sponsorship alpha needs closed 10d cash/SPY/QQQ replacement rows, but the hot OHLCV warehouse now raises SQLite disk I/O errors during settlement; repair or park the warehouse readability blocker without changing strategy behavior.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "hot_warehouse_sqlite_readability_for_kova_forward_settlement_v1"
+  ],
+  "mechanism_family": "kova_multisource_forward_observation_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260624-016",
+    "exp-20260624-017",
+    "exp-20260625-019"
+  ],
+  "new_evidence_type": "immutable_hot_warehouse_readability_repair_for_forward_settlement",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "sec13f_ownership",
+      "field_tags": [
+        "alpha",
+        "behavior",
+        "blocker",
+        "but",
+        "cash",
+        "changing",
+        "closed",
+        "disk",
+        "during",
+        "errors",
+        "forward",
+        "hot",
+        "i",
+        "kova",
+        "needs",
+        "now",
+        "o",
+        "or",
+        "park",
+        "qqq",
+        "raises",
+        "readability",
+        "repair",
+        "replacement",
+        "rows",
+        "sec13f",
+        "settlement",
+        "sponsorship",
+        "spy",
+        "sqlite",
+        "strategy",
+        "warehouse",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "kova_sec13f_forward_outcome_settlement",
+        "reopen_condition": "Next alpha work must wait for enough closed 10d replacement-value rows or predeclare a separate observed-only sponsorship attribution. Promotion still requires a shared default-off helper and canonical Gate 1-4 evidence.",
+        "score": 0.5132,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "kova_forward_sec13f_sponsorship_ledger",
+        "reopen_condition": "Close Kova 2026-06-13+ rows with cash/SPY/QQQ replacement value, then test a predeclared sponsorship monotonicity or interaction hypothesis. Historical canonical-window promotion requires a separate shared helper with PIT 13F coverage.",
+        "score": 0.5013,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "kova_sec13f_forward_sponsorship_attribution",
+        "reopen_condition": "A valid retry needs enough closed 10d replacement-value rows, materially richer PIT manager/flow provenance, borrow/options cross-evidence, or a shared default-off helper with canonical fixed-window PIT coverage.",
+        "score": 0.491,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_active_manager_concentration",
+        "reopen_condition": "A valid retry needs independent active-manager quality or manager alpha attribution, non-quarterly ownership/flow data, borrow/options cross-evidence, or closed forward rows from a shared default-off helper.",
+        "score": 0.4808,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "kova_sec13f_coownership_network_forward_attribution",
+        "reopen_condition": "A valid retry needs enough closed 10d replacement-value rows, materially richer PIT manager identity/active-flow provenance, borrow/options cross-evidence, or canonical fixed-window PIT coverage through a shared default-off helper.",
+        "score": 0.48,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "sec13f_ownership",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.72,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "immutable_uri_read_fails",
+      "hot_warehouse_missing_10d_exit_rows",
+      "source_ledger_missing_required_fields",
+      "duplicate_observation_ids"
+    ],
+    "confidence_reason": "The hot warehouse main database quick_check passed when opened as immutable and contains OHLCV through 2026-06-26. That should be enough to settle the first Kova SEC13F asof dates through 10d while leaving strategy behavior unchanged.",
+    "recorded_at": "2026-06-28T07:23:05+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "observed_only_lead": false,
+    "decision": "blocked_hot_warehouse_kova_settlement_readability",
+    "artifact": "data/experiments/exp-20260628-002/exp_20260628_002_hot_warehouse_kova_settlement_readability.json",
+    "outcome_ledger": "data/experiments/exp-20260628-002/kova_sec13f_forward_outcome_settlement_immutable_ledger.jsonl",
+    "log": "experiments/logs/exp-20260628-002.json",
+    "runner": "quant/experiments/exp_20260628_002_hot_warehouse_kova_settlement_readability.py",
+    "gate4": {
+      "passed": false,
+      "decision": "blocked_hot_warehouse_kova_settlement_readability",
+      "failed_reasons": [
+        "settled_10d_floor_met"
+      ],
+      "acceptance_checks": {
+        "source_ledger_loaded": true,
+        "outcome_rows_equal_source_rows": true,
+        "duplicate_observation_ids_zero": true,
+        "source_sec13f_asof_valid": true,
+        "hot_warehouse_exists": true,
+        "default_probe_side_effect_avoided": true,
+        "mode_ro_read_blocker_detected": true,
+        "journal_blocker_observed": true,
+        "immutable_read_succeeds": true,
+        "immutable_quick_check_ok": true,
+        "immutable_ohlcv_range_loaded": true,
+        "spy_benchmark_available": true,
+        "qqq_benchmark_available": true,
+        "settled_1d_floor_met": true,
+        "settled_3d_floor_met": true,
+        "settled_5d_floor_met": true,
+        "settled_10d_floor_met": false,
+        "strategy_behavior_unchanged": true,
+        "warehouse_journal_left_untouched": true
+      },
+      "measurement_repair": true,
+      "alpha_ready": false,
+      "strategy_rerun_required": false,
+      "before_after_strategy_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "max_drawdown_pct": 0.0
+      },
+      "outcome_summary": {
+        "horizon_settled_counts": {
+          "1": 13686,
+          "3": 12435,
+          "5": 6211,
+          "10": 0
+        },
+        "outcome_status_counts": {
+          "pending_forward_close": 30,
+          "settled_partial": 13686
+        }
+      },
+      "lead_limitations": [
+        "Measurement repair only; not a Kova/13F rank or threshold test.",
+        "The immutable read path is experiment-owned; common warehouse cleanup is separate scope.",
+        "Any alpha promotion still requires predeclared attribution or a shared helper."
+      ]
+    },
+    "settlement_metadata": {
+      "price_metadata": {
+        "warehouse": "data/warehouse/warehouse_main_hot.sqlite",
+        "exists": true,
+        "sqlite_read_mode": "immutable_read_only_uri",
+        "requested_ticker_count": 1249,
+        "price_ticker_count": 1248,
+        "missing_requested_ticker_count": 1,
+        "missing_requested_ticker_sample": [
+          "PSTG"
+        ],
+        "warehouse_min_date": "2024-09-20",
+        "warehouse_max_date": "2026-06-26",
+        "warehouse_row_count": 57303,
+        "benchmark_ranges": {
+          "SPY": {
+            "start": "2025-05-19",
+            "end": "2026-06-25",
+            "rows": 277
+          },
+          "QQQ": {
+            "start": "2025-05-19",
+            "end": "2026-06-25",
+            "rows": 277
+          }
+        },
+        "hot_warehouse_diagnostics": {
+          "warehouse": {
+            "path": "data/warehouse/warehouse_main_hot.sqlite",
+            "exists": true,
+            "size_bytes": 9617408,
+            "modified_at_utc": "2026-06-28T07:24:39+00:00",
+            "sha256": "9dd8710a3cecc67296d67784e69e29cdacec46be90c30413eb204bd4f32a2105"
+          },
+          "rollback_journal": {
+            "path": "data/warehouse/warehouse_main_hot.sqlite-journal",
+            "exists": true,
+            "size_bytes": 94904,
+            "modified_at_utc": "2026-06-28T03:05:17+00:00",
+            "sha256": "4991092abb8d3f35d3a9dad2fd817d48c7759630e0e8f691952fc8da7a977720"
+          },
+          "immutable_uri": "file:///D:/Github/ginger/data/warehouse/warehouse_main_hot.sqlite?mode=ro&immutable=1",
+          "attempts": {
+            "default": {
+              "label": "default",
+              "ok": null,
+              "skipped": true,
+              "reason": "avoid_rollback_recovery_side_effect; mode_ro records the read blocker"
+            },
+            "mode_ro": {
+              "label": "mode_ro",
+              "uri": true,
+              "target": "file:///D:/Github/ginger/data/warehouse/warehouse_main_hot.sqlite?mode=ro",
+              "ok": false,
+              "error_type": "OperationalError",
+              "error": "attempt to write a readonly database",
+              "elapsed_ms": 0.428
+            },
+            "immutable": {
+              "label": "immutable",
+              "uri": true,
+              "target": "file:///D:/Github/ginger/data/warehouse/warehouse_main_hot.sqlite?mode=ro&immutable=1",
+              "ok": true,
+              "quick_check": "ok",
+              "ohlcv_min_date": "2024-09-20",
+              "ohlcv_max_date": "2026-06-26",
+              "ohlcv_row_count": 57303,
+              "ohlcv_ticker_count": 1346,
+              "elapsed_ms": 31.512
+            }
+          },
+          "default_probe_skipped": true,
+          "default_read_failed": null,
+          "mode_ro_read_failed": true,
+          "immutable_read_ok": true,
+          "immutable_quick_check_ok": true,
+          "journal_blocker_observed": true
+        }
+      },
+      "outcome_rows": 13716,
+      "outcome_status_counts": {
+        "pending_forward_close": 30,
+        "settled_partial": 13686
+      },
+      "horizon_settled_counts": {
+        "1": 13686,
+        "3": 12435,
+        "5": 6211,
+        "10": 0
+      },
+      "horizon_status_counts": {
+        "1": {
+          "missing_ticker_prices": 7,
+          "pending_forward_entry": 23,
+          "settled": 13686
+        },
+        "3": {
+          "missing_ticker_prices": 7,
+          "pending_forward_entry": 23,
+          "pending_forward_exit": 1248,
+          "settled": 12438
+        },
+        "5": {
+          "missing_ticker_prices": 7,
+          "pending_forward_entry": 23,
+          "pending_forward_exit": 7463,
+          "settled": 6223
+        },
+        "10": {
+          "missing_ticker_prices": 7,
+          "pending_forward_entry": 23,
+          "pending_forward_exit": 13686
+        }
+      }
+    },
+    "outcome_summary": {
+      "outcome_rows": 13716,
+      "ticker_count": 1249,
+      "asof_date_start": "2026-06-13",
+      "asof_date_end": "2026-06-23",
+      "asof_date_count": 11,
+      "outcome_status_counts": {
+        "pending_forward_close": 30,
+        "settled_partial": 13686
+      },
+      "horizons": {
+        "1": {
+          "settled_rows": 13686,
+          "distinct_tickers": 1247,
+          "asof_date_count": 11,
+          "entry_date_count": 7,
+          "exit_date_count": 7,
+          "rows_by_asof_date": [
+            {
+              "key": "2026-06-15",
+              "n": 1246,
+              "share": 0.091042
+            },
+            {
+              "key": "2026-06-16",
+              "n": 1246,
+              "share": 0.091042
+            },
+            {
+              "key": "2026-06-17",
+              "n": 1246,
+              "share": 0.091042
+            },
+            {
+              "key": "2026-06-13",
+              "n": 1244,
+              "share": 0.090896
+            },
+            {
+              "key": "2026-06-14",
+              "n": 1244,
+              "share": 0.090896
+            },
+            {
+              "key": "2026-06-22",
+              "n": 1244,
+              "share": 0.090896
+            },
+            {
+              "key": "2026-06-23",
+              "n": 1244,
+              "share": 0.090896
+            },
+            {
+              "key": "2026-06-18",
+              "n": 1243,
+              "share": 0.090823
+            },
+            {
+              "key": "2026-06-19",
+              "n": 1243,
+              "share": 0.090823
+            },
+            {
+              "key": "2026-06-20",
+              "n": 1243,
+              "share": 0.090823
+            },
+            {
+              "key": "2026-06-21",
+              "n": 1243,
+              "share": 0.090823
+            }
+          ],
+          "rows_by_sec13f_status": [
+            {
+              "key": "ok",
+              "n": 10658,
+              "share": 0.778752
+            },
+            {
+              "key": "skipped",
+              "n": 3028,
+              "share": 0.221248
+            }
+          ],
+          "rows_by_rs_proxy_status": [
+            {
+              "key": "ok",
+              "n": 8922,
+              "share": 0.998992
+            },
+            {
+              "key": "insufficient_history",
+              "n": 9,
+              "share": 0.001008
+            }
+          ],
+          "replacement_value_vs_cash_usd": {
+            "n": 13686,
+            "sum": -976729.1,
+            "mean": -71.367,
+            "median": -62.54,
+            "min": -1457.72,
+            "max": 2774.83,
+            "positive_rate": 0.339
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 13686,
+            "sum": 54711.98,
+            "mean": 3.9977,
+            "median": 9.88,
+            "min": -1358.8,
+            "max": 2822.96,
+            "positive_rate": 0.5241
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 13686,
+            "sum": 196358.84,
+            "mean": 14.3474,
+            "median": 24.35,
+            "min": -1399.06,
+            "max": 2849.0,
+            "positive_rate": 0.5503
+          }
+        },
+        "3": {
+          "settled_rows": 12435,
+          "distinct_tickers": 1246,
+          "asof_date_count": 10,
+          "entry_date_count": 6,
+          "exit_date_count": 6,
+          "rows_by_asof_date": [
+            {
+              "key": "2026-06-15",
+              "n": 1246,
+              "share": 0.100201
+            },
+            {
+              "key": "2026-06-13",
+              "n": 1244,
+              "share": 0.10004
+            },
+            {
+              "key": "2026-06-14",
+              "n": 1244,
+              "share": 0.10004
+            },
+            {
+              "key": "2026-06-16",
+              "n": 1243,
+              "share": 0.09996
+            },
+            {
+              "key": "2026-06-17",
+              "n": 1243,
+              "share": 0.09996
+            },
+            {
+              "key": "2026-06-18",
+              "n": 1243,
+              "share": 0.09996
+            },
+            {
+              "key": "2026-06-19",
+              "n": 1243,
+              "share": 0.09996
+            },
+            {
+              "key": "2026-06-20",
+              "n": 1243,
+              "share": 0.09996
+            },
+            {
+              "key": "2026-06-21",
+              "n": 1243,
+              "share": 0.09996
+            },
+            {
+              "key": "2026-06-22",
+              "n": 1243,
+              "share": 0.09996
+            }
+          ],
+          "rows_by_sec13f_status": [
+            {
+              "key": "ok",
+              "n": 9686,
+              "share": 0.77893
+            },
+            {
+              "key": "skipped",
+              "n": 2749,
+              "share": 0.22107
+            }
+          ],
+          "rows_by_rs_proxy_status": [
+            {
+              "key": "ok",
+              "n": 7679,
+              "share": 0.998959
+            },
+            {
+              "key": "insufficient_history",
+              "n": 8,
+              "share": 0.001041
+            }
+          ],
+          "replacement_value_vs_cash_usd": {
+            "n": 12435,
+            "sum": -1352333.12,
+            "mean": -108.7522,
+            "median": -101.48,
+            "min": -2674.85,
+            "max": 19067.12,
+            "positive_rate": 0.3996
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 12435,
+            "sum": 934428.78,
+            "mean": 75.1451,
+            "median": 79.37,
+            "min": -2563.61,
+            "max": 19305.32,
+            "positive_rate": 0.578
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 12435,
+            "sum": 2200339.18,
+            "mean": 176.9473,
+            "median": 164.66,
+            "min": -2667.36,
+            "max": 19534.86,
+            "positive_rate": 0.6326
+          }
+        },
+        "5": {
+          "settled_rows": 6211,
+          "distinct_tickers": 1243,
+          "asof_date_count": 5,
+          "entry_date_count": 4,
+          "exit_date_count": 4,
+          "rows_by_asof_date": [
+            {
+              "key": "2026-06-15",
+              "n": 1243,
+              "share": 0.200129
+            },
+            {
+              "key": "2026-06-16",
+              "n": 1243,
+              "share": 0.200129
+            },
+            {
+              "key": "2026-06-17",
+              "n": 1243,
+              "share": 0.200129
+            },
+            {
+              "key": "2026-06-13",
+              "n": 1241,
+              "share": 0.199807
+            },
+            {
+              "key": "2026-06-14",
+              "n": 1241,
+              "share": 0.199807
+            }
+          ],
+          "rows_by_sec13f_status": [
+            {
+              "key": "ok",
+              "n": 4840,
+              "share": 0.779263
+            },
+            {
+              "key": "skipped",
+              "n": 1371,
+              "share": 0.220737
+            }
+          ],
+          "rows_by_rs_proxy_status": [
+            {
+              "key": "ok",
+              "n": 1471,
+              "share": 0.997965
+            },
+            {
+              "key": "insufficient_history",
+              "n": 3,
+              "share": 0.002035
+            }
+          ],
+          "replacement_value_vs_cash_usd": {
+            "n": 6211,
+            "sum": -1080694.26,
+            "mean": -173.9968,
+            "median": -147.98,
+            "min": -3020.33,
+            "max": 18656.28,
+            "positive_rate": 0.364
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 6211,
+            "sum": 186193.98,
+            "mean": 29.9781,
+            "median": 55.66,
+            "min": -2795.51,
+            "max": 18953.89,
+            "positive_rate": 0.5452
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 6211,
+            "sum": 447945.51,
+            "mean": 72.1213,
+            "median": 86.1,
+            "min": -2767.04,
+            "max": 19086.2,
+            "positive_rate": 0.5616
+          }
+        },
+        "10": {
+          "settled_rows": 0,
+          "distinct_tickers": 0,
+          "asof_date_count": 0,
+          "entry_date_count": 0,
+          "exit_date_count": 0,
+          "rows_by_asof_date": [],
+          "rows_by_sec13f_status": [],
+          "rows_by_rs_proxy_status": [],
+          "replacement_value_vs_cash_usd": {
+            "n": 0,
+            "sum": null,
+            "mean": null,
+            "median": null,
+            "min": null,
+            "max": null,
+            "positive_rate": null
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 0,
+            "sum": null,
+            "mean": null,
+            "median": null,
+            "min": null,
+            "max": null,
+            "positive_rate": null
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 0,
+            "sum": null,
+            "mean": null,
+            "median": null,
+            "min": null,
+            "max": null,
+            "positive_rate": null
+          }
+        }
+      },
+      "sample_rows": [
+        {
+          "schema_version": 1,
+          "experiment_id": "exp-20260628-002",
+          "source_experiment_id": "exp-20260624-016",
+          "rule_version": "hot_warehouse_sqlite_readability_for_kova_forward_settlement_v1",
+          "source_rule_version": "kova_forward_sec13f_sponsorship_observation_ledger_v1",
+          "observation_id": "e8e9ee30432ec94c3073b7a5",
+          "asof_date": "2026-06-13",
+          "ticker": "A",
+          "source": "kova_multisource_forward_snapshot",
+          "source_snapshot_file": "data/kova/snapshots/kova_data_snapshot_20260613.json",
+          "rs_proxy_status": null,
+          "rs_proxy_rank_pct_20d": null,
+          "rs_proxy_rank_pct_60d": null,
+          "rs_proxy_rank_pct_120d": null,
+          "companyfacts_growth_row_count": 48,
+          "companyfacts_selected_ok_component_count": 3,
+          "companyfacts_selected_positive_yoy_count": 3,
+          "sec13f_status": "ok",
+          "sec13f_holder_count": 862,
+          "sec13f_position_row_count": 1546,
+          "sec13f_total_value_usd": 31645938809.0,
+          "sec13f_total_shares": 287666555.0,
+          "sec13f_source_asof_date": "2026-06-11",
+          "sec13f_source_file": "data/non_ohlcv/sec13f_institutional/holdings_01mar2026-31may2026.json",
+          "quality_flags": [
+            "pending_forward_close",
+            "no_entry_date_target_price_by_design",
+            "rs_proxy_not_ok",
+            "intraday_unavailable_or_skipped"
+          ],
+          "trade_enabled": false,
+          "alters_orders": false,
+          "proxy_notional_usd": 10000.0,
+          "forward_1d_status": "settled",
+          "forward_1d_entry_date": "2026-06-15",
+          "forward_1d_exit_date": "2026-06-15",
+          "forward_1d_entry_open": 130.92,
+          "forward_1d_exit_close": 130.59,
+          "forward_1d_entry_fill": 130.9855,
+          "forward_1d_exit_fill": 130.5247,
+          "forward_1d_return_pct": -0.701795,
+          "forward_1d_pnl_usd": -70.18,
+          "replacement_value_1d_vs_cash_usd": -70.18,
+          "forward_1d_spy_status": "settled",
+          "forward_1d_spy_pnl_usd": -5.4,
+          "replacement_value_1d_vs_spy_usd": -64.78,
+          "forward_1d_qqq_status": "settled",
+          "forward_1d_qqq_pnl_usd": 34.86,
+          "replacement_value_1d_vs_qqq_usd": -105.04,
+          "forward_3d_status": "settled",
+          "forward_3d_entry_date": "2026-06-15",
+          "forward_3d_exit_date": "2026-06-17",
+          "forward_3d_entry_open": 130.92,
+          "forward_3d_exit_close": 124.33,
+          "forward_3d_entry_fill": 130.9855,
+          "forward_3d_exit_fill": 124.2678,
+          "forward_3d_return_pct": -5.478583,
+          "forward_3d_pnl_usd": -547.86,
+          "replacement_value_3d_vs_cash_usd": -547.86,
+          "forward_3d_spy_status": "settled",
+          "forward_3d_spy_pnl_usd": -189.69,
+          "replacement_value_3d_vs_spy_usd": -358.17,
+          "forward_3d_qqq_status": "settled",
+          "forward_3d_qqq_pnl_usd": -256.0,
+          "replacement_value_3d_vs_qqq_usd": -291.86,
+          "forward_5d_status": "settled",
+          "forward_5d_entry_date": "2026-06-15",
+          "forward_5d_exit_date": "2026-06-22",
+          "forward_5d_entry_open": 130.92,
+          "forward_5d_exit_close": 126.49,
+          "forward_5d_entry_fill": 130.9855,
+          "forward_5d_exit_fill": 126.4268,
+          "forward_5d_return_pct": -3.830309,
+          "forward_5d_pnl_usd": -383.03,
+          "replacement_value_5d_vs_cash_usd": -383.03,
+          "forward_5d_spy_status": "settled",
+          "forward_5d_spy_pnl_usd": -118.64,
+          "replacement_value_5d_vs_spy_usd": -264.39,
+          "forward_5d_qqq_status": "settled",
+          "forward_5d_qqq_pnl_usd": -47.02,
+          "replacement_value_5d_vs_qqq_usd": -336.01,
+          "forward_10d_status": "pending_forward_exit",
+          "forward_10d_entry_date": "2026-06-15",
+          "forward_10d_available_forward_sessions": 8,
+          "planned_entry_date": "2026-06-15",
+          "entry_date": "2026-06-15",
+          "target_price": null,
+          "target_price_resolution": "not_applicable_observed_only_time_horizon",
+          "settled_horizons": [
+            1,
+            3,
+            5
+          ],
+          "horizon_statuses": {
+            "1": "settled",
+            "3": "settled",
+            "5": "settled",
+            "10": "pending_forward_exit"
+          },
+          "outcome_status": "settled_partial",
+          "replacement_value_vs_cash_usd": -383.03,
+          "replacement_value_vs_spy_usd": -264.39,
+          "replacement_value_vs_qqq_usd": -336.01,
+          "forward_10d_return_pct": null
+        },
+        {
+          "schema_version": 1,
+          "experiment_id": "exp-20260628-002",
+          "source_experiment_id": "exp-20260624-016",
+          "rule_version": "hot_warehouse_sqlite_readability_for_kova_forward_settlement_v1",
+          "source_rule_version": "kova_forward_sec13f_sponsorship_observation_ledger_v1",
+          "observation_id": "9646ea9639634710a33ccdb9",
+          "asof_date": "2026-06-13",
+          "ticker": "AA",
+          "source": "kova_multisource_forward_snapshot",
+          "source_snapshot_file": "data/kova/snapshots/kova_data_snapshot_20260613.json",
+          "rs_proxy_status": null,
+          "rs_proxy_rank_pct_20d": null,
+          "rs_proxy_rank_pct_60d": null,
+          "rs_proxy_rank_pct_120d": null,
+          "companyfacts_growth_row_count": 50,
+          "companyfacts_selected_ok_component_count": 3,
+          "companyfacts_selected_positive_yoy_count": 0,
+          "sec13f_status": "ok",
+          "sec13f_holder_count": 624,
+          "sec13f_position_row_count": 1128,
+          "sec13f_total_value_usd": 15646682191.0,
+          "sec13f_total_shares": 248566686.0,
+          "sec13f_source_asof_date": "2026-06-11",
+          "sec13f_source_file": "data/non_ohlcv/sec13f_institutional/holdings_01mar2026-31may2026.json",
+          "quality_flags": [
+            "pending_forward_close",
+            "no_entry_date_target_price_by_design",
+            "rs_proxy_not_ok",
+            "intraday_unavailable_or_skipped"
+          ],
+          "trade_enabled": false,
+          "alters_orders": false,
+          "proxy_notional_usd": 10000.0,
+          "forward_1d_status": "settled",
+          "forward_1d_entry_date": "2026-06-15",
+          "forward_1d_exit_date": "2026-06-15",
+          "forward_1d_entry_open": 66.29,
+          "forward_1d_exit_close": 64.16,
+          "forward_1d_entry_fill": 66.3231,
+          "forward_1d_exit_fill": 64.1279,
+          "forward_1d_return_pct": -3.659857,
+          "forward_1d_pnl_usd": -365.99,
+          "replacement_value_1d_vs_cash_usd": -365.99,
+          "forward_1d_spy_status": "settled",
+          "forward_1d_spy_pnl_usd": -5.4,
+          "replacement_value_1d_vs_spy_usd": -360.59,
+          "forward_1d_qqq_status": "settled",
+          "forward_1d_qqq_pnl_usd": 34.86,
+          "replacement_value_1d_vs_qqq_usd": -400.85,
+          "forward_3d_status": "settled",
+          "forward_3d_entry_date": "2026-06-15",
+          "forward_3d_exit_date": "2026-06-17",
+          "forward_3d_entry_open": 66.29,
+          "forward_3d_exit_close": 61.73,
+          "forward_3d_entry_fill": 66.3231,
+          "forward_3d_exit_fill": 61.6991,
+          "forward_3d_return_pct": -7.32193,
+          "forward_3d_pnl_usd": -732.19,
+          "replacement_value_3d_vs_cash_usd": -732.19,
+          "forward_3d_spy_status": "settled",
+          "forward_3d_spy_pnl_usd": -189.69,
+          "replacement_value_3d_vs_spy_usd": -542.5,
+          "forward_3d_qqq_status": "settled",
+          "forward_3d_qqq_pnl_usd": -256.0,
+          "replacement_value_3d_vs_qqq_usd": -476.19,
+          "forward_5d_status": "settled",
+          "forward_5d_entry_date": "2026-06-15",
+          "forward_5d_exit_date": "2026-06-22",
+          "forward_5d_entry_open": 66.29,
+          "forward_5d_exit_close": 58.35,
+          "forward_5d_entry_fill": 66.3231,
+          "forward_5d_exit_fill": 58.3208,
+          "forward_5d_return_pct": -12.41563,
+          "forward_5d_pnl_usd": -1241.56,
+          "replacement_value_5d_vs_cash_usd": -1241.56,
+          "forward_5d_spy_status": "settled",
+          "forward_5d_spy_pnl_usd": -118.64,
+          "replacement_value_5d_vs_spy_usd": -1122.92,
+          "forward_5d_qqq_status": "settled",
+          "forward_5d_qqq_pnl_usd": -47.02,
+          "replacement_value_5d_vs_qqq_usd": -1194.54,
+          "forward_10d_status": "pending_forward_exit",
+          "forward_10d_entry_date": "2026-06-15",
+          "forward_10d_available_forward_sessions": 8,
+          "planned_entry_date": "2026-06-15",
+          "entry_date": "2026-06-15",
+          "target_price": null,
+          "target_price_resolution": "not_applicable_observed_only_time_horizon",
+          "settled_horizons": [
+            1,
+            3,
+            5
+          ],
+          "horizon_statuses": {
+            "1": "settled",
+            "3": "settled",
+            "5": "settled",
+            "10": "pending_forward_exit"
+          },
+          "outcome_status": "settled_partial",
+          "replacement_value_vs_cash_usd": -1241.56,
+          "replacement_value_vs_spy_usd": -1122.92,
+          "replacement_value_vs_qqq_usd": -1194.54,
+          "forward_10d_return_pct": null
+        }
+      ]
+    },
+    "calibration": {
+      "actual_success": 0,
+      "predicted_success_probability": 0.72,
+      "brier_score": 0.5184,
+      "predicted_failure_modes": [
+        "immutable_uri_read_fails",
+        "hot_warehouse_missing_10d_exit_rows",
+        "source_ledger_missing_required_fields",
+        "duplicate_observation_ids"
+      ],
+      "failure_modes_observed": [
+        "settled_10d_floor_met"
+      ],
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "The hot-warehouse readability repair did not meet the predeclared floor."
+    },
+    "summary": "The SQLite blocker was isolated: mode=ro reads fail while immutable read-only access passes quick_check and loads OHLCV through 2026-06-26. The experiment remains blocked because the first Kova asof cohort has only 8 available forward sessions, so 10d rows are not yet mature."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260628-002.json",
+  "single_causal_variable": "hot_warehouse_sqlite_readability_for_kova_forward_settlement_v1",
+  "status": "blocked",
+  "ticket_file": "experiments/tickets/exp-20260628-002.json",
+  "trial_family": "hot_warehouse_kova_forward_settlement_readability",
+  "trial_variant_id": "immutable_hot_warehouse_read_for_kova_forward_settlement_v1",
+  "alpha_hypothesis": "Institutional sponsorship may become an orthogonal Kova evidence axis only after Kova forward rows have closed cash/SPY/QQQ replacement outcomes. This run repairs the hot warehouse SQLite readability blocker and does not test any 13F threshold.",
+  "implementation_mode": "measurement_repair",
+  "new_evidence_axis": "A non-empty hot-warehouse rollback journal blocks ordinary non-immutable SQLite access, but the main database validates under immutable read-only access and can settle Kova SEC13F forward rows as far as available sessions allow. This is not a 13F holder-count, value, RS, Companyfacts, top-N, hold, cooldown, or notional threshold retry.",
+  "decision": "blocked_hot_warehouse_kova_settlement_readability",
+  "artifact": "data/experiments/exp-20260628-002/exp_20260628_002_hot_warehouse_kova_settlement_readability.json",
+  "outcome_ledger": "data/experiments/exp-20260628-002/kova_sec13f_forward_outcome_settlement_immutable_ledger.jsonl",
+  "log": "experiments/logs/exp-20260628-002.json",
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    },
+    "passed": true
+  },
+  "gate2": {
+    "dependencies_validated": false,
+    "fields_checked": [
+      "observation_id",
+      "asof_date",
+      "ticker",
+      "sec13f_status",
+      "sec13f_source_asof_date",
+      "outcome_status",
+      "planned_entry_date",
+      "entry_date",
+      "target_price",
+      "forward_5d_return_pct",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd",
+      "hot_warehouse_default_read_error",
+      "hot_warehouse_immutable_quick_check",
+      "forward_10d_return_pct",
+      "replacement_value_10d_vs_cash_usd",
+      "replacement_value_10d_vs_spy_usd",
+      "replacement_value_10d_vs_qqq_usd"
+    ],
+    "source_field_coverage": {
+      "observation_id": {
+        "present_rows": 13716,
+        "scanned_rows": 13716,
+        "coverage": 1.0
+      },
+      "asof_date": {
+        "present_rows": 13716,
+        "scanned_rows": 13716,
+        "coverage": 1.0
+      },
+      "ticker": {
+        "present_rows": 13716,
+        "scanned_rows": 13716,
+        "coverage": 1.0
+      },
+      "sec13f_status": {
+        "present_rows": 13716,
+        "scanned_rows": 13716,
+        "coverage": 1.0
+      },
+      "sec13f_source_asof_date": {
+        "present_rows": 13716,
+        "scanned_rows": 13716,
+        "coverage": 1.0
+      },
+      "outcome_status": {
+        "present_rows": 13716,
+        "scanned_rows": 13716,
+        "coverage": 1.0
+      }
+    },
+    "outcome_rows": 13716,
+    "planned_entry_date_rows": 13686,
+    "entry_date_rows": 13686,
+    "target_price_scope": "Not applicable: Kova observations are not executable candidates and this measurement repair uses fixed forward horizons, not target-price exits.",
+    "failed_reasons": [
+      "settled_10d_floor_met"
+    ]
+  },
+  "gate3": {
+    "filter_added": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "passed": true,
+    "note": "No executable filter or strategy rule was added."
+  },
+  "gate4": {
+    "passed": false,
+    "decision": "blocked_hot_warehouse_kova_settlement_readability",
+    "failed_reasons": [
+      "settled_10d_floor_met"
+    ],
+    "acceptance_checks": {
+      "source_ledger_loaded": true,
+      "outcome_rows_equal_source_rows": true,
+      "duplicate_observation_ids_zero": true,
+      "source_sec13f_asof_valid": true,
+      "hot_warehouse_exists": true,
+      "default_probe_side_effect_avoided": true,
+      "mode_ro_read_blocker_detected": true,
+      "journal_blocker_observed": true,
+      "immutable_read_succeeds": true,
+      "immutable_quick_check_ok": true,
+      "immutable_ohlcv_range_loaded": true,
+      "spy_benchmark_available": true,
+      "qqq_benchmark_available": true,
+      "settled_1d_floor_met": true,
+      "settled_3d_floor_met": true,
+      "settled_5d_floor_met": true,
+      "settled_10d_floor_met": false,
+      "strategy_behavior_unchanged": true,
+      "warehouse_journal_left_untouched": true
+    },
+    "measurement_repair": true,
+    "alpha_ready": false,
+    "strategy_rerun_required": false,
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "max_drawdown_pct": 0.0
+    },
+    "outcome_summary": {
+      "horizon_settled_counts": {
+        "1": 13686,
+        "3": 12435,
+        "5": 6211,
+        "10": 0
+      },
+      "outcome_status_counts": {
+        "pending_forward_close": 30,
+        "settled_partial": 13686
+      }
+    },
+    "lead_limitations": [
+      "Measurement repair only; not a Kova/13F rank or threshold test.",
+      "The immutable read path is experiment-owned; common warehouse cleanup is separate scope.",
+      "Any alpha promotion still requires predeclared attribution or a shared helper."
+    ]
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "watchlist_changed": false,
+    "llm_decision_boundary_changed": false,
+    "replay_only": false,
+    "live_ready": false,
+    "parity_note": "This experiment writes an experiment-owned outcome ledger only. It reads exp-20260624-016 and the hot OHLCV warehouse through an immutable read-only SQLite URI without deleting the rollback journal or modifying daily Kova snapshots, paper sleeve state, backtester, run.py, or any execution path."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The SQLite blocker was isolated: mode=ro reads fail while immutable read-only access passes quick_check and loads OHLCV through 2026-06-26. The experiment remains blocked because the first Kova asof cohort has only 8 available forward sessions, so 10d rows are not yet mature.",
+    "forbidden_near_neighbor_retry": "Do not use this repair to retune Kova 13F holder_count, total_value, RS, Companyfacts, top-N, hold, cooldown, notional, or allocator thresholds. Do not delete or rewrite the warehouse journal under this experiment scope.",
+    "new_evidence_required": "Park this surface until the hot warehouse contains at least 10 forward sessions after the 2026-06-15 entry cohort. Do not run Kova/13F alpha slices on the same 1d/3d/5d partial rows; a separate warehouse cleanup ticket is needed before deleting or rewriting the journal."
+  },
+  "scope_correction": {
+    "corrected_before_runner_execution": true,
+    "added_outcome_ledger_to_allowed_write_scope": true,
+    "outcome_ledger": "data/experiments/exp-20260628-002/kova_sec13f_forward_outcome_settlement_immutable_ledger.jsonl",
+    "warehouse_journal_left_untouched": true,
+    "journal_path": "data/warehouse/warehouse_main_hot.sqlite-journal"
+  },
+  "related_files": [
+    "quant/experiments/exp_20260628_002_hot_warehouse_kova_settlement_readability.py",
+    "data/experiments/exp-20260624-016/kova_forward_sec13f_sponsorship_ledger.jsonl",
+    "data/experiments/exp-20260628-002/kova_sec13f_forward_outcome_settlement_immutable_ledger.jsonl",
+    "data/experiments/exp-20260628-002/exp_20260628_002_hot_warehouse_kova_settlement_readability.json",
+    "data/warehouse/warehouse_main_hot.sqlite",
+    "data/warehouse/warehouse_main_hot.sqlite-journal",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260624-017.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260628_002_hot_warehouse_kova_settlement_readability.py",
+    "data/experiments/exp-20260628-002/exp_20260628_002_hot_warehouse_kova_settlement_readability.json",
+    "data/experiments/exp-20260628-002/kova_sec13f_forward_outcome_settlement_immutable_ledger.jsonl",
+    "experiments/logs/exp-20260628-002.json",
+    "experiments/cards/exp-20260628-002.md",
+    "experiments/manifests/exp-20260628-002.json",
+    "experiments/tickets/exp-20260628-002.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-06-28T07:28:06+00:00"
+}
