@@ -348,9 +348,14 @@ experiments/tickets/exp-YYYYMMDD-NNN.json
 experiments/cards/exp-YYYYMMDD-NNN.md
 experiments/manifests/exp-YYYYMMDD-NNN.json
 experiments/logs/exp-YYYYMMDD-NNN.json
-docs/experiment_log.jsonl
 docs/experiment_registry.json
 ```
+
+The per-experiment log shard `experiments/logs/exp-YYYYMMDD-NNN.json` is the
+source of truth. Do **not** write the monolithic `docs/experiment_log.jsonl`: it
+is an untracked, derived view regenerated from the shards with
+`experiment.py rebuild-log`. Writing it directly is what caused divergent-append
+merge conflicts; new runners must only write their shard.
 
 Do not write broad files outside the ticket's `allowed_write_scope` unless the
 ticket explicitly allows it and the change is necessary.

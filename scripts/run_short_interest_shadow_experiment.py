@@ -970,7 +970,9 @@ def main() -> None:
     ]
     payload["candidate_date_ranges"] = window_ranges
     dump_json(log_path, log_row)
-    upsert_jsonl(REPO_ROOT / "docs" / "experiment_log.jsonl", log_row)
+    # Per-experiment shard (above) is the source of truth; the monolithic
+    # docs/experiment_log.jsonl is a derived view rebuilt via
+    # `experiment.py rebuild-log`, not written here.
     write_audit_markdown(audit_path, payload)
     update_ticket(
         REPO_ROOT / "experiments" / "tickets" / f"{experiment_id}.json",

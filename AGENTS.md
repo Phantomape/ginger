@@ -93,7 +93,7 @@ docs/production_backtest_parity.md
 docs/alpha-optimization-playbook.md
 docs/experiment_log_format.md
 docs/iteration_analysis.md
-docs/experiment_log.jsonl
+docs/experiment_log.jsonl   # 派生视图，未跟踪；缺失时 `experiment.py rebuild-log` 重建
 data/backtest_results_*.json
 data/backtests/backtest_results_*.json
 ```

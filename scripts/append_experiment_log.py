@@ -190,30 +190,16 @@ rows.append({
     "notes": "Off-mode numerics identical to baseline (code path is pure passthrough when replay_llm=False). On-mode attribution is statistically immaterial at n=5 covered days — value is the mechanism, not the current delta.",
 })
 
-out_path = str(REPO_ROOT / "docs" / "experiment_log.jsonl")
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from experiment_registry import append_log_entry, DEFAULT_LOG
 
-# Skip rows whose experiment_id is already in the log to avoid double-writes on re-run.
-existing_ids = set()
-if os.path.exists(out_path):
-    with io.open(out_path, encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                existing_ids.add(json.loads(line).get("experiment_id"))
-            except json.JSONDecodeError:
-                continue
+# The monolithic docs/experiment_log.jsonl is a derived, untracked view
+# (rebuild via `experiment.py rebuild-log`). Each row is persisted to its
+# per-experiment shard (experiments/logs/<id>.json), the source of truth.
+# append_log_entry is idempotent: an existing shard is left untouched.
+for r in rows:
+    shard = append_log_entry(DEFAULT_LOG, r)
+    print(f"  {r.get('experiment_id')} -> {shard}")
 
-new_rows = [r for r in rows if r.get("experiment_id") not in existing_ids]
-with io.open(out_path, "a", encoding="utf-8") as f:
-    for r in new_rows:
-        f.write(json.dumps(r, ensure_ascii=False) + "\n")
-
-print(f"Wrote {len(new_rows)} rows ({len(rows) - len(new_rows)} skipped as duplicates).")
-with io.open(out_path, encoding="utf-8") as f:
-    for i, line in enumerate(f, 1):
-        line = line.rstrip("\n")
-        if line:
-            parsed = json.loads(line)
-            print(f"  line {i}: {parsed.get('experiment_id')} / {parsed.get('status')} / {parsed.get('decision')}")
+print(f"Persisted {len(rows)} row(s) to per-experiment shards under experiments/logs/.")

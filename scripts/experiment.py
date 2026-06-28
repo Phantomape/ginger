@@ -238,7 +238,7 @@ def _audit(argv):
 
 
 def main():
-    commands = {"new", "reserve", "claim", "close", "audit"}
+    commands = {"new", "reserve", "claim", "close", "audit", "rebuild-log"}
     if len(sys.argv) < 2 or sys.argv[1] in {"-h", "--help"}:
         parser = argparse.ArgumentParser(description=__doc__)
         parser.add_argument(
@@ -277,6 +277,12 @@ def main():
         return result
     if command == "audit":
         return _audit(remainder)
+    if command == "rebuild-log":
+        from experiment_registry import rebuild_experiment_log_from_shards
+
+        n = rebuild_experiment_log_from_shards()
+        print(f"rebuilt docs/experiment_log.jsonl from {n} shard(s)")
+        return
 
 
 if __name__ == "__main__":

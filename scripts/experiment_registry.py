@@ -2274,10 +2274,11 @@ def append_log_entry(log_path, row, *, allow_duplicate=False,
     The monolithic ``docs/experiment_log.jsonl`` is no longer a tracked,
     ever-growing file. The per-experiment shard (``experiments/logs/<id>.json``)
     is the source of truth; the monolithic log is a derived view that can be
-    rebuilt on demand (``scripts/compact_experiment_records.py``). Callers that
-    still pass the monolithic log path get their record persisted to the shard
-    instead, so the log stops growing. Idempotent: an existing shard (e.g. one the
-    runner already wrote) is left untouched. Returns the shard path.
+    rebuilt on demand (``scripts/experiment.py rebuild-log``, which calls
+    ``rebuild_experiment_log_from_shards``). Callers that still pass the
+    monolithic log path get their record persisted to the shard instead, so the
+    log stops growing. Idempotent: an existing shard (e.g. one the runner already
+    wrote) is left untouched. Returns the shard path.
     """
     experiment_id = row.get("experiment_id")
     if not experiment_id:
@@ -2298,6 +2299,36 @@ def append_log_entry(log_path, row, *, allow_duplicate=False,
         # Raced with the runner's own shard write; the shard exists, which is the
         # goal of this call.
         return shard
+
+
+def rebuild_experiment_log_from_shards(logs_dir=DEFAULT_EXPERIMENT_LOGS_DIR,
+                                       log_path=DEFAULT_LOG):
+    """Regenerate the derived monolithic ``docs/experiment_log.jsonl`` from the
+    per-experiment shards (the source of truth).
+
+    Writes one compact JSONL line per shard, sorted by experiment id, so the
+    output is deterministic (re-runs and parallel agents produce byte-identical
+    files -> no merge conflicts even if the file is tracked). The monolithic log
+    is purely a convenience view; the shards in ``experiments/logs/`` hold the
+    canonical record. Returns the number of rows written.
+    """
+    logs_dir = Path(logs_dir)
+    rows = []
+    if logs_dir.is_dir():
+        for shard in sorted(logs_dir.glob("exp-*.json")):
+            try:
+                with shard.open(encoding="utf-8-sig") as f:
+                    row = json.load(f)
+            except (OSError, json.JSONDecodeError):
+                continue
+            if isinstance(row, dict) and row.get("experiment_id"):
+                rows.append(row)
+    rows.sort(key=lambda r: r.get("experiment_id", ""))
+    text = "".join(
+        json.dumps(r, ensure_ascii=False, sort_keys=True) + "\n" for r in rows
+    )
+    _atomic_write_text(text, Path(log_path))
+    return len(rows)
 
 
 def print_json(data):
