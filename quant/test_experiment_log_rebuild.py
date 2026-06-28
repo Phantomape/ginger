@@ -84,20 +84,29 @@ def test_rebuild_empty_logs_dir(tmp_path):
 
 
 def test_active_writers_do_not_write_monolithic_log():
-    """The canonical log writers persist shards, not the monolithic file."""
+    """The canonical log writers persist shards, not the monolithic file.
+
+    These writers have no legitimate reason to name ``experiment_log.jsonl``
+    outside a comment anymore: they write the per-experiment shard, and the
+    monolithic file is rebuilt from shards. We forbid *any* non-comment mention
+    of the path so variable-based appends (``p = .../experiment_log.jsonl``;
+    ``p.open("a")`` on a later line) cannot slip through a same-line heuristic.
+    """
     offenders = []
     for rel in [
         "scripts/run_free_short_pressure_shadow_experiment.py",
         "scripts/run_short_interest_shadow_experiment.py",
         "scripts/append_experiment_log.py",
+        "scripts/audit_sector_state_alpha.py",
     ]:
         text = (ROOT / rel).read_text(encoding="utf-8")
         for lineno, line in enumerate(text.splitlines(), 1):
             stripped = line.lstrip()
             if stripped.startswith("#"):
                 continue  # explanatory comments may name the path
-            if "experiment_log.jsonl" in line and (
-                "upsert_jsonl" in line or 'open(' in line or '"a"' in line
-            ):
+            if "experiment_log.jsonl" in line:
                 offenders.append(f"{rel}:{lineno}: {stripped}")
-    assert not offenders, "direct monolithic-log writes found:\n" + "\n".join(offenders)
+    assert not offenders, (
+        "non-comment monolithic-log reference found (write shards instead):\n"
+        + "\n".join(offenders)
+    )

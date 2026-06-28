@@ -517,9 +517,9 @@ def main():
     }
     ticket_path.write_text(json.dumps(ticket, indent=2), encoding="utf-8")
 
-    jsonl_path = ROOT / "docs" / "experiment_log.jsonl"
-    with jsonl_path.open("a", encoding="utf-8") as f:
-        f.write(json.dumps(record, separators=(",", ":")) + "\n")
+    # The per-experiment shard (log_path, written above) is the source of truth;
+    # the monolithic docs/experiment_log.jsonl is an untracked derived view
+    # rebuilt via `experiment.py rebuild-log`, not appended here.
 
     print(json.dumps({
         "experiment_id": EXPERIMENT_ID,
