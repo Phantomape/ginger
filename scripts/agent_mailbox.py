@@ -24,6 +24,7 @@ import argparse
 import datetime
 import json
 import os
+import re
 import sys
 import time
 from pathlib import Path
@@ -149,6 +150,52 @@ def read_transcript(channel: str, *, root=MAILBOX_ROOT):
     return out
 
 
+_EXP_ID_RE = re.compile(r"exp-\d{8}-\d{3}")
+_PATH_RE = re.compile(
+    r"(?:data|docs|experiments|quant|scripts|operator_inputs)/"
+    r"[A-Za-z0-9_./\-*]+"
+)
+
+
+def extract_references(text: str):
+    """Pull checkable references out of a message: experiment ids and repo
+    paths. Returns (exp_ids, paths) as sets. Used by the dangling-ref pre-filter.
+    """
+    exp_ids = set(_EXP_ID_RE.findall(text or ""))
+    paths = {p.rstrip(".,);:") for p in _PATH_RE.findall(text or "")}
+    return exp_ids, paths
+
+
+def verify_channel(channel: str, *, root=MAILBOX_ROOT, repo_root=REPO_ROOT):
+    """Mechanical pre-filter: report referenced experiment ids / repo paths in a
+    channel that do NOT exist on disk (dangling references).
+
+    IMPORTANT LIMIT: this only checks *existence*. It cannot catch a reference
+    that exists but is mis-attributed (e.g. citing a real exp id for a claim
+    that belongs to a different experiment) -- that requires a verifier agent
+    actually reading the source. See "Debate protocol v2" in
+    docs/agent_mailbox.md.
+    """
+    repo_root = Path(repo_root)
+    rows = read_transcript(channel, root=root)
+    dangling = []
+    checked = 0
+    for m in rows:
+        seq, who, text = m.get("seq"), m.get("from"), m.get("text", "")
+        exp_ids, paths = extract_references(text)
+        for eid in sorted(exp_ids):
+            checked += 1
+            if not (repo_root / "experiments" / "tickets" / f"{eid}.json").exists():
+                dangling.append({"seq": seq, "from": who, "kind": "exp_id",
+                                 "ref": eid})
+        for p in sorted(paths):
+            checked += 1
+            if not (repo_root / p).exists():
+                dangling.append({"seq": seq, "from": who, "kind": "path",
+                                 "ref": p})
+    return {"channel": channel, "checked": checked, "dangling": dangling}
+
+
 def list_channels(*, root=MAILBOX_ROOT):
     root = Path(root)
     if not root.is_dir():
@@ -180,6 +227,22 @@ def _cmd_transcript(a):
 def _cmd_list(a):
     for name in list_channels(root=a.root):
         print(name)
+
+
+def _cmd_verify(a):
+    rep = verify_channel(a.channel, root=a.root)
+    d = rep["dangling"]
+    print(f"[verify channel={rep['channel']} checked={rep['checked']} "
+          f"dangling={len(d)}]")
+    for f in d:
+        print(f"  DANGLING {f['kind']}: {f['ref']}  "
+              f"(cited by {f['from']} seq {f['seq']})")
+    print("note: existence-only pre-filter; it CANNOT catch a reference that "
+          "exists but is mis-attributed -- that needs a verifier agent reading "
+          "the source (see docs/agent_mailbox.md, Debate protocol v2).",
+          file=sys.stderr)
+    if d:
+        raise SystemExit(1)
 
 
 def main(argv=None):
@@ -216,6 +279,11 @@ def main(argv=None):
 
     ls = sub.add_parser("list", help="List channels.")
     ls.set_defaults(func=_cmd_list)
+
+    v = sub.add_parser("verify", help="Pre-filter: flag dangling exp-id/path "
+                                      "references in a channel (existence only).")
+    v.add_argument("--channel", required=True)
+    v.set_defaults(func=_cmd_verify)
 
     a = ap.parse_args(argv)
     a.func(a)

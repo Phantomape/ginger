@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import tempfile
+import time
 from pathlib import Path
 
 
@@ -10,12 +11,40 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DATA_ROOT = REPO_ROOT / "data"
 
 
+# Bounded retry for the final rename. On Windows ``os.replace`` raises
+# ``PermissionError`` (ERROR_ACCESS_DENIED / ERROR_SHARING_VIOLATION) when the
+# temp or destination is momentarily locked by AV, the search indexer, or a
+# concurrent reader. The lock clears in milliseconds, so a short exponential
+# backoff recovers it instead of leaving an orphan ``.tmp`` with no final file
+# (the failure that silently dropped quant_signals_20260627 and 5 earlier days,
+# and recurs on the backtester -- see exp-20260626-005 / exp-20260627-021).
+_REPLACE_RETRY_ATTEMPTS = 6
+_REPLACE_RETRY_BASE_DELAY_S = 0.05
+
+
+def _replace_with_retry(src: str | Path, dst: str | Path) -> None:
+    """``os.replace`` retried with backoff for transient Windows lock errors."""
+    delay = _REPLACE_RETRY_BASE_DELAY_S
+    for attempt in range(_REPLACE_RETRY_ATTEMPTS):
+        try:
+            os.replace(src, dst)
+            return
+        except PermissionError:
+            if attempt == _REPLACE_RETRY_ATTEMPTS - 1:
+                raise
+            time.sleep(delay)
+            delay *= 2
+
+
 def atomic_write_text(text: str, filepath: str | Path) -> None:
     """Write text via a same-directory temp file + atomic os.replace.
 
     Prevents the partial / interleaved / non-truncating write corruption class
     (e.g. a shorter write leaving an older file's trailing bytes) -- never
-    leaves a half-written or stale-tailed file at ``filepath``.
+    leaves a half-written or stale-tailed file at ``filepath``. The final rename
+    is retried with backoff so a transient Windows lock does not leave an orphan
+    temp with no final file; if every attempt fails the error is re-raised so
+    the caller cannot mistake a dropped write for success.
     """
     path = Path(filepath)
     directory = path.parent
@@ -30,7 +59,7 @@ def atomic_write_text(text: str, filepath: str | Path) -> None:
             handle.write(text)
             handle.flush()
             os.fsync(handle.fileno())
-        os.replace(tmp_path, path)
+        _replace_with_retry(tmp_path, path)
         tmp_path = None
     finally:
         if tmp_path and os.path.exists(tmp_path):

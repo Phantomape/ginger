@@ -167,6 +167,138 @@ def sweep_quietly(repo_root: Path | str = REPO_ROOT) -> int:
         return 0
 
 
+# Daily-artifact directories whose atomic-write orphans are RECOVERABLE data
+# (the temp holds the only copy of that day's output when the final rename
+# failed), unlike experiment residue which is throwaway. These must be recovered
+# (promote temp -> final) before any cleanup, never blindly deleted.
+_RECOVERABLE_DIRS = (
+    "data/daily/signals/quant",
+    "data/daily/signals/trend",
+    "data/daily/snapshots/earnings",
+    "data/daily/snapshots/events",
+    "data/daily/reports",
+    "data/daily/orders",
+)
+
+# A temp younger than this may still be mid-write; do not touch it.
+_RECOVER_MIN_AGE_S = 120.0
+
+
+def _promote_with_retry(src: Path, dst: Path) -> None:
+    """``os.replace`` retried for transient Windows lock errors (local copy of
+    the writer's retry; not imported, so this module stays loadable by file path)."""
+    delay = 0.05
+    for attempt in range(6):
+        try:
+            os.replace(src, dst)
+            return
+        except PermissionError:
+            if attempt == 5:
+                raise
+            time.sleep(delay)
+            delay *= 2
+
+
+def _final_name_for_temp(temp_name: str) -> str | None:
+    """``.quant_signals_20260627.json.of4kgikh.tmp`` -> ``quant_signals_20260627.json``."""
+    if not (temp_name.startswith(".") and temp_name.endswith(".tmp")):
+        return None
+    core = temp_name[1:-4]  # strip leading "." and trailing ".tmp"
+    final = core.rsplit(".", 1)[0]  # strip the random NamedTemporaryFile segment
+    return final or None
+
+
+def _temp_payload_is_valid(path: Path, final_name: str) -> bool:
+    """Reject truncated/garbage temps. JSON finals must parse; others non-empty."""
+    try:
+        raw = path.read_text(encoding="utf-8")
+    except OSError:
+        return False
+    if not raw.strip():
+        return False
+    if final_name.endswith(".json"):
+        try:
+            payload = json.loads(raw)
+        except ValueError:
+            return False
+        return isinstance(payload, (dict, list)) and bool(payload)
+    return True
+
+
+def recover_orphan_atomic_writes(
+    directory: Path | str,
+    *,
+    now: float | None = None,
+    min_age_s: float = _RECOVER_MIN_AGE_S,
+    dry_run: bool = False,
+) -> dict:
+    """Recover/clean orphan atomic-write temps in *directory* (non-recursive).
+
+    For each ``.<final>.<rand>.tmp`` older than ``min_age_s``:
+
+    * final MISSING + temp valid  -> promote temp to final (RECOVERY);
+    * final EXISTS                -> remove the stale temp (CLEANUP);
+    * final MISSING + temp invalid -> leave it (reported, never deleted, so no
+      data is lost to a half-written temp).
+
+    Idempotent and best-effort. Returns a summary dict.
+    """
+    directory = Path(directory)
+    now = time.time() if now is None else now
+    recovered: list[str] = []
+    cleaned: list[str] = []
+    skipped: list[dict] = []
+    if not directory.is_dir():
+        return {"recovered": recovered, "cleaned": cleaned, "skipped": skipped}
+    for entry in os.scandir(directory):
+        if not (entry.is_file() and entry.name.endswith(".tmp")):
+            continue
+        temp_path = Path(entry.path)
+        final_name = _final_name_for_temp(entry.name)
+        if not final_name:
+            continue
+        try:
+            age = now - temp_path.stat().st_mtime
+        except OSError:
+            continue
+        if age < min_age_s:
+            continue  # may still be mid-write
+        final_path = directory / final_name
+        if final_path.exists():
+            if not dry_run:
+                try:
+                    temp_path.unlink()
+                except OSError:
+                    continue
+            cleaned.append(str(temp_path))
+            continue
+        if not _temp_payload_is_valid(temp_path, final_name):
+            skipped.append({"path": str(temp_path), "reason": "invalid_or_partial_payload"})
+            continue
+        if not dry_run:
+            try:
+                _promote_with_retry(temp_path, final_path)
+            except OSError as exc:
+                skipped.append({"path": str(temp_path), "reason": f"promote_failed:{exc}"})
+                continue
+        recovered.append(str(final_path))
+    return {"recovered": recovered, "cleaned": cleaned, "skipped": skipped}
+
+
+def recover_daily_artifacts_quietly(repo_root: Path | str = REPO_ROOT) -> dict:
+    """Best-effort recovery sweep over recoverable daily-artifact dirs. Never raises."""
+    repo_root = Path(repo_root)
+    totals = {"recovered": [], "cleaned": [], "skipped": []}
+    for rel in _RECOVERABLE_DIRS:
+        try:
+            result = recover_orphan_atomic_writes(repo_root / rel)
+        except Exception:
+            continue
+        for key in totals:
+            totals[key].extend(result.get(key, []))
+    return totals
+
+
 def main() -> None:
     import argparse
 

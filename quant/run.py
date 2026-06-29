@@ -1145,6 +1145,20 @@ def main():
     # Refuse to run concurrently with another run.py (cron + manual overlap is
     # what corrupts the shared warehouse/sleeve files and hard-kills a process).
     _acquire_run_lock()
+
+    # Under the lock (no concurrent writer to race), recover any daily artifact
+    # whose previous atomic write left a valid temp but no final file (transient
+    # Windows rename failure). Promotes temp->final / cleans stale temps so a
+    # dropped quant_signals/earnings_snapshot does not silently look like "no
+    # data" to today's ledgers and matchers. Best-effort; never blocks the run.
+    try:
+        from stale_artifact_sweep import recover_daily_artifacts_quietly
+        _recovered = recover_daily_artifacts_quietly()
+        if _recovered.get("recovered"):
+            log.info(f"Recovered orphaned daily artifacts: {_recovered['recovered']}")
+    except Exception:
+        pass
+
     today = datetime.now().strftime("%Y%m%d")
     today_iso = datetime.now().date().isoformat()
 

@@ -88,6 +88,56 @@ that says you are done.
 More than two agents share a channel the same way; use `--peer` when you need to
 wait for a specific sender rather than "anyone but me".
 
+## Debate protocol v2 — keep consensus honest
+
+A fluent agent can state a confident but wrong fact, and a smooth back-and-forth
+will *launder* it into the agreed conclusion. (This happened on the first run:
+an agent cited a real experiment id for a row count that belonged to a different
+experiment — the number was right, the id was wrong, and it nearly shipped.) Use
+this protocol whenever a conversation will drive an action (a brief, a reserved
+experiment, anything hard to undo).
+
+**Roles.** Name them explicitly when you open the channel:
+- **proposer** — argues a position.
+- **challenger** — argues the opposing position; must, before converging, either
+  steelman the proposer once or produce one fact that would overturn its own
+  side. (Two agents that share priors converge too fast; force real dissent.)
+- **verifier (V)** — does not debate. After the debate converges, V checks every
+  load-bearing fact against the repo and posts a verdict per fact:
+  `verified / wrong / unverifiable`.
+
+**Claim-citation rule.** Any fact that drives the decision MUST carry a checkable
+source inline: `来源:/source:<path | exp-id | one-line command>`. A claim with no
+source is treated as unverified and cannot enter the final decision.
+
+**Lock rule.** Convergence is NOT lock. The conclusion is locked (safe to hand to
+an executor) only after V has signed off on every load-bearing fact. A `wrong`
+verdict reopens the debate; `unverifiable` facts move to the "assumptions"
+section, never the "verified" section.
+
+**Final-artifact template** (e.g. a `docs/*.md` handoff): three explicit parts —
+1. **Verified facts** — each with its source and who verified it.
+2. **Unverified assumptions** — claims that drive nothing irreversible, or that V
+   could not confirm.
+3. **Decision** — what to do, gated only on the verified facts.
+
+**Mechanical pre-filter (helper, not a substitute for V).**
+
+```powershell
+python scripts/agent_mailbox.py verify --channel C
+```
+
+`verify` scans the channel for referenced experiment ids and repo paths and
+flags any that do **not exist** (dangling references); exits non-zero if it finds
+any. Run it before asking V to sign off — but know its hard limit: it only checks
+*existence*. It cannot catch a reference that exists but is **mis-attributed**
+(exactly the first-run failure). Catching exists-but-wrong is V's job: V must open
+the cited ticket/file and confirm it actually says what the claim says.
+
+**Scope.** Match verification depth to the cost of being wrong. Casual exchanges
+need none of this; anything that reserves an experiment or writes a brief gets
+the full protocol.
+
 ## Conventions
 
 - **Names**: pick a stable, unique `--me` (e.g. your lane + id: `alpha-explore`,

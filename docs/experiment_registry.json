@@ -195492,8 +195492,3206 @@
       "artifact": "data/experiments/exp-20260628-011/exp_20260628_011_post_20260628_alpha_surface_evidence_gate.json",
       "log": "experiments/logs/exp-20260628-011.json",
       "updated_at": "2026-06-28T16:13:35+00:00"
+    },
+    {
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260628_012_accepted_core_13f_crowding_attribution.py",
+        "data/experiments/exp-20260628-012/exp_20260628_012_accepted_core_13f_crowding_attribution.json",
+        "experiments/cards/exp-20260628-012.md",
+        "experiments/manifests/exp-20260628-012.json",
+        "experiments/tickets/exp-20260628-012.json",
+        "experiments/logs/exp-20260628-012.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260628-012.md",
+      "causal_components": [
+        "canonical accepted-stack trade replay",
+        "PIT 13F holdings join",
+        "sector-normalized crowding buckets",
+        "loss-tail attribution",
+        "no strategy behavior change"
+      ],
+      "change_type": "observed_only_attribution",
+      "changed_variable": "accepted_core_pit_13f_crowding_loss_tail_attribution_v1",
+      "claimed_at": "2026-06-28T17:07:41+00:00",
+      "completed_at": "2026-06-28T17:14:56+00:00",
+      "created_at": "2026-06-28T17:07:28+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260628-012",
+      "experiment_uid": "expuid-5912d6c158184a2a",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260628-012",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-28T17:07:28+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "accepted_core_13f_crowding_attribution"
+      },
+      "hypothesis": "Read-only risk-allocation alpha attribution: accepted core trades with high point-in-time 13F ownership crowding may carry worse loss-tail and lower PnL than less-crowded accepted trades, identifying a future production-visible risk-scaling hypothesis without changing candidate pools, entries, exits, ranking, sizing, or orders.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "accepted_core_pit_13f_crowding_loss_tail_attribution_v1"
+      ],
+      "mechanism_family": "production_visible_13f_crowding_risk_attribution",
+      "multiple_testing_risk_bucket": "moderate",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260618-016",
+        "exp-20260622-007",
+        "exp-20260624-019",
+        "exp-20260625-010",
+        "exp-20260625-012"
+      ],
+      "new_evidence_type": "new_gate_shape_pit_13f_risk_attribution",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "sec13f_ownership",
+          "field_tags": [
+            "13f",
+            "a",
+            "accepted",
+            "allocation",
+            "alpha",
+            "attribution",
+            "carry",
+            "changing",
+            "core",
+            "crowded",
+            "crowding",
+            "entries",
+            "exits",
+            "future",
+            "high",
+            "hypothesis",
+            "identifying",
+            "in",
+            "less",
+            "loss",
+            "lower",
+            "may",
+            "only",
+            "or",
+            "orders",
+            "ownership",
+            "pit",
+            "pnl",
+            "point",
+            "pools",
+            "ranking",
+            "read",
+            "risk",
+            "scaling",
+            "sizing",
+            "tail",
+            "than",
+            "time",
+            "trades",
+            "without",
+            "worse"
+          ],
+          "gate_shape": "allocator_source"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec13f_ownership",
+            "family_key": "sec13f_active_manager_concentration",
+            "reopen_condition": "A valid retry needs independent active-manager quality or manager alpha attribution, non-quarterly ownership/flow data, borrow/options cross-evidence, or closed forward rows from a shared default-off helper.",
+            "score": 0.4667,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec13f_ownership",
+            "family_key": "kova_13f_institutional_readiness",
+            "reopen_condition": null,
+            "score": 0.4663,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec13f_ownership",
+            "family_key": "coownership_peer_shock",
+            "reopen_condition": "A genuinely new relation axis or data shape: e.g. holdings-CHANGE co-movement (managers adding the same two names same quarter, not static co-hold), 13F concentration-weighted edges restricted to high-conviction active managers only, or a non-quarterly ownership signal. Or forward closed paper rows if the static graph is revisited at all.",
+            "score": 0.4631,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec13f_ownership",
+            "family_key": "sec13f_sector_normalized_ownership_surprise_candidate_pool",
+            "reopen_condition": "Need materially richer manager identity/quality, sector-normalized ownership surprise with independent borrow/options evidence, or forward replacement-value rows from a shared helper.",
+            "score": 0.4585,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec13f_ownership",
+            "family_key": "sec13f_crowding_context_candidate_pool",
+            "reopen_condition": "Raw PIT 13F candidate rows, manager identity/quality, sector-relative crowding surprise, or daily default-off forward observations.",
+            "score": 0.4583,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": "new gate shape: PIT 13F ownership/crowding joined only to already accepted core trades for read-only risk attribution, not a direct candidate-pool source, source rank, threshold scan, or same-row forward ledger reslice",
+        "override": true,
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "allocator_source",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "sec13f_ownership",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": {
+        "success_probability": 0.26,
+        "expected_ev_delta": 0.0,
+        "expected_pnl_delta": 0.0,
+        "main_failure_modes": [
+          "no_monotonic_loss_tail_separation",
+          "window_reversal",
+          "13f_delay_too_stale",
+          "only_relabels_large_cap_quality"
+        ],
+        "confidence_reason": "Playbook says 13F should remain ownership/crowding context rather than direct entry alpha; using it only as read-only accepted-core risk attribution is a different gate shape from prior 13F candidate pools, but delayed quarterly data and recent 13F failures keep success odds low.",
+        "recorded_at": "2026-06-28T17:06:51+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "accepted": false,
+        "accepted_alpha": false,
+        "observed_only_lead": false,
+        "gate4_passed": false,
+        "decision": "rejected_no_pit_13f_crowding_loss_tail_edge",
+        "artifact": "data/experiments/exp-20260628-012/exp_20260628_012_accepted_core_13f_crowding_attribution.json",
+        "log": "experiments/logs/exp-20260628-012.json",
+        "gate1": {
+          "passed": true,
+          "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+          "standard_window_result": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+          "window_files": {
+            "late_strong": "data/experiments/exp-20260602-003/late_strong_after.json",
+            "mid_weak": "data/experiments/exp-20260602-003/mid_weak_after.json",
+            "old_thin": "data/experiments/exp-20260602-003/old_thin_after.json"
+          }
+        },
+        "gate2": {
+          "passed": true,
+          "dependency_fields_checked": [
+            "entry_date",
+            "entry_price",
+            "stop_price",
+            "target_mult_used",
+            "target_price_reconstructed",
+            "pnl",
+            "pnl_pct_net",
+            "13f_snapshot_as_of",
+            "13f_report_period",
+            "holder_count",
+            "total_value_usd",
+            "holder_count_sector_percentile",
+            "total_value_sector_percentile"
+          ],
+          "target_price_note": "Closed trade rows omit original target_price; runner reconstructs entry_price + (entry_price - stop_price) * target_mult_used and does not schedule executable orders.",
+          "source_audit": {
+            "late_strong": {
+              "path": "data/experiments/exp-20260602-003/late_strong_after.json",
+              "trade_rows": 18,
+              "rows_with_entry_date": 18,
+              "rows_with_target_price_reconstructed": 18,
+              "rows_with_13f_snapshot": 18,
+              "rows_with_13f_join": 8,
+              "bucket_counts": {
+                "low": 0,
+                "middle": 0,
+                "high": 8,
+                "unknown": 10
+              }
+            },
+            "mid_weak": {
+              "path": "data/experiments/exp-20260602-003/mid_weak_after.json",
+              "trade_rows": 21,
+              "rows_with_entry_date": 21,
+              "rows_with_target_price_reconstructed": 21,
+              "rows_with_13f_snapshot": 21,
+              "rows_with_13f_join": 14,
+              "bucket_counts": {
+                "low": 0,
+                "middle": 1,
+                "high": 13,
+                "unknown": 7
+              }
+            },
+            "old_thin": {
+              "path": "data/experiments/exp-20260602-003/old_thin_after.json",
+              "trade_rows": 22,
+              "rows_with_entry_date": 22,
+              "rows_with_target_price_reconstructed": 22,
+              "rows_with_13f_snapshot": 22,
+              "rows_with_13f_join": 11,
+              "bucket_counts": {
+                "low": 0,
+                "middle": 1,
+                "high": 10,
+                "unknown": 11
+              }
+            }
+          },
+          "snapshot_audit": {
+            "holdings_dir": "data/non_ohlcv/sec13f_institutional",
+            "sector_map": "data/reference/broad_market_sector_map.json",
+            "snapshot_count": 8,
+            "source_files": [
+              {
+                "path": "data/non_ohlcv/sec13f_institutional/holdings_01dec2024-28feb2025.json",
+                "loaded": true,
+                "as_of": "2025-03-15",
+                "window_label": "01dec2024-28feb2025",
+                "holdings_rows": 962,
+                "tickers_with_sector": 962
+              },
+              {
+                "path": "data/non_ohlcv/sec13f_institutional/holdings_01dec2025-28feb2026.json",
+                "loaded": true,
+                "as_of": "2026-03-15",
+                "window_label": "01dec2025-28feb2026",
+                "holdings_rows": 967,
+                "tickers_with_sector": 967
+              },
+              {
+                "path": "data/non_ohlcv/sec13f_institutional/holdings_01jun2024-31aug2024.json",
+                "loaded": true,
+                "as_of": "2024-09-15",
+                "window_label": "01jun2024-31aug2024",
+                "holdings_rows": 950,
+                "tickers_with_sector": 950
+              },
+              {
+                "path": "data/non_ohlcv/sec13f_institutional/holdings_01jun2025-31aug2025.json",
+                "loaded": true,
+                "as_of": "2025-09-15",
+                "window_label": "01jun2025-31aug2025",
+                "holdings_rows": 965,
+                "tickers_with_sector": 965
+              },
+              {
+                "path": "data/non_ohlcv/sec13f_institutional/holdings_01mar2025-31may2025.json",
+                "loaded": true,
+                "as_of": "2025-06-15",
+                "window_label": "01mar2025-31may2025",
+                "holdings_rows": 962,
+                "tickers_with_sector": 962
+              },
+              {
+                "path": "data/non_ohlcv/sec13f_institutional/holdings_01mar2026-31may2026.json",
+                "loaded": true,
+                "as_of": "2026-06-11",
+                "window_label": "01mar2026-31may2026",
+                "holdings_rows": 971,
+                "tickers_with_sector": 971
+              },
+              {
+                "path": "data/non_ohlcv/sec13f_institutional/holdings_01sep2024-30nov2024.json",
+                "loaded": true,
+                "as_of": "2024-12-15",
+                "window_label": "01sep2024-30nov2024",
+                "holdings_rows": 955,
+                "tickers_with_sector": 955
+              },
+              {
+                "path": "data/non_ohlcv/sec13f_institutional/holdings_01sep2025-30nov2025.json",
+                "loaded": true,
+                "as_of": "2025-12-15",
+                "window_label": "01sep2025-30nov2025",
+                "holdings_rows": 968,
+                "tickers_with_sector": 968
+              }
+            ]
+          }
+        },
+        "gate3": {
+          "passed": true,
+          "note": "No executable filter was added; core survival is unchanged.",
+          "signals_generated_delta": 0,
+          "signals_survived_delta": 0,
+          "survival_rate_delta": 0.0
+        },
+        "gate4": {
+          "passed": false,
+          "observed_only_lead": false,
+          "decision": "rejected_no_pit_13f_crowding_loss_tail_edge",
+          "acceptance_rule": "Observed-only lead only if joined sample >=50, high bucket >=10, low bucket >=10, pooled high bucket has lower avg PnL, lower win rate, higher 2pct loss-tail rate than low bucket, and all three windows support the same direction. No strategy acceptance is possible in this run.",
+          "failed_reasons": [
+            "joined_sample_too_small",
+            "low_bucket_sample_too_small",
+            "high_low_comparison_unavailable",
+            "insufficient_window_support"
+          ],
+          "supporting_windows": [],
+          "window_comparisons": {
+            "late_strong": {
+              "available": false
+            },
+            "mid_weak": {
+              "available": false
+            },
+            "old_thin": {
+              "available": false
+            }
+          },
+          "pooled_high_low": {
+            "available": false
+          },
+          "minimums": {
+            "min_joined_rows": 50,
+            "min_high_bucket_rows": 10,
+            "min_low_bucket_rows": 10,
+            "min_supporting_windows": 3
+          }
+        },
+        "calibration": {
+          "actual_decision": "rejected_no_pit_13f_crowding_loss_tail_edge",
+          "actual_success": 0,
+          "predicted_success_probability": 0.26,
+          "brier_score": 0.0676,
+          "expected_ev_delta": 0.0,
+          "actual_ev_delta": 0.0,
+          "expected_pnl_delta": 0.0,
+          "actual_pnl_delta": 0.0,
+          "predicted_failure_modes": [
+            "no_monotonic_loss_tail_separation",
+            "window_reversal",
+            "13f_delay_too_stale",
+            "only_relabels_large_cap_quality"
+          ],
+          "realized_failure_mode": "joined_sample_too_small;low_bucket_sample_too_small;high_low_comparison_unavailable;insufficient_window_support",
+          "predicted_failure_mode_hit": true,
+          "surprise_note": "PIT 13F crowding did not produce a monotonic high-vs-low loss-tail separation on the accepted stack."
+        },
+        "summary": "The point-in-time 13F crowding split did not satisfy the fixed loss-tail rule: high crowding failed at least one pooled direction check and/or did not hold across all three windows. The data remains useful context, but not a standalone risk-scaling lead on accepted core trades."
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260628-012.json",
+      "single_causal_variable": "accepted_core_pit_13f_crowding_loss_tail_attribution_v1",
+      "status": "rejected",
+      "ticket_file": "experiments/tickets/exp-20260628-012.json",
+      "trial_family": "accepted_core_13f_crowding_risk_attribution",
+      "trial_variant_id": "accepted_stack_sector_normalized_holder_value_crowding_v1",
+      "implementation_mode": "observed_only_attribution",
+      "new_evidence_axis": "New gate shape: PIT 13F ownership/crowding joined only to already accepted core trades for read-only risk attribution, not a direct candidate-pool source, source rank, threshold scan, or same-row forward ledger reslice.",
+      "parameters": {
+        "join_rule": "latest 13F holdings snapshot with as_of <= trade.entry_date",
+        "crowding_score": "mean(holder_count_sector_percentile, total_value_sector_percentile)",
+        "low_crowding_max": 0.4,
+        "high_crowding_min": 0.8,
+        "loss_tail_pnl_pct": -0.02,
+        "uses_realized_exit_information": false,
+        "alters_strategy_behavior": false
+      },
+      "pre_run_questions": {
+        "1_alpha_hypothesis": "Read-only risk-allocation alpha attribution: accepted core trades with high point-in-time 13F ownership crowding may carry worse loss-tail and lower PnL than less-crowded accepted trades, identifying a future production-visible risk-scaling hypothesis without changing candidate pools, entries, exits, ranking, sizing, or orders.",
+        "2_history_check": {
+          "novelty_gate": "experiment.py new required a novelty override but reported no blocking matches; this run uses a new gate shape over already accepted trades rather than a 13F candidate-pool source, source-rank scan, or threshold retune.",
+          "new_evidence_axis": "New gate shape: PIT 13F ownership/crowding joined only to already accepted core trades for read-only risk attribution, not a direct candidate-pool source, source rank, threshold scan, or same-row forward ledger reslice.",
+          "nearby_prior_experiments": [
+            "exp-20260618-016",
+            "exp-20260622-007",
+            "exp-20260624-019",
+            "exp-20260625-010",
+            "exp-20260625-012"
+          ]
+        },
+        "3_single_policy_bundle": "accepted_core_pit_13f_crowding_loss_tail_attribution_v1",
+        "4_success_failure_standard": "Observed-only lead only if joined sample >=50, high bucket >=10, low bucket >=10, pooled high bucket has lower avg PnL, lower win rate, higher 2pct loss-tail rate than low bucket, and all three windows support the same direction. No strategy acceptance is possible in this run.",
+        "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_012_accepted_core_13f_crowding_attribution.py"
+      },
+      "gate1": {
+        "passed": true,
+        "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+        "standard_window_result": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "window_files": {
+          "late_strong": "data/experiments/exp-20260602-003/late_strong_after.json",
+          "mid_weak": "data/experiments/exp-20260602-003/mid_weak_after.json",
+          "old_thin": "data/experiments/exp-20260602-003/old_thin_after.json"
+        }
+      },
+      "gate2": {
+        "passed": true,
+        "dependency_fields_checked": [
+          "entry_date",
+          "entry_price",
+          "stop_price",
+          "target_mult_used",
+          "target_price_reconstructed",
+          "pnl",
+          "pnl_pct_net",
+          "13f_snapshot_as_of",
+          "13f_report_period",
+          "holder_count",
+          "total_value_usd",
+          "holder_count_sector_percentile",
+          "total_value_sector_percentile"
+        ],
+        "target_price_note": "Closed trade rows omit original target_price; runner reconstructs entry_price + (entry_price - stop_price) * target_mult_used and does not schedule executable orders.",
+        "source_audit": {
+          "late_strong": {
+            "path": "data/experiments/exp-20260602-003/late_strong_after.json",
+            "trade_rows": 18,
+            "rows_with_entry_date": 18,
+            "rows_with_target_price_reconstructed": 18,
+            "rows_with_13f_snapshot": 18,
+            "rows_with_13f_join": 8,
+            "bucket_counts": {
+              "low": 0,
+              "middle": 0,
+              "high": 8,
+              "unknown": 10
+            }
+          },
+          "mid_weak": {
+            "path": "data/experiments/exp-20260602-003/mid_weak_after.json",
+            "trade_rows": 21,
+            "rows_with_entry_date": 21,
+            "rows_with_target_price_reconstructed": 21,
+            "rows_with_13f_snapshot": 21,
+            "rows_with_13f_join": 14,
+            "bucket_counts": {
+              "low": 0,
+              "middle": 1,
+              "high": 13,
+              "unknown": 7
+            }
+          },
+          "old_thin": {
+            "path": "data/experiments/exp-20260602-003/old_thin_after.json",
+            "trade_rows": 22,
+            "rows_with_entry_date": 22,
+            "rows_with_target_price_reconstructed": 22,
+            "rows_with_13f_snapshot": 22,
+            "rows_with_13f_join": 11,
+            "bucket_counts": {
+              "low": 0,
+              "middle": 1,
+              "high": 10,
+              "unknown": 11
+            }
+          }
+        },
+        "snapshot_audit": {
+          "holdings_dir": "data/non_ohlcv/sec13f_institutional",
+          "sector_map": "data/reference/broad_market_sector_map.json",
+          "snapshot_count": 8,
+          "source_files": [
+            {
+              "path": "data/non_ohlcv/sec13f_institutional/holdings_01dec2024-28feb2025.json",
+              "loaded": true,
+              "as_of": "2025-03-15",
+              "window_label": "01dec2024-28feb2025",
+              "holdings_rows": 962,
+              "tickers_with_sector": 962
+            },
+            {
+              "path": "data/non_ohlcv/sec13f_institutional/holdings_01dec2025-28feb2026.json",
+              "loaded": true,
+              "as_of": "2026-03-15",
+              "window_label": "01dec2025-28feb2026",
+              "holdings_rows": 967,
+              "tickers_with_sector": 967
+            },
+            {
+              "path": "data/non_ohlcv/sec13f_institutional/holdings_01jun2024-31aug2024.json",
+              "loaded": true,
+              "as_of": "2024-09-15",
+              "window_label": "01jun2024-31aug2024",
+              "holdings_rows": 950,
+              "tickers_with_sector": 950
+            },
+            {
+              "path": "data/non_ohlcv/sec13f_institutional/holdings_01jun2025-31aug2025.json",
+              "loaded": true,
+              "as_of": "2025-09-15",
+              "window_label": "01jun2025-31aug2025",
+              "holdings_rows": 965,
+              "tickers_with_sector": 965
+            },
+            {
+              "path": "data/non_ohlcv/sec13f_institutional/holdings_01mar2025-31may2025.json",
+              "loaded": true,
+              "as_of": "2025-06-15",
+              "window_label": "01mar2025-31may2025",
+              "holdings_rows": 962,
+              "tickers_with_sector": 962
+            },
+            {
+              "path": "data/non_ohlcv/sec13f_institutional/holdings_01mar2026-31may2026.json",
+              "loaded": true,
+              "as_of": "2026-06-11",
+              "window_label": "01mar2026-31may2026",
+              "holdings_rows": 971,
+              "tickers_with_sector": 971
+            },
+            {
+              "path": "data/non_ohlcv/sec13f_institutional/holdings_01sep2024-30nov2024.json",
+              "loaded": true,
+              "as_of": "2024-12-15",
+              "window_label": "01sep2024-30nov2024",
+              "holdings_rows": 955,
+              "tickers_with_sector": 955
+            },
+            {
+              "path": "data/non_ohlcv/sec13f_institutional/holdings_01sep2025-30nov2025.json",
+              "loaded": true,
+              "as_of": "2025-12-15",
+              "window_label": "01sep2025-30nov2025",
+              "holdings_rows": 968,
+              "tickers_with_sector": 968
+            }
+          ]
+        }
+      },
+      "gate3": {
+        "passed": true,
+        "note": "No executable filter was added; core survival is unchanged.",
+        "signals_generated_delta": 0,
+        "signals_survived_delta": 0,
+        "survival_rate_delta": 0.0
+      },
+      "gate4": {
+        "passed": false,
+        "observed_only_lead": false,
+        "decision": "rejected_no_pit_13f_crowding_loss_tail_edge",
+        "acceptance_rule": "Observed-only lead only if joined sample >=50, high bucket >=10, low bucket >=10, pooled high bucket has lower avg PnL, lower win rate, higher 2pct loss-tail rate than low bucket, and all three windows support the same direction. No strategy acceptance is possible in this run.",
+        "failed_reasons": [
+          "joined_sample_too_small",
+          "low_bucket_sample_too_small",
+          "high_low_comparison_unavailable",
+          "insufficient_window_support"
+        ],
+        "supporting_windows": [],
+        "window_comparisons": {
+          "late_strong": {
+            "available": false
+          },
+          "mid_weak": {
+            "available": false
+          },
+          "old_thin": {
+            "available": false
+          }
+        },
+        "pooled_high_low": {
+          "available": false
+        },
+        "minimums": {
+          "min_joined_rows": 50,
+          "min_high_bucket_rows": 10,
+          "min_low_bucket_rows": 10,
+          "min_supporting_windows": 3
+        }
+      },
+      "production_impact": {
+        "shared_policy_changed": false,
+        "backtester_adapter_changed": false,
+        "run_adapter_changed": false,
+        "replay_only": false,
+        "trade_enabled": false,
+        "daily_snapshot_exposed": false,
+        "parity_test_added": false,
+        "alters_signal_generation": false,
+        "alters_candidate_ranking": false,
+        "alters_sizing": false,
+        "alters_exits": false,
+        "alters_orders": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "uses_llm": false,
+        "parity_note": "Read-only attribution over accepted backtest trade rows. No production or backtest decision path changed."
+      },
+      "post_run_reflection": {
+        "why_result_happened": "The point-in-time 13F crowding split did not satisfy the fixed loss-tail rule: high crowding failed at least one pooled direction check and/or did not hold across all three windows. The data remains useful context, but not a standalone risk-scaling lead on accepted core trades.",
+        "forbidden_near_neighbor_retry": "Do not rerun this accepted-stack 13F attribution by changing the high/low percentile thresholds, holder vs value weights, sector buckets, report-period lag, or notional response curve.",
+        "new_evidence_required": "Independent active-manager quality, non-quarterly ownership/flow data, borrow/options confirmation, or prospective forward rows closed after a shared default-off 13F context logger."
+      },
+      "rejection_reason": "joined_sample_too_small;low_bucket_sample_too_small;high_low_comparison_unavailable;insufficient_window_support",
+      "next_retry_requires": "Do not retune holder/value percentiles, high/low bucket cuts, sector normalization, or direct 13F candidate-pool variants on the same frozen windows. A retry needs active-manager quality, non-quarterly ownership flow, borrow/options cross-evidence, or prospective forward rows tagged with a 13F context field.",
+      "related_files": [
+        "quant/experiments/exp_20260628_012_accepted_core_13f_crowding_attribution.py",
+        "data/experiments/exp-20260628-012/exp_20260628_012_accepted_core_13f_crowding_attribution.json",
+        "experiments/logs/exp-20260628-012.json",
+        "experiments/cards/exp-20260628-012.md",
+        "experiments/manifests/exp-20260628-012.json",
+        "experiments/tickets/exp-20260628-012.json",
+        "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+        "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "data/reference/broad_market_sector_map.json",
+        "data/experiments/exp-20260602-003/late_strong_after.json",
+        "data/experiments/exp-20260602-003/mid_weak_after.json",
+        "data/experiments/exp-20260602-003/old_thin_after.json"
+      ],
+      "changed_files": [
+        "quant/experiments/exp_20260628_012_accepted_core_13f_crowding_attribution.py",
+        "data/experiments/exp-20260628-012/exp_20260628_012_accepted_core_13f_crowding_attribution.json",
+        "experiments/logs/exp-20260628-012.json",
+        "experiments/cards/exp-20260628-012.md",
+        "experiments/manifests/exp-20260628-012.json",
+        "experiments/tickets/exp-20260628-012.json",
+        "docs/experiment_registry.json"
+      ],
+      "reproduction_commands": [
+        ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_012_accepted_core_13f_crowding_attribution.py",
+        ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260628_012_accepted_core_13f_crowding_attribution.py",
+        ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+      ],
+      "anti_js": {
+        "used_javascript": false,
+        "evidence": "Python runner only; no node/js tooling invoked."
+      },
+      "decision": "rejected_no_pit_13f_crowding_loss_tail_edge",
+      "artifact": "data/experiments/exp-20260628-012/exp_20260628_012_accepted_core_13f_crowding_attribution.json",
+      "log": "experiments/logs/exp-20260628-012.json",
+      "updated_at": "2026-06-28T17:14:56+00:00"
+    },
+    {
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260628_013_accepted_core_style_factor_tape_attribution.py",
+        "data/experiments/exp-20260628-013/exp_20260628_013_accepted_core_style_factor_tape_attribution.json",
+        "experiments/cards/exp-20260628-013.md",
+        "experiments/manifests/exp-20260628-013.json",
+        "experiments/tickets/exp-20260628-013.json",
+        "experiments/logs/exp-20260628-013.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260628-013.md",
+      "causal_components": [
+        "canonical accepted-stack trade replay",
+        "PIT factor ETF close cache",
+        "fixed risk-on/risk-off style tape buckets",
+        "loss-tail attribution",
+        "no strategy behavior change"
+      ],
+      "change_type": "observed_only_attribution",
+      "changed_variable": "accepted_core_entry_style_factor_tape_loss_tail_attribution_v1",
+      "claimed_at": "2026-06-28T18:09:47+00:00",
+      "completed_at": "2026-06-28T18:14:19+00:00",
+      "created_at": "2026-06-28T18:09:33+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260628-013",
+      "experiment_uid": "expuid-b15486e3ef734afd",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260628-013",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-28T18:09:33+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "accepted_core_style_factor_tape_attribution"
+      },
+      "hypothesis": "Accepted core trades entered when defensive factor ETF leadership dominates momentum factor leadership carry worse loss-tail and lower PnL than risk-on style tape entries, giving a production-visible risk-allocation candidate without changing entries, exits, ranking, sizing, or orders.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "accepted_core_entry_style_factor_tape_loss_tail_attribution_v1"
+      ],
+      "mechanism_family": "production_visible_factor_etf_style_tape_risk_attribution",
+      "multiple_testing_risk_bucket": "moderate",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260620-027",
+        "exp-20260627-003",
+        "exp-20260628-006"
+      ],
+      "new_evidence_type": "new_gate_shape_pit_factor_etf_style_tape_attribution",
+      "novelty": {
+        "blocking_matches": [
+          {
+            "accept_rate": 0.0,
+            "family_key": "core_ample_slot_stock_rank1_topup_extension",
+            "score": 0.6186,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "cross_sectional_ranking_attribution",
+            "score": 0.6182,
+            "status": "frozen_rejected",
+            "trials": 4
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "full_universe_alpha_score_candidate_pool_risk_adjusted_ranking",
+            "score": 0.6182,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "cross_sectional_ranking_component_attribution",
+            "score": 0.6174,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "ohlcv_momentum",
+          "field_tags": [
+            "a",
+            "accepted",
+            "allocation",
+            "attribution",
+            "carry",
+            "changing",
+            "core",
+            "defensive",
+            "dominates",
+            "entered",
+            "entries",
+            "entry",
+            "etf",
+            "exits",
+            "factor",
+            "giving",
+            "leadership",
+            "loss",
+            "lower",
+            "momentum",
+            "on",
+            "or",
+            "orders",
+            "pnl",
+            "ranking",
+            "risk",
+            "sizing",
+            "style",
+            "tail",
+            "tape",
+            "than",
+            "trades",
+            "when",
+            "without",
+            "worse"
+          ],
+          "gate_shape": "allocator_source"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_momentum",
+            "family_key": "core_ample_slot_stock_rank1_topup_extension",
+            "reopen_condition": null,
+            "score": 0.6186,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_momentum",
+            "family_key": "cross_sectional_ranking_attribution",
+            "reopen_condition": "Cross-sectional ranking via alpha_score is closed for new alpha on robust broad-universe evidence: the edge shrinks when the universe broadens (the opposite of a generalizable alpha) and the only tilt is single-regime (late_strong). Do not propose alpha_score reweighting as a live ranking/sizing change. Reviving a ranking surface needs genuinely populated non-momentum components on the broad unive",
+            "score": 0.6182,
+            "status": "frozen_rejected",
+            "trials": 4
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_momentum",
+            "family_key": "full_universe_alpha_score_candidate_pool_risk_adjusted_ranking",
+            "reopen_condition": "Forward replacement-value rows, a shared production/replay alpha_score adapter, or a materially new component-level ranking field. Do not mine nearby alpha_score risk formulas on the same frozen replay.",
+            "score": 0.6182,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_momentum",
+            "family_key": "cross_sectional_ranking_component_attribution",
+            "reopen_condition": null,
+            "score": 0.6174,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "ohlcv_momentum",
+            "family_key": "rs20_entry_state_shared_sizing",
+            "reopen_condition": "Forward/paper monitoring of rs20_entry_state attribution, especially mid_weak-like drawdown and concentration behavior.",
+            "score": 0.4816,
+            "status": "has_accepted",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": "New gate shape: PIT factor ETF style tape joined only to already accepted core trades for observed-only loss-tail attribution; not a factor-residual candidate pool, allocator source, cross-sectional ranking, or threshold retune.",
+        "override": true,
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "allocator_source",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "ohlcv_momentum",
+          "trials": 0
+        },
+        "warn": true,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": {
+        "success_probability": 0.2,
+        "expected_ev_delta": null,
+        "expected_pnl_delta": null,
+        "main_failure_modes": [
+          "factor residual candidate pool already failed; accepted trade count only 61; style tape may be broad macro context with no per-trade edge"
+        ],
+        "confidence_reason": "New gate shape over already accepted trades using ETF style-state at entry rather than generating factor-residual candidates or tuning factor model thresholds.",
+        "recorded_at": "2026-06-28T18:08:56+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "accepted": false,
+        "accepted_alpha": false,
+        "observed_only_lead": false,
+        "gate4_passed": false,
+        "decision": "rejected_no_style_factor_tape_loss_tail_edge",
+        "artifact": "data/experiments/exp-20260628-013/exp_20260628_013_accepted_core_style_factor_tape_attribution.json",
+        "log": "experiments/logs/exp-20260628-013.json",
+        "gate1": {
+          "passed": true,
+          "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+          "standard_window_result": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+          "window_files": {
+            "late_strong": "data/experiments/exp-20260602-003/late_strong_after.json",
+            "mid_weak": "data/experiments/exp-20260602-003/mid_weak_after.json",
+            "old_thin": "data/experiments/exp-20260602-003/old_thin_after.json"
+          }
+        },
+        "gate2": {
+          "passed": true,
+          "dependency_fields_checked": [
+            "entry_date",
+            "entry_price",
+            "stop_price",
+            "target_mult_used",
+            "target_price_reconstructed",
+            "pnl",
+            "pnl_pct_net",
+            "SPY_20d_return",
+            "MTUM_20d_return",
+            "USMV_20d_return",
+            "MTUM_minus_USMV_20d"
+          ],
+          "target_price_note": "Closed trade rows omit original target_price; runner reconstructs entry_price + (entry_price - stop_price) * target_mult_used and does not schedule executable orders.",
+          "source_audit": {
+            "late_strong": {
+              "path": "data/experiments/exp-20260602-003/late_strong_after.json",
+              "trade_rows": 18,
+              "rows_with_entry_date": 18,
+              "rows_with_target_price_reconstructed": 18,
+              "rows_with_style_tape": 18,
+              "style_bucket_counts": {
+                "defensive_leadership": 2,
+                "balanced_or_mixed": 7,
+                "risk_on_momentum": 9,
+                "unknown": 0
+              }
+            },
+            "mid_weak": {
+              "path": "data/experiments/exp-20260602-003/mid_weak_after.json",
+              "trade_rows": 21,
+              "rows_with_entry_date": 21,
+              "rows_with_target_price_reconstructed": 21,
+              "rows_with_style_tape": 21,
+              "style_bucket_counts": {
+                "defensive_leadership": 1,
+                "balanced_or_mixed": 7,
+                "risk_on_momentum": 13,
+                "unknown": 0
+              }
+            },
+            "old_thin": {
+              "path": "data/experiments/exp-20260602-003/old_thin_after.json",
+              "trade_rows": 22,
+              "rows_with_entry_date": 22,
+              "rows_with_target_price_reconstructed": 22,
+              "rows_with_style_tape": 19,
+              "style_bucket_counts": {
+                "defensive_leadership": 2,
+                "balanced_or_mixed": 6,
+                "risk_on_momentum": 11,
+                "unknown": 3
+              }
+            }
+          },
+          "factor_audit": {
+            "factor_cache": "data/experiments/exp-20260620-027/factor_etf_daily.json",
+            "tickers_required": [
+              "SPY",
+              "MTUM",
+              "USMV",
+              "QUAL",
+              "SIZE",
+              "VLUE"
+            ],
+            "tickers_present": {
+              "SPY": {
+                "present": true,
+                "rows": 396,
+                "first_date": "2024-09-20",
+                "last_date": "2026-04-21"
+              },
+              "MTUM": {
+                "present": true,
+                "rows": 396,
+                "first_date": "2024-09-20",
+                "last_date": "2026-04-21"
+              },
+              "USMV": {
+                "present": true,
+                "rows": 396,
+                "first_date": "2024-09-20",
+                "last_date": "2026-04-21"
+              },
+              "QUAL": {
+                "present": true,
+                "rows": 396,
+                "first_date": "2024-09-20",
+                "last_date": "2026-04-21"
+              },
+              "SIZE": {
+                "present": true,
+                "rows": 396,
+                "first_date": "2024-09-20",
+                "last_date": "2026-04-21"
+              },
+              "VLUE": {
+                "present": true,
+                "rows": 396,
+                "first_date": "2024-09-20",
+                "last_date": "2026-04-21"
+              }
+            }
+          }
+        },
+        "gate3": {
+          "passed": true,
+          "note": "No executable filter was added; core survival is unchanged.",
+          "signals_generated_delta": 0,
+          "signals_survived_delta": 0,
+          "survival_rate_delta": 0.0
+        },
+        "gate4": {
+          "passed": false,
+          "observed_only_lead": false,
+          "decision": "rejected_no_style_factor_tape_loss_tail_edge",
+          "acceptance_rule": "Observed-only lead only if joined sample >=50, defensive bucket >=10, risk-on bucket >=10, pooled defensive bucket has lower average PnL, lower win rate, and higher 2pct loss-tail rate than risk-on, with at least two standard windows supporting the same direction. No strategy acceptance is possible in this run.",
+          "failed_reasons": [
+            "defensive_bucket_sample_too_small",
+            "defensive_loss_tail_not_worse",
+            "insufficient_window_support"
+          ],
+          "supporting_windows": [
+            "old_thin"
+          ],
+          "pooled_defensive_vs_risk_on": {
+            "available": true,
+            "defensive_minus_risk_on_avg_pnl": -798.508121,
+            "defensive_minus_risk_on_median_pnl": -827.17,
+            "defensive_minus_risk_on_win_rate": -0.115152,
+            "defensive_minus_risk_on_loss_tail_rate": -0.084848,
+            "defensive_rows": 5,
+            "risk_on_rows": 33
+          },
+          "minimums": {
+            "min_joined_rows": 50,
+            "min_defensive_rows": 10,
+            "min_risk_on_rows": 10,
+            "min_supporting_windows": 2
+          }
+        },
+        "calibration": {
+          "actual_decision": "rejected_no_style_factor_tape_loss_tail_edge",
+          "actual_success": 0,
+          "predicted_success_probability": 0.2,
+          "brier_score": 0.04,
+          "expected_ev_delta": null,
+          "actual_ev_delta": 0.0,
+          "expected_pnl_delta": null,
+          "actual_pnl_delta": 0.0,
+          "predicted_failure_modes": [
+            "factor residual candidate pool already failed; accepted trade count only 61; style tape may be broad macro context with no per-trade edge"
+          ],
+          "realized_failure_mode": "defensive_bucket_sample_too_small;defensive_loss_tail_not_worse;insufficient_window_support",
+          "predicted_failure_mode_hit": true,
+          "surprise_note": "PIT style factor tape did not produce a robust defensive-vs-risk-on loss-tail separation on the accepted stack."
+        },
+        "summary": "The fixed PIT style tape split did not satisfy the loss-tail rule on accepted core trades: defensive leadership failed at least one pooled direction check, bucket-size check, or window-support check. This should not be retuned on the same frozen accepted-stack windows."
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260628-013.json",
+      "single_causal_variable": "accepted_core_entry_style_factor_tape_loss_tail_attribution_v1",
+      "status": "rejected",
+      "ticket_file": "experiments/tickets/exp-20260628-013.json",
+      "trial_family": "accepted_core_style_factor_tape_risk_attribution",
+      "trial_variant_id": "accepted_stack_factor_etf_style_tape_v1",
+      "implementation_mode": "observed_only_attribution",
+      "new_evidence_axis": "New gate shape: PIT factor ETF style tape joined only to already accepted core trades for observed-only loss-tail attribution; not a factor-residual candidate pool, allocator source, cross-sectional ranking, or threshold retune.",
+      "parameters": {
+        "factor_tickers": [
+          "SPY",
+          "MTUM",
+          "USMV",
+          "QUAL",
+          "SIZE",
+          "VLUE"
+        ],
+        "lookback_days": 20,
+        "style_spread_threshold": 0.015,
+        "loss_tail_pnl_pct": -0.02,
+        "bucket_rule": "risk_on_momentum if MTUM-USMV 20d >= threshold; defensive_leadership if USMV-MTUM 20d >= threshold; otherwise balanced_or_mixed."
+      },
+      "pre_run_questions": {
+        "1_alpha_hypothesis": "Accepted core trades entered when defensive factor ETF leadership dominates momentum factor leadership carry worse loss-tail and lower PnL than risk-on style tape entries, giving a production-visible risk-allocation candidate without changing entries, exits, ranking, sizing, or orders.",
+        "2_history_check": {
+          "novelty_gate": "experiment.py new blocked the initial reservation as an allocator_source/ohlcv_momentum near-neighbor; override was used only for a new gate shape that joins PIT factor ETF style tape to already accepted trades for read-only attribution.",
+          "new_evidence_axis": "New gate shape: PIT factor ETF style tape joined only to already accepted core trades for observed-only loss-tail attribution; not a factor-residual candidate pool, allocator source, cross-sectional ranking, or threshold retune.",
+          "nearby_prior_experiments": [
+            "exp-20260620-027",
+            "exp-20260627-003",
+            "exp-20260628-006"
+          ]
+        },
+        "3_single_policy_bundle": "accepted_core_entry_style_factor_tape_loss_tail_attribution_v1",
+        "4_success_failure_standard": "Observed-only lead only if joined sample >=50, defensive bucket >=10, risk-on bucket >=10, pooled defensive bucket has lower average PnL, lower win rate, and higher 2pct loss-tail rate than risk-on, with at least two standard windows supporting the same direction. No strategy acceptance is possible in this run.",
+        "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_013_accepted_core_style_factor_tape_attribution.py"
+      },
+      "gate1": {
+        "passed": true,
+        "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+        "standard_window_result": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "window_files": {
+          "late_strong": "data/experiments/exp-20260602-003/late_strong_after.json",
+          "mid_weak": "data/experiments/exp-20260602-003/mid_weak_after.json",
+          "old_thin": "data/experiments/exp-20260602-003/old_thin_after.json"
+        }
+      },
+      "gate2": {
+        "passed": true,
+        "dependency_fields_checked": [
+          "entry_date",
+          "entry_price",
+          "stop_price",
+          "target_mult_used",
+          "target_price_reconstructed",
+          "pnl",
+          "pnl_pct_net",
+          "SPY_20d_return",
+          "MTUM_20d_return",
+          "USMV_20d_return",
+          "MTUM_minus_USMV_20d"
+        ],
+        "target_price_note": "Closed trade rows omit original target_price; runner reconstructs entry_price + (entry_price - stop_price) * target_mult_used and does not schedule executable orders.",
+        "source_audit": {
+          "late_strong": {
+            "path": "data/experiments/exp-20260602-003/late_strong_after.json",
+            "trade_rows": 18,
+            "rows_with_entry_date": 18,
+            "rows_with_target_price_reconstructed": 18,
+            "rows_with_style_tape": 18,
+            "style_bucket_counts": {
+              "defensive_leadership": 2,
+              "balanced_or_mixed": 7,
+              "risk_on_momentum": 9,
+              "unknown": 0
+            }
+          },
+          "mid_weak": {
+            "path": "data/experiments/exp-20260602-003/mid_weak_after.json",
+            "trade_rows": 21,
+            "rows_with_entry_date": 21,
+            "rows_with_target_price_reconstructed": 21,
+            "rows_with_style_tape": 21,
+            "style_bucket_counts": {
+              "defensive_leadership": 1,
+              "balanced_or_mixed": 7,
+              "risk_on_momentum": 13,
+              "unknown": 0
+            }
+          },
+          "old_thin": {
+            "path": "data/experiments/exp-20260602-003/old_thin_after.json",
+            "trade_rows": 22,
+            "rows_with_entry_date": 22,
+            "rows_with_target_price_reconstructed": 22,
+            "rows_with_style_tape": 19,
+            "style_bucket_counts": {
+              "defensive_leadership": 2,
+              "balanced_or_mixed": 6,
+              "risk_on_momentum": 11,
+              "unknown": 3
+            }
+          }
+        },
+        "factor_audit": {
+          "factor_cache": "data/experiments/exp-20260620-027/factor_etf_daily.json",
+          "tickers_required": [
+            "SPY",
+            "MTUM",
+            "USMV",
+            "QUAL",
+            "SIZE",
+            "VLUE"
+          ],
+          "tickers_present": {
+            "SPY": {
+              "present": true,
+              "rows": 396,
+              "first_date": "2024-09-20",
+              "last_date": "2026-04-21"
+            },
+            "MTUM": {
+              "present": true,
+              "rows": 396,
+              "first_date": "2024-09-20",
+              "last_date": "2026-04-21"
+            },
+            "USMV": {
+              "present": true,
+              "rows": 396,
+              "first_date": "2024-09-20",
+              "last_date": "2026-04-21"
+            },
+            "QUAL": {
+              "present": true,
+              "rows": 396,
+              "first_date": "2024-09-20",
+              "last_date": "2026-04-21"
+            },
+            "SIZE": {
+              "present": true,
+              "rows": 396,
+              "first_date": "2024-09-20",
+              "last_date": "2026-04-21"
+            },
+            "VLUE": {
+              "present": true,
+              "rows": 396,
+              "first_date": "2024-09-20",
+              "last_date": "2026-04-21"
+            }
+          }
+        }
+      },
+      "gate3": {
+        "passed": true,
+        "note": "No executable filter was added; core survival is unchanged.",
+        "signals_generated_delta": 0,
+        "signals_survived_delta": 0,
+        "survival_rate_delta": 0.0
+      },
+      "gate4": {
+        "passed": false,
+        "observed_only_lead": false,
+        "decision": "rejected_no_style_factor_tape_loss_tail_edge",
+        "acceptance_rule": "Observed-only lead only if joined sample >=50, defensive bucket >=10, risk-on bucket >=10, pooled defensive bucket has lower average PnL, lower win rate, and higher 2pct loss-tail rate than risk-on, with at least two standard windows supporting the same direction. No strategy acceptance is possible in this run.",
+        "failed_reasons": [
+          "defensive_bucket_sample_too_small",
+          "defensive_loss_tail_not_worse",
+          "insufficient_window_support"
+        ],
+        "supporting_windows": [
+          "old_thin"
+        ],
+        "pooled_defensive_vs_risk_on": {
+          "available": true,
+          "defensive_minus_risk_on_avg_pnl": -798.508121,
+          "defensive_minus_risk_on_median_pnl": -827.17,
+          "defensive_minus_risk_on_win_rate": -0.115152,
+          "defensive_minus_risk_on_loss_tail_rate": -0.084848,
+          "defensive_rows": 5,
+          "risk_on_rows": 33
+        },
+        "minimums": {
+          "min_joined_rows": 50,
+          "min_defensive_rows": 10,
+          "min_risk_on_rows": 10,
+          "min_supporting_windows": 2
+        }
+      },
+      "production_impact": {
+        "shared_policy_changed": false,
+        "backtester_adapter_changed": false,
+        "run_adapter_changed": false,
+        "replay_only": false,
+        "trade_enabled": false,
+        "daily_snapshot_exposed": false,
+        "parity_test_added": false,
+        "alters_signal_generation": false,
+        "alters_candidate_ranking": false,
+        "alters_sizing": false,
+        "alters_exits": false,
+        "alters_orders": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "uses_llm": false,
+        "parity_note": "Read-only attribution over accepted backtest trade rows. No production or backtest decision path changed."
+      },
+      "post_run_reflection": {
+        "why_result_happened": "The fixed PIT style tape split did not satisfy the loss-tail rule on accepted core trades: defensive leadership failed at least one pooled direction check, bucket-size check, or window-support check. This should not be retuned on the same frozen accepted-stack windows.",
+        "forbidden_near_neighbor_retry": "Do not rerun this accepted-stack style factor attribution by changing MTUM/USMV spread cuts, adding adjacent factor ETFs, changing lookback days, or converting the same field into a risk-scaling response curve.",
+        "new_evidence_required": "Prospective forward rows tagged by a shared default-off style tape logger, or an independent source such as options/flows that is not merely another ETF-style threshold."
+      },
+      "rejection_reason": "defensive_bucket_sample_too_small;defensive_loss_tail_not_worse;insufficient_window_support",
+      "next_retry_requires": "Do not retune style spread thresholds, ETF list, lookback length, or notional response curves on the same accepted-stack windows. A retry needs prospectively closed forward rows with a shared style-tape logger or a materially different source beyond ETF style tape.",
+      "related_files": [
+        "quant/experiments/exp_20260628_013_accepted_core_style_factor_tape_attribution.py",
+        "data/experiments/exp-20260628-013/exp_20260628_013_accepted_core_style_factor_tape_attribution.json",
+        "experiments/logs/exp-20260628-013.json",
+        "experiments/cards/exp-20260628-013.md",
+        "experiments/manifests/exp-20260628-013.json",
+        "experiments/tickets/exp-20260628-013.json",
+        "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+        "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "data/experiments/exp-20260620-027/factor_etf_daily.json",
+        "data/experiments/exp-20260602-003/late_strong_after.json",
+        "data/experiments/exp-20260602-003/mid_weak_after.json",
+        "data/experiments/exp-20260602-003/old_thin_after.json"
+      ],
+      "changed_files": [
+        "quant/experiments/exp_20260628_013_accepted_core_style_factor_tape_attribution.py",
+        "data/experiments/exp-20260628-013/exp_20260628_013_accepted_core_style_factor_tape_attribution.json",
+        "experiments/logs/exp-20260628-013.json",
+        "experiments/cards/exp-20260628-013.md",
+        "experiments/manifests/exp-20260628-013.json",
+        "experiments/tickets/exp-20260628-013.json",
+        "docs/experiment_registry.json"
+      ],
+      "reproduction_commands": [
+        ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_013_accepted_core_style_factor_tape_attribution.py",
+        ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+      ],
+      "anti_js": {
+        "strategy_behavior_changed": false,
+        "threshold_scan": false,
+        "uses_future_factor_closes": false,
+        "entry_day_close_used": false
+      },
+      "decision": "rejected_no_style_factor_tape_loss_tail_edge",
+      "artifact": "data/experiments/exp-20260628-013/exp_20260628_013_accepted_core_style_factor_tape_attribution.json",
+      "log": "experiments/logs/exp-20260628-013.json",
+      "updated_at": "2026-06-28T18:14:19+00:00"
+    },
+    {
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260628_014_accepted_core_form4_selling_overhang_attribution.py",
+        "data/experiments/exp-20260628-014/exp_20260628_014_accepted_core_form4_selling_overhang_attribution.json",
+        "experiments/cards/exp-20260628-014.md",
+        "experiments/manifests/exp-20260628-014.json",
+        "experiments/tickets/exp-20260628-014.json",
+        "experiments/logs/exp-20260628-014.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data\\experiments\\exp-20260602-003\\exp_20260602_003_post_earnings_explicit_continuation.json",
+      "card_file": "experiments/cards/exp-20260628-014.md",
+      "causal_components": [
+        "canonical accepted-stack trade replay",
+        "PIT daily Form 4 transaction join",
+        "fixed sale-overhang buckets",
+        "loss-tail attribution",
+        "no strategy behavior change"
+      ],
+      "change_type": "observed_only_attribution",
+      "changed_variable": "accepted_core_pit_form4_selling_overhang_loss_tail_attribution_v1",
+      "claimed_at": "2026-06-28T19:06:33+00:00",
+      "completed_at": "2026-06-28T19:12:31+00:00",
+      "created_at": "2026-06-28T19:06:22+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260628-014",
+      "experiment_uid": "expuid-cd95fef0b4494d5d",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260628-014",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-28T19:06:22+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "accepted_core_form4_selling_overhang_attribution"
+      },
+      "hypothesis": "Read-only risk-allocation attribution: accepted core trades with high PIT Form 4 selling and 10b5-1 activity in the 10 days before entry may carry worse loss-tail and lower PnL than accepted trades without insider-sale overhang.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "accepted_core_pit_form4_selling_overhang_loss_tail_attribution_v1"
+      ],
+      "mechanism_family": "production_visible_form4_selling_overhang_risk_attribution",
+      "multiple_testing_risk_bucket": "moderate",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260625-013",
+        "exp-20260620-004",
+        "exp-20260503-017",
+        "exp-20260628-012",
+        "exp-20260628-013"
+      ],
+      "new_evidence_type": "new_gate_shape_pit_form4_accepted_core_risk_attribution",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "form4_insider",
+          "field_tags": [
+            "10b5",
+            "accepted",
+            "activity",
+            "allocation",
+            "attribution",
+            "before",
+            "carry",
+            "core",
+            "entry",
+            "form",
+            "form4",
+            "high",
+            "in",
+            "insider",
+            "loss",
+            "lower",
+            "may",
+            "only",
+            "overhang",
+            "pit",
+            "pnl",
+            "read",
+            "risk",
+            "sale",
+            "selling",
+            "tail",
+            "than",
+            "trades",
+            "without",
+            "worse"
+          ],
+          "gate_shape": "other"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "form4_insider",
+            "family_key": "form4_sale_pressure_long_entry_derisk",
+            "reopen_condition": null,
+            "score": 0.4864,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "form4_insider",
+            "family_key": "form4_forward_replacement_context_attribution",
+            "reopen_condition": "Need materially more closed forward replacement rows from the shared daily Form4 helper, explicit Form 144 plan/float context, or executive ownership and compensation provenance before another Form4 conflict alpha attempt.",
+            "score": 0.4816,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "form4_insider",
+            "family_key": "form4_sale_absorption_leadership_candidate_pool",
+            "reopen_condition": "A retry needs materially new PIT evidence, such as forward daily replacement value on sale clusters, explicit post-sale ownership-retention context, or a shared default-off daily Form 4 sale-absorption adapter with non-replay observations. Pure threshold, role, 10b5-1, or liquidity retunes stay frozen.",
+            "score": 0.475,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "form4_insider",
+            "family_key": "form4_post_sale_retention_absorption_candidate_pool",
+            "reopen_condition": "A retry needs materially new PIT evidence beyond retained ownership, such as daily forward replacement value for sale clusters, parsed Form 144 float/sale-plan context, or a shared default-off daily Form 4 sale-retention adapter with closed forward observations. Pure threshold, role, 10b5-1, or liquidity retunes stay frozen.",
+            "score": 0.4742,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "form4_insider",
+            "family_key": "non_ohlcv_event_confirmation_insider_form4",
+            "reopen_condition": null,
+            "score": 0.4742,
+            "status": "frozen_rejected",
+            "trials": 15
+          }
+        ],
+        "new_evidence_axis": "New gate shape: PIT daily Form 4 transaction archive joined only to already accepted core trades for read-only loss-tail attribution; not a Form4 candidate-pool source, code-list sweep, forward-row reslice, or risk response retune.",
+        "override": false,
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "other",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "form4_insider",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": {
+        "success_probability": 0.24,
+        "expected_ev_delta": 0.0,
+        "expected_pnl_delta": 0.0,
+        "main_failure_modes": [
+          "no_monotonic_loss_tail_separation",
+          "sample_too_thin",
+          "window_reversal",
+          "form4_activity_relabels_growth_insider_liquidity"
+        ],
+        "confidence_reason": "Daily Form 4 XML is now PIT and transaction-level, so the old data-gap is repaired; however Form4 forward conflict rows were thin and Form4 candidate-pool history is weak, so this is only a new read-only risk attribution gate over accepted core trades.",
+        "recorded_at": "2026-06-28T19:05:45+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "accepted": false,
+        "accepted_alpha": false,
+        "observed_only_lead": true,
+        "gate4_passed": true,
+        "decision": "observed_only_positive_form4_sale_overhang_loss_tail_edge",
+        "artifact": "data/experiments/exp-20260628-014/exp_20260628_014_accepted_core_form4_selling_overhang_attribution.json",
+        "log": "experiments/logs/exp-20260628-014.json",
+        "gate1": {
+          "passed": true,
+          "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+          "standard_window_result": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+          "window_files": {
+            "late_strong": "data/experiments/exp-20260602-003/late_strong_after.json",
+            "mid_weak": "data/experiments/exp-20260602-003/mid_weak_after.json",
+            "old_thin": "data/experiments/exp-20260602-003/old_thin_after.json"
+          }
+        },
+        "gate2": {
+          "passed": true,
+          "dependency_fields_checked": [
+            "entry_date",
+            "entry_price",
+            "stop_price",
+            "target_mult_used",
+            "target_price_reconstructed",
+            "pnl",
+            "pnl_pct_net",
+            "daily_non_ohlcv_snapshot_YYYYMMDD",
+            "Form4 usable_trade_date",
+            "Form4 transaction_code",
+            "Form4 transaction_value",
+            "Form4 10b5_1_flag",
+            "Form4 is_officer"
+          ],
+          "target_price_note": "Closed trade rows omit original target_price; runner reconstructs entry_price + (entry_price - stop_price) * target_mult_used and does not schedule executable orders.",
+          "source_audit": {
+            "late_strong": {
+              "path": "data/experiments/exp-20260602-003/late_strong_after.json",
+              "trade_rows": 18,
+              "rows_with_entry_date": 18,
+              "rows_with_target_price_reconstructed": 18,
+              "rows_with_form4_archive_coverage": 18,
+              "bucket_counts": {
+                "no_sale_overhang": 12,
+                "moderate_or_routine_disposal": 1,
+                "high_sale_overhang": 5
+              }
+            },
+            "mid_weak": {
+              "path": "data/experiments/exp-20260602-003/mid_weak_after.json",
+              "trade_rows": 21,
+              "rows_with_entry_date": 21,
+              "rows_with_target_price_reconstructed": 21,
+              "rows_with_form4_archive_coverage": 21,
+              "bucket_counts": {
+                "no_sale_overhang": 12,
+                "moderate_or_routine_disposal": 1,
+                "high_sale_overhang": 8
+              }
+            },
+            "old_thin": {
+              "path": "data/experiments/exp-20260602-003/old_thin_after.json",
+              "trade_rows": 22,
+              "rows_with_entry_date": 22,
+              "rows_with_target_price_reconstructed": 22,
+              "rows_with_form4_archive_coverage": 22,
+              "bucket_counts": {
+                "no_sale_overhang": 15,
+                "moderate_or_routine_disposal": 1,
+                "high_sale_overhang": 6
+              }
+            }
+          },
+          "form4_audit": {
+            "form4_dir": "data/non_ohlcv",
+            "source_file_count": 469,
+            "raw_jsonl_rows": 285383,
+            "deduped_rows_loaded": 31016,
+            "bad_json_rows": 0,
+            "ticker_count": 49,
+            "min_usable_trade_date": "2024-09-24",
+            "max_usable_trade_date": "2026-06-29",
+            "transaction_code_counts": {
+              "A": 2857,
+              "C": 1352,
+              "D": 83,
+              "E": 172,
+              "F": 2295,
+              "G": 443,
+              "H": 1,
+              "I": 25,
+              "J": 250,
+              "M": 5855,
+              "P": 294,
+              "S": 17373,
+              "X": 16
+            }
+          }
+        },
+        "gate3": {
+          "passed": true,
+          "note": "No executable filter was added; core survival is unchanged.",
+          "signals_generated_delta": 0,
+          "signals_survived_delta": 0,
+          "survival_rate_delta": 0.0
+        },
+        "gate4": {
+          "passed": true,
+          "observed_only_lead": true,
+          "decision": "observed_only_positive_form4_sale_overhang_loss_tail_edge",
+          "acceptance_rule": "Observed-only lead only if Form4 archive-covered accepted-core rows >=50, high-sale bucket >=8, clean bucket >=10, pooled high-sale bucket has lower average PnL, lower win rate, and higher 2pct loss-tail rate than clean rows, with at least two standard windows supporting the same direction. No strategy acceptance is possible.",
+          "failed_reasons": [],
+          "supporting_windows": [
+            "mid_weak",
+            "old_thin"
+          ],
+          "pooled_high_vs_clean": {
+            "available": true,
+            "high_minus_clean_avg_pnl": -923.283846,
+            "high_minus_clean_median_pnl": -3908.35,
+            "high_minus_clean_win_rate": -0.089069,
+            "high_minus_clean_loss_tail_rate": 0.089069,
+            "high_rows": 19,
+            "clean_rows": 39
+          },
+          "minimums": {
+            "min_covered_rows": 50,
+            "min_high_bucket_rows": 8,
+            "min_clean_bucket_rows": 10,
+            "min_supporting_windows": 2
+          }
+        },
+        "calibration": {
+          "actual_decision": "observed_only_positive_form4_sale_overhang_loss_tail_edge",
+          "actual_success": 1,
+          "predicted_success_probability": 0.24,
+          "brier_score": 0.5776,
+          "expected_ev_delta": 0.0,
+          "actual_ev_delta": 0.0,
+          "expected_pnl_delta": 0.0,
+          "actual_pnl_delta": 0.0,
+          "predicted_failure_modes": [
+            "no_monotonic_loss_tail_separation",
+            "sample_too_thin",
+            "window_reversal",
+            "form4_activity_relabels_growth_insider_liquidity"
+          ],
+          "realized_failure_mode": "",
+          "predicted_failure_mode_hit": false,
+          "surprise_note": "PIT Form 4 sale overhang separated accepted-stack loss tail and needs prospective logging."
+        },
+        "summary": "High PIT Form 4 sale overhang separated lower PnL and heavier loss tail from clean accepted-core entries across the fixed checks. This remains observed-only and needs default-off prospective logging before any risk policy use."
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260628-014.json",
+      "single_causal_variable": "accepted_core_pit_form4_selling_overhang_loss_tail_attribution_v1",
+      "status": "observed_only",
+      "ticket_file": "experiments/tickets/exp-20260628-014.json",
+      "trial_family": "accepted_core_form4_selling_overhang_risk_attribution",
+      "trial_variant_id": "accepted_stack_daily_form4_sale_10b5_overhang_v1",
+      "implementation_mode": "observed_only_attribution",
+      "new_evidence_axis": "New gate shape: PIT daily Form 4 transaction archive joined only to already accepted core trades for read-only loss-tail attribution; not a Form4 candidate-pool source, code-list sweep, forward-row reslice, or risk response retune.",
+      "parameters": {
+        "lookback_calendar_days": 10,
+        "high_sale_value_usd": 5000000.0,
+        "high_officer_sale_value_usd": 1000000.0,
+        "high_10b5_sale_rows": 1,
+        "loss_tail_pnl_pct": -0.02,
+        "bucket_rule": "high_sale_overhang if sale_value >= $5M, officer sale value >= $1M, or any 10b5-1 sale row in the 10 calendar days before entry; moderate_or_routine_disposal for other sale/tax-withholding rows; otherwise no_sale_overhang.",
+        "uses_realized_exit_information": false,
+        "alters_strategy_behavior": false
+      },
+      "pre_run_questions": {
+        "1_alpha_hypothesis": "Read-only risk-allocation attribution: accepted core trades with high PIT Form 4 selling and 10b5-1 activity in the 10 days before entry may carry worse loss-tail and lower PnL than accepted trades without insider-sale overhang.",
+        "2_history_check": {
+          "novelty_gate": "experiment.py new reported no blocking matches. The nearest families were Form4 candidate-pool or forward-context attempts; this run uses a new gate shape over already accepted trades.",
+          "new_evidence_axis": "New gate shape: PIT daily Form 4 transaction archive joined only to already accepted core trades for read-only loss-tail attribution; not a Form4 candidate-pool source, code-list sweep, forward-row reslice, or risk response retune.",
+          "nearby_prior_experiments": [
+            "exp-20260625-013",
+            "exp-20260620-004",
+            "exp-20260503-017",
+            "exp-20260628-012",
+            "exp-20260628-013"
+          ]
+        },
+        "3_single_policy_bundle": "accepted_core_pit_form4_selling_overhang_loss_tail_attribution_v1",
+        "4_success_failure_standard": "Observed-only lead only if Form4 archive-covered accepted-core rows >=50, high-sale bucket >=8, clean bucket >=10, pooled high-sale bucket has lower average PnL, lower win rate, and higher 2pct loss-tail rate than clean rows, with at least two standard windows supporting the same direction. No strategy acceptance is possible.",
+        "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_014_accepted_core_form4_selling_overhang_attribution.py"
+      },
+      "gate1": {
+        "passed": true,
+        "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+        "standard_window_result": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "window_files": {
+          "late_strong": "data/experiments/exp-20260602-003/late_strong_after.json",
+          "mid_weak": "data/experiments/exp-20260602-003/mid_weak_after.json",
+          "old_thin": "data/experiments/exp-20260602-003/old_thin_after.json"
+        }
+      },
+      "gate2": {
+        "passed": true,
+        "dependency_fields_checked": [
+          "entry_date",
+          "entry_price",
+          "stop_price",
+          "target_mult_used",
+          "target_price_reconstructed",
+          "pnl",
+          "pnl_pct_net",
+          "daily_non_ohlcv_snapshot_YYYYMMDD",
+          "Form4 usable_trade_date",
+          "Form4 transaction_code",
+          "Form4 transaction_value",
+          "Form4 10b5_1_flag",
+          "Form4 is_officer"
+        ],
+        "target_price_note": "Closed trade rows omit original target_price; runner reconstructs entry_price + (entry_price - stop_price) * target_mult_used and does not schedule executable orders.",
+        "source_audit": {
+          "late_strong": {
+            "path": "data/experiments/exp-20260602-003/late_strong_after.json",
+            "trade_rows": 18,
+            "rows_with_entry_date": 18,
+            "rows_with_target_price_reconstructed": 18,
+            "rows_with_form4_archive_coverage": 18,
+            "bucket_counts": {
+              "no_sale_overhang": 12,
+              "moderate_or_routine_disposal": 1,
+              "high_sale_overhang": 5
+            }
+          },
+          "mid_weak": {
+            "path": "data/experiments/exp-20260602-003/mid_weak_after.json",
+            "trade_rows": 21,
+            "rows_with_entry_date": 21,
+            "rows_with_target_price_reconstructed": 21,
+            "rows_with_form4_archive_coverage": 21,
+            "bucket_counts": {
+              "no_sale_overhang": 12,
+              "moderate_or_routine_disposal": 1,
+              "high_sale_overhang": 8
+            }
+          },
+          "old_thin": {
+            "path": "data/experiments/exp-20260602-003/old_thin_after.json",
+            "trade_rows": 22,
+            "rows_with_entry_date": 22,
+            "rows_with_target_price_reconstructed": 22,
+            "rows_with_form4_archive_coverage": 22,
+            "bucket_counts": {
+              "no_sale_overhang": 15,
+              "moderate_or_routine_disposal": 1,
+              "high_sale_overhang": 6
+            }
+          }
+        },
+        "form4_audit": {
+          "form4_dir": "data/non_ohlcv",
+          "source_file_count": 469,
+          "raw_jsonl_rows": 285383,
+          "deduped_rows_loaded": 31016,
+          "bad_json_rows": 0,
+          "ticker_count": 49,
+          "min_usable_trade_date": "2024-09-24",
+          "max_usable_trade_date": "2026-06-29",
+          "transaction_code_counts": {
+            "A": 2857,
+            "C": 1352,
+            "D": 83,
+            "E": 172,
+            "F": 2295,
+            "G": 443,
+            "H": 1,
+            "I": 25,
+            "J": 250,
+            "M": 5855,
+            "P": 294,
+            "S": 17373,
+            "X": 16
+          }
+        }
+      },
+      "gate3": {
+        "passed": true,
+        "note": "No executable filter was added; core survival is unchanged.",
+        "signals_generated_delta": 0,
+        "signals_survived_delta": 0,
+        "survival_rate_delta": 0.0
+      },
+      "gate4": {
+        "passed": true,
+        "observed_only_lead": true,
+        "decision": "observed_only_positive_form4_sale_overhang_loss_tail_edge",
+        "acceptance_rule": "Observed-only lead only if Form4 archive-covered accepted-core rows >=50, high-sale bucket >=8, clean bucket >=10, pooled high-sale bucket has lower average PnL, lower win rate, and higher 2pct loss-tail rate than clean rows, with at least two standard windows supporting the same direction. No strategy acceptance is possible.",
+        "failed_reasons": [],
+        "supporting_windows": [
+          "mid_weak",
+          "old_thin"
+        ],
+        "pooled_high_vs_clean": {
+          "available": true,
+          "high_minus_clean_avg_pnl": -923.283846,
+          "high_minus_clean_median_pnl": -3908.35,
+          "high_minus_clean_win_rate": -0.089069,
+          "high_minus_clean_loss_tail_rate": 0.089069,
+          "high_rows": 19,
+          "clean_rows": 39
+        },
+        "minimums": {
+          "min_covered_rows": 50,
+          "min_high_bucket_rows": 8,
+          "min_clean_bucket_rows": 10,
+          "min_supporting_windows": 2
+        }
+      },
+      "production_impact": {
+        "shared_policy_changed": false,
+        "backtester_adapter_changed": false,
+        "run_adapter_changed": false,
+        "replay_only": false,
+        "trade_enabled": false,
+        "daily_snapshot_exposed": false,
+        "parity_test_added": false,
+        "alters_signal_generation": false,
+        "alters_candidate_ranking": false,
+        "alters_sizing": false,
+        "alters_exits": false,
+        "alters_orders": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "uses_llm": false,
+        "parity_note": "Read-only attribution over accepted backtest trade rows. No production or backtest decision path changed."
+      },
+      "post_run_reflection": {
+        "why_result_happened": "High PIT Form 4 sale overhang separated lower PnL and heavier loss tail from clean accepted-core entries across the fixed checks. This remains observed-only and needs default-off prospective logging before any risk policy use.",
+        "forbidden_near_neighbor_retry": "Do not rerun this accepted-stack Form4 attribution by changing S/F/P code handling, sale-value buckets, 10b5-1 treatment, owner roles, lookback length, or converting the same field into a risk scalar response curve.",
+        "new_evidence_required": "Explicit Form 144 plan/float context, executive ownership and compensation provenance, or prospectively closed forward rows from a shared default-off Form4 context logger."
+      },
+      "next_retry_requires": "Do not retune Form4 transaction-code lists, sale-value thresholds, 10b5 handling, owner roles, lookback days, or a notional response curve on the same accepted-stack windows. A retry needs explicit Form 144 plan/float context, executive ownership/compensation provenance, or prospective forward rows tagged by a shared Form4 context logger.",
+      "related_files": [
+        "quant/experiments/exp_20260628_014_accepted_core_form4_selling_overhang_attribution.py",
+        "data/experiments/exp-20260628-014/exp_20260628_014_accepted_core_form4_selling_overhang_attribution.json",
+        "experiments/logs/exp-20260628-014.json",
+        "experiments/cards/exp-20260628-014.md",
+        "experiments/manifests/exp-20260628-014.json",
+        "experiments/tickets/exp-20260628-014.json",
+        "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+        "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "data/non_ohlcv",
+        "data/experiments/exp-20260602-003/late_strong_after.json",
+        "data/experiments/exp-20260602-003/mid_weak_after.json",
+        "data/experiments/exp-20260602-003/old_thin_after.json"
+      ],
+      "changed_files": [
+        "quant/experiments/exp_20260628_014_accepted_core_form4_selling_overhang_attribution.py",
+        "data/experiments/exp-20260628-014/exp_20260628_014_accepted_core_form4_selling_overhang_attribution.json",
+        "experiments/logs/exp-20260628-014.json",
+        "experiments/cards/exp-20260628-014.md",
+        "experiments/manifests/exp-20260628-014.json",
+        "experiments/tickets/exp-20260628-014.json",
+        "docs/experiment_registry.json"
+      ],
+      "reproduction_commands": [
+        ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_014_accepted_core_form4_selling_overhang_attribution.py",
+        ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260628_014_accepted_core_form4_selling_overhang_attribution.py",
+        ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+      ],
+      "anti_js": {
+        "strategy_behavior_changed": false,
+        "threshold_scan": false,
+        "uses_future_form4_rows": false,
+        "entry_day_close_used": false
+      },
+      "decision": "observed_only_positive_form4_sale_overhang_loss_tail_edge",
+      "artifact": "data/experiments/exp-20260628-014/exp_20260628_014_accepted_core_form4_selling_overhang_attribution.json",
+      "log": "experiments/logs/exp-20260628-014.json",
+      "updated_at": "2026-06-28T19:12:31+00:00"
+    },
+    {
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "data/experiments/exp-20260628-015/exp_20260628_015_breakout_without_2x_volume_precursor_forward_replacement_value_v1.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json",
+        "experiments/cards/exp-20260628-015.md",
+        "experiments/logs/exp-20260628-015.json",
+        "experiments/manifests/exp-20260628-015.json",
+        "experiments/tickets/exp-20260628-015.json",
+        "quant/breakout_precursor_paper_sleeve.py",
+        "quant/experiments/exp_20260628_015_breakout_without_2x_volume_precursor_forward_replacement_value_v1.py",
+        "quant/test_breakout_precursor_paper_sleeve.py"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260628-015.md",
+      "causal_components": [
+        "shared default-off precursor helper",
+        "full-population historical precursor replay",
+        "10d/20d forward replacement ledger",
+        "same-name actual trend_long entry comparator",
+        "entry-regime attribution bucket"
+      ],
+      "change_type": "default_off_paper_sleeve_forward_replacement_instrumentation",
+      "changed_files": [
+        "quant/breakout_precursor_paper_sleeve.py",
+        "quant/test_breakout_precursor_paper_sleeve.py",
+        "quant/experiments/exp_20260628_015_breakout_without_2x_volume_precursor_forward_replacement_value_v1.py",
+        "data/experiments/exp-20260628-015/exp_20260628_015_breakout_without_2x_volume_precursor_forward_replacement_value_v1.json",
+        "experiments/logs/exp-20260628-015.json",
+        "experiments/cards/exp-20260628-015.md",
+        "experiments/manifests/exp-20260628-015.json",
+        "experiments/tickets/exp-20260628-015.json",
+        "docs/experiment_registry.json"
+      ],
+      "changed_variable": "breakout_without_2x_volume_precursor_forward_replacement_value_v1",
+      "claimed_at": "2026-06-28T20:48:33+00:00",
+      "completed_at": "2026-06-28T21:15:59+00:00",
+      "created_at": "2026-06-28T20:47:21+00:00",
+      "evaluation_windows": [
+        {
+          "baseline": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "end": "2026-04-21",
+          "label": "late_strong",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "start": "2025-10-23"
+        },
+        {
+          "baseline": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "end": "2025-10-22",
+          "label": "mid_weak",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "start": "2025-04-23"
+        },
+        {
+          "baseline": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "end": "2025-04-22",
+          "label": "old_thin",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "start": "2024-10-02"
+        }
+      ],
+      "experiment_id": "exp-20260628-015",
+      "experiment_uid": "expuid-1b0af5cdf31a4540",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260628-015",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-28T20:47:21+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "breakout_without_2x_volume_precursor_forward_replacement_value_v1"
+      },
+      "hypothesis": "entry/candidate_pool: trend_long enters late because it waits for >2x volume confirmation after the 20d-high breakout; exp-20260627-006 found 24/39 actual trend_long trades had a production-visible breakout-without-2x-volume precursor 1-5 sessions earlier (+1.92% median entry advantage, +2.46% 10d delta) BUT late_strong regime 20d delta is negative (-1.53%). Build a default-off shared-paper-first sleeve logging the FULL population of breakout-without-2x-volume precursor events (above_200ma & breakout_20d & not volume_spike), including those that never become a real trend_long entry, with forward 10d/20d replacement value vs same-name actual-entry comparator and entry-regime bucket, to de-bias the survivorship-conditioned lead before any volume-threshold or entry-timing change. trade_enabled=False.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "breakout_without_2x_volume_precursor_forward_replacement_value_v1"
+      ],
+      "mechanism_family": "entry",
+      "multiple_testing_risk_bucket": "low",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260530-013",
+        "exp-20260530-016",
+        "exp-20260627-006",
+        "exp-20260627-007"
+      ],
+      "new_evidence_type": "full_population_breakout_without_2x_volume_precursor_forward_replacement_rows",
+      "novelty": {
+        "blocking_matches": [
+          {
+            "accept_rate": 0.0,
+            "family_key": "full_universe_alpha_score_candidate_pool_regime_gate",
+            "score": 0.6152,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "free_ohlcv_intraindustry_liquidity_leader_lead_lag_candidate_pool",
+            "score": 0.6146,
+            "status": "frozen_rejected",
+            "trials": 2
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "tail_state_winner_continuation_candidate_pool",
+            "score": 0.6101,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "compression_breakout_tail_state_candidate_pool",
+            "score": 0.6052,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "broad_full_liquid_5d_winner_changepoint_tail_state_candidate_pool",
+            "score": 0.6047,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "regime_state",
+          "field_tags": [
+            "200ma",
+            "20d",
+            "2x",
+            "a",
+            "above",
+            "actual",
+            "advantage",
+            "after",
+            "any",
+            "because",
+            "become",
+            "before",
+            "bias",
+            "breakout",
+            "bucket",
+            "build",
+            "but",
+            "change",
+            "comparator",
+            "conditioned",
+            "confirmation",
+            "de",
+            "delta",
+            "earlier",
+            "enabled",
+            "enters",
+            "entry",
+            "events",
+            "exp",
+            "false",
+            "first",
+            "forward",
+            "found",
+            "full",
+            "had",
+            "high",
+            "including",
+            "is",
+            "it",
+            "late",
+            "lead",
+            "logging",
+            "long",
+            "median",
+            "name",
+            "negative",
+            "never",
+            "not",
+            "of",
+            "or",
+            "population",
+            "precursor",
+            "real",
+            "regime",
+            "replacement",
+            "same",
+            "sessions",
+            "sleeve",
+            "spike",
+            "strong",
+            "survivorship",
+            "that",
+            "those",
+            "threshold",
+            "timing",
+            "to",
+            "trade",
+            "trades",
+            "trend",
+            "value",
+            "volume",
+            "waits",
+            "without"
+          ],
+          "gate_shape": "candidate_pool_top1_10d"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "regime_state",
+            "family_key": "full_universe_alpha_score_candidate_pool_regime_gate",
+            "reopen_condition": "Forward replacement-value rows, a shared production/replay alpha_score adapter, or a materially richer rank-validity field. Do not just mine alpha_score state gates on the same frozen replay.",
+            "score": 0.6152,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "regime_state",
+            "family_key": "free_ohlcv_intraindustry_liquidity_leader_lead_lag_candidate_pool",
+            "reopen_condition": "Do not retry this same frozen-window regime re-slice by changing risk_off/chop/on labels or probability thresholds. A valid next step needs closed forward replacement-value rows tagged with entry-time regime, a shared default-off daily/backtest adapter for the source, or a materially different relation provenance such as customer/supplier links or a non-OHLCV relation graph.",
+            "score": 0.6146,
+            "status": "frozen_rejected",
+            "trials": 2
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "regime_state",
+            "family_key": "tail_state_winner_continuation_candidate_pool",
+            "reopen_condition": "Revisit only with a materially new PIT tail-state or flow field and direct replacement-value evidence versus the accepted low-deployment ETF comparator.",
+            "score": 0.6101,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "regime_state",
+            "family_key": "compression_breakout_tail_state_candidate_pool",
+            "reopen_condition": "A retry needs forward replacement-value rows or a materially different PIT flow/catalyst field; not another OHLCV tail-state threshold sweep.",
+            "score": 0.6052,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "regime_state",
+            "family_key": "broad_full_liquid_5d_winner_changepoint_tail_state_candidate_pool",
+            "reopen_condition": "A future retry needs genuinely new PIT evidence such as forward replacement-value rows, external free breadth data with production parity, or a non-OHLCV context layer. Broad 5-day continuation threshold retunes should stay frozen.",
+            "score": 0.6047,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": "forward replacement-value paper rows on named breakout-without-2x-volume latency cases (full-population, regime-bucketed) -- the explicit reopen_condition of frozen families prebreakout_momentum_entry (exp-20260530-013) and prebreakout_catalyst_qualified_entry (exp-20260530-016)",
+        "override": true,
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": true,
+          "gate_shape": "candidate_pool_top1_10d",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "regime_state",
+          "trials": 8
+        },
+        "warn": true,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "post_run_reflection": {
+        "why_result_happened": "The full-population precursor base rate stayed positive in aggregate because many non-survivor breakout-without-2x-volume rows still had positive 20d drift, and the actual-entry comparator subset kept a positive 10d entry-advantage median. The result is not allocation-ready because fixed windows are mixed: late_strong and old_thin have negative 10d full-population medians, and old_thin also has a negative 20d median.",
+        "forbidden_near_neighbor_retry": "Do not rerun this as a 2x-volume threshold retune, a volume-spike hard-exclusion-to-weighting response curve change, or another slice that only conditions on actual trend_long survivor entries.",
+        "new_evidence_required": "Next valid step is a default-off daily adapter plus a Gate 1-4 candidate-source replay that can compare against accepted core allocation; private threshold retunes remain insufficient. Any promotion attempt must handle fixed-window instability explicitly."
+      },
+      "prediction": {
+        "success_probability": 0.7,
+        "expected_ev_delta": 0.0,
+        "expected_pnl_delta": 0.0,
+        "main_failure_modes": [
+          "full_population_base_rate_kills_the_lead",
+          "late_strong_dominates_population_no_net_edge",
+          "comparator_join_to_actual_entry_sparse",
+          "unsettled_forward_rows_near_window_end"
+        ],
+        "confidence_reason": "The detector reuses production-visible OHLCV predicates (above_200ma & breakout_20d & not volume_spike) and only adds a default-off full-population forward ledger. The main uncertainty is not build risk; it is whether the de-biased full population erases the survivorship-conditioned lead from exp-20260627-006.",
+        "recorded_at": "2026-06-28T21:15:59+00:00"
+      },
+      "prior_trial_count": 0,
+      "reopen_condition": "Next valid step is a default-off daily adapter plus a Gate 1-4 candidate-source replay that can compare against accepted core allocation; private threshold retunes remain insufficient. Any promotion attempt must handle fixed-window instability explicitly.",
+      "result": {
+        "experiment_id": "exp-20260628-015",
+        "status": "observed_only_positive_lead",
+        "decision": "observed_only_mixed_window_positive_full_population_lead_not_allocation_ready",
+        "artifact": "data/experiments/exp-20260628-015/exp_20260628_015_breakout_without_2x_volume_precursor_forward_replacement_value_v1.json",
+        "log": "experiments/logs/exp-20260628-015.json",
+        "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "prediction": {
+          "success_probability": 0.7,
+          "expected_ev_delta": 0.0,
+          "expected_pnl_delta": 0.0,
+          "confidence_reason": "The detector reuses production-visible OHLCV predicates (above_200ma & breakout_20d & not volume_spike) and only adds a default-off full-population forward ledger. The main uncertainty is not build risk; it is whether the de-biased full population erases the survivorship-conditioned lead from exp-20260627-006.",
+          "main_failure_modes": [
+            "full_population_base_rate_kills_the_lead",
+            "late_strong_dominates_population_no_net_edge",
+            "comparator_join_to_actual_entry_sparse",
+            "unsettled_forward_rows_near_window_end"
+          ]
+        },
+        "actual_success": 1,
+        "calibration_note": "Prediction covered low-risk instrumentation; alpha promotion still depends on full-population base rate and comparator deltas.",
+        "gate_summary": {
+          "gate1_baseline": {
+            "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+            "windows": [
+              {
+                "label": "late_strong",
+                "start": "2025-10-23",
+                "end": "2026-04-21",
+                "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+                "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+                "expected_value_score": 5.1628,
+                "sharpe_daily": 4.41,
+                "total_pnl": 117072.92,
+                "max_drawdown_pct": 0.0665,
+                "win_rate": 0.8333,
+                "trade_count": 18,
+                "signals_generated": 51,
+                "signals_survived": 41,
+                "survival_rate": 0.8039
+              },
+              {
+                "label": "mid_weak",
+                "start": "2025-04-23",
+                "end": "2025-10-22",
+                "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+                "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+                "expected_value_score": 2.1402,
+                "sharpe_daily": 2.74,
+                "total_pnl": 78110.11,
+                "max_drawdown_pct": 0.1119,
+                "win_rate": 0.5238,
+                "trade_count": 21,
+                "signals_generated": 53,
+                "signals_survived": 42,
+                "survival_rate": 0.7925
+              },
+              {
+                "label": "old_thin",
+                "start": "2024-10-02",
+                "end": "2025-04-22",
+                "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+                "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+                "expected_value_score": 0.5911,
+                "sharpe_daily": 1.49,
+                "total_pnl": 39667.96,
+                "max_drawdown_pct": 0.1001,
+                "win_rate": 0.4091,
+                "trade_count": 22,
+                "signals_generated": 60,
+                "signals_survived": 52,
+                "survival_rate": 0.8667
+              }
+            ],
+            "aggregate_expected_value_score": 7.8941,
+            "aggregate_total_pnl": 234850.99,
+            "aggregate_trade_count": 61
+          },
+          "gate2_runtime_fields": {
+            "source": "operator_inputs/open_positions.json",
+            "positions_checked": 11,
+            "entry_date_present": true,
+            "target_price_present": true,
+            "missing_entry_date_tickers": [],
+            "missing_target_price_tickers": [],
+            "passed": true
+          },
+          "gate3_survival": {
+            "baseline_unchanged": true,
+            "signals_generated_delta": 0,
+            "signals_survived_delta": 0,
+            "survival_rate_delta": 0.0,
+            "note": "No additional filter was added to the live/core strategy."
+          },
+          "gate4_behavioral_delta": {
+            "behavioral_after_backtest_required": false,
+            "reason": "Default-off paper attribution helper and historical ledger only; no entry, exit, ranking, sizing, or live-order policy changed.",
+            "baseline_expected_value_score_delta": 0.0,
+            "baseline_total_pnl_delta": 0.0,
+            "core_trade_count_delta": 0,
+            "allocation_ready": true,
+            "promotion_gate_required_before_live": true
+          }
+        },
+        "evidence_summary": {
+          "events_total": 1463,
+          "events_became_actual_entry": 37,
+          "forward_10d_full_population": {
+            "n": 1357,
+            "mean": 0.8595,
+            "median": 0.1264,
+            "min": -30.6331,
+            "max": 71.5402,
+            "win_rate": 0.5166
+          },
+          "forward_20d_full_population": {
+            "n": 1275,
+            "mean": 2.6977,
+            "median": 1.1418,
+            "min": -33.4468,
+            "max": 102.201,
+            "win_rate": 0.5537
+          },
+          "forward_10d_precursor_minus_actual_entry_delta": {
+            "n": 37,
+            "mean": 3.824,
+            "median": 2.0284,
+            "min": -5.16,
+            "max": 37.077,
+            "win_rate": 0.7297
+          }
+        },
+        "failed_checks": [],
+        "notes": [
+          "fixed_window_full_population_medians_mixed",
+          "late_strong_10d_full_population_median_-0.3939",
+          "old_thin_10d_full_population_median_-0.6275",
+          "old_thin_20d_full_population_median_-0.9472"
+        ],
+        "production_impact": {
+          "shared_policy_changed": false,
+          "backtester_adapter_changed": false,
+          "run_adapter_changed": false,
+          "daily_snapshot_exposed": false,
+          "replay_only": false,
+          "default_off_attribution_only": true,
+          "alters_signal_generation": false,
+          "alters_candidate_ranking": false,
+          "alters_sizing": false,
+          "alters_exits": false,
+          "alters_orders": false,
+          "trade_enabled": false,
+          "live_order_path_changed": false,
+          "daily_default_off_snapshot_wired": false,
+          "baseline_strategy_metrics_changed": false
+        },
+        "changed_files": [
+          "quant/breakout_precursor_paper_sleeve.py",
+          "quant/test_breakout_precursor_paper_sleeve.py",
+          "quant/experiments/exp_20260628_015_breakout_without_2x_volume_precursor_forward_replacement_value_v1.py",
+          "data/experiments/exp-20260628-015/exp_20260628_015_breakout_without_2x_volume_precursor_forward_replacement_value_v1.json",
+          "experiments/logs/exp-20260628-015.json",
+          "experiments/cards/exp-20260628-015.md",
+          "experiments/manifests/exp-20260628-015.json",
+          "experiments/tickets/exp-20260628-015.json",
+          "docs/experiment_registry.json"
+        ],
+        "reproduction_commands": [
+          ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_015_breakout_without_2x_volume_precursor_forward_replacement_value_v1.py",
+          ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_breakout_precursor_paper_sleeve.py",
+          ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+        ],
+        "post_run_reflection": {
+          "why_result_happened": "The full-population precursor base rate stayed positive in aggregate because many non-survivor breakout-without-2x-volume rows still had positive 20d drift, and the actual-entry comparator subset kept a positive 10d entry-advantage median. The result is not allocation-ready because fixed windows are mixed: late_strong and old_thin have negative 10d full-population medians, and old_thin also has a negative 20d median.",
+          "forbidden_near_neighbor_retry": "Do not rerun this as a 2x-volume threshold retune, a volume-spike hard-exclusion-to-weighting response curve change, or another slice that only conditions on actual trend_long survivor entries.",
+          "new_evidence_required": "Next valid step is a default-off daily adapter plus a Gate 1-4 candidate-source replay that can compare against accepted core allocation; private threshold retunes remain insufficient. Any promotion attempt must handle fixed-window instability explicitly."
+        }
+      },
+      "result_artifact": "data/experiments/exp-20260628-015/exp_20260628_015_breakout_without_2x_volume_precursor_forward_replacement_value_v1.json",
+      "revision_manifest_file": "experiments/manifests/exp-20260628-015.json",
+      "single_causal_variable": "breakout_without_2x_volume_precursor_forward_replacement_value_v1",
+      "status": "observed_only_positive_lead",
+      "ticket_file": "experiments/tickets/exp-20260628-015.json",
+      "trial_family": "breakout_without_2x_volume_precursor_forward_replacement",
+      "trial_variant_id": "full_population_precursor_forward_ledger_v1",
+      "updated_at": "2026-06-28T21:15:59+00:00"
+    },
+    {
+      "acceptance_rule": "Accept only as alpha-enabling measurement repair if the parser/logger creates a PIT Form144 planned-sale context surface with machine-parseable planned_sale_to_float or planned_sale_to_adv when documents are available, writes an append-only daily ledger/schema, exposes no trading behavior change, and records the predeclared forward reopen gate: >=25 closed rows, >=8 high planned-sale/float rows, single ticker <=40%.",
+      "allowed_write_scope": [
+        "quant/form144_planned_sale_context.py",
+        "quant/daily_non_ohlcv_snapshot.py",
+        "quant/backfill_non_ohlcv.py",
+        "quant/test_form144_planned_sale_context.py",
+        "quant/test_daily_non_ohlcv_snapshot.py",
+        "quant/experiments/exp_20260628_016_form144_planned_sale_context_logger.py",
+        "data/non_ohlcv/form144_planned_sale_context_*.jsonl",
+        "data/non_ohlcv/form144_planned_sale_context_summary_*.json",
+        "data/experiments/exp-20260628-016/",
+        "experiments/cards/exp-20260628-016.md",
+        "experiments/manifests/exp-20260628-016.json",
+        "experiments/logs/exp-20260628-016.json",
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260628-016.md",
+      "causal_components": [
+        "Form144 PIT parser",
+        "append-only planned-sale ledger",
+        "as-of-entry context tags",
+        "outcome join schema",
+        "no strategy behavior change"
+      ],
+      "change_type": "forward_context_logger",
+      "changed_variable": "form144_planned_sale_float_context_logger_v1",
+      "claimed_at": "2026-06-28T20:49:23+00:00",
+      "completed_at": "2026-06-28T21:01:29+00:00",
+      "created_at": "2026-06-28T20:49:20+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260628-016",
+      "experiment_uid": "expuid-9e6e0258737a454c",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260628-016",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-28T20:49:20+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "form144_planned_sale_context_logger"
+      },
+      "hypothesis": "Alpha-enabling Form 144 planned-sale/float context logger: parse PIT Form 144 planned sale shares/value and attach as-of-entry planned-sale-to-float/ADV context to accepted-core/default-off forward rows without changing ranking, sizing, exits, or orders.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "form144_planned_sale_float_context_logger_v1"
+      ],
+      "mechanism_family": "production_visible_form144_planned_sale_forward_context",
+      "multiple_testing_risk_bucket": "moderate",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260612-023",
+        "exp-20260613-013",
+        "exp-20260616-008",
+        "exp-20260628-014"
+      ],
+      "new_evidence_type": "new_pit_form144_planned_sale_float_field_and_forward_context_logger",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "other",
+          "field_tags": [
+            "accepted",
+            "adv",
+            "alpha",
+            "as",
+            "attach",
+            "changing",
+            "context",
+            "core",
+            "enabling",
+            "entry",
+            "exits",
+            "float",
+            "form",
+            "form144",
+            "forward",
+            "logger",
+            "of",
+            "or",
+            "orders",
+            "parse",
+            "pit",
+            "planned",
+            "ranking",
+            "rows",
+            "sale",
+            "shares",
+            "sizing",
+            "to",
+            "value",
+            "without"
+          ],
+          "gate_shape": "allocator_source"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "forward_replacement_stock_vs_etf_diversification",
+            "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+            "score": 0.2109,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "accepted_entry_cluster_rank_tail_sizing",
+            "reopen_condition": null,
+            "score": 0.1864,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_momentum",
+            "family_key": "cross_sectional_ranking_component_attribution",
+            "reopen_condition": null,
+            "score": 0.18,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "entry_day_component_attribution",
+            "reopen_condition": "Use the schema v2 PIT component attribution report before any future component-aware allocation test; do not retry raw expectation_revision, post_earnings_drift, or trend scalars on the frozen canonical windows without new forward evidence or a materially different interaction.",
+            "score": 0.1742,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "canonical_state_vector_ranking_validation",
+            "reopen_condition": "Run a separate Gate 1-4 alpha experiment for a small shared-policy post-sizing top-up on entry-day leadership_vector.state == strong and non-hot risk state; do not promote from attribution alone.",
+            "score": 0.1722,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": "Form144 planned-sale/float PIT parser and forward context logger: new field surface beyond Form4 sale-overhang attribution and prior Form144 index-only candidate-pool tests.",
+        "override": true,
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "allocator_source",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "other",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": {
+        "success_probability": 0.46,
+        "expected_ev_delta": 0.0,
+        "expected_pnl_delta": 0.0,
+        "main_failure_modes": [
+          "missing_form144_primary_documents",
+          "planned_sale_fields_not_parseable",
+          "no_float_or_adv_denominator",
+          "daily_snapshot_wiring_regression"
+        ],
+        "confidence_reason": "The next-direction brief and exp-20260616-008 both identify parsed Form144 planned-sale/float as the required non-repeat evidence axis after the exp-20260628-014 Form4 overhang lead. This is data plumbing, not a candidate-pool retry; risk is document/schema coverage.",
+        "recorded_at": "2026-06-28T20:49:01+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "accepted": true,
+        "accepted_alpha": false,
+        "accepted_measurement_repair": true,
+        "alpha_ready": false,
+        "gate4_passed": true,
+        "decision": "accepted_measurement_repair_form144_planned_sale_context_logger",
+        "artifact": "data/experiments/exp-20260628-016/exp_20260628_016_form144_planned_sale_context_logger.json",
+        "log": "experiments/logs/exp-20260628-016.json",
+        "gate1": {
+          "passed": true,
+          "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+          "baseline_expected_value_score_sum": 7.8941,
+          "baseline_total_pnl": 234850.99
+        },
+        "gate2": {
+          "passed": true,
+          "runtime_fields_required": [
+            "entry_date",
+            "target_price",
+            "Form144 usable_trade_date",
+            "Form144 planned_sale_shares",
+            "Form144 planned_sale_to_float",
+            "Form144 planned_sale_to_adv20",
+            "Form144 outcome join keys"
+          ],
+          "contract": {
+            "daily_snapshot_accepts_refresh_form144_context": true,
+            "daily_snapshot_accepts_form144_context_lookback_days": true,
+            "backfill_accepts_refresh_form144_context": true,
+            "backfill_accepts_form144_context_lookback_days": true,
+            "default_refresh_enabled": false,
+            "fail_soft_helper": "daily_non_ohlcv_snapshot._run_form144_planned_sale_context",
+            "ledger_partition": "data/non_ohlcv/form144_planned_sale_context_YYYYMMDD.jsonl",
+            "summary_partition": "data/non_ohlcv/form144_planned_sale_context_summary_YYYYMMDD.json"
+          },
+          "summary_fields_present": [
+            "asof_date",
+            "daily_snapshot_wired",
+            "document_cache_dirs",
+            "entry_context_schema",
+            "forward_reopen_gate",
+            "generated_at",
+            "index_audit",
+            "lookback_days",
+            "max_usable_trade_date",
+            "min_usable_trade_date",
+            "outcome_join_schema",
+            "output_path",
+            "planned_sale_bucket_counts",
+            "production_impact",
+            "rows_with_cached_primary_document",
+            "rows_with_machine_parseable_ratio",
+            "rows_with_parseable_planned_sale_shares",
+            "rows_with_parseable_planned_sale_to_adv20",
+            "rows_with_parseable_planned_sale_to_float",
+            "rows_with_parseable_planned_sale_value",
+            "rows_written",
+            "rule_version",
+            "schema_version",
+            "status",
+            "summary_output",
+            "ticker_count",
+            "trade_enabled"
+          ],
+          "strategy_fields_changed": false
+        },
+        "gate3": {
+          "passed": true,
+          "not_applicable_reason": "No signal generation, survival filter, ranking, sizing, exit, or order rule changed.",
+          "signals_generated_delta": 0,
+          "signals_survived_delta": 0,
+          "survival_rate_delta": 0.0
+        },
+        "gate4": {
+          "passed": true,
+          "decision": "accepted_measurement_repair_form144_planned_sale_context_logger",
+          "failed_reasons": [],
+          "measurement_repair_only": true,
+          "accepted_alpha": false,
+          "alpha_ready": false,
+          "acceptance_rule": "Accept only as alpha-enabling measurement repair if a PIT Form144 planned-sale ledger, daily default-off snapshot wiring, entry context schema, outcome join schema, and explicit forward reopen gate are present with no strategy behavior change.",
+          "forward_reopen_gate": {
+            "closed_forward_rows_min": 25,
+            "high_planned_sale_float_bucket_rows_min": 8,
+            "single_ticker_share_max": 0.4,
+            "required_replacement_values": [
+              "cash",
+              "SPY",
+              "QQQ"
+            ],
+            "park_after_materialization_runs_without_new_closable_rows": 3
+          },
+          "current_forward_gate_ready": false,
+          "current_forward_gate_status": {
+            "closed_forward_rows": 0,
+            "high_planned_sale_float_bucket_rows": 0,
+            "single_ticker_share": null,
+            "reason": "forward outcome rows have not matured; this run only creates the PIT context logger"
+          },
+          "before_after_strategy_delta": {
+            "strategy_behavior_changed": false,
+            "expected_value_score_sum_delta": 0.0,
+            "total_pnl_delta": 0.0,
+            "trade_count_delta": 0
+          }
+        },
+        "calibration": {
+          "actual_decision": "accepted_measurement_repair_form144_planned_sale_context_logger",
+          "actual_success": 1,
+          "predicted_success_probability": 0.46,
+          "brier_score": 0.2916,
+          "expected_ev_delta": 0.0,
+          "actual_ev_delta": 0.0,
+          "expected_pnl_delta": 0.0,
+          "actual_pnl_delta": 0.0,
+          "predicted_failure_modes": [
+            "missing_form144_primary_documents",
+            "planned_sale_fields_not_parseable",
+            "no_float_or_adv_denominator",
+            "daily_snapshot_wiring_regression"
+          ],
+          "realized_failure_mode": "",
+          "predicted_failure_mode_hit": false,
+          "surprise_note": "Form144 planned-sale context logger materialized as default-off data plumbing; current alpha gate remains waiting on closed forward rows and cached/parseable Form144 documents."
+        },
+        "summary": "The blocker was missing shared default-off Form144 planned-sale context plumbing. The new parser/logger writes a PIT daily ledger and daily plus catch-up wiring while leaving all strategy behavior unchanged. Local index rows are present, but cached primary documents and closed forward outcomes are still the reopen condition for an alpha test."
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260628-016.json",
+      "single_causal_variable": "form144_planned_sale_float_context_logger_v1",
+      "status": "accepted_measurement_repair",
+      "ticket_file": "experiments/tickets/exp-20260628-016.json",
+      "trial_family": "form144_planned_sale_float_context_logger",
+      "trial_variant_id": "pit_planned_sale_float_adv_context_v1",
+      "implementation_mode": "shared_default_off_forward_context_logger",
+      "new_evidence_axis": "Form144 planned-sale/float PIT parser and forward context logger: new field surface beyond Form4 sale-overhang attribution and prior Form144 index-only candidate-pool tests.",
+      "parameters": {
+        "as_of": "2026-06-28",
+        "lookback_days": 90,
+        "trade_enabled": false,
+        "rule_version": "form144_planned_sale_float_context_logger_v1",
+        "default_refresh_form144_context": false
+      },
+      "pre_run_questions": {
+        "1_alpha_hypothesis": "Alpha-enabling Form 144 planned-sale/float context logger: parse PIT Form 144 planned sale shares/value and attach as-of-entry planned-sale-to-float/ADV context to accepted-core/default-off forward rows without changing ranking, sizing, exits, or orders.",
+        "2_history_check": {
+          "novelty_gate": "experiment.py new accepted exp-20260628-016 with override axis recorded and no blocking near-neighbor.",
+          "nearby_prior_experiments": [
+            "exp-20260612-023",
+            "exp-20260613-013",
+            "exp-20260616-008",
+            "exp-20260628-014"
+          ],
+          "new_evidence_axis": "Form144 planned-sale/float PIT parser and forward context logger: new field surface beyond Form4 sale-overhang attribution and prior Form144 index-only candidate-pool tests."
+        },
+        "3_single_policy_bundle": "form144_planned_sale_float_context_logger_v1",
+        "4_success_criteria": "Accept only as alpha-enabling measurement repair if a PIT Form144 planned-sale ledger, daily default-off snapshot wiring, entry context schema, outcome join schema, and explicit forward reopen gate are present with no strategy behavior change.",
+        "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_016_form144_planned_sale_context_logger.py"
+      },
+      "gate1": {
+        "passed": true,
+        "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "baseline_expected_value_score_sum": 7.8941,
+        "baseline_total_pnl": 234850.99
+      },
+      "gate2": {
+        "passed": true,
+        "runtime_fields_required": [
+          "entry_date",
+          "target_price",
+          "Form144 usable_trade_date",
+          "Form144 planned_sale_shares",
+          "Form144 planned_sale_to_float",
+          "Form144 planned_sale_to_adv20",
+          "Form144 outcome join keys"
+        ],
+        "contract": {
+          "daily_snapshot_accepts_refresh_form144_context": true,
+          "daily_snapshot_accepts_form144_context_lookback_days": true,
+          "backfill_accepts_refresh_form144_context": true,
+          "backfill_accepts_form144_context_lookback_days": true,
+          "default_refresh_enabled": false,
+          "fail_soft_helper": "daily_non_ohlcv_snapshot._run_form144_planned_sale_context",
+          "ledger_partition": "data/non_ohlcv/form144_planned_sale_context_YYYYMMDD.jsonl",
+          "summary_partition": "data/non_ohlcv/form144_planned_sale_context_summary_YYYYMMDD.json"
+        },
+        "summary_fields_present": [
+          "asof_date",
+          "daily_snapshot_wired",
+          "document_cache_dirs",
+          "entry_context_schema",
+          "forward_reopen_gate",
+          "generated_at",
+          "index_audit",
+          "lookback_days",
+          "max_usable_trade_date",
+          "min_usable_trade_date",
+          "outcome_join_schema",
+          "output_path",
+          "planned_sale_bucket_counts",
+          "production_impact",
+          "rows_with_cached_primary_document",
+          "rows_with_machine_parseable_ratio",
+          "rows_with_parseable_planned_sale_shares",
+          "rows_with_parseable_planned_sale_to_adv20",
+          "rows_with_parseable_planned_sale_to_float",
+          "rows_with_parseable_planned_sale_value",
+          "rows_written",
+          "rule_version",
+          "schema_version",
+          "status",
+          "summary_output",
+          "ticker_count",
+          "trade_enabled"
+        ],
+        "strategy_fields_changed": false
+      },
+      "gate3": {
+        "passed": true,
+        "not_applicable_reason": "No signal generation, survival filter, ranking, sizing, exit, or order rule changed.",
+        "signals_generated_delta": 0,
+        "signals_survived_delta": 0,
+        "survival_rate_delta": 0.0
+      },
+      "gate4": {
+        "passed": true,
+        "decision": "accepted_measurement_repair_form144_planned_sale_context_logger",
+        "failed_reasons": [],
+        "measurement_repair_only": true,
+        "accepted_alpha": false,
+        "alpha_ready": false,
+        "acceptance_rule": "Accept only as alpha-enabling measurement repair if a PIT Form144 planned-sale ledger, daily default-off snapshot wiring, entry context schema, outcome join schema, and explicit forward reopen gate are present with no strategy behavior change.",
+        "forward_reopen_gate": {
+          "closed_forward_rows_min": 25,
+          "high_planned_sale_float_bucket_rows_min": 8,
+          "single_ticker_share_max": 0.4,
+          "required_replacement_values": [
+            "cash",
+            "SPY",
+            "QQQ"
+          ],
+          "park_after_materialization_runs_without_new_closable_rows": 3
+        },
+        "current_forward_gate_ready": false,
+        "current_forward_gate_status": {
+          "closed_forward_rows": 0,
+          "high_planned_sale_float_bucket_rows": 0,
+          "single_ticker_share": null,
+          "reason": "forward outcome rows have not matured; this run only creates the PIT context logger"
+        },
+        "before_after_strategy_delta": {
+          "strategy_behavior_changed": false,
+          "expected_value_score_sum_delta": 0.0,
+          "total_pnl_delta": 0.0,
+          "trade_count_delta": 0
+        }
+      },
+      "production_impact": {
+        "shared_policy_changed": false,
+        "backtester_adapter_changed": false,
+        "run_adapter_changed": true,
+        "daily_snapshot_exposed": true,
+        "trade_enabled": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "ranking_changed": false,
+        "sizing_changed": false,
+        "paper_orders_changed": false,
+        "live_orders_changed": false,
+        "watchlist_changed": false,
+        "llm_decision_boundary_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "parity_note": "Data collection is opt-in through refresh_form144_context and fail-soft. It feeds no ranking, sizing, entry, exit, or order path."
+      },
+      "post_run_reflection": {
+        "why_result_happened": "The blocker was missing shared default-off Form144 planned-sale context plumbing. The new parser/logger writes a PIT daily ledger and daily plus catch-up wiring while leaving all strategy behavior unchanged. Local index rows are present, but cached primary documents and closed forward outcomes are still the reopen condition for an alpha test.",
+        "forbidden_near_neighbor_retry": "Do not retune exp-014 Form4 sale-overhang buckets or change a risk response curve on this surface. Form144 may be reopened only with cached parseable planned-sale documents plus materially more closed forward rows, a new data source, or a new gate shape.",
+        "new_evidence_required": "Cached Form144 primary documents with machine-parseable planned_sale_to_float or planned_sale_to_adv20 and closed forward replacement-value rows versus cash, SPY, and QQQ."
+      },
+      "next_retry_requires": "Do not use Form144 for any notional haircut, risk scalar, ranking, or candidate-pool retune until the forward reopen gate is met: >=25 closed rows with cash/SPY/QQQ replacement value, >=8 high planned-sale/float rows, and single-ticker share <=40%. If three materialization/readiness runs add no closable rows, park with the exact missing cache/forward-row condition.",
+      "related_files": [
+        "quant/experiments/exp_20260628_016_form144_planned_sale_context_logger.py",
+        "quant/form144_planned_sale_context.py",
+        "quant/daily_non_ohlcv_snapshot.py",
+        "quant/backfill_non_ohlcv.py",
+        "quant/test_form144_planned_sale_context.py",
+        "quant/test_daily_non_ohlcv_snapshot.py",
+        "data/non_ohlcv/form144_planned_sale_context_20260628.jsonl",
+        "data/non_ohlcv/form144_planned_sale_context_summary_20260628.json",
+        "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+      ],
+      "changed_files": [
+        "quant/experiments/exp_20260628_016_form144_planned_sale_context_logger.py",
+        "quant/form144_planned_sale_context.py",
+        "quant/daily_non_ohlcv_snapshot.py",
+        "quant/backfill_non_ohlcv.py",
+        "quant/test_form144_planned_sale_context.py",
+        "quant/test_daily_non_ohlcv_snapshot.py",
+        "data/experiments/exp-20260628-016/exp_20260628_016_form144_planned_sale_context_logger.json",
+        "experiments/logs/exp-20260628-016.json",
+        "experiments/cards/exp-20260628-016.md",
+        "experiments/manifests/exp-20260628-016.json",
+        "experiments/tickets/exp-20260628-016.json",
+        "docs/experiment_registry.json",
+        "data/non_ohlcv/form144_planned_sale_context_20260628.jsonl",
+        "data/non_ohlcv/form144_planned_sale_context_summary_20260628.json"
+      ],
+      "reproduction_commands": [
+        ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_016_form144_planned_sale_context_logger.py",
+        ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_form144_planned_sale_context.py quant\\test_daily_non_ohlcv_snapshot.py -q",
+        ".\\.venv\\Scripts\\python.exe -B -c \"from pathlib import Path; files=['quant/form144_planned_sale_context.py','quant/daily_non_ohlcv_snapshot.py','quant/backfill_non_ohlcv.py','quant/test_form144_planned_sale_context.py','quant/test_daily_non_ohlcv_snapshot.py','quant/experiments/exp_20260628_016_form144_planned_sale_context_logger.py']; [compile(Path(f).read_text(encoding='utf-8'), f, 'exec') for f in files]\"",
+        ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+      ],
+      "anti_js": {
+        "used_javascript": false,
+        "strategy_behavior_changed": false,
+        "threshold_scan": false,
+        "uses_future_form144_rows": false
+      },
+      "decision": "accepted_measurement_repair_form144_planned_sale_context_logger",
+      "artifact": "data/experiments/exp-20260628-016/exp_20260628_016_form144_planned_sale_context_logger.json",
+      "log": "experiments/logs/exp-20260628-016.json",
+      "updated_at": "2026-06-28T21:01:29+00:00"
+    },
+    {
+      "experiment_id": "exp-20260628-017",
+      "status": "observed_only",
+      "lane": "measurement_repair",
+      "owner": "alpha-explore",
+      "hypothesis": "Daily atomic-write final rename intermittently fails on Windows (transient AV/indexer lock), leaving an orphan .tmp and no final quant_signals/earnings artifact, which silently breaks downstream ledgers/matchers (e.g. estimate_revision matcher saw no_daily_signal_match_artifacts_loaded for 2026-06-27). Add os.replace retry to data_paths.atomic_write_text plus a recover-before-delete orphan sweep for daily artifact dirs wired into run.py startup, and recover the orphaned 2026-06-27 quant_signals final.",
+      "ticket_file": "experiments/tickets/exp-20260628-017.json",
+      "card_file": "experiments/cards/exp-20260628-017.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260628-017.json",
+      "updated_at": "2026-06-28T20:55:09+00:00"
+    },
+    {
+      "experiment_id": "exp-20260628-018",
+      "status": "observed_only",
+      "lane": "measurement_repair",
+      "owner": "alpha-explore",
+      "hypothesis": "Daily atomic-write final rename intermittently fails on Windows leaving orphan .tmp and no final artifact, silently breaking downstream ledgers; add os.replace retry to data_paths.atomic_write_text + recover-before-delete daily orphan sweep wired into run.py, and recover the 2026-06-27 quant_signals final.",
+      "ticket_file": "experiments/tickets/exp-20260628-018.json",
+      "card_file": "experiments/cards/exp-20260628-018.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260628-018.json",
+      "updated_at": "2026-06-28T20:56:28+00:00"
+    },
+    {
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "data/experiments/exp-20260628-015/exp_20260628_015_breakout_without_2x_volume_precursor_forward_replacement_value_v1.json",
+        "data/experiments/exp-20260628-019/exp_20260628_019_breakout_precursor_full_stack.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json",
+        "experiments/cards/exp-20260628-019.md",
+        "experiments/logs/exp-20260628-019.json",
+        "experiments/manifests/exp-20260628-019.json",
+        "experiments/tickets/exp-20260628-019.json",
+        "quant/experiments/exp_20260628_019_breakout_precursor_full_stack.py"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260628-019.md",
+      "causal_components": [
+        "shared helper",
+        "historical replay",
+        "accepted comparator",
+        "execution envelope",
+        "full-stack verdict"
+      ],
+      "change_type": "candidate_pool_full_stack",
+      "changed_variable": "breakout_without_2x_volume_precursor_default_off_candidate_source_v1",
+      "claimed_at": "2026-06-28T23:06:51+00:00",
+      "completed_at": "2026-06-28T23:17:09+00:00",
+      "created_at": "2026-06-28T23:06:38+00:00",
+      "decision": "rejected_breakout_precursor_default_off_candidate_source",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260628-019",
+      "experiment_uid": "expuid-7a4efbc25cf4472d",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260628-019",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-28T23:06:38+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "breakout_precursor_full_stack"
+      },
+      "hypothesis": "candidate_pool/full_stack: the fixed breakout-without-2x-volume precursor source may have standalone replacement value when promoted from the exp-20260628-015 full-population forward lead into a top-1/day $4k next-open/10d default-off source.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "breakout_without_2x_volume_precursor_default_off_candidate_source_v1"
+      ],
+      "mechanism_family": "production_visible_free_ohlcv_candidate_pool",
+      "multiple_testing_risk_bucket": "moderate",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260627-006",
+        "exp-20260627-007",
+        "exp-20260628-015"
+      ],
+      "new_evidence_type": "positive_full_population_forward_lead_full_stack_promotion",
+      "novelty": {
+        "blocking_matches": [
+          {
+            "accept_rate": 0.0,
+            "family_key": "volume_dryup_breakout_candidate_pool",
+            "score": 0.6308,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "down_volume_absorption_breakout_default_off_paper_sleeve",
+            "score": 0.6296,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "volume_breadth_confirmed_breakout_default_off_paper_sleeve",
+            "score": 0.6286,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "full_universe_alpha_score_candidate_pool_component_gate",
+            "score": 0.6235,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "sec_ftd_pressure_breakout_candidate_pool",
+            "score": 0.6154,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "ohlcv_relation",
+          "field_tags": [
+            "2x",
+            "a",
+            "breakout",
+            "exp",
+            "forward",
+            "from",
+            "full",
+            "have",
+            "into",
+            "lead",
+            "may",
+            "no",
+            "population",
+            "precursor",
+            "promoted",
+            "replacement",
+            "retune",
+            "stack",
+            "standalone",
+            "threshold",
+            "value",
+            "volume",
+            "when",
+            "without"
+          ],
+          "gate_shape": "candidate_pool_top1_10d"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_relation",
+            "family_key": "volume_dryup_breakout_candidate_pool",
+            "reopen_condition": "A valid reopen needs a new non-OHLCV confirmation field, a true forward replacement row showing allocation value, or a distinct data source. Another adjacent volume-dry-up breakout retune is not new evidence.",
+            "score": 0.6308,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_relation",
+            "family_key": "down_volume_absorption_breakout_default_off_paper_sleeve",
+            "reopen_condition": "If revisited, collect forward paper rows or add an orthogonal production-visible context field; do not just retune absorption, breakout, or volume-ratio thresholds on the frozen sample.",
+            "score": 0.6296,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_relation",
+            "family_key": "volume_breadth_confirmed_breakout_default_off_paper_sleeve",
+            "reopen_condition": "If revisited, collect forward paper rows or add an orthogonal production-visible context field; do not just retune volume-breadth, breakout, or volume-ratio thresholds on the frozen sample.",
+            "score": 0.6286,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_relation",
+            "family_key": "full_universe_alpha_score_candidate_pool_component_gate",
+            "reopen_condition": "Forward replacement-value rows, a shared production/replay alpha_score adapter, or a materially richer component-level ranking field. Do not just mine alpha_score component thresholds on the same frozen replay.",
+            "score": 0.6235,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_relation",
+            "family_key": "sec_ftd_pressure_breakout_candidate_pool",
+            "reopen_condition": null,
+            "score": 0.6154,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": "positive full-population forward replacement ledger from exp-20260628-015 that de-biased the prior actual-entry survivor lead; this is a full-stack promotion test, not a 2x-volume threshold retune, volume response curve change, or same-row survivor reslice.",
+        "override": true,
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0521,
+          "accepts": 5,
+          "applicable": true,
+          "gate_shape": "candidate_pool_top1_10d",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "ohlcv_relation",
+          "trials": 96
+        },
+        "warn": true,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "post_run_reflection": {
+        "forbidden_near_neighbor_retry": "Do not sweep the 2x volume threshold, rank tie-breaks, volume ratio response curves, hold days, cooldown, notional, or actual future-entry survivor slices on these frozen windows.",
+        "new_evidence_required": "A valid retry needs settled forward replacement-value rows from a daily default-off precursor logger, daily snapshot parity, or an orthogonal PIT qualifier such as non-OHLCV flow/borrow/options context; not another OHLCV volume-threshold retune.",
+        "why_result_happened": "The full-population precursor source did not survive as a fixed top-1/day candidate source. The exp015 aggregate lead was diluted by false positives and remained window/comparator fragile once forced into a deployable paper allocation shape."
+      },
+      "prediction": {
+        "success_probability": 0.28,
+        "expected_ev_delta": null,
+        "expected_pnl_delta": null,
+        "main_failure_modes": [
+          "fixed_window_instability",
+          "accepted_comparator_not_beaten",
+          "drawdown_or_concentration_failed",
+          "full_population_false_positive_drag"
+        ],
+        "confidence_reason": "exp-20260628-015 showed a de-biased full-population positive aggregate 10d/20d lead, but fixed windows were mixed and prior trend-long precursor promotion failed when conditioned on actual future entries; this run tests the only valid promotion shape without threshold or response retuning.",
+        "recorded_at": "2026-06-28T23:05:58+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "decision": "rejected_breakout_precursor_default_off_candidate_source",
+        "full_stack_verdict": "reject",
+        "artifact": "data/experiments/exp-20260628-019/exp_20260628_019_breakout_precursor_full_stack.json",
+        "log": "experiments/logs/exp-20260628-019.json",
+        "card": "experiments/cards/exp-20260628-019.md",
+        "aggregate_expected_value_delta": 0.4833,
+        "aggregate_strategy_total_pnl_delta": 9885.38,
+        "accepted": false,
+        "gate4": {
+          "passed": false,
+          "decision": "rejected_breakout_precursor_default_off_candidate_source",
+          "failed_reasons": [
+            "drawdown_drift_too_high",
+            "accepted_distribution_ev_not_beaten",
+            "accepted_distribution_pnl_not_beaten",
+            "daily_snapshot_not_exposed_for_full_stack_contract"
+          ],
+          "aggregate_ev_delta": 0.4833,
+          "aggregate_pnl_delta": 9885.38,
+          "windows_ev_improved": 3,
+          "windows_ev_regressed": 0,
+          "windows_pnl_improved": 3,
+          "windows_pnl_regressed": 0,
+          "target_trade_count": 279,
+          "target_trade_count_min": 20,
+          "target_windows": [
+            "late_strong",
+            "mid_weak",
+            "old_thin"
+          ],
+          "target_window_count_min": 3,
+          "max_drawdown_worse": 0.0146,
+          "max_drawdown_worse_guardrail": 0.005,
+          "minimum_core_survival_rate": 0.7925,
+          "survival_guard_passed": true,
+          "target_concentration": {
+            "passed": true,
+            "max_single_positive_pnl_share": 0.205605,
+            "max_single_positive_pnl_share_guardrail": 0.5,
+            "positive_pnl_hhi": 0.101221,
+            "positive_pnl_hhi_guardrail": 0.35,
+            "top5_positive_pnl_share": 0.629852
+          },
+          "accepted_comparators": {
+            "compression": {
+              "experiment_id": "exp-20260608-013",
+              "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+              "expected_value_score_delta_sum": 0.1608,
+              "total_pnl_delta_sum": 2248.98
+            },
+            "distribution": {
+              "experiment_id": "exp-20260611-007",
+              "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+              "expected_value_score_delta_sum": 0.5286,
+              "total_pnl_delta_sum": 10432.91
+            }
+          },
+          "full_stack_contract": {
+            "daily_snapshot_exposed": false,
+            "parity_test_added": false
+          }
+        },
+        "calibration": {
+          "predicted_success_probability": 0.28,
+          "actual_gate4_passed": false,
+          "actual_success": 0,
+          "failure_modes_observed": [
+            "drawdown_drift_too_high",
+            "accepted_distribution_ev_not_beaten",
+            "accepted_distribution_pnl_not_beaten",
+            "daily_snapshot_not_exposed_for_full_stack_contract"
+          ],
+          "brier_score": 0.0784,
+          "expected_ev_delta": null,
+          "actual_ev_delta": 0.4833,
+          "expected_pnl_delta": null,
+          "actual_pnl_delta": 9885.38
+        },
+        "production_impact": {
+          "trade_enabled": false,
+          "alters_orders": false,
+          "adapter_status": "experiment_owned_full_stack_replay_attempt",
+          "shared_policy_changed": false,
+          "backtester_adapter_changed": true,
+          "run_adapter_changed": false,
+          "replay_only": false,
+          "default_off_paper_only": true,
+          "daily_snapshot_exposed": false,
+          "parity_test_added": false,
+          "production_signal_path_changed": false,
+          "production_orders_changed": false,
+          "production_watchlist_changed": false,
+          "alters_signal_generation": false,
+          "alters_candidate_ranking": false,
+          "alters_sizing": false,
+          "alters_exits": false,
+          "uses_llm": false,
+          "uses_free_ohlcv_only": true,
+          "live_realism_evaluated": true,
+          "live_ready": false,
+          "execution_envelope": {
+            "base_notional": 4000.0,
+            "max_capital_pct": 0.4,
+            "min_dollar_volume": null,
+            "slippage_bps": 5.0,
+            "max_displacement": 1,
+            "max_concurrent": 10,
+            "order_semantics": "next_open",
+            "kill_switch_drawdown_pct": 0.08,
+            "sleeve_drawdown_stop_pct": 0.05,
+            "notes": "Top-1/day with 10-trading-day hold and fixed $4,000 default-off paper notional. This run does not wire a daily snapshot, so the full-stack contract cannot be accepted even if economics pass.",
+            "missing": [
+              "min_dollar_volume"
+            ],
+            "complete": false
+          },
+          "parity_note": "Historical replay consumes the exp-20260628-015 shared helper artifact but this experiment does not add daily default-off snapshot wiring. No live/default order, ranking, sizing, exit, watchlist, LLM, or news path changes."
+        },
+        "post_run_reflection": {
+          "why_result_happened": "The full-population precursor source did not survive as a fixed top-1/day candidate source. The exp015 aggregate lead was diluted by false positives and remained window/comparator fragile once forced into a deployable paper allocation shape.",
+          "forbidden_near_neighbor_retry": "Do not sweep the 2x volume threshold, rank tie-breaks, volume ratio response curves, hold days, cooldown, notional, or actual future-entry survivor slices on these frozen windows.",
+          "new_evidence_required": "A valid retry needs settled forward replacement-value rows from a daily default-off precursor logger, daily snapshot parity, or an orthogonal PIT qualifier such as non-OHLCV flow/borrow/options context; not another OHLCV volume-threshold retune."
+        }
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260628-019.json",
+      "single_causal_variable": "breakout_without_2x_volume_precursor_default_off_candidate_source_v1",
+      "status": "rejected",
+      "summary": "The breakout-without-2x-volume precursor failed full-stack promotion; do not retain or retune it on frozen windows.",
+      "ticket_file": "experiments/tickets/exp-20260628-019.json",
+      "trial_family": "breakout_without_2x_volume_precursor_full_stack",
+      "trial_variant_id": "breakout_precursor_top1_volume_ratio_rank_v1",
+      "artifact": "data/experiments/exp-20260628-019/exp_20260628_019_breakout_precursor_full_stack.json",
+      "log": "experiments/logs/exp-20260628-019.json",
+      "aggregate_expected_value_delta": 0.4833,
+      "aggregate_strategy_total_pnl_delta": 9885.38,
+      "updated_at": "2026-06-28T23:17:09+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-28T16:13:35+00:00"
+  "updated_at": "2026-06-28T23:17:09+00:00"
 }

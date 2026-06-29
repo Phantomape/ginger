@@ -100,3 +100,46 @@ def test_list_channels(tmp_path):
     mb.send_message("alpha", "A", "x", root=tmp_path)
     mb.send_message("beta", "A", "y", root=tmp_path)
     assert mb.list_channels(root=tmp_path) == ["alpha", "beta"]
+
+
+def test_extract_references():
+    exp_ids, paths = mb.extract_references(
+        "see exp-20260628-014 and data/x/y.json, plus exp-20260101-001 "
+        "(docs/agent_mailbox.md)."
+    )
+    assert exp_ids == {"exp-20260628-014", "exp-20260101-001"}
+    assert "data/x/y.json" in paths
+    assert "docs/agent_mailbox.md" in paths
+
+
+def test_verify_flags_dangling_but_not_existing(tmp_path):
+    repo = tmp_path / "repo"
+    (repo / "experiments" / "tickets").mkdir(parents=True)
+    (repo / "experiments" / "tickets" / "exp-20260628-014.json").write_text("{}")
+    (repo / "docs").mkdir()
+    (repo / "docs" / "real.md").write_text("x")
+    mbox = tmp_path / "mbox"
+    mb.send_message("c", "A", "grounded: exp-20260628-014 and docs/real.md",
+                    root=mbox)
+    mb.send_message("c", "B", "bad: exp-20260628-999 and docs/missing.md",
+                    root=mbox)
+    rep = mb.verify_channel("c", root=mbox, repo_root=repo)
+    refs = {(f["kind"], f["ref"]) for f in rep["dangling"]}
+    assert ("exp_id", "exp-20260628-999") in refs
+    assert ("path", "docs/missing.md") in refs
+    # existing references are NOT flagged
+    assert ("exp_id", "exp-20260628-014") not in refs
+    assert ("path", "docs/real.md") not in refs
+
+
+def test_verify_cannot_catch_misattribution(tmp_path):
+    """Documents the known limit: an existing-but-wrong id passes verify."""
+    repo = tmp_path / "repo"
+    (repo / "experiments" / "tickets").mkdir(parents=True)
+    (repo / "experiments" / "tickets" / "exp-20260628-007.json").write_text("{}")
+    mbox = tmp_path / "mbox"
+    # Claim attributes a fact to a real id that is actually a different exp.
+    mb.send_message("c", "A", "low_deployment_etf has 17 rows (exp-20260628-007)",
+                    root=mbox)
+    rep = mb.verify_channel("c", root=mbox, repo_root=repo)
+    assert rep["dangling"] == []  # exists -> not flagged, even though mis-cited
