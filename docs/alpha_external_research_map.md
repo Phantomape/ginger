@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-06-28.
+Last refreshed: 2026-06-29.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -636,6 +636,43 @@ Sources:
 - <https://arxiv.org/abs/2510.26228>
 - <https://arxiv.org/abs/2510.15691>
 
+### LLM Alpha Mining Requires A Trajectory Ledger
+
+Recent LLM alpha-mining systems are useful because they make idea generation,
+code generation, critique, and backtest feedback explicit. The local lesson is
+not to outsource alpha discovery to an agent; it is to persist every generated
+hypothesis, formula/code hash, critique, repair, comparator, and backtest
+result as a replayable trajectory. This is the missing audit layer between an
+LLM idea and Ginger's `experiment.py new` contract.
+
+Implementable fields:
+
+- `llm_alpha_miner_model_id`
+- `llm_alpha_hypothesis_hash`
+- `llm_generated_factor_code_hash`
+- `llm_factor_parse_status`
+- `llm_factor_redundancy_bucket`
+- `llm_backtest_feedback_iteration`
+- `llm_hypothesis_to_code_consistency_score`
+- `llm_alpha_miner_comparator_delta`
+- `llm_alpha_miner_repair_reason`
+
+Controls:
+
+- reserve a normal experiment ID before any LLM-generated factor affects a
+  replay;
+- store the natural-language hypothesis, executable code, tests, and backtest
+  configuration as a single immutable trajectory;
+- compare the generated factor against simple recency/momentum/volatility
+  placebos and the accepted local comparator after costs;
+- treat self-repair loops as multiple-testing exposure unless the full
+  trajectory and rejected candidates are logged.
+
+Sources:
+
+- <https://arxiv.org/abs/2602.07085>
+- <https://arxiv.org/abs/2511.18850>
+
 ### Human-Directed LLM Beats Autonomous LLM
 
 New 2026 live-signal evidence argues for structured human direction and
@@ -751,6 +788,44 @@ Controls:
   it displaces after costs.
 
 Source: <https://arxiv.org/abs/2605.31201>
+
+### SEC RAG Must Preserve Filing Structure And Outcome Labels
+
+Recent SEC-specific retrieval work points to two concrete requirements: filing
+chunks need semantic structure instead of arbitrary token windows, and
+explainable stock-movement labels should preserve which disclosure section and
+risk item produced the evidence. For Ginger, this maps directly to the SEC text
+blockers: before another filing-text candidate pool, the archive should expose
+accession-bounded section/table spans, retrieval metadata, risk-factor/event
+labels, and realized 5/10/20-day outcome labels.
+
+Implementable fields:
+
+- `sec_rag_chunking_version`
+- `sec_filing_section_span_hash`
+- `sec_filing_table_span_hash`
+- `sec_risk_item_label`
+- `sec_disclosure_event_label`
+- `sec_rag_retrieval_rank`
+- `sec_rag_missing_section_reason`
+- `sec_label_outcome_horizon`
+- `sec_label_realized_path_bucket`
+
+Controls:
+
+- chunk SEC filings by section/table/document structure, not arbitrary text
+  size alone;
+- key every retrieved span by accession, accepted timestamp, form, section,
+  and parser version;
+- keep risk/event labels as observed evidence rows until they beat accepted
+  SEC and non-text comparators after costs;
+- score retrieval coverage and missing sections before using LLM labels for
+  candidate-pool, ranking, or risk decisions.
+
+Sources:
+
+- <https://arxiv.org/abs/2508.06312>
+- <https://arxiv.org/abs/2601.19189>
 
 ### Agentic Trading Evidence Ledger
 

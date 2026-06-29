@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1487`
-- Raw records loaded by meta report: `4413`
-- History fingerprint: `8acdffb9cfc31a0d`
+- Strategy records counted: `1489`
+- Raw records loaded by meta report: `4450`
+- History fingerprint: `f6f21268c201bdba`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -64,10 +64,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260625-024` `rejected_moomoo_short_volume_notional_downweight`: EV `+0.0000`, PnL `$0.00`, family `moomoo_short_volume_clean_flow`, trial `toxic_q5_notional_downweight`.
-  Lesson: The toxic-Q5 rows were not costly enough in the accepted allocator replay for a 50% notional haircut to beat the ungated policy after EV, PnL, window, drawdown, and concentration checks. Do not rescue this by sweeping...
-- `exp-20260626-003` `rejected_companyfacts_purchase_obligation_ladder_candidate_pool`: EV `+0.6556`, PnL `$12,100.40`, family `production_visible_sec_companyfacts_counterparty_commitment_candidate_pool`, trial `companyfacts_purchase_obligation_maturity_ladder_candidate_pool`.
-  Lesson: The purchase-obligation maturity-ladder source did not clear Gate 4 (failed: window_ev_regression, window_pnl_regression). It is not retained or promoted. Do not retry by sweeping purchase-obligation tag lists, growth...
 - `exp-20260626-004` `rejected_companyfacts_completed_divestiture_candidate_pool`: EV `-0.0155`, PnL `$-1,274.45`, family `production_visible_sec_companyfacts_segment_divestiture_candidate_pool`, trial `companyfacts_completed_divestiture_segment_simplification_candidate_pool`.
   Lesson: The completed-divestiture Companyfacts source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, targe...
 - `exp-20260626-007` `rejected_companyfacts_product_service_mix_candidate_pool`: EV `-0.0617`, PnL `$-895.45`, family `production_visible_sec_companyfacts_product_service_mix_candidate_pool`, trial `companyfacts_product_service_revenue_mix_shift_candidate_pool`.
@@ -88,6 +84,10 @@ facts before changing strategy behavior.
   Lesson: The regime gate removed mid_weak and late_strong dilution, but the only expanded window still paid for the raw old_thin uplift with unacceptable drawdown and survival damage. Do not retry naive broad top300/top500 exp...
 - `exp-20260628-008` `blocked_consumer_platform_pilot_live_outcome_not_mature`: EV `+0.0000`, PnL `$0.00`, family `pilot_forward_readiness`, trial `consumer_platform_pilot_live_outcome_readiness`.
   Lesson: The target sleeve has 1 visible live decision row(s) and 0 settled 10-trading-day outcome row(s); this is below the predeclared readiness floor. Do not re-slice the same CONSUMER_PLATFORM_PILOT live decision row by ad...
+- `exp-20260628-019` `rejected_breakout_precursor_default_off_candidate_source`: EV `+0.0000`, PnL `$0.00`, family `production_visible_free_ohlcv_candidate_pool`, trial `breakout_without_2x_volume_precursor_full_stack`.
+  Lesson: The full-population precursor source did not survive as a fixed top-1/day candidate source. The exp015 aggregate lead was diluted by false positives and remained window/comparator fragile once forced into a deployable...
+- `exp-20260629-009` `rejected_sec_13d_item4_governance_terms_candidate_pool`: EV `-0.0287`, PnL `$-270.72`, family `production_visible_sec_ownership_item4_governance_terms`, trial `sec_13d_item4_governance_terms_candidate_pool`.
+  Lesson: The structured 13D Item-4 governance-term source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, ta...
 
 ## Highest-Signal Historical Records
 

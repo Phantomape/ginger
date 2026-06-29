@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-06-28.
+Last refreshed: 2026-06-29.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -691,6 +691,26 @@ publication timing and replacement outcomes. `exp-20260628-011` retained this
 as measurement repair by turning those blockers into machine-checkable reopen
 conditions. Do not answer these blockers by re-slicing the same partial rows or
 daily "still not mature" readiness audits.
+
+The June 29 readout adds useful plumbing and closes several tempting shortcuts,
+but still does not create a new allocation-ready alpha. The retained work is
+alpha-enabling measurement: sleeve health now reads `as_of`-keyed core-risk
+forward rows; allocator-top1 time-exit rows explicitly mark `target_price` as
+not applicable; Form 4 sale-overhang context is now emitted through a shared
+daily non-OHLCV ledger; Form 144 planned-sale/float is parked behind cached
+primary documents, parseable ratios, and closed forward rows; 13D Item-4
+governance-term fields are now shared provenance; and saturated-source
+overrides now reject same-source "new field/tag" churn after a dry
+`(gate_shape, data_source)` cell is saturated. The alpha attempts stayed
+negative: breakout-without-2x-volume precursors did not become deployable after
+OHLCV breadth-persistence selection, and structured 13D Item-4 governance terms
+failed Gate 4 as a fixed candidate-pool source. The next compliant alpha
+hypothesis should come from materially more closed forward replacement rows or
+a genuinely new PIT data surface such as borrow economics, options/flow
+context, campaign outcome provenance, or parsed Form 144 sale pressure. Do not
+spend another run on adjacent OHLCV precursor thresholds, governance phrase
+lists, Form 4/Form 144 response curves, or daily maturity audits that only
+confirm the same reopen counts.
 
 ## Detail Sources
 
@@ -1566,6 +1586,38 @@ production-visible field:
   makes this a real data source lead, not an alpha-ready field. Reopen after
   PIT borrow economics have ticker/date breadth, publication timing, daily
   parity, and settled outcome joins;
+- breakout-without-2x-volume precursor candidate-pool retries, including
+  adjacent OHLCV breadth-persistence selectors, volume-threshold retunes,
+  prebreakout entry timing, rank/top-N/hold/cooldown/notional changes, or
+  response-curve variants on the exp-20260628-015/019 and exp-20260629-008
+  rows. The de-biased full-population read showed the actual-trade lead was
+  selection-biased, the deployable top-1/day shape failed comparator/drawdown
+  guards, and the breadth selector still regressed windows. Reopen only with a
+  materially new non-OHLCV pre-volume-confirmation field or settled daily
+  forward rows from an exact shared logger;
+- Form 4 sale-overhang risk-allocation retries while the shared daily context
+  logger has no closed replacement-value sample. The observed-only split is a
+  lead, not policy: reopen only after at least 25 prospectively logged rows
+  close with cash/SPY/QQQ replacement value, at least 8 high-sale-overhang rows,
+  and max single-ticker share <=40%, or with a materially new executive
+  ownership/compensation provenance field;
+- Form 144 planned-sale/float retries while cached primary documents,
+  parseable planned-sale-to-float or planned-sale-to-ADV ratios, and closed
+  forward rows are absent. `exp-20260629-002` parks the surface; do not retry
+  by changing notional haircuts, risk scalars, ranking, candidate pools, or
+  readiness-audit wording until the reopen counts move;
+- structured Schedule 13D Item-4 governance-term candidate pools that sweep
+  governance buckets, phrase lists, holder types, classPercent, signal
+  absorption, event age, top-N, hold, cooldown, notional, or response shape on
+  the frozen windows. `exp-20260629-006` built the shared provenance surface,
+  but `exp-20260629-009` failed Gate 4. Reopen only with campaign/board-seat
+  outcome evidence beyond regex provenance, repaired `old_thin` structured XML
+  coverage, or closed forward replacement-value rows;
+- saturated-source overrides that name only another same-source field, tag,
+  XBRL label, phrase list, threshold, or response curve inside an already dry
+  saturated source/gate cell. After `exp-20260629-010`, legal override evidence
+  is limited to a genuinely new data source, a new gate shape, or materially
+  more closed/settled forward rows;
 - missing archive/text availability as an alpha field.
 
 ## Update Discipline
