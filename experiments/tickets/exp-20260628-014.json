@@ -1,0 +1,548 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260628_014_accepted_core_form4_selling_overhang_attribution.py",
+    "data/experiments/exp-20260628-014/exp_20260628_014_accepted_core_form4_selling_overhang_attribution.json",
+    "experiments/cards/exp-20260628-014.md",
+    "experiments/manifests/exp-20260628-014.json",
+    "experiments/tickets/exp-20260628-014.json",
+    "experiments/logs/exp-20260628-014.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data\\experiments\\exp-20260602-003\\exp_20260602_003_post_earnings_explicit_continuation.json",
+  "card_file": "experiments/cards/exp-20260628-014.md",
+  "causal_components": [
+    "canonical accepted-stack trade replay",
+    "PIT daily Form 4 transaction join",
+    "fixed sale-overhang buckets",
+    "loss-tail attribution",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "accepted_core_pit_form4_selling_overhang_loss_tail_attribution_v1",
+  "claimed_at": "2026-06-28T19:06:33+00:00",
+  "completed_at": "2026-06-28T19:12:31+00:00",
+  "created_at": "2026-06-28T19:06:22+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260628-014",
+  "experiment_uid": "expuid-cd95fef0b4494d5d",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260628-014",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-28T19:06:22+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "accepted_core_form4_selling_overhang_attribution"
+  },
+  "hypothesis": "Read-only risk-allocation attribution: accepted core trades with high PIT Form 4 selling and 10b5-1 activity in the 10 days before entry may carry worse loss-tail and lower PnL than accepted trades without insider-sale overhang.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "accepted_core_pit_form4_selling_overhang_loss_tail_attribution_v1"
+  ],
+  "mechanism_family": "production_visible_form4_selling_overhang_risk_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260625-013",
+    "exp-20260620-004",
+    "exp-20260503-017",
+    "exp-20260628-012",
+    "exp-20260628-013"
+  ],
+  "new_evidence_type": "new_gate_shape_pit_form4_accepted_core_risk_attribution",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "form4_insider",
+      "field_tags": [
+        "10b5",
+        "accepted",
+        "activity",
+        "allocation",
+        "attribution",
+        "before",
+        "carry",
+        "core",
+        "entry",
+        "form",
+        "form4",
+        "high",
+        "in",
+        "insider",
+        "loss",
+        "lower",
+        "may",
+        "only",
+        "overhang",
+        "pit",
+        "pnl",
+        "read",
+        "risk",
+        "sale",
+        "selling",
+        "tail",
+        "than",
+        "trades",
+        "without",
+        "worse"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "form4_insider",
+        "family_key": "form4_sale_pressure_long_entry_derisk",
+        "reopen_condition": null,
+        "score": 0.4864,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "form4_insider",
+        "family_key": "form4_forward_replacement_context_attribution",
+        "reopen_condition": "Need materially more closed forward replacement rows from the shared daily Form4 helper, explicit Form 144 plan/float context, or executive ownership and compensation provenance before another Form4 conflict alpha attempt.",
+        "score": 0.4816,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "form4_insider",
+        "family_key": "form4_sale_absorption_leadership_candidate_pool",
+        "reopen_condition": "A retry needs materially new PIT evidence, such as forward daily replacement value on sale clusters, explicit post-sale ownership-retention context, or a shared default-off daily Form 4 sale-absorption adapter with non-replay observations. Pure threshold, role, 10b5-1, or liquidity retunes stay frozen.",
+        "score": 0.475,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "form4_insider",
+        "family_key": "form4_post_sale_retention_absorption_candidate_pool",
+        "reopen_condition": "A retry needs materially new PIT evidence beyond retained ownership, such as daily forward replacement value for sale clusters, parsed Form 144 float/sale-plan context, or a shared default-off daily Form 4 sale-retention adapter with closed forward observations. Pure threshold, role, 10b5-1, or liquidity retunes stay frozen.",
+        "score": 0.4742,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "form4_insider",
+        "family_key": "non_ohlcv_event_confirmation_insider_form4",
+        "reopen_condition": null,
+        "score": 0.4742,
+        "status": "frozen_rejected",
+        "trials": 15
+      }
+    ],
+    "new_evidence_axis": "New gate shape: PIT daily Form 4 transaction archive joined only to already accepted core trades for read-only loss-tail attribution; not a Form4 candidate-pool source, code-list sweep, forward-row reslice, or risk response retune.",
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "form4_insider",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.24,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "no_monotonic_loss_tail_separation",
+      "sample_too_thin",
+      "window_reversal",
+      "form4_activity_relabels_growth_insider_liquidity"
+    ],
+    "confidence_reason": "Daily Form 4 XML is now PIT and transaction-level, so the old data-gap is repaired; however Form4 forward conflict rows were thin and Form4 candidate-pool history is weak, so this is only a new read-only risk attribution gate over accepted core trades.",
+    "recorded_at": "2026-06-28T19:05:45+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": true,
+    "gate4_passed": true,
+    "decision": "observed_only_positive_form4_sale_overhang_loss_tail_edge",
+    "artifact": "data/experiments/exp-20260628-014/exp_20260628_014_accepted_core_form4_selling_overhang_attribution.json",
+    "log": "experiments/logs/exp-20260628-014.json",
+    "gate1": {
+      "passed": true,
+      "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+      "standard_window_result": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_files": {
+        "late_strong": "data/experiments/exp-20260602-003/late_strong_after.json",
+        "mid_weak": "data/experiments/exp-20260602-003/mid_weak_after.json",
+        "old_thin": "data/experiments/exp-20260602-003/old_thin_after.json"
+      }
+    },
+    "gate2": {
+      "passed": true,
+      "dependency_fields_checked": [
+        "entry_date",
+        "entry_price",
+        "stop_price",
+        "target_mult_used",
+        "target_price_reconstructed",
+        "pnl",
+        "pnl_pct_net",
+        "daily_non_ohlcv_snapshot_YYYYMMDD",
+        "Form4 usable_trade_date",
+        "Form4 transaction_code",
+        "Form4 transaction_value",
+        "Form4 10b5_1_flag",
+        "Form4 is_officer"
+      ],
+      "target_price_note": "Closed trade rows omit original target_price; runner reconstructs entry_price + (entry_price - stop_price) * target_mult_used and does not schedule executable orders.",
+      "source_audit": {
+        "late_strong": {
+          "path": "data/experiments/exp-20260602-003/late_strong_after.json",
+          "trade_rows": 18,
+          "rows_with_entry_date": 18,
+          "rows_with_target_price_reconstructed": 18,
+          "rows_with_form4_archive_coverage": 18,
+          "bucket_counts": {
+            "no_sale_overhang": 12,
+            "moderate_or_routine_disposal": 1,
+            "high_sale_overhang": 5
+          }
+        },
+        "mid_weak": {
+          "path": "data/experiments/exp-20260602-003/mid_weak_after.json",
+          "trade_rows": 21,
+          "rows_with_entry_date": 21,
+          "rows_with_target_price_reconstructed": 21,
+          "rows_with_form4_archive_coverage": 21,
+          "bucket_counts": {
+            "no_sale_overhang": 12,
+            "moderate_or_routine_disposal": 1,
+            "high_sale_overhang": 8
+          }
+        },
+        "old_thin": {
+          "path": "data/experiments/exp-20260602-003/old_thin_after.json",
+          "trade_rows": 22,
+          "rows_with_entry_date": 22,
+          "rows_with_target_price_reconstructed": 22,
+          "rows_with_form4_archive_coverage": 22,
+          "bucket_counts": {
+            "no_sale_overhang": 15,
+            "moderate_or_routine_disposal": 1,
+            "high_sale_overhang": 6
+          }
+        }
+      },
+      "form4_audit": {
+        "form4_dir": "data/non_ohlcv",
+        "source_file_count": 469,
+        "raw_jsonl_rows": 285383,
+        "deduped_rows_loaded": 31016,
+        "bad_json_rows": 0,
+        "ticker_count": 49,
+        "min_usable_trade_date": "2024-09-24",
+        "max_usable_trade_date": "2026-06-29",
+        "transaction_code_counts": {
+          "A": 2857,
+          "C": 1352,
+          "D": 83,
+          "E": 172,
+          "F": 2295,
+          "G": 443,
+          "H": 1,
+          "I": 25,
+          "J": 250,
+          "M": 5855,
+          "P": 294,
+          "S": 17373,
+          "X": 16
+        }
+      }
+    },
+    "gate3": {
+      "passed": true,
+      "note": "No executable filter was added; core survival is unchanged.",
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "survival_rate_delta": 0.0
+    },
+    "gate4": {
+      "passed": true,
+      "observed_only_lead": true,
+      "decision": "observed_only_positive_form4_sale_overhang_loss_tail_edge",
+      "acceptance_rule": "Observed-only lead only if Form4 archive-covered accepted-core rows >=50, high-sale bucket >=8, clean bucket >=10, pooled high-sale bucket has lower average PnL, lower win rate, and higher 2pct loss-tail rate than clean rows, with at least two standard windows supporting the same direction. No strategy acceptance is possible.",
+      "failed_reasons": [],
+      "supporting_windows": [
+        "mid_weak",
+        "old_thin"
+      ],
+      "pooled_high_vs_clean": {
+        "available": true,
+        "high_minus_clean_avg_pnl": -923.283846,
+        "high_minus_clean_median_pnl": -3908.35,
+        "high_minus_clean_win_rate": -0.089069,
+        "high_minus_clean_loss_tail_rate": 0.089069,
+        "high_rows": 19,
+        "clean_rows": 39
+      },
+      "minimums": {
+        "min_covered_rows": 50,
+        "min_high_bucket_rows": 8,
+        "min_clean_bucket_rows": 10,
+        "min_supporting_windows": 2
+      }
+    },
+    "calibration": {
+      "actual_decision": "observed_only_positive_form4_sale_overhang_loss_tail_edge",
+      "actual_success": 1,
+      "predicted_success_probability": 0.24,
+      "brier_score": 0.5776,
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": 0.0,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "predicted_failure_modes": [
+        "no_monotonic_loss_tail_separation",
+        "sample_too_thin",
+        "window_reversal",
+        "form4_activity_relabels_growth_insider_liquidity"
+      ],
+      "realized_failure_mode": "",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "PIT Form 4 sale overhang separated accepted-stack loss tail and needs prospective logging."
+    },
+    "summary": "High PIT Form 4 sale overhang separated lower PnL and heavier loss tail from clean accepted-core entries across the fixed checks. This remains observed-only and needs default-off prospective logging before any risk policy use."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260628-014.json",
+  "single_causal_variable": "accepted_core_pit_form4_selling_overhang_loss_tail_attribution_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260628-014.json",
+  "trial_family": "accepted_core_form4_selling_overhang_risk_attribution",
+  "trial_variant_id": "accepted_stack_daily_form4_sale_10b5_overhang_v1",
+  "implementation_mode": "observed_only_attribution",
+  "new_evidence_axis": "New gate shape: PIT daily Form 4 transaction archive joined only to already accepted core trades for read-only loss-tail attribution; not a Form4 candidate-pool source, code-list sweep, forward-row reslice, or risk response retune.",
+  "parameters": {
+    "lookback_calendar_days": 10,
+    "high_sale_value_usd": 5000000.0,
+    "high_officer_sale_value_usd": 1000000.0,
+    "high_10b5_sale_rows": 1,
+    "loss_tail_pnl_pct": -0.02,
+    "bucket_rule": "high_sale_overhang if sale_value >= $5M, officer sale value >= $1M, or any 10b5-1 sale row in the 10 calendar days before entry; moderate_or_routine_disposal for other sale/tax-withholding rows; otherwise no_sale_overhang.",
+    "uses_realized_exit_information": false,
+    "alters_strategy_behavior": false
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Read-only risk-allocation attribution: accepted core trades with high PIT Form 4 selling and 10b5-1 activity in the 10 days before entry may carry worse loss-tail and lower PnL than accepted trades without insider-sale overhang.",
+    "2_history_check": {
+      "novelty_gate": "experiment.py new reported no blocking matches. The nearest families were Form4 candidate-pool or forward-context attempts; this run uses a new gate shape over already accepted trades.",
+      "new_evidence_axis": "New gate shape: PIT daily Form 4 transaction archive joined only to already accepted core trades for read-only loss-tail attribution; not a Form4 candidate-pool source, code-list sweep, forward-row reslice, or risk response retune.",
+      "nearby_prior_experiments": [
+        "exp-20260625-013",
+        "exp-20260620-004",
+        "exp-20260503-017",
+        "exp-20260628-012",
+        "exp-20260628-013"
+      ]
+    },
+    "3_single_policy_bundle": "accepted_core_pit_form4_selling_overhang_loss_tail_attribution_v1",
+    "4_success_failure_standard": "Observed-only lead only if Form4 archive-covered accepted-core rows >=50, high-sale bucket >=8, clean bucket >=10, pooled high-sale bucket has lower average PnL, lower win rate, and higher 2pct loss-tail rate than clean rows, with at least two standard windows supporting the same direction. No strategy acceptance is possible.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_014_accepted_core_form4_selling_overhang_attribution.py"
+  },
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "standard_window_result": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "window_files": {
+      "late_strong": "data/experiments/exp-20260602-003/late_strong_after.json",
+      "mid_weak": "data/experiments/exp-20260602-003/mid_weak_after.json",
+      "old_thin": "data/experiments/exp-20260602-003/old_thin_after.json"
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "dependency_fields_checked": [
+      "entry_date",
+      "entry_price",
+      "stop_price",
+      "target_mult_used",
+      "target_price_reconstructed",
+      "pnl",
+      "pnl_pct_net",
+      "daily_non_ohlcv_snapshot_YYYYMMDD",
+      "Form4 usable_trade_date",
+      "Form4 transaction_code",
+      "Form4 transaction_value",
+      "Form4 10b5_1_flag",
+      "Form4 is_officer"
+    ],
+    "target_price_note": "Closed trade rows omit original target_price; runner reconstructs entry_price + (entry_price - stop_price) * target_mult_used and does not schedule executable orders.",
+    "source_audit": {
+      "late_strong": {
+        "path": "data/experiments/exp-20260602-003/late_strong_after.json",
+        "trade_rows": 18,
+        "rows_with_entry_date": 18,
+        "rows_with_target_price_reconstructed": 18,
+        "rows_with_form4_archive_coverage": 18,
+        "bucket_counts": {
+          "no_sale_overhang": 12,
+          "moderate_or_routine_disposal": 1,
+          "high_sale_overhang": 5
+        }
+      },
+      "mid_weak": {
+        "path": "data/experiments/exp-20260602-003/mid_weak_after.json",
+        "trade_rows": 21,
+        "rows_with_entry_date": 21,
+        "rows_with_target_price_reconstructed": 21,
+        "rows_with_form4_archive_coverage": 21,
+        "bucket_counts": {
+          "no_sale_overhang": 12,
+          "moderate_or_routine_disposal": 1,
+          "high_sale_overhang": 8
+        }
+      },
+      "old_thin": {
+        "path": "data/experiments/exp-20260602-003/old_thin_after.json",
+        "trade_rows": 22,
+        "rows_with_entry_date": 22,
+        "rows_with_target_price_reconstructed": 22,
+        "rows_with_form4_archive_coverage": 22,
+        "bucket_counts": {
+          "no_sale_overhang": 15,
+          "moderate_or_routine_disposal": 1,
+          "high_sale_overhang": 6
+        }
+      }
+    },
+    "form4_audit": {
+      "form4_dir": "data/non_ohlcv",
+      "source_file_count": 469,
+      "raw_jsonl_rows": 285383,
+      "deduped_rows_loaded": 31016,
+      "bad_json_rows": 0,
+      "ticker_count": 49,
+      "min_usable_trade_date": "2024-09-24",
+      "max_usable_trade_date": "2026-06-29",
+      "transaction_code_counts": {
+        "A": 2857,
+        "C": 1352,
+        "D": 83,
+        "E": 172,
+        "F": 2295,
+        "G": 443,
+        "H": 1,
+        "I": 25,
+        "J": 250,
+        "M": 5855,
+        "P": 294,
+        "S": 17373,
+        "X": 16
+      }
+    }
+  },
+  "gate3": {
+    "passed": true,
+    "note": "No executable filter was added; core survival is unchanged.",
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "survival_rate_delta": 0.0
+  },
+  "gate4": {
+    "passed": true,
+    "observed_only_lead": true,
+    "decision": "observed_only_positive_form4_sale_overhang_loss_tail_edge",
+    "acceptance_rule": "Observed-only lead only if Form4 archive-covered accepted-core rows >=50, high-sale bucket >=8, clean bucket >=10, pooled high-sale bucket has lower average PnL, lower win rate, and higher 2pct loss-tail rate than clean rows, with at least two standard windows supporting the same direction. No strategy acceptance is possible.",
+    "failed_reasons": [],
+    "supporting_windows": [
+      "mid_weak",
+      "old_thin"
+    ],
+    "pooled_high_vs_clean": {
+      "available": true,
+      "high_minus_clean_avg_pnl": -923.283846,
+      "high_minus_clean_median_pnl": -3908.35,
+      "high_minus_clean_win_rate": -0.089069,
+      "high_minus_clean_loss_tail_rate": 0.089069,
+      "high_rows": 19,
+      "clean_rows": 39
+    },
+    "minimums": {
+      "min_covered_rows": 50,
+      "min_high_bucket_rows": 8,
+      "min_clean_bucket_rows": 10,
+      "min_supporting_windows": 2
+    }
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "trade_enabled": false,
+    "daily_snapshot_exposed": false,
+    "parity_test_added": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "uses_llm": false,
+    "parity_note": "Read-only attribution over accepted backtest trade rows. No production or backtest decision path changed."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "High PIT Form 4 sale overhang separated lower PnL and heavier loss tail from clean accepted-core entries across the fixed checks. This remains observed-only and needs default-off prospective logging before any risk policy use.",
+    "forbidden_near_neighbor_retry": "Do not rerun this accepted-stack Form4 attribution by changing S/F/P code handling, sale-value buckets, 10b5-1 treatment, owner roles, lookback length, or converting the same field into a risk scalar response curve.",
+    "new_evidence_required": "Explicit Form 144 plan/float context, executive ownership and compensation provenance, or prospectively closed forward rows from a shared default-off Form4 context logger."
+  },
+  "next_retry_requires": "Do not retune Form4 transaction-code lists, sale-value thresholds, 10b5 handling, owner roles, lookback days, or a notional response curve on the same accepted-stack windows. A retry needs explicit Form 144 plan/float context, executive ownership/compensation provenance, or prospective forward rows tagged by a shared Form4 context logger.",
+  "related_files": [
+    "quant/experiments/exp_20260628_014_accepted_core_form4_selling_overhang_attribution.py",
+    "data/experiments/exp-20260628-014/exp_20260628_014_accepted_core_form4_selling_overhang_attribution.json",
+    "experiments/logs/exp-20260628-014.json",
+    "experiments/cards/exp-20260628-014.md",
+    "experiments/manifests/exp-20260628-014.json",
+    "experiments/tickets/exp-20260628-014.json",
+    "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/non_ohlcv",
+    "data/experiments/exp-20260602-003/late_strong_after.json",
+    "data/experiments/exp-20260602-003/mid_weak_after.json",
+    "data/experiments/exp-20260602-003/old_thin_after.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260628_014_accepted_core_form4_selling_overhang_attribution.py",
+    "data/experiments/exp-20260628-014/exp_20260628_014_accepted_core_form4_selling_overhang_attribution.json",
+    "experiments/logs/exp-20260628-014.json",
+    "experiments/cards/exp-20260628-014.md",
+    "experiments/manifests/exp-20260628-014.json",
+    "experiments/tickets/exp-20260628-014.json",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_014_accepted_core_form4_selling_overhang_attribution.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260628_014_accepted_core_form4_selling_overhang_attribution.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "anti_js": {
+    "strategy_behavior_changed": false,
+    "threshold_scan": false,
+    "uses_future_form4_rows": false,
+    "entry_day_close_used": false
+  },
+  "decision": "observed_only_positive_form4_sale_overhang_loss_tail_edge",
+  "artifact": "data/experiments/exp-20260628-014/exp_20260628_014_accepted_core_form4_selling_overhang_attribution.json",
+  "log": "experiments/logs/exp-20260628-014.json",
+  "updated_at": "2026-06-28T19:12:31+00:00"
+}

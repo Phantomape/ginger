@@ -1,0 +1,270 @@
+{
+  "baseline_anchor": {
+    "aggregate_expected_value_score": null,
+    "aggregate_total_return_pct": null,
+    "exists": true,
+    "note": "Baseline anchors protocol only; this repair changes no trading policy."
+  },
+  "changed_files": [
+    "quant/accepted_helper_source_priority_allocator_paper_sleeve.py",
+    "quant/test_accepted_helper_source_priority_allocator_paper_sleeve.py",
+    "quant/experiments/exp_20260629_004_allocator_top1_time_exit_outcome_contract.py"
+  ],
+  "changed_variable": "allocator_top1_time_exit_outcome_contract_v1",
+  "decision": "accepted_measurement_repair_allocator_top1_time_exit_outcome_contract",
+  "experiment_id": "exp-20260629-004",
+  "gate1": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "passed": true
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields_checked": [
+      "entry_date",
+      "entry_date_status",
+      "target_price",
+      "target_price_required",
+      "target_price_status",
+      "exit_rule"
+    ],
+    "target_price_contract": "not_applicable_time_exit",
+    "target_price_relevance": "target_price is intentionally None because allocator_top1 exits by fixed time hold; closed outcomes use exit_price and pnl fields."
+  },
+  "gate3": {
+    "note": "Measurement repair only; no new filter was added.",
+    "passed": true,
+    "signals_generated": 8,
+    "signals_survived": 1,
+    "survival_rate": 0.125
+  },
+  "gate4": {
+    "expected_value_delta": 0.0,
+    "note": "No before/after strategy replay was run because orders, ranking, sizing, and exits are unchanged. This accepts only the measurement contract.",
+    "passed": true,
+    "pnl_delta": 0.0,
+    "status": "not_applicable_measurement_repair_no_policy_delta"
+  },
+  "hypothesis": "Repair the allocator_top1 forward allocation blocker by exposing an explicit time-exit outcome contract and target_price_not_applicable marker for selected and skipped rows, so future Gate 2 checks distinguish time-exit paper rows from missing target-price data.",
+  "input_files": {
+    "allocator_state": "data/paper_sleeves/accepted_helper_source_priority_allocator/state.json",
+    "baseline": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "pilot_recommendations": "data/pilots/pilot_recommendations_2026-06-29.json",
+    "ticket": "experiments/tickets/exp-20260629-004.json"
+  },
+  "lane": "measurement_repair",
+  "metrics": {
+    "after_contract": {
+      "entry_date_or_status_coverage_rate": 1.0,
+      "entry_date_present": 7,
+      "entry_date_status_present": 8,
+      "rows": 8,
+      "target_price_present": 0,
+      "target_price_required_false": 8,
+      "target_price_status_coverage_rate": 1.0,
+      "target_price_status_not_applicable": 8
+    },
+    "before_contract": {
+      "entry_date_or_status_coverage_rate": 0.875,
+      "entry_date_present": 7,
+      "entry_date_status_present": 0,
+      "rows": 8,
+      "target_price_present": 0,
+      "target_price_required_false": 0,
+      "target_price_status_coverage_rate": 0.0,
+      "target_price_status_not_applicable": 0
+    },
+    "signals_generated": 8,
+    "signals_survived": 1,
+    "state_rows_with_contract_after_helper": {
+      "entry_date_or_status_coverage_rate": 1.0,
+      "entry_date_present": 7,
+      "entry_date_status_present": 8,
+      "rows": 8,
+      "target_price_present": 0,
+      "target_price_required_false": 8,
+      "target_price_status_coverage_rate": 1.0,
+      "target_price_status_not_applicable": 8
+    },
+    "survival_rate": 0.125
+  },
+  "new_evidence_type": "measurement_repair",
+  "post_run_reflection": {
+    "do_not_claim": "Do not use this repair to retune allocator capacity or promote allocator_top1; closed replacement-value rows are still required.",
+    "next_retry_requires": "Wait for materially more closed allocator_top1 replacement-value rows, then test selected-vs-skipped allocation with the explicit contract.",
+    "why_result_happened": "The prior allocator blocker was semantic rather than alpha evidence: time-exit rows were counted as missing target_price. The helper now marks target_price as not_applicable_time_exit and names exit_price/pnl as the closed-outcome fields."
+  },
+  "prediction": {
+    "confidence_reason": "Prior allocator experiment isolated the blocker to target_price/closed-outcome readiness; this repair is additive metadata on an existing time-exit paper sleeve.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "helper_contract_not_used_by_snapshot",
+      "current_rows_missing_entry_date",
+      "registry_lock_conflict"
+    ],
+    "recorded_at": "2026-06-29T06:07:33+00:00",
+    "success_probability": 0.75
+  },
+  "production_impact": {
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_ranking": false,
+    "alters_sizing": false,
+    "daily_snapshot_contract_exposed": true,
+    "default_off_paper_only": true,
+    "live_ready": false,
+    "shared_helper_changed": true,
+    "trade_enabled": false
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_accepted_helper_source_priority_allocator_paper_sleeve.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260629_004_allocator_top1_time_exit_outcome_contract.py"
+  ],
+  "rows_after_contract": [
+    {
+      "allocation_bucket": "selected",
+      "days_held": 6,
+      "days_remaining": 4,
+      "entry_date": "2026-06-18",
+      "entry_date_status": "present",
+      "exit_rule": "time_exit_after_10_trading_days",
+      "hold_days": 10,
+      "outcome_contract_rule_version": "allocator_top1_time_exit_outcome_contract_v1",
+      "paper_status": "open",
+      "signal_date": "2026-06-16",
+      "state_bucket": "open_positions",
+      "status": "HOLD",
+      "target_price": null,
+      "target_price_required": false,
+      "target_price_status": "not_applicable_time_exit",
+      "ticker": "DDOG"
+    },
+    {
+      "allocation_bucket": "skipped",
+      "days_held": 4,
+      "days_remaining": 6,
+      "entry_date": "2026-06-23",
+      "entry_date_status": "present",
+      "exit_rule": "time_exit_after_10_trading_days",
+      "hold_days": 10,
+      "outcome_contract_rule_version": "allocator_top1_time_exit_outcome_contract_v1",
+      "paper_status": "open",
+      "signal_date": "2026-06-22",
+      "state_bucket": "open_positions",
+      "status": "SKIP_concurrency_cap",
+      "target_price": null,
+      "target_price_required": false,
+      "target_price_status": "not_applicable_time_exit",
+      "ticker": "INTC"
+    },
+    {
+      "allocation_bucket": "skipped",
+      "days_held": 5,
+      "days_remaining": 5,
+      "entry_date": "2026-06-22",
+      "entry_date_status": "present",
+      "exit_rule": "time_exit_after_10_trading_days",
+      "hold_days": 10,
+      "outcome_contract_rule_version": "allocator_top1_time_exit_outcome_contract_v1",
+      "paper_status": "open",
+      "signal_date": "2026-06-18",
+      "state_bucket": "open_positions",
+      "status": "SKIP_concurrency_cap",
+      "target_price": null,
+      "target_price_required": false,
+      "target_price_status": "not_applicable_time_exit",
+      "ticker": "MU"
+    },
+    {
+      "allocation_bucket": "skipped",
+      "days_held": 9,
+      "days_remaining": 1,
+      "entry_date": "2026-06-12",
+      "entry_date_status": "present",
+      "exit_rule": "time_exit_after_10_trading_days",
+      "hold_days": 10,
+      "outcome_contract_rule_version": "allocator_top1_time_exit_outcome_contract_v1",
+      "paper_status": "open",
+      "signal_date": "2026-06-11",
+      "state_bucket": "open_positions",
+      "status": "SKIP_concurrency_cap",
+      "target_price": null,
+      "target_price_required": false,
+      "target_price_status": "not_applicable_time_exit",
+      "ticker": "CRDO"
+    },
+    {
+      "allocation_bucket": "skipped",
+      "days_held": 3,
+      "days_remaining": 7,
+      "entry_date": "2026-06-23",
+      "entry_date_status": "present",
+      "exit_rule": "time_exit_after_10_trading_days",
+      "hold_days": 10,
+      "outcome_contract_rule_version": "allocator_top1_time_exit_outcome_contract_v1",
+      "paper_status": "open",
+      "signal_date": "2026-06-22",
+      "state_bucket": "open_positions",
+      "status": "SKIP_concurrency_cap",
+      "target_price": null,
+      "target_price_required": false,
+      "target_price_status": "not_applicable_time_exit",
+      "ticker": "NVMI"
+    },
+    {
+      "allocation_bucket": "skipped",
+      "days_held": 3,
+      "days_remaining": 7,
+      "entry_date": "2026-06-23",
+      "entry_date_status": "present",
+      "exit_rule": "time_exit_after_10_trading_days",
+      "hold_days": 10,
+      "outcome_contract_rule_version": "allocator_top1_time_exit_outcome_contract_v1",
+      "paper_status": "open",
+      "signal_date": "2026-06-22",
+      "state_bucket": "open_positions",
+      "status": "SKIP_concurrency_cap",
+      "target_price": null,
+      "target_price_required": false,
+      "target_price_status": "not_applicable_time_exit",
+      "ticker": "SITM"
+    },
+    {
+      "allocation_bucket": "skipped",
+      "days_held": 4,
+      "days_remaining": 6,
+      "entry_date": "2026-06-22",
+      "entry_date_status": "present",
+      "exit_rule": "time_exit_after_10_trading_days",
+      "hold_days": 10,
+      "outcome_contract_rule_version": "allocator_top1_time_exit_outcome_contract_v1",
+      "paper_status": "open",
+      "signal_date": "2026-06-11",
+      "state_bucket": "open_positions",
+      "status": "SKIP_concurrency_cap",
+      "target_price": null,
+      "target_price_required": false,
+      "target_price_status": "not_applicable_time_exit",
+      "ticker": "SBUX"
+    },
+    {
+      "allocation_bucket": "skipped",
+      "days_held": null,
+      "days_remaining": null,
+      "entry_date": null,
+      "entry_date_status": "pending_next_session_open",
+      "exit_rule": "time_exit_after_10_trading_days",
+      "hold_days": 10,
+      "outcome_contract_rule_version": "allocator_top1_time_exit_outcome_contract_v1",
+      "paper_status": "pending_entry",
+      "signal_date": "2026-06-15",
+      "state_bucket": "pending_entries",
+      "status": "SKIP_concurrency_cap",
+      "target_price": null,
+      "target_price_required": false,
+      "target_price_status": "not_applicable_time_exit",
+      "ticker": "WDC"
+    }
+  ],
+  "status": "accepted"
+}

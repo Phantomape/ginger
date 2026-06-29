@@ -20,6 +20,11 @@ try:
         DEFAULT_XML_CACHE_DIR,
         backfill_form4_transactions,
     )
+    from form4_sale_overhang_context import (
+        DEFAULT_LOOKBACK_DAYS as FORM4_CONTEXT_DEFAULT_LOOKBACK_DAYS,
+        persist_form4_sale_overhang_context,
+        production_impact as form4_context_production_impact,
+    )
     from sec_filing_backfill import (
         DEFAULT_CACHE_DIR as SEC_SUBMISSIONS_CACHE_DIR,
         DEFAULT_FORMS as SEC_DEFAULT_FORMS,
@@ -34,6 +39,11 @@ try:
         write_jsonl as write_sec_filing_text_jsonl,
     )
     from options_onclickmedia import persist_daily_options_snapshot
+    from form144_planned_sale_context import (
+        DEFAULT_LOOKBACK_DAYS as FORM144_CONTEXT_DEFAULT_LOOKBACK_DAYS,
+        persist_form144_planned_sale_context,
+        production_impact as form144_production_impact,
+    )
     from moomoo_borrow_availability_sidecar import (
         MANIFEST_PATH as BORROW_AVAILABILITY_MANIFEST_PATH,
         ROWS_PATH as BORROW_AVAILABILITY_ROWS_PATH,
@@ -44,6 +54,11 @@ except ImportError:  # pragma: no cover - package-style imports in tests
         DEFAULT_USER_AGENT as FORM4_USER_AGENT,
         DEFAULT_XML_CACHE_DIR,
         backfill_form4_transactions,
+    )
+    from quant.form4_sale_overhang_context import (
+        DEFAULT_LOOKBACK_DAYS as FORM4_CONTEXT_DEFAULT_LOOKBACK_DAYS,
+        persist_form4_sale_overhang_context,
+        production_impact as form4_context_production_impact,
     )
     from quant.sec_filing_backfill import (
         DEFAULT_CACHE_DIR as SEC_SUBMISSIONS_CACHE_DIR,
@@ -59,6 +74,11 @@ except ImportError:  # pragma: no cover - package-style imports in tests
         write_jsonl as write_sec_filing_text_jsonl,
     )
     from quant.options_onclickmedia import persist_daily_options_snapshot
+    from quant.form144_planned_sale_context import (
+        DEFAULT_LOOKBACK_DAYS as FORM144_CONTEXT_DEFAULT_LOOKBACK_DAYS,
+        persist_form144_planned_sale_context,
+        production_impact as form144_production_impact,
+    )
     from quant.moomoo_borrow_availability_sidecar import (
         MANIFEST_PATH as BORROW_AVAILABILITY_MANIFEST_PATH,
         ROWS_PATH as BORROW_AVAILABILITY_ROWS_PATH,
@@ -93,6 +113,10 @@ def persist_daily_non_ohlcv_snapshots(
     refresh_options_cache: bool = False,
     refresh_borrow_availability: bool = False,
     borrow_availability_broad: bool = False,
+    refresh_form4_context: bool = False,
+    form4_context_lookback_days: int = FORM4_CONTEXT_DEFAULT_LOOKBACK_DAYS,
+    refresh_form144_context: bool = False,
+    form144_context_lookback_days: int = FORM144_CONTEXT_DEFAULT_LOOKBACK_DAYS,
 ) -> dict[str, Any]:
     """Write date-stamped SEC and Form 4 inputs for today's forward queues.
 
@@ -114,8 +138,12 @@ def persist_daily_non_ohlcv_snapshots(
         "sec_filing_text_summary": root / f"sec_filing_text_backfill_summary_{tag}.json",
         "form4_transactions": root / f"form4_transactions_{tag}.jsonl",
         "form4_summary": root / f"form4_backfill_summary_{tag}.json",
+        "form4_sale_overhang_context": root / f"form4_sale_overhang_context_{tag}.jsonl",
+        "form4_sale_overhang_context_summary": root / f"form4_sale_overhang_context_summary_{tag}.json",
         "options_onclickmedia_chain": root / f"options_onclickmedia_chain_{tag}.jsonl",
         "options_onclickmedia_summary": root / f"options_onclickmedia_summary_{tag}.json",
+        "form144_planned_sale_context": root / f"form144_planned_sale_context_{tag}.jsonl",
+        "form144_planned_sale_context_summary": root / f"form144_planned_sale_context_summary_{tag}.json",
         "borrow_availability_rows": Path(BORROW_AVAILABILITY_ROWS_PATH),
         "borrow_availability_manifest": Path(BORROW_AVAILABILITY_MANIFEST_PATH),
         "summary": root / f"daily_non_ohlcv_snapshot_{tag}.json",
@@ -178,6 +206,46 @@ def persist_daily_non_ohlcv_snapshots(
         max_ciks=max_ciks,
     )
 
+    if refresh_form4_context:
+        snapshot["form4_sale_overhang_context"] = _run_form4_sale_overhang_context(
+            paths=paths,
+            as_of_date=as_of_date,
+            data_dir=root,
+            lookback_days=form4_context_lookback_days,
+        )
+    else:
+        snapshot["form4_sale_overhang_context"] = {
+            "status": "skipped",
+            "reason": "refresh_form4_context_false",
+            "output_path": _path_text(paths["form4_sale_overhang_context"]),
+            "summary_output": _path_text(paths["form4_sale_overhang_context_summary"]),
+            "trade_enabled": False,
+            "daily_snapshot_wired": True,
+            "production_impact": form4_context_production_impact(
+                "form4_sale_overhang_context_collection_skipped"
+            ),
+        }
+
+    if refresh_form144_context:
+        snapshot["form144_planned_sale_context"] = _run_form144_planned_sale_context(
+            paths=paths,
+            as_of_date=as_of_date,
+            data_dir=root,
+            lookback_days=form144_context_lookback_days,
+        )
+    else:
+        snapshot["form144_planned_sale_context"] = {
+            "status": "skipped",
+            "reason": "refresh_form144_context_false",
+            "output_path": _path_text(paths["form144_planned_sale_context"]),
+            "summary_output": _path_text(paths["form144_planned_sale_context_summary"]),
+            "trade_enabled": False,
+            "daily_snapshot_wired": True,
+            "production_impact": form144_production_impact(
+                "form144_planned_sale_context_collection_skipped"
+            ),
+        }
+
     if refresh_options and options_tickers:
         snapshot["options_onclickmedia"] = _run_options_onclickmedia(
             as_of_date=as_of_date,
@@ -235,6 +303,10 @@ def persist_daily_non_ohlcv_snapshots(
     ]
     if snapshot["options_onclickmedia"].get("status") != "skipped":
         statuses.append(snapshot["options_onclickmedia"].get("status"))
+    if snapshot["form4_sale_overhang_context"].get("status") != "skipped":
+        statuses.append(snapshot["form4_sale_overhang_context"].get("status"))
+    if snapshot["form144_planned_sale_context"].get("status") != "skipped":
+        statuses.append(snapshot["form144_planned_sale_context"].get("status"))
     if snapshot["borrow_availability"].get("status") != "skipped":
         statuses.append(snapshot["borrow_availability"].get("status"))
     if all(status == "ok" for status in statuses):
@@ -247,11 +319,15 @@ def persist_daily_non_ohlcv_snapshots(
     _write_json(paths["summary"], snapshot)
     if logger:
         logger.info(
-            "Daily non-OHLCV snapshot: status=%s sec_rows=%s sec_text_rows=%s form4_rows=%s borrow_status=%s borrow_populated=%s",
+            "Daily non-OHLCV snapshot: status=%s sec_rows=%s sec_text_rows=%s form4_rows=%s form4_context_status=%s form4_context_rows=%s form144_status=%s form144_rows=%s borrow_status=%s borrow_populated=%s",
             snapshot["status"],
             snapshot["sec_filing_events"].get("rows_written"),
             snapshot["sec_filing_text"].get("rows_written"),
             snapshot["form4_transactions"].get("rows_written"),
+            snapshot["form4_sale_overhang_context"].get("status"),
+            snapshot["form4_sale_overhang_context"].get("rows_written"),
+            snapshot["form144_planned_sale_context"].get("status"),
+            snapshot["form144_planned_sale_context"].get("rows_written"),
             snapshot["borrow_availability"].get("status"),
             snapshot["borrow_availability"].get("borrow_populated_this_run"),
         )
@@ -371,6 +447,34 @@ def _run_form4_transactions(
         }
 
 
+def _run_form4_sale_overhang_context(
+    *,
+    paths: dict[str, Path],
+    as_of_date: date,
+    data_dir: Path,
+    lookback_days: int,
+) -> dict[str, Any]:
+    try:
+        summary = persist_form4_sale_overhang_context(
+            as_of=as_of_date,
+            data_dir=data_dir,
+            lookback_days=lookback_days,
+        )
+        return summary
+    except Exception as exc:
+        return {
+            "status": "failed",
+            "error": str(exc),
+            "output_path": _path_text(paths["form4_sale_overhang_context"]),
+            "summary_output": _path_text(paths["form4_sale_overhang_context_summary"]),
+            "trade_enabled": False,
+            "daily_snapshot_wired": True,
+            "production_impact": form4_context_production_impact(
+                "form4_sale_overhang_context_collection_failed_only"
+            ),
+        }
+
+
 def _run_options_onclickmedia(
     *,
     as_of_date: date,
@@ -414,6 +518,34 @@ def _run_options_onclickmedia(
                 "alters_orders": False,
                 "scope": "options_data_collection_failed_only",
             },
+        }
+
+
+def _run_form144_planned_sale_context(
+    *,
+    paths: dict[str, Path],
+    as_of_date: date,
+    data_dir: Path,
+    lookback_days: int,
+) -> dict[str, Any]:
+    try:
+        summary = persist_form144_planned_sale_context(
+            as_of=as_of_date,
+            data_dir=data_dir,
+            lookback_days=lookback_days,
+        )
+        return summary
+    except Exception as exc:
+        return {
+            "status": "failed",
+            "error": str(exc),
+            "output_path": _path_text(paths["form144_planned_sale_context"]),
+            "summary_output": _path_text(paths["form144_planned_sale_context_summary"]),
+            "trade_enabled": False,
+            "daily_snapshot_wired": True,
+            "production_impact": form144_production_impact(
+                "form144_planned_sale_context_collection_failed_only"
+            ),
         }
 
 

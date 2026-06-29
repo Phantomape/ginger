@@ -1,0 +1,150 @@
+{
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "alpha_hypothesis": "Pre-execution core risk intensity may support a future risk-allocation alpha, but only after the forward observation surface is visible to health/maturity tooling.",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "changed_variable": "sleeve_health_as_of_snapshot_date_key_v1",
+  "decision": "accepted_measurement_repair_sleeve_health_as_of_snapshot_date",
+  "expected_value_score": 7.8941,
+  "experiment_id": "exp-20260629-001",
+  "gate1": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "passed": true,
+    "strategy_metrics_unchanged": true
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields_checked": {
+      "as_of": "2026-06-26",
+      "entry_date": "not_applicable_forward_observation_row",
+      "target_price": 1379.91
+    }
+  },
+  "gate3": {
+    "not_applicable_reason": "No signal, filter, ranking, sizing, exit, or order rule changed.",
+    "passed": true,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "survival_rate_delta": 0.0
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_delta": 0.0,
+      "strategy_behavior_changed": false,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "health_status_delta": {
+      "legacy_status": {
+        "last_snapshot": null,
+        "status": "never_persisted"
+      },
+      "repaired_status": {
+        "last_snapshot": "2026-06-26",
+        "staleness_sessions": 1,
+        "status": "fresh"
+      },
+      "rule_version": "sleeve_health_report_v3"
+    },
+    "measurement_repair_only": true,
+    "passed": true
+  },
+  "max_drawdown_pct": 0.1119,
+  "next_retry_requires": "Do not re-slice the single core-risk row. Reopen alpha only after materially more closed forward rows with realized replacement values exist, or after a new orthogonal risk-intensity source is wired.",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve another readiness audit for this same single core-risk row or simply join more observed-only labels to it.",
+    "new_evidence_required": "Materially more closed core-risk forward rows with realized replacement values, or a new orthogonal risk-intensity source/gate shape.",
+    "why_result_happened": "core_risk_intensity_ledger writes daily forward observation rows with an as_of field, while sleeve_health_report_v2 only checked asof_date/date for snapshots.jsonl rows."
+  },
+  "production_impact": {
+    "daily_health_report_changed": true,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "parity_note": "Read-side sleeve health date parsing only; no trading policy consumes this repair.",
+    "ranking_changed": false,
+    "risk_budget_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260629_001_sleeve_health_as_of_snapshot_date.py",
+    ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_sleeve_health.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "signals_generated": 164,
+  "signals_survived": 135,
+  "snapshot_evidence": {
+    "snapshot_date_key": "as_of",
+    "snapshot_path": "data/paper_sleeves/core_risk_intensity_forward_observation/snapshots.jsonl",
+    "snapshot_row_sample": {
+      "as_of": "2026-06-26",
+      "candidate_status": "selected",
+      "risk_intensity": 2.84503493,
+      "rule_version": "core_risk_intensity_forward_observation_v1",
+      "strategy": "trend_long",
+      "target_price": 1379.91,
+      "ticker": "LLY",
+      "trade_enabled": false
+    }
+  },
+  "status": "accepted_measurement_repair",
+  "survival_rate": 0.8232,
+  "timestamp": "2026-06-29",
+  "total_pnl": 234850.99,
+  "total_trades": 61,
+  "win_rate": 0.5738,
+  "windows": [
+    {
+      "end": "2026-04-21",
+      "expected_value_score": 5.1628,
+      "label": "late_strong",
+      "max_drawdown_pct": 0.0665,
+      "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+      "sharpe_daily": 4.41,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+      "start": "2025-10-23",
+      "survival_rate": 0.8039,
+      "total_pnl": 117072.92,
+      "trade_count": 18,
+      "win_rate": 0.8333
+    },
+    {
+      "end": "2025-10-22",
+      "expected_value_score": 2.1402,
+      "label": "mid_weak",
+      "max_drawdown_pct": 0.1119,
+      "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+      "sharpe_daily": 2.74,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+      "start": "2025-04-23",
+      "survival_rate": 0.7925,
+      "total_pnl": 78110.11,
+      "trade_count": 21,
+      "win_rate": 0.5238
+    },
+    {
+      "end": "2025-04-22",
+      "expected_value_score": 0.5911,
+      "label": "old_thin",
+      "max_drawdown_pct": 0.1001,
+      "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+      "sharpe_daily": 1.49,
+      "signals_generated": 60,
+      "signals_survived": 52,
+      "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+      "start": "2024-10-02",
+      "survival_rate": 0.8667,
+      "total_pnl": 39667.96,
+      "trade_count": 22,
+      "win_rate": 0.4091
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8232,
+    "total_pnl": 234850.99,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8232,
+    "total_pnl": 234850.99,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "brier_score": 0.0025,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": 0.0,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "hidden_additional_json_errors",
+      "audit_legacy_debt_masks_current_fix",
+      "unrelated_dirty_registry_conflict"
+    ],
+    "predicted_success_probability": 0.95,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "The shard was valid UTF-8 JSON for Python but failed PowerShell parsing because default Get-Content corrupted the non-ASCII network error strings; ASCII normalization fixed mixed-tool parsing without changing experiment semantics."
+  },
+  "causal_components": [
+    "malformed JSON shard repair",
+    "parse validation",
+    "audit validation",
+    "no strategy behavior change"
+  ],
+  "change_summary": "Normalized three exp-20260628-020 Form144 materializer network-error strings to ASCII so both Python UTF-8 JSON and PowerShell ConvertFrom-Json parse the shard.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "experiment_log_shard_json_parse_repair_exp_20260628_020",
+  "component": "experiments/logs/exp-20260628-020.json, experiments/logs/exp-20260629-007.json, experiments/cards/exp-20260629-007.md, experiments/manifests/exp-20260629-007.json, experiments/tickets/exp-20260629-007.json, data/experiments/exp-20260629-007/",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "survival_rate": 0.0,
+    "total_pnl": 0.0
+  },
+  "experiment_id": "exp-20260629-007",
+  "hypothesis": "Repair the malformed exp-20260628-020 experiment log shard so recent Form144 materialization history remains parseable for audit, derived memory, and novelty/source-saturation accounting; this is required because current alpha candidates are blocked by saturated SEC text scans or immature forward rows.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "experiment_log_integrity_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260628-020",
+    "exp-20260629-006"
+  ],
+  "new_evidence_type": "malformed_recent_log_shard_blocks_history_parsing",
+  "next_retry_requires": [],
+  "notes": "Measurement repair only. Initial alpha candidate, 13D Item-4 governance terms candidate-pool, was blocked by source-saturation on sec_text_event; accepted default-off forward surfaces also had no materially new closed rows. No strategy behavior, orders, ranking, sizing, exits, LLM/news, or watchlist behavior changed.",
+  "parameters": {
+    "locked_variables": [
+      "experiment_log_shard_json_parse_repair_exp_20260628_020"
+    ],
+    "single_causal_variable": "experiment_log_shard_json_parse_repair_exp_20260628_020"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not spend another experiment ID on this same parse repair unless a new log shard fails mixed Python/PowerShell JSON parsing or an audit proves this shard still blocks derived memory.",
+    "new_evidence_required": "A retry requires a newly detected malformed log shard, a parser/audit failure attributable to exp-20260628-020, or a repository-wide encoding contract change.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The shard was valid UTF-8 JSON for Python but failed PowerShell parsing because default Get-Content corrupted the non-ASCII network error strings; ASCII normalization fixed mixed-tool parsing without changing experiment semantics."
+  },
+  "prediction": {
+    "confidence_reason": "The parse failure is localized to three unterminated error strings in exp-20260628-020; repairing JSON escaping is deterministic, changes no strategy behavior, and directly restores machine-readable experiment history for subsequent alpha gating.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "hidden_additional_json_errors",
+      "audit_legacy_debt_masks_current_fix",
+      "unrelated_dirty_registry_conflict"
+    ],
+    "recorded_at": "2026-06-29T10:07:57+00:00",
+    "success_probability": 0.95
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260629-007/before_parse_status.json",
+    "data/experiments/exp-20260629-007/after_parse_status.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-06-29T10:10:28+00:00",
+  "trial_family": "experiment_log_json_parse_repair",
+  "trial_variant_id": "exp_20260628_020_error_string_escape_v1"
+}

@@ -57,6 +57,36 @@ XML_13D = """<?xml version="1.0" encoding="UTF-8"?>
   </formData>
 </edgarSubmission>"""
 
+XML_13D_ITEM4_GOVERNANCE = """<?xml version="1.0" encoding="UTF-8"?>
+<edgarSubmission xmlns="http://www.sec.gov/edgar/schedule13D">
+  <headerData><submissionType>SCHEDULE 13D/A</submissionType></headerData>
+  <formData>
+    <coverPageHeader>
+      <dateOfEvent>02/18/2026</dateOfEvent>
+      <issuerName>Example Software Inc.</issuerName>
+    </coverPageHeader>
+    <reportingPersons>
+      <reportingPersonInfo>
+        <reportingPersonName>Activist Fund LP</reportingPersonName>
+        <aggregateAmountOwned>9000000</aggregateAmountOwned>
+        <percentOfClass>6.7</percentOfClass>
+        <typeOfReportingPerson>IA</typeOfReportingPerson>
+      </reportingPersonInfo>
+    </reportingPersons>
+    <items>
+      <item4>
+        On February 18, 2026, the Reporting Persons entered into a cooperation
+        agreement with the Issuer. Pursuant to the cooperation agreement, the
+        Issuer agreed to appoint one independent director, appoint a second
+        independent director before the 2026 annual meeting, and accept the
+        resignation of a current director. The Reporting Persons withdrew their
+        nomination of one director nominee and agreed to a customary standstill
+        for 18 months.
+      </item4>
+    </items>
+  </formData>
+</edgarSubmission>"""
+
 
 def test_parse_13g_classpercent_and_holder():
     parsed = ingest.parse_schedule_xml(XML_13G)
@@ -89,8 +119,77 @@ def test_parse_13d_percentofclass_multi_person():
     assert set(flags["reporting_person_types"]) == {"PN", "IN"}
 
 
+def test_extract_item4_governance_terms():
+    item4 = ingest.extract_item4_text(XML_13D_ITEM4_GOVERNANCE)
+    assert item4 is not None
+    terms = ingest.classify_item4_governance_terms(item4, filing_date="2026-02-18")
+    assert terms["governance_terms_present"] is True
+    assert terms["governance_terms_bucket"] == "board_seat_and_standstill"
+    assert terms["cooperation_or_settlement_agreement_present"] is True
+    assert terms["board_terms_present"] is True
+    assert terms["board_appointment_count"] == 2
+    assert terms["nomination_withdrawal_present"] is True
+    assert terms["board_departure_present"] is True
+    assert terms["standstill_terms_present"] is True
+    assert terms["standstill_duration_days"] == 540
+    assert "board_appointment_count" in terms["governance_term_hits"]
+
+
+def test_governance_terms_capture_board_member_appointment_without_support_noise():
+    text = (
+        "The Issuer entered into a voting and support agreement related to a "
+        "merger. Separately, the investor entered into a cooperation agreement "
+        "and Edward Garden was appointed as a member of the Board."
+    )
+    terms = ingest.classify_item4_governance_terms(text, filing_date="2026-01-06")
+    assert terms["cooperation_or_settlement_agreement_present"] is True
+    assert terms["board_terms_present"] is True
+    assert terms["board_appointment_count"] == 1
+    support_only = ingest.classify_item4_governance_terms(
+        "The parties entered into a voting and support agreement for a merger."
+    )
+    assert support_only["cooperation_or_settlement_agreement_present"] is False
+    assert support_only["governance_terms_present"] is False
+
+
+def test_build_parsed_rows_exposes_governance_terms(monkeypatch, tmp_path):
+    accession = "0000000000-26-000001"
+    cache = tmp_path / f"{accession.replace('-', '')}.xml"
+    cache.write_text(XML_13D_ITEM4_GOVERNANCE, encoding="utf-8")
+    monkeypatch.setattr(ingest, "XML_CACHE_DIR", tmp_path)
+    result = ingest.build_parsed_rows(
+        [
+            {
+                "ticker": "EXM",
+                "issuer_cik": "0000000000",
+                "accession_number": accession,
+                "form": "SCHEDULE 13D/A",
+                "family": "13D",
+                "is_amendment": True,
+                "primary_doc_description": "SCHEDULE 13D/A",
+                "filing_date": "2026-02-18",
+                "accepted_at": "2026-02-18T21:00:00.000Z",
+                "primary_document": "primary_doc.xml",
+                "structured_xml": True,
+                "window": "late_strong",
+                "usable_trade_date": "2026-02-19",
+            }
+        ],
+        fetch=False,
+        refresh=False,
+    )
+    assert result["fetch_status"] == {"cached": 1}
+    row = result["rows"][0]
+    assert row["item4_text_present"] is True
+    assert row["item4_governance_terms_present"] is True
+    assert row["item4_governance_terms_bucket"] == "board_seat_and_standstill"
+    assert row["item4_board_appointment_count"] == 2
+    assert row["item4_standstill_duration_days"] == 540
+
+
 def test_parse_rejects_non_structured():
     assert ingest.parse_schedule_xml("<html><body>not edgar</body></html>") is None
+    assert ingest.extract_item4_text("<html><body>not edgar</body></html>") is None
 
 
 def test_to_float_filters_junk():

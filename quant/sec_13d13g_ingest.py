@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import time
 import urllib.error
 import urllib.request
@@ -54,6 +55,98 @@ WINDOWS = {
 # mechanical index rebalancing, not informed accumulation. Used only as an
 # attribute tag for diagnostics, never as a hard production rule here.
 BIG3_TOKENS = ("vanguard", "blackrock", "state street", "ssga")
+
+NUMBER_WORDS = {
+    "a": 1,
+    "an": 1,
+    "one": 1,
+    "two": 2,
+    "three": 3,
+    "four": 4,
+    "five": 5,
+    "six": 6,
+    "seven": 7,
+    "eight": 8,
+    "nine": 9,
+    "ten": 10,
+    "eleven": 11,
+    "twelve": 12,
+    "thirteen": 13,
+    "fourteen": 14,
+    "fifteen": 15,
+    "eighteen": 18,
+    "twenty-four": 24,
+    "first": 1,
+    "second": 1,
+    "third": 1,
+    "fourth": 1,
+    "fifth": 1,
+    "sixth": 1,
+}
+
+MONTH_ALIASES = {
+    "jan": 1,
+    "january": 1,
+    "feb": 2,
+    "february": 2,
+    "mar": 3,
+    "march": 3,
+    "apr": 4,
+    "april": 4,
+    "may": 5,
+    "jun": 6,
+    "june": 6,
+    "jul": 7,
+    "july": 7,
+    "aug": 8,
+    "august": 8,
+    "sep": 9,
+    "sept": 9,
+    "september": 9,
+    "oct": 10,
+    "october": 10,
+    "nov": 11,
+    "november": 11,
+    "dec": 12,
+    "december": 12,
+}
+
+BOARD_APPOINT_RE = re.compile(
+    r"\b(?:appoint(?:ed|s|ing)?|appointment\s+of)\s+"
+    r"(?P<num>\d+|one|two|three|four|five|six|seven|eight|nine|ten|a|an|"
+    r"first|second|third|fourth|fifth|sixth)?"
+    r"(?P<body>(?:\s+\w+){0,8}?)\s+director(?:s)?\b",
+    re.IGNORECASE,
+)
+BOARD_MEMBER_APPOINT_RE = re.compile(
+    r"\bappointed\b.{0,100}?\b(?:member|representative)\s+of\s+the\s+board\b|"
+    r"\bappointed\b.{0,100}?\bto\s+the\s+board\b",
+    re.IGNORECASE | re.DOTALL,
+)
+BOARD_SIZE_RE = re.compile(
+    r"\b(?:increase|decrease)[sd]?\s+the\s+size\s+of\s+the\s+board\s+from\s+"
+    r"(?P<from_word>\d+|one|two|three|four|five|six|seven|eight|nine|ten|"
+    r"eleven|twelve|thirteen|fourteen|fifteen)"
+    r"(?:\s*\((?P<from_num>\d+)\))?\s+to\s+"
+    r"(?P<to_word>\d+|one|two|three|four|five|six|seven|eight|nine|ten|"
+    r"eleven|twelve|thirteen|fourteen|fifteen)"
+    r"(?:\s*\((?P<to_num>\d+)\))?",
+    re.IGNORECASE,
+)
+STANDSTILL_DURATION_RE = re.compile(
+    r"\bstandstill\b.{0,120}?\b(?P<num>\d+|one|two|three|four|five|six|"
+    r"seven|eight|nine|ten|eleven|twelve|eighteen|twenty-four)\s+"
+    r"(?P<unit>day|days|month|months|year|years)\b",
+    re.IGNORECASE | re.DOTALL,
+)
+STANDSTILL_UNTIL_RE = re.compile(
+    r"\bstandstill\b.{0,160}?\buntil\s+"
+    r"(?P<month>jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|"
+    r"jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|"
+    r"nov(?:ember)?|dec(?:ember)?)\.?\s+"
+    r"(?P<day>\d{1,2}),?\s+(?P<year>\d{4})",
+    re.IGNORECASE | re.DOTALL,
+)
 
 
 def utc_now() -> str:
@@ -414,6 +507,197 @@ def parse_13ga_direction_fields(raw_xml: str) -> dict[str, Any] | None:
     }
 
 
+def _number_value(value: str | None) -> int | None:
+    if not value:
+        return None
+    normalized = str(value).strip().lower()
+    if normalized.isdigit():
+        return int(normalized)
+    return NUMBER_WORDS.get(normalized)
+
+
+def _parse_month_date(text: str) -> date | None:
+    match = re.search(
+        r"\b(?P<month>jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|"
+        r"jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|"
+        r"nov(?:ember)?|dec(?:ember)?)\.?\s+(?P<day>\d{1,2}),?\s+(?P<year>\d{4})\b",
+        text,
+        re.IGNORECASE,
+    )
+    if not match:
+        return None
+    month = MONTH_ALIASES.get(match.group("month").lower().rstrip("."))
+    if month is None:
+        return None
+    try:
+        return date(int(match.group("year")), month, int(match.group("day")))
+    except ValueError:
+        return None
+
+
+def extract_item4_text(raw_xml: str) -> str | None:
+    """Extract Schedule 13D Item-4 purpose text from structured XML.
+
+    This is a shared, data-only parser. It returns normalized text so callers do
+    not need to copy private experiment regexes. Missing or non-structured XML
+    returns ``None`` rather than an empty trading signal.
+    """
+    try:
+        root = ET.fromstring(raw_xml)
+    except ET.ParseError:
+        return None
+    if _localname(root.tag) != "edgarSubmission":
+        return None
+
+    chunks: list[str] = []
+    for el in root.iter():
+        if _localname(el.tag) in {"item4", "transactionPurpose"}:
+            chunks.extend(text.strip() for text in el.itertext() if text and text.strip())
+    text = " ".join(" ".join(chunks).split())
+    return text or None
+
+
+def _board_size_delta(text: str) -> int | None:
+    match = BOARD_SIZE_RE.search(text)
+    if not match:
+        return None
+    from_value = _number_value(match.group("from_num") or match.group("from_word"))
+    to_value = _number_value(match.group("to_num") or match.group("to_word"))
+    if from_value is None or to_value is None:
+        return None
+    return to_value - from_value
+
+
+def _board_appointment_count(text: str) -> int:
+    total = 0
+    spans: list[tuple[int, int]] = []
+    for match in BOARD_APPOINT_RE.finditer(text):
+        body = (match.group("body") or "").lower()
+        if "nominee" in body or "nomination" in body:
+            continue
+        value = _number_value(match.group("num"))
+        total += value if value is not None and value > 1 else 1
+        spans.append(match.span())
+    for match in BOARD_MEMBER_APPOINT_RE.finditer(text):
+        if any(not (match.end() <= start or match.start() >= end) for start, end in spans):
+            continue
+        total += 1
+    return total
+
+
+def _standstill_duration_days(text: str, filing_date: str | None) -> tuple[int | None, str | None]:
+    match = STANDSTILL_DURATION_RE.search(text)
+    if match:
+        value = _number_value(match.group("num"))
+        unit = match.group("unit").lower()
+        if value is not None:
+            if unit.startswith("day"):
+                return value, None
+            if unit.startswith("month"):
+                return value * 30, None
+            if unit.startswith("year"):
+                return value * 365, None
+
+    until = STANDSTILL_UNTIL_RE.search(text)
+    if not until:
+        return None, None
+    until_date = _parse_month_date(until.group(0))
+    if until_date is None:
+        return None, None
+    if not filing_date:
+        return None, until_date.isoformat()
+    try:
+        start = date.fromisoformat(filing_date)
+    except ValueError:
+        return None, until_date.isoformat()
+    return max((until_date - start).days, 0), until_date.isoformat()
+
+
+def classify_item4_governance_terms(
+    item4_text: str | None, *, filing_date: str | None = None
+) -> dict[str, Any]:
+    """Return machine-checkable 13D Item-4 governance/activism term fields.
+
+    The fields are provenance for later attribution. They do not rank, size,
+    filter, or otherwise decide trades.
+    """
+    text = " ".join(str(item4_text or "").split())
+    lower = text.lower()
+    board_appointment_count = _board_appointment_count(lower)
+    board_size_delta = _board_size_delta(lower)
+    standstill_duration_days, standstill_until_date = _standstill_duration_days(
+        lower, filing_date
+    )
+    cooperation_present = bool(re.search(r"\b(cooperation|settlement)\s+agreement\b", lower))
+    nomination_withdrawal_present = bool(
+        re.search(
+            r"\b(withdrew|withdrawn|withdrawal|withdraw)\b.{0,60}\b(nomination|nominee)",
+            lower,
+        )
+    )
+    board_departure_present = bool(
+        re.search(r"\b(resignation|resign|resigned)\b.{0,60}\bdirector\b", lower)
+    )
+    standstill_present = "standstill" in lower
+    board_terms_present = bool(
+        board_appointment_count
+        or board_size_delta
+        or re.search(
+            r"\b(board seat|board representation|shareholder representative|"
+            r"member of the board|slate of director nominees)\b",
+            lower,
+        )
+    )
+
+    hits: list[str] = []
+    if cooperation_present:
+        hits.append("cooperation_or_settlement_agreement")
+    if board_terms_present:
+        hits.append("board_seat_or_representation")
+    if board_appointment_count:
+        hits.append("board_appointment_count")
+    if board_size_delta:
+        hits.append("board_size_change")
+    if nomination_withdrawal_present:
+        hits.append("nomination_withdrawal")
+    if board_departure_present:
+        hits.append("board_departure")
+    if standstill_present:
+        hits.append("standstill_terms")
+    if standstill_duration_days is not None or standstill_until_date:
+        hits.append("standstill_duration")
+
+    if board_terms_present and standstill_present:
+        bucket = "board_seat_and_standstill"
+    elif board_terms_present:
+        bucket = "board_seat_terms"
+    elif standstill_present:
+        bucket = "standstill_terms"
+    elif cooperation_present:
+        bucket = "cooperation_or_settlement"
+    elif nomination_withdrawal_present:
+        bucket = "nomination_withdrawal"
+    else:
+        bucket = "no_governance_terms"
+
+    return {
+        "item4_text_present": bool(text),
+        "governance_terms_present": bool(hits),
+        "governance_terms_bucket": bucket,
+        "governance_term_hits": hits,
+        "cooperation_or_settlement_agreement_present": cooperation_present,
+        "board_terms_present": board_terms_present,
+        "board_appointment_count": board_appointment_count,
+        "board_size_delta": board_size_delta,
+        "nomination_withdrawal_present": nomination_withdrawal_present,
+        "board_departure_present": board_departure_present,
+        "standstill_terms_present": standstill_present,
+        "standstill_duration_days": standstill_duration_days,
+        "standstill_until_date": standstill_until_date,
+        "item4_excerpt": text[:700] if text else None,
+    }
+
+
 def _holder_flags(persons: list[dict[str, Any]]) -> dict[str, Any]:
     names = " | ".join((p.get("reporting_person_name") or "").lower() for p in persons)
     is_big3 = any(tok in names for tok in BIG3_TOKENS)
@@ -447,6 +731,10 @@ def build_parsed_rows(events: list[dict[str, Any]], *, fetch: bool, refresh: boo
         if not parsed:
             continue
         flags = _holder_flags(parsed["reporting_persons"])
+        item4_text = extract_item4_text(raw) if raw and ev.get("family") == "13D" else None
+        governance_terms = classify_item4_governance_terms(
+            item4_text, filing_date=ev.get("filing_date")
+        )
         rows.append(
             {
                 "ticker": ev["ticker"],
@@ -466,6 +754,20 @@ def build_parsed_rows(events: list[dict[str, Any]], *, fetch: bool, refresh: boo
                 "issuer_cusip": parsed["issuer_cusip"],
                 "reporting_persons": parsed["reporting_persons"],
                 "comments": parsed["comments"],
+                "item4_governance_terms": governance_terms,
+                "item4_text_present": governance_terms["item4_text_present"],
+                "item4_governance_terms_present": governance_terms[
+                    "governance_terms_present"
+                ],
+                "item4_governance_terms_bucket": governance_terms[
+                    "governance_terms_bucket"
+                ],
+                "item4_board_appointment_count": governance_terms[
+                    "board_appointment_count"
+                ],
+                "item4_standstill_duration_days": governance_terms[
+                    "standstill_duration_days"
+                ],
                 **flags,
             }
         )

@@ -11,12 +11,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import sleeve_health as sh
 
 
-def _mk_sleeve(root, name, last_asof=None):
+def _mk_sleeve(root, name, last_asof=None, date_key="asof_date"):
     d = root / name
     d.mkdir(parents=True)
     if last_asof:
         (d / "snapshots.jsonl").write_text(
-            json.dumps({"asof_date": last_asof}) + chr(10), encoding="utf-8"
+            json.dumps({date_key: last_asof}) + chr(10), encoding="utf-8"
         )
     return d
 
@@ -77,6 +77,23 @@ def test_report_appends_once_per_asof(tmp_path):
     assert first["persisted"] is True
     assert second["persisted"] is False
     assert len(log.read_text(encoding="utf-8").splitlines()) == 1
+
+
+def test_report_accepts_as_of_snapshot_key(tmp_path):
+    root = tmp_path / "paper_sleeves"
+    _mk_sleeve(root, "core_risk_intensity_forward_observation", "2026-06-26", date_key="as_of")
+    report = sh.build_sleeve_health_report(
+        "2026-06-29",
+        {},
+        sleeves_root=root,
+        health_log_path=tmp_path / "health.jsonl",
+        persist=False,
+    )
+    entry = report["disk_status"]["core_risk_intensity_forward_observation"]
+    assert report["rule_version"] == "sleeve_health_report_v3"
+    assert entry["last_snapshot"] == "2026-06-26"
+    assert entry["status"] == "fresh"
+    assert "core_risk_intensity_forward_observation" not in report["stalled_sleeves"]
 
 
 def test_report_is_read_only_flagged(tmp_path):

@@ -97157,11 +97157,11 @@
       "experiment_id": "exp-20260622-006",
       "hypothesis": "Stocks linked by shared 13F institutional holders (co-ownership network peers, Anton-Polk Connected Stocks) under-react to an idiosyncratic up-move in a co-held peer and drift to catch up over ~10d; admitting the lagging co-held peer with same-day price confirmation yields incremental EV over the rolling-correlation peer definition.",
       "lane": "alpha_search",
-      "owner": "coownership-peer-shock-agent",
+      "owner": "alpha-explore",
       "revision_manifest_file": "experiments/manifests/exp-20260622-006.json",
       "status": "rejected",
       "ticket_file": "experiments/tickets/exp-20260622-006.json",
-      "updated_at": "2026-06-22T06:57:11+00:00"
+      "updated_at": "2026-06-29T07:12:44+00:00"
     },
     {
       "acceptance_rule": "Use AGENTS.md Gate 4.",
@@ -197371,21 +197371,23 @@
         "same-name actual trend_long entry comparator",
         "entry-regime attribution bucket"
       ],
-      "change_type": "default_off_paper_sleeve_forward_replacement_instrumentation",
+      "change_type": "observed_only_de_biased_full_population_entry_latency_replay",
       "changed_files": [
         "quant/breakout_precursor_paper_sleeve.py",
         "quant/test_breakout_precursor_paper_sleeve.py",
-        "quant/experiments/exp_20260628_015_breakout_without_2x_volume_precursor_forward_replacement_value_v1.py",
-        "data/experiments/exp-20260628-015/exp_20260628_015_breakout_without_2x_volume_precursor_forward_replacement_value_v1.json",
+        "quant/experiments/exp_20260628_015_breakout_precursor_full_population_replay.py",
+        "data/experiments/exp-20260628-015/exp_20260628_015_breakout_precursor_full_population_replay.json",
+        "data/experiments/exp-20260628-015/breakout_precursor_events.jsonl",
         "experiments/logs/exp-20260628-015.json",
         "experiments/cards/exp-20260628-015.md",
         "experiments/manifests/exp-20260628-015.json",
         "experiments/tickets/exp-20260628-015.json",
+        "docs/experiment_log.jsonl",
         "docs/experiment_registry.json"
       ],
       "changed_variable": "breakout_without_2x_volume_precursor_forward_replacement_value_v1",
       "claimed_at": "2026-06-28T20:48:33+00:00",
-      "completed_at": "2026-06-28T21:15:59+00:00",
+      "completed_at": "2026-06-29T01:11:29+00:00",
       "created_at": "2026-06-28T20:47:21+00:00",
       "evaluation_windows": [
         {
@@ -197420,7 +197422,7 @@
         "scheme": "hf_hub_local_v1",
         "slug": "breakout_without_2x_volume_precursor_forward_replacement_value_v1"
       },
-      "hypothesis": "entry/candidate_pool: trend_long enters late because it waits for >2x volume confirmation after the 20d-high breakout; exp-20260627-006 found 24/39 actual trend_long trades had a production-visible breakout-without-2x-volume precursor 1-5 sessions earlier (+1.92% median entry advantage, +2.46% 10d delta) BUT late_strong regime 20d delta is negative (-1.53%). Build a default-off shared-paper-first sleeve logging the FULL population of breakout-without-2x-volume precursor events (above_200ma & breakout_20d & not volume_spike), including those that never become a real trend_long entry, with forward 10d/20d replacement value vs same-name actual-entry comparator and entry-regime bucket, to de-bias the survivorship-conditioned lead before any volume-threshold or entry-timing change. trade_enabled=False.",
+      "hypothesis": "entry/candidate_pool: trend_long enters late because it waits for >2x volume confirmation after the 20d-high breakout; exp-20260627-006 found 24/39 actual trend_long trades had an earlier breakout-without-2x-volume precursor. De-bias that survivorship-conditioned lead by measuring the FULL precursor population (above_200ma & breakout_20d & not volume_spike) forward replacement value before any volume-threshold or entry-timing change.",
       "lane": "alpha_search",
       "locked_variables": [
         "breakout_without_2x_volume_precursor_forward_replacement_value_v1"
@@ -197431,8 +197433,7 @@
       "nearby_prior_experiments": [
         "exp-20260530-013",
         "exp-20260530-016",
-        "exp-20260627-006",
-        "exp-20260627-007"
+        "exp-20260627-006"
       ],
       "new_evidence_type": "full_population_breakout_without_2x_volume_precursor_forward_replacement_rows",
       "novelty": {
@@ -197617,213 +197618,43 @@
         "warn": true,
         "warn_threshold": 0.55
       },
-      "owner": "alpha-explore",
+      "owner": "agent-trend-entry-latency",
       "post_run_reflection": {
-        "why_result_happened": "The full-population precursor base rate stayed positive in aggregate because many non-survivor breakout-without-2x-volume rows still had positive 20d drift, and the actual-entry comparator subset kept a positive 10d entry-advantage median. The result is not allocation-ready because fixed windows are mixed: late_strong and old_thin have negative 10d full-population medians, and old_thin also has a negative 20d median.",
         "forbidden_near_neighbor_retry": "Do not rerun this as a 2x-volume threshold retune, a volume-spike hard-exclusion-to-weighting response curve change, or another slice that only conditions on actual trend_long survivor entries.",
-        "new_evidence_required": "Next valid step is a default-off daily adapter plus a Gate 1-4 candidate-source replay that can compare against accepted core allocation; private threshold retunes remain insufficient. Any promotion attempt must handle fixed-window instability explicitly."
+        "new_evidence_required": "Next valid step is a default-off daily adapter plus a Gate 1-4 candidate-source replay that can compare against accepted core allocation; private threshold retunes remain insufficient. Any promotion attempt must handle fixed-window instability explicitly.",
+        "why_result_happened": "The full-population precursor base rate stayed positive in aggregate because many non-survivor breakout-without-2x-volume rows still had positive 20d drift, and the actual-entry comparator subset kept a positive 10d entry-advantage median. The result is not allocation-ready because fixed windows are mixed: late_strong and old_thin have negative 10d full-population medians, and old_thin also has a negative 20d median."
       },
       "prediction": {
         "success_probability": 0.7,
         "expected_ev_delta": 0.0,
         "expected_pnl_delta": 0.0,
         "main_failure_modes": [
+          "warehouse_universe_scan_misses_precursor_events",
           "full_population_base_rate_kills_the_lead",
-          "late_strong_dominates_population_no_net_edge",
-          "comparator_join_to_actual_entry_sparse",
-          "unsettled_forward_rows_near_window_end"
+          "late_strong_dominates_population_no_net_edge"
         ],
-        "confidence_reason": "The detector reuses production-visible OHLCV predicates (above_200ma & breakout_20d & not volume_spike) and only adds a default-off full-population forward ledger. The main uncertainty is not build risk; it is whether the de-biased full population erases the survivorship-conditioned lead from exp-20260627-006.",
-        "recorded_at": "2026-06-28T21:15:59+00:00"
+        "confidence_reason": "Detection forks an existing PIT feature over warehouse OHLCV that covers the 50-name universe with deep history; the 0.3 failure mass is the de-biased base rate plausibly erasing the survivorship-conditioned lead, which is the point of the measurement.",
+        "recorded_at": "2026-06-28T00:00:00+00:00"
       },
       "prior_trial_count": 0,
       "reopen_condition": "Next valid step is a default-off daily adapter plus a Gate 1-4 candidate-source replay that can compare against accepted core allocation; private threshold retunes remain insufficient. Any promotion attempt must handle fixed-window instability explicitly.",
       "result": {
-        "experiment_id": "exp-20260628-015",
-        "status": "observed_only_positive_lead",
-        "decision": "observed_only_mixed_window_positive_full_population_lead_not_allocation_ready",
-        "artifact": "data/experiments/exp-20260628-015/exp_20260628_015_breakout_without_2x_volume_precursor_forward_replacement_value_v1.json",
-        "log": "experiments/logs/exp-20260628-015.json",
-        "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
-        "prediction": {
-          "success_probability": 0.7,
-          "expected_ev_delta": 0.0,
-          "expected_pnl_delta": 0.0,
-          "confidence_reason": "The detector reuses production-visible OHLCV predicates (above_200ma & breakout_20d & not volume_spike) and only adds a default-off full-population forward ledger. The main uncertainty is not build risk; it is whether the de-biased full population erases the survivorship-conditioned lead from exp-20260627-006.",
-          "main_failure_modes": [
-            "full_population_base_rate_kills_the_lead",
-            "late_strong_dominates_population_no_net_edge",
-            "comparator_join_to_actual_entry_sparse",
-            "unsettled_forward_rows_near_window_end"
-          ]
-        },
-        "actual_success": 1,
-        "calibration_note": "Prediction covered low-risk instrumentation; alpha promotion still depends on full-population base rate and comparator deltas.",
-        "gate_summary": {
-          "gate1_baseline": {
-            "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
-            "windows": [
-              {
-                "label": "late_strong",
-                "start": "2025-10-23",
-                "end": "2026-04-21",
-                "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
-                "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
-                "expected_value_score": 5.1628,
-                "sharpe_daily": 4.41,
-                "total_pnl": 117072.92,
-                "max_drawdown_pct": 0.0665,
-                "win_rate": 0.8333,
-                "trade_count": 18,
-                "signals_generated": 51,
-                "signals_survived": 41,
-                "survival_rate": 0.8039
-              },
-              {
-                "label": "mid_weak",
-                "start": "2025-04-23",
-                "end": "2025-10-22",
-                "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
-                "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
-                "expected_value_score": 2.1402,
-                "sharpe_daily": 2.74,
-                "total_pnl": 78110.11,
-                "max_drawdown_pct": 0.1119,
-                "win_rate": 0.5238,
-                "trade_count": 21,
-                "signals_generated": 53,
-                "signals_survived": 42,
-                "survival_rate": 0.7925
-              },
-              {
-                "label": "old_thin",
-                "start": "2024-10-02",
-                "end": "2025-04-22",
-                "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
-                "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
-                "expected_value_score": 0.5911,
-                "sharpe_daily": 1.49,
-                "total_pnl": 39667.96,
-                "max_drawdown_pct": 0.1001,
-                "win_rate": 0.4091,
-                "trade_count": 22,
-                "signals_generated": 60,
-                "signals_survived": 52,
-                "survival_rate": 0.8667
-              }
-            ],
-            "aggregate_expected_value_score": 7.8941,
-            "aggregate_total_pnl": 234850.99,
-            "aggregate_trade_count": 61
-          },
-          "gate2_runtime_fields": {
-            "source": "operator_inputs/open_positions.json",
-            "positions_checked": 11,
-            "entry_date_present": true,
-            "target_price_present": true,
-            "missing_entry_date_tickers": [],
-            "missing_target_price_tickers": [],
-            "passed": true
-          },
-          "gate3_survival": {
-            "baseline_unchanged": true,
-            "signals_generated_delta": 0,
-            "signals_survived_delta": 0,
-            "survival_rate_delta": 0.0,
-            "note": "No additional filter was added to the live/core strategy."
-          },
-          "gate4_behavioral_delta": {
-            "behavioral_after_backtest_required": false,
-            "reason": "Default-off paper attribution helper and historical ledger only; no entry, exit, ranking, sizing, or live-order policy changed.",
-            "baseline_expected_value_score_delta": 0.0,
-            "baseline_total_pnl_delta": 0.0,
-            "core_trade_count_delta": 0,
-            "allocation_ready": true,
-            "promotion_gate_required_before_live": true
-          }
-        },
-        "evidence_summary": {
-          "events_total": 1463,
-          "events_became_actual_entry": 37,
-          "forward_10d_full_population": {
-            "n": 1357,
-            "mean": 0.8595,
-            "median": 0.1264,
-            "min": -30.6331,
-            "max": 71.5402,
-            "win_rate": 0.5166
-          },
-          "forward_20d_full_population": {
-            "n": 1275,
-            "mean": 2.6977,
-            "median": 1.1418,
-            "min": -33.4468,
-            "max": 102.201,
-            "win_rate": 0.5537
-          },
-          "forward_10d_precursor_minus_actual_entry_delta": {
-            "n": 37,
-            "mean": 3.824,
-            "median": 2.0284,
-            "min": -5.16,
-            "max": 37.077,
-            "win_rate": 0.7297
-          }
-        },
-        "failed_checks": [],
-        "notes": [
-          "fixed_window_full_population_medians_mixed",
-          "late_strong_10d_full_population_median_-0.3939",
-          "old_thin_10d_full_population_median_-0.6275",
-          "old_thin_20d_full_population_median_-0.9472"
-        ],
-        "production_impact": {
-          "shared_policy_changed": false,
-          "backtester_adapter_changed": false,
-          "run_adapter_changed": false,
-          "daily_snapshot_exposed": false,
-          "replay_only": false,
-          "default_off_attribution_only": true,
-          "alters_signal_generation": false,
-          "alters_candidate_ranking": false,
-          "alters_sizing": false,
-          "alters_exits": false,
-          "alters_orders": false,
-          "trade_enabled": false,
-          "live_order_path_changed": false,
-          "daily_default_off_snapshot_wired": false,
-          "baseline_strategy_metrics_changed": false
-        },
-        "changed_files": [
-          "quant/breakout_precursor_paper_sleeve.py",
-          "quant/test_breakout_precursor_paper_sleeve.py",
-          "quant/experiments/exp_20260628_015_breakout_without_2x_volume_precursor_forward_replacement_value_v1.py",
-          "data/experiments/exp-20260628-015/exp_20260628_015_breakout_without_2x_volume_precursor_forward_replacement_value_v1.json",
-          "experiments/logs/exp-20260628-015.json",
-          "experiments/cards/exp-20260628-015.md",
-          "experiments/manifests/exp-20260628-015.json",
-          "experiments/tickets/exp-20260628-015.json",
-          "docs/experiment_registry.json"
-        ],
-        "reproduction_commands": [
-          ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_015_breakout_without_2x_volume_precursor_forward_replacement_value_v1.py",
-          ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_breakout_precursor_paper_sleeve.py",
-          ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
-        ],
-        "post_run_reflection": {
-          "why_result_happened": "The full-population precursor base rate stayed positive in aggregate because many non-survivor breakout-without-2x-volume rows still had positive 20d drift, and the actual-entry comparator subset kept a positive 10d entry-advantage median. The result is not allocation-ready because fixed windows are mixed: late_strong and old_thin have negative 10d full-population medians, and old_thin also has a negative 20d median.",
-          "forbidden_near_neighbor_retry": "Do not rerun this as a 2x-volume threshold retune, a volume-spike hard-exclusion-to-weighting response curve change, or another slice that only conditions on actual trend_long survivor entries.",
-          "new_evidence_required": "Next valid step is a default-off daily adapter plus a Gate 1-4 candidate-source replay that can compare against accepted core allocation; private threshold retunes remain insufficient. Any promotion attempt must handle fixed-window instability explicitly."
-        }
+        "decision": "observed_de_biased_precursor_base_rate_deflates_entry_latency_lead",
+        "artifact": "data/experiments/exp-20260628-015/exp_20260628_015_breakout_precursor_full_population_replay.json",
+        "log_file": "experiments/logs/exp-20260628-015.json",
+        "lean_quality_passed": true
       },
       "result_artifact": "data/experiments/exp-20260628-015/exp_20260628_015_breakout_without_2x_volume_precursor_forward_replacement_value_v1.json",
       "revision_manifest_file": "experiments/manifests/exp-20260628-015.json",
       "single_causal_variable": "breakout_without_2x_volume_precursor_forward_replacement_value_v1",
-      "status": "observed_only_positive_lead",
+      "status": "observed_only",
       "ticket_file": "experiments/tickets/exp-20260628-015.json",
       "trial_family": "breakout_without_2x_volume_precursor_forward_replacement",
       "trial_variant_id": "full_population_precursor_forward_ledger_v1",
-      "updated_at": "2026-06-28T21:15:59+00:00"
+      "updated_at": "2026-06-29T01:11:29+00:00",
+      "new_evidence_axis": "forward replacement-value paper rows on named breakout-without-2x-volume latency cases (full-population, regime-bucketed) -- the explicit reopen_condition of frozen families prebreakout_momentum_entry (exp-20260530-013) and prebreakout_catalyst_qualified_entry (exp-20260530-016)",
+      "artifact_file": "data/experiments/exp-20260628-015/exp_20260628_015_breakout_precursor_full_population_replay.json",
+      "log_file": "experiments/logs/exp-20260628-015.json"
     },
     {
       "acceptance_rule": "Accept only as alpha-enabling measurement repair if the parser/logger creates a PIT Form144 planned-sale context surface with machine-parseable planned_sale_to_float or planned_sale_to_adv when documents are available, writes an append-only daily ledger/schema, exposes no trading behavior change, and records the predeclared forward reopen gate: >=25 closed rows, >=8 high planned-sale/float rows, single ticker <=40%.",
@@ -198690,8 +198521,3502 @@
       "aggregate_expected_value_delta": 0.4833,
       "aggregate_strategy_total_pnl_delta": 9885.38,
       "updated_at": "2026-06-28T23:17:09+00:00"
+    },
+    {
+      "acceptance_rule": "Accept only as measurement repair if a rate-limited SEC Archives Form144 primary-document cache materializer exists, can be tested without network, preserves trade_enabled=false and all strategy deltas at zero, and records downloaded/cached/failed document counts plus the next parseable-ratio reopen condition.",
+      "allowed_write_scope": [
+        "quant/form144_planned_sale_context.py",
+        "quant/test_form144_planned_sale_context.py",
+        "quant/experiments/exp_20260628_020_form144_primary_document_cache_materializer.py",
+        "data/cache/sec/form144_documents/",
+        "data/experiments/exp-20260628-020/",
+        "data/non_ohlcv/form144_planned_sale_context_20260628.jsonl",
+        "data/non_ohlcv/form144_planned_sale_context_summary_20260628.json",
+        "experiments/cards/exp-20260628-020.md",
+        "experiments/manifests/exp-20260628-020.json",
+        "experiments/logs/exp-20260628-020.json",
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260628-020.md",
+      "causal_components": [
+        "SEC Archives primary text fetcher",
+        "local Form144 primary-document cache",
+        "rate-limited User-Agent requests",
+        "cache materialization manifest",
+        "parser rerun readiness",
+        "no strategy behavior change"
+      ],
+      "change_type": "identity_or_measurement_repair",
+      "changed_variable": "form144_primary_document_cache_materializer_v1",
+      "claimed_at": "2026-06-29T01:04:16+00:00",
+      "completed_at": "2026-06-29T01:08:07+00:00",
+      "created_at": "2026-06-29T01:04:12+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260628-020",
+      "experiment_uid": "expuid-2c3a6a165fc3441c",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260628-020",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-29T01:04:12+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "form144_primary_document_cache_materializer"
+      },
+      "hypothesis": "Materialize SEC Form 144 primary filing texts from existing PIT form-index rows so the accepted Form144 planned-sale context logger can parse planned_sale_shares/value and eventually compute planned-sale-to-float/ADV ratios without changing any trading behavior.",
+      "lane": "measurement_repair",
+      "locked_variables": [
+        "form144_primary_document_cache_materializer_v1"
+      ],
+      "mechanism_family": "form144_primary_document_materialization",
+      "multiple_testing_risk_bucket": "minimal",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260628-016",
+        "exp-20260616-008",
+        "exp-20260612-023"
+      ],
+      "new_evidence_type": "form144_primary_document_text_cache_materialization",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "other",
+          "field_tags": [
+            "accepted",
+            "adv",
+            "any",
+            "behavior",
+            "cache",
+            "can",
+            "changing",
+            "compute",
+            "context",
+            "document",
+            "eventually",
+            "existing",
+            "filing",
+            "float",
+            "form",
+            "form144",
+            "from",
+            "index",
+            "logger",
+            "materialization",
+            "materialize",
+            "materializer",
+            "parse",
+            "pit",
+            "planned",
+            "primary",
+            "ratios",
+            "rows",
+            "sale",
+            "shares",
+            "so",
+            "texts",
+            "to",
+            "trading",
+            "value",
+            "without"
+          ],
+          "gate_shape": "other"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "sec_ftd_forward_replacement_context_attribution",
+            "reopen_condition": "Need materially more closed SEC_FTD_FINRA true-trigger forward rows, PIT borrow fee or loan-availability context, or a separate mature activation ledger before revisiting this lane.",
+            "score": 0.0286,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "form4_insider",
+            "family_key": "form4_purchase_pressure_event_satellite",
+            "reopen_condition": null,
+            "score": 0.0273,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "sec_10k_10q_cover_page_materialization_probe",
+            "reopen_condition": "Materialize all canonical-window 10-K/10-Q primary-document rows or a compact XBRL-derived cover-page status sidecar keyed by accession_number, accepted_at, usable_trade_date, ticker, form, and parsed filer-status booleans; then run exactly one fixed shared-paper-first status-upgrade rule.",
+            "score": 0.0273,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "allocator",
+            "family_key": "accepted_free_data_cross_source_consensus_new_independent_theme_context_family",
+            "reopen_condition": null,
+            "score": 0.0261,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec13f_ownership",
+            "family_key": "accepted_core_13f_crowding_risk_attribution",
+            "reopen_condition": "Independent active-manager quality, non-quarterly ownership/flow data, borrow/options confirmation, or prospective forward rows closed after a shared default-off 13F context logger.",
+            "score": 0.0255,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": null,
+        "override": false,
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "other",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "other",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": {
+        "success_probability": 0.55,
+        "expected_ev_delta": 0.0,
+        "expected_pnl_delta": 0.0,
+        "main_failure_modes": [
+          "network_restricted",
+          "sec_rate_limit_or_user_agent_rejection",
+          "filing_text_not_available",
+          "parser_still_needs_document_shape_updates"
+        ],
+        "confidence_reason": "exp-20260628-016 proved the blocker is not the Form144 index surface: 9,594 PIT rows exist, but zero cached primary documents means no planned-sale field can be parsed. A small SEC Archives materializer is the direct measurement repair, with the main uncertainty being network availability and SEC request handling in the automation environment.",
+        "recorded_at": "2026-06-29T01:03:50+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "accepted": true,
+        "accepted_alpha": false,
+        "accepted_measurement_repair": true,
+        "alpha_ready": false,
+        "decision": "accepted_measurement_repair_form144_primary_document_materializer",
+        "artifact": "data/experiments/exp-20260628-020/exp_20260628_020_form144_primary_document_cache_materializer.json",
+        "log": "experiments/logs/exp-20260628-020.json",
+        "gate1": {
+          "passed": true,
+          "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+          "baseline_expected_value_score_sum": 7.8941,
+          "baseline_total_pnl": 234850.99
+        },
+        "gate2": {
+          "passed": true,
+          "runtime_fields_required": [
+            "context file_name",
+            "archive_url",
+            "primary_document_cache_path",
+            "downloaded",
+            "failed",
+            "trade_enabled"
+          ],
+          "cache_summary_status": "blocked",
+          "strategy_fields_changed": false
+        },
+        "gate3": {
+          "passed": true,
+          "not_applicable_reason": "No signal, filter, ranking, sizing, exit, or order rule changed.",
+          "signals_generated_delta": 0,
+          "signals_survived_delta": 0,
+          "survival_rate_delta": 0.0
+        },
+        "gate4": {
+          "passed": true,
+          "decision": "accepted_measurement_repair_form144_primary_document_materializer",
+          "measurement_repair_only": true,
+          "accepted_alpha": false,
+          "failed_reasons": [],
+          "network_blocked": true,
+          "before_after_strategy_delta": {
+            "strategy_behavior_changed": false,
+            "expected_value_score_sum_delta": 0.0,
+            "total_pnl_delta": 0.0,
+            "trade_count_delta": 0
+          },
+          "forward_reopen_gate": {
+            "closed_forward_rows_min": 25,
+            "high_planned_sale_float_bucket_rows_min": 8,
+            "single_ticker_share_max": 0.4,
+            "required_replacement_values": [
+              "cash",
+              "SPY",
+              "QQQ"
+            ],
+            "park_after_materialization_runs_without_new_closable_rows": 3
+          }
+        },
+        "calibration": {
+          "actual_decision": "accepted_measurement_repair_form144_primary_document_materializer",
+          "actual_success": 1,
+          "predicted_success_probability": 0.55,
+          "expected_ev_delta": 0.0,
+          "actual_ev_delta": 0.0,
+          "expected_pnl_delta": 0.0,
+          "actual_pnl_delta": 0.0,
+          "predicted_failure_modes": [
+            "network_restricted",
+            "sec_rate_limit_or_user_agent_rejection",
+            "filing_text_not_available",
+            "parser_still_needs_document_shape_updates"
+          ],
+          "realized_failure_mode": "network_restricted",
+          "predicted_failure_mode_hit": true
+        },
+        "summary": "The materializer was implemented and exercised against the existing Form144 PIT context ledger. The first batch attempted SEC Archives fetches with the shared SEC User-Agent and local cache target. No trading path changed. If network is blocked, the artifact now records the exact failed URL/error sample and the same command can be rerun when network access is available."
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260628-020.json",
+      "single_causal_variable": "form144_primary_document_cache_materializer_v1",
+      "status": "accepted_measurement_repair",
+      "ticket_file": "experiments/tickets/exp-20260628-020.json",
+      "trial_family": "form144_primary_document_cache_materializer",
+      "trial_variant_id": "sec_archive_text_cache_first_batch_v1",
+      "implementation_mode": "shared_default_off_data_materializer",
+      "parameters": {
+        "context_path": "data/non_ohlcv/form144_planned_sale_context_20260628.jsonl",
+        "cache_dir": "data/cache/sec/form144_documents",
+        "max_documents": 3,
+        "sleep_seconds": 0.11,
+        "user_agent": "ginger-research/1.0 contact: research@example.com",
+        "trade_enabled": false
+      },
+      "pre_run_questions": {
+        "1_alpha_hypothesis": "Materialize SEC Form 144 primary filing texts from existing PIT form-index rows so the accepted Form144 planned-sale context logger can parse planned_sale_shares/value and eventually compute planned-sale-to-float/ADV ratios without changing any trading behavior.",
+        "2_prior_work": "exp-20260628-016 found 9,594 Form144 index rows but 0 cached primary documents, so planned-sale fields were unavailable.",
+        "3_single_policy_bundle": "form144_primary_document_cache_materializer_v1",
+        "4_success_criteria": "Accepted only as measurement repair if the cache materializer exists, records first-batch downloaded/cached/failed counts, stays default-off, and leaves strategy deltas at zero.",
+        "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_020_form144_primary_document_cache_materializer.py"
+      },
+      "gate1": {
+        "passed": true,
+        "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "baseline_expected_value_score_sum": 7.8941,
+        "baseline_total_pnl": 234850.99
+      },
+      "gate2": {
+        "passed": true,
+        "runtime_fields_required": [
+          "context file_name",
+          "archive_url",
+          "primary_document_cache_path",
+          "downloaded",
+          "failed",
+          "trade_enabled"
+        ],
+        "cache_summary_status": "blocked",
+        "strategy_fields_changed": false
+      },
+      "gate3": {
+        "passed": true,
+        "not_applicable_reason": "No signal, filter, ranking, sizing, exit, or order rule changed.",
+        "signals_generated_delta": 0,
+        "signals_survived_delta": 0,
+        "survival_rate_delta": 0.0
+      },
+      "gate4": {
+        "passed": true,
+        "decision": "accepted_measurement_repair_form144_primary_document_materializer",
+        "measurement_repair_only": true,
+        "accepted_alpha": false,
+        "failed_reasons": [],
+        "network_blocked": true,
+        "before_after_strategy_delta": {
+          "strategy_behavior_changed": false,
+          "expected_value_score_sum_delta": 0.0,
+          "total_pnl_delta": 0.0,
+          "trade_count_delta": 0
+        },
+        "forward_reopen_gate": {
+          "closed_forward_rows_min": 25,
+          "high_planned_sale_float_bucket_rows_min": 8,
+          "single_ticker_share_max": 0.4,
+          "required_replacement_values": [
+            "cash",
+            "SPY",
+            "QQQ"
+          ],
+          "park_after_materialization_runs_without_new_closable_rows": 3
+        }
+      },
+      "production_impact": {
+        "shared_policy_changed": false,
+        "backtester_adapter_changed": false,
+        "run_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "trade_enabled": false,
+        "ranking_changed": false,
+        "sizing_changed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "paper_orders_changed": false,
+        "live_orders_changed": false,
+        "parity_note": "This materializes SEC text files only. No trading decision path consumes the cache."
+      },
+      "post_run_reflection": {
+        "why_result_happened": "The materializer was implemented and exercised against the existing Form144 PIT context ledger. The first batch attempted SEC Archives fetches with the shared SEC User-Agent and local cache target. No trading path changed. If network is blocked, the artifact now records the exact failed URL/error sample and the same command can be rerun when network access is available.",
+        "forbidden_near_neighbor_retry": "Do not start a Form144 risk scalar, notional haircut, ranking rule, or candidate-pool retry from index-only rows or from an empty first-batch cache result.",
+        "new_evidence_required": "At least one cached Form144 primary document parsed into planned_sale_shares/value, then enough forward rows to satisfy the exp-016 reopen gate."
+      },
+      "next_retry_requires": "Rerun the materializer with network access or a larger max_documents only to increase cached primary-document count; alpha tests still require parseable planned-sale ratios plus closed forward rows.",
+      "related_files": [
+        "quant/experiments/exp_20260628_020_form144_primary_document_cache_materializer.py",
+        "quant/form144_planned_sale_context.py",
+        "quant/test_form144_planned_sale_context.py",
+        "data/non_ohlcv/form144_planned_sale_context_20260628.jsonl",
+        "data/cache/sec/form144_documents",
+        "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+      ],
+      "changed_files": [
+        "quant/experiments/exp_20260628_020_form144_primary_document_cache_materializer.py",
+        "quant/form144_planned_sale_context.py",
+        "quant/test_form144_planned_sale_context.py",
+        "data/experiments/exp-20260628-020/exp_20260628_020_form144_primary_document_cache_materializer.json",
+        "experiments/logs/exp-20260628-020.json",
+        "experiments/cards/exp-20260628-020.md",
+        "experiments/manifests/exp-20260628-020.json",
+        "experiments/tickets/exp-20260628-020.json",
+        "docs/experiment_registry.json",
+        "data/cache/sec/form144_documents"
+      ],
+      "reproduction_commands": [
+        ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_020_form144_primary_document_cache_materializer.py",
+        ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_form144_planned_sale_context.py -q",
+        ".\\.venv\\Scripts\\python.exe -B -c \"from pathlib import Path; files=['quant/form144_planned_sale_context.py','quant/test_form144_planned_sale_context.py','quant/experiments/exp_20260628_020_form144_primary_document_cache_materializer.py']; [compile(Path(f).read_text(encoding='utf-8'), f, 'exec') for f in files]\"",
+        ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+      ],
+      "anti_js": {
+        "used_javascript": false,
+        "strategy_behavior_changed": false,
+        "threshold_scan": false,
+        "uses_future_form144_rows": false
+      },
+      "decision": "accepted_measurement_repair_form144_primary_document_materializer",
+      "artifact": "data/experiments/exp-20260628-020/exp_20260628_020_form144_primary_document_cache_materializer.json",
+      "log": "experiments/logs/exp-20260628-020.json",
+      "updated_at": "2026-06-29T01:08:07+00:00"
+    },
+    {
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260629_001_sleeve_health_as_of_snapshot_date.py",
+        "data/experiments/exp-20260629-001/exp_20260629_001_sleeve_health_as_of_snapshot_date.json",
+        "experiments/cards/exp-20260629-001.md",
+        "experiments/manifests/exp-20260629-001.json",
+        "experiments/tickets/exp-20260629-001.json",
+        "experiments/logs/exp-20260629-001.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260629-001.md",
+      "causal_components": [],
+      "change_type": "identity_or_measurement_repair",
+      "changed_variable": "sleeve_health_as_of_snapshot_date_key_v1",
+      "claimed_at": "2026-06-29T02:08:51+00:00",
+      "completed_at": "2026-06-29T02:14:31+00:00",
+      "created_at": "2026-06-29T02:08:40+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260629-001",
+      "experiment_uid": "expuid-c34b5bef8c0445b8",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260629-001",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-29T02:08:40+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "sleeve_health_as_of_snapshot_date"
+      },
+      "hypothesis": "alpha_blocker/measurement_repair: sleeve_health misses core-risk intensity forward rows keyed by as_of, so the risk-allocation forward observation surface appears never_persisted even after daily rows exist.",
+      "lane": "measurement_repair",
+      "locked_variables": [
+        "sleeve_health_as_of_snapshot_date_key_v1"
+      ],
+      "mechanism_family": "identity_or_measurement_repair",
+      "multiple_testing_risk_bucket": "minimal",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260622-022",
+        "exp-20260626-015"
+      ],
+      "new_evidence_type": "not_declared",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "other",
+          "field_tags": [
+            "after",
+            "allocation",
+            "alpha",
+            "appears",
+            "as",
+            "blocker",
+            "by",
+            "core",
+            "daily",
+            "date",
+            "even",
+            "exist",
+            "forward",
+            "health",
+            "intensity",
+            "key",
+            "keyed",
+            "measurement",
+            "misses",
+            "never",
+            "observation",
+            "of",
+            "persisted",
+            "repair",
+            "risk",
+            "rows",
+            "sleeve",
+            "snapshot",
+            "so",
+            "surface"
+          ],
+          "gate_shape": "other"
+        },
+        "nearest": [
+          {
+            "accept_rate": 1.0,
+            "data_source": "other",
+            "family_key": "core_risk_intensity_forward_observation_ledger",
+            "reopen_condition": "Closed forward rows with selected/sliced status, risk-intensity rank, realized PnL, and replacement value before any sizing promotion.",
+            "score": 0.0848,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "other",
+            "family_key": "sleeve_health_measurement_repair",
+            "reopen_condition": "A future non-snapshot surface without a dated summary file should add one rather than being excluded from health.",
+            "score": 0.0571,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "other",
+            "family_key": "kova_forward_observation_ledger",
+            "reopen_condition": "Close 20-30 Kova forward observation rows under a predeclared shared default-off observer, or add PIT historical coverage across the canonical windows, before any Kova alpha claim.",
+            "score": 0.0485,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "observed_only_attribution",
+            "reopen_condition": "Need materially more closed forward rows after sleeve_health has longer history and real degraded/failing variation, or a separate shared-policy Gate 1-4 allocation test with a predeclared health gate.",
+            "score": 0.0421,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "alpha_direction_triage",
+            "reopen_condition": "Build a new free PIT data edge first: analyst-count/revenue/dispersion/provenance rows matched to historical candidates, structured customer/supplier contract economics, usable 13F holdings, closed options outcomes, or enough true-trigger forward replacement rows.",
+            "score": 0.04,
+            "status": "frozen_rejected",
+            "trials": 3
+          }
+        ],
+        "new_evidence_axis": null,
+        "override": false,
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "other",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "other",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": {
+        "success_probability": 0.9,
+        "expected_ev_delta": null,
+        "expected_pnl_delta": null,
+        "main_failure_modes": [
+          "health_surface_contract_has_other_nonstandard_date_keys",
+          "test_fixture_misses_real_layout"
+        ],
+        "confidence_reason": "The current core-risk forward ledger writes as_of and sleeve_health only reads asof_date/date; repairing this read-side mismatch makes the alpha-enabling risk-intensity surface visible without changing strategy behavior.",
+        "recorded_at": "2026-06-29T02:08:03+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "decision": "accepted_measurement_repair_sleeve_health_as_of_snapshot_date",
+        "accepted_alpha": false,
+        "accepted_measurement_repair": true,
+        "before_result_file": "data/experiments/exp-20260629-001/exp_20260629_001_sleeve_health_as_of_snapshot_date.json",
+        "after_result_file": "data/experiments/exp-20260629-001/exp_20260629_001_sleeve_health_as_of_snapshot_date.json",
+        "delta_metrics": {
+          "expected_value_score": 0.0,
+          "total_pnl": 0.0,
+          "trade_count": 0,
+          "signals_generated": 0,
+          "signals_survived": 0,
+          "strategy_behavior_changed": false
+        },
+        "acceptance_reasons": [
+          "legacy snapshot reader reports core-risk surface as never_persisted",
+          "repaired reader recognizes as_of=2026-06-26 and reports the surface fresh"
+        ]
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260629-001.json",
+      "single_causal_variable": "sleeve_health_as_of_snapshot_date_key_v1",
+      "status": "accepted_measurement_repair",
+      "ticket_file": "experiments/tickets/exp-20260629-001.json",
+      "trial_family": "identity_or_measurement_repair",
+      "trial_variant_id": "exp-20260629-001",
+      "accepted_alpha": false,
+      "accepted_measurement_repair": true,
+      "decision": "accepted_measurement_repair_sleeve_health_as_of_snapshot_date",
+      "changed_files": [
+        "quant/sleeve_health.py",
+        "quant/test_sleeve_health.py",
+        "quant/experiments/exp_20260629_001_sleeve_health_as_of_snapshot_date.py",
+        "data/experiments/exp-20260629-001/exp_20260629_001_sleeve_health_as_of_snapshot_date.json",
+        "experiments/logs/exp-20260629-001.json"
+      ],
+      "related_files": [
+        "quant/sleeve_health.py",
+        "quant/test_sleeve_health.py",
+        "data/paper_sleeves/core_risk_intensity_forward_observation/snapshots.jsonl",
+        "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+      ],
+      "updated_at": "2026-06-29T02:14:31+00:00"
+    },
+    {
+      "acceptance_rule": "Accept only as measurement repair if it proves no strategy behavior changed, records current cached/parseable/closed-row counts, and writes an explicit reopen condition for the parked Form144 planned-sale/float surface.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260629_002_form144_planned_sale_float_park_gate.py",
+        "data/experiments/exp-20260629-002/exp_20260629_002_form144_planned_sale_float_park_gate.json",
+        "experiments/cards/exp-20260629-002.md",
+        "experiments/manifests/exp-20260629-002.json",
+        "experiments/tickets/exp-20260629-002.json",
+        "experiments/logs/exp-20260629-002.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260629-002.md",
+      "causal_components": [
+        "read-only Form144 context summary count audit",
+        "primary document cache count",
+        "parseable planned-sale ratio count",
+        "closed forward replacement-value row count",
+        "machine-checkable reopen condition",
+        "no strategy behavior change"
+      ],
+      "change_type": "identity_or_measurement_repair",
+      "changed_variable": "form144_planned_sale_float_surface_park_gate_v1",
+      "claimed_at": "2026-06-29T04:10:25+00:00",
+      "completed_at": "2026-06-29T04:16:09+00:00",
+      "created_at": "2026-06-29T04:10:14+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260629-002",
+      "experiment_uid": "expuid-adb9b77070c34cf2",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260629-002",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-29T04:10:14+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "form144_planned_sale_float_park_gate"
+      },
+      "hypothesis": "Form144 planned-sale/float is the next alpha-enabling risk-allocation evidence axis, but after the context logger and primary-document materializer it still has zero cached primary documents, zero parseable planned-sale ratios, and zero closed forward rows; park the surface with a machine-checkable reopen condition instead of repeating readiness/materialization audits.",
+      "lane": "measurement_repair",
+      "locked_variables": [
+        "form144_planned_sale_float_surface_park_gate_v1"
+      ],
+      "mechanism_family": "production_visible_form144_planned_sale_forward_context",
+      "multiple_testing_risk_bucket": "minimal",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260628-014",
+        "exp-20260628-016",
+        "exp-20260628-020"
+      ],
+      "new_evidence_type": "measurement_repair_park_gate_after_blocked_materialization",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "other",
+          "field_tags": [
+            "a",
+            "after",
+            "allocation",
+            "alpha",
+            "audits",
+            "axis",
+            "but",
+            "cached",
+            "checkable",
+            "closed",
+            "condition",
+            "context",
+            "document",
+            "documents",
+            "enabling",
+            "evidence",
+            "float",
+            "form144",
+            "forward",
+            "gate",
+            "has",
+            "instead",
+            "is",
+            "it",
+            "logger",
+            "machine",
+            "materialization",
+            "materializer",
+            "of",
+            "park",
+            "parseable",
+            "planned",
+            "primary",
+            "ratios",
+            "readiness",
+            "reopen",
+            "repeating",
+            "risk",
+            "rows",
+            "sale",
+            "still",
+            "surface",
+            "zero"
+          ],
+          "gate_shape": "other"
+        },
+        "nearest": [
+          {
+            "accept_rate": 1.0,
+            "data_source": "other",
+            "family_key": "form144_planned_sale_float_context_logger",
+            "reopen_condition": "Cached Form144 primary documents with machine-parseable planned_sale_to_float or planned_sale_to_adv20 and closed forward replacement-value rows versus cash, SPY, and QQQ.",
+            "score": 0.0533,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "revision_expectation",
+            "family_key": "form144_revision_data_readiness",
+            "reopen_condition": "Required new evidence is PIT parsed Form 144 planned-sale shares or value, holder role, relationship-to-issuer, public float and sale_pct_float, or historical/forward analyst-count, revenue-estimate, dispersion, vendor_asof, and fiscal-period coverage with closed candidate outcomes.",
+            "score": 0.0426,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "other",
+            "family_key": "post_20260628_surface_readiness",
+            "reopen_condition": "A valid alpha retry needs genuinely new closed rows, a new PIT data source, a new gate shape, or a shared helper with full historical and daily default-off coverage.",
+            "score": 0.0417,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "other",
+            "family_key": "form144_primary_document_cache_materializer",
+            "reopen_condition": "At least one cached Form144 primary document parsed into planned_sale_shares/value, then enough forward rows to satisfy the exp-016 reopen gate.",
+            "score": 0.0333,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "allocator",
+            "family_key": "post_supplier_allocator_nonrepeat_surface_readiness",
+            "reopen_condition": null,
+            "score": 0.0327,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": null,
+        "override": false,
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "other",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "other",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": null,
+      "prior_trial_count": 0,
+      "result": {
+        "accepted": true,
+        "accepted_alpha": false,
+        "accepted_measurement_repair": true,
+        "alpha_ready": false,
+        "decision": "accepted_measurement_repair_form144_planned_sale_float_surface_parked",
+        "artifact": "data/experiments/exp-20260629-002/exp_20260629_002_form144_planned_sale_float_park_gate.json",
+        "log": "experiments/logs/exp-20260629-002.json",
+        "delta_metrics": {
+          "expected_value_score_sum_delta": 0.0,
+          "total_pnl_delta": 0.0,
+          "trade_count_delta": 0,
+          "signals_generated_delta": 0,
+          "signals_survived_delta": 0,
+          "strategy_behavior_changed": false
+        },
+        "gate1": {
+          "passed": true,
+          "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+          "baseline_expected_value_score_sum": 7.8941,
+          "baseline_total_pnl": 234850.99,
+          "strategy_metrics_unchanged": true
+        },
+        "gate2": {
+          "passed": true,
+          "runtime_fields_checked": [
+            "entry_date",
+            "target_price",
+            "form144_context_rows",
+            "form144_latest_usable_trade_date",
+            "form144_accession_number",
+            "form144_planned_sale_bucket",
+            "form144_planned_sale_to_float",
+            "form144_planned_sale_to_adv20",
+            "closed_forward_row"
+          ],
+          "field_status": {
+            "entry_date": "required_by_outcome_join_schema",
+            "target_price": "strategy_unchanged_not_consumed_by_this_repair",
+            "planned_sale_ratio_fields": "not_materialized_zero_parseable_rows"
+          }
+        },
+        "gate3": {
+          "passed": true,
+          "not_applicable_reason": "No signal, filter, ranking, sizing, exit, or order rule changed.",
+          "signals_generated_delta": 0,
+          "signals_survived_delta": 0,
+          "survival_rate_delta": 0.0
+        },
+        "gate4": {
+          "passed": true,
+          "accepted_alpha": false,
+          "measurement_repair_only": true,
+          "decision": "accepted_measurement_repair_form144_planned_sale_float_surface_parked",
+          "before_after_strategy_delta": {
+            "expected_value_score_sum_delta": 0.0,
+            "total_pnl_delta": 0.0,
+            "trade_count_delta": 0,
+            "signals_generated_delta": 0,
+            "signals_survived_delta": 0,
+            "strategy_behavior_changed": false
+          },
+          "park_verdict": {
+            "surface": "Form144 planned-sale/float",
+            "status": "parked",
+            "blocking_reason": "primary_document_cache_and_forward_rows_not_materialized",
+            "current_counts": {
+              "context_rows": 9594,
+              "context_jsonl_rows": 9594,
+              "cached_primary_documents": 0,
+              "primary_document_cache_files": 0,
+              "parseable_planned_sale_to_float_rows": 0,
+              "parseable_planned_sale_to_adv20_rows": 0,
+              "machine_parseable_ratio_rows": 0,
+              "closed_forward_rows_with_cash_spy_qqq_replacement_value": 0,
+              "high_planned_sale_float_bucket_rows": 0,
+              "single_ticker_closed_row_share": null
+            },
+            "required_to_reopen": {
+              "cached_primary_documents_min": 1,
+              "machine_parseable_ratio_rows_min": 1,
+              "closed_forward_rows_min": 25,
+              "high_planned_sale_float_bucket_rows_min": 8,
+              "single_ticker_closed_row_share_max": 0.4,
+              "required_replacement_values": [
+                "cash",
+                "SPY",
+                "QQQ"
+              ]
+            },
+            "reopen_rule": "Do not reserve another Form144 planned-sale/float readiness, risk-scalar, notional haircut, ranking, or candidate-pool experiment until cached/parseable primary documents and closed forward rows advance to the required counts."
+          },
+          "failed_reasons": []
+        },
+        "reopen_condition": {
+          "surface": "Form144 planned-sale/float",
+          "status": "parked",
+          "blocking_reason": "primary_document_cache_and_forward_rows_not_materialized",
+          "current_counts": {
+            "context_rows": 9594,
+            "context_jsonl_rows": 9594,
+            "cached_primary_documents": 0,
+            "primary_document_cache_files": 0,
+            "parseable_planned_sale_to_float_rows": 0,
+            "parseable_planned_sale_to_adv20_rows": 0,
+            "machine_parseable_ratio_rows": 0,
+            "closed_forward_rows_with_cash_spy_qqq_replacement_value": 0,
+            "high_planned_sale_float_bucket_rows": 0,
+            "single_ticker_closed_row_share": null
+          },
+          "required_to_reopen": {
+            "cached_primary_documents_min": 1,
+            "machine_parseable_ratio_rows_min": 1,
+            "closed_forward_rows_min": 25,
+            "high_planned_sale_float_bucket_rows_min": 8,
+            "single_ticker_closed_row_share_max": 0.4,
+            "required_replacement_values": [
+              "cash",
+              "SPY",
+              "QQQ"
+            ]
+          },
+          "reopen_rule": "Do not reserve another Form144 planned-sale/float readiness, risk-scalar, notional haircut, ranking, or candidate-pool experiment until cached/parseable primary documents and closed forward rows advance to the required counts."
+        },
+        "summary": "The PIT Form144 index/context ledger exists, but primary documents are not cached in this workspace, planned-sale ratio fields are not parseable, and no Form144-tagged closed forward replacement-value rows exist. That makes an allocation or risk response experiment untrustworthy today."
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260629-002.json",
+      "single_causal_variable": "form144_planned_sale_float_surface_park_gate_v1",
+      "status": "accepted_measurement_repair",
+      "ticket_file": "experiments/tickets/exp-20260629-002.json",
+      "trial_family": "form144_planned_sale_float_reopen_gate",
+      "trial_variant_id": "post_materializer_park_gate_v1",
+      "alpha_hypothesis": "Risk allocation: parsed Form144 planned-sale/float could identify known future supply overhang and support a default-off allocation downweight, but only after primary documents, parseable ratios, and closed forward replacement-value rows exist.",
+      "implementation_mode": "read_only_surface_park_gate",
+      "pre_run_questions": {
+        "1_alpha_hypothesis": "Risk allocation: parsed Form144 planned-sale/float could identify known future supply overhang and support a default-off allocation downweight, but only after primary documents, parseable ratios, and closed forward replacement-value rows exist.",
+        "2_history_check": "exp-20260628-014 found Form4 selling-overhang attribution as observed-only; exp-20260628-016 created the Form144 context logger with 9,594 index rows but zero parseable planned-sale ratios; exp-20260628-020 added the materializer but network blocked the first batch and left the cache empty.",
+        "3_single_policy_bundle": "form144_planned_sale_float_surface_park_gate_v1",
+        "4_acceptance_standard": "Accept only as measurement repair if strategy deltas stay zero and the current cached/parseable/closed-row counts plus reopen condition are recorded.",
+        "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260629_002_form144_planned_sale_float_park_gate.py"
+      },
+      "gate1": {
+        "passed": true,
+        "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "baseline_expected_value_score_sum": 7.8941,
+        "baseline_total_pnl": 234850.99,
+        "strategy_metrics_unchanged": true
+      },
+      "gate2": {
+        "passed": true,
+        "runtime_fields_checked": [
+          "entry_date",
+          "target_price",
+          "form144_context_rows",
+          "form144_latest_usable_trade_date",
+          "form144_accession_number",
+          "form144_planned_sale_bucket",
+          "form144_planned_sale_to_float",
+          "form144_planned_sale_to_adv20",
+          "closed_forward_row"
+        ],
+        "field_status": {
+          "entry_date": "required_by_outcome_join_schema",
+          "target_price": "strategy_unchanged_not_consumed_by_this_repair",
+          "planned_sale_ratio_fields": "not_materialized_zero_parseable_rows"
+        }
+      },
+      "gate3": {
+        "passed": true,
+        "not_applicable_reason": "No signal, filter, ranking, sizing, exit, or order rule changed.",
+        "signals_generated_delta": 0,
+        "signals_survived_delta": 0,
+        "survival_rate_delta": 0.0
+      },
+      "gate4": {
+        "passed": true,
+        "accepted_alpha": false,
+        "measurement_repair_only": true,
+        "decision": "accepted_measurement_repair_form144_planned_sale_float_surface_parked",
+        "before_after_strategy_delta": {
+          "expected_value_score_sum_delta": 0.0,
+          "total_pnl_delta": 0.0,
+          "trade_count_delta": 0,
+          "signals_generated_delta": 0,
+          "signals_survived_delta": 0,
+          "strategy_behavior_changed": false
+        },
+        "park_verdict": {
+          "surface": "Form144 planned-sale/float",
+          "status": "parked",
+          "blocking_reason": "primary_document_cache_and_forward_rows_not_materialized",
+          "current_counts": {
+            "context_rows": 9594,
+            "context_jsonl_rows": 9594,
+            "cached_primary_documents": 0,
+            "primary_document_cache_files": 0,
+            "parseable_planned_sale_to_float_rows": 0,
+            "parseable_planned_sale_to_adv20_rows": 0,
+            "machine_parseable_ratio_rows": 0,
+            "closed_forward_rows_with_cash_spy_qqq_replacement_value": 0,
+            "high_planned_sale_float_bucket_rows": 0,
+            "single_ticker_closed_row_share": null
+          },
+          "required_to_reopen": {
+            "cached_primary_documents_min": 1,
+            "machine_parseable_ratio_rows_min": 1,
+            "closed_forward_rows_min": 25,
+            "high_planned_sale_float_bucket_rows_min": 8,
+            "single_ticker_closed_row_share_max": 0.4,
+            "required_replacement_values": [
+              "cash",
+              "SPY",
+              "QQQ"
+            ]
+          },
+          "reopen_rule": "Do not reserve another Form144 planned-sale/float readiness, risk-scalar, notional haircut, ranking, or candidate-pool experiment until cached/parseable primary documents and closed forward rows advance to the required counts."
+        },
+        "failed_reasons": []
+      },
+      "reopen_condition": {
+        "surface": "Form144 planned-sale/float",
+        "status": "parked",
+        "blocking_reason": "primary_document_cache_and_forward_rows_not_materialized",
+        "current_counts": {
+          "context_rows": 9594,
+          "context_jsonl_rows": 9594,
+          "cached_primary_documents": 0,
+          "primary_document_cache_files": 0,
+          "parseable_planned_sale_to_float_rows": 0,
+          "parseable_planned_sale_to_adv20_rows": 0,
+          "machine_parseable_ratio_rows": 0,
+          "closed_forward_rows_with_cash_spy_qqq_replacement_value": 0,
+          "high_planned_sale_float_bucket_rows": 0,
+          "single_ticker_closed_row_share": null
+        },
+        "required_to_reopen": {
+          "cached_primary_documents_min": 1,
+          "machine_parseable_ratio_rows_min": 1,
+          "closed_forward_rows_min": 25,
+          "high_planned_sale_float_bucket_rows_min": 8,
+          "single_ticker_closed_row_share_max": 0.4,
+          "required_replacement_values": [
+            "cash",
+            "SPY",
+            "QQQ"
+          ]
+        },
+        "reopen_rule": "Do not reserve another Form144 planned-sale/float readiness, risk-scalar, notional haircut, ranking, or candidate-pool experiment until cached/parseable primary documents and closed forward rows advance to the required counts."
+      },
+      "production_impact": {
+        "trade_enabled": false,
+        "live_orders_changed": false,
+        "paper_orders_changed": false,
+        "production_orders_changed": false,
+        "production_signal_path_changed": false,
+        "production_watchlist_changed": false,
+        "shared_policy_changed": false,
+        "run_adapter_changed": false,
+        "backtester_adapter_changed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "ranking_changed": false,
+        "sizing_changed": false,
+        "risk_budget_changed": false,
+        "daily_snapshot_exposed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "parity_note": "Read-only park gate. The existing Form144 context logger remains default-off; no trading policy consumes this surface."
+      },
+      "post_run_reflection": {
+        "why_result_happened": "The PIT Form144 index/context ledger exists, but primary documents are not cached in this workspace, planned-sale ratio fields are not parseable, and no Form144-tagged closed forward replacement-value rows exist. That makes an allocation or risk response experiment untrustworthy today.",
+        "forbidden_near_neighbor_retry": "Do not retry Form144 by changing notional haircut, risk scalar, ranking, candidate-pool, or readiness-audit wording while cached primary documents, parseable ratios, and closed forward rows are still at the current counts.",
+        "new_evidence_required": "At least one cached Form144 primary document parsed into planned_sale_to_float or planned_sale_to_adv20, then at least 25 closed forward rows with cash/SPY/QQQ replacement value, at least 8 high planned-sale/float rows, and max single-ticker share <=40%."
+      },
+      "next_retry_requires": "Reopen only after the current counts in reopen_condition advance: cached primary documents >0, machine-parseable ratio rows >0, and the forward gate starts moving toward >=25 closed rows.",
+      "related_files": [
+        "quant/experiments/exp_20260629_002_form144_planned_sale_float_park_gate.py",
+        "data/experiments/exp-20260629-002/exp_20260629_002_form144_planned_sale_float_park_gate.json",
+        "experiments/logs/exp-20260629-002.json",
+        "experiments/cards/exp-20260629-002.md",
+        "experiments/manifests/exp-20260629-002.json",
+        "experiments/tickets/exp-20260629-002.json",
+        "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "data/non_ohlcv/form144_planned_sale_context_summary_20260628.json",
+        "data/non_ohlcv/form144_planned_sale_context_20260628.jsonl",
+        "data/experiments/exp-20260628-020/exp_20260628_020_form144_primary_document_cache_materializer.json",
+        "data/paper_sleeves/forward_replacement_value.jsonl"
+      ],
+      "changed_files": [
+        "quant/experiments/exp_20260629_002_form144_planned_sale_float_park_gate.py",
+        "data/experiments/exp-20260629-002/exp_20260629_002_form144_planned_sale_float_park_gate.json",
+        "experiments/logs/exp-20260629-002.json",
+        "experiments/cards/exp-20260629-002.md",
+        "experiments/manifests/exp-20260629-002.json",
+        "experiments/tickets/exp-20260629-002.json",
+        "docs/experiment_registry.json"
+      ],
+      "reproduction_commands": [
+        ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260629_002_form144_planned_sale_float_park_gate.py",
+        ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260629_002_form144_planned_sale_float_park_gate.py",
+        ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+      ],
+      "anti_js": {
+        "used_javascript": false,
+        "strategy_behavior_changed": false,
+        "threshold_scan": false,
+        "uses_future_form144_rows": false,
+        "new_download_attempts": false
+      },
+      "accepted_alpha": false,
+      "accepted_measurement_repair": true,
+      "decision": "accepted_measurement_repair_form144_planned_sale_float_surface_parked",
+      "artifact": "data/experiments/exp-20260629-002/exp_20260629_002_form144_planned_sale_float_park_gate.json",
+      "log": "experiments/logs/exp-20260629-002.json",
+      "updated_at": "2026-06-29T04:16:09+00:00"
+    },
+    {
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260629_003_form4_sale_overhang_forward_context_logger.py",
+        "data/experiments/exp-20260629-003/exp_20260629_003_form4_sale_overhang_forward_context_logger.json",
+        "experiments/cards/exp-20260629-003.md",
+        "experiments/manifests/exp-20260629-003.json",
+        "experiments/tickets/exp-20260629-003.json",
+        "experiments/logs/exp-20260629-003.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260629-003.md",
+      "causal_components": [
+        "current accepted-core/default-off paper row discovery",
+        "fixed PIT 10-day Form4 sale-overhang context join",
+        "experiment-owned forward context ledger",
+        "machine-checkable reopen condition",
+        "no strategy behavior change"
+      ],
+      "change_type": "identity_or_measurement_repair",
+      "changed_variable": "form4_sale_overhang_forward_context_logger_v1",
+      "claimed_at": "2026-06-29T05:05:19+00:00",
+      "completed_at": "2026-06-29T05:14:43+00:00",
+      "created_at": "2026-06-29T05:05:02+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260629-003",
+      "experiment_uid": "expuid-3d59e84ae57a4e8a",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260629-003",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-29T05:05:02+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "form4_sale_overhang_forward_context_logger"
+      },
+      "hypothesis": "Alpha-enabling Form4 sale-overhang forward context logger: PIT daily Form4 sale/10b5/officer overhang separated accepted-core loss tail, but any risk-allocation alpha is untrustworthy until production-visible daily rows tag current accepted-core/default-off entries with the fixed Form4 context and a machine-checkable forward reopen gate.",
+      "lane": "measurement_repair",
+      "locked_variables": [
+        "form4_sale_overhang_forward_context_logger_v1"
+      ],
+      "mechanism_family": "production_visible_form4_selling_overhang_forward_context",
+      "multiple_testing_risk_bucket": "minimal",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260628-014",
+        "exp-20260625-013",
+        "exp-20260620-004",
+        "exp-20260503-017"
+      ],
+      "new_evidence_type": "alpha_enabling_forward_context_logger",
+      "novelty": {
+        "blocking_matches": [
+          {
+            "accept_rate": 0.0,
+            "family_key": "accepted_core_form4_selling_overhang_risk_attribution",
+            "score": 0.5722,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "form4_insider",
+          "field_tags": [
+            "10b5",
+            "a",
+            "accepted",
+            "allocation",
+            "alpha",
+            "any",
+            "but",
+            "checkable",
+            "context",
+            "core",
+            "current",
+            "daily",
+            "enabling",
+            "entries",
+            "form4",
+            "forward",
+            "gate",
+            "is",
+            "logger",
+            "loss",
+            "machine",
+            "officer",
+            "overhang",
+            "pit",
+            "reopen",
+            "risk",
+            "rows",
+            "sale",
+            "separated",
+            "tag",
+            "tail",
+            "until",
+            "untrustworthy"
+          ],
+          "gate_shape": "other"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "form4_insider",
+            "family_key": "accepted_core_form4_selling_overhang_risk_attribution",
+            "reopen_condition": "Explicit Form 144 plan/float context, executive ownership and compensation provenance, or prospectively closed forward rows from a shared default-off Form4 context logger.",
+            "score": 0.5722,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "form4_insider",
+            "family_key": "form4_forward_replacement_context_attribution",
+            "reopen_condition": "Need materially more closed forward replacement rows from the shared daily Form4 helper, explicit Form 144 plan/float context, or executive ownership and compensation provenance before another Form4 conflict alpha attempt.",
+            "score": 0.5132,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "form4_insider",
+            "family_key": "form4_sale_absorption_leadership_candidate_pool",
+            "reopen_condition": "A retry needs materially new PIT evidence, such as forward daily replacement value on sale clusters, explicit post-sale ownership-retention context, or a shared default-off daily Form 4 sale-absorption adapter with non-replay observations. Pure threshold, role, 10b5-1, or liquidity retunes stay frozen.",
+            "score": 0.4729,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "form4_insider",
+            "family_key": "form4_post_sale_retention_absorption_candidate_pool",
+            "reopen_condition": "A retry needs materially new PIT evidence beyond retained ownership, such as daily forward replacement value for sale clusters, parsed Form 144 float/sale-plan context, or a shared default-off daily Form 4 sale-retention adapter with closed forward observations. Pure threshold, role, 10b5-1, or liquidity retunes stay frozen.",
+            "score": 0.4722,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "form4_insider",
+            "family_key": "form4_sale_pressure_long_entry_derisk",
+            "reopen_condition": null,
+            "score": 0.4716,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": null,
+        "override": false,
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "other",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "form4_insider",
+          "trials": 0
+        },
+        "warn": true,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": {
+        "success_probability": 0.62,
+        "expected_ev_delta": null,
+        "expected_pnl_delta": null,
+        "main_failure_modes": [
+          "daily_candidate_join_unavailable",
+          "form4_snapshot_schema_drift",
+          "forward_outcome_rows_not_closed",
+          "yet_another_observed_only_reslice"
+        ],
+        "confidence_reason": "exp-20260628-014 produced a positive observed-only PIT Form4 sale-overhang loss-tail lead but explicitly forbade risk response retunes until prospective shared logging exists. This run only repairs that alpha blocker by writing production-visible context rows and a reopen gate without changing trading behavior.",
+        "recorded_at": "2026-06-29T05:04:25+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "accepted": true,
+        "accepted_alpha": false,
+        "accepted_measurement_repair": true,
+        "alpha_ready": false,
+        "decision": "accepted_measurement_repair_form4_sale_overhang_context_logger",
+        "artifact": "data/experiments/exp-20260629-003/exp_20260629_003_form4_sale_overhang_forward_context_logger.json",
+        "log": "experiments/logs/exp-20260629-003.json",
+        "delta_metrics": {
+          "expected_value_score_sum_delta": 0.0,
+          "total_pnl_delta": 0.0,
+          "trade_count_delta": 0,
+          "signals_generated_delta": 0,
+          "signals_survived_delta": 0,
+          "strategy_behavior_changed": false
+        },
+        "gate1": {
+          "passed": true,
+          "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+          "baseline_expected_value_score_sum": 7.8941,
+          "baseline_total_pnl": 234850.99,
+          "strategy_metrics_unchanged": true
+        },
+        "gate2": {
+          "passed": true,
+          "runtime_fields_checked": [
+            "entry_date",
+            "target_price",
+            "context_as_of",
+            "ticker",
+            "form4_latest_usable_trade_date",
+            "form4_sale_overhang_bucket",
+            "form4_sale_rows",
+            "form4_ten_b5_sale_rows",
+            "form4_officer_sale_rows"
+          ],
+          "field_status": {
+            "entry_date": "present_for_open_paper_positions_or_context_as_of_fallback",
+            "target_price": "present_on core_risk_intensity rows; missing values are logged but not consumed by this repair",
+            "context_as_of": "required_for_each_logged_row",
+            "form4_archive": "loaded_from daily PIT form4_transactions jsonl files"
+          },
+          "counts": {
+            "form4_rows_loaded": 31016,
+            "context_rows": 108,
+            "rows_with_target_price": 2,
+            "rows_with_context_as_of": 108,
+            "current_or_prospective_rows": 67
+          }
+        },
+        "gate3": {
+          "passed": true,
+          "not_applicable_reason": "No signal, filter, ranking, sizing, exit, or order rule changed.",
+          "signals_generated_delta": 0,
+          "signals_survived_delta": 0,
+          "survival_rate_delta": 0.0
+        },
+        "gate4": {
+          "passed": true,
+          "accepted_alpha": false,
+          "measurement_repair_only": true,
+          "decision": "accepted_measurement_repair_form4_sale_overhang_context_logger",
+          "before_after_strategy_delta": {
+            "expected_value_score_sum_delta": 0.0,
+            "total_pnl_delta": 0.0,
+            "trade_count_delta": 0,
+            "signals_generated_delta": 0,
+            "signals_survived_delta": 0,
+            "strategy_behavior_changed": false
+          },
+          "reopen_condition": {
+            "surface": "Form4 sale/10b5/officer overhang",
+            "status": "forward_logging_open_not_alpha_ready",
+            "blocking_reason": "closed_forward_replacement_rows_not_materialized",
+            "current_counts": {
+              "prospective_context_rows_logged": 108,
+              "prospective_high_sale_overhang_rows_logged": 27,
+              "rows_with_target_price": 2,
+              "rows_with_form4_rows": 37,
+              "forward_ledger_form4_tagged_rows": 0,
+              "closed_forward_rows_with_cash_spy_qqq_replacement_value": 0,
+              "high_sale_overhang_forward_rows": 0,
+              "single_ticker_closed_row_share": null
+            },
+            "required_to_reopen": {
+              "closed_forward_rows_min": 25,
+              "high_sale_overhang_forward_rows_min": 8,
+              "single_ticker_closed_row_share_max": 0.4,
+              "required_replacement_values": [
+                "cash",
+                "SPY",
+                "QQQ"
+              ],
+              "required_context_rule_version": "form4_sale_overhang_forward_context_logger_v1"
+            },
+            "reopen_rule": "Do not reserve a Form4 sale-overhang risk scalar, notional haircut, ranking, veto, or candidate-pool experiment until prospectively logged context rows close with cash/SPY/QQQ replacement value and the required row counts advance. Do not retry by changing transaction codes, 10b5 handling, owner-role filters, sale-value thresholds, lookback days, or response curve."
+          },
+          "remaining_blocker": "This run is experiment-owned. A future shared daily adapter can write the same fields to production-visible snapshots, but a risk response still stays blocked until closed forward rows exist.",
+          "failed_reasons": []
+        },
+        "reopen_condition": {
+          "surface": "Form4 sale/10b5/officer overhang",
+          "status": "forward_logging_open_not_alpha_ready",
+          "blocking_reason": "closed_forward_replacement_rows_not_materialized",
+          "current_counts": {
+            "prospective_context_rows_logged": 108,
+            "prospective_high_sale_overhang_rows_logged": 27,
+            "rows_with_target_price": 2,
+            "rows_with_form4_rows": 37,
+            "forward_ledger_form4_tagged_rows": 0,
+            "closed_forward_rows_with_cash_spy_qqq_replacement_value": 0,
+            "high_sale_overhang_forward_rows": 0,
+            "single_ticker_closed_row_share": null
+          },
+          "required_to_reopen": {
+            "closed_forward_rows_min": 25,
+            "high_sale_overhang_forward_rows_min": 8,
+            "single_ticker_closed_row_share_max": 0.4,
+            "required_replacement_values": [
+              "cash",
+              "SPY",
+              "QQQ"
+            ],
+            "required_context_rule_version": "form4_sale_overhang_forward_context_logger_v1"
+          },
+          "reopen_rule": "Do not reserve a Form4 sale-overhang risk scalar, notional haircut, ranking, veto, or candidate-pool experiment until prospectively logged context rows close with cash/SPY/QQQ replacement value and the required row counts advance. Do not retry by changing transaction codes, 10b5 handling, owner-role filters, sale-value thresholds, lookback days, or response curve."
+        },
+        "summary": "The fixed Form4 sale-overhang join can tag current paper/default-off rows using only PIT usable_trade_date data, including rows with entry_date and target_price. It still cannot justify a risk response because no Form4-tagged closed forward replacement-value sample exists yet."
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260629-003.json",
+      "single_causal_variable": "form4_sale_overhang_forward_context_logger_v1",
+      "status": "accepted_measurement_repair",
+      "ticket_file": "experiments/tickets/exp-20260629-003.json",
+      "trial_family": "form4_sale_overhang_forward_context_logger",
+      "trial_variant_id": "current_paper_rows_form4_context_v1",
+      "alpha_hypothesis": "Risk allocation: fixed PIT Form 4 sale, 10b5-1, and officer-sale overhang may identify accepted-core/default-off entries with worse loss tail, but an alpha response needs prospective context rows and closed forward replacement value before any scalar, veto, or ranking change.",
+      "implementation_mode": "experiment_owned_context_logger",
+      "pre_run_questions": {
+        "1_alpha_hypothesis": "Risk allocation: fixed PIT Form 4 sale, 10b5-1, and officer-sale overhang may identify accepted-core/default-off entries with worse loss tail, but an alpha response needs prospective context rows and closed forward replacement value before any scalar, veto, or ranking change.",
+        "2_history_check": "exp-20260628-014 found positive observed-only accepted-core loss-tail separation for high PIT Form4 sale overhang, but forbade threshold/role/10b5/lookback/response retunes without new prospective forward context rows.",
+        "3_single_policy_bundle": "form4_sale_overhang_forward_context_logger_v1",
+        "4_acceptance_standard": "Accept only as measurement repair if baseline metrics are unchanged, current/default-off rows are logged with fixed Form4 context, and a machine-checkable reopen gate is recorded.",
+        "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260629_003_form4_sale_overhang_forward_context_logger.py"
+      },
+      "gate1": {
+        "passed": true,
+        "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "baseline_expected_value_score_sum": 7.8941,
+        "baseline_total_pnl": 234850.99,
+        "strategy_metrics_unchanged": true
+      },
+      "gate2": {
+        "passed": true,
+        "runtime_fields_checked": [
+          "entry_date",
+          "target_price",
+          "context_as_of",
+          "ticker",
+          "form4_latest_usable_trade_date",
+          "form4_sale_overhang_bucket",
+          "form4_sale_rows",
+          "form4_ten_b5_sale_rows",
+          "form4_officer_sale_rows"
+        ],
+        "field_status": {
+          "entry_date": "present_for_open_paper_positions_or_context_as_of_fallback",
+          "target_price": "present_on core_risk_intensity rows; missing values are logged but not consumed by this repair",
+          "context_as_of": "required_for_each_logged_row",
+          "form4_archive": "loaded_from daily PIT form4_transactions jsonl files"
+        },
+        "counts": {
+          "form4_rows_loaded": 31016,
+          "context_rows": 108,
+          "rows_with_target_price": 2,
+          "rows_with_context_as_of": 108,
+          "current_or_prospective_rows": 67
+        }
+      },
+      "gate3": {
+        "passed": true,
+        "not_applicable_reason": "No signal, filter, ranking, sizing, exit, or order rule changed.",
+        "signals_generated_delta": 0,
+        "signals_survived_delta": 0,
+        "survival_rate_delta": 0.0
+      },
+      "gate4": {
+        "passed": true,
+        "accepted_alpha": false,
+        "measurement_repair_only": true,
+        "decision": "accepted_measurement_repair_form4_sale_overhang_context_logger",
+        "before_after_strategy_delta": {
+          "expected_value_score_sum_delta": 0.0,
+          "total_pnl_delta": 0.0,
+          "trade_count_delta": 0,
+          "signals_generated_delta": 0,
+          "signals_survived_delta": 0,
+          "strategy_behavior_changed": false
+        },
+        "reopen_condition": {
+          "surface": "Form4 sale/10b5/officer overhang",
+          "status": "forward_logging_open_not_alpha_ready",
+          "blocking_reason": "closed_forward_replacement_rows_not_materialized",
+          "current_counts": {
+            "prospective_context_rows_logged": 108,
+            "prospective_high_sale_overhang_rows_logged": 27,
+            "rows_with_target_price": 2,
+            "rows_with_form4_rows": 37,
+            "forward_ledger_form4_tagged_rows": 0,
+            "closed_forward_rows_with_cash_spy_qqq_replacement_value": 0,
+            "high_sale_overhang_forward_rows": 0,
+            "single_ticker_closed_row_share": null
+          },
+          "required_to_reopen": {
+            "closed_forward_rows_min": 25,
+            "high_sale_overhang_forward_rows_min": 8,
+            "single_ticker_closed_row_share_max": 0.4,
+            "required_replacement_values": [
+              "cash",
+              "SPY",
+              "QQQ"
+            ],
+            "required_context_rule_version": "form4_sale_overhang_forward_context_logger_v1"
+          },
+          "reopen_rule": "Do not reserve a Form4 sale-overhang risk scalar, notional haircut, ranking, veto, or candidate-pool experiment until prospectively logged context rows close with cash/SPY/QQQ replacement value and the required row counts advance. Do not retry by changing transaction codes, 10b5 handling, owner-role filters, sale-value thresholds, lookback days, or response curve."
+        },
+        "remaining_blocker": "This run is experiment-owned. A future shared daily adapter can write the same fields to production-visible snapshots, but a risk response still stays blocked until closed forward rows exist.",
+        "failed_reasons": []
+      },
+      "reopen_condition": {
+        "surface": "Form4 sale/10b5/officer overhang",
+        "status": "forward_logging_open_not_alpha_ready",
+        "blocking_reason": "closed_forward_replacement_rows_not_materialized",
+        "current_counts": {
+          "prospective_context_rows_logged": 108,
+          "prospective_high_sale_overhang_rows_logged": 27,
+          "rows_with_target_price": 2,
+          "rows_with_form4_rows": 37,
+          "forward_ledger_form4_tagged_rows": 0,
+          "closed_forward_rows_with_cash_spy_qqq_replacement_value": 0,
+          "high_sale_overhang_forward_rows": 0,
+          "single_ticker_closed_row_share": null
+        },
+        "required_to_reopen": {
+          "closed_forward_rows_min": 25,
+          "high_sale_overhang_forward_rows_min": 8,
+          "single_ticker_closed_row_share_max": 0.4,
+          "required_replacement_values": [
+            "cash",
+            "SPY",
+            "QQQ"
+          ],
+          "required_context_rule_version": "form4_sale_overhang_forward_context_logger_v1"
+        },
+        "reopen_rule": "Do not reserve a Form4 sale-overhang risk scalar, notional haircut, ranking, veto, or candidate-pool experiment until prospectively logged context rows close with cash/SPY/QQQ replacement value and the required row counts advance. Do not retry by changing transaction codes, 10b5 handling, owner-role filters, sale-value thresholds, lookback days, or response curve."
+      },
+      "production_impact": {
+        "trade_enabled": false,
+        "live_orders_changed": false,
+        "paper_orders_changed": false,
+        "production_orders_changed": false,
+        "production_signal_path_changed": false,
+        "production_watchlist_changed": false,
+        "shared_policy_changed": false,
+        "run_adapter_changed": false,
+        "backtester_adapter_changed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "ranking_changed": false,
+        "sizing_changed": false,
+        "risk_budget_changed": false,
+        "daily_snapshot_exposed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "parity_note": "Experiment-owned context ledger only. It reads existing daily/default-off paper rows and Form4 PIT archives; no trading policy consumes this field."
+      },
+      "post_run_reflection": {
+        "why_result_happened": "The fixed Form4 sale-overhang join can tag current paper/default-off rows using only PIT usable_trade_date data, including rows with entry_date and target_price. It still cannot justify a risk response because no Form4-tagged closed forward replacement-value sample exists yet.",
+        "forbidden_near_neighbor_retry": "Do not retry Form4 sale overhang by changing sale-value thresholds, transaction-code lists, 10b5 handling, owner roles, lookback days, or hard-exclusion/downweight/tilt/notional response shape on the same observed-only stack.",
+        "new_evidence_required": "Prospectively logged Form4 context rows must close with cash/SPY/QQQ replacement value: at least 25 closed rows, at least 8 high-sale-overhang rows, and max single-ticker share <=40%."
+      },
+      "next_retry_requires": "A future Form4 alpha response requires materially advanced closed forward rows under reopen_condition or a distinct new data source/gate shape.",
+      "related_files": [
+        "quant/experiments/exp_20260629_003_form4_sale_overhang_forward_context_logger.py",
+        "data/experiments/exp-20260629-003/exp_20260629_003_form4_sale_overhang_forward_context_logger.json",
+        "experiments/logs/exp-20260629-003.json",
+        "experiments/cards/exp-20260629-003.md",
+        "experiments/manifests/exp-20260629-003.json",
+        "experiments/tickets/exp-20260629-003.json",
+        "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "data/paper_sleeves/forward_replacement_value.jsonl",
+        "data/non_ohlcv",
+        "data/paper_sleeves"
+      ],
+      "changed_files": [
+        "quant/experiments/exp_20260629_003_form4_sale_overhang_forward_context_logger.py",
+        "data/experiments/exp-20260629-003/exp_20260629_003_form4_sale_overhang_forward_context_logger.json",
+        "experiments/logs/exp-20260629-003.json",
+        "experiments/cards/exp-20260629-003.md",
+        "experiments/manifests/exp-20260629-003.json",
+        "experiments/tickets/exp-20260629-003.json",
+        "docs/experiment_registry.json"
+      ],
+      "reproduction_commands": [
+        ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260629_003_form4_sale_overhang_forward_context_logger.py",
+        ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260629_003_form4_sale_overhang_forward_context_logger.py",
+        ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+      ],
+      "anti_js": {
+        "used_javascript": false,
+        "strategy_behavior_changed": false,
+        "threshold_scan": false,
+        "uses_future_form4_rows": false,
+        "new_download_attempts": false,
+        "response_curve_retune": false
+      },
+      "accepted_alpha": false,
+      "accepted_measurement_repair": true,
+      "decision": "accepted_measurement_repair_form4_sale_overhang_context_logger",
+      "artifact": "data/experiments/exp-20260629-003/exp_20260629_003_form4_sale_overhang_forward_context_logger.json",
+      "log": "experiments/logs/exp-20260629-003.json",
+      "updated_at": "2026-06-29T05:14:43+00:00"
+    },
+    {
+      "acceptance_rule": "Measurement repair accepted if allocator_top1 selected/skipped rows expose entry_date plus an explicit not_applicable_time_exit target_price contract without changing orders, ranking, sizing, or exits; no alpha acceptance is claimed until closed replacement rows exist.",
+      "allowed_write_scope": [
+        "quant/accepted_helper_source_priority_allocator_paper_sleeve.py",
+        "quant/test_accepted_helper_source_priority_allocator_paper_sleeve.py",
+        "quant/experiments/exp_20260629_004_allocator_top1_time_exit_outcome_contract.py",
+        "data/experiments/exp-20260629-004",
+        "experiments/cards/exp-20260629-004.md",
+        "experiments/logs/exp-20260629-004.json",
+        "experiments/tickets/exp-20260629-004.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260629-004.md",
+      "causal_components": [],
+      "change_type": "measurement_repair",
+      "changed_variable": "allocator_top1_time_exit_outcome_contract_v1",
+      "claimed_at": "2026-06-29T06:08:31+00:00",
+      "completed_at": "2026-06-29T06:17:50+00:00",
+      "created_at": "2026-06-29T06:08:12+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260629-004",
+      "experiment_uid": "expuid-29702719c28f4621",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260629-004",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-29T06:08:12+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "allocator_top1_time_exit_outcome_contract"
+      },
+      "hypothesis": "Repair the allocator_top1 forward allocation blocker by exposing an explicit time-exit outcome contract and target_price_not_applicable marker for selected and skipped rows, so future Gate 2 checks distinguish time-exit paper rows from missing target-price data.",
+      "lane": "measurement_repair",
+      "locked_variables": [
+        "allocator_top1_time_exit_outcome_contract_v1"
+      ],
+      "mechanism_family": "allocator_forward_measurement",
+      "multiple_testing_risk_bucket": "minimal",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [],
+      "new_evidence_type": "measurement_repair",
+      "novelty": {
+        "blocking_matches": [
+          {
+            "accept_rate": 0.0,
+            "family_key": "allocator_top1_forward_attribution",
+            "score": 0.6457,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "accepted_allocator_forward_activation_readiness",
+            "score": 0.6333,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "parsed_13ga_exit_overhang_allocator_overlap",
+            "score": 0.6293,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.3333,
+            "family_key": "accepted_default_off_helper_source_priority_allocation",
+            "score": 0.6216,
+            "status": "has_accepted",
+            "trials": 24
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "accepted_default_off_helper_gap_fill_allocation",
+            "score": 0.62,
+            "status": "frozen_rejected",
+            "trials": 2
+          }
+        ],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "allocator",
+          "field_tags": [
+            "allocation",
+            "allocator",
+            "an",
+            "applicable",
+            "blocker",
+            "by",
+            "checks",
+            "contract",
+            "data",
+            "distinguish",
+            "exit",
+            "explicit",
+            "exposing",
+            "forward",
+            "from",
+            "future",
+            "gate",
+            "marker",
+            "measurement",
+            "missing",
+            "not",
+            "outcome",
+            "price",
+            "repair",
+            "rows",
+            "selected",
+            "skipped",
+            "so",
+            "target",
+            "time"
+          ],
+          "gate_shape": "allocator_source"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "allocator",
+            "family_key": "allocator_top1_forward_attribution",
+            "reopen_condition": "Wait for materially more closed allocator_top1 replacement-value rows, or add a daily target_price/closed-outcome ledger that makes Gate 2 and Gate 4 executable.",
+            "score": 0.6457,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "allocator",
+            "family_key": "accepted_allocator_forward_activation_readiness",
+            "reopen_condition": "Wait for closed allocator_top1 forward replacement-value rows under the existing envelope, or add a genuinely new PIT source that is not an allocator/source-arbitration neighbor.",
+            "score": 0.6333,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "allocator",
+            "family_key": "parsed_13ga_exit_overhang_allocator_overlap",
+            "reopen_condition": "A valid retry needs closed forward accepted-allocator replacement rows tagged with parsed ownership exits, richer holder/activist outcome provenance, or repaired structured-XML coverage that materially changes overlap.",
+            "score": 0.6293,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.3333,
+            "data_source": "allocator",
+            "family_key": "accepted_default_off_helper_source_priority_allocation",
+            "reopen_condition": "Closed forward replacement-value rows for rejected second-slot candidates, or a materially new PIT field that predicts which second slot should displace idle allocator capacity.",
+            "score": 0.6216,
+            "status": "has_accepted",
+            "trials": 24
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "allocator",
+            "family_key": "accepted_default_off_helper_gap_fill_allocation",
+            "reopen_condition": "Retry only with closed forward replacement-value rows, a shared daily no-displacement helper, or a new PIT flow/catalyst field that explains why empty-date distribution rows should displace accepted allocator idle cash.",
+            "score": 0.62,
+            "status": "frozen_rejected",
+            "trials": 2
+          }
+        ],
+        "new_evidence_axis": null,
+        "override": false,
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "allocator_source",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "allocator",
+          "trials": 0
+        },
+        "warn": true,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": {
+        "success_probability": 0.75,
+        "expected_ev_delta": 0.0,
+        "expected_pnl_delta": 0.0,
+        "main_failure_modes": [
+          "helper_contract_not_used_by_snapshot",
+          "current_rows_missing_entry_date",
+          "registry_lock_conflict"
+        ],
+        "confidence_reason": "Prior allocator experiment isolated the blocker to target_price/closed-outcome readiness; this repair is additive metadata on an existing time-exit paper sleeve.",
+        "recorded_at": "2026-06-29T06:07:33+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "decision": "accepted_measurement_repair_allocator_top1_time_exit_outcome_contract",
+        "status": "accepted",
+        "artifact": "data/experiments/exp-20260629-004/allocator_top1_time_exit_outcome_contract.json",
+        "log": "experiments/logs/exp-20260629-004.json",
+        "metrics": {
+          "before_contract": {
+            "rows": 8,
+            "entry_date_present": 7,
+            "entry_date_status_present": 0,
+            "target_price_present": 0,
+            "target_price_status_not_applicable": 0,
+            "target_price_required_false": 0,
+            "target_price_status_coverage_rate": 0.0,
+            "entry_date_or_status_coverage_rate": 0.875
+          },
+          "after_contract": {
+            "rows": 8,
+            "entry_date_present": 7,
+            "entry_date_status_present": 8,
+            "target_price_present": 0,
+            "target_price_status_not_applicable": 8,
+            "target_price_required_false": 8,
+            "target_price_status_coverage_rate": 1.0,
+            "entry_date_or_status_coverage_rate": 1.0
+          },
+          "state_rows_with_contract_after_helper": {
+            "rows": 8,
+            "entry_date_present": 7,
+            "entry_date_status_present": 8,
+            "target_price_present": 0,
+            "target_price_status_not_applicable": 8,
+            "target_price_required_false": 8,
+            "target_price_status_coverage_rate": 1.0,
+            "entry_date_or_status_coverage_rate": 1.0
+          },
+          "signals_generated": 8,
+          "signals_survived": 1,
+          "survival_rate": 0.125
+        },
+        "gate2": {
+          "passed": true,
+          "runtime_fields_checked": [
+            "entry_date",
+            "entry_date_status",
+            "target_price",
+            "target_price_required",
+            "target_price_status",
+            "exit_rule"
+          ],
+          "target_price_contract": "not_applicable_time_exit",
+          "target_price_relevance": "target_price is intentionally None because allocator_top1 exits by fixed time hold; closed outcomes use exit_price and pnl fields."
+        },
+        "gate4": {
+          "passed": true,
+          "status": "not_applicable_measurement_repair_no_policy_delta",
+          "expected_value_delta": 0.0,
+          "pnl_delta": 0.0,
+          "note": "No before/after strategy replay was run because orders, ranking, sizing, and exits are unchanged. This accepts only the measurement contract."
+        },
+        "production_impact": {
+          "shared_helper_changed": true,
+          "default_off_paper_only": true,
+          "trade_enabled": false,
+          "alters_orders": false,
+          "alters_ranking": false,
+          "alters_sizing": false,
+          "alters_exits": false,
+          "daily_snapshot_contract_exposed": true,
+          "live_ready": false
+        }
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260629-004.json",
+      "single_causal_variable": "allocator_top1_time_exit_outcome_contract_v1",
+      "status": "accepted",
+      "ticket_file": "experiments/tickets/exp-20260629-004.json",
+      "trial_family": "allocator_top1_outcome_contract",
+      "trial_variant_id": "time_exit_target_price_not_applicable_v1",
+      "decision": "accepted_measurement_repair_allocator_top1_time_exit_outcome_contract",
+      "artifact": "data/experiments/exp-20260629-004/allocator_top1_time_exit_outcome_contract.json",
+      "log": "experiments/logs/exp-20260629-004.json",
+      "accepted_measurement_repair": true,
+      "updated_at": "2026-06-29T06:17:50+00:00"
+    },
+    {
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "quant/form4_sale_overhang_context.py",
+        "quant/daily_non_ohlcv_snapshot.py",
+        "quant/backfill_non_ohlcv.py",
+        "quant/test_form4_sale_overhang_context.py",
+        "quant/test_daily_non_ohlcv_snapshot.py",
+        "quant/experiments/exp_20260629_005_form4_sale_overhang_shared_daily_context_logger.py",
+        "experiments/tickets/exp-20260629-005.json",
+        "experiments/cards/exp-20260629-005.md",
+        "experiments/manifests/exp-20260629-005.json",
+        "experiments/logs/exp-20260629-005.json",
+        "data/experiments/exp-20260629-005",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260629-005.md",
+      "causal_components": [
+        "shared Form4 sale-overhang helper",
+        "daily non-OHLCV snapshot opt-in ledger",
+        "backfill/catch-up opt-in hook",
+        "focused helper and snapshot tests",
+        "no strategy behavior change"
+      ],
+      "change_type": "identity_or_measurement_repair",
+      "changed_variable": "form4_sale_overhang_shared_daily_context_logger_v1",
+      "claimed_at": "2026-06-29T08:07:38+00:00",
+      "completed_at": "2026-06-29T08:19:36+00:00",
+      "created_at": "2026-06-29T08:06:44+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260629-005",
+      "experiment_uid": "expuid-bbf06bdba98348d4",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260629-005",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-29T08:06:44+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "form4_sale_overhang_shared_daily_context_logger"
+      },
+      "hypothesis": "Alpha-enabling Form4 sale-overhang shared daily context logger: expose the fixed PIT Form4 sale/10b5/officer overhang fields from exp-20260629-003 through a shared daily non-OHLCV ledger so future accepted-core/default-off rows can close with replacement-value evidence before any risk response.",
+      "lane": "measurement_repair",
+      "locked_variables": [
+        "form4_sale_overhang_shared_daily_context_logger_v1"
+      ],
+      "mechanism_family": "production_visible_form4_selling_overhang_forward_context",
+      "multiple_testing_risk_bucket": "minimal",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260628-014",
+        "exp-20260629-003"
+      ],
+      "new_evidence_type": "alpha_enabling_forward_context_shared_daily_surface",
+      "novelty": {
+        "blocking_matches": [
+          {
+            "accept_rate": 0.0,
+            "family_key": "accepted_core_form4_selling_overhang_risk_attribution",
+            "score": 0.5526,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "form4_insider",
+          "field_tags": [
+            "10b5",
+            "a",
+            "accepted",
+            "alpha",
+            "any",
+            "before",
+            "can",
+            "close",
+            "context",
+            "core",
+            "daily",
+            "enabling",
+            "evidence",
+            "exp",
+            "expose",
+            "fields",
+            "form4",
+            "forward",
+            "from",
+            "future",
+            "ledger",
+            "logger",
+            "non",
+            "officer",
+            "overhang",
+            "pit",
+            "replacement",
+            "response",
+            "risk",
+            "rows",
+            "sale",
+            "selling",
+            "so",
+            "through",
+            "value"
+          ],
+          "gate_shape": "other"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "form4_insider",
+            "family_key": "accepted_core_form4_selling_overhang_risk_attribution",
+            "reopen_condition": "Explicit Form 144 plan/float context, executive ownership and compensation provenance, or prospectively closed forward rows from a shared default-off Form4 context logger.",
+            "score": 0.5526,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "form4_insider",
+            "family_key": "form4_sale_overhang_forward_context_logger",
+            "reopen_condition": "Prospectively logged Form4 context rows must close with cash/SPY/QQQ replacement value: at least 25 closed rows, at least 8 high-sale-overhang rows, and max single-ticker share <=40%.",
+            "score": 0.5278,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "form4_insider",
+            "family_key": "form4_forward_replacement_context_attribution",
+            "reopen_condition": "Need materially more closed forward replacement rows from the shared daily Form4 helper, explicit Form 144 plan/float context, or executive ownership and compensation provenance before another Form4 conflict alpha attempt.",
+            "score": 0.51,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "form4_insider",
+            "family_key": "form4_role_quality_event_satellite",
+            "reopen_condition": null,
+            "score": 0.48,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "form4_insider",
+            "family_key": "form4_ownership_delta_event_satellite",
+            "reopen_condition": null,
+            "score": 0.4786,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": null,
+        "override": false,
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "other",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "form4_insider",
+          "trials": 0
+        },
+        "warn": true,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": {
+        "success_probability": 0.58,
+        "expected_ev_delta": null,
+        "expected_pnl_delta": null,
+        "main_failure_modes": [
+          "daily_candidate_join_unavailable",
+          "form4_schema_drift",
+          "ledger_not_replayable",
+          "accidental_strategy_behavior_change"
+        ],
+        "confidence_reason": "exp-20260628-014 found a PIT Form4 sale-overhang loss-tail lead and exp-20260629-003 proved the fixed join can tag current rows, but it remains experiment-owned; a shared daily ledger is the missing production-visible forward evidence surface, not a response-curve retune.",
+        "recorded_at": "2026-06-29T08:06:05+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "accepted": true,
+        "accepted_alpha": false,
+        "accepted_measurement_repair": true,
+        "alpha_ready": false,
+        "decision": "accepted_measurement_repair_form4_sale_overhang_shared_daily_context_logger",
+        "artifact": "data/experiments/exp-20260629-005/exp_20260629_005_form4_sale_overhang_shared_daily_context_logger.json",
+        "log": "experiments/logs/exp-20260629-005.json",
+        "delta_metrics": {
+          "expected_value_score_sum_delta": 0.0,
+          "total_pnl_delta": 0.0,
+          "trade_count_delta": 0,
+          "signals_generated_delta": 0,
+          "signals_survived_delta": 0,
+          "strategy_behavior_changed": false
+        },
+        "gate1": {
+          "passed": true,
+          "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+          "baseline_expected_value_score_sum": 7.8941,
+          "baseline_total_pnl": 234850.99,
+          "strategy_metrics_unchanged": true
+        },
+        "gate2": {
+          "passed": true,
+          "runtime_fields_checked": [
+            "alters_orders",
+            "context_as_of",
+            "eligible_for_forward_outcome_join",
+            "form4_latest_usable_trade_date",
+            "form4_officer_sale_rows",
+            "form4_sale_overhang_bucket",
+            "form4_sale_rows",
+            "form4_ten_b5_sale_rows",
+            "ticker",
+            "trade_enabled"
+          ],
+          "field_status": {
+            "form4_archive": "loaded_from_daily_pit_form4_transactions_jsonl_files",
+            "daily_snapshot_wiring": true,
+            "backfill_wiring": true,
+            "output_path": "D:/Github/ginger/data/experiments/exp-20260629-005/daily_non_ohlcv_probe/form4_sale_overhang_context_20260628.jsonl",
+            "summary_output": "D:/Github/ginger/data/experiments/exp-20260629-005/daily_non_ohlcv_probe/form4_sale_overhang_context_summary_20260628.json"
+          },
+          "counts": {
+            "form4_rows_loaded": 30965,
+            "context_rows": 29,
+            "high_sale_overhang_rows": 17,
+            "ticker_count": 29
+          }
+        },
+        "gate3": {
+          "passed": true,
+          "not_applicable_reason": "No signal, filter, ranking, sizing, exit, risk budget, or order rule changed.",
+          "signals_generated_delta": 0,
+          "signals_survived_delta": 0,
+          "survival_rate_delta": 0.0
+        },
+        "gate4": {
+          "passed": true,
+          "accepted_alpha": false,
+          "measurement_repair_only": true,
+          "decision": "accepted_measurement_repair_form4_sale_overhang_shared_daily_context_logger",
+          "before_after_strategy_delta": {
+            "expected_value_score_sum_delta": 0.0,
+            "total_pnl_delta": 0.0,
+            "trade_count_delta": 0,
+            "signals_generated_delta": 0,
+            "signals_survived_delta": 0,
+            "strategy_behavior_changed": false
+          },
+          "reopen_condition": {
+            "surface": "Form4 sale/10b5/officer overhang",
+            "status": "shared_forward_logging_open_not_alpha_ready",
+            "blocking_reason": "closed_forward_replacement_rows_not_materialized",
+            "current_counts": {
+              "shared_daily_context_rows_logged": 29,
+              "shared_daily_high_sale_overhang_rows_logged": 17,
+              "shared_daily_tickers_logged": 29,
+              "closed_forward_rows_with_cash_spy_qqq_replacement_value": 0,
+              "high_sale_overhang_forward_rows": 0,
+              "single_ticker_closed_row_share": null
+            },
+            "required_to_reopen": {
+              "closed_forward_rows_min": 25,
+              "high_sale_overhang_forward_rows_min": 8,
+              "single_ticker_share_max": 0.4,
+              "required_replacement_values": [
+                "cash",
+                "SPY",
+                "QQQ"
+              ],
+              "required_context_rule_version": "form4_sale_overhang_shared_daily_context_logger_v1",
+              "park_after_materialization_runs_without_new_closable_rows": 3
+            },
+            "reopen_rule": "Do not reserve a Form4 sale-overhang risk scalar, notional haircut, ranking, veto, or candidate-pool experiment until shared daily context rows close with cash/SPY/QQQ replacement value and the required row counts advance. Do not retry by changing transaction codes, 10b5 handling, owner-role filters, sale-value thresholds, lookback days, or response curve."
+          },
+          "failed_reasons": []
+        },
+        "reopen_condition": {
+          "surface": "Form4 sale/10b5/officer overhang",
+          "status": "shared_forward_logging_open_not_alpha_ready",
+          "blocking_reason": "closed_forward_replacement_rows_not_materialized",
+          "current_counts": {
+            "shared_daily_context_rows_logged": 29,
+            "shared_daily_high_sale_overhang_rows_logged": 17,
+            "shared_daily_tickers_logged": 29,
+            "closed_forward_rows_with_cash_spy_qqq_replacement_value": 0,
+            "high_sale_overhang_forward_rows": 0,
+            "single_ticker_closed_row_share": null
+          },
+          "required_to_reopen": {
+            "closed_forward_rows_min": 25,
+            "high_sale_overhang_forward_rows_min": 8,
+            "single_ticker_share_max": 0.4,
+            "required_replacement_values": [
+              "cash",
+              "SPY",
+              "QQQ"
+            ],
+            "required_context_rule_version": "form4_sale_overhang_shared_daily_context_logger_v1",
+            "park_after_materialization_runs_without_new_closable_rows": 3
+          },
+          "reopen_rule": "Do not reserve a Form4 sale-overhang risk scalar, notional haircut, ranking, veto, or candidate-pool experiment until shared daily context rows close with cash/SPY/QQQ replacement value and the required row counts advance. Do not retry by changing transaction codes, 10b5 handling, owner-role filters, sale-value thresholds, lookback days, or response curve."
+        },
+        "summary": "The local Form4 archive already contains PIT usable_trade_date records, so the fixed sale-overhang summary can be written as a shared daily context ledger. That removes the production-visible logging blocker but still does not create a closed forward replacement-value sample."
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260629-005.json",
+      "single_causal_variable": "form4_sale_overhang_shared_daily_context_logger_v1",
+      "status": "accepted_measurement_repair",
+      "ticket_file": "experiments/tickets/exp-20260629-005.json",
+      "trial_family": "form4_sale_overhang_shared_daily_context_logger",
+      "trial_variant_id": "shared_daily_non_ohlcv_context_v1",
+      "alpha_hypothesis": "Risk allocation: fixed PIT Form 4 sale, 10b5-1, and officer-sale overhang may identify accepted-core/default-off entries with worse loss tail, but any alpha response requires prospectively logged shared daily context rows that later close with replacement-value evidence.",
+      "implementation_mode": "shared_daily_non_ohlcv_context_helper",
+      "pre_run_questions": {
+        "1_alpha_hypothesis": "Risk allocation: fixed PIT Form 4 sale, 10b5-1, and officer-sale overhang may identify accepted-core/default-off entries with worse loss tail, but any alpha response requires prospectively logged shared daily context rows that later close with replacement-value evidence.",
+        "2_history_check": "exp-20260628-014 found a positive observed-only Form4 sale-overhang loss-tail lead, and exp-20260629-003 proved a fixed experiment-owned logger could tag current rows. This run exposes that fixed context through shared daily plumbing; it is not a threshold, role, 10b5, lookback, or response-curve retune.",
+        "3_single_policy_bundle": "form4_sale_overhang_shared_daily_context_logger_v1",
+        "4_acceptance_standard": "Accept only as measurement repair if baseline metrics are unchanged, the shared helper emits PIT context rows, daily and backfill opt-in hooks exist, and production impact remains data-only.",
+        "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260629_005_form4_sale_overhang_shared_daily_context_logger.py"
+      },
+      "gate1": {
+        "passed": true,
+        "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "baseline_expected_value_score_sum": 7.8941,
+        "baseline_total_pnl": 234850.99,
+        "strategy_metrics_unchanged": true
+      },
+      "gate2": {
+        "passed": true,
+        "runtime_fields_checked": [
+          "alters_orders",
+          "context_as_of",
+          "eligible_for_forward_outcome_join",
+          "form4_latest_usable_trade_date",
+          "form4_officer_sale_rows",
+          "form4_sale_overhang_bucket",
+          "form4_sale_rows",
+          "form4_ten_b5_sale_rows",
+          "ticker",
+          "trade_enabled"
+        ],
+        "field_status": {
+          "form4_archive": "loaded_from_daily_pit_form4_transactions_jsonl_files",
+          "daily_snapshot_wiring": true,
+          "backfill_wiring": true,
+          "output_path": "D:/Github/ginger/data/experiments/exp-20260629-005/daily_non_ohlcv_probe/form4_sale_overhang_context_20260628.jsonl",
+          "summary_output": "D:/Github/ginger/data/experiments/exp-20260629-005/daily_non_ohlcv_probe/form4_sale_overhang_context_summary_20260628.json"
+        },
+        "counts": {
+          "form4_rows_loaded": 30965,
+          "context_rows": 29,
+          "high_sale_overhang_rows": 17,
+          "ticker_count": 29
+        }
+      },
+      "gate3": {
+        "passed": true,
+        "not_applicable_reason": "No signal, filter, ranking, sizing, exit, risk budget, or order rule changed.",
+        "signals_generated_delta": 0,
+        "signals_survived_delta": 0,
+        "survival_rate_delta": 0.0
+      },
+      "gate4": {
+        "passed": true,
+        "accepted_alpha": false,
+        "measurement_repair_only": true,
+        "decision": "accepted_measurement_repair_form4_sale_overhang_shared_daily_context_logger",
+        "before_after_strategy_delta": {
+          "expected_value_score_sum_delta": 0.0,
+          "total_pnl_delta": 0.0,
+          "trade_count_delta": 0,
+          "signals_generated_delta": 0,
+          "signals_survived_delta": 0,
+          "strategy_behavior_changed": false
+        },
+        "reopen_condition": {
+          "surface": "Form4 sale/10b5/officer overhang",
+          "status": "shared_forward_logging_open_not_alpha_ready",
+          "blocking_reason": "closed_forward_replacement_rows_not_materialized",
+          "current_counts": {
+            "shared_daily_context_rows_logged": 29,
+            "shared_daily_high_sale_overhang_rows_logged": 17,
+            "shared_daily_tickers_logged": 29,
+            "closed_forward_rows_with_cash_spy_qqq_replacement_value": 0,
+            "high_sale_overhang_forward_rows": 0,
+            "single_ticker_closed_row_share": null
+          },
+          "required_to_reopen": {
+            "closed_forward_rows_min": 25,
+            "high_sale_overhang_forward_rows_min": 8,
+            "single_ticker_share_max": 0.4,
+            "required_replacement_values": [
+              "cash",
+              "SPY",
+              "QQQ"
+            ],
+            "required_context_rule_version": "form4_sale_overhang_shared_daily_context_logger_v1",
+            "park_after_materialization_runs_without_new_closable_rows": 3
+          },
+          "reopen_rule": "Do not reserve a Form4 sale-overhang risk scalar, notional haircut, ranking, veto, or candidate-pool experiment until shared daily context rows close with cash/SPY/QQQ replacement value and the required row counts advance. Do not retry by changing transaction codes, 10b5 handling, owner-role filters, sale-value thresholds, lookback days, or response curve."
+        },
+        "failed_reasons": []
+      },
+      "reopen_condition": {
+        "surface": "Form4 sale/10b5/officer overhang",
+        "status": "shared_forward_logging_open_not_alpha_ready",
+        "blocking_reason": "closed_forward_replacement_rows_not_materialized",
+        "current_counts": {
+          "shared_daily_context_rows_logged": 29,
+          "shared_daily_high_sale_overhang_rows_logged": 17,
+          "shared_daily_tickers_logged": 29,
+          "closed_forward_rows_with_cash_spy_qqq_replacement_value": 0,
+          "high_sale_overhang_forward_rows": 0,
+          "single_ticker_closed_row_share": null
+        },
+        "required_to_reopen": {
+          "closed_forward_rows_min": 25,
+          "high_sale_overhang_forward_rows_min": 8,
+          "single_ticker_share_max": 0.4,
+          "required_replacement_values": [
+            "cash",
+            "SPY",
+            "QQQ"
+          ],
+          "required_context_rule_version": "form4_sale_overhang_shared_daily_context_logger_v1",
+          "park_after_materialization_runs_without_new_closable_rows": 3
+        },
+        "reopen_rule": "Do not reserve a Form4 sale-overhang risk scalar, notional haircut, ranking, veto, or candidate-pool experiment until shared daily context rows close with cash/SPY/QQQ replacement value and the required row counts advance. Do not retry by changing transaction codes, 10b5 handling, owner-role filters, sale-value thresholds, lookback days, or response curve."
+      },
+      "production_impact": {
+        "trade_enabled": false,
+        "live_orders_changed": false,
+        "paper_orders_changed": false,
+        "production_orders_changed": false,
+        "production_signal_path_changed": false,
+        "production_watchlist_changed": false,
+        "shared_policy_changed": false,
+        "run_adapter_changed": true,
+        "backtester_adapter_changed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "ranking_changed": false,
+        "sizing_changed": false,
+        "risk_budget_changed": false,
+        "daily_snapshot_exposed": true,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "parity_note": "Shared daily context helper and opt-in daily/backfill wiring only. No trading policy consumes the field."
+      },
+      "post_run_reflection": {
+        "why_result_happened": "The local Form4 archive already contains PIT usable_trade_date records, so the fixed sale-overhang summary can be written as a shared daily context ledger. That removes the production-visible logging blocker but still does not create a closed forward replacement-value sample.",
+        "forbidden_near_neighbor_retry": "Do not retry Form4 sale overhang by changing sale thresholds, transaction-code lists, 10b5 handling, owner roles, lookback days, or hard-exclusion/downweight/tilt/notional response shape on the same observed-only evidence.",
+        "new_evidence_required": "Shared daily Form4 context rows must close with cash/SPY/QQQ replacement value: at least 25 closed rows, at least 8 high-sale-overhang rows, and max single-ticker share <=40%."
+      },
+      "next_retry_requires": "A future Form4 alpha response requires materially advanced closed forward rows under reopen_condition or a distinct new data source/gate shape.",
+      "related_files": [
+        "quant/experiments/exp_20260629_005_form4_sale_overhang_shared_daily_context_logger.py",
+        "quant/form4_sale_overhang_context.py",
+        "quant/daily_non_ohlcv_snapshot.py",
+        "quant/backfill_non_ohlcv.py",
+        "quant/test_form4_sale_overhang_context.py",
+        "quant/test_daily_non_ohlcv_snapshot.py",
+        "data/experiments/exp-20260629-005/exp_20260629_005_form4_sale_overhang_shared_daily_context_logger.json",
+        "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "data/non_ohlcv"
+      ],
+      "changed_files": [
+        "quant/form4_sale_overhang_context.py",
+        "quant/daily_non_ohlcv_snapshot.py",
+        "quant/backfill_non_ohlcv.py",
+        "quant/test_form4_sale_overhang_context.py",
+        "quant/test_daily_non_ohlcv_snapshot.py",
+        "quant/experiments/exp_20260629_005_form4_sale_overhang_shared_daily_context_logger.py",
+        "data/experiments/exp-20260629-005/exp_20260629_005_form4_sale_overhang_shared_daily_context_logger.json",
+        "experiments/logs/exp-20260629-005.json",
+        "experiments/cards/exp-20260629-005.md",
+        "experiments/manifests/exp-20260629-005.json",
+        "experiments/tickets/exp-20260629-005.json",
+        "docs/experiment_registry.json"
+      ],
+      "reproduction_commands": [
+        ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\form4_sale_overhang_context.py quant\\daily_non_ohlcv_snapshot.py quant\\backfill_non_ohlcv.py quant\\experiments\\exp_20260629_005_form4_sale_overhang_shared_daily_context_logger.py",
+        ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_form4_sale_overhang_context.py quant\\test_daily_non_ohlcv_snapshot.py",
+        ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260629_005_form4_sale_overhang_shared_daily_context_logger.py",
+        ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+      ],
+      "anti_js": {
+        "used_javascript": false,
+        "strategy_behavior_changed": false,
+        "threshold_scan": false,
+        "uses_future_form4_rows": false,
+        "new_download_attempts": false,
+        "response_curve_retune": false
+      },
+      "accepted_alpha": false,
+      "accepted_measurement_repair": true,
+      "decision": "accepted_measurement_repair_form4_sale_overhang_shared_daily_context_logger",
+      "artifact": "data/experiments/exp-20260629-005/exp_20260629_005_form4_sale_overhang_shared_daily_context_logger.json",
+      "log": "experiments/logs/exp-20260629-005.json",
+      "updated_at": "2026-06-29T08:19:36+00:00"
+    },
+    {
+      "acceptance_rule": "Accept only as measurement repair if shared parser exposes deterministic PIT governance-term fields with coverage counts and no strategy behavior change; do not promote candidate-pool/risk response until closed replacement-value rows or Gate 1-4 alpha evidence exists.",
+      "allowed_write_scope": [
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260629-006.md",
+      "causal_components": [
+        "shared Item-4 text extraction",
+        "shared governance-term classifier",
+        "coverage artifact and parser tests",
+        "no strategy behavior change"
+      ],
+      "change_type": "measurement_repair",
+      "changed_variable": "sec_13d_item4_governance_terms_shared_surface_v1",
+      "claimed_at": "2026-06-29T09:17:22+00:00",
+      "completed_at": "2026-06-29T09:25:40+00:00",
+      "created_at": "2026-06-29T09:17:04+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260629-006",
+      "experiment_uid": "expuid-1bdd485d481047cc",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260629-006",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-29T09:17:04+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "sec_13d_item4_governance_terms_shared_surface_v1"
+      },
+      "hypothesis": "Alpha-enabling 13D Item-4 governance-outcome surface: extract PIT board-seat, cooperation/settlement agreement, nomination withdrawal, and standstill-duration terms from cached Schedule 13D Item-4 primary-document text into the shared sec_13d13g ingest rows without changing ranking, sizing, exits, orders, or candidate selection.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "sec_13d_item4_governance_terms_shared_surface_v1"
+      ],
+      "mechanism_family": "production_visible_sec_ownership_item4_governance_terms",
+      "multiple_testing_risk_bucket": "moderate",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260618-016",
+        "exp-20260618-019",
+        "exp-20260619-014"
+      ],
+      "new_evidence_type": "new_machine_checkable_item4_governance_terms",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "sec_text_event",
+          "field_tags": [
+            "13d",
+            "13d13g",
+            "agreement",
+            "alpha",
+            "board",
+            "cached",
+            "changing",
+            "cooperation",
+            "document",
+            "duration",
+            "enabling",
+            "exits",
+            "extract",
+            "from",
+            "governance",
+            "ingest",
+            "into",
+            "item",
+            "item4",
+            "nomination",
+            "or",
+            "orders",
+            "outcome",
+            "ownership",
+            "pit",
+            "primary",
+            "ranking",
+            "rows",
+            "schedule",
+            "seat",
+            "settlement",
+            "sizing",
+            "standstill",
+            "surface",
+            "terms",
+            "text",
+            "withdrawal",
+            "without"
+          ],
+          "gate_shape": "allocator_source"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec_text_event",
+            "family_key": "issuer_8k_governance_resolution_text_candidate_pool",
+            "reopen_condition": "A retry needs materially richer evidence, such as parsed counterparty/holder identity, board-seat count, ownership threshold, explicit standstill duration, evidence spans, or closed forward replacement rows. Do not sweep phrase lists, item codes, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows.",
+            "score": 0.489,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec_text_event",
+            "family_key": "post_sec_item_nonrepeat_alpha_surface_readiness",
+            "reopen_condition": "Best next alpha work is data-edge construction, not another replay: historical PIT 13F/crowding snapshots by filing availability date, supplier/customer concentration or payment-term contract fields for DPO, borrow fee/availability/utilization, PIT options history with vendor_asof, or mature closed forward replacement-value rows from accepted shared helpers.",
+            "score": 0.4793,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec_text_event",
+            "family_key": "parsed_13d_item4_active_intent_absorption_candidate_pool",
+            "reopen_condition": "If this fixed Item-4 active-intent source fails, do not retry by sweeping phrase lists, holder types, classPercent thresholds, signal excess, close-location, volume, volatility, ret20, price/ADV, event age, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs materially richer purpose-text provenance such as direct activist campaign/board-seat outcomes, 13G/A stake-",
+            "score": 0.469,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.5,
+            "data_source": "sec_text_event",
+            "family_key": "event_governance_disclosure_quality",
+            "reopen_condition": null,
+            "score": 0.4686,
+            "status": "has_accepted",
+            "trials": 2
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec_text_event",
+            "family_key": "event_disclosure_complexity_quality",
+            "reopen_condition": null,
+            "score": 0.4678,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": "Board-seat count, board appointment/departure, cooperation/settlement agreement, nomination withdrawal, and standstill-duration fields parsed from cached Schedule 13D Item-4 text; this is shared data-surface construction, not a phrase-list/top-N/hold/notional retry.",
+        "override": false,
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "allocator_source",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "sec_text_event",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": {
+        "success_probability": 0.34,
+        "expected_ev_delta": 0.0,
+        "expected_pnl_delta": 0.0,
+        "main_failure_modes": [
+          "schema_variation",
+          "false_positive_term_extraction",
+          "no_item4_text_coverage",
+          "duplicate_13d_phrase_gate"
+        ],
+        "confidence_reason": "Playbook freezes the simple Item-4 active phrase candidate pool but explicitly names board-seat/standstill economics as a valid richer provenance axis; local cached 13D XML and exp-019 private extraction prove the source is available.",
+        "recorded_at": "2026-06-29T09:16:27+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "accepted": true,
+        "accepted_alpha": false,
+        "accepted_measurement_repair": true,
+        "decision": "accepted_measurement_repair_sec_13d_item4_governance_terms_surface",
+        "artifact": "data/experiments/exp-20260629-006/exp_20260629_006_sec_13d_item4_governance_terms_surface.json",
+        "log": "experiments/logs/exp-20260629-006.json",
+        "delta_metrics": {
+          "expected_value_score_sum_delta": 0.0,
+          "total_pnl_delta": 0.0,
+          "trade_count_delta": 0,
+          "signals_generated_delta": 0,
+          "signals_survived_delta": 0,
+          "strategy_behavior_changed": false
+        },
+        "gate1": {
+          "passed": true,
+          "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+          "baseline_expected_value_score_sum": 7.8941,
+          "baseline_total_pnl": 234850.99,
+          "strategy_metrics_unchanged": true
+        },
+        "gate2": {
+          "passed": true,
+          "runtime_fields_checked": [
+            "accession_number",
+            "filing_date",
+            "item4_board_appointment_count",
+            "item4_governance_terms",
+            "item4_governance_terms_bucket",
+            "item4_governance_terms_present",
+            "item4_standstill_duration_days",
+            "item4_text_present",
+            "usable_trade_date"
+          ],
+          "parsed_event_count": 13224,
+          "parsed_row_count": 6072,
+          "item4_text_rows": 686,
+          "governance_term_rows": 66,
+          "field_contract_passed": true,
+          "source": "quant/sec_13d13g_ingest.py",
+          "cache_dir": "data/cache/sec/ownership_13d13g"
+        },
+        "gate3": {
+          "passed": true,
+          "not_applicable_reason": "No signal, filter, ranking, sizing, exit, risk budget, or order rule changed.",
+          "signals_generated_delta": 0,
+          "signals_survived_delta": 0,
+          "survival_rate_delta": 0.0
+        },
+        "gate4": {
+          "passed": true,
+          "accepted_alpha": false,
+          "measurement_repair_only": true,
+          "decision": "accepted_measurement_repair_sec_13d_item4_governance_terms_surface",
+          "before_after_strategy_delta": {
+            "expected_value_score_sum_delta": 0.0,
+            "total_pnl_delta": 0.0,
+            "trade_count_delta": 0,
+            "signals_generated_delta": 0,
+            "signals_survived_delta": 0,
+            "strategy_behavior_changed": false
+          },
+          "failed_reasons": [],
+          "next_alpha_gate": "Do not promote or retune a 13D candidate-pool/risk response from this repair alone. A future alpha test needs fixed use of these new fields plus Gate 1-4 or closed forward replacement-value rows."
+        },
+        "calibration": {
+          "predicted_success_probability": 0.34,
+          "actual_success": 1,
+          "brier_score": 0.4356,
+          "expected_ev_delta": 0.0,
+          "actual_ev_delta": 0.0,
+          "expected_pnl_delta": 0.0,
+          "actual_pnl_delta": 0.0,
+          "predicted_failure_modes": [
+            "schema_variation",
+            "false_positive_term_extraction",
+            "no_item4_text_coverage",
+            "duplicate_13d_phrase_gate"
+          ],
+          "failure_modes_observed": [],
+          "predicted_failure_mode_hit": false
+        },
+        "summary": "Cached structured Schedule 13D XML already contains Item-4 text, so the generic private extractor from exp-20260618-019 could be promoted into shared deterministic governance-term fields. This creates provenance for future tests but no alpha claim."
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260629-006.json",
+      "single_causal_variable": "sec_13d_item4_governance_terms_shared_surface_v1",
+      "status": "accepted_measurement_repair",
+      "ticket_file": "experiments/tickets/exp-20260629-006.json",
+      "trial_family": "sec_13d_item4_governance_terms_surface",
+      "trial_variant_id": "shared_board_seat_standstill_terms_v1",
+      "alpha_hypothesis": "Candidate-pool/risk-allocation future hypothesis: specific 13D Item-4 governance outcomes such as board seats, standstill terms, and settlement agreements may contain more durable activist provenance than the rejected generic active-intent phrase gate, but first the fields must be exposed by a shared PIT parser.",
+      "new_evidence_axis": "Board-seat count, board appointment/departure, cooperation or settlement agreement, nomination withdrawal, and standstill-duration fields parsed from cached Schedule 13D Item-4 text.",
+      "pre_run_questions": {
+        "1_alpha_hypothesis": "Candidate-pool/risk-allocation future hypothesis: specific 13D Item-4 governance outcomes such as board seats, standstill terms, and settlement agreements may contain more durable activist provenance than the rejected generic active-intent phrase gate, but first the fields must be exposed by a shared PIT parser.",
+        "2_history_check": "Novelty gate passed. Nearby exp-20260618-019 rejected the generic active Item-4 phrase candidate pool, while the playbook named board-seat/standstill economics as richer valid provenance.",
+        "3_single_policy_bundle": "sec_13d_item4_governance_terms_shared_surface_v1",
+        "4_acceptance_standard": "Accept only as measurement repair if the shared parser exposes deterministic PIT governance fields with coverage and strategy metrics remain unchanged.",
+        "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260629_006_sec_13d_item4_governance_terms_surface.py"
+      },
+      "gate1": {
+        "passed": true,
+        "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "baseline_expected_value_score_sum": 7.8941,
+        "baseline_total_pnl": 234850.99,
+        "strategy_metrics_unchanged": true
+      },
+      "gate2": {
+        "passed": true,
+        "runtime_fields_checked": [
+          "accession_number",
+          "filing_date",
+          "item4_board_appointment_count",
+          "item4_governance_terms",
+          "item4_governance_terms_bucket",
+          "item4_governance_terms_present",
+          "item4_standstill_duration_days",
+          "item4_text_present",
+          "usable_trade_date"
+        ],
+        "parsed_event_count": 13224,
+        "parsed_row_count": 6072,
+        "item4_text_rows": 686,
+        "governance_term_rows": 66,
+        "field_contract_passed": true,
+        "source": "quant/sec_13d13g_ingest.py",
+        "cache_dir": "data/cache/sec/ownership_13d13g"
+      },
+      "gate3": {
+        "passed": true,
+        "not_applicable_reason": "No signal, filter, ranking, sizing, exit, risk budget, or order rule changed.",
+        "signals_generated_delta": 0,
+        "signals_survived_delta": 0,
+        "survival_rate_delta": 0.0
+      },
+      "gate4": {
+        "passed": true,
+        "accepted_alpha": false,
+        "measurement_repair_only": true,
+        "decision": "accepted_measurement_repair_sec_13d_item4_governance_terms_surface",
+        "before_after_strategy_delta": {
+          "expected_value_score_sum_delta": 0.0,
+          "total_pnl_delta": 0.0,
+          "trade_count_delta": 0,
+          "signals_generated_delta": 0,
+          "signals_survived_delta": 0,
+          "strategy_behavior_changed": false
+        },
+        "failed_reasons": [],
+        "next_alpha_gate": "Do not promote or retune a 13D candidate-pool/risk response from this repair alone. A future alpha test needs fixed use of these new fields plus Gate 1-4 or closed forward replacement-value rows."
+      },
+      "production_impact": {
+        "trade_enabled": false,
+        "live_orders_changed": false,
+        "paper_orders_changed": false,
+        "production_signal_path_changed": false,
+        "production_watchlist_changed": false,
+        "shared_policy_changed": false,
+        "backtester_adapter_changed": false,
+        "run_adapter_changed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "ranking_changed": false,
+        "sizing_changed": false,
+        "risk_budget_changed": false,
+        "llm_decision_boundary_changed": false,
+        "daily_snapshot_exposed": false,
+        "live_ready": false,
+        "parity_note": "Shared data parser only. No production trading path consumes the new Item-4 governance fields."
+      },
+      "post_run_reflection": {
+        "why_result_happened": "Cached structured Schedule 13D XML already contains Item-4 text, so the generic private extractor from exp-20260618-019 could be promoted into shared deterministic governance-term fields. This creates provenance for future tests but no alpha claim.",
+        "forbidden_near_neighbor_retry": "Do not retry 13D/13G by sweeping phrase lists, holder types, classPercent, signal absorption, event age, top-N, hold, cooldown, or notional on frozen windows.",
+        "new_evidence_required": "A valid alpha retry needs fixed use of the new board-seat/standstill fields with Gate 1-4, campaign/board-seat outcome evidence beyond regex provenance, repaired old_thin coverage, or closed forward replacement-value rows."
+      },
+      "next_retry_requires": "Use these fields only as a new fixed provenance axis; do not retune the old active-intent phrase gate.",
+      "related_files": [
+        "quant/experiments/exp_20260629_006_sec_13d_item4_governance_terms_surface.py",
+        "quant/sec_13d13g_ingest.py",
+        "quant/test_sec_13d13g_ingest.py",
+        "data/experiments/exp-20260629-006/exp_20260629_006_sec_13d_item4_governance_terms_surface.json",
+        "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+      ],
+      "changed_files": [
+        "quant/sec_13d13g_ingest.py",
+        "quant/test_sec_13d13g_ingest.py",
+        "quant/experiments/exp_20260629_006_sec_13d_item4_governance_terms_surface.py",
+        "data/experiments/exp-20260629-006/exp_20260629_006_sec_13d_item4_governance_terms_surface.json",
+        "experiments/logs/exp-20260629-006.json",
+        "experiments/cards/exp-20260629-006.md",
+        "experiments/manifests/exp-20260629-006.json",
+        "experiments/tickets/exp-20260629-006.json",
+        "docs/experiment_registry.json"
+      ],
+      "reproduction_commands": [
+        ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\sec_13d13g_ingest.py quant\\experiments\\exp_20260629_006_sec_13d_item4_governance_terms_surface.py",
+        ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_sec_13d13g_ingest.py",
+        ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260629_006_sec_13d_item4_governance_terms_surface.py",
+        ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+      ],
+      "anti_js": {
+        "used_javascript": false,
+        "strategy_behavior_changed": false,
+        "threshold_scan": false,
+        "response_curve_retune": false,
+        "uses_future_data": false
+      },
+      "calibration": {
+        "predicted_success_probability": 0.34,
+        "actual_success": 1,
+        "brier_score": 0.4356,
+        "expected_ev_delta": 0.0,
+        "actual_ev_delta": 0.0,
+        "expected_pnl_delta": 0.0,
+        "actual_pnl_delta": 0.0,
+        "predicted_failure_modes": [
+          "schema_variation",
+          "false_positive_term_extraction",
+          "no_item4_text_coverage",
+          "duplicate_13d_phrase_gate"
+        ],
+        "failure_modes_observed": [],
+        "predicted_failure_mode_hit": false
+      },
+      "accepted_alpha": false,
+      "accepted_measurement_repair": true,
+      "decision": "accepted_measurement_repair_sec_13d_item4_governance_terms_surface",
+      "artifact": "data/experiments/exp-20260629-006/exp_20260629_006_sec_13d_item4_governance_terms_surface.json",
+      "log": "experiments/logs/exp-20260629-006.json",
+      "updated_at": "2026-06-29T09:25:40+00:00"
+    },
+    {
+      "experiment_id": "exp-20260629-007",
+      "status": "accepted",
+      "lane": "measurement_repair",
+      "owner": "alpha-explore",
+      "hypothesis": "Repair the malformed exp-20260628-020 experiment log shard so recent Form144 materialization history remains parseable for audit, derived memory, and novelty/source-saturation accounting; this is required because current alpha candidates are blocked by saturated SEC text scans or immature forward rows.",
+      "ticket_file": "experiments/tickets/exp-20260629-007.json",
+      "card_file": "experiments/cards/exp-20260629-007.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260629-007.json",
+      "updated_at": "2026-06-29T10:10:28+00:00"
+    },
+    {
+      "acceptance_rule": "Observed-only scout: if breadth persistence materially improves precursor full-population 10d/20d medians and a top1/day replay beats accepted comparators with no window regression, next step is shared default-off daily parity; otherwise reject and freeze this selector.",
+      "allowed_write_scope": [
+        "data/experiments/exp-20260628-015/exp_20260628_015_breakout_without_2x_volume_precursor_forward_replacement_value_v1.json",
+        "data/experiments/exp-20260629-008/breakout_precursor_breadth_persistence_events.jsonl",
+        "data/experiments/exp-20260629-008/exp_20260629_008_breakout_precursor_breadth_persistence_scout.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json",
+        "experiments/cards/exp-20260629-008.md",
+        "experiments/logs/exp-20260629-008.json",
+        "experiments/manifests/exp-20260629-008.json",
+        "experiments/tickets/exp-20260629-008.json",
+        "quant/experiments/exp_20260629_008_*;data/experiments/exp-20260629-008/*;experiments/logs/exp-20260629-008.json;experiments/cards/exp-20260629-008.md;experiments/manifests/exp-20260629-008.json;experiments/tickets/exp-20260629-008.json;docs/experiment_log.jsonl;docs/experiment_registry.json",
+        "quant/experiments/exp_20260629_008_breakout_precursor_breadth_persistence_scout.py"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260629-008.md",
+      "causal_components": [],
+      "change_type": "observed_only_breadth_persistence_selector_scout",
+      "changed_variable": "breakout_precursor_breadth_persistence_selector_v1",
+      "claimed_at": "2026-06-29T11:10:31+00:00",
+      "completed_at": "2026-06-29T11:20:04+00:00",
+      "created_at": "2026-06-29T11:10:20+00:00",
+      "decision": "rejected_breakout_precursor_breadth_persistence_selector",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260629-008",
+      "experiment_uid": "expuid-32fc7044a25d403b",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260629-008",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-29T11:10:20+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "breakout_precursor_breadth_persistence_scout"
+      },
+      "hypothesis": "candidate_pool scout: breakout-without-2x-volume precursors may only be useful when broad-market volume-breadth thrust persists into the signal date. Apply a fixed 2-of-3-session PIT breadth-persistence selector to the exp-20260628-015 full precursor population before any volume-threshold or full-stack promotion.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "breakout_precursor_breadth_persistence_selector_v1"
+      ],
+      "mechanism_family": "production_visible_free_ohlcv_candidate_pool",
+      "multiple_testing_risk_bucket": "moderate",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260628-015",
+        "exp-20260628-019",
+        "exp-20260528-018"
+      ],
+      "new_evidence_type": "pit_three_session_breadth_persistence_field_on_precursor_population",
+      "novelty": {
+        "blocking_matches": [
+          {
+            "accept_rate": 0.0,
+            "family_key": "volume_breadth_confirmed_breakout_default_off_paper_sleeve",
+            "score": 0.6432,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "full_universe_alpha_score_candidate_pool_component_gate",
+            "score": 0.6273,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "volume_dryup_breakout_candidate_pool",
+            "score": 0.6216,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "breadth_recovery_confirmed_breakout_default_off_paper_sleeve",
+            "score": 0.6211,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "broad_market_candidate_breadth_selection_gate",
+            "score": 0.6211,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "ohlcv_relation",
+          "field_tags": [
+            "2x",
+            "a",
+            "any",
+            "be",
+            "before",
+            "breadth",
+            "breakout",
+            "date",
+            "exp",
+            "full",
+            "into",
+            "market",
+            "may",
+            "on",
+            "only",
+            "or",
+            "persistence",
+            "persists",
+            "pit",
+            "population",
+            "precursor",
+            "precursors",
+            "promotion",
+            "selector",
+            "session",
+            "signal",
+            "stack",
+            "three",
+            "threshold",
+            "thrust",
+            "use",
+            "useful",
+            "volume",
+            "when",
+            "without"
+          ],
+          "gate_shape": "candidate_pool_top1_10d"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_relation",
+            "family_key": "volume_breadth_confirmed_breakout_default_off_paper_sleeve",
+            "reopen_condition": "If revisited, collect forward paper rows or add an orthogonal production-visible context field; do not just retune volume-breadth, breakout, or volume-ratio thresholds on the frozen sample.",
+            "score": 0.6432,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_relation",
+            "family_key": "full_universe_alpha_score_candidate_pool_component_gate",
+            "reopen_condition": "Forward replacement-value rows, a shared production/replay alpha_score adapter, or a materially richer component-level ranking field. Do not just mine alpha_score component thresholds on the same frozen replay.",
+            "score": 0.6273,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_relation",
+            "family_key": "volume_dryup_breakout_candidate_pool",
+            "reopen_condition": "A valid reopen needs a new non-OHLCV confirmation field, a true forward replacement row showing allocation value, or a distinct data source. Another adjacent volume-dry-up breakout retune is not new evidence.",
+            "score": 0.6216,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_relation",
+            "family_key": "breadth_recovery_confirmed_breakout_default_off_paper_sleeve",
+            "reopen_condition": "If revisited, require forward paper rows or a materially orthogonal production-visible source-quality field; do not just retune recovery, breadth, breakout, or volume-ratio thresholds on the frozen sample.",
+            "score": 0.6211,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_relation",
+            "family_key": "broad_market_candidate_breadth_selection_gate",
+            "reopen_condition": "If forward broad-market paper rows show thin-breadth days driving losses, retest with live ledger replacement-value evidence before enabling any shared selection rule.",
+            "score": 0.6211,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": "machine-checkable PIT field: volume-breadth context passed on at least 2 of the signal-date and prior 2 trading sessions, applied to exp-20260628-015 precursor forward rows; not a 2x volume threshold, rank, hold, notional, or regime-label retune",
+        "override": true,
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0521,
+          "accepts": 5,
+          "applicable": true,
+          "gate_shape": "candidate_pool_top1_10d",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "ohlcv_relation",
+          "trials": 96
+        },
+        "warn": true,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "post_run_reflection": {
+        "forbidden_near_neighbor_retry": "Do not retune the 2-of-3 count, VBB context thresholds, 2x volume gate, top1 rank, hold days, cooldown, or notional on the exp015/exp019 precursor rows. OHLCV candidate-pool novelty is near source saturation.",
+        "new_evidence_required": "A materially new non-OHLCV pre-volume-confirmation selector (borrow/availability, options-implied pressure, ownership/flow) or settled daily forward rows from an exact shared logger. Do not spend another experiment on adjacent OHLCV breadth persistence.",
+        "why_result_happened": "The selector only adds an OHLCV market-internal breadth state to a precursor family whose false-positive drag was already exposed by exp-20260628-015 and whose fixed top1/day promotion failed in exp-20260628-019."
+      },
+      "prediction": {
+        "success_probability": 0.24,
+        "expected_ev_delta": 0.0,
+        "expected_pnl_delta": 0.0,
+        "main_failure_modes": [
+          "breadth_field_not_new_enough",
+          "too_few_persistent_days",
+          "selector_does_not_beat_accepted_comparators",
+          "drawdown_or_window_fragility"
+        ],
+        "confidence_reason": "exp-20260628-015 explicitly named breadth persistence as a valid pre-volume-confirmation selector. Confidence is low because the source is still OHLCV breadth and VBB intensity has already been mined on another sleeve.",
+        "recorded_at": "2026-06-29T11:10:00+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "decision": "rejected_breakout_precursor_breadth_persistence_selector",
+        "artifact": "data/experiments/exp-20260629-008/exp_20260629_008_breakout_precursor_breadth_persistence_scout.json",
+        "ledger": "data/experiments/exp-20260629-008/breakout_precursor_breadth_persistence_events.jsonl",
+        "log": "experiments/logs/exp-20260629-008.json",
+        "card": "experiments/cards/exp-20260629-008.md",
+        "aggregate_expected_value_delta": 0.0314,
+        "aggregate_strategy_total_pnl_delta": 1216.64,
+        "accepted": false,
+        "accepted_alpha": false,
+        "gate4": {
+          "passed": false,
+          "decision": "rejected_breakout_precursor_breadth_persistence_selector",
+          "failed_reasons": [
+            "window_ev_regression",
+            "window_pnl_regression",
+            "accepted_compression_ev_not_beaten",
+            "accepted_compression_pnl_not_beaten",
+            "accepted_distribution_ev_not_beaten",
+            "accepted_distribution_pnl_not_beaten"
+          ],
+          "aggregate_ev_delta": 0.0314,
+          "aggregate_pnl_delta": 1216.64,
+          "windows_ev_improved": 2,
+          "windows_ev_regressed": 1,
+          "windows_pnl_improved": 2,
+          "windows_pnl_regressed": 1,
+          "target_trade_count": 31,
+          "target_trade_count_min": 20,
+          "target_windows": [
+            "late_strong",
+            "mid_weak",
+            "old_thin"
+          ],
+          "target_window_count_min": 3,
+          "max_drawdown_worse": 0.0016,
+          "max_drawdown_worse_guardrail": 0.005,
+          "minimum_core_survival_rate": 0.7925,
+          "survival_guard_passed": true,
+          "accepted_comparators": {
+            "compression": {
+              "experiment_id": "exp-20260608-013",
+              "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+              "expected_value_score_delta_sum": 0.1608,
+              "total_pnl_delta_sum": 2248.98
+            },
+            "distribution": {
+              "experiment_id": "exp-20260611-007",
+              "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+              "expected_value_score_delta_sum": 0.5286,
+              "total_pnl_delta_sum": 10432.91
+            }
+          },
+          "target_concentration": {
+            "passed": true,
+            "max_single_positive_pnl_share": 0.218414,
+            "max_single_positive_pnl_share_guardrail": 0.5,
+            "positive_pnl_hhi": 0.134235,
+            "positive_pnl_hhi_guardrail": 0.35
+          }
+        },
+        "calibration": {
+          "predicted_success_probability": 0.24,
+          "actual_gate4_passed": false,
+          "actual_success": 0,
+          "failure_modes_observed": [
+            "window_ev_regression",
+            "window_pnl_regression",
+            "accepted_compression_ev_not_beaten",
+            "accepted_compression_pnl_not_beaten",
+            "accepted_distribution_ev_not_beaten",
+            "accepted_distribution_pnl_not_beaten"
+          ],
+          "brier_score": 0.0576,
+          "expected_ev_delta": 0.0,
+          "actual_ev_delta": 0.0314,
+          "expected_pnl_delta": 0.0,
+          "actual_pnl_delta": 1216.64
+        },
+        "production_impact": {
+          "trade_enabled": false,
+          "alters_orders": false,
+          "adapter_status": "observed_only_replay_scout_no_shared_adapter",
+          "shared_policy_changed": false,
+          "backtester_adapter_changed": false,
+          "run_adapter_changed": false,
+          "replay_only": true,
+          "default_off_paper_only": false,
+          "daily_snapshot_exposed": false,
+          "parity_test_added": false,
+          "production_signal_path_changed": false,
+          "production_orders_changed": false,
+          "production_watchlist_changed": false,
+          "alters_signal_generation": false,
+          "alters_candidate_ranking": false,
+          "alters_sizing": false,
+          "alters_exits": false,
+          "uses_llm": false,
+          "uses_free_ohlcv_only": true,
+          "live_ready": false,
+          "parity_note": "Read-only scout using existing exp015 precursor forward rows and the existing VBB breadth context. No shared helper, daily snapshot, live order, ranking, sizing, exit, LLM, or news path changed."
+        },
+        "post_run_reflection": {
+          "why_result_happened": "The selector only adds an OHLCV market-internal breadth state to a precursor family whose false-positive drag was already exposed by exp-20260628-015 and whose fixed top1/day promotion failed in exp-20260628-019.",
+          "forbidden_near_neighbor_retry": "Do not retune the 2-of-3 count, VBB context thresholds, 2x volume gate, top1 rank, hold days, cooldown, or notional on the exp015/exp019 precursor rows. OHLCV candidate-pool novelty is near source saturation.",
+          "new_evidence_required": "A materially new non-OHLCV pre-volume-confirmation selector (borrow/availability, options-implied pressure, ownership/flow) or settled daily forward rows from an exact shared logger. Do not spend another experiment on adjacent OHLCV breadth persistence."
+        }
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260629-008.json",
+      "single_causal_variable": "breakout_precursor_breadth_persistence_selector_v1",
+      "status": "rejected",
+      "summary": "The breadth-persistence selector did not clear Gate 4. Reject and do not retry adjacent breadth-count, volume-breadth-fraction, rank, notional, cooldown, hold, or 2x volume threshold variants on these frozen rows.",
+      "ticket_file": "experiments/tickets/exp-20260629-008.json",
+      "trial_family": "breakout_precursor_breadth_persistence_selector",
+      "trial_variant_id": "precursor_breadth_pass_2_of_3_top1_10d_v1",
+      "new_evidence_axis": "machine-checkable PIT field: volume-breadth context passed on at least 2 of the signal-date and prior 2 trading sessions, applied to exp-20260628-015 precursor forward rows; not a 2x volume threshold, rank, hold, notional, or regime-label retune",
+      "artifact": "data/experiments/exp-20260629-008/exp_20260629_008_breakout_precursor_breadth_persistence_scout.json",
+      "log": "experiments/logs/exp-20260629-008.json",
+      "aggregate_expected_value_delta": 0.0314,
+      "aggregate_strategy_total_pnl_delta": 1216.64,
+      "updated_at": "2026-06-29T11:20:04+00:00"
+    },
+    {
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260629_009_sec_13d_item4_governance_terms_candidate_pool.py",
+        "data/experiments/exp-20260629-009/exp_20260629_009_sec_13d_item4_governance_terms_candidate_pool.json",
+        "experiments/cards/exp-20260629-009.md",
+        "experiments/manifests/exp-20260629-009.json",
+        "experiments/tickets/exp-20260629-009.json",
+        "experiments/logs/exp-20260629-009.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260629-009.md",
+      "causal_components": [
+        "shared sec_13d13g governance-terms parser",
+        "historical replay",
+        "daily default-off surface if retained",
+        "execution envelope",
+        "Gate 1-4 verdict"
+      ],
+      "change_type": "default_off_paper_candidate_pool_replay_scout",
+      "changed_variable": "sec_13d_item4_governance_terms_candidate_pool_v1",
+      "claimed_at": "2026-06-29T12:05:44+00:00",
+      "completed_at": "2026-06-29T12:11:38+00:00",
+      "created_at": "2026-06-29T12:05:25+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260629-009",
+      "experiment_uid": "expuid-f42f0fc7d2ad42d2",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260629-009",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-29T12:05:25+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "sec_13d_item4_governance_terms_candidate_pool"
+      },
+      "hypothesis": "candidate_pool: structured Schedule 13D Item-4 governance terms such as board-seat, cooperation/settlement, nomination-withdrawal, and standstill outcomes may identify a stronger activist catalyst than the rejected generic Item-4 phrase gate. A fixed top-1/day default-off paper source from the shared sec_13d13g governance-terms surface should add next-open 10d replacement value across canonical windows.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "sec_13d_item4_governance_terms_candidate_pool_v1"
+      ],
+      "mechanism_family": "production_visible_sec_ownership_item4_governance_terms",
+      "multiple_testing_risk_bucket": "moderate",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260618-019",
+        "exp-20260619-014",
+        "exp-20260629-006"
+      ],
+      "new_evidence_type": "structured_sec_13d_item4_governance_terms_surface",
+      "novelty": {
+        "blocking_matches": [
+          {
+            "accept_rate": 0.0,
+            "family_key": "parsed_13d_item4_active_intent_absorption_candidate_pool",
+            "score": 0.6182,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "issuer_8k_governance_resolution_text_candidate_pool",
+            "score": 0.6178,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "sec_text_structured_contract_economics_candidate_pool",
+            "score": 0.6093,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "sbc_grant_value_backlog_relief_candidate_pool",
+            "score": 0.6091,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "free_sec_submissions_8k_nonreliance_absorption_candidate_pool",
+            "score": 0.6089,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "sec_text_event",
+          "field_tags": [
+            "13d",
+            "13d13g",
+            "a",
+            "across",
+            "activist",
+            "add",
+            "as",
+            "board",
+            "canonical",
+            "catalyst",
+            "cooperation",
+            "from",
+            "gate",
+            "generic",
+            "governance",
+            "identify",
+            "item",
+            "item4",
+            "may",
+            "nomination",
+            "outcomes",
+            "ownership",
+            "phrase",
+            "rejected",
+            "replacement",
+            "schedule",
+            "seat",
+            "settlement",
+            "should",
+            "standstill",
+            "stronger",
+            "structured",
+            "such",
+            "surface",
+            "terms",
+            "than",
+            "top",
+            "value",
+            "windows",
+            "withdrawal"
+          ],
+          "gate_shape": "candidate_pool_top1_10d"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec_text_event",
+            "family_key": "parsed_13d_item4_active_intent_absorption_candidate_pool",
+            "reopen_condition": "If this fixed Item-4 active-intent source fails, do not retry by sweeping phrase lists, holder types, classPercent thresholds, signal excess, close-location, volume, volatility, ret20, price/ADV, event age, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs materially richer purpose-text provenance such as direct activist campaign/board-seat outcomes, 13G/A stake-",
+            "score": 0.6182,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec_text_event",
+            "family_key": "issuer_8k_governance_resolution_text_candidate_pool",
+            "reopen_condition": "A retry needs materially richer evidence, such as parsed counterparty/holder identity, board-seat count, ownership threshold, explicit standstill duration, evidence spans, or closed forward replacement rows. Do not sweep phrase lists, item codes, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows.",
+            "score": 0.6178,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec_text_event",
+            "family_key": "sec_text_structured_contract_economics_candidate_pool",
+            "reopen_condition": "A retry needs a materially richer structured event tuple, such as counterparty identity, contract duration/value normalization by market cap, source-document evidence spans, or closed forward replacement rows. Do not sweep regex phrase lists, value thresholds, item codes, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows.",
+            "score": 0.6093,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec_text_event",
+            "family_key": "sbc_grant_value_backlog_relief_candidate_pool",
+            "reopen_condition": "A retry needs materially different PIT grant-value evidence such as closed forward replacement-value rows, option-exercise/vesting context joined to the same issuers, or a production-shared daily snapshot of grant backlog maturation. Do not sweep grant backlog tags, freshness, ratio thresholds, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows.",
+            "score": 0.6091,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec_text_event",
+            "family_key": "free_sec_submissions_8k_nonreliance_absorption_candidate_pool",
+            "reopen_condition": "If this fixed Item 4.02 nonreliance absorption bundle fails, do not retry by sweeping 8-K/A inclusion, signal excess, close-location, volume, volatility, ret20, price/ADV, event-age, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs materially richer PIT nonreliance semantics such as restatement scope, non-reliance period, auditor involvement, control weakness la",
+            "score": 0.6089,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": "New data source: shared structured Schedule 13D Item-4 governance-term fields emitted by quant/sec_13d13g_ingest.py after exp-20260629-006, not a generic sec_text_event phrase-list scan; fixed provenance bucket only, no phrase/threshold/top-N/hold/notional sweep.",
+        "override": true,
+        "saturated_source_override": true,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": true,
+          "gate_shape": "candidate_pool_top1_10d",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": true,
+          "source": "sec_text_event",
+          "trials": 43
+        },
+        "warn": true,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": {
+        "success_probability": 0.22,
+        "expected_ev_delta": null,
+        "expected_pnl_delta": null,
+        "main_failure_modes": [
+          "thin_sample",
+          "source_saturation_reject",
+          "priced_at_next_open",
+          "old_thin_coverage_gap",
+          "accepted_comparator_not_beaten"
+        ],
+        "confidence_reason": "Mechanism: board-seat and standstill outcomes are concrete activist governance economics, not generic text tone. Nearby history rejected simple 13D active phrase gates but exp-20260629-006 exposed deterministic governance-term fields as a new structured provenance surface. Main disconfirmers are thin tradeable coverage, next-open pricing, and source-saturation if the gate classifies this as old SEC text.",
+        "recorded_at": "2026-06-29T12:04:45+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "decision": "rejected_sec_13d_item4_governance_terms_candidate_pool",
+        "accepted": false,
+        "numeric_gate4_passed": false,
+        "artifact": "data/experiments/exp-20260629-009/exp_20260629_009_sec_13d_item4_governance_terms_candidate_pool.json",
+        "log": "experiments/logs/exp-20260629-009.json",
+        "aggregate_expected_value_delta": -0.0287,
+        "aggregate_strategy_total_pnl_delta": -270.72,
+        "gate4": {
+          "passed": false,
+          "decision": "rejected_sec_13d_item4_governance_terms_candidate_pool",
+          "failed_reasons": [
+            "aggregate_ev_not_positive",
+            "aggregate_pnl_not_positive",
+            "window_ev_regression",
+            "window_pnl_regression",
+            "fewer_than_two_ev_improved_windows",
+            "target_sample_too_small",
+            "target_concentration_failed",
+            "accepted_compression_ev_not_beaten",
+            "accepted_compression_pnl_not_beaten",
+            "accepted_distribution_ev_not_beaten",
+            "accepted_distribution_pnl_not_beaten"
+          ],
+          "aggregate_ev_delta": -0.0287,
+          "aggregate_pnl_delta": -270.72,
+          "windows_ev_improved": 1,
+          "windows_ev_regressed": 2,
+          "windows_pnl_improved": 1,
+          "windows_pnl_regressed": 2,
+          "target_trade_count": 13,
+          "target_trade_count_min": 20,
+          "target_windows": [
+            "late_strong",
+            "mid_weak",
+            "old_thin"
+          ],
+          "target_window_count_min": 3,
+          "max_drawdown_worse": 0.0,
+          "max_drawdown_worse_guardrail": 0.005,
+          "minimum_core_survival_rate": 0.7925,
+          "survival_guard_passed": true,
+          "target_concentration": {
+            "passed": false,
+            "max_single_positive_pnl_share": 0.68574,
+            "max_single_positive_pnl_share_guardrail": 0.5,
+            "positive_pnl_hhi": 0.525008,
+            "positive_pnl_hhi_guardrail": 0.35
+          },
+          "accepted_compression_comparator": {
+            "experiment_id": "exp-20260608-013",
+            "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+            "aggregate_expected_value_delta": 0.1608,
+            "aggregate_pnl_delta": 2248.98
+          },
+          "accepted_distribution_comparator": {
+            "experiment_id": "exp-20260611-007",
+            "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+            "aggregate_expected_value_delta": 0.5286,
+            "aggregate_pnl_delta": 10432.91
+          }
+        },
+        "calibration": {
+          "predicted_success_probability": 0.22,
+          "actual_gate4_passed": false,
+          "actual_success": 0,
+          "failure_modes_observed": [
+            "aggregate_ev_not_positive",
+            "aggregate_pnl_not_positive",
+            "window_ev_regression",
+            "window_pnl_regression",
+            "fewer_than_two_ev_improved_windows",
+            "target_sample_too_small",
+            "target_concentration_failed",
+            "accepted_compression_ev_not_beaten",
+            "accepted_compression_pnl_not_beaten",
+            "accepted_distribution_ev_not_beaten",
+            "accepted_distribution_pnl_not_beaten"
+          ],
+          "brier_score": 0.0484,
+          "expected_ev_delta": null,
+          "actual_ev_delta": -0.0287,
+          "expected_pnl_delta": null,
+          "actual_pnl_delta": -270.72,
+          "predicted_failure_modes": [
+            "thin_sample",
+            "source_saturation_reject",
+            "priced_at_next_open",
+            "old_thin_coverage_gap",
+            "accepted_comparator_not_beaten"
+          ],
+          "predicted_failure_mode_hit": false
+        },
+        "production_impact": {
+          "trade_enabled": false,
+          "alters_orders": false,
+          "adapter_status": "private_replay_scout_no_shared_adapter",
+          "shared_policy_changed": false,
+          "backtester_adapter_changed": false,
+          "run_adapter_changed": false,
+          "replay_only": true,
+          "default_off_paper_only": true,
+          "daily_snapshot_exposed": false,
+          "parity_test_added": false,
+          "production_signal_path_changed": false,
+          "production_orders_changed": false,
+          "production_watchlist_changed": false,
+          "alters_signal_generation": false,
+          "alters_candidate_ranking": false,
+          "alters_sizing": false,
+          "alters_exits": false,
+          "uses_llm": false,
+          "uses_free_sec_companyfacts": false,
+          "uses_free_ohlcv": true,
+          "live_realism_evaluated": true,
+          "live_ready": false,
+          "execution_envelope": {
+            "trade_enabled": false,
+            "target_notional_per_paper_trade": 4000.0,
+            "daily_entry_slots": 1,
+            "same_ticker_cooldown_days": 10,
+            "hold_days": 10,
+            "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+            "order_semantics": "observe-only next-session-open paper entry; no broker order",
+            "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+            "kill_switch": "trade_enabled remains false; no production adapter changes",
+            "failure_handling": "missing parsed 13D rows, missing cached primary_doc.xml, no shared governance-term field hit, missing OHLCV, missing next open, or missing 10d exit rejects the paper candidate"
+          },
+          "parity_note": "This experiment changes no production code. A positive result is only a replay lead until a shared default-off helper computes the same PIT 13D Item-4 governance-term parser output, acceptance-time signal date, price-absorption gate, cooldown, next-open paper entry, 10-day exit, costs, and concentration controls in both historical replay and daily production.",
+          "uses_free_sec_submissions": true,
+          "uses_parsed_sec_13d13g": true,
+          "uses_structured_item4_governance_terms": true
+        },
+        "post_run_reflection": {
+          "why_result_happened": "The structured 13D Item-4 governance-term source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, target_sample_too_small, target_concentration_failed, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). The fixed bundle tested only exp-20260629-006 governance-term rows plus the existing signal-day SPY-relative price-absorption replay envelope. The result is not retained or promoted.",
+          "outcome_summary": "Aggregate EV delta -0.0287; aggregate PnL delta $-270.72; max drawdown drift +0.0000; 13 paper trades.",
+          "negative_reflection": "A negative result means deterministic Item-4 governance terms are still too sparse, too stale, or too transaction-control-heavy after next-open execution and price absorption. Keep the surface as ownership/governance context unless stronger forward replacement rows appear.",
+          "forbidden_near_neighbor_retry": "Do not retry by sweeping governance buckets, phrase lists, holder types, classPercent, signal excess, close-location, volume, volatility, ret20, price/ADV, event age, top-N, hold, cooldown, notional, or response shape on these frozen windows.",
+          "new_evidence_required": "If this fixed governance-term source fails, do not retry by sweeping governance bucket lists, phrase lists, holder types, classPercent, signal excess, close-location, volume, volatility, ret20, price/ADV, event age, top-N, hold, cooldown, notional, or response shape on these frozen windows. A valid retry needs campaign/board-seat outcome evidence beyond regex provenance, repaired old_thin structured XML coverage, or closed forward replacement-value rows."
+        }
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260629-009.json",
+      "single_causal_variable": "sec_13d_item4_governance_terms_candidate_pool_v1",
+      "status": "rejected",
+      "ticket_file": "experiments/tickets/exp-20260629-009.json",
+      "trial_family": "sec_13d_item4_governance_terms_candidate_pool",
+      "trial_variant_id": "fixed_governance_terms_top1_10d_v1",
+      "decision": "rejected_sec_13d_item4_governance_terms_candidate_pool",
+      "summary": "The structured 13D Item-4 governance-term source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, target_sample_too_small, target_concentration_failed, accepted_compression_ev_not_beaten, accepted_compression_pnl_not_beaten, accepted_distribution_ev_not_beaten, accepted_distribution_pnl_not_beaten). The fixed bundle tested only exp-20260629-006 governance-term rows plus the existing signal-day SPY-relative price-absorption replay envelope. The result is not retained or promoted.",
+      "artifact": "data/experiments/exp-20260629-009/exp_20260629_009_sec_13d_item4_governance_terms_candidate_pool.json",
+      "log": "experiments/logs/exp-20260629-009.json",
+      "aggregate_expected_value_delta": -0.0287,
+      "aggregate_strategy_total_pnl_delta": -270.72,
+      "updated_at": "2026-06-29T12:11:38+00:00"
+    },
+    {
+      "experiment_id": "exp-20260629-010",
+      "status": "accepted",
+      "lane": "measurement_repair",
+      "owner": "alpha-explore",
+      "hypothesis": "alpha_blocker/measurement_repair: saturated-source reservation overrides still permit a mere new field as the declared evidence axis, which conflicts with the current no-repeat rule and can let agents reserve duplicate dry-source candidate-pool scans instead of moving to new data, new gate shapes, or materially more forward rows.",
+      "ticket_file": "experiments/tickets/exp-20260629-010.json",
+      "card_file": "experiments/cards/exp-20260629-010.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260629-010.json",
+      "updated_at": "2026-06-29T15:16:03+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-28T23:17:09+00:00"
+  "updated_at": "2026-06-29T15:16:03+00:00"
 }

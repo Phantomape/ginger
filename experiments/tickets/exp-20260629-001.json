@@ -1,0 +1,203 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260629_001_sleeve_health_as_of_snapshot_date.py",
+    "data/experiments/exp-20260629-001/exp_20260629_001_sleeve_health_as_of_snapshot_date.json",
+    "experiments/cards/exp-20260629-001.md",
+    "experiments/manifests/exp-20260629-001.json",
+    "experiments/tickets/exp-20260629-001.json",
+    "experiments/logs/exp-20260629-001.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260629-001.md",
+  "causal_components": [],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "sleeve_health_as_of_snapshot_date_key_v1",
+  "claimed_at": "2026-06-29T02:08:51+00:00",
+  "completed_at": "2026-06-29T02:14:31+00:00",
+  "created_at": "2026-06-29T02:08:40+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260629-001",
+  "experiment_uid": "expuid-c34b5bef8c0445b8",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260629-001",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-29T02:08:40+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sleeve_health_as_of_snapshot_date"
+  },
+  "hypothesis": "alpha_blocker/measurement_repair: sleeve_health misses core-risk intensity forward rows keyed by as_of, so the risk-allocation forward observation surface appears never_persisted even after daily rows exist.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "sleeve_health_as_of_snapshot_date_key_v1"
+  ],
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260622-022",
+    "exp-20260626-015"
+  ],
+  "new_evidence_type": "not_declared",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "after",
+        "allocation",
+        "alpha",
+        "appears",
+        "as",
+        "blocker",
+        "by",
+        "core",
+        "daily",
+        "date",
+        "even",
+        "exist",
+        "forward",
+        "health",
+        "intensity",
+        "key",
+        "keyed",
+        "measurement",
+        "misses",
+        "never",
+        "observation",
+        "of",
+        "persisted",
+        "repair",
+        "risk",
+        "rows",
+        "sleeve",
+        "snapshot",
+        "so",
+        "surface"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "core_risk_intensity_forward_observation_ledger",
+        "reopen_condition": "Closed forward rows with selected/sliced status, risk-intensity rank, realized PnL, and replacement value before any sizing promotion.",
+        "score": 0.0848,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "sleeve_health_measurement_repair",
+        "reopen_condition": "A future non-snapshot surface without a dated summary file should add one rather than being excluded from health.",
+        "score": 0.0571,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "kova_forward_observation_ledger",
+        "reopen_condition": "Close 20-30 Kova forward observation rows under a predeclared shared default-off observer, or add PIT historical coverage across the canonical windows, before any Kova alpha claim.",
+        "score": 0.0485,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "observed_only_attribution",
+        "reopen_condition": "Need materially more closed forward rows after sleeve_health has longer history and real degraded/failing variation, or a separate shared-policy Gate 1-4 allocation test with a predeclared health gate.",
+        "score": 0.0421,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "alpha_direction_triage",
+        "reopen_condition": "Build a new free PIT data edge first: analyst-count/revenue/dispersion/provenance rows matched to historical candidates, structured customer/supplier contract economics, usable 13F holdings, closed options outcomes, or enough true-trigger forward replacement rows.",
+        "score": 0.04,
+        "status": "frozen_rejected",
+        "trials": 3
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.9,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "health_surface_contract_has_other_nonstandard_date_keys",
+      "test_fixture_misses_real_layout"
+    ],
+    "confidence_reason": "The current core-risk forward ledger writes as_of and sleeve_health only reads asof_date/date; repairing this read-side mismatch makes the alpha-enabling risk-intensity surface visible without changing strategy behavior.",
+    "recorded_at": "2026-06-29T02:08:03+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "accepted_measurement_repair_sleeve_health_as_of_snapshot_date",
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "before_result_file": "data/experiments/exp-20260629-001/exp_20260629_001_sleeve_health_as_of_snapshot_date.json",
+    "after_result_file": "data/experiments/exp-20260629-001/exp_20260629_001_sleeve_health_as_of_snapshot_date.json",
+    "delta_metrics": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "signals_generated": 0,
+      "signals_survived": 0,
+      "strategy_behavior_changed": false
+    },
+    "acceptance_reasons": [
+      "legacy snapshot reader reports core-risk surface as never_persisted",
+      "repaired reader recognizes as_of=2026-06-26 and reports the surface fresh"
+    ]
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260629-001.json",
+  "single_causal_variable": "sleeve_health_as_of_snapshot_date_key_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260629-001.json",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260629-001",
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "decision": "accepted_measurement_repair_sleeve_health_as_of_snapshot_date",
+  "changed_files": [
+    "quant/sleeve_health.py",
+    "quant/test_sleeve_health.py",
+    "quant/experiments/exp_20260629_001_sleeve_health_as_of_snapshot_date.py",
+    "data/experiments/exp-20260629-001/exp_20260629_001_sleeve_health_as_of_snapshot_date.json",
+    "experiments/logs/exp-20260629-001.json"
+  ],
+  "related_files": [
+    "quant/sleeve_health.py",
+    "quant/test_sleeve_health.py",
+    "data/paper_sleeves/core_risk_intensity_forward_observation/snapshots.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "updated_at": "2026-06-29T02:14:31+00:00"
+}

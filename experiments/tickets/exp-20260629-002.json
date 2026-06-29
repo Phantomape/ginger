@@ -1,0 +1,487 @@
+{
+  "acceptance_rule": "Accept only as measurement repair if it proves no strategy behavior changed, records current cached/parseable/closed-row counts, and writes an explicit reopen condition for the parked Form144 planned-sale/float surface.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260629_002_form144_planned_sale_float_park_gate.py",
+    "data/experiments/exp-20260629-002/exp_20260629_002_form144_planned_sale_float_park_gate.json",
+    "experiments/cards/exp-20260629-002.md",
+    "experiments/manifests/exp-20260629-002.json",
+    "experiments/tickets/exp-20260629-002.json",
+    "experiments/logs/exp-20260629-002.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260629-002.md",
+  "causal_components": [
+    "read-only Form144 context summary count audit",
+    "primary document cache count",
+    "parseable planned-sale ratio count",
+    "closed forward replacement-value row count",
+    "machine-checkable reopen condition",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "form144_planned_sale_float_surface_park_gate_v1",
+  "claimed_at": "2026-06-29T04:10:25+00:00",
+  "completed_at": "2026-06-29T04:16:09+00:00",
+  "created_at": "2026-06-29T04:10:14+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260629-002",
+  "experiment_uid": "expuid-adb9b77070c34cf2",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260629-002",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-29T04:10:14+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "form144_planned_sale_float_park_gate"
+  },
+  "hypothesis": "Form144 planned-sale/float is the next alpha-enabling risk-allocation evidence axis, but after the context logger and primary-document materializer it still has zero cached primary documents, zero parseable planned-sale ratios, and zero closed forward rows; park the surface with a machine-checkable reopen condition instead of repeating readiness/materialization audits.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "form144_planned_sale_float_surface_park_gate_v1"
+  ],
+  "mechanism_family": "production_visible_form144_planned_sale_forward_context",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260628-014",
+    "exp-20260628-016",
+    "exp-20260628-020"
+  ],
+  "new_evidence_type": "measurement_repair_park_gate_after_blocked_materialization",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "after",
+        "allocation",
+        "alpha",
+        "audits",
+        "axis",
+        "but",
+        "cached",
+        "checkable",
+        "closed",
+        "condition",
+        "context",
+        "document",
+        "documents",
+        "enabling",
+        "evidence",
+        "float",
+        "form144",
+        "forward",
+        "gate",
+        "has",
+        "instead",
+        "is",
+        "it",
+        "logger",
+        "machine",
+        "materialization",
+        "materializer",
+        "of",
+        "park",
+        "parseable",
+        "planned",
+        "primary",
+        "ratios",
+        "readiness",
+        "reopen",
+        "repeating",
+        "risk",
+        "rows",
+        "sale",
+        "still",
+        "surface",
+        "zero"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "form144_planned_sale_float_context_logger",
+        "reopen_condition": "Cached Form144 primary documents with machine-parseable planned_sale_to_float or planned_sale_to_adv20 and closed forward replacement-value rows versus cash, SPY, and QQQ.",
+        "score": 0.0533,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "form144_revision_data_readiness",
+        "reopen_condition": "Required new evidence is PIT parsed Form 144 planned-sale shares or value, holder role, relationship-to-issuer, public float and sale_pct_float, or historical/forward analyst-count, revenue-estimate, dispersion, vendor_asof, and fiscal-period coverage with closed candidate outcomes.",
+        "score": 0.0426,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "post_20260628_surface_readiness",
+        "reopen_condition": "A valid alpha retry needs genuinely new closed rows, a new PIT data source, a new gate shape, or a shared helper with full historical and daily default-off coverage.",
+        "score": 0.0417,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "form144_primary_document_cache_materializer",
+        "reopen_condition": "At least one cached Form144 primary document parsed into planned_sale_shares/value, then enough forward rows to satisfy the exp-016 reopen gate.",
+        "score": 0.0333,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "post_supplier_allocator_nonrepeat_surface_readiness",
+        "reopen_condition": null,
+        "score": 0.0327,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_form144_planned_sale_float_surface_parked",
+    "artifact": "data/experiments/exp-20260629-002/exp_20260629_002_form144_planned_sale_float_park_gate.json",
+    "log": "experiments/logs/exp-20260629-002.json",
+    "delta_metrics": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "strategy_behavior_changed": false
+    },
+    "gate1": {
+      "passed": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "baseline_expected_value_score_sum": 7.8941,
+      "baseline_total_pnl": 234850.99,
+      "strategy_metrics_unchanged": true
+    },
+    "gate2": {
+      "passed": true,
+      "runtime_fields_checked": [
+        "entry_date",
+        "target_price",
+        "form144_context_rows",
+        "form144_latest_usable_trade_date",
+        "form144_accession_number",
+        "form144_planned_sale_bucket",
+        "form144_planned_sale_to_float",
+        "form144_planned_sale_to_adv20",
+        "closed_forward_row"
+      ],
+      "field_status": {
+        "entry_date": "required_by_outcome_join_schema",
+        "target_price": "strategy_unchanged_not_consumed_by_this_repair",
+        "planned_sale_ratio_fields": "not_materialized_zero_parseable_rows"
+      }
+    },
+    "gate3": {
+      "passed": true,
+      "not_applicable_reason": "No signal, filter, ranking, sizing, exit, or order rule changed.",
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "survival_rate_delta": 0.0
+    },
+    "gate4": {
+      "passed": true,
+      "accepted_alpha": false,
+      "measurement_repair_only": true,
+      "decision": "accepted_measurement_repair_form144_planned_sale_float_surface_parked",
+      "before_after_strategy_delta": {
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0,
+        "signals_generated_delta": 0,
+        "signals_survived_delta": 0,
+        "strategy_behavior_changed": false
+      },
+      "park_verdict": {
+        "surface": "Form144 planned-sale/float",
+        "status": "parked",
+        "blocking_reason": "primary_document_cache_and_forward_rows_not_materialized",
+        "current_counts": {
+          "context_rows": 9594,
+          "context_jsonl_rows": 9594,
+          "cached_primary_documents": 0,
+          "primary_document_cache_files": 0,
+          "parseable_planned_sale_to_float_rows": 0,
+          "parseable_planned_sale_to_adv20_rows": 0,
+          "machine_parseable_ratio_rows": 0,
+          "closed_forward_rows_with_cash_spy_qqq_replacement_value": 0,
+          "high_planned_sale_float_bucket_rows": 0,
+          "single_ticker_closed_row_share": null
+        },
+        "required_to_reopen": {
+          "cached_primary_documents_min": 1,
+          "machine_parseable_ratio_rows_min": 1,
+          "closed_forward_rows_min": 25,
+          "high_planned_sale_float_bucket_rows_min": 8,
+          "single_ticker_closed_row_share_max": 0.4,
+          "required_replacement_values": [
+            "cash",
+            "SPY",
+            "QQQ"
+          ]
+        },
+        "reopen_rule": "Do not reserve another Form144 planned-sale/float readiness, risk-scalar, notional haircut, ranking, or candidate-pool experiment until cached/parseable primary documents and closed forward rows advance to the required counts."
+      },
+      "failed_reasons": []
+    },
+    "reopen_condition": {
+      "surface": "Form144 planned-sale/float",
+      "status": "parked",
+      "blocking_reason": "primary_document_cache_and_forward_rows_not_materialized",
+      "current_counts": {
+        "context_rows": 9594,
+        "context_jsonl_rows": 9594,
+        "cached_primary_documents": 0,
+        "primary_document_cache_files": 0,
+        "parseable_planned_sale_to_float_rows": 0,
+        "parseable_planned_sale_to_adv20_rows": 0,
+        "machine_parseable_ratio_rows": 0,
+        "closed_forward_rows_with_cash_spy_qqq_replacement_value": 0,
+        "high_planned_sale_float_bucket_rows": 0,
+        "single_ticker_closed_row_share": null
+      },
+      "required_to_reopen": {
+        "cached_primary_documents_min": 1,
+        "machine_parseable_ratio_rows_min": 1,
+        "closed_forward_rows_min": 25,
+        "high_planned_sale_float_bucket_rows_min": 8,
+        "single_ticker_closed_row_share_max": 0.4,
+        "required_replacement_values": [
+          "cash",
+          "SPY",
+          "QQQ"
+        ]
+      },
+      "reopen_rule": "Do not reserve another Form144 planned-sale/float readiness, risk-scalar, notional haircut, ranking, or candidate-pool experiment until cached/parseable primary documents and closed forward rows advance to the required counts."
+    },
+    "summary": "The PIT Form144 index/context ledger exists, but primary documents are not cached in this workspace, planned-sale ratio fields are not parseable, and no Form144-tagged closed forward replacement-value rows exist. That makes an allocation or risk response experiment untrustworthy today."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260629-002.json",
+  "single_causal_variable": "form144_planned_sale_float_surface_park_gate_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260629-002.json",
+  "trial_family": "form144_planned_sale_float_reopen_gate",
+  "trial_variant_id": "post_materializer_park_gate_v1",
+  "alpha_hypothesis": "Risk allocation: parsed Form144 planned-sale/float could identify known future supply overhang and support a default-off allocation downweight, but only after primary documents, parseable ratios, and closed forward replacement-value rows exist.",
+  "implementation_mode": "read_only_surface_park_gate",
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Risk allocation: parsed Form144 planned-sale/float could identify known future supply overhang and support a default-off allocation downweight, but only after primary documents, parseable ratios, and closed forward replacement-value rows exist.",
+    "2_history_check": "exp-20260628-014 found Form4 selling-overhang attribution as observed-only; exp-20260628-016 created the Form144 context logger with 9,594 index rows but zero parseable planned-sale ratios; exp-20260628-020 added the materializer but network blocked the first batch and left the cache empty.",
+    "3_single_policy_bundle": "form144_planned_sale_float_surface_park_gate_v1",
+    "4_acceptance_standard": "Accept only as measurement repair if strategy deltas stay zero and the current cached/parseable/closed-row counts plus reopen condition are recorded.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260629_002_form144_planned_sale_float_park_gate.py"
+  },
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_expected_value_score_sum": 7.8941,
+    "baseline_total_pnl": 234850.99,
+    "strategy_metrics_unchanged": true
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields_checked": [
+      "entry_date",
+      "target_price",
+      "form144_context_rows",
+      "form144_latest_usable_trade_date",
+      "form144_accession_number",
+      "form144_planned_sale_bucket",
+      "form144_planned_sale_to_float",
+      "form144_planned_sale_to_adv20",
+      "closed_forward_row"
+    ],
+    "field_status": {
+      "entry_date": "required_by_outcome_join_schema",
+      "target_price": "strategy_unchanged_not_consumed_by_this_repair",
+      "planned_sale_ratio_fields": "not_materialized_zero_parseable_rows"
+    }
+  },
+  "gate3": {
+    "passed": true,
+    "not_applicable_reason": "No signal, filter, ranking, sizing, exit, or order rule changed.",
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "survival_rate_delta": 0.0
+  },
+  "gate4": {
+    "passed": true,
+    "accepted_alpha": false,
+    "measurement_repair_only": true,
+    "decision": "accepted_measurement_repair_form144_planned_sale_float_surface_parked",
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "strategy_behavior_changed": false
+    },
+    "park_verdict": {
+      "surface": "Form144 planned-sale/float",
+      "status": "parked",
+      "blocking_reason": "primary_document_cache_and_forward_rows_not_materialized",
+      "current_counts": {
+        "context_rows": 9594,
+        "context_jsonl_rows": 9594,
+        "cached_primary_documents": 0,
+        "primary_document_cache_files": 0,
+        "parseable_planned_sale_to_float_rows": 0,
+        "parseable_planned_sale_to_adv20_rows": 0,
+        "machine_parseable_ratio_rows": 0,
+        "closed_forward_rows_with_cash_spy_qqq_replacement_value": 0,
+        "high_planned_sale_float_bucket_rows": 0,
+        "single_ticker_closed_row_share": null
+      },
+      "required_to_reopen": {
+        "cached_primary_documents_min": 1,
+        "machine_parseable_ratio_rows_min": 1,
+        "closed_forward_rows_min": 25,
+        "high_planned_sale_float_bucket_rows_min": 8,
+        "single_ticker_closed_row_share_max": 0.4,
+        "required_replacement_values": [
+          "cash",
+          "SPY",
+          "QQQ"
+        ]
+      },
+      "reopen_rule": "Do not reserve another Form144 planned-sale/float readiness, risk-scalar, notional haircut, ranking, or candidate-pool experiment until cached/parseable primary documents and closed forward rows advance to the required counts."
+    },
+    "failed_reasons": []
+  },
+  "reopen_condition": {
+    "surface": "Form144 planned-sale/float",
+    "status": "parked",
+    "blocking_reason": "primary_document_cache_and_forward_rows_not_materialized",
+    "current_counts": {
+      "context_rows": 9594,
+      "context_jsonl_rows": 9594,
+      "cached_primary_documents": 0,
+      "primary_document_cache_files": 0,
+      "parseable_planned_sale_to_float_rows": 0,
+      "parseable_planned_sale_to_adv20_rows": 0,
+      "machine_parseable_ratio_rows": 0,
+      "closed_forward_rows_with_cash_spy_qqq_replacement_value": 0,
+      "high_planned_sale_float_bucket_rows": 0,
+      "single_ticker_closed_row_share": null
+    },
+    "required_to_reopen": {
+      "cached_primary_documents_min": 1,
+      "machine_parseable_ratio_rows_min": 1,
+      "closed_forward_rows_min": 25,
+      "high_planned_sale_float_bucket_rows_min": 8,
+      "single_ticker_closed_row_share_max": 0.4,
+      "required_replacement_values": [
+        "cash",
+        "SPY",
+        "QQQ"
+      ]
+    },
+    "reopen_rule": "Do not reserve another Form144 planned-sale/float readiness, risk-scalar, notional haircut, ranking, or candidate-pool experiment until cached/parseable primary documents and closed forward rows advance to the required counts."
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "shared_policy_changed": false,
+    "run_adapter_changed": false,
+    "backtester_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "risk_budget_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "parity_note": "Read-only park gate. The existing Form144 context logger remains default-off; no trading policy consumes this surface."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The PIT Form144 index/context ledger exists, but primary documents are not cached in this workspace, planned-sale ratio fields are not parseable, and no Form144-tagged closed forward replacement-value rows exist. That makes an allocation or risk response experiment untrustworthy today.",
+    "forbidden_near_neighbor_retry": "Do not retry Form144 by changing notional haircut, risk scalar, ranking, candidate-pool, or readiness-audit wording while cached primary documents, parseable ratios, and closed forward rows are still at the current counts.",
+    "new_evidence_required": "At least one cached Form144 primary document parsed into planned_sale_to_float or planned_sale_to_adv20, then at least 25 closed forward rows with cash/SPY/QQQ replacement value, at least 8 high planned-sale/float rows, and max single-ticker share <=40%."
+  },
+  "next_retry_requires": "Reopen only after the current counts in reopen_condition advance: cached primary documents >0, machine-parseable ratio rows >0, and the forward gate starts moving toward >=25 closed rows.",
+  "related_files": [
+    "quant/experiments/exp_20260629_002_form144_planned_sale_float_park_gate.py",
+    "data/experiments/exp-20260629-002/exp_20260629_002_form144_planned_sale_float_park_gate.json",
+    "experiments/logs/exp-20260629-002.json",
+    "experiments/cards/exp-20260629-002.md",
+    "experiments/manifests/exp-20260629-002.json",
+    "experiments/tickets/exp-20260629-002.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/non_ohlcv/form144_planned_sale_context_summary_20260628.json",
+    "data/non_ohlcv/form144_planned_sale_context_20260628.jsonl",
+    "data/experiments/exp-20260628-020/exp_20260628_020_form144_primary_document_cache_materializer.json",
+    "data/paper_sleeves/forward_replacement_value.jsonl"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260629_002_form144_planned_sale_float_park_gate.py",
+    "data/experiments/exp-20260629-002/exp_20260629_002_form144_planned_sale_float_park_gate.json",
+    "experiments/logs/exp-20260629-002.json",
+    "experiments/cards/exp-20260629-002.md",
+    "experiments/manifests/exp-20260629-002.json",
+    "experiments/tickets/exp-20260629-002.json",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260629_002_form144_planned_sale_float_park_gate.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260629_002_form144_planned_sale_float_park_gate.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "anti_js": {
+    "used_javascript": false,
+    "strategy_behavior_changed": false,
+    "threshold_scan": false,
+    "uses_future_form144_rows": false,
+    "new_download_attempts": false
+  },
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "decision": "accepted_measurement_repair_form144_planned_sale_float_surface_parked",
+  "artifact": "data/experiments/exp-20260629-002/exp_20260629_002_form144_planned_sale_float_park_gate.json",
+  "log": "experiments/logs/exp-20260629-002.json",
+  "updated_at": "2026-06-29T04:16:09+00:00"
+}

@@ -1,0 +1,212 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "experiments/logs/exp-20260628-020.json",
+    "experiments/logs/exp-20260629-007.json",
+    "experiments/cards/exp-20260629-007.md",
+    "experiments/manifests/exp-20260629-007.json",
+    "experiments/tickets/exp-20260629-007.json",
+    "data/experiments/exp-20260629-007/"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260629-007.md",
+  "causal_components": [
+    "malformed JSON shard repair",
+    "parse validation",
+    "audit validation",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "experiment_log_shard_json_parse_repair_exp_20260628_020",
+  "claimed_at": "2026-06-29T10:08:29+00:00",
+  "completed_at": "2026-06-29T10:10:28+00:00",
+  "created_at": "2026-06-29T10:08:17+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260629-007",
+  "experiment_uid": "expuid-9b8a47c3340048b4",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260629-007",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-29T10:08:17+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "experiment_log_shard_json_parse_repair"
+  },
+  "hypothesis": "Repair the malformed exp-20260628-020 experiment log shard so recent Form144 materialization history remains parseable for audit, derived memory, and novelty/source-saturation accounting; this is required because current alpha candidates are blocked by saturated SEC text scans or immature forward rows.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "experiment_log_shard_json_parse_repair_exp_20260628_020"
+  ],
+  "mechanism_family": "experiment_log_integrity_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260628-020",
+    "exp-20260629-006"
+  ],
+  "new_evidence_type": "malformed_recent_log_shard_blocks_history_parsing",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "accounting",
+        "alpha",
+        "are",
+        "audit",
+        "because",
+        "blocked",
+        "by",
+        "candidates",
+        "current",
+        "derived",
+        "exp",
+        "experiment",
+        "form144",
+        "forward",
+        "history",
+        "immature",
+        "integrity",
+        "is",
+        "json",
+        "log",
+        "malformed",
+        "materialization",
+        "memory",
+        "novelty",
+        "or",
+        "parse",
+        "parseable",
+        "recent",
+        "remains",
+        "repair",
+        "required",
+        "rows",
+        "saturated",
+        "saturation",
+        "scans",
+        "shard",
+        "so",
+        "text",
+        "this"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "recovered_quant_signals_entry_candidate_forward_readiness",
+        "reopen_condition": "Generate or recover session-date quant_signals artifacts with candidate rows, then settle them against PIT local OHLCV/quote bars before testing allocation value.",
+        "score": 0.1761,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "candidate_pool_data_surface_readiness_gate",
+        "reopen_condition": "A valid next alpha needs a materially new PIT field with three-window coverage and a shared helper path, or enough closed forward replacement rows from a default-off daily observer.",
+        "score": 0.1755,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "form144_revision_data_readiness",
+        "reopen_condition": "Required new evidence is PIT parsed Form 144 planned-sale shares or value, holder role, relationship-to-issuer, public float and sale_pct_float, or historical/forward analyst-count, revenue-estimate, dispersion, vendor_asof, and fiscal-period coverage with closed candidate outcomes.",
+        "score": 0.1674,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "allocator",
+        "family_key": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+        "reopen_condition": "Collect forward paper rows with replacement value versus cash and same-day core candidates; do not enable live/default orders or retune source-overlap parameters until forward evidence passes a separate activation gate.",
+        "score": 0.1598,
+        "status": "has_accepted",
+        "trials": 3
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "sec_refinancing_covenant_relief_text_candidate_pool",
+        "reopen_condition": "A retry needs materially cleaner structured debt-event tuples, such as maturity ladder before/after, covenant headroom, facility availability versus market cap, dilution-adjusted financing terms, or closed forward replacement rows. Do not sweep financing phrase lists, RS/close/volume/vol guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.1598,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "The parse failure is localized to three unterminated error strings in exp-20260628-020; repairing JSON escaping is deterministic, changes no strategy behavior, and directly restores machine-readable experiment history for subsequent alpha gating.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "hidden_additional_json_errors",
+      "audit_legacy_debt_masks_current_fix",
+      "unrelated_dirty_registry_conflict"
+    ],
+    "recorded_at": "2026-06-29T10:07:57+00:00",
+    "success_probability": 0.95
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260629-007/before_parse_status.json",
+    "after_result_file": "data/experiments/exp-20260629-007/after_parse_status.json",
+    "delta_metrics": {
+      "survival_rate": 0.0,
+      "total_pnl": 0.0
+    },
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.95,
+      "brier_score": 0.0025,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "pnl_prediction_error": 0.0,
+      "predicted_failure_modes": [
+        "hidden_additional_json_errors",
+        "audit_legacy_debt_masks_current_fix",
+        "unrelated_dirty_registry_conflict"
+      ],
+      "realized_failure_mode": "none",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "The shard was valid UTF-8 JSON for Python but failed PowerShell parsing because default Get-Content corrupted the non-ASCII network error strings; ASCII normalization fixed mixed-tool parsing without changing experiment semantics."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260629-007.json",
+  "single_causal_variable": "experiment_log_shard_json_parse_repair_exp_20260628_020",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260629-007.json",
+  "trial_family": "experiment_log_json_parse_repair",
+  "trial_variant_id": "exp_20260628_020_error_string_escape_v1"
+}

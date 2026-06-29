@@ -1,0 +1,675 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260628_012_accepted_core_13f_crowding_attribution.py",
+    "data/experiments/exp-20260628-012/exp_20260628_012_accepted_core_13f_crowding_attribution.json",
+    "experiments/cards/exp-20260628-012.md",
+    "experiments/manifests/exp-20260628-012.json",
+    "experiments/tickets/exp-20260628-012.json",
+    "experiments/logs/exp-20260628-012.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260628-012.md",
+  "causal_components": [
+    "canonical accepted-stack trade replay",
+    "PIT 13F holdings join",
+    "sector-normalized crowding buckets",
+    "loss-tail attribution",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "accepted_core_pit_13f_crowding_loss_tail_attribution_v1",
+  "claimed_at": "2026-06-28T17:07:41+00:00",
+  "completed_at": "2026-06-28T17:14:56+00:00",
+  "created_at": "2026-06-28T17:07:28+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260628-012",
+  "experiment_uid": "expuid-5912d6c158184a2a",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260628-012",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-28T17:07:28+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "accepted_core_13f_crowding_attribution"
+  },
+  "hypothesis": "Read-only risk-allocation alpha attribution: accepted core trades with high point-in-time 13F ownership crowding may carry worse loss-tail and lower PnL than less-crowded accepted trades, identifying a future production-visible risk-scaling hypothesis without changing candidate pools, entries, exits, ranking, sizing, or orders.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "accepted_core_pit_13f_crowding_loss_tail_attribution_v1"
+  ],
+  "mechanism_family": "production_visible_13f_crowding_risk_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260618-016",
+    "exp-20260622-007",
+    "exp-20260624-019",
+    "exp-20260625-010",
+    "exp-20260625-012"
+  ],
+  "new_evidence_type": "new_gate_shape_pit_13f_risk_attribution",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "sec13f_ownership",
+      "field_tags": [
+        "13f",
+        "a",
+        "accepted",
+        "allocation",
+        "alpha",
+        "attribution",
+        "carry",
+        "changing",
+        "core",
+        "crowded",
+        "crowding",
+        "entries",
+        "exits",
+        "future",
+        "high",
+        "hypothesis",
+        "identifying",
+        "in",
+        "less",
+        "loss",
+        "lower",
+        "may",
+        "only",
+        "or",
+        "orders",
+        "ownership",
+        "pit",
+        "pnl",
+        "point",
+        "pools",
+        "ranking",
+        "read",
+        "risk",
+        "scaling",
+        "sizing",
+        "tail",
+        "than",
+        "time",
+        "trades",
+        "without",
+        "worse"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_active_manager_concentration",
+        "reopen_condition": "A valid retry needs independent active-manager quality or manager alpha attribution, non-quarterly ownership/flow data, borrow/options cross-evidence, or closed forward rows from a shared default-off helper.",
+        "score": 0.4667,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "kova_13f_institutional_readiness",
+        "reopen_condition": null,
+        "score": 0.4663,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "coownership_peer_shock",
+        "reopen_condition": "A genuinely new relation axis or data shape: e.g. holdings-CHANGE co-movement (managers adding the same two names same quarter, not static co-hold), 13F concentration-weighted edges restricted to high-conviction active managers only, or a non-quarterly ownership signal. Or forward closed paper rows if the static graph is revisited at all.",
+        "score": 0.4631,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_sector_normalized_ownership_surprise_candidate_pool",
+        "reopen_condition": "Need materially richer manager identity/quality, sector-normalized ownership surprise with independent borrow/options evidence, or forward replacement-value rows from a shared helper.",
+        "score": 0.4585,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_crowding_context_candidate_pool",
+        "reopen_condition": "Raw PIT 13F candidate rows, manager identity/quality, sector-relative crowding surprise, or daily default-off forward observations.",
+        "score": 0.4583,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "new gate shape: PIT 13F ownership/crowding joined only to already accepted core trades for read-only risk attribution, not a direct candidate-pool source, source rank, threshold scan, or same-row forward ledger reslice",
+    "override": true,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "sec13f_ownership",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.26,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "no_monotonic_loss_tail_separation",
+      "window_reversal",
+      "13f_delay_too_stale",
+      "only_relabels_large_cap_quality"
+    ],
+    "confidence_reason": "Playbook says 13F should remain ownership/crowding context rather than direct entry alpha; using it only as read-only accepted-core risk attribution is a different gate shape from prior 13F candidate pools, but delayed quarterly data and recent 13F failures keep success odds low.",
+    "recorded_at": "2026-06-28T17:06:51+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "gate4_passed": false,
+    "decision": "rejected_no_pit_13f_crowding_loss_tail_edge",
+    "artifact": "data/experiments/exp-20260628-012/exp_20260628_012_accepted_core_13f_crowding_attribution.json",
+    "log": "experiments/logs/exp-20260628-012.json",
+    "gate1": {
+      "passed": true,
+      "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+      "standard_window_result": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_files": {
+        "late_strong": "data/experiments/exp-20260602-003/late_strong_after.json",
+        "mid_weak": "data/experiments/exp-20260602-003/mid_weak_after.json",
+        "old_thin": "data/experiments/exp-20260602-003/old_thin_after.json"
+      }
+    },
+    "gate2": {
+      "passed": true,
+      "dependency_fields_checked": [
+        "entry_date",
+        "entry_price",
+        "stop_price",
+        "target_mult_used",
+        "target_price_reconstructed",
+        "pnl",
+        "pnl_pct_net",
+        "13f_snapshot_as_of",
+        "13f_report_period",
+        "holder_count",
+        "total_value_usd",
+        "holder_count_sector_percentile",
+        "total_value_sector_percentile"
+      ],
+      "target_price_note": "Closed trade rows omit original target_price; runner reconstructs entry_price + (entry_price - stop_price) * target_mult_used and does not schedule executable orders.",
+      "source_audit": {
+        "late_strong": {
+          "path": "data/experiments/exp-20260602-003/late_strong_after.json",
+          "trade_rows": 18,
+          "rows_with_entry_date": 18,
+          "rows_with_target_price_reconstructed": 18,
+          "rows_with_13f_snapshot": 18,
+          "rows_with_13f_join": 8,
+          "bucket_counts": {
+            "low": 0,
+            "middle": 0,
+            "high": 8,
+            "unknown": 10
+          }
+        },
+        "mid_weak": {
+          "path": "data/experiments/exp-20260602-003/mid_weak_after.json",
+          "trade_rows": 21,
+          "rows_with_entry_date": 21,
+          "rows_with_target_price_reconstructed": 21,
+          "rows_with_13f_snapshot": 21,
+          "rows_with_13f_join": 14,
+          "bucket_counts": {
+            "low": 0,
+            "middle": 1,
+            "high": 13,
+            "unknown": 7
+          }
+        },
+        "old_thin": {
+          "path": "data/experiments/exp-20260602-003/old_thin_after.json",
+          "trade_rows": 22,
+          "rows_with_entry_date": 22,
+          "rows_with_target_price_reconstructed": 22,
+          "rows_with_13f_snapshot": 22,
+          "rows_with_13f_join": 11,
+          "bucket_counts": {
+            "low": 0,
+            "middle": 1,
+            "high": 10,
+            "unknown": 11
+          }
+        }
+      },
+      "snapshot_audit": {
+        "holdings_dir": "data/non_ohlcv/sec13f_institutional",
+        "sector_map": "data/reference/broad_market_sector_map.json",
+        "snapshot_count": 8,
+        "source_files": [
+          {
+            "path": "data/non_ohlcv/sec13f_institutional/holdings_01dec2024-28feb2025.json",
+            "loaded": true,
+            "as_of": "2025-03-15",
+            "window_label": "01dec2024-28feb2025",
+            "holdings_rows": 962,
+            "tickers_with_sector": 962
+          },
+          {
+            "path": "data/non_ohlcv/sec13f_institutional/holdings_01dec2025-28feb2026.json",
+            "loaded": true,
+            "as_of": "2026-03-15",
+            "window_label": "01dec2025-28feb2026",
+            "holdings_rows": 967,
+            "tickers_with_sector": 967
+          },
+          {
+            "path": "data/non_ohlcv/sec13f_institutional/holdings_01jun2024-31aug2024.json",
+            "loaded": true,
+            "as_of": "2024-09-15",
+            "window_label": "01jun2024-31aug2024",
+            "holdings_rows": 950,
+            "tickers_with_sector": 950
+          },
+          {
+            "path": "data/non_ohlcv/sec13f_institutional/holdings_01jun2025-31aug2025.json",
+            "loaded": true,
+            "as_of": "2025-09-15",
+            "window_label": "01jun2025-31aug2025",
+            "holdings_rows": 965,
+            "tickers_with_sector": 965
+          },
+          {
+            "path": "data/non_ohlcv/sec13f_institutional/holdings_01mar2025-31may2025.json",
+            "loaded": true,
+            "as_of": "2025-06-15",
+            "window_label": "01mar2025-31may2025",
+            "holdings_rows": 962,
+            "tickers_with_sector": 962
+          },
+          {
+            "path": "data/non_ohlcv/sec13f_institutional/holdings_01mar2026-31may2026.json",
+            "loaded": true,
+            "as_of": "2026-06-11",
+            "window_label": "01mar2026-31may2026",
+            "holdings_rows": 971,
+            "tickers_with_sector": 971
+          },
+          {
+            "path": "data/non_ohlcv/sec13f_institutional/holdings_01sep2024-30nov2024.json",
+            "loaded": true,
+            "as_of": "2024-12-15",
+            "window_label": "01sep2024-30nov2024",
+            "holdings_rows": 955,
+            "tickers_with_sector": 955
+          },
+          {
+            "path": "data/non_ohlcv/sec13f_institutional/holdings_01sep2025-30nov2025.json",
+            "loaded": true,
+            "as_of": "2025-12-15",
+            "window_label": "01sep2025-30nov2025",
+            "holdings_rows": 968,
+            "tickers_with_sector": 968
+          }
+        ]
+      }
+    },
+    "gate3": {
+      "passed": true,
+      "note": "No executable filter was added; core survival is unchanged.",
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "survival_rate_delta": 0.0
+    },
+    "gate4": {
+      "passed": false,
+      "observed_only_lead": false,
+      "decision": "rejected_no_pit_13f_crowding_loss_tail_edge",
+      "acceptance_rule": "Observed-only lead only if joined sample >=50, high bucket >=10, low bucket >=10, pooled high bucket has lower avg PnL, lower win rate, higher 2pct loss-tail rate than low bucket, and all three windows support the same direction. No strategy acceptance is possible in this run.",
+      "failed_reasons": [
+        "joined_sample_too_small",
+        "low_bucket_sample_too_small",
+        "high_low_comparison_unavailable",
+        "insufficient_window_support"
+      ],
+      "supporting_windows": [],
+      "window_comparisons": {
+        "late_strong": {
+          "available": false
+        },
+        "mid_weak": {
+          "available": false
+        },
+        "old_thin": {
+          "available": false
+        }
+      },
+      "pooled_high_low": {
+        "available": false
+      },
+      "minimums": {
+        "min_joined_rows": 50,
+        "min_high_bucket_rows": 10,
+        "min_low_bucket_rows": 10,
+        "min_supporting_windows": 3
+      }
+    },
+    "calibration": {
+      "actual_decision": "rejected_no_pit_13f_crowding_loss_tail_edge",
+      "actual_success": 0,
+      "predicted_success_probability": 0.26,
+      "brier_score": 0.0676,
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": 0.0,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "predicted_failure_modes": [
+        "no_monotonic_loss_tail_separation",
+        "window_reversal",
+        "13f_delay_too_stale",
+        "only_relabels_large_cap_quality"
+      ],
+      "realized_failure_mode": "joined_sample_too_small;low_bucket_sample_too_small;high_low_comparison_unavailable;insufficient_window_support",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "PIT 13F crowding did not produce a monotonic high-vs-low loss-tail separation on the accepted stack."
+    },
+    "summary": "The point-in-time 13F crowding split did not satisfy the fixed loss-tail rule: high crowding failed at least one pooled direction check and/or did not hold across all three windows. The data remains useful context, but not a standalone risk-scaling lead on accepted core trades."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260628-012.json",
+  "single_causal_variable": "accepted_core_pit_13f_crowding_loss_tail_attribution_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260628-012.json",
+  "trial_family": "accepted_core_13f_crowding_risk_attribution",
+  "trial_variant_id": "accepted_stack_sector_normalized_holder_value_crowding_v1",
+  "implementation_mode": "observed_only_attribution",
+  "new_evidence_axis": "New gate shape: PIT 13F ownership/crowding joined only to already accepted core trades for read-only risk attribution, not a direct candidate-pool source, source rank, threshold scan, or same-row forward ledger reslice.",
+  "parameters": {
+    "join_rule": "latest 13F holdings snapshot with as_of <= trade.entry_date",
+    "crowding_score": "mean(holder_count_sector_percentile, total_value_sector_percentile)",
+    "low_crowding_max": 0.4,
+    "high_crowding_min": 0.8,
+    "loss_tail_pnl_pct": -0.02,
+    "uses_realized_exit_information": false,
+    "alters_strategy_behavior": false
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Read-only risk-allocation alpha attribution: accepted core trades with high point-in-time 13F ownership crowding may carry worse loss-tail and lower PnL than less-crowded accepted trades, identifying a future production-visible risk-scaling hypothesis without changing candidate pools, entries, exits, ranking, sizing, or orders.",
+    "2_history_check": {
+      "novelty_gate": "experiment.py new required a novelty override but reported no blocking matches; this run uses a new gate shape over already accepted trades rather than a 13F candidate-pool source, source-rank scan, or threshold retune.",
+      "new_evidence_axis": "New gate shape: PIT 13F ownership/crowding joined only to already accepted core trades for read-only risk attribution, not a direct candidate-pool source, source rank, threshold scan, or same-row forward ledger reslice.",
+      "nearby_prior_experiments": [
+        "exp-20260618-016",
+        "exp-20260622-007",
+        "exp-20260624-019",
+        "exp-20260625-010",
+        "exp-20260625-012"
+      ]
+    },
+    "3_single_policy_bundle": "accepted_core_pit_13f_crowding_loss_tail_attribution_v1",
+    "4_success_failure_standard": "Observed-only lead only if joined sample >=50, high bucket >=10, low bucket >=10, pooled high bucket has lower avg PnL, lower win rate, higher 2pct loss-tail rate than low bucket, and all three windows support the same direction. No strategy acceptance is possible in this run.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_012_accepted_core_13f_crowding_attribution.py"
+  },
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "standard_window_result": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "window_files": {
+      "late_strong": "data/experiments/exp-20260602-003/late_strong_after.json",
+      "mid_weak": "data/experiments/exp-20260602-003/mid_weak_after.json",
+      "old_thin": "data/experiments/exp-20260602-003/old_thin_after.json"
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "dependency_fields_checked": [
+      "entry_date",
+      "entry_price",
+      "stop_price",
+      "target_mult_used",
+      "target_price_reconstructed",
+      "pnl",
+      "pnl_pct_net",
+      "13f_snapshot_as_of",
+      "13f_report_period",
+      "holder_count",
+      "total_value_usd",
+      "holder_count_sector_percentile",
+      "total_value_sector_percentile"
+    ],
+    "target_price_note": "Closed trade rows omit original target_price; runner reconstructs entry_price + (entry_price - stop_price) * target_mult_used and does not schedule executable orders.",
+    "source_audit": {
+      "late_strong": {
+        "path": "data/experiments/exp-20260602-003/late_strong_after.json",
+        "trade_rows": 18,
+        "rows_with_entry_date": 18,
+        "rows_with_target_price_reconstructed": 18,
+        "rows_with_13f_snapshot": 18,
+        "rows_with_13f_join": 8,
+        "bucket_counts": {
+          "low": 0,
+          "middle": 0,
+          "high": 8,
+          "unknown": 10
+        }
+      },
+      "mid_weak": {
+        "path": "data/experiments/exp-20260602-003/mid_weak_after.json",
+        "trade_rows": 21,
+        "rows_with_entry_date": 21,
+        "rows_with_target_price_reconstructed": 21,
+        "rows_with_13f_snapshot": 21,
+        "rows_with_13f_join": 14,
+        "bucket_counts": {
+          "low": 0,
+          "middle": 1,
+          "high": 13,
+          "unknown": 7
+        }
+      },
+      "old_thin": {
+        "path": "data/experiments/exp-20260602-003/old_thin_after.json",
+        "trade_rows": 22,
+        "rows_with_entry_date": 22,
+        "rows_with_target_price_reconstructed": 22,
+        "rows_with_13f_snapshot": 22,
+        "rows_with_13f_join": 11,
+        "bucket_counts": {
+          "low": 0,
+          "middle": 1,
+          "high": 10,
+          "unknown": 11
+        }
+      }
+    },
+    "snapshot_audit": {
+      "holdings_dir": "data/non_ohlcv/sec13f_institutional",
+      "sector_map": "data/reference/broad_market_sector_map.json",
+      "snapshot_count": 8,
+      "source_files": [
+        {
+          "path": "data/non_ohlcv/sec13f_institutional/holdings_01dec2024-28feb2025.json",
+          "loaded": true,
+          "as_of": "2025-03-15",
+          "window_label": "01dec2024-28feb2025",
+          "holdings_rows": 962,
+          "tickers_with_sector": 962
+        },
+        {
+          "path": "data/non_ohlcv/sec13f_institutional/holdings_01dec2025-28feb2026.json",
+          "loaded": true,
+          "as_of": "2026-03-15",
+          "window_label": "01dec2025-28feb2026",
+          "holdings_rows": 967,
+          "tickers_with_sector": 967
+        },
+        {
+          "path": "data/non_ohlcv/sec13f_institutional/holdings_01jun2024-31aug2024.json",
+          "loaded": true,
+          "as_of": "2024-09-15",
+          "window_label": "01jun2024-31aug2024",
+          "holdings_rows": 950,
+          "tickers_with_sector": 950
+        },
+        {
+          "path": "data/non_ohlcv/sec13f_institutional/holdings_01jun2025-31aug2025.json",
+          "loaded": true,
+          "as_of": "2025-09-15",
+          "window_label": "01jun2025-31aug2025",
+          "holdings_rows": 965,
+          "tickers_with_sector": 965
+        },
+        {
+          "path": "data/non_ohlcv/sec13f_institutional/holdings_01mar2025-31may2025.json",
+          "loaded": true,
+          "as_of": "2025-06-15",
+          "window_label": "01mar2025-31may2025",
+          "holdings_rows": 962,
+          "tickers_with_sector": 962
+        },
+        {
+          "path": "data/non_ohlcv/sec13f_institutional/holdings_01mar2026-31may2026.json",
+          "loaded": true,
+          "as_of": "2026-06-11",
+          "window_label": "01mar2026-31may2026",
+          "holdings_rows": 971,
+          "tickers_with_sector": 971
+        },
+        {
+          "path": "data/non_ohlcv/sec13f_institutional/holdings_01sep2024-30nov2024.json",
+          "loaded": true,
+          "as_of": "2024-12-15",
+          "window_label": "01sep2024-30nov2024",
+          "holdings_rows": 955,
+          "tickers_with_sector": 955
+        },
+        {
+          "path": "data/non_ohlcv/sec13f_institutional/holdings_01sep2025-30nov2025.json",
+          "loaded": true,
+          "as_of": "2025-12-15",
+          "window_label": "01sep2025-30nov2025",
+          "holdings_rows": 968,
+          "tickers_with_sector": 968
+        }
+      ]
+    }
+  },
+  "gate3": {
+    "passed": true,
+    "note": "No executable filter was added; core survival is unchanged.",
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "survival_rate_delta": 0.0
+  },
+  "gate4": {
+    "passed": false,
+    "observed_only_lead": false,
+    "decision": "rejected_no_pit_13f_crowding_loss_tail_edge",
+    "acceptance_rule": "Observed-only lead only if joined sample >=50, high bucket >=10, low bucket >=10, pooled high bucket has lower avg PnL, lower win rate, higher 2pct loss-tail rate than low bucket, and all three windows support the same direction. No strategy acceptance is possible in this run.",
+    "failed_reasons": [
+      "joined_sample_too_small",
+      "low_bucket_sample_too_small",
+      "high_low_comparison_unavailable",
+      "insufficient_window_support"
+    ],
+    "supporting_windows": [],
+    "window_comparisons": {
+      "late_strong": {
+        "available": false
+      },
+      "mid_weak": {
+        "available": false
+      },
+      "old_thin": {
+        "available": false
+      }
+    },
+    "pooled_high_low": {
+      "available": false
+    },
+    "minimums": {
+      "min_joined_rows": 50,
+      "min_high_bucket_rows": 10,
+      "min_low_bucket_rows": 10,
+      "min_supporting_windows": 3
+    }
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "trade_enabled": false,
+    "daily_snapshot_exposed": false,
+    "parity_test_added": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "uses_llm": false,
+    "parity_note": "Read-only attribution over accepted backtest trade rows. No production or backtest decision path changed."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The point-in-time 13F crowding split did not satisfy the fixed loss-tail rule: high crowding failed at least one pooled direction check and/or did not hold across all three windows. The data remains useful context, but not a standalone risk-scaling lead on accepted core trades.",
+    "forbidden_near_neighbor_retry": "Do not rerun this accepted-stack 13F attribution by changing the high/low percentile thresholds, holder vs value weights, sector buckets, report-period lag, or notional response curve.",
+    "new_evidence_required": "Independent active-manager quality, non-quarterly ownership/flow data, borrow/options confirmation, or prospective forward rows closed after a shared default-off 13F context logger."
+  },
+  "rejection_reason": "joined_sample_too_small;low_bucket_sample_too_small;high_low_comparison_unavailable;insufficient_window_support",
+  "next_retry_requires": "Do not retune holder/value percentiles, high/low bucket cuts, sector normalization, or direct 13F candidate-pool variants on the same frozen windows. A retry needs active-manager quality, non-quarterly ownership flow, borrow/options cross-evidence, or prospective forward rows tagged with a 13F context field.",
+  "related_files": [
+    "quant/experiments/exp_20260628_012_accepted_core_13f_crowding_attribution.py",
+    "data/experiments/exp-20260628-012/exp_20260628_012_accepted_core_13f_crowding_attribution.json",
+    "experiments/logs/exp-20260628-012.json",
+    "experiments/cards/exp-20260628-012.md",
+    "experiments/manifests/exp-20260628-012.json",
+    "experiments/tickets/exp-20260628-012.json",
+    "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/reference/broad_market_sector_map.json",
+    "data/experiments/exp-20260602-003/late_strong_after.json",
+    "data/experiments/exp-20260602-003/mid_weak_after.json",
+    "data/experiments/exp-20260602-003/old_thin_after.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260628_012_accepted_core_13f_crowding_attribution.py",
+    "data/experiments/exp-20260628-012/exp_20260628_012_accepted_core_13f_crowding_attribution.json",
+    "experiments/logs/exp-20260628-012.json",
+    "experiments/cards/exp-20260628-012.md",
+    "experiments/manifests/exp-20260628-012.json",
+    "experiments/tickets/exp-20260628-012.json",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_012_accepted_core_13f_crowding_attribution.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260628_012_accepted_core_13f_crowding_attribution.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "anti_js": {
+    "used_javascript": false,
+    "evidence": "Python runner only; no node/js tooling invoked."
+  },
+  "decision": "rejected_no_pit_13f_crowding_loss_tail_edge",
+  "artifact": "data/experiments/exp-20260628-012/exp_20260628_012_accepted_core_13f_crowding_attribution.json",
+  "log": "experiments/logs/exp-20260628-012.json",
+  "updated_at": "2026-06-28T17:14:56+00:00"
+}

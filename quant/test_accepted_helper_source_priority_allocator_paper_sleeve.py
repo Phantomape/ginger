@@ -3,9 +3,11 @@ from __future__ import annotations
 from datetime import date, timedelta
 
 from quant.accepted_helper_source_priority_allocator_paper_sleeve import (
+    OUTCOME_CONTRACT_RULE_VERSION,
     RULE_VERSION,
     SOURCE_PRIORITY,
     SOURCE_RULE_VERSION,
+    TARGET_PRICE_STATUS,
     build_accepted_helper_source_priority_allocator_snapshot,
     empty_accepted_helper_source_priority_allocator_state,
     select_accepted_helper_source_priority_rows,
@@ -249,6 +251,16 @@ def test_daily_snapshot_creates_default_off_pending_from_source_snapshots() -> N
     candidate = snapshot["candidates"][0]
     assert candidate["ticker"] == "TOP"
     assert candidate["source_family"] == "volatility_relief"
+    assert candidate["outcome_contract_rule_version"] == OUTCOME_CONTRACT_RULE_VERSION
+    assert candidate["exit_rule"] == "time_exit_after_10_trading_days"
+    assert candidate["target_price"] is None
+    assert candidate["target_price_required"] is False
+    assert candidate["target_price_status"] == TARGET_PRICE_STATUS
+    pending = snapshot["new_pending_entries"][0]
+    assert pending["entry_date_status"] == "pending_next_session_open"
+    assert pending["target_price_status"] == TARGET_PRICE_STATUS
+    assert pending["trade_enabled"] is False
+    assert pending["alters_orders"] is False
     assert snapshot["source_priority_context"]["priority_audit"][
         "selected_source_counts"
     ] == {"volatility_relief": 1}
@@ -445,5 +457,12 @@ def test_daily_snapshot_marks_open_allocator_position_with_last_price() -> None:
     assert position["last_price_asof"] == as_of
     assert position["observed_trading_days"] == 3
     assert position["paper_status"] == "open"
+    assert position["outcome_contract_rule_version"] == OUTCOME_CONTRACT_RULE_VERSION
+    assert position["exit_rule"] == "time_exit_after_10_trading_days"
+    assert position["entry_date_status"] == "present"
+    assert position["target_price"] is None
+    assert position["target_price_required"] is False
+    assert position["target_price_status"] == TARGET_PRICE_STATUS
+    assert position["trade_enabled"] is False
     assert position["unrealized_return_pct"] == round((expected_last / 100.0) - 1.0, 6)
     assert position["unrealized_pnl"] == round(5000.0 * ((expected_last / 100.0) - 1.0), 2)

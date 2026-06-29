@@ -1,0 +1,373 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "aggregate_expected_value_delta": 0.4833,
+  "aggregate_expected_value_delta_pct": 0.061223,
+  "aggregate_strategy_total_pnl_delta": 9885.38,
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260628-019/exp_20260628_019_breakout_precursor_full_stack.json",
+  "backtest_protocol": {
+    "execution_model": "Signal uses only signal-date OHLCV features from exp015. Paper entry is next open; exit is 10-trading-day close; events whose 10d exit is outside the fixed window are not scored in Gate 4.",
+    "source": "docs/backtesting.md canonical three-window accepted core baseline plus default-off paper overlay from exp015 event artifact",
+    "source_lead_artifact": "data/experiments/exp-20260628-015/exp_20260628_015_breakout_without_2x_volume_precursor_forward_replacement_value_v1.json",
+    "windows": {
+      "late_strong": {
+        "baseline": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "baseline": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "baseline": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json",
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "baseline_result_file": {
+    "late_strong": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+    "mid_weak": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+    "old_thin": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+  },
+  "calibration": {
+    "actual_ev_delta": 0.4833,
+    "actual_gate4_passed": false,
+    "actual_pnl_delta": 9885.38,
+    "actual_success": 0,
+    "brier_score": 0.0784,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "failure_modes_observed": [
+      "drawdown_drift_too_high",
+      "accepted_distribution_ev_not_beaten",
+      "accepted_distribution_pnl_not_beaten",
+      "daily_snapshot_not_exposed_for_full_stack_contract"
+    ],
+    "predicted_success_probability": 0.28
+  },
+  "card": "experiments/cards/exp-20260628-019.md",
+  "changed_variable": "breakout_without_2x_volume_precursor_default_off_candidate_source_v1",
+  "decision": "rejected_breakout_precursor_default_off_candidate_source",
+  "experiment_id": "exp-20260628-019",
+  "full_stack": {
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "complete": false,
+      "kill_switch_drawdown_pct": 0.08,
+      "max_capital_pct": 0.4,
+      "max_concurrent": 10,
+      "max_displacement": 1,
+      "min_dollar_volume": null,
+      "missing": [
+        "min_dollar_volume"
+      ],
+      "notes": "Top-1/day with 10-trading-day hold and fixed $4,000 default-off paper notional. This run does not wire a daily snapshot, so the full-stack contract cannot be accepted even if economics pass.",
+      "order_semantics": "next_open",
+      "sleeve_drawdown_stop_pct": 0.05,
+      "slippage_bps": 5.0
+    },
+    "gate4_canonical_status": "blocked",
+    "gate4_strict_materiality_status": "blocked",
+    "live_readiness": {
+      "blockers": [
+        "forward_rows_immature:0/30",
+        "forward_pnl_not_positive",
+        "replacement_value_not_passed",
+        "execution_envelope_incomplete",
+        "kill_switch_parity_not_passed"
+      ],
+      "closed_forward_trades": 0,
+      "envelope_missing": [
+        "min_dollar_volume"
+      ],
+      "forward_pnl": null,
+      "kill_switch_parity_passed": false,
+      "min_closed_forward_trades": 30,
+      "ready": false,
+      "replacement_value_passed": false
+    },
+    "materiality_note": "Strict materiality is recorded for transparency; for candidate sources the binding materiality standard is beating accepted comparators after costs.",
+    "verdict": {
+      "anti_js": "No JavaScript was used.",
+      "execution_envelope": {
+        "base_notional": 4000.0,
+        "complete": false,
+        "kill_switch_drawdown_pct": 0.08,
+        "max_capital_pct": 0.4,
+        "max_concurrent": 10,
+        "max_displacement": 1,
+        "min_dollar_volume": null,
+        "missing": [
+          "min_dollar_volume"
+        ],
+        "notes": "Top-1/day with 10-trading-day hold and fixed $4,000 default-off paper notional. This run does not wire a daily snapshot, so the full-stack contract cannot be accepted even if economics pass.",
+        "order_semantics": "next_open",
+        "sleeve_drawdown_stop_pct": 0.05,
+        "slippage_bps": 5.0
+      },
+      "gate4": {
+        "accepted_comparators": {
+          "compression": {
+            "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+            "expected_value_score_delta_sum": 0.1608,
+            "experiment_id": "exp-20260608-013",
+            "total_pnl_delta_sum": 2248.98
+          },
+          "distribution": {
+            "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+            "expected_value_score_delta_sum": 0.5286,
+            "experiment_id": "exp-20260611-007",
+            "total_pnl_delta_sum": 10432.91
+          }
+        },
+        "aggregate_ev_delta": 0.4833,
+        "aggregate_pnl_delta": 9885.38,
+        "decision": "rejected_breakout_precursor_default_off_candidate_source",
+        "failed_reasons": [
+          "drawdown_drift_too_high",
+          "accepted_distribution_ev_not_beaten",
+          "accepted_distribution_pnl_not_beaten",
+          "daily_snapshot_not_exposed_for_full_stack_contract"
+        ],
+        "full_stack_contract": {
+          "daily_snapshot_exposed": false,
+          "parity_test_added": false
+        },
+        "max_drawdown_worse": 0.0146,
+        "max_drawdown_worse_guardrail": 0.005,
+        "minimum_core_survival_rate": 0.7925,
+        "passed": false,
+        "survival_guard_passed": true,
+        "target_concentration": {
+          "max_single_positive_pnl_share": 0.205605,
+          "max_single_positive_pnl_share_guardrail": 0.5,
+          "passed": true,
+          "positive_pnl_hhi": 0.101221,
+          "positive_pnl_hhi_guardrail": 0.35,
+          "top5_positive_pnl_share": 0.629852
+        },
+        "target_trade_count": 279,
+        "target_trade_count_min": 20,
+        "target_window_count_min": 3,
+        "target_windows": [
+          "late_strong",
+          "mid_weak",
+          "old_thin"
+        ],
+        "windows_ev_improved": 3,
+        "windows_ev_regressed": 0,
+        "windows_pnl_improved": 3,
+        "windows_pnl_regressed": 0
+      },
+      "gate4_passed": false,
+      "live_readiness": {
+        "blockers": [
+          "forward_rows_immature:0/30",
+          "forward_pnl_not_positive",
+          "replacement_value_not_passed",
+          "execution_envelope_incomplete",
+          "kill_switch_parity_not_passed"
+        ],
+        "closed_forward_trades": 0,
+        "envelope_missing": [
+          "min_dollar_volume"
+        ],
+        "forward_pnl": null,
+        "kill_switch_parity_passed": false,
+        "min_closed_forward_trades": 30,
+        "ready": false,
+        "replacement_value_passed": false
+      },
+      "live_ready": false,
+      "next_step": "Reject and do not retune this precursor source on frozen windows. A valid retry needs genuinely new forward rows, daily default-off parity, or an orthogonal PIT qualifier.",
+      "verdict": "reject"
+    }
+  },
+  "full_stack_verdict": "reject",
+  "gate4": {
+    "accepted_comparators": {
+      "compression": {
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "expected_value_score_delta_sum": 0.1608,
+        "experiment_id": "exp-20260608-013",
+        "total_pnl_delta_sum": 2248.98
+      },
+      "distribution": {
+        "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+        "expected_value_score_delta_sum": 0.5286,
+        "experiment_id": "exp-20260611-007",
+        "total_pnl_delta_sum": 10432.91
+      }
+    },
+    "aggregate_ev_delta": 0.4833,
+    "aggregate_pnl_delta": 9885.38,
+    "decision": "rejected_breakout_precursor_default_off_candidate_source",
+    "failed_reasons": [
+      "drawdown_drift_too_high",
+      "accepted_distribution_ev_not_beaten",
+      "accepted_distribution_pnl_not_beaten",
+      "daily_snapshot_not_exposed_for_full_stack_contract"
+    ],
+    "full_stack_contract": {
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false
+    },
+    "max_drawdown_worse": 0.0146,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": false,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.205605,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": true,
+      "positive_pnl_hhi": 0.101221,
+      "positive_pnl_hhi_guardrail": 0.35,
+      "top5_positive_pnl_share": 0.629852
+    },
+    "target_trade_count": 279,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_ev_improved": 3,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 3,
+    "windows_pnl_regressed": 0
+  },
+  "hypothesis": "candidate_pool/full_stack: the fixed breakout-without-2x-volume precursor source may have standalone replacement value when promoted from the exp-20260628-015 full-population forward lead into a top-1/day $4k next-open/10d default-off source.",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260628-019.json",
+  "mechanism_family": "production_visible_free_ohlcv_candidate_pool",
+  "next_retry_requires": [
+    "daily default-off precursor logger forward rows",
+    "orthogonal PIT qualifier beyond OHLCV volume threshold",
+    "no frozen-window volume/lookback/notional retune"
+  ],
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not sweep the 2x volume threshold, rank tie-breaks, volume ratio response curves, hold days, cooldown, notional, or actual future-entry survivor slices on these frozen windows.",
+    "new_evidence_required": "A valid retry needs settled forward replacement-value rows from a daily default-off precursor logger, daily snapshot parity, or an orthogonal PIT qualifier such as non-OHLCV flow/borrow/options context; not another OHLCV volume-threshold retune.",
+    "why_result_happened": "The full-population precursor source did not survive as a fixed top-1/day candidate source. The exp015 aggregate lead was diluted by false positives and remained window/comparator fragile once forced into a deployable paper allocation shape."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "candidate_pool/full_stack: the fixed breakout-without-2x-volume precursor source may have standalone replacement value when promoted from the exp-20260628-015 full-population forward lead into a top-1/day $4k next-open/10d default-off source.",
+    "2_history_check": {
+      "exp-20260627-006": "Positive but survivor-conditioned actual-entry precursor lead; not a valid base-rate test.",
+      "exp-20260627-007": "Rejected unconditional default-off top-1 precursor source because future-entry conditioning was removed and fixed windows were weak.",
+      "exp-20260628-015": "New full-population forward ledger: aggregate 10d/20d medians were positive, but late_strong and old_thin full-population medians were mixed; valid next step was a Gate 1-4 candidate source replay, not threshold retuning."
+    },
+    "3_single_causal_variable": "breakout_without_2x_volume_precursor_default_off_candidate_source_v1",
+    "4_acceptance_standard": "Use docs/backtesting.md canonical windows. Aggregate EV/PnL must be positive, no EV/PnL regression window, at least 20 target trades in all 3 windows, survival >=5%, drawdown drift <=0.5pp, concentration guards pass, accepted compression and distribution comparators are beaten, and daily/default-off full-stack contract is complete.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_019_breakout_precursor_full_stack.py"
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260628-015 showed a de-biased full-population positive aggregate 10d/20d lead, but fixed windows were mixed and prior trend-long precursor promotion failed when conditioned on actual future entries; this run tests the only valid promotion shape without threshold or response retuning.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "fixed_window_instability",
+      "accepted_comparator_not_beaten",
+      "drawdown_or_concentration_failed",
+      "full_population_false_positive_drag"
+    ],
+    "recorded_at": "2026-06-28T23:05:58+00:00",
+    "success_probability": 0.28
+  },
+  "production_impact": {
+    "adapter_status": "experiment_owned_full_stack_replay_attempt",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": true,
+    "daily_snapshot_exposed": false,
+    "default_off_paper_only": true,
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "complete": false,
+      "kill_switch_drawdown_pct": 0.08,
+      "max_capital_pct": 0.4,
+      "max_concurrent": 10,
+      "max_displacement": 1,
+      "min_dollar_volume": null,
+      "missing": [
+        "min_dollar_volume"
+      ],
+      "notes": "Top-1/day with 10-trading-day hold and fixed $4,000 default-off paper notional. This run does not wire a daily snapshot, so the full-stack contract cannot be accepted even if economics pass.",
+      "order_semantics": "next_open",
+      "sleeve_drawdown_stop_pct": 0.05,
+      "slippage_bps": 5.0
+    },
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "parity_note": "Historical replay consumes the exp-20260628-015 shared helper artifact but this experiment does not add daily default-off snapshot wiring. No live/default order, ranking, sizing, exit, watchlist, LLM, or news path changes.",
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_free_ohlcv_only": true,
+    "uses_llm": false
+  },
+  "rejection_reason": "drawdown_drift_too_high; accepted_distribution_ev_not_beaten; accepted_distribution_pnl_not_beaten; daily_snapshot_not_exposed_for_full_stack_contract",
+  "related_files": [
+    "quant/experiments/exp_20260628_019_breakout_precursor_full_stack.py",
+    "data/experiments/exp-20260628-019/exp_20260628_019_breakout_precursor_full_stack.json",
+    "experiments/logs/exp-20260628-019.json",
+    "experiments/tickets/exp-20260628-019.json",
+    "experiments/cards/exp-20260628-019.md",
+    "experiments/manifests/exp-20260628-019.json",
+    "docs/experiment_registry.json",
+    "data/experiments/exp-20260628-015/exp_20260628_015_breakout_without_2x_volume_precursor_forward_replacement_value_v1.json"
+  ],
+  "single_causal_variable": "breakout_without_2x_volume_precursor_default_off_candidate_source_v1",
+  "status": "rejected",
+  "timestamp": "2026-06-28T23:15:24+00:00",
+  "trial_family": "breakout_without_2x_volume_precursor_full_stack",
+  "trial_variant_id": "breakout_precursor_top1_volume_ratio_rank_v1",
+  "windows": [
+    {
+      "expected_value_after": 5.3895,
+      "expected_value_before": 5.1628,
+      "expected_value_delta": 0.2267,
+      "label": "late_strong",
+      "raw_candidate_count": 433,
+      "strategy_total_pnl_delta": 4587.34,
+      "target_trade_count": 81
+    },
+    {
+      "expected_value_after": 2.3577,
+      "expected_value_before": 2.1402,
+      "expected_value_delta": 0.2175,
+      "label": "mid_weak",
+      "raw_candidate_count": 602,
+      "strategy_total_pnl_delta": 4041.02,
+      "target_trade_count": 106
+    },
+    {
+      "expected_value_after": 0.6302,
+      "expected_value_before": 0.5911,
+      "expected_value_delta": 0.0391,
+      "label": "old_thin",
+      "raw_candidate_count": 428,
+      "strategy_total_pnl_delta": 1257.02,
+      "target_trade_count": 92
+    }
+  ]
+}

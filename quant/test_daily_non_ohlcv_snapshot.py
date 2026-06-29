@@ -40,6 +40,10 @@ def test_daily_snapshot_writes_dated_artifacts_and_all_sec_text_items(tmp_path, 
 
     assert snapshot["status"] == "ok"
     assert snapshot["borrow_availability"]["status"] == "skipped"
+    assert snapshot["form4_sale_overhang_context"]["status"] == "skipped"
+    assert snapshot["form4_sale_overhang_context"]["daily_snapshot_wired"] is True
+    assert snapshot["form144_planned_sale_context"]["status"] == "skipped"
+    assert snapshot["form144_planned_sale_context"]["daily_snapshot_wired"] is True
     assert calls["sec_events"].start == "2026-05-01"
     assert calls["sec_events"].end == "2026-05-04"
     assert calls["sec_events"].refresh_submissions is True
@@ -81,6 +85,120 @@ def test_daily_snapshot_keeps_form4_when_sec_source_fails(tmp_path, monkeypatch)
     assert snapshot["sec_filing_text"]["status"] == "skipped"
     assert snapshot["form4_transactions"]["status"] == "ok"
     assert (tmp_path / "form4_transactions_20260504.jsonl").exists()
+
+
+def test_daily_snapshot_can_collect_form4_context_as_data_only(tmp_path, monkeypatch):
+    def fake_sec_events(args):
+        Path(args.output).write_text("", encoding="utf-8")
+        Path(args.summary_output).write_text("{}\n", encoding="utf-8")
+        return {"rows_written": 0, "pit_safe_rows": 0}
+
+    def fake_sec_text(args):
+        return ([], {"rows_written": 0, "item_codes": args.item_codes})
+
+    def fake_form4(args):
+        Path(args.output).write_text("", encoding="utf-8")
+        Path(args.summary_output).write_text("{}\n", encoding="utf-8")
+        return {"rows_written": 0, "pit_safe_count": 0}
+
+    def fake_form4_context(**kwargs):
+        assert kwargs["as_of"].isoformat() == "2026-05-04"
+        assert kwargs["data_dir"] == tmp_path
+        assert kwargs["lookback_days"] == 7
+        return {
+            "status": "ok",
+            "rows_written": 3,
+            "rows_with_high_sale_overhang": 1,
+            "output_path": str(tmp_path / "form4_sale_overhang_context_20260504.jsonl"),
+            "summary_output": str(tmp_path / "form4_sale_overhang_context_summary_20260504.json"),
+            "trade_enabled": False,
+            "daily_snapshot_wired": True,
+            "production_impact": {
+                "alters_signal_generation": False,
+                "alters_candidate_ranking": False,
+                "alters_sizing": False,
+                "alters_orders": False,
+            },
+        }
+
+    monkeypatch.setattr(daily_snapshot, "backfill_sec_filing_events", fake_sec_events)
+    monkeypatch.setattr(daily_snapshot, "build_sec_filing_text_rows", fake_sec_text)
+    monkeypatch.setattr(daily_snapshot, "backfill_form4_transactions", fake_form4)
+    monkeypatch.setattr(daily_snapshot, "persist_form4_sale_overhang_context", fake_form4_context)
+
+    snapshot = daily_snapshot.persist_daily_non_ohlcv_snapshots(
+        as_of="2026-05-04",
+        data_dir=tmp_path,
+        refresh_form4_context=True,
+        form4_context_lookback_days=7,
+    )
+
+    assert snapshot["status"] == "ok"
+    assert snapshot["form4_sale_overhang_context"]["status"] == "ok"
+    assert snapshot["form4_sale_overhang_context"]["rows_written"] == 3
+    assert snapshot["form4_sale_overhang_context"]["trade_enabled"] is False
+    impact = snapshot["form4_sale_overhang_context"]["production_impact"]
+    assert impact["alters_signal_generation"] is False
+    assert impact["alters_candidate_ranking"] is False
+    assert impact["alters_sizing"] is False
+    assert impact["alters_orders"] is False
+
+
+def test_daily_snapshot_can_collect_form144_context_as_data_only(tmp_path, monkeypatch):
+    def fake_sec_events(args):
+        Path(args.output).write_text("", encoding="utf-8")
+        Path(args.summary_output).write_text("{}\n", encoding="utf-8")
+        return {"rows_written": 0, "pit_safe_rows": 0}
+
+    def fake_sec_text(args):
+        return ([], {"rows_written": 0, "item_codes": args.item_codes})
+
+    def fake_form4(args):
+        Path(args.output).write_text("", encoding="utf-8")
+        Path(args.summary_output).write_text("{}\n", encoding="utf-8")
+        return {"rows_written": 0, "pit_safe_count": 0}
+
+    def fake_form144(**kwargs):
+        assert kwargs["as_of"].isoformat() == "2026-05-04"
+        assert kwargs["data_dir"] == tmp_path
+        assert kwargs["lookback_days"] == 45
+        return {
+            "status": "ok",
+            "rows_written": 2,
+            "rows_with_machine_parseable_ratio": 1,
+            "output_path": str(tmp_path / "form144_planned_sale_context_20260504.jsonl"),
+            "summary_output": str(tmp_path / "form144_planned_sale_context_summary_20260504.json"),
+            "trade_enabled": False,
+            "daily_snapshot_wired": True,
+            "production_impact": {
+                "alters_signal_generation": False,
+                "alters_candidate_ranking": False,
+                "alters_sizing": False,
+                "alters_orders": False,
+            },
+        }
+
+    monkeypatch.setattr(daily_snapshot, "backfill_sec_filing_events", fake_sec_events)
+    monkeypatch.setattr(daily_snapshot, "build_sec_filing_text_rows", fake_sec_text)
+    monkeypatch.setattr(daily_snapshot, "backfill_form4_transactions", fake_form4)
+    monkeypatch.setattr(daily_snapshot, "persist_form144_planned_sale_context", fake_form144)
+
+    snapshot = daily_snapshot.persist_daily_non_ohlcv_snapshots(
+        as_of="2026-05-04",
+        data_dir=tmp_path,
+        refresh_form144_context=True,
+        form144_context_lookback_days=45,
+    )
+
+    assert snapshot["status"] == "ok"
+    assert snapshot["form144_planned_sale_context"]["status"] == "ok"
+    assert snapshot["form144_planned_sale_context"]["rows_written"] == 2
+    assert snapshot["form144_planned_sale_context"]["trade_enabled"] is False
+    impact = snapshot["form144_planned_sale_context"]["production_impact"]
+    assert impact["alters_signal_generation"] is False
+    assert impact["alters_candidate_ranking"] is False
+    assert impact["alters_sizing"] is False
+    assert impact["alters_orders"] is False
 
 
 def test_daily_snapshot_can_collect_options_as_data_only(tmp_path, monkeypatch):

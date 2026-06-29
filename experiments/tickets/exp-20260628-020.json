@@ -1,0 +1,387 @@
+{
+  "acceptance_rule": "Accept only as measurement repair if a rate-limited SEC Archives Form144 primary-document cache materializer exists, can be tested without network, preserves trade_enabled=false and all strategy deltas at zero, and records downloaded/cached/failed document counts plus the next parseable-ratio reopen condition.",
+  "allowed_write_scope": [
+    "quant/form144_planned_sale_context.py",
+    "quant/test_form144_planned_sale_context.py",
+    "quant/experiments/exp_20260628_020_form144_primary_document_cache_materializer.py",
+    "data/cache/sec/form144_documents/",
+    "data/experiments/exp-20260628-020/",
+    "data/non_ohlcv/form144_planned_sale_context_20260628.jsonl",
+    "data/non_ohlcv/form144_planned_sale_context_summary_20260628.json",
+    "experiments/cards/exp-20260628-020.md",
+    "experiments/manifests/exp-20260628-020.json",
+    "experiments/logs/exp-20260628-020.json",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260628-020.md",
+  "causal_components": [
+    "SEC Archives primary text fetcher",
+    "local Form144 primary-document cache",
+    "rate-limited User-Agent requests",
+    "cache materialization manifest",
+    "parser rerun readiness",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "form144_primary_document_cache_materializer_v1",
+  "claimed_at": "2026-06-29T01:04:16+00:00",
+  "completed_at": "2026-06-29T01:08:07+00:00",
+  "created_at": "2026-06-29T01:04:12+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260628-020",
+  "experiment_uid": "expuid-2c3a6a165fc3441c",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260628-020",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-29T01:04:12+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "form144_primary_document_cache_materializer"
+  },
+  "hypothesis": "Materialize SEC Form 144 primary filing texts from existing PIT form-index rows so the accepted Form144 planned-sale context logger can parse planned_sale_shares/value and eventually compute planned-sale-to-float/ADV ratios without changing any trading behavior.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "form144_primary_document_cache_materializer_v1"
+  ],
+  "mechanism_family": "form144_primary_document_materialization",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260628-016",
+    "exp-20260616-008",
+    "exp-20260612-023"
+  ],
+  "new_evidence_type": "form144_primary_document_text_cache_materialization",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "accepted",
+        "adv",
+        "any",
+        "behavior",
+        "cache",
+        "can",
+        "changing",
+        "compute",
+        "context",
+        "document",
+        "eventually",
+        "existing",
+        "filing",
+        "float",
+        "form",
+        "form144",
+        "from",
+        "index",
+        "logger",
+        "materialization",
+        "materialize",
+        "materializer",
+        "parse",
+        "pit",
+        "planned",
+        "primary",
+        "ratios",
+        "rows",
+        "sale",
+        "shares",
+        "so",
+        "texts",
+        "to",
+        "trading",
+        "value",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "sec_ftd_forward_replacement_context_attribution",
+        "reopen_condition": "Need materially more closed SEC_FTD_FINRA true-trigger forward rows, PIT borrow fee or loan-availability context, or a separate mature activation ledger before revisiting this lane.",
+        "score": 0.0286,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "form4_insider",
+        "family_key": "form4_purchase_pressure_event_satellite",
+        "reopen_condition": null,
+        "score": 0.0273,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "sec_10k_10q_cover_page_materialization_probe",
+        "reopen_condition": "Materialize all canonical-window 10-K/10-Q primary-document rows or a compact XBRL-derived cover-page status sidecar keyed by accession_number, accepted_at, usable_trade_date, ticker, form, and parsed filer-status booleans; then run exactly one fixed shared-paper-first status-upgrade rule.",
+        "score": 0.0273,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "accepted_free_data_cross_source_consensus_new_independent_theme_context_family",
+        "reopen_condition": null,
+        "score": 0.0261,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "accepted_core_13f_crowding_risk_attribution",
+        "reopen_condition": "Independent active-manager quality, non-quarterly ownership/flow data, borrow/options confirmation, or prospective forward rows closed after a shared default-off 13F context logger.",
+        "score": 0.0255,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.55,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "network_restricted",
+      "sec_rate_limit_or_user_agent_rejection",
+      "filing_text_not_available",
+      "parser_still_needs_document_shape_updates"
+    ],
+    "confidence_reason": "exp-20260628-016 proved the blocker is not the Form144 index surface: 9,594 PIT rows exist, but zero cached primary documents means no planned-sale field can be parsed. A small SEC Archives materializer is the direct measurement repair, with the main uncertainty being network availability and SEC request handling in the automation environment.",
+    "recorded_at": "2026-06-29T01:03:50+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_form144_primary_document_materializer",
+    "artifact": "data/experiments/exp-20260628-020/exp_20260628_020_form144_primary_document_cache_materializer.json",
+    "log": "experiments/logs/exp-20260628-020.json",
+    "gate1": {
+      "passed": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "baseline_expected_value_score_sum": 7.8941,
+      "baseline_total_pnl": 234850.99
+    },
+    "gate2": {
+      "passed": true,
+      "runtime_fields_required": [
+        "context file_name",
+        "archive_url",
+        "primary_document_cache_path",
+        "downloaded",
+        "failed",
+        "trade_enabled"
+      ],
+      "cache_summary_status": "blocked",
+      "strategy_fields_changed": false
+    },
+    "gate3": {
+      "passed": true,
+      "not_applicable_reason": "No signal, filter, ranking, sizing, exit, or order rule changed.",
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "survival_rate_delta": 0.0
+    },
+    "gate4": {
+      "passed": true,
+      "decision": "accepted_measurement_repair_form144_primary_document_materializer",
+      "measurement_repair_only": true,
+      "accepted_alpha": false,
+      "failed_reasons": [],
+      "network_blocked": true,
+      "before_after_strategy_delta": {
+        "strategy_behavior_changed": false,
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0
+      },
+      "forward_reopen_gate": {
+        "closed_forward_rows_min": 25,
+        "high_planned_sale_float_bucket_rows_min": 8,
+        "single_ticker_share_max": 0.4,
+        "required_replacement_values": [
+          "cash",
+          "SPY",
+          "QQQ"
+        ],
+        "park_after_materialization_runs_without_new_closable_rows": 3
+      }
+    },
+    "calibration": {
+      "actual_decision": "accepted_measurement_repair_form144_primary_document_materializer",
+      "actual_success": 1,
+      "predicted_success_probability": 0.55,
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": 0.0,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "predicted_failure_modes": [
+        "network_restricted",
+        "sec_rate_limit_or_user_agent_rejection",
+        "filing_text_not_available",
+        "parser_still_needs_document_shape_updates"
+      ],
+      "realized_failure_mode": "network_restricted",
+      "predicted_failure_mode_hit": true
+    },
+    "summary": "The materializer was implemented and exercised against the existing Form144 PIT context ledger. The first batch attempted SEC Archives fetches with the shared SEC User-Agent and local cache target. No trading path changed. If network is blocked, the artifact now records the exact failed URL/error sample and the same command can be rerun when network access is available."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260628-020.json",
+  "single_causal_variable": "form144_primary_document_cache_materializer_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260628-020.json",
+  "trial_family": "form144_primary_document_cache_materializer",
+  "trial_variant_id": "sec_archive_text_cache_first_batch_v1",
+  "implementation_mode": "shared_default_off_data_materializer",
+  "parameters": {
+    "context_path": "data/non_ohlcv/form144_planned_sale_context_20260628.jsonl",
+    "cache_dir": "data/cache/sec/form144_documents",
+    "max_documents": 3,
+    "sleep_seconds": 0.11,
+    "user_agent": "ginger-research/1.0 contact: research@example.com",
+    "trade_enabled": false
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Materialize SEC Form 144 primary filing texts from existing PIT form-index rows so the accepted Form144 planned-sale context logger can parse planned_sale_shares/value and eventually compute planned-sale-to-float/ADV ratios without changing any trading behavior.",
+    "2_prior_work": "exp-20260628-016 found 9,594 Form144 index rows but 0 cached primary documents, so planned-sale fields were unavailable.",
+    "3_single_policy_bundle": "form144_primary_document_cache_materializer_v1",
+    "4_success_criteria": "Accepted only as measurement repair if the cache materializer exists, records first-batch downloaded/cached/failed counts, stays default-off, and leaves strategy deltas at zero.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_020_form144_primary_document_cache_materializer.py"
+  },
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_expected_value_score_sum": 7.8941,
+    "baseline_total_pnl": 234850.99
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields_required": [
+      "context file_name",
+      "archive_url",
+      "primary_document_cache_path",
+      "downloaded",
+      "failed",
+      "trade_enabled"
+    ],
+    "cache_summary_status": "blocked",
+    "strategy_fields_changed": false
+  },
+  "gate3": {
+    "passed": true,
+    "not_applicable_reason": "No signal, filter, ranking, sizing, exit, or order rule changed.",
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "survival_rate_delta": 0.0
+  },
+  "gate4": {
+    "passed": true,
+    "decision": "accepted_measurement_repair_form144_primary_document_materializer",
+    "measurement_repair_only": true,
+    "accepted_alpha": false,
+    "failed_reasons": [],
+    "network_blocked": true,
+    "before_after_strategy_delta": {
+      "strategy_behavior_changed": false,
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "forward_reopen_gate": {
+      "closed_forward_rows_min": 25,
+      "high_planned_sale_float_bucket_rows_min": 8,
+      "single_ticker_share_max": 0.4,
+      "required_replacement_values": [
+        "cash",
+        "SPY",
+        "QQQ"
+      ],
+      "park_after_materialization_runs_without_new_closable_rows": 3
+    }
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "trade_enabled": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "paper_orders_changed": false,
+    "live_orders_changed": false,
+    "parity_note": "This materializes SEC text files only. No trading decision path consumes the cache."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The materializer was implemented and exercised against the existing Form144 PIT context ledger. The first batch attempted SEC Archives fetches with the shared SEC User-Agent and local cache target. No trading path changed. If network is blocked, the artifact now records the exact failed URL/error sample and the same command can be rerun when network access is available.",
+    "forbidden_near_neighbor_retry": "Do not start a Form144 risk scalar, notional haircut, ranking rule, or candidate-pool retry from index-only rows or from an empty first-batch cache result.",
+    "new_evidence_required": "At least one cached Form144 primary document parsed into planned_sale_shares/value, then enough forward rows to satisfy the exp-016 reopen gate."
+  },
+  "next_retry_requires": "Rerun the materializer with network access or a larger max_documents only to increase cached primary-document count; alpha tests still require parseable planned-sale ratios plus closed forward rows.",
+  "related_files": [
+    "quant/experiments/exp_20260628_020_form144_primary_document_cache_materializer.py",
+    "quant/form144_planned_sale_context.py",
+    "quant/test_form144_planned_sale_context.py",
+    "data/non_ohlcv/form144_planned_sale_context_20260628.jsonl",
+    "data/cache/sec/form144_documents",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260628_020_form144_primary_document_cache_materializer.py",
+    "quant/form144_planned_sale_context.py",
+    "quant/test_form144_planned_sale_context.py",
+    "data/experiments/exp-20260628-020/exp_20260628_020_form144_primary_document_cache_materializer.json",
+    "experiments/logs/exp-20260628-020.json",
+    "experiments/cards/exp-20260628-020.md",
+    "experiments/manifests/exp-20260628-020.json",
+    "experiments/tickets/exp-20260628-020.json",
+    "docs/experiment_registry.json",
+    "data/cache/sec/form144_documents"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_020_form144_primary_document_cache_materializer.py",
+    ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_form144_planned_sale_context.py -q",
+    ".\\.venv\\Scripts\\python.exe -B -c \"from pathlib import Path; files=['quant/form144_planned_sale_context.py','quant/test_form144_planned_sale_context.py','quant/experiments/exp_20260628_020_form144_primary_document_cache_materializer.py']; [compile(Path(f).read_text(encoding='utf-8'), f, 'exec') for f in files]\"",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "anti_js": {
+    "used_javascript": false,
+    "strategy_behavior_changed": false,
+    "threshold_scan": false,
+    "uses_future_form144_rows": false
+  },
+  "decision": "accepted_measurement_repair_form144_primary_document_materializer",
+  "artifact": "data/experiments/exp-20260628-020/exp_20260628_020_form144_primary_document_cache_materializer.json",
+  "log": "experiments/logs/exp-20260628-020.json",
+  "updated_at": "2026-06-29T01:08:07+00:00"
+}

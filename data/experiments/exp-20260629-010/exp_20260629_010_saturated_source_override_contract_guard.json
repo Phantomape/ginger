@@ -1,0 +1,149 @@
+{
+  "experiment_id": "exp-20260629-010",
+  "status": "accepted_measurement_repair",
+  "decision": "accepted_measurement_repair_saturated_source_override_contract_guard",
+  "accepted": true,
+  "accepted_alpha": false,
+  "lane": "measurement_repair",
+  "hypothesis": "alpha_blocker/measurement_repair: saturated-source reservation overrides still permit a mere new field as the declared evidence axis, which conflicts with the current no-repeat rule and can let agents reserve duplicate dry-source candidate-pool scans instead of moving to new data, new gate shapes, or materially more forward rows.",
+  "single_causal_variable": "saturated_source_override_allowed_axis_contract_v2",
+  "changed_variable": "saturated_source_override_allowed_axis_contract_v2",
+  "change_type": "reservation_gate_contract_repair",
+  "mechanism_family": "experiment_protocol_measurement_repair",
+  "trial_family": "saturated_source_override_contract_guard",
+  "trial_variant_id": "saturated_source_override_allowed_axis_v2",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "expected_value_score": 7.8941,
+  "total_pnl": 234850.99,
+  "max_drawdown_pct": 0.1119,
+  "survival_rate": 0.7925,
+  "total_trades": 61,
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "aggregate_expected_value_score": 7.8941,
+    "aggregate_total_pnl": 234850.99,
+    "trade_count": 61
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields_checked": [
+      "new_evidence_axis",
+      "saturated_source_override",
+      "source_saturation.saturated",
+      "saturated_source_axis.valid",
+      "saturated_source_axis.categories"
+    ],
+    "entry_date_relevance": "Reservation-gate measurement repair; no trade rows are generated.",
+    "target_price_relevance": "Reservation-gate measurement repair; no orders or exits are generated."
+  },
+  "gate3": {
+    "passed": true,
+    "new_filter_added": false,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "survival_rate_delta": 0.0
+  },
+  "gate4": {
+    "passed": true,
+    "measurement_repair_only": true,
+    "strategy_behavior_changed": false,
+    "decision": "accepted_measurement_repair_saturated_source_override_contract_guard",
+    "acceptance_checks": {
+      "field_only_axis_rejected": true,
+      "new_data_source_axis_accepted": true,
+      "new_gate_shape_axis_accepted": true,
+      "more_forward_rows_axis_accepted": true,
+      "focused_tests_passed": true,
+      "py_compile_passed": true
+    }
+  },
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "total_pnl": 0.0,
+    "trade_count": 0,
+    "strategy_behavior_changed": false
+  },
+  "validation": {
+    "tests": [
+      {
+        "command": ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_create_experiment_ticket.py",
+        "passed": true,
+        "result": "4 passed"
+      },
+      {
+        "command": ".\\.venv\\Scripts\\python.exe -B -m py_compile scripts\\create_experiment_ticket.py quant\\test_create_experiment_ticket.py",
+        "passed": true
+      }
+    ],
+    "classifier_examples": {
+      "invalid_same_source_new_field": {
+        "axis": "same data source, same gate shape, new XBRL field never scanned before",
+        "valid": false,
+        "invalid_same_source_field_only": true,
+        "categories": []
+      },
+      "valid_new_data_source": {
+        "axis": "new data source: PIT borrow fee and utilization sidecar",
+        "valid": true,
+        "categories": [
+          "new_data_source"
+        ]
+      },
+      "valid_new_gate_shape": {
+        "axis": "new gate shape: shared forward default-off helper instead of candidate scan",
+        "valid": true,
+        "categories": [
+          "new_gate_shape"
+        ]
+      },
+      "valid_more_forward_rows": {
+        "axis": "materially more closed forward rows with settled replacement value",
+        "valid": true,
+        "categories": [
+          "materially_more_forward_rows"
+        ]
+      }
+    }
+  },
+  "production_impact": {
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "risk_budget_changed": false,
+    "llm_decision_boundary_changed": false,
+    "trade_enabled": false,
+    "live_ready": false,
+    "parity_note": "Only experiment reservation tooling changed. No backtester, paper sleeve, daily run, live order, ranking, sizing, exit, or LLM decision path changed."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The saturated-source hard rule was already clear in AGENTS.md, but reservation tooling still used the older generic novelty wording. A small classifier and tests now make same-source field/tag overrides fail while keeping legal new-source, new-gate-shape, and forward-row reopen paths available.",
+    "forbidden_near_neighbor_retry": "Do not use --saturated-source-override to justify a new field, tag, concept, or label inside the same saturated data_source and gate_shape cell.",
+    "new_evidence_required": "For any future saturated-source reservation, name a genuinely new data source, a new gate shape, or materially more closed/settled forward rows in --new-evidence-axis.",
+    "realized_failure_mode": null
+  },
+  "changed_files": [
+    "scripts/create_experiment_ticket.py",
+    "quant/test_create_experiment_ticket.py",
+    "data/experiments/exp-20260629-010/exp_20260629_010_saturated_source_override_contract_guard.json",
+    "experiments/tickets/exp-20260629-010.json",
+    "experiments/cards/exp-20260629-010.md",
+    "experiments/manifests/exp-20260629-010.json",
+    "experiments/logs/exp-20260629-010.json",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_create_experiment_ticket.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile scripts\\create_experiment_ticket.py quant\\test_create_experiment_ticket.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "anti_js": {
+    "used_javascript": false,
+    "evidence": "Python tooling only."
+  }
+}

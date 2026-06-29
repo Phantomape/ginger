@@ -89,6 +89,10 @@ def ensure_non_ohlcv_coverage(
     options_max_tickers: int | None = None,
     refresh_borrow_availability: bool = False,
     borrow_availability_broad: bool = False,
+    refresh_form4_context: bool = False,
+    form4_context_lookback_days: int = 10,
+    refresh_form144_context: bool = False,
+    form144_context_lookback_days: int = 90,
     build_filing_features: bool = True,
     companyfacts_path: str | Path | None = None,
     record_existing: bool = True,
@@ -184,6 +188,10 @@ def ensure_non_ohlcv_coverage(
                 options_max_tickers=options_max_tickers,
                 refresh_borrow_availability=refresh_borrow_availability,
                 borrow_availability_broad=borrow_availability_broad,
+                refresh_form4_context=refresh_form4_context,
+                form4_context_lookback_days=form4_context_lookback_days,
+                refresh_form144_context=refresh_form144_context,
+                form144_context_lookback_days=form144_context_lookback_days,
                 max_ciks=max_ciks,
             )
             summary["daily_snapshots"][day_iso] = snapshot
@@ -339,6 +347,10 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--refresh-form4-xml", action=argparse.BooleanOptionalAction, default=False)
     parser.add_argument("--refresh-borrow-availability", action=argparse.BooleanOptionalAction, default=False)
     parser.add_argument("--borrow-availability-broad", action=argparse.BooleanOptionalAction, default=False)
+    parser.add_argument("--refresh-form4-context", action=argparse.BooleanOptionalAction, default=False)
+    parser.add_argument("--form4-context-lookback-days", type=int, default=10)
+    parser.add_argument("--refresh-form144-context", action=argparse.BooleanOptionalAction, default=False)
+    parser.add_argument("--form144-context-lookback-days", type=int, default=90)
     parser.add_argument("--build-filing-features", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--companyfacts-path", default=None)
     parser.add_argument("--max-ciks", type=int, default=None)
@@ -366,6 +378,10 @@ def main(argv: list[str] | None = None) -> int:
         refresh_form4_xml=args.refresh_form4_xml,
         refresh_borrow_availability=args.refresh_borrow_availability,
         borrow_availability_broad=args.borrow_availability_broad,
+        refresh_form4_context=args.refresh_form4_context,
+        form4_context_lookback_days=args.form4_context_lookback_days,
+        refresh_form144_context=args.refresh_form144_context,
+        form144_context_lookback_days=args.form144_context_lookback_days,
         build_filing_features=args.build_filing_features,
         companyfacts_path=args.companyfacts_path,
         record_existing=args.record_existing,

@@ -1,0 +1,402 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "alpha_ready": false,
+  "anti_js": {
+    "strategy_behavior_changed": false,
+    "threshold_scan": false,
+    "used_javascript": false,
+    "uses_future_form144_rows": false
+  },
+  "artifact": "data/experiments/exp-20260628-016/exp_20260628_016_form144_planned_sale_context_logger.json",
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair_form144_planned_sale_context_logger",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "brier_score": 0.2916,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "missing_form144_primary_documents",
+      "planned_sale_fields_not_parseable",
+      "no_float_or_adv_denominator",
+      "daily_snapshot_wiring_regression"
+    ],
+    "predicted_success_probability": 0.46,
+    "realized_failure_mode": "",
+    "surprise_note": "Form144 planned-sale context logger materialized as default-off data plumbing; current alpha gate remains waiting on closed forward rows and cached/parseable Form144 documents."
+  },
+  "causal_components": [
+    "Form144 PIT parser",
+    "append-only planned-sale ledger",
+    "as-of-entry context tags",
+    "outcome join schema",
+    "no strategy behavior change"
+  ],
+  "change_type": "forward_context_logger",
+  "changed_files": [
+    "quant/experiments/exp_20260628_016_form144_planned_sale_context_logger.py",
+    "quant/form144_planned_sale_context.py",
+    "quant/daily_non_ohlcv_snapshot.py",
+    "quant/backfill_non_ohlcv.py",
+    "quant/test_form144_planned_sale_context.py",
+    "quant/test_daily_non_ohlcv_snapshot.py",
+    "data/experiments/exp-20260628-016/exp_20260628_016_form144_planned_sale_context_logger.json",
+    "experiments/logs/exp-20260628-016.json",
+    "experiments/cards/exp-20260628-016.md",
+    "experiments/manifests/exp-20260628-016.json",
+    "experiments/tickets/exp-20260628-016.json",
+    "docs/experiment_registry.json",
+    "data/non_ohlcv/form144_planned_sale_context_20260628.jsonl",
+    "data/non_ohlcv/form144_planned_sale_context_summary_20260628.json"
+  ],
+  "changed_variable": "form144_planned_sale_float_context_logger_v1",
+  "daily_snapshot_contract": {
+    "backfill_accepts_form144_context_lookback_days": true,
+    "backfill_accepts_refresh_form144_context": true,
+    "daily_snapshot_accepts_form144_context_lookback_days": true,
+    "daily_snapshot_accepts_refresh_form144_context": true,
+    "default_refresh_enabled": false,
+    "fail_soft_helper": "daily_non_ohlcv_snapshot._run_form144_planned_sale_context",
+    "ledger_partition": "data/non_ohlcv/form144_planned_sale_context_YYYYMMDD.jsonl",
+    "summary_partition": "data/non_ohlcv/form144_planned_sale_context_summary_YYYYMMDD.json"
+  },
+  "decision": "accepted_measurement_repair_form144_planned_sale_context_logger",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "entry_context_schema": {
+    "context_fields": [
+      "form144_context_rows",
+      "form144_high_planned_sale_rows",
+      "form144_latest_usable_trade_date",
+      "form144_latest_accession_number",
+      "form144_max_planned_sale_to_float",
+      "form144_max_planned_sale_to_adv20",
+      "form144_planned_sale_bucket"
+    ],
+    "keys": [
+      "ticker",
+      "entry_date"
+    ],
+    "pit_filter": "usable_trade_date <= entry_date"
+  },
+  "experiment_id": "exp-20260628-016",
+  "form144_context_summary": {
+    "asof_date": "2026-06-28",
+    "daily_snapshot_wired": true,
+    "document_cache_dirs": [
+      "D:/Github/ginger/data/cache/sec/form144_documents",
+      "D:/Github/ginger/data/cache/sec/edgar",
+      "D:/Github/ginger/data/cache/sec"
+    ],
+    "entry_context_schema": {
+      "context_fields": [
+        "form144_context_rows",
+        "form144_high_planned_sale_rows",
+        "form144_latest_usable_trade_date",
+        "form144_latest_accession_number",
+        "form144_max_planned_sale_to_float",
+        "form144_max_planned_sale_to_adv20",
+        "form144_planned_sale_bucket"
+      ],
+      "keys": [
+        "ticker",
+        "entry_date"
+      ],
+      "pit_filter": "usable_trade_date <= entry_date"
+    },
+    "forward_reopen_gate": {
+      "closed_forward_rows_min": 25,
+      "high_planned_sale_float_bucket_rows_min": 8,
+      "park_after_materialization_runs_without_new_closable_rows": 3,
+      "required_replacement_values": [
+        "cash",
+        "SPY",
+        "QQQ"
+      ],
+      "single_ticker_share_max": 0.4
+    },
+    "generated_at": "2026-06-28T21:01:28+00:00",
+    "index_audit": {
+      "end_date": "2026-06-28",
+      "malformed_form144_rows": 0,
+      "mapped_form144_rows_in_window": 9594,
+      "raw_form144_rows": 125560,
+      "source_company_ticker_map": "D:/Github/ginger/data/reference/sec_company_tickers.json",
+      "source_form_index_dir": "D:/Github/ginger/data/cache/sec/form_index",
+      "source_index_file_count": 7,
+      "start_date": "2026-03-30",
+      "ticker_count_in_window": 2201,
+      "unmapped_form144_rows_in_window": 8037
+    },
+    "lookback_days": 90,
+    "max_usable_trade_date": "2026-06-12",
+    "min_usable_trade_date": "2026-03-31",
+    "outcome_join_schema": {
+      "forward_outcome_fields": [
+        "cash_replacement_value_10d",
+        "cash_replacement_value_20d",
+        "spy_replacement_value_10d",
+        "spy_replacement_value_20d",
+        "qqq_replacement_value_10d",
+        "qqq_replacement_value_20d",
+        "closed_forward_row"
+      ],
+      "join_keys": [
+        "ticker",
+        "entry_date",
+        "usable_trade_date_lte_entry_date",
+        "form144_accession_number"
+      ],
+      "pit_guard": "Only rows with usable_trade_date <= entry_date are eligible for an entry context join."
+    },
+    "output_path": "D:/Github/ginger/data/non_ohlcv/form144_planned_sale_context_20260628.jsonl",
+    "planned_sale_bucket_counts": {
+      "form144_index_only_document_missing": 9594
+    },
+    "production_impact": {
+      "alters_candidate_ranking": false,
+      "alters_orders": false,
+      "alters_signal_generation": false,
+      "alters_sizing": false,
+      "backtester_adapter_changed": false,
+      "replay_only": false,
+      "run_adapter_changed": true,
+      "scope": "form144_planned_sale_context_collection",
+      "shared_policy_changed": false,
+      "trade_enabled": false
+    },
+    "rows_with_cached_primary_document": 0,
+    "rows_with_machine_parseable_ratio": 0,
+    "rows_with_parseable_planned_sale_shares": 0,
+    "rows_with_parseable_planned_sale_to_adv20": 0,
+    "rows_with_parseable_planned_sale_to_float": 0,
+    "rows_with_parseable_planned_sale_value": 0,
+    "rows_written": 9594,
+    "rule_version": "form144_planned_sale_float_context_logger_v1",
+    "schema_version": 1,
+    "status": "ok",
+    "summary_output": "D:/Github/ginger/data/non_ohlcv/form144_planned_sale_context_summary_20260628.json",
+    "ticker_count": 2201,
+    "trade_enabled": false
+  },
+  "forward_reopen_gate": {
+    "closed_forward_rows_min": 25,
+    "high_planned_sale_float_bucket_rows_min": 8,
+    "park_after_materialization_runs_without_new_closable_rows": 3,
+    "required_replacement_values": [
+      "cash",
+      "SPY",
+      "QQQ"
+    ],
+    "single_ticker_share_max": 0.4
+  },
+  "gate1": {
+    "baseline_expected_value_score_sum": 7.8941,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_total_pnl": 234850.99,
+    "passed": true
+  },
+  "gate2": {
+    "contract": {
+      "backfill_accepts_form144_context_lookback_days": true,
+      "backfill_accepts_refresh_form144_context": true,
+      "daily_snapshot_accepts_form144_context_lookback_days": true,
+      "daily_snapshot_accepts_refresh_form144_context": true,
+      "default_refresh_enabled": false,
+      "fail_soft_helper": "daily_non_ohlcv_snapshot._run_form144_planned_sale_context",
+      "ledger_partition": "data/non_ohlcv/form144_planned_sale_context_YYYYMMDD.jsonl",
+      "summary_partition": "data/non_ohlcv/form144_planned_sale_context_summary_YYYYMMDD.json"
+    },
+    "passed": true,
+    "runtime_fields_required": [
+      "entry_date",
+      "target_price",
+      "Form144 usable_trade_date",
+      "Form144 planned_sale_shares",
+      "Form144 planned_sale_to_float",
+      "Form144 planned_sale_to_adv20",
+      "Form144 outcome join keys"
+    ],
+    "strategy_fields_changed": false,
+    "summary_fields_present": [
+      "asof_date",
+      "daily_snapshot_wired",
+      "document_cache_dirs",
+      "entry_context_schema",
+      "forward_reopen_gate",
+      "generated_at",
+      "index_audit",
+      "lookback_days",
+      "max_usable_trade_date",
+      "min_usable_trade_date",
+      "outcome_join_schema",
+      "output_path",
+      "planned_sale_bucket_counts",
+      "production_impact",
+      "rows_with_cached_primary_document",
+      "rows_with_machine_parseable_ratio",
+      "rows_with_parseable_planned_sale_shares",
+      "rows_with_parseable_planned_sale_to_adv20",
+      "rows_with_parseable_planned_sale_to_float",
+      "rows_with_parseable_planned_sale_value",
+      "rows_written",
+      "rule_version",
+      "schema_version",
+      "status",
+      "summary_output",
+      "ticker_count",
+      "trade_enabled"
+    ]
+  },
+  "gate3": {
+    "not_applicable_reason": "No signal generation, survival filter, ranking, sizing, exit, or order rule changed.",
+    "passed": true,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "survival_rate_delta": 0.0
+  },
+  "gate4": {
+    "acceptance_rule": "Accept only as alpha-enabling measurement repair if a PIT Form144 planned-sale ledger, daily default-off snapshot wiring, entry context schema, outcome join schema, and explicit forward reopen gate are present with no strategy behavior change.",
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "strategy_behavior_changed": false,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "current_forward_gate_ready": false,
+    "current_forward_gate_status": {
+      "closed_forward_rows": 0,
+      "high_planned_sale_float_bucket_rows": 0,
+      "reason": "forward outcome rows have not matured; this run only creates the PIT context logger",
+      "single_ticker_share": null
+    },
+    "decision": "accepted_measurement_repair_form144_planned_sale_context_logger",
+    "failed_reasons": [],
+    "forward_reopen_gate": {
+      "closed_forward_rows_min": 25,
+      "high_planned_sale_float_bucket_rows_min": 8,
+      "park_after_materialization_runs_without_new_closable_rows": 3,
+      "required_replacement_values": [
+        "cash",
+        "SPY",
+        "QQQ"
+      ],
+      "single_ticker_share_max": 0.4
+    },
+    "measurement_repair_only": true,
+    "passed": true
+  },
+  "hypothesis": "Alpha-enabling Form 144 planned-sale/float context logger: parse PIT Form 144 planned sale shares/value and attach as-of-entry planned-sale-to-float/ADV context to accepted-core/default-off forward rows without changing ranking, sizing, exits, or orders.",
+  "implementation_mode": "shared_default_off_forward_context_logger",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260628-016.json",
+  "mechanism_family": "production_visible_form144_planned_sale_forward_context",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260612-023",
+    "exp-20260613-013",
+    "exp-20260616-008",
+    "exp-20260628-014"
+  ],
+  "new_evidence_axis": "Form144 planned-sale/float PIT parser and forward context logger: new field surface beyond Form4 sale-overhang attribution and prior Form144 index-only candidate-pool tests.",
+  "new_evidence_type": "new_pit_form144_planned_sale_float_field_and_forward_context_logger",
+  "next_retry_requires": "Do not use Form144 for any notional haircut, risk scalar, ranking, or candidate-pool retune until the forward reopen gate is met: >=25 closed rows with cash/SPY/QQQ replacement value, >=8 high planned-sale/float rows, and single-ticker share <=40%. If three materialization/readiness runs add no closable rows, park with the exact missing cache/forward-row condition.",
+  "outcome_join_schema": {
+    "forward_outcome_fields": [
+      "cash_replacement_value_10d",
+      "cash_replacement_value_20d",
+      "spy_replacement_value_10d",
+      "spy_replacement_value_20d",
+      "qqq_replacement_value_10d",
+      "qqq_replacement_value_20d",
+      "closed_forward_row"
+    ],
+    "join_keys": [
+      "ticker",
+      "entry_date",
+      "usable_trade_date_lte_entry_date",
+      "form144_accession_number"
+    ],
+    "pit_guard": "Only rows with usable_trade_date <= entry_date are eligible for an entry context join."
+  },
+  "owner": "alpha-explore",
+  "parameters": {
+    "as_of": "2026-06-28",
+    "default_refresh_form144_context": false,
+    "lookback_days": 90,
+    "rule_version": "form144_planned_sale_float_context_logger_v1",
+    "trade_enabled": false
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune exp-014 Form4 sale-overhang buckets or change a risk response curve on this surface. Form144 may be reopened only with cached parseable planned-sale documents plus materially more closed forward rows, a new data source, or a new gate shape.",
+    "new_evidence_required": "Cached Form144 primary documents with machine-parseable planned_sale_to_float or planned_sale_to_adv20 and closed forward replacement-value rows versus cash, SPY, and QQQ.",
+    "why_result_happened": "The blocker was missing shared default-off Form144 planned-sale context plumbing. The new parser/logger writes a PIT daily ledger and daily plus catch-up wiring while leaving all strategy behavior unchanged. Local index rows are present, but cached primary documents and closed forward outcomes are still the reopen condition for an alpha test."
+  },
+  "prediction": {
+    "confidence_reason": "The next-direction brief and exp-20260616-008 both identify parsed Form144 planned-sale/float as the required non-repeat evidence axis after the exp-20260628-014 Form4 overhang lead. This is data plumbing, not a candidate-pool retry; risk is document/schema coverage.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "missing_form144_primary_documents",
+      "planned_sale_fields_not_parseable",
+      "no_float_or_adv_denominator",
+      "daily_snapshot_wiring_regression"
+    ],
+    "recorded_at": "2026-06-28T20:49:01+00:00",
+    "success_probability": 0.46
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": true,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "paper_orders_changed": false,
+    "parity_note": "Data collection is opt-in through refresh_form144_context and fail-soft. It feeds no ranking, sizing, entry, exit, or order path.",
+    "ranking_changed": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false,
+    "watchlist_changed": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/experiments/exp_20260628_016_form144_planned_sale_context_logger.py",
+    "quant/form144_planned_sale_context.py",
+    "quant/daily_non_ohlcv_snapshot.py",
+    "quant/backfill_non_ohlcv.py",
+    "quant/test_form144_planned_sale_context.py",
+    "quant/test_daily_non_ohlcv_snapshot.py",
+    "data/non_ohlcv/form144_planned_sale_context_20260628.jsonl",
+    "data/non_ohlcv/form144_planned_sale_context_summary_20260628.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_016_form144_planned_sale_context_logger.py",
+    ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_form144_planned_sale_context.py quant\\test_daily_non_ohlcv_snapshot.py -q",
+    ".\\.venv\\Scripts\\python.exe -B -c \"from pathlib import Path; files=['quant/form144_planned_sale_context.py','quant/daily_non_ohlcv_snapshot.py','quant/backfill_non_ohlcv.py','quant/test_form144_planned_sale_context.py','quant/test_daily_non_ohlcv_snapshot.py','quant/experiments/exp_20260628_016_form144_planned_sale_context_logger.py']; [compile(Path(f).read_text(encoding='utf-8'), f, 'exec') for f in files]\"",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "form144_planned_sale_float_context_logger_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-06-28T21:01:22+00:00",
+  "trial_family": "form144_planned_sale_float_context_logger",
+  "trial_variant_id": "pit_planned_sale_float_adv_context_v1"
+}

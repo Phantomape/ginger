@@ -17,6 +17,81 @@ from experiment_registry import (
 ALPHA_LANES = {"alpha_search", "alpha_discovery", "universe_scout"}
 
 
+def classify_saturated_source_axis(axis):
+    """Classify whether a saturated-source override names a legal evidence axis.
+
+    AGENTS.md is stricter than the ordinary novelty override: once a
+    ``(gate_shape, data_source)`` cell is saturated, an untried same-source field
+    no longer counts as new evidence. The override must name a new data source, a
+    new gate shape, or materially more closed/settled forward rows.
+    """
+    raw = str(axis or "").strip()
+    text = raw.lower().replace("_", " ").replace("-", " ")
+    text = " ".join(text.split())
+    categories = []
+    if any(
+        phrase in text
+        for phrase in (
+            "new data source",
+            "different data source",
+            "genuinely new source",
+            "new source",
+            "new external source",
+        )
+    ):
+        categories.append("new_data_source")
+    if any(
+        phrase in text
+        for phrase in (
+            "new gate shape",
+            "different gate shape",
+            "non scan gate shape",
+            "non scan gateshape",
+            "new gateshape",
+        )
+    ):
+        categories.append("new_gate_shape")
+    if any(
+        phrase in text
+        for phrase in (
+            "materially more closed",
+            "substantially more closed",
+            "closed forward row",
+            "closed forward rows",
+            "settled forward row",
+            "settled forward rows",
+            "mature forward row",
+            "mature forward rows",
+            "matured forward row",
+            "matured forward rows",
+            "new forward row",
+            "new forward rows",
+            "forward replacement row",
+            "forward replacement rows",
+        )
+    ):
+        categories.append("materially_more_forward_rows")
+    field_only_markers = (
+        "field" in text
+        or "tag" in text
+        or "xbrl" in text
+        or "concept" in text
+        or "label" in text
+    )
+    return {
+        "axis": raw or None,
+        "valid": bool(categories),
+        "categories": categories,
+        "invalid_same_source_field_only": bool(field_only_markers and not categories),
+        "rule": (
+            "For saturated (gate_shape, data_source) cells, legal override axes "
+            "are limited to a new data source, a new gate shape, or materially "
+            "more closed/settled forward rows. Same-source new fields/tags do "
+            "not qualify."
+        ),
+    }
+
+
 def _novelty_check(args):
     """Advisory near-neighbor check at reservation time. Fails safe.
 
@@ -127,6 +202,7 @@ def _novelty_check(args):
         "enforced": enforce,
         "source_saturation": saturation,
         "saturated_source_override": bool(getattr(args, "saturated_source_override", False)),
+        "saturated_source_axis": classify_saturated_source_axis(args.new_evidence_axis),
     }
 
     if result.get("warn") and enforce and alpha_lane:
@@ -164,16 +240,28 @@ def _novelty_check(args):
                 f"({saturation['accepts']}/{saturation['trials']} accepted, "
                 f"{100 * saturation['accept_rate']:.1f}% over "
                 f">= {saturation['min_trials']} trials). Stop swapping fields on a "
-                "proven-dry source. Prefer a higher-yield source (e.g. "
-                "finra_short_interest, ohlcv_momentum), a non-scan gate_shape "
-                "(allocator_source / notional_scalar), or a genuinely new data "
-                "source. To proceed anyway, re-run with --saturated-source-override "
-                'and --new-evidence-axis "<a new data source/field never scanned on '
-                'this shape, not another field on the same dry source>".'
+                "proven-dry source. Prefer a genuinely new data source, a new "
+                "gate_shape, or materially more closed/settled forward rows. "
+                "To proceed anyway, re-run with --saturated-source-override "
+                'and --new-evidence-axis "<new data source | new gate shape | '
+                'materially more closed forward rows>". Same-source new fields '
+                "or tags do not qualify."
+            )
+        axis_class = out["saturated_source_axis"]
+        if not axis_class["valid"]:
+            raise SystemExit(
+                "saturation gate blocked this reservation: the declared "
+                "--new-evidence-axis does not satisfy the saturated-source hard "
+                "rule. Same-source untried fields/tags/XBRL labels are not a "
+                "legal override after a dry (gate_shape, data_source) cell is "
+                "saturated. Name a genuinely new data source, a new gate shape, "
+                "or materially more closed/settled forward rows."
             )
         print(
             f"[saturation] override accepted on dry source '{saturation['source']}'"
-            f" ({100 * saturation['accept_rate']:.1f}%); axis={out['new_evidence_axis']}",
+            f" ({100 * saturation['accept_rate']:.1f}%); "
+            f"axis={out['new_evidence_axis']} "
+            f"categories={','.join(axis_class['categories'])}",
             file=sys.stderr,
         )
     return out
@@ -297,7 +385,10 @@ def main(description=__doc__):
         help=(
             "What is genuinely new versus prior/frozen families (new data source, "
             "a field no prior family used, a new gate shape, or forward rows). "
-            "Required to override a near-neighbor warning under --enforce-novelty."
+            "Required to override a near-neighbor warning under --enforce-novelty. "
+            "For saturated-source overrides, same-source new fields/tags do not "
+            "qualify; name a new data source, new gate shape, or materially more "
+            "closed/settled forward rows."
         ),
     )
     parser.add_argument(
@@ -312,7 +403,8 @@ def main(description=__doc__):
             "Proceed despite a source-saturation block (re-scanning a data source "
             "whose candidate-pool history is dry). Distinct from --novelty-override "
             "on purpose: also requires --new-evidence-axis naming a genuinely new "
-            "data source/field, and is recorded for audit."
+            "data source, a new gate shape, or materially more closed/settled "
+            "forward rows. Same-source new fields/tags are blocked."
         ),
     )
     parser.add_argument(

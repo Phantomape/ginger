@@ -1,0 +1,100 @@
+{
+  "artifact": "data/experiments/exp-20260629-004/allocator_top1_time_exit_outcome_contract.json",
+  "changed_files": [
+    "quant/accepted_helper_source_priority_allocator_paper_sleeve.py",
+    "quant/test_accepted_helper_source_priority_allocator_paper_sleeve.py",
+    "quant/experiments/exp_20260629_004_allocator_top1_time_exit_outcome_contract.py"
+  ],
+  "changed_variable": "allocator_top1_time_exit_outcome_contract_v1",
+  "decision": "accepted_measurement_repair_allocator_top1_time_exit_outcome_contract",
+  "experiment_id": "exp-20260629-004",
+  "gate1": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "passed": true
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields_checked": [
+      "entry_date",
+      "entry_date_status",
+      "target_price",
+      "target_price_required",
+      "target_price_status",
+      "exit_rule"
+    ],
+    "target_price_contract": "not_applicable_time_exit",
+    "target_price_relevance": "target_price is intentionally None because allocator_top1 exits by fixed time hold; closed outcomes use exit_price and pnl fields."
+  },
+  "gate3": {
+    "note": "Measurement repair only; no new filter was added.",
+    "passed": true,
+    "signals_generated": 8,
+    "signals_survived": 1,
+    "survival_rate": 0.125
+  },
+  "gate4": {
+    "expected_value_delta": 0.0,
+    "note": "No before/after strategy replay was run because orders, ranking, sizing, and exits are unchanged. This accepts only the measurement contract.",
+    "passed": true,
+    "pnl_delta": 0.0,
+    "status": "not_applicable_measurement_repair_no_policy_delta"
+  },
+  "hypothesis": "Repair the allocator_top1 forward allocation blocker by exposing an explicit time-exit outcome contract and target_price_not_applicable marker for selected and skipped rows, so future Gate 2 checks distinguish time-exit paper rows from missing target-price data.",
+  "lane": "measurement_repair",
+  "metrics": {
+    "after_contract": {
+      "entry_date_or_status_coverage_rate": 1.0,
+      "entry_date_present": 7,
+      "entry_date_status_present": 8,
+      "rows": 8,
+      "target_price_present": 0,
+      "target_price_required_false": 8,
+      "target_price_status_coverage_rate": 1.0,
+      "target_price_status_not_applicable": 8
+    },
+    "before_contract": {
+      "entry_date_or_status_coverage_rate": 0.875,
+      "entry_date_present": 7,
+      "entry_date_status_present": 0,
+      "rows": 8,
+      "target_price_present": 0,
+      "target_price_required_false": 0,
+      "target_price_status_coverage_rate": 0.0,
+      "target_price_status_not_applicable": 0
+    },
+    "signals_generated": 8,
+    "signals_survived": 1,
+    "state_rows_with_contract_after_helper": {
+      "entry_date_or_status_coverage_rate": 1.0,
+      "entry_date_present": 7,
+      "entry_date_status_present": 8,
+      "rows": 8,
+      "target_price_present": 0,
+      "target_price_required_false": 8,
+      "target_price_status_coverage_rate": 1.0,
+      "target_price_status_not_applicable": 8
+    },
+    "survival_rate": 0.125
+  },
+  "post_run_reflection": {
+    "do_not_claim": "Do not use this repair to retune allocator capacity or promote allocator_top1; closed replacement-value rows are still required.",
+    "next_retry_requires": "Wait for materially more closed allocator_top1 replacement-value rows, then test selected-vs-skipped allocation with the explicit contract.",
+    "why_result_happened": "The prior allocator blocker was semantic rather than alpha evidence: time-exit rows were counted as missing target_price. The helper now marks target_price as not_applicable_time_exit and names exit_price/pnl as the closed-outcome fields."
+  },
+  "production_impact": {
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_ranking": false,
+    "alters_sizing": false,
+    "daily_snapshot_contract_exposed": true,
+    "default_off_paper_only": true,
+    "live_ready": false,
+    "shared_helper_changed": true,
+    "trade_enabled": false
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_accepted_helper_source_priority_allocator_paper_sleeve.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260629_004_allocator_top1_time_exit_outcome_contract.py"
+  ],
+  "status": "accepted"
+}

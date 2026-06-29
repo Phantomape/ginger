@@ -1,0 +1,500 @@
+{
+  "acceptance_rule": "Accept only as alpha-enabling measurement repair if the parser/logger creates a PIT Form144 planned-sale context surface with machine-parseable planned_sale_to_float or planned_sale_to_adv when documents are available, writes an append-only daily ledger/schema, exposes no trading behavior change, and records the predeclared forward reopen gate: >=25 closed rows, >=8 high planned-sale/float rows, single ticker <=40%.",
+  "allowed_write_scope": [
+    "quant/form144_planned_sale_context.py",
+    "quant/daily_non_ohlcv_snapshot.py",
+    "quant/backfill_non_ohlcv.py",
+    "quant/test_form144_planned_sale_context.py",
+    "quant/test_daily_non_ohlcv_snapshot.py",
+    "quant/experiments/exp_20260628_016_form144_planned_sale_context_logger.py",
+    "data/non_ohlcv/form144_planned_sale_context_*.jsonl",
+    "data/non_ohlcv/form144_planned_sale_context_summary_*.json",
+    "data/experiments/exp-20260628-016/",
+    "experiments/cards/exp-20260628-016.md",
+    "experiments/manifests/exp-20260628-016.json",
+    "experiments/logs/exp-20260628-016.json",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260628-016.md",
+  "causal_components": [
+    "Form144 PIT parser",
+    "append-only planned-sale ledger",
+    "as-of-entry context tags",
+    "outcome join schema",
+    "no strategy behavior change"
+  ],
+  "change_type": "forward_context_logger",
+  "changed_variable": "form144_planned_sale_float_context_logger_v1",
+  "claimed_at": "2026-06-28T20:49:23+00:00",
+  "completed_at": "2026-06-28T21:01:29+00:00",
+  "created_at": "2026-06-28T20:49:20+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260628-016",
+  "experiment_uid": "expuid-9e6e0258737a454c",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260628-016",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-28T20:49:20+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "form144_planned_sale_context_logger"
+  },
+  "hypothesis": "Alpha-enabling Form 144 planned-sale/float context logger: parse PIT Form 144 planned sale shares/value and attach as-of-entry planned-sale-to-float/ADV context to accepted-core/default-off forward rows without changing ranking, sizing, exits, or orders.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "form144_planned_sale_float_context_logger_v1"
+  ],
+  "mechanism_family": "production_visible_form144_planned_sale_forward_context",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260612-023",
+    "exp-20260613-013",
+    "exp-20260616-008",
+    "exp-20260628-014"
+  ],
+  "new_evidence_type": "new_pit_form144_planned_sale_float_field_and_forward_context_logger",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "accepted",
+        "adv",
+        "alpha",
+        "as",
+        "attach",
+        "changing",
+        "context",
+        "core",
+        "enabling",
+        "entry",
+        "exits",
+        "float",
+        "form",
+        "form144",
+        "forward",
+        "logger",
+        "of",
+        "or",
+        "orders",
+        "parse",
+        "pit",
+        "planned",
+        "ranking",
+        "rows",
+        "sale",
+        "shares",
+        "sizing",
+        "to",
+        "value",
+        "without"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.2109,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "accepted_entry_cluster_rank_tail_sizing",
+        "reopen_condition": null,
+        "score": 0.1864,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "cross_sectional_ranking_component_attribution",
+        "reopen_condition": null,
+        "score": 0.18,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "entry_day_component_attribution",
+        "reopen_condition": "Use the schema v2 PIT component attribution report before any future component-aware allocation test; do not retry raw expectation_revision, post_earnings_drift, or trend scalars on the frozen canonical windows without new forward evidence or a materially different interaction.",
+        "score": 0.1742,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "canonical_state_vector_ranking_validation",
+        "reopen_condition": "Run a separate Gate 1-4 alpha experiment for a small shared-policy post-sizing top-up on entry-day leadership_vector.state == strong and non-hot risk state; do not promote from attribution alone.",
+        "score": 0.1722,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Form144 planned-sale/float PIT parser and forward context logger: new field surface beyond Form4 sale-overhang attribution and prior Form144 index-only candidate-pool tests.",
+    "override": true,
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.46,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "missing_form144_primary_documents",
+      "planned_sale_fields_not_parseable",
+      "no_float_or_adv_denominator",
+      "daily_snapshot_wiring_regression"
+    ],
+    "confidence_reason": "The next-direction brief and exp-20260616-008 both identify parsed Form144 planned-sale/float as the required non-repeat evidence axis after the exp-20260628-014 Form4 overhang lead. This is data plumbing, not a candidate-pool retry; risk is document/schema coverage.",
+    "recorded_at": "2026-06-28T20:49:01+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "alpha_ready": false,
+    "gate4_passed": true,
+    "decision": "accepted_measurement_repair_form144_planned_sale_context_logger",
+    "artifact": "data/experiments/exp-20260628-016/exp_20260628_016_form144_planned_sale_context_logger.json",
+    "log": "experiments/logs/exp-20260628-016.json",
+    "gate1": {
+      "passed": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "baseline_expected_value_score_sum": 7.8941,
+      "baseline_total_pnl": 234850.99
+    },
+    "gate2": {
+      "passed": true,
+      "runtime_fields_required": [
+        "entry_date",
+        "target_price",
+        "Form144 usable_trade_date",
+        "Form144 planned_sale_shares",
+        "Form144 planned_sale_to_float",
+        "Form144 planned_sale_to_adv20",
+        "Form144 outcome join keys"
+      ],
+      "contract": {
+        "daily_snapshot_accepts_refresh_form144_context": true,
+        "daily_snapshot_accepts_form144_context_lookback_days": true,
+        "backfill_accepts_refresh_form144_context": true,
+        "backfill_accepts_form144_context_lookback_days": true,
+        "default_refresh_enabled": false,
+        "fail_soft_helper": "daily_non_ohlcv_snapshot._run_form144_planned_sale_context",
+        "ledger_partition": "data/non_ohlcv/form144_planned_sale_context_YYYYMMDD.jsonl",
+        "summary_partition": "data/non_ohlcv/form144_planned_sale_context_summary_YYYYMMDD.json"
+      },
+      "summary_fields_present": [
+        "asof_date",
+        "daily_snapshot_wired",
+        "document_cache_dirs",
+        "entry_context_schema",
+        "forward_reopen_gate",
+        "generated_at",
+        "index_audit",
+        "lookback_days",
+        "max_usable_trade_date",
+        "min_usable_trade_date",
+        "outcome_join_schema",
+        "output_path",
+        "planned_sale_bucket_counts",
+        "production_impact",
+        "rows_with_cached_primary_document",
+        "rows_with_machine_parseable_ratio",
+        "rows_with_parseable_planned_sale_shares",
+        "rows_with_parseable_planned_sale_to_adv20",
+        "rows_with_parseable_planned_sale_to_float",
+        "rows_with_parseable_planned_sale_value",
+        "rows_written",
+        "rule_version",
+        "schema_version",
+        "status",
+        "summary_output",
+        "ticker_count",
+        "trade_enabled"
+      ],
+      "strategy_fields_changed": false
+    },
+    "gate3": {
+      "passed": true,
+      "not_applicable_reason": "No signal generation, survival filter, ranking, sizing, exit, or order rule changed.",
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "survival_rate_delta": 0.0
+    },
+    "gate4": {
+      "passed": true,
+      "decision": "accepted_measurement_repair_form144_planned_sale_context_logger",
+      "failed_reasons": [],
+      "measurement_repair_only": true,
+      "accepted_alpha": false,
+      "alpha_ready": false,
+      "acceptance_rule": "Accept only as alpha-enabling measurement repair if a PIT Form144 planned-sale ledger, daily default-off snapshot wiring, entry context schema, outcome join schema, and explicit forward reopen gate are present with no strategy behavior change.",
+      "forward_reopen_gate": {
+        "closed_forward_rows_min": 25,
+        "high_planned_sale_float_bucket_rows_min": 8,
+        "single_ticker_share_max": 0.4,
+        "required_replacement_values": [
+          "cash",
+          "SPY",
+          "QQQ"
+        ],
+        "park_after_materialization_runs_without_new_closable_rows": 3
+      },
+      "current_forward_gate_ready": false,
+      "current_forward_gate_status": {
+        "closed_forward_rows": 0,
+        "high_planned_sale_float_bucket_rows": 0,
+        "single_ticker_share": null,
+        "reason": "forward outcome rows have not matured; this run only creates the PIT context logger"
+      },
+      "before_after_strategy_delta": {
+        "strategy_behavior_changed": false,
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0
+      }
+    },
+    "calibration": {
+      "actual_decision": "accepted_measurement_repair_form144_planned_sale_context_logger",
+      "actual_success": 1,
+      "predicted_success_probability": 0.46,
+      "brier_score": 0.2916,
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": 0.0,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "predicted_failure_modes": [
+        "missing_form144_primary_documents",
+        "planned_sale_fields_not_parseable",
+        "no_float_or_adv_denominator",
+        "daily_snapshot_wiring_regression"
+      ],
+      "realized_failure_mode": "",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "Form144 planned-sale context logger materialized as default-off data plumbing; current alpha gate remains waiting on closed forward rows and cached/parseable Form144 documents."
+    },
+    "summary": "The blocker was missing shared default-off Form144 planned-sale context plumbing. The new parser/logger writes a PIT daily ledger and daily plus catch-up wiring while leaving all strategy behavior unchanged. Local index rows are present, but cached primary documents and closed forward outcomes are still the reopen condition for an alpha test."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260628-016.json",
+  "single_causal_variable": "form144_planned_sale_float_context_logger_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260628-016.json",
+  "trial_family": "form144_planned_sale_float_context_logger",
+  "trial_variant_id": "pit_planned_sale_float_adv_context_v1",
+  "implementation_mode": "shared_default_off_forward_context_logger",
+  "new_evidence_axis": "Form144 planned-sale/float PIT parser and forward context logger: new field surface beyond Form4 sale-overhang attribution and prior Form144 index-only candidate-pool tests.",
+  "parameters": {
+    "as_of": "2026-06-28",
+    "lookback_days": 90,
+    "trade_enabled": false,
+    "rule_version": "form144_planned_sale_float_context_logger_v1",
+    "default_refresh_form144_context": false
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Alpha-enabling Form 144 planned-sale/float context logger: parse PIT Form 144 planned sale shares/value and attach as-of-entry planned-sale-to-float/ADV context to accepted-core/default-off forward rows without changing ranking, sizing, exits, or orders.",
+    "2_history_check": {
+      "novelty_gate": "experiment.py new accepted exp-20260628-016 with override axis recorded and no blocking near-neighbor.",
+      "nearby_prior_experiments": [
+        "exp-20260612-023",
+        "exp-20260613-013",
+        "exp-20260616-008",
+        "exp-20260628-014"
+      ],
+      "new_evidence_axis": "Form144 planned-sale/float PIT parser and forward context logger: new field surface beyond Form4 sale-overhang attribution and prior Form144 index-only candidate-pool tests."
+    },
+    "3_single_policy_bundle": "form144_planned_sale_float_context_logger_v1",
+    "4_success_criteria": "Accept only as alpha-enabling measurement repair if a PIT Form144 planned-sale ledger, daily default-off snapshot wiring, entry context schema, outcome join schema, and explicit forward reopen gate are present with no strategy behavior change.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_016_form144_planned_sale_context_logger.py"
+  },
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_expected_value_score_sum": 7.8941,
+    "baseline_total_pnl": 234850.99
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields_required": [
+      "entry_date",
+      "target_price",
+      "Form144 usable_trade_date",
+      "Form144 planned_sale_shares",
+      "Form144 planned_sale_to_float",
+      "Form144 planned_sale_to_adv20",
+      "Form144 outcome join keys"
+    ],
+    "contract": {
+      "daily_snapshot_accepts_refresh_form144_context": true,
+      "daily_snapshot_accepts_form144_context_lookback_days": true,
+      "backfill_accepts_refresh_form144_context": true,
+      "backfill_accepts_form144_context_lookback_days": true,
+      "default_refresh_enabled": false,
+      "fail_soft_helper": "daily_non_ohlcv_snapshot._run_form144_planned_sale_context",
+      "ledger_partition": "data/non_ohlcv/form144_planned_sale_context_YYYYMMDD.jsonl",
+      "summary_partition": "data/non_ohlcv/form144_planned_sale_context_summary_YYYYMMDD.json"
+    },
+    "summary_fields_present": [
+      "asof_date",
+      "daily_snapshot_wired",
+      "document_cache_dirs",
+      "entry_context_schema",
+      "forward_reopen_gate",
+      "generated_at",
+      "index_audit",
+      "lookback_days",
+      "max_usable_trade_date",
+      "min_usable_trade_date",
+      "outcome_join_schema",
+      "output_path",
+      "planned_sale_bucket_counts",
+      "production_impact",
+      "rows_with_cached_primary_document",
+      "rows_with_machine_parseable_ratio",
+      "rows_with_parseable_planned_sale_shares",
+      "rows_with_parseable_planned_sale_to_adv20",
+      "rows_with_parseable_planned_sale_to_float",
+      "rows_with_parseable_planned_sale_value",
+      "rows_written",
+      "rule_version",
+      "schema_version",
+      "status",
+      "summary_output",
+      "ticker_count",
+      "trade_enabled"
+    ],
+    "strategy_fields_changed": false
+  },
+  "gate3": {
+    "passed": true,
+    "not_applicable_reason": "No signal generation, survival filter, ranking, sizing, exit, or order rule changed.",
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "survival_rate_delta": 0.0
+  },
+  "gate4": {
+    "passed": true,
+    "decision": "accepted_measurement_repair_form144_planned_sale_context_logger",
+    "failed_reasons": [],
+    "measurement_repair_only": true,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "acceptance_rule": "Accept only as alpha-enabling measurement repair if a PIT Form144 planned-sale ledger, daily default-off snapshot wiring, entry context schema, outcome join schema, and explicit forward reopen gate are present with no strategy behavior change.",
+    "forward_reopen_gate": {
+      "closed_forward_rows_min": 25,
+      "high_planned_sale_float_bucket_rows_min": 8,
+      "single_ticker_share_max": 0.4,
+      "required_replacement_values": [
+        "cash",
+        "SPY",
+        "QQQ"
+      ],
+      "park_after_materialization_runs_without_new_closable_rows": 3
+    },
+    "current_forward_gate_ready": false,
+    "current_forward_gate_status": {
+      "closed_forward_rows": 0,
+      "high_planned_sale_float_bucket_rows": 0,
+      "single_ticker_share": null,
+      "reason": "forward outcome rows have not matured; this run only creates the PIT context logger"
+    },
+    "before_after_strategy_delta": {
+      "strategy_behavior_changed": false,
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    }
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": true,
+    "daily_snapshot_exposed": true,
+    "trade_enabled": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "paper_orders_changed": false,
+    "live_orders_changed": false,
+    "watchlist_changed": false,
+    "llm_decision_boundary_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "parity_note": "Data collection is opt-in through refresh_form144_context and fail-soft. It feeds no ranking, sizing, entry, exit, or order path."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The blocker was missing shared default-off Form144 planned-sale context plumbing. The new parser/logger writes a PIT daily ledger and daily plus catch-up wiring while leaving all strategy behavior unchanged. Local index rows are present, but cached primary documents and closed forward outcomes are still the reopen condition for an alpha test.",
+    "forbidden_near_neighbor_retry": "Do not retune exp-014 Form4 sale-overhang buckets or change a risk response curve on this surface. Form144 may be reopened only with cached parseable planned-sale documents plus materially more closed forward rows, a new data source, or a new gate shape.",
+    "new_evidence_required": "Cached Form144 primary documents with machine-parseable planned_sale_to_float or planned_sale_to_adv20 and closed forward replacement-value rows versus cash, SPY, and QQQ."
+  },
+  "next_retry_requires": "Do not use Form144 for any notional haircut, risk scalar, ranking, or candidate-pool retune until the forward reopen gate is met: >=25 closed rows with cash/SPY/QQQ replacement value, >=8 high planned-sale/float rows, and single-ticker share <=40%. If three materialization/readiness runs add no closable rows, park with the exact missing cache/forward-row condition.",
+  "related_files": [
+    "quant/experiments/exp_20260628_016_form144_planned_sale_context_logger.py",
+    "quant/form144_planned_sale_context.py",
+    "quant/daily_non_ohlcv_snapshot.py",
+    "quant/backfill_non_ohlcv.py",
+    "quant/test_form144_planned_sale_context.py",
+    "quant/test_daily_non_ohlcv_snapshot.py",
+    "data/non_ohlcv/form144_planned_sale_context_20260628.jsonl",
+    "data/non_ohlcv/form144_planned_sale_context_summary_20260628.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260628_016_form144_planned_sale_context_logger.py",
+    "quant/form144_planned_sale_context.py",
+    "quant/daily_non_ohlcv_snapshot.py",
+    "quant/backfill_non_ohlcv.py",
+    "quant/test_form144_planned_sale_context.py",
+    "quant/test_daily_non_ohlcv_snapshot.py",
+    "data/experiments/exp-20260628-016/exp_20260628_016_form144_planned_sale_context_logger.json",
+    "experiments/logs/exp-20260628-016.json",
+    "experiments/cards/exp-20260628-016.md",
+    "experiments/manifests/exp-20260628-016.json",
+    "experiments/tickets/exp-20260628-016.json",
+    "docs/experiment_registry.json",
+    "data/non_ohlcv/form144_planned_sale_context_20260628.jsonl",
+    "data/non_ohlcv/form144_planned_sale_context_summary_20260628.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_016_form144_planned_sale_context_logger.py",
+    ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_form144_planned_sale_context.py quant\\test_daily_non_ohlcv_snapshot.py -q",
+    ".\\.venv\\Scripts\\python.exe -B -c \"from pathlib import Path; files=['quant/form144_planned_sale_context.py','quant/daily_non_ohlcv_snapshot.py','quant/backfill_non_ohlcv.py','quant/test_form144_planned_sale_context.py','quant/test_daily_non_ohlcv_snapshot.py','quant/experiments/exp_20260628_016_form144_planned_sale_context_logger.py']; [compile(Path(f).read_text(encoding='utf-8'), f, 'exec') for f in files]\"",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "anti_js": {
+    "used_javascript": false,
+    "strategy_behavior_changed": false,
+    "threshold_scan": false,
+    "uses_future_form144_rows": false
+  },
+  "decision": "accepted_measurement_repair_form144_planned_sale_context_logger",
+  "artifact": "data/experiments/exp-20260628-016/exp_20260628_016_form144_planned_sale_context_logger.json",
+  "log": "experiments/logs/exp-20260628-016.json",
+  "updated_at": "2026-06-28T21:01:29+00:00"
+}

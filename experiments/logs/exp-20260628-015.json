@@ -1,0 +1,252 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "anti_js": "No JavaScript was used.",
+  "artifact": "data/experiments/exp-20260628-015/exp_20260628_015_breakout_precursor_full_population_replay.json",
+  "before_metrics": {
+    "aggregate_expected_value_score": 7.8941,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "total_trade_count": 61
+  },
+  "card_file": "experiments/cards/exp-20260628-015.md",
+  "change_type": "observed_only_de_biased_full_population_entry_latency_replay",
+  "changed_files": [
+    "quant/breakout_precursor_paper_sleeve.py",
+    "quant/test_breakout_precursor_paper_sleeve.py",
+    "quant/experiments/exp_20260628_015_breakout_precursor_full_population_replay.py",
+    "data/experiments/exp-20260628-015/exp_20260628_015_breakout_precursor_full_population_replay.json",
+    "data/experiments/exp-20260628-015/breakout_precursor_events.jsonl",
+    "experiments/logs/exp-20260628-015.json",
+    "experiments/cards/exp-20260628-015.md",
+    "experiments/manifests/exp-20260628-015.json",
+    "experiments/tickets/exp-20260628-015.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "breakout_without_2x_volume_precursor_forward_replacement_value_v1",
+  "decision": "observed_de_biased_precursor_base_rate_deflates_entry_latency_lead",
+  "experiment_id": "exp-20260628-015",
+  "gate1": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "passed": true
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields_checked": [
+      "above_200ma",
+      "breakout_20d",
+      "volume_spike_ratio",
+      "forward_net_return_pct",
+      "entry_regime_label",
+      "became_trend_long_entry"
+    ]
+  },
+  "gate3": {
+    "new_filter_added": false,
+    "passed": true
+  },
+  "gate4": {
+    "decision": "observed_de_biased_precursor_base_rate_deflates_entry_latency_lead",
+    "observed_only": true,
+    "passed": true,
+    "strategy_replay_changed": false
+  },
+  "hypothesis": "entry/candidate_pool: trend_long enters late because it waits for >2x volume confirmation after the 20d-high breakout; exp-20260627-006 found 24/39 actual trend_long trades had an earlier breakout-without-2x-volume precursor. De-bias that survivorship-conditioned lead by measuring the FULL precursor population (above_200ma & breakout_20d & not volume_spike) forward replacement value before any volume-threshold or entry-timing change.",
+  "lane": "alpha_search",
+  "lead_deflated": true,
+  "lean_quality_passed": true,
+  "ledger_file": "data/experiments/exp-20260628-015/breakout_precursor_events.jsonl",
+  "log_file": "experiments/logs/exp-20260628-015.json",
+  "mechanism_family": "entry",
+  "nearby_prior_experiments": [
+    "exp-20260530-013",
+    "exp-20260530-016",
+    "exp-20260627-006"
+  ],
+  "new_evidence_axis": "forward replacement-value paper rows on named breakout-without-2x-volume latency cases (full-population, regime-bucketed) -- the explicit reopen_condition of frozen families prebreakout_momentum_entry (exp-20260530-013) and prebreakout_catalyst_qualified_entry (exp-20260530-016)",
+  "new_evidence_type": "full_population_breakout_without_2x_volume_precursor_forward_replacement_rows",
+  "old_thin_full_population_negative_median": true,
+  "owner": "agent-trend-entry-latency",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do NOT relax the volume_spike 2.0x threshold, add a blanket prebreakout / earlier-entry rule, or retune any threshold/top-N/notional on this frozen sample -- that is the frozen prebreakout_momentum_entry / prebreakout_catalyst_qualified_entry family, and the de-biased base rate confirms its rejection. An earlier-entry timing gain exists only on the already-selected subset, but selecting that subset at decision time requires exactly the volume confirmation whose removal defines the precursor (circular).",
+    "new_evidence_required": "A genuinely new PIT pre-volume-confirmation field that predicts WHICH breakout-without-2x-volume names go on to work (e.g. PIT borrow/availability, options-implied pressure, breadth persistence), tested out of sample -- not a volume-threshold change. Only such a selector would justify a default-off forward ledger; a blanket ledger of a deflated signal would be measurement treadmill.",
+    "why_result_happened": "exp-20260627-006's +1.92%/+2.46% precursor advantage was measured only on breakouts that became real trades. The full precursor population earns roughly half the 10d return and is negative at the median in old_thin, because the 2x volume confirmation selects the names that go on to work. Removing it floods in weak events."
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_attribution_only": true,
+    "live_ready": false,
+    "parity_note": "Read-only historical replay. The precursor detector reproduces feature_layer.compute_trend_features (200d MA / prior-20d high / 20d avg-vol / 2.0x) minus the volume confirmation; it changes no paper or live decision surface.",
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "replay": {
+    "actual_trend_long_entries_joined": 39,
+    "became_actual_entry_subset": 37,
+    "by_chop_regime_label": {
+      "choppy_range": {
+        "10d": {
+          "mean": 3.3823,
+          "median": -3.7715,
+          "n": 6
+        },
+        "20d": {
+          "mean": 14.8208,
+          "median": -8.9778,
+          "n": 6
+        }
+      },
+      "risk_off_stress": {
+        "10d": {
+          "mean": 4.7046,
+          "median": 3.5706,
+          "n": 158
+        },
+        "20d": {
+          "mean": 9.6542,
+          "median": 7.3901,
+          "n": 158
+        }
+      },
+      "risk_on_trend": {
+        "10d": {
+          "mean": 0.7178,
+          "median": 0.2119,
+          "n": 1231
+        },
+        "20d": {
+          "mean": 3.0606,
+          "median": 1.4801,
+          "n": 1231
+        }
+      }
+    },
+    "by_window": {
+      "late_strong": {
+        "actual_entry_subset": {
+          "10d": {
+            "mean": 2.6976,
+            "median": 1.1004,
+            "n": 9
+          },
+          "20d": {
+            "mean": 11.4601,
+            "median": 6.9574,
+            "n": 9
+          }
+        },
+        "full_population": {
+          "10d": {
+            "mean": 1.1768,
+            "median": 0.2458,
+            "n": 389
+          },
+          "20d": {
+            "mean": 5.1682,
+            "median": 1.741,
+            "n": 389
+          }
+        }
+      },
+      "mid_weak": {
+        "actual_entry_subset": {
+          "10d": {
+            "mean": 7.5672,
+            "median": 5.6864,
+            "n": 14
+          },
+          "20d": {
+            "mean": 9.6867,
+            "median": 9.6158,
+            "n": 14
+          }
+        },
+        "full_population": {
+          "10d": {
+            "mean": 1.7861,
+            "median": 1.1806,
+            "n": 629
+          },
+          "20d": {
+            "mean": 4.4558,
+            "median": 3.1284,
+            "n": 629
+          }
+        }
+      },
+      "old_thin": {
+        "actual_entry_subset": {
+          "10d": {
+            "mean": 5.3553,
+            "median": 4.0206,
+            "n": 14
+          },
+          "20d": {
+            "mean": 4.4972,
+            "median": 3.9645,
+            "n": 14
+          }
+        },
+        "full_population": {
+          "10d": {
+            "mean": 0.1751,
+            "median": -0.3642,
+            "n": 377
+          },
+          "20d": {
+            "mean": 1.5086,
+            "median": -0.5209,
+            "n": 377
+          }
+        }
+      }
+    },
+    "forward_actual_entry_subset": {
+      "10d": {
+        "mean": 5.5458,
+        "median": 4.2797,
+        "n": 37
+      },
+      "20d": {
+        "mean": 8.1545,
+        "median": 6.9574,
+        "n": 37
+      }
+    },
+    "forward_full_population": {
+      "10d": {
+        "mean": 1.1808,
+        "median": 0.5947,
+        "n": 1395
+      },
+      "20d": {
+        "mean": 3.858,
+        "median": 2.027,
+        "n": 1395
+      }
+    },
+    "names_with_bars": 50,
+    "precursor_events_in_window": 1395,
+    "precursor_events_settled_in_window": 1395,
+    "precursor_events_total": 1864,
+    "universe_size": 50
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_breakout_precursor_paper_sleeve.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260628_015_breakout_precursor_full_population_replay.py"
+  ],
+  "revision_manifest_file": "experiments/manifests/exp-20260628-015.json",
+  "single_causal_variable": "breakout_without_2x_volume_precursor_forward_replacement_value_v1",
+  "status": "observed_only",
+  "summary": "Full-population breakout-without-2x-volume precursor base rate is 1.1808% (median 0.5947%) at 10d / 3.858% at 20d across 1395 settled in-window events, versus 5.5458% / 8.1545% on the 37-event actual-entry subset that exp-20260627-006 measured -- a ~4.7x survivorship inflation at 10d. old_thin full-population 20d median is -0.5209% (negative). The 2x volume gate performs real selection; a blanket earlier-entry / volume-threshold relaxation is not supported.",
+  "survivorship_inflation_10d_x": 4.7,
+  "timestamp": "2026-06-29T01:11:27Z",
+  "trial_family": "breakout_without_2x_volume_precursor_forward_replacement",
+  "trial_variant_id": "full_population_precursor_forward_ledger_v1"
+}

@@ -75,6 +75,8 @@ RULE_VERSION = "accepted_helper_source_priority_shared_default_off_allocator_v3"
 SOURCE_RULE_VERSION = (
     "accepted_helper_source_priority_top1_with_lagged_consensus_source_notional_v4"
 )
+OUTCOME_CONTRACT_RULE_VERSION = "allocator_top1_time_exit_outcome_contract_v1"
+TARGET_PRICE_STATUS = "not_applicable_time_exit"
 STATE_SCHEMA_VERSION = 1
 LAGGED_CONSENSUS_SOURCE_ARTIFACT = (
     DATA_ROOT
@@ -220,6 +222,36 @@ SOURCE_PRIORITY: "OrderedDict[str, dict[str, Any]]" = OrderedDict(
 
 def utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+def allocator_time_exit_outcome_contract(
+    row: dict[str, Any],
+    config: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    cfg = _config(config)
+    hold_days = _int_or_default(row.get("hold_days"), int(cfg["hold_days"]))
+    entry_date = str(row.get("entry_date") or "")[:10]
+    paper_status = str(row.get("paper_status") or "")
+    if entry_date:
+        entry_date_status = "present"
+    elif paper_status == "pending_entry":
+        entry_date_status = "pending_next_session_open"
+    else:
+        entry_date_status = "not_entered_or_skipped"
+    return {
+        "outcome_contract_rule_version": OUTCOME_CONTRACT_RULE_VERSION,
+        "exit_rule": f"time_exit_after_{hold_days}_trading_days",
+        "exit_rule_status": "fixed_time_exit",
+        "target_price": None,
+        "target_price_required": False,
+        "target_price_status": TARGET_PRICE_STATUS,
+        "target_price_not_applicable_reason": (
+            "allocator_top1_paper_sleeve_closes_by_fixed_trading_day_hold"
+        ),
+        "entry_date_status": entry_date_status,
+        "closed_outcome_price_field": "exit_price",
+        "closed_outcome_pnl_fields": ["pnl", "pnl_pct_net", "net_return_pct"],
+    }
 
 
 def empty_accepted_helper_source_priority_allocator_state() -> dict[str, Any]:
@@ -842,9 +874,46 @@ def _snapshot_payload(
     rows_by_ticker: dict[str, list[dict[str, Any]]],
     config: dict[str, Any],
 ) -> dict[str, Any]:
-    closed = [row for row in state.get("closed_positions") or [] if isinstance(row, dict)]
-    pending = [row for row in state.get("pending_entries") or [] if isinstance(row, dict)]
-    open_positions = [row for row in state.get("open_positions") or [] if isinstance(row, dict)]
+    closed = [
+        _with_time_exit_outcome_contract(row, config)
+        for row in state.get("closed_positions") or []
+        if isinstance(row, dict)
+    ]
+    pending = [
+        _with_time_exit_outcome_contract(row, config)
+        for row in state.get("pending_entries") or []
+        if isinstance(row, dict)
+    ]
+    open_positions = [
+        _with_time_exit_outcome_contract(row, config)
+        for row in state.get("open_positions") or []
+        if isinstance(row, dict)
+    ]
+    selected_rows = [
+        _with_time_exit_outcome_contract(row, config)
+        for row in selected_rows
+        if isinstance(row, dict)
+    ]
+    rejected = [
+        _with_time_exit_outcome_contract(row, config)
+        for row in rejected
+        if isinstance(row, dict)
+    ]
+    new_pending_entries = [
+        _with_time_exit_outcome_contract(row, config)
+        for row in new_pending_entries
+        if isinstance(row, dict)
+    ]
+    filled_today = [
+        _with_time_exit_outcome_contract(row, config)
+        for row in filled_today
+        if isinstance(row, dict)
+    ]
+    closed_today = [
+        _with_time_exit_outcome_contract(row, config)
+        for row in closed_today
+        if isinstance(row, dict)
+    ]
     return {
         "schema_version": STATE_SCHEMA_VERSION,
         "sleeve": SLEEVE_NAME,
@@ -938,6 +1007,15 @@ def _pending_entry_from_candidate(candidate: dict[str, Any], config: dict[str, A
             "alters_orders": False,
         }
     )
+    return _with_time_exit_outcome_contract(out, config)
+
+
+def _with_time_exit_outcome_contract(
+    row: dict[str, Any],
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    out = deepcopy(row)
+    out.update(allocator_time_exit_outcome_contract(out, config))
     return out
 
 
@@ -1014,6 +1092,12 @@ def _normalise_state(state: dict[str, Any]) -> None:
     for key in ("pending_entries", "open_positions", "closed_positions", "skipped_days"):
         if not isinstance(state.get(key), list):
             state[key] = []
+    cfg = _config(None)
+    for key in ("pending_entries", "open_positions", "closed_positions"):
+        state[key] = [
+            _with_time_exit_outcome_contract(row, cfg) if isinstance(row, dict) else row
+            for row in state[key]
+        ]
 
 
 def _append_skip_once(state: dict[str, Any], row: dict[str, Any]) -> None:
@@ -1136,6 +1220,14 @@ def _float(value: Any, default: float = 0.0) -> float:
     except (TypeError, ValueError):
         return default
     return number if math.isfinite(number) else default
+
+
+def _int_or_default(value: Any, default: int) -> int:
+    try:
+        number = int(value)
+    except (TypeError, ValueError):
+        return default
+    return number if number > 0 else default
 
 
 def _production_impact() -> dict[str, Any]:

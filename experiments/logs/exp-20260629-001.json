@@ -1,0 +1,133 @@
+{
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "alpha_hypothesis": "Pre-execution core risk intensity may support a future risk-allocation alpha, but only after the forward observation surface is visible to health/maturity tooling.",
+  "artifact": "data/experiments/exp-20260629-001/exp_20260629_001_sleeve_health_as_of_snapshot_date.json",
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair_sleeve_health_as_of_snapshot_date",
+    "actual_success": 1,
+    "predicted_failure_modes": [
+      "health_surface_contract_has_other_nonstandard_date_keys",
+      "test_fixture_misses_real_layout"
+    ],
+    "predicted_success_probability": 0.9,
+    "realized_failure_mode": null
+  },
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/sleeve_health.py",
+    "quant/test_sleeve_health.py",
+    "quant/experiments/exp_20260629_001_sleeve_health_as_of_snapshot_date.py",
+    "data/experiments/exp-20260629-001/exp_20260629_001_sleeve_health_as_of_snapshot_date.json",
+    "experiments/logs/exp-20260629-001.json"
+  ],
+  "changed_variable": "sleeve_health_as_of_snapshot_date_key_v1",
+  "decision": "accepted_measurement_repair_sleeve_health_as_of_snapshot_date",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "signals_generated": 0,
+    "signals_survived": 0,
+    "strategy_behavior_changed": false,
+    "total_pnl": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260629-001",
+  "gate1": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "passed": true,
+    "strategy_metrics_unchanged": true
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields_checked": {
+      "as_of": "2026-06-26",
+      "entry_date": "not_applicable_forward_observation_row",
+      "target_price": 1379.91
+    }
+  },
+  "gate3": {
+    "not_applicable_reason": "No signal, filter, ranking, sizing, exit, or order rule changed.",
+    "passed": true,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "survival_rate_delta": 0.0
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_delta": 0.0,
+      "strategy_behavior_changed": false,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "health_status_delta": {
+      "legacy_status": {
+        "last_snapshot": null,
+        "status": "never_persisted"
+      },
+      "repaired_status": {
+        "last_snapshot": "2026-06-26",
+        "staleness_sessions": 1,
+        "status": "fresh"
+      },
+      "rule_version": "sleeve_health_report_v3"
+    },
+    "measurement_repair_only": true,
+    "passed": true
+  },
+  "hypothesis": "alpha_blocker/measurement_repair: sleeve_health misses core-risk intensity forward rows keyed by as_of, so the risk-allocation forward observation surface appears never_persisted even after daily rows exist.",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260622-022",
+    "exp-20260626-015"
+  ],
+  "next_retry_requires": "Do not re-slice the single core-risk row. Reopen alpha only after materially more closed forward rows with realized replacement values exist, or after a new orthogonal risk-intensity source is wired.",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve another readiness audit for this same single core-risk row or simply join more observed-only labels to it.",
+    "new_evidence_required": "Materially more closed core-risk forward rows with realized replacement values, or a new orthogonal risk-intensity source/gate shape.",
+    "why_result_happened": "core_risk_intensity_ledger writes daily forward observation rows with an as_of field, while sleeve_health_report_v2 only checked asof_date/date for snapshots.jsonl rows."
+  },
+  "prediction": {
+    "confidence_reason": "The current core-risk forward ledger writes as_of and sleeve_health only reads asof_date/date; repairing this read-side mismatch makes the alpha-enabling risk-intensity surface visible without changing strategy behavior.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "health_surface_contract_has_other_nonstandard_date_keys",
+      "test_fixture_misses_real_layout"
+    ],
+    "recorded_at": "2026-06-29T02:08:03+00:00",
+    "success_probability": 0.9
+  },
+  "production_impact": {
+    "daily_health_report_changed": true,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "parity_note": "Read-side sleeve health date parsing only; no trading policy consumes this repair.",
+    "ranking_changed": false,
+    "risk_budget_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "quant/sleeve_health.py",
+    "quant/test_sleeve_health.py",
+    "data/paper_sleeves/core_risk_intensity_forward_observation/snapshots.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260629_001_sleeve_health_as_of_snapshot_date.py",
+    ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_sleeve_health.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "sleeve_health_as_of_snapshot_date_key_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-06-29",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260629-001"
+}

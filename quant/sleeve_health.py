@@ -25,7 +25,7 @@ except ImportError:  # pragma: no cover - package-style import fallback
     from quant.us_market_calendar import is_us_equity_session
 
 
-RULE_VERSION = "sleeve_health_report_v2"
+RULE_VERSION = "sleeve_health_report_v3"
 HEALTH_LOG_RELPATH = Path("paper_sleeves") / "sleeve_health.jsonl"
 
 # Snapshot payload keys in the daily run that describe sleeve-like surfaces.
@@ -82,7 +82,7 @@ def _last_snapshot_date(snapshot_path: Path) -> str | None:
         row = json.loads(last)
     except json.JSONDecodeError:
         return None
-    return str(row.get("asof_date") or row.get("date") or "")[:10] or None
+    return str(row.get("asof_date") or row.get("as_of") or row.get("date") or "")[:10] or None
 
 
 def _json_surface_date(path: Path) -> str | None:
