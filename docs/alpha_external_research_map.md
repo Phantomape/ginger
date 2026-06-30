@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-06-29.
+Last refreshed: 2026-06-30.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -492,6 +492,42 @@ Controls:
 
 Source: <https://arxiv.org/abs/2512.11273>
 
+### Exit Parameter Searches Need Full-Denominator Oracle Rows
+
+Recent stop-loss / take-profit parameterization work is useful as a workflow
+warning, not as a license to tune exits. Exit rules are path-dependent and can
+look good when only selected winners, selected regret rows, or one market
+state are inspected. Ginger's translation is to require full-denominator
+fixed-entry oracle rows before designing a shared exit lifecycle, then test the
+actual executable policy through Gate 1-4.
+
+Implementable fields:
+
+- `fixed_entry_oracle_row_id`
+- `exit_oracle_denominator_coverage`
+- `exit_regret_bucket`
+- `max_favorable_excursion_pct`
+- `max_adverse_excursion_pct`
+- `giveback_pct`
+- `candidate_exit_policy_version`
+- `exit_policy_costed_replacement_value`
+
+Controls:
+
+- persist every completed trade row, not only top-regret examples;
+- separate diagnostic oracle labels from executable exit inputs;
+- freeze stop/target/time/confirmation semantics before after-measurement;
+- compare against the current shared stop/target lifecycle across all standard
+  windows and report drawdown, trade count, and window regressions.
+
+Local June 30 check: `exp-20260630-009` was rejected because the artifact only
+saved top-regret samples, `exp-20260630-011` repaired the full-row oracle
+surface, and `exp-20260630-012` rejected close-confirmed static stops through
+Gate 4. The next exit alpha needs a cohort-level oracle hypothesis plus shared
+production/backtest policy, not a stop-distance or response-curve retune.
+
+Source: <https://arxiv.org/abs/2604.27150>
+
 ### Agentic Nowcasting
 
 Agentic AI nowcasting papers suggest that autonomous information gathering can
@@ -567,6 +603,13 @@ Controls:
 - store token/article/aggregate evidence with source timestamps and model id;
 - use explanation quality first as an uncertainty and veto-attribution surface,
   not as a direct buy/sell rule.
+
+Local June 30 check: `exp-20260630-002` rejected a fixed positive-event
+taxonomy on daily clean-trade-news rows, while `exp-20260630-004..007` retained
+structured event ledgers and daily snapshots as measurement surfaces. The
+research-compatible next step is not another keyword list; it is a
+schema-bound actor/relation/object/magnitude event row with source hashes,
+explicit-ticker provenance, and closed replacement value.
 
 Source: <https://arxiv.org/abs/2606.12210>
 

@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-06-29.
+Last refreshed: 2026-06-30.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -692,25 +692,37 @@ as measurement repair by turning those blockers into machine-checkable reopen
 conditions. Do not answer these blockers by re-slicing the same partial rows or
 daily "still not mature" readiness audits.
 
-The June 29 readout adds useful plumbing and closes several tempting shortcuts,
-but still does not create a new allocation-ready alpha. The retained work is
-alpha-enabling measurement: sleeve health now reads `as_of`-keyed core-risk
-forward rows; allocator-top1 time-exit rows explicitly mark `target_price` as
-not applicable; Form 4 sale-overhang context is now emitted through a shared
-daily non-OHLCV ledger; Form 144 planned-sale/float is parked behind cached
-primary documents, parseable ratios, and closed forward rows; 13D Item-4
-governance-term fields are now shared provenance; and saturated-source
-overrides now reject same-source "new field/tag" churn after a dry
-`(gate_shape, data_source)` cell is saturated. The alpha attempts stayed
-negative: breakout-without-2x-volume precursors did not become deployable after
-OHLCV breadth-persistence selection, and structured 13D Item-4 governance terms
-failed Gate 4 as a fixed candidate-pool source. The next compliant alpha
-hypothesis should come from materially more closed forward replacement rows or
-a genuinely new PIT data surface such as borrow economics, options/flow
-context, campaign outcome provenance, or parsed Form 144 sale pressure. Do not
-spend another run on adjacent OHLCV precursor thresholds, governance phrase
-lists, Form 4/Form 144 response curves, or daily maturity audits that only
-confirm the same reopen counts.
+The June 29-30 readout is useful mostly because it separates evidence plumbing
+from deployable alpha. Retained work added machine-checkable guardrails and
+forward surfaces: sleeve health now reads `as_of`-keyed core-risk rows;
+allocator-top1 time exits explicitly mark `target_price` as not applicable;
+Form 4 sale-overhang fields are shared daily context; Form 144 planned-sale /
+float is parked behind cached primary documents, parseable ratios, and closed
+forward rows; 13D Item-4 governance terms are shared provenance; saturated
+source overrides reject same-source field churn; parked-surface
+`reopen_condition` counts block readiness-audit re-reservations; daily and
+intraday news now have text sanitation plus structured event observation
+ledgers; OnclickMedia options ledgers gained more pending/settled outcome
+rows; and fixed-entry exit-oracle diagnostics now persist full denominator
+trade rows. None of that changes live orders, ranking, sizing, exits, or core
+candidate selection.
+
+The alpha reads were negative or only leads. Daily positive-event keyword
+taxonomy failed forward edge checks; structured daily-news relation-quality
+rows produced an observed-only 2026-forward lead but lack canonical-window
+coverage; bearish options put-demand did not underperform consistently;
+intraday advisory shadow actions did not show stable h1/h3 edge; the first
+exit-oracle artifact was incomplete; close-confirmed static stops failed Gate
+4; breakout-without-2x-volume and 13D governance candidate-pool retries stayed
+rejected. The next compliant alpha should come from materially more closed
+forward replacement rows, historical PIT coverage for a now-forward-only
+surface, or a genuinely new economic data source such as borrow economics,
+options/flow with fill-cost controls, campaign outcome provenance, parsed Form
+144 sale pressure, or structured event tuples with canonical-window replay. Do
+not spend another run on adjacent OHLCV precursor thresholds, positive-news
+keyword lists, options moneyness/skew buckets, Form 4/Form 144 response curves,
+close-confirmed stop retunes, intraday advisory reslices, or daily maturity
+audits that only confirm unchanged reopen counts.
 
 ## Detail Sources
 
@@ -1077,6 +1089,14 @@ not an autonomous trade call; it is a timestamped, schema-bound, retrievable
 field with source coverage, calibration, uncertainty, and failure-mode metadata.
 If the field cannot be replayed or compared against a displaced candidate after
 costs, keep it out of trading logic.
+
+June 30 implementation implication: deterministic news sanitation and
+structured event tuples are now the default path for LLM/news alpha. Raw
+positive/negative keyword taxonomies are not enough. A valid text retry needs a
+replayable actor/relation/object/magnitude schema, source and text hashes,
+explicit-ticker provenance, forward replacement rows, and either canonical
+window replay or materially more mature forward rows before it can affect a
+helper, prompt veto, rank, size, or exit.
 
 ## Anti-Repeat Rules
 
@@ -1618,6 +1638,28 @@ production-visible field:
   saturated source/gate cell. After `exp-20260629-010`, legal override evidence
   is limited to a genuinely new data source, a new gate shape, or materially
   more closed/settled forward rows;
+- parked-surface readiness audits or response-curve retries before the
+  recorded quantitative `reopen_condition` counts have actually advanced.
+  After `exp-20260629-011`, "still not mature" is a pre-flight count check, not
+  a new experiment ID;
+- daily or intraday news alpha retries that only swap positive-event keyword
+  lists, sentiment labels, source filters, event-age windows, or LLM prompt
+  wording. After `exp-20260630-002` and `exp-20260630-005`, the legal route is
+  structured event tuples with canonical replay or materially more closed
+  forward replacement rows;
+- options-flow alpha retries that only reslice current OnclickMedia rows by
+  put/call demand, IV, open interest, moneyness, expiration, stale-chain flags,
+  or spread buckets. `exp-20260630-010` keeps options as attribution context
+  until materially more closed rows, historical PIT chain coverage, borrow/loan
+  economics, or a new cost/event-distance field exists;
+- close-confirmed static stop, trailing stop, target trim, time stop, hold-day,
+  or response-curve retries on the same fixed-entry exit rows. After
+  `exp-20260630-011` and `exp-20260630-012`, a valid exit retry needs full-row
+  oracle cohort evidence plus a shared production/backtest lifecycle policy;
+- intraday advisory shadow-action allocation or exit retries that only reslice
+  the current settled snapshots by action type, horizon, LLM wording, or
+  confidence. `exp-20260630-014` found no stable h1/h3 edge; reopen only with
+  materially more closed rows or a new timestamped decision-quality field;
 - missing archive/text availability as an alpha field.
 
 ## Update Discipline

@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1489`
-- Raw records loaded by meta report: `4450`
-- History fingerprint: `f6f21268c201bdba`
+- Strategy records counted: `1491`
+- Raw records loaded by meta report: `4470`
+- History fingerprint: `2c991ced88dd221d`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -42,8 +42,8 @@ facts before changing strategy behavior.
 - `pilot_or_sleeve` priority `0.6303`: experiments `342`, accept `25.73%`, sum EV `+132.4642`, sum PnL `$2,298,112.16`.
   Reason: 2/342 records have sample >= 10; 340/342 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually chang...
   Guardrail: heavily explored family; diminishing-return risk; many prior rejections in this family
-- `slot_or_ranking` priority `0.5717`: experiments `330`, accept `26.06%`, sum EV `+80.6478`, sum PnL `$1,448,932.42`.
-  Reason: 16/330 records have sample >= 10; 314/330 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
+- `slot_or_ranking` priority `0.5712`: experiments `331`, accept `25.98%`, sum EV `+80.6478`, sum PnL `$1,448,932.42`.
+  Reason: 16/331 records have sample >= 10; 315/331 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
   Guardrail: can change survival, trade count, or exit distribution broadly; heavily explored family; diminishing-return risk; many prior rejections in this family
 - `candidate_pool_full_stack` priority `0.5655`: experiments `26`, accept `23.08%`, sum EV `+5.5598`, sum PnL `$103,177.10`.
   Reason: 20/26 records show multi-window evidence; 4/26 records have sample >= 10; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
@@ -64,10 +64,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260626-004` `rejected_companyfacts_completed_divestiture_candidate_pool`: EV `-0.0155`, PnL `$-1,274.45`, family `production_visible_sec_companyfacts_segment_divestiture_candidate_pool`, trial `companyfacts_completed_divestiture_segment_simplification_candidate_pool`.
-  Lesson: The completed-divestiture Companyfacts source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, targe...
-- `exp-20260626-007` `rejected_companyfacts_product_service_mix_candidate_pool`: EV `-0.0617`, PnL `$-895.45`, family `production_visible_sec_companyfacts_product_service_mix_candidate_pool`, trial `companyfacts_product_service_revenue_mix_shift_candidate_pool`.
-  Lesson: The product/service revenue mix source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, target_sampl...
 - `exp-20260626-008` `blocked_sec_cover_page_filer_status_text_surface_missing`: EV `+0.0000`, PnL `$0.00`, family `production_visible_sec_cover_page_filer_status_candidate_pool`, trial `sec_cover_page_filer_status_upgrade_candidate_pool`.
   Lesson: The event archive contains 10-K/10-Q filing metadata, but the local SEC filing text replay surface did not provide parseable 10-K/10-Q cover-page rows for the canonical windows, so the status-upgrade field cannot be t...
 - `exp-20260627-003` `rejected_factor_residual_idiosyncratic_leadership_candidate_pool`: EV `+0.7818`, PnL `$7,049.14`, family `production_visible_free_factor_residual_ohlcv_candidate_pool`, trial `factor_residual_repaired_factor_warehouse_rerun`.
@@ -88,6 +84,10 @@ facts before changing strategy behavior.
   Lesson: The full-population precursor source did not survive as a fixed top-1/day candidate source. The exp015 aggregate lead was diluted by false positives and remained window/comparator fragile once forced into a deployable...
 - `exp-20260629-009` `rejected_sec_13d_item4_governance_terms_candidate_pool`: EV `-0.0287`, PnL `$-270.72`, family `production_visible_sec_ownership_item4_governance_terms`, trial `sec_13d_item4_governance_terms_candidate_pool`.
   Lesson: The structured 13D Item-4 governance-term source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, ta...
+- `exp-20260630-002` `rejected_no_daily_news_event_forward_value_edge`: EV `+0.0000`, PnL `$0.00`, family `daily_news_llm_event_scoring_alpha`, trial `daily_clean_trade_news_event_taxonomy_forward_value`.
+  Lesson: The fixed positive-event taxonomy did not clear the predeclared forward edge checks versus explicit-ticker control rows after dedupe and 10d settlement; daily news remains an attribution surface, not a trading rule. D...
+- `exp-20260630-012` `rejected_close_confirmed_static_stop`: EV `+0.0000`, PnL `$0.00`, family `exit_policy_shared_gate`, trial `close_confirmed_static_stop_exit`.
+  Lesson: Close-confirmed stops changed enough trade exits to test the shakeout hypothesis. Do not retune stop distance, trailing stops, target trims, time stops, hold days, or response curves from these same rows. A valid retr...
 
 ## Highest-Signal Historical Records
 
