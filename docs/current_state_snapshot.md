@@ -8,7 +8,7 @@ complete state database.
 
 - Strategy records counted: `1491`
 - Accepted strategy records: `230`
-- History fingerprint: `2c991ced88dd221d`
+- History fingerprint: `97de6e13fa5f6100`
 - Generated from committed experiment logs when using `--git-ref HEAD`.
 
 ## Exact State Sources
@@ -84,11 +84,11 @@ complete state database.
 
 ## Current Research Queue Pointers
 
-- `production_visible_default_off_paper_adapter_for_candidate_pool_alpha` priority `0.8479`, experiments `4`, accept `100.00%`.
-- `default_off_paper_adapter` priority `0.7972`, experiments `14`, accept `85.71%`.
-- `default_off_shared_paper_adapter` priority `0.7726`, experiments `4`, accept `100.00%`.
-- `default_off_paper_shared_adapter` priority `0.7477`, experiments `6`, accept `100.00%`.
-- `paper_notional_support_scout` priority `0.7009`, experiments `6`, accept `66.67%`.
+- `production_visible_default_off_paper_adapter_for_candidate_pool_alpha` priority `0.8479`, experiments `2`, accept `100.00%`.
+- `default_off_paper_adapter` priority `0.8172`, experiments `7`, accept `85.71%`.
+- `default_off_paper_shared_adapter` priority `0.7477`, experiments `3`, accept `100.00%`.
+- `paper_notional_support_scout` priority `0.7009`, experiments `3`, accept `66.67%`.
+- `pilot_or_sleeve` priority `0.6303`, experiments `171`, accept `25.73%`.
 
 ## State Migration Note
 
