@@ -169,6 +169,54 @@ def _fetch_intraday_news(held_tickers: set[str]) -> dict | None:
     }
 
 
+def _persist_intraday_structured_news_observation(
+    date_str: str,
+    time_label: str,
+    data_dir,
+) -> dict:
+    """Persist read-only structured intraday event rows after trade news is saved."""
+    try:
+        try:
+            from intraday_news_structured_event_snapshot import (
+                persist_intraday_structured_event_snapshot,
+            )
+        except ImportError:  # pragma: no cover - package-style imports in tests
+            from quant.intraday_news_structured_event_snapshot import (
+                persist_intraday_structured_event_snapshot,
+            )
+
+        snapshot = persist_intraday_structured_event_snapshot(
+            date_str,
+            time_label,
+            data_dir=data_dir,
+        )
+        event_rows = (snapshot.get("event_contract_audit") or {}).get(
+            "selected_ledger_rows",
+            0,
+        )
+        observation_rows = (
+            snapshot.get("forward_observation_contract_audit") or {}
+        ).get("observation_rows", 0)
+        target_rows = (
+            snapshot.get("forward_observation_contract_audit") or {}
+        ).get("target_relation_quality_rows", 0)
+        log.info(
+            "Intraday structured-news observations: events=%s observations=%s target=%s",
+            event_rows,
+            observation_rows,
+            target_rows,
+        )
+        return snapshot
+    except Exception as e:
+        log.warning("Intraday structured-news observation snapshot unavailable: %s", e)
+        return {
+            "status": "unavailable",
+            "error": str(e),
+            "strategy_behavior_changed": False,
+            "trade_enabled": False,
+        }
+
+
 def main(no_news: bool = False, offline: bool = False, data_dir=None) -> dict:
     if offline:
         no_news = True
@@ -368,6 +416,16 @@ def main(no_news: bool = False, offline: bool = False, data_dir=None) -> dict:
             path = intraday_output_path("trade_news", date_str, time_label, data_dir)
             _write_intraday_json(news_payload["trade_items"], path, default=str)
             outputs.append(path)
+            structured_snapshot = _persist_intraday_structured_news_observation(
+                date_str,
+                time_label,
+                data_dir,
+            )
+            if structured_snapshot.get("status") != "unavailable":
+                outputs.append(Path(structured_snapshot["event_artifact_path"]))
+                outputs.append(
+                    Path(structured_snapshot["forward_observation_artifact_path"])
+                )
     except Exception as e:
         log.error("Failed writing intraday artifacts: %s", e)
 

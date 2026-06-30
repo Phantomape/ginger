@@ -215316,8 +215316,382 @@
       ],
       "lean_quality_passed": true,
       "updated_at": "2026-06-30T15:09:50+00:00"
+    },
+    {
+      "acceptance_rule": "Accepted measurement repair only if run_intraday writes default-off structured event and forward observation artifacts with required fields, trade_enabled=false, strategy_behavior_changed=false, tests pass, and no strategy metrics change.",
+      "allowed_write_scope": [
+        "quant/intraday_news_structured_event_snapshot.py",
+        "quant/run_intraday.py",
+        "quant/test_intraday_news_structured_event_snapshot.py",
+        "quant/test_run_intraday_wiring.py",
+        "data/experiments",
+        "experiments/logs",
+        "experiments/cards",
+        "experiments/manifests",
+        "experiments/tickets",
+        "docs/experiment_registry.json",
+        "docs/experiment_log.jsonl"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260630-015.md",
+      "causal_components": [
+        "shared snapshot helper",
+        "run_intraday default-off persistence",
+        "schema tests"
+      ],
+      "change_type": "measurement_repair_intraday_forward_observation_wiring",
+      "changed_variable": "intraday_structured_event_snapshot_wiring_v1",
+      "claimed_at": "2026-06-30T16:19:06+00:00",
+      "completed_at": "2026-06-30T16:26:05+00:00",
+      "created_at": "2026-06-30T16:18:44+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260630-015",
+      "experiment_uid": "expuid-ba91b0ffe55a4244",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260630-015",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-30T16:18:44+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "intraday_structured_event_snapshot_wiring_v1"
+      },
+      "hypothesis": "Timestamped intraday news relation-quality events may become tradable LLM event-scoring alpha only if the production intraday observer writes the fixed structured-event forward observation rows prospectively; this run wires the accepted exp-20260630-013 contract into the default-off intraday artifact path without changing trading behavior.",
+      "lane": "measurement_repair",
+      "locked_variables": [
+        "live orders",
+        "default orders",
+        "ranking",
+        "sizing",
+        "exits",
+        "prompts",
+        "LLM hard decision",
+        "trade_enabled"
+      ],
+      "mechanism_family": "intraday_news_llm_event_scoring_alpha",
+      "multiple_testing_risk_bucket": "minimal",
+      "must_not_touch": [
+        "quant/backtester.py",
+        "quant/run.py",
+        "quant/portfolio_engine.py"
+      ],
+      "nearby_prior_experiments": [
+        "exp-20260630-013",
+        "exp-20260630-014"
+      ],
+      "new_evidence_type": "production_intraday_observer_wiring_creates_new_rows",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "ohlcv_relation",
+          "field_tags": [
+            "accepted",
+            "alpha",
+            "artifact",
+            "become",
+            "behavior",
+            "changing",
+            "contract",
+            "event",
+            "events",
+            "exp",
+            "forward",
+            "if",
+            "into",
+            "intraday",
+            "llm",
+            "may",
+            "news",
+            "observation",
+            "observer",
+            "only",
+            "path",
+            "prospectively",
+            "relation",
+            "rows",
+            "run",
+            "scoring",
+            "snapshot",
+            "structured",
+            "this",
+            "timestamped",
+            "tradable",
+            "trading",
+            "wires",
+            "wiring",
+            "without",
+            "writes"
+          ],
+          "gate_shape": "other"
+        },
+        "nearest": [
+          {
+            "accept_rate": 1.0,
+            "data_source": "ohlcv_relation",
+            "family_key": "daily_news_structured_event_forward_observation_contract",
+            "reopen_condition": "More closed cash/SPY/QQQ replacement-value rows under this fixed observation contract, a production PIT LLM event scorer that writes the same evidence-span schema, or canonical-window clean-trade-news coverage.",
+            "score": 0.5365,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_relation",
+            "family_key": "structured_daily_news_relation_magnitude_forward_value",
+            "reopen_condition": "More closed cash/SPY/QQQ replacement-value rows for structured events, a true PIT LLM scorer writing the same evidence-span schema, or historical daily-news coverage spanning the canonical fixed windows.",
+            "score": 0.489,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_relation",
+            "family_key": "breakout_without_2x_volume_precursor_forward_replacement",
+            "reopen_condition": "A genuinely new PIT pre-volume-confirmation field that predicts WHICH breakout-without-2x-volume names go on to work (e.g. PIT borrow/availability, options-implied pressure, breadth persistence), tested out of sample -- not a volume-threshold change. Only such a selector would justify a default-off forward ledger; a blanket ledger of a deflated signal would be measurement treadmill.",
+            "score": 0.4678,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "ohlcv_relation",
+            "family_key": "governed_space_trend_high_close_intraday_thrust_fixed_notional_paper_sleeve",
+            "reopen_condition": "Expose the same intraday-thrust bucket in the shared default-off Space observation helper and collect forward replacement-value rows before any live/default behavior changes.",
+            "score": 0.4678,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "ohlcv_relation",
+            "family_key": "nonrepeat_alpha_surface_readiness",
+            "reopen_condition": "A retry needs materially more closed forward replacement rows, real 10-K/10-Q text/cache with parsed cover-page status, populated PIT borrow economics, or a genuinely new data source/gate shape.",
+            "score": 0.4674,
+            "status": "has_accepted",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": null,
+        "override": false,
+        "reopen_condition_guard": {
+          "applicable": false,
+          "blocked": false,
+          "matched_conditions": [],
+          "override_accepted": false,
+          "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+        },
+        "saturated_source_axis": {
+          "axis": null,
+          "categories": [],
+          "invalid_same_source_field_only": false,
+          "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+          "valid": false
+        },
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "other",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "ohlcv_relation",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": {
+        "success_probability": 0.7,
+        "expected_ev_delta": 0.0,
+        "expected_pnl_delta": 0.0,
+        "main_failure_modes": [
+          "missing_intraday_news_files",
+          "snapshot_path_mismatch",
+          "duplicate_observation_ids",
+          "production_behavior_accidental_change"
+        ],
+        "confidence_reason": "exp-20260630-013 already accepted the shared helper contract; daily wiring pattern exists in exp-20260630-007; remaining work is bounded snapshot persistence.",
+        "recorded_at": "2026-06-30T16:18:11+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "accepted": true,
+        "accepted_alpha": false,
+        "accepted_measurement_repair": true,
+        "decision": "accepted_measurement_repair_intraday_structured_event_snapshot_wiring",
+        "artifact": "data/experiments/exp-20260630-015/exp_20260630_015_intraday_structured_event_snapshot_wiring.json",
+        "gate4": {
+          "passed": true,
+          "decision": "accepted_measurement_repair_intraday_structured_event_snapshot_wiring",
+          "failed_reasons": [],
+          "measurement_repair_only": true,
+          "before_after_strategy_delta": {
+            "expected_value_score_sum_delta": 0.0,
+            "total_pnl_delta": 0.0,
+            "trade_count_delta": 0
+          }
+        },
+        "delta_metrics": {
+          "expected_value_score_sum_delta": 0.0,
+          "total_pnl_delta": 0.0,
+          "trade_count_delta": 0,
+          "capture_count": 2,
+          "event_rows": 6,
+          "observation_rows": 6,
+          "target_relation_quality_rows": 4
+        },
+        "production_impact": {
+          "shared_policy_changed": false,
+          "backtester_adapter_changed": false,
+          "run_adapter_changed": false,
+          "run_intraday_adapter_changed": true,
+          "replay_only": false,
+          "trade_enabled": false,
+          "daily_snapshot_exposed": false,
+          "intraday_snapshot_exposed": true,
+          "live_orders_changed": false,
+          "paper_orders_changed": false,
+          "ranking_changed": false,
+          "sizing_changed": false,
+          "exit_rules_changed": false,
+          "llm_prompt_changed": false,
+          "live_ready": false,
+          "parity_test_added": true
+        }
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260630-015.json",
+      "single_causal_variable": "intraday_structured_event_snapshot_wiring_v1",
+      "status": "accepted_measurement_repair",
+      "ticket_file": "experiments/tickets/exp-20260630-015.json",
+      "trial_family": "intraday_structured_event_forward_observer_wiring",
+      "trial_variant_id": "v1_default_off_snapshot_writes_pending_forward_rows",
+      "implementation_mode": "measurement_repair",
+      "gate1": {
+        "passed": true,
+        "baseline_metrics": {
+          "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+          "expected_value_score_sum": 7.8941,
+          "total_pnl": 234850.99,
+          "trade_count": 61
+        }
+      },
+      "gate2": {
+        "passed": true,
+        "fields_checked": [
+          "event_artifact_path",
+          "forward_observation_artifact_path",
+          "trade_enabled",
+          "strategy_behavior_changed",
+          "event_contract_audit.selected_ledger_rows",
+          "forward_observation_contract_audit.observation_rows"
+        ],
+        "entry_date_scope": "Pending forward observations only; no executable entries.",
+        "target_price_scope": "Pending forward observations only; no executable target exits."
+      },
+      "gate3": {
+        "passed": true,
+        "filter_added": false,
+        "signals_generated": 6,
+        "signals_survived": 6,
+        "survival_rate": 1.0
+      },
+      "gate4": {
+        "passed": true,
+        "decision": "accepted_measurement_repair_intraday_structured_event_snapshot_wiring",
+        "failed_reasons": [],
+        "measurement_repair_only": true,
+        "before_after_strategy_delta": {
+          "expected_value_score_sum_delta": 0.0,
+          "total_pnl_delta": 0.0,
+          "trade_count_delta": 0
+        }
+      },
+      "before_metrics": {
+        "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "expected_value_score_sum": 7.8941,
+        "total_pnl": 234850.99,
+        "trade_count": 61
+      },
+      "after_metrics": {
+        "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "expected_value_score_sum": 7.8941,
+        "total_pnl": 234850.99,
+        "trade_count": 61
+      },
+      "delta_metrics": {
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0,
+        "capture_count": 2,
+        "event_rows": 6,
+        "observation_rows": 6,
+        "target_relation_quality_rows": 4
+      },
+      "production_impact": {
+        "shared_policy_changed": false,
+        "backtester_adapter_changed": false,
+        "run_adapter_changed": false,
+        "run_intraday_adapter_changed": true,
+        "replay_only": false,
+        "trade_enabled": false,
+        "daily_snapshot_exposed": false,
+        "intraday_snapshot_exposed": true,
+        "live_orders_changed": false,
+        "paper_orders_changed": false,
+        "ranking_changed": false,
+        "sizing_changed": false,
+        "exit_rules_changed": false,
+        "llm_prompt_changed": false,
+        "live_ready": false,
+        "parity_test_added": true
+      },
+      "post_run_reflection": {
+        "why_result_happened": "The accepted exp-20260630-013 contract was already reusable; the production intraday path only needed bounded default-off artifact persistence for the existing captures.",
+        "forbidden_near_neighbor_retry": "Do not retune intraday event relation lists, prompt wording, horizons, notional, or action response curves on these pending rows.",
+        "new_evidence_required": "Closed replacement-value outcomes from this fixed observer, or a PIT LLM scorer writing the same evidence-span schema."
+      },
+      "next_retry_requires": [
+        "closed intraday structured-event forward rows",
+        "PIT LLM event scorer using the same schema"
+      ],
+      "related_files": [
+        "quant/intraday_news_structured_event_snapshot.py",
+        "quant/run_intraday.py",
+        "quant/test_intraday_news_structured_event_snapshot.py",
+        "quant/test_run_intraday_wiring.py",
+        "quant/experiments/exp_20260630_015_intraday_structured_event_snapshot_wiring.py",
+        "data/experiments/exp-20260630-015/exp_20260630_015_intraday_structured_event_snapshot_wiring.json",
+        "experiments/logs/exp-20260630-015.json",
+        "experiments/cards/exp-20260630-015.md",
+        "experiments/manifests/exp-20260630-015.json",
+        "experiments/tickets/exp-20260630-015.json",
+        "docs/experiment_registry.json"
+      ],
+      "reproduction_commands": [
+        ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260630_015_intraday_structured_event_snapshot_wiring.py",
+        ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_intraday_news_structured_event_snapshot.py quant\\test_run_intraday_wiring.py -q",
+        ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+      ],
+      "calibration": {
+        "predicted_success_probability": 0.7,
+        "actual_success": true,
+        "predicted_failure_modes": [
+          "missing_intraday_news_files",
+          "snapshot_path_mismatch",
+          "duplicate_observation_ids",
+          "production_behavior_accidental_change"
+        ],
+        "realized_failure_modes": [],
+        "brier_score": 0.09
+      },
+      "artifact": "data/experiments/exp-20260630-015/exp_20260630_015_intraday_structured_event_snapshot_wiring.json",
+      "log": "experiments/logs/exp-20260630-015.json",
+      "updated_at": "2026-06-30T16:26:05+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-30T15:09:50+00:00"
+  "updated_at": "2026-06-30T16:26:05+00:00"
 }

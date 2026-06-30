@@ -1,0 +1,104 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "alpha_ready": false,
+  "experiment_id": "exp-20260630-015",
+  "label": "after_intraday_structured_event_snapshot_wiring",
+  "source": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "expected_value_score": 7.8941,
+  "total_pnl": 234850.99,
+  "max_drawdown_pct": 0.1119,
+  "total_trades": 61,
+  "signals_generated": 164,
+  "signals_survived": 135,
+  "survival_rate": 0.8232,
+  "strategy_behavior_changed": false,
+  "trade_enabled": false,
+  "measurement_repair": {
+    "rule_version": "intraday_news_structured_event_snapshot_v1",
+    "source_event_rule_version": "intraday_news_structured_event_ledger_v1",
+    "forward_observation_rule_version": "intraday_news_structured_event_forward_observation_contract_v1",
+    "production_path": "quant/run_intraday.py",
+    "event_artifact_pattern": "data/daily/intraday/structured/intraday_news_structured_events_YYYYMMDD_TIME.json",
+    "forward_observation_artifact_pattern": "data/daily/intraday/structured/intraday_news_structured_event_observations_YYYYMMDD_TIME.jsonl",
+    "entry_semantics": "next_session_open_after_intraday_capture",
+    "exit_semantics": "ten_trading_day_close_observation",
+    "writes_only_after_trade_news_artifact": true,
+    "no_news_or_offline_runs_skip_wiring": true
+  },
+  "gate_checks": {
+    "gate1_baseline_loaded": true,
+    "gate2_required_fields_validated": true,
+    "gate3_survival_unchanged": true,
+    "gate4_strategy_delta_zero": true
+  },
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "max_drawdown_pct_delta": 0.0,
+    "strategy_behavior_changed": false
+  },
+  "tests": [
+    {
+      "command": ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\intraday_news_structured_event_snapshot.py quant\\run_intraday.py quant\\test_intraday_news_structured_event_snapshot.py quant\\test_run_intraday_wiring.py",
+      "passed": true
+    },
+    {
+      "command": ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_intraday_news_structured_event_snapshot.py quant\\test_run_intraday_wiring.py -q",
+      "passed": true,
+      "result": "4 passed"
+    },
+    {
+      "command": ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_intraday_news_structured_events.py quant\\test_daily_news_structured_event_snapshot.py -q",
+      "passed": true,
+      "result": "6 passed"
+    },
+    {
+      "command": ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_run_daily_wiring.py -q",
+      "passed": true,
+      "result": "3 passed"
+    }
+  ],
+  "changed_files": [
+    "quant/intraday_news_structured_event_snapshot.py",
+    "quant/run_intraday.py",
+    "quant/test_intraday_news_structured_event_snapshot.py",
+    "quant/test_run_intraday_wiring.py",
+    "data/experiments/exp-20260630-015/exp_20260630_015_intraday_structured_event_snapshot_wiring_before.json",
+    "data/experiments/exp-20260630-015/exp_20260630_015_intraday_structured_event_snapshot_wiring_after.json"
+  ],
+  "windows": [
+    {
+      "label": "late_strong",
+      "expected_value_score": 5.1628,
+      "total_pnl": 117072.92,
+      "max_drawdown_pct": 0.0665,
+      "trade_count": 18,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039
+    },
+    {
+      "label": "mid_weak",
+      "expected_value_score": 2.1402,
+      "total_pnl": 78110.11,
+      "max_drawdown_pct": 0.1119,
+      "trade_count": 21,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925
+    },
+    {
+      "label": "old_thin",
+      "expected_value_score": 0.5911,
+      "total_pnl": 39667.96,
+      "max_drawdown_pct": 0.1001,
+      "trade_count": 22,
+      "signals_generated": 60,
+      "signals_survived": 52,
+      "survival_rate": 0.8667
+    }
+  ]
+}
