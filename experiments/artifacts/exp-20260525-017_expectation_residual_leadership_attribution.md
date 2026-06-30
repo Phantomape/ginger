@@ -8,17 +8,17 @@ Observed-only alpha search. No entries, exits, ranking, sizing, LLM/news, or ord
 
 ```json
 {
-  "candidate_objects_total": 42,
+  "candidate_objects_total": 43,
   "candidate_source_breakdown": {
     "entry_execution_plan.deferred_breakout_signals": 7,
     "entry_execution_plan.slot_sliced_signals": 5,
     "pilot_entry_execution_plan.pilot_slot_sliced_signals": 6,
     "pilot_signals": 5,
-    "signals": 19
+    "signals": 20
   },
-  "candidates_with_eps_estimate_delta_7d": 17,
+  "candidates_with_eps_estimate_delta_7d": 18,
   "closed_forward_outcomes": {
-    "10d": 33,
+    "10d": 36,
     "20d": 30,
     "5d": 42
   },
@@ -26,24 +26,24 @@ Observed-only alpha search. No entries, exits, ranking, sizing, LLM/news, or ord
     "ledger_row_not_usable": 12,
     "missing_ledger_row": 2,
     "usable_ledger_missing_7d_delta": 11,
-    "usable_ledger_with_7d_delta": 17
+    "usable_ledger_with_7d_delta": 18
   },
-  "ledger_joined_candidates": 40,
-  "ledger_usable_candidates": 28,
-  "positive_expectation_candidates": 7,
+  "ledger_joined_candidates": 41,
+  "ledger_usable_candidates": 29,
+  "positive_expectation_candidates": 8,
   "record_type_breakdown": {
     "deferred_breakout_signal": 7,
     "pilot_slot_sliced_signal": 6,
     "selected_pilot_signal": 5,
-    "selected_signal": 19,
+    "selected_signal": 20,
     "slot_sliced_signal": 5
   },
-  "residual_context_ok_candidates": 29,
+  "residual_context_ok_candidates": 30,
   "residual_context_status_counts": {
     "insufficient_residual_inputs": 13,
-    "ok": 29
+    "ok": 30
   },
-  "residual_leader_candidates": 25
+  "residual_leader_candidates": 26
 }
 ```
 
@@ -51,9 +51,9 @@ Observed-only alpha search. No entries, exits, ranking, sizing, LLM/news, or ord
 
 | Bucket | Candidates | 5d Closed | 5d Avg Return | 10d Closed | 10d Avg Return |
 |---|---:|---:|---:|---:|---:|
-| A_positive_expectation_and_residual_leader | 7 | 7 | 1.2193% | 1 | -0.8354% |
+| A_positive_expectation_and_residual_leader | 8 | 7 | 1.2193% | 3 | 0.8169% |
 | B_positive_expectation_only | 0 | 0 |  | 0 |  |
-| C_residual_leader_only | 18 | 18 | -4.9747% | 15 | -7.8463% |
+| C_residual_leader_only | 18 | 18 | -4.9747% | 16 | -8.1461% |
 | D_neither | 17 | 17 | 0.0331% | 17 | -1.7556% |
 
 ## Reconstructed Scout
@@ -70,12 +70,12 @@ Non-PIT reconstructed rows are shown only for research triage. They cannot pass 
     "missing_next_earnings_date": 11,
     "no_prior_same_event_snapshot": 1
   },
-  "positive_expectation_candidates": 7,
+  "positive_expectation_candidates": 8,
   "scope": "non_pit_reconstructed_scout_only",
   "source_quality_counts": {
     "missing": 2,
     "non_pit_reconstructed": 12,
-    "pit_usable": 28
+    "pit_usable": 29
   },
   "total_usable_candidates": 42
 }
@@ -83,9 +83,9 @@ Non-PIT reconstructed rows are shown only for research triage. They cannot pass 
 
 | Scout Bucket | Candidates | 5d Closed | 5d Avg Return | 10d Closed | 10d Avg Return |
 |---|---:|---:|---:|---:|---:|
-| A_positive_expectation_and_residual_leader | 7 | 7 | 1.2193% | 1 | -0.8354% |
+| A_positive_expectation_and_residual_leader | 8 | 7 | 1.2193% | 3 | 0.8169% |
 | B_positive_expectation_only | 0 | 0 |  | 0 |  |
-| C_residual_leader_only | 18 | 18 | -4.9747% | 15 | -7.8463% |
+| C_residual_leader_only | 18 | 18 | -4.9747% | 16 | -8.1461% |
 | D_neither | 17 | 17 | 0.0331% | 17 | -1.7556% |
 
 ## Gate

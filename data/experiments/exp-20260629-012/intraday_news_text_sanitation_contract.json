@@ -1,0 +1,569 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "loaded": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3,
+    "windows": [
+      {
+        "expected_value_score": 5.1628,
+        "label": "late_strong",
+        "max_drawdown_pct": 0.0665,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18
+      },
+      {
+        "expected_value_score": 2.1402,
+        "label": "mid_weak",
+        "max_drawdown_pct": 0.1119,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21
+      },
+      {
+        "expected_value_score": 0.5911,
+        "label": "old_thin",
+        "max_drawdown_pct": 0.1001,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22
+      }
+    ]
+  },
+  "alpha_hypothesis": "LLM event scoring can only become a production-replayable alpha input if intraday news text quality, hidden text, and ticker/entity provenance are audited before prompts consume the feed.",
+  "alpha_ready": false,
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "loaded": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3,
+    "windows": [
+      {
+        "expected_value_score": 5.1628,
+        "label": "late_strong",
+        "max_drawdown_pct": 0.0665,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18
+      },
+      {
+        "expected_value_score": 2.1402,
+        "label": "mid_weak",
+        "max_drawdown_pct": 0.1119,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21
+      },
+      {
+        "expected_value_score": 0.5911,
+        "label": "old_thin",
+        "max_drawdown_pct": 0.1001,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22
+      }
+    ]
+  },
+  "calibration": {
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "predicted_failure_modes": [
+      "overflagging_clean_text",
+      "underflagging_mojibake",
+      "intraday_payload_shape_mismatch"
+    ],
+    "predicted_success_probability": 0.8,
+    "realized_failure_mode": null,
+    "surprise_level": "low"
+  },
+  "causal_components": [
+    "shared news text sanitizer",
+    "raw and trade intraday news item annotations",
+    "data_quality.news_text_sanitation summary",
+    "LLM prompt exposure of text-quality risks",
+    "focused unit tests",
+    "no strategy behavior change"
+  ],
+  "change_type": "llm_event_data_quality_repair",
+  "changed_files": [
+    "quant/news_text_sanitizer.py",
+    "quant/run_intraday.py",
+    "quant/intraday_review.py",
+    "quant/test_intraday_news_sanitizer.py",
+    "quant/test_intraday_review.py",
+    "quant/experiments/exp_20260629_012_intraday_news_text_sanitation_contract.py"
+  ],
+  "changed_variable": "intraday_news_text_sanitation_contract_v1",
+  "decision": "accepted_measurement_repair_intraday_news_text_sanitation_contract",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "intraday_news_changed_items": 8,
+    "intraday_news_flagged_items": 8,
+    "intraday_news_items_audited": 8,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260629-012",
+  "gate1": {
+    "baseline_expected_value_score_sum": 7.8941,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_total_pnl": 234850.99,
+    "passed": true,
+    "strategy_metrics_unchanged": true
+  },
+  "gate2": {
+    "field_status": {
+      "changed_items": 8,
+      "flagged_items": 8,
+      "hash_fields_present": true,
+      "input_rows": 8,
+      "sample_exists": true
+    },
+    "passed": true,
+    "runtime_fields_checked": [
+      "news.trade_items[].title",
+      "news.trade_items[].summary",
+      "news.trade_items[].tickers",
+      "news.trade_items[].text_sanitation.pre_sanitize_hash",
+      "news.trade_items[].text_sanitation.post_sanitize_hash",
+      "data_quality.news_text_sanitation",
+      "entry_date_not_applicable_no_strategy_rule_change",
+      "target_price_not_applicable_no_strategy_rule_change"
+    ]
+  },
+  "gate3": {
+    "not_applicable_reason": "No signal, filter, ranking, sizing, exit, risk budget, or order rule changed.",
+    "passed": true,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "survival_rate_delta": 0.0
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "intraday_news_changed_items": 8,
+      "intraday_news_flagged_items": 8,
+      "intraday_news_items_audited": 8,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "strategy_behavior_changed": false,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "decision": "accepted_measurement_repair_intraday_news_text_sanitation_contract",
+    "failed_reasons": [],
+    "measurement_repair_only": true,
+    "passed": true
+  },
+  "hypothesis": "LLM/news event scoring cannot be trusted if intraday trade news text with unexpanded HTML entities, hidden/control characters, mojibake, or ticker/entity mismatches is passed to prompts without a replayable sanitation audit; add a read-only intraday news sanitation contract that logs these risks without changing orders.",
+  "implementation_mode": "intraday_news_llm_prompt_measurement_contract",
+  "lane": "measurement_repair",
+  "mechanism_family": "llm_event_scoring_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260625-021",
+    "exp-20260626-019",
+    "exp-20260626-020",
+    "exp-20260627-025"
+  ],
+  "new_evidence_type": "new_llm_news_data_quality_axis",
+  "next_retry_requires": [
+    "materially more closed intraday advisory forward rows",
+    "or a new PIT LLM event label tied to replacement-value outcomes"
+  ],
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "anti_repeat": "Do not retune prompts or trade decisions from this sample alone; next alpha work needs closed forward rows or a new LLM event scoring label with replayable outcomes.",
+    "next_step": "Let future intraday runs accumulate sanitized news snapshots, then evaluate whether flagged LLM-news items explain advisory quality or forward replacement value.",
+    "why_result_happened": "The current intraday trade-news sample contains unexpanded HTML entities in summaries that were previously invisible to data_quality and LLM prompt context; the sanitizer records them with deterministic hashes while preserving original news fields. A file-level check corrected the initial terminal display impression of title mojibake."
+  },
+  "pre_run_hypothesis_note": "The initial console read suggested mojibake in titles; file-level UTF-8 inspection showed correct Unicode titles and unexpanded HTML entities in summaries. The contract still covers mojibake/hidden text if it appears in future runs.",
+  "prediction": {
+    "confidence_reason": "Fresh 2026-06-29 intraday news artifacts already contain mojibake strings that are passed into LLM prompts, while current data_quality only records source success counts; a read-only sanitizer is localized and should leave strategy metrics unchanged.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "overflagging_clean_text",
+      "underflagging_mojibake",
+      "intraday_payload_shape_mismatch"
+    ],
+    "recorded_at": "2026-06-29T18:05:47+00:00",
+    "success_probability": 0.8
+  },
+  "production_impact": {
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "intraday_advisory_prompt_changed": true,
+    "intraday_advisory_snapshot_changed": true,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "paper_orders_changed": false,
+    "parity_note": "Intraday advisory artifacts only. No EOD signal, backtest, paper sleeve, live order, or shared strategy policy path consumes this.",
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "ranking_changed": false,
+    "risk_budget_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_intraday_news_sanitizer.py quant\\test_intraday_review.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260629_012_intraday_news_text_sanitation_contract.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "sample_audit": {
+    "annotated_examples": [
+      {
+        "flags": [
+          "html_entity_unescaped"
+        ],
+        "status": "changed",
+        "ticker_entity_match": {
+          "confidence": "high",
+          "matched_tickers": [
+            "META"
+          ],
+          "status": "explicit_text_match",
+          "tickers": [
+            "META"
+          ]
+        },
+        "tickers": [
+          "META"
+        ],
+        "title": "Why Meta Should Be A Market Favorite, But Isn\u2019t (Rating Upgrade) (NASDAQ:META) - Seeking Alpha"
+      },
+      {
+        "flags": [
+          "html_entity_unescaped"
+        ],
+        "status": "changed",
+        "ticker_entity_match": {
+          "confidence": "high",
+          "matched_tickers": [
+            "AMD"
+          ],
+          "status": "explicit_text_match",
+          "tickers": [
+            "AMD"
+          ]
+        },
+        "tickers": [
+          "AMD"
+        ],
+        "title": "AMD price tries to gather positive momentum - Forecast today - 29-06-2026 - Economies.com"
+      },
+      {
+        "flags": [
+          "html_entity_unescaped"
+        ],
+        "status": "changed",
+        "ticker_entity_match": {
+          "confidence": "high",
+          "matched_tickers": [
+            "TSLA"
+          ],
+          "status": "explicit_text_match",
+          "tickers": [
+            "TSLA"
+          ]
+        },
+        "tickers": [
+          "TSLA"
+        ],
+        "title": "Tesla (TSLA) Stock Climbs After Morgan Stanley Upgrades Q2 Delivery Estimates - Blockonomi"
+      },
+      {
+        "flags": [
+          "html_entity_unescaped"
+        ],
+        "status": "changed",
+        "ticker_entity_match": {
+          "confidence": "high",
+          "matched_tickers": [
+            "APP"
+          ],
+          "status": "explicit_text_match",
+          "tickers": [
+            "APP"
+          ]
+        },
+        "tickers": [
+          "APP"
+        ],
+        "title": "Grab Holdings: Southeast Asia's Super-App Is Getting Stronger (Rating Upgrade) - Seeking Alpha"
+      },
+      {
+        "flags": [
+          "html_entity_unescaped"
+        ],
+        "status": "changed",
+        "ticker_entity_match": {
+          "confidence": "high",
+          "matched_tickers": [
+            "NFLX"
+          ],
+          "status": "explicit_text_match",
+          "tickers": [
+            "NFLX"
+          ]
+        },
+        "tickers": [
+          "NFLX"
+        ],
+        "title": "Netflix (NASDAQ:NFLX) bounce brings heavy Nasdaq volume ahead of Q2 earnings - TechStock\u00b2"
+      }
+    ],
+    "annotated_items_preview": [
+      {
+        "published_at": "2026-06-29T15:54:13+00:00",
+        "raw_source": "https://news.google.com/rss/search?q=META+stock&hl=en-US&gl=US&ceid=US:en",
+        "source": "google_news",
+        "source_metadata": {
+          "keywords": [
+            "META"
+          ]
+        },
+        "summary": "Why Meta Should Be A Market Favorite, But Isn\u2019t (Rating Upgrade) (NASDAQ:META)&nbsp;&nbsp;Seeking Alpha",
+        "text_sanitation": {
+          "changed": true,
+          "field_count": 2,
+          "fields": {
+            "summary": {
+              "changed": true,
+              "flags": [
+                "html_entity_unescaped"
+              ],
+              "original_length": 103,
+              "post_sanitize_hash": "a13697b1b395370c",
+              "pre_sanitize_hash": "c0019011999c23e8",
+              "sanitized_length": 92,
+              "sanitized_text": "Why Meta Should Be A Market Favorite, But Isn\u2019t (Rating Upgrade) (NASDAQ:META) Seeking Alpha",
+              "status": "changed"
+            },
+            "title": {
+              "changed": false,
+              "flags": [],
+              "original_length": 94,
+              "post_sanitize_hash": "9e9453aec379194a",
+              "pre_sanitize_hash": "9e9453aec379194a",
+              "sanitized_length": 94,
+              "sanitized_text": "Why Meta Should Be A Market Favorite, But Isn\u2019t (Rating Upgrade) (NASDAQ:META) - Seeking Alpha",
+              "status": "ok"
+            }
+          },
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "post_sanitize_hash": "241112d0342d7684",
+          "pre_sanitize_hash": "49f92ceb450fd6b9",
+          "rule_version": "intraday_news_text_sanitation_contract_v1",
+          "status": "changed",
+          "ticker_entity_match": {
+            "confidence": "high",
+            "matched_tickers": [
+              "META"
+            ],
+            "status": "explicit_text_match",
+            "tickers": [
+              "META"
+            ]
+          },
+          "watched_ticker_overlap": []
+        },
+        "tickers": [
+          "META"
+        ],
+        "tier": "T3",
+        "title": "Why Meta Should Be A Market Favorite, But Isn\u2019t (Rating Upgrade) (NASDAQ:META) - Seeking Alpha",
+        "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNdkd5QjdtXzBOaFN3OTRQazMzS0ZHakxYQXpIZHYyVmRNZ2ZhQzh5c0JKRndHVEtkNk1kLUJDdzRCenFEMTV3VGVDOHB5X1BtZXY3N2d0czh5WFhHaU9rOTVMbFBPUTBKMFpGQ2ZKd2ZXZEdkYmFWNS1TMkFhRmI5LXpNNk9mblJrX0hqRVNWelVscnFHYWsxSHBibl9wRVRWRE80?oc=5"
+      },
+      {
+        "published_at": "2026-06-29T12:20:00+00:00",
+        "raw_source": "https://news.google.com/rss/search?q=AMD+stock&hl=en-US&gl=US&ceid=US:en",
+        "source": "google_news",
+        "source_metadata": {
+          "keywords": [
+            "AMD"
+          ]
+        },
+        "summary": "AMD price tries to gather positive momentum - Forecast today - 29-06-2026&nbsp;&nbsp;Economies.com",
+        "text_sanitation": {
+          "changed": true,
+          "field_count": 2,
+          "fields": {
+            "summary": {
+              "changed": true,
+              "flags": [
+                "html_entity_unescaped"
+              ],
+              "original_length": 98,
+              "post_sanitize_hash": "c567dec4d3dd10c5",
+              "pre_sanitize_hash": "b0dc6b1edf0e6c61",
+              "sanitized_length": 87,
+              "sanitized_text": "AMD price tries to gather positive momentum - Forecast today - 29-06-2026 Economies.com",
+              "status": "changed"
+            },
+            "title": {
+              "changed": false,
+              "flags": [],
+              "original_length": 89,
+              "post_sanitize_hash": "c78e45c736437e80",
+              "pre_sanitize_hash": "c78e45c736437e80",
+              "sanitized_length": 89,
+              "sanitized_text": "AMD price tries to gather positive momentum - Forecast today - 29-06-2026 - Economies.com",
+              "status": "ok"
+            }
+          },
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "post_sanitize_hash": "4d03d735147b6b6d",
+          "pre_sanitize_hash": "f949a435ab9c7a7d",
+          "rule_version": "intraday_news_text_sanitation_contract_v1",
+          "status": "changed",
+          "ticker_entity_match": {
+            "confidence": "high",
+            "matched_tickers": [
+              "AMD"
+            ],
+            "status": "explicit_text_match",
+            "tickers": [
+              "AMD"
+            ]
+          },
+          "watched_ticker_overlap": []
+        },
+        "tickers": [
+          "AMD"
+        ],
+        "tier": "T3",
+        "title": "AMD price tries to gather positive momentum - Forecast today - 29-06-2026 - Economies.com",
+        "url": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxNUlZmZVdXWGdqMzFuZlNBd1pnWWRHRmREd3BDa1VtUGxLZlVmU2NlSTRKckxsaDZhY3V2N3YyQmwtTTVoZzIycWpkRGZzT0xXbHJIZkUyUmdOeW8wSXR3NFA4emVGNmVlMDBIMHhFVHhHaWI2Q0lQWC1nV3p0LXl1UjFXaTRIWFFneGtIVEdfSWNBWWlyOEVJMUNXWFlEYUVYTkJCN1laTklWZFdlRFdDdGFnam9ibzU0NzB0QTBwckdUbWgxYy1OSEJ5a09ZS012amc?oc=5"
+      },
+      {
+        "published_at": "2026-06-29T12:00:33+00:00",
+        "raw_source": "https://news.google.com/rss/search?q=TSLA+stock&hl=en-US&gl=US&ceid=US:en",
+        "source": "google_news",
+        "source_metadata": {
+          "keywords": [
+            "TSLA"
+          ]
+        },
+        "summary": "Tesla (TSLA) Stock Climbs After Morgan Stanley Upgrades Q2 Delivery Estimates&nbsp;&nbsp;Blockonomi",
+        "text_sanitation": {
+          "changed": true,
+          "field_count": 2,
+          "fields": {
+            "summary": {
+              "changed": true,
+              "flags": [
+                "html_entity_unescaped"
+              ],
+              "original_length": 99,
+              "post_sanitize_hash": "d07f304094748397",
+              "pre_sanitize_hash": "2b1b11b3d59acf9e",
+              "sanitized_length": 88,
+              "sanitized_text": "Tesla (TSLA) Stock Climbs After Morgan Stanley Upgrades Q2 Delivery Estimates Blockonomi",
+              "status": "changed"
+            },
+            "title": {
+              "changed": false,
+              "flags": [],
+              "original_length": 90,
+              "post_sanitize_hash": "c7a8d68f560dd339",
+              "pre_sanitize_hash": "c7a8d68f560dd339",
+              "sanitized_length": 90,
+              "sanitized_text": "Tesla (TSLA) Stock Climbs After Morgan Stanley Upgrades Q2 Delivery Estimates - Blockonomi",
+              "status": "ok"
+            }
+          },
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "post_sanitize_hash": "cc9f2e22869aaa91",
+          "pre_sanitize_hash": "48f7b6dc7d524f4f",
+          "rule_version": "intraday_news_text_sanitation_contract_v1",
+          "status": "changed",
+          "ticker_entity_match": {
+            "confidence": "high",
+            "matched_tickers": [
+              "TSLA"
+            ],
+            "status": "explicit_text_match",
+            "tickers": [
+              "TSLA"
+            ]
+          },
+          "watched_ticker_overlap": []
+        },
+        "tickers": [
+          "TSLA"
+        ],
+        "tier": "T3",
+        "title": "Tesla (TSLA) Stock Climbs After Morgan Stanley Upgrades Q2 Delivery Estimates - Blockonomi",
+        "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxPaU5qU29uckxTMTRFa2xmTGtka3RKdjI5VVVSaHJhaGhva05IRGhlUGlNMGtBMkVYWVk0OWVZM1VGMWdXR01id2FWakZvbHVBU01tRzRkRkFYOE02b082ZUNjQk1SSkxNQThJMWN2RWF3RGhsdG5OVkV6ZWRfc2xTRUdUMUxOSm9teXhfTERYY2JteURUNUh1WGpzbG9GQU4y?oc=5"
+      }
+    ],
+    "hash_fields_present": true,
+    "input_rows": 8,
+    "sample_exists": true,
+    "sample_path": "data/daily/intraday/news/intraday_trade_news_20260629_1302ET.json",
+    "summary": {
+      "all_clear": false,
+      "changed_items": 8,
+      "flag_counts": {
+        "html_entity_unescaped": 8
+      },
+      "flagged_items": 8,
+      "hash_algorithm": "sha256_16",
+      "items": 8,
+      "rule_version": "intraday_news_text_sanitation_contract_v1",
+      "status_counts": {
+        "changed": 8
+      },
+      "ticker_entity_status_counts": {
+        "explicit_text_match": 8
+      }
+    }
+  },
+  "single_causal_variable": "intraday_news_text_sanitation_contract_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-06-29T18:14:49+00:00",
+  "trial_family": "intraday_news_text_sanitation_contract",
+  "trial_variant_id": "mojibake_hidden_text_ticker_match_v1"
+}

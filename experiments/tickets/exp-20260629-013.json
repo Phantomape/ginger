@@ -1,0 +1,243 @@
+{
+  "acceptance_rule": "Accept as measurement repair only if the runner writes a deduplicated PIT native shadow-action ledger from 2026-06-29 snapshots, verifies required fields including ticker/rule/shadow_action/trade_enabled/creates_order/order_semantics/capture_time_et/quote_time_basis/source_quote_time_available, confirms pending_actions are empty and no executable order is implied, and leaves strategy metrics unchanged.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260629_013_intraday_native_advisory_shadow_action_contract.py",
+    "data/experiments/exp-20260629-013",
+    "experiments/logs/exp-20260629-013.json",
+    "experiments/cards/exp-20260629-013.md",
+    "experiments/manifests/exp-20260629-013.json",
+    "experiments/tickets/exp-20260629-013.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260629-013.md",
+  "causal_components": [
+    "2026-06-29 intraday_review snapshots",
+    "native advisory_shadow_actions rows",
+    "order_semantics and quote_time provenance contract",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "intraday_native_advisory_shadow_action_contract_v1",
+  "claimed_at": null,
+  "completed_at": "2026-06-29T19:15:50+00:00",
+  "created_at": "2026-06-29T19:15:09+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260629-013",
+  "experiment_uid": "expuid-6e7ae463fe874147",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260629-013",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-29T19:15:09+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "intraday_native_advisory_shadow_action_contract"
+  },
+  "hypothesis": "LLM/exit advisory quality can only become a bounded alpha input after native intraday advisory shadow actions are persisted as PIT rows with explicit order semantics, quote-time provenance, and no live order side effects; the 2026-06-29 snapshots now expose native advisory_shadow_actions fields that were missing in exp-20260627-025.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "trade_enabled=false",
+    "creates_order=false",
+    "order_semantics=none_shadow_only",
+    "no prompt retune",
+    "no exit or ranking change"
+  ],
+  "mechanism_family": "intraday_advisory_forward_measurement_repair",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [
+    "quant/intraday_review.py",
+    "quant/run_intraday.py",
+    "quant/news_text_sanitizer.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260627-025",
+    "exp-20260626-019",
+    "exp-20260629-012"
+  ],
+  "new_evidence_type": "native_intraday_advisory_shadow_action_snapshot_fields",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "action",
+        "actions",
+        "advisory",
+        "after",
+        "alpha",
+        "are",
+        "as",
+        "become",
+        "bounded",
+        "can",
+        "contract",
+        "effects",
+        "exit",
+        "exp",
+        "explicit",
+        "expose",
+        "fields",
+        "forward",
+        "in",
+        "input",
+        "intraday",
+        "live",
+        "llm",
+        "measurement",
+        "missing",
+        "native",
+        "no",
+        "now",
+        "only",
+        "order",
+        "persisted",
+        "pit",
+        "provenance",
+        "quote",
+        "repair",
+        "rows",
+        "semantics",
+        "shadow",
+        "side",
+        "snapshots",
+        "that",
+        "time",
+        "were"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "intraday_advisory_shadow_action_contract",
+        "reopen_condition": "New snapshots generated with advisory_shadow_actions and later closed forward outcomes/replacement value; quote_time_et or broker bar IDs remain useful before any executable action contract.",
+        "score": 0.0545,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.5,
+        "data_source": "other",
+        "family_key": "intraday_shadow_action_forward_outcome",
+        "reopen_condition": "More snapshots generated after this contract, with h1/h3/h5/h10 settled outcomes and replacement-value accounting. Broker bar IDs or true quote_time_et would further strengthen causality.",
+        "score": 0.0511,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.0467,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "intraday_review_quote_capture_provenance",
+        "reopen_condition": "Future intraday alpha promotion needs newly generated snapshots with capture_time_et, real pending action or existing-rule trigger semantics, and closed forward outcomes/replacement value. This repair alone is not alpha evidence.",
+        "score": 0.0435,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "intraday_advisory_shadow_action_forward_outcome",
+        "reopen_condition": "More intraday snapshots with native primary_advisory_shadow_action, settled h3/h5/h10 outcomes, true quote timestamps or broker bar IDs, and slot-reuse/replacement-value accounting before Gate 1-4 exit promotion.",
+        "score": 0.0408,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New native intraday_review advisory_shadow_actions snapshot fields from 2026-06-29, including order_semantics, quote_time_basis, creates_order, pending_action, and advisory_only, which exp-20260627-025 lacked and explicitly named as needed native action semantics. This is not a prompt/action threshold retune or forward-outcome slice.",
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": "New native intraday_review advisory_shadow_actions snapshot fields from 2026-06-29, including order_semantics, quote_time_basis, creates_order, pending_action, and advisory_only, which exp-20260627-025 lacked and explicitly named as needed native action semantics. This is not a prompt/action threshold retune or forward-outcome slice.",
+      "categories": [],
+      "invalid_same_source_field_only": true,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "The 2026-06-29 snapshots visibly contain native advisory_shadow_actions rows with trade_enabled=false and creates_order=false; risk is schema drift or duplicate handling.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "native_rows_missing",
+      "field_contract_incomplete",
+      "duplicate_rows_between_1301_1302",
+      "pending_actions_nonempty",
+      "order_side_effect_detected"
+    ],
+    "recorded_at": "2026-06-29T19:14:47+00:00",
+    "success_probability": 0.78
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "after_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "delta_metrics": {},
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.78,
+      "brier_score": 0.6084,
+      "calibration_direction": "overconfident",
+      "surprise_level": "high",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "native_rows_missing",
+        "field_contract_incomplete",
+        "duplicate_rows_between_1301_1302",
+        "pending_actions_nonempty",
+        "order_side_effect_detected"
+      ],
+      "realized_failure_mode": "duplicate_prior_contract_reopen_condition_unmet",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "The reservation novelty score was low enough to pass, but docs/frozen_families.jsonl identified exp-20260626-020 as an accepted same-family contract after reservation."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260629-013.json",
+  "single_causal_variable": "intraday_native_advisory_shadow_action_contract_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260629-013.json",
+  "trial_family": "intraday_native_advisory_shadow_action_contract",
+  "trial_variant_id": "native_shadow_action_contract_20260629_v1"
+}

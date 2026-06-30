@@ -1,0 +1,553 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260630_010_options_bearish_put_demand_forward_value.py",
+    "data/experiments/exp-20260630-010/exp_20260630_010_options_bearish_put_demand_forward_value.json",
+    "experiments/cards/exp-20260630-010.md",
+    "experiments/manifests/exp-20260630-010.json",
+    "experiments/tickets/exp-20260630-010.json",
+    "experiments/logs/exp-20260630-010.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260630-010.md",
+  "causal_components": [
+    "fixed bearish put-demand predicate",
+    "refreshed closed outcome ledger",
+    "cash SPY QQQ replacement-value attribution",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_forward_attribution",
+  "changed_variable": "onclickmedia_options_bearish_put_demand_forward_value_v1",
+  "claimed_at": "2026-06-30T10:04:54+00:00",
+  "completed_at": "2026-06-30T10:10:04+00:00",
+  "created_at": "2026-06-30T10:04:45+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260630-010",
+  "experiment_uid": "expuid-0a0d602d3af4461c",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260630-010",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-30T10:04:45+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "options_bearish_put_demand_forward_value"
+  },
+  "hypothesis": "Refreshed closed OnclickMedia options forward rows may reveal that liquid high put-demand / high put-IV pressure marks weaker 10-day replacement value and can become a future risk-allocation context.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "onclickmedia_options_bearish_put_demand_forward_value_v1"
+  ],
+  "mechanism_family": "production_visible_forward_options_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260625-001",
+    "exp-20260630-008"
+  ],
+  "new_evidence_type": "materially_more_closed_options_forward_rows",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "allocation",
+        "bearish",
+        "become",
+        "can",
+        "closed",
+        "context",
+        "demand",
+        "forward",
+        "future",
+        "high",
+        "iv",
+        "liquid",
+        "marks",
+        "may",
+        "onclickmedia",
+        "options",
+        "pressure",
+        "put",
+        "refreshed",
+        "replacement",
+        "reveal",
+        "risk",
+        "rows",
+        "that",
+        "value",
+        "weaker"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "onclickmedia_options_closed_forward_skew_attribution",
+        "reopen_condition": "A valid options retry needs materially more closed forward rows with replacement value, PIT vendor/asof controls, borrow or loan-availability context, or historical PIT options chains covering the canonical windows.",
+        "score": 0.0774,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "onclickmedia_options_demand_quality_forward_attribution",
+        "reopen_condition": "A valid retry needs materially more closed forward rows including the exp020 deltas, PIT vendor-as-of controls, borrow/loan availability context, or historical PIT options-chain coverage across the canonical windows.",
+        "score": 0.0606,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "sec_ftd_forward_replacement_context_attribution",
+        "reopen_condition": "Need materially more closed SEC_FTD_FINRA true-trigger forward rows, PIT borrow fee or loan-availability context, or a separate mature activation ledger before revisiting this lane.",
+        "score": 0.05,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "forward_replacement_entry_regime_activation_attribution",
+        "reopen_condition": "Need materially more closed forward replacement rows carrying entry_regime tags, especially outside QQQ-only low-deployment ETF rows, before any activation-envelope test.",
+        "score": 0.0485,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "forward_replacement_entry_regime_exposure_scalar",
+        "reopen_condition": "Need materially more closed forward replacement rows carrying entry_regime tags across diversified sleeves and non-risk-on states before any regime soft-tilt activation test.",
+        "score": 0.0485,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "exp-20260630-008 materially expanded and re-settled the OnclickMedia options forward ledger to 1544 closed 10d rows from 2026-05/06, beyond the exp-20260625-001 outcome sample; this is not a threshold retune on unchanged rows.",
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "exp-20260630-008 materially expanded and re-settled the OnclickMedia options forward ledger to 1544 closed 10d rows from 2026-05/06, beyond the exp-20260625-001 outcome sample; this is not a threshold retune on unchanged rows.",
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": "exp-20260630-008 materially expanded and re-settled the OnclickMedia options forward ledger to 1544 closed 10d rows from 2026-05/06, beyond the exp-20260625-001 outcome sample; this is not a threshold retune on unchanged rows.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.32,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "no_monotonic_edge",
+      "quality_flags_dominate",
+      "single_ticker_concentration",
+      "market_beta_not_options_pressure"
+    ],
+    "confidence_reason": "Options put-demand and IV skew can reflect protection pressure not visible in OHLCV, and exp-20260630-008 materially expanded closed replacement-value rows beyond the rejected exp-20260625-001 sample; the main disconfirmers are noisy vendor fields, market beta, and concentration.",
+    "recorded_at": "2026-06-30T10:04:06+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "rejected_no_options_bearish_put_demand_forward_edge",
+    "artifact": "data/experiments/exp-20260630-010/exp_20260630_010_options_bearish_put_demand_forward_value.json",
+    "log": "experiments/logs/exp-20260630-010.json",
+    "runner": "quant/experiments/exp_20260630_010_options_bearish_put_demand_forward_value.py",
+    "gate4": {
+      "passed": false,
+      "observed_only_lead": false,
+      "accepted_alpha": false,
+      "decision": "rejected_no_options_bearish_put_demand_forward_edge",
+      "failed_reasons": [
+        "primary_cash_median_not_weaker",
+        "primary_spy_median_not_weaker",
+        "primary_qqq_median_not_weaker",
+        "too_few_supporting_horizons"
+      ],
+      "primary_horizon": 10,
+      "supporting_horizons_mean_cash_spy_qqq": 1,
+      "acceptance_rule": {
+        "primary_horizon": 10,
+        "min_bearish_rows": 60,
+        "min_bearish_entry_dates": 10,
+        "min_bearish_tickers": 20,
+        "bearish_must_underperform_non_bearish_mean_and_median_for": [
+          "cash",
+          "spy",
+          "qqq"
+        ],
+        "min_supporting_horizons_mean_cash_spy_qqq": 2,
+        "max_single_negative_pnl_share_guardrail": 0.5,
+        "negative_pnl_hhi_guardrail": 0.35
+      },
+      "strategy_rerun_required": false,
+      "before_after_strategy_delta": {
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0,
+        "strategy_behavior_changed": false
+      }
+    },
+    "calibration": {
+      "actual_decision": "observed_only_rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.32,
+      "brier_score": 0.1024,
+      "predicted_failure_modes": [
+        "no_monotonic_edge",
+        "quality_flags_dominate",
+        "single_ticker_concentration",
+        "market_beta_not_options_pressure"
+      ],
+      "realized_failure_modes": [
+        "no_monotonic_edge",
+        "market_beta_not_options_pressure"
+      ],
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "The fixed bearish options bucket did not show stable weaker cash/SPY/QQQ replacement value versus non-bearish quality rows."
+    },
+    "summary": "The fixed bearish put-demand bucket did not consistently underperform non-bearish quality rows across 10d cash/SPY/QQQ mean and median checks, so options pressure remains attribution context."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260630-010.json",
+  "single_causal_variable": "onclickmedia_options_bearish_put_demand_forward_value_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260630-010.json",
+  "trial_family": "onclickmedia_options_bearish_put_demand_forward_value",
+  "trial_variant_id": "fixed_liquid_put_volume_iv_pressure_v1",
+  "implementation_mode": "observed_only_forward_attribution",
+  "new_evidence_axis": "exp-20260630-008 materially expanded and re-settled the OnclickMedia options forward ledger to 1544 closed 10d rows from 2026-05/06, beyond the exp-20260625-001 outcome sample; this is not a threshold retune on unchanged rows.",
+  "decision": "rejected_no_options_bearish_put_demand_forward_edge",
+  "artifact": "data/experiments/exp-20260630-010/exp_20260630_010_options_bearish_put_demand_forward_value.json",
+  "log": "experiments/logs/exp-20260630-010.json",
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ],
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119
+    },
+    "note": "Observed-only attribution; before and after policy metrics are identical."
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "fields_checked": [
+      "observation_id",
+      "ticker",
+      "quote_date",
+      "usable_trade_date",
+      "entry_date",
+      "target_price",
+      "outcome_status",
+      "quality_pass",
+      "pit_safe_contract_rate",
+      "put_call_volume_ratio",
+      "put_minus_call_volume_weighted_iv",
+      "liquid_contract_rate",
+      "avg_liquidity_score",
+      "wide_spread_contract_rate",
+      "zero_bid_or_ask_count",
+      "replacement_value_10d_vs_cash_usd",
+      "replacement_value_10d_vs_spy_usd",
+      "replacement_value_10d_vs_qqq_usd"
+    ],
+    "field_coverage": {
+      "observation_id": {
+        "present_rows": 2147,
+        "scanned_rows": 2147,
+        "coverage": 1.0
+      },
+      "ticker": {
+        "present_rows": 2147,
+        "scanned_rows": 2147,
+        "coverage": 1.0
+      },
+      "quote_date": {
+        "present_rows": 2147,
+        "scanned_rows": 2147,
+        "coverage": 1.0
+      },
+      "usable_trade_date": {
+        "present_rows": 2147,
+        "scanned_rows": 2147,
+        "coverage": 1.0
+      },
+      "entry_date": {
+        "present_rows": 2087,
+        "scanned_rows": 2147,
+        "coverage": 0.972054
+      },
+      "target_price": {
+        "present_rows": 0,
+        "scanned_rows": 2147,
+        "coverage": 0.0
+      },
+      "outcome_status": {
+        "present_rows": 2147,
+        "scanned_rows": 2147,
+        "coverage": 1.0
+      },
+      "quality_pass": {
+        "present_rows": 2147,
+        "scanned_rows": 2147,
+        "coverage": 1.0
+      },
+      "pit_safe_contract_rate": {
+        "present_rows": 2147,
+        "scanned_rows": 2147,
+        "coverage": 1.0
+      },
+      "put_call_volume_ratio": {
+        "present_rows": 2147,
+        "scanned_rows": 2147,
+        "coverage": 1.0
+      },
+      "put_minus_call_volume_weighted_iv": {
+        "present_rows": 2147,
+        "scanned_rows": 2147,
+        "coverage": 1.0
+      },
+      "liquid_contract_rate": {
+        "present_rows": 2147,
+        "scanned_rows": 2147,
+        "coverage": 1.0
+      },
+      "avg_liquidity_score": {
+        "present_rows": 2147,
+        "scanned_rows": 2147,
+        "coverage": 1.0
+      },
+      "wide_spread_contract_rate": {
+        "present_rows": 1945,
+        "scanned_rows": 2147,
+        "coverage": 0.905915
+      },
+      "zero_bid_or_ask_count": {
+        "present_rows": 2147,
+        "scanned_rows": 2147,
+        "coverage": 1.0
+      },
+      "replacement_value_10d_vs_cash_usd": {
+        "present_rows": 1544,
+        "scanned_rows": 2147,
+        "coverage": 0.719143
+      },
+      "replacement_value_10d_vs_spy_usd": {
+        "present_rows": 1544,
+        "scanned_rows": 2147,
+        "coverage": 0.719143
+      },
+      "replacement_value_10d_vs_qqq_usd": {
+        "present_rows": 1544,
+        "scanned_rows": 2147,
+        "coverage": 0.719143
+      }
+    },
+    "entry_date_rows": 2087,
+    "target_price_scope": "Not applicable: options forward attribution uses fixed horizons and does not schedule target exits or orders.",
+    "source_summary": {
+      "outcome_ledger": "data/experiments/exp-20260630-008/options_forward_outcome_refresh_all_current_sources.jsonl",
+      "rows": 2147,
+      "outcome_status_counts": {
+        "closed_10d_forward": 1544,
+        "missing_entry_bar": 60,
+        "partial_closed_forward": 483,
+        "pending_forward_close": 60
+      },
+      "source_experiment_counts": {
+        "exp-20260623-009": 1846,
+        "exp-20260624-020": 60,
+        "exp-20260629-014": 181,
+        "exp-20260630-003": 60
+      },
+      "ticker_count": 63,
+      "entry_date_count": 38,
+      "entry_date_start": "2025-01-14",
+      "entry_date_end": "2026-06-29",
+      "quote_date_count": 39,
+      "quote_date_start": "2025-01-13",
+      "quote_date_end": "2026-06-29"
+    }
+  },
+  "gate3": {
+    "filter_added": false,
+    "signals_generated": 1179,
+    "signals_survived": 79,
+    "survival_rate": 0.067,
+    "baseline_survival_rate": 0.8232,
+    "passed": true,
+    "note": "No executable filter was added. Survival here is attribution bucket coverage, not a live strategy survival claim."
+  },
+  "gate4": {
+    "passed": false,
+    "observed_only_lead": false,
+    "accepted_alpha": false,
+    "decision": "rejected_no_options_bearish_put_demand_forward_edge",
+    "failed_reasons": [
+      "primary_cash_median_not_weaker",
+      "primary_spy_median_not_weaker",
+      "primary_qqq_median_not_weaker",
+      "too_few_supporting_horizons"
+    ],
+    "primary_horizon": 10,
+    "supporting_horizons_mean_cash_spy_qqq": 1,
+    "acceptance_rule": {
+      "primary_horizon": 10,
+      "min_bearish_rows": 60,
+      "min_bearish_entry_dates": 10,
+      "min_bearish_tickers": 20,
+      "bearish_must_underperform_non_bearish_mean_and_median_for": [
+        "cash",
+        "spy",
+        "qqq"
+      ],
+      "min_supporting_horizons_mean_cash_spy_qqq": 2,
+      "max_single_negative_pnl_share_guardrail": 0.5,
+      "negative_pnl_hhi_guardrail": 0.35
+    },
+    "strategy_rerun_required": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "strategy_behavior_changed": false
+    }
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "shared_helper_promoted": false,
+    "daily_snapshot_exposed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "paper_orders_changed": false,
+    "live_orders_changed": false,
+    "watchlist_changed": false,
+    "llm_decision_boundary_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "uses_options_forward_outcome_ledger": true,
+    "forward_only_not_fixed_window_pit_coverage": true,
+    "parity_note": "Observed-only attribution on an experiment-owned forward outcome ledger. No shared policy/helper or production adapter behavior changed."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The fixed bearish put-demand bucket did not consistently underperform non-bearish quality rows across 10d cash/SPY/QQQ mean and median checks, so options pressure remains attribution context.",
+    "forbidden_near_neighbor_retry": "Do not retry options put/call ratio, IV skew, liquidity, spread, zero-bid count, open interest, top-N, hold, cooldown, notional, or threshold variants on this same exp-20260630-008 forward ledger.",
+    "new_evidence_required": "A valid retry needs materially more closed forward rows beyond exp-20260630-008, PIT vendor/as-of controls, borrow/loan availability context, or historical PIT options-chain coverage across the canonical windows."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260630_010_options_bearish_put_demand_forward_value.py",
+    "data/experiments/exp-20260630-008/options_forward_outcome_refresh_all_current_sources.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260625-001.json",
+    "experiments/logs/exp-20260630-008.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260630_010_options_bearish_put_demand_forward_value.py",
+    "data/experiments/exp-20260630-010/exp_20260630_010_options_bearish_put_demand_forward_value.json",
+    "experiments/logs/exp-20260630-010.json",
+    "experiments/cards/exp-20260630-010.md",
+    "experiments/manifests/exp-20260630-010.json",
+    "experiments/tickets/exp-20260630-010.json",
+    "docs/experiment_registry.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-06-30T10:10:04+00:00"
+}

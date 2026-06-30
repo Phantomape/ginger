@@ -1,0 +1,889 @@
+{
+  "acceptance_rule": "Accept as measurement repair only if the 2026-06-24..2026-06-26 snapshots have rows, required raw field coverage is >=95%, new observation IDs are nonzero and unique versus exp009+exp020, and before/after strategy deltas remain exactly zero.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260629_014_options_forward_ledger_refresh_20260624_20260626.py",
+    "data/experiments/exp-20260629-014/exp_20260629_014_options_forward_ledger_refresh_20260624_20260626.json",
+    "data/experiments/exp-20260629-014/options_forward_observation_ledger_delta_20260624_20260626.jsonl",
+    "experiments/logs/exp-20260629-014.json",
+    "experiments/cards/exp-20260629-014.md",
+    "experiments/manifests/exp-20260629-014.json",
+    "experiments/tickets/exp-20260629-014.json",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260629-014.md",
+  "causal_components": [
+    "new forward options snapshot rows",
+    "per ticker-date pending observation rows",
+    "PIT usability caveats",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "onclickmedia_options_forward_observation_ledger_refresh_20260624_20260626_v1",
+  "claimed_at": "2026-06-29T22:08:36+00:00",
+  "completed_at": "2026-06-29T22:13:22+00:00",
+  "created_at": "2026-06-29T22:08:27+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-05-15",
+      "start": "2024-08-01"
+    },
+    {
+      "end": "2026-05-15",
+      "start": "2025-04-01"
+    },
+    {
+      "end": "2024-06-30",
+      "start": "2024-01-01"
+    }
+  ],
+  "experiment_id": "exp-20260629-014",
+  "experiment_uid": "expuid-38472dff71624ff4",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260629-014",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-29T22:08:27+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "onclickmedia_options_forward_observation_ledger_refresh_20260624_20260626_v1"
+  },
+  "hypothesis": "Alpha-enabling options forward ledger refresh: 2026-06-24 through 2026-06-26 OnclickMedia snapshots should add new PIT pending rows for future options demand/protection attribution without changing strategy behavior.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "onclickmedia_options_forward_observation_ledger_refresh_20260624_20260626_v1"
+  ],
+  "mechanism_family": "production_visible_forward_options_attribution",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260623-009",
+    "exp-20260624-020",
+    "exp-20260624-026",
+    "exp-20260625-001"
+  ],
+  "new_evidence_type": "new_forward_options_snapshot_rows",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "add",
+        "alpha",
+        "attribution",
+        "behavior",
+        "changing",
+        "demand",
+        "enabling",
+        "forward",
+        "future",
+        "ledger",
+        "new",
+        "observation",
+        "onclickmedia",
+        "options",
+        "pending",
+        "pit",
+        "protection",
+        "refresh",
+        "rows",
+        "should",
+        "snapshots",
+        "strategy",
+        "through",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "onclickmedia_options_demand_quality_forward_attribution",
+        "reopen_condition": "A valid retry needs materially more closed forward rows including the exp020 deltas, PIT vendor-as-of controls, borrow/loan availability context, or historical PIT options-chain coverage across the canonical windows.",
+        "score": 0.0667,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "non_ohlcv_options_structure_overlay",
+        "reopen_condition": null,
+        "score": 0.0625,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "kova_forward_observation_ledger",
+        "reopen_condition": "Close 20-30 Kova forward observation rows under a predeclared shared default-off observer, or add PIT historical coverage across the canonical windows, before any Kova alpha claim.",
+        "score": 0.0593,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "options_structure_overlay",
+        "reopen_condition": null,
+        "score": 0.0571,
+        "status": "frozen_rejected",
+        "trials": 9
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "onclickmedia_options_event_distance_forward_attribution",
+        "reopen_condition": "A valid options retry needs materially more closed forward rows, historical PIT options-chain coverage across canonical windows, or a different production-visible event/cost field that creates new rows rather than reslicing this same small forward sample.",
+        "score": 0.0552,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.86,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "snapshot_schema_inconsistent",
+      "ledger_duplicate_rows",
+      "no_new_snapshot_rows",
+      "quality_controls_too_sparse"
+    ],
+    "confidence_reason": "exp-20260624-020 already normalized a neighboring daily options snapshot; three later chain files are present and non-empty, so the main risk is schema drift or duplicate observation IDs.",
+    "recorded_at": "2026-06-29T22:08:06+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "observed_only_lead": false,
+    "decision": "accepted_measurement_repair_options_forward_ledger_refreshed_20260624_20260626",
+    "artifact": "data/experiments/exp-20260629-014/exp_20260629_014_options_forward_ledger_refresh_20260624_20260626.json",
+    "delta_ledger": "data/experiments/exp-20260629-014/options_forward_observation_ledger_delta_20260624_20260626.jsonl",
+    "log": "experiments/logs/exp-20260629-014.json",
+    "runner": "quant/experiments/exp_20260629_014_options_forward_ledger_refresh_20260624_20260626.py",
+    "gate4": {
+      "passed": true,
+      "decision": "accepted_measurement_repair_options_forward_ledger_refreshed_20260624_20260626",
+      "before_after_strategy_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "max_drawdown_pct": 0.0
+      },
+      "acceptance_checks": {
+        "prior_ledgers_exist": true,
+        "target_snapshot_rows_positive": true,
+        "new_delta_rows_positive": true,
+        "duplicate_new_observation_ids_zero": true,
+        "bad_json_rows_zero": true,
+        "required_field_coverage_min": 1.0,
+        "strategy_behavior_changed": false
+      },
+      "failed_reasons": [],
+      "strategy_rerun_required": false
+    },
+    "refresh_summary": {
+      "chain_file_count": 40,
+      "target_chain_files": [],
+      "bad_json_rows": 0,
+      "prior_ledgers": [
+        {
+          "source_experiment_id": "exp-20260623-009",
+          "path": "data/experiments/exp-20260623-009/options_forward_observation_ledger.jsonl",
+          "exists": true,
+          "rows": 1846,
+          "observation_ids": 1846
+        },
+        {
+          "source_experiment_id": "exp-20260624-020",
+          "path": "data/experiments/exp-20260624-020/options_forward_observation_ledger_delta_20260623.jsonl",
+          "exists": true,
+          "rows": 60,
+          "observation_ids": 60
+        }
+      ],
+      "prior_observation_ids": 1906,
+      "all_current_ledger_rows": 2087,
+      "target_quote_dates": [
+        "2026-06-24",
+        "2026-06-25",
+        "2026-06-26"
+      ],
+      "target_raw_contract_rows": 17685,
+      "target_ledger_rows": 181,
+      "new_delta_rows": 181,
+      "duplicate_new_observation_ids": 0,
+      "target_raw_field_coverage": {
+        "ticker": {
+          "present": 17685,
+          "missing": 0,
+          "coverage": 1.0
+        },
+        "quote_date": {
+          "present": 17685,
+          "missing": 0,
+          "coverage": 1.0
+        },
+        "usable_trade_date": {
+          "present": 17685,
+          "missing": 0,
+          "coverage": 1.0
+        },
+        "call_put": {
+          "present": 17685,
+          "missing": 0,
+          "coverage": 1.0
+        },
+        "strike": {
+          "present": 17685,
+          "missing": 0,
+          "coverage": 1.0
+        },
+        "expiration": {
+          "present": 17685,
+          "missing": 0,
+          "coverage": 1.0
+        },
+        "implied_vol": {
+          "present": 17685,
+          "missing": 0,
+          "coverage": 1.0
+        },
+        "volume": {
+          "present": 17685,
+          "missing": 0,
+          "coverage": 1.0
+        },
+        "open_interest": {
+          "present": 17685,
+          "missing": 0,
+          "coverage": 1.0
+        },
+        "bid": {
+          "present": 17685,
+          "missing": 0,
+          "coverage": 1.0
+        },
+        "ask": {
+          "present": 17685,
+          "missing": 0,
+          "coverage": 1.0
+        },
+        "mid": {
+          "present": 17685,
+          "missing": 0,
+          "coverage": 1.0
+        },
+        "pit_safe": {
+          "present": 17685,
+          "missing": 0,
+          "coverage": 1.0
+        }
+      },
+      "delta_summary": {
+        "ledger_rows": 181,
+        "quote_date_start": "2026-06-24",
+        "quote_date_end": "2026-06-26",
+        "quote_date_count": 3,
+        "quote_date_row_counts": {
+          "2026-06-24": 60,
+          "2026-06-25": 61,
+          "2026-06-26": 60
+        },
+        "usable_trade_date_start": "2026-06-25",
+        "usable_trade_date_end": "2026-06-29",
+        "ticker_count": 61,
+        "quality_flag_counts": {
+          "open_interest_reporting_lag_caveat": 181,
+          "thin_liquid_contract_count": 1,
+          "vendor_asof_missing": 181,
+          "wide_spread_majority": 96,
+          "zero_bid_or_ask_present": 106
+        },
+        "sample_observations": [
+          {
+            "schema_version": 1,
+            "rule_version": "onclickmedia_options_forward_observation_ledger_v1",
+            "observation_id": "519b4450cfdbd68b96997b3c",
+            "source": "onclickmedia_options",
+            "ticker": "AAPL",
+            "quote_date": "2026-06-24",
+            "usable_trade_date": "2026-06-25",
+            "alpha_candidate_state": "observation_only_pending_outcome",
+            "pit_safe_flag": "forward_collected_next_trade_day_usable",
+            "vendor_asof_available": false,
+            "vendor_asof_caveat": true,
+            "open_interest_same_day_usable": false,
+            "open_interest_lag_caveat": true,
+            "raw_contract_count": 100,
+            "liquid_contract_count": 91,
+            "liquid_contract_rate": 0.91,
+            "pit_safe_contract_rate": 1.0,
+            "expiration_count": 2,
+            "min_expiration": "2026-06-26",
+            "max_expiration": "2026-06-29",
+            "call_volume": 112246,
+            "put_volume": 133796,
+            "put_call_volume_ratio": 1.191989,
+            "call_open_interest": 118003,
+            "put_open_interest": 68411,
+            "put_call_open_interest_ratio": 0.579739,
+            "call_volume_weighted_iv": 0.340794,
+            "put_volume_weighted_iv": 0.322024,
+            "put_minus_call_volume_weighted_iv": -0.01877,
+            "avg_spread_pct": 0.38413,
+            "median_spread_pct": 0.129433,
+            "wide_spread_contract_rate": 0.33,
+            "zero_bid_or_ask_count": 4,
+            "avg_liquidity_score": 0.741,
+            "min_liquidity_score": 0.1,
+            "first_retrieved_at": "2026-06-25T05:25:42+00:00",
+            "last_retrieved_at": "2026-06-25T05:25:42+00:00",
+            "quality_flags": [
+              "vendor_asof_missing",
+              "zero_bid_or_ask_present",
+              "open_interest_reporting_lag_caveat"
+            ],
+            "outcome_status": "pending_forward_close",
+            "forward_5d_return_pct": null,
+            "forward_10d_return_pct": null,
+            "replacement_value_vs_cash_usd": null,
+            "replacement_value_vs_spy_usd": null,
+            "replacement_value_vs_qqq_usd": null,
+            "delta_experiment_id": "exp-20260629-014",
+            "delta_rule_version": "onclickmedia_options_forward_observation_ledger_refresh_20260624_20260626_v1",
+            "source_prior_rule_version": "onclickmedia_options_forward_observation_ledger_v1"
+          },
+          {
+            "schema_version": 1,
+            "rule_version": "onclickmedia_options_forward_observation_ledger_v1",
+            "observation_id": "8988601eaed1e61e25f031e4",
+            "source": "onclickmedia_options",
+            "ticker": "AAPL",
+            "quote_date": "2026-06-25",
+            "usable_trade_date": "2026-06-26",
+            "alpha_candidate_state": "observation_only_pending_outcome",
+            "pit_safe_flag": "forward_collected_next_trade_day_usable",
+            "vendor_asof_available": false,
+            "vendor_asof_caveat": true,
+            "open_interest_same_day_usable": false,
+            "open_interest_lag_caveat": true,
+            "raw_contract_count": 100,
+            "liquid_contract_count": 96,
+            "liquid_contract_rate": 0.96,
+            "pit_safe_contract_rate": 1.0,
+            "expiration_count": 2,
+            "min_expiration": "2026-06-26",
+            "max_expiration": "2026-06-29",
+            "call_volume": 555687,
+            "put_volume": 439614,
+            "put_call_volume_ratio": 0.791118,
+            "call_open_interest": 88872,
+            "put_open_interest": 83775,
+            "put_call_open_interest_ratio": 0.942648,
+            "call_volume_weighted_iv": 0.481034,
+            "put_volume_weighted_iv": 0.559629,
+            "put_minus_call_volume_weighted_iv": 0.078595,
+            "avg_spread_pct": 0.401426,
+            "median_spread_pct": 0.204168,
+            "wide_spread_contract_rate": 0.53,
+            "zero_bid_or_ask_count": 6,
+            "avg_liquidity_score": 0.748,
+            "min_liquidity_score": 0.3,
+            "first_retrieved_at": "2026-06-26T04:47:08+00:00",
+            "last_retrieved_at": "2026-06-26T04:47:08+00:00",
+            "quality_flags": [
+              "vendor_asof_missing",
+              "wide_spread_majority",
+              "zero_bid_or_ask_present",
+              "open_interest_reporting_lag_caveat"
+            ],
+            "outcome_status": "pending_forward_close",
+            "forward_5d_return_pct": null,
+            "forward_10d_return_pct": null,
+            "replacement_value_vs_cash_usd": null,
+            "replacement_value_vs_spy_usd": null,
+            "replacement_value_vs_qqq_usd": null,
+            "delta_experiment_id": "exp-20260629-014",
+            "delta_rule_version": "onclickmedia_options_forward_observation_ledger_refresh_20260624_20260626_v1",
+            "source_prior_rule_version": "onclickmedia_options_forward_observation_ledger_v1"
+          },
+          {
+            "schema_version": 1,
+            "rule_version": "onclickmedia_options_forward_observation_ledger_v1",
+            "observation_id": "f19e2930e8d6719d46591837",
+            "source": "onclickmedia_options",
+            "ticker": "AAPL",
+            "quote_date": "2026-06-26",
+            "usable_trade_date": "2026-06-29",
+            "alpha_candidate_state": "observation_only_pending_outcome",
+            "pit_safe_flag": "forward_collected_next_trade_day_usable",
+            "vendor_asof_available": false,
+            "vendor_asof_caveat": true,
+            "open_interest_same_day_usable": false,
+            "open_interest_lag_caveat": true,
+            "raw_contract_count": 96,
+            "liquid_contract_count": 82,
+            "liquid_contract_rate": 0.854167,
+            "pit_safe_contract_rate": 1.0,
+            "expiration_count": 2,
+            "min_expiration": "2026-06-29",
+            "max_expiration": "2026-07-01",
+            "call_volume": 162167,
+            "put_volume": 102234,
+            "put_call_volume_ratio": 0.630424,
+            "call_open_interest": 41381,
+            "put_open_interest": 30279,
+            "put_call_open_interest_ratio": 0.731713,
+            "call_volume_weighted_iv": 0.258697,
+            "put_volume_weighted_iv": 0.35477,
+            "put_minus_call_volume_weighted_iv": 0.096073,
+            "avg_spread_pct": 0.769472,
+            "median_spread_pct": 0.589082,
+            "wide_spread_contract_rate": 0.75,
+            "zero_bid_or_ask_count": 12,
+            "avg_liquidity_score": 0.629687,
+            "min_liquidity_score": 0.1,
+            "first_retrieved_at": "2026-06-27T04:16:50+00:00",
+            "last_retrieved_at": "2026-06-27T04:16:50+00:00",
+            "quality_flags": [
+              "vendor_asof_missing",
+              "wide_spread_majority",
+              "zero_bid_or_ask_present",
+              "open_interest_reporting_lag_caveat"
+            ],
+            "outcome_status": "pending_forward_close",
+            "forward_5d_return_pct": null,
+            "forward_10d_return_pct": null,
+            "replacement_value_vs_cash_usd": null,
+            "replacement_value_vs_spy_usd": null,
+            "replacement_value_vs_qqq_usd": null,
+            "delta_experiment_id": "exp-20260629-014",
+            "delta_rule_version": "onclickmedia_options_forward_observation_ledger_refresh_20260624_20260626_v1",
+            "source_prior_rule_version": "onclickmedia_options_forward_observation_ledger_v1"
+          },
+          {
+            "schema_version": 1,
+            "rule_version": "onclickmedia_options_forward_observation_ledger_v1",
+            "observation_id": "037242203f4ab0d8168f531b",
+            "source": "onclickmedia_options",
+            "ticker": "AMD",
+            "quote_date": "2026-06-24",
+            "usable_trade_date": "2026-06-25",
+            "alpha_candidate_state": "observation_only_pending_outcome",
+            "pit_safe_flag": "forward_collected_next_trade_day_usable",
+            "vendor_asof_available": false,
+            "vendor_asof_caveat": true,
+            "open_interest_same_day_usable": false,
+            "open_interest_lag_caveat": true,
+            "raw_contract_count": 100,
+            "liquid_contract_count": 100,
+            "liquid_contract_rate": 1.0,
+            "pit_safe_contract_rate": 1.0,
+            "expiration_count": 2,
+            "min_expiration": "2026-06-26",
+            "max_expiration": "2026-07-02",
+            "call_volume": 55694,
+            "put_volume": 43000,
+            "put_call_volume_ratio": 0.772076,
+            "call_open_interest": 47984,
+            "put_open_interest": 51624,
+            "put_call_open_interest_ratio": 1.075859,
+            "call_volume_weighted_iv": 0.888286,
+            "put_volume_weighted_iv": 0.92104,
+            "put_minus_call_volume_weighted_iv": 0.032754,
+            "avg_spread_pct": 0.082482,
+            "median_spread_pct": 0.074932,
+            "wide_spread_contract_rate": 0.02,
+            "zero_bid_or_ask_count": 0,
+            "avg_liquidity_score": 0.87,
+            "min_liquidity_score": 0.6,
+            "first_retrieved_at": "2026-06-25T05:25:42+00:00",
+            "last_retrieved_at": "2026-06-25T05:25:42+00:00",
+            "quality_flags": [
+              "vendor_asof_missing",
+              "open_interest_reporting_lag_caveat"
+            ],
+            "outcome_status": "pending_forward_close",
+            "forward_5d_return_pct": null,
+            "forward_10d_return_pct": null,
+            "replacement_value_vs_cash_usd": null,
+            "replacement_value_vs_spy_usd": null,
+            "replacement_value_vs_qqq_usd": null,
+            "delta_experiment_id": "exp-20260629-014",
+            "delta_rule_version": "onclickmedia_options_forward_observation_ledger_refresh_20260624_20260626_v1",
+            "source_prior_rule_version": "onclickmedia_options_forward_observation_ledger_v1"
+          },
+          {
+            "schema_version": 1,
+            "rule_version": "onclickmedia_options_forward_observation_ledger_v1",
+            "observation_id": "0f5727d8a0ec8547beeeee23",
+            "source": "onclickmedia_options",
+            "ticker": "AMD",
+            "quote_date": "2026-06-25",
+            "usable_trade_date": "2026-06-26",
+            "alpha_candidate_state": "observation_only_pending_outcome",
+            "pit_safe_flag": "forward_collected_next_trade_day_usable",
+            "vendor_asof_available": false,
+            "vendor_asof_caveat": true,
+            "open_interest_same_day_usable": false,
+            "open_interest_lag_caveat": true,
+            "raw_contract_count": 100,
+            "liquid_contract_count": 100,
+            "liquid_contract_rate": 1.0,
+            "pit_safe_contract_rate": 1.0,
+            "expiration_count": 2,
+            "min_expiration": "2026-06-26",
+            "max_expiration": "2026-07-02",
+            "call_volume": 82223,
+            "put_volume": 43784,
+            "put_call_volume_ratio": 0.532503,
+            "call_open_interest": 64379,
+            "put_open_interest": 45606,
+            "put_call_open_interest_ratio": 0.708399,
+            "call_volume_weighted_iv": 0.833322,
+            "put_volume_weighted_iv": 0.853483,
+            "put_minus_call_volume_weighted_iv": 0.020161,
+            "avg_spread_pct": 0.080221,
+            "median_spread_pct": 0.076722,
+            "wide_spread_contract_rate": 0.0,
+            "zero_bid_or_ask_count": 0,
+            "avg_liquidity_score": 0.884,
+            "min_liquidity_score": 0.6,
+            "first_retrieved_at": "2026-06-26T04:47:08+00:00",
+            "last_retrieved_at": "2026-06-26T04:47:08+00:00",
+            "quality_flags": [
+              "vendor_asof_missing",
+              "open_interest_reporting_lag_caveat"
+            ],
+            "outcome_status": "pending_forward_close",
+            "forward_5d_return_pct": null,
+            "forward_10d_return_pct": null,
+            "replacement_value_vs_cash_usd": null,
+            "replacement_value_vs_spy_usd": null,
+            "replacement_value_vs_qqq_usd": null,
+            "delta_experiment_id": "exp-20260629-014",
+            "delta_rule_version": "onclickmedia_options_forward_observation_ledger_refresh_20260624_20260626_v1",
+            "source_prior_rule_version": "onclickmedia_options_forward_observation_ledger_v1"
+          }
+        ]
+      }
+    },
+    "calibration": {
+      "actual_success": 1,
+      "actual_decision": "accepted_measurement_repair_options_forward_ledger_refreshed_20260624_20260626",
+      "predicted_success_probability": 0.86,
+      "brier_score": 0.0196,
+      "predicted_failure_modes": [
+        "snapshot_schema_inconsistent",
+        "ledger_duplicate_rows",
+        "no_new_snapshot_rows",
+        "quality_controls_too_sparse"
+      ],
+      "realized_failure_modes": [],
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "The three new snapshots normalized cleanly into delta observation rows."
+    },
+    "summary": "The 2026-06-24 through 2026-06-26 OnclickMedia snapshots have enough normalized contract fields to create pending ticker-date observations. This increases future options evidence capacity but still provides no accepted options alpha because the new rows need closed replacement-value outcomes."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260629-014.json",
+  "single_causal_variable": "onclickmedia_options_forward_observation_ledger_refresh_20260624_20260626_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260629-014.json",
+  "trial_family": "onclickmedia_options_forward_ledger_refresh",
+  "trial_variant_id": "post_exp020_20260624_20260626_pending_rows_v1",
+  "alpha_hypothesis": "Options put/call, open-interest, volume, IV skew, and contract-quality fields may identify demand or protection pressure not visible in OHLCV, but only after forward ledger rows mature into closed cash/SPY/QQQ replacement-value outcomes.",
+  "implementation_mode": "measurement_repair",
+  "new_evidence_axis": "Three new non-empty OnclickMedia options snapshot dates after exp020 (2026-06-24, 2026-06-25, 2026-06-26) create pending forward observation rows. This is not a retune of options thresholds or an observed-only reslice of the same closed rows.",
+  "decision": "accepted_measurement_repair_options_forward_ledger_refreshed_20260624_20260626",
+  "artifact": "data/experiments/exp-20260629-014/exp_20260629_014_options_forward_ledger_refresh_20260624_20260626.json",
+  "delta_ledger": "data/experiments/exp-20260629-014/options_forward_observation_ledger_delta_20260624_20260626.jsonl",
+  "log": "experiments/logs/exp-20260629-014.json",
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    }
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "fields_checked": [
+      "ticker",
+      "quote_date",
+      "usable_trade_date",
+      "call_put",
+      "strike",
+      "expiration",
+      "implied_vol",
+      "volume",
+      "open_interest",
+      "bid",
+      "ask",
+      "mid",
+      "pit_safe"
+    ],
+    "prior_ledgers": [
+      {
+        "source_experiment_id": "exp-20260623-009",
+        "path": "data/experiments/exp-20260623-009/options_forward_observation_ledger.jsonl",
+        "exists": true,
+        "rows": 1846,
+        "observation_ids": 1846
+      },
+      {
+        "source_experiment_id": "exp-20260624-020",
+        "path": "data/experiments/exp-20260624-020/options_forward_observation_ledger_delta_20260623.jsonl",
+        "exists": true,
+        "rows": 60,
+        "observation_ids": 60
+      }
+    ],
+    "target_quote_dates": [
+      "2026-06-24",
+      "2026-06-25",
+      "2026-06-26"
+    ],
+    "target_raw_contract_rows": 17685,
+    "target_ledger_rows": 181,
+    "new_delta_rows": 181,
+    "target_raw_field_coverage": {
+      "ticker": {
+        "present": 17685,
+        "missing": 0,
+        "coverage": 1.0
+      },
+      "quote_date": {
+        "present": 17685,
+        "missing": 0,
+        "coverage": 1.0
+      },
+      "usable_trade_date": {
+        "present": 17685,
+        "missing": 0,
+        "coverage": 1.0
+      },
+      "call_put": {
+        "present": 17685,
+        "missing": 0,
+        "coverage": 1.0
+      },
+      "strike": {
+        "present": 17685,
+        "missing": 0,
+        "coverage": 1.0
+      },
+      "expiration": {
+        "present": 17685,
+        "missing": 0,
+        "coverage": 1.0
+      },
+      "implied_vol": {
+        "present": 17685,
+        "missing": 0,
+        "coverage": 1.0
+      },
+      "volume": {
+        "present": 17685,
+        "missing": 0,
+        "coverage": 1.0
+      },
+      "open_interest": {
+        "present": 17685,
+        "missing": 0,
+        "coverage": 1.0
+      },
+      "bid": {
+        "present": 17685,
+        "missing": 0,
+        "coverage": 1.0
+      },
+      "ask": {
+        "present": 17685,
+        "missing": 0,
+        "coverage": 1.0
+      },
+      "mid": {
+        "present": 17685,
+        "missing": 0,
+        "coverage": 1.0
+      },
+      "pit_safe": {
+        "present": 17685,
+        "missing": 0,
+        "coverage": 1.0
+      }
+    },
+    "required_field_coverage_min": 1.0,
+    "entry_date_target_price_note": "No executable entries or target exits are scheduled. The delta ledger stores usable_trade_date and pending outcome placeholders only.",
+    "failed_reasons": []
+  },
+  "gate3": {
+    "filter_added": false,
+    "baseline_signals_generated": 164,
+    "baseline_signals_survived": 135,
+    "baseline_survival_rate": 0.8232,
+    "note": "No executable filter, candidate selection, or strategy rule was added."
+  },
+  "gate4": {
+    "passed": true,
+    "decision": "accepted_measurement_repair_options_forward_ledger_refreshed_20260624_20260626",
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "max_drawdown_pct": 0.0
+    },
+    "acceptance_checks": {
+      "prior_ledgers_exist": true,
+      "target_snapshot_rows_positive": true,
+      "new_delta_rows_positive": true,
+      "duplicate_new_observation_ids_zero": true,
+      "bad_json_rows_zero": true,
+      "required_field_coverage_min": 1.0,
+      "strategy_behavior_changed": false
+    },
+    "failed_reasons": [],
+    "strategy_rerun_required": false
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_collector_changed": false,
+    "daily_snapshot_exposed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "replay_only": false,
+    "live_ready": false,
+    "parity_note": "This experiment writes an experiment-owned forward observation delta only. The existing daily options collector and all trading adapters are unchanged."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The 2026-06-24 through 2026-06-26 OnclickMedia snapshots have enough normalized contract fields to create pending ticker-date observations. This increases future options evidence capacity but still provides no accepted options alpha because the new rows need closed replacement-value outcomes.",
+    "forbidden_near_neighbor_retry": "Do not retry options put/call, IV, OI, volume, expiration, moneyness, top-N, hold, cooldown, or notional rules on this pending-forward delta. It remains a forward observation surface, not Gate-4 alpha coverage.",
+    "new_evidence_required": "Wait for these 2026-06-24..2026-06-26 rows to close with cash/SPY/QQQ replacement value, add PIT borrow/loan availability context, or backfill historical PIT options chains with vendor/as-of controls before another options alpha claim."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260629_014_options_forward_ledger_refresh_20260624_20260626.py",
+    "data/experiments/exp-20260629-014/options_forward_observation_ledger_delta_20260624_20260626.jsonl",
+    "data/experiments/exp-20260629-014/exp_20260629_014_options_forward_ledger_refresh_20260624_20260626.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "quant/experiments/exp_20260623_009_options_forward_observation_ledger.py",
+    "quant/experiments/exp_20260624_020_options_forward_ledger_refresh_20260623.py",
+    "experiments/logs/exp-20260625-001.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260629_014_options_forward_ledger_refresh_20260624_20260626.py",
+    "data/experiments/exp-20260629-014/exp_20260629_014_options_forward_ledger_refresh_20260624_20260626.json",
+    "data/experiments/exp-20260629-014/options_forward_observation_ledger_delta_20260624_20260626.jsonl",
+    "experiments/logs/exp-20260629-014.json",
+    "experiments/cards/exp-20260629-014.md",
+    "experiments/manifests/exp-20260629-014.json",
+    "experiments/tickets/exp-20260629-014.json",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-06-29T22:13:22+00:00"
+}

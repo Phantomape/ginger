@@ -1,0 +1,180 @@
+{
+  "alpha_hypothesis": "LLM/news event scoring can only become a production-replayable alpha input if daily clean-news text quality and ticker/entity provenance are audited before prompts or event labels consume the feed.",
+  "artifact": "data/experiments/exp-20260630-001/daily_news_text_sanitation_contract.json",
+  "audit_summary": {
+    "changed_items": 7468,
+    "date_range": {
+      "end": "2026-06-26",
+      "start": "2026-01-23"
+    },
+    "file_count": 158,
+    "file_count_by_kind": {
+      "clean_news": 79,
+      "clean_trade_news": 79
+    },
+    "flag_counts": {
+      "hidden_or_control_char": 1,
+      "html_entity_unescaped": 3234,
+      "mojibake_suspect": 30,
+      "ticker_entity_metadata_only": 6518
+    },
+    "flagged_items": 9752,
+    "ignored_temp_file_count": 28,
+    "items": 10142,
+    "rule_version": "daily_news_text_sanitation_contract_v1",
+    "status_counts": {
+      "changed": 3443,
+      "ok": 150,
+      "suspect": 6549
+    },
+    "ticker_entity_status_counts": {
+      "explicit_text_match": 3624,
+      "metadata_only": 6518
+    }
+  },
+  "calibration": {
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "predicted_failure_modes": [
+      "daily_news_schema_drift",
+      "sanitizer_false_positive",
+      "accidental_strategy_path_change"
+    ],
+    "predicted_success_probability": 0.82,
+    "realized_failure_mode": null,
+    "surprise_level": "low"
+  },
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/daily_news_text_sanitation.py",
+    "quant/test_daily_news_text_sanitation.py",
+    "quant/experiments/exp_20260630_001_daily_news_text_sanitation_contract.py"
+  ],
+  "changed_variable": "daily_news_text_sanitation_contract_v1",
+  "decision": "accepted_measurement_repair_daily_news_text_sanitation_contract",
+  "delta_metrics": {
+    "daily_news_changed_items": 7468,
+    "daily_news_files_audited": 158,
+    "daily_news_flagged_items": 9752,
+    "daily_news_items_audited": 10142,
+    "expected_value_score_sum_delta": 0.0,
+    "ignored_temp_file_count": 28,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260630-001",
+  "gate1": {
+    "baseline_expected_value_score_sum": 7.8941,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_total_pnl": 234850.99,
+    "passed": true,
+    "strategy_metrics_unchanged": true
+  },
+  "gate2": {
+    "field_status": {
+      "all_hash_fields_present": true,
+      "file_count": 158,
+      "hash_fields_missing": 0,
+      "ignored_temp_file_count": 28,
+      "items": 10142
+    },
+    "passed": true,
+    "runtime_fields_checked": [
+      "daily.clean_news[].title",
+      "daily.clean_news[].summary",
+      "daily.clean_news[].tickers",
+      "daily.clean_trade_news[].title",
+      "daily.clean_trade_news[].summary",
+      "daily.clean_trade_news[].tier",
+      "text_sanitation.pre_sanitize_hash",
+      "text_sanitation.post_sanitize_hash",
+      "text_sanitation.ticker_entity_status",
+      "entry_date_not_applicable_no_strategy_rule_change",
+      "target_price_not_applicable_no_strategy_rule_change"
+    ]
+  },
+  "gate3": {
+    "not_applicable_reason": "No signal, filter, ranking, sizing, exit, risk budget, or order rule changed.",
+    "passed": true,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "survival_rate_delta": 0.0
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "before_after_strategy_delta": {
+      "daily_news_changed_items": 7468,
+      "daily_news_files_audited": 158,
+      "daily_news_flagged_items": 9752,
+      "daily_news_items_audited": 10142,
+      "expected_value_score_sum_delta": 0.0,
+      "ignored_temp_file_count": 28,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "strategy_behavior_changed": false,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "decision": "accepted_measurement_repair_daily_news_text_sanitation_contract",
+    "failed_reasons": [],
+    "measurement_repair_only": true,
+    "passed": true
+  },
+  "hypothesis": "Alpha-enabling LLM/news event scoring repair: daily clean-news and clean-trade-news archives still contain HTML entities, mojibake/control-text risks, and unaudited ticker-text provenance; add a replayable daily news text sanitation contract so future daily event scoring can consume hashed sanitized text without changing trades.",
+  "lane": "measurement_repair",
+  "mechanism_family": "daily_news_llm_event_scoring_measurement_repair",
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "anti_repeat": "Do not retune LLM prompts or trade decisions from sanitation flags alone. A future alpha needs a structured event label or closed replacement-value outcomes tied to these daily news rows.",
+    "next_step": "Wire this contract into a daily event-scoring observation ledger only if the ledger records PIT labels and later cash/SPY/QQQ outcomes.",
+    "why_result_happened": "Final daily clean-news archives contain enough rows to audit, and the text contract found deterministic quality/provenance risks including HTML unescaping, mojibake-suspect strings, and metadata-only ticker matches."
+  },
+  "prediction": {
+    "confidence_reason": "daily clean/trade news archives visibly contain HTML entities and mojibake while existing sanitation coverage is intraday-only; this is localized measurement repair.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "daily_news_schema_drift",
+      "sanitizer_false_positive",
+      "accidental_strategy_path_change"
+    ],
+    "recorded_at": "2026-06-30T01:15:14+00:00",
+    "success_probability": 0.82
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_news_archives_rewritten": false,
+    "daily_news_prompt_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "paper_orders_changed": false,
+    "parity_note": "Read-only helper and experiment artifact only. No daily news file, EOD signal, backtest, paper sleeve, live order, or strategy policy path changed.",
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "ranking_changed": false,
+    "risk_budget_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_daily_news_text_sanitation.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260630_001_daily_news_text_sanitation_contract.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "daily_news_text_sanitation_contract_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-06-30T01:21:13+00:00",
+  "trial_family": "daily_news_text_sanitation_contract",
+  "trial_variant_id": "daily_news_text_sanitation_contract_v1"
+}

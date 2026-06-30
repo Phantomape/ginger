@@ -1,0 +1,1183 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.7925,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.7925,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_success": 0,
+    "brier_score": 0.0324,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "h3_action_underperformance_reverses",
+      "no_stable_directional_separation",
+      "ok_bucket_outperforms_action_bucket",
+      "still_observed_only_no_shared_exit_policy"
+    ],
+    "predicted_success_probability": 0.18,
+    "realized_failure_modes": [
+      "h1_action_underperformance_not_met",
+      "h3_action_underperformance_not_met"
+    ],
+    "surprise_note": "The added settled rows confirmed no stable h1/h3 underperformance edge; h3 action-vs-OK SPY-excess separation reversed positive."
+  },
+  "causal_components": [
+    "intraday_review snapshots",
+    "primary advisory shadow action extraction",
+    "next-1d and next-3d OHLCV settlement",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_forward_attribution",
+  "changed_files": [
+    "quant/experiments/exp_20260630_014_intraday_advisory_shadow_forward_outcome_20260629.py",
+    "data/experiments/exp-20260630-014/exp_20260630_014_intraday_advisory_shadow_forward_outcome_20260629.json",
+    "experiments/logs/exp-20260630-014.json",
+    "experiments/cards/exp-20260630-014.md",
+    "experiments/manifests/exp-20260630-014.json",
+    "experiments/tickets/exp-20260630-014.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "intraday_advisory_shadow_action_forward_outcome_20260629_v1",
+  "decision": "observed_only_rejected_no_stable_intraday_shadow_action_edge_20260629",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260630-014",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.7925,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "note": "Observed-only attribution; before and after strategy behavior are identical.",
+    "passed": true
+  },
+  "gate2": {
+    "fields_checked": [
+      "intraday_review.date",
+      "positions[].ticker",
+      "positions[].status",
+      "positions[].quote.price",
+      "positions[].context.exit_signals.triggered_rules",
+      "positions[].primary_advisory_shadow_action",
+      "ohlcv_overlay.entry_close",
+      "ohlcv_overlay.future_close",
+      "entry_date",
+      "target_price"
+    ],
+    "passed": true,
+    "source_diagnostics": {
+      "calendar_max": "2026-06-29",
+      "calendar_min": "2023-08-29",
+      "native_primary_advisory_shadow_action_count": 10,
+      "observation_count": 97,
+      "shadow_source_counts": {
+        "derived_from_context_exit_signals": 37,
+        "derived_no_triggered_rule": 50,
+        "native_primary_advisory_shadow_action": 10
+      },
+      "skipped_counts": {
+        "snapshot_non_trading_or_no_spy_bar": 2
+      },
+      "snapshot_count": 9,
+      "trading_snapshot_count": 6
+    },
+    "target_price_relevance": "No target exits are scheduled. target_price is represented only inside existing intraday exit-level context for attribution."
+  },
+  "gate3": {
+    "baseline_survival_rate": 0.7925,
+    "filter_added": false,
+    "note": "No executable filter was added; rows are only attributed.",
+    "passed": true,
+    "signals_generated": 97,
+    "signals_survived": 72,
+    "survival_rate": 0.742268
+  },
+  "gate4": {
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "strategy_behavior_changed": false,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "bucket_summary": {
+      "h1": {
+        "by_shadow_action": {
+          "EXIT": {
+            "qqq_excess_pct": {
+              "max": 8.361762,
+              "mean": -0.150894,
+              "median": 0.492927,
+              "min": -22.991351,
+              "n": 19,
+              "positive_rate": 0.631579
+            },
+            "return_pct": {
+              "max": 6.9854,
+              "mean": -1.347687,
+              "median": -0.082324,
+              "min": -26.284256,
+              "n": 19,
+              "positive_rate": 0.473684
+            },
+            "row_count": 19,
+            "spy_excess_pct": {
+              "max": 7.708537,
+              "mean": -0.8269,
+              "median": 0.873461,
+              "min": -24.83206,
+              "n": 19,
+              "positive_rate": 0.578947
+            },
+            "ticker_counts": {
+              "AMZN": 2,
+              "APP": 1,
+              "GOOG": 1,
+              "HOOD": 1,
+              "META": 4,
+              "MUU": 4,
+              "NFLX": 4,
+              "SPCX": 1,
+              "TRIP": 1
+            }
+          },
+          "NONE": {
+            "qqq_excess_pct": {
+              "max": 30.261388,
+              "mean": 0.306208,
+              "median": -0.552169,
+              "min": -9.827607,
+              "n": 36,
+              "positive_rate": 0.416667
+            },
+            "return_pct": {
+              "max": 31.071949,
+              "mean": -0.100898,
+              "median": -0.917544,
+              "min": -11.203969,
+              "n": 36,
+              "positive_rate": 0.361111
+            },
+            "row_count": 36,
+            "spy_excess_pct": {
+              "max": 30.927386,
+              "mean": 0.00033,
+              "median": -0.875795,
+              "min": -10.480832,
+              "n": 36,
+              "positive_rate": 0.416667
+            },
+            "ticker_counts": {
+              "APP": 1,
+              "COHR": 5,
+              "CRDO": 5,
+              "GOOG": 1,
+              "HOOD": 3,
+              "MRVL": 5,
+              "NBIS": 5,
+              "NVDA": 3,
+              "SPCX": 3,
+              "TSLA": 1
+            }
+          },
+          "REVIEW": {
+            "qqq_excess_pct": {
+              "max": 8.876363,
+              "mean": 0.815594,
+              "median": -0.016512,
+              "min": -4.903386,
+              "n": 17,
+              "positive_rate": 0.470588
+            },
+            "return_pct": {
+              "max": 8.461722,
+              "mean": 0.973667,
+              "median": -0.021157,
+              "min": -5.761113,
+              "n": 17,
+              "positive_rate": 0.470588
+            },
+            "row_count": 17,
+            "spy_excess_pct": {
+              "max": 8.223138,
+              "mean": 0.818488,
+              "median": -0.253744,
+              "min": -4.308918,
+              "n": 17,
+              "positive_rate": 0.470588
+            },
+            "ticker_counts": {
+              "AMD": 5,
+              "APP": 3,
+              "NVDA": 2,
+              "TRIP": 3,
+              "TSLA": 4
+            }
+          }
+        },
+        "by_shadow_rule": {
+          "ATR_STOP": {
+            "qqq_excess_pct": {
+              "max": 6.961043,
+              "mean": 3.771304,
+              "median": 3.859942,
+              "min": 0.492927,
+              "n": 3,
+              "positive_rate": 1.0
+            },
+            "return_pct": {
+              "max": 5.584681,
+              "mean": 2.073355,
+              "median": 0.567038,
+              "min": 0.068346,
+              "n": 3,
+              "positive_rate": 1.0
+            },
+            "row_count": 3,
+            "spy_excess_pct": {
+              "max": 6.307818,
+              "mean": 2.813916,
+              "median": 2.019233,
+              "min": 0.114697,
+              "n": 3,
+              "positive_rate": 1.0
+            },
+            "ticker_counts": {
+              "AMZN": 2,
+              "HOOD": 1
+            }
+          },
+          "HARD_STOP": {
+            "qqq_excess_pct": {
+              "max": 8.361762,
+              "mean": 1.742997,
+              "median": 2.131245,
+              "min": -3.464458,
+              "n": 10,
+              "positive_rate": 0.6
+            },
+            "return_pct": {
+              "max": 6.9854,
+              "mean": 0.611067,
+              "median": -0.187475,
+              "min": -2.653897,
+              "n": 10,
+              "positive_rate": 0.4
+            },
+            "row_count": 10,
+            "spy_excess_pct": {
+              "max": 7.708537,
+              "mean": 1.171119,
+              "median": 1.016516,
+              "min": -2.798461,
+              "n": 10,
+              "positive_rate": 0.6
+            },
+            "ticker_counts": {
+              "APP": 1,
+              "META": 4,
+              "NFLX": 4,
+              "SPCX": 1
+            }
+          },
+          "LEGACY_TARGET_REVIEW": {
+            "qqq_excess_pct": {
+              "max": 1.657984,
+              "mean": -0.029129,
+              "median": 0.403425,
+              "min": -2.468209,
+              "n": 5,
+              "positive_rate": 0.6
+            },
+            "return_pct": {
+              "max": 3.433792,
+              "mean": -0.388702,
+              "median": -0.021157,
+              "min": -5.761113,
+              "n": 5,
+              "positive_rate": 0.4
+            },
+            "row_count": 5,
+            "spy_excess_pct": {
+              "max": 2.323982,
+              "mean": -0.302775,
+              "median": 0.025195,
+              "min": -4.308918,
+              "n": 5,
+              "positive_rate": 0.6
+            },
+            "ticker_counts": {
+              "AMD": 5
+            }
+          },
+          "SIGNAL_TARGET": {
+            "qqq_excess_pct": {
+              "max": 3.535628,
+              "mean": -5.268479,
+              "median": -0.046182,
+              "min": -22.991351,
+              "n": 6,
+              "positive_rate": 0.5
+            },
+            "return_pct": {
+              "max": 2.779355,
+              "mean": -6.322798,
+              "median": -0.470764,
+              "min": -26.284256,
+              "n": 6,
+              "positive_rate": 0.333333
+            },
+            "row_count": 6,
+            "spy_excess_pct": {
+              "max": 1.694919,
+              "mean": -5.977341,
+              "median": -0.424413,
+              "min": -24.83206,
+              "n": 6,
+              "positive_rate": 0.333333
+            },
+            "ticker_counts": {
+              "GOOG": 1,
+              "MUU": 4,
+              "TRIP": 1
+            }
+          },
+          "TIME_STOP": {
+            "qqq_excess_pct": {
+              "max": 8.876363,
+              "mean": 1.167562,
+              "median": -0.140041,
+              "min": -4.903386,
+              "n": 12,
+              "positive_rate": 0.416667
+            },
+            "return_pct": {
+              "max": 8.461722,
+              "mean": 1.541321,
+              "median": 0.557213,
+              "min": -4.092825,
+              "n": 12,
+              "positive_rate": 0.5
+            },
+            "row_count": 12,
+            "spy_excess_pct": {
+              "max": 8.223138,
+              "mean": 1.285681,
+              "median": -0.316947,
+              "min": -4.237389,
+              "n": 12,
+              "positive_rate": 0.416667
+            },
+            "ticker_counts": {
+              "APP": 3,
+              "NVDA": 2,
+              "TRIP": 3,
+              "TSLA": 4
+            }
+          },
+          "UNKNOWN": {
+            "qqq_excess_pct": {
+              "max": 30.261388,
+              "mean": 0.306208,
+              "median": -0.552169,
+              "min": -9.827607,
+              "n": 36,
+              "positive_rate": 0.416667
+            },
+            "return_pct": {
+              "max": 31.071949,
+              "mean": -0.100898,
+              "median": -0.917544,
+              "min": -11.203969,
+              "n": 36,
+              "positive_rate": 0.361111
+            },
+            "row_count": 36,
+            "spy_excess_pct": {
+              "max": 30.927386,
+              "mean": 0.00033,
+              "median": -0.875795,
+              "min": -10.480832,
+              "n": 36,
+              "positive_rate": 0.416667
+            },
+            "ticker_counts": {
+              "APP": 1,
+              "COHR": 5,
+              "CRDO": 5,
+              "GOOG": 1,
+              "HOOD": 3,
+              "MRVL": 5,
+              "NBIS": 5,
+              "NVDA": 3,
+              "SPCX": 3,
+              "TSLA": 1
+            }
+          }
+        },
+        "by_status_bucket": {
+          "APPROACHING": {
+            "qqq_excess_pct": {
+              "max": 1.630488,
+              "mean": -2.763981,
+              "median": -3.523211,
+              "min": -6.068487,
+              "n": 6,
+              "positive_rate": 0.333333
+            },
+            "return_pct": {
+              "max": 4.115909,
+              "mean": -3.453813,
+              "median": -4.305823,
+              "min": -9.361391,
+              "n": 6,
+              "positive_rate": 0.166667
+            },
+            "row_count": 6,
+            "spy_excess_pct": {
+              "max": 2.468423,
+              "mean": -3.252972,
+              "median": -3.556549,
+              "min": -7.909196,
+              "n": 6,
+              "positive_rate": 0.166667
+            },
+            "ticker_counts": {
+              "HOOD": 1,
+              "MRVL": 2,
+              "NBIS": 2,
+              "SPCX": 1
+            }
+          },
+          "BREACHED": {
+            "qqq_excess_pct": {
+              "max": 8.876363,
+              "mean": 0.305503,
+              "median": 0.348679,
+              "min": -22.991351,
+              "n": 36,
+              "positive_rate": 0.555556
+            },
+            "return_pct": {
+              "max": 8.461722,
+              "mean": -0.251492,
+              "median": -0.05174,
+              "min": -26.284256,
+              "n": 36,
+              "positive_rate": 0.472222
+            },
+            "row_count": 36,
+            "spy_excess_pct": {
+              "max": 8.223138,
+              "mean": -0.049911,
+              "median": 0.069946,
+              "min": -24.83206,
+              "n": 36,
+              "positive_rate": 0.527778
+            },
+            "ticker_counts": {
+              "AMD": 5,
+              "AMZN": 2,
+              "APP": 4,
+              "GOOG": 1,
+              "META": 4,
+              "MUU": 4,
+              "NFLX": 4,
+              "NVDA": 2,
+              "TRIP": 4,
+              "TSLA": 4
+            }
+          },
+          "OK": {
+            "qqq_excess_pct": {
+              "max": 30.261388,
+              "mean": 0.920246,
+              "median": -0.46861,
+              "min": -9.827607,
+              "n": 30,
+              "positive_rate": 0.433333
+            },
+            "return_pct": {
+              "max": 31.071949,
+              "mean": 0.569685,
+              "median": -0.647012,
+              "min": -11.203969,
+              "n": 30,
+              "positive_rate": 0.4
+            },
+            "row_count": 30,
+            "spy_excess_pct": {
+              "max": 30.927386,
+              "mean": 0.650991,
+              "median": -0.487496,
+              "min": -10.480832,
+              "n": 30,
+              "positive_rate": 0.466667
+            },
+            "ticker_counts": {
+              "APP": 1,
+              "COHR": 5,
+              "CRDO": 5,
+              "GOOG": 1,
+              "HOOD": 2,
+              "MRVL": 3,
+              "NBIS": 3,
+              "NVDA": 3,
+              "SPCX": 2,
+              "TSLA": 1
+            }
+          }
+        }
+      },
+      "h3": {
+        "by_shadow_action": {
+          "EXIT": {
+            "qqq_excess_pct": {
+              "max": 13.345997,
+              "mean": 1.477522,
+              "median": 0.299356,
+              "min": -2.292052,
+              "n": 12,
+              "positive_rate": 0.583333
+            },
+            "return_pct": {
+              "max": 12.346907,
+              "mean": 0.159021,
+              "median": -1.366066,
+              "min": -3.998701,
+              "n": 12,
+              "positive_rate": 0.416667
+            },
+            "row_count": 12,
+            "spy_excess_pct": {
+              "max": 12.972609,
+              "mean": 0.808125,
+              "median": -0.650866,
+              "min": -2.66544,
+              "n": 12,
+              "positive_rate": 0.416667
+            },
+            "ticker_counts": {
+              "AMZN": 2,
+              "GOOG": 1,
+              "META": 3,
+              "MUU": 2,
+              "NFLX": 3,
+              "TRIP": 1
+            }
+          },
+          "NONE": {
+            "qqq_excess_pct": {
+              "max": 14.320268,
+              "mean": -2.491931,
+              "median": -2.487698,
+              "min": -11.698457,
+              "n": 24,
+              "positive_rate": 0.25
+            },
+            "return_pct": {
+              "max": 16.214391,
+              "mean": -3.248069,
+              "median": -4.019411,
+              "min": -12.697547,
+              "n": 24,
+              "positive_rate": 0.208333
+            },
+            "row_count": 24,
+            "spy_excess_pct": {
+              "max": 15.156073,
+              "mean": -2.910042,
+              "median": -3.105994,
+              "min": -12.071844,
+              "n": 24,
+              "positive_rate": 0.208333
+            },
+            "ticker_counts": {
+              "APP": 1,
+              "COHR": 3,
+              "CRDO": 3,
+              "GOOG": 1,
+              "HOOD": 2,
+              "MRVL": 3,
+              "NBIS": 3,
+              "NVDA": 3,
+              "SPCX": 3,
+              "TSLA": 1
+            }
+          },
+          "REVIEW": {
+            "qqq_excess_pct": {
+              "max": 12.056393,
+              "mean": 4.195745,
+              "median": 3.153173,
+              "min": -0.532251,
+              "n": 9,
+              "positive_rate": 0.888889
+            },
+            "return_pct": {
+              "max": 11.057303,
+              "mean": 4.268764,
+              "median": 3.799977,
+              "min": -3.455214,
+              "n": 9,
+              "positive_rate": 0.777778
+            },
+            "row_count": 9,
+            "spy_excess_pct": {
+              "max": 11.683005,
+              "mean": 4.227099,
+              "median": 2.779785,
+              "min": -2.099738,
+              "n": 9,
+              "positive_rate": 0.888889
+            },
+            "ticker_counts": {
+              "AMD": 3,
+              "APP": 2,
+              "TRIP": 2,
+              "TSLA": 2
+            }
+          }
+        },
+        "by_shadow_rule": {
+          "ATR_STOP": {
+            "qqq_excess_pct": {
+              "max": 0.440039,
+              "mean": 0.416289,
+              "median": 0.416289,
+              "min": 0.392538,
+              "n": 2,
+              "positive_rate": 1.0
+            },
+            "return_pct": {
+              "max": -0.606552,
+              "mean": -1.544738,
+              "median": -1.544738,
+              "min": -2.482924,
+              "n": 2,
+              "positive_rate": 0.0
+            },
+            "row_count": 2,
+            "spy_excess_pct": {
+              "max": 0.019151,
+              "mean": -0.554149,
+              "median": -0.554149,
+              "min": -1.127448,
+              "n": 2,
+              "positive_rate": 0.5
+            },
+            "ticker_counts": {
+              "AMZN": 2
+            }
+          },
+          "HARD_STOP": {
+            "qqq_excess_pct": {
+              "max": 2.358604,
+              "mean": 0.072774,
+              "median": -0.295853,
+              "min": -1.12649,
+              "n": 6,
+              "positive_rate": 0.5
+            },
+            "return_pct": {
+              "max": 2.700449,
+              "mean": -0.603203,
+              "median": -0.620773,
+              "min": -3.720844,
+              "n": 6,
+              "positive_rate": 0.5
+            },
+            "row_count": 6,
+            "spy_excess_pct": {
+              "max": 1.985216,
+              "mean": -0.295583,
+              "median": -0.767799,
+              "min": -2.365369,
+              "n": 6,
+              "positive_rate": 0.333333
+            },
+            "ticker_counts": {
+              "META": 3,
+              "NFLX": 3
+            }
+          },
+          "LEGACY_TARGET_REVIEW": {
+            "qqq_excess_pct": {
+              "max": 1.905853,
+              "mean": 0.901829,
+              "median": 1.331886,
+              "min": -0.532251,
+              "n": 3,
+              "positive_rate": 0.666667
+            },
+            "return_pct": {
+              "max": 3.799977,
+              "mean": 0.225853,
+              "median": 0.332796,
+              "min": -3.455214,
+              "n": 3,
+              "positive_rate": 0.666667
+            },
+            "row_count": 3,
+            "spy_excess_pct": {
+              "max": 2.741659,
+              "mean": 0.533473,
+              "median": 0.958499,
+              "min": -2.099738,
+              "n": 3,
+              "positive_rate": 0.666667
+            },
+            "ticker_counts": {
+              "AMD": 3
+            }
+          },
+          "SIGNAL_TARGET": {
+            "qqq_excess_pct": {
+              "max": 13.345997,
+              "mean": 4.115261,
+              "median": 2.70355,
+              "min": -2.292052,
+              "n": 4,
+              "positive_rate": 0.5
+            },
+            "return_pct": {
+              "max": 12.346907,
+              "mean": 2.154235,
+              "median": 0.134367,
+              "min": -3.998701,
+              "n": 4,
+              "positive_rate": 0.5
+            },
+            "row_count": 4,
+            "spy_excess_pct": {
+              "max": 12.972609,
+              "mean": 3.144824,
+              "median": 1.136063,
+              "min": -2.66544,
+              "n": 4,
+              "positive_rate": 0.5
+            },
+            "ticker_counts": {
+              "GOOG": 1,
+              "MUU": 2,
+              "TRIP": 1
+            }
+          },
+          "TIME_STOP": {
+            "qqq_excess_pct": {
+              "max": 12.056393,
+              "mean": 5.842702,
+              "median": 5.785284,
+              "min": 0.501201,
+              "n": 6,
+              "positive_rate": 1.0
+            },
+            "return_pct": {
+              "max": 11.057303,
+              "mean": 6.290219,
+              "median": 7.679409,
+              "min": -0.497889,
+              "n": 6,
+              "positive_rate": 0.833333
+            },
+            "row_count": 6,
+            "spy_excess_pct": {
+              "max": 11.683005,
+              "mean": 6.073911,
+              "median": 6.62109,
+              "min": 0.127813,
+              "n": 6,
+              "positive_rate": 1.0
+            },
+            "ticker_counts": {
+              "APP": 2,
+              "TRIP": 2,
+              "TSLA": 2
+            }
+          },
+          "UNKNOWN": {
+            "qqq_excess_pct": {
+              "max": 14.320268,
+              "mean": -2.491931,
+              "median": -2.487698,
+              "min": -11.698457,
+              "n": 24,
+              "positive_rate": 0.25
+            },
+            "return_pct": {
+              "max": 16.214391,
+              "mean": -3.248069,
+              "median": -4.019411,
+              "min": -12.697547,
+              "n": 24,
+              "positive_rate": 0.208333
+            },
+            "row_count": 24,
+            "spy_excess_pct": {
+              "max": 15.156073,
+              "mean": -2.910042,
+              "median": -3.105994,
+              "min": -12.071844,
+              "n": 24,
+              "positive_rate": 0.208333
+            },
+            "ticker_counts": {
+              "APP": 1,
+              "COHR": 3,
+              "CRDO": 3,
+              "GOOG": 1,
+              "HOOD": 2,
+              "MRVL": 3,
+              "NBIS": 3,
+              "NVDA": 3,
+              "SPCX": 3,
+              "TSLA": 1
+            }
+          }
+        },
+        "by_status_bucket": {
+          "APPROACHING": {
+            "qqq_excess_pct": {
+              "max": 4.35022,
+              "mean": -4.614605,
+              "median": -5.71732,
+              "min": -11.698457,
+              "n": 5,
+              "positive_rate": 0.2
+            },
+            "return_pct": {
+              "max": 6.244344,
+              "mean": -5.804601,
+              "median": -8.640284,
+              "min": -12.697547,
+              "n": 5,
+              "positive_rate": 0.2
+            },
+            "row_count": 5,
+            "spy_excess_pct": {
+              "max": 5.186026,
+              "mean": -5.223793,
+              "median": -7.284808,
+              "min": -12.071844,
+              "n": 5,
+              "positive_rate": 0.2
+            },
+            "ticker_counts": {
+              "HOOD": 1,
+              "MRVL": 1,
+              "NBIS": 2,
+              "SPCX": 1
+            }
+          },
+          "BREACHED": {
+            "qqq_excess_pct": {
+              "max": 13.345997,
+              "mean": 2.642475,
+              "median": 0.806325,
+              "min": -2.292052,
+              "n": 21,
+              "positive_rate": 0.714286
+            },
+            "return_pct": {
+              "max": 12.346907,
+              "mean": 1.920339,
+              "median": 0.884034,
+              "min": -3.998701,
+              "n": 21,
+              "positive_rate": 0.571429
+            },
+            "row_count": 21,
+            "spy_excess_pct": {
+              "max": 12.972609,
+              "mean": 2.273399,
+              "median": 0.958499,
+              "min": -2.66544,
+              "n": 21,
+              "positive_rate": 0.619048
+            },
+            "ticker_counts": {
+              "AMD": 3,
+              "AMZN": 2,
+              "APP": 2,
+              "GOOG": 1,
+              "META": 3,
+              "MUU": 2,
+              "NFLX": 3,
+              "TRIP": 3,
+              "TSLA": 2
+            }
+          },
+          "OK": {
+            "qqq_excess_pct": {
+              "max": 14.320268,
+              "mean": -1.933333,
+              "median": -2.075017,
+              "min": -11.50252,
+              "n": 19,
+              "positive_rate": 0.263158
+            },
+            "return_pct": {
+              "max": 16.214391,
+              "mean": -2.575297,
+              "median": -2.025125,
+              "min": -12.50161,
+              "n": 19,
+              "positive_rate": 0.210526
+            },
+            "row_count": 19,
+            "spy_excess_pct": {
+              "max": 15.156073,
+              "mean": -2.301159,
+              "median": -2.929099,
+              "min": -11.875908,
+              "n": 19,
+              "positive_rate": 0.210526
+            },
+            "ticker_counts": {
+              "APP": 1,
+              "COHR": 3,
+              "CRDO": 3,
+              "GOOG": 1,
+              "HOOD": 1,
+              "MRVL": 2,
+              "MUU": 1,
+              "NVDA": 3,
+              "SPCX": 2,
+              "TSLA": 1
+            }
+          }
+        }
+      }
+    },
+    "comparisons": {
+      "h1": {
+        "action_minus_ok_return_mean_pp": -0.821177,
+        "action_minus_ok_spy_excess_mean_pp": -0.700902,
+        "action_return_pct": {
+          "max": 8.461722,
+          "mean": -0.251492,
+          "median": -0.05174,
+          "min": -26.284256,
+          "n": 36,
+          "positive_rate": 0.472222
+        },
+        "action_rows": 36,
+        "action_spy_excess_pct": {
+          "max": 8.223138,
+          "mean": -0.049911,
+          "median": 0.069946,
+          "min": -24.83206,
+          "n": 36,
+          "positive_rate": 0.527778
+        },
+        "horizon": 1,
+        "ok_no_action_return_pct": {
+          "max": 31.071949,
+          "mean": 0.569685,
+          "median": -0.647012,
+          "min": -11.203969,
+          "n": 30,
+          "positive_rate": 0.4
+        },
+        "ok_no_action_rows": 30,
+        "ok_no_action_spy_excess_pct": {
+          "max": 30.927386,
+          "mean": 0.650991,
+          "median": -0.487496,
+          "min": -10.480832,
+          "n": 30,
+          "positive_rate": 0.466667
+        },
+        "settled_rows": 72
+      },
+      "h3": {
+        "action_minus_ok_return_mean_pp": 4.495636,
+        "action_minus_ok_spy_excess_mean_pp": 4.574558,
+        "action_return_pct": {
+          "max": 12.346907,
+          "mean": 1.920339,
+          "median": 0.884034,
+          "min": -3.998701,
+          "n": 21,
+          "positive_rate": 0.571429
+        },
+        "action_rows": 21,
+        "action_spy_excess_pct": {
+          "max": 12.972609,
+          "mean": 2.273399,
+          "median": 0.958499,
+          "min": -2.66544,
+          "n": 21,
+          "positive_rate": 0.619048
+        },
+        "horizon": 3,
+        "ok_no_action_return_pct": {
+          "max": 16.214391,
+          "mean": -2.575297,
+          "median": -2.025125,
+          "min": -12.50161,
+          "n": 19,
+          "positive_rate": 0.210526
+        },
+        "ok_no_action_rows": 19,
+        "ok_no_action_spy_excess_pct": {
+          "max": 15.156073,
+          "mean": -2.301159,
+          "median": -2.929099,
+          "min": -11.875908,
+          "n": 19,
+          "positive_rate": 0.210526
+        },
+        "settled_rows": 45
+      }
+    },
+    "decision": "observed_only_rejected_no_stable_intraday_shadow_action_edge",
+    "failed_reasons": [
+      "h1_action_underperformance_not_met",
+      "h3_action_underperformance_not_met"
+    ],
+    "observed_only": true,
+    "passed": false
+  },
+  "hypothesis": "Post-exp024 intraday primary advisory shadow actions may identify existing positions with worse next-1d and next-3d returns than OK/no-action positions after materially more settled rows matured through the 2026-06-29 warehouse.",
+  "implementation_mode": "observed_only_intraday_exit_advisory_attribution",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "mechanism_family": "intraday_exit_advisory_forward_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260626-024",
+    "exp-20260627-025"
+  ],
+  "new_evidence_axis": "Materially more settled post-contract intraday forward rows: current h1/h3 settled rows are 72/45 versus exp-20260627-025's 46/15, and the warehouse calendar advanced to 2026-06-29.",
+  "new_evidence_type": "materially_more_settled_intraday_forward_rows",
+  "observed_only_lead": false,
+  "owner": "alpha-explore",
+  "parameters": {
+    "config": {
+      "asof_max_date": "2026-06-30",
+      "asof_min_date": "2026-06-22",
+      "horizons": [
+        1,
+        3
+      ],
+      "min_h3_action_rows": 3,
+      "min_h3_ok_rows": 3,
+      "min_primary_h1_action_rows": 8,
+      "min_primary_h1_ok_rows": 8,
+      "min_primary_h1_rows": 20,
+      "required_action_underperformance_pp": 1.0
+    },
+    "settlement_source": "ohlcv_warehouse.ohlcv_overlay",
+    "snapshot_glob": "data/daily/intraday/snapshots/intraday_review_*.json",
+    "source_runner": "quant/experiments/exp_20260627_025_intraday_advisory_shadow_forward_outcome.py"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune REVIEW/EXIT labels, SIGNAL_TARGET, stop distance, target distance, trailing stop, time stop, or hard-exclusion versus tilt response functions on the same 2026-06-22..2026-06-30 snapshot surface.",
+    "new_evidence_required": "Reopen only after materially more closed forward rows beyond the 2026-06-29 warehouse, true quote timestamps or broker bar IDs, native primary actions at materially larger coverage, and slot-reuse/replacement-value accounting.",
+    "why_result_happened": "More settled rows did not improve the advisory-action edge: h1 action rows underperformed OK/no-action by less than the required 1 pp, while h3 action rows outperformed OK/no-action on SPY-excess mean, reversing the intended signal direction."
+  },
+  "prediction": {
+    "confidence_reason": "Current no-ID maturity check shows rows advanced versus exp-20260627-025 from h1/h3 46/15 to 72/45, satisfying the reopen-count condition, but h3 action-vs-OK separation appears reversed; likely result is a clean rejection that freezes this near-term exit-advisory promotion path.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "h3_action_underperformance_reverses",
+      "no_stable_directional_separation",
+      "ok_bucket_outperforms_action_bucket",
+      "still_observed_only_no_shared_exit_policy"
+    ],
+    "recorded_at": "2026-06-30T15:04:48+00:00",
+    "success_probability": 0.18
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "paper_orders_changed": false,
+    "parity_note": "Read-only attribution over existing intraday snapshots and OHLCV settlement. No order, exit, or daily adapter behavior changed.",
+    "ranking_changed": false,
+    "risk_budget_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false,
+    "watchlist_changed": false
+  },
+  "rejection_reason": "h1_action_underperformance_not_met;h3_action_underperformance_not_met",
+  "related_files": [
+    "quant/experiments/exp_20260630_014_intraday_advisory_shadow_forward_outcome_20260629.py",
+    "quant/experiments/exp_20260627_025_intraday_advisory_shadow_forward_outcome.py",
+    "data/experiments/exp-20260630-014/exp_20260630_014_intraday_advisory_shadow_forward_outcome_20260629.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/daily/intraday/snapshots",
+    "data/warehouse/warehouse_main.sqlite",
+    "data/warehouse/warehouse_main_hot.sqlite"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260630_014_intraday_advisory_shadow_forward_outcome_20260629.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260630_014_intraday_advisory_shadow_forward_outcome_20260629.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "intraday_advisory_shadow_action_forward_outcome_20260629_v1",
+  "status": "observed_only_rejected",
+  "summary": {
+    "h1_settled_rows": 72,
+    "h3_settled_rows": 45,
+    "observation_count": 97,
+    "reopen_guard_progress": {
+      "current_h1_settled_rows": 72,
+      "current_h3_settled_rows": 45,
+      "prior_exp_20260627_025_h1_settled_rows": 46,
+      "prior_exp_20260627_025_h3_settled_rows": 15,
+      "warehouse_calendar_max": "2026-06-29"
+    },
+    "shadow_action_counts": {
+      "EXIT": 22,
+      "NONE": 50,
+      "REVIEW": 25
+    },
+    "status_bucket_counts": {
+      "APPROACHING": 8,
+      "BREACHED": 47,
+      "OK": 42
+    }
+  },
+  "timestamp": "2026-06-30T15:09:50Z",
+  "trial_family": "intraday_advisory_shadow_action_forward_outcome",
+  "trial_variant_id": "post_exp024_matured_through_20260629_v1"
+}

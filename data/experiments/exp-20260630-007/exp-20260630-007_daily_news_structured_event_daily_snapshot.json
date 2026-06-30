@@ -1,0 +1,657 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "alpha_hypothesis": "Structured LLM/news relation-quality events may become tradable alpha only if future daily runs write the same PIT observation rows that can later be closed against cash/SPY/QQQ replacement value.",
+  "alpha_ready": false,
+  "anti_js": {
+    "evidence": "Python runner and pytest only; no JavaScript tooling invoked.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260630-007/exp-20260630-007_daily_news_structured_event_daily_snapshot.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.8232,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_success": true,
+    "brier_score": 0.0484,
+    "predicted_failure_mode_hit": [],
+    "predicted_failure_modes": [
+      "run_order_without_news",
+      "artifact_schema_incomplete",
+      "observation_id_instability",
+      "daily_path_side_effect"
+    ],
+    "predicted_success_probability": 0.78,
+    "realized_failure_modes": []
+  },
+  "causal_components": [
+    "shared helper",
+    "daily artifact path",
+    "run.py read-only observer",
+    "artifact schema test",
+    "no trading behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/daily_news_structured_event_snapshot.py",
+    "quant/test_daily_news_structured_event_snapshot.py",
+    "quant/data_paths.py",
+    "quant/run.py",
+    "quant/experiments/exp-20260630-007_daily_news_structured_event_daily_snapshot.py",
+    "data/experiments/exp-20260630-007/exp-20260630-007_daily_news_structured_event_daily_snapshot.json",
+    "experiments/logs/exp-20260630-007.json",
+    "experiments/cards/exp-20260630-007.md",
+    "experiments/manifests/exp-20260630-007.json",
+    "experiments/tickets/exp-20260630-007.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "daily_news_structured_event_daily_observation_snapshot_v1",
+  "decision": "accepted_measurement_repair_daily_news_structured_event_daily_snapshot",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "latest_event_rows": 3,
+    "latest_observation_rows": 3,
+    "latest_target_relation_quality_rows": 2,
+    "run_adapter_daily_observer_call_count": 2,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "dry_run_snapshot_audit": {
+    "event_contract_audit": {
+      "date_range": {
+        "end": "2026-06-29",
+        "start": "2026-06-29"
+      },
+      "duplicate_event_ids": 0,
+      "duplicate_input_rows_removed": 0,
+      "event_date_count": 1,
+      "explicit_ticker_items": 10,
+      "file_count": 1,
+      "ignored_temp_file_count": 15,
+      "ledger_rows": 3,
+      "magnitude_row_share": 0.0,
+      "magnitude_rows": 0,
+      "news_root": "D:\\Github\\ginger\\data\\daily\\news",
+      "polarity_counts": {
+        "negative": 1,
+        "positive": 2
+      },
+      "raw_event_rows": 3,
+      "raw_items": 10,
+      "relation_counts": {
+        "guidance_or_rating_upgrade": 2,
+        "legal_or_regulatory_pressure": 1
+      },
+      "required_field_audit": {
+        "all_required_fields_present": true,
+        "missing_counts": {},
+        "required_fields": [
+          "event_id",
+          "event_date",
+          "ticker",
+          "relation_type",
+          "relation_polarity",
+          "actor",
+          "object",
+          "magnitude",
+          "evidence_span",
+          "sanitized_text_hash",
+          "source_provenance"
+        ]
+      },
+      "source_date_counts": {
+        "2026-06-29": 3
+      },
+      "source_kind": "clean_trade_news",
+      "target_relation_quality_event_dates": 1,
+      "target_relation_quality_rows": 2,
+      "target_relation_quality_tickers": 2,
+      "ticker_top20": {
+        "APP": 1,
+        "META": 1,
+        "RBLX": 1
+      },
+      "unreadable_files": 0
+    },
+    "forward_observation_contract_audit": {
+      "date_range": {
+        "end": "2026-06-29",
+        "start": "2026-06-29"
+      },
+      "duplicate_observation_ids": 0,
+      "event_date_count": 1,
+      "observation_rows": 3,
+      "relation_counts": {
+        "guidance_or_rating_upgrade": 2,
+        "legal_or_regulatory_pressure": 1
+      },
+      "required_field_audit": {
+        "all_required_fields_present": true,
+        "missing_counts": {},
+        "required_fields": [
+          "observation_id",
+          "event_id",
+          "event_date",
+          "ticker",
+          "relation_type",
+          "relation_polarity",
+          "target_relation_quality",
+          "entry_semantics",
+          "exit_semantics",
+          "unit_notional_usd",
+          "outcome_status"
+        ]
+      },
+      "target_relation_quality_event_dates": 1,
+      "target_relation_quality_rows": 2,
+      "target_relation_quality_tickers": 2
+    },
+    "sample_event_rows": [
+      {
+        "actor": {
+          "match_confidence": "high",
+          "match_status": "explicit_text_match",
+          "ticker": "APP",
+          "type": "ticker"
+        },
+        "event_date": "2026-06-29",
+        "event_id": "86b802fa684dbd805f803d16",
+        "evidence_span": {
+          "context_end": 187,
+          "context_start": 0,
+          "end": 77,
+          "start": 63,
+          "text": "Grab Holdings: Southeast Asia's Super-App Is Getting Stronger (Rating Upgrade) - Seeking Alpha\nGrab Holdings: Southeast Asia's Super-App Is Getting Stronger (Rating Upgrade) Seeking Alpha"
+        },
+        "evidence_text_hash": "957da743c4afdada086508c3",
+        "evidence_trigger": {
+          "hash": "e788b735505e819a",
+          "text": "rating upgrade"
+        },
+        "magnitude": {
+          "has_numeric_magnitude": false,
+          "values": [],
+          "window_hash": "d6de86702d4cb812"
+        },
+        "object": {
+          "counterparty_extracted": false,
+          "source": "local_evidence_window",
+          "text": "forecast_or_rating",
+          "type": "forecast_or_rating"
+        },
+        "published_at": "2026-06-29T11:10:23+00:00",
+        "relation_polarity": "positive",
+        "relation_type": "guidance_or_rating_upgrade",
+        "rule_version": "daily_news_structured_event_ledger_v1",
+        "sanitized_text_hash": "957da743c4afdada",
+        "source_item_hash": "d5b7ebc133dd2270a3e3a387",
+        "source_provenance": {
+          "file_sha256": "10076b4eb3691424a45b1e0bf3eea58d1b6e8308543a47df3c99b2502a3ae8ce",
+          "item_index": 5,
+          "kind": "clean_trade_news",
+          "news_date": "2026-06-29",
+          "path": "data/daily/news/trade/clean_trade_news_20260629.json",
+          "raw_source": "https://news.google.com/rss/search?q=APP+stock&hl=en-US&gl=US&ceid=US:en",
+          "source": "google_news",
+          "tier": "T3",
+          "url": "https://news.google.com/rss/articles/CBMivgFBVV95cUxNZ2p6a1owVGdYRE9OTnZzQmR2aG03QkxiaGZOLU41c1JMWDhhcXZFLVVYdk9QTDc1b2pFLTdOVUpBdWs5QVctYVZiUnNCaVpFSDMzeXRZeks5bXVBUHo5VDBjXzhFNU9jVW1oaUFBSTJuYTdXSWVrYlEtMm8xUVBnMEFReExHMFlfcVdnRmJqTjRHYzVFRTJlanNWUGVsSElGZ1cxNDRTbUJVaHBNWkUwSzlHQm0wcWJBTjBVSWJ3?oc=5"
+        },
+        "text_quality": {
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "status": "changed",
+          "ticker_entity_status": "explicit_text_match"
+        },
+        "ticker": "APP"
+      },
+      {
+        "actor": {
+          "match_confidence": "high",
+          "match_status": "explicit_text_match",
+          "ticker": "META",
+          "type": "ticker"
+        },
+        "event_date": "2026-06-29",
+        "event_id": "ba6c149ce5f33ab870fe8137",
+        "evidence_span": {
+          "context_end": 187,
+          "context_start": 0,
+          "end": 63,
+          "start": 49,
+          "text": "Why Meta Should Be A Market Favorite, But Isn\u2019t (Rating Upgrade) (NASDAQ:META) - Seeking Alpha\nWhy Meta Should Be A Market Favorite, But Isn\u2019t (Rating Upgrade) (NASDAQ:META) Seeking Alpha"
+        },
+        "evidence_text_hash": "241112d0342d768439e712ea",
+        "evidence_trigger": {
+          "hash": "e788b735505e819a",
+          "text": "rating upgrade"
+        },
+        "magnitude": {
+          "has_numeric_magnitude": false,
+          "values": [],
+          "window_hash": "c618c04c3d6ad164"
+        },
+        "object": {
+          "counterparty_extracted": false,
+          "source": "local_evidence_window",
+          "text": "forecast_or_rating",
+          "type": "forecast_or_rating"
+        },
+        "published_at": "2026-06-29T15:54:13+00:00",
+        "relation_polarity": "positive",
+        "relation_type": "guidance_or_rating_upgrade",
+        "rule_version": "daily_news_structured_event_ledger_v1",
+        "sanitized_text_hash": "241112d0342d7684",
+        "source_item_hash": "8c4f49622d2ddbd197e7be04",
+        "source_provenance": {
+          "file_sha256": "10076b4eb3691424a45b1e0bf3eea58d1b6e8308543a47df3c99b2502a3ae8ce",
+          "item_index": 4,
+          "kind": "clean_trade_news",
+          "news_date": "2026-06-29",
+          "path": "data/daily/news/trade/clean_trade_news_20260629.json",
+          "raw_source": "https://news.google.com/rss/search?q=META+stock&hl=en-US&gl=US&ceid=US:en",
+          "source": "google_news",
+          "tier": "T3",
+          "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNdkd5QjdtXzBOaFN3OTRQazMzS0ZHakxYQXpIZHYyVmRNZ2ZhQzh5c0JKRndHVEtkNk1kLUJDdzRCenFEMTV3VGVDOHB5X1BtZXY3N2d0czh5WFhHaU9rOTVMbFBPUTBKMFpGQ2ZKd2ZXZEdkYmFWNS1TMkFhRmI5LXpNNk9mblJrX0hqRVNWelVscnFHYWsxSHBibl9wRVRWRE80?oc=5"
+        },
+        "text_quality": {
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "status": "changed",
+          "ticker_entity_status": "explicit_text_match"
+        },
+        "ticker": "META"
+      },
+      {
+        "actor": {
+          "match_confidence": "high",
+          "match_status": "explicit_text_match",
+          "ticker": "RBLX",
+          "type": "ticker"
+        },
+        "event_date": "2026-06-29",
+        "event_id": "17cc7f1a5c23f2858aa0f1a3",
+        "evidence_span": {
+          "context_end": 193,
+          "context_start": 0,
+          "end": 83,
+          "start": 76,
+          "text": "RBLX Investors Have Opportunity to Lead Roblox Corporation Securities Fraud Lawsuit - Morningstar\nRBLX Investors Have Opportunity to Lead Roblox Corporation Securities Fraud Lawsuit Morningstar"
+        },
+        "evidence_text_hash": "29593a578e5975d9e8a41e90",
+        "evidence_trigger": {
+          "hash": "b85b91c53558d46d",
+          "text": "lawsuit"
+        },
+        "magnitude": {
+          "has_numeric_magnitude": false,
+          "values": [],
+          "window_hash": "832975fc15ee00fc"
+        },
+        "object": {
+          "counterparty_extracted": false,
+          "source": "local_evidence_window",
+          "text": "legal_regulatory_risk",
+          "type": "legal_regulatory_risk"
+        },
+        "published_at": "2026-06-29T19:31:00+00:00",
+        "relation_polarity": "negative",
+        "relation_type": "legal_or_regulatory_pressure",
+        "rule_version": "daily_news_structured_event_ledger_v1",
+        "sanitized_text_hash": "29593a578e5975d9",
+        "source_item_hash": "2607581afbcb364cc1801114",
+        "source_provenance": {
+          "file_sha256": "10076b4eb3691424a45b1e0bf3eea58d1b6e8308543a47df3c99b2502a3ae8ce",
+          "item_index": 1,
+          "kind": "clean_trade_news",
+          "news_date": "2026-06-29",
+          "path": "data/daily/news/trade/clean_trade_news_20260629.json",
+          "raw_source": "https://news.google.com/rss/search?q=RBLX+stock&hl=en-US&gl=US&ceid=US:en",
+          "source": "google_news",
+          "tier": "T3",
+          "url": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxQVTlSdE1aQ21TZGFEZEhZcG03RjR1M2xVSEUxaXFYX0F4UXJaR2VHMXBNTWJSdWFJMTJNVzVyRnUxWmN6azVpZmM1VnZUYS1ucVN0OUdpbXkxMmFJVjBaYjJ4SFpCbzk4VFV2OWxQRE82WGRBSUE0emtCTGhiNzNkQWVFcS0xSVE2cDltWFY0SGhIX0NxdXJ1NlE4MTJKdjNTLWp3eGtUcEJSTlVKQWtYcm5YRHdRb3F2eVZ5R1p1Q25sUVRQeTRtMUU4VUp0emwwYXRZSVNVYklVYVQ4?oc=5"
+        },
+        "text_quality": {
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "status": "changed",
+          "ticker_entity_status": "explicit_text_match"
+        },
+        "ticker": "RBLX"
+      }
+    ],
+    "sample_observation_rows": [
+      {
+        "entry_date": null,
+        "entry_semantics": "next_session_open_after_news_date",
+        "event_date": "2026-06-29",
+        "event_id": "86b802fa684dbd805f803d16",
+        "evidence_text_hash": "957da743c4afdada086508c3",
+        "excluded_positive_relation": false,
+        "exit_semantics": "ten_trading_day_close_observation",
+        "forward_10d_return_pct": null,
+        "forward_5d_return_pct": null,
+        "magnitude_qualified": false,
+        "observation_id": "f1257286462764882f520cac",
+        "outcome_status": "pending_forward_close",
+        "published_at": "2026-06-29T11:10:23+00:00",
+        "relation_polarity": "positive",
+        "relation_type": "guidance_or_rating_upgrade",
+        "replacement_value_vs_cash_usd": null,
+        "replacement_value_vs_qqq_usd": null,
+        "replacement_value_vs_spy_usd": null,
+        "rule_version": "daily_news_structured_event_forward_observation_contract_v1",
+        "sanitized_text_hash": "957da743c4afdada",
+        "source_event_rule_version": "daily_news_structured_event_ledger_v1",
+        "source_item_hash": "d5b7ebc133dd2270a3e3a387",
+        "source_provenance": {
+          "file_sha256": "10076b4eb3691424a45b1e0bf3eea58d1b6e8308543a47df3c99b2502a3ae8ce",
+          "item_index": 5,
+          "kind": "clean_trade_news",
+          "news_date": "2026-06-29",
+          "path": "data/daily/news/trade/clean_trade_news_20260629.json",
+          "raw_source": "https://news.google.com/rss/search?q=APP+stock&hl=en-US&gl=US&ceid=US:en",
+          "source": "google_news",
+          "tier": "T3",
+          "url": "https://news.google.com/rss/articles/CBMivgFBVV95cUxNZ2p6a1owVGdYRE9OTnZzQmR2aG03QkxiaGZOLU41c1JMWDhhcXZFLVVYdk9QTDc1b2pFLTdOVUpBdWs5QVctYVZiUnNCaVpFSDMzeXRZeks5bXVBUHo5VDBjXzhFNU9jVW1oaUFBSTJuYTdXSWVrYlEtMm8xUVBnMEFReExHMFlfcVdnRmJqTjRHYzVFRTJlanNWUGVsSElGZ1cxNDRTbUJVaHBNWkUwSzlHQm0wcWJBTjBVSWJ3?oc=5"
+        },
+        "target_cohort_version": "structured_relation_quality_v1",
+        "target_price": null,
+        "target_relation_quality": true,
+        "ticker": "APP",
+        "unit_notional_usd": 4000.0
+      },
+      {
+        "entry_date": null,
+        "entry_semantics": "next_session_open_after_news_date",
+        "event_date": "2026-06-29",
+        "event_id": "ba6c149ce5f33ab870fe8137",
+        "evidence_text_hash": "241112d0342d768439e712ea",
+        "excluded_positive_relation": false,
+        "exit_semantics": "ten_trading_day_close_observation",
+        "forward_10d_return_pct": null,
+        "forward_5d_return_pct": null,
+        "magnitude_qualified": false,
+        "observation_id": "06f896cfd6d43884b2482c2a",
+        "outcome_status": "pending_forward_close",
+        "published_at": "2026-06-29T15:54:13+00:00",
+        "relation_polarity": "positive",
+        "relation_type": "guidance_or_rating_upgrade",
+        "replacement_value_vs_cash_usd": null,
+        "replacement_value_vs_qqq_usd": null,
+        "replacement_value_vs_spy_usd": null,
+        "rule_version": "daily_news_structured_event_forward_observation_contract_v1",
+        "sanitized_text_hash": "241112d0342d7684",
+        "source_event_rule_version": "daily_news_structured_event_ledger_v1",
+        "source_item_hash": "8c4f49622d2ddbd197e7be04",
+        "source_provenance": {
+          "file_sha256": "10076b4eb3691424a45b1e0bf3eea58d1b6e8308543a47df3c99b2502a3ae8ce",
+          "item_index": 4,
+          "kind": "clean_trade_news",
+          "news_date": "2026-06-29",
+          "path": "data/daily/news/trade/clean_trade_news_20260629.json",
+          "raw_source": "https://news.google.com/rss/search?q=META+stock&hl=en-US&gl=US&ceid=US:en",
+          "source": "google_news",
+          "tier": "T3",
+          "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNdkd5QjdtXzBOaFN3OTRQazMzS0ZHakxYQXpIZHYyVmRNZ2ZhQzh5c0JKRndHVEtkNk1kLUJDdzRCenFEMTV3VGVDOHB5X1BtZXY3N2d0czh5WFhHaU9rOTVMbFBPUTBKMFpGQ2ZKd2ZXZEdkYmFWNS1TMkFhRmI5LXpNNk9mblJrX0hqRVNWelVscnFHYWsxSHBibl9wRVRWRE80?oc=5"
+        },
+        "target_cohort_version": "structured_relation_quality_v1",
+        "target_price": null,
+        "target_relation_quality": true,
+        "ticker": "META",
+        "unit_notional_usd": 4000.0
+      },
+      {
+        "entry_date": null,
+        "entry_semantics": "next_session_open_after_news_date",
+        "event_date": "2026-06-29",
+        "event_id": "17cc7f1a5c23f2858aa0f1a3",
+        "evidence_text_hash": "29593a578e5975d9e8a41e90",
+        "excluded_positive_relation": false,
+        "exit_semantics": "ten_trading_day_close_observation",
+        "forward_10d_return_pct": null,
+        "forward_5d_return_pct": null,
+        "magnitude_qualified": false,
+        "observation_id": "e8be5e7ab307a8469ee41539",
+        "outcome_status": "pending_forward_close",
+        "published_at": "2026-06-29T19:31:00+00:00",
+        "relation_polarity": "negative",
+        "relation_type": "legal_or_regulatory_pressure",
+        "replacement_value_vs_cash_usd": null,
+        "replacement_value_vs_qqq_usd": null,
+        "replacement_value_vs_spy_usd": null,
+        "rule_version": "daily_news_structured_event_forward_observation_contract_v1",
+        "sanitized_text_hash": "29593a578e5975d9",
+        "source_event_rule_version": "daily_news_structured_event_ledger_v1",
+        "source_item_hash": "2607581afbcb364cc1801114",
+        "source_provenance": {
+          "file_sha256": "10076b4eb3691424a45b1e0bf3eea58d1b6e8308543a47df3c99b2502a3ae8ce",
+          "item_index": 1,
+          "kind": "clean_trade_news",
+          "news_date": "2026-06-29",
+          "path": "data/daily/news/trade/clean_trade_news_20260629.json",
+          "raw_source": "https://news.google.com/rss/search?q=RBLX+stock&hl=en-US&gl=US&ceid=US:en",
+          "source": "google_news",
+          "tier": "T3",
+          "url": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxQVTlSdE1aQ21TZGFEZEhZcG03RjR1M2xVSEUxaXFYX0F4UXJaR2VHMXBNTWJSdWFJMTJNVzVyRnUxWmN6azVpZmM1VnZUYS1ucVN0OUdpbXkxMmFJVjBaYjJ4SFpCbzk4VFV2OWxQRE82WGRBSUE0emtCTGhiNzNkQWVFcS0xSVE2cDltWFY0SGhIX0NxdXJ1NlE4MTJKdjNTLWp3eGtUcEJSTlVKQWtYcm5YRHdRb3F2eVZ5R1p1Q25sUVRQeTRtMUU4VUp0emwwYXRZSVNVYklVYVQ4?oc=5"
+        },
+        "target_cohort_version": "structured_relation_quality_v1",
+        "target_price": null,
+        "target_relation_quality": false,
+        "ticker": "RBLX",
+        "unit_notional_usd": 4000.0
+      }
+    ]
+  },
+  "experiment_id": "exp-20260630-007",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "artifact_keys_present": {
+      "daily_news_structured_event_observations": true,
+      "daily_news_structured_events": true
+    },
+    "dependencies_validated": true,
+    "entry_date_scope": "Forward observations are pending; no executable entry is scheduled.",
+    "event_required_field_audit": {
+      "all_required_fields_present": true,
+      "missing_counts": {},
+      "required_fields": [
+        "event_id",
+        "event_date",
+        "ticker",
+        "relation_type",
+        "relation_polarity",
+        "actor",
+        "object",
+        "magnitude",
+        "evidence_span",
+        "sanitized_text_hash",
+        "source_provenance"
+      ]
+    },
+    "fields_checked": [
+      "event_date",
+      "ticker",
+      "relation_type",
+      "relation_polarity",
+      "evidence_span",
+      "source_provenance",
+      "observation_id",
+      "entry_semantics",
+      "exit_semantics",
+      "entry_date",
+      "target_price",
+      "outcome_status"
+    ],
+    "observation_required_field_audit": {
+      "all_required_fields_present": true,
+      "missing_counts": {},
+      "required_fields": [
+        "observation_id",
+        "event_id",
+        "event_date",
+        "ticker",
+        "relation_type",
+        "relation_polarity",
+        "target_relation_quality",
+        "entry_semantics",
+        "exit_semantics",
+        "unit_notional_usd",
+        "outcome_status"
+      ]
+    },
+    "passed": true,
+    "run_adapter_wiring": {
+      "daily_observer_call_count": 2,
+      "helper_function_defined": true,
+      "helper_imports_persist_function": true,
+      "run_path": "quant/run.py"
+    },
+    "stable_ids": true,
+    "target_price_scope": "No target exit is scheduled; target_price is intentionally null."
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "Measurement rows only; no executable filter or rank rule was added.",
+    "signals_generated": 3,
+    "signals_survived": 3,
+    "survival_rate": 1.0,
+    "target_relation_quality_rows": 2
+  },
+  "gate4": {
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "max_drawdown_pct_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "decision": "accepted_measurement_repair_daily_news_structured_event_daily_snapshot",
+    "failed_reasons": [],
+    "measurement_repair_only": true,
+    "passed": true
+  },
+  "hypothesis": "Persist the accepted structured daily-news event forward-observation contract from the production daily path so the exp-20260630-005 LLM/news relation-quality lead can accumulate prospective PIT rows without changing trading behavior.",
+  "implementation_mode": "measurement_repair_daily_forward_observation_snapshot",
+  "lane": "measurement_repair",
+  "log": "experiments/logs/exp-20260630-007.json",
+  "mechanism_family": "daily_news_llm_event_scoring_alpha",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260630-004",
+    "exp-20260630-005",
+    "exp-20260630-006"
+  ],
+  "new_evidence_type": "production_daily_forward_observation_rows",
+  "next_retry_requires": [
+    "new closed structured-event daily observation rows",
+    "PIT LLM labels persisted with the same evidence-span schema",
+    "canonical-window daily-news coverage"
+  ],
+  "owner": "alpha-explore",
+  "parameters": {
+    "actual_daily_write_in_runner": false,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data_dir": "data",
+    "latest_clean_trade_news_tag": "20260629",
+    "observer_rule_version": "daily_news_structured_event_daily_snapshot_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not use this wiring to sweep relation lists, polarity labels, magnitude requirements, hold days, top-N, notional, response curves, or prompt wording on the same rows.",
+    "new_evidence_required": "Let daily runs accumulate new forward observations, then close them against cash/SPY/QQQ replacement value; alternatively add a true PIT LLM scorer using the same evidence-span schema or canonical-window daily-news coverage.",
+    "why_result_happened": "The accepted structured-news contract was narrow enough to wire into daily production observation as a separate artifact. The latest clean trade-news archive emits stable event and observation IDs without touching trading behavior."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Structured LLM/news relation-quality events may become tradable alpha only if future daily runs write the same PIT observation rows that can later be closed against cash/SPY/QQQ replacement value.",
+    "2_history_check": {
+      "exp-20260630-004": "Built structured actor/object/relation/magnitude evidence rows.",
+      "exp-20260630-005": "Observed-only positive relation-quality lead, not promoted due canonical coverage gap.",
+      "exp-20260630-006": "Accepted shared forward-observation contract but left daily_snapshot_exposed=false.",
+      "novelty_gate": "Reservation passed; this is daily production observation wiring, not a row reslice."
+    },
+    "3_single_measurement_bundle": "daily_news_structured_event_daily_observation_snapshot_v1",
+    "4_success_failure_standard": "Accept only if daily artifact keys exist, the latest clean_trade_news dry-run emits schema-complete event/observation rows with stable IDs, and run.py calls the observer after both news collection paths.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp-20260630-007_daily_news_structured_event_daily_snapshot.py"
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260630-006 already proved the structured event helper can reproduce the ledger and stable observation IDs; this narrow repair only persists the same contract from the daily path, with the main risk being run-order integration or schema drift.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "run_order_without_news",
+      "artifact_schema_incomplete",
+      "observation_id_instability",
+      "daily_path_side_effect"
+    ],
+    "recorded_at": "2026-06-30T07:07:59+00:00",
+    "success_probability": 0.78
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": true,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "llm_prompt_changed": false,
+    "paper_orders_changed": false,
+    "parity_note": "run.py now writes a separate read-only structured-news observation artifact after news collection. It is not attached to the LLM prompt or quant_signals and cannot affect orders, ranking, sizing, or exits.",
+    "ranking_changed": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "quant/daily_news_structured_events.py",
+    "quant/test_daily_news_structured_events.py",
+    "experiments/logs/exp-20260630-004.json",
+    "experiments/logs/exp-20260630-005.json",
+    "experiments/logs/exp-20260630-006.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp-20260630-007_daily_news_structured_event_daily_snapshot.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\daily_news_structured_event_snapshot.py quant\\test_daily_news_structured_event_snapshot.py quant\\run.py quant\\experiments\\exp-20260630-007_daily_news_structured_event_daily_snapshot.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_daily_news_structured_event_snapshot.py quant\\test_daily_news_structured_events.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "daily_news_structured_event_daily_observation_snapshot_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-06-30T07:16:43+00:00",
+  "trial_family": "daily_news_structured_event_daily_observation_snapshot",
+  "trial_variant_id": "v1_production_daily_observer"
+}

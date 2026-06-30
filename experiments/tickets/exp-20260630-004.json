@@ -1,0 +1,506 @@
+{
+  "acceptance_rule": "accepted_measurement_repair only if the artifact produces a replayable JSONL ledger with nonzero rows and every event row contains event_date,ticker,relation_type,evidence_span,sanitized_text_hash,actor/object/magnitude/provenance fields; no strategy metrics may change",
+  "allowed_write_scope": [
+    "quant/experiments/exp_*_daily_news_structured_event_ledger.py;data/experiments/exp-*;experiments/logs/exp-*.json;experiments/cards/exp-*.md;experiments/manifests/exp-*.json;experiments/tickets/exp-*.json;docs/experiment_registry.json;docs/experiment_log.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260630-004.md",
+  "causal_components": [
+    "daily clean-trade-news archive",
+    "sanitized text",
+    "evidence span extraction",
+    "actor relation magnitude fields",
+    "no trading behavior change"
+  ],
+  "change_type": "daily_news_structured_event_measurement_surface",
+  "changed_variable": "daily_news_structured_event_evidence_ledger_v1",
+  "claimed_at": "2026-06-30T04:07:56+00:00",
+  "completed_at": "2026-06-30T04:12:34+00:00",
+  "created_at": "2026-06-30T04:07:47+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260630-004",
+  "experiment_uid": "expuid-72b73a1dfa3d411b",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260630-004",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-30T04:07:47+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "daily_news_structured_event_ledger"
+  },
+  "hypothesis": "Daily news LLM/event-scoring alpha is currently blocked because the accepted sanitation contract and rejected keyword taxonomy do not leave replayable actor/object/relation/magnitude evidence spans; build a structured PIT event evidence ledger without changing trading behavior.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "trade_enabled=false",
+    "live_orders_changed=false",
+    "paper_orders_changed=false",
+    "baseline_strategy_metrics_unchanged"
+  ],
+  "mechanism_family": "daily_news_llm_event_scoring_alpha",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [
+    "production trading defaults",
+    "live order path",
+    "paper order path",
+    "ranking",
+    "sizing",
+    "exits",
+    "source news archive files"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260630-001",
+    "exp-20260630-002"
+  ],
+  "new_evidence_type": "structured_pit_event_ledger_with_actor_relation_magnitude_evidence_spans",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_relation",
+      "field_tags": [
+        "a",
+        "accepted",
+        "actor",
+        "alpha",
+        "because",
+        "behavior",
+        "blocked",
+        "build",
+        "changing",
+        "contract",
+        "currently",
+        "daily",
+        "do",
+        "event",
+        "evidence",
+        "is",
+        "keyword",
+        "leave",
+        "ledger",
+        "llm",
+        "magnitude",
+        "news",
+        "not",
+        "object",
+        "pit",
+        "rejected",
+        "relation",
+        "replayable",
+        "sanitation",
+        "scoring",
+        "spans",
+        "structured",
+        "taxonomy",
+        "trading",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "nonrepeat_alpha_surface_readiness",
+        "reopen_condition": "A retry needs materially more closed forward replacement rows, real 10-K/10-Q text/cache with parsed cover-page status, populated PIT borrow economics, or a genuinely new data source/gate shape.",
+        "score": 0.4773,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "breakout_without_2x_volume_precursor_forward_replacement",
+        "reopen_condition": "A genuinely new PIT pre-volume-confirmation field that predicts WHICH breakout-without-2x-volume names go on to work (e.g. PIT borrow/availability, options-implied pressure, breadth persistence), tested out of sample -- not a volume-threshold change. Only such a selector would justify a default-off forward ledger; a blanket ledger of a deflated signal would be measurement treadmill.",
+        "score": 0.4682,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "true_pit_earnings_peer_reaction_candidate_pool",
+        "reopen_condition": "Only reopen with analyst-count/estimate trajectory, estimate dispersion, customer/supplier links, or closed forward replacement rows.",
+        "score": 0.4603,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "event_breadth_context_quality",
+        "reopen_condition": null,
+        "score": 0.46,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "sec_event_provenanced_peer_shock",
+        "reopen_condition": "Need relation evidence that names actual economic linkage, such as counterparties, supplier/customer edges, product-line overlap, or PIT text classification with daily production parity.",
+        "score": 0.46,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_relation",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.72,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "source archive lacks enough explicit event text",
+      "evidence extraction is too keyword-like",
+      "ledger rows cannot be made provenance-complete"
+    ],
+    "confidence_reason": "Prior sanitation and forward-value runs proved the cleaned archive exists; this iteration changes measurement shape only and writes no strategy behavior.",
+    "recorded_at": "2026-06-30T04:12:34+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair",
+    "artifact": "data/experiments/exp-20260630-004/exp_20260630_004_daily_news_structured_event_ledger.json",
+    "ledger_jsonl": "data/experiments/exp-20260630-004/daily_news_structured_event_ledger.jsonl",
+    "delta_metrics": {
+      "expected_value_score_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "ledger_rows": 384,
+      "explicit_ticker_items": 1132,
+      "magnitude_rows": 45
+    },
+    "gate4": {
+      "status": "accepted_measurement_repair",
+      "passed": true,
+      "failed_reasons": [],
+      "expected_value_score_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "note": "No strategy behavior changed; this is accepted only as measurement repair."
+    },
+    "source_audit": {
+      "news_root": "data/daily/news",
+      "source_kind": "clean_trade_news",
+      "file_count": 79,
+      "unreadable_files": 0,
+      "raw_items": 1152,
+      "explicit_ticker_items": 1132,
+      "raw_event_rows": 386,
+      "ledger_rows": 384,
+      "duplicate_input_rows_removed": 2,
+      "duplicate_event_ids": 0,
+      "date_range": {
+        "start": "2026-01-22",
+        "end": "2026-06-26"
+      },
+      "event_date_count": 84,
+      "source_date_counts": {
+        "2026-01-23": 4,
+        "2026-01-30": 1,
+        "2026-02-17": 1,
+        "2026-02-19": 1,
+        "2026-02-20": 1,
+        "2026-03-13": 3,
+        "2026-03-22": 5,
+        "2026-03-28": 3,
+        "2026-03-29": 2,
+        "2026-04-04": 3,
+        "2026-04-10": 1,
+        "2026-04-13": 2,
+        "2026-04-14": 2,
+        "2026-04-15": 8,
+        "2026-04-16": 4,
+        "2026-04-17": 2,
+        "2026-04-20": 3,
+        "2026-04-21": 2,
+        "2026-04-22": 2,
+        "2026-04-23": 4,
+        "2026-04-24": 5,
+        "2026-04-27": 2,
+        "2026-04-28": 3,
+        "2026-04-29": 2,
+        "2026-04-30": 7,
+        "2026-05-01": 9,
+        "2026-05-03": 5,
+        "2026-05-04": 3,
+        "2026-05-05": 3,
+        "2026-05-06": 5,
+        "2026-05-07": 4,
+        "2026-05-08": 5,
+        "2026-05-09": 5,
+        "2026-05-10": 5,
+        "2026-05-11": 9,
+        "2026-05-12": 8,
+        "2026-05-13": 7,
+        "2026-05-14": 3,
+        "2026-05-15": 5,
+        "2026-05-16": 5,
+        "2026-05-17": 3,
+        "2026-05-18": 4,
+        "2026-05-19": 7,
+        "2026-05-20": 15,
+        "2026-05-21": 10,
+        "2026-05-22": 9,
+        "2026-05-23": 9,
+        "2026-05-24": 9,
+        "2026-05-25": 9,
+        "2026-05-26": 7,
+        "2026-05-27": 2,
+        "2026-05-28": 3,
+        "2026-05-29": 6,
+        "2026-05-30": 3,
+        "2026-05-31": 4,
+        "2026-06-01": 3,
+        "2026-06-02": 4,
+        "2026-06-03": 7,
+        "2026-06-04": 3,
+        "2026-06-05": 11,
+        "2026-06-06": 9,
+        "2026-06-07": 10,
+        "2026-06-08": 8,
+        "2026-06-09": 2,
+        "2026-06-10": 2,
+        "2026-06-11": 5,
+        "2026-06-13": 11,
+        "2026-06-15": 9,
+        "2026-06-17": 7,
+        "2026-06-18": 8,
+        "2026-06-22": 7,
+        "2026-06-23": 3,
+        "2026-06-24": 4,
+        "2026-06-25": 5,
+        "2026-06-26": 14
+      },
+      "relation_counts": {
+        "capital_return": 48,
+        "customer_order_or_partnership": 10,
+        "downgrade_or_target_cut": 34,
+        "drawdown_or_failed_transaction": 87,
+        "financial_growth_or_beat": 90,
+        "guidance_or_rating_upgrade": 63,
+        "legal_or_regulatory_pressure": 28,
+        "product_or_approval_catalyst": 24
+      },
+      "polarity_counts": {
+        "negative": 149,
+        "positive": 235
+      },
+      "ticker_top20": {
+        "APP": 27,
+        "MU": 26,
+        "NFLX": 26,
+        "NVDA": 25,
+        "TSLA": 24,
+        "META": 23,
+        "RBLX": 22,
+        "WDC": 20,
+        "AMD": 19,
+        "CRDO": 17,
+        "COIN": 16,
+        "GE": 16,
+        "GEV": 16,
+        "LITE": 14,
+        "HOOD": 13,
+        "INTC": 12,
+        "SOFI": 11,
+        "MCD": 9,
+        "MRVL": 9,
+        "GOOG": 7
+      },
+      "magnitude_rows": 45,
+      "magnitude_row_share": 0.1171875,
+      "required_field_audit": {
+        "required_fields": [
+          "event_id",
+          "event_date",
+          "ticker",
+          "relation_type",
+          "relation_polarity",
+          "actor",
+          "object",
+          "magnitude",
+          "evidence_span",
+          "sanitized_text_hash",
+          "source_provenance"
+        ],
+        "missing_counts": {},
+        "all_required_fields_present": true
+      }
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "live_orders_changed": false,
+      "paper_orders_changed": false,
+      "entry_rules_changed": false,
+      "ranking_changed": false,
+      "sizing_changed": false,
+      "exit_rules_changed": false,
+      "llm_prompt_changed": false,
+      "news_archives_changed": false,
+      "shared_helper_promoted": false,
+      "daily_snapshot_exposed": false,
+      "live_ready": false
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260630-004.json",
+  "single_causal_variable": "daily_news_structured_event_evidence_ledger_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260630-004.json",
+  "trial_family": "daily_news_structured_event_evidence_ledger",
+  "trial_variant_id": "v1_structured_evidence_spans",
+  "alpha_hypothesis": "A future LLM/news event-scoring alpha can only be tested credibly if daily news rows first have replayable actor/object/relation/magnitude evidence spans instead of unreplayable keyword buckets.",
+  "implementation_mode": "measurement_surface_only",
+  "gate1": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_metrics": {
+      "expected_value_score": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": null
+    },
+    "passed": true
+  },
+  "gate2": {
+    "runtime_fields_checked": [
+      "event_date",
+      "ticker",
+      "relation_type",
+      "evidence_span",
+      "sanitized_text_hash",
+      "source_provenance"
+    ],
+    "entry_date": "not_applicable_measurement_repair_no_strategy_entries",
+    "target_price": "not_applicable_measurement_repair_no_strategy_entries",
+    "required_field_audit": {
+      "required_fields": [
+        "event_id",
+        "event_date",
+        "ticker",
+        "relation_type",
+        "relation_polarity",
+        "actor",
+        "object",
+        "magnitude",
+        "evidence_span",
+        "sanitized_text_hash",
+        "source_provenance"
+      ],
+      "missing_counts": {},
+      "all_required_fields_present": true
+    },
+    "passed": true
+  },
+  "gate3": {
+    "signals_generated": 384,
+    "signals_survived": 384,
+    "survival_rate": 1.0,
+    "passed": true,
+    "note": "Measurement ledger rows only; not tradable signals."
+  },
+  "gate4": {
+    "status": "accepted_measurement_repair",
+    "passed": true,
+    "failed_reasons": [],
+    "expected_value_score_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "note": "No strategy behavior changed; this is accepted only as measurement repair."
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "llm_prompt_changed": false,
+    "news_archives_changed": false,
+    "shared_helper_promoted": false,
+    "daily_snapshot_exposed": false,
+    "live_ready": false
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The clean-trade-news archive contains enough explicit ticker text and event phrases to materialize a provenance-complete structured ledger. This remains measurement-only because no forward outcome or canonical-window policy replay was added.",
+    "forbidden_near_neighbor_retry": "Do not use this ledger to sweep keyword buckets, tiers, hold days, top-N, notional, or response curves on the same rows. The next alpha test must use the structured fields as fixed inputs and join enough closed replacement-value outcomes or canonical-window replay coverage.",
+    "new_evidence_required": "Closed cash/SPY/QQQ replacement-value outcomes for these structured events, or an LLM scorer that writes the same actor/object/relation/magnitude/evidence schema at decision time."
+  },
+  "next_retry_requires": [
+    "closed replacement-value outcomes joined to structured event rows",
+    "or PIT LLM event labels persisted with the same evidence-span schema",
+    "or canonical-window daily-news coverage that can be replayed without lookahead"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260630_004_daily_news_structured_event_ledger.py",
+    "data/experiments/exp-20260630-004/exp_20260630_004_daily_news_structured_event_ledger.json",
+    "data/experiments/exp-20260630-004/daily_news_structured_event_ledger.jsonl",
+    "experiments/logs/exp-20260630-004.json",
+    "experiments/cards/exp-20260630-004.md",
+    "experiments/manifests/exp-20260630-004.json",
+    "experiments/tickets/exp-20260630-004.json",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260630_004_daily_news_structured_event_ledger.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260630_004_daily_news_structured_event_ledger.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "calibration": {
+    "prediction_success_probability": 0.72,
+    "observed_success": true,
+    "main_failure_modes": [
+      "source archive lacks enough explicit event text",
+      "evidence extraction is too keyword-like",
+      "ledger rows cannot be made provenance-complete"
+    ],
+    "realized_failure_modes": [],
+    "surprise": "None; the archive produced structured rows with exact spans."
+  },
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "alpha_ready": false,
+  "decision": "accepted_measurement_repair",
+  "artifact": "data/experiments/exp-20260630-004/exp_20260630_004_daily_news_structured_event_ledger.json",
+  "ledger_jsonl": "data/experiments/exp-20260630-004/daily_news_structured_event_ledger.jsonl",
+  "log": "experiments/logs/exp-20260630-004.json",
+  "updated_at": "2026-06-30T04:12:34+00:00"
+}

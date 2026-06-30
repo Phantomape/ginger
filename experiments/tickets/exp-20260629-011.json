@@ -1,0 +1,876 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "scripts/create_experiment_ticket.py",
+    "quant/test_create_experiment_ticket.py",
+    "quant/experiments",
+    "data/experiments",
+    "experiments/logs",
+    "experiments/cards",
+    "experiments/manifests",
+    "experiments/tickets",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260629-011.md",
+  "causal_components": [
+    "load nested reopen_condition records from experiment logs",
+    "surface matcher for parked alpha forward-context surfaces",
+    "numeric current_counts versus required_to_reopen checks",
+    "alpha-lane block before reservation write",
+    "new data source or new gate shape escape hatch",
+    "focused unit tests",
+    "no strategy behavior change"
+  ],
+  "change_type": "reservation_gate_contract_repair",
+  "changed_variable": "parked_reopen_condition_progress_guard_v1",
+  "claimed_at": "2026-06-29T17:12:36+00:00",
+  "completed_at": "2026-06-29T17:19:50+00:00",
+  "created_at": "2026-06-29T17:12:21+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260629-011",
+  "experiment_uid": "expuid-d0006928cd164e06",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260629-011",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-29T17:12:21+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "parked_reopen_condition_progress_guard"
+  },
+  "hypothesis": "alpha_blocker/measurement_repair: parked forward-context surfaces with quantitative reopen_condition can still be re-reserved for alpha readiness audits or response retunes before their current_counts advance, so reservation tooling should block matching alpha-lane tickets until material reopen progress or a distinct new data source/gate shape exists.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "parked_reopen_condition_progress_guard_v1"
+  ],
+  "mechanism_family": "experiment_protocol_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260629-002",
+    "exp-20260629-005",
+    "exp-20260629-010"
+  ],
+  "new_evidence_type": "reservation_gate_hard_rule_alignment",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "advance",
+        "alpha",
+        "audits",
+        "be",
+        "before",
+        "block",
+        "blocker",
+        "can",
+        "condition",
+        "context",
+        "counts",
+        "current",
+        "data",
+        "distinct",
+        "exists",
+        "experiment",
+        "forward",
+        "gate",
+        "guard",
+        "lane",
+        "matching",
+        "material",
+        "measurement",
+        "new",
+        "or",
+        "parked",
+        "progress",
+        "protocol",
+        "quantitative",
+        "re",
+        "readiness",
+        "reopen",
+        "repair",
+        "reservation",
+        "reserved",
+        "response",
+        "retunes",
+        "shape",
+        "should",
+        "so",
+        "still",
+        "surface",
+        "surfaces",
+        "their",
+        "tickets",
+        "tooling",
+        "until"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "candidate_pool_data_surface_readiness_gate",
+        "reopen_condition": "A valid next alpha needs a materially new PIT field with three-window coverage and a shared helper path, or enough closed forward replacement rows from a default-off daily observer.",
+        "score": 0.037,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "post_scalar_direction_gate",
+        "reopen_condition": null,
+        "score": 0.0369,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "current_alpha_surface_readiness_delta",
+        "reopen_condition": "Need materially more closed forward replacement rows for a diversified sleeve/source, non-skipped Kova intraday or 13F provenance, replayable historical 6-K text, PIT borrow/loan or options history, or a new production-visible field not already saturated.",
+        "score": 0.032,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "current_nonrepeat_alpha_surface_readiness",
+        "reopen_condition": "A valid next alpha needs materially more closed forward replacement rows for one diversified sleeve/source family, non-skipped Kova intraday or 13F provenance, PIT borrow/loan or options history with stronger provenance, or a new production-visible field not already saturated.",
+        "score": 0.0314,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "post_accepted_scalar_stack_current_surface_readiness",
+        "reopen_condition": null,
+        "score": 0.0308,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.82,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "surface_matcher_too_broad",
+      "surface_matcher_too_narrow",
+      "registry_conflict"
+    ],
+    "confidence_reason": "The change is localized to reservation-time protocol checks and focused tests; no strategy, sizing, ranking, exit, or order behavior changes.",
+    "recorded_at": "2026-06-29T17:11:42+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_parked_reopen_condition_progress_guard",
+    "artifact": "data/experiments/exp-20260629-011/exp_20260629_011_parked_reopen_condition_progress_guard.json",
+    "log": "experiments/logs/exp-20260629-011.json",
+    "delta_metrics": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "strategy_behavior_changed": false
+    },
+    "gate1": {
+      "passed": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "baseline_expected_value_score_sum": 7.8941,
+      "baseline_total_pnl": 234850.99,
+      "strategy_metrics_unchanged": true
+    },
+    "gate2": {
+      "passed": true,
+      "runtime_fields_checked": [
+        "lane",
+        "hypothesis",
+        "single_causal_variable",
+        "changed_variable",
+        "trial_family",
+        "new_evidence_axis",
+        "reopen_condition.surface",
+        "reopen_condition.current_counts",
+        "reopen_condition.required_to_reopen"
+      ],
+      "field_status": {
+        "form4_blocked_without_progress": true,
+        "form144_blocked_without_progress": true,
+        "new_source_axis_allowed": true,
+        "measurement_repair_unblocked": true
+      }
+    },
+    "gate3": {
+      "passed": true,
+      "not_applicable_reason": "No signal, filter, ranking, sizing, exit, risk budget, or order rule changed.",
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "survival_rate_delta": 0.0
+    },
+    "gate4": {
+      "passed": true,
+      "accepted_alpha": false,
+      "measurement_repair_only": true,
+      "decision": "accepted_measurement_repair_parked_reopen_condition_progress_guard",
+      "before_after_strategy_delta": {
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0,
+        "signals_generated_delta": 0,
+        "signals_survived_delta": 0,
+        "strategy_behavior_changed": false
+      },
+      "failed_reasons": []
+    },
+    "summary": "The repo already writes structured reopen_condition records with current_counts and required_to_reopen thresholds. Wiring those records into reservation-time checks prevents duplicate alpha tickets against parked surfaces before any trading code is touched."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260629-011.json",
+  "single_causal_variable": "parked_reopen_condition_progress_guard_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260629-011.json",
+  "trial_family": "parked_surface_reopen_condition_progress_guard",
+  "trial_variant_id": "reservation_time_guard_v1",
+  "alpha_hypothesis": "Risk allocation: parked forward-context surfaces such as Form4 sale-overhang and Form144 planned-sale/float may become useful only after their logged closed-row and coverage counts advance; until then response retunes are invalid duplicate alpha attempts.",
+  "implementation_mode": "reservation_time_reopen_condition_guard",
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Risk allocation: parked forward-context surfaces such as Form4 sale-overhang and Form144 planned-sale/float may become useful only after their logged closed-row and coverage counts advance; until then response retunes are invalid duplicate alpha attempts.",
+    "2_history_check": "exp-20260629-002 parked Form144 planned-sale/float, exp-20260629-005 parked Form4 sale-overhang alpha responses until closed forward rows materialize, and exp-20260629-010 repaired saturated-source override semantics. No current surface had enough new closed rows.",
+    "3_single_policy_bundle": "parked_reopen_condition_progress_guard_v1",
+    "4_acceptance_standard": "Accept only as measurement repair if the reservation tool blocks Form4/Form144 alpha-lane retries without progress, allows a new data-source or new-gate-shape axis, and leaves strategy metrics unchanged.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260629_011_parked_reopen_condition_progress_guard.py"
+  },
+  "guard_audit": {
+    "parked_surface_count": 3,
+    "parked_surfaces": [
+      {
+        "experiment_id": "exp-20260629-002",
+        "source_log": "experiments/logs/exp-20260629-002.json",
+        "surface": "Form144 planned-sale/float",
+        "status": "parked",
+        "blocking_reason": "primary_document_cache_and_forward_rows_not_materialized",
+        "current_counts": {
+          "cached_primary_documents": 0,
+          "closed_forward_rows_with_cash_spy_qqq_replacement_value": 0,
+          "context_jsonl_rows": 9594,
+          "context_rows": 9594,
+          "high_planned_sale_float_bucket_rows": 0,
+          "machine_parseable_ratio_rows": 0,
+          "parseable_planned_sale_to_adv20_rows": 0,
+          "parseable_planned_sale_to_float_rows": 0,
+          "primary_document_cache_files": 0,
+          "single_ticker_closed_row_share": null
+        },
+        "required_to_reopen": {
+          "cached_primary_documents_min": 1,
+          "closed_forward_rows_min": 25,
+          "high_planned_sale_float_bucket_rows_min": 8,
+          "machine_parseable_ratio_rows_min": 1,
+          "required_replacement_values": [
+            "cash",
+            "SPY",
+            "QQQ"
+          ],
+          "single_ticker_closed_row_share_max": 0.4
+        }
+      },
+      {
+        "experiment_id": "exp-20260629-003",
+        "source_log": "experiments/logs/exp-20260629-003.json",
+        "surface": "Form4 sale/10b5/officer overhang",
+        "status": "forward_logging_open_not_alpha_ready",
+        "blocking_reason": "closed_forward_replacement_rows_not_materialized",
+        "current_counts": {
+          "closed_forward_rows_with_cash_spy_qqq_replacement_value": 0,
+          "forward_ledger_form4_tagged_rows": 0,
+          "high_sale_overhang_forward_rows": 0,
+          "prospective_context_rows_logged": 108,
+          "prospective_high_sale_overhang_rows_logged": 27,
+          "rows_with_form4_rows": 37,
+          "rows_with_target_price": 2,
+          "single_ticker_closed_row_share": null
+        },
+        "required_to_reopen": {
+          "closed_forward_rows_min": 25,
+          "high_sale_overhang_forward_rows_min": 8,
+          "required_context_rule_version": "form4_sale_overhang_forward_context_logger_v1",
+          "required_replacement_values": [
+            "cash",
+            "SPY",
+            "QQQ"
+          ],
+          "single_ticker_closed_row_share_max": 0.4
+        }
+      },
+      {
+        "experiment_id": "exp-20260629-005",
+        "source_log": "experiments/logs/exp-20260629-005.json",
+        "surface": "Form4 sale/10b5/officer overhang",
+        "status": "shared_forward_logging_open_not_alpha_ready",
+        "blocking_reason": "closed_forward_replacement_rows_not_materialized",
+        "current_counts": {
+          "closed_forward_rows_with_cash_spy_qqq_replacement_value": 0,
+          "high_sale_overhang_forward_rows": 0,
+          "shared_daily_context_rows_logged": 29,
+          "shared_daily_high_sale_overhang_rows_logged": 17,
+          "shared_daily_tickers_logged": 29,
+          "single_ticker_closed_row_share": null
+        },
+        "required_to_reopen": {
+          "closed_forward_rows_min": 25,
+          "high_sale_overhang_forward_rows_min": 8,
+          "park_after_materialization_runs_without_new_closable_rows": 3,
+          "required_context_rule_version": "form4_sale_overhang_shared_daily_context_logger_v1",
+          "required_replacement_values": [
+            "cash",
+            "SPY",
+            "QQQ"
+          ],
+          "single_ticker_share_max": 0.4
+        }
+      }
+    ],
+    "verdicts": {
+      "form4_alpha_response_without_progress": {
+        "applicable": true,
+        "blocked": true,
+        "override_accepted": false,
+        "matched_conditions": [
+          {
+            "experiment_id": "exp-20260629-003",
+            "source_log": "experiments/logs/exp-20260629-003.json",
+            "surface": "Form4 sale/10b5/officer overhang",
+            "status": "forward_logging_open_not_alpha_ready",
+            "blocking_reason": "closed_forward_replacement_rows_not_materialized",
+            "checks_satisfied": false,
+            "numeric_checks": [
+              {
+                "required_key": "closed_forward_rows_min",
+                "current_key": "closed_forward_rows_with_cash_spy_qqq_replacement_value",
+                "current_value": 0,
+                "operator": ">=",
+                "threshold": 25,
+                "passed": false
+              },
+              {
+                "required_key": "high_sale_overhang_forward_rows_min",
+                "current_key": "high_sale_overhang_forward_rows",
+                "current_value": 0,
+                "operator": ">=",
+                "threshold": 8,
+                "passed": false
+              },
+              {
+                "required_key": "single_ticker_closed_row_share_max",
+                "current_key": "single_ticker_closed_row_share",
+                "current_value": null,
+                "operator": "<=",
+                "threshold": 0.4,
+                "passed": false
+              }
+            ],
+            "reopen_rule": "Do not reserve a Form4 sale-overhang risk scalar, notional haircut, ranking, veto, or candidate-pool experiment until prospectively logged context rows close with cash/SPY/QQQ replacement value and the required row counts advance. Do not retry by changing transaction codes, 10b5 handling, owner-role filters, sale-value thresholds, lookback days, or response curve."
+          },
+          {
+            "experiment_id": "exp-20260629-005",
+            "source_log": "experiments/logs/exp-20260629-005.json",
+            "surface": "Form4 sale/10b5/officer overhang",
+            "status": "shared_forward_logging_open_not_alpha_ready",
+            "blocking_reason": "closed_forward_replacement_rows_not_materialized",
+            "checks_satisfied": false,
+            "numeric_checks": [
+              {
+                "required_key": "closed_forward_rows_min",
+                "current_key": "closed_forward_rows_with_cash_spy_qqq_replacement_value",
+                "current_value": 0,
+                "operator": ">=",
+                "threshold": 25,
+                "passed": false
+              },
+              {
+                "required_key": "high_sale_overhang_forward_rows_min",
+                "current_key": "high_sale_overhang_forward_rows",
+                "current_value": 0,
+                "operator": ">=",
+                "threshold": 8,
+                "passed": false
+              },
+              {
+                "required_key": "single_ticker_share_max",
+                "current_key": "single_ticker_closed_row_share",
+                "current_value": null,
+                "operator": "<=",
+                "threshold": 0.4,
+                "passed": false
+              }
+            ],
+            "reopen_rule": "Do not reserve a Form4 sale-overhang risk scalar, notional haircut, ranking, veto, or candidate-pool experiment until shared daily context rows close with cash/SPY/QQQ replacement value and the required row counts advance. Do not retry by changing transaction codes, 10b5 handling, owner-role filters, sale-value thresholds, lookback days, or response curve."
+          }
+        ],
+        "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape.",
+        "new_evidence_axis": {
+          "axis": null,
+          "valid": false,
+          "categories": [],
+          "invalid_same_source_field_only": false,
+          "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify."
+        },
+        "blocking_matches": [
+          {
+            "experiment_id": "exp-20260629-003",
+            "source_log": "experiments/logs/exp-20260629-003.json",
+            "surface": "Form4 sale/10b5/officer overhang",
+            "status": "forward_logging_open_not_alpha_ready",
+            "blocking_reason": "closed_forward_replacement_rows_not_materialized",
+            "checks_satisfied": false,
+            "numeric_checks": [
+              {
+                "required_key": "closed_forward_rows_min",
+                "current_key": "closed_forward_rows_with_cash_spy_qqq_replacement_value",
+                "current_value": 0,
+                "operator": ">=",
+                "threshold": 25,
+                "passed": false
+              },
+              {
+                "required_key": "high_sale_overhang_forward_rows_min",
+                "current_key": "high_sale_overhang_forward_rows",
+                "current_value": 0,
+                "operator": ">=",
+                "threshold": 8,
+                "passed": false
+              },
+              {
+                "required_key": "single_ticker_closed_row_share_max",
+                "current_key": "single_ticker_closed_row_share",
+                "current_value": null,
+                "operator": "<=",
+                "threshold": 0.4,
+                "passed": false
+              }
+            ],
+            "reopen_rule": "Do not reserve a Form4 sale-overhang risk scalar, notional haircut, ranking, veto, or candidate-pool experiment until prospectively logged context rows close with cash/SPY/QQQ replacement value and the required row counts advance. Do not retry by changing transaction codes, 10b5 handling, owner-role filters, sale-value thresholds, lookback days, or response curve."
+          },
+          {
+            "experiment_id": "exp-20260629-005",
+            "source_log": "experiments/logs/exp-20260629-005.json",
+            "surface": "Form4 sale/10b5/officer overhang",
+            "status": "shared_forward_logging_open_not_alpha_ready",
+            "blocking_reason": "closed_forward_replacement_rows_not_materialized",
+            "checks_satisfied": false,
+            "numeric_checks": [
+              {
+                "required_key": "closed_forward_rows_min",
+                "current_key": "closed_forward_rows_with_cash_spy_qqq_replacement_value",
+                "current_value": 0,
+                "operator": ">=",
+                "threshold": 25,
+                "passed": false
+              },
+              {
+                "required_key": "high_sale_overhang_forward_rows_min",
+                "current_key": "high_sale_overhang_forward_rows",
+                "current_value": 0,
+                "operator": ">=",
+                "threshold": 8,
+                "passed": false
+              },
+              {
+                "required_key": "single_ticker_share_max",
+                "current_key": "single_ticker_closed_row_share",
+                "current_value": null,
+                "operator": "<=",
+                "threshold": 0.4,
+                "passed": false
+              }
+            ],
+            "reopen_rule": "Do not reserve a Form4 sale-overhang risk scalar, notional haircut, ranking, veto, or candidate-pool experiment until shared daily context rows close with cash/SPY/QQQ replacement value and the required row counts advance. Do not retry by changing transaction codes, 10b5 handling, owner-role filters, sale-value thresholds, lookback days, or response curve."
+          }
+        ]
+      },
+      "form4_alpha_response_new_source_axis": {
+        "applicable": true,
+        "blocked": false,
+        "override_accepted": true,
+        "matched_conditions": [
+          {
+            "experiment_id": "exp-20260629-003",
+            "source_log": "experiments/logs/exp-20260629-003.json",
+            "surface": "Form4 sale/10b5/officer overhang",
+            "status": "forward_logging_open_not_alpha_ready",
+            "blocking_reason": "closed_forward_replacement_rows_not_materialized",
+            "checks_satisfied": false,
+            "numeric_checks": [
+              {
+                "required_key": "closed_forward_rows_min",
+                "current_key": "closed_forward_rows_with_cash_spy_qqq_replacement_value",
+                "current_value": 0,
+                "operator": ">=",
+                "threshold": 25,
+                "passed": false
+              },
+              {
+                "required_key": "high_sale_overhang_forward_rows_min",
+                "current_key": "high_sale_overhang_forward_rows",
+                "current_value": 0,
+                "operator": ">=",
+                "threshold": 8,
+                "passed": false
+              },
+              {
+                "required_key": "single_ticker_closed_row_share_max",
+                "current_key": "single_ticker_closed_row_share",
+                "current_value": null,
+                "operator": "<=",
+                "threshold": 0.4,
+                "passed": false
+              }
+            ],
+            "reopen_rule": "Do not reserve a Form4 sale-overhang risk scalar, notional haircut, ranking, veto, or candidate-pool experiment until prospectively logged context rows close with cash/SPY/QQQ replacement value and the required row counts advance. Do not retry by changing transaction codes, 10b5 handling, owner-role filters, sale-value thresholds, lookback days, or response curve."
+          },
+          {
+            "experiment_id": "exp-20260629-005",
+            "source_log": "experiments/logs/exp-20260629-005.json",
+            "surface": "Form4 sale/10b5/officer overhang",
+            "status": "shared_forward_logging_open_not_alpha_ready",
+            "blocking_reason": "closed_forward_replacement_rows_not_materialized",
+            "checks_satisfied": false,
+            "numeric_checks": [
+              {
+                "required_key": "closed_forward_rows_min",
+                "current_key": "closed_forward_rows_with_cash_spy_qqq_replacement_value",
+                "current_value": 0,
+                "operator": ">=",
+                "threshold": 25,
+                "passed": false
+              },
+              {
+                "required_key": "high_sale_overhang_forward_rows_min",
+                "current_key": "high_sale_overhang_forward_rows",
+                "current_value": 0,
+                "operator": ">=",
+                "threshold": 8,
+                "passed": false
+              },
+              {
+                "required_key": "single_ticker_share_max",
+                "current_key": "single_ticker_closed_row_share",
+                "current_value": null,
+                "operator": "<=",
+                "threshold": 0.4,
+                "passed": false
+              }
+            ],
+            "reopen_rule": "Do not reserve a Form4 sale-overhang risk scalar, notional haircut, ranking, veto, or candidate-pool experiment until shared daily context rows close with cash/SPY/QQQ replacement value and the required row counts advance. Do not retry by changing transaction codes, 10b5 handling, owner-role filters, sale-value thresholds, lookback days, or response curve."
+          }
+        ],
+        "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape.",
+        "new_evidence_axis": {
+          "axis": "new data source: PIT broker locate/borrow sidecar",
+          "valid": true,
+          "categories": [
+            "new_data_source"
+          ],
+          "invalid_same_source_field_only": false,
+          "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify."
+        },
+        "override_reason": "Declared evidence axis names a new data source or new gate shape."
+      },
+      "form144_alpha_response_without_progress": {
+        "applicable": true,
+        "blocked": true,
+        "override_accepted": false,
+        "matched_conditions": [
+          {
+            "experiment_id": "exp-20260629-002",
+            "source_log": "experiments/logs/exp-20260629-002.json",
+            "surface": "Form144 planned-sale/float",
+            "status": "parked",
+            "blocking_reason": "primary_document_cache_and_forward_rows_not_materialized",
+            "checks_satisfied": false,
+            "numeric_checks": [
+              {
+                "required_key": "cached_primary_documents_min",
+                "current_key": "cached_primary_documents",
+                "current_value": 0,
+                "operator": ">=",
+                "threshold": 1,
+                "passed": false
+              },
+              {
+                "required_key": "closed_forward_rows_min",
+                "current_key": "closed_forward_rows_with_cash_spy_qqq_replacement_value",
+                "current_value": 0,
+                "operator": ">=",
+                "threshold": 25,
+                "passed": false
+              },
+              {
+                "required_key": "high_planned_sale_float_bucket_rows_min",
+                "current_key": "high_planned_sale_float_bucket_rows",
+                "current_value": 0,
+                "operator": ">=",
+                "threshold": 8,
+                "passed": false
+              },
+              {
+                "required_key": "machine_parseable_ratio_rows_min",
+                "current_key": "machine_parseable_ratio_rows",
+                "current_value": 0,
+                "operator": ">=",
+                "threshold": 1,
+                "passed": false
+              },
+              {
+                "required_key": "single_ticker_closed_row_share_max",
+                "current_key": "single_ticker_closed_row_share",
+                "current_value": null,
+                "operator": "<=",
+                "threshold": 0.4,
+                "passed": false
+              }
+            ],
+            "reopen_rule": "Do not reserve another Form144 planned-sale/float readiness, risk-scalar, notional haircut, ranking, or candidate-pool experiment until cached/parseable primary documents and closed forward rows advance to the required counts."
+          }
+        ],
+        "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape.",
+        "new_evidence_axis": {
+          "axis": null,
+          "valid": false,
+          "categories": [],
+          "invalid_same_source_field_only": false,
+          "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify."
+        },
+        "blocking_matches": [
+          {
+            "experiment_id": "exp-20260629-002",
+            "source_log": "experiments/logs/exp-20260629-002.json",
+            "surface": "Form144 planned-sale/float",
+            "status": "parked",
+            "blocking_reason": "primary_document_cache_and_forward_rows_not_materialized",
+            "checks_satisfied": false,
+            "numeric_checks": [
+              {
+                "required_key": "cached_primary_documents_min",
+                "current_key": "cached_primary_documents",
+                "current_value": 0,
+                "operator": ">=",
+                "threshold": 1,
+                "passed": false
+              },
+              {
+                "required_key": "closed_forward_rows_min",
+                "current_key": "closed_forward_rows_with_cash_spy_qqq_replacement_value",
+                "current_value": 0,
+                "operator": ">=",
+                "threshold": 25,
+                "passed": false
+              },
+              {
+                "required_key": "high_planned_sale_float_bucket_rows_min",
+                "current_key": "high_planned_sale_float_bucket_rows",
+                "current_value": 0,
+                "operator": ">=",
+                "threshold": 8,
+                "passed": false
+              },
+              {
+                "required_key": "machine_parseable_ratio_rows_min",
+                "current_key": "machine_parseable_ratio_rows",
+                "current_value": 0,
+                "operator": ">=",
+                "threshold": 1,
+                "passed": false
+              },
+              {
+                "required_key": "single_ticker_closed_row_share_max",
+                "current_key": "single_ticker_closed_row_share",
+                "current_value": null,
+                "operator": "<=",
+                "threshold": 0.4,
+                "passed": false
+              }
+            ],
+            "reopen_rule": "Do not reserve another Form144 planned-sale/float readiness, risk-scalar, notional haircut, ranking, or candidate-pool experiment until cached/parseable primary documents and closed forward rows advance to the required counts."
+          }
+        ]
+      },
+      "measurement_repair_same_surface": {
+        "applicable": false,
+        "blocked": false,
+        "override_accepted": false,
+        "matched_conditions": [],
+        "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+      }
+    },
+    "passed": true
+  },
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_expected_value_score_sum": 7.8941,
+    "baseline_total_pnl": 234850.99,
+    "strategy_metrics_unchanged": true
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields_checked": [
+      "lane",
+      "hypothesis",
+      "single_causal_variable",
+      "changed_variable",
+      "trial_family",
+      "new_evidence_axis",
+      "reopen_condition.surface",
+      "reopen_condition.current_counts",
+      "reopen_condition.required_to_reopen"
+    ],
+    "field_status": {
+      "form4_blocked_without_progress": true,
+      "form144_blocked_without_progress": true,
+      "new_source_axis_allowed": true,
+      "measurement_repair_unblocked": true
+    }
+  },
+  "gate3": {
+    "passed": true,
+    "not_applicable_reason": "No signal, filter, ranking, sizing, exit, risk budget, or order rule changed.",
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "survival_rate_delta": 0.0
+  },
+  "gate4": {
+    "passed": true,
+    "accepted_alpha": false,
+    "measurement_repair_only": true,
+    "decision": "accepted_measurement_repair_parked_reopen_condition_progress_guard",
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "strategy_behavior_changed": false
+    },
+    "failed_reasons": []
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "shared_policy_changed": false,
+    "run_adapter_changed": false,
+    "backtester_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "risk_budget_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "parity_note": "Reservation protocol only. No backtest, paper, daily, or live strategy path consumes this guard."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The repo already writes structured reopen_condition records with current_counts and required_to_reopen thresholds. Wiring those records into reservation-time checks prevents duplicate alpha tickets against parked surfaces before any trading code is touched.",
+    "forbidden_near_neighbor_retry": "Do not reserve Form4 sale-overhang or Form144 planned-sale/float readiness audits, notional haircuts, ranking tilts, risk scalars, vetoes, or response-curve variants while the logged numeric reopen checks remain unmet.",
+    "new_evidence_required": "A valid retry needs the logged reopen counts to satisfy their numeric checks, or a genuinely new data source or new gate shape declared in --new-evidence-axis."
+  },
+  "next_retry_requires": "Use the guard output before reserving parked-surface alpha tickets; current Form4/Form144 counts are still below their reopen thresholds.",
+  "related_files": [
+    "quant/experiments/exp_20260629_011_parked_reopen_condition_progress_guard.py",
+    "scripts/create_experiment_ticket.py",
+    "quant/test_create_experiment_ticket.py",
+    "data/experiments/exp-20260629-011/exp_20260629_011_parked_reopen_condition_progress_guard.json",
+    "experiments/logs/exp-20260629-011.json",
+    "experiments/cards/exp-20260629-011.md",
+    "experiments/manifests/exp-20260629-011.json",
+    "experiments/tickets/exp-20260629-011.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "changed_files": [
+    "scripts/create_experiment_ticket.py",
+    "quant/test_create_experiment_ticket.py",
+    "quant/experiments/exp_20260629_011_parked_reopen_condition_progress_guard.py",
+    "data/experiments/exp-20260629-011/exp_20260629_011_parked_reopen_condition_progress_guard.json",
+    "experiments/logs/exp-20260629-011.json",
+    "experiments/cards/exp-20260629-011.md",
+    "experiments/manifests/exp-20260629-011.json",
+    "experiments/tickets/exp-20260629-011.json",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile scripts\\create_experiment_ticket.py quant\\test_create_experiment_ticket.py quant\\experiments\\exp_20260629_011_parked_reopen_condition_progress_guard.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_create_experiment_ticket.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260629_011_parked_reopen_condition_progress_guard.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "anti_js": {
+    "used_javascript": false,
+    "strategy_behavior_changed": false,
+    "threshold_scan": false,
+    "response_curve_retune": false,
+    "new_download_attempts": false
+  },
+  "calibration": {
+    "predicted_success_probability": 0.82,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "actual_success": 1,
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "predicted_failure_modes": [
+      "surface_matcher_too_broad",
+      "surface_matcher_too_narrow",
+      "registry_conflict"
+    ],
+    "realized_failure_mode": null,
+    "surprise_level": "low"
+  },
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "decision": "accepted_measurement_repair_parked_reopen_condition_progress_guard",
+  "artifact": "data/experiments/exp-20260629-011/exp_20260629_011_parked_reopen_condition_progress_guard.json",
+  "log": "experiments/logs/exp-20260629-011.json",
+  "updated_at": "2026-06-29T17:19:50+00:00"
+}

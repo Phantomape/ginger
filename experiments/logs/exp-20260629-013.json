@@ -1,0 +1,122 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 0,
+    "brier_score": 0.6084,
+    "calibration_direction": "overconfident",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "native_rows_missing",
+      "field_contract_incomplete",
+      "duplicate_rows_between_1301_1302",
+      "pending_actions_nonempty",
+      "order_side_effect_detected"
+    ],
+    "predicted_success_probability": 0.78,
+    "realized_failure_mode": "duplicate_prior_contract_reopen_condition_unmet",
+    "surprise_level": "high",
+    "surprise_note": "The reservation novelty score was low enough to pass, but docs/frozen_families.jsonl identified exp-20260626-020 as an accepted same-family contract after reservation."
+  },
+  "causal_components": [
+    "2026-06-29 intraday_review snapshots",
+    "native advisory_shadow_actions rows",
+    "order_semantics and quote_time provenance contract",
+    "no strategy behavior change"
+  ],
+  "change_summary": "Rejected before implementation: prior exp-20260626-020 already accepted the intraday advisory shadow-action contract, and the logged reopen condition requires later closed forward outcomes or replacement value; the 2026-06-29 snapshots only add unsettled duplicate advisory rows.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "intraday_native_advisory_shadow_action_contract_v1",
+  "component": "quant/experiments/exp_20260629_013_intraday_native_advisory_shadow_action_contract.py, data/experiments/exp-20260629-013, experiments/logs/exp-20260629-013.json, experiments/cards/exp-20260629-013.md, experiments/manifests/exp-20260629-013.json, experiments/tickets/exp-20260629-013.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "rejected_duplicate_intraday_shadow_action_contract_reopen_condition_unmet",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260629-013",
+  "hypothesis": "LLM/exit advisory quality can only become a bounded alpha input after native intraday advisory shadow actions are persisted as PIT rows with explicit order semantics, quote-time provenance, and no live order side effects; the 2026-06-29 snapshots now expose native advisory_shadow_actions fields that were missing in exp-20260627-025.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "intraday_advisory_forward_measurement_repair",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260627-025",
+    "exp-20260626-019",
+    "exp-20260629-012"
+  ],
+  "new_evidence_type": "native_intraday_advisory_shadow_action_snapshot_fields",
+  "next_retry_requires": [
+    "new intraday snapshots with advisory_shadow_actions plus settled h1/h3/h5/h10 outcomes or replacement-value accounting",
+    "true quote_time_et or broker bar IDs before any executable action contract",
+    "real pending_actions rows before any pending-action semantics experiment"
+  ],
+  "notes": "No runner or artifact was written. Mechanical preflight found 2026-06-29 1301/1302 snapshots have advisory_shadow_actions rows but pending_actions is empty and no quote_time_et/broker IDs or settled outcomes exist. No strategy, live, paper, order, prompt, ranking, sizing, or exit behavior changed.",
+  "parameters": {
+    "locked_variables": [
+      "trade_enabled=false",
+      "creates_order=false",
+      "order_semantics=none_shadow_only",
+      "no prompt retune",
+      "no exit or ranking change"
+    ],
+    "single_causal_variable": "intraday_native_advisory_shadow_action_contract_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve another intraday advisory shadow-action contract, prompt retune, action-threshold retune, or readiness audit from the 2026-06-29 1301/1302 snapshots alone.",
+    "new_evidence_required": "A valid retry needs new advisory snapshots with later settled outcomes or replacement-value rows, true quote timestamps or broker bar IDs, or non-empty real pending_actions rows.",
+    "realized_failure_mode": "duplicate_prior_contract_reopen_condition_unmet",
+    "why_result_happened": "The novelty score was low enough to pass, but the frozen-family nearest-neighbor output identified exp-20260626-020 as an accepted same-family contract. The current 2026-06-29 snapshots contain advisory_shadow_actions, but pending_actions is empty and no later closed outcome or replacement-value evidence exists yet."
+  },
+  "prediction": {
+    "confidence_reason": "The 2026-06-29 snapshots visibly contain native advisory_shadow_actions rows with trade_enabled=false and creates_order=false; risk is schema drift or duplicate handling.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "native_rows_missing",
+      "field_contract_incomplete",
+      "duplicate_rows_between_1301_1302",
+      "pending_actions_nonempty",
+      "order_side_effect_detected"
+    ],
+    "recorded_at": "2026-06-29T19:14:47+00:00",
+    "success_probability": 0.78
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "Prior exp-20260626-020 already accepted the intraday advisory shadow-action contract. The 2026-06-29 1301/1302 snapshots add no settled forward outcome, replacement-value, true quote_time_et, broker bar ID, or non-empty pending_actions evidence, so this is not a legal reopen.",
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "secondary_windows": [],
+  "status": "rejected",
+  "timestamp": "2026-06-29T19:15:50+00:00",
+  "trial_family": "intraday_native_advisory_shadow_action_contract",
+  "trial_variant_id": "native_shadow_action_contract_20260629_v1"
+}

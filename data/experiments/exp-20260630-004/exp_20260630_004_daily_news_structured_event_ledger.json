@@ -1,0 +1,1530 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "after_metrics": {
+    "expected_value_score": 7.8941,
+    "total_pnl": 234850.99,
+    "trade_count": null
+  },
+  "alpha_hypothesis": "A future LLM/news event-scoring alpha can only be tested credibly if daily news rows first have replayable actor/object/relation/magnitude evidence spans instead of unreplayable keyword buckets.",
+  "alpha_ready": false,
+  "anti_js": {
+    "evidence": "Python runner only; no JavaScript tooling invoked.",
+    "used_javascript": false
+  },
+  "artifacts": {
+    "artifact_json": "data/experiments/exp-20260630-004/exp_20260630_004_daily_news_structured_event_ledger.json",
+    "ledger_jsonl": "data/experiments/exp-20260630-004/daily_news_structured_event_ledger.jsonl"
+  },
+  "before_metrics": {
+    "expected_value_score": 7.8941,
+    "total_pnl": 234850.99,
+    "trade_count": null
+  },
+  "calibration": {
+    "main_failure_modes": [
+      "source archive lacks enough explicit event text",
+      "evidence extraction is too keyword-like",
+      "ledger rows cannot be made provenance-complete"
+    ],
+    "observed_success": true,
+    "prediction_success_probability": 0.72,
+    "realized_failure_modes": [],
+    "surprise": "None; the archive produced structured rows with exact spans."
+  },
+  "causal_components": [
+    "daily clean-trade-news archive",
+    "sanitized text",
+    "evidence span extraction",
+    "actor relation magnitude fields",
+    "no trading behavior change"
+  ],
+  "change_type": "daily_news_structured_event_measurement_surface",
+  "changed_files": [
+    "quant/experiments/exp_20260630_004_daily_news_structured_event_ledger.py",
+    "data/experiments/exp-20260630-004/exp_20260630_004_daily_news_structured_event_ledger.json",
+    "data/experiments/exp-20260630-004/daily_news_structured_event_ledger.jsonl",
+    "experiments/logs/exp-20260630-004.json",
+    "experiments/cards/exp-20260630-004.md",
+    "experiments/manifests/exp-20260630-004.json",
+    "experiments/tickets/exp-20260630-004.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "daily_news_structured_event_evidence_ledger_v1",
+  "decision": "accepted_measurement_repair",
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "explicit_ticker_items": 1132,
+    "ledger_rows": 384,
+    "magnitude_rows": 45,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260630-004",
+  "gate1": {
+    "baseline_metrics": {
+      "expected_value_score": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": null
+    },
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "passed": true
+  },
+  "gate2": {
+    "entry_date": "not_applicable_measurement_repair_no_strategy_entries",
+    "passed": true,
+    "required_field_audit": {
+      "all_required_fields_present": true,
+      "missing_counts": {},
+      "required_fields": [
+        "event_id",
+        "event_date",
+        "ticker",
+        "relation_type",
+        "relation_polarity",
+        "actor",
+        "object",
+        "magnitude",
+        "evidence_span",
+        "sanitized_text_hash",
+        "source_provenance"
+      ]
+    },
+    "runtime_fields_checked": [
+      "event_date",
+      "ticker",
+      "relation_type",
+      "evidence_span",
+      "sanitized_text_hash",
+      "source_provenance"
+    ],
+    "target_price": "not_applicable_measurement_repair_no_strategy_entries"
+  },
+  "gate3": {
+    "note": "Measurement ledger rows only; not tradable signals.",
+    "passed": true,
+    "signals_generated": 384,
+    "signals_survived": 384,
+    "survival_rate": 1.0
+  },
+  "gate4": {
+    "expected_value_score_delta": 0.0,
+    "failed_reasons": [],
+    "note": "No strategy behavior changed; this is accepted only as measurement repair.",
+    "passed": true,
+    "status": "accepted_measurement_repair",
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "hypothesis": "Daily news LLM/event-scoring alpha is currently blocked because the accepted sanitation contract and rejected keyword taxonomy do not leave replayable actor/object/relation/magnitude evidence spans; build a structured PIT event evidence ledger without changing trading behavior.",
+  "implementation_mode": "measurement_surface_only",
+  "lane": "measurement_repair",
+  "mechanism_family": "daily_news_llm_event_scoring_alpha",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260630-001",
+    "exp-20260630-002"
+  ],
+  "new_evidence_type": "structured_pit_event_ledger_with_actor_relation_magnitude_evidence_spans",
+  "next_retry_requires": [
+    "closed replacement-value outcomes joined to structured event rows",
+    "or PIT LLM event labels persisted with the same evidence-span schema",
+    "or canonical-window daily-news coverage that can be replayed without lookahead"
+  ],
+  "owner": "alpha-explore",
+  "parameters": {
+    "dedupe_key": "event_date,ticker,relation_type,evidence_text_hash,source_item_hash",
+    "min_ledger_rows": 1,
+    "require_explicit_ticker_text": true,
+    "required_event_fields": [
+      "event_id",
+      "event_date",
+      "ticker",
+      "relation_type",
+      "relation_polarity",
+      "actor",
+      "object",
+      "magnitude",
+      "evidence_span",
+      "sanitized_text_hash",
+      "source_provenance"
+    ],
+    "source_kind": "clean_trade_news"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not use this ledger to sweep keyword buckets, tiers, hold days, top-N, notional, or response curves on the same rows. The next alpha test must use the structured fields as fixed inputs and join enough closed replacement-value outcomes or canonical-window replay coverage.",
+    "new_evidence_required": "Closed cash/SPY/QQQ replacement-value outcomes for these structured events, or an LLM scorer that writes the same actor/object/relation/magnitude/evidence schema at decision time.",
+    "why_result_happened": "The clean-trade-news archive contains enough explicit ticker text and event phrases to materialize a provenance-complete structured ledger. This remains measurement-only because no forward outcome or canonical-window policy replay was added."
+  },
+  "pre_run_questions": {
+    "nearby_history": "exp-20260630-001 accepted sanitation; exp-20260630-002 rejected keyword taxonomy and required structured actor/object/relation/magnitude evidence spans.",
+    "profit_hypothesis": "A future LLM/news event-scoring alpha can only be tested credibly if daily news rows first have replayable actor/object/relation/magnitude evidence spans instead of unreplayable keyword buckets.",
+    "reproducibility": "Run .\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260630_004_daily_news_structured_event_ledger.py; artifacts live under data/experiments/exp-20260630-004.",
+    "single_policy_bundle": "daily_news_structured_event_evidence_ledger_v1",
+    "success_standard": "Nonzero replayable JSONL ledger with required structured event fields and zero trading metric changes."
+  },
+  "prediction": {
+    "confidence_reason": "Prior sanitation and forward-value runs proved the cleaned archive exists; this iteration changes measurement shape only and writes no strategy behavior.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "source archive lacks enough explicit event text",
+      "evidence extraction is too keyword-like",
+      "ledger rows cannot be made provenance-complete"
+    ],
+    "success_probability": 0.72
+  },
+  "production_impact": {
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "llm_prompt_changed": false,
+    "news_archives_changed": false,
+    "paper_orders_changed": false,
+    "ranking_changed": false,
+    "shared_helper_promoted": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "quant/daily_news_text_sanitation.py",
+    "quant/news_text_sanitizer.py",
+    "experiments/logs/exp-20260630-001.json",
+    "experiments/logs/exp-20260630-002.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260630_004_daily_news_structured_event_ledger.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260630_004_daily_news_structured_event_ledger.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "sample_events": [
+    {
+      "actor": {
+        "match_confidence": "high",
+        "match_status": "explicit_text_match",
+        "ticker": "APP",
+        "type": "ticker"
+      },
+      "event_date": "2026-01-22",
+      "event_id": "dc8efc2e12662f36ba3716c5",
+      "evidence_span": {
+        "context_end": 160,
+        "context_start": 0,
+        "end": 20,
+        "start": 15,
+        "text": "AppLovin stock falls again after short-seller report; APP investors eye Feb. 11 earnings - TechStock2\nAppLovin stock falls again after short-seller report; APP"
+      },
+      "evidence_text_hash": "df28bb50d70cc68d2e3f3811",
+      "evidence_trigger": {
+        "hash": "c1b7cf7c9cdf6f57",
+        "text": "falls"
+      },
+      "magnitude": {
+        "has_numeric_magnitude": false,
+        "values": [],
+        "window_hash": "8377c66e887bb3d2"
+      },
+      "object": {
+        "counterparty_extracted": false,
+        "source": "local_evidence_window",
+        "text": "market_or_transaction_failure",
+        "type": "market_or_transaction_failure"
+      },
+      "published_at": "2026-01-22T16:39:21+00:00",
+      "relation_polarity": "negative",
+      "relation_type": "drawdown_or_failed_transaction",
+      "rule_version": "daily_news_structured_event_ledger_v1",
+      "sanitized_text_hash": "c222ce942685468f",
+      "source_item_hash": "e14eb58f21159893c128ac83",
+      "source_provenance": {
+        "file_sha256": "4cc2927f22758b0005c182bb87ffe766b1645b8f16f69957b8d1e4269ec882ae",
+        "item_index": 6,
+        "kind": "clean_trade_news",
+        "news_date": "2026-01-23",
+        "path": "data/daily/news/trade/clean_trade_news_20260123.json",
+        "raw_source": "https://news.google.com/rss/search?q=APP+stock&hl=en-US&gl=US&ceid=US:en",
+        "source": "google_news",
+        "tier": null,
+        "url": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxQVmhQRG5QRkZXS05wWVFGSnZrVm1TOEhhbXVCbXJkcGNxUXJNeVg0VEFhOHRjZ3A4SGlmUkRDT2hld2lTYUc0S0xCWDdWVmF4WmxYY0owZ2tlWlRhQzROclpCclJuOEszLXg0bGZTOEpGaW5mZ0lTUDZ2WDlFdWlYb3NITUVTUWllWG1hSjkwTm1CQnAyUmtQblJaOG5JNlRHWHY4NFNYckZXekU?oc=5"
+      },
+      "text_quality": {
+        "flags": [
+          "html_entity_unescaped"
+        ],
+        "status": "changed",
+        "ticker_entity_status": "explicit_text_match"
+      },
+      "ticker": "APP"
+    },
+    {
+      "actor": {
+        "match_confidence": "high",
+        "match_status": "explicit_text_match",
+        "ticker": "GOOG",
+        "type": "ticker"
+      },
+      "event_date": "2026-01-22",
+      "event_id": "65e1c53bd8769670be4b12a1",
+      "evidence_span": {
+        "context_end": 195,
+        "context_start": 0,
+        "end": 55,
+        "start": 48,
+        "text": "Alphabet (GOOG) stock rises after Raymond James upgrade as judge keeps consumer antitrust case alive - TechStock2\nAlphabet (GOOG) stock rises after Raymond James upgrade as judge keeps consumer a"
+      },
+      "evidence_text_hash": "b2e447c5daf109799841a329",
+      "evidence_trigger": {
+        "hash": "7fef9479c8bc5a3c",
+        "text": "upgrade"
+      },
+      "magnitude": {
+        "has_numeric_magnitude": false,
+        "values": [],
+        "window_hash": "d9bf7281d461c200"
+      },
+      "object": {
+        "counterparty_extracted": false,
+        "source": "local_evidence_window",
+        "text": "forecast_or_rating",
+        "type": "forecast_or_rating"
+      },
+      "published_at": "2026-01-22T22:18:19+00:00",
+      "relation_polarity": "positive",
+      "relation_type": "guidance_or_rating_upgrade",
+      "rule_version": "daily_news_structured_event_ledger_v1",
+      "sanitized_text_hash": "aacd4ef05b7e2384",
+      "source_item_hash": "39b05e0edeb035e51def8b64",
+      "source_provenance": {
+        "file_sha256": "4cc2927f22758b0005c182bb87ffe766b1645b8f16f69957b8d1e4269ec882ae",
+        "item_index": 2,
+        "kind": "clean_trade_news",
+        "news_date": "2026-01-23",
+        "path": "data/daily/news/trade/clean_trade_news_20260123.json",
+        "raw_source": "https://news.google.com/rss/search?q=GOOG+stock&hl=en-US&gl=US&ceid=US:en",
+        "source": "google_news",
+        "tier": null,
+        "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxPOUliYkYtYVpKdEpOR3MxU1ZTUkozWC1vWTVkaVZLUS1GZ05ab0p5NHo2aXU5SVR3czNBeWt1dHF0c1BtcDlEX1o3WUUxV2FOdlVJNG43VnV0R0NDT2tWR3hZS012eHpEWHlHN0MzT1V0d0MyYm53b2VkM2ZvcHNXMEl3bEtLTFdKaFFucnRIbFI2NXZNTUdURjlNVG9Dc0FoNS00V3RmRWNJQzJoSVp3V0sxeDJ2OThKZ1RV?oc=5"
+      },
+      "text_quality": {
+        "flags": [
+          "html_entity_unescaped"
+        ],
+        "status": "changed",
+        "ticker_entity_status": "explicit_text_match"
+      },
+      "ticker": "GOOG"
+    },
+    {
+      "actor": {
+        "match_confidence": "high",
+        "match_status": "explicit_text_match",
+        "ticker": "QQQ",
+        "type": "ticker"
+      },
+      "event_date": "2026-01-22",
+      "event_id": "52114874c1535a27de339bcd",
+      "evidence_span": {
+        "context_end": 212,
+        "context_start": 0,
+        "end": 72,
+        "start": 65,
+        "text": "Assessing Invesco (IVZ) Valuation After RBC Capital\u2019s Outperform Upgrade And QQQ ETF Earnings Tailwind - Yahoo Finance\nAssessing Invesco (IVZ) Valuation After RBC Capital\u2019s Outperform Upgrade And QQQ ETF Earnings"
+      },
+      "evidence_text_hash": "f9758eba94dacb54aabeadb1",
+      "evidence_trigger": {
+        "hash": "7fef9479c8bc5a3c",
+        "text": "upgrade"
+      },
+      "magnitude": {
+        "has_numeric_magnitude": false,
+        "values": [],
+        "window_hash": "480ea066fcde9f7d"
+      },
+      "object": {
+        "counterparty_extracted": false,
+        "source": "local_evidence_window",
+        "text": "forecast_or_rating",
+        "type": "forecast_or_rating"
+      },
+      "published_at": "2026-01-22T21:14:23+00:00",
+      "relation_polarity": "positive",
+      "relation_type": "guidance_or_rating_upgrade",
+      "rule_version": "daily_news_structured_event_ledger_v1",
+      "sanitized_text_hash": "34c750ab629c4887",
+      "source_item_hash": "21315fcfe2a7a522b980650b",
+      "source_provenance": {
+        "file_sha256": "4cc2927f22758b0005c182bb87ffe766b1645b8f16f69957b8d1e4269ec882ae",
+        "item_index": 4,
+        "kind": "clean_trade_news",
+        "news_date": "2026-01-23",
+        "path": "data/daily/news/trade/clean_trade_news_20260123.json",
+        "raw_source": "https://news.google.com/rss/search?q=QQQ+ETF&hl=en-US&gl=US&ceid=US:en",
+        "source": "google_news",
+        "tier": null,
+        "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPYlA1MmxITmM3QTJVcmFLMTN6c2d5V0cySFFTNEFPWm5EOU44c2NGUGhYbTNZOXNoOThvMDFKaHpEVXpjTG5vNnNOZ2NER2E3c2J6YmVvalVQUjBuZHlsSEFnME5icnJteV9YWl9VWmo2dUxZTnVfSDdaVzhfemR4OE1ndHNNUmFE?oc=5"
+      },
+      "text_quality": {
+        "flags": [
+          "html_entity_unescaped"
+        ],
+        "status": "changed",
+        "ticker_entity_status": "explicit_text_match"
+      },
+      "ticker": "QQQ"
+    },
+    {
+      "actor": {
+        "match_confidence": "high",
+        "match_status": "explicit_text_match",
+        "ticker": "META",
+        "type": "ticker"
+      },
+      "event_date": "2026-01-23",
+      "event_id": "fe6a7a008064697e92c1c369",
+      "evidence_span": {
+        "context_end": 185,
+        "context_start": 0,
+        "end": 47,
+        "start": 40,
+        "text": "Meta Stock Jumps Off Support on Analyst Upgrade, but Is It Enough to Shift Trend? - FXLeaders\nMeta Stock Jumps Off Support on Analyst Upgrade, but Is It Enough to Shift Trend? FXLeaders"
+      },
+      "evidence_text_hash": "009ee16dc5dc1e64ded66549",
+      "evidence_trigger": {
+        "hash": "7fef9479c8bc5a3c",
+        "text": "upgrade"
+      },
+      "magnitude": {
+        "has_numeric_magnitude": false,
+        "values": [],
+        "window_hash": "69c8da9b07cbf99f"
+      },
+      "object": {
+        "counterparty_extracted": false,
+        "source": "local_evidence_window",
+        "text": "forecast_or_rating",
+        "type": "forecast_or_rating"
+      },
+      "published_at": "2026-01-23T02:32:30+00:00",
+      "relation_polarity": "positive",
+      "relation_type": "guidance_or_rating_upgrade",
+      "rule_version": "daily_news_structured_event_ledger_v1",
+      "sanitized_text_hash": "009ee16dc5dc1e64",
+      "source_item_hash": "f91299503f5a0f222e287919",
+      "source_provenance": {
+        "file_sha256": "4cc2927f22758b0005c182bb87ffe766b1645b8f16f69957b8d1e4269ec882ae",
+        "item_index": 1,
+        "kind": "clean_trade_news",
+        "news_date": "2026-01-23",
+        "path": "data/daily/news/trade/clean_trade_news_20260123.json",
+        "raw_source": "https://news.google.com/rss/search?q=META+stock&hl=en-US&gl=US&ceid=US:en",
+        "source": "google_news",
+        "tier": null,
+        "url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxNMmdZTHZYX0d5dE1uVEFYRGg5aUFDRUhFbzBiZDBQMzNDOV9aMTd4dnRWLS03aWZYSEd4NXpqUk80WjR2LVJhUW1UQnJ3blhtclFIR0pEbGVoSWMtTVdxSG9Rdl93eFQwbk5MdVE0bEFWc1FmcE9PakpEMjVQX3FRSzVmUDVrWEVGQ1Y3M1lnSUo1Q29KZ3pnY2RndjRBZnRtbzhTd3JLa085UDVZcHM2dVNyU2JiMWJNSFF6T3ZFOA?oc=5"
+      },
+      "text_quality": {
+        "flags": [
+          "html_entity_unescaped"
+        ],
+        "status": "changed",
+        "ticker_entity_status": "explicit_text_match"
+      },
+      "ticker": "META"
+    },
+    {
+      "actor": {
+        "match_confidence": "high",
+        "match_status": "explicit_text_match",
+        "ticker": "TSLA",
+        "type": "ticker"
+      },
+      "event_date": "2026-01-28",
+      "event_id": "d0f1fc7e03ec6f8938f70b88",
+      "evidence_span": {
+        "context_end": 208,
+        "context_start": 0,
+        "end": 68,
+        "start": 53,
+        "text": "TSLA stock price: Why Tesla stock is surging today \u2013 strong earnings, $2 billion xAI investment, and Cyber - The Economic Times\nTSLA stock price: Why Tesla stock is surging today \u2013 strong earnings, $2 billion"
+      },
+      "evidence_text_hash": "d22879de23f6c435f903eeea",
+      "evidence_trigger": {
+        "hash": "0f04568454665d28",
+        "text": "strong earnings"
+      },
+      "magnitude": {
+        "has_numeric_magnitude": true,
+        "values": [
+          "$2 billion"
+        ],
+        "window_hash": "ec05cd4d3eeb4c94"
+      },
+      "object": {
+        "counterparty_extracted": false,
+        "source": "local_evidence_window",
+        "text": "financial_result",
+        "type": "financial_result"
+      },
+      "published_at": "2026-01-28T23:25:49+00:00",
+      "relation_polarity": "positive",
+      "relation_type": "financial_growth_or_beat",
+      "rule_version": "daily_news_structured_event_ledger_v1",
+      "sanitized_text_hash": "7e06293accdc2818",
+      "source_item_hash": "e0a5e80045b72e952e09dada",
+      "source_provenance": {
+        "file_sha256": "c7fc2c5f641cdcae3e9abd3d59fc1f3e2ce10e5bef5d6dfbe77fc526794afc04",
+        "item_index": 6,
+        "kind": "clean_trade_news",
+        "news_date": "2026-01-30",
+        "path": "data/daily/news/trade/clean_trade_news_20260130.json",
+        "raw_source": "https://news.google.com/rss/search?q=TSLA+stock&hl=en-US&gl=US&ceid=US:en",
+        "source": "google_news",
+        "tier": null,
+        "url": "https://news.google.com/rss/articles/CBMipAJBVV95cUxPTVg4VDVYR0VuYy0yUkVfb1JwS3oyTHBhYXBzNE56MUxvNWl5RXpvSk1PbzNjckI3UmFWejM2dDlXem1zY0FxRzY1bVZuLURXMUxYWXo4eE9RYW5CazBOV1NZZTFfN2NHc3BwdzBpdE5TeURzTzc3TEZtWFYtLUJlOU9xVGx2eFlycEtaaG53aGpVNk9DQVdDV2xUY001cExZaXRvUHVacmdyM0Zzdl9LOEVQQ3VnV1hjcUNQem0yZVkzZDZzZW00X21RcmhaZDVQeVp1Nl9aaS1nNmdEMnZZU0JSM2pTREJRYmVGc09zSy1rc0ozblFOaVN6QzJrbWVOX2dkVm84bXFOZHJlNTlvSHhQUjRFa2pRMmdKcnJvS041VWJo0gGqAkFVX3lxTFBwMG9jLUpheWNqZlRpWG1FQVAyVlZPWlp6TmQzc2NCY3o4Rk1xb3FxdDRSckpzQnVrM2xpYUVqUUNoTmc2V1F3cUFiU0RCN21Cc2xDUXpSNnVwbWdiZjY3Tjl2M0QwMDBEWkdPdUZ1Vm9MSTZuVUFiT3NmeXFQemJySkIzOXdrMFRWVWhkNERiSGFqZUZmbUpYcmVLekFFWThBdzFld2g2dDFZUmFLSEppeHBacndQeHFZbGJuY3cyazJDRDhHemdZUTdXdHpGQWIyRUd4ekJXenh6NkVaY2lSUGtNT1RyWUtvTDk0QzkyN3N6ZUNSUTM5R3dBM2ExeVViVDdBSXFxTlVRTUYxQmxhWkMzOHl1RThrVnUtNFRfZ0djNk05cFI2b1E?oc=5"
+      },
+      "text_quality": {
+        "flags": [
+          "html_entity_unescaped"
+        ],
+        "status": "changed",
+        "ticker_entity_status": "explicit_text_match"
+      },
+      "ticker": "TSLA"
+    },
+    {
+      "actor": {
+        "match_confidence": "high",
+        "match_status": "explicit_text_match",
+        "ticker": "COIN",
+        "type": "ticker"
+      },
+      "event_date": "2026-02-16",
+      "event_id": "f438d2897e81691f61681ffb",
+      "evidence_span": {
+        "context_end": 173,
+        "context_start": 0,
+        "end": 45,
+        "start": 38,
+        "text": "Coinbase Stock Price Jumps 16% As $2B Buyback Offsets Earnings Miss - The Coin Republic\nCoinbase Stock Price Jumps 16% As $2B Buyback Offsets Earnings Miss The Coin Republic"
+      },
+      "evidence_text_hash": "b3472d74ba88df9d24c22607",
+      "evidence_trigger": {
+        "hash": "6733b79462d66aa4",
+        "text": "buyback"
+      },
+      "magnitude": {
+        "has_numeric_magnitude": true,
+        "values": [
+          "$2",
+          "$2"
+        ],
+        "window_hash": "7d51b9c56899946e"
+      },
+      "object": {
+        "counterparty_extracted": false,
+        "source": "local_evidence_window",
+        "text": "capital_allocation",
+        "type": "capital_allocation"
+      },
+      "published_at": "2026-02-16T23:30:00+00:00",
+      "relation_polarity": "positive",
+      "relation_type": "capital_return",
+      "rule_version": "daily_news_structured_event_ledger_v1",
+      "sanitized_text_hash": "b3472d74ba88df9d",
+      "source_item_hash": "8552707960fae1e0eb6ec9f3",
+      "source_provenance": {
+        "file_sha256": "09dabe285e432baf4e8d3d6d9beae947368d945bdef90b5d38c2053452f38589",
+        "item_index": 6,
+        "kind": "clean_trade_news",
+        "news_date": "2026-02-19",
+        "path": "data/daily/news/trade/clean_trade_news_20260219.json",
+        "raw_source": "https://news.google.com/rss/search?q=COIN+stock&hl=en-US&gl=US&ceid=US:en",
+        "source": "google_news",
+        "tier": null,
+        "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQa1FPcGJfM2tYNGpmamZ5MzhuSVNobGpibWtpZDJDWV8tNkVpRExwckRmOXo3RFZ6SC1BSXdlS2dwazBNRGNrbWxPNVJPTEN6ZW1PbVBfRG5DV01yeGJCbzdzWDZjNTdJam9QSFVWd2tqRFZOMEF6ejFsbDJXaHJRRXpOUHVQa2diUUFPdVI3TkxEYnNMbHotVi00WmNkdTZQc1VfbmUtUmg2SEdkVXfSAbMBQVVfeXFMUDRUVnJTdWdUa3NnRHJmR2Fwam5ZQVBIWWFjRU93QWYtTFNGVXJjUXVob0ZQYWI0Y2ZkMVQ0eE9Zc2JNaW9RNEtBVUh5aG5JT1dIRmFrYTlhQzJGT0x2VmJlOGJqQmNnWFIwb3hJT1dRanAxblpYa0hxc2xrVmJSVXljSGNMOGVYenZ4aUVHenJ3a3VSM0t6Ni1MMXZpdDVRZHp4NEtFcUEwNkxKYTVhWml1aFk?oc=5"
+      },
+      "text_quality": {
+        "flags": [
+          "html_entity_unescaped"
+        ],
+        "status": "changed",
+        "ticker_entity_status": "explicit_text_match"
+      },
+      "ticker": "COIN"
+    },
+    {
+      "actor": {
+        "match_confidence": "high",
+        "match_status": "explicit_text_match",
+        "ticker": "COIN",
+        "type": "ticker"
+      },
+      "event_date": "2026-02-17",
+      "event_id": "ec11b3bba1885f4fe5e3b917",
+      "evidence_span": {
+        "context_end": 147,
+        "context_start": 0,
+        "end": 35,
+        "start": 18,
+        "text": "Mizuho Securities Cuts Price Target for MSTR, COIN, HOOD Stocks - CoinGape\nMizuho Securities Cuts Price Target for MSTR, COIN, HOOD Stocks CoinGape"
+      },
+      "evidence_text_hash": "5b40ff5e789425f5eb3ac957",
+      "evidence_trigger": {
+        "hash": "ed3dde2ca89087c0",
+        "text": "cuts price target"
+      },
+      "magnitude": {
+        "has_numeric_magnitude": false,
+        "values": [],
+        "window_hash": "eaded8f5da385e58"
+      },
+      "object": {
+        "counterparty_extracted": true,
+        "source": "local_evidence_window",
+        "text": "MSTR",
+        "type": "forecast_or_rating"
+      },
+      "published_at": "2026-02-17T15:51:29+00:00",
+      "relation_polarity": "negative",
+      "relation_type": "downgrade_or_target_cut",
+      "rule_version": "daily_news_structured_event_ledger_v1",
+      "sanitized_text_hash": "5b40ff5e789425f5",
+      "source_item_hash": "2cf79fef4e29a8073cf07b8b",
+      "source_provenance": {
+        "file_sha256": "1b425bc48608ea31f0c5f60ba1642d2f34d84282d4d9e1182b56b0397e9459e5",
+        "item_index": 1,
+        "kind": "clean_trade_news",
+        "news_date": "2026-02-17",
+        "path": "data/daily/news/trade/clean_trade_news_20260217.json",
+        "raw_source": "https://news.google.com/rss/search?q=COIN+stock&hl=en-US&gl=US&ceid=US:en",
+        "source": "google_news",
+        "tier": null,
+        "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxOZDdLZFYySDZTSEY5SXNvQWdOMHZHTVV2ZllWUnNFUjl1RU9BeDJLY1U2SU5abXp4QWYwVmxfS0ZjY0NLMlpnSE1DdURveWpibjRTclVNbGVwbmxtVGxzbEwyQnRnaXZub2JHaDh1cWlRT21VT2xyLWFLZ1hJREdKN3BjTTM0Ynlta2xuYWl6Ylp4UzFUbGFBV2RaWQ?oc=5"
+      },
+      "text_quality": {
+        "flags": [
+          "html_entity_unescaped"
+        ],
+        "status": "changed",
+        "ticker_entity_status": "explicit_text_match"
+      },
+      "ticker": "COIN"
+    },
+    {
+      "actor": {
+        "match_confidence": "high",
+        "match_status": "explicit_text_match",
+        "ticker": "AMD",
+        "type": "ticker"
+      },
+      "event_date": "2026-02-20",
+      "event_id": "8b5bcc24dd7044214feb7ac5",
+      "evidence_span": {
+        "context_end": 125,
+        "context_start": 0,
+        "end": 46,
+        "start": 32,
+        "text": "AMD's Pullback Won't Last Long (Rating Upgrade) - Seeking Alpha\nAMD's Pullback Won't Last Long (Rating Upgrade) Seeking Alpha"
+      },
+      "evidence_text_hash": "2ba57911aa1c00daafdc3008",
+      "evidence_trigger": {
+        "hash": "e788b735505e819a",
+        "text": "rating upgrade"
+      },
+      "magnitude": {
+        "has_numeric_magnitude": false,
+        "values": [],
+        "window_hash": "2ba57911aa1c00da"
+      },
+      "object": {
+        "counterparty_extracted": false,
+        "source": "local_evidence_window",
+        "text": "forecast_or_rating",
+        "type": "forecast_or_rating"
+      },
+      "published_at": "2026-02-20T23:53:36+00:00",
+      "relation_polarity": "positive",
+      "relation_type": "guidance_or_rating_upgrade",
+      "rule_version": "daily_news_structured_event_ledger_v1",
+      "sanitized_text_hash": "2ba57911aa1c00da",
+      "source_item_hash": "bb6d7cadd206489e5ea0c4d3",
+      "source_provenance": {
+        "file_sha256": "3d1a0f619e076acff56201067ce0de2a5fbad6fada4c65eb4b8bbf35b32d06c0",
+        "item_index": 1,
+        "kind": "clean_trade_news",
+        "news_date": "2026-02-20",
+        "path": "data/daily/news/trade/clean_trade_news_20260220.json",
+        "raw_source": "https://news.google.com/rss/search?q=AMD+stock&hl=en-US&gl=US&ceid=US:en",
+        "source": "google_news",
+        "tier": null,
+        "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxQd1NxbjZaanhTeWJRTGRvNFh2QU1NOW03NUFlY3RIZHB3M2Q3S0g5UUdPM29NdjJxcGZ0TE90UDJlS2VXQmstUHZyMXZveldsbjlFZUVTU3FvNUFLSmxfUTFhN0s3ZlYzc3cyMXFVWXZGaExacEMtWV9FaXg2akF2ejZqQWlJSkdsckZoOUYtWG04VFVET05XckUwY0sxbm5WWDlNOFdnNEkxYTRzMkJQQzNn?oc=5"
+      },
+      "text_quality": {
+        "flags": [
+          "html_entity_unescaped"
+        ],
+        "status": "changed",
+        "ticker_entity_status": "explicit_text_match"
+      },
+      "ticker": "AMD"
+    },
+    {
+      "actor": {
+        "match_confidence": "high",
+        "match_status": "explicit_text_match",
+        "ticker": "META",
+        "type": "ticker"
+      },
+      "event_date": "2026-03-13",
+      "event_id": "e70c59e884872f9343071e19",
+      "evidence_span": {
+        "context_end": 165,
+        "context_start": 0,
+        "end": 25,
+        "start": 11,
+        "text": "Meta Stock Faces Pressure as $135 Billion AI Spending Plan Raises Investor Concerns - techi.com\nMeta Stock Faces Pressure as $135 Billion AI Spending Plan Raises Inv"
+      },
+      "evidence_text_hash": "1a37befaf9e125dda0a794d3",
+      "evidence_trigger": {
+        "hash": "66c143d90950cc99",
+        "text": "faces pressure"
+      },
+      "magnitude": {
+        "has_numeric_magnitude": true,
+        "values": [
+          "$135 Billion"
+        ],
+        "window_hash": "e196ad78ea551def"
+      },
+      "object": {
+        "counterparty_extracted": false,
+        "source": "local_evidence_window",
+        "text": "legal_regulatory_risk",
+        "type": "legal_regulatory_risk"
+      },
+      "published_at": "2026-03-13T04:46:43+00:00",
+      "relation_polarity": "negative",
+      "relation_type": "legal_or_regulatory_pressure",
+      "rule_version": "daily_news_structured_event_ledger_v1",
+      "sanitized_text_hash": "c9342ee0c1c59664",
+      "source_item_hash": "a7af3fb24325e6386f01e2f0",
+      "source_provenance": {
+        "file_sha256": "179284b9702fe0ce9863cf4dfbb3309dbe5ca6c5144c222bba7634268ae24536",
+        "item_index": 6,
+        "kind": "clean_trade_news",
+        "news_date": "2026-03-13",
+        "path": "data/daily/news/trade/clean_trade_news_20260313.json",
+        "raw_source": "https://news.google.com/rss/search?q=META+stock&hl=en-US&gl=US&ceid=US:en",
+        "source": "google_news",
+        "tier": null,
+        "url": "https://news.google.com/rss/articles/CBMigAFBVV95cUxNZUo1aHlmazk2dHNaQW5OM0ZFR2tTdEdya2hqa3VOSS1QMjFaNkQxZXNsSTR2WHp6V0ZGUFQzUVVUUXg4NDVpQ2xnNk12ZXdLVEdNTDRYVGt6RW1PWGN6bVp6V04wNVZFRFotUkE2U09xS2wycEVSS3MwN1JqY012bA?oc=5"
+      },
+      "text_quality": {
+        "flags": [
+          "html_entity_unescaped"
+        ],
+        "status": "changed",
+        "ticker_entity_status": "explicit_text_match"
+      },
+      "ticker": "META"
+    },
+    {
+      "actor": {
+        "match_confidence": "high",
+        "match_status": "explicit_text_match",
+        "ticker": "MU",
+        "type": "ticker"
+      },
+      "event_date": "2026-03-13",
+      "event_id": "7ec47af1a64b28ee1cee90ca",
+      "evidence_span": {
+        "context_end": 174,
+        "context_start": 0,
+        "end": 34,
+        "start": 19,
+        "text": "MU Stock Surges on Strong Earnings and Memory Forecast but Can Micron Justify High Expectations? - FXLeaders\nMU Stock Surges on Strong Earnings and Memory Forecast but Can Mi"
+      },
+      "evidence_text_hash": "aab4a89714e4b084e08c3156",
+      "evidence_trigger": {
+        "hash": "0f04568454665d28",
+        "text": "strong earnings"
+      },
+      "magnitude": {
+        "has_numeric_magnitude": false,
+        "values": [],
+        "window_hash": "7109f0561d3d457b"
+      },
+      "object": {
+        "counterparty_extracted": false,
+        "source": "local_evidence_window",
+        "text": "financial_result",
+        "type": "financial_result"
+      },
+      "published_at": "2026-03-13T21:54:41+00:00",
+      "relation_polarity": "positive",
+      "relation_type": "financial_growth_or_beat",
+      "rule_version": "daily_news_structured_event_ledger_v1",
+      "sanitized_text_hash": "5cb07c767f82c5b7",
+      "source_item_hash": "d8a4ef18ec28c378a9ce0da3",
+      "source_provenance": {
+        "file_sha256": "179284b9702fe0ce9863cf4dfbb3309dbe5ca6c5144c222bba7634268ae24536",
+        "item_index": 0,
+        "kind": "clean_trade_news",
+        "news_date": "2026-03-13",
+        "path": "data/daily/news/trade/clean_trade_news_20260313.json",
+        "raw_source": "https://news.google.com/rss/search?q=MU+stock&hl=en-US&gl=US&ceid=US:en",
+        "source": "google_news",
+        "tier": null,
+        "url": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxNdUZrMVJ0aEtOUTM3bGtyNDVDNWo1bVVFbmhfMmJPYVJmXzZ6WmxxazN3NkpaNEJldzBINXFidXV2N3FjWHoxYy1PUHpDVkFUSkt0eHBqdUUzajdodmdsNGVxakRtN183ejl6NXVVOU5qdFZVVWZ3WmcwOU9FdFBiYzhzcGw5VEpEcG5rT0lIVkUzazRNazJuT1JGMWtBT05qbUlmZ2c2Mjd5NS1ya3JhVWlHM3BjUEJSd3NzbnRmTDAzLUlWdzhBMmpqZzVBSlMyQlI5Tw?oc=5"
+      },
+      "text_quality": {
+        "flags": [
+          "html_entity_unescaped"
+        ],
+        "status": "changed",
+        "ticker_entity_status": "explicit_text_match"
+      },
+      "ticker": "MU"
+    },
+    {
+      "actor": {
+        "match_confidence": "high",
+        "match_status": "explicit_text_match",
+        "ticker": "TSLA",
+        "type": "ticker"
+      },
+      "event_date": "2026-03-13",
+      "event_id": "4fe9fd94968fae73a6aec99d",
+      "evidence_span": {
+        "context_end": 153,
+        "context_start": 0,
+        "end": 45,
+        "start": 38,
+        "text": "TSLA Stock Today: March 13 California Lawsuit Targets Clean Car Rules - Meyka\nTSLA Stock Today: March 13 California Lawsuit Targets Clean Car Rules Meyka"
+      },
+      "evidence_text_hash": "b004ddf73c24f71b4cf0c78d",
+      "evidence_trigger": {
+        "hash": "b85b91c53558d46d",
+        "text": "lawsuit"
+      },
+      "magnitude": {
+        "has_numeric_magnitude": false,
+        "values": [],
+        "window_hash": "31d6c9f6ae329fca"
+      },
+      "object": {
+        "counterparty_extracted": false,
+        "source": "local_evidence_window",
+        "text": "legal_regulatory_risk",
+        "type": "legal_regulatory_risk"
+      },
+      "published_at": "2026-03-13T08:55:07+00:00",
+      "relation_polarity": "negative",
+      "relation_type": "legal_or_regulatory_pressure",
+      "rule_version": "daily_news_structured_event_ledger_v1",
+      "sanitized_text_hash": "b004ddf73c24f71b",
+      "source_item_hash": "f4af60a5ff8ba80b6cedfd64",
+      "source_provenance": {
+        "file_sha256": "179284b9702fe0ce9863cf4dfbb3309dbe5ca6c5144c222bba7634268ae24536",
+        "item_index": 5,
+        "kind": "clean_trade_news",
+        "news_date": "2026-03-13",
+        "path": "data/daily/news/trade/clean_trade_news_20260313.json",
+        "raw_source": "https://news.google.com/rss/search?q=TSLA+stock&hl=en-US&gl=US&ceid=US:en",
+        "source": "google_news",
+        "tier": null,
+        "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxNQ1AzTG1sVWhtWmtsQVlzRC0wcnM1cGh4SDdWMTI1M0dkeXZ1MFRXVTlLajAzLWtKd3NoN1FSR2pnbE1qUV9pRmc2eW5mRkFKeHMtb2Vrd1NpbTFZTm5Ib1diendVbThGQzdSdWpWc0pjRWk3eDM4M3B3QTFsNHFEdGlyUG5vTFl0NjJrbEQzeVRZSVBzZkx6dmZlU0hNdw?oc=5"
+      },
+      "text_quality": {
+        "flags": [
+          "html_entity_unescaped"
+        ],
+        "status": "changed",
+        "ticker_entity_status": "explicit_text_match"
+      },
+      "ticker": "TSLA"
+    },
+    {
+      "actor": {
+        "match_confidence": "high",
+        "match_status": "explicit_text_match",
+        "ticker": "COIN",
+        "type": "ticker"
+      },
+      "event_date": "2026-03-20",
+      "event_id": "345fdf8dd8966d7314779e74",
+      "evidence_span": {
+        "context_end": 195,
+        "context_start": 0,
+        "end": 68,
+        "start": 63,
+        "text": "Coinbase stock price forecast: Downside risk dominates as COIN falls 3.18% to $196 - Traders Union\nCoinbase stock price forecast: Downside risk dominates as COIN falls 3.18% to $196 Traders Union"
+      },
+      "evidence_text_hash": "f07d29dff40bc87d8ab7270e",
+      "evidence_trigger": {
+        "hash": "c1b7cf7c9cdf6f57",
+        "text": "falls"
+      },
+      "magnitude": {
+        "has_numeric_magnitude": true,
+        "values": [
+          "$196"
+        ],
+        "window_hash": "7c2c73d5fe51f4ed"
+      },
+      "object": {
+        "counterparty_extracted": false,
+        "source": "local_evidence_window",
+        "text": "market_or_transaction_failure",
+        "type": "market_or_transaction_failure"
+      },
+      "published_at": "2026-03-20T17:20:50+00:00",
+      "relation_polarity": "negative",
+      "relation_type": "drawdown_or_failed_transaction",
+      "rule_version": "daily_news_structured_event_ledger_v1",
+      "sanitized_text_hash": "f07d29dff40bc87d",
+      "source_item_hash": "2dab6d8a550399c410bf1870",
+      "source_provenance": {
+        "file_sha256": "fc601dd86a068cd01eb1d7070528707f2fa0f4d65a0dbefe44cd3745d773d985",
+        "item_index": 5,
+        "kind": "clean_trade_news",
+        "news_date": "2026-03-22",
+        "path": "data/daily/news/trade/clean_trade_news_20260322.json",
+        "raw_source": "https://news.google.com/rss/search?q=COIN+stock&hl=en-US&gl=US&ceid=US:en",
+        "source": "google_news",
+        "tier": null,
+        "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxOWDZIT1ZzSnBIcV9Pd2tWMy1FS1hJMU43Qm9DVkhKV2dsbkNmQ2lCalRyRHpnd2UweWVhd2VXUmtvMXliQkpUdmVzdXlQY0s1ZXYwbG5za0haSUpEUGdySmxpcFg2QTROOTZiY2RrMXNEZ2NJbEVnbkkzbnlKbHZ5SXZIQ0puanQ5LWJqMFFRcHdUdngxci1YMFl6WkttUmRa?oc=5"
+      },
+      "text_quality": {
+        "flags": [
+          "html_entity_unescaped"
+        ],
+        "status": "changed",
+        "ticker_entity_status": "explicit_text_match"
+      },
+      "ticker": "COIN"
+    },
+    {
+      "actor": {
+        "match_confidence": "high",
+        "match_status": "explicit_text_match",
+        "ticker": "META",
+        "type": "ticker"
+      },
+      "event_date": "2026-03-20",
+      "event_id": "2c2ef1a643fa70c5c66faf0b",
+      "evidence_span": {
+        "context_end": 187,
+        "context_start": 0,
+        "end": 47,
+        "start": 40,
+        "text": "Meta targeted older workers in layoffs, lawsuit by former senior director for company claims - The Mercury News\nMeta targeted older workers in layoffs, lawsuit by former senior director f"
+      },
+      "evidence_text_hash": "f216839aed14416b16c2666b",
+      "evidence_trigger": {
+        "hash": "b85b91c53558d46d",
+        "text": "lawsuit"
+      },
+      "magnitude": {
+        "has_numeric_magnitude": false,
+        "values": [],
+        "window_hash": "0b36443f83aa4bec"
+      },
+      "object": {
+        "counterparty_extracted": false,
+        "source": "local_evidence_window",
+        "text": "legal_regulatory_risk",
+        "type": "legal_regulatory_risk"
+      },
+      "published_at": "2026-03-20T19:14:43+00:00",
+      "relation_polarity": "negative",
+      "relation_type": "legal_or_regulatory_pressure",
+      "rule_version": "daily_news_structured_event_ledger_v1",
+      "sanitized_text_hash": "e921fe498ca6ff47",
+      "source_item_hash": "c13b2e6124cec70354e9423d",
+      "source_provenance": {
+        "file_sha256": "fc601dd86a068cd01eb1d7070528707f2fa0f4d65a0dbefe44cd3745d773d985",
+        "item_index": 4,
+        "kind": "clean_trade_news",
+        "news_date": "2026-03-22",
+        "path": "data/daily/news/trade/clean_trade_news_20260322.json",
+        "raw_source": "https://news.google.com/rss/search?q=META+stock&hl=en-US&gl=US&ceid=US:en",
+        "source": "google_news",
+        "tier": null,
+        "url": "https://news.google.com/rss/articles/CBMif0FVX3lxTE5HV25acGNuMkJwQWpFc1FtbzZkTmtfc0RVeWdWcFZJVnpiVkZQUVl6RXZ1N3JWcXFyLUpLVkkyLVpvVDA1RFZ3T1BkamFkQTdjNFU3VkpuM1BZUEJDcC03ZUt0RVBIb3d3NHBEbENETm5hTjN4RFFWalRGbjdtcXPSAYQBQVVfeXFMTzR1SFAxZnJLdGIwZ1I5enI1OWFlOHVnNFlqQmc1OU56cENOV2ZMaHBoa0ExZ29tTE96Y3lUQ0lRQ0NSQk1EOFk2NEttZ1pXNEdVeVh2ZDBGMW1WcXIwVms3ampMNWpwYWFNNXc0dW1SMWtYZVRVQkNiLW5DNlZTclVTdGw1?oc=5"
+      },
+      "text_quality": {
+        "flags": [
+          "html_entity_unescaped"
+        ],
+        "status": "changed",
+        "ticker_entity_status": "explicit_text_match"
+      },
+      "ticker": "META"
+    },
+    {
+      "actor": {
+        "match_confidence": "high",
+        "match_status": "explicit_text_match",
+        "ticker": "TSLA",
+        "type": "ticker"
+      },
+      "event_date": "2026-03-20",
+      "event_id": "c6a30a83fcb10c92899b904f",
+      "evidence_span": {
+        "context_end": 181,
+        "context_start": 0,
+        "end": 41,
+        "start": 33,
+        "text": "Tesla FSD Poised To Win European Approval. But TSLA Stock Completes A Round Trip. - Investor's Business Daily\nTesla FSD Poised To Win European Approval. But TSLA Stock Completes A R"
+      },
+      "evidence_text_hash": "d52803e8392724981c367ca2",
+      "evidence_trigger": {
+        "hash": "9deb65b8788f41ff",
+        "text": "approval"
+      },
+      "magnitude": {
+        "has_numeric_magnitude": false,
+        "values": [],
+        "window_hash": "b606d81baabb2d08"
+      },
+      "object": {
+        "counterparty_extracted": false,
+        "source": "local_evidence_window",
+        "text": "product_catalyst",
+        "type": "product_catalyst"
+      },
+      "published_at": "2026-03-20T21:03:00+00:00",
+      "relation_polarity": "positive",
+      "relation_type": "product_or_approval_catalyst",
+      "rule_version": "daily_news_structured_event_ledger_v1",
+      "sanitized_text_hash": "97e66a3fc1d38677",
+      "source_item_hash": "682b25987240efea832850d4",
+      "source_provenance": {
+        "file_sha256": "fc601dd86a068cd01eb1d7070528707f2fa0f4d65a0dbefe44cd3745d773d985",
+        "item_index": 3,
+        "kind": "clean_trade_news",
+        "news_date": "2026-03-22",
+        "path": "data/daily/news/trade/clean_trade_news_20260322.json",
+        "raw_source": "https://news.google.com/rss/search?q=TSLA+stock&hl=en-US&gl=US&ceid=US:en",
+        "source": "google_news",
+        "tier": null,
+        "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE9sZFZJQVdlcDB3R2RRNWt3blhXYktaMUNPZFJqSkJTYTVtTXpua0FmUEgtbjFkV1diQXdNVGpHUE5QeWc1dGh1QUFScTg3SkNzcl9NSkc3Y1M5OE12QWY2UkcyM2hYRHRwU0VsQS1TVi1mcFk5RXJF?oc=5"
+      },
+      "text_quality": {
+        "flags": [
+          "html_entity_unescaped"
+        ],
+        "status": "changed",
+        "ticker_entity_status": "explicit_text_match"
+      },
+      "ticker": "TSLA"
+    },
+    {
+      "actor": {
+        "match_confidence": "high",
+        "match_status": "explicit_text_match",
+        "ticker": "NVDA",
+        "type": "ticker"
+      },
+      "event_date": "2026-03-22",
+      "event_id": "f617eba6a69570d52c3b7ead",
+      "evidence_span": {
+        "context_end": 783,
+        "context_start": 489,
+        "end": 643,
+        "start": 629,
+        "text": "ketWatchWhy Nvidia Stock Is Stuck in a Trading Range\u2014and What Could Finally Break It Out Barron'sNvidia: The Significance Of $6 Tokenomics (Rating Upgrade) (NASDAQ:NVDA) Seeking AlphaNVIDIA (NASDAQ:NVDA) Shares Down 3.2% - Here's Why MarketBeatPrediction: This Will Be Nvidia's Stock Price by t"
+      },
+      "evidence_text_hash": "c28bc132e91f8ab943bd7513",
+      "evidence_trigger": {
+        "hash": "e788b735505e819a",
+        "text": "rating upgrade"
+      },
+      "magnitude": {
+        "has_numeric_magnitude": true,
+        "values": [
+          "$6"
+        ],
+        "window_hash": "32c3f51db3f0d838"
+      },
+      "object": {
+        "counterparty_extracted": false,
+        "source": "local_evidence_window",
+        "text": "forecast_or_rating",
+        "type": "forecast_or_rating"
+      },
+      "published_at": "2026-03-22T23:33:00+00:00",
+      "relation_polarity": "positive",
+      "relation_type": "guidance_or_rating_upgrade",
+      "rule_version": "daily_news_structured_event_ledger_v1",
+      "sanitized_text_hash": "e16906775c36dcac",
+      "source_item_hash": "40e0733855a6c72571845756",
+      "source_provenance": {
+        "file_sha256": "fc601dd86a068cd01eb1d7070528707f2fa0f4d65a0dbefe44cd3745d773d985",
+        "item_index": 0,
+        "kind": "clean_trade_news",
+        "news_date": "2026-03-22",
+        "path": "data/daily/news/trade/clean_trade_news_20260322.json",
+        "raw_source": "https://news.google.com/rss/search?q=NVDA+stock&hl=en-US&gl=US&ceid=US:en",
+        "source": "google_news",
+        "tier": null,
+        "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxNZU04QmdIckNvWUJjYTRVV0dwRGpldWo5MW96WDk3d3JiYV9Mai1KWXNVNWx6QjFscVpmWExPeTNob2hzTmZOVlVrZUY0SEV5azFQaHFKWXRwcVV3MVl3MFdVV1dMM3FaaGtGZ25YREFLampLY0xLeG8zUV9LMDhCbTV4NDlXTzJuMWtqeVRQSkxnWkRPSWcxRg?oc=5"
+      },
+      "text_quality": {
+        "flags": [
+          "html_entity_unescaped"
+        ],
+        "status": "changed",
+        "ticker_entity_status": "explicit_text_match"
+      },
+      "ticker": "NVDA"
+    },
+    {
+      "actor": {
+        "match_confidence": "high",
+        "match_status": "explicit_text_match",
+        "ticker": "NVDA",
+        "type": "ticker"
+      },
+      "event_date": "2026-03-22",
+      "event_id": "e2f022260b4a18140de32225",
+      "evidence_span": {
+        "context_end": 183,
+        "context_start": 0,
+        "end": 43,
+        "start": 30,
+        "text": "History Says Right Now Is the Turning Point for Nvidia's Stock - The Motley Fool\nHistory Says Right Now Is the Turning Point for Nvidia's Stock The Motley FoolGoldman Sachs sends blun"
+      },
+      "evidence_text_hash": "43bb6f5f049d184d8f1365bd",
+      "evidence_trigger": {
+        "hash": "9b7d5bf993394c7c",
+        "text": "turning point"
+      },
+      "magnitude": {
+        "has_numeric_magnitude": false,
+        "values": [],
+        "window_hash": "f32405e62e6604de"
+      },
+      "object": {
+        "counterparty_extracted": true,
+        "source": "local_evidence_window",
+        "text": "Nvidia",
+        "type": "product_catalyst"
+      },
+      "published_at": "2026-03-22T23:33:00+00:00",
+      "relation_polarity": "positive",
+      "relation_type": "product_or_approval_catalyst",
+      "rule_version": "daily_news_structured_event_ledger_v1",
+      "sanitized_text_hash": "e16906775c36dcac",
+      "source_item_hash": "40e0733855a6c72571845756",
+      "source_provenance": {
+        "file_sha256": "fc601dd86a068cd01eb1d7070528707f2fa0f4d65a0dbefe44cd3745d773d985",
+        "item_index": 0,
+        "kind": "clean_trade_news",
+        "news_date": "2026-03-22",
+        "path": "data/daily/news/trade/clean_trade_news_20260322.json",
+        "raw_source": "https://news.google.com/rss/search?q=NVDA+stock&hl=en-US&gl=US&ceid=US:en",
+        "source": "google_news",
+        "tier": null,
+        "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxNZU04QmdIckNvWUJjYTRVV0dwRGpldWo5MW96WDk3d3JiYV9Mai1KWXNVNWx6QjFscVpmWExPeTNob2hzTmZOVlVrZUY0SEV5azFQaHFKWXRwcVV3MVl3MFdVV1dMM3FaaGtGZ25YREFLampLY0xLeG8zUV9LMDhCbTV4NDlXTzJuMWtqeVRQSkxnWkRPSWcxRg?oc=5"
+      },
+      "text_quality": {
+        "flags": [
+          "html_entity_unescaped"
+        ],
+        "status": "changed",
+        "ticker_entity_status": "explicit_text_match"
+      },
+      "ticker": "NVDA"
+    },
+    {
+      "actor": {
+        "match_confidence": "high",
+        "match_status": "explicit_text_match",
+        "ticker": "GOOG",
+        "type": "ticker"
+      },
+      "event_date": "2026-03-26",
+      "event_id": "dc760fbb232a04d40b2cdfce",
+      "evidence_span": {
+        "context_end": 145,
+        "context_start": 0,
+        "end": 33,
+        "start": 28,
+        "text": "GOOG Stock Forecast: Google Falls 3.8% on AI and Energy Risks - Coinpaper\nGOOG Stock Forecast: Google Falls 3.8% on AI and Energy Risks Coinpaper"
+      },
+      "evidence_text_hash": "63b9e53b89a975c728810c65",
+      "evidence_trigger": {
+        "hash": "c1b7cf7c9cdf6f57",
+        "text": "falls"
+      },
+      "magnitude": {
+        "has_numeric_magnitude": false,
+        "values": [],
+        "window_hash": "8dab708b12ab44b8"
+      },
+      "object": {
+        "counterparty_extracted": false,
+        "source": "local_evidence_window",
+        "text": "market_or_transaction_failure",
+        "type": "market_or_transaction_failure"
+      },
+      "published_at": "2026-03-26T16:53:44+00:00",
+      "relation_polarity": "negative",
+      "relation_type": "drawdown_or_failed_transaction",
+      "rule_version": "daily_news_structured_event_ledger_v1",
+      "sanitized_text_hash": "63b9e53b89a975c7",
+      "source_item_hash": "47d7c75874856b2eed14533d",
+      "source_provenance": {
+        "file_sha256": "9b25242a2633cd1ecc28265715a9631abcc0378c464e5d76f4d7b272eb7c0d47",
+        "item_index": 5,
+        "kind": "clean_trade_news",
+        "news_date": "2026-03-28",
+        "path": "data/daily/news/trade/clean_trade_news_20260328.json",
+        "raw_source": "https://news.google.com/rss/search?q=GOOG+stock&hl=en-US&gl=US&ceid=US:en",
+        "source": "google_news",
+        "tier": null,
+        "url": "https://news.google.com/rss/articles/CBMikAFBVV95cUxPSVZBV1lwNTA4RHlZZVhxdGZNbFV3dDg1S2FyWlU5SXRrb0RGdXFMeWNkZmp6RE5tTTA5bVExNEl4dDJRQmcza05nRDB0a2FKWmZ4d0FqdTF3TkViWjgxVV9iWWNCVTFxU3ctQ01uZnA2RVFkX3hieVFtVm9PN3lMc2NUNGw2OHI0Y2ZGOTlqdGs?oc=5"
+      },
+      "text_quality": {
+        "flags": [
+          "html_entity_unescaped"
+        ],
+        "status": "changed",
+        "ticker_entity_status": "explicit_text_match"
+      },
+      "ticker": "GOOG"
+    },
+    {
+      "actor": {
+        "match_confidence": "high",
+        "match_status": "explicit_text_match",
+        "ticker": "META",
+        "type": "ticker"
+      },
+      "event_date": "2026-03-27",
+      "event_id": "5a915325aed539b54b819641",
+      "evidence_span": {
+        "context_end": 191,
+        "context_start": 0,
+        "end": 73,
+        "start": 66,
+        "text": "Meta, social media stocks continue slide Friday amid fallout from lawsuit losses - Yahoo Finance\nMeta, social media stocks continue slide Friday amid fallout from lawsuit losses Yahoo Finance"
+      },
+      "evidence_text_hash": "7286ac9427685e6964d0c555",
+      "evidence_trigger": {
+        "hash": "b85b91c53558d46d",
+        "text": "lawsuit"
+      },
+      "magnitude": {
+        "has_numeric_magnitude": false,
+        "values": [],
+        "window_hash": "2467779c0f89ddd0"
+      },
+      "object": {
+        "counterparty_extracted": false,
+        "source": "local_evidence_window",
+        "text": "legal_regulatory_risk",
+        "type": "legal_regulatory_risk"
+      },
+      "published_at": "2026-03-27T18:24:38+00:00",
+      "relation_polarity": "negative",
+      "relation_type": "legal_or_regulatory_pressure",
+      "rule_version": "daily_news_structured_event_ledger_v1",
+      "sanitized_text_hash": "7286ac9427685e69",
+      "source_item_hash": "6e892e817c7b8d60342b71ac",
+      "source_provenance": {
+        "file_sha256": "9b25242a2633cd1ecc28265715a9631abcc0378c464e5d76f4d7b272eb7c0d47",
+        "item_index": 2,
+        "kind": "clean_trade_news",
+        "news_date": "2026-03-28",
+        "path": "data/daily/news/trade/clean_trade_news_20260328.json",
+        "raw_source": "https://news.google.com/rss/search?q=META+stock&hl=en-US&gl=US&ceid=US:en",
+        "source": "google_news",
+        "tier": null,
+        "url": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxQUTU3NzFJUlV1cU1yS3hVelp4cm1wM0JWdF9FQ3JsMGpVeEx2S09haDg2bVpLbVFLd3FaVl9KZ1ViTVFoX0xuRUxWeERIdWVoejhUaGRacFBKaDd2dE5GRkpPeGxsS18zWTdQTmozNW9FXzVjUUNOa2hUcGQ5eHFEbVlFOTZwRGdtNjRidWQ2QUxPZXNtVEJVS2ZPMmdPYlNwTjdHSXk1Ynh5X3ZlbFNGcTU0TC1mZWJHTDBoQnE0MFhrZ3h4YTFRdm5STUNSN01nOVE?oc=5"
+      },
+      "text_quality": {
+        "flags": [
+          "html_entity_unescaped"
+        ],
+        "status": "changed",
+        "ticker_entity_status": "explicit_text_match"
+      },
+      "ticker": "META"
+    },
+    {
+      "actor": {
+        "match_confidence": "high",
+        "match_status": "explicit_text_match",
+        "ticker": "NFLX",
+        "type": "ticker"
+      },
+      "event_date": "2026-03-27",
+      "event_id": "4fe182c452dee5afd5c3a6c9",
+      "evidence_span": {
+        "context_end": 197,
+        "context_start": 0,
+        "end": 58,
+        "start": 44,
+        "text": "Netflix price hike to drive revenue upside, boost forecast - analysts (NFLX:NASDAQ) - Seeking Alpha\nNetflix price hike to drive revenue upside, boost forecast - analysts (NFLX:NASDAQ) Seeking Alpha"
+      },
+      "evidence_text_hash": "1a08e67e424069de02a6b215",
+      "evidence_trigger": {
+        "hash": "df7680134e79b6f0",
+        "text": "boost forecast"
+      },
+      "magnitude": {
+        "has_numeric_magnitude": false,
+        "values": [],
+        "window_hash": "e589d663b241e1db"
+      },
+      "object": {
+        "counterparty_extracted": false,
+        "source": "local_evidence_window",
+        "text": "forecast_or_rating",
+        "type": "forecast_or_rating"
+      },
+      "published_at": "2026-03-27T14:25:26+00:00",
+      "relation_polarity": "positive",
+      "relation_type": "guidance_or_rating_upgrade",
+      "rule_version": "daily_news_structured_event_ledger_v1",
+      "sanitized_text_hash": "1a08e67e424069de",
+      "source_item_hash": "fbafae21ca7dd548094963c4",
+      "source_provenance": {
+        "file_sha256": "9b25242a2633cd1ecc28265715a9631abcc0378c464e5d76f4d7b272eb7c0d47",
+        "item_index": 3,
+        "kind": "clean_trade_news",
+        "news_date": "2026-03-28",
+        "path": "data/daily/news/trade/clean_trade_news_20260328.json",
+        "raw_source": "https://news.google.com/rss/search?q=NFLX+stock&hl=en-US&gl=US&ceid=US:en",
+        "source": "google_news",
+        "tier": null,
+        "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxPbzB0Smt3ZUtUZGNBQUhkalBxVFNWNFU4Y2FtSFUyWk1ZZnZHTEFyMU0xYkd5bEs1aHR5SlNTcEZZM0dHUktxZUd4X2FraGlaOXBsSEtwRm5CUW5RNWRROGJ2R1lWclJKV2hXN0lDV010ckxoYlVqQ195VUpfaGpXNGFBU09naDB3RWtNRnZLWWJkSFNIbWJBUW1iQjVqSkVmOU5ZaHBaZ3lnZw?oc=5"
+      },
+      "text_quality": {
+        "flags": [
+          "html_entity_unescaped"
+        ],
+        "status": "changed",
+        "ticker_entity_status": "explicit_text_match"
+      },
+      "ticker": "NFLX"
+    },
+    {
+      "actor": {
+        "match_confidence": "high",
+        "match_status": "explicit_text_match",
+        "ticker": "NFLX",
+        "type": "ticker"
+      },
+      "event_date": "2026-03-27",
+      "event_id": "645221d0eb77af01c629bdb3",
+      "evidence_span": {
+        "context_end": 197,
+        "context_start": 0,
+        "end": 58,
+        "start": 44,
+        "text": "Netflix price hike to drive revenue upside, boost forecast - analysts (NFLX:NASDAQ) - Seeking Alpha\nNetflix price hike to drive revenue upside, boost forecast - analysts (NFLX:NASDAQ) Seeking Alpha"
+      },
+      "evidence_text_hash": "1a08e67e424069de02a6b215",
+      "evidence_trigger": {
+        "hash": "df7680134e79b6f0",
+        "text": "boost forecast"
+      },
+      "magnitude": {
+        "has_numeric_magnitude": false,
+        "values": [],
+        "window_hash": "e589d663b241e1db"
+      },
+      "object": {
+        "counterparty_extracted": false,
+        "source": "local_evidence_window",
+        "text": "forecast_or_rating",
+        "type": "forecast_or_rating"
+      },
+      "published_at": "2026-03-27T14:25:26+00:00",
+      "relation_polarity": "positive",
+      "relation_type": "guidance_or_rating_upgrade",
+      "rule_version": "daily_news_structured_event_ledger_v1",
+      "sanitized_text_hash": "1a08e67e424069de",
+      "source_item_hash": "0075f53b60549d74ce0160e2",
+      "source_provenance": {
+        "file_sha256": "d72d7cea2e777e9f727bf0c45c749ef8d7ab9d50ab152f82896bb4867d7fe7d4",
+        "item_index": 4,
+        "kind": "clean_trade_news",
+        "news_date": "2026-03-29",
+        "path": "data/daily/news/trade/clean_trade_news_20260329.json",
+        "raw_source": "https://news.google.com/rss/search?q=NFLX+stock&hl=en-US&gl=US&ceid=US:en",
+        "source": "google_news",
+        "tier": "T3",
+        "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxPbzB0Smt3ZUtUZGNBQUhkalBxVFNWNFU4Y2FtSFUyWk1ZZnZHTEFyMU0xYkd5bEs1aHR5SlNTcEZZM0dHUktxZUd4X2FraGlaOXBsSEtwRm5CUW5RNWRROGJ2R1lWclJKV2hXN0lDV010ckxoYlVqQ195VUpfaGpXNGFBU09naDB3RWtNRnZLWWJkSFNIbWJBUW1iQjVqSkVmOU5ZaHBaZ3lnZw?oc=5"
+      },
+      "text_quality": {
+        "flags": [
+          "html_entity_unescaped"
+        ],
+        "status": "changed",
+        "ticker_entity_status": "explicit_text_match"
+      },
+      "ticker": "NFLX"
+    }
+  ],
+  "single_causal_variable": "daily_news_structured_event_evidence_ledger_v1",
+  "source_audit": {
+    "date_range": {
+      "end": "2026-06-26",
+      "start": "2026-01-22"
+    },
+    "duplicate_event_ids": 0,
+    "duplicate_input_rows_removed": 2,
+    "event_date_count": 84,
+    "explicit_ticker_items": 1132,
+    "file_count": 79,
+    "ledger_rows": 384,
+    "magnitude_row_share": 0.1171875,
+    "magnitude_rows": 45,
+    "news_root": "data/daily/news",
+    "polarity_counts": {
+      "negative": 149,
+      "positive": 235
+    },
+    "raw_event_rows": 386,
+    "raw_items": 1152,
+    "relation_counts": {
+      "capital_return": 48,
+      "customer_order_or_partnership": 10,
+      "downgrade_or_target_cut": 34,
+      "drawdown_or_failed_transaction": 87,
+      "financial_growth_or_beat": 90,
+      "guidance_or_rating_upgrade": 63,
+      "legal_or_regulatory_pressure": 28,
+      "product_or_approval_catalyst": 24
+    },
+    "required_field_audit": {
+      "all_required_fields_present": true,
+      "missing_counts": {},
+      "required_fields": [
+        "event_id",
+        "event_date",
+        "ticker",
+        "relation_type",
+        "relation_polarity",
+        "actor",
+        "object",
+        "magnitude",
+        "evidence_span",
+        "sanitized_text_hash",
+        "source_provenance"
+      ]
+    },
+    "source_date_counts": {
+      "2026-01-23": 4,
+      "2026-01-30": 1,
+      "2026-02-17": 1,
+      "2026-02-19": 1,
+      "2026-02-20": 1,
+      "2026-03-13": 3,
+      "2026-03-22": 5,
+      "2026-03-28": 3,
+      "2026-03-29": 2,
+      "2026-04-04": 3,
+      "2026-04-10": 1,
+      "2026-04-13": 2,
+      "2026-04-14": 2,
+      "2026-04-15": 8,
+      "2026-04-16": 4,
+      "2026-04-17": 2,
+      "2026-04-20": 3,
+      "2026-04-21": 2,
+      "2026-04-22": 2,
+      "2026-04-23": 4,
+      "2026-04-24": 5,
+      "2026-04-27": 2,
+      "2026-04-28": 3,
+      "2026-04-29": 2,
+      "2026-04-30": 7,
+      "2026-05-01": 9,
+      "2026-05-03": 5,
+      "2026-05-04": 3,
+      "2026-05-05": 3,
+      "2026-05-06": 5,
+      "2026-05-07": 4,
+      "2026-05-08": 5,
+      "2026-05-09": 5,
+      "2026-05-10": 5,
+      "2026-05-11": 9,
+      "2026-05-12": 8,
+      "2026-05-13": 7,
+      "2026-05-14": 3,
+      "2026-05-15": 5,
+      "2026-05-16": 5,
+      "2026-05-17": 3,
+      "2026-05-18": 4,
+      "2026-05-19": 7,
+      "2026-05-20": 15,
+      "2026-05-21": 10,
+      "2026-05-22": 9,
+      "2026-05-23": 9,
+      "2026-05-24": 9,
+      "2026-05-25": 9,
+      "2026-05-26": 7,
+      "2026-05-27": 2,
+      "2026-05-28": 3,
+      "2026-05-29": 6,
+      "2026-05-30": 3,
+      "2026-05-31": 4,
+      "2026-06-01": 3,
+      "2026-06-02": 4,
+      "2026-06-03": 7,
+      "2026-06-04": 3,
+      "2026-06-05": 11,
+      "2026-06-06": 9,
+      "2026-06-07": 10,
+      "2026-06-08": 8,
+      "2026-06-09": 2,
+      "2026-06-10": 2,
+      "2026-06-11": 5,
+      "2026-06-13": 11,
+      "2026-06-15": 9,
+      "2026-06-17": 7,
+      "2026-06-18": 8,
+      "2026-06-22": 7,
+      "2026-06-23": 3,
+      "2026-06-24": 4,
+      "2026-06-25": 5,
+      "2026-06-26": 14
+    },
+    "source_kind": "clean_trade_news",
+    "ticker_top20": {
+      "AMD": 19,
+      "APP": 27,
+      "COIN": 16,
+      "CRDO": 17,
+      "GE": 16,
+      "GEV": 16,
+      "GOOG": 7,
+      "HOOD": 13,
+      "INTC": 12,
+      "LITE": 14,
+      "MCD": 9,
+      "META": 23,
+      "MRVL": 9,
+      "MU": 26,
+      "NFLX": 26,
+      "NVDA": 25,
+      "RBLX": 22,
+      "SOFI": 11,
+      "TSLA": 24,
+      "WDC": 20
+    },
+    "unreadable_files": 0
+  },
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-06-30T04:12:34+00:00",
+  "trial_family": "daily_news_structured_event_evidence_ledger",
+  "trial_variant_id": "v1_structured_evidence_spans"
+}

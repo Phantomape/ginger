@@ -1,0 +1,161 @@
+{
+  "alpha_hypothesis": "LLM event scoring can only become a production-replayable alpha input if intraday news text quality, hidden text, and ticker/entity provenance are audited before prompts consume the feed.",
+  "artifact": "data/experiments/exp-20260629-012/intraday_news_text_sanitation_contract.json",
+  "calibration": {
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "predicted_failure_modes": [
+      "overflagging_clean_text",
+      "underflagging_mojibake",
+      "intraday_payload_shape_mismatch"
+    ],
+    "predicted_success_probability": 0.8,
+    "realized_failure_mode": null,
+    "surprise_level": "low"
+  },
+  "change_type": "llm_event_data_quality_repair",
+  "changed_files": [
+    "quant/news_text_sanitizer.py",
+    "quant/run_intraday.py",
+    "quant/intraday_review.py",
+    "quant/test_intraday_news_sanitizer.py",
+    "quant/test_intraday_review.py",
+    "quant/experiments/exp_20260629_012_intraday_news_text_sanitation_contract.py"
+  ],
+  "changed_variable": "intraday_news_text_sanitation_contract_v1",
+  "decision": "accepted_measurement_repair_intraday_news_text_sanitation_contract",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "intraday_news_changed_items": 8,
+    "intraday_news_flagged_items": 8,
+    "intraday_news_items_audited": 8,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260629-012",
+  "gate1": {
+    "baseline_expected_value_score_sum": 7.8941,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_total_pnl": 234850.99,
+    "passed": true,
+    "strategy_metrics_unchanged": true
+  },
+  "gate2": {
+    "field_status": {
+      "changed_items": 8,
+      "flagged_items": 8,
+      "hash_fields_present": true,
+      "input_rows": 8,
+      "sample_exists": true
+    },
+    "passed": true,
+    "runtime_fields_checked": [
+      "news.trade_items[].title",
+      "news.trade_items[].summary",
+      "news.trade_items[].tickers",
+      "news.trade_items[].text_sanitation.pre_sanitize_hash",
+      "news.trade_items[].text_sanitation.post_sanitize_hash",
+      "data_quality.news_text_sanitation",
+      "entry_date_not_applicable_no_strategy_rule_change",
+      "target_price_not_applicable_no_strategy_rule_change"
+    ]
+  },
+  "gate3": {
+    "not_applicable_reason": "No signal, filter, ranking, sizing, exit, risk budget, or order rule changed.",
+    "passed": true,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "survival_rate_delta": 0.0
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "intraday_news_changed_items": 8,
+      "intraday_news_flagged_items": 8,
+      "intraday_news_items_audited": 8,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "strategy_behavior_changed": false,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "decision": "accepted_measurement_repair_intraday_news_text_sanitation_contract",
+    "failed_reasons": [],
+    "measurement_repair_only": true,
+    "passed": true
+  },
+  "hypothesis": "LLM/news event scoring cannot be trusted if intraday trade news text with unexpanded HTML entities, hidden/control characters, mojibake, or ticker/entity mismatches is passed to prompts without a replayable sanitation audit; add a read-only intraday news sanitation contract that logs these risks without changing orders.",
+  "lane": "measurement_repair",
+  "mechanism_family": "llm_event_scoring_measurement_repair",
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "anti_repeat": "Do not retune prompts or trade decisions from this sample alone; next alpha work needs closed forward rows or a new LLM event scoring label with replayable outcomes.",
+    "next_step": "Let future intraday runs accumulate sanitized news snapshots, then evaluate whether flagged LLM-news items explain advisory quality or forward replacement value.",
+    "why_result_happened": "The current intraday trade-news sample contains unexpanded HTML entities in summaries that were previously invisible to data_quality and LLM prompt context; the sanitizer records them with deterministic hashes while preserving original news fields. A file-level check corrected the initial terminal display impression of title mojibake."
+  },
+  "prediction": {
+    "confidence_reason": "Fresh 2026-06-29 intraday news artifacts already contain mojibake strings that are passed into LLM prompts, while current data_quality only records source success counts; a read-only sanitizer is localized and should leave strategy metrics unchanged.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "overflagging_clean_text",
+      "underflagging_mojibake",
+      "intraday_payload_shape_mismatch"
+    ],
+    "recorded_at": "2026-06-29T18:05:47+00:00",
+    "success_probability": 0.8
+  },
+  "production_impact": {
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "intraday_advisory_prompt_changed": true,
+    "intraday_advisory_snapshot_changed": true,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "paper_orders_changed": false,
+    "parity_note": "Intraday advisory artifacts only. No EOD signal, backtest, paper sleeve, live order, or shared strategy policy path consumes this.",
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "ranking_changed": false,
+    "risk_budget_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_intraday_news_sanitizer.py quant\\test_intraday_review.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260629_012_intraday_news_text_sanitation_contract.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "sample_summary": {
+    "all_clear": false,
+    "changed_items": 8,
+    "flag_counts": {
+      "html_entity_unescaped": 8
+    },
+    "flagged_items": 8,
+    "hash_algorithm": "sha256_16",
+    "items": 8,
+    "rule_version": "intraday_news_text_sanitation_contract_v1",
+    "status_counts": {
+      "changed": 8
+    },
+    "ticker_entity_status_counts": {
+      "explicit_text_match": 8
+    }
+  },
+  "single_causal_variable": "intraday_news_text_sanitation_contract_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-06-29T18:14:49+00:00",
+  "trial_family": "intraday_news_text_sanitation_contract",
+  "trial_variant_id": "mojibake_hidden_text_ticker_match_v1"
+}

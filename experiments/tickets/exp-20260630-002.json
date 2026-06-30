@@ -1,0 +1,708 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260630_002_daily_news_event_forward_value.py",
+    "data/experiments/exp-20260630-002/exp_20260630_002_daily_news_event_forward_value.json",
+    "experiments/cards/exp-20260630-002.md",
+    "experiments/manifests/exp-20260630-002.json",
+    "experiments/tickets/exp-20260630-002.json",
+    "experiments/logs/exp-20260630-002.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260630-002.md",
+  "causal_components": [
+    "daily clean-trade-news archive",
+    "deterministic event taxonomy",
+    "explicit ticker text provenance",
+    "5d/10d forward outcome join",
+    "cash/SPY/QQQ replacement value",
+    "no strategy behavior change"
+  ],
+  "change_type": "llm_event_scoring_forward_attribution",
+  "changed_variable": "daily_clean_trade_news_event_taxonomy_forward_value_v1",
+  "claimed_at": "2026-06-30T02:05:37+00:00",
+  "completed_at": "2026-06-30T02:17:54+00:00",
+  "created_at": "2026-06-30T02:05:28+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260630-002",
+  "experiment_uid": "expuid-630b2d031e6d487f",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260630-002",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-30T02:05:28+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "daily_news_event_forward_value"
+  },
+  "hypothesis": "Daily clean-trade-news explicit-ticker positive event rows may contain production-visible LLM/news event-scoring alpha if a fixed deterministic event taxonomy shows closed 5d/10d replacement value versus cash, SPY, and QQQ without changing trading behavior.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "daily_clean_trade_news_event_taxonomy_forward_value_v1"
+  ],
+  "mechanism_family": "daily_news_llm_event_scoring_alpha",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260630-001",
+    "exp-20260428-012",
+    "exp-20260502-010"
+  ],
+  "new_evidence_type": "daily_news_sanitized_archive_forward_outcome_rows",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "5d",
+        "a",
+        "alpha",
+        "behavior",
+        "cash",
+        "changing",
+        "clean",
+        "closed",
+        "contain",
+        "daily",
+        "deterministic",
+        "event",
+        "explicit",
+        "forward",
+        "if",
+        "llm",
+        "may",
+        "news",
+        "positive",
+        "qqq",
+        "replacement",
+        "rows",
+        "scoring",
+        "shows",
+        "spy",
+        "taxonomy",
+        "ticker",
+        "trade",
+        "trading",
+        "value",
+        "versus",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "exit_lifecycle_next_open_exit_value_attribution",
+        "reopen_condition": "More closed production exit-lifecycle rows plus explicit slot-reuse/winner-collateral accounting and a shared default-off advisory lifecycle helper before any Gate 1-4 exit-policy promotion.",
+        "score": 0.0667,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "forward_replacement_prior_same_ticker_memory",
+        "reopen_condition": "Need materially more closed forward replacement rows with prior same-ticker history, or a separate shared-policy Gate 1-4 allocation test after the ledger has genuine multi-ticker prior-positive coverage.",
+        "score": 0.0457,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "forward_replacement_entry_regime_activation_attribution",
+        "reopen_condition": "Need materially more closed forward replacement rows carrying entry_regime tags, especially outside QQQ-only low-deployment ETF rows, before any activation-envelope test.",
+        "score": 0.0421,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "forward_replacement_entry_regime_exposure_scalar",
+        "reopen_condition": "Need materially more closed forward replacement rows carrying entry_regime tags across diversified sleeves and non-risk-on states before any regime soft-tilt activation test.",
+        "score": 0.0421,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "breakout_without_2x_volume_precursor_forward_replacement",
+        "reopen_condition": "A genuinely new PIT pre-volume-confirmation field that predicts WHICH breakout-without-2x-volume names go on to work (e.g. PIT borrow/availability, options-implied pressure, breadth persistence), tested out of sample -- not a volume-threshold change. Only such a selector would justify a default-off forward ledger; a blanket ledger of a deflated signal would be measurement treadmill.",
+        "score": 0.041,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": null,
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.28,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "insufficient_closed_forward_rows",
+      "no_event_taxonomy_edge",
+      "ticker_metadata_only_noise",
+      "missing_ohlcv_settlement",
+      "coverage_not_canonical_windows"
+    ],
+    "confidence_reason": "The sanitation repair exposed deterministic text hashes and ticker-provenance for 10k daily news rows, giving a genuinely different news/event evidence surface; risk is high because history is current-forward only and prior news-confirmation attempts were fragile.",
+    "recorded_at": "2026-06-30T02:04:50+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "rejected_no_daily_news_event_forward_value_edge",
+    "artifact": "data/experiments/exp-20260630-002/exp_20260630_002_daily_news_event_forward_value.json",
+    "log": "experiments/logs/exp-20260630-002.json",
+    "runner": "quant/experiments/exp_20260630_002_daily_news_event_forward_value.py",
+    "gate4": {
+      "observed_only_lead": false,
+      "failed_reasons": [
+        "mean_10d_return_edge_vs_control_too_low",
+        "coverage_not_canonical_windows"
+      ],
+      "checks": {
+        "closed_10d_target_rows": 180,
+        "closed_10d_control_rows": 717,
+        "target_event_dates": 51,
+        "target_ticker_count": 26,
+        "target_single_ticker_share": 0.1,
+        "mean_10d_return_edge_vs_control": -0.007903,
+        "target_mean_10d_replacement_vs_spy_usd": 83.71,
+        "target_mean_10d_replacement_vs_qqq_usd": 30.76,
+        "canonical_three_window_coverage": false
+      },
+      "decision": "rejected_no_daily_news_event_forward_value_edge",
+      "strategy_rerun_required": false,
+      "before_after_strategy_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "max_drawdown_pct": 0.0
+      },
+      "lead_limitations": [
+        "Daily news archive coverage starts in 2026 and does not cover all canonical fixed windows.",
+        "No shared helper, daily paper sleeve, prompt rule, or live order behavior was promoted.",
+        "Event taxonomy is deterministic and not an LLM semantic scorer."
+      ]
+    },
+    "calibration": {
+      "predicted_success_probability": 0.28,
+      "actual_success": false,
+      "brier_score": 0.0784,
+      "predicted_failure_modes": [
+        "insufficient_closed_forward_rows",
+        "no_event_taxonomy_edge",
+        "ticker_metadata_only_noise",
+        "missing_ohlcv_settlement",
+        "coverage_not_canonical_windows"
+      ],
+      "failed_reasons": [
+        "mean_10d_return_edge_vs_control_too_low",
+        "coverage_not_canonical_windows"
+      ],
+      "predicted_failure_modes_hit": [
+        "no_event_taxonomy_edge",
+        "coverage_not_canonical_windows"
+      ]
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260630-002.json",
+  "single_causal_variable": "daily_clean_trade_news_event_taxonomy_forward_value_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260630-002.json",
+  "trial_family": "daily_clean_trade_news_event_taxonomy_forward_value",
+  "trial_variant_id": "explicit_ticker_positive_event_v1",
+  "implementation_mode": "observed_only_forward_attribution",
+  "decision": "rejected_no_daily_news_event_forward_value_edge",
+  "artifact": "data/experiments/exp-20260630-002/exp_20260630_002_daily_news_event_forward_value.json",
+  "log": "experiments/logs/exp-20260630-002.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ],
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119
+    },
+    "note": "Observed-only attribution; before and after strategy metrics are identical."
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "fields_checked": [
+      "news_date",
+      "ticker",
+      "title",
+      "text_sanitation.post_sanitize_hash",
+      "ticker_entity_status",
+      "event_bucket",
+      "entry_date",
+      "target_price",
+      "forward_5d_return_pct",
+      "forward_10d_return_pct",
+      "forward_10d_replacement_value_vs_spy_usd",
+      "forward_10d_replacement_value_vs_qqq_usd"
+    ],
+    "entry_date_present": true,
+    "target_price_present_count": 0,
+    "target_price_relevance": "Not applicable; no target exit is scheduled in this observed-only attribution.",
+    "source_audit": {
+      "news_dir": "data/daily/news/trade",
+      "file_count": 79,
+      "date_range": {
+        "start": "2026-01-23",
+        "end": "2026-06-26"
+      },
+      "file_summaries": [
+        {
+          "path": "data/daily/news/trade/clean_trade_news_20260123.json",
+          "news_date": "2026-01-23",
+          "rows": 9,
+          "readable": true,
+          "schema_valid": true,
+          "summary": {
+            "rule_version": "daily_news_text_sanitation_contract_v1",
+            "hash_algorithm": "sha256_16",
+            "items": 9,
+            "flagged_items": 9,
+            "changed_items": 9,
+            "status_counts": {
+              "changed": 9
+            },
+            "flag_counts": {
+              "html_entity_unescaped": 9
+            },
+            "ticker_entity_status_counts": {
+              "explicit_text_match": 9
+            },
+            "all_clear": false,
+            "source_rule_version": "intraday_news_text_sanitation_contract_v1"
+          }
+        },
+        {
+          "path": "data/daily/news/trade/clean_trade_news_20260130.json",
+          "news_date": "2026-01-30",
+          "rows": 7,
+          "readable": true,
+          "schema_valid": true,
+          "summary": {
+            "rule_version": "daily_news_text_sanitation_contract_v1",
+            "hash_algorithm": "sha256_16",
+            "items": 7,
+            "flagged_items": 7,
+            "changed_items": 7,
+            "status_counts": {
+              "changed": 7
+            },
+            "flag_counts": {
+              "html_entity_unescaped": 7
+            },
+            "ticker_entity_status_counts": {
+              "explicit_text_match": 7
+            },
+            "all_clear": false,
+            "source_rule_version": "intraday_news_text_sanitation_contract_v1"
+          }
+        },
+        {
+          "path": "data/daily/news/trade/clean_trade_news_20260214.json",
+          "news_date": "2026-02-14",
+          "rows": 6,
+          "readable": true,
+          "schema_valid": true,
+          "summary": {
+            "rule_version": "daily_news_text_sanitation_contract_v1",
+            "hash_algorithm": "sha256_16",
+            "items": 6,
+            "flagged_items": 6,
+            "changed_items": 6,
+            "status_counts": {
+              "changed": 6
+            },
+            "flag_counts": {
+              "html_entity_unescaped": 6
+            },
+            "ticker_entity_status_counts": {
+              "explicit_text_match": 6
+            },
+            "all_clear": false,
+            "source_rule_version": "intraday_news_text_sanitation_contract_v1"
+          }
+        },
+        {
+          "path": "data/daily/news/trade/clean_trade_news_20260217.json",
+          "news_date": "2026-02-17",
+          "rows": 6,
+          "readable": true,
+          "schema_valid": true,
+          "summary": {
+            "rule_version": "daily_news_text_sanitation_contract_v1",
+            "hash_algorithm": "sha256_16",
+            "items": 6,
+            "flagged_items": 6,
+            "changed_items": 6,
+            "status_counts": {
+              "changed": 6
+            },
+            "flag_counts": {
+              "html_entity_unescaped": 6
+            },
+            "ticker_entity_status_counts": {
+              "explicit_text_match": 6
+            },
+            "all_clear": false,
+            "source_rule_version": "intraday_news_text_sanitation_contract_v1"
+          }
+        },
+        {
+          "path": "data/daily/news/trade/clean_trade_news_20260219.json",
+          "news_date": "2026-02-19",
+          "rows": 7,
+          "readable": true,
+          "schema_valid": true,
+          "summary": {
+            "rule_version": "daily_news_text_sanitation_contract_v1",
+            "hash_algorithm": "sha256_16",
+            "items": 7,
+            "flagged_items": 7,
+            "changed_items": 7,
+            "status_counts": {
+              "changed": 7
+            },
+            "flag_counts": {
+              "html_entity_unescaped": 7
+            },
+            "ticker_entity_status_counts": {
+              "explicit_text_match": 7
+            },
+            "all_clear": false,
+            "source_rule_version": "intraday_news_text_sanitation_contract_v1"
+          }
+        },
+        {
+          "path": "data/daily/news/trade/clean_trade_news_20260220.json",
+          "news_date": "2026-02-20",
+          "rows": 8,
+          "readable": true,
+          "schema_valid": true,
+          "summary": {
+            "rule_version": "daily_news_text_sanitation_contract_v1",
+            "hash_algorithm": "sha256_16",
+            "items": 8,
+            "flagged_items": 8,
+            "changed_items": 8,
+            "status_counts": {
+              "changed": 8
+            },
+            "flag_counts": {
+              "html_entity_unescaped": 8
+            },
+            "ticker_entity_status_counts": {
+              "explicit_text_match": 8
+            },
+            "all_clear": false,
+            "source_rule_version": "intraday_news_text_sanitation_contract_v1"
+          }
+        },
+        {
+          "path": "data/daily/news/trade/clean_trade_news_20260312.json",
+          "news_date": "2026-03-12",
+          "rows": 7,
+          "readable": true,
+          "schema_valid": true,
+          "summary": {
+            "rule_version": "daily_news_text_sanitation_contract_v1",
+            "hash_algorithm": "sha256_16",
+            "items": 7,
+            "flagged_items": 7,
+            "changed_items": 7,
+            "status_counts": {
+              "changed": 7
+            },
+            "flag_counts": {
+              "html_entity_unescaped": 7
+            },
+            "ticker_entity_status_counts": {
+              "explicit_text_match": 7
+            },
+            "all_clear": false,
+            "source_rule_version": "intraday_news_text_sanitation_contract_v1"
+          }
+        },
+        {
+          "path": "data/daily/news/trade/clean_trade_news_20260313.json",
+          "news_date": "2026-03-13",
+          "rows": 8,
+          "readable": true,
+          "schema_valid": true,
+          "summary": {
+            "rule_version": "daily_news_text_sanitation_contract_v1",
+            "hash_algorithm": "sha256_16",
+            "items": 8,
+            "flagged_items": 8,
+            "changed_items": 8,
+            "status_counts": {
+              "changed": 8
+            },
+            "flag_counts": {
+              "html_entity_unescaped": 8
+            },
+            "ticker_entity_status_counts": {
+              "explicit_text_match": 8
+            },
+            "all_clear": false,
+            "source_rule_version": "intraday_news_text_sanitation_contract_v1"
+          }
+        }
+      ],
+      "explicit_ticker_rows": 1334,
+      "positive_event_rows_raw": 256,
+      "bucket_counts_raw": {
+        "control_non_positive_event": 1078,
+        "analyst_upgrade": 59,
+        "earnings_growth": 81,
+        "product_catalyst": 73,
+        "capital_return": 34,
+        "order_contract_partner": 9
+      }
+    },
+    "settlement_audit": {
+      "warehouse_path": "data/warehouse/warehouse_main.sqlite",
+      "loaded_tickers": [
+        "AAPL",
+        "ADBE",
+        "AMD",
+        "AMZN",
+        "APLD",
+        "APP",
+        "AVGO",
+        "BAC",
+        "BE",
+        "C",
+        "COHR",
+        "COIN",
+        "CRDO",
+        "CRM",
+        "F",
+        "GE",
+        "GEV",
+        "GM",
+        "GOOG",
+        "GOOGL",
+        "GS",
+        "HOOD",
+        "INTC",
+        "IWM",
+        "JNJ",
+        "JPM",
+        "KO",
+        "LITE",
+        "LLY",
+        "MCD",
+        "META",
+        "MMM",
+        "MRVL",
+        "MSFT",
+        "MTSI",
+        "MU",
+        "NFLX",
+        "NVDA",
+        "ORCL",
+        "PEP",
+        "QQQ",
+        "RBLX",
+        "SBUX",
+        "SOFI",
+        "SPY",
+        "TSLA",
+        "V",
+        "VRT",
+        "WDC"
+      ],
+      "input_rows": 1261,
+      "settled_rows_any_horizon": 1030,
+      "skipped_reasons": {
+        "missing_next_session": 127,
+        "missing_ticker_bars": 3,
+        "not_yet_10d_closed": 234,
+        "not_yet_5d_closed": 101
+      },
+      "date_range": {
+        "news_start": "2026-01-23",
+        "news_end": "2026-06-26",
+        "entry_start": "2026-01-26",
+        "entry_end": "2026-06-08"
+      }
+    }
+  },
+  "gate3": {
+    "filter_added": false,
+    "signals_generated": 1334,
+    "signals_survived": 897,
+    "survival_rate": 0.6724,
+    "target_candidate_rows_raw": 256,
+    "target_candidate_rows_deduped": 254,
+    "note": "No executable filter was added; this measures a fixed observed-only cohort."
+  },
+  "gate4": {
+    "observed_only_lead": false,
+    "failed_reasons": [
+      "mean_10d_return_edge_vs_control_too_low",
+      "coverage_not_canonical_windows"
+    ],
+    "checks": {
+      "closed_10d_target_rows": 180,
+      "closed_10d_control_rows": 717,
+      "target_event_dates": 51,
+      "target_ticker_count": 26,
+      "target_single_ticker_share": 0.1,
+      "mean_10d_return_edge_vs_control": -0.007903,
+      "target_mean_10d_replacement_vs_spy_usd": 83.71,
+      "target_mean_10d_replacement_vs_qqq_usd": 30.76,
+      "canonical_three_window_coverage": false
+    },
+    "decision": "rejected_no_daily_news_event_forward_value_edge",
+    "strategy_rerun_required": false,
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "max_drawdown_pct": 0.0
+    },
+    "lead_limitations": [
+      "Daily news archive coverage starts in 2026 and does not cover all canonical fixed windows.",
+      "No shared helper, daily paper sleeve, prompt rule, or live order behavior was promoted.",
+      "Event taxonomy is deterministic and not an LLM semantic scorer."
+    ]
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "llm_prompt_changed": false,
+    "news_archives_changed": false,
+    "shared_helper_promoted": false,
+    "daily_snapshot_exposed": false,
+    "live_ready": false
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The fixed positive-event taxonomy did not clear the predeclared forward edge checks versus explicit-ticker control rows after dedupe and 10d settlement; daily news remains an attribution surface, not a trading rule.",
+    "forbidden_near_neighbor_retry": "Do not retry by sweeping the positive/negative keyword list, tiers, headline sources, hold days, top-N, notional, or response curve on the same daily news archive. A valid retry needs either materially more closed daily news rows, an LLM-scored event label with saved evidence spans, or canonical-window replay coverage.",
+    "new_evidence_required": "A replayable PIT structured event ledger with actor/object/relation/magnitude/evidence spans and enough closed replacement-value rows, or historical daily-news coverage spanning the canonical windows."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260630_002_daily_news_event_forward_value.py",
+    "data/daily/news/trade",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "quant/daily_news_text_sanitation.py",
+    "quant/news_text_sanitizer.py",
+    "experiments/logs/exp-20260630-001.json"
+  ],
+  "updated_at": "2026-06-30T02:17:54+00:00"
+}
