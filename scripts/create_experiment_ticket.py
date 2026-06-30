@@ -16,6 +16,264 @@ from experiment_registry import (
 
 ALPHA_LANES = {"alpha_search", "alpha_discovery", "universe_scout"}
 
+COMMON_SURFACE_TOKENS = {
+    "alpha",
+    "audit",
+    "candidate",
+    "condition",
+    "context",
+    "daily",
+    "entry",
+    "experiment",
+    "forward",
+    "gate",
+    "logger",
+    "notional",
+    "park",
+    "parked",
+    "ranking",
+    "readiness",
+    "reopen",
+    "response",
+    "risk",
+    "scalar",
+    "search",
+    "shared",
+    "sizing",
+    "surface",
+    "trade",
+}
+
+
+def _repo_root():
+    return Path(__file__).resolve().parents[1]
+
+
+def _normalize_text(value):
+    text = str(value or "").lower().replace("_", " ").replace("-", " ").replace("/", " ")
+    text = "".join(ch if ch.isalnum() else " " for ch in text)
+    return " ".join(text.split())
+
+
+def _tokens(value):
+    return {
+        token
+        for token in _normalize_text(value).split()
+        if len(token) >= 3 and token not in COMMON_SURFACE_TOKENS
+    }
+
+
+def _is_number(value):
+    return type(value) in (int, float)
+
+
+def _iter_reopen_conditions(value):
+    """Yield nested reopen_condition dicts from an experiment log payload."""
+    stack = [value]
+    while stack:
+        item = stack.pop()
+        if isinstance(item, dict):
+            condition = item.get("reopen_condition")
+            if isinstance(condition, dict):
+                yield condition
+            for child in item.values():
+                if isinstance(child, (dict, list)):
+                    stack.append(child)
+        elif isinstance(item, list):
+            stack.extend(child for child in item if isinstance(child, (dict, list)))
+
+
+def load_reopen_conditions(repo_root=None):
+    """Load machine-counted reopen conditions from closed experiment logs."""
+    root = Path(repo_root) if repo_root is not None else _repo_root()
+    log_dir = root / "experiments" / "logs"
+    conditions = []
+    seen = set()
+    if not log_dir.exists():
+        return conditions
+    for path in sorted(log_dir.glob("*.json")):
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8-sig"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        experiment_id = payload.get("experiment_id") if isinstance(payload, dict) else None
+        for condition in _iter_reopen_conditions(payload):
+            if not isinstance(condition.get("current_counts"), dict):
+                continue
+            if not isinstance(condition.get("required_to_reopen"), dict):
+                continue
+            if not condition.get("surface"):
+                continue
+            key = (
+                str(path),
+                json.dumps(condition, sort_keys=True, default=str),
+            )
+            if key in seen:
+                continue
+            seen.add(key)
+            item = dict(condition)
+            item["source_log"] = str(path.relative_to(root)).replace("\\", "/")
+            item["experiment_id"] = experiment_id or path.stem
+            conditions.append(item)
+    return conditions
+
+
+def surface_matches_text(surface, text):
+    """Return True when a proposed ticket text appears to target a parked surface."""
+    surface_text = _normalize_text(surface)
+    proposed_text = _normalize_text(text)
+    surface_collapsed = surface_text.replace(" ", "")
+    proposed_collapsed = proposed_text.replace(" ", "")
+
+    if "form4" in surface_collapsed:
+        return "form4" in proposed_collapsed and any(
+            term in proposed_text for term in ("sale", "10b5", "officer", "overhang")
+        )
+    if "form144" in surface_collapsed:
+        return "form144" in proposed_collapsed
+
+    surface_tokens = _tokens(surface)
+    proposed_tokens = _tokens(text)
+    if not surface_tokens:
+        return False
+    overlap = surface_tokens & proposed_tokens
+    required = 1 if len(surface_tokens) <= 2 else 2
+    return len(overlap) >= required
+
+
+def _find_current_count(current_counts, required_key):
+    base = required_key
+    if base.endswith("_min") or base.endswith("_max"):
+        base = base.rsplit("_", 1)[0]
+    if base in current_counts and (_is_number(current_counts[base]) or current_counts[base] is None):
+        return base, current_counts[base]
+
+    base_tokens = _tokens(base)
+    best_key = None
+    best_value = None
+    best_score = 0
+    for key, value in current_counts.items():
+        if not (_is_number(value) or value is None):
+            continue
+        key_tokens = _tokens(key)
+        score = len(base_tokens & key_tokens)
+        if score > best_score:
+            best_key = key
+            best_value = value
+            best_score = score
+    required_score = 1 if len(base_tokens) <= 2 else 2
+    if best_key is not None and best_score >= required_score:
+        return best_key, best_value
+    return None, None
+
+
+def reopen_condition_numeric_checks(condition):
+    """Compare a reopen_condition's current_counts to numeric thresholds."""
+    current_counts = condition.get("current_counts") or {}
+    required = condition.get("required_to_reopen") or {}
+    checks = []
+    for key, threshold in sorted(required.items()):
+        if not _is_number(threshold):
+            continue
+        if key.endswith("_min"):
+            current_key, current_value = _find_current_count(current_counts, key)
+            passed = _is_number(current_value) and current_value >= threshold
+            checks.append(
+                {
+                    "required_key": key,
+                    "current_key": current_key,
+                    "current_value": current_value,
+                    "operator": ">=",
+                    "threshold": threshold,
+                    "passed": bool(passed),
+                }
+            )
+        elif key.endswith("_max"):
+            current_key, current_value = _find_current_count(current_counts, key)
+            passed = _is_number(current_value) and current_value <= threshold
+            checks.append(
+                {
+                    "required_key": key,
+                    "current_key": current_key,
+                    "current_value": current_value,
+                    "operator": "<=",
+                    "threshold": threshold,
+                    "passed": bool(passed),
+                }
+            )
+    return checks
+
+
+def evaluate_reopen_condition_guard(args, repo_root=None):
+    """Evaluate the parked-surface reopen rule for a proposed reservation."""
+    alpha_lane = getattr(args, "lane", None) in ALPHA_LANES
+    result = {
+        "applicable": alpha_lane,
+        "blocked": False,
+        "override_accepted": False,
+        "matched_conditions": [],
+        "rule": (
+            "If a parked surface has a quantitative reopen_condition, alpha-lane "
+            "reservations that target that surface are blocked until the numeric "
+            "reopen checks pass, unless the ticket names a genuinely new data "
+            "source or a new gate shape."
+        ),
+    }
+    if not alpha_lane:
+        return result
+
+    ticket_text = " ".join(
+        str(getattr(args, name, "") or "")
+        for name in (
+            "hypothesis",
+            "single_causal_variable",
+            "changed_variable",
+            "trial_family",
+            "trial_variant_id",
+            "mechanism_family",
+            "file_slug",
+            "new_evidence_axis",
+        )
+    )
+    axis_class = classify_saturated_source_axis(getattr(args, "new_evidence_axis", ""))
+    result["new_evidence_axis"] = axis_class
+
+    for condition in load_reopen_conditions(repo_root=repo_root):
+        if not surface_matches_text(condition.get("surface"), ticket_text):
+            continue
+        checks = reopen_condition_numeric_checks(condition)
+        satisfied = bool(checks) and all(check["passed"] for check in checks)
+        result["matched_conditions"].append(
+            {
+                "experiment_id": condition.get("experiment_id"),
+                "source_log": condition.get("source_log"),
+                "surface": condition.get("surface"),
+                "status": condition.get("status"),
+                "blocking_reason": condition.get("blocking_reason"),
+                "checks_satisfied": satisfied,
+                "numeric_checks": checks,
+                "reopen_rule": condition.get("reopen_rule"),
+            }
+        )
+
+    blocked_matches = [
+        item for item in result["matched_conditions"] if not item["checks_satisfied"]
+    ]
+    if not blocked_matches:
+        return result
+
+    categories = set(axis_class.get("categories") or [])
+    if categories & {"new_data_source", "new_gate_shape"}:
+        result["override_accepted"] = True
+        result["override_reason"] = (
+            "Declared evidence axis names a new data source or new gate shape."
+        )
+        return result
+
+    result["blocked"] = True
+    result["blocking_matches"] = blocked_matches
+    return result
+
 
 def classify_saturated_source_axis(axis):
     """Classify whether a saturated-source override names a legal evidence axis.
@@ -204,6 +462,45 @@ def _novelty_check(args):
         "saturated_source_override": bool(getattr(args, "saturated_source_override", False)),
         "saturated_source_axis": classify_saturated_source_axis(args.new_evidence_axis),
     }
+
+    reopen_guard = evaluate_reopen_condition_guard(args)
+    out["reopen_condition_guard"] = reopen_guard
+    if reopen_guard.get("matched_conditions"):
+        print(
+            "[reopen] matched parked surface(s): "
+            + ", ".join(
+                str(item.get("surface"))
+                for item in reopen_guard["matched_conditions"][:3]
+            ),
+            file=sys.stderr,
+        )
+    if reopen_guard.get("blocked") and enforce and alpha_lane:
+        first = (reopen_guard.get("blocking_matches") or [{}])[0]
+        failed_checks = [
+            f"{check.get('current_key') or check.get('required_key')}="
+            f"{check.get('current_value')} {check.get('operator')} "
+            f"{check.get('threshold')}"
+            for check in first.get("numeric_checks", [])
+            if not check.get("passed")
+        ]
+        raise SystemExit(
+            "reopen-condition gate blocked this reservation: the proposed "
+            f"alpha-lane ticket targets parked surface '{first.get('surface')}' "
+            f"from {first.get('experiment_id')}, but its quantitative reopen "
+            "checks are not satisfied"
+            + (": " + "; ".join(failed_checks) + "." if failed_checks else ".")
+            + " Reopen only after the counts advance in the recorded "
+            "reopen_condition, or declare a genuinely new data source or a new "
+            "gate shape in --new-evidence-axis. Do not spend a new experiment ID "
+            "on a readiness audit or response-curve retune for the same parked "
+            "surface."
+        )
+    if reopen_guard.get("override_accepted"):
+        print(
+            "[reopen] override accepted; "
+            f"new_evidence_axis={out['new_evidence_axis']}",
+            file=sys.stderr,
+        )
 
     if result.get("warn") and enforce and alpha_lane:
         if not (args.novelty_override and (args.new_evidence_axis or "").strip()):

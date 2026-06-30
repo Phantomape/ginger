@@ -41,6 +41,7 @@ try:
         render_intraday_report,
         split_completed_sessions,
     )
+    from news_text_sanitizer import annotate_news_items, build_news_sanitation_summary
     from open_position_schema import positions_by_ticker
     from pending_actions import get_open_pending_actions
     from portfolio_accounting import resolve_portfolio_accounting
@@ -60,6 +61,10 @@ except ImportError:  # pragma: no cover - package-style imports in tests
         intraday_output_path,
         render_intraday_report,
         split_completed_sessions,
+    )
+    from quant.news_text_sanitizer import (
+        annotate_news_items,
+        build_news_sanitation_summary,
     )
     from quant.open_position_schema import positions_by_ticker
     from quant.pending_actions import get_open_pending_actions
@@ -292,7 +297,20 @@ def main(no_news: bool = False, offline: bool = False, data_dir=None) -> dict:
         except Exception as e:
             log.error("Intraday news failed: %s", e)
     if news_payload:
-        news = {"trade_items": news_payload["trade_items"]}
+        news_payload = dict(news_payload)
+        news_payload["raw_items"] = annotate_news_items(
+            news_payload.get("raw_items") or [], held_tickers
+        )
+        news_payload["trade_items"] = annotate_news_items(
+            news_payload.get("trade_items") or [], held_tickers
+        )
+        news_sanitation_summary = build_news_sanitation_summary(
+            news_payload["trade_items"]
+        )
+        news = {
+            "trade_items": news_payload["trade_items"],
+            "text_sanitation": news_sanitation_summary,
+        }
 
     review = {
         "generated_at_et": now_et.strftime("%Y-%m-%d %H:%M ET"),
@@ -322,6 +340,7 @@ def main(no_news: bool = False, offline: bool = False, data_dir=None) -> dict:
                 {
                     "news_sources_ok": news_payload["sources_ok"],
                     "news_sources_failed": news_payload["sources_failed"],
+                    "news_text_sanitation": news_sanitation_summary,
                 }
                 if news_payload else {}
             ),

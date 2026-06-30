@@ -435,6 +435,34 @@ def test_report_and_prompt_surface_advisory_shadow_actions():
     assert '"shadow_action": "EXIT"' in prompt
 
 
+def test_report_and_prompt_surface_news_text_sanitation_summary():
+    review = _review_stub()
+    review["news"] = {
+        "trade_items": [
+            {
+                "title": "Why Meta isn\u9225\u6a9bt loved",
+                "tickers": ["META"],
+                "text_sanitation": {"status": "suspect"},
+            }
+        ],
+        "text_sanitation": {
+            "items": 1,
+            "flagged_items": 1,
+            "changed_items": 0,
+            "flag_counts": {"mojibake_suspect": 1},
+        },
+    }
+    review["data_quality"]["news_text_sanitation"] = review["news"]["text_sanitation"]
+
+    report = render_intraday_report(review)
+    prompt = intraday_review.build_intraday_llm_prompt(review)
+
+    assert "news text sanitation items=1 flagged=1 changed=0" in report
+    assert "mojibake_suspect=1" in report
+    assert "NEWS TEXT SANITATION" in prompt
+    assert '"flagged_items": 1' in prompt
+
+
 def test_output_paths_stay_inside_intraday_subtree(tmp_path):
     for kind in ("report", "llm_prompt", "news_raw", "trade_news", "snapshot"):
         path = intraday_output_path(kind, "20260610", "1300ET", tmp_path)

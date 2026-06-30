@@ -383,6 +383,38 @@ def _collect_trade_news(today, universe, pilot_universe):
     return trade_items
 
 
+def _persist_daily_structured_news_observation(today):
+    """Persist read-only structured-news observation rows after news is saved."""
+    try:
+        from daily_news_structured_event_snapshot import (
+            persist_daily_structured_event_snapshot,
+        )
+
+        snapshot = persist_daily_structured_event_snapshot(today)
+        event_rows = (snapshot.get("event_contract_audit") or {}).get("ledger_rows", 0)
+        observation_rows = (
+            snapshot.get("forward_observation_contract_audit") or {}
+        ).get("observation_rows", 0)
+        target_rows = (
+            snapshot.get("forward_observation_contract_audit") or {}
+        ).get("target_relation_quality_rows", 0)
+        log.info(
+            "Structured-news observations: events=%s observations=%s target=%s",
+            event_rows,
+            observation_rows,
+            target_rows,
+        )
+        return snapshot
+    except Exception as e:
+        log.warning(f"Structured-news observation snapshot unavailable: {e}")
+        return {
+            "status": "unavailable",
+            "error": str(e),
+            "strategy_behavior_changed": False,
+            "trade_enabled": False,
+        }
+
+
 def _generate_llm_prompt(trade_items, open_positions, trend_signals_dict):
     try:
         from llm_advisor import get_investment_advice
@@ -2435,6 +2467,7 @@ def main():
         )
         # Prompt is out — now drain deferred broad/alt-data accumulation that the
         # operator handoff did not need.
+        _persist_daily_structured_news_observation(today)
         _run_deferred_after_prompt()
 
     try:
@@ -3481,6 +3514,7 @@ def main():
         log.info("News already collected for priority LLM prompt; skipping duplicate collection.")
     else:
         trade_items = _collect_trade_news(today, universe, pilot_universe)
+        _persist_daily_structured_news_observation(today)
 
     # ── Step 9: LLM prompt ────────────────────────────────────────────────────
     _print_section("STEP 9 — LLM prompt")

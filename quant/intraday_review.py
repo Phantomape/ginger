@@ -770,6 +770,17 @@ def render_intraday_report(review: dict) -> str:
         lines.append(
             f"  news sources ok={dq['news_sources_ok']} failed={dq['news_sources_failed']}"
         )
+    news_text = dq.get("news_text_sanitation")
+    if news_text:
+        flags = news_text.get("flag_counts") or {}
+        flags_txt = " ".join(f"{k}={v}" for k, v in sorted(flags.items())) or "none"
+        lines.append(
+            "  news text sanitation "
+            f"items={news_text.get('items', 0)} "
+            f"flagged={news_text.get('flagged_items', 0)} "
+            f"changed={news_text.get('changed_items', 0)} "
+            f"flags={flags_txt}"
+        )
     for finding in dq.get("calendar_audit", []):
         marker = "[!]" if finding["severity"] in ("stale", "gap", "error") else "[i]"
         lines.append(f"  {marker} calendar/{finding['calendar']}: {finding['message']}")
@@ -822,6 +833,12 @@ def build_intraday_llm_prompt(review: dict) -> str:
 
     news = review.get("news") or {}
     news_items = news.get("trade_items", [])[:25]
+    data_quality = review.get("data_quality", {})
+    news_text_sanitation = (
+        data_quality.get("news_text_sanitation")
+        or news.get("text_sanitation")
+        or {}
+    )
 
     sections = [
         _LLM_SYSTEM,
@@ -844,6 +861,9 @@ def build_intraday_llm_prompt(review: dict) -> str:
         "",
         "OPEN PENDING ACTIONS (unexecuted prior advice):",
         json.dumps(review.get("pending_actions", []), indent=2, ensure_ascii=False),
+        "",
+        "NEWS TEXT SANITATION:",
+        json.dumps(news_text_sanitation, indent=2, ensure_ascii=False),
         "",
         f"INTRADAY NEWS (trade-filtered, {len(news_items)} item(s) shown):",
         json.dumps(news_items, indent=2, ensure_ascii=False),

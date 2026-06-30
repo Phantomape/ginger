@@ -324,6 +324,14 @@ DAILY_ARTIFACTS: dict[str, tuple[str, str]] = {
     "news_source_stats": ("daily/news/source_stats", "news_source_stats_{date}.json"),
     "clean_news": ("daily/news/clean", "clean_news_{date}.json"),
     "clean_trade_news": ("daily/news/trade", "clean_trade_news_{date}.json"),
+    "daily_news_structured_events": (
+        "daily/news/structured",
+        "daily_news_structured_events_{date}.json",
+    ),
+    "daily_news_structured_event_observations": (
+        "daily/news/structured",
+        "daily_news_structured_event_observations_{date}.jsonl",
+    ),
     "trend_signals": ("daily/signals/trend", "trend_signals_{date}.json"),
     "quant_signals": ("daily/signals/quant", "quant_signals_{date}.json"),
     "report": ("daily/reports", "report_{date}.txt"),
