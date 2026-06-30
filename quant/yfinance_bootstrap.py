@@ -39,4 +39,13 @@ def configure_yfinance_runtime():
     except Exception:
         pass
 
+    # Same idea for OHLCV: record symbols yfinance reports as delisted (no timezone)
+    # so dead names (NUAN, PXD, MRO, ...) are not re-fetched every run.
+    try:
+        from yf_no_price_cache import install_yf_log_filter as install_no_price_filter
+
+        install_no_price_filter()
+    except Exception:
+        pass
+
     return cache_dir

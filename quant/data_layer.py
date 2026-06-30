@@ -22,6 +22,8 @@ from open_position_schema import account_position_tickers
 from earnings_assets import empty_earnings_data, is_non_earnings_asset
 from yf_negative_cache import clear as clear_no_fundamentals
 from yf_negative_cache import is_blocked as is_no_fundamentals_cached
+from yf_no_price_cache import clear as clear_no_price
+from yf_no_price_cache import is_blocked as is_no_price_cached
 
 logger = logging.getLogger(__name__)
 
@@ -118,6 +120,10 @@ def get_ohlcv(ticker, lookback_days=400):
     400 calendar days is enough for 200-day MA + 52-week-high features.
     Returns a DataFrame with [Open, High, Low, Close, Volume], or None.
     """
+    if is_no_price_cached(ticker):
+        # Recently observed as delisted (no timezone) -- skip the wasted round-trip.
+        logger.debug("%s: skipped OHLCV fetch (cached delisted)", ticker)
+        return None
     try:
         end = datetime.now()
         start = end - timedelta(days=lookback_days)
@@ -134,6 +140,7 @@ def get_ohlcv(ticker, lookback_days=400):
         if normalized is None:
             return None
 
+        clear_no_price(ticker)  # real data -> self-heal any stale delisted entry
         logger.debug("%s: %s trading days downloaded", ticker, len(normalized))
         return normalized
 
@@ -153,31 +160,44 @@ def get_ohlcv_many(tickers, lookback_days=400):
     if not unique_tickers:
         return {}
 
-    try:
-        end = datetime.now()
-        start = end - timedelta(days=lookback_days)
-        ticker_arg = unique_tickers if len(unique_tickers) > 1 else unique_tickers[0]
-        bulk = yf.download(
-            ticker_arg,
-            start=start,
-            end=end,
-            progress=False,
-            auto_adjust=True,
-            group_by="ticker",
-            threads=True,
-        )
-    except Exception as e:
-        logger.error("Bulk OHLCV download failed - %s", e)
-        bulk = None
-
+    # Drop symbols recently observed as delisted (no timezone) so they never enter the
+    # vendor call. They have no warehouse rows, so the refresh would otherwise re-fetch
+    # them at full lookback every run, forever, for nothing.
     results = {}
-    for ticker in unique_tickers:
+    skipped = [t for t in unique_tickers if is_no_price_cached(t)]
+    skipped_set = set(skipped)
+    for ticker in skipped:
+        logger.debug("%s: skipped OHLCV fetch (cached delisted)", ticker)
+        results[ticker] = None
+    fetch_tickers = [t for t in unique_tickers if t not in skipped_set]
+
+    bulk = None
+    if fetch_tickers:
+        try:
+            end = datetime.now()
+            start = end - timedelta(days=lookback_days)
+            ticker_arg = fetch_tickers if len(fetch_tickers) > 1 else fetch_tickers[0]
+            bulk = yf.download(
+                ticker_arg,
+                start=start,
+                end=end,
+                progress=False,
+                auto_adjust=True,
+                group_by="ticker",
+                threads=True,
+            )
+        except Exception as e:
+            logger.error("Bulk OHLCV download failed - %s", e)
+            bulk = None
+
+    for ticker in fetch_tickers:
         normalized = _normalize_ohlcv_frame(ticker, bulk)
         if normalized is not None:
+            clear_no_price(ticker)  # real data -> self-heal any stale delisted entry
             logger.debug("%s: %s trading days downloaded", ticker, len(normalized))
         results[ticker] = normalized
 
-    missing = [ticker for ticker, data in results.items() if data is None]
+    missing = [t for t in fetch_tickers if results.get(t) is None]
     if missing:
         logger.warning(
             "Bulk OHLCV missing %d/%d ticker(s); falling back individually: %s",
@@ -193,11 +213,12 @@ def get_ohlcv_many(tickers, lookback_days=400):
     ok_frames = [d for d in results.values() if d is not None]
     total_rows = sum(len(d) for d in ok_frames)
     logger.info(
-        "OHLCV ready: %d/%d tickers, %d rows total%s",
+        "OHLCV ready: %d/%d tickers, %d rows total%s%s",
         len(ok_frames),
         len(unique_tickers),
         total_rows,
         f", {len(unique_tickers) - len(ok_frames)} missing" if len(ok_frames) < len(unique_tickers) else "",
+        f", {len(skipped)} skipped (cached delisted)" if skipped else "",
     )
 
     return results
