@@ -215703,17 +215703,394 @@
       "updated_at": "2026-06-30T16:41:25+00:00"
     },
     {
-      "experiment_id": "exp-20260630-017",
-      "status": "proposed",
-      "lane": "alpha_search",
-      "owner": "alpha-relation-peer",
-      "hypothesis": "Read-only relation attribution: when a high characteristic-similarity peer (similarity from sector + PIT fundamentals growth/margin/leverage + liquidity ADV + momentum RS + analyst-coverage breadth, NOT sector/ETF label or 13F overlap) makes a strong idiosyncratic move, the laggard peer earns positive next-open 5/10/20d forward replacement value, and this captures incremental cost-adjusted displacement value beyond the accepted rolling-correlation peer-shock and industry-relative laggard-repair comparators.",
-      "ticket_file": "experiments/tickets/exp-20260630-017.json",
+      "acceptance_rule": "AGENTS.md Gate 4; observed-only acceptance = positive 5/10/20d forward replacement value across the three canonical windows AND cost-adjusted displacement beating rolling-correlation peer-shock and industry-relative laggard-repair, single-ticker concentration under cap.",
+      "allowed_write_scope": [
+        "quant/characteristic_similarity_peers.py",
+        "quant/test_characteristic_similarity_peers.py",
+        "quant/experiments/",
+        "data/experiments/",
+        "data/non_ohlcv/characteristic_similarity_peers.jsonl",
+        "experiments/",
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
       "card_file": "experiments/cards/exp-20260630-017.md",
+      "causal_components": [],
+      "change_type": "relation_aware_peer_shock_observed_only_attribution",
+      "changed_variable": "characteristic_similarity_peer_shock_forward_replacement_v1",
+      "claimed_at": "2026-06-30T17:02:49+00:00",
+      "completed_at": "2026-06-30T17:24:58+00:00",
+      "created_at": "2026-06-30T16:40:53+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260630-017",
+      "experiment_uid": "expuid-9a5addbc3f7548ec",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260630-017",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-06-30T16:40:53+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "characteristic_similarity_peer_shock_forward_value"
+      },
+      "hypothesis": "Read-only relation attribution: high characteristic-similarity peer (sector plus point-in-time fundamentals growth/margin/leverage, liquidity ADV, momentum RS, and analyst coverage breadth; not sector/ETF label or 13F overlap) strong idiosyncratic move may predict laggard peer positive next-open 5/10/20d forward replacement value, incremental beyond accepted rolling-correlation peer-shock and industry-relative laggard-repair comparators.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "characteristic_similarity_peer_shock_laggard_forward_replacement_value"
+      ],
+      "mechanism_family": "peer_shock",
+      "multiple_testing_risk_bucket": "moderate_relation_alpha_near_accepted_peer_sleeves",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260606-025",
+        "exp-20260607-008",
+        "exp-20260608-025"
+      ],
+      "new_evidence_type": "PIT multi-factor characteristic-similarity peer graph with non-price feature requirement and explicit rolling-corr cap.",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "sec13f_ownership",
+          "field_tags": [
+            "13f",
+            "20d",
+            "a",
+            "accepted",
+            "adjusted",
+            "adv",
+            "analyst",
+            "attribution",
+            "aware",
+            "beyond",
+            "breadth",
+            "captures",
+            "characteristic",
+            "comparators",
+            "correlation",
+            "cost",
+            "coverage",
+            "displacement",
+            "earns",
+            "etf",
+            "forward",
+            "from",
+            "fundamentals",
+            "growth",
+            "high",
+            "idiosyncratic",
+            "incremental",
+            "industry",
+            "label",
+            "laggard",
+            "leverage",
+            "liquidity",
+            "makes",
+            "margin",
+            "momentum",
+            "move",
+            "not",
+            "only",
+            "or",
+            "overlap",
+            "peer",
+            "pit",
+            "positive",
+            "read",
+            "relation",
+            "relative",
+            "repair",
+            "replacement",
+            "rolling",
+            "rs",
+            "sector",
+            "shock",
+            "similarity",
+            "strong",
+            "this",
+            "transfer",
+            "value",
+            "when"
+          ],
+          "gate_shape": "other"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec13f_ownership",
+            "family_key": "accepted_core_13f_crowding_risk_attribution",
+            "reopen_condition": "Independent active-manager quality, non-quarterly ownership/flow data, borrow/options confirmation, or prospective forward rows closed after a shared default-off 13F context logger.",
+            "score": 0.4864,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec13f_ownership",
+            "family_key": "coownership_peer_shock",
+            "reopen_condition": "A genuinely new relation axis or data shape: e.g. holdings-CHANGE co-movement (managers adding the same two names same quarter, not static co-hold), 13F concentration-weighted edges restricted to high-conviction active managers only, or a non-quarterly ownership signal. Or forward closed paper rows if the static graph is revisited at all.",
+            "score": 0.4824,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec13f_ownership",
+            "family_key": "sec13f_coaccumulation_peer_shock",
+            "reopen_condition": "A valid retry needs non-quarterly ownership/flow evidence, active-manager conviction classification independent of holding count, manager-level alpha attribution, or closed forward replacement-value rows from a shared default-off helper.",
+            "score": 0.4732,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "sec13f_ownership",
+            "family_key": "kova_free_data_backfill_and_forward_snapshot",
+            "reopen_condition": null,
+            "score": 0.4682,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "sec13f_ownership",
+            "family_key": "measurement_repair",
+            "reopen_condition": "TODO",
+            "score": 0.4664,
+            "status": "has_accepted",
+            "trials": 6
+          }
+        ],
+        "new_evidence_axis": "multi-factor PIT characteristic-similarity peer construction distinct from sector/ETF labels, 13F crowding, rolling-correlation, and generic peer lag",
+        "override": false,
+        "reopen_condition_guard": {
+          "applicable": true,
+          "blocked": false,
+          "matched_conditions": [],
+          "new_evidence_axis": {
+            "axis": "multi-factor PIT characteristic-similarity peer construction distinct from sector/ETF labels, 13F crowding, rolling-correlation, and generic peer lag",
+            "categories": [],
+            "invalid_same_source_field_only": true,
+            "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+            "valid": false
+          },
+          "override_accepted": false,
+          "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+        },
+        "saturated_source_axis": {
+          "axis": "multi-factor PIT characteristic-similarity peer construction distinct from sector/ETF labels, 13F crowding, rolling-correlation, and generic peer lag",
+          "categories": [],
+          "invalid_same_source_field_only": true,
+          "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+          "valid": false
+        },
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "other",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "sec13f_ownership",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": {
+        "success_probability": 0.2,
+        "expected_ev_delta": 0.15,
+        "expected_pnl_delta": 2000.0,
+        "main_failure_modes": [
+          "thin_sample_after_non_corr_cap",
+          "not_incremental_vs_rolling_corr_peer_shock",
+          "not_incremental_vs_industry_laggard_repair",
+          "forward_horizon_replacement_not_positive",
+          "fundamental_missingness_bias"
+        ],
+        "confidence_reason": "I assigned only a 20% pass probability because the non-correlation cap should make the candidate set thin, while the accepted rolling-corr and industry-laggard sleeves already capture nearby peer-shock replacement value on these same frozen windows.",
+        "recorded_at": "2026-06-30T17:24:58+00:00"
+      },
+      "prior_trial_count": 1,
+      "result": {
+        "decision": "rejected_characteristic_similarity_peer_shock_forward_value",
+        "accepted": false,
+        "numeric_gate4_passed": false,
+        "artifact": "data/experiments/exp-20260630-017/exp_20260630_017_characteristic_similarity_peer_shock_forward_value.json",
+        "log": "experiments/logs/exp-20260630-017.json",
+        "aggregate_expected_value_delta": 0.0018,
+        "aggregate_strategy_total_pnl_delta": 116.61,
+        "gate4": {
+          "passed": false,
+          "failed_reasons": [
+            "fewer_than_two_ev_improved_windows",
+            "target_sample_too_small",
+            "target_concentration_failed",
+            "rolling_corr_peer_shock_ev_not_beaten",
+            "rolling_corr_peer_shock_pnl_not_beaten",
+            "industry_laggard_repair_ev_not_beaten",
+            "industry_laggard_repair_pnl_not_beaten",
+            "h5_sample_too_small",
+            "h5_net_pnl_not_positive",
+            "h5_spy_replacement_not_positive",
+            "h5_qqq_replacement_not_positive",
+            "h10_sample_too_small",
+            "h20_sample_too_small"
+          ],
+          "aggregate_ev_delta": 0.0018,
+          "aggregate_pnl_delta": 116.61,
+          "target_trade_count": 2,
+          "target_trade_count_min": 20,
+          "windows_ev_improved": 1,
+          "windows_ev_regressed": 0,
+          "windows_pnl_improved": 1,
+          "windows_pnl_regressed": 0,
+          "max_drawdown_worse": 0.0,
+          "max_drawdown_worse_guardrail": 0.005,
+          "target_concentration": {
+            "single_ticker_positive_share": 1.0,
+            "single_ticker_positive_share_guardrail": 0.5,
+            "positive_pnl_hhi": 1.0,
+            "positive_pnl_hhi_guardrail": 0.35,
+            "passed": false
+          },
+          "forward_horizon_summary": {
+            "by_horizon": {
+              "5": {
+                "count": 2,
+                "net_pnl": -185.9,
+                "avg_pnl": -92.95,
+                "avg_pnl_pct": -0.023238,
+                "winner_count": 0,
+                "win_rate": 0.0,
+                "count_vs_spy": 2,
+                "net_excess_vs_spy_usd": -180.37,
+                "count_vs_qqq": 2,
+                "net_excess_vs_qqq_usd": -244.97,
+                "positive_net_pnl_window_count": 0
+              },
+              "10": {
+                "count": 2,
+                "net_pnl": 116.6,
+                "avg_pnl": 58.3,
+                "avg_pnl_pct": 0.014575,
+                "winner_count": 1,
+                "win_rate": 0.5,
+                "count_vs_spy": 2,
+                "net_excess_vs_spy_usd": 169.94,
+                "count_vs_qqq": 2,
+                "net_excess_vs_qqq_usd": 65.9,
+                "positive_net_pnl_window_count": 1
+              },
+              "20": {
+                "count": 2,
+                "net_pnl": 787.88,
+                "avg_pnl": 393.94,
+                "avg_pnl_pct": 0.098485,
+                "winner_count": 2,
+                "win_rate": 1.0,
+                "count_vs_spy": 2,
+                "net_excess_vs_spy_usd": 793.73,
+                "count_vs_qqq": 2,
+                "net_excess_vs_qqq_usd": 652.6,
+                "positive_net_pnl_window_count": 1
+              }
+            }
+          },
+          "accepted_comparators": [
+            {
+              "name": "rolling_corr_peer_shock",
+              "experiment_id": "exp-20260606-025",
+              "aggregate_ev_delta": 0.3622,
+              "aggregate_pnl_delta": 5583.66
+            },
+            {
+              "name": "industry_relative_laggard_repair",
+              "experiment_id": "exp-20260607-008",
+              "aggregate_ev_delta": 0.4271,
+              "aggregate_pnl_delta": 9109.07
+            }
+          ]
+        },
+        "calibration": {
+          "actual_success": 0,
+          "predicted_success_probability": 0.2,
+          "brier_score": 0.04,
+          "expected_ev_delta": 0.15,
+          "actual_ev_delta": 0.0018,
+          "ev_prediction_error": -0.1482,
+          "expected_pnl_delta": 2000,
+          "actual_pnl_delta": 116.61,
+          "pnl_prediction_error": -1883.39,
+          "predicted_failure_modes": [
+            "thin_sample_after_non_corr_cap",
+            "not_incremental_vs_rolling_corr_peer_shock",
+            "not_incremental_vs_industry_laggard_repair",
+            "forward_horizon_replacement_not_positive",
+            "fundamental_missingness_bias"
+          ],
+          "realized_failure_mode": "fewer_than_two_ev_improved_windows",
+          "predicted_failure_mode_hit": false,
+          "calibration_direction": "directionally_calibrated",
+          "surprise_level": "low"
+        },
+        "production_impact": {
+          "shared_policy_changed": false,
+          "research_helper_added": true,
+          "backtester_adapter_changed": false,
+          "run_adapter_changed": false,
+          "replay_only": true,
+          "trade_enabled": false,
+          "daily_snapshot_exposed": false,
+          "live_ready": false,
+          "parity_test_added": false,
+          "alters_signal_generation": false,
+          "alters_candidate_ranking": false,
+          "alters_sizing": false,
+          "alters_exits": false,
+          "alters_orders": false,
+          "uses_llm": false,
+          "uses_free_ohlcv": true,
+          "uses_sec_companyfacts": true,
+          "uses_estimate_revision_ledger": true,
+          "activation_envelope": {
+            "paper_notional_usd": 4000.0,
+            "daily_entry_slots": 1,
+            "hold_days": 10,
+            "same_ticker_cooldown_days": 10,
+            "min_avg_dollar_volume_20d": 50000000.0,
+            "max_prior_return_correlation": 0.57,
+            "min_characteristic_similarity": 0.64,
+            "trade_enabled_until_forward_gate": false
+          }
+        },
+        "post_run_reflection": {
+          "why_result_happened": "Characteristic-similarity peer shock did not clear the predeclared screen: fewer_than_two_ev_improved_windows, target_sample_too_small, target_concentration_failed, rolling_corr_peer_shock_ev_not_beaten, rolling_corr_peer_shock_pnl_not_beaten, industry_laggard_repair_ev_not_beaten.",
+          "policy_bundle_tested": "characteristic_similarity_peer_shock_forward_replacement_v1",
+          "realized_failure_mode": "fewer_than_two_ev_improved_windows",
+          "forbidden_near_neighbor_retry": "Do not rerun this same characteristic-similarity peer-shock family by only changing similarity weights, min similarity, non-price feature count, prior-correlation cap, hold days, cooldown, notional, or response sizing on the same frozen windows.",
+          "new_evidence_required": "A legal retry requires a genuinely new relation data source, a new gate shape that changes the event being tested, or materially more settled forward replacement-value rows from a shared default-off paper observation surface.",
+          "anti_repeat": "This closes the characteristic-similarity peer-shock scout for adjacent threshold/weight/response retunes on the same standard-window sample.",
+          "next_evidence": "If positive, promote a shared default-off daily paper helper with the same non-price feature and non-corr caps; if rejected, move to a new relation source or new settled forward rows."
+        }
+      },
       "revision_manifest_file": "experiments/manifests/exp-20260630-017.json",
-      "updated_at": "2026-06-30T16:40:53+00:00"
+      "single_causal_variable": "characteristic_similarity_peer_shock_forward_replacement_v1",
+      "status": "rejected",
+      "ticket_file": "experiments/tickets/exp-20260630-017.json",
+      "trial_family": "characteristic_similarity_peer_shock",
+      "trial_variant_id": "non_corr_pit_characteristic_similarity_top1_next_open_10d_v1",
+      "decision": "rejected_characteristic_similarity_peer_shock_forward_value",
+      "summary": "Characteristic-similarity peer shock did not clear the predeclared screen: fewer_than_two_ev_improved_windows, target_sample_too_small, target_concentration_failed, rolling_corr_peer_shock_ev_not_beaten, rolling_corr_peer_shock_pnl_not_beaten, industry_laggard_repair_ev_not_beaten.",
+      "artifact": "data/experiments/exp-20260630-017/exp_20260630_017_characteristic_similarity_peer_shock_forward_value.json",
+      "log": "experiments/logs/exp-20260630-017.json",
+      "aggregate_expected_value_delta": 0.0018,
+      "aggregate_strategy_total_pnl_delta": 116.61,
+      "updated_at": "2026-06-30T17:24:58+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-06-30T16:41:25+00:00"
+  "updated_at": "2026-06-30T17:24:58+00:00"
 }
