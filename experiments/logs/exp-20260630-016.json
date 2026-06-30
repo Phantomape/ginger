@@ -1,0 +1,101 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "observed_only",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": null,
+    "brier_score": null,
+    "calibration_direction": "not_scored",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "in_sample_effect_absent_or_sign_flips",
+      "population_definition_too_coarse_vs_sleeve_trades",
+      "non_monotonic_noise"
+    ],
+    "predicted_success_probability": 0.3,
+    "realized_failure_mode": "in_sample_effect_absent_or_sign_flips",
+    "surprise_level": "not_scored",
+    "surprise_note": "Stretched was marginally BETTER, not just null."
+  },
+  "causal_components": [],
+  "change_summary": "In-sample large-N (n=2594 breakout entries, core 56-name universe, 3 canonical windows) test of the entry ATR-extension de-allocation signal using the identical PIT _entry_exhaustion_asof. Stretched(ext>=4.0) n=132 fwd10 +1.72%/+1.79% raw, +1.38%/+1.19% vs SPY -- BETTER than normal, opposite sign of exp-026's n=6 forward read; extension->return non-monotonic. Read-only; no strategy change.",
+  "change_type": "candidate_pool",
+  "changed_variable": "entry_atr_extension_deallocation_predictive_value_in_sample",
+  "component": "quant/experiments/exp_20260630_016_entry_atr_extension_deallocation_predictive_value_in_sample.py, data/experiments/exp-20260630-016/exp_20260630_016_entry_atr_extension_deallocation_predictive_value_in_sample.json, experiments/cards/exp-20260630-016.md, experiments/manifests/exp-20260630-016.json, experiments/tickets/exp-20260630-016.json, experiments/logs/exp-20260630-016.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "observed_only",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260630-016",
+  "hypothesis": "In-sample large-N test of the entry ATR-extension (entry_exhaustion) de-allocation signal: exp-20260627-026 found stretched (ext>=4.0) entries directionally worse on only 41 forward rows (6 stretched). Tag ALL 20d-high-close breakout entries across the 3 canonical windows in the core 56-name universe with the identical PIT extension function and compare forward-10d (raw + SPY-excess) for stretched vs normal, to test whether the de-allocation signal survives at scale before waiting months for forward rows to mature.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "entry_exhaustion_extension_timing",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "in_sample_large_n_attribution_surface",
+  "next_retry_requires": [],
+  "notes": "Retires the ATR-extension entry de-allocation axis on in-sample evidence: the exp-20260627-026 stretched-worse finding (n=6) is consistent with small-sample noise; it vanishes/flips at 22x more stretched samples (same pattern as exp-015's 4.7x deflation of the sibling volume signal). Caveat: population is all 20d-high breakouts (broader than exp-026's exact sleeve trades; sleeves select ~3x more stretched names, 15% vs 5%, but extension does not cost them). Narrow sleeve-only claim remains forward-gated but low-prior. Do not pursue an ATR-extension sizing/de-rank rule.",
+  "parameters": {
+    "locked_variables": [
+      "entry_atr_extension_deallocation_predictive_value_in_sample"
+    ],
+    "single_causal_variable": "entry_atr_extension_deallocation_predictive_value_in_sample"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not build an ATR-extension de-rank/notional-haircut/sizing rule; do not sweep the 4.0 stretched threshold, ATR/MA/high lookbacks, top-N, hold, or cooldown; do not re-slice the 41 forward rows (exp-026 boundary holds) or run another in-sample extension cut (now covered at n=2594).",
+    "new_evidence_required": "A materially different PIT NON-price field predicting which extended breakouts fail (borrow/options/flow), or a sufficiently large EXACT accepted-sleeve forward sub-sample (>=8 stretched) -- low prior since the broad in-sample effect is absent.",
+    "realized_failure_mode": "in_sample_effect_absent_or_sign_flips",
+    "why_result_happened": "The exp-026 stretched-worse read rested on only 6 forward rows; at in-sample scale (n=2594, 132 stretched) the de-allocation effect does not merely vanish but reverses (stretched +1.72%/+1.79% raw and +1.38%/+1.19% vs SPY, better than normal) and extension-to-return is non-monotonic across quintiles, so the original signal was small-sample noise, matching the 4.7x deflation exp-015 found for the sibling volume signal."
+  },
+  "prediction": {
+    "confidence_reason": "exp-026 stretched-worse rests on n=6; exp-015 showed the sibling volume signal deflated 4.7x at full population, so the prior is the effect is small-sample noise that vanishes at scale.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "in_sample_effect_absent_or_sign_flips",
+      "population_definition_too_coarse_vs_sleeve_trades",
+      "non_monotonic_noise"
+    ],
+    "recorded_at": "2026-06-30T16:39:52+00:00",
+    "success_probability": 0.3
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "secondary_windows": [],
+  "status": "observed_only",
+  "timestamp": "2026-06-30T16:41:25+00:00",
+  "trial_family": "atr_extension_deallocation_attribution",
+  "trial_variant_id": "in_sample_large_n_breakout_population_v1"
+}
