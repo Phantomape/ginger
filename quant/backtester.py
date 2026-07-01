@@ -216,6 +216,7 @@ DEFAULT_CONFIG = {
     "EARLY_RELATIVE_WEAKNESS_MIN_RS_VS_SPY": -0.03,
     "EARLY_RELATIVE_WEAKNESS_REQUIRE_NEGATIVE_RETURN": True,
     "EARLY_RELATIVE_WEAKNESS_REDUCE_PCT": 100,
+    "EARLY_RELATIVE_WEAKNESS_MIN_ACTUAL_RISK_PCT": None,
     "ADDON_ENABLED": ADDON_ENABLED,
     "ADDON_CHECKPOINT_DAYS": ADDON_CHECKPOINT_DAYS,
     "ADDON_MIN_UNREALIZED_PCT": ADDON_MIN_UNREALIZED_PCT,
@@ -2608,6 +2609,7 @@ class BacktestEngine:
                     "entry_price": pos.entry_price,
                     "entry_open_price": pos.entry_open_price,
                     "entry_date": str(pos.entry_date.date()) if hasattr(pos.entry_date, "date") else str(pos.entry_date),
+                    "actual_risk_pct": pos.actual_risk_pct,
                 })
 
             actions, _audit = build_early_relative_weakness_exit_actions(
@@ -2622,6 +2624,9 @@ class BacktestEngine:
                     True,
                 ),
                 reduce_pct=self.config.get("EARLY_RELATIVE_WEAKNESS_REDUCE_PCT", 100),
+                min_actual_risk_pct=self.config.get(
+                    "EARLY_RELATIVE_WEAKNESS_MIN_ACTUAL_RISK_PCT",
+                ),
             )
             for action in actions:
                 pos = position_by_ticker.get(action.get("ticker"))

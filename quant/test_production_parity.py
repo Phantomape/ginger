@@ -758,6 +758,50 @@ def test_build_early_relative_weakness_exit_actions_emits_day_three_exit():
     assert any(row["status"] == "eligible" for row in audit)
 
 
+def test_build_early_relative_weakness_exit_actions_filters_by_actual_risk():
+    open_positions = {
+        "positions": [
+            {
+                "ticker": "NVDA",
+                "shares": 10,
+                "avg_cost": 100.0,
+                "entry_date": "2026-01-02",
+                "actual_risk_pct": 0.025,
+            },
+            {
+                "ticker": "MSFT",
+                "shares": 10,
+                "avg_cost": 100.0,
+                "entry_date": "2026-01-02",
+                "actual_risk_pct": 0.01,
+            },
+        ]
+    }
+    ohlcv = {
+        "NVDA": _ohlcv([100.0, 99.0, 96.0]),
+        "MSFT": _ohlcv([100.0, 99.0, 96.0]),
+        "SPY": _ohlcv([100.0, 100.5, 101.0]),
+    }
+
+    actions, audit = build_early_relative_weakness_exit_actions(
+        open_positions=open_positions,
+        ohlcv_dict=ohlcv,
+        current_prices={"NVDA": 96.0, "MSFT": 96.0},
+        enabled=True,
+        min_actual_risk_pct=0.02,
+    )
+
+    assert [action["ticker"] for action in actions] == ["NVDA"]
+    assert actions[0]["actual_risk_pct"] == 0.025
+    assert actions[0]["min_actual_risk_pct"] == 0.02
+    assert any(
+        row["ticker"] == "MSFT"
+        and row["reason"] == "actual_risk_below_threshold"
+        and row["actual_risk_pct"] == 0.01
+        for row in audit
+    )
+
+
 def test_build_early_relative_weakness_exit_actions_waits_for_check_day():
     open_positions = {
         "positions": [
