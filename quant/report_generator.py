@@ -2808,6 +2808,32 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"avg$vol={candidate.get('avg_dollar_volume_20d')} "
                 f"notional={notional_text} (paper only)"
             )
+        # Render the actual pending queue (next-open paper buys) so an entry
+        # captured by an earlier same-day run stays visible even when it has
+        # dropped out of this run's fresh candidate list. Without this the
+        # report and state.json pending queue can disagree.
+        pending_queue = (
+            alpha_score_market_regime_paper_sleeve.get("pending_entries") or []
+        )
+        if pending_queue:
+            lines.append("  Pending queue (next-open paper buys):")
+            for entry in pending_queue[:5]:
+                cand = entry.get("candidate") or {}
+                p_notional = entry.get("notional")
+                if not isinstance(p_notional, (int, float)):
+                    p_notional = cand.get("intended_notional")
+                p_notional_text = (
+                    f"${p_notional:,.0f}"
+                    if isinstance(p_notional, (int, float))
+                    else "n/a"
+                )
+                lines.append(
+                    f"    {entry.get('ticker', cand.get('ticker', '?'))}: "
+                    f"signal {entry.get('created_asof', '?')} "
+                    f"alpha={cand.get('alpha_score')} "
+                    f"rank_pct={cand.get('alpha_score_rank_pct')} "
+                    f"notional={p_notional_text} (paper only)"
+                )
 
     if accepted_source_consensus_paper_sleeve and (
         accepted_source_consensus_paper_sleeve.get("candidate_count", 0) > 0
